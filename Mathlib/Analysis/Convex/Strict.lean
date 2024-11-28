@@ -189,7 +189,7 @@ variable [AddCancelCommMonoid E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => z + x) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun x ↦ z + x) ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
   refine preimage_interior_subset_interior_preimage (continuous_add_left _) ?_
   have h := hs hx hy ((add_right_injective _).ne hxy) ha hb hab
@@ -197,7 +197,7 @@ theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_left (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => x + z) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun x ↦ x + z) ⁻¹' s) := by
   simpa only [add_comm] using hs.preimage_add_right z
 
 end AddCancelCommMonoid
@@ -225,11 +225,11 @@ theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
       (add_mem_add (hs hv hx hvx ha hb hab) <| ht.convex hw hy ha.le hb.le hab)
 
 theorem StrictConvex.add_left (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => z + x) '' s) := by
+    StrictConvex 𝕜 ((fun x ↦ z + x) '' s) := by
   simpa only [singleton_add] using (strictConvex_singleton z).add hs
 
 theorem StrictConvex.add_right (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => x + z) '' s) := by simpa only [add_comm] using hs.add_left z
+    StrictConvex 𝕜 ((fun x ↦ x + z) '' s) := by simpa only [add_comm] using hs.add_left z
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.vadd (hs : StrictConvex 𝕜 s) (x : E) : StrictConvex 𝕜 (x +ᵥ s) :=

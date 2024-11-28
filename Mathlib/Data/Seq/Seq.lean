@@ -88,7 +88,7 @@ theorem cons_injective2 : Function.Injective2 (cons : α → Seq α → Seq α) 
   ⟨by rw [← Option.some_inj, ← get?_cons_zero, h, get?_cons_zero],
     Seq.ext fun n => by simp_rw [← get?_cons_succ x s n, h, get?_cons_succ]⟩
 
-theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s :=
+theorem cons_left_injective (s : Seq α) : Function.Injective fun x ↦ cons x s :=
   cons_injective2.left _
 
 theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
@@ -1072,7 +1072,7 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
-  simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
+  simp only [show (fun x ↦ join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩

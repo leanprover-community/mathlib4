@@ -317,7 +317,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
         rcases mem_closure_iff.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
         exact ⟨y, ⟨ys, hy⟩⟩
       let F x := (Exy x).choose
-      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
+      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x ↦ (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
       obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, ball y (δ / 2)⟩ :=

@@ -843,13 +843,13 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m + 1) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
-    apply congr_arg fun x => Nat.shiftRight x n
+    apply congr_arg fun x ↦ Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
   · trans
     · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
     rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
-    apply congr_arg fun x => Nat.shiftRight x n
+    apply congr_arg fun x ↦ Nat.shiftRight x n
     simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 
 @[simp]
@@ -1102,7 +1102,7 @@ theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat' n
   | 0 => rfl
   | ZNum.pos p => show _ = Int.toNat' p by rw [← PosNum.to_nat_to_int p]; rfl
   | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat' (-x)) <|
+    (congr_arg fun x ↦ Int.toNat' (-x)) <|
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 @[simp]
@@ -1110,7 +1110,7 @@ theorem ofZNum_toNat : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n
   | 0 => rfl
   | ZNum.pos p => show _ = Int.toNat p by rw [← PosNum.to_nat_to_int p]; rfl
   | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat (-x)) <|
+    (congr_arg fun x ↦ Int.toNat (-x)) <|
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 @[simp]

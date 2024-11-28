@@ -130,7 +130,7 @@ def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) 
         ext m
         exact
           f.cons_smul m c x }-- then register its continuity thanks to its boundedness properties.
-    ‖f‖ fun x => by
+    ‖f‖ fun x ↦ by
       rw [LinearMap.coe_mk, AddHom.coe_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
 

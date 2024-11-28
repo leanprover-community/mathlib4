@@ -164,7 +164,7 @@ variable (A)
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
   { SMulZeroClass.compFun A f with
-    smul_add := fun x => smul_add (f x) }
+    smul_add := fun x ↦ smul_add (f x) }
 
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]

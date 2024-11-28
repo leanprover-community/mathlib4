@@ -333,7 +333,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   let c : Cone F :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
-      { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
+      { app := fun x ↦ ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
         naturality := fun _ _ f => RingHom.coe_inj
           ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
   createsLimitOfReflectsIso fun c' t =>
@@ -467,7 +467,7 @@ instance :
     let c : Cone F :=
     { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
-        { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
+        { app := fun x ↦ ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality :=
             fun _ _ f => RingHom.coe_inj
               ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }

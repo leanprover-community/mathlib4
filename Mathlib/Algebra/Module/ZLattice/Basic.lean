@@ -182,7 +182,7 @@ theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b 
 def fractRestrict (x : E) : fundamentalDomain b := ⟨fract b x, fract_mem_fundamentalDomain b x⟩
 
 theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
-  fun x => ⟨↑x, Subtype.eq (fract_eq_self.mpr (Subtype.mem x))⟩
+  fun x ↦ ⟨↑x, Subtype.eq (fract_eq_self.mpr (Subtype.mem x))⟩
 
 @[simp]
 theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
@@ -252,7 +252,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
 and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
     E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
-  refine Equiv.ofBijective ?_ ⟨fun x y => ?_, fun x => ?_⟩
+  refine Equiv.ofBijective ?_ ⟨fun x y => ?_, fun x ↦ ?_⟩
   · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
     rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
     exact QuotientAddGroup.leftRel_apply.mp h
@@ -329,7 +329,7 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
     IsAddFundamentalDomain (span ℤ (Set.range b)) (fundamentalDomain b) μ := by
   cases nonempty_fintype ι
   exact IsAddFundamentalDomain.mk' (nullMeasurableSet (fundamentalDomain_measurableSet b))
-    fun x => exist_unique_vadd_mem_fundamentalDomain b x
+    fun x ↦ exist_unique_vadd_mem_fundamentalDomain b x
 
 /-- A version of `ZSpan.isAddFundamentalDomain` for `AddSubgroup`. -/
 protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]

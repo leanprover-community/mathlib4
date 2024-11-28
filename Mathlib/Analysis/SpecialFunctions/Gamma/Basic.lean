@@ -85,7 +85,7 @@ equal but not definitionally so. We use the first of these throughout. -/
 
 This is proved by reduction to the real case. -/
 theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
-    IntegrableOn (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) (Ioi 0) := by
+    IntegrableOn (fun x ↦ (-x).exp * x ^ (s - 1) : ℝ → ℂ) (Ioi 0) := by
   constructor
   · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
@@ -152,20 +152,20 @@ theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
   intervalIntegral_tendsto_integral_Ioi 0 (GammaIntegral_convergent hs) tendsto_id
 
 private theorem Gamma_integrand_intervalIntegrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
-    IntervalIntegrable (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
+    IntervalIntegrable (fun x ↦ (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hX]
   exact IntegrableOn.mono_set (GammaIntegral_convergent hs) Ioc_subset_Ioi_self
 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
-    IntervalIntegrable (fun x => -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
+    IntervalIntegrable (fun x ↦ -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
   convert (Gamma_integrand_intervalIntegrable (s + 1) _ hX).neg
   · simp only [ofReal_exp, ofReal_neg, add_sub_cancel_right]; rfl
   · simp only [add_re, one_re]; linarith
 
 private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y : ℝ} (hY : 0 ≤ Y) :
     IntervalIntegrable (fun x : ℝ => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) volume 0 Y := by
-  have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
-      (fun x => s * ((-x).exp * x ^ (s - 1)) : ℝ → ℂ) := by ext1; ring
+  have : (fun x ↦ (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
+      (fun x ↦ s * ((-x).exp * x ^ (s - 1)) : ℝ → ℂ) := by ext1; ring
   rw [this, intervalIntegrable_iff_integrableOn_Ioc_of_le hY]
   constructor
   · refine (continuousOn_const.mul ?_).aestronglyMeasurable measurableSet_Ioc
@@ -188,7 +188,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
 theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     partialGamma (s + 1) X = s * partialGamma s X - (-X).exp * X ^ s := by
   rw [partialGamma, partialGamma, add_sub_cancel_right]
-  have F_der_I : ∀ x : ℝ, x ∈ Ioo 0 X → HasDerivAt (fun x => (-x).exp * x ^ s : ℝ → ℂ)
+  have F_der_I : ∀ x : ℝ, x ∈ Ioo 0 X → HasDerivAt (fun x ↦ (-x).exp * x ^ s : ℝ → ℂ)
       (-((-x).exp * x ^ s) + (-x).exp * (s * x ^ (s - 1))) x := by
     intro x hx
     have d1 : HasDerivAt (fun y : ℝ => (-y).exp) (-(-x).exp) x := by
@@ -208,8 +208,8 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
-      (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
+  have : (fun x ↦ (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
+      (fun x ↦ s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
   have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
   rw [← t, ofReal_zero, zero_cpow]

@@ -173,7 +173,7 @@ norm. -/
 def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E :=
   { c with
-    nonneg_re := fun x => by
+    nonneg_re := fun x ↦ by
       rw [← InnerProductSpace.norm_sq_eq_inner]
       apply sq_nonneg }
 
@@ -184,7 +184,7 @@ norm. -/
 def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
-    nonneg_re := fun x => by
+    nonneg_re := fun x ↦ by
       rw [← InnerProductSpace.norm_sq_eq_inner]
       apply sq_nonneg
     definite := fun x hx =>
@@ -391,9 +391,9 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 /-- Seminormed group structure constructed from an `PreInnerProductSpace.Core` structure -/
 def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
-    { toFun := fun x => √(re ⟪x, x⟫)
+    { toFun := fun x ↦ √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      neg' := fun x ↦ by simp only [inner_neg_left, neg_neg, inner_neg_right]
       add_le' := fun x y => by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
@@ -458,9 +458,9 @@ attribute [local instance] toNorm
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
 def toNormedAddCommGroup : NormedAddCommGroup F :=
   AddGroupNorm.toNormedAddCommGroup
-    { toFun := fun x => √(re ⟪x, x⟫)
+    { toFun := fun x ↦ √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      neg' := fun x ↦ by simp only [inner_neg_left, neg_neg, inner_neg_right]
       add_le' := fun x y => by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
@@ -499,7 +499,7 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProduct
     InnerProductSpace 𝕜 F :=
   letI : NormedSpace 𝕜 F := @InnerProductSpace.Core.toNormedSpace 𝕜 F _ _ _ cd
   { cd with
-    norm_sq_eq_inner := fun x => by
+    norm_sq_eq_inner := fun x ↦ by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
       have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
       simp [h₁, sq_sqrt, h₂] }
@@ -979,26 +979,26 @@ adapted from the corresponding development of the theory of linearly independent
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 
-theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
+theorem orthonormal_empty : Orthonormal 𝕜 (fun x ↦ x : (∅ : Set E) → E) := by
   classical
   simp [orthonormal_subtype_iff_ite]
 
 variable {𝕜 E}
 
 theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
-    (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
-    Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
+    (h : ∀ i, Orthonormal 𝕜 (fun x ↦ x : s i → E)) :
+    Orthonormal 𝕜 (fun x ↦ x : (⋃ i, s i) → E) := by
   classical
   rw [orthonormal_subtype_iff_ite]
   rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
   obtain ⟨k, hik, hjk⟩ := hs i j
-  have h_orth : Orthonormal 𝕜 (fun x => x : s k → E) := h k
+  have h_orth : Orthonormal 𝕜 (fun x ↦ x : s k → E) := h k
   rw [orthonormal_subtype_iff_ite] at h_orth
   exact h_orth x (hik hxi) y (hjk hyj)
 
 theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· ⊆ ·) s)
-    (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x => ((x : a) : E))) :
-    Orthonormal 𝕜 (fun x => x : ⋃₀ s → E) := by
+    (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x ↦ ((x : a) : E))) :
+    Orthonormal 𝕜 (fun x ↦ x : ⋃₀ s → E) := by
   rw [Set.sUnion_eq_iUnion]; exact orthonormal_iUnion_of_directed hs.directed_val (by simpa using h)
 
 /-- Given an orthonormal set `v` of vectors in `E`, there exists a maximal orthonormal set
@@ -1266,7 +1266,7 @@ for all `x`.
 -/
 theorem ext_inner_map (S T : V →ₗ[ℂ] V) : (∀ x : V, ⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ) ↔ S = T := by
   rw [← sub_eq_zero, ← inner_map_self_eq_zero]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [LinearMap.sub_apply, inner_sub_left, sub_eq_zero]
 
 end Complex
@@ -1294,7 +1294,7 @@ theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E)
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
-  ⟨f, fun x => by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
+  ⟨f, fun x ↦ by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
 
 @[simp]
 theorem LinearMap.coe_isometryOfInner (f : E →ₗ[𝕜] E') (h) : ⇑(f.isometryOfInner h) = f :=
@@ -1968,7 +1968,7 @@ instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 
   { Submodule.normedSpace W with
     inner := fun x y => ⟪(x : E), (y : E)⟫
     conj_symm := fun _ _ => inner_conj_symm _ _
-    norm_sq_eq_inner := fun x => norm_sq_eq_inner (x : E)
+    norm_sq_eq_inner := fun x ↦ norm_sq_eq_inner (x : E)
     add_left := fun _ _ _ => inner_add_left _ _ _
     smul_left := fun _ _ _ => inner_smul_left _ _ _ }
 
@@ -2392,7 +2392,7 @@ theorem inner_mk_mk (x y : E) :
 instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
   conj_symm := Quotient.ind₂ inner_conj_symm
-  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  add_left := Quotient.ind fun x ↦ Quotient.ind₂ <| inner_add_left x
   smul_left := Quotient.ind₂ inner_smul_left
 
 end SeparationQuotient
@@ -2425,7 +2425,7 @@ theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inn
 protected theorem continuous_inner :
     Continuous (uncurry inner : Completion E × Completion E → 𝕜) := by
   let inner' : E →+ E →+ 𝕜 :=
-    { toFun := fun x => (innerₛₗ 𝕜 x).toAddMonoidHom
+    { toFun := fun x ↦ (innerₛₗ 𝕜 x).toAddMonoidHom
       map_zero' := by ext x; exact inner_zero_left _
       map_add' := fun x y => by ext z; exact inner_add_left _ _ _ }
   have : Continuous fun p : E × E => inner' p.1 p.2 := continuous_inner

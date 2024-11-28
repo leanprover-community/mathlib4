@@ -285,7 +285,7 @@ theorem counitCoalgHom_toLinearMap :
 variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
-  ⟨fun f g => CoalgHom.ext fun x => by
+  ⟨fun f g => CoalgHom.ext fun x ↦ by
     have hf := CoalgHomClass.counit_comp_apply f x
     have hg := CoalgHomClass.counit_comp_apply g x
     simp_all only [CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp, CoalgHom.coe_toLinearMap,

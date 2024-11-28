@@ -335,7 +335,7 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
-    { obj := fun x => ⟨f x.as⟩
+    { obj := fun x ↦ ⟨f x.as⟩
       map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
       map_id := fun _ => rfl
       map_comp := fun {x y z} p q => by

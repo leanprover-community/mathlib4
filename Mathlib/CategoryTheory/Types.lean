@@ -203,7 +203,7 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
   rfl
 
 instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
-  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+  map_surjective f := ⟨fun x ↦ (f (ULift.up x)).down, rfl⟩
 
 instance uliftFunctor_faithful : uliftFunctor.Faithful where
   map_injective {_X} {_Y} f g p :=

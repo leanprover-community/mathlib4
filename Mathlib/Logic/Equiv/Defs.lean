@@ -275,7 +275,7 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
 
 @[simp] theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
     (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
-  ext fun x => by substs h h2; rfl
+  ext fun x ↦ by substs h h2; rfl
 
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
   subst h; simp [coe_refl]
@@ -390,7 +390,7 @@ def equivPEmpty (α : Sort v) [IsEmpty α] : α ≃ PEmpty.{u} := equivOfIsEmpty
 
 /-- `α` is equivalent to an empty type iff `α` is empty. -/
 def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
-  ⟨fun e ↦ Function.isEmpty e, @equivEmpty α, fun e ↦ ext fun x => (e x).elim, fun _ => rfl⟩
+  ⟨fun e ↦ Function.isEmpty e, @equivEmpty α, fun e ↦ ext fun x ↦ (e x).elim, fun _ => rfl⟩
 
 /-- The `Sort` of proofs of a false proposition is equivalent to `PEmpty`. -/
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
@@ -427,8 +427,8 @@ is equivalent to the type of maps `α₂ → β₂`. -/
 def arrowCongr {α₁ β₁ α₂ β₂ : Sort*} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
   toFun f := e₂ ∘ f ∘ e₁.symm
   invFun f := e₂.symm ∘ f ∘ e₁
-  left_inv f := funext fun x => by simp only [comp_apply, symm_apply_apply]
-  right_inv f := funext fun x => by simp only [comp_apply, apply_symm_apply]
+  left_inv f := funext fun x ↦ by simp only [comp_apply, symm_apply_apply]
+  right_inv f := funext fun x ↦ by simp only [comp_apply, apply_symm_apply]
 
 theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
     (f : α₁ → β₁) (g : β₁ → γ₁) :

@@ -398,7 +398,7 @@ theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
 variable (L) (M)
 
 instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
-  refine (isEmpty_subtype _).2 (fun x => ?_)
+  refine (isEmpty_subtype _).2 (fun x ↦ ?_)
   have h : (∅ : Set M) ∈ (closure L).closed := by
     rw [mem_closed_iff]
     intro n f
@@ -935,7 +935,7 @@ namespace Substructure
 
 /-- The embedding associated to an inclusion of substructures. -/
 def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x ↦ h x.2
 
 @[simp]
 theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl

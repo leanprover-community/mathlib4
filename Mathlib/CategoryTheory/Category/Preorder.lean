@@ -134,10 +134,10 @@ to the opposite category of the preorder `X`. -/
 @[simps]
 def orderDualEquivalence : Xᵒᵈ ≌ Xᵒᵖ where
   functor :=
-    { obj := fun x => op (OrderDual.ofDual x)
+    { obj := fun x ↦ op (OrderDual.ofDual x)
       map := fun f => (homOfLE (leOfHom f)).op }
   inverse :=
-    { obj := fun x => OrderDual.toDual x.unop
+    { obj := fun x ↦ OrderDual.toDual x.unop
       map := fun f => (homOfLE (leOfHom f.unop)) }
   unitIso := Iso.refl _
   counitIso := Iso.refl _

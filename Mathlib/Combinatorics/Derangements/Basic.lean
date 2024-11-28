@@ -99,7 +99,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine
         Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
-            subtypeEquivRight fun x => ?_).symm
+            subtypeEquivRight fun x ↦ ?_).symm
           (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
       rw [eq_comm, Set.ext_iff]
       simp_rw [Set.mem_compl_iff, Classical.not_not]
@@ -144,7 +144,7 @@ theorem RemoveNone.fiber_some (a : α) :
     use Equiv.Perm.decomposeOption.symm (some a, f)
     constructor
     · intro x
-      apply_fun fun x => Equiv.swap none (some a) x
+      apply_fun fun x ↦ Equiv.swap none (some a) x
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       cases' x with x
       · simp

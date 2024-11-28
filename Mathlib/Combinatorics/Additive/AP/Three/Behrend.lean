@@ -101,7 +101,7 @@ theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 quadrant. -/
 def sphere (n d k : ℕ) : Finset (Fin n → ℕ) := {x ∈ box n d | ∑ i, x i ^ 2 = k}
 
-theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x => by simp [sphere, funext_iff]
+theorem sphere_zero_subset : sphere n d 0 ⊆ 0 := fun x ↦ by simp [sphere, funext_iff]
 
 @[simp]
 theorem sphere_zero_right (n k : ℕ) : sphere (n + 1) 0 k = ∅ := by simp [sphere]
@@ -171,7 +171,7 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
   refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
     cast_injective.comp_left.injOn (Set.subset_univ _) ?_
-  refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
+  refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x ↦ ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 
@@ -212,7 +212,7 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
       forall_apply_eq_imp_iff₂, sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
-  apply map_injOn.mono fun x => ?_
+  apply map_injOn.mono fun x ↦ ?_
   simp only [mem_coe, sphere, mem_filter, mem_box, and_imp, two_mul]
   exact fun h _ i => (h i).trans_le le_self_add
 

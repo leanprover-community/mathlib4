@@ -593,7 +593,7 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     all_goals simp only [measure_univ, one_mul, mul_one, Set.inter_univ, Set.univ_inter]
   simp_rw [h_P_inter, h_μg, Finset.prod_mul_distrib,
     Finset.prod_ite_mem (p1 ∪ p2) p1 (fun x ↦ κ a (f1 x)), Finset.union_inter_cancel_left,
-    Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x => κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
+    Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x ↦ κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
       ← ha1, ht2_eq, ← ha2]
 
 theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}

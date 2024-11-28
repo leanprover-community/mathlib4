@@ -1518,7 +1518,7 @@ end Module.Dual
 namespace LinearMap
 
 theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
-  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x => (forall_dual_apply_eq_zero_iff K x).mp⟩
+  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x ↦ (forall_dual_apply_eq_zero_iff K x).mp⟩
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦

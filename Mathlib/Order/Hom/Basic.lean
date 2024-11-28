@@ -359,7 +359,7 @@ theorem comp_const (γ : Type*) [Preorder γ] (f : α →o β) (c : α) :
 `OrderHom`. -/
 @[simps]
 protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
-  ⟨fun x => (f x, g x), fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
+  ⟨fun x ↦ (f x, g x), fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
 
 @[mono]
 theorem prod_mono {f₁ f₂ : α →o β} (hf : f₁ ≤ f₂) {g₁ g₂ : α →o γ} (hg : g₁ ≤ g₂) :
@@ -1274,7 +1274,7 @@ theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h ↦ f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
 
 theorem OrderIso.complementedLattice [ComplementedLattice α] (f : α ≃o β) : ComplementedLattice β :=
-  ⟨fun x => by
+  ⟨fun x ↦ by
     obtain ⟨y, hy⟩ := exists_isCompl (f.symm x)
     rw [← f.symm_apply_apply y] at hy
     exact ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩

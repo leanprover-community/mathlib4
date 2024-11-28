@@ -60,7 +60,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
       rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
         Real.Gamma_add_one (ne_of_gt (by positivity))]
       field_simp; ring
-    rw [integral_fun_norm_addHaar μ (fun x => Real.exp (- x ^ p)), nsmul_eq_mul, smul_eq_mul,
+    rw [integral_fun_norm_addHaar μ (fun x ↦ Real.exp (- x ^ p)), nsmul_eq_mul, smul_eq_mul,
       mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_toReal]
     exact ne_of_lt measure_ball_lt_top
 
@@ -186,21 +186,21 @@ theorem MeasureTheory.volume_sum_rpow_lt_one (hp : 1 ≤ p) :
   simp_rw [eq_norm, norm_eq_abs] at nm_smul
   -- We use `measure_lt_one_eq_integral_div_gamma` with `g` equals to the norm `L_p`
   convert (measure_lt_one_eq_integral_div_gamma (volume : Measure (ι → ℝ))
-    (g := fun x => (∑ i, |x i| ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
+    (g := fun x ↦ (∑ i, |x i| ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
     (fun r x => nm_smul r x) (by linarith : 0 < p)) using 4
   · rw [rpow_lt_one_iff' _ (one_div_pos.mpr h₁)]
     exact Finset.sum_nonneg' (fun _ => rpow_nonneg (abs_nonneg _) _)
   · simp_rw [← rpow_mul (h₂ _), div_mul_cancel₀ _ (ne_of_gt h₁), Real.rpow_one,
       ← Finset.sum_neg_distrib, exp_sum]
     rw [integral_fintype_prod_eq_pow ι fun x : ℝ => exp (- |x| ^ p), integral_comp_abs
-      (f := fun x => exp (- x ^ p)), integral_exp_neg_rpow h₁]
+      (f := fun x ↦ exp (- x ^ p)), integral_exp_neg_rpow h₁]
   · rw [finrank_fintype_fun_eq_card]
 
 theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :
     volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r} = (.ofReal r) ^ card ι *
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ (x : ι → ℝ) : 0 ≤ ∑ i, |x i| ^ p := by positivity
-  have h₂ : ∀ x : ι → ℝ, 0 ≤ (∑ i, |x i| ^ p) ^ (1 / p) := fun x => rpow_nonneg (h₁ x) _
+  have h₂ : ∀ x : ι → ℝ, 0 ≤ (∑ i, |x i| ^ p) ^ (1 / p) := fun x ↦ rpow_nonneg (h₁ x) _
   obtain hr | hr := le_or_lt r 0
   · have : {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r} = ∅ := by
       ext x
@@ -258,7 +258,7 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
   simp_rw [eq_norm, norm_eq_abs] at nm_smul
   -- We use `measure_lt_one_eq_integral_div_gamma` with `g` equals to the norm `L_p`
   convert measure_lt_one_eq_integral_div_gamma (volume : Measure (ι → ℂ))
-    (g := fun x => (∑ i, ‖x i‖ ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
+    (g := fun x ↦ (∑ i, ‖x i‖ ^ p) ^ (1 / p)) nm_zero nm_neg nm_add (eq_zero _).mp
     (fun r x => nm_smul r x) (by linarith : 0 < p) using 4
   · rw [rpow_lt_one_iff' _ (one_div_pos.mpr h₁)]
     exact Finset.sum_nonneg' (fun _ => rpow_nonneg (norm_nonneg _) _)
@@ -273,7 +273,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
     volume {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = (.ofReal r) ^ (2 * card ι) *
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ (x : ι → ℂ) : 0 ≤ ∑ i, ‖x i‖ ^ p := by positivity
-  have h₂ : ∀ x : ι → ℂ, 0 ≤ (∑ i, ‖x i‖ ^ p) ^ (1 / p) := fun x => rpow_nonneg (h₁ x) _
+  have h₂ : ∀ x : ι → ℂ, 0 ≤ (∑ i, ‖x i‖ ^ p) ^ (1 / p) := fun x ↦ rpow_nonneg (h₁ x) _
   obtain hr | hr := le_or_lt r 0
   · have : {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = ∅ := by
       ext x

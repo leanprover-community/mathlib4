@@ -60,7 +60,7 @@ The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable 
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
   pred {_} f := isFraction M f
-  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
+  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x ↦ w (i x)⟩
 
 /--
 For any open subset `U ⊆ Spec R`, `IsLocallyFraction` is the predicate expressing that a function
@@ -314,7 +314,7 @@ in `U`), this is `m / r` seen as a section of `M^~` over `U`.
 def const (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
     (tildeInModuleCat M).obj (op U) :=
-  ⟨fun x => LocalizedModule.mk m ⟨r, hu x x.2⟩, fun x =>
+  ⟨fun x ↦ LocalizedModule.mk m ⟨r, hu x x.2⟩, fun x =>
     ⟨U, x.2, 𝟙 _, m, r, fun y => ⟨hu _ y.2, by
       simpa only [LocalizedModule.mkLinearMap_apply, LocalizedModule.smul'_mk,
         LocalizedModule.mk_eq] using ⟨1, by simp⟩⟩⟩⟩

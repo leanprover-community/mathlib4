@@ -133,7 +133,7 @@ theorem sublistsAux_eq_flatMap :
     · intros _ _; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
-    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
+    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x ↦ (sublists l₁).map (· ++ x)) := by
   simp only [sublists, foldr_append]
   induction l₁ with
   | nil => simp
@@ -142,14 +142,14 @@ theorem sublists_append (l₁ l₂ : List α) :
     simp [List.flatMap, flatten_flatten, Function.comp_def]
 
 theorem sublists_cons (a : α) (l : List α) :
-    sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
+    sublists (a :: l) = sublists l >>= (fun x ↦ [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by
   rw [sublists_append]
   simp only [sublists_singleton, map_cons, bind_eq_flatMap, nil_append, cons_append, map_nil]
 
 @[simp]
 theorem sublists_concat (l : List α) (a : α) :
-    sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
+    sublists (l ++ [a]) = sublists l ++ map (fun x ↦ x ++ [a]) (sublists l) := by
   rw [sublists_append, sublists_singleton, bind_eq_flatMap, flatMap_cons, flatMap_cons, flatMap_nil,
      map_id'' append_nil, append_nil]
 

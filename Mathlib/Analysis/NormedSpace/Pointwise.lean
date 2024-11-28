@@ -253,7 +253,7 @@ theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
 @[simp]
 theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :
     thickening ε (thickening δ s) = thickening (ε + δ) s :=
-  (thickening_thickening_subset _ _ _).antisymm fun x => by
+  (thickening_thickening_subset _ _ _).antisymm fun x ↦ by
     simp_rw [mem_thickening_iff]
     rintro ⟨z, hz, hxz⟩
     rw [add_comm] at hxz
@@ -263,7 +263,7 @@ theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :
 @[simp]
 theorem cthickening_thickening (hε : 0 ≤ ε) (hδ : 0 < δ) (s : Set E) :
     cthickening ε (thickening δ s) = cthickening (ε + δ) s :=
-  (cthickening_thickening_subset hε _ _).antisymm fun x => by
+  (cthickening_thickening_subset hε _ _).antisymm fun x ↦ by
     simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ.le, infEdist_thickening hδ]
     exact tsub_le_iff_right.2
 
@@ -290,7 +290,7 @@ theorem thickening_cthickening (hε : 0 < ε) (hδ : 0 ≤ δ) (s : Set E) :
 @[simp]
 theorem cthickening_cthickening (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (s : Set E) :
     cthickening ε (cthickening δ s) = cthickening (ε + δ) s :=
-  (cthickening_cthickening_subset hε hδ _).antisymm fun x => by
+  (cthickening_cthickening_subset hε hδ _).antisymm fun x ↦ by
     simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ, infEdist_cthickening]
     exact tsub_le_iff_right.2
 

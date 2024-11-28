@@ -259,7 +259,7 @@ instance orderedSub : OrderedSub (ι →₀ α) :=
 instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderBot,
     Finsupp.orderedAddCommMonoid with
-    exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+    exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x ↦ (add_tsub_cancel_of_le <| h x).symm⟩
     le_self_add := fun _f _g _x => le_self_add }
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl

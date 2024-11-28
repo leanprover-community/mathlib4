@@ -211,7 +211,7 @@ protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Co
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
-    Tendsto (fun x => dist (f x) (g x)) x (𝓝 (dist a b)) :=
+    Tendsto (fun x ↦ dist (f x) (g x)) x (𝓝 (dist a b)) :=
   (continuous_dist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
 
 lemma continuous_iff_continuous_dist [TopologicalSpace β] {f : β → α} :
@@ -237,5 +237,5 @@ protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : 
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
-    Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
+    Tendsto (fun x ↦ nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
   (continuous_nndist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)

@@ -154,7 +154,7 @@ theorem lift_const {f : Filter α} {g : Filter β} : (f.lift fun _ => g) = g :=
 
 @[simp]
 theorem lift_inf {f : Filter α} {g h : Set α → Filter β} :
-    (f.lift fun x => g x ⊓ h x) = f.lift g ⊓ f.lift h := by simp only [Filter.lift, iInf_inf_eq]
+    (f.lift fun x ↦ g x ⊓ h x) = f.lift g ⊓ f.lift h := by simp only [Filter.lift, iInf_inf_eq]
 
 @[simp]
 theorem lift_principal2 {f : Filter α} : f.lift 𝓟 = f :=

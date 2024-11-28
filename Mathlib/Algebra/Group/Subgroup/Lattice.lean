@@ -170,7 +170,7 @@ theorem coe_eq_singleton {H : Subgroup G} : (∃ g : G, (H : Set G) = {g}) ↔ H
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x ∈ H, x ≠ (1 : G) := by
-  rw [Subtype.nontrivial_iff_exists_ne (fun x => x ∈ H) (1 : H)]
+  rw [Subtype.nontrivial_iff_exists_ne (fun x ↦ x ∈ H) (1 : H)]
   simp
 
 @[to_additive]

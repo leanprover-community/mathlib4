@@ -125,8 +125,8 @@ variable {K} (L) (M : Type w) [Structure L M]
 theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N ≃[L] P)) :
     N ∈ L.age M ↔ P ∈ L.age M :=
   and_congr h.some.fg_iff
-    ⟨Nonempty.map fun x => Embedding.comp x h.some.symm.toEmbedding,
-      Nonempty.map fun x => Embedding.comp x h.some.toEmbedding⟩
+    ⟨Nonempty.map fun x ↦ Embedding.comp x h.some.symm.toEmbedding,
+      Nonempty.map fun x ↦ Embedding.comp x h.some.toEmbedding⟩
 
 variable {L} {M} {N : Type w} [Structure L N]
 

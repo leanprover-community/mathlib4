@@ -210,7 +210,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
   -- Porting note: the following goal does not exist in mathlib3.
-  · exact (fun x => x.1)
+  · exact (fun x ↦ x.1)
   · intro x; rfl
   · intro σ
     rw [PowerBasis.liftEquiv'_apply_coe]

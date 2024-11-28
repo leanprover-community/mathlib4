@@ -226,7 +226,7 @@ protected noncomputable def mk : Basis ι R M :=
   .ofRepr
     { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
       invFun := Finsupp.linearCombination _ v
-      left_inv := fun x => hli.linearCombination_repr ⟨x, _⟩
+      left_inv := fun x ↦ hli.linearCombination_repr ⟨x, _⟩
       right_inv := fun _ => hli.repr_eq rfl }
 
 @[simp]

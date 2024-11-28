@@ -115,11 +115,11 @@ theorem projIic_surjOn : SurjOn (projIic b) (Iic b) univ := fun x _ => ⟨x, x.2
 theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
   ⟨x, x.2, projIcc_val h x⟩
 
-theorem projIci_surjective : Surjective (projIci a) := fun x => ⟨x, projIci_coe x⟩
+theorem projIci_surjective : Surjective (projIci a) := fun x ↦ ⟨x, projIci_coe x⟩
 
-theorem projIic_surjective : Surjective (projIic b) := fun x => ⟨x, projIic_coe x⟩
+theorem projIic_surjective : Surjective (projIic b) := fun x ↦ ⟨x, projIic_coe x⟩
 
-theorem projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, projIcc_val h x⟩
+theorem projIcc_surjective : Surjective (projIcc a b h) := fun x ↦ ⟨x, projIcc_val h x⟩
 
 @[simp]
 theorem range_projIci : range (projIci a) = univ := projIci_surjective.range_eq

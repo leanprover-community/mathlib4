@@ -202,7 +202,7 @@ def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
 
 @[simp]
 theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
-    map₂ op (f : Germ l β) g = fun x => op (f x) (g x) :=
+    map₂ op (f : Germ l β) g = fun x ↦ op (f x) (g x) :=
   rfl
 
 /-- A germ at `l` of maps from `α` to `β` tends to `lb : Filter β` if it is represented by a map

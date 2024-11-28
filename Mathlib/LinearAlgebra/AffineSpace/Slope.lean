@@ -54,13 +54,13 @@ theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +
   rw [sub_smul_slope, vsub_vadd]
 
 @[simp]
-theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
+theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x ↦ f x +ᵥ c) = slope f := by
   ext a b
   simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 
 @[simp]
 theorem slope_sub_smul (f : k → E) {a b : k} (h : a ≠ b) :
-    slope (fun x => (x - a) • f x) a b = f b := by
+    slope (fun x ↦ (x - a) • f x) a b = f b := by
   simp [slope, inv_smul_smul₀ (sub_ne_zero.2 h.symm)]
 
 theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E)) : f a = f b := by

@@ -24,10 +24,10 @@ namespace ContinuousLinearMap
 
 variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) (l : Filter E)
 
-theorem isBigOWith_id : IsBigOWith ‖f‖ l f fun x => x :=
+theorem isBigOWith_id : IsBigOWith ‖f‖ l f fun x ↦ x :=
   isBigOWith_of_le' _ f.le_opNorm
 
-theorem isBigO_id : f =O[l] fun x => x :=
+theorem isBigO_id : f =O[l] fun x ↦ x :=
   (f.isBigOWith_id l).isBigO
 
 theorem isBigOWith_comp [RingHomIsometric σ₂₃] {α : Type*} (g : F →SL[σ₂₃] G) (f : α → F)

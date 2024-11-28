@@ -201,7 +201,7 @@ instance : AddCommMonoid (LocalizedModule S M) where
 
 instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) where
   neg p :=
-    liftOn p (fun x => LocalizedModule.mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
+    liftOn p (fun x ↦ LocalizedModule.mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
       rw [mk_eq]
       exact ⟨u, by simpa⟩
 
@@ -210,7 +210,7 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModu
     neg_add_cancel := by
       rintro ⟨m, s⟩
       change
-        (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
+        (liftOn (mk m s) (fun x ↦ mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
               rw [mk_eq]
               exact ⟨u, by simpa⟩) +
             mk m s =
@@ -756,7 +756,7 @@ variable [IsLocalizedModule S f]
 map `LocalizedModule S M ⟶ M'`.
 -/
 noncomputable def fromLocalizedModule' : LocalizedModule S M → M' := fun p =>
-  p.liftOn (fun x => (IsLocalizedModule.map_units f x.2).unit⁻¹.val (f x.1))
+  p.liftOn (fun x ↦ (IsLocalizedModule.map_units f x.2).unit⁻¹.val (f x.1))
     (by
       rintro ⟨a, b⟩ ⟨a', b'⟩ ⟨c, eq1⟩
       dsimp

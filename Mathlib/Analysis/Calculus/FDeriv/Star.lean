@@ -31,21 +31,21 @@ variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter E}
 
 @[fun_prop]
 theorem HasStrictFDerivAt.star (h : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
+    HasStrictFDerivAt (fun x ↦ star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
   (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasStrictFDerivAt.comp x h
 
 theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' x L) :
-    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x L :=
+    HasFDerivAtFilter (fun x ↦ star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x L :=
   (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp x h Filter.tendsto_map
 
 @[fun_prop]
 nonrec theorem HasFDerivWithinAt.star (h : HasFDerivWithinAt f f' s x) :
-    HasFDerivWithinAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') s x :=
+    HasFDerivWithinAt (fun x ↦ star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') s x :=
   h.star
 
 @[fun_prop]
 nonrec theorem HasFDerivAt.star (h : HasFDerivAt f f' x) :
-    HasFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
+    HasFDerivAt (fun x ↦ star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
   h.star
 
 @[fun_prop]
@@ -79,7 +79,7 @@ theorem differentiableOn_star_iff :
 
 @[fun_prop]
 theorem Differentiable.star (h : Differentiable 𝕜 f) : Differentiable 𝕜 fun y => star (f y) :=
-  fun x => (h x).star
+  fun x ↦ (h x).star
 
 @[simp]
 theorem differentiable_star_iff : (Differentiable 𝕜 fun y => star (f y)) ↔ Differentiable 𝕜 f :=

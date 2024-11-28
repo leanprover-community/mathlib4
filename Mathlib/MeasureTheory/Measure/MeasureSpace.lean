@@ -145,7 +145,7 @@ theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
   haveI := hs.toEncodable
   rw [biUnion_eq_iUnion]
-  exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.2) fun x => h x x.2
+  exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x ↦ x.2) fun x ↦ h x x.2
 
 theorem measure_biUnion {s : Set β} {f : β → Set α} (hs : s.Countable) (hd : s.PairwiseDisjoint f)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) :=
@@ -1280,7 +1280,7 @@ theorem map_id : map id μ = μ :=
   ext fun _ => map_apply measurable_id
 
 @[simp]
-theorem map_id' : map (fun x => x) μ = μ :=
+theorem map_id' : map (fun x ↦ x) μ = μ :=
   map_id
 
 /-- Mapping a measure twice is the same as mapping the measure with the composition. This version is
@@ -1849,23 +1849,23 @@ theorem biSup_measure_Iic [Preorder α] {s : Set α} (hsc : s.Countable)
 
 theorem tendsto_measure_Ico_atTop [Preorder α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
-    Tendsto (fun x => μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
+    Tendsto (fun x ↦ μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
   rw [← iUnion_Ico_right]
   exact tendsto_measure_iUnion_atTop (antitone_const.Ico monotone_id)
 
 theorem tendsto_measure_Ioc_atBot [Preorder α] [NoMinOrder α]
     [(atBot : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
-    Tendsto (fun x => μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
+    Tendsto (fun x ↦ μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
   rw [← iUnion_Ioc_left]
   exact tendsto_measure_iUnion_atBot (monotone_id.Ioc antitone_const)
 
 theorem tendsto_measure_Iic_atTop [Preorder α] [(atTop : Filter α).IsCountablyGenerated]
-    (μ : Measure α) : Tendsto (fun x => μ (Iic x)) atTop (𝓝 (μ univ)) := by
+    (μ : Measure α) : Tendsto (fun x ↦ μ (Iic x)) atTop (𝓝 (μ univ)) := by
   rw [← iUnion_Iic]
   exact tendsto_measure_iUnion_atTop monotone_Iic
 
 theorem tendsto_measure_Ici_atBot [Preorder α] [(atBot : Filter α).IsCountablyGenerated]
-    (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
+    (μ : Measure α) : Tendsto (fun x ↦ μ (Ici x)) atBot (𝓝 (μ univ)) :=
   tendsto_measure_Iic_atTop (α := αᵒᵈ) μ
 
 variable [PartialOrder α] {a b : α}

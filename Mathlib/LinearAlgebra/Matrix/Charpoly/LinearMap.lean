@@ -84,7 +84,7 @@ theorem Matrix.Represents.congr_fun {A : Matrix ι ι R} {f : Module.End R M} (h
 theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
     A.Represents b f ↔
       ∀ x, Fintype.linearCombination R R b (A *ᵥ x) = f (Fintype.linearCombination R R b x) :=
-  ⟨fun e x => e.congr_fun x, fun H => LinearMap.ext fun x => H x⟩
+  ⟨fun e x => e.congr_fun x, fun H => LinearMap.ext fun x ↦ H x⟩
 
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
     A.Represents b f ↔ ∀ j, ∑ i : ι, A i j • b i = f (b j) := by
@@ -175,7 +175,7 @@ theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I :
     ∃ M, Matrix.isRepresentation.toEnd R b hb M = f ∧ ∀ i j, M.1 i j ∈ I := by
   have : ∀ x, f x ∈ LinearMap.range (Ideal.finsuppTotal ι M I b) := by
     rw [Ideal.range_finsuppTotal, hb]
-    exact fun x => hI (LinearMap.mem_range_self f x)
+    exact fun x ↦ hI (LinearMap.mem_range_self f x)
   choose bM' hbM' using this
   let A : Matrix ι ι R := fun i j => bM' (b j) i
   have : A.Represents b f := by

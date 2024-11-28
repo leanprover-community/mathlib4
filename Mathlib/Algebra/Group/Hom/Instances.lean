@@ -37,7 +37,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
   mul_one := by intros; ext; apply mul_one
   mul_comm := by intros; ext; apply mul_comm
   npow n f :=
-    { toFun := fun x => f x ^ n, map_one' := by simp, map_mul' := fun x y => by simp [mul_pow] }
+    { toFun := fun x ↦ f x ^ n, map_one' := by simp, map_mul' := fun x y => by simp [mul_pow] }
   npow_zero f := by
     ext x
     simp
@@ -58,7 +58,7 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       apply div_eq_mul_inv,
     inv_mul_cancel := by intros; ext; apply inv_mul_cancel,
     zpow := fun n f =>
-      { toFun := fun x => f x ^ n,
+      { toFun := fun x ↦ f x ^ n,
         map_one' := by simp,
         map_mul' := fun x y => by simp [mul_zpow] },
     zpow_zero' := fun f => by
@@ -122,11 +122,11 @@ theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f
 def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M →* N →* P) :
     N →* M →* P where
   toFun y :=
-    { toFun := fun x => f x y,
+    { toFun := fun x ↦ f x y,
       map_one' := by simp [f.map_one, one_apply],
       map_mul' := fun x₁ x₂ => by simp [f.map_mul, mul_apply] }
-  map_one' := ext fun x => (f x).map_one
-  map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
+  map_one' := ext fun x ↦ (f x).map_one
+  map_mul' y₁ y₂ := ext fun x ↦ (f x).map_mul y₁ y₂
 
 @[to_additive (attr := simp)]
 theorem flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)

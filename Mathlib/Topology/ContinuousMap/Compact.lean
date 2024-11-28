@@ -58,7 +58,7 @@ theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBounde
             fun f g h => hs fun x _ => h x⟩,
           fun ⟨_, ⟨ε, hε, ht⟩, hs⟩ =>
           ⟨⟨Set.univ, { p | dist p.1 p.2 ≤ ε }⟩, ⟨isCompact_univ, ⟨ε, hε, fun _ h => h⟩⟩,
-            fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x => h x (mem_univ x)))⟩⟩)
+            fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x ↦ h x (mem_univ x)))⟩⟩)
 
 @[deprecated (since := "2024-10-05")]
 alias uniformInducing_equivBoundedOfCompact := isUniformInducing_equivBoundedOfCompact
@@ -236,7 +236,7 @@ instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
 
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
-  (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
+  (norm_le _ (norm_nonneg _)).mpr fun x ↦ norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
 
 end
 

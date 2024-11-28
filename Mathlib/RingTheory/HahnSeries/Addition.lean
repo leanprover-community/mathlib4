@@ -254,7 +254,7 @@ instance : Neg (HahnSeries Γ R) where
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     zsmul := zsmulRec
-    neg_add_cancel := fun x => by
+    neg_add_cancel := fun x ↦ by
       ext
       apply neg_add_cancel }
 

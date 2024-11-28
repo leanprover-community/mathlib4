@@ -201,7 +201,7 @@ theorem mem_cthickening_of_dist_le {α : Type*} [PseudoMetricSpace α] (x y : α
   exact ENNReal.ofReal_le_ofReal h'
 
 theorem cthickening_eq_preimage_infEdist (δ : ℝ) (E : Set α) :
-    cthickening δ E = (fun x => infEdist x E) ⁻¹' Iic (ENNReal.ofReal δ) :=
+    cthickening δ E = (fun x ↦ infEdist x E) ⁻¹' Iic (ENNReal.ofReal δ) :=
   rfl
 
 /-- The closed thickening is a closed set. -/

@@ -176,7 +176,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 := by
 
 instance : Add (MultilinearMap R M₁ M₂) :=
   ⟨fun f f' =>
-    ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
+    ⟨fun x ↦ f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
 
 @[simp]
@@ -385,7 +385,7 @@ theorem compLinearMap_id (g : MultilinearMap R M₁' M₂) :
 /-- Composing with a family of surjective linear maps is injective. -/
 theorem compLinearMap_injective (f : ∀ i, M₁ i →ₗ[R] M₁' i) (hf : ∀ i, Surjective (f i)) :
     Injective fun g : MultilinearMap R M₁' M₂ => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by
+  ext fun x ↦ by
     simpa [fun i => surjInv_eq (hf i)]
       using MultilinearMap.ext_iff.mp h fun i => surjInv (hf i) (x i)
 
@@ -714,7 +714,7 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     by_cases h' : P j
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
       have h'' : ¬ ⟨j, h'⟩ = i :=
-        fun he => by apply_fun (fun x => x.1) at he; exact h he
+        fun he => by apply_fun (fun x ↦ x.1) at he; exact h he
       rw [Function.update_noteq h'']
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
 
@@ -1549,7 +1549,7 @@ a multilinear map in `n` variables taking values in linear maps from `M (last n)
 def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
     MultilinearMap R (fun i : Fin n => M (Fin.castSucc i)) (M (last n) →ₗ[R] M₂) where
   toFun m :=
-    { toFun := fun x => f (snoc m x)
+    { toFun := fun x ↦ f (snoc m x)
       map_add' := fun x y => by simp_rw [f.snoc_add]
       map_smul' := fun c x => by simp only [f.snoc_smul, RingHom.id_apply] }
   map_update_add' := @fun dec m i x y => by

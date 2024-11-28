@@ -701,7 +701,7 @@ theorem IsGLB.nonempty [NoMaxOrder α] (hs : IsGLB s a) : s.Nonempty :=
   hs.dual.nonempty
 
 theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonempty :=
-  (Nonempty.elim ha) fun x => (not_bddAbove_iff'.1 h x).imp fun _ ha => ha.1
+  (Nonempty.elim ha) fun x ↦ (not_bddAbove_iff'.1 h x).imp fun _ ha => ha.1
 
 theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :=
   @nonempty_of_not_bddAbove αᵒᵈ _ _ _ h

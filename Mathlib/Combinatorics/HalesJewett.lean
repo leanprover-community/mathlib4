@@ -343,7 +343,7 @@ private theorem exists_mono_in_high_dimension' :
         Exists.imp fun ι =>
           Exists.imp fun _ h C =>
             let ⟨l, c, lc⟩ := h fun v => C (e ∘ v)
-            ⟨l.map e, c, e.forall_congr_right.mp fun x => by rw [← lc x, Line.map_apply]⟩)
+            ⟨l.map e, c, e.forall_congr_right.mp fun x ↦ by rw [← lc x, Line.map_apply]⟩)
   (by
     -- This deals with the degenerate case where `α` is empty.
     intro κ _
@@ -401,7 +401,7 @@ private theorem exists_mono_in_high_dimension' :
     -- If `C'` has a monochromatic line, then so does `C`. We use this in two places below.
     have mono_of_mono : (∃ l, IsMono C' l) → ∃ l, IsMono C l := by
       rintro ⟨l, c, hl⟩
-      refine ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => ?_⟩
+      refine ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x ↦ ?_⟩
       rw [Line.horizontal_apply, ← hl, ← hl']
     -- By choice of `ι`, `C'` either has `r` color-focused lines or a monochromatic line.
     specialize hι C'
@@ -418,11 +418,11 @@ private theorem exists_mono_in_high_dimension' :
       · apply p.has_color
     -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
     -- and adding to this the vertical line obtained by the focus point and `l`.
-    refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
+    refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x ↦ ?_⟩,
             Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
     -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
-    · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩
+    · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x ↦ ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
     -- The vertical line is almost monochromatic.
     · rw [vertical_apply, ← congr_fun (hl' x), Line.map_apply]
@@ -445,7 +445,7 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
-    ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
+    ⟨l, c.down, fun x ↦ by rw [← hc x, Function.comp_apply]⟩⟩
 
 end Line
 

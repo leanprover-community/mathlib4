@@ -94,7 +94,7 @@ theorem toNonUnitalSubsemiring_injective :
     Function.Injective
       (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A) :=
   fun S T h =>
-  ext fun x => by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
+  ext fun x ↦ by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
 
 theorem toNonUnitalSubsemiring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubsemiring = U.toNonUnitalSubsemiring ↔ S = U :=
@@ -109,7 +109,7 @@ theorem coe_toSubmodule (S : NonUnitalSubalgebra R A) : (↑S.toSubmodule : Set 
 
 theorem toSubmodule_injective :
     Function.Injective (toSubmodule : NonUnitalSubalgebra R A → Submodule R A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
+  ext fun x ↦ by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
 
 theorem toSubmodule_inj {S U : NonUnitalSubalgebra R A} : S.toSubmodule = U.toSubmodule ↔ S = U :=
   toSubmodule_injective.eq_iff
@@ -163,7 +163,7 @@ theorem coe_toNonUnitalSubring (S : NonUnitalSubalgebra R A) :
 
 theorem toNonUnitalSubring_injective :
     Function.Injective (toNonUnitalSubring : NonUnitalSubalgebra R A → NonUnitalSubring A) :=
-  fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
+  fun S T h => ext fun x ↦ by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
 
 theorem toNonUnitalSubring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
@@ -858,7 +858,7 @@ theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) =
   ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+  ⟨fun B C => ext fun x ↦ by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 variable [NonUnitalNonAssocSemiring B] [Module R B]
 

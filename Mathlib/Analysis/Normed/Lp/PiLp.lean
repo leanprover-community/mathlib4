@@ -698,7 +698,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
     WithLp.linearEquiv _ _ _
       ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
-  norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
+  norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x ↦ by
     simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
       Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
@@ -749,7 +749,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
       ≪≫ₗ LinearEquiv.piCurry 𝕜 α
       ≪≫ₗ (LinearEquiv.piCongrRight fun _ => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
-  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
+  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x ↦ by
     simp_rw [← coe_nnnorm, NNReal.coe_inj]
     obtain rfl | hp := eq_or_ne p ⊤
     · simp_rw [← PiLp.nnnorm_equiv, Pi.nnnorm_def, ← PiLp.nnnorm_equiv, Pi.nnnorm_def]

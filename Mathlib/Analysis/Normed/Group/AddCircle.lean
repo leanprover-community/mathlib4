@@ -158,7 +158,7 @@ open Metric
 
 theorem closedBall_eq_univ_of_half_period_le (hp : p ≠ 0) (x : AddCircle p) {ε : ℝ}
     (hε : |p| / 2 ≤ ε) : closedBall x ε = univ :=
-  eq_univ_iff_forall.mpr fun x => by
+  eq_univ_iff_forall.mpr fun x ↦ by
     simpa only [mem_closedBall, dist_eq_norm] using (norm_le_half_period p hp).trans hε
 
 @[simp]

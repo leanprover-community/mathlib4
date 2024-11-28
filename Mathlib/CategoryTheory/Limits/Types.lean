@@ -334,10 +334,10 @@ instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F) :=
 
 /-- Inclusion into the quotient type implementing the colimit. -/
 def Quot.ι (F : J ⥤ Type u) (j : J) : F.obj j → Quot F :=
-  fun x => Quot.mk _ ⟨j, x⟩
+  fun x ↦ Quot.mk _ ⟨j, x⟩
 
 lemma Quot.jointly_surjective {F : J ⥤ Type u} (x : Quot F) : ∃ j y, x = Quot.ι F j y :=
-  Quot.ind (β := fun x => ∃ j y, x = Quot.ι F j y) (fun ⟨j, y⟩ => ⟨j, y, rfl⟩) x
+  Quot.ind (β := fun x ↦ ∃ j y, x = Quot.ι F j y) (fun ⟨j, y⟩ => ⟨j, y, rfl⟩) x
 
 section
 
@@ -346,7 +346,7 @@ variable {F : J ⥤ Type u} (c : Cocone F)
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
     assuming that `Quot F` lives in the correct universe. -/
 def Quot.desc : Quot F → c.pt :=
-  Quot.lift (fun x => c.ι.app x.1 x.2) <| by
+  Quot.lift (fun x ↦ c.ι.app x.1 x.2) <| by
     rintro ⟨j, x⟩ ⟨j', _⟩ ⟨φ : j ⟶ j', rfl : _ = F.map φ x⟩
     exact congr_fun (c.ι.naturality φ).symm x
 
@@ -372,14 +372,14 @@ lemma Quot.desc_toCocone_desc {α : Type u} (f : Quot F → α) (hc : IsColimit 
 theorem isColimit_iff_bijective_desc : Nonempty (IsColimit c) ↔ (Quot.desc c).Bijective := by
   classical
   refine ⟨?_, ?_⟩
-  · refine fun ⟨hc⟩ => ⟨fun x y h => ?_, fun x => ?_⟩
+  · refine fun ⟨hc⟩ => ⟨fun x y h => ?_, fun x ↦ ?_⟩
     · let f : Quot F → ULift.{u} Bool := fun z => ULift.up (x = z)
       suffices f x = f y by simpa [f] using this
       rw [← Quot.desc_toCocone_desc c f hc x, h, Quot.desc_toCocone_desc]
     · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ => ULift.up true
-      let f₂ : c.pt ⟶ ULift.{u} Bool := fun x => ULift.up (∃ a, Quot.desc c a = x)
+      let f₂ : c.pt ⟶ ULift.{u} Bool := fun x ↦ ULift.up (∃ a, Quot.desc c a = x)
       suffices f₁ = f₂ by simpa [f₁, f₂] using congrFun this x
-      refine hc.hom_ext fun j => funext fun x => ?_
+      refine hc.hom_ext fun j => funext fun x ↦ ?_
       simpa [f₁, f₂] using ⟨Quot.ι F j x, by simp⟩
   · refine fun h ↦ ⟨?_⟩
     let e := Equiv.ofBijective _ h
@@ -598,7 +598,7 @@ variable {f}
 
 /-- the universal property for the image factorisation -/
 noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
-  (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
+  (fun x ↦ F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
   funext x
@@ -628,7 +628,7 @@ instance : HasImages (Type u) where
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
-      (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
+      (fun x ↦ ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
         have p := st.w
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p

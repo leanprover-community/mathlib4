@@ -285,7 +285,7 @@ theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Sur
 @[simp]
 theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 end NonUnitalRingHom
 
@@ -609,7 +609,7 @@ theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjectiv
 @[simp]
 theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ RingHom.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ RingHom.ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 end RingHom
 

@@ -130,7 +130,7 @@ lemma schnirelmannDensity_eq_one_iff_of_zero_mem (hA : 0 ∈ A) :
     schnirelmannDensity A = 1 ↔ A = Set.univ := by
   rw [schnirelmannDensity_eq_one_iff]
   constructor
-  · refine fun h ↦ Set.eq_univ_of_forall fun x => ?_
+  · refine fun h ↦ Set.eq_univ_of_forall fun x ↦ ?_
     rcases eq_or_ne x 0 with rfl | hx
     · exact hA
     · exact h hx

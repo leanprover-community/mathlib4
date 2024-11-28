@@ -68,7 +68,7 @@ is injective when `ψ` is primitive. -/
 theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     Function.Injective ψ.mulShift := by
   intro a b h
-  apply_fun fun x => x * mulShift ψ (-b) at h
+  apply_fun fun x ↦ x * mulShift ψ (-b) at h
   simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
@@ -241,7 +241,7 @@ is a domain. -/
 theorem sum_eq_zero_of_ne_one [IsDomain R'] {ψ : AddChar R R'} (hψ : ψ ≠ 1) : ∑ a, ψ a = 0 := by
   rcases ne_one_iff.1 hψ with ⟨b, hb⟩
   have h₁ : ∑ a : R, ψ (b + a) = ∑ a : R, ψ a :=
-    Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x => rfl
+    Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x ↦ rfl
   simp_rw [map_add_eq_mul] at h₁
   have h₂ : ∑ a : R, ψ a = Finset.univ.sum ↑ψ := rfl
   rw [← Finset.mul_sum, h₂] at h₁

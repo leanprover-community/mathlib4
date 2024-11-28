@@ -147,7 +147,7 @@ lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a
   omega
 
 theorem image_sub_const_Ico (h : c ≤ a) :
-    ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
+    ((Ico a b).image fun x ↦ x - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
   refine ⟨?_, fun h ↦ ⟨x + c, by omega⟩⟩
@@ -155,7 +155,7 @@ theorem image_sub_const_Ico (h : c ≤ a) :
   omega
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
-    ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
+    ((Ico a b).image fun x ↦ c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
   refine ⟨?_, fun h ↦ ⟨c - x, by omega⟩⟩

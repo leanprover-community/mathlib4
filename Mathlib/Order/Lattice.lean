@@ -192,7 +192,7 @@ theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 instance : Std.Commutative (α := α) (· ⊔ ·) := ⟨sup_comm⟩
 
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
-  eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
+  eq_of_forall_ge_iff fun x ↦ by simp only [sup_le_iff]; rw [and_assoc]
 
 instance : Std.Associative (α := α) (· ⊔ ·) := ⟨sup_assoc⟩
 
@@ -884,13 +884,13 @@ protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} (hf : Monotone f)
     (hg : Monotone g) :
-    Monotone fun x => max (f x) (g x) :=
+    Monotone fun x ↦ max (f x) (g x) :=
   hf.sup hg
 
 /-- Pointwise minimum of two monotone functions is a monotone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} (hf : Monotone f)
     (hg : Monotone g) :
-    Monotone fun x => min (f x) (g x) :=
+    Monotone fun x ↦ min (f x) (g x) :=
   hf.inf hg
 
 theorem le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β} (h : Monotone f) (x y : α) :
@@ -955,12 +955,12 @@ protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : S
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => max (f x) (g x)) s :=
+    (hg : MonotoneOn g s) : MonotoneOn (fun x ↦ max (f x) (g x)) s :=
   hf.sup hg
 
 /-- Pointwise minimum of two monotone functions is a monotone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => min (f x) (g x)) s :=
+    (hg : MonotoneOn g s) : MonotoneOn (fun x ↦ min (f x) (g x)) s :=
   hf.inf hg
 
 theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β]
@@ -1001,13 +1001,13 @@ protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} (hf : Antitone f)
     (hg : Antitone g) :
-    Antitone fun x => max (f x) (g x) :=
+    Antitone fun x ↦ max (f x) (g x) :=
   hf.sup hg
 
 /-- Pointwise minimum of two monotone functions is a monotone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} (hf : Antitone f)
     (hg : Antitone g) :
-    Antitone fun x => min (f x) (g x) :=
+    Antitone fun x ↦ min (f x) (g x) :=
   hf.inf hg
 
 theorem map_sup_le [SemilatticeSup α] [SemilatticeInf β] {f : α → β} (h : Antitone f) (x y : α) :
@@ -1045,12 +1045,12 @@ protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} {s : S
 
 /-- Pointwise maximum of two antitone functions is an antitone function. -/
 protected theorem max [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => max (f x) (g x)) s :=
+    (hg : AntitoneOn g s) : AntitoneOn (fun x ↦ max (f x) (g x)) s :=
   hf.sup hg
 
 /-- Pointwise minimum of two antitone functions is an antitone function. -/
 protected theorem min [Preorder α] [LinearOrder β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => min (f x) (g x)) s :=
+    (hg : AntitoneOn g s) : AntitoneOn (fun x ↦ min (f x) (g x)) s :=
   hf.inf hg
 
 theorem of_map_inf [SemilatticeInf α] [SemilatticeSup β]

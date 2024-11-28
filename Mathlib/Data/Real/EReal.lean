@@ -222,9 +222,9 @@ protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
-  mul_one := fun x => by rw [EReal.mul_comm, EReal.one_mul]
+  mul_one := fun x ↦ by rw [EReal.mul_comm, EReal.one_mul]
   zero_mul := EReal.zero_mul
-  mul_zero := fun x => by rw [EReal.mul_comm, EReal.zero_mul]
+  mul_zero := fun x ↦ by rw [EReal.mul_comm, EReal.zero_mul]
 
 /-! ### Real coercion -/
 
@@ -607,7 +607,7 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
   coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
+  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x ↦ match x with
     | ⊥ => fun h ↦ absurd h bot_lt_zero.not_le
     | ⊤ => fun _ => ⟨⊤, rfl⟩
     | (x : ℝ) => fun h ↦ ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
@@ -919,8 +919,8 @@ theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := by
 /-- Negation as an order reversing isomorphism on `EReal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
-    toFun := fun x => OrderDual.toDual (-x)
-    invFun := fun x => -OrderDual.ofDual x
+    toFun := fun x ↦ OrderDual.toDual (-x)
+    invFun := fun x ↦ -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
 
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]

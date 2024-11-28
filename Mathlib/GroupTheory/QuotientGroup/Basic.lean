@@ -121,7 +121,7 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
   { kerLift φ with
     toFun := kerLift φ
     invFun := mk ∘ ψ
-    left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
+    left_inv := fun x ↦ kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
     right_inv := hφ }
 
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/
@@ -209,7 +209,7 @@ theorem homQuotientZPowOfHom_comp :
 @[to_additive (attr := simp)]
 theorem homQuotientZPowOfHom_comp_of_rightInverse (i : Function.RightInverse g f) :
     (homQuotientZPowOfHom f n).comp (homQuotientZPowOfHom g n) = MonoidHom.id _ :=
-  monoidHom_ext _ <| MonoidHom.ext fun x => congrArg _ <| i x
+  monoidHom_ext _ <| MonoidHom.ext fun x ↦ congrArg _ <| i x
 
 /-- The equivalence of quotients by powers of an integer induced by a group isomorphism. -/
 @[to_additive "The equivalence of quotients by multiples of an integer induced by an additive group

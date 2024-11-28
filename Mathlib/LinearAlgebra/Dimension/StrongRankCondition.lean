@@ -342,7 +342,7 @@ theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 
-theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → M)) :
+theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x ↦ x : s → M)) :
     Module.rank R ↑(span R s) = #s := by
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs

@@ -162,7 +162,7 @@ theorem star_mul' [CommSemigroup R] [StarMul R] (x y : R) : star (x * y) = star 
 @[simps apply]
 def starMulEquiv [Mul R] [StarMul R] : R ≃* Rᵐᵒᵖ :=
   { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
-    toFun := fun x => MulOpposite.op (star x)
+    toFun := fun x ↦ MulOpposite.op (star x)
     map_mul' := fun x y => by simp only [star_mul, op_mul] }
 
 /-- `star` as a `MulAut` for commutative `R`. -/
@@ -281,7 +281,7 @@ instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R
 @[simps apply]
 def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
   { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
-    toFun := fun x => MulOpposite.op (star x) }
+    toFun := fun x ↦ MulOpposite.op (star x) }
 
 @[simp, norm_cast]
 theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=

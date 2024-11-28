@@ -55,7 +55,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem addHom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ x, f.comp (singleAddHom β x) = g.comp (singleAddHom β x)) : f = g :=
-  addHom_ext fun x => DFunLike.congr_fun (H x)
+  addHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 end AddMonoid
 

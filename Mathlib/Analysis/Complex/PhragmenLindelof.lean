@@ -758,7 +758,7 @@ Then `f` is equal to zero on the closed right half-plane. -/
 theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl ℂ f {z | 0 < z.re})
     (hexp : ∃ c < (2 : ℝ), ∃ B,
       f =O[cobounded ℂ ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
-    (hre : SuperpolynomialDecay atTop expR fun x => ‖f x‖) (him : ∃ C, ∀ x : ℝ, ‖f (x * I)‖ ≤ C) :
+    (hre : SuperpolynomialDecay atTop expR fun x ↦ ‖f x‖) (him : ∃ C, ∀ x : ℝ, ‖f (x * I)‖ ≤ C) :
     EqOn f 0 {z : ℂ | 0 ≤ z.re} := by
   rcases him with ⟨C, hC⟩
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
@@ -814,7 +814,7 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
       f =O[cobounded ℂ ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
     (hgexp : ∃ c < (2 : ℝ), ∃ B,
       g =O[cobounded ℂ ⊓ 𝓟 {z | 0 < z.re}] fun z => expR (B * abs z ^ c))
-    (hre : SuperpolynomialDecay atTop expR fun x => ‖f x - g x‖)
+    (hre : SuperpolynomialDecay atTop expR fun x ↦ ‖f x - g x‖)
     (hfim : ∃ C, ∀ x : ℝ, ‖f (x * I)‖ ≤ C) (hgim : ∃ C, ∀ x : ℝ, ‖g (x * I)‖ ≤ C) :
     EqOn f g {z : ℂ | 0 ≤ z.re} := by
   suffices EqOn (f - g) 0 {z : ℂ | 0 ≤ z.re} by
@@ -822,6 +822,6 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
   refine eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) ?_ hre ?_
   · exact isBigO_sub_exp_rpow hfexp hgexp
   · rcases hfim with ⟨Cf, hCf⟩; rcases hgim with ⟨Cg, hCg⟩
-    exact ⟨Cf + Cg, fun x => norm_sub_le_of_le (hCf x) (hCg x)⟩
+    exact ⟨Cf + Cg, fun x ↦ norm_sub_le_of_le (hCf x) (hCg x)⟩
 
 end PhragmenLindelof

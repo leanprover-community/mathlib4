@@ -160,7 +160,7 @@ protected theorem surjective (h : α ≃ᵤ β) : Function.Surjective h :=
 /-- Change the uniform equiv `f` to make the inverse function definitionally equal to `g`. -/
 def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f) : α ≃ᵤ β :=
   have : g = f.symm :=
-    funext fun x => calc
+    funext fun x ↦ calc
       g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
       _ = f.symm x := by rw [hg x]
   { toFun := f

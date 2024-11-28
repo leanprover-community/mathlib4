@@ -89,7 +89,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
       convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x ↦ δ_le _) fun x ↦ le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
   have seq_is_cauchy : CauchySeq fun n => (w n : F) := by
     rw [cauchySeq_iff_le_tendsto_0]
@@ -459,7 +459,7 @@ def orthogonalProjection : E →L[𝕜] K :=
             mul_zero]
         ext
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
-    1 fun x => by
+    1 fun x ↦ by
     simp only [one_mul, LinearMap.coe_mk]
     refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
@@ -624,7 +624,7 @@ variable [HasOrthogonalProjection K]
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive
-    (2 • (K.subtype.comp (orthogonalProjection K).toLinearMap) - LinearMap.id) fun x => by
+    (2 • (K.subtype.comp (orthogonalProjection K).toLinearMap) - LinearMap.id) fun x ↦ by
     simp [two_smul]
 
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is

@@ -1174,10 +1174,10 @@ theorem exp_antiperiodic : Function.Antiperiodic exp (π * I) := by simp [exp_ad
 theorem exp_periodic : Function.Periodic exp (2 * π * I) :=
   (mul_assoc (2 : ℂ) π I).symm ▸ exp_antiperiodic.periodic_two_mul
 
-theorem exp_mul_I_antiperiodic : Function.Antiperiodic (fun x => exp (x * I)) π := by
+theorem exp_mul_I_antiperiodic : Function.Antiperiodic (fun x ↦ exp (x * I)) π := by
   simpa only [mul_inv_cancel_right₀ I_ne_zero] using exp_antiperiodic.mul_const I_ne_zero
 
-theorem exp_mul_I_periodic : Function.Periodic (fun x => exp (x * I)) (2 * π) :=
+theorem exp_mul_I_periodic : Function.Periodic (fun x ↦ exp (x * I)) (2 * π) :=
   exp_mul_I_antiperiodic.periodic_two_mul
 
 @[simp]
@@ -1214,7 +1214,7 @@ theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {
   simp only [abs_exp, Real.exp_le_exp, re_ofReal_mul, add_re, exp_re, neg_im, Real.cos_neg, ←
     add_mul, mul_assoc, mul_comm (Real.cos b), neg_re, ← Real.cos_abs z.im]
   have : Real.exp |z.re| ≤ Real.exp z.re + Real.exp (-z.re) :=
-    apply_abs_le_add_of_nonneg (fun x => (Real.exp_pos x).le) z.re
+    apply_abs_le_add_of_nonneg (fun x ↦ (Real.exp_pos x).le) z.re
   refine mul_le_mul_of_nonpos_left (mul_le_mul this ?_ ?_ ((Real.exp_pos _).le.trans this)) ha
   · exact
       Real.cos_le_cos_of_nonneg_of_le_pi (_root_.abs_nonneg _)

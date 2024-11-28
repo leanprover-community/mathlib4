@@ -109,7 +109,7 @@ letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') :=
 set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
+  opNorm_le_bound _ zero_le_one fun x ↦ (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
 
 @[deprecated (since := "2024-02-02")] alias op_norm_mulLeftRight_le := opNorm_mulLeftRight_le
 
@@ -129,7 +129,7 @@ class _root_.RegularNormedAlgebra : Prop where
 instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
     [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜' where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 𝕜') <|
-    fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
+    fun x ↦ le_antisymm (opNorm_mul_apply_le _ _ _) <| by
       convert ratio_le_opNorm ((mul 𝕜 𝕜') x) (1 : 𝕜')
       simp [norm_one]
 
@@ -208,7 +208,7 @@ theorem lsmul_apply (c : 𝕜') (x : E) : lsmul 𝕜 𝕜' c x = c • x :=
 variable {𝕜'}
 
 theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
-  refine opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
+  refine opNorm_eq_of_bounds (norm_nonneg _) (fun x ↦ ?_) fun N _ h => ?_
   · rw [toSpanSingleton_apply, norm_smul, mul_comm]
   · specialize h 1
     rw [toSpanSingleton_apply, norm_smul, mul_comm] at h
@@ -223,7 +223,7 @@ theorem opNorm_lsmul_apply_le (x : 𝕜') : ‖(lsmul 𝕜 𝕜' x : E →L[𝕜
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
-  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => ?_
+  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x ↦ ?_
   simp_rw [one_mul]
   exact opNorm_lsmul_apply_le _
 
@@ -267,7 +267,7 @@ This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
 theorem opNorm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] [Nontrivial E] : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ = 1 := by
-  refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
+  refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x ↦ ?_) fun N _ h => ?_
   · rw [one_mul]
     apply opNorm_lsmul_apply_le
   obtain ⟨y, hy⟩ := exists_ne (0 : E)

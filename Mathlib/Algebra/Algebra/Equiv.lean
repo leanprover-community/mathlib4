@@ -690,10 +690,10 @@ instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A�
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
-  one_smul := fun x => by ext; rfl
+  one_smul := fun x ↦ by ext; rfl
   mul_smul := fun x y z => by ext; rfl
   smul_mul := fun x y z => by ext; exact map_mul x _ _
-  smul_one := fun x => by ext; exact map_one x
+  smul_one := fun x ↦ by ext; exact map_one x
 
 @[simp]
 theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :

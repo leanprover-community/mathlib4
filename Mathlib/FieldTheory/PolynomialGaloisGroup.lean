@@ -82,7 +82,7 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
 def uniqueGalOfSplits (h : p.Splits (RingHom.id F)) : Unique p.Gal where
   default := 1
   uniq f :=
-    AlgEquiv.ext fun x => by
+    AlgEquiv.ext fun x ↦ by
       obtain ⟨y, rfl⟩ :=
         Algebra.mem_bot.mp
           ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)

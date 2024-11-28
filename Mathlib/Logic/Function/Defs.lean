@@ -34,7 +34,7 @@ Thus this usage is no longer allowed: -/
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]
 def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
-    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
+    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x ↦ f (g x)
 
 infixr:80 " ∘' " => Function.dcomp
 

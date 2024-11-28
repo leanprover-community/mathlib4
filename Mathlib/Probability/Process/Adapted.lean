@@ -109,7 +109,7 @@ variable [MeasurableSpace ι]
 
 protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
   intro i
-  have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
+  have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x ↦ (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl
   rw [this]
   exact (h i).comp_measurable measurable_prod_mk_left

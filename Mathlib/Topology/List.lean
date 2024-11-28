@@ -112,7 +112,7 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   · exact tendsto_pure_pure _ _
   · intro l a ih
     dsimp only [List.length]
-    refine Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) ?_
+    refine Tendsto.comp (tendsto_pure_pure (fun x ↦ x + 1) _) ?_
     exact Tendsto.comp ih tendsto_snd
 
 /-- Continuity of `insertIdx` in terms of `Tendsto`. -/

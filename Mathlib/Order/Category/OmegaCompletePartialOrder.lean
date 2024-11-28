@@ -79,7 +79,7 @@ def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   lift s :=
     -- Porting note: Original proof didn't have `.toFun`
     ⟨⟨fun t j => (s.π.app ⟨j⟩).toFun t, fun _ _ h j => (s.π.app ⟨j⟩).monotone h⟩,
-      fun x => funext fun j => (s.π.app ⟨j⟩).continuous x⟩
+      fun x ↦ funext fun j => (s.π.app ⟨j⟩).continuous x⟩
   uniq s m w := by
     ext t; funext j -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext t j`
     change m.toFun t j = (s.π.app ⟨j⟩).toFun t
@@ -112,17 +112,17 @@ def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePar
 -- Porting note: Changed `{ a // f a = g a }` to `{ a // f.toFun a = g.toFun a }`
 def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
   Fork.ofι (P := ωCPO.of { a // f.toFun a = g.toFun a }) (equalizerι f g)
-    (ContinuousHom.ext _ _ fun x => x.2)
+    (ContinuousHom.ext _ _ fun x ↦ x.2)
 
 /-- The equalizer fork is a limit. -/
 def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
   Fork.IsLimit.mk' _ fun s =>
     -- Porting note: Changed `s.ι x` to `s.ι.toFun x`
-    ⟨{  toFun := fun x => ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
+    ⟨{  toFun := fun x ↦ ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
         monotone' := fun _ _ h => s.ι.monotone h
-        map_ωSup' := fun x => Subtype.ext (s.ι.continuous x)
+        map_ωSup' := fun x ↦ Subtype.ext (s.ι.continuous x)
       }, by ext; rfl, fun hm => by
-      apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
+      apply ContinuousHom.ext _ _ fun x ↦ Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
       apply ContinuousHom.congr_fun hm⟩
 
 end HasEqualizers

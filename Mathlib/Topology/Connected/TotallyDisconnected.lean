@@ -53,7 +53,7 @@ instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     TotallyDisconnectedSpace (∀ a : α, β a) :=
   ⟨fun t _ h2 =>
     have this : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
-      h2.image (fun x => x a) (continuous_apply a).continuousOn
+      h2.image (fun x ↦ x a) (continuous_apply a).continuousOn
     fun x x_in y y_in => funext fun a ↦ (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
 
 instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnectedSpace α]
@@ -114,7 +114,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
 theorem totallyDisconnectedSpace_iff_connectedComponent_singleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, connectedComponent x = {x} := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_subsingleton]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [subsingleton_iff_singleton]
   exact mem_connectedComponent
 
@@ -276,7 +276,7 @@ theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : Connec
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
-  refine ConnectedComponents.surjective_coe.forall.2 fun x => ?_
+  refine ConnectedComponents.surjective_coe.forall.2 fun x ↦ ?_
   rw [← ConnectedComponents.isQuotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
   refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_

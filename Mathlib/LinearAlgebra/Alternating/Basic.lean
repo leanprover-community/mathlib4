@@ -125,7 +125,7 @@ theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
 attribute [coe] AlternatingMap.toMultilinearMap
 
 instance coe : Coe (M [⋀^ι]→ₗ[R] N) (MultilinearMap R (fun _ : ι => M) N) :=
-  ⟨fun x => x.toMultilinearMap⟩
+  ⟨fun x ↦ x.toMultilinearMap⟩
 
 @[simp, norm_cast]
 theorem coe_multilinearMap : ⇑(f : MultilinearMap R (fun _ : ι => M) N) = f :=
@@ -540,7 +540,7 @@ theorem compLinearMap_id (f : M [⋀^ι]→ₗ[R] N) : f.compLinearMap LinearMap
 /-- Composing with a surjective linear map is injective. -/
 theorem compLinearMap_injective (f : M₂ →ₗ[R] M) (hf : Function.Surjective f) :
     Function.Injective fun g : M [⋀^ι]→ₗ[R] N => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by
+  ext fun x ↦ by
     simpa [Function.surjInv_eq hf] using AlternatingMap.ext_iff.mp h (Function.surjInv hf ∘ x)
 
 theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
@@ -759,7 +759,7 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
   -- Porting note: Was `conv at h in .. => ..`.
-  rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
+  rw [← (funext fun x ↦ ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
   rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
     add_eq_zero_iff_eq_neg] at h
   rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero

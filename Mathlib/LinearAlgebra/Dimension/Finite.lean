@@ -171,7 +171,7 @@ theorem fintype_card_le_finrank [Module.Finite R M]
   simpa using h.cardinalMk_le_finrank
 
 theorem finset_card_le_finrank [Module.Finite R M]
-    {b : Finset M} (h : LinearIndependent R (fun x => x : b → M)) :
+    {b : Finset M} (h : LinearIndependent R (fun x ↦ x : b → M)) :
     b.card ≤ finrank R M := by
   rw [← Fintype.card_coe]
   exact h.fintype_card_le_finrank

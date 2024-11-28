@@ -258,7 +258,7 @@ end fintsupport
 the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.
 -/
 theorem continuous_smul {g : X → E} {i : ι} (hg : ∀ x ∈ tsupport (f i), ContinuousAt g x) :
-    Continuous fun x => f i x • g x :=
+    Continuous fun x ↦ f i x • g x :=
   continuous_of_tsupport fun x hx =>
     ((f i).continuousAt x).smul <| hg x <| tsupport_smul_subset_left _ _ hx
 
@@ -267,7 +267,7 @@ such that each `g i` is continuous at every point of the topological support of 
 `fun x ↦ ∑ᶠ i, f i x • g i x` is continuous on the whole space. -/
 theorem continuous_finsum_smul [ContinuousAdd E] {g : ι → X → E}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContinuousAt (g i) x) :
-    Continuous fun x => ∑ᶠ i, f i x • g i x :=
+    Continuous fun x ↦ ∑ᶠ i, f i x • g i x :=
   (continuous_finsum fun i => f.continuous_smul (hg i)) <|
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 
@@ -302,7 +302,7 @@ theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordina
 `fun x ↦ ∑ᶠ i, f i x • g i x` is a continuous function. -/
 theorem IsSubordinate.continuous_finsum_smul [ContinuousAdd E] {U : ι → Set X}
     (ho : ∀ i, IsOpen (U i)) (hf : f.IsSubordinate U) {g : ι → X → E}
-    (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x => ∑ᶠ i, f i x • g i x :=
+    (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x ↦ ∑ᶠ i, f i x • g i x :=
   f.continuous_finsum_smul fun i _ hx => (hg i).continuousAt <| (ho i).mem_nhds <| hf i hx
 
 end PartitionOfUnity

@@ -330,7 +330,7 @@ theorem isCompact_of_finite_subcover
   simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
     (nhds_basis_opens _).disjoint_iff_left] at h
   choose U hU hUf using h
-  refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩
+  refine ⟨s, U, fun x ↦ (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩
   refine compl_not_mem (le_principal_iff.1 hfs) ?_
   refine mem_of_superset ((biInter_finset_mem t).2 fun x _ => hUf x) ?_
   rw [subset_compl_comm, compl_iInter₂]
@@ -475,7 +475,7 @@ theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
-  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, _, hst⟩
+  rcases hs.elim_nhds_subcover (fun x ↦ {x}) fun x _ => this x with ⟨t, _, hst⟩
   simp only [← t.set_biUnion_coe, biUnion_of_singleton] at hst
   exact t.finite_toSet.subset hst
 
@@ -505,7 +505,7 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
         (fun i => (hV_cpct i).inter_right W_op.isClosed_compl) fun i =>
         (hV_closed i).inter W_op.isClosed_compl
     rcases hV i j with ⟨k, hki, hkj⟩
-    refine ⟨k, ⟨fun x => ?_, fun x => ?_⟩⟩ <;> simp only [and_imp, mem_inter_iff, mem_compl_iff] <;>
+    refine ⟨k, ⟨fun x ↦ ?_, fun x ↦ ?_⟩⟩ <;> simp only [and_imp, mem_inter_iff, mem_compl_iff] <;>
       tauto
   have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
@@ -830,7 +830,7 @@ theorem exists_nhds_ne_neBot (X : Type*) [TopologicalSpace X] [CompactSpace X] [
 
 theorem finite_cover_nhds_interior [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Finset X, ⋃ x ∈ t, interior (U x) = univ :=
-  let ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x => interior (U x))
+  let ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x ↦ interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, univ_subset_iff.1 ht⟩
 
@@ -994,9 +994,9 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
   rw [isCompact_iff_ultrafilter_le_nhds'] at hs ht ⊢
   intro f hfs
   obtain ⟨x : X, sx : x ∈ s, hx : map Prod.fst f.1 ≤ 𝓝 x⟩ :=
-    hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x => And.left)
+    hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x ↦ And.left)
   obtain ⟨y : Y, ty : y ∈ t, hy : map Prod.snd f.1 ≤ 𝓝 y⟩ :=
-    ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x => And.right)
+    ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x ↦ And.right)
   rw [map_le_iff_le_comap] at hx hy
   refine ⟨⟨x, y⟩, ⟨sx, ty⟩, ?_⟩
   rw [nhds_prod_eq]; exact le_inf hx hy

@@ -64,7 +64,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   have A : Tendsto (fun x : ℝ => (u n + u r / x) / (n + r / x)) atTop (𝓝 ((u n + 0) / (n + 0))) :=
     (tendsto_const_nhds.add <| tendsto_const_nhds.div_atTop tendsto_id).div
       (tendsto_const_nhds.add <| tendsto_const_nhds.div_atTop tendsto_id) <| by simpa
-  have B : Tendsto (fun x => (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
+  have B : Tendsto (fun x ↦ (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
     rw [add_zero, add_zero] at A
     refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
     simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right₀ hx, mul_comm]

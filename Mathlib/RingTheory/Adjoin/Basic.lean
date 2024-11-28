@@ -308,7 +308,7 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
         (IsScalarTower.algebraMap_apply _ _ _ _).symm⟩)
         (Set.union_subset_union_left _ fun _ ⟨_x, hx, hxs⟩ => hxs ▸ ⟨⟨_, subset_adjoin hx⟩, rfl⟩))
     (closure_le.2 <|
-      Set.union_subset (Set.range_subset_iff.2 fun x => adjoin_mono Set.subset_union_left <|
+      Set.union_subset (Set.range_subset_iff.2 fun x ↦ adjoin_mono Set.subset_union_left <|
         Algebra.adjoin_algebraMap R A s ▸ ⟨x, x.prop, rfl⟩)
         (Set.Subset.trans Set.subset_union_right subset_adjoin))
 

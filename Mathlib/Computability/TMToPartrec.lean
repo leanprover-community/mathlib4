@@ -294,7 +294,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
               v.val.tail : List ℕ) ∈
           PFun.fix
             (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
-              (fun x => Part.some (if v.tail.headI = 0
+              (fun x ↦ Part.some (if v.tail.headI = 0
                 then Sum.inl
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail : List ℕ)
                 else Sum.inr
@@ -316,7 +316,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     replace hf := fun a ↦ hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
-    refine Part.ext fun x => ?_
+    refine Part.ext fun x ↦ ?_
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
       exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
       List.headI_nil, List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
@@ -586,7 +586,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
 theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     Turing.eval step (stepNormal f (Cont.fix f k) v) =
       f.fix.eval v >>= fun v => Turing.eval step (Cfg.ret k v) := by
-  refine Part.ext fun x => ?_
+  refine Part.ext fun x ↦ ?_
   simp only [Part.bind_eq_bind, Part.mem_bind_iff]
   constructor
   · suffices ∀ c, x ∈ eval step c → ∀ v c', c = Cfg.then c' (Cont.fix f k) →
@@ -917,7 +917,7 @@ def peek' (k : K') : Stmt' → Stmt' :=
 /-- Push the value in the local store to the given stack. -/
 @[simp]
 def push' (k : K') : Stmt' → Stmt' :=
-  push k fun x => x.iget
+  push k fun x ↦ x.iget
 
 /-- Move everything from the `rev` stack to the `main` stack (reversed). -/
 def unrev :=
@@ -938,7 +938,7 @@ def head (k : K') (q : Λ') : Λ' :=
   Λ'.move natEnd k rev <|
     (Λ'.push rev fun _ => some Γ'.cons) <|
       Λ'.read fun s =>
-        (if s = some Γ'.consₗ then id else Λ'.clear (fun x => x = Γ'.consₗ) k) <| unrev q
+        (if s = some Γ'.consₗ then id else Λ'.clear (fun x ↦ x = Γ'.consₗ) k) <| unrev q
 
 /-- The program that evaluates code `c` with continuation `k`. This expects an initial state where
 `trList v` is on `main`, `trContStack k` is on `stack`, and `aux` and `rev` are empty.
@@ -1580,7 +1580,7 @@ theorem tr_init (c v) :
 
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
-  refine Part.ext fun x => ?_
+  refine Part.ext fun x ↦ ?_
   rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h

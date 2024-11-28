@@ -146,7 +146,7 @@ def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
 variable (M)
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x ↦ by
   simp [algebraMapInv]
 
 @[simp]
@@ -200,7 +200,7 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
-theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
+theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x ↦ by
   -- Porting note: Original proof didn't have `letI` and `haveI`
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩

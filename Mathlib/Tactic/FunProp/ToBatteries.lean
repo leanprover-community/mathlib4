@@ -117,10 +117,10 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
 
 Examples:
 ```
-  f                ==> fun x => f x
-  fun x y => f x y ==> fun x => f x
-  HAdd.hAdd y      ==> fun x => HAdd.hAdd y x
-  HAdd.hAdd        ==> fun x => HAdd.hAdd x
+  f                ==> fun x ↦ f x
+  fun x y => f x y ==> fun x ↦ f x
+  HAdd.hAdd y      ==> fun x ↦ HAdd.hAdd y x
+  HAdd.hAdd        ==> fun x ↦ HAdd.hAdd x
 ``` -/
 def etaExpand1 (f : Expr) : MetaM Expr := do
   let f := f.eta
@@ -144,7 +144,7 @@ does beta-reduction through let bindings without inlining them.
 
 Example
 ```
-beta' (fun x => let y := x * x; fun z => x + y + z) #[a,b]
+beta' (fun x ↦ let y := x * x; fun z => x + y + z) #[a,b]
 ==>
 let y := a * a; a + y + b
 ```
@@ -152,12 +152,12 @@ let y := a * a; a + y + b
 def betaThroughLet (f : Expr) (args : Array Expr) : Expr :=
   betaThroughLetAux f args.toList
 
-/-- Beta reduces head of an expression, `(fun x => e) a` ==> `e[x/a]`. This version applies
+/-- Beta reduces head of an expression, `(fun x ↦ e) a` ==> `e[x/a]`. This version applies
 arguments through let bindings without inlining them.
 
 Example
 ```
-headBeta' ((fun x => let y := x * x; fun z => x + y + z) a b)
+headBeta' ((fun x ↦ let y := x * x; fun z => x + y + z) a b)
 ==>
 let y := a * a; a + y + b
 ```

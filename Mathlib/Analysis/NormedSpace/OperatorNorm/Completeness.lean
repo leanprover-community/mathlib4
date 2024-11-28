@@ -48,7 +48,7 @@ def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} 
     -- Then `‖g x‖ ≤ C * ‖x‖` for all `g ∈ s`, `x : E`, hence `‖f x‖ ≤ C * ‖x‖` for all `x`.
     have : ∀ x, IsClosed { g : E' → F | ‖g x‖ ≤ C * ‖x‖ } := fun x =>
       isClosed_Iic.preimage (@continuous_apply E' (fun _ => F) _ x).norm
-    refine ⟨C, fun x => (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf⟩
+    refine ⟨C, fun x ↦ (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf⟩
     exact g.le_of_opNorm_le (hC _ hg) _
 
 /-- Let `f : E → F` be a map, let `g : α → E →SL[σ₁₂] F` be a family of continuous (semi)linear maps
@@ -150,7 +150,7 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
-  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => ?_)
+  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x ↦ ?_)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
     isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
   refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf

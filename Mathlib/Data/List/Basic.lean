@@ -127,7 +127,7 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 
 /-! ### set-theoretic notation of lists -/
 
-instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
+instance instSingletonList : Singleton α (List α) := ⟨fun x ↦ [x]⟩
 
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
@@ -417,10 +417,10 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 
-theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x ↦ ⟨[x], rfl⟩
 
 theorem surjective_head? : Surjective (@head? α) :=
-  Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
+  Option.forall.2 ⟨⟨[], rfl⟩, fun x ↦ ⟨[x], rfl⟩⟩
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -1233,7 +1233,7 @@ theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, 
   simp [getElem_scanl_zero]
 
 theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
-    ((scanl f b l).get? i).bind fun x => (l.get? i).map fun y => f x y := by
+    ((scanl f b l).get? i).bind fun x ↦ (l.get? i).map fun y => f x y := by
   induction' l with hd tl hl generalizing b i
   · symm
     simp only [Option.bind_eq_none', get?, forall₂_true_iff, not_false_iff, Option.map_none',
@@ -1440,7 +1440,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
 /-- The original list `L` can be recovered by flattening the lists produced by `splitOnP p L`,
 interspersed with the elements `L.filter p`. -/
 theorem splitOnP_spec (as : List α) :
-    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
+    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x ↦ [x]) ++ [[]])) = as := by
   induction as with
   | nil => rfl
   | cons a as' ih =>
@@ -1764,14 +1764,14 @@ lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
-      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ => mem_of_mem_filter) := by
+      (l.filter fun x ↦ ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ => mem_of_mem_filter) := by
   classical
   refine map_injective_iff.2 Subtype.coe_injective ?_
   simp [comp_def, map_filter' _ Subtype.coe_injective]
 
 -- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
 lemma filter_attach (l : List α) (p : α → Bool) :
-    (l.attach.filter fun x => p x : List {x // x ∈ l}) =
+    (l.attach.filter fun x ↦ p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun _ => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
@@ -2348,7 +2348,7 @@ section lookup
 variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
-    lookup a (as.map fun x => (x, f x)) = some (f a) := by
+    lookup a (as.map fun x ↦ (x, f x)) = some (f a) := by
   induction' as with a' as ih
   · exact (List.not_mem_nil _ h).elim
   · by_cases ha : a = a'

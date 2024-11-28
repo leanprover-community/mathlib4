@@ -446,7 +446,7 @@ noncomputable def Archimedean.floorRing (α) [LinearOrderedRing α] [Archimedean
 instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [FloorRing α] :
     Archimedean α := by
   rw [archimedean_iff_int_le]
-  exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩
+  exact fun x ↦ ⟨⌈x⌉, Int.le_ceil x⟩
 
 @[to_additive]
 instance Units.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :

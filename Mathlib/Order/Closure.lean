@@ -196,7 +196,7 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
+  ext c₁ c₂ <| fun x ↦ IsGLB.unique (c₁.closure_isGLB x) <|
     (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the

@@ -336,7 +336,7 @@ theorem vanishingIdeal_iUnion {ι : Sort*} (t : ι → Set (PrimeSpectrum R)) :
 
 theorem zeroLocus_inf (I J : Ideal R) :
     zeroLocus ((I ⊓ J : Ideal R) : Set R) = zeroLocus I ∪ zeroLocus J :=
-  Set.ext fun x => x.2.inf_le
+  Set.ext fun x ↦ x.2.inf_le
 
 theorem union_zeroLocus (s s' : Set R) :
     zeroLocus s ∪ zeroLocus s' = zeroLocus (Ideal.span s ⊓ Ideal.span s' : Ideal R) := by
@@ -345,11 +345,11 @@ theorem union_zeroLocus (s s' : Set R) :
 
 theorem zeroLocus_mul (I J : Ideal R) :
     zeroLocus ((I * J : Ideal R) : Set R) = zeroLocus I ∪ zeroLocus J :=
-  Set.ext fun x => x.2.mul_le
+  Set.ext fun x ↦ x.2.mul_le
 
 theorem zeroLocus_singleton_mul (f g : R) :
     zeroLocus ({f * g} : Set R) = zeroLocus {f} ∪ zeroLocus {g} :=
-  Set.ext fun x => by simpa using x.2.mul_mem_iff_mem_or_mem
+  Set.ext fun x ↦ by simpa using x.2.mul_mem_iff_mem_or_mem
 
 @[simp]
 theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
@@ -359,7 +359,7 @@ theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
 @[simp]
 theorem zeroLocus_singleton_pow (f : R) (n : ℕ) (hn : 0 < n) :
     zeroLocus ({f ^ n} : Set R) = zeroLocus {f} :=
-  Set.ext fun x => by simpa using x.2.pow_mem_iff_mem n hn
+  Set.ext fun x ↦ by simpa using x.2.pow_mem_iff_mem n hn
 
 theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
     vanishingIdeal t ⊔ vanishingIdeal t' ≤ vanishingIdeal (t ∩ t') := by
@@ -517,7 +517,7 @@ theorem specComap_asIdeal (y : PrimeSpectrum S) :
   rfl
 
 @[simp]
-theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
+theorem specComap_id : (RingHom.id R).specComap = fun x ↦ x :=
   rfl
 
 @[simp]

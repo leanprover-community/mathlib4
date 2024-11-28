@@ -158,7 +158,7 @@ theorem fibRec_charPoly_eq {β : Type*} [CommRing β] :
 end Poly
 
 /-- As expected, the Fibonacci sequence is a solution of `fibRec`. -/
-theorem fib_isSol_fibRec : fibRec.IsSolution (fun x => x.fib : ℕ → α) := by
+theorem fib_isSol_fibRec : fibRec.IsSolution (fun x ↦ x.fib : ℕ → α) := by
   rw [fibRec]
   intro n
   simp only

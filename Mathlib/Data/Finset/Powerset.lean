@@ -217,7 +217,7 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
     s.powersetCard (s.card + n) = ∅ := by simpa
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
-    powersetCard n s = (powerset s).filter fun x => x.card = n := by
+    powersetCard n s = (powerset s).filter fun x ↦ x.card = n := by
   ext
   simp [mem_powersetCard]
 
@@ -293,7 +293,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     constructor
     · classical
       intro h
-      have : map f (filter (fun x => (f x ∈ t)) s) = t := by
+      have : map f (filter (fun x ↦ (f x ∈ t)) s) = t := by
         ext x
         simp only [mem_map, mem_filter, decide_eq_true_eq]
         exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,

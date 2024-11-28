@@ -162,7 +162,7 @@ theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l,
 @[deprecated (since := "2024-10-16")] alias Perm.bind_left := Perm.flatMap_left
 
 theorem flatMap_append_perm (l : List α) (f g : α → List β) :
-    l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
+    l.flatMap f ++ l.flatMap g ~ l.flatMap fun x ↦ f x ++ g x := by
   induction' l with a l IH
   · simp
   simp only [flatMap_cons, append_assoc]
@@ -173,8 +173,8 @@ theorem flatMap_append_perm (l : List α) (f g : α → List β) :
 @[deprecated (since := "2024-10-16")] alias bind_append_perm := flatMap_append_perm
 
 theorem map_append_flatMap_perm (l : List α) (f : α → β) (g : α → List β) :
-    l.map f ++ l.flatMap g ~ l.flatMap fun x => f x :: g x := by
-  simpa [← map_eq_flatMap] using flatMap_append_perm l (fun x => [f x]) g
+    l.map f ++ l.flatMap g ~ l.flatMap fun x ↦ f x :: g x := by
+  simpa [← map_eq_flatMap] using flatMap_append_perm l (fun x ↦ [f x]) g
 
 @[deprecated (since := "2024-10-16")] alias map_append_bind_perm := map_append_flatMap_perm
 

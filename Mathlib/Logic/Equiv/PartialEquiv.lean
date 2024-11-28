@@ -435,7 +435,7 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
     e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
-  Set.ext fun x => and_congr_right_iff.2 fun hx =>
+  Set.ext fun x ↦ and_congr_right_iff.2 fun hx =>
     by simp only [mem_preimage, e.left_inv hx]
 
 theorem source_inter_preimage_target_inter (s : Set β) :
@@ -735,7 +735,7 @@ theorem symm_trans_self : e.symm.trans e ≈ ofSet e.target :=
 /-- Two equivalent partial equivs are equal when the source and target are `univ`. -/
 theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' := by
-  refine PartialEquiv.ext (fun x => ?_) (fun x => ?_) h.1
+  refine PartialEquiv.ext (fun x ↦ ?_) (fun x ↦ ?_) h.1
   · apply h.2
     rw [s]
     exact mem_univ _

@@ -131,12 +131,12 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
           _ = _ := Multiset.prod_add _ _
       map_one' := rfl }
   invFun F x := F (Multiplicative.ofAdd ({x} : Multiset α))
-  left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
+  left_inv f := funext fun x ↦ show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
     let x' := x.toAdd
     show (Multiset.map (fun a ↦ F' {a}) x').sum = F' x' by
-      erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
+      erw [← Multiset.map_map (fun x ↦ F' x) (fun x ↦ {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
@@ -334,7 +334,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 
 variable (α)
 
-protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
+protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x ↦ by
   induction x with
   | hn1 =>
     use -1

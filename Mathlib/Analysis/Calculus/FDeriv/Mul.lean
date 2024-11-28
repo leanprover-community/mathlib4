@@ -86,7 +86,7 @@ theorem DifferentiableOn.clm_comp (hc : DifferentiableOn 𝕜 c s) (hd : Differe
 
 @[fun_prop]
 theorem Differentiable.clm_comp (hc : Differentiable 𝕜 c) (hd : Differentiable 𝕜 d) :
-    Differentiable 𝕜 fun y => (c y).comp (d y) := fun x => (hc x).clm_comp (hd x)
+    Differentiable 𝕜 fun y => (c y).comp (d y) := fun x ↦ (hc x).clm_comp (hd x)
 
 theorem fderivWithin_clm_comp (hxs : UniqueDiffWithinAt 𝕜 s x) (hc : DifferentiableWithinAt 𝕜 c s x)
     (hd : DifferentiableWithinAt 𝕜 d s x) :
@@ -138,7 +138,7 @@ theorem DifferentiableOn.clm_apply (hc : DifferentiableOn 𝕜 c s) (hu : Differ
 
 @[fun_prop]
 theorem Differentiable.clm_apply (hc : Differentiable 𝕜 c) (hu : Differentiable 𝕜 u) :
-    Differentiable 𝕜 fun y => (c y) (u y) := fun x => (hc x).clm_apply (hu x)
+    Differentiable 𝕜 fun y => (c y) (u y) := fun x ↦ (hc x).clm_apply (hu x)
 
 theorem fderivWithin_clm_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (hu : DifferentiableWithinAt 𝕜 u s x) :
@@ -275,7 +275,7 @@ theorem DifferentiableOn.smul (hc : DifferentiableOn 𝕜 c s) (hf : Differentia
 
 @[simp, fun_prop]
 theorem Differentiable.smul (hc : Differentiable 𝕜 c) (hf : Differentiable 𝕜 f) :
-    Differentiable 𝕜 fun y => c y • f y := fun x => (hc x).smul (hf x)
+    Differentiable 𝕜 fun y => c y • f y := fun x ↦ (hc x).smul (hf x)
 
 theorem fderivWithin_smul (hxs : UniqueDiffWithinAt 𝕜 s x) (hc : DifferentiableWithinAt 𝕜 c s x)
     (hf : DifferentiableWithinAt 𝕜 f s x) :
@@ -318,7 +318,7 @@ theorem DifferentiableOn.smul_const (hc : DifferentiableOn 𝕜 c s) (f : F) :
 
 @[fun_prop]
 theorem Differentiable.smul_const (hc : Differentiable 𝕜 c) (f : F) :
-    Differentiable 𝕜 fun y => c y • f := fun x => (hc x).smul_const f
+    Differentiable 𝕜 fun y => c y • f := fun x ↦ (hc x).smul_const f
 
 theorem fderivWithin_smul_const (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
@@ -399,26 +399,26 @@ theorem DifferentiableOn.mul (ha : DifferentiableOn 𝕜 a s) (hb : Differentiab
 
 @[simp, fun_prop]
 theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable 𝕜 b) :
-    Differentiable 𝕜 fun y => a y * b y := fun x => (ha x).mul (hb x)
+    Differentiable 𝕜 fun y => a y * b y := fun x ↦ (ha x).mul (hb x)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.pow (ha : DifferentiableWithinAt 𝕜 a s x) :
-    ∀ n : ℕ, DifferentiableWithinAt 𝕜 (fun x => a x ^ n) s x
+    ∀ n : ℕ, DifferentiableWithinAt 𝕜 (fun x ↦ a x ^ n) s x
   | 0 => by simp only [pow_zero, differentiableWithinAt_const]
   | n + 1 => by simp only [pow_succ', DifferentiableWithinAt.pow ha n, ha.mul]
 
 @[simp, fun_prop]
 theorem DifferentiableAt.pow (ha : DifferentiableAt 𝕜 a x) (n : ℕ) :
-    DifferentiableAt 𝕜 (fun x => a x ^ n) x :=
+    DifferentiableAt 𝕜 (fun x ↦ a x ^ n) x :=
   differentiableWithinAt_univ.mp <| ha.differentiableWithinAt.pow n
 
 @[fun_prop]
 theorem DifferentiableOn.pow (ha : DifferentiableOn 𝕜 a s) (n : ℕ) :
-    DifferentiableOn 𝕜 (fun x => a x ^ n) s := fun x h => (ha x h).pow n
+    DifferentiableOn 𝕜 (fun x ↦ a x ^ n) s := fun x h => (ha x h).pow n
 
 @[simp, fun_prop]
-theorem Differentiable.pow (ha : Differentiable 𝕜 a) (n : ℕ) : Differentiable 𝕜 fun x => a x ^ n :=
-  fun x => (ha x).pow n
+theorem Differentiable.pow (ha : Differentiable 𝕜 a) (n : ℕ) : Differentiable 𝕜 fun x ↦ a x ^ n :=
+  fun x ↦ (ha x).pow n
 
 theorem fderivWithin_mul' (hxs : UniqueDiffWithinAt 𝕜 s x) (ha : DifferentiableWithinAt 𝕜 a s x)
     (hb : DifferentiableWithinAt 𝕜 b s x) :
@@ -492,7 +492,7 @@ theorem DifferentiableOn.mul_const (ha : DifferentiableOn 𝕜 a s) (b : 𝔸) :
 
 @[fun_prop]
 theorem Differentiable.mul_const (ha : Differentiable 𝕜 a) (b : 𝔸) :
-    Differentiable 𝕜 fun y => a y * b := fun x => (ha x).mul_const b
+    Differentiable 𝕜 fun y => a y * b := fun x ↦ (ha x).mul_const b
 
 theorem fderivWithin_mul_const' (hxs : UniqueDiffWithinAt 𝕜 s x)
     (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
@@ -543,7 +543,7 @@ theorem DifferentiableOn.const_mul (ha : DifferentiableOn 𝕜 a s) (b : 𝔸) :
 
 @[fun_prop]
 theorem Differentiable.const_mul (ha : Differentiable 𝕜 a) (b : 𝔸) :
-    Differentiable 𝕜 fun y => b * a y := fun x => (ha x).const_mul b
+    Differentiable 𝕜 fun y => b * a y := fun x ↦ (ha x).const_mul b
 
 theorem fderivWithin_const_mul (hxs : UniqueDiffWithinAt 𝕜 s x)
     (ha : DifferentiableWithinAt 𝕜 a s x) (b : 𝔸) :
@@ -834,21 +834,21 @@ variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
 theorem DifferentiableWithinAt.inverse (hf : DifferentiableWithinAt 𝕜 h S z) (hz : IsUnit (h z)) :
-    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ Ring.inverse (h x)) S z :=
   (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
 
 @[simp, fun_prop]
 theorem DifferentiableAt.inverse (hf : DifferentiableAt 𝕜 h z) (hz : IsUnit (h z)) :
-    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z :=
+    DifferentiableAt 𝕜 (fun x ↦ Ring.inverse (h x)) z :=
   (differentiableAt_inverse hz).comp z hf
 
 @[fun_prop]
 theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, IsUnit (h x)) :
-    DifferentiableOn 𝕜 (fun x => Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
+    DifferentiableOn 𝕜 (fun x ↦ Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
 
 @[simp, fun_prop]
 theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit (h x)) :
-    Differentiable 𝕜 fun x => Ring.inverse (h x) := fun x => (hf x).inverse (hz x)
+    Differentiable 𝕜 fun x ↦ Ring.inverse (h x) := fun x ↦ (hf x).inverse (hz x)
 
 end AlgebraInverse
 
@@ -888,7 +888,7 @@ theorem differentiableAt_inv {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.
 
 @[fun_prop]
 theorem differentiableWithinAt_inv {x : R} (hx : x ≠ 0) (s : Set R) :
-    DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ x⁻¹) s x :=
   (differentiableAt_inv hx).differentiableWithinAt
 
 @[deprecated (since := "2024-09-21")]
@@ -906,7 +906,7 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
 
 /-- Non-commutative version of `fderivWithin_inv` -/
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
+    fderivWithin 𝕜 (fun x ↦ x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv hx) hxs]
   exact fderiv_inv' hx
 
@@ -914,7 +914,7 @@ variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
 theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
-    DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹) S z :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ (h x)⁻¹) S z :=
   (differentiableAt_inv hz).comp_differentiableWithinAt z hf
 
 @[deprecated (since := "2024-09-21")]
@@ -922,20 +922,20 @@ alias DifferentiableWithinAt.inv' := DifferentiableWithinAt.inv
 
 @[simp, fun_prop]
 theorem DifferentiableAt.inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
-    DifferentiableAt 𝕜 (fun x => (h x)⁻¹) z :=
+    DifferentiableAt 𝕜 (fun x ↦ (h x)⁻¹) z :=
   (differentiableAt_inv hz).comp z hf
 
 @[deprecated (since := "2024-09-21")] alias DifferentiableAt.inv' := DifferentiableAt.inv
 
 @[fun_prop]
 theorem DifferentiableOn.inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
-    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv (hz x h)
+    DifferentiableOn 𝕜 (fun x ↦ (h x)⁻¹) S := fun x h => (hf x h).inv (hz x h)
 
 @[deprecated (since := "2024-09-21")] alias DifferentiableOn.inv' := DifferentiableOn.inv
 
 @[simp, fun_prop]
 theorem Differentiable.inv (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
-    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv (hz x)
+    Differentiable 𝕜 fun x ↦ (h x)⁻¹ := fun x ↦ (hf x).inv (hz x)
 
 @[deprecated (since := "2024-09-21")] alias Differentiable.inv' := Differentiable.inv
 

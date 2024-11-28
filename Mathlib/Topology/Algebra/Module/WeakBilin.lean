@@ -11,7 +11,7 @@ import Mathlib.Topology.Algebra.Group.Basic
 
 This file defines the weak topology given two vector spaces `E` and `F` over a commutative semiring
 `𝕜` and a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`. The weak topology on `E` is the coarsest topology
-such that for all `y : F` every map `fun x => B x y` is continuous.
+such that for all `y : F` every map `fun x ↦ B x y` is continuous.
 
 ## Main definitions
 
@@ -28,7 +28,7 @@ We establish that `WeakBilin B` has the following structure:
 * `WeakBilin.instContinuousSMul`: The scalar multiplication in `WeakBilin B` is continuous.
 
 We prove the following results characterizing the weak topology:
-* `eval_continuous`: For any `y : F`, the evaluation mapping `fun x => B x y` is continuous.
+* `eval_continuous`: For any `y : F`, the evaluation mapping `fun x ↦ B x y` is continuous.
 * `continuous_of_continuous_eval`: For a mapping to `WeakBilin B` to be continuous,
   it suffices that its compositions with pairing with `B` at all points `y : F` is continuous.
 * `tendsto_iff_forall_eval_tendsto`: Convergence in `WeakBilin B` can be characterized

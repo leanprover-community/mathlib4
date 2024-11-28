@@ -611,7 +611,7 @@ namespace SimpleFunc
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
   rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_nnnorm]
-  have h_eq := SimpleFunc.map_apply (fun x => (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
+  have h_eq := SimpleFunc.map_apply (fun x ↦ (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
   simp_rw [← h_eq]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
   · congr
@@ -1090,7 +1090,7 @@ theorem norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) 
     ‖setToL1 hT‖ ≤ (1 : ℝ≥0) * ‖setToL1SCLM α E μ hT‖ := by
       refine
         ContinuousLinearMap.opNorm_extend_le (setToL1SCLM α E μ hT) (coeToLp α E ℝ)
-          (simpleFunc.denseRange one_ne_top) fun x => le_of_eq ?_
+          (simpleFunc.denseRange one_ne_top) fun x ↦ le_of_eq ?_
       rw [NNReal.coe_one, one_mul]
       rfl
     _ = ‖setToL1SCLM α E μ hT‖ := by rw [NNReal.coe_one, one_mul]
@@ -1392,7 +1392,7 @@ theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     Tendsto (fun n => setToFun μ T hT (SimpleFunc.approxOn f fmeas s 0 (hs <| by simp) n)) atTop
       (𝓝 <| setToFun μ T hT f) := by
   refine tendsto_setToFun_approxOn_of_measurable hT hf fmeas ?_ _ (integrable_zero _ _ _)
-  exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
+  exact Eventually.of_forall fun x ↦ subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
 /-- Auxiliary lemma for `setToFun_congr_measure`: the function sending `f : α →₁[μ] G` to
 `f : α →₁[μ'] G` is continuous when `μ' ≤ c' • μ` for `c' ≠ ∞`. -/
@@ -1604,22 +1604,22 @@ theorem continuousWithinAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive 
     {fs : X → α → E} {x₀ : X} {bound : α → ℝ} {s : Set X}
     (hfs_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_cont : ∀ᵐ a ∂μ, ContinuousWithinAt (fun x => fs x a) s x₀) :
-    ContinuousWithinAt (fun x => setToFun μ T hT (fs x)) s x₀ :=
+    (h_cont : ∀ᵐ a ∂μ, ContinuousWithinAt (fun x ↦ fs x a) s x₀) :
+    ContinuousWithinAt (fun x ↦ setToFun μ T hT (fs x)) s x₀ :=
   tendsto_setToFun_filter_of_dominated_convergence hT bound ‹_› ‹_› ‹_› ‹_›
 
 theorem continuousAt_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
     {x₀ : X} {bound : α → ℝ} (hfs_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_cont : ∀ᵐ a ∂μ, ContinuousAt (fun x => fs x a) x₀) :
-    ContinuousAt (fun x => setToFun μ T hT (fs x)) x₀ :=
+    (h_cont : ∀ᵐ a ∂μ, ContinuousAt (fun x ↦ fs x a) x₀) :
+    ContinuousAt (fun x ↦ setToFun μ T hT (fs x)) x₀ :=
   tendsto_setToFun_filter_of_dominated_convergence hT bound ‹_› ‹_› ‹_› ‹_›
 
 theorem continuousOn_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
     {bound : α → ℝ} {s : Set X} (hfs_meas : ∀ x ∈ s, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ x ∈ s, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_cont : ∀ᵐ a ∂μ, ContinuousOn (fun x => fs x a) s) :
-    ContinuousOn (fun x => setToFun μ T hT (fs x)) s := by
+    (h_cont : ∀ᵐ a ∂μ, ContinuousOn (fun x ↦ fs x a) s) :
+    ContinuousOn (fun x ↦ setToFun μ T hT (fs x)) s := by
   intro x hx
   refine continuousWithinAt_setToFun_of_dominated hT ?_ ?_ bound_integrable ?_
   · filter_upwards [self_mem_nhdsWithin] with x hx using hfs_meas x hx
@@ -1629,7 +1629,7 @@ theorem continuousOn_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C
 theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) {fs : X → α → E}
     {bound : α → ℝ} (hfs_meas : ∀ x, AEStronglyMeasurable (fs x) μ)
     (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=
+    (h_cont : ∀ᵐ a ∂μ, Continuous fun x ↦ fs x a) : Continuous fun x ↦ setToFun μ T hT (fs x) :=
   continuous_iff_continuousAt.mpr fun _ =>
     continuousAt_setToFun_of_dominated hT (Eventually.of_forall hfs_meas)
         (Eventually.of_forall h_bound) ‹_› <|

@@ -51,7 +51,7 @@ def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
 
 /-- Central moment of a real random variable, `μ[(X - μ[X]) ^ p]`. -/
 def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
-  have m := fun (x : Ω) => μ[X] -- Porting note: Lean deems `μ[(X - fun x => μ[X]) ^ p]` ambiguous
+  have m := fun (x : Ω) => μ[X] -- Porting note: Lean deems `μ[(X - fun x ↦ μ[X]) ^ p]` ambiguous
   exact μ[(X - m) ^ p]
 
 @[simp]
@@ -78,9 +78,9 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
   · rw [centralMoment_one' h_int]
     simp only [measure_univ, ENNReal.one_toReal, sub_self, zero_mul]
   · simp only [centralMoment, Pi.sub_apply, pow_one]
-    have : ¬Integrable (fun x => X x - integral μ X) μ := by
+    have : ¬Integrable (fun x ↦ X x - integral μ X) μ := by
       refine fun h_sub => h_int ?_
-      have h_add : X = (fun x => X x - integral μ X) + fun _ => integral μ X := by ext1 x; simp
+      have h_add : X = (fun x ↦ X x - integral μ X) + fun _ => integral μ X := by ext1 x; simp
       rw [h_add]
       exact h_sub.add (integrable_const _)
     rw [integral_undef this]
@@ -187,8 +187,8 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
     IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
-  have h_meas : ∀ t, Measurable fun x => exp (t * x) := fun t => (measurable_id'.const_mul t).exp
-  change IndepFun ((fun x => exp (s * x)) ∘ X) ((fun x => exp (t * x)) ∘ Y) μ
+  have h_meas : ∀ t, Measurable fun x ↦ exp (t * x) := fun t => (measurable_id'.const_mul t).exp
+  change IndepFun ((fun x ↦ exp (s * x)) ∘ X) ((fun x ↦ exp (t * x)) ∘ Y) μ
   exact IndepFun.comp h_indep (h_meas s) (h_meas t)
 
 theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
@@ -300,7 +300,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
       have : exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤
           μ[fun ω => exp (t * X ω)] :=
-        mul_meas_ge_le_integral_of_nonneg (ae_of_all _ fun x => (exp_pos _).le) h_int _
+        mul_meas_ge_le_integral_of_nonneg (ae_of_all _ fun x ↦ (exp_pos _).le) h_int _
       rwa [mul_comm (exp (t * ε))⁻¹, ← div_eq_mul_inv, le_div_iff₀' (exp_pos _)]
     _ = exp (-t * ε) * mgf X μ t := by rw [neg_mul, exp_neg]; rfl
 

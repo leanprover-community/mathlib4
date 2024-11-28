@@ -88,7 +88,7 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => f x * g x :=
+    Continuous fun x ↦ f x * g x :=
   continuous_mul.comp (hf.prod_mk hg : _)
 
 @[to_additive (attr := continuity)]
@@ -101,7 +101,7 @@ theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul {f g : X → M} {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x * g x) s :=
+    ContinuousOn (fun x ↦ f x * g x) s :=
   (continuous_mul.comp_continuousOn (hf.prod hg) : _)
 
 @[to_additive]
@@ -110,7 +110,7 @@ theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 
 
 @[to_additive]
 theorem Filter.Tendsto.mul {f g : α → M} {x : Filter α} {a b : M} (hf : Tendsto f x (𝓝 a))
-    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => f x * g x) x (𝓝 (a * b)) :=
+    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x ↦ f x * g x) x (𝓝 (a * b)) :=
   tendsto_mul.comp (hf.prod_mk_nhds hg)
 
 @[to_additive]
@@ -196,8 +196,8 @@ protected theorem Inseparable.pow {M : Type*} [Monoid M] [TopologicalSpace M] [C
 @[to_additive (attr := simps)
   "Construct an additive unit from limits of additive units and their negatives."]
 def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Space N]
-    {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x => ↑(f x)) l (𝓝 r₁))
-    (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ where
+    {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x ↦ ↑(f x)) l (𝓝 r₁))
+    (h₂ : Tendsto (fun x ↦ ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ where
   val := r₁
   inv := r₂
   val_inv := by
@@ -209,12 +209,12 @@ def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Sp
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.mul {f g : X → M} {x : X} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun x => f x * g x) x :=
+    ContinuousAt (fun x ↦ f x * g x) x :=
   Filter.Tendsto.mul hf hg
 
 @[to_additive]
 theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : ContinuousWithinAt f s x)
-    (hg : ContinuousWithinAt g s x) : ContinuousWithinAt (fun x => f x * g x) s x :=
+    (hg : ContinuousWithinAt g s x) : ContinuousWithinAt (fun x ↦ f x * g x) s x :=
   Filter.Tendsto.mul hf hg
 
 @[to_additive]
@@ -248,16 +248,16 @@ open Function
 @[to_additive]
 theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
     (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) <| 𝓝 1)
-    (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1))
-    (hright : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x * x₀) (𝓝 1)) : ContinuousMul M :=
+    (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x ↦ x₀ * x) (𝓝 1))
+    (hright : ∀ x₀ : M, 𝓝 x₀ = map (fun x ↦ x * x₀) (𝓝 1)) : ContinuousMul M :=
   ⟨by
     rw [continuous_iff_continuousAt]
     rintro ⟨x₀, y₀⟩
     have key : (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) =
-        ((fun x => x₀ * x) ∘ fun x => x * y₀) ∘ uncurry (· * ·) := by
+        ((fun x ↦ x₀ * x) ∘ fun x ↦ x * y₀) ∘ uncurry (· * ·) := by
       ext p
       simp [uncurry, mul_assoc]
-    have key₂ : ((fun x => x₀ * x) ∘ fun x => y₀ * x) = fun x => x₀ * y₀ * x := by
+    have key₂ : ((fun x ↦ x₀ * x) ∘ fun x ↦ y₀ * x) = fun x ↦ x₀ * y₀ * x := by
       ext x
       simp [mul_assoc]
     calc
@@ -270,16 +270,16 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
         -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
         simp (config := { unfoldPartialApp := true }) only [uncurry]
         simp_rw [hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp_def]
-      _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) := by
+      _ = map ((fun x ↦ x₀ * x) ∘ fun x ↦ x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) := by
         rw [key, ← Filter.map_map]
-      _ ≤ map ((fun x : M => x₀ * x) ∘ fun x => x * y₀) (𝓝 1) := map_mono hmul
+      _ ≤ map ((fun x : M => x₀ * x) ∘ fun x ↦ x * y₀) (𝓝 1) := map_mono hmul
       _ = 𝓝 (x₀ * y₀) := by
         rw [← Filter.map_map, ← hright, hleft y₀, Filter.map_map, key₂, ← hleft]⟩
 
 @[to_additive]
 theorem continuousMul_of_comm_of_nhds_one (M : Type u) [CommMonoid M] [TopologicalSpace M]
     (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
-    (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)) : ContinuousMul M := by
+    (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x ↦ x₀ * x) (𝓝 1)) : ContinuousMul M := by
   apply ContinuousMul.of_nhds_one hmul hleft
   intro x₀
   simp_rw [mul_comm, hleft x₀]
@@ -590,9 +590,9 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 
 -- We register `Continuous.pow` as a `continuity` lemma with low penalty (so
 -- `continuity` will try it before other `continuity` lemmas). This is a
--- workaround for goals of the form `Continuous fun x => x ^ 2`, where
+-- workaround for goals of the form `Continuous fun x ↦ x ^ 2`, where
 -- `continuity` applies `Continuous.mul` since the goal is defeq to
--- `Continuous fun x => x * x`.
+-- `Continuous fun x ↦ x * x`.
 --
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
@@ -611,22 +611,22 @@ theorem continuousAt_pow (x : M) (n : ℕ) : ContinuousAt (fun (x : M) => x ^ n)
 
 @[to_additive]
 theorem Filter.Tendsto.pow {l : Filter α} {f : α → M} {x : M} (hf : Tendsto f l (𝓝 x)) (n : ℕ) :
-    Tendsto (fun x => f x ^ n) l (𝓝 (x ^ n)) :=
+    Tendsto (fun x ↦ f x ^ n) l (𝓝 (x ^ n)) :=
   (continuousAt_pow _ _).tendsto.comp hf
 
 @[to_additive]
 theorem ContinuousWithinAt.pow {f : X → M} {x : X} {s : Set X} (hf : ContinuousWithinAt f s x)
-    (n : ℕ) : ContinuousWithinAt (fun x => f x ^ n) s x :=
+    (n : ℕ) : ContinuousWithinAt (fun x ↦ f x ^ n) s x :=
   Filter.Tendsto.pow hf n
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.pow {f : X → M} {x : X} (hf : ContinuousAt f x) (n : ℕ) :
-    ContinuousAt (fun x => f x ^ n) x :=
+    ContinuousAt (fun x ↦ f x ^ n) x :=
   Filter.Tendsto.pow hf n
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.pow {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
-    ContinuousOn (fun x => f x ^ n) s := fun x hx => (hf x hx).pow n
+    ContinuousOn (fun x ↦ f x ^ n) s := fun x hx => (hf x hx).pow n
 
 /-- Left-multiplication by a left-invertible element of a topological monoid is proper, i.e.,
 inverse images of compact sets are compact. -/
@@ -781,8 +781,8 @@ theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → 
 
 @[to_additive]
 theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ i, f i x := by
-  refine continuous_iff_continuousAt.2 fun x => ?_
+    (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x ↦ ∏ᶠ i, f i x := by
+  refine continuous_iff_continuousAt.2 fun x ↦ ?_
   rcases finprod_eventually_eq_prod hf x with ⟨s, hs⟩
   refine ContinuousAt.congr ?_ (EventuallyEq.symm hs)
   exact tendsto_finset_prod _ fun i _ => (hc i).continuousAt
@@ -790,7 +790,7 @@ theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
 @[to_additive]
 theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀ i, p i → Continuous (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
-    Continuous fun x => ∏ᶠ (i) (_ : p i), f i x := by
+    Continuous fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 

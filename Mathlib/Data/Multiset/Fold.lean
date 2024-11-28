@@ -77,7 +77,7 @@ theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
   foldr_singleton _ _ _
 
 theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
-    (s.map fun x => f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
+    (s.map fun x ↦ f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
   Multiset.induction_on s (by simp) (fun a b h => by
     rw [map_cons, fold_cons_left, h, map_cons, fold_cons_left, map_cons,
       fold_cons_right, ha.assoc, ← ha.assoc (g a), hc.comm (g a),

@@ -60,7 +60,7 @@ theorem mem_normalizer (m : M) : m ∈ N.normalizer ↔ ∀ x : L, ⁅x, m⁆ �
 theorem le_normalizer : N ≤ N.normalizer := by
   intro m hm
   rw [mem_normalizer]
-  exact fun x => N.lie_mem hm
+  exact fun x ↦ N.lie_mem hm
 
 theorem normalizer_inf : (N₁ ⊓ N₂).normalizer = N₁.normalizer ⊓ N₂.normalizer := by
   ext; simp [← forall_and]

@@ -397,7 +397,7 @@ theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRi
     Function.Bijective (algebraMap R Rₘ) := by
   letI := hR.toField
   replace hM := le_nonZeroDivisors_of_noZeroDivisors hM
-  refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
+  refine ⟨IsLocalization.injective _ hM, fun x ↦ ?_⟩
   obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M x
   obtain ⟨n, hn⟩ := hR.mul_inv_cancel (nonZeroDivisors.ne_zero <| hM hm)
   exact ⟨r * n, by rw [eq_mk'_iff_mul_eq, ← map_mul, mul_assoc, _root_.mul_comm n, hn, mul_one]⟩
@@ -471,7 +471,7 @@ theorem IsLocalization.algebraMap_eq_map_map_submonoid :
       map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :=
   Eq.symm <|
-    IsLocalization.map_unique _ (algebraMap Rₘ Sₘ) fun x => by
+    IsLocalization.map_unique _ (algebraMap Rₘ Sₘ) fun x ↦ by
       rw [← IsScalarTower.algebraMap_apply R S Sₘ, ← IsScalarTower.algebraMap_apply R Rₘ Sₘ]
 
 /-- If the square below commutes, the bottom map is uniquely specified:

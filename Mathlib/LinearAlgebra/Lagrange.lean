@@ -290,8 +290,8 @@ def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
   toFun r := ∑ i ∈ s, C (r i) * Lagrange.basis s v i
   map_add' f g := by
     simp_rw [← Finset.sum_add_distrib]
-    have h : (fun x => C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) =
-    (fun x => C ((f + g) x) * Lagrange.basis s v x) := by
+    have h : (fun x ↦ C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) =
+    (fun x ↦ C ((f + g) x) * Lagrange.basis s v x) := by
       simp_rw [← add_mul, ← C_add, Pi.add_apply]
     rw [h]
   map_smul' c f := by
@@ -377,7 +377,7 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
   map_add' _ _ := funext fun _ => eval_add
   map_smul' c f := funext <| by simp
   invFun r :=
-    ⟨interpolate s v fun x => if hx : x ∈ s then r ⟨x, hx⟩ else 0,
+    ⟨interpolate s v fun x ↦ if hx : x ∈ s then r ⟨x, hx⟩ else 0,
       mem_degreeLT.2 <| degree_interpolate_lt _ hvs⟩
   left_inv := by
     rintro ⟨f, hf⟩
@@ -500,7 +500,7 @@ theorem eval_nodal_not_at_node [Nontrivial R] [NoZeroDivisors R] {x : R}
 
 theorem nodal_eq_mul_nodal_erase [DecidableEq ι] {i : ι} (hi : i ∈ s) :
     nodal s v = (X - C (v i)) * nodal (s.erase i) v := by
-    simp_rw [nodal, Finset.mul_prod_erase _ (fun x => X - C (v x)) hi]
+    simp_rw [nodal, Finset.mul_prod_erase _ (fun x ↦ X - C (v x)) hi]
 
 theorem X_sub_C_dvd_nodal (v : ι → R) {i : ι} (hi : i ∈ s) : X - C (v i) ∣ nodal s v := by
   classical

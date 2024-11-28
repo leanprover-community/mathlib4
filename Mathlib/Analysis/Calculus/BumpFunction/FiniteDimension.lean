@@ -124,15 +124,15 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     NNReal.exists_pos_sum_of_countable one_ne_zero ℕ
   have : ∀ n : ℕ, ∃ r : ℝ, 0 < r ∧ ∀ i ≤ n, ∀ x, ‖iteratedFDeriv ℝ i (r • g n) x‖ ≤ δ n := by
     intro n
-    have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (fun x => g n x) x‖ ≤ R := by
+    have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (fun x ↦ g n x) x‖ ≤ R := by
       intro i
-      have : BddAbove (range fun x => ‖iteratedFDeriv ℝ i (fun x : E => g n x) x‖) := by
+      have : BddAbove (range fun x ↦ ‖iteratedFDeriv ℝ i (fun x : E => g n x) x‖) := by
         apply ((g_smooth n).continuous_iteratedFDeriv
           (mod_cast le_top)).norm.bddAbove_range_of_hasCompactSupport
         apply HasCompactSupport.comp_left _ norm_zero
         apply (g_comp_supp n).iteratedFDeriv
       rcases this with ⟨R, hR⟩
-      exact ⟨R, fun x => hR (mem_range_self _)⟩
+      exact ⟨R, fun x ↦ hR (mem_range_self _)⟩
     choose R hR using this
     let M := max (((Finset.range (n + 1)).image R).max' (by simp)) 1
     have δnpos : 0 < δ n := δpos n
@@ -159,7 +159,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     refine .of_nnnorm_bounded _ δc.summable fun n => ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm]
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
-  refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
+  refine ⟨fun x ↦ ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
       simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx
@@ -213,8 +213,8 @@ theorem u_exists :
   obtain ⟨f, f_support, f_smooth, f_range⟩ :
       ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 :=
     A.exists_smooth_support_eq
-  have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x => f_range (mem_range_self x)
-  refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
+  have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x ↦ f_range (mem_range_self x)
+  refine ⟨fun x ↦ (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _
   · intro x
     simp only [mem_Icc]
@@ -288,7 +288,7 @@ def w (D : ℝ) (x : E) : ℝ :=
   ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x)
 
 theorem w_def (D : ℝ) :
-    (w D : E → ℝ) = fun x => ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x) := by
+    (w D : E → ℝ) = fun x ↦ ((∫ x : E, u x ∂μ) * |D| ^ finrank ℝ E)⁻¹ • u (D⁻¹ • x) := by
   ext1 x; rfl
 
 theorem w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by

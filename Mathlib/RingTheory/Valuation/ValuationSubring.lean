@@ -209,7 +209,7 @@ theorem mem_ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R)
 
 /-- An overring of a valuation ring is a valuation ring. -/
 def ofLE (R : ValuationSubring K) (S : Subring K) (h : R.toSubring ≤ S) : ValuationSubring K :=
-  { S with mem_or_inv_mem' := fun x => (R.mem_or_inv_mem x).imp (@h x) (@h _) }
+  { S with mem_or_inv_mem' := fun x ↦ (R.mem_or_inv_mem x).imp (@h x) (@h _) }
 
 section Order
 
@@ -292,7 +292,7 @@ theorem ofPrime_valuation_eq_one_iff_mem_primeCompl (A : ValuationSubring K) (P 
 @[simp]
 theorem idealOfLE_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     idealOfLE A (ofPrime A P) (le_ofPrime A P) = P := by
-  refine Ideal.ext (fun x => ?_)
+  refine Ideal.ext (fun x ↦ ?_)
   apply IsLocalization.AtPrime.to_map_mem_maximal_iff
   exact isLocalRing (ofPrime A P)
 

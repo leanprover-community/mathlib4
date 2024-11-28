@@ -63,7 +63,7 @@ theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (
     0 ≤ re ⟪x, T x⟫ := by rw [inner_re_symm]; exact hT.inner_nonneg_left x
 
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := by
-  refine ⟨.zero _, fun x => ?_⟩
+  refine ⟨.zero _, fun x ↦ ?_⟩
   change 0 ≤ re ⟪_, _⟫
   rw [zero_apply, inner_zero_left, ZeroHomClass.map_zero]
 
@@ -72,13 +72,13 @@ theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
 
 theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive := by
-  refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
+  refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x ↦ ?_⟩
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.inner_nonneg_left x) (hS.inner_nonneg_left x)
 
 theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
     (S ∘L T ∘L S†).IsPositive := by
-  refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
+  refine ⟨hT.isSelfAdjoint.conj_adjoint S, fun x ↦ ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.inner_nonneg_left _
 

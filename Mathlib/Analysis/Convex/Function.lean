@@ -900,7 +900,7 @@ section Module
 
 variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
 
-theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : ConvexOn 𝕜 s fun x => c • f x :=
+theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : ConvexOn 𝕜 s fun x ↦ c • f x :=
   ⟨hf.1, fun x hx y hy a b ha hb hab =>
     calc
       c • f (a • x + b • y) ≤ c • (a • f x + b • f y) :=
@@ -908,7 +908,7 @@ theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : Conve
       _ = a • c • f x + b • c • f y := by rw [smul_add, smul_comm c, smul_comm c]⟩
 
 theorem ConcaveOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConcaveOn 𝕜 s f) :
-    ConcaveOn 𝕜 s fun x => c • f x :=
+    ConcaveOn 𝕜 s fun x ↦ c • f x :=
   hf.dual.smul hc
 
 end Module

@@ -580,7 +580,7 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
 
 theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
-  Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
+  Ideal.ext fun x ↦ by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
 
 end Supp
 

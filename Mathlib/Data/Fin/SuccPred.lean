@@ -46,7 +46,7 @@ theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a +
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
-    PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
+    PredOrder.ofCore (fun x ↦ if x = 0 then 0 else x - 1)
       (by
         intro a ha b
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha

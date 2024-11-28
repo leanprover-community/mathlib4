@@ -35,10 +35,10 @@ We also register the corresponding lemma for integrals of `ℝ≥0∞`-valued fu
 `ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`.
 
 Generally useful lemmas which are not related to integrals:
-* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x => inner c (f x) =ᵐ[μ] 0` then
+* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x ↦ inner c (f x) =ᵐ[μ] 0` then
   `f =ᵐ[μ] 0`.
 * `ae_eq_zero_of_forall_dual`: if for all constants `c` in the dual space,
-  `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
+  `fun x ↦ c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
 
@@ -54,7 +54,7 @@ section AeEqOfForall
 variable {α E 𝕜 : Type*} {m : MeasurableSpace α} {μ : Measure α} [RCLike 𝕜]
 
 theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x => (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
+    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : E, (fun x ↦ (inner c (f x) : 𝕜)) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 := by
   let s := denseSeq E
   have hs : DenseRange s := denseRange_denseSeq E
@@ -71,11 +71,11 @@ variable (𝕜)
 
 theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {t : Set E} (ht : TopologicalSpace.IsSeparable t) {f : α → E}
-    (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) : f =ᵐ[μ] 0 := by
+    (hf : ∀ c : Dual 𝕜 E, (fun x ↦ ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) : f =ᵐ[μ] 0 := by
   rcases ht with ⟨d, d_count, hd⟩
   haveI : Encodable d := d_count.toEncodable
   have : ∀ x : d, ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖(x : E)‖ :=
-    fun x => exists_dual_vector'' 𝕜 (x : E)
+    fun x ↦ exists_dual_vector'' 𝕜 (x : E)
   choose s hs using this
   have A : ∀ a : E, a ∈ t → (∀ x, ⟪a, s x⟫ = (0 : 𝕜)) → a = 0 := by
     intro a hat ha
@@ -104,7 +104,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
   exact A (f x) h'x hx
 
 theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) :
+    [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x ↦ ⟪f x, c⟫) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
@@ -664,8 +664,8 @@ theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (
     · refine ae_lt_top' hf.restrict (ne_of_lt (lt_of_le_of_lt ?_ hfi.lt_top))
       exact @setLIntegral_univ α _ μ f ▸ lintegral_mono_set (Set.subset_univ _)
   -- putting the proofs where they are used is extremely slow
-  exacts [ae_of_all _ fun x => ENNReal.toReal_nonneg,
-    hg.ennreal_toReal.restrict.aestronglyMeasurable, ae_of_all _ fun x => ENNReal.toReal_nonneg,
+  exacts [ae_of_all _ fun x ↦ ENNReal.toReal_nonneg,
+    hg.ennreal_toReal.restrict.aestronglyMeasurable, ae_of_all _ fun x ↦ ENNReal.toReal_nonneg,
     hf.ennreal_toReal.restrict.aestronglyMeasurable]
 
 @[deprecated (since := "2024-06-29")]

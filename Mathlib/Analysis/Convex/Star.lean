@@ -207,14 +207,14 @@ theorem StarConvex.add {t : Set E} (hs : StarConvex 𝕜 x s) (ht : StarConvex �
   exact (hs.prod ht).is_linear_image IsLinearMap.isLinearMap_add
 
 theorem StarConvex.add_left (hs : StarConvex 𝕜 x s) (z : E) :
-    StarConvex 𝕜 (z + x) ((fun x => z + x) '' s) := by
+    StarConvex 𝕜 (z + x) ((fun x ↦ z + x) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
   refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   match_scalars <;> simp [hab]
 
 theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
-    StarConvex 𝕜 (x + z) ((fun x => x + z) '' s) := by
+    StarConvex 𝕜 (x + z) ((fun x ↦ x + z) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
   refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
@@ -222,14 +222,14 @@ theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
 
 /-- The translation of a star-convex set is also star-convex. -/
 theorem StarConvex.preimage_add_right (hs : StarConvex 𝕜 (z + x) s) :
-    StarConvex 𝕜 x ((fun x => z + x) ⁻¹' s) := by
+    StarConvex 𝕜 x ((fun x ↦ z + x) ⁻¹' s) := by
   intro y hy a b ha hb hab
   have h := hs hy ha hb hab
   rwa [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul] at h
 
 /-- The translation of a star-convex set is also star-convex. -/
 theorem StarConvex.preimage_add_left (hs : StarConvex 𝕜 (x + z) s) :
-    StarConvex 𝕜 x ((fun x => x + z) ⁻¹' s) := by
+    StarConvex 𝕜 x ((fun x ↦ x + z) ⁻¹' s) := by
   rw [add_comm] at hs
   simpa only [add_comm] using hs.preimage_add_right
 
@@ -265,7 +265,7 @@ theorem StarConvex.preimage_smul {c : 𝕜} (hs : StarConvex 𝕜 (c • x) s) :
   hs.linear_preimage (LinearMap.lsmul _ _ c)
 
 theorem StarConvex.affinity (hs : StarConvex 𝕜 x s) (z : E) (c : 𝕜) :
-    StarConvex 𝕜 (z + c • x) ((fun x => z + c • x) '' s) := by
+    StarConvex 𝕜 (z + c • x) ((fun x ↦ z + c • x) '' s) := by
   have h := (hs.smul c).add_left z
   rwa [← image_smul, image_image] at h
 
@@ -284,7 +284,7 @@ variable [AddCommMonoid E] [SMulWithZero 𝕜 E] {s : Set E}
 theorem starConvex_zero_iff :
     StarConvex 𝕜 0 s ↔ ∀ ⦃x : E⦄, x ∈ s → ∀ ⦃a : 𝕜⦄, 0 ≤ a → a ≤ 1 → a • x ∈ s := by
   refine
-    forall_congr' fun x => forall_congr' fun _ => ⟨fun h a ha₀ ha₁ => ?_, fun h a b ha hb hab => ?_⟩
+    forall_congr' fun x ↦ forall_congr' fun _ => ⟨fun h a ha₀ ha₁ => ?_, fun h a b ha hb hab => ?_⟩
   · simpa only [sub_add_cancel, eq_self_iff_true, forall_true_left, zero_add, smul_zero] using
       h (sub_nonneg_of_le ha₁) ha₀
   · rw [smul_zero, zero_add]

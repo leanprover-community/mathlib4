@@ -50,7 +50,7 @@ end Functor
 
 
 protected instance pure : Pure Finset :=
-  ⟨fun x => {x}⟩
+  ⟨fun x ↦ {x}⟩
 
 @[simp]
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl

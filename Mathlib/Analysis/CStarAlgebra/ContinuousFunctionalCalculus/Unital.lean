@@ -468,13 +468,13 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
 
 lemma cfc_const_add (r : R) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x => r + f x) a = algebraMap R A r + cfc f a := by
+    cfc (fun x ↦ r + f x) a = algebraMap R A r + cfc f a := by
   have : (fun z => r + f z) = (fun z => (fun _ => r) z + f z) := by ext; simp
   rw [this, cfc_add a _ _ (continuousOn_const (c := r)) hf, cfc_const r a ha]
 
 lemma cfc_add_const (r : R) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x => f x + r) a = cfc f a + algebraMap R A r := by
+    cfc (fun x ↦ f x + r) a = cfc f a + algebraMap R A r := by
   rw [add_comm (cfc f a)]
   conv_lhs => simp only [add_comm]
   exact cfc_const_add r f a hf ha

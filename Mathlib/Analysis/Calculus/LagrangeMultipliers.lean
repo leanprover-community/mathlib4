@@ -43,7 +43,7 @@ theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     (hextr : IsLocalExtrOn φ {x | f x = f x₀} x₀) (hf' : HasStrictFDerivAt f f' x₀)
     (hφ' : HasStrictFDerivAt φ φ' x₀) : LinearMap.range (f'.prod φ') ≠ ⊤ := by
   intro htop
-  set fφ := fun x => (f x, φ x)
+  set fφ := fun x ↦ (f x, φ x)
   have A : map φ (𝓝[f ⁻¹' {f x₀}] x₀) = 𝓝 (φ x₀) := by
     change map (Prod.snd ∘ fφ) (𝓝[fφ ⁻¹' {p | p.1 = f x₀}] x₀) = 𝓝 (φ x₀)
     rw [← map_map, nhdsWithin, map_inf_principal_preimage, (hf'.prod hφ').map_nhds_eq_of_surj htop]
@@ -65,7 +65,7 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
     ((LinearEquiv.refl ℝ (F →ₗ[ℝ] ℝ)).prod (LinearMap.ringLmapEquivSelf ℝ ℝ ℝ).symm).trans
       (LinearMap.coprodEquiv ℝ)
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩
-  refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => ?_⟩
+  refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x ↦ ?_⟩
   convert LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
   -- squeezed `simp [mul_comm]` to speed up elaboration
   simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prod_apply,
@@ -84,7 +84,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
   refine ⟨Λ 1, Λ₀, ?_, ?_⟩
   · contrapose! hΛ
     simp only [Prod.mk_eq_zero] at hΛ ⊢
-    refine ⟨LinearMap.ext fun x => ?_, hΛ.2⟩
+    refine ⟨LinearMap.ext fun x ↦ ?_, hΛ.2⟩
     simpa [hΛ.1] using Λ.map_smul x 1
   · ext x
     have H₁ : Λ (f' x) = f' x * Λ 1 := by

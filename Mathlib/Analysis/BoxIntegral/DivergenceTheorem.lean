@@ -146,10 +146,10 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] E) (s : Set (Fin (n + 1) → ℝ))
     (hs : s.Countable) (Hs : ∀ x ∈ s, ContinuousWithinAt f (Box.Icc I) x)
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x) (i : Fin (n + 1)) :
-    HasIntegral.{0, u, u} I GP (fun x => f' x (Pi.single i 1)) BoxAdditiveMap.volume
-      (integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.upper i) x))
+    HasIntegral.{0, u, u} I GP (fun x ↦ f' x (Pi.single i 1)) BoxAdditiveMap.volume
+      (integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.upper i) x))
           BoxAdditiveMap.volume -
-        integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x))
+        integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.lower i) x))
           BoxAdditiveMap.volume) := by
   /- Note that `f` is continuous on `I.Icc`, hence it is integrable on the faces of all boxes
     `J ≤ I`, thus the difference of integrals over `x i = J.upper i` and `x i = J.lower i` is a
@@ -158,12 +158,12 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     by_cases hxs : x ∈ s
     exacts [Hs x hxs, (Hd x ⟨hx, hxs⟩).continuousWithinAt]
   set fI : ℝ → Box (Fin n) → E := fun y J =>
-    integral.{0, u, u} J GP (fun x => f (i.insertNth y x)) BoxAdditiveMap.volume
+    integral.{0, u, u} J GP (fun x ↦ f (i.insertNth y x)) BoxAdditiveMap.volume
   set fb : Icc (I.lower i) (I.upper i) → Fin n →ᵇᵃ[↑(I.face i)] E := fun x =>
     (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.2) volume).toBoxAdditive
   set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x _ J => rfl
   -- Thus our statement follows from some local estimates.
-  change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
+  change HasIntegral I GP (fun x ↦ f' x (Pi.single i 1)) _ (F I)
   refine HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le ?_ ?_ _ s hs ?_ ?_
   ·-- We use the volume as an upper estimate.
     exact (volume : Measure (Fin (n + 1) → ℝ)).toBoxAdditive.restrict _ le_top
@@ -261,11 +261,11 @@ theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
     (s : Set (Fin (n + 1) → ℝ)) (hs : s.Countable)
     (Hs : ∀ x ∈ s, ContinuousWithinAt f (Box.Icc I) x)
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x) :
-    HasIntegral.{0, u, u} I GP (fun x => ∑ i, f' x (Pi.single i 1) i) BoxAdditiveMap.volume
+    HasIntegral.{0, u, u} I GP (fun x ↦ ∑ i, f' x (Pi.single i 1) i) BoxAdditiveMap.volume
       (∑ i,
-        (integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.upper i) x) i)
+        (integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.upper i) x) i)
             BoxAdditiveMap.volume -
-          integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x) i)
+          integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.lower i) x) i)
             BoxAdditiveMap.volume)) := by
   refine HasIntegral.sum fun i _ => ?_
   simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs

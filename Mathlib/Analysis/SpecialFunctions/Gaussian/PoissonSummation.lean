@@ -99,10 +99,10 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
     rw [ha, zero_re]
-  have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
+  have f_bd : f =O[cocompact ℝ] (fun x ↦ |x| ^ (-2 : ℝ)) := by
     convert (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact ?_ _ (-2)).isBigO
     rwa [neg_mul, neg_re, neg_lt_zero]
-  have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
+  have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x ↦ |x| ^ (-2 : ℝ)) := by
     rw [hFf]
     have : ∀ (x : ℝ), -↑π / a * (↑x + I * b) ^ 2 =
         -↑π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a := by

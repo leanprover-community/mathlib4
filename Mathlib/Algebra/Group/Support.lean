@@ -146,12 +146,12 @@ theorem mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : α => c) =
 
 @[to_additive]
 theorem mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : α → M) (g : α → N) :
-    (mulSupport fun x => op (f x) (g x)) ⊆ mulSupport f ∪ mulSupport g := fun x hx =>
+    (mulSupport fun x ↦ op (f x) (g x)) ⊆ mulSupport f ∪ mulSupport g := fun x hx =>
   not_or_of_imp fun hf hg => hx <| by simp only [hf, hg, op1]
 
 @[to_additive]
 theorem mulSupport_comp_subset {g : M → N} (hg : g 1 = 1) (f : α → M) :
-    mulSupport (g ∘ f) ⊆ mulSupport f := fun x => mt fun h ↦ by simp only [(· ∘ ·), *]
+    mulSupport (g ∘ f) ⊆ mulSupport f := fun x ↦ mt fun h ↦ by simp only [(· ∘ ·), *]
 
 @[to_additive]
 theorem mulSupport_subset_comp {g : M → N} (hg : ∀ {x}, g x = 1 → x = 1) (f : α → M) :
@@ -175,13 +175,13 @@ theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
 
 @[to_additive support_prod_mk]
 theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
-    (mulSupport fun x => (f x, g x)) = mulSupport f ∪ mulSupport g :=
-  Set.ext fun x => by
+    (mulSupport fun x ↦ (f x, g x)) = mulSupport f ∪ mulSupport g :=
+  Set.ext fun x ↦ by
     simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
 
 @[to_additive support_prod_mk']
 theorem mulSupport_prod_mk' (f : α → M × N) :
-    mulSupport f = (mulSupport fun x => (f x).1) ∪ mulSupport fun x => (f x).2 := by
+    mulSupport f = (mulSupport fun x ↦ (f x).1) ∪ mulSupport fun x ↦ (f x).2 := by
   simp only [← mulSupport_prod_mk]
 
 @[to_additive]
@@ -203,12 +203,12 @@ end One
 
 @[to_additive]
 theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
-    (mulSupport fun x => f x * g x) ⊆ mulSupport f ∪ mulSupport g :=
+    (mulSupport fun x ↦ f x * g x) ⊆ mulSupport f ∪ mulSupport g :=
   mulSupport_binop_subset (· * ·) (one_mul _) f g
 
 @[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
-    (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
+    (mulSupport fun x ↦ f x ^ n) ⊆ mulSupport f := by
   induction n with
   | zero => simp [pow_zero, mulSupport_one]
   | succ n hfn =>
@@ -219,7 +219,7 @@ section DivisionMonoid
 variable [DivisionMonoid G] (f g : α → G)
 
 @[to_additive (attr := simp)]
-theorem mulSupport_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
+theorem mulSupport_inv : (mulSupport fun x ↦ (f x)⁻¹) = mulSupport f :=
   ext fun _ => inv_ne_one
 
 @[to_additive (attr := simp)]
@@ -227,11 +227,11 @@ theorem mulSupport_inv' : mulSupport f⁻¹ = mulSupport f :=
   mulSupport_inv f
 
 @[to_additive]
-theorem mulSupport_mul_inv : (mulSupport fun x => f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=
+theorem mulSupport_mul_inv : (mulSupport fun x ↦ f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=
   mulSupport_binop_subset (fun a b => a * b⁻¹) (by simp) f g
 
 @[to_additive]
-theorem mulSupport_div : (mulSupport fun x => f x / g x) ⊆ mulSupport f ∪ mulSupport g :=
+theorem mulSupport_div : (mulSupport fun x ↦ f x / g x) ⊆ mulSupport f ∪ mulSupport g :=
   mulSupport_binop_subset (· / ·) one_div_one f g
 
 end DivisionMonoid

@@ -34,7 +34,7 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 @[simps!]
 def ofTypeMonad : Monad (Type u) where
   toFunctor := ofTypeFunctor m
-  η := ⟨@pure m _, fun _ _ f => funext fun x => (LawfulApplicative.map_pure f x).symm⟩
+  η := ⟨@pure m _, fun _ _ f => funext fun x ↦ (LawfulApplicative.map_pure f x).symm⟩
   μ := ⟨@joinM m _, fun α β (f : α → β) => funext fun a ↦ by apply joinM_map_map⟩
   assoc α := funext fun a ↦ by apply joinM_map_joinM
   left_unit α := funext fun a ↦ by apply joinM_pure

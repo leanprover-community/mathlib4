@@ -109,8 +109,8 @@ def actionDiagonalSucc (G : Type u) [Group G] :
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
-  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine Prod.ext rfl (funext fun x => ?_)
+  · exact Prod.ext rfl (funext fun x ↦ Fin.elim0 x)
+  · refine Prod.ext rfl (funext fun x ↦ ?_)
     /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -364,7 +364,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) <| MonCat.of G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := fun x => x ∘ f.unop.toOrderHom
+    { hom := fun x ↦ x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -483,7 +483,7 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
-  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
+  refine Finsupp.lhom_ext' fun x ↦ LinearMap.ext_ring ?_
   dsimp [groupCohomology.resolution]
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
@@ -571,7 +571,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
 
 theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
-  refine LinearMap.ext fun x => ?_
+  refine LinearMap.ext fun x ↦ ?_
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,

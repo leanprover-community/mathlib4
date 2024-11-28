@@ -31,13 +31,13 @@ namespace Ordinal
 
 /-- Converts an ordinal into the corresponding pre-game. -/
 noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩
+  ⟨o.toType, PEmpty, fun x ↦ ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩
 termination_by o
 decreasing_by exact ((enumIsoToType o).symm x).prop
 
 @[deprecated "No deprecation message was provided." (since := "2024-09-22")]
 theorem toPGame_def (o : Ordinal) : o.toPGame =
-    ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩ := by
+    ⟨o.toType, PEmpty, fun x ↦ ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
 
 @[simp]

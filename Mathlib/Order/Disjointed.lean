@@ -158,6 +158,6 @@ theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
   disjointed_eq_inf_compl f n
 
 theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
-    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
+    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x ↦ Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]

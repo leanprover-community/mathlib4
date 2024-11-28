@@ -243,8 +243,8 @@ instance oppositeRack : Rack Rᵐᵒᵖ where
     simp only [op_inj, unop_op, op_unop]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
-  left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
-  right_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
+  left_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y => by simp
+  right_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y => by simp
 
 @[simp]
 theorem op_act_op_eq {x y : R} : op x ◃ op y = op (x ◃⁻¹ y) :=
@@ -333,7 +333,7 @@ theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y 
 
 /-- The identity homomorphism -/
 def id (S : Type*) [Shelf S] : S →◃ S where
-  toFun := fun x => x
+  toFun := fun x ↦ x
   map_act' := by simp
 
 instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
@@ -678,7 +678,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
   left_inv f := by ext; rfl
   right_inv F :=
     MonoidHom.ext fun x =>
-      Quotient.inductionOn x fun x => by
+      Quotient.inductionOn x fun x ↦ by
         induction x with
         | unit => exact F.map_one.symm
         | incl => rfl

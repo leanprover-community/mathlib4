@@ -44,7 +44,7 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 @[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
-    algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
+    algebraMap_mem' := fun x ↦ Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
 
 @[simp]
 theorem adjoin_toSubfield :
@@ -908,7 +908,7 @@ theorem adjoin_finite_isCompactElement {S : Set E} (h : S.Finite) : IsCompactEle
 /-- The lattice of intermediate fields is compactly generated. -/
 instance : IsCompactlyGenerated (IntermediateField F E) :=
   ⟨fun s =>
-    ⟨(fun x => F⟮x⟯) '' s,
+    ⟨(fun x ↦ F⟮x⟯) '' s,
       ⟨by rintro t ⟨x, _, rfl⟩; exact adjoin_simple_isCompactElement x,
         sSup_image.trans <| (biSup_adjoin_simple _).trans <|
           le_antisymm (adjoin_le_iff.mpr le_rfl) <| subset_adjoin F (s : Set E)⟩⟩⟩
@@ -1061,7 +1061,7 @@ theorem subsingleton_of_finrank_adjoin_eq_one (h : ∀ x : E, finrank F F⟮x⟯
 theorem bot_eq_top_of_finrank_adjoin_le_one [FiniteDimensional F E]
     (h : ∀ x : E, finrank F F⟮x⟯ ≤ 1) : (⊥ : IntermediateField F E) = ⊤ := by
   apply bot_eq_top_of_finrank_adjoin_eq_one
-  exact fun x => by linarith [h x, show 0 < finrank F F⟮x⟯ from finrank_pos]
+  exact fun x ↦ by linarith [h x, show 0 < finrank F F⟮x⟯ from finrank_pos]
 
 theorem subsingleton_of_finrank_adjoin_le_one [FiniteDimensional F E]
     (h : ∀ x : E, finrank F F⟮x⟯ ≤ 1) : Subsingleton (IntermediateField F E) :=
@@ -1272,7 +1272,7 @@ of `minpoly α` in `K`. -/
 noncomputable def algHomAdjoinIntegralEquiv (h : IsIntegral F α) :
     (F⟮α⟯ →ₐ[F] K) ≃ { x // x ∈ (minpoly F α).aroots K } :=
   (adjoin.powerBasis h).liftEquiv'.trans
-    ((Equiv.refl _).subtypeEquiv fun x => by
+    ((Equiv.refl _).subtypeEquiv fun x ↦ by
       rw [adjoin.powerBasis_gen, minpoly_gen, Equiv.refl_apply])
 
 lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)

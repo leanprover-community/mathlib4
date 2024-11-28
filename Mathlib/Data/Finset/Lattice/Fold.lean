@@ -113,7 +113,7 @@ theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂
 
 @[simp]
 theorem sup_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
-    (s.biUnion t).sup f = s.sup fun x => (t x).sup f :=
+    (s.biUnion t).sup f = s.sup fun x ↦ (t x).sup f :=
   eq_of_forall_ge_iff fun c ↦ by simp [@forall_swap _ β]
 
 theorem sup_const {s : Finset β} (h : s.Nonempty) (c : α) : (s.sup fun _ => c) = c :=
@@ -142,7 +142,7 @@ protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α
   eq_of_forall_ge_iff fun a ↦ by simpa using forall₂_swap
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS does not simplify
-theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
+theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x ↦ f x) = s.sup f :=
   (s.attach.sup_map (Function.Embedding.subtype _) f).symm.trans <| congr_arg _ attach_map_val
 
 /-- See also `Finset.product_biUnion`. -/
@@ -190,14 +190,14 @@ theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {
 theorem sup_coe {P : α → Prop} {Pbot : P ⊥} {Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)} (t : Finset β)
     (f : β → { x : α // P x }) :
     (@sup { x // P x } _ (Subtype.semilatticeSup Psup) (Subtype.orderBot Pbot) t f : α) =
-      t.sup fun x => ↑(f x) := by
+      t.sup fun x ↦ ↑(f x) := by
   letI := Subtype.semilatticeSup Psup
   letI := Subtype.orderBot Pbot
   apply comp_sup_eq_sup_comp Subtype.val <;> intros <;> rfl
 
 @[simp]
 theorem sup_toFinset {α β} [DecidableEq β] (s : Finset α) (f : α → Multiset β) :
-    (s.sup f).toFinset = s.sup fun x => (f x).toFinset :=
+    (s.sup f).toFinset = s.sup fun x ↦ (f x).toFinset :=
   comp_sup_eq_sup_comp Multiset.toFinset toFinset_union rfl
 
 theorem _root_.List.foldr_sup_eq_sup_toFinset [DecidableEq α] (l : List α) :
@@ -343,7 +343,7 @@ theorem inf_union [DecidableEq β] : (s₁ ∪ s₂).inf f = s₁.inf f ⊓ s₂
   eq_of_forall_le_iff fun c ↦ by simp [or_imp, forall_and]
 
 @[simp] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
-    (s.biUnion t).inf f = s.inf fun x => (t x).inf f :=
+    (s.biUnion t).inf f = s.inf fun x ↦ (t x).inf f :=
   @sup_biUnion αᵒᵈ _ _ _ _ _ _ _ _
 
 theorem inf_const (h : s.Nonempty) (c : α) : (s.inf fun _ => c) = c := @sup_const αᵒᵈ _ _ _ _ h _
@@ -366,7 +366,7 @@ protected theorem inf_comm (s : Finset β) (t : Finset γ) (f : β → γ → α
     (s.inf fun b ↦ t.inf (f b)) = t.inf fun c ↦ s.inf fun b ↦ f b c :=
   @Finset.sup_comm αᵒᵈ _ _ _ _ _ _ _
 
-theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x => f x) = s.inf f :=
+theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x ↦ f x) = s.inf f :=
   @sup_attach αᵒᵈ _ _ _ _ _
 
 theorem inf_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
@@ -399,7 +399,7 @@ theorem comp_inf_eq_inf_comp [SemilatticeInf γ] [OrderTop γ] {s : Finset β} {
 theorem inf_coe {P : α → Prop} {Ptop : P ⊤} {Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)} (t : Finset β)
     (f : β → { x : α // P x }) :
     (@inf { x // P x } _ (Subtype.semilatticeInf Pinf) (Subtype.orderTop Ptop) t f : α) =
-      t.inf fun x => ↑(f x) :=
+      t.inf fun x ↦ ↑(f x) :=
   @sup_coe αᵒᵈ _ _ _ _ Ptop Pinf t f
 
 theorem _root_.List.foldr_inf_eq_inf_toFinset [DecidableEq α] (l : List α) :

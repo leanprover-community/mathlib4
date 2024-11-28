@@ -38,7 +38,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
     { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨fun x => x i.as, fun _ => rfl⟩) }
+      π := Discrete.natTrans (fun i => ⟨fun x ↦ x i.as, fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
         { hom := fun x i => (s.π.app ⟨i⟩).hom x

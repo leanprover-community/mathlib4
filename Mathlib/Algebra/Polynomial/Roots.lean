@@ -349,7 +349,7 @@ theorem zero_of_eval_zero [Infinite R] (p : R[X]) (h : ∀ x, p.eval x = 0) : p 
   classical
   by_contra hp
   refine @Fintype.false R _ ?_
-  exact ⟨p.roots.toFinset, fun x => Multiset.mem_toFinset.mpr ((mem_roots hp).mpr (h _))⟩
+  exact ⟨p.roots.toFinset, fun x ↦ Multiset.mem_toFinset.mpr ((mem_roots hp).mpr (h _))⟩
 
 theorem funext [Infinite R] {p q : R[X]} (ext : ∀ r : R, p.eval r = q.eval r) : p = q := by
   rw [← sub_eq_zero]

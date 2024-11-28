@@ -168,7 +168,7 @@ protected theorem irrefl {v : V} : ¬G.Adj v v :=
   G.loopless v
 
 theorem adj_comm (u v : V) : G.Adj u v ↔ G.Adj v u :=
-  ⟨fun x => G.symm x, fun x => G.symm x⟩
+  ⟨fun x ↦ G.symm x, fun x ↦ G.symm x⟩
 
 @[symm]
 theorem adj_symm (h : G.Adj u v) : G.Adj v u :=

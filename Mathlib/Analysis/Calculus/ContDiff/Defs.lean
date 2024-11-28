@@ -319,7 +319,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
   · rintro ⟨u, hu, f', f'_eq_deriv, Hf'⟩
     rw [show (n : WithTop ℕ∞) + 1 = (n + 1 : ℕ) from rfl, contDiffWithinAt_nat]
     rcases Hf' n le_rfl with ⟨v, hv, p', Hp'⟩
-    refine ⟨v ∩ u, ?_, fun x => (p' x).unshift (f x), ?_⟩
+    refine ⟨v ∩ u, ?_, fun x ↦ (p' x).unshift (f x), ?_⟩
     · apply Filter.inter_mem _ hu
       apply nhdsWithin_le_of_mem hu
       exact nhdsWithin_mono _ (subset_insert x u) hv
@@ -569,9 +569,9 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     exact ((Hp.mono ho).cont m le_rfl).congr fun y hy => (A y hy).symm
 
 theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
-    (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
+    (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x ↦ iteratedFDerivWithin 𝕜 m f s x) s)
     (Hdiff : ∀ m : ℕ, m < n →
-      DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s) :
+      DifferentiableOn 𝕜 (fun x ↦ iteratedFDerivWithin 𝕜 m f s x) s) :
     ContDiffOn 𝕜 n f s := by
   intro x hx m hm
   rw [insert_eq_of_mem hx]
@@ -620,8 +620,8 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
 
 theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
-      (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
-        ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s :=
+      (∀ m : ℕ, m ≤ n → ContinuousOn (fun x ↦ iteratedFDerivWithin 𝕜 m f s x) s) ∧
+        ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x ↦ iteratedFDerivWithin 𝕜 m f s x) s :=
   ⟨fun h ↦ ⟨fun _m hm => h.continuousOn_iteratedFDerivWithin (mod_cast hm) hs, fun _m hm =>
       h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
     fun h ↦ contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
@@ -712,11 +712,11 @@ theorem ContDiffOn.fderiv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s)
   (hf.fderivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (fderivWithin_of_isOpen hs hx).symm
 
 theorem ContDiffOn.continuousOn_fderivWithin (h : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
-    (hn : 1 ≤ n) : ContinuousOn (fun x => fderivWithin 𝕜 f s x) s :=
+    (hn : 1 ≤ n) : ContinuousOn (fun x ↦ fderivWithin 𝕜 f s x) s :=
   ((contDiffOn_succ_iff_fderivWithin hs).1 (h.of_le hn)).2.continuousOn
 
 theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs : IsOpen s)
-    (hn : 1 ≤ n) : ContinuousOn (fun x => fderiv 𝕜 f x) s :=
+    (hn : 1 ≤ n) : ContinuousOn (fun x ↦ fderiv 𝕜 f x) s :=
   ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1 (h.of_le hn)).2.continuousOn
 
 /-- The following lemma will be removed when the definition of `C^ω` will be corrected. For now,
@@ -918,19 +918,19 @@ theorem contDiff_iff_ftaylorSeries :
 
 theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
-      (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
-        ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
+      (∀ m : ℕ, m ≤ n → Continuous fun x ↦ iteratedFDeriv 𝕜 m f x) ∧
+        ∀ m : ℕ, m < n → Differentiable 𝕜 fun x ↦ iteratedFDeriv 𝕜 m f x := by
   simp [contDiffOn_univ.symm, continuous_iff_continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : m ≤ n) (hf : ContDiff 𝕜 n f) :
-    Continuous fun x => iteratedFDeriv 𝕜 m f x :=
+    Continuous fun x ↦ iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp (hf.of_le hm)).1 m le_rfl
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
-    Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
+    Differentiable 𝕜 fun x ↦ iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp
     (hf.of_le (ENat.add_one_natCast_le_withTop_of_lt hm))).2 m (mod_cast lt_add_one m)
 
@@ -957,7 +957,7 @@ theorem contDiff_top_iff_fderiv :
   rw [contDiffOn_top_iff_fderivWithin uniqueDiffOn_univ]
 
 theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
-    Continuous fun x => fderiv 𝕜 f x :=
+    Continuous fun x ↦ fderiv 𝕜 f x :=
   (contDiff_succ_iff_fderiv.1 (h.of_le hn)).2.continuous
 
 /-- If a function is at least `C^1`, its bundled derivative (mapping `(x, v)` to `Df(x) v`) is

@@ -478,11 +478,11 @@ theorem prod_mono {s₁ s₂ : Subsemigroup M} {t₁ t₂ : Subsemigroup N} (hs 
 
 @[to_additive prod_top]
 theorem prod_top (s : Subsemigroup M) : s.prod (⊤ : Subsemigroup N) = s.comap (MulHom.fst M N) :=
-  ext fun x => by simp [mem_prod, MulHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MulHom.coe_fst]
 
 @[to_additive top_prod]
 theorem top_prod (s : Subsemigroup N) : (⊤ : Subsemigroup M).prod s = s.comap (MulHom.snd M N) :=
-  ext fun x => by simp [mem_prod, MulHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MulHom.coe_snd]
 
 @[to_additive (attr := simp) top_prod_top]
 theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ :=
@@ -622,7 +622,7 @@ def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h 
 /-- Restriction of a semigroup hom to its range interpreted as a subsemigroup. -/
 @[to_additive "Restriction of an `AddSemigroup` hom to its range interpreted as a subsemigroup."]
 def srangeRestrict {N} [Mul N] (f : M →ₙ* N) : M →ₙ* f.srange :=
-  (f.codRestrict f.srange) fun x => ⟨x, rfl⟩
+  (f.codRestrict f.srange) fun x ↦ ⟨x, rfl⟩
 
 @[to_additive (attr := simp)]
 theorem coe_srangeRestrict {N} [Mul N] (f : M →ₙ* N) (x : M) : (f.srangeRestrict x : N) = f x :=
@@ -687,7 +687,7 @@ theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subs
 /-- The semigroup hom associated to an inclusion of subsemigroups. -/
 @[to_additive "The `AddSemigroup` hom associated to an inclusion of subsemigroups."]
 def inclusion {S T : Subsemigroup M} (h : S ≤ T) : S →ₙ* T :=
-  (MulMemClass.subtype S).codRestrict _ fun x => h x.2
+  (MulMemClass.subtype S).codRestrict _ fun x ↦ h x.2
 
 @[to_additive (attr := simp)]
 theorem range_subtype (s : Subsemigroup M) : (MulMemClass.subtype s).srange = s :=
@@ -741,8 +741,8 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M �
   { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
     (e : M →ₙ* N).subsemigroupMap S,
     (e : M ≃ N).image S with
-    toFun := fun x => ⟨e x, _⟩
-    invFun := fun x => ⟨e.symm x, _⟩ }
+    toFun := fun x ↦ ⟨e x, _⟩
+    invFun := fun x ↦ ⟨e.symm x, _⟩ }
 
 end MulEquiv
 

@@ -224,13 +224,13 @@ theorem continuous_extend : Continuous γ.extend :=
 theorem _root_.Filter.Tendsto.path_extend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
     (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
-    Tendsto (↿fun x => (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
+    Tendsto (↿fun x ↦ (γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
 theorem _root_.ContinuousAt.path_extend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
     {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
-  hγ.IccExtend (fun x => γ x) hg
+  hγ.IccExtend (fun x ↦ γ x) hg
 
 @[simp]
 theorem extend_extends {a b : X} (γ : Path a b) {t : ℝ}
@@ -440,10 +440,10 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
   refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
   · change
-      Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
+      Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x ↦ 2 * x : I → ℝ))
     exact h₁'.comp (continuous_id.prodMap <| continuous_const.mul continuous_subtype_val)
   · change
-      Continuous ((fun p : ι × ℝ => (γ₂ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x - 1 : I → ℝ))
+      Continuous ((fun p : ι × ℝ => (γ₂ p.1).extend p.2) ∘ Prod.map id (fun x ↦ 2 * x - 1 : I → ℝ))
     exact
       h₂'.comp
         (continuous_id.prodMap <|
@@ -579,7 +579,7 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   mean the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/
 @[continuity]
 theorem truncate_continuous_family {a b : X} (γ : Path a b) :
-    Continuous (fun x => γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
+    Continuous (fun x ↦ γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
   γ.continuous_extend.comp
     (((continuous_subtype_val.comp (continuous_snd.comp continuous_snd)).max continuous_fst).min
       (continuous_fst.comp continuous_snd))
@@ -587,7 +587,7 @@ theorem truncate_continuous_family {a b : X} (γ : Path a b) :
 @[continuity]
 theorem truncate_const_continuous_family {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
-  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by fun_prop
+  have key : Continuous (fun x ↦ (t, x) : ℝ × I → ℝ × ℝ × I) := by fun_prop
   exact γ.truncate_continuous_family.comp key
 
 @[simp]

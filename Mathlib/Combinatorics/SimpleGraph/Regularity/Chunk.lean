@@ -490,7 +490,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
         product_subset_product star_subset_chunk star_subset_chunk
       have hε : 0 ≤ ε := by sz_positivity
       have sp : ∀ (a b : Finset (Finset α)), a.product b = a ×ˢ b := fun a b => rfl
-      have := add_div_le_sum_sq_div_card t (fun x => (G.edgeDensity x.1 x.2 : ℝ))
+      have := add_div_le_sum_sq_div_card t (fun x ↦ (G.edgeDensity x.1 x.2 : ℝ))
         ((G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25) (show 0 ≤ 3 / 4 * ε by linarith) ?_ ?_
       · simp_rw [sp, card_product, card_chunk (m_pos hPα).ne', ← mul_pow, cast_pow, mul_pow,
           div_pow, ← mul_assoc] at this

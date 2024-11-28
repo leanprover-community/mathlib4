@@ -719,7 +719,7 @@ def biproductBiproductIso {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
-  inv := biproduct.lift fun i => biproduct.lift fun x => biproduct.π _ (⟨i, x⟩ : Σ i, f i)
+  inv := biproduct.lift fun i => biproduct.lift fun x ↦ biproduct.π _ (⟨i, x⟩ : Σ i, f i)
 
 section πKernel
 

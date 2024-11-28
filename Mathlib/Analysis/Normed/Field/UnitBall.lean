@@ -155,7 +155,7 @@ theorem coe_pow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (
 /-- Monoid homomorphism from the unit sphere to the group of units. -/
 def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
   Units.liftRight (Submonoid.unitSphere 𝕜).subtype
-    (fun x => Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
+    (fun x ↦ Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
 
 @[simp]
 theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) :

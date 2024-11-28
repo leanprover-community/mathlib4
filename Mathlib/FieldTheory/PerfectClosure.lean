@@ -413,7 +413,7 @@ instance instReduced : IsReduced (PerfectClosure K p) where
 instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
   bijective_frobenius := by
     let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
-      liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
+      liftOn e (fun x ↦ mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
     refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
@@ -433,7 +433,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine fun e ↦ liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
+        refine fun e ↦ liftOn e (fun x ↦ (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
         rintro - - ⟨n, x⟩
         simp [f.map_frobenius]
       map_one' := f.map_one

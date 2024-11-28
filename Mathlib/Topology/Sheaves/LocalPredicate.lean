@@ -148,7 +148,7 @@ theorem PrelocalPredicate.sheafifyOf {T : X → Type v} {P : PrelocalPredicate T
 @[simps!]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type v) X where
   obj U := { f : ∀ x : U.unop , T x // P.pred f }
-  map {_ _} i f := ⟨fun x => f.1 (i.unop x), P.res i.unop f.1 f.2⟩
+  map {_ _} i f := ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
 

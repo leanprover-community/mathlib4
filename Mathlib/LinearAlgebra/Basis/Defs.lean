@@ -271,7 +271,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (hsmul : ∀ (c : R) (x : M), f (c • x) = c • f x) (f_eq : ∀ i, f (b i) = Finsupp.single i 1)
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
-    { toFun := fun x => f x i
+    { toFun := fun x ↦ f x i
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
@@ -646,9 +646,9 @@ section Singleton
 /-- `Basis.singleton ι R` is the basis sending the unique element of `ι` to `1 : R`. -/
 protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
-    { toFun := fun x => Finsupp.single default x
+    { toFun := fun x ↦ Finsupp.single default x
       invFun := fun f => f default
-      left_inv := fun x => by simp
+      left_inv := fun x ↦ by simp
       right_inv := fun f => Finsupp.unique_ext (by simp)
       map_add' := fun x y => by simp
       map_smul' := fun c x => by simp }
@@ -813,14 +813,14 @@ def equiv' (f : M → M') (g : M' → M) (hf : ∀ i, f (b i) ∈ range b') (hg 
           Exists.elim (hf i) fun i' hi' => by
             rw [LinearMap.comp_apply, b.constr_basis, Function.comp_apply, ← hi', b'.constr_basis,
               Function.comp_apply, hi', hgf, LinearMap.id_apply]
-      fun x => congr_arg (fun h : M →ₗ[R] M => h x) this
+      fun x ↦ congr_arg (fun h : M →ₗ[R] M => h x) this
     right_inv :=
       have : (constr (M' := M') b R (f ∘ b)).comp (constr (M' := M) b' R (g ∘ b')) = LinearMap.id :=
         b'.ext fun i =>
           Exists.elim (hg i) fun i' hi' => by
             rw [LinearMap.comp_apply, b'.constr_basis, Function.comp_apply, ← hi', b.constr_basis,
               Function.comp_apply, hi', hfg, LinearMap.id_apply]
-      fun x => congr_arg (fun h : M' →ₗ[R] M' => h x) this }
+      fun x ↦ congr_arg (fun h : M' →ₗ[R] M' => h x) this }
 
 @[simp]
 theorem equiv'_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι) :

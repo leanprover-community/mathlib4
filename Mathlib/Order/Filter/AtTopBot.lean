@@ -306,7 +306,7 @@ lemma atBot_basis_Iio [Nonempty α] [NoMinOrder α] : (@atBot α _).HasBasis (fu
 lemma atBot_basis_Iio' [NoMinOrder α] (a : α) : atBot.HasBasis (· < a) Iio :=
   atTop_basis_Ioi' (α := αᵒᵈ) a
 
-lemma atBot_basis' (a : α) : (@atBot α _).HasBasis (fun x => x ≤ a) Iic := atTop_basis' (α := αᵒᵈ) _
+lemma atBot_basis' (a : α) : (@atBot α _).HasBasis (fun x ↦ x ≤ a) Iic := atTop_basis' (α := αᵒᵈ) _
 
 variable [Nonempty α]
 
@@ -415,12 +415,12 @@ theorem tendsto_atBot (e : α ≃o β) : Tendsto e atBot atBot :=
 
 @[simp]
 theorem tendsto_atTop_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
-    Tendsto (fun x => e (f x)) l atTop ↔ Tendsto f l atTop := by
+    Tendsto (fun x ↦ e (f x)) l atTop ↔ Tendsto f l atTop := by
   rw [← e.comap_atTop, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
 theorem tendsto_atBot_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
-    Tendsto (fun x => e (f x)) l atBot ↔ Tendsto f l atBot :=
+    Tendsto (fun x ↦ e (f x)) l atBot ↔ Tendsto f l atBot :=
   e.dual.tendsto_atTop_iff
 
 end OrderIso
@@ -1128,22 +1128,22 @@ theorem atBot_Iic_eq [Preorder α] [IsDirected α (· ≥ ·)] (a : α) :
 
 theorem tendsto_Ioi_atTop [Preorder α] [IsDirected α (· ≤ ·)]
     {a : α} {f : β → Ioi a} {l : Filter β} :
-    Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by
+    Tendsto f l atTop ↔ Tendsto (fun x ↦ (f x : α)) l atTop := by
   rw [atTop_Ioi_eq, tendsto_comap_iff, Function.comp_def]
 
 theorem tendsto_Iio_atBot [Preorder α] [IsDirected α (· ≥ ·)]
     {a : α} {f : β → Iio a} {l : Filter β} :
-    Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l atBot :=
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ (f x : α)) l atBot :=
   tendsto_Ioi_atTop (α := αᵒᵈ)
 
 theorem tendsto_Ici_atTop [Preorder α] [IsDirected α (· ≤ ·)]
     {a : α} {f : β → Ici a} {l : Filter β} :
-    Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by
+    Tendsto f l atTop ↔ Tendsto (fun x ↦ (f x : α)) l atTop := by
   rw [atTop_Ici_eq, tendsto_comap_iff, Function.comp_def]
 
 theorem tendsto_Iic_atBot [Preorder α] [IsDirected α (· ≥ ·)]
     {a : α} {f : β → Iic a} {l : Filter β} :
-    Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l atBot :=
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ (f x : α)) l atBot :=
   tendsto_Ici_atTop (α := αᵒᵈ)
 
 @[simp]

@@ -112,12 +112,12 @@ instance partialOrder : PartialOrder (ENorm 𝕜 V) where
   le e₁ e₂ := ∀ x, e₁ x ≤ e₂ x
   le_refl _ _ := le_rfl
   le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
-  le_antisymm _ _ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
+  le_antisymm _ _ h₁₂ h₂₁ := ext fun x ↦ le_antisymm (h₁₂ x) (h₂₁ x)
 
 /-- The `ENorm` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENorm 𝕜 V) :=
-  ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
-      eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
+  ⟨{  toFun := fun x ↦ if x = 0 then 0 else ⊤
+      eq_zero' := fun x ↦ by simp only; split_ifs <;> simp [*]
       map_add_le' := fun x y => by
         simp only
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]
@@ -146,7 +146,7 @@ noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
     le := (· ≤ ·)
     lt := (· < ·)
     sup := fun e₁ e₂ =>
-      { toFun := fun x => max (e₁ x) (e₂ x)
+      { toFun := fun x ↦ max (e₁ x) (e₂ x)
         eq_zero' := fun _ h => e₁.eq_zero_iff.1 (ENNReal.max_eq_zero_iff.1 h).1
         map_add_le' := fun _ _ =>
           max_le (le_trans (e₁.map_add_le _ _) <| add_le_add (le_max_left _ _) (le_max_left _ _))
@@ -157,7 +157,7 @@ noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
     sup_le := fun _ _ _ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
 
 @[simp, norm_cast]
-theorem coe_max (e₁ e₂ : ENorm 𝕜 V) : ⇑(e₁ ⊔ e₂) = fun x => max (e₁ x) (e₂ x) :=
+theorem coe_max (e₁ e₂ : ENorm 𝕜 V) : ⇑(e₁ ⊔ e₂) = fun x ↦ max (e₁ x) (e₂ x) :=
   rfl
 
 @[norm_cast]
@@ -202,7 +202,7 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
 /-- Normed group instance on `e.finiteSubspace`. -/
 instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
   { e.metricSpace with
-    norm := fun x => (e x).toReal
+    norm := fun x ↦ (e x).toReal
     dist_eq := fun _ _ => rfl }
 
 theorem finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=

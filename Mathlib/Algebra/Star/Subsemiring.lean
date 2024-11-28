@@ -73,7 +73,7 @@ theorem coe_toSubsemiring (S : StarSubsemiring R) : (S.toSubsemiring : Set R) = 
 
 theorem toSubsemiring_injective :
     Function.Injective (toSubsemiring : StarSubsemiring R → Subsemiring R) := fun S T h =>
-  ext fun x => by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
+  ext fun x ↦ by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
 
 theorem toSubsemiring_inj {S U : StarSubsemiring R} : S.toSubsemiring = U.toSubsemiring ↔ S = U :=
   toSubsemiring_injective.eq_iff

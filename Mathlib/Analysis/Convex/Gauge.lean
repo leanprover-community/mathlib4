@@ -114,7 +114,7 @@ theorem gauge_nonneg (x : E) : 0 ≤ gauge s x :=
   Real.sInf_nonneg fun _ hx => hx.1.le
 
 theorem gauge_neg (symmetric : ∀ x ∈ s, -x ∈ s) (x : E) : gauge s (-x) = gauge s x := by
-  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x => ⟨fun h ↦ by simpa using symmetric _ h, symmetric x⟩
+  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x ↦ ⟨fun h ↦ by simpa using symmetric _ h, symmetric x⟩
   simp_rw [gauge_def', smul_neg, this]
 
 theorem gauge_neg_set_neg (x : E) : gauge (-s) (-x) = gauge s x := by

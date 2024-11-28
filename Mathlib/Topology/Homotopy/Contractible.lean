@@ -104,7 +104,7 @@ theorem hequiv [ContractibleSpace X] [ContractibleSpace Y] :
 
 instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   obtain ⟨p, ⟨h⟩⟩ := id_nullhomotopic X
-  have : ∀ x, Joined p x := fun x => ⟨(h.evalAt x).symm⟩
+  have : ∀ x, Joined p x := fun x ↦ ⟨(h.evalAt x).symm⟩
   rw [pathConnectedSpace_iff_eq]; use p; ext; tauto
 
 end ContractibleSpace

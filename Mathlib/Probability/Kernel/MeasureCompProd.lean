@@ -150,7 +150,7 @@ lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [Nor
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
     Integrable f (μ ⊗ₘ κ) ↔
       (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) (κ x)) ∧
-        Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂(κ x)) μ := by
+        Integrable (fun x ↦ ∫ y, ‖f (x, y)‖ ∂(κ x)) μ := by
   simp_rw [Measure.compProd, ProbabilityTheory.integrable_compProd_iff hf, Kernel.prodMkLeft_apply,
     Kernel.const_apply]
 

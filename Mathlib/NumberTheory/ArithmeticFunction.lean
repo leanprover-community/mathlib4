@@ -122,7 +122,7 @@ section One
 variable [One R]
 
 instance one : One (ArithmeticFunction R) :=
-  ⟨⟨fun x => ite (x = 1) 1 0, rfl⟩⟩
+  ⟨⟨fun x ↦ ite (x = 1) 1 0, rfl⟩⟩
 
 theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
   rfl
@@ -218,7 +218,7 @@ end AddMonoid
 instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
-    natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
+    natCast := fun n => ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
     natCast_zero := by ext; simp
     natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
 
@@ -391,7 +391,7 @@ section Zeta
 
 /-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
 def zeta : ArithmeticFunction ℕ :=
-  ⟨fun x => ite (x = 0) 0 1, rfl⟩
+  ⟨fun x ↦ ite (x = 0) 0 1, rfl⟩
 
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "ζ" => ArithmeticFunction.zeta
@@ -448,7 +448,7 @@ section Pmul
 
 /-- This is the pointwise product of `ArithmeticFunction`s. -/
 def pmul [MulZeroClass R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
-  ⟨fun x => f x * g x, by simp⟩
+  ⟨fun x ↦ f x * g x, by simp⟩
 
 @[simp]
 theorem pmul_apply [MulZeroClass R] {f g : ArithmeticFunction R} {x : ℕ} : f.pmul g x = f x * g x :=
@@ -1126,8 +1126,8 @@ end CommRing
 theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     (∀ n > 0, ∑ i ∈ n.divisors, f i = g n) ↔
       ∀ n > 0, ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
-  let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
-  let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
+  let f' : ArithmeticFunction R := ⟨fun x ↦ if x = 0 then 0 else f x, if_pos rfl⟩
+  let g' : ArithmeticFunction R := ⟨fun x ↦ if x = 0 then 0 else g x, if_pos rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
   · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'

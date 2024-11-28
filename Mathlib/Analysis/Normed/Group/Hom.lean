@@ -245,7 +245,7 @@ theorem opNorm_eq_of_bounds {M : ℝ} (M_nonneg : 0 ≤ M) (h_above : ∀ x, ‖
 
 theorem opNorm_le_of_lipschitz {f : NormedAddGroupHom V₁ V₂} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
+  f.opNorm_le_bound K.2 fun x ↦ by simpa only [dist_zero_right, map_zero] using hf.dist_le_mul x 0
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
 `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound given to the constructor
@@ -365,7 +365,7 @@ def id : NormedAddGroupHom V V :=
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
 space is non-trivial.) It means that one can not do better than an inequality in general. -/
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one fun x => by simp
+  opNorm_le_bound _ zero_le_one fun x ↦ by simp
 
 /-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
 (Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
@@ -438,7 +438,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
       map_add' := (r • f.toAddMonoidHom).map_add'
       bound' :=
         let ⟨b, hb⟩ := f.bound'
-        ⟨dist r 0 * b, fun x => by
+        ⟨dist r 0 * b, fun x ↦ by
           have := dist_smul_pair r (f x) (f 0)
           rw [map_zero, smul_zero, dist_zero_right, dist_zero_right] at this
           rw [mul_assoc]

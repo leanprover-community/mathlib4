@@ -32,7 +32,7 @@ theorem uniformity :
   rfl
 
 theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 𝕜} :
-    UniformContinuous f ↔ ∀ i j, UniformContinuous fun x => f x i j := by
+    UniformContinuous f ↔ ∀ i j, UniformContinuous fun x ↦ f x i j := by
   simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_iInf, Filter.tendsto_comap_iff]
   apply Iff.intro <;> intro a <;> apply a
 

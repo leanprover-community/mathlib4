@@ -162,7 +162,7 @@ def M.pathDestRight {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a �
 /-- Destructor for M-type of `P` -/
 def M.dest' {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last.M}
     (h : PFunctor.M.dest x = ⟨a, f⟩) (f' : M.Path P x ⟹ α) : P (α.append1 (P.M α)) :=
-  ⟨a, splitFun (M.pathDestLeft P h f') fun x => ⟨f x, M.pathDestRight P h f' x⟩⟩
+  ⟨a, splitFun (M.pathDestLeft P h f') fun x ↦ ⟨f x, M.pathDestRight P h f' x⟩⟩
 
 /-- Destructor for M-types -/
 def M.dest {α : TypeVec n} (x : P.M α) : P (α ::: P.M α) :=
@@ -287,7 +287,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     all_goals aesop
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
-    M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
+    M.dest P (g <$$> x) = (appendFun g fun x ↦ g <$$> x) <$$> M.dest P x := by
   cases' x with a f
   rw [map_eq]
   conv =>

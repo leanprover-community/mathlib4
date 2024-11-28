@@ -90,7 +90,7 @@ homomorphism `G →* N`. -/
       "The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group
       homomorphism `G →+ N`."]
 def rangeRestrict (f : G →* N) : G →* f.range :=
-  codRestrict f _ fun x => ⟨x, rfl⟩
+  codRestrict f _ fun x ↦ ⟨x, rfl⟩
 
 @[to_additive (attr := simp)]
 theorem coe_rangeRestrict (f : G →* N) (g : G) : (f.rangeRestrict g : N) = f g :=
@@ -138,7 +138,7 @@ theorem range_eq_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.S
 
 @[to_additive (attr := simp)]
 theorem range_one : (1 : G →* N).range = ⊥ :=
-  SetLike.ext fun x => by simpa using @comm _ (· = ·) _ 1 x
+  SetLike.ext fun x ↦ by simpa using @comm _ (· = ·) _ 1 x
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.range_subtype (H : Subgroup G) : H.subtype.range = H :=
@@ -155,7 +155,7 @@ theorem _root_.Subgroup.inclusion_range {H K : Subgroup G} (h_le : H ≤ K) :
 @[to_additive]
 theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] {K : Subgroup G₂}
     (f : G₁ →* G₂) (h : f.range ≤ K) :
-    f.range.subgroupOf K = (f.codRestrict K fun x => h ⟨x, rfl⟩).range := by
+    f.range.subgroupOf K = (f.codRestrict K fun x ↦ h ⟨x, rfl⟩).range := by
   ext k
   refine exists_congr ?_
   simp [Subtype.ext_iff]
@@ -186,7 +186,7 @@ theorem ofLeftInverse_symm_apply {f : G →* N} {g : N →* G} (h : Function.Lef
 @[to_additive "The range of an injective additive group homomorphism is isomorphic to its
 domain."]
 noncomputable def ofInjective {f : G →* N} (hf : Function.Injective f) : G ≃* f.range :=
-  MulEquiv.ofBijective (f.codRestrict f.range fun x => ⟨x, rfl⟩)
+  MulEquiv.ofBijective (f.codRestrict f.range fun x ↦ ⟨x, rfl⟩)
     ⟨fun _ _ h => hf (Subtype.ext_iff.mp h), by
       rintro ⟨x, y, rfl⟩
       exact ⟨y, rfl⟩⟩
@@ -301,7 +301,7 @@ theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
-  ⟨fun h ↦ ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
+  ⟨fun h ↦ ext fun x ↦ h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=

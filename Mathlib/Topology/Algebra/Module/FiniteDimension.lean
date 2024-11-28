@@ -114,7 +114,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       @nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0 =
           map id (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) :=
         map_id.symm
-      _ = map (fun x => id x • (1 : 𝕜)) (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) := by
+      _ = map (fun x ↦ id x • (1 : 𝕜)) (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) := by
         conv_rhs =>
           congr
           ext
@@ -322,7 +322,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
   obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf)
-  refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
+  refine IsOpenMap.of_sections fun x ↦ ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
           continuous_const).continuousAt

@@ -68,7 +68,7 @@ theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f 
   rw [fold, fold, map_congr rfl H]
 
 theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :
-    (s.fold op (b₁ * b₂) fun x => f x * g x) = s.fold op b₁ f * s.fold op b₂ g := by
+    (s.fold op (b₁ * b₂) fun x ↦ f x * g x) = s.fold op b₁ f * s.fold op b₂ g := by
   simp only [fold, fold_distrib]
 
 theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b c) :
@@ -83,7 +83,7 @@ theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b
 
 theorem fold_hom {op' : γ → γ → γ} [Std.Commutative op'] [Std.Associative op'] {m : β → γ}
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) :
-    (s.fold op' (m b) fun x => m (f x)) = m (s.fold op b f) := by
+    (s.fold op' (m b) fun x ↦ m (f x)) = m (s.fold op b f) := by
   rw [fold, fold, ← Multiset.fold_hom op hm, Multiset.map_map]
   simp only [Function.comp_apply]
 

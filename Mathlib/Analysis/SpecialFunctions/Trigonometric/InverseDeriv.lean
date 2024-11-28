@@ -91,7 +91,7 @@ theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x 
     fun h ↦ (hasDerivAt_arcsin h.1 h.2).differentiableAt⟩
 
 @[simp]
-theorem deriv_arcsin : deriv arcsin = fun x => 1 / √(1 - x ^ 2) := by
+theorem deriv_arcsin : deriv arcsin = fun x ↦ 1 / √(1 - x ^ 2) := by
   funext x
   by_cases h : x ≠ -1 ∧ x ≠ 1
   · exact (hasDerivAt_arcsin h.1 h.2).deriv
@@ -149,8 +149,8 @@ theorem differentiableAt_arccos {x : ℝ} : DifferentiableAt ℝ arccos x ↔ x 
   (differentiableAt_const _).sub_iff_right.trans differentiableAt_arcsin
 
 @[simp]
-theorem deriv_arccos : deriv arccos = fun x => -(1 / √(1 - x ^ 2)) :=
-  funext fun x => (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
+theorem deriv_arccos : deriv arccos = fun x ↦ -(1 / √(1 - x ^ 2)) :=
+  funext fun x ↦ (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
 
 theorem differentiableOn_arccos : DifferentiableOn ℝ arccos {-1, 1}ᶜ :=
   differentiableOn_arcsin.const_sub _

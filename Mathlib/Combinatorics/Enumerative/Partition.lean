@@ -115,8 +115,8 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 `Sym τ n` corresponding to a given partition. -/
 def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
     {x : Sym σ n // ofSym x = μ} ≃ {x : Sym τ n // ofSym x = μ} where
-  toFun := fun x => ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
-  invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
+  toFun := fun x ↦ ⟨Sym.equivCongr e x, by simp [ofSym_map, x.2]⟩
+  invFun := fun x ↦ ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
   left_inv := by intro x; simp
   right_inv := by intro x; simp
 

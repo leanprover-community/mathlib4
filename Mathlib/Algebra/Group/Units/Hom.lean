@@ -191,7 +191,7 @@ to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
   "If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
   lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version."]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
-  (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
+  (Units.liftRight f fun x ↦ (hf x).unit) fun _ => rfl
 
 @[to_additive]
 theorem coe_liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x) :

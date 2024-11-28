@@ -291,7 +291,7 @@ def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   right_inv J := SetLike.ext fun x ↦ mem_span_iff.trans
     ⟨fun h ↦ mem_mk' _ _ _ _ _ _ _ |>.1 <| h (mk'
       J J.zero_mem J.add_mem J.neg_mem (J.mul_mem_left _) (J.mul_mem_right _))
-      (fun x => by simp), by aesop⟩
+      (fun x ↦ by simp), by aesop⟩
 
 end CommRing
 

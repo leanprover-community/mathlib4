@@ -117,7 +117,7 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
   rw [polar_eq_iInter]
-  refine isClosed_iInter fun x => isClosed_iInter fun _ => ?_
+  refine isClosed_iInter fun x ↦ isClosed_iInter fun _ => ?_
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 
 theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
@@ -139,7 +139,7 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
-  refine ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => ?_⟩
+  refine ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x ↦ ?_⟩
   refine norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => ?_)
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc

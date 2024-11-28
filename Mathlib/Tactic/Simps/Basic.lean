@@ -1186,7 +1186,7 @@ def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   | `(attr| simps $[!%$bang]? $[?%$trc]? $c:optConfig $[$ids]*) => do
     let cfg ← liftCommandElabM <| elabSimpsConfig c
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
-    let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
+    let ids := ids.map fun x ↦ (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
     simpsTac stx nm cfg ids.toList trc.isSome
   | _ => throwUnsupportedSyntax
 

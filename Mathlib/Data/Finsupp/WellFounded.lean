@@ -41,7 +41,7 @@ theorem Lex.acc (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s) (x : α →�
 
 theorem Lex.wellFounded (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
     (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (Finsupp.Lex r s) :=
-  ⟨fun x => Lex.acc hbot hs x fun a _ => hr.apply a⟩
+  ⟨fun x ↦ Lex.acc hbot hs x fun a _ => hr.apply a⟩
 
 theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
     [IsTrichotomous α r] (hr : WellFounded (Function.swap r)) : WellFounded (Finsupp.Lex r s) :=

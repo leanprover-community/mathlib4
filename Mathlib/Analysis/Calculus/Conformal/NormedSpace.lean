@@ -106,7 +106,7 @@ section GlobalConformality
 def Conformal (f : X → Y) :=
   ∀ x : X, ConformalAt f x
 
-theorem conformal_id : Conformal (id : X → X) := fun x => conformalAt_id x
+theorem conformal_id : Conformal (id : X → X) := fun x ↦ conformalAt_id x
 
 theorem conformal_const_smul {c : ℝ} (h : c ≠ 0) : Conformal fun x : X => c • x := fun x =>
   conformalAt_const_smul h x
@@ -120,10 +120,10 @@ theorem differentiable {f : X → Y} (h : Conformal f) : Differentiable ℝ f :=
   (h x).differentiableAt
 
 theorem comp {f : X → Y} {g : Y → Z} (hf : Conformal f) (hg : Conformal g) : Conformal (g ∘ f) :=
-  fun x => (hg <| f x).comp x (hf x)
+  fun x ↦ (hg <| f x).comp x (hf x)
 
 theorem const_smul {f : X → Y} (hf : Conformal f) {c : ℝ} (hc : c ≠ 0) : Conformal (c • f) :=
-  fun x => (hf x).const_smul hc
+  fun x ↦ (hf x).const_smul hc
 
 end Conformal
 

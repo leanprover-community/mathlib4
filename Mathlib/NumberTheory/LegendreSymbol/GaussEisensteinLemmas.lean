@@ -77,7 +77,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ} (hap : (a 
           (∏ x ∈ Ico 1 (p / 2).succ, if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) =
           ∏ x ∈ Ico 1 (p / 2).succ with ¬(a * x.cast : ZMod p).val ≤ p / 2, -1 :=
         prod_bij_ne_one (fun x _ _ => x)
-          (fun x => by split_ifs <;> (dsimp; simp_all))
+          (fun x ↦ by split_ifs <;> (dsimp; simp_all))
           (fun _ _ _ _ _ _ => id) (fun b h _ => ⟨b, by simp_all [-not_le]⟩)
           (by intros; split_ifs at * <;> simp_all)
       rw [prod_mul_distrib, this, prod_const]
@@ -151,7 +151,7 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
   calc
     a / b = #(Ico 1 (a / b).succ) := by simp
     _ = #{x ∈ Ico 1 c.succ | x * b ≤ a} :=
-      congr_arg _ <| Finset.ext fun x => by
+      congr_arg _ <| Finset.ext fun x ↦ by
         have : x * b ≤ a → x ≤ c := fun h ↦ le_trans (by rwa [le_div_iff_mul_le hb0]) hc
         simp [Nat.lt_succ_iff, le_div_iff_mul_le hb0]; tauto
 
@@ -206,7 +206,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q} ∪
         {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} =
       Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ :=
-    Finset.ext fun x => by
+    Finset.ext fun x ↦ by
       have := le_total (x.2 * p) (x.1 * q)
       simp only [mem_union, mem_filter, mem_Ico, mem_product]
       tauto

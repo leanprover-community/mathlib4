@@ -61,7 +61,7 @@ open Polynomial
 /-- The cardinality of a field is at most `n` times the cardinality of the image of a degree `n`
   polynomial -/
 theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 0 < p.degree) :
-    Fintype.card R ≤ natDegree p * #(univ.image fun x => eval x p) :=
+    Fintype.card R ≤ natDegree p * #(univ.image fun x ↦ eval x p) :=
   Finset.card_le_mul_card_image _ _ (fun a _ =>
     calc
       _ = #(p - C a).roots.toFinset :=
@@ -142,7 +142,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   -- ... and leaves G unchanged
   have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
   -- Therefore the sum of x over a G is the sum of a x over G
-  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
+  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x ↦ ((x : Kˣ) : K)
   -- ... and the former is the sum of x over G.
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
   simp only [h_unchanged, mulLeftEmbedding_apply, Subgroup.coe_mul, Units.val_mul, ← mul_sum,
@@ -270,7 +270,7 @@ is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
 theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
-    { toFun := fun x => x ^ i
+    { toFun := fun x ↦ x ^ i
       map_one' := by simp
       map_mul' := by intros; simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance

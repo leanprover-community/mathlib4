@@ -89,7 +89,7 @@ theorem edist_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a b c
 
 @[to_additive]
 theorem isometry_mul_right [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M] (a : M) :
-    Isometry fun x => x * a :=
+    Isometry fun x ↦ x * a :=
   isometry_smul M (MulOpposite.op a)
 
 @[to_additive (attr := simp)]
@@ -220,7 +220,7 @@ theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_ball (MulOpposite.op a) b r
 
@@ -231,7 +231,7 @@ theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ≥0�
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_closedBall [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_closedBall (MulOpposite.op a) b r
 
@@ -349,7 +349,7 @@ theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ) :
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_ball (MulOpposite.op a) b r
 
@@ -360,7 +360,7 @@ theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ) :
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_closedBall [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_closedBall (MulOpposite.op a) b r
 

@@ -436,11 +436,11 @@ lemma app_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : Cᵒᵖ)
 /-- Backward direction of the unit. -/
 def unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     F.obj (op X) → YonedaCollection (restrictedYonedaObj η) X :=
-  fun x => YonedaCollection.mk (yonedaEquiv.symm (η.app _ x)) ⟨x, ⟨by aesop_cat⟩⟩
+  fun x ↦ YonedaCollection.mk (yonedaEquiv.symm (η.app _ x)) ⟨x, ⟨by aesop_cat⟩⟩
 
 lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitForward η X ∘ unitBackward η X = id :=
-  funext fun x => by simp [unitForward, unitBackward]
+  funext fun x ↦ by simp [unitForward, unitBackward]
 
 lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitBackward η X ∘ unitForward η X = id := by
@@ -488,7 +488,7 @@ lemma OverArrows.yonedaCollectionPresheafToA_val_fst (s : yoneda.obj X ⟶ A)
 /-- Forward direction of the counit. -/
 def counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : CostructuredArrow yoneda A) :
     F.obj (op s) → OverArrows (yonedaCollectionPresheafToA F) s.hom :=
-  fun x => ⟨YonedaCollection.mk s.hom x, ⟨by simp [YonedaCollection.yonedaEquivFst_eq]⟩⟩
+  fun x ↦ ⟨YonedaCollection.mk s.hom x, ⟨by simp [YonedaCollection.yonedaEquivFst_eq]⟩⟩
 
 lemma counitForward_val_fst (s : CostructuredArrow yoneda A) (x : F.obj (op s)) :
     (counitForward F s x).val.fst = s.hom := by
@@ -527,7 +527,7 @@ lemma counitForward_counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ T
 
 lemma counitBackward_counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) : counitBackward F s ∘ counitForward F s = id :=
-  funext fun x => by simp [counitBackward]
+  funext fun x ↦ by simp [counitBackward]
 
 /-- Intermediate stage of assembling the counit. -/
 @[simps]

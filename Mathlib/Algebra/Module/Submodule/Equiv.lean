@@ -95,7 +95,7 @@ variable (p)
 /-- The top submodule of `M` is linearly equivalent to `M`. -/
 def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
   { p.subtype with
-    invFun := fun x => ⟨x, h.symm ▸ trivial⟩
+    invFun := fun x ↦ ⟨x, h.symm ▸ trivial⟩
     left_inv := fun _ => rfl
     right_inv := fun _ => rfl }
 

@@ -370,7 +370,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
-  prop' : ∀ t, P ⟨fun x => toFun (t, x),
+  prop' : ∀ t, P ⟨fun x ↦ toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
 
 namespace HomotopyWith

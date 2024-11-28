@@ -63,13 +63,13 @@ theorem uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2 
 
 @[to_additive]
 theorem UniformContinuous.div [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun x => f x / g x :=
+    (hg : UniformContinuous g) : UniformContinuous fun x ↦ f x / g x :=
   uniformContinuous_div.comp (hf.prod_mk hg)
 
 @[to_additive]
 theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
-    UniformContinuous fun x => (f x)⁻¹ := by
-  have : UniformContinuous fun x => 1 / f x := uniformContinuous_const.div hf
+    UniformContinuous fun x ↦ (f x)⁻¹ := by
+  have : UniformContinuous fun x ↦ 1 / f x := uniformContinuous_const.div hf
   simp_all
 
 @[to_additive]
@@ -78,8 +78,8 @@ theorem uniformContinuous_inv : UniformContinuous fun x : α => x⁻¹ :=
 
 @[to_additive]
 theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun x => f x * g x := by
-  have : UniformContinuous fun x => f x / (g x)⁻¹ := hf.div hg.inv
+    (hg : UniformContinuous g) : UniformContinuous fun x ↦ f x * g x := by
+  have : UniformContinuous fun x ↦ f x / (g x)⁻¹ := hf.div hg.inv
   simp_all
 
 @[to_additive]
@@ -115,7 +115,7 @@ theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b
 
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
-    ∀ n : ℕ, UniformContinuous fun x => f x ^ n
+    ∀ n : ℕ, UniformContinuous fun x ↦ f x ^ n
   | 0 => by
     simp_rw [pow_zero]
     exact uniformContinuous_const
@@ -129,7 +129,7 @@ theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => 
 
 @[to_additive UniformContinuous.const_zsmul]
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
-    ∀ n : ℤ, UniformContinuous fun x => f x ^ n
+    ∀ n : ℤ, UniformContinuous fun x ↦ f x ^ n
   | (n : ℕ) => by
     simp_rw [zpow_natCast]
     exact hf.pow_const _

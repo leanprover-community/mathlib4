@@ -541,7 +541,7 @@ theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
   BooleanAlgebra.himp_eq x y
 
 instance (priority := 100) BooleanAlgebra.toComplementedLattice : ComplementedLattice α :=
-  ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
+  ⟨fun x ↦ ⟨xᶜ, isCompl_compl⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :

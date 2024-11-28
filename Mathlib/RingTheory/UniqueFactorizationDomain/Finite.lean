@@ -33,7 +33,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
     Fintype.ofFinset
       (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
-      fun x => ?_
+      fun x ↦ ?_
   simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true,
     Multiset.mem_toFinset, Multiset.mem_powerset, exists_eq_right, Multiset.mem_map]
   constructor

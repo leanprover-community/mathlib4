@@ -45,7 +45,7 @@ theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFins
 @[simp]
 theorem coe_piFinset (t : ∀ a, Finset (δ a)) :
     (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a ↦ t a :=
-  Set.ext fun x => by
+  Set.ext fun x ↦ by
     rw [Set.mem_univ_pi]
     exact Fintype.mem_piFinset
 

@@ -46,7 +46,7 @@ variable [∀ α, MvQPF <| F α]
 
 /-- polynomial functor representation of a dependent sum -/
 protected def P : MvPFunctor n :=
-  ⟨Σ a, (P (F a)).A, fun x => (P (F x.1)).B x.2⟩
+  ⟨Σ a, (P (F a)).A, fun x ↦ (P (F x.1)).B x.2⟩
 
 /-- abstraction function for dependent sums -/
 protected def abs ⦃α⦄ : Sigma.P F α → Sigma F α
@@ -80,7 +80,7 @@ protected def P : MvPFunctor n :=
 
 /-- abstraction function for dependent products -/
 protected def abs ⦃α⦄ : Pi.P F α → Pi F α
-  | ⟨a, f⟩ => fun x => MvQPF.abs ⟨a x, fun i y => f i ⟨_, y⟩⟩
+  | ⟨a, f⟩ => fun x ↦ MvQPF.abs ⟨a x, fun i y => f i ⟨_, y⟩⟩
 
 /-- representation function for dependent products -/
 protected def repr ⦃α⦄ : Pi F α → Pi.P F α

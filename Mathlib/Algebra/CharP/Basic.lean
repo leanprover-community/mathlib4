@@ -104,7 +104,7 @@ lemma Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nont
   ⟨fun h =>
     (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
       (Ring.two_ne_zero hR),
-    fun h ↦ ((congr_arg (fun x => -x) h).trans neg_zero).trans h.symm⟩
+    fun h ↦ ((congr_arg (fun x ↦ -x) h).trans neg_zero).trans h.symm⟩
 
 end
 

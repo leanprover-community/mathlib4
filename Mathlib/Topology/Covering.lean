@@ -194,10 +194,10 @@ variable {f}
 
 protected theorem IsFiberBundle.isCoveringMap {F : Type*} [TopologicalSpace F] [DiscreteTopology F]
     (hf : ∀ x : X, ∃ e : Trivialization F f, x ∈ e.baseSet) : IsCoveringMap f :=
-  IsCoveringMap.mk f (fun _ => F) (fun x => Classical.choose (hf x)) fun x =>
+  IsCoveringMap.mk f (fun _ => F) (fun x ↦ Classical.choose (hf x)) fun x =>
     Classical.choose_spec (hf x)
 
 protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [TopologicalSpace F]
     [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
     [FiberBundle F E] : IsCoveringMap (π F E) :=
-  IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
+  IsFiberBundle.isCoveringMap fun x ↦ ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩

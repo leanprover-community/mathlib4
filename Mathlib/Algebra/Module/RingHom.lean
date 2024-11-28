@@ -46,7 +46,7 @@ abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoi
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
-    zero_smul := fun x => by rw [← f.map_zero, hsmul, zero_smul]
+    zero_smul := fun x ↦ by rw [← f.map_zero, hsmul, zero_smul]
     add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 
 variable {R} (M)

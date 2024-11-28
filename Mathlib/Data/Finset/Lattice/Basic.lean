@@ -165,7 +165,7 @@ theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) 
   ext fun _ => by simp only [mem_union, or_left_comm]
 
 theorem union_right_comm (s t u : Finset α) : s ∪ t ∪ u = s ∪ u ∪ t :=
-  ext fun x => by simp only [mem_union, or_assoc, @or_comm (x ∈ t)]
+  ext fun x ↦ by simp only [mem_union, or_assoc, @or_comm (x ∈ t)]
 
 theorem union_self (s : Finset α) : s ∪ s = s :=
   union_idempotent s

@@ -230,7 +230,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       · rintro x ⟨hx, _⟩ y ⟨hy, _⟩
         apply hU <;> assumption
     rcases this with ⟨V', V'_in, zeroV', hV'⟩
-    have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ := by
+    have nhds_right : (fun x ↦ x * x₀) '' V' ∈ 𝓝 x₀ := by
       have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, mul_inv_cancel₀ h, mul_one]

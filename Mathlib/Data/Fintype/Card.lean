@@ -543,7 +543,7 @@ theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
 theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
-  refine exists_congr fun x => ?_
+  refine exists_congr fun x ↦ ?_
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
 

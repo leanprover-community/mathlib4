@@ -127,7 +127,7 @@ theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
 
 @[simp]
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a :=
-  ext fun x => by
+  ext fun x ↦ by
     simp +contextual only [mem_erase, mem_insert, and_congr_right_iff,
       false_or, iff_self, imp_true_iff]
 
@@ -136,7 +136,7 @@ theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s)
 
 theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     erase (insert a s) b = insert a (erase s b) :=
-  ext fun x => by
+  ext fun x ↦ by
     have : x ≠ b ∧ x = a ↔ x = a := and_iff_right_of_imp fun hx => hx.symm ▸ h
     simp only [mem_erase, mem_insert, and_or_left, this]
 
@@ -145,7 +145,7 @@ theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b
   simp only [cons_eq_insert, erase_insert_of_ne hb]
 
 @[simp] theorem insert_erase (h : a ∈ s) : insert a (erase s a) = s :=
-  ext fun x => by
+  ext fun x ↦ by
     simp only [mem_insert, mem_erase, or_and_left, dec_em, true_and]
     apply or_iff_right_of_imp
     rintro rfl
@@ -177,7 +177,7 @@ theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ erase s a ⊆ t := by
   simp only [subset_iff, or_iff_not_imp_left, mem_erase, mem_insert, and_imp]
-  exact forall_congr' fun x => forall_swap
+  exact forall_congr' fun x ↦ forall_swap
 
 theorem erase_insert_subset (a : α) (s : Finset α) : erase (insert a s) a ⊆ s :=
   subset_insert_iff.1 <| Subset.rfl
@@ -378,8 +378,8 @@ variable [DecidableEq α]
 theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.filter p ∪ s₂.filter p :=
   ext fun _ => by simp only [mem_filter, mem_union, or_and_right]
 
-theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x :=
-  ext fun x => by simp [mem_filter, mem_union, ← and_or_left]
+theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x ↦ p x ∨ q x :=
+  ext fun x ↦ by simp [mem_filter, mem_union, ← and_or_left]
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
     (s.filter fun i => i ∈ t) = s ∩ t :=

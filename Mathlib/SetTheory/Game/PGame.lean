@@ -591,7 +591,7 @@ private theorem le_trans_aux {x y z : PGame}
 
 instance : Preorder PGame :=
   { PGame.le with
-    le_refl := fun x => by
+    le_refl := fun x ↦ by
       induction x with | mk _ _ _ _ IHl IHr => _
       exact
         le_of_forall_lf (fun i => lf_of_le_moveLeft (IHl i)) fun i => lf_of_moveRight_le (IHr i)
@@ -1244,7 +1244,7 @@ theorem neg_def {xl xr xL xR} : -mk xl xr xL xR = mk xr xl (fun j => -xR j) fun 
 
 instance : InvolutiveNeg PGame :=
   { inferInstanceAs (Neg PGame) with
-    neg_neg := fun x => by
+    neg_neg := fun x ↦ by
       induction' x with xl xr xL xR ihL ihR
       simp_rw [neg_def, ihL, ihR] }
 
@@ -1256,7 +1256,7 @@ instance : NegZeroClass PGame :=
 
 @[simp]
 theorem neg_ofLists (L R : List PGame) :
-    -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
+    -ofLists L R = ofLists (R.map fun x ↦ -x) (L.map fun x ↦ -x) := by
   simp only [ofLists, neg_def, List.getElem_map, mk.injEq, List.length_map, true_and]
   constructor
   all_goals

@@ -180,7 +180,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
         finiteIndex_of_leftCoset_cover_const hcovers'⟩
     -- Otherwise, by the induction hypothesis, one of the subgroups `H k ≠ H j` has finite index.
     have hn' : (Finset.univ.image K).card < n := hn ▸ by
-      refine ((Finset.card_le_card fun x => ?_).trans_lt <|
+      refine ((Finset.card_le_card fun x ↦ ?_).trans_lt <|
         Finset.card_erase_lt_of_mem (Finset.mem_image_of_mem H hj))
       rw [mem_image_univ_iff_mem_range, Set.mem_range]
       exact fun ⟨k, hk⟩ => hk ▸ hK' k

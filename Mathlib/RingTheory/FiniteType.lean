@@ -394,7 +394,7 @@ theorem mem_closure_of_mem_span_closure [Nontrivial R] {m : M} {S : Set M}
   let S' := @Submonoid.closure (Multiplicative M) Multiplicative.mulOneClass S
   have h' : Submonoid.map (of R M) S' = Submonoid.closure ((fun x : M => (of R M) x) '' S) :=
     MonoidHom.map_mclosure _ _
-  rw [Set.image_congr' (show ∀ x, of' R M x = of R M x from fun x => of'_eq_of x), ← h'] at h
+  rw [Set.image_congr' (show ∀ x, of' R M x = of R M x from fun x ↦ of'_eq_of x), ← h'] at h
   simpa using of'_mem_span.1 h
 
 end Ring

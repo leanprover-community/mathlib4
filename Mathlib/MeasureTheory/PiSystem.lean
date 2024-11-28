@@ -512,7 +512,7 @@ namespace DynkinSystem
 @[ext]
 theorem ext : ∀ {d₁ d₂ : DynkinSystem α}, (∀ s : Set α, d₁.Has s ↔ d₂.Has s) → d₁ = d₂
   | ⟨s₁, _, _, _⟩, ⟨s₂, _, _, _⟩, h => by
-    have : s₁ = s₂ := funext fun x => propext <| h x
+    have : s₁ = s₂ := funext fun x ↦ propext <| h x
     subst this
     rfl
 
@@ -616,7 +616,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
   has_empty := by simp [d.has_empty]
   has_compl {t} hts := by
     beta_reduce
-    have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
+    have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x ↦ by by_cases h : x ∈ s <;> simp [h]
     rw [this]
     exact
       d.has_diff (d.has_compl hts) (d.has_compl h)

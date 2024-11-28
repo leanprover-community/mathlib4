@@ -198,25 +198,25 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h]; simp [ht _ h]]
 
 /-- If sets `s` and `t` are disjoint, then `s ∪ t` is equivalent to `s ⊕ t`. -/
-protected def union {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t) :
+protected def union {α} {s t : Set α} [DecidablePred fun x ↦ x ∈ s] (H : Disjoint s t) :
     (s ∪ t : Set α) ≃ s ⊕ t :=
-  Set.union' (fun x => x ∈ s) (fun _ => id) fun _ xt xs => Set.disjoint_left.mp H xs xt
+  Set.union' (fun x ↦ x ∈ s) (fun _ => id) fun _ xt xs => Set.disjoint_left.mp H xs xt
 
-theorem union_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
+theorem union_apply_left {α} {s t : Set α} [DecidablePred fun x ↦ x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ s) : Equiv.Set.union H a = Sum.inl ⟨a, ha⟩ :=
   dif_pos ha
 
-theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
+theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x ↦ x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ t) : Equiv.Set.union H a = Sum.inr ⟨a, ha⟩ :=
   dif_neg fun h ↦ Set.disjoint_left.mp H h ha
 
 @[simp]
-theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
+theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x ↦ x ∈ s] (H : Disjoint s t)
     (a : s) : (Equiv.Set.union H).symm (Sum.inl a) = ⟨a, by simp⟩ :=
   rfl
 
 @[simp]
-theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
+theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x ↦ x ∈ s] (H : Disjoint s t)
     (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, by simp⟩ :=
   rfl
 
@@ -369,7 +369,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
         _ ≃ t ⊕ (tᶜ : Set β) := e₀.sumCongr e₁
         _ ≃ β := Set.sumCompl t
         )
-      fun x => by
+      fun x ↦ by
       simp only [Sum.map_inl, trans_apply, sumCongr_apply, Set.sumCompl_apply_inl,
         Set.sumCompl_symm_apply, Trans.trans]
   left_inv e := by
@@ -380,7 +380,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
     · simp only [Set.sumCompl_symm_apply_of_not_mem hx, Sum.map_inr, subtypeEquiv_apply,
         Set.sumCompl_apply_inr, trans_apply, sumCongr_apply, Subtype.coe_mk, Trans.trans]
   right_inv e :=
-    Equiv.ext fun x => by
+    Equiv.ext fun x ↦ by
       simp only [Sum.map_inr, subtypeEquiv_apply, Set.sumCompl_apply_inr, Function.comp_apply,
         sumCongr_apply, Equiv.coe_trans, Subtype.coe_eta, Subtype.coe_mk, Trans.trans,
         Set.sumCompl_symm_apply_compl]
@@ -423,7 +423,7 @@ protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Inj
   (Equiv.symm_apply_eq _).2 rfl
 
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
-    (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
+    (fun x ↦ (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
   ext ⟨b, a, has, rfl⟩
   simp [hf.eq_iff]
 
@@ -540,7 +540,7 @@ theorem coe_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
 @[simp]
 theorem self_comp_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
     f ∘ (ofInjective f hf).symm = Subtype.val :=
-  funext fun x => apply_ofInjective_symm hf x
+  funext fun x ↦ apply_ofInjective_symm hf x
 
 theorem ofLeftInverse_eq_ofInjective {α β : Type*} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :

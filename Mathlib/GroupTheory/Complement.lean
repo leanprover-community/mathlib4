@@ -73,14 +73,14 @@ theorem IsComplement.existsUnique (h : IsComplement S T) (g : G) :
 @[to_additive]
 theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
   let ϕ : H × K ≃ K × H :=
-    Equiv.mk (fun x => ⟨x.2⁻¹, x.1⁻¹⟩) (fun x => ⟨x.2⁻¹, x.1⁻¹⟩)
-      (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
+    Equiv.mk (fun x ↦ ⟨x.2⁻¹, x.1⁻¹⟩) (fun x ↦ ⟨x.2⁻¹, x.1⁻¹⟩)
+      (fun x ↦ Prod.ext (inv_inv _) (inv_inv _)) fun x ↦ Prod.ext (inv_inv _) (inv_inv _)
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
   suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
     rw [isComplement'_def, IsComplement, ← Equiv.bijective_comp ϕ]
     apply (congr_arg Function.Bijective hf).mp -- Porting note: This was a `rw` in mathlib3
     rwa [ψ.comp_bijective]
-  exact funext fun x => mul_inv_rev _ _
+  exact funext fun x ↦ mul_inv_rev _ _
 
 @[to_additive]
 theorem isComplement'_comm : IsComplement' H K ↔ IsComplement' K H :=

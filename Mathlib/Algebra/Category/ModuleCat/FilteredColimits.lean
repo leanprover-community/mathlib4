@@ -101,7 +101,7 @@ instance colimitSMulWithZero : SMulWithZero R (M F) :=
   smul_zero := fun r => by
     erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
-  zero_smul := fun x => by
+  zero_smul := fun x ↦ by
     refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
     erw [colimit_smul_mk_eq, zero_smul, colimit_zero_eq _ j]
     rfl }
@@ -168,7 +168,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   uniq t _ h :=
     LinearMap.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
-        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
+        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x ↦ LinearMap.congr_fun (h j) x
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where

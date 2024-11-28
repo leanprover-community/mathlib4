@@ -192,7 +192,7 @@ theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn �
 @[fun_prop]
 theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 (g ∘ f) :=
-  fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
+  fun x ↦ DifferentiableAt.comp x (hg (f x)) (hf x)
 
 @[fun_prop]
 theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 𝕜 g)
@@ -203,7 +203,7 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
+    HasStrictFDerivAt (fun x ↦ g (f x)) (g'.comp f') x :=
   .of_isLittleO <|
     ((hg.isLittleO.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
         hf.isBigO_sub).triangle <| by

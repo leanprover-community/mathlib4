@@ -36,7 +36,7 @@ structure IsNatPowModT (p : Prop) (a b m c : Nat) : Prop where
 
 theorem IsNatPowModT.run
     (p : IsNatPowModT (Nat.mod (Nat.pow a (nat_lit 1)) m = Nat.mod a m) a b m c) :
-    Nat.mod (Nat.pow a b) m = c := p.run' (congr_arg (fun x => x % m) (Nat.pow_one a))
+    Nat.mod (Nat.pow a b) m = c := p.run' (congr_arg (fun x ↦ x % m) (Nat.pow_one a))
 
 theorem IsNatPowModT.trans (h1 : IsNatPowModT p a b m c)
     (h2 : IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a b' m c') : IsNatPowModT p a b' m c' :=

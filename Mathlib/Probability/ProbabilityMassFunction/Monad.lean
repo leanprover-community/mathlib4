@@ -122,13 +122,13 @@ theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
 
 @[simp]
 theorem bind_pure : p.bind pure = p :=
-  PMF.ext fun x => (bind_apply _ _ _).trans (_root_.trans
+  PMF.ext fun x ↦ (bind_apply _ _ _).trans (_root_.trans
     (tsum_eq_single x fun y hy => by rw [pure_apply_of_ne _ _ hy.symm, mul_zero]) <|
     by rw [pure_apply_self, mul_one])
 
 @[simp]
 theorem bind_const (p : PMF α) (q : PMF β) : (p.bind fun _ => q) = q :=
-  PMF.ext fun x => by rw [bind_apply, ENNReal.tsum_mul_right, tsum_coe, one_mul]
+  PMF.ext fun x ↦ by rw [bind_apply, ENNReal.tsum_mul_right, tsum_coe, one_mul]
 
 @[simp]
 theorem bind_bind : (p.bind f).bind g = p.bind fun a ↦ (f a).bind g :=
@@ -157,7 +157,7 @@ theorem toOuterMeasure_bind_apply :
       (tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable)
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun _ => ENNReal.tsum_mul_left
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
-      (tsum_congr fun a ↦ (congr_arg fun x => p a * x) <| tsum_congr fun b ↦ by split_ifs <;> rfl)
+      (tsum_congr fun a ↦ (congr_arg fun x ↦ p a * x) <| tsum_congr fun b ↦ by split_ifs <;> rfl)
     _ = ∑' a, p a * (f a).toOuterMeasure s :=
       tsum_congr fun a ↦ by simp only [toOuterMeasure_apply, Set.indicator_apply]
 
@@ -169,7 +169,7 @@ theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
   (toMeasure_apply_eq_toOuterMeasure_apply (p.bind f) s hs).trans
     ((toOuterMeasure_bind_apply p f s).trans
       (tsum_congr fun a =>
-        congr_arg (fun x => p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) s hs).symm))
+        congr_arg (fun x ↦ p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) s hs).symm))
 
 end Measure
 

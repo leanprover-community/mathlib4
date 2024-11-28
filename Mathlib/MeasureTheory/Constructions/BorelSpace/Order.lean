@@ -379,7 +379,7 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
       ?_ ?_ ?_
   · rintro _ ⟨l, -, u, -, h, rfl⟩
     exact ⟨l, u, h, rfl⟩
-  · refine sUnion_eq_univ_iff.2 fun x => ?_
+  · refine sUnion_eq_univ_iff.2 fun x ↦ ?_
     rcases hsd.exists_le' hsb x with ⟨l, hls, hlx⟩
     rcases hsd.exists_gt x with ⟨u, hus, hxu⟩
     exact ⟨_, ⟨l, hls, u, hus, hlx.trans_lt hxu, rfl⟩, hlx, hxu⟩
@@ -627,7 +627,7 @@ theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
 
 protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Monotone f) : Measurable f :=
-  suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).measurableSet
+  suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x ↦ (h x).measurableSet
   fun _ => ordConnected_def.mpr fun _a ha _ _ _c hc => lt_of_lt_of_le ha (hf hc.1)
 
 theorem aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
@@ -655,7 +655,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s
   have A : ∀ x ∈ s, ∃ y ∈ Ioi x, Ioo x y ⊆ s := fun x hx =>
     (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
   choose! y hy h'y using A
-  have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
+  have B : Set.PairwiseDisjoint (s \ interior s) fun x ↦ Ioo x (y x) := by
     intro x hx x' hx' hxx'
     rcases lt_or_gt_of_ne hxx' with (h' | h')
     · refine disjoint_left.2 fun z hz h'z => ?_
@@ -801,7 +801,7 @@ alias aemeasurable_iInf := AEMeasurable.iInf
 
 protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun x => sSup ((fun i => f i x) '' s) := by
+    Measurable fun x ↦ sSup ((fun i => f i x) '' s) := by
   simp_rw [image_eq_range]
   have : Countable s := hs.to_subtype
   exact .iSup fun i ↦ hf i i.2
@@ -811,7 +811,7 @@ alias measurable_sSup := Measurable.sSup
 
 protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun x => sInf ((fun i => f i x) '' s) :=
+    Measurable fun x ↦ sInf ((fun i => f i x) '' s) :=
   .sSup (α := αᵒᵈ) hs hf
 
 @[deprecated (since := "2024-10-21")]
@@ -868,7 +868,7 @@ alias aemeasurable_biInf := AEMeasurable.biInf
 -/
 theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasCountableBasis p s) (hs : ∀ j, (s j).Countable) :
-    Measurable fun x => liminf (f · x) v := by
+    Measurable fun x ↦ liminf (f · x) v := by
   classical
   /- We would like to write the liminf as `⨆ (j : Subtype p), ⨅ (i : s j), f i x`, as the
   measurability would follow from the measurability of infs and sups. Unfortunately, this is not
@@ -924,7 +924,7 @@ alias measurable_liminf' := Measurable.liminf'
 -/
 theorem Measurable.limsup' {ι ι'} {f : ι → δ → α} {u : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hu : u.HasCountableBasis p s) (hs : ∀ i, (s i).Countable) :
-    Measurable fun x => limsup (fun i => f i x) u :=
+    Measurable fun x ↦ limsup (fun i => f i x) u :=
   .liminf' (α := αᵒᵈ) hf hu hs
 
 @[deprecated (since := "2024-10-21")]
@@ -934,7 +934,7 @@ alias measurable_limsup' := Measurable.limsup'
 -/
 @[measurability]
 theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun x => liminf (fun i => f i x) atTop :=
+    Measurable fun x ↦ liminf (fun i => f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
 @[deprecated (since := "2024-10-21")]
@@ -944,7 +944,7 @@ alias measurable_liminf := Measurable.liminf
 -/
 @[measurability]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun x => limsup (fun i => f i x) atTop :=
+    Measurable fun x ↦ limsup (fun i => f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _
 
 @[deprecated (since := "2024-10-21")]

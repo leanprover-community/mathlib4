@@ -86,7 +86,7 @@ def Subpresheaf.ι : G.toPresheaf ⟶ F where app _ x := x
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
     NatTrans.ext <|
-      funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
+      funext fun U => funext fun x ↦ Subtype.ext <| congr_fun (congr_app e U) x⟩
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
@@ -110,7 +110,7 @@ instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   intro X
   rw [isIso_iff_bijective]
-  exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
+  exact ⟨Subtype.coe_injective, fun x ↦ ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
 theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   constructor
@@ -129,7 +129,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
   naturality := by
     have := elementwise_of% f.naturality
     intros
-    refine funext fun x => Subtype.ext ?_
+    refine funext fun x ↦ Subtype.ext ?_
     simp only [toPresheaf_obj, types_comp_apply]
     exact this _ _
 

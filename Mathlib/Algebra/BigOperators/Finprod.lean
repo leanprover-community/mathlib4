@@ -250,7 +250,7 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
 
 theorem finprod_nonneg {R : Type*} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
-  finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
+  finprod_induction (fun x ↦ 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 
 @[to_additive finsum_nonneg]
 theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
@@ -954,11 +954,11 @@ multiplicative and holds on factors. -/
       additive and holds on summands."]
 theorem finprod_mem_induction (p : M → Prop) (hp₀ : p 1) (hp₁ : ∀ x y, p x → p y → p (x * y))
     (hp₂ : ∀ x ∈ s, p <| f x) : p (∏ᶠ i ∈ s, f i) :=
-  finprod_induction _ hp₀ hp₁ fun x => finprod_induction _ hp₀ hp₁ <| hp₂ x
+  finprod_induction _ hp₀ hp₁ fun x ↦ finprod_induction _ hp₀ hp₁ <| hp₂ x
 
 theorem finprod_cond_nonneg {R : Type*} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
     (hf : ∀ x, p x → 0 ≤ f x) : 0 ≤ ∏ᶠ (x) (_ : p x), f x :=
-  finprod_nonneg fun x => finprod_nonneg <| hf x
+  finprod_nonneg fun x ↦ finprod_nonneg <| hf x
 
 @[to_additive]
 theorem single_le_finprod {M : Type*} [OrderedCommMonoid M] (i : α) {f : α → M}

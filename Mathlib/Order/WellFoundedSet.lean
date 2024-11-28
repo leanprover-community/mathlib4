@@ -770,7 +770,7 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
   intro f hf
   rw [isPWO_iff_exists_monotone_subseq] at hα
   obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (ofLex f (g n)).1 :=
-    hα (fun n => (ofLex f n).1) (fun k => mem_image_of_mem (fun x => (ofLex x).1) (hf k))
+    hα (fun n => (ofLex f n).1) (fun k => mem_image_of_mem (fun x ↦ (ofLex x).1) (hf k))
   have hhg : ∀ n, (ofLex f (g 0)).1 ≤ (ofLex f (g n)).1 := fun n => hg n.zero_le
   by_cases hc : ∃ n, (ofLex f (g 0)).1 < (ofLex f (g n)).1
   · obtain ⟨n, hn⟩ := hc
@@ -803,7 +803,7 @@ theorem imageProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
 
 theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
-  let f : α ×ₗ β → β := fun x => (ofLex x).2
+  let f : α ×ₗ β → β := fun x ↦ (ofLex x).2
   have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by
     ext x
     simp [f]
@@ -869,7 +869,7 @@ theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn
     (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     s.WellFoundedOn (Prod.Lex rα rβ on fun c ↦ (f c, g c)) :=
   WellFounded.prod_lex_of_wellFoundedOn_fiber hα
-    fun a ↦ ((hβ a).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
+    fun a ↦ ((hβ a).onFun (f := fun x ↦ ⟨x, x.1.2, x.2⟩)).mono (fun _ _ h ↦ ‹_›)
 
 end ProdLex
 
@@ -902,6 +902,6 @@ theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedO
   show WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
   exact
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c ↦ f c) (fun i c => g _ c) hι
-      fun i => ((hπ i).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h => ‹_›)
+      fun i => ((hπ i).onFun (f := fun x ↦ ⟨x, x.1.2, x.2⟩)).mono (fun b c h => ‹_›)
 
 end SigmaLex

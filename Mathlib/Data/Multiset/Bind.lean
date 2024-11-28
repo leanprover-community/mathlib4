@@ -129,7 +129,7 @@ theorem bind_cons (f : α → β) (g : α → Multiset β) :
     (by simp +contextual [add_comm, add_left_comm, add_assoc])
 
 @[simp]
-theorem bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β)) = map f s :=
+theorem bind_singleton (f : α → β) : (s.bind fun x ↦ ({f x} : Multiset β)) = map f s :=
   Multiset.induction_on s (by rw [zero_bind, map_zero]) (by simp [singleton_add])
 
 @[simp]

@@ -39,7 +39,7 @@ subgroup that is less than `ε`. -/
 theorem dense_of_not_isolated_zero (S : AddSubgroup G) (hS : ∀ ε > 0, ∃ g ∈ S, g ∈ Ioo 0 ε) :
     Dense (S : Set G) := by
   cases subsingleton_or_nontrivial G
-  · refine fun x => _root_.subset_closure ?_
+  · refine fun x ↦ _root_.subset_closure ?_
     rw [Subsingleton.elim x 0]
     exact zero_mem S
   refine dense_of_exists_between fun a b hlt => ?_

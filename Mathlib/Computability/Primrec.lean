@@ -528,7 +528,7 @@ theorem option_bind₁ {f : α → Option σ} (hf : Primrec f) : Primrec fun o =
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec fun a ↦ (f a).map (g a) :=
-  (option_bind hf (option_some.comp₂ hg)).of_eq fun x => by cases f x <;> rfl
+  (option_bind hf (option_some.comp₂ hg)).of_eq fun x ↦ by cases f x <;> rfl
 
 theorem option_map₁ {f : α → σ} (hf : Primrec f) : Primrec (Option.map f) :=
   option_map .id (hf.comp snd).to₂
@@ -661,10 +661,10 @@ def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
 
 theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, Decidable (p x n)]
-    (hf : Primrec f) (hp : PrimrecRel p) : Primrec fun x => (f x).findGreatest (p x) :=
+    (hf : Primrec f) (hp : PrimrecRel p) : Primrec fun x ↦ (f x).findGreatest (p x) :=
   (nat_rec' (h := fun x nih => if p x (nih.1 + 1) then nih.1 + 1 else nih.2)
     hf (const 0) (ite (hp.comp fst (snd |> fst.comp |> succ.comp))
-      (snd |> fst.comp |> succ.comp) (snd.comp snd))).of_eq fun x => by
+      (snd |> fst.comp |> succ.comp) (snd.comp snd))).of_eq fun x ↦ by
         induction f x <;> simp [Nat.findGreatest, *]
 
 /-- To show a function `f : α → ℕ` is primitive recursive, it is enough to show that the function
@@ -1049,7 +1049,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         List.eq_nil_iff_forall_not_mem.mpr
           (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
       have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
-          mapGraph (bs.map <| fun x => (x, f x)) bs' = bs'.map f := by
+          mapGraph (bs.map <| fun x ↦ (x, f x)) bs' = bs'.map f := by
         induction' bs' with b bs' ih <;> simp [mapGraph]
         · have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
           rcases this with ⟨ha, has'⟩

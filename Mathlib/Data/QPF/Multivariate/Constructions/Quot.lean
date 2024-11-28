@@ -74,7 +74,7 @@ variable [q : MvQPF F] (Hfunc : ∀ ⦃α β⦄ (a b : F α) (f : α ⟹ β), R 
 
 /-- `Quot1` is a QPF -/
 noncomputable def relQuot : @MvQPF _ (Quot1 R) :=
-  @quotientQPF n F q _ (MvQPF.Quot1.mvFunctor R Hfunc) (fun x => Quot.mk _ x)
+  @quotientQPF n F q _ (MvQPF.Quot1.mvFunctor R Hfunc) (fun x ↦ Quot.mk _ x)
     Quot.out (fun _x => Quot.out_eq _) fun _f _x => rfl
 
 end

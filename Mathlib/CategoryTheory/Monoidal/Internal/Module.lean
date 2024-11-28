@@ -44,10 +44,10 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
   { (inferInstance : AddCommGroup A.X) with
     one := A.one (1 : R)
     mul := fun x y => A.mul (x ⊗ₜ y)
-    one_mul := fun x => by
+    one_mul := fun x ↦ by
       convert LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x)
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
-    mul_one := fun x => by
+    mul_one := fun x ↦ by
       convert LinearMap.congr_fun A.mul_one (x ⊗ₜ (1 : R))
       erw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
@@ -60,9 +60,9 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
       convert A.mul.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl
-    zero_mul := fun x => show A.mul _ = 0 by
+    zero_mul := fun x ↦ show A.mul _ = 0 by
       rw [TensorProduct.zero_tmul, map_zero]
-    mul_zero := fun x => show A.mul _ = 0 by
+    mul_zero := fun x ↦ show A.mul _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
 instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X :=
@@ -104,7 +104,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   mul := LinearMap.mul' R A
   one_mul := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
+    refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x ↦ ?_
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
     -- Porting note: this `dsimp` does nothing
@@ -117,7 +117,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [id_apply]
   mul_one := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
+    refine TensorProduct.ext <| LinearMap.ext fun x ↦ LinearMap.ext_ring ?_
     -- Porting note: this `dsimp` does nothing
     -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --   LinearMap.compr₂_apply, Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply,
@@ -132,7 +132,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   mul_assoc := by
     set_option tactic.skipAssignedInstances false in
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
+    refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x ↦ LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
     dsimp only [compr₂_apply, TensorProduct.mk_apply]
     rw [compr₂_apply, compr₂_apply]

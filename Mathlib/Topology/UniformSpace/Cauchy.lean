@@ -230,7 +230,7 @@ theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ]
   simpa only [CauchySeq, prod_map_map_eq', prod_atTop_atTop_eq] using hu.prod hv
 
 theorem CauchySeq.prod {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v : γ → β}
-    (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x => (u x, v x) :=
+    (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x ↦ (u x, v x) :=
   haveI := hu.1.of_map
   (Cauchy.prod hu hv).mono (Tendsto.prod_mk le_rfl le_rfl)
 

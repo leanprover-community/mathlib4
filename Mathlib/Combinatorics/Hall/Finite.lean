@@ -53,13 +53,13 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   specialize ha (s'.image fun z => z.1)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
-  · have ha' : #s' < #(s'.biUnion fun x => t x) := by
+  · have ha' : #s' < #(s'.biUnion fun x ↦ t x) := by
       convert ha he fun h ↦ by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_biUnion, exists_prop, SetCoe.exists, exists_and_right,
         exists_eq_right, Subtype.coe_mk]
     rw [← erase_biUnion]
-    by_cases hb : a ∈ s'.biUnion fun x => t x
+    by_cases hb : a ∈ s'.biUnion fun x ↦ t x
     · rw [card_erase_of_mem hb]
       exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_not_mem hb]
@@ -200,7 +200,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     apply f''_not_mem_biUnion x' hx''
     rw [← h]
     apply f'_mem_biUnion x
-  refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
+  refine ⟨fun x ↦ if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
   · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]

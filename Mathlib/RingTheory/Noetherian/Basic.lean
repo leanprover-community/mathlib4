@@ -333,7 +333,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     change n ∈ N at hn
     rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_linearCombination] at hn
     rcases hn with ⟨l, hl1, hl2⟩
-    refine ⟨fun x => l x, Subtype.ext ?_⟩
+    refine ⟨fun x ↦ l x, Subtype.ext ?_⟩
     change (∑ i ∈ s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.linearCombination_apply, Finsupp.sum, eq_comm]

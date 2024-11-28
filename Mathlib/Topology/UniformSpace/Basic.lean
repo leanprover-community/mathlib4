@@ -180,7 +180,7 @@ theorem swap_idRel : Prod.swap '' idRel = @idRel α :=
   Set.ext fun ⟨a, b⟩ => by simpa [image_swap_eq_preimage_swap] using eq_comm
 
 theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
+    Monotone fun x ↦ f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
 
 @[mono, gcongr]
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
@@ -454,19 +454,19 @@ theorem eventually_uniformity_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 
 
 /-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is transitive. -/
 theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β → α}
-    (h₁₂ : Tendsto (fun x => (f₁ x, f₂ x)) l (𝓤 α))
-    (h₂₃ : Tendsto (fun x => (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x => (f₁ x, f₃ x)) l (𝓤 α) := by
+    (h₁₂ : Tendsto (fun x ↦ (f₁ x, f₂ x)) l (𝓤 α))
+    (h₂₃ : Tendsto (fun x ↦ (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x ↦ (f₁ x, f₃ x)) l (𝓤 α) := by
   refine le_trans (le_lift'.2 fun s hs => mem_map.2 ?_) comp_le_uniformity
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 
 /-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is symmetric. -/
 theorem Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h : Tendsto f l (𝓤 α)) :
-    Tendsto (fun x => ((f x).2, (f x).1)) l (𝓤 α) :=
+    Tendsto (fun x ↦ ((f x).2, (f x).1)) l (𝓤 α) :=
   tendsto_swap_uniformity.comp h
 
 /-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is reflexive. -/
 theorem tendsto_diag_uniformity (f : β → α) (l : Filter β) :
-    Tendsto (fun x => (f x, f x)) l (𝓤 α) := fun _s hs =>
+    Tendsto (fun x ↦ (f x, f x)) l (𝓤 α) := fun _s hs =>
   mem_map.2 <| univ_mem' fun _ => refl_mem_uniformity hs
 
 theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a, a)) f (𝓤 α) :=
@@ -1319,7 +1319,7 @@ theorem uniformContinuous_subtype_val {p : α → Prop} [UniformSpace α] :
 
 theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [UniformSpace β] {f : β → α}
     (hf : UniformContinuous f) (h : ∀ x, p (f x)) :
-    UniformContinuous (fun x => ⟨f x, h x⟩ : β → Subtype p) :=
+    UniformContinuous (fun x ↦ ⟨f x, h x⟩ : β → Subtype p) :=
   uniformContinuous_comap' hf
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
@@ -1630,19 +1630,19 @@ namespace Uniform
 variable [UniformSpace α]
 
 theorem tendsto_nhds_right {f : Filter β} {u : β → α} {a : α} :
-    Tendsto u f (𝓝 a) ↔ Tendsto (fun x => (a, u x)) f (𝓤 α) := by
+    Tendsto u f (𝓝 a) ↔ Tendsto (fun x ↦ (a, u x)) f (𝓤 α) := by
   rw [nhds_eq_comap_uniformity, tendsto_comap_iff]; rfl
 
 theorem tendsto_nhds_left {f : Filter β} {u : β → α} {a : α} :
-    Tendsto u f (𝓝 a) ↔ Tendsto (fun x => (u x, a)) f (𝓤 α) := by
+    Tendsto u f (𝓝 a) ↔ Tendsto (fun x ↦ (u x, a)) f (𝓤 α) := by
   rw [nhds_eq_comap_uniformity', tendsto_comap_iff]; rfl
 
 theorem continuousAt_iff'_right [TopologicalSpace β] {f : β → α} {b : β} :
-    ContinuousAt f b ↔ Tendsto (fun x => (f b, f x)) (𝓝 b) (𝓤 α) := by
+    ContinuousAt f b ↔ Tendsto (fun x ↦ (f b, f x)) (𝓝 b) (𝓤 α) := by
   rw [ContinuousAt, tendsto_nhds_right]
 
 theorem continuousAt_iff'_left [TopologicalSpace β] {f : β → α} {b : β} :
-    ContinuousAt f b ↔ Tendsto (fun x => (f x, f b)) (𝓝 b) (𝓤 α) := by
+    ContinuousAt f b ↔ Tendsto (fun x ↦ (f x, f b)) (𝓝 b) (𝓤 α) := by
   rw [ContinuousAt, tendsto_nhds_left]
 
 theorem continuousAt_iff_prod [TopologicalSpace β] {f : β → α} {b : β} :
@@ -1651,27 +1651,27 @@ theorem continuousAt_iff_prod [TopologicalSpace β] {f : β → α} {b : β} :
     continuousAt_iff'_left.2 <| H.comp <| tendsto_id.prod_mk_nhds tendsto_const_nhds⟩
 
 theorem continuousWithinAt_iff'_right [TopologicalSpace β] {f : β → α} {b : β} {s : Set β} :
-    ContinuousWithinAt f s b ↔ Tendsto (fun x => (f b, f x)) (𝓝[s] b) (𝓤 α) := by
+    ContinuousWithinAt f s b ↔ Tendsto (fun x ↦ (f b, f x)) (𝓝[s] b) (𝓤 α) := by
   rw [ContinuousWithinAt, tendsto_nhds_right]
 
 theorem continuousWithinAt_iff'_left [TopologicalSpace β] {f : β → α} {b : β} {s : Set β} :
-    ContinuousWithinAt f s b ↔ Tendsto (fun x => (f x, f b)) (𝓝[s] b) (𝓤 α) := by
+    ContinuousWithinAt f s b ↔ Tendsto (fun x ↦ (f x, f b)) (𝓝[s] b) (𝓤 α) := by
   rw [ContinuousWithinAt, tendsto_nhds_left]
 
 theorem continuousOn_iff'_right [TopologicalSpace β] {f : β → α} {s : Set β} :
-    ContinuousOn f s ↔ ∀ b ∈ s, Tendsto (fun x => (f b, f x)) (𝓝[s] b) (𝓤 α) := by
+    ContinuousOn f s ↔ ∀ b ∈ s, Tendsto (fun x ↦ (f b, f x)) (𝓝[s] b) (𝓤 α) := by
   simp [ContinuousOn, continuousWithinAt_iff'_right]
 
 theorem continuousOn_iff'_left [TopologicalSpace β] {f : β → α} {s : Set β} :
-    ContinuousOn f s ↔ ∀ b ∈ s, Tendsto (fun x => (f x, f b)) (𝓝[s] b) (𝓤 α) := by
+    ContinuousOn f s ↔ ∀ b ∈ s, Tendsto (fun x ↦ (f x, f b)) (𝓝[s] b) (𝓤 α) := by
   simp [ContinuousOn, continuousWithinAt_iff'_left]
 
 theorem continuous_iff'_right [TopologicalSpace β] {f : β → α} :
-    Continuous f ↔ ∀ b, Tendsto (fun x => (f b, f x)) (𝓝 b) (𝓤 α) :=
+    Continuous f ↔ ∀ b, Tendsto (fun x ↦ (f b, f x)) (𝓝 b) (𝓤 α) :=
   continuous_iff_continuousAt.trans <| forall_congr' fun _ => tendsto_nhds_right
 
 theorem continuous_iff'_left [TopologicalSpace β] {f : β → α} :
-    Continuous f ↔ ∀ b, Tendsto (fun x => (f x, f b)) (𝓝 b) (𝓤 α) :=
+    Continuous f ↔ ∀ b, Tendsto (fun x ↦ (f x, f b)) (𝓝 b) (𝓤 α) :=
   continuous_iff_continuousAt.trans <| forall_congr' fun _ => tendsto_nhds_left
 
 /-- Consider two functions `f` and `g` which coincide on a set `s` and are continuous there.
@@ -1702,11 +1702,11 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
 end Uniform
 
 theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
-    (hf : Tendsto f l (𝓝 b)) (hg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto g l (𝓝 b) :=
+    (hf : Tendsto f l (𝓝 b)) (hg : Tendsto (fun x ↦ (f x, g x)) l (𝓤 β)) : Tendsto g l (𝓝 b) :=
   Uniform.tendsto_nhds_right.2 <| (Uniform.tendsto_nhds_right.1 hf).uniformity_trans hg
 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
-    (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
+    (hfg : Tendsto (fun x ↦ (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h ↦ h.congr_uniformity hfg, fun h ↦ h.congr_uniformity hfg.uniformity_symm⟩
 
 set_option linter.style.longFile 1900

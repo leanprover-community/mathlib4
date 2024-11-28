@@ -148,8 +148,8 @@ theorem FiniteDimensional.exists_is_basis_integral :
     rw [IsScalarTower.algebraMap_eq A K L]
     exact (algebraMap K L).injective.comp (IsFractionRing.injective A K)
   refine ⟨s', bs'.map {Algebra.lmul _ _ (algebraMap A L y) with
-    toFun := fun x => algebraMap A L y * x
-    invFun := fun x => (algebraMap A L y)⁻¹ * x
+    toFun := fun x ↦ algebraMap A L y * x
+    invFun := fun x ↦ (algebraMap A L y)⁻¹ * x
     left_inv := ?_
     right_inv := ?_}, ?_⟩
   · intro x; simp only [inv_mul_cancel_left₀ hy']

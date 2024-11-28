@@ -239,7 +239,7 @@ open Monic
 -- Eventually this can be generalized with Vieta's formulas
 -- plus the connection between roots and factorization.
 theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
-    nextCoeff (t.map fun x => X - C x).prod = -t.sum := by
+    nextCoeff (t.map fun x ↦ X - C x).prod = -t.sum := by
   rw [nextCoeff_multiset_prod]
   · simp only [nextCoeff_X_sub_C]
     exact t.sum_hom (-AddMonoidHom.id R)
@@ -251,7 +251,7 @@ theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
   simpa using multiset_prod_X_sub_C_nextCoeff (s.1.map f)
 
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
-    (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
+    (t.map fun x ↦ X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff, if_neg]

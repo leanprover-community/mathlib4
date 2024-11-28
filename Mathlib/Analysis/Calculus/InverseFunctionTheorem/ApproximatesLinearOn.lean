@@ -158,7 +158,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     bound on `dist (u n) b`, from which one checks that `u n` stays in the ball on which one has a
     control. Therefore, the bound can be checked at the next step, and so on inductively.
     -/
-  set g := fun x => x + f'symm (y - f x) with hg
+  set g := fun x ↦ x + f'symm (y - f x) with hg
   set u := fun n : ℕ => g^[n] b with hu
   have usucc : ∀ n, u (n + 1) = g (u n) := by simp [hu, ← iterate_succ_apply' g _ b]
   -- First bound: if `f z` is close to `y`, then `g z` is close to `z` (i.e., almost a fixed point).

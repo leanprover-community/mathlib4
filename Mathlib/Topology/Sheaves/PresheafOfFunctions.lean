@@ -53,7 +53,7 @@ theorem presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
 
 @[simp]
 theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
-    (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
+    (presheafToTypes X T).map i f = fun x ↦ f (i.unop x) :=
   rfl
 
 -- We don't just define this in terms of `presheafToTypes`,

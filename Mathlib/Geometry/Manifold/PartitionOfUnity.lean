@@ -163,7 +163,7 @@ theorem sum_le_one (x : M) : ∑ᶠ i, f i x ≤ 1 :=
 def toPartitionOfUnity : PartitionOfUnity ι M s :=
   { f with toFun := fun i => f i }
 
-theorem contMDiff_sum : ContMDiff I 𝓘(ℝ) ⊤ fun x => ∑ᶠ i, f i x :=
+theorem contMDiff_sum : ContMDiff I 𝓘(ℝ) ⊤ fun x ↦ ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
 
 @[deprecated (since := "2024-11-21")] alias smooth_sum := contMDiff_sum
@@ -179,7 +179,7 @@ theorem finsum_smul_mem_convex {g : ι → M → F} {t : Set F} {x : M} (hx : x 
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
 
 theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n g x) :
-    ContMDiff I 𝓘(ℝ, F) n fun x => f i x • g x :=
+    ContMDiff I 𝓘(ℝ, F) n fun x ↦ f i x • g x :=
   contMDiff_of_tsupport fun x hx =>
     ((f i).contMDiff.contMDiffAt.of_le le_top).smul <| hg x <| tsupport_smul_subset_left _ _ hx
 
@@ -190,7 +190,7 @@ functions such that `g i` is $C^n$ smooth at every point of the topological supp
 the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem contMDiff_finsum_smul {g : ι → M → F}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n (g i) x) :
-    ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
+    ContMDiff I 𝓘(ℝ, F) n fun x ↦ ∑ᶠ i, f i x • g i x :=
   (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 
@@ -288,7 +288,7 @@ alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUn
 `U i`, then the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/
 theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (hg : ∀ i, ContMDiffOn I 𝓘(ℝ, F) n (g i) (U i)) :
-    ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
+    ContMDiff I 𝓘(ℝ, F) n fun x ↦ ∑ᶠ i, f i x • g i x :=
   f.contMDiff_finsum_smul fun i _ hx => (hg i).contMDiffAt <| (ho i).mem_nhds (hf i hx)
 
 @[deprecated (since := "2024-11-21")]
@@ -349,7 +349,7 @@ namespace SmoothBumpCovering
 variable [FiniteDimensional ℝ E]
 variable {s : Set M} {U : M → Set M} (fs : SmoothBumpCovering ι I M s)
 
-instance : CoeFun (SmoothBumpCovering ι I M s) fun x => ∀ i : ι, SmoothBumpFunction I (x.c i) :=
+instance : CoeFun (SmoothBumpCovering ι I M s) fun x ↦ ∀ i : ι, SmoothBumpFunction I (x.c i) :=
   ⟨toFun⟩
 
 /--
@@ -506,7 +506,7 @@ theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s 
   rcases SmoothBumpCovering.exists_isSubordinate I ht this with ⟨ι, f, hf⟩
   set g := f.toSmoothPartitionOfUnity
   refine
-    ⟨⟨_, g.contMDiff_sum⟩, fun x hx => ?_, fun x => g.sum_eq_one, fun x =>
+    ⟨⟨_, g.contMDiff_sum⟩, fun x hx => ?_, fun x ↦ g.sum_eq_one, fun x =>
       ⟨g.sum_nonneg x, g.sum_le_one x⟩⟩
   suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
   refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
@@ -600,11 +600,11 @@ theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
   choose U hU g hgs hgt using Hloc
   obtain ⟨f, hf⟩ :=
-    SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ (fun x => interior (U x))
-      (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
-  refine ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
+    SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ (fun x ↦ interior (U x))
+      (fun x ↦ isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
+  refine ⟨⟨fun x ↦ ∑ᶠ i, f i x • g i x,
       hf.contMDiff_finsum_smul (fun i => isOpen_interior) fun i => (hgs i).mono interior_subset⟩,
-    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
+    fun x ↦ f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
   exact interior_subset (hf _ <| subset_closure hi)
 
 /-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`

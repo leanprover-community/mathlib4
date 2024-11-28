@@ -113,12 +113,12 @@ theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
 
 @[to_additive]
 lemma BddBelow.range_inv {α : Type*} {f : α → G} (hf : BddBelow (range f)) :
-    BddAbove (range (fun x => (f x)⁻¹)) :=
+    BddAbove (range (fun x ↦ (f x)⁻¹)) :=
   hf.range_comp (OrderIso.inv G).monotone
 
 @[to_additive]
 lemma BddAbove.range_inv {α : Type*} {f : α → G} (hf : BddAbove (range f)) :
-    BddBelow (range (fun x => (f x)⁻¹)) :=
+    BddBelow (range (fun x ↦ (f x)⁻¹)) :=
   BddBelow.range_inv (G := Gᵒᵈ) hf
 
 end InvNeg

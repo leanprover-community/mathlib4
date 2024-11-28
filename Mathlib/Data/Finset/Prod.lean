@@ -329,7 +329,7 @@ theorem product_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by
   rw [← diag_union_offDiag, union_sdiff_self, sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _)]
 
 theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag :=
-  ext fun x => by simpa only [mem_diag, mem_inter] using and_and_right
+  ext fun x ↦ by simpa only [mem_diag, mem_inter] using and_and_right
 
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by

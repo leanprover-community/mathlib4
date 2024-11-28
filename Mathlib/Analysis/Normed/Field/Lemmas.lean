@@ -39,12 +39,12 @@ variable [NonUnitalSeminormedRing α]
 
 theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
 
 theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 

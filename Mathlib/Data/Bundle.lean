@@ -91,7 +91,7 @@ theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = �
     exact ⟨x, rfl⟩
 
 /-- Notation for the direct sum of two bundles over the same base. -/
-notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
+notation:100 E₁ " ×ᵇ " E₂ => fun x ↦ E₁ x × E₂ x
 
 /-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
 @[reducible, nolint unusedArguments]
@@ -115,7 +115,7 @@ variable {B' : Type*}
 
 /-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by
 `Bundle.Pullback f E` or `f *ᵖ E`, is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
-def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x => E (f x)
+def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x ↦ E (f x)
 
 @[inherit_doc]
 notation f " *ᵖ " E:arg => Pullback f E

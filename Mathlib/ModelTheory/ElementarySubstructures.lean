@@ -54,7 +54,7 @@ instance instCoe : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
   ⟨ElementarySubstructure.toSubstructure⟩
 
 instance instSetLike : SetLike (L.ElementarySubstructure M) M :=
-  ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
+  ⟨fun x ↦ x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
     congr⟩
 
 instance inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=

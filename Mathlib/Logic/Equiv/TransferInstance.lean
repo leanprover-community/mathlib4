@@ -89,7 +89,7 @@ noncomputable instance [Small.{v} α] [Div α] : Div (Shrink.{v} α) :=
 /-- Transfer `Inv` across an `Equiv` -/
 @[to_additive "Transfer `Neg` across an `Equiv`"]
 protected abbrev Inv [Inv β] : Inv α :=
-  ⟨fun x => e.symm (e x)⁻¹⟩
+  ⟨fun x ↦ e.symm (e x)⁻¹⟩
 
 @[to_additive]
 theorem inv_def [Inv β] (x : α) :

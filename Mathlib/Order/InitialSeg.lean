@@ -164,9 +164,9 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
   allEq f g := by
     ext a
     refine IsWellFounded.induction r a fun b IH =>
-      extensional_of_trichotomous_of_irrefl s fun x => ?_
+      extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
     rw [f.exists_eq_iff_rel, g.exists_eq_iff_rel]
-    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl
+    exact exists_congr fun x ↦ and_congr_left fun hx => IH _ hx ▸ Iff.rfl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a ↦ have := a.isWellFounded; Subsingleton.elim a⟩

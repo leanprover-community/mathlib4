@@ -112,7 +112,7 @@ theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
         fun _ _ hx hy => by simp only [map_add, hx, hy]
       have lie : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 ⁅x, y⁆ = D2 ⁅x, y⁆ :=
         fun _ _ hx hy => by simp only [apply_lie_eq_sub, hx, hy]
-      LieSubalgebra.lieSpan_induction R (p := fun x => D1 x = D2 x) hz h zero smul add lie
+      LieSubalgebra.lieSpan_induction R (p := fun x ↦ D1 x = D2 x) hz h zero smul add lie
 
 /-- If the Lie span of a set is the whole Lie algebra, then two Lie derivations equal on this set
 are equal on the whole Lie algebra. -/

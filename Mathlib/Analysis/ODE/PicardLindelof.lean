@@ -204,7 +204,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
 
 theorem continuous_vComp : Continuous f.vComp := by
   have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
-  refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
+  refine ContinuousOn.comp_continuous v.continuousOn this fun x ↦ ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 
 theorem norm_vComp_le (t : ℝ) : ‖f.vComp t‖ ≤ v.C :=

@@ -138,7 +138,7 @@ theorem dist_eq : dist f g = sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x)
 
 theorem dist_set_exists : ∃ C, 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C := by
   rcases isBounded_iff.1 (f.isBounded_range.union g.isBounded_range) with ⟨C, hC⟩
-  refine ⟨max 0 C, le_max_left _ _, fun x => (hC ?_ ?_).trans (le_max_right _ _)⟩
+  refine ⟨max 0 C, le_max_left _ _, fun x ↦ (hC ?_ ?_).trans (le_max_right _ _)⟩
     <;> [left; right]
     <;> apply mem_range_self
 
@@ -162,7 +162,7 @@ theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (
 
 theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
     (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C := by
-  have c : Continuous fun x => dist (f x) (g x) := by continuity
+  have c : Continuous fun x ↦ dist (f x) (g x) := by continuity
   obtain ⟨x, -, le⟩ :=
     IsCompact.exists_isMaxOn isCompact_univ Set.univ_nonempty (Continuous.continuousOn c)
   exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y => le trivial) (w x)
@@ -178,7 +178,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
       convert C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
-      exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
+      exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x ↦ False.elim (h (Nonempty.intro x))⟩
 
 theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C :=
@@ -186,7 +186,7 @@ theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
 
 /-- The type of bounded continuous functions, with the uniform distance, is a pseudometric space. -/
 instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
-  dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
+  dist_self f := le_antisymm ((dist_le le_rfl).2 fun x ↦ by simp) dist_nonneg'
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
@@ -236,7 +236,7 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
       (h _ (dist_mem_uniformity <| half_pos ε_pos)).mp
         (Eventually.of_forall fun n hn =>
           lt_of_le_of_lt
-            ((dist_le (half_pos ε_pos).le).mpr fun x => dist_comm (f x) (F n x) ▸ le_of_lt (hn x))
+            ((dist_le (half_pos ε_pos).le).mpr fun x ↦ dist_comm (f x) (F n x) ▸ le_of_lt (hn x))
             (half_lt_self ε_pos))
 
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
@@ -251,7 +251,7 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
 
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x ↦ congr_fun h x⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_coeFn := isEmbedding_coeFn
@@ -275,7 +275,7 @@ theorem lipschitz_evalx (x : α) : LipschitzWith 1 fun f : α →ᵇ β => f x :
   LipschitzWith.mk_one fun _ _ => dist_coe_le_dist x
 
 theorem uniformContinuous_coe : @UniformContinuous (α →ᵇ β) (α → β) _ _ (⇑) :=
-  uniformContinuous_pi.2 fun x => (lipschitz_evalx x).uniformContinuous
+  uniformContinuous_pi.2 fun x ↦ (lipschitz_evalx x).uniformContinuous
 
 theorem continuous_coe : Continuous fun (f : α →ᵇ β) x => f x :=
   UniformContinuous.continuous uniformContinuous_coe
@@ -299,8 +299,8 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
     rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
     have f_bdd := fun x n m N hn hm => le_trans (dist_coe_le_dist x) (b_bound n m N hn hm)
     have fx_cau : ∀ x, CauchySeq fun n => f n x :=
-      fun x => cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
-    choose F hF using fun x => cauchySeq_tendsto_of_complete (fx_cau x)
+      fun x ↦ cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
+    choose F hF using fun x ↦ cauchySeq_tendsto_of_complete (fx_cau x)
     /- `F : α → β`, `hF : ∀ (x : α), Tendsto (fun n ↦ ↑(f n) x) atTop (𝓝 (F x))`
       `F` is the desired limit function. Check that it is uniformly approximated by `f N`. -/
     have fF_bdd : ∀ x N, dist (f N x) (F x) ≤ b N :=
@@ -323,7 +323,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         _ ≤ C + (b 0 + b 0) := by mono
     · -- Check that `F` is close to `f N` in distance terms
       refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) ?_ b_lim)
-      exact fun N => (dist_le (b0 _)).2 fun x => fF_bdd x N
+      exact fun N => (dist_le (b0 _)).2 fun x ↦ fF_bdd x N
 
 /-- Composition of a bounded continuous function and a continuous function. -/
 def compContinuous {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ β) (g : C(δ, α)) : δ →ᵇ β where
@@ -340,7 +340,7 @@ theorem compContinuous_apply {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ �
 
 theorem lipschitz_compContinuous {δ : Type*} [TopologicalSpace δ] (g : C(δ, α)) :
     LipschitzWith 1 fun f : α →ᵇ β => f.compContinuous g :=
-  LipschitzWith.mk_one fun _ _ => (dist_le dist_nonneg).2 fun x => dist_coe_le_dist (g x)
+  LipschitzWith.mk_one fun _ _ => (dist_le dist_nonneg).2 fun x ↦ dist_coe_le_dist (g x)
 
 theorem continuous_compContinuous {δ : Type*} [TopologicalSpace δ] (g : C(δ, α)) :
     Continuous fun f : α →ᵇ β => f.compContinuous g :=
@@ -359,7 +359,7 @@ theorem restrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.restrict s x 
 /-- Composition (in the target) of a bounded continuous function with a Lipschitz map again
 gives a bounded continuous function. -/
 def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) : α →ᵇ γ :=
-  ⟨⟨fun x => G (f x), H.continuous.comp f.continuous⟩,
+  ⟨⟨fun x ↦ G (f x), H.continuous.comp f.continuous⟩,
     let ⟨D, hD⟩ := f.bounded
     ⟨max C 0 * D, fun x y =>
       calc
@@ -423,7 +423,7 @@ theorem extend_of_empty [IsEmpty α] (f : α ↪ δ) (g : α →ᵇ β) (h : δ 
 theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂ : δ →ᵇ β) :
     dist (g₁.extend f h₁) (g₂.extend f h₂) =
       max (dist g₁ g₂) (dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ)) := by
-  refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x => ?_) (max_le ?_ ?_)
+  refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x ↦ ?_) (max_le ?_ ?_)
   · rcases em (∃ y, f y = x) with (⟨x, rfl⟩ | hx)
     · simp only [extend_apply]
       exact (dist_coe_le_dist x).trans (le_max_left _ _)
@@ -433,10 +433,10 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
         dist (h₁ x) (h₂ x) = dist (h₁.restrict (range f)ᶜ x) (h₂.restrict (range f)ᶜ x) := rfl
         _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := dist_coe_le_dist x
         _ ≤ _ := le_max_right _ _
-  · refine (dist_le dist_nonneg).2 fun x => ?_
+  · refine (dist_le dist_nonneg).2 fun x ↦ ?_
     rw [← extend_apply f g₁ h₁, ← extend_apply f g₂ h₂]
     exact dist_coe_le_dist _
-  · refine (dist_le dist_nonneg).2 fun x => ?_
+  · refine (dist_le dist_nonneg).2 fun x ↦ ?_
     calc
       dist (h₁ x) (h₂ x) = dist (extend f g₁ h₁ x) (extend f g₂ h₂ x) := by
         rw [extend_apply' x.coe_prop, extend_apply' x.coe_prop]
@@ -506,7 +506,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   refine ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.1 a), (hF (f.1 a)).1⟩, ?_⟩
   rintro ⟨f, hf⟩ ⟨g, hg⟩ f_eq_g
   -- If two functions have the same approximation, then they are within distance `ε`
-  refine lt_of_le_of_lt ((dist_le <| le_of_lt ε₁0).2 fun x => ?_) εε₁
+  refine lt_of_le_of_lt ((dist_le <| le_of_lt ε₁0).2 fun x ↦ ?_) εε₁
   obtain ⟨x', x'tα, hx'⟩ := mem_iUnion₂.1 (htα (mem_univ x))
   calc
     dist (f x) (g x) ≤ dist (f x) (f x') + dist (g x) (g x') + dist (f x') (g x') :=
@@ -539,7 +539,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
     refine arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) ?_
     rw [isUniformEmbedding_subtype_val.isUniformInducing.equicontinuous_iff]
     exact H.comp (A.restrictPreimage F)
-  · let g := codRestrict s f fun x => in_s f x hf
+  · let g := codRestrict s f fun x ↦ in_s f x hf
     rw [show f = F g by ext; rfl] at hf ⊢
     exact ⟨g, hf, rfl⟩
 
@@ -860,7 +860,7 @@ theorem norm_const_le (b : β) : ‖const α b‖ ≤ ‖b‖ :=
 
 @[simp]
 theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
-  le_antisymm (norm_const_le b) <| h.elim fun x => (const α b).norm_coe_le_norm x
+  le_antisymm (norm_const_le b) <| h.elim fun x ↦ (const α b).norm_coe_le_norm x
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
@@ -1022,7 +1022,7 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
           exact hb x y⟩ }
 
 @[simp]
-theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f x := rfl
+theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x ↦ c • f x := rfl
 
 theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
 
@@ -1144,7 +1144,7 @@ protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[
       map_add' := fun f g => by ext; simp
       map_smul' := fun c f => by ext; simp } ‖g‖ fun f =>
         norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg g) (norm_nonneg f))
-          (fun x => by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
+          (fun x ↦ by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
 
 @[simp]
 theorem _root_.ContinuousLinearMap.compLeftContinuousBounded_apply (g : β →L[𝕜] γ) (f : α →ᵇ β)
@@ -1340,7 +1340,7 @@ functions from `α` to `𝕜`. -/
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
-    ofNormedAddCommGroup (fun x => f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x =>
+    ofNormedAddCommGroup (fun x ↦ f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x =>
       calc
         ‖f x • g x‖ ≤ ‖f x‖ * ‖g x‖ := norm_smul_le _ _
         _ ≤ ‖f‖ * ‖g‖ :=
@@ -1351,7 +1351,7 @@ instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
       (fun c _ _ => ext fun a ↦ smul_add (c a) _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
-      (fun f => ext fun x => one_smul 𝕜 (f x))
+      (fun f => ext fun x ↦ one_smul 𝕜 (f x))
 
 /- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed

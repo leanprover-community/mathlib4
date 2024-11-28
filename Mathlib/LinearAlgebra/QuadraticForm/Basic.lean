@@ -463,8 +463,8 @@ end Sum
 
 instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] :
     DistribMulAction S (QuadraticMap R M N) where
-  mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
-  one_smul Q := ext fun x => by simp only [QuadraticMap.smul_apply, one_smul]
+  mul_smul a b Q := ext fun x ↦ by simp only [smul_apply, mul_smul]
+  one_smul Q := ext fun x ↦ by simp only [QuadraticMap.smul_apply, one_smul]
   smul_add a Q Q' := by
     ext
     simp only [add_apply, smul_apply, smul_add]
@@ -780,7 +780,7 @@ theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :
 
 @[simp] theorem _root_.QuadraticMap.toQuadraticMap_polarBilin (Q : QuadraticMap R M N) :
     toQuadraticMap (polarBilin Q) = 2 • Q :=
-  QuadraticMap.ext fun x => (polar_self _ x).trans <| by simp
+  QuadraticMap.ext fun x ↦ (polar_self _ x).trans <| by simp
 
 theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
     Function.Injective (polarBilin : QuadraticMap R M N → _) := by

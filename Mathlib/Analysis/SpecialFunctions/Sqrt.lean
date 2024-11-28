@@ -86,12 +86,12 @@ theorem HasStrictDerivAt.sqrt (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
 
 theorem derivWithin_sqrt (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)
     (hxs : UniqueDiffWithinAt ℝ s x) :
-    derivWithin (fun x => √(f x)) s x = derivWithin f s x / (2 * √(f x)) :=
+    derivWithin (fun x ↦ √(f x)) s x = derivWithin f s x / (2 * √(f x)) :=
   (hf.hasDerivWithinAt.sqrt hx).derivWithin hxs
 
 @[simp]
 theorem deriv_sqrt (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
-    deriv (fun x => √(f x)) x = deriv f x / (2 * √(f x)) :=
+    deriv (fun x ↦ √(f x)) x = deriv f x / (2 * √(f x)) :=
   (hf.hasDerivAt.sqrt hx).deriv
 
 end deriv
@@ -125,16 +125,16 @@ theorem DifferentiableOn.sqrt (hf : DifferentiableOn ℝ f s) (hs : ∀ x ∈ s,
     DifferentiableOn ℝ (fun y => √(f y)) s := fun x hx => (hf x hx).sqrt (hs x hx)
 
 theorem Differentiable.sqrt (hf : Differentiable ℝ f) (hs : ∀ x, f x ≠ 0) :
-    Differentiable ℝ fun y => √(f y) := fun x => (hf x).sqrt (hs x)
+    Differentiable ℝ fun y => √(f y) := fun x ↦ (hf x).sqrt (hs x)
 
 theorem fderivWithin_sqrt (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)
     (hxs : UniqueDiffWithinAt ℝ s x) :
-    fderivWithin ℝ (fun x => √(f x)) s x = (1 / (2 * √(f x))) • fderivWithin ℝ f s x :=
+    fderivWithin ℝ (fun x ↦ √(f x)) s x = (1 / (2 * √(f x))) • fderivWithin ℝ f s x :=
   (hf.hasFDerivWithinAt.sqrt hx).fderivWithin hxs
 
 @[simp]
 theorem fderiv_sqrt (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
-    fderiv ℝ (fun x => √(f x)) x = (1 / (2 * √(f x))) • fderiv ℝ f x :=
+    fderiv ℝ (fun x ↦ √(f x)) x = (1 / (2 * √(f x))) • fderiv ℝ f x :=
   (hf.hasFDerivAt.sqrt hx).fderiv
 
 theorem ContDiffAt.sqrt (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
@@ -149,6 +149,6 @@ theorem ContDiffOn.sqrt (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0
     ContDiffOn ℝ n (fun y => √(f y)) s := fun x hx => (hf x hx).sqrt (hs x hx)
 
 theorem ContDiff.sqrt (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) : ContDiff ℝ n fun y => √(f y) :=
-  contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.sqrt (h x)
+  contDiff_iff_contDiffAt.2 fun x ↦ hf.contDiffAt.sqrt (h x)
 
 end fderiv

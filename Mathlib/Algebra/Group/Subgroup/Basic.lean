@@ -112,11 +112,11 @@ theorem prod_mono_left (H : Subgroup N) : Monotone fun K : Subgroup G => K.prod 
 
 @[to_additive prod_top]
 theorem prod_top (K : Subgroup G) : K.prod (⊤ : Subgroup N) = K.comap (MonoidHom.fst G N) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 @[to_additive top_prod]
 theorem top_prod (H : Subgroup N) : (⊤ : Subgroup G).prod H = H.comap (MonoidHom.snd G N) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[to_additive (attr := simp) top_prod_top]
 theorem top_prod_top : (⊤ : Subgroup G).prod (⊤ : Subgroup N) = ⊤ :=
@@ -198,11 +198,11 @@ theorem mem_pi (I : Set η) {H : ∀ i, Subgroup (f i)} {p : ∀ i, f i} :
 
 @[to_additive]
 theorem pi_top (I : Set η) : (pi I fun i => (⊤ : Subgroup (f i))) = ⊤ :=
-  ext fun x => by simp [mem_pi]
+  ext fun x ↦ by simp [mem_pi]
 
 @[to_additive]
 theorem pi_empty (H : ∀ i, Subgroup (f i)) : pi ∅ H = ⊤ :=
-  ext fun x => by simp [mem_pi]
+  ext fun x ↦ by simp [mem_pi]
 
 @[to_additive]
 theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
@@ -358,7 +358,7 @@ variable {N : Type*} [Group N]
 /-- The preimage of the normalizer is contained in the normalizer of the preimage. -/
 @[to_additive "The preimage of the normalizer is contained in the normalizer of the preimage."]
 theorem le_normalizer_comap (f : N →* G) :
-    H.normalizer.comap f ≤ (H.comap f).normalizer := fun x => by
+    H.normalizer.comap f ≤ (H.comap f).normalizer := fun x ↦ by
   simp only [mem_normalizer_iff, mem_comap]
   intro h n
   simp [h (f n)]

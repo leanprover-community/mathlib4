@@ -1198,7 +1198,7 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
       (le_ciSup (Cardinal.bddAbove_range _) _)))⟩
 
 theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x ↦ ((@equivShrink s h).symm x).val)
   use a
   intro b hb
   simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
@@ -1380,8 +1380,8 @@ theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsW
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a ∈ s) :
-    a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
-  convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
+    a ≤ sup.{u, u} fun x ↦ ((@equivShrink s hs).symm x).val := by
+  convert le_sup.{u, u} (fun x ↦ ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
@@ -1425,7 +1425,7 @@ theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNorma
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
-    (sup.{u, u} fun x => (@equivShrink s hs).symm x) = sSup s :=
+    (sup.{u, u} fun x ↦ (@equivShrink s hs).symm x) = sSup s :=
   let hs' := bddAbove_iff_small.2 hs
   ((csSup_le_iff' hs').2 (le_sup_shrink_equiv hs)).antisymm'
     (sup_le fun _x => le_csSup hs' (Subtype.mem _))

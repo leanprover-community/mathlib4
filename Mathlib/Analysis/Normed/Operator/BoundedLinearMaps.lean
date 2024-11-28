@@ -103,12 +103,12 @@ theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
   LinearMap.id.isLinear.with_bound 1 <| by simp [le_refl]
 
 theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
-  refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => ?_
+  refine (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x ↦ ?_
   rw [one_mul]
   exact le_max_left _ _
 
 theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
-  refine (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x => ?_
+  refine (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x ↦ ?_
   rw [one_mul]
   exact le_max_right _ _
 
@@ -164,7 +164,7 @@ section
 
 open Asymptotics Filter
 
-theorem isBigO_id {f : E → F} (h : IsBoundedLinearMap 𝕜 f) (l : Filter E) : f =O[l] fun x => x :=
+theorem isBigO_id {f : E → F} (h : IsBoundedLinearMap 𝕜 f) (l : Filter E) : f =O[l] fun x ↦ x :=
   let ⟨_, _, hM⟩ := h.bound
   IsBigO.of_bound _ (mem_of_superset univ_mem fun x _ => hM x)
 
@@ -273,7 +273,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
     IsBoundedBilinearMap 𝕜 fun x : E × F => f x.1 x.2 :=
   { add_left := f.map_add₂
     smul_left := f.map_smul₂
-    add_right := fun x => (f x).map_add
+    add_right := fun x ↦ (f x).map_add
     smul_right := fun c x => (f x).map_smul c
     bound :=
       ⟨max ‖f‖ 1, zero_lt_one.trans_le (le_max_right _ _), fun x y =>
@@ -296,7 +296,7 @@ protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) 
     Filter.Eventually.of_forall fun ⟨x, y⟩ => by simpa [mul_assoc] using hC x y
 
 theorem IsBoundedBilinearMap.isBigO_comp {α : Type*} (H : IsBoundedBilinearMap 𝕜 f) {g : α → E}
-    {h : α → F} {l : Filter α} : (fun x => f (g x, h x)) =O[l] fun x => ‖g x‖ * ‖h x‖ :=
+    {h : α → F} {l : Filter α} : (fun x ↦ f (g x, h x)) =O[l] fun x ↦ ‖g x‖ * ‖h x‖ :=
   H.isBigO.comp_tendsto le_top
 
 protected theorem IsBoundedBilinearMap.isBigO' (h : IsBoundedBilinearMap 𝕜 f) :
@@ -342,7 +342,7 @@ theorem ContinuousLinearMap.continuous₂ (f : E →L[𝕜] F →L[𝕜] G) :
   f.isBoundedBilinearMap.continuous
 
 theorem IsBoundedBilinearMap.isBoundedLinearMap_left (h : IsBoundedBilinearMap 𝕜 f) (y : F) :
-    IsBoundedLinearMap 𝕜 fun x => f (x, y) :=
+    IsBoundedLinearMap 𝕜 fun x ↦ f (x, y) :=
   (h.toContinuousLinearMap.flip y).isBoundedLinearMap
 
 theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 𝕜 f) (x : E) :
@@ -429,12 +429,12 @@ end BilinearMap
 
 @[continuity, fun_prop]
 theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
-    (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
+    (hg : Continuous g) (hf : Continuous f) : Continuous fun x ↦ (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
 
 theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (g x).comp (f x)) s :=
+    ContinuousOn (fun x ↦ (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prod hf)
 
 @[continuity, fun_prop]

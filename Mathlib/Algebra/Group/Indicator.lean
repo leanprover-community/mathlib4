@@ -110,7 +110,7 @@ theorem mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ 
 @[to_additive (attr := simp)]
 theorem mulSupport_mulIndicator :
     Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f :=
-  ext fun x => by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
+  ext fun x ↦ by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
 
 /-- If a multiplicative indicator function is not equal to `1` at a point, then that point is in the
 set. -/
@@ -139,7 +139,7 @@ theorem mulIndicator_range_comp {ι : Sort*} (f : ι → α) (g : α → M) :
 
 @[to_additive]
 theorem mulIndicator_congr (h : EqOn f g s) : mulIndicator s f = mulIndicator s g :=
-  funext fun x => by
+  funext fun x ↦ by
     simp only [mulIndicator]
     split_ifs with h_1
     · exact h h_1
@@ -172,7 +172,7 @@ variable {M}
 @[to_additive]
 theorem mulIndicator_mulIndicator (s t : Set α) (f : α → M) :
     mulIndicator s (mulIndicator t f) = mulIndicator (s ∩ t) f :=
-  funext fun x => by
+  funext fun x ↦ by
     simp only [mulIndicator]
     split_ifs <;> simp_all +contextual
 
@@ -207,7 +207,7 @@ theorem mulIndicator_comp_of_one {g : M → N} (hg : g 1 = 1) :
 
 @[to_additive]
 theorem comp_mulIndicator_const (c : M) (f : M → N) (hf : f 1 = 1) :
-    (fun x => f (s.mulIndicator (fun _ => c) x)) = s.mulIndicator fun _ => f c :=
+    (fun x ↦ f (s.mulIndicator (fun _ => c) x)) = s.mulIndicator fun _ => f c :=
   (mulIndicator_comp_of_one hf).symm
 
 @[to_additive]

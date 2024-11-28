@@ -45,7 +45,7 @@ def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i
 `prodEquivPiFinTwo`. -/
 @[simps (config := .asFn)]
 def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
-  { piFinTwoEquiv fun _ => α with invFun := fun x => ![x.1, x.2] }
+  { piFinTwoEquiv fun _ => α with invFun := fun x ↦ ![x.1, x.2] }
 
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of

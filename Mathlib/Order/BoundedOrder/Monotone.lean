@@ -73,12 +73,12 @@ section Preorder
 variable [Preorder α]
 
 theorem monotone_and {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) :
-    Monotone fun x => p x ∧ q x :=
+    Monotone fun x ↦ p x ∧ q x :=
   fun _ _ h => And.imp (m_p h) (m_q h)
 
 -- Note: by finish [monotone] doesn't work
 theorem monotone_or {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) :
-    Monotone fun x => p x ∨ q x :=
+    Monotone fun x ↦ p x ∨ q x :=
   fun _ _ h => Or.imp (m_p h) (m_q h)
 
 theorem monotone_le {x : α} : Monotone (x ≤ ·) := fun _ _ h' h => h.trans h'

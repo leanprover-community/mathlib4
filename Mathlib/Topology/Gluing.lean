@@ -119,7 +119,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
   a = b ∨ ∃ x : D.V (a.1, b.1), D.f _ _ x = a.2 ∧ D.f _ _ (D.t _ _ x) = b.2
 
 theorem rel_equiv : Equivalence D.Rel :=
-  ⟨fun x => Or.inl (refl x), by
+  ⟨fun x ↦ Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, e₂, by rw [← e₁, D.t_inv_apply]⟩], by
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
@@ -272,7 +272,7 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   convert D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp]
   -- Porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
-  show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
+  show (fun x ↦ ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
   rw [← Set.image_image]
   -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
   refine congr_arg ?_ ?_
@@ -393,7 +393,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
+      t := fun i j => ⟨fun x ↦ ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
         refine Continuous.subtype_mk ?_ ?_

@@ -523,7 +523,7 @@ are also inverse to each other on the other side. -/
 theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (hfg : f * g = 1) :
     g * f = 1 := by
   have ginj : Injective g :=
-    HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
+    HasLeftInverse.injective ⟨f, fun x ↦ show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
   let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
     (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi

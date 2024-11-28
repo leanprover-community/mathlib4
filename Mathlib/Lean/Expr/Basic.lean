@@ -463,7 +463,7 @@ where
       This function handles nested existentials. -/
   go (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
     let xn ← mkFreshUserName `x
-    withLocalDeclD xn A fun x => do
+    withLocalDeclD xn A fun x ↦ do
       let px := p.beta #[x]
       let notPx := mkNot px
       let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx

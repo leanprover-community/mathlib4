@@ -327,7 +327,7 @@ theorem snd_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (snd N P).comp (f.pr
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun x ↦ by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 
 end Prod
 
@@ -377,7 +377,7 @@ theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
 @[to_additive]
 theorem comp_coprod {Q : Type*} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →ₙ* P) (g : N →ₙ* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 end Coprod
 
@@ -410,7 +410,7 @@ def snd : M × N →* N :=
       "Given additive monoids `A`, `B`, the natural inclusion homomorphism
       from `A` to `A × B`."]
 def inl : M →* M × N :=
-  { toFun := fun x => (x, 1),
+  { toFun := fun x ↦ (x, 1),
     map_one' := rfl,
     map_mul' := fun _ _ => Prod.ext rfl (one_mul 1).symm }
 
@@ -494,7 +494,7 @@ theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) 
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun x ↦ by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 
 end Prod
 
@@ -543,15 +543,15 @@ theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
 
 @[to_additive (attr := simp)]
 theorem coprod_comp_inl : (f.coprod g).comp (inl M N) = f :=
-  ext fun x => by simp [coprod_apply]
+  ext fun x ↦ by simp [coprod_apply]
 
 @[to_additive (attr := simp)]
 theorem coprod_comp_inr : (f.coprod g).comp (inr M N) = g :=
-  ext fun x => by simp [coprod_apply]
+  ext fun x ↦ by simp [coprod_apply]
 
 @[to_additive (attr := simp)]
 theorem coprod_unique (f : M × N →* P) : (f.comp (inl M N)).coprod (f.comp (inr M N)) = f :=
-  ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
+  ext fun x ↦ by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 
 @[to_additive (attr := simp)]
 theorem coprod_inl_inr {M N : Type*} [CommMonoid M] [CommMonoid N] :
@@ -561,7 +561,7 @@ theorem coprod_inl_inr {M N : Type*} [CommMonoid M] [CommMonoid N] :
 @[to_additive]
 theorem comp_coprod {Q : Type*} [CommMonoid Q] (h : P →* Q) (f : M →* P) (g : N →* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 end Coprod
 

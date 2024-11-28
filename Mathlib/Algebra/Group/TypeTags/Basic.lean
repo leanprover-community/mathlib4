@@ -50,7 +50,7 @@ namespace Additive
 
 /-- Reinterpret `x : α` as an element of `Additive α`. -/
 def ofMul : α ≃ Additive α :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Additive α` as an element of `α`. -/
 def toMul : Additive α ≃ α := ofMul.symm
@@ -80,7 +80,7 @@ namespace Multiplicative
 
 /-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
 def ofAdd : α ≃ Multiplicative α :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
 def toAdd : Multiplicative α ≃ α := ofAdd.symm
@@ -311,7 +311,7 @@ instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicati
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
-  ⟨fun x => ofAdd x.toMul⁻¹⟩
+  ⟨fun x ↦ ofAdd x.toMul⁻¹⟩
 
 @[simp]
 theorem ofMul_inv [Inv α] (x : α) : ofMul x⁻¹ = -ofMul x :=
@@ -322,7 +322,7 @@ theorem toMul_neg [Inv α] (x : Additive α) : (-x).toMul = x.toMul⁻¹ :=
   rfl
 
 instance Multiplicative.inv [Neg α] : Inv (Multiplicative α) :=
-  ⟨fun x => ofMul (-x.toAdd)⟩
+  ⟨fun x ↦ ofMul (-x.toAdd)⟩
 
 @[simp]
 theorem ofAdd_neg [Neg α] (x : α) : ofAdd (-x) = (ofAdd x)⁻¹ :=

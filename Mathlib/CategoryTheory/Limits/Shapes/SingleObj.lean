@@ -89,10 +89,10 @@ def Types.Quot.equivOrbitRelQuotient :
     Types.Quot J ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) where
   toFun := Quot.lift (fun p => ⟦p.2⟧) <| fun a b h => Quotient.sound <|
     (Types.Quot.Rel.iff_orbitRel J a.2 b.2).mp h
-  invFun := Quot.lift (fun x => Quot.mk _ ⟨SingleObj.star G, x⟩) <| fun a b h =>
+  invFun := Quot.lift (fun x ↦ Quot.mk _ ⟨SingleObj.star G, x⟩) <| fun a b h =>
     Quot.sound <| (Types.Quot.Rel.iff_orbitRel J a b).mpr h
-  left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
-  right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
+  left_inv := fun x ↦ Quot.inductionOn x (fun _ ↦ rfl)
+  right_inv := fun x ↦ Quot.inductionOn x (fun _ ↦ rfl)
 
 /-- The colimit of `J : SingleObj G ⥤ Type u` is equivalent to the quotient of
 `J.obj (SingleObj.star G)` by the induced action. -/

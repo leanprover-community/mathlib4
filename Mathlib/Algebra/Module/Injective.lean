@@ -163,7 +163,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=
-        { toFun := fun x => f x.2.choose
+        { toFun := fun x ↦ f x.2.choose
           map_add' := fun x y => by
             have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
             rw [← map_add, ← (x + y).2.choose_spec] at eq1

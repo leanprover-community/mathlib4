@@ -219,7 +219,7 @@ theorem AnalyticSet.image_of_continuousOn {β : Type*} [TopologicalSpace β] {s 
   have : f '' s = range (f ∘ g) := by rw [range_comp, gs]
   rw [this]
   apply analyticSet_range_of_polishSpace
-  apply hf.comp_continuous g_cont fun x => _
+  apply hf.comp_continuous g_cont fun x ↦ _
   rw [← gs]
   exact mem_range_self
 
@@ -245,7 +245,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     exact
       isClosed_eq ((f_cont n).comp (continuous_apply n)) ((f_cont i₀).comp (continuous_apply i₀))
   haveI : PolishSpace t := t_closed.polishSpace
-  let F : t → α := fun x => f i₀ ((x : γ) i₀)
+  let F : t → α := fun x ↦ f i₀ ((x : γ) i₀)
   have F_cont : Continuous F := (f_cont i₀).comp ((continuous_apply i₀).comp continuous_subtype_val)
   have F_range : range F = ⋂ n : ι, s n := by
     apply Subset.antisymm
@@ -934,7 +934,7 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }
   have : ∀ x, (map (f · x) l ×ˢ map (f · x) l).HasAntitoneBasis fun n =>
-      ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x => (hu.map _).prod (hu.map _)
+      ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x ↦ (hu.map _).prod (hu.map _)
   simp_rw [and_iff_right (hl.map _),
     Filter.HasBasis.le_basis_iff (this _).toHasBasis Metric.uniformity_basis_dist_inv_nat_succ,
     Set.setOf_forall]

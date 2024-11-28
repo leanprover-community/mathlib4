@@ -369,7 +369,7 @@ theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
 /-- If the scalar product forms a `Module`, and the `SubMulAction` is not `⊥`, then the
 subset inherits the zero. -/
 instance [n_empty : Nonempty p] : Zero p where
-  zero := ⟨0, n_empty.elim fun x => p.zero_mem ⟨x, x.prop⟩⟩
+  zero := ⟨0, n_empty.elim fun x ↦ p.zero_mem ⟨x, x.prop⟩⟩
 
 end Module
 
@@ -391,7 +391,7 @@ theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
     exact neg_mem _ h, neg_mem _⟩
 
 instance : Neg p :=
-  ⟨fun x => ⟨-x.1, neg_mem _ x.2⟩⟩
+  ⟨fun x ↦ ⟨-x.1, neg_mem _ x.2⟩⟩
 
 @[simp, norm_cast]
 theorem val_neg (x : p) : ((-x : p) : M) = -x :=

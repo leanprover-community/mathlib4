@@ -62,7 +62,7 @@ theorem coe_toSubsemiring (S : Subalgebra R A) : (↑S.toSubsemiring : Set A) = 
 
 theorem toSubsemiring_injective :
     Function.Injective (toSubsemiring : Subalgebra R A → Subsemiring A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
+  ext fun x ↦ by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
 
 theorem toSubsemiring_inj {S U : Subalgebra R A} : S.toSubsemiring = U.toSubsemiring ↔ S = U :=
   toSubsemiring_injective.eq_iff
@@ -199,7 +199,7 @@ theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R
 
 theorem toSubring_injective {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] :
     Function.Injective (toSubring : Subalgebra R A → Subring A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubring, ← mem_toSubring, h]
+  ext fun x ↦ by rw [← mem_toSubring, ← mem_toSubring, h]
 
 theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S U : Subalgebra R A} : S.toSubring = U.toSubring ↔ S = U :=
@@ -276,7 +276,7 @@ which can quickly get expensive.
 instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     [IsScalarTower R' R A] :
     Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
+  { (algebraMap R' A).codRestrict S fun x ↦ by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
         Algebra.algebraMap_eq_smul_one]
       exact algebraMap_mem S
@@ -845,7 +845,7 @@ def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
   AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl rfl
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+  ⟨fun B C => ext fun x ↦ by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsingleton (A →ₐ[R] B) :=
   ⟨fun f g =>
@@ -856,7 +856,7 @@ instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsinglet
 
 instance _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] :
     Subsingleton (A ≃ₐ[R] B) :=
-  ⟨fun f g => AlgEquiv.ext fun x => AlgHom.ext_iff.mp (Subsingleton.elim f.toAlgHom g.toAlgHom) x⟩
+  ⟨fun f g => AlgEquiv.ext fun x ↦ AlgHom.ext_iff.mp (Subsingleton.elim f.toAlgHom g.toAlgHom) x⟩
 
 instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
     Subsingleton (A ≃ₐ[R] B) :=

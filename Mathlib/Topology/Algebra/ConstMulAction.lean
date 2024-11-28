@@ -78,27 +78,27 @@ instance : ContinuousConstSMul (ULift M) α := ⟨fun γ ↦ continuous_const_sm
 
 @[to_additive]
 theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf : Tendsto f l (𝓝 a))
-    (c : M) : Tendsto (fun x => c • f x) l (𝓝 (c • a)) :=
+    (c : M) : Tendsto (fun x ↦ c • f x) l (𝓝 (c • a)) :=
   ((continuous_const_smul _).tendsto _).comp hf
 
 variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
 @[to_additive]
 nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
-    ContinuousWithinAt (fun x => c • g x) s b :=
+    ContinuousWithinAt (fun x ↦ c • g x) s b :=
   hg.const_smul c
 
 @[to_additive (attr := fun_prop)]
 nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
-    ContinuousAt (fun x => c • g x) b :=
+    ContinuousAt (fun x ↦ c • g x) b :=
   hg.const_smul c
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
-    ContinuousOn (fun x => c • g x) s := fun x hx => (hg x hx).const_smul c
+    ContinuousOn (fun x ↦ c • g x) s := fun x hx => (hg x hx).const_smul c
 
 @[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
+theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x ↦ c • g x :=
   (continuous_const_smul _).comp hg
 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
@@ -188,28 +188,28 @@ variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [Continuou
 
 @[to_additive]
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
-    Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
+    Tendsto (fun x ↦ c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h ↦ by simpa only [inv_smul_smul] using h.const_smul c⁻¹, fun h ↦ h.const_smul _⟩
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {s : Set β}
 
 @[to_additive]
 theorem continuousWithinAt_const_smul_iff (c : G) :
-    ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
+    ContinuousWithinAt (fun x ↦ c • f x) s b ↔ ContinuousWithinAt f s b :=
   tendsto_const_smul_iff c
 
 @[to_additive]
 theorem continuousOn_const_smul_iff (c : G) :
-    ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
+    ContinuousOn (fun x ↦ c • f x) s ↔ ContinuousOn f s :=
   forall₂_congr fun _ _ => continuousWithinAt_const_smul_iff c
 
 @[to_additive]
 theorem continuousAt_const_smul_iff (c : G) :
-    ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
+    ContinuousAt (fun x ↦ c • f x) b ↔ ContinuousAt f b :=
   tendsto_const_smul_iff c
 
 @[to_additive]
-theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
+theorem continuous_const_smul_iff (c : G) : (Continuous fun x ↦ c • f x) ↔ Continuous f := by
   simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
 
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on
@@ -283,24 +283,24 @@ variable {G₀ : Type*} [TopologicalSpace α] [GroupWithZero G₀] [MulAction G�
   [ContinuousConstSMul G₀ α]
 
 theorem tendsto_const_smul_iff₀ {f : β → α} {l : Filter β} {a : α} {c : G₀} (hc : c ≠ 0) :
-    Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
+    Tendsto (fun x ↦ c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   tendsto_const_smul_iff (Units.mk0 c hc)
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : G₀} {s : Set β}
 
 theorem continuousWithinAt_const_smul_iff₀ (hc : c ≠ 0) :
-    ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
+    ContinuousWithinAt (fun x ↦ c • f x) s b ↔ ContinuousWithinAt f s b :=
   tendsto_const_smul_iff (Units.mk0 c hc)
 
 theorem continuousOn_const_smul_iff₀ (hc : c ≠ 0) :
-    ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
+    ContinuousOn (fun x ↦ c • f x) s ↔ ContinuousOn f s :=
   continuousOn_const_smul_iff (Units.mk0 c hc)
 
 theorem continuousAt_const_smul_iff₀ (hc : c ≠ 0) :
-    ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
+    ContinuousAt (fun x ↦ c • f x) b ↔ ContinuousAt f b :=
   continuousAt_const_smul_iff (Units.mk0 c hc)
 
-theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c • f x) ↔ Continuous f :=
+theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x ↦ c • f x) ↔ Continuous f :=
   continuous_const_smul_iff (Units.mk0 c hc)
 
 /-- Scalar multiplication by a non-zero element of a group with zero acting on `α` is a
@@ -364,11 +364,11 @@ theorem IsClosed.smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [Topolo
   isClosedMap_smul₀ c s hs
 
 theorem HasCompactMulSupport.comp_smul {β : Type*} [One β] {f : α → β} (h : HasCompactMulSupport f)
-    {c : G₀} (hc : c ≠ 0) : HasCompactMulSupport fun x => f (c • x) :=
+    {c : G₀} (hc : c ≠ 0) : HasCompactMulSupport fun x ↦ f (c • x) :=
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 
 theorem HasCompactSupport.comp_smul {β : Type*} [Zero β] {f : α → β} (h : HasCompactSupport f)
-    {c : G₀} (hc : c ≠ 0) : HasCompactSupport fun x => f (c • x) :=
+    {c : G₀} (hc : c ≠ 0) : HasCompactSupport fun x ↦ f (c • x) :=
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 
 attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
@@ -380,25 +380,25 @@ namespace IsUnit
 variable [Monoid M] [TopologicalSpace α] [MulAction M α] [ContinuousConstSMul M α]
 
 nonrec theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
-    Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
+    Tendsto (fun x ↦ c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   tendsto_const_smul_iff hc.unit
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : M} {s : Set β}
 
 nonrec theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
-    ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
+    ContinuousWithinAt (fun x ↦ c • f x) s b ↔ ContinuousWithinAt f s b :=
   continuousWithinAt_const_smul_iff hc.unit
 
 nonrec theorem continuousOn_const_smul_iff (hc : IsUnit c) :
-    ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
+    ContinuousOn (fun x ↦ c • f x) s ↔ ContinuousOn f s :=
   continuousOn_const_smul_iff hc.unit
 
 nonrec theorem continuousAt_const_smul_iff (hc : IsUnit c) :
-    ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
+    ContinuousAt (fun x ↦ c • f x) b ↔ ContinuousAt f b :=
   continuousAt_const_smul_iff hc.unit
 
 nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
-    (Continuous fun x => c • f x) ↔ Continuous f :=
+    (Continuous fun x ↦ c • f x) ↔ Continuous f :=
   continuous_const_smul_iff hc.unit
 
 nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=

@@ -270,7 +270,7 @@ instance : Div s :=
   ⟨fun x y => ⟨x / y, s.div_mem x.2 y.2⟩⟩
 
 instance : Inv s :=
-  ⟨fun x => ⟨x⁻¹, s.inv_mem x.2⟩⟩
+  ⟨fun x ↦ ⟨x⁻¹, s.inv_mem x.2⟩⟩
 
 instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩

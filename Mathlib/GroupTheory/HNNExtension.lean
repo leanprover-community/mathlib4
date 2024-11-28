@@ -207,7 +207,7 @@ def ReducedWord.empty : ReducedWord G A B :=
 variable {G A B}
 /-- The product of a `ReducedWord` as an element of the `HNNExtension` -/
 def ReducedWord.prod : ReducedWord G A B → HNNExtension G A B φ :=
-  fun w => of w.head * (w.toList.map (fun x => t ^ (x.1 : ℤ) * of x.2)).prod
+  fun w => of w.head * (w.toList.map (fun x ↦ t ^ (x.1 : ℤ) * of x.2)).prod
 
 /-- Given a `TransversalPair`, we can make a normal form for words in the `HNNExtension G A B φ`.
 The normal form is a `head`, which is an element of `G`, followed by the product list of pairs,

@@ -76,8 +76,8 @@ variable {α β : Type*}
 inductive IsPoly : ((α → ℕ) → ℤ) → Prop
   | proj : ∀ i, IsPoly fun x : α → ℕ => x i
   | const : ∀ n : ℤ, IsPoly fun _ : α → ℕ => n
-  | sub : ∀ {f g : (α → ℕ) → ℤ}, IsPoly f → IsPoly g → IsPoly fun x => f x - g x
-  | mul : ∀ {f g : (α → ℕ) → ℤ}, IsPoly f → IsPoly g → IsPoly fun x => f x * g x
+  | sub : ∀ {f g : (α → ℕ) → ℤ}, IsPoly f → IsPoly g → IsPoly fun x ↦ f x - g x
+  | mul : ∀ {f g : (α → ℕ) → ℤ}, IsPoly f → IsPoly g → IsPoly fun x ↦ f x * g x
 
 theorem IsPoly.neg {f : (α → ℕ) → ℤ} : IsPoly f → IsPoly (-f) := by
   rw [← zero_sub]; exact (IsPoly.const 0).sub
@@ -453,7 +453,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
   ext (ex1_dioph <| reindex_dioph _ (none::some) d) fun v =>
-    exists_congr fun x => by
+    exists_congr fun x ↦ by
       dsimp
       rw [show Option.elim' x v ∘ cons none some = x::v from
           funext fun s => by cases' s with a b <;> rfl]

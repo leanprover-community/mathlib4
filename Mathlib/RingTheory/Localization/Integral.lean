@@ -151,8 +151,8 @@ variable {A K C}
 -/
 theorem comap_isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] :
     Algebra.IsAlgebraic A C ↔ Algebra.IsAlgebraic K C :=
-  ⟨fun h ↦ ⟨fun x => (isAlgebraic_iff A K C).mp (h.isAlgebraic x)⟩,
-   fun h ↦ ⟨fun x => (isAlgebraic_iff A K C).mpr (h.isAlgebraic x)⟩⟩
+  ⟨fun h ↦ ⟨fun x ↦ (isAlgebraic_iff A K C).mp (h.isAlgebraic x)⟩,
+   fun h ↦ ⟨fun x ↦ (isAlgebraic_iff A K C).mpr (h.isAlgebraic x)⟩⟩
 
 end IsFractionRing
 

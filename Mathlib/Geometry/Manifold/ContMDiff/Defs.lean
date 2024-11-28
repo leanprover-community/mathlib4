@@ -557,7 +557,7 @@ theorem ContMDiffOn.continuousOn (hf : ContMDiffOn I I' n f s) : ContinuousOn f 
   (hf x hx).continuousWithinAt
 
 theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (hf x).continuousAt
+  continuous_iff_continuousAt.2 fun x ↦ (hf x).continuousAt
 
 /-! ### `C^∞` smoothness -/
 

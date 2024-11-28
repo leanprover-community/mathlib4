@@ -386,7 +386,7 @@ theorem ExponentExists.of_finite : ExponentExists G := by
   let _inst := Fintype.ofFinite G
   simp only [Monoid.ExponentExists]
   refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
-  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (_root_.orderOf_pos x).ne'
+  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x ↦ (_root_.orderOf_pos x).ne'
   · rw [← orderOf_dvd_iff_pow_eq_one, lcm_orderOf_eq_exponent]
     exact order_dvd_exponent g
 

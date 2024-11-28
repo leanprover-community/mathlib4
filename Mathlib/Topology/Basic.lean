@@ -766,7 +766,7 @@ theorem IsOpen.eventually_mem (hs : IsOpen s) (hx : x ∈ s) :
 /-- The open neighborhoods of `x` are a basis for the neighborhood filter. See `nhds_basis_opens`
 for a variant using open sets around `x` instead. -/
 theorem nhds_basis_opens' (x : X) :
-    (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsOpen s) fun x => x := by
+    (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsOpen s) fun x ↦ x := by
   convert nhds_basis_opens x using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 
@@ -1037,7 +1037,7 @@ theorem clusterPt_principal {x : X} {C : Set X} :
 -/
 
 theorem interior_eq_nhds' : interior s = { x | s ∈ 𝓝 x } :=
-  Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_setOf_eq]
+  Set.ext fun x ↦ by simp only [mem_interior, mem_nhds_iff, mem_setOf_eq]
 
 theorem interior_eq_nhds : interior s = { x | 𝓝 x ≤ 𝓟 s } :=
   interior_eq_nhds'.trans <| by simp only [le_principal_iff]
@@ -1098,7 +1098,7 @@ alias ⟨_, Filter.Frequently.mem_closure⟩ := mem_closure_iff_frequently
 to `s` then `x` is in `s`. -/
 theorem isClosed_iff_frequently : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y ∈ s) → x ∈ s := by
   rw [← closure_subset_iff_isClosed]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [mem_closure_iff_frequently]
 
 /-- The set of cluster points of a filter is closed. In particular, the set of limit points
@@ -1424,7 +1424,7 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 -- This is needed due to reducibility issues with the `continuity` tactic.
 @[continuity, fun_prop]
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
-    Continuous (fun x => g (f x)) := hg.comp hf
+    Continuous (fun x ↦ g (f x)) := hg.comp hf
 
 theorem Continuous.iterate {f : X → X} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
@@ -1435,7 +1435,7 @@ nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
 
 @[fun_prop]
 theorem ContinuousAt.comp' {g : Y → Z} {x : X} (hg : ContinuousAt g (f x))
-    (hf : ContinuousAt f x) : ContinuousAt (fun x => g (f x)) x := ContinuousAt.comp hg hf
+    (hf : ContinuousAt f x) : ContinuousAt (fun x ↦ g (f x)) x := ContinuousAt.comp hg hf
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContinuousAt.comp_of_eq {g : Y → Z} (hg : ContinuousAt g y)
@@ -1556,7 +1556,7 @@ variable {α ι : Type*} (f : α → X) (g : X → Y)
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/
-theorem Function.Surjective.denseRange (hf : Function.Surjective f) : DenseRange f := fun x => by
+theorem Function.Surjective.denseRange (hf : Function.Surjective f) : DenseRange f := fun x ↦ by
   simp [hf.range_eq]
 
 theorem denseRange_id : DenseRange (id : X → X) :=

@@ -89,7 +89,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
+  RingHom.ext fun x ↦ Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
 
 instance inhabited : Inhabited (R ⧸ I) :=
   ⟨mk I 37⟩
@@ -107,7 +107,7 @@ theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
-  Quotient.inductionOn' y fun x => Exists.intro x rfl
+  Quotient.inductionOn' y fun x ↦ Exists.intro x rfl
 
 instance : RingHomSurjective (mk I) :=
   ⟨mk_surjective⟩

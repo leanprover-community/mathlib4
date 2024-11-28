@@ -76,9 +76,9 @@ theorem fst_apply (x : M × M₂) : fst R M M₂ x = x.1 :=
 theorem snd_apply (x : M × M₂) : snd R M M₂ x = x.2 :=
   rfl
 
-theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x => ⟨(x, 0), rfl⟩
+theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x ↦ ⟨(x, 0), rfl⟩
 
-theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x), rfl⟩
+theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x ↦ ⟨(0, x), rfl⟩
 
 /-- The prod of two linear maps is a linear map. -/
 @[simps]
@@ -164,7 +164,7 @@ theorem ker_fst : ker (fst R M M₂) = range (inr R M M₂) :=
 end
 
 @[simp]
-theorem coe_inl : (inl R M M₂ : M → M × M₂) = fun x => (x, 0) :=
+theorem coe_inl : (inl R M M₂ : M → M × M₂) = fun x ↦ (x, 0) :=
   rfl
 
 theorem inl_apply (x : M) : inl R M M₂ x = (x, 0) :=
@@ -217,7 +217,7 @@ theorem coprod_zero_right (f : M →ₗ[R] M₃) : f.coprod (0 : M₂ →ₗ[R] 
 
 theorem comp_coprod (f : M₃ →ₗ[R] M₄) (g₁ : M →ₗ[R] M₃) (g₂ : M₂ →ₗ[R] M₃) :
     f.comp (g₁.coprod g₂) = (f.comp g₁).coprod (f.comp g₂) :=
-  ext fun x => f.map_add (g₁ x.1) (g₂ x.2)
+  ext fun x ↦ f.map_add (g₁ x.1) (g₂ x.2)
 
 theorem fst_eq_coprod : fst R M M₂ = coprod LinearMap.id 0 := by ext; simp
 
@@ -382,7 +382,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃
   [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 
 theorem range_coprod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : range (f.coprod g) = range f ⊔ range g :=
-  Submodule.ext fun x => by simp [mem_sup]
+  Submodule.ext fun x ↦ by simp [mem_sup]
 
 theorem isCompl_range_inl_inr : IsCompl (range <| inl R M M₂) (range <| inr R M M₂) := by
   constructor
@@ -468,7 +468,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂]
 
 theorem sup_eq_range (p q : Submodule R M) : p ⊔ q = range (p.subtype.coprod q.subtype) :=
-  Submodule.ext fun x => by simp [Submodule.mem_sup, SetLike.exists]
+  Submodule.ext fun x ↦ by simp [Submodule.mem_sup, SetLike.exists]
 
 variable (p : Submodule R M) (q : Submodule R M₂)
 

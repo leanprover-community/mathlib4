@@ -134,7 +134,7 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 `S` and the type of additive units of `S`. "]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
-  invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x ↦ ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
   left_inv := fun _ => rfl
   right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
@@ -249,8 +249,8 @@ the subgroup itself as a type. -/
 @[to_additive " The equivalence between the coercion of an additive subgroup `S` of
 `Mˣ` to an additive submonoid of `M` and the additive subgroup itself as a type. "]
 noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
-  toFun := fun x => ⟨S.unit_of_mem_ofUnits x.2, S.unit_of_mem_ofUnits_spec_mem⟩
-  invFun := fun x => ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
+  toFun := fun x ↦ ⟨S.unit_of_mem_ofUnits x.2, S.unit_of_mem_ofUnits_spec_mem⟩
+  invFun := fun x ↦ ⟨x.1, ⟨x.1, x.2, rfl⟩⟩
   left_inv := fun _ => rfl
   right_inv := fun _ => Subtype.ext (Units.ext rfl)
   map_mul' := fun _ _ => Subtype.ext (Units.ext rfl)

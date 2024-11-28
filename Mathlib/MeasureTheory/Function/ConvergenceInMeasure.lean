@@ -214,7 +214,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
           (add_le_add_right hn_ge 1))
     exact le_trans hNx.le h_inv_n_le_k
   rw [ae_iff]
-  refine ⟨ExistsSeqTendstoAe.seqTendstoAeSeq_strictMono hfg, measure_mono_null (fun x => ?_) hμs⟩
+  refine ⟨ExistsSeqTendstoAe.seqTendstoAeSeq_strictMono hfg, measure_mono_null (fun x ↦ ?_) hμs⟩
   rw [Set.mem_setOf_eq, ← @Classical.not_not (x ∈ s), not_imp_not]
   exact h_tendsto x
 

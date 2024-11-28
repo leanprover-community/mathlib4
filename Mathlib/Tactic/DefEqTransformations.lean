@@ -92,7 +92,7 @@ elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
 This also exists as a `conv`-mode tactic.
 
 This means that whenever there is an applied lambda expression such as
-`(fun x => f x) y` then the argument is substituted into the lambda expression
+`(fun x ↦ f x) y` then the argument is substituted into the lambda expression
 yielding an expression such as `f y`.
 -/
 elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>

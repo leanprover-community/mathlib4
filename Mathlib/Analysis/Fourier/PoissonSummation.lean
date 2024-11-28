@@ -58,7 +58,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
-    have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
+    have : Periodic e 1 := Periodic.comp (fun x ↦ AddCircle.coe_add_period 1 x) (fourier (-m))
     simpa only [mul_one] using this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
@@ -140,7 +140,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
   refine fun y => (hd y.1 (by linarith [hx.1, y.2.1])).trans ?_
-  have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x => by positivity
+  have A : ∀ x : ℝ, 0 ≤ |x| ^ (-b) := fun x ↦ by positivity
   rw [mul_assoc, mul_le_mul_left hc, norm_of_nonneg (A _), norm_of_nonneg (A _)]
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
@@ -156,7 +156,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   have : (fun x : ℝ => |x| ^ (-b)) ∘ Neg.neg = fun x : ℝ => |x| ^ (-b) := by
     ext1 x; simp only [Function.comp_apply, abs_neg]
   rw [this] at h2
-  refine (isBigO_of_le _ fun x => ?_).trans h2
+  refine (isBigO_of_le _ fun x ↦ ?_).trans h2
   -- equality holds, but less work to prove `≤` alone
   rw [norm_norm, Function.comp_apply, norm_norm, ContinuousMap.norm_le _ (norm_nonneg _)]
   rintro ⟨x, hx⟩
@@ -168,7 +168,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
 
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : f =O[cocompact ℝ] fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
-    (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) =O[cocompact ℝ] (|·| ^ (-b)) := by
+    (fun x ↦ ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) =O[cocompact ℝ] (|·| ^ (-b)) := by
   obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
   have : ∀ x : ℝ,

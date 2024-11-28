@@ -237,7 +237,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       apply Subalgebra.restrictScalars_injective R
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
-    letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
+    letI g : t → AX := fun x ↦ MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
     refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]

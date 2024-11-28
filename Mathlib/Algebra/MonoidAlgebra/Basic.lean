@@ -60,7 +60,7 @@ non-associative algebras over `k` is adjoint to the forgetful functor in the oth
 def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (G →ₙ* A) ≃ (MonoidAlgebra k G →ₙₐ[k] A) where
   toFun f :=
-    { liftAddHom fun x => (smulAddHom k A).flip (f x) with
+    { liftAddHom fun x ↦ (smulAddHom k A).flip (f x) with
       toFun := fun a ↦ a.sum fun m t => t • f m
       map_smul' := fun t' a => by
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed

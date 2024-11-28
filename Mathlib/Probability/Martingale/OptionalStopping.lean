@@ -70,7 +70,7 @@ theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp :
   refine submartingale_of_setIntegral_le hadp hint fun i j hij s hs => ?_
   classical
   specialize hf (s.piecewise (fun _ => i) fun _ => j) _ (isStoppingTime_piecewise_const hij hs)
-    (isStoppingTime_const 𝒢 j) (fun x => (ite_le_sup _ _ (x ∈ s)).trans (max_eq_right hij).le)
+    (isStoppingTime_const 𝒢 j) (fun x ↦ (ite_le_sup _ _ (x ∈ s)).trans (max_eq_right hij).le)
     ⟨j, fun _ => le_rfl⟩
   rwa [stoppedValue_const, stoppedValue_piecewise_const,
     integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
@@ -203,7 +203,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hitting_isStoppingTime hsub.adapted measurableSet_Ici) hitting_le)
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hitting_isStoppingTime hsub.adapted measurableSet_Ici) hitting_le)
-      exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
+      exacts [integral_nonneg fun x ↦ hnonneg _ _, integral_nonneg fun x ↦ hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_
       rw [← stoppedValue_const f n]

@@ -557,7 +557,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
   classical
-  set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
+  set f := fun x ↦ if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
   refine ⟨f, fs, ?_, ?_⟩
   -- check that the range of `f` is `s`.
@@ -656,7 +656,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ Continuous f :=
     exists_retraction_of_isClosed hs hne
   have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.eq <| fs x x.2
-  exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
+  exact ⟨rangeFactorization f, A, fun x ↦ ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
 end PiNat
 
@@ -679,7 +679,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
-  let g : s → α := fun x => x.2.some
+  let g : s → α := fun x ↦ x.2.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
     (mem_iInter.1 x.2.some_mem n : _)
   have g_cont : Continuous g := by

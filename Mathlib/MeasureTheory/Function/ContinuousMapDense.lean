@@ -79,7 +79,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     (hε : ε ≠ 0) :
     ∃ f : α → E,
       Continuous f ∧
-        eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ ≤ ε ∧
+        eLpNorm (fun x ↦ f x - s.indicator (fun _y => c) x) p μ ≤ ε ∧
           (∀ x, ‖f x‖ ≤ ‖c‖) ∧ Function.support f ⊆ u ∧ Memℒp f p μ := by
   obtain ⟨η, η_pos, hη⟩ :
       ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _x => c) p μ ≤ ε :=
@@ -95,7 +95,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
       (disjoint_compl_left_iff.2 hsv)
   -- Multiply this by `c` to get a continuous approximation to the function `f`; the key point is
   -- that this is pointwise bounded by the indicator of the set `v \ s`, which has small measure.
-  have g_norm : ∀ x, ‖g x‖ = g x := fun x => by rw [Real.norm_eq_abs, abs_of_nonneg (hg_range x).1]
+  have g_norm : ∀ x, ‖g x‖ = g x := fun x ↦ by rw [Real.norm_eq_abs, abs_of_nonneg (hg_range x).1]
   have gc_bd0 : ∀ x, ‖g x • c‖ ≤ ‖c‖ := by
     intro x
     simp only [norm_smul, g_norm x]
@@ -114,7 +114,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
   have gc_support : (Function.support fun x : α => g x • c) ⊆ v := by
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
-  have gc_mem : Memℒp (fun x => g x • c) p μ := by
+  have gc_mem : Memℒp (fun x ↦ g x • c) p μ := by
     refine Memℒp.smul_of_top_left (memℒp_top_const _) ?_
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
@@ -122,13 +122,13 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
       simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne,
         ENNReal.rpow_eq_top_iff, inv_lt_zero, false_and, or_false, not_and, not_lt,
         ENNReal.toReal_nonneg, imp_true_iff]
-    refine (eLpNorm_mono fun x => ?_).trans_lt this
+    refine (eLpNorm_mono fun x ↦ ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CStarRing.norm_one]
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
   refine
-    ⟨fun x => g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
+    ⟨fun x ↦ g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
 

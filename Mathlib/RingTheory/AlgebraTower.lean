@@ -220,7 +220,7 @@ def algHomEquivSigma :
     rfl
   right_inv := by
     rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
-    obtain rfl : f = fun x => g (algebraMap B C x) := by
+    obtain rfl : f = fun x ↦ g (algebraMap B C x) := by
       ext x
       exact (hg x).symm
     rfl

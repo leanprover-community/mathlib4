@@ -53,7 +53,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   have u'_meas : ∀ i, MeasurableSet (u' i) := by
     intro i
     exact MeasurableSet.biInter (s_count.mono inter_subset_left) fun b _ => (huv i b).1
-  let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
+  let f' : α → β := fun x ↦ ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
   have f'_meas : Measurable f' := by fun_prop (disch := aesop)
   let t := ⋃ (p : s) (q : ↥(s ∩ Ioi p)), u' p ∩ v p q
   have μt : μ t ≤ 0 :=

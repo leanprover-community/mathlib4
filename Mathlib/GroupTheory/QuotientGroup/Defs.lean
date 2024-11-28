@@ -84,7 +84,7 @@ See note [partially-applied ext lemmas]. -/
 
  See note [partially-applied ext lemmas]. "]
 theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| (DFunLike.congr_fun h : _)
+  MonoidHom.ext fun x ↦ QuotientGroup.induction_on x <| (DFunLike.congr_fun h : _)
 
 @[to_additive (attr := simp)]
 theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
@@ -205,7 +205,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
-  refine induction_on x fun x => ?_
+  refine induction_on x fun x ↦ ?_
   simp only [map_mk, MonoidHom.comp_apply]
 
 @[to_additive (attr := simp)]
@@ -252,12 +252,12 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
   { map G' H' e (he ▸ G'.le_comap_map (e : G →* H)) with
     toFun := map G' H' e (he ▸ G'.le_comap_map (e : G →* H))
     invFun := map H' G' e.symm (he ▸ (G'.map_equiv_eq_comap_symm e).le)
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H))
         (he ▸ (G'.map_equiv_eq_comap_symm e).le)]
       simp only [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
         MulEquiv.coe_monoidHom_refl, map_id_apply]
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
         (he ▸ G'.le_comap_map (e : G →* H)) ]
       simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,

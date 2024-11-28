@@ -95,7 +95,7 @@ def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := norm
     dist := fun x y => norm (x - y)
-    dist_self := fun x => by
+    dist_self := fun x ↦ by
       simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
     dist_comm := fun x y => by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
     dist_triangle := fun x y z => by

@@ -28,7 +28,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
     (hmb : m < f' b) : m ∈ f' '' Ioo a b := by
   rcases hab.eq_or_lt with (rfl | hab')
   · exact (lt_asymm hma hmb).elim
-  set g : ℝ → ℝ := fun x => f x - m * x
+  set g : ℝ → ℝ := fun x ↦ f x - m * x
   have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x := by
     intro x hx
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)

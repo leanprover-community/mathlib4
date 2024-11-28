@@ -592,11 +592,11 @@ theorem prod_mono_left (t : NonUnitalSubring S) : Monotone fun s : NonUnitalSubr
 
 theorem prod_top (s : NonUnitalSubring R) :
     s.prod (⊤ : NonUnitalSubring S) = s.comap (NonUnitalRingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 theorem top_prod (s : NonUnitalSubring S) :
     (⊤ : NonUnitalSubring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[simp]
 theorem top_prod_top : (⊤ : NonUnitalSubring R).prod (⊤ : NonUnitalSubring S) = ⊤ :=
@@ -632,7 +632,7 @@ theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+  Set.ext fun x ↦ by simp [mem_sSup_of_directedOn Sne hS]
 
 theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubring R} {x : S} :
     x ∈ K.map (f : R →ₙ+* S) ↔ f.symm x ∈ K :=
@@ -659,7 +659,7 @@ open NonUnitalSubring
 
 This is the bundled version of `Set.rangeFactorization`. -/
 def rangeRestrict (f : R →ₙ+* S) : R →ₙ+* f.range :=
-  NonUnitalRingHom.codRestrict f f.range fun x => ⟨x, rfl⟩
+  NonUnitalRingHom.codRestrict f f.range fun x ↦ ⟨x, rfl⟩
 
 @[simp]
 theorem coe_rangeRestrict (f : R →ₙ+* S) (x : R) : (f.rangeRestrict x : S) = f x :=
@@ -752,8 +752,8 @@ def nonUnitalSubringCongr (h : s = t) : s ≃+* t :=
 `RingHom.range`. -/
 def ofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
-    toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ NonUnitalSubringClass.subtype f.range) x
+    toFun := fun x ↦ f.rangeRestrict x
+    invFun := fun x ↦ (g ∘ NonUnitalSubringClass.subtype f.range) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

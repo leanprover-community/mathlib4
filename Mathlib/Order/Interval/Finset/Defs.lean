@@ -810,7 +810,7 @@ section LocallyFiniteOrderTop
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β] [@DecidableRel (α × β) (· ≤ ·)]
 
 instance Prod.instLocallyFiniteOrderTop : LocallyFiniteOrderTop (α × β) :=
-  LocallyFiniteOrderTop.ofIci' (α × β) (fun x => Ici x.1 ×ˢ Ici x.2) fun a x => by
+  LocallyFiniteOrderTop.ofIci' (α × β) (fun x ↦ Ici x.1 ×ˢ Ici x.2) fun a x => by
     rw [mem_product, mem_Ici, mem_Ici, le_def]
 
 lemma Finset.Ici_prod_def (x : α × β) : Ici x = Ici x.1 ×ˢ Ici x.2 := rfl

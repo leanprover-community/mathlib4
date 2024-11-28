@@ -780,7 +780,7 @@ theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
 theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
     (hf : Continuous f) (hg : Continuous g) (hf' : ContinuousOn f' { x | f x ≤ g x })
     (hg' : ContinuousOn g' { x | g x ≤ f x }) (hfg : ∀ x, f x = g x → f' x = g' x) :
-    Continuous fun x => if f x ≤ g x then f' x else g' x := by
+    Continuous fun x ↦ if f x ≤ g x then f' x else g' x := by
   refine continuous_if (fun a ha => hfg _ (frontier_le_subset_eq hf hg ha)) ?_ (hg'.mono ?_)
   · rwa [(isClosed_le hf hg).closure_eq]
   · simp only [not_le]
@@ -788,7 +788,7 @@ theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] 
 
 theorem Continuous.if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
     (hf' : Continuous f') (hg' : Continuous g') (hf : Continuous f) (hg : Continuous g)
-    (hfg : ∀ x, f x = g x → f' x = g' x) : Continuous fun x => if f x ≤ g x then f' x else g' x :=
+    (hfg : ∀ x, f x = g x → f' x = g' x) : Continuous fun x ↦ if f x ≤ g x then f' x else g' x :=
   continuous_if_le hf hg hf'.continuousOn hg'.continuousOn hfg
 
 theorem Filter.Tendsto.eventually_lt {l : Filter γ} {f g : γ → α} {y z : α} (hf : Tendsto f l (𝓝 y))
@@ -805,7 +805,7 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b ↦ min (f b) (g b) := by
   simp only [min_def]
-  exact hf.if_le hg hf hg fun x => id
+  exact hf.if_le hg hf hg fun x ↦ id
 
 @[continuity, fun_prop]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :

@@ -29,7 +29,7 @@ open Complex hiding exp abs_of_nonneg
 theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
     (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by
   rw [isLittleO_exp_comp_exp_comp]
-  suffices Tendsto (fun x => x * (b * x ^ (p - 1) + -1)) atTop atTop by
+  suffices Tendsto (fun x ↦ x * (b * x ^ (p - 1) + -1)) atTop atTop by
     refine Tendsto.congr' ?_ this
     refine eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ)) (fun x hx => ?_)
     rw [mem_Ioi] at hx
@@ -59,7 +59,7 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
 theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
   obtain hp | hp := le_iff_lt_or_eq.mp hp
-  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.rexp
+  · have h_exp : ∀ x, ContinuousAt (fun x ↦ exp (- x)) x := fun x ↦ continuousAt_neg.rexp
     rw [← Ioc_union_Ioi_eq_Ioi zero_le_one, integrableOn_union]
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
@@ -67,16 +67,16 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
       · refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
         exact intervalIntegral.intervalIntegrable_rpow' hs
       · intro x _
-        change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Icc 0 1) x
+        change ContinuousWithinAt ((fun x ↦ exp (- x)) ∘ (fun x ↦ x ^ p)) (Icc 0 1) x
         refine ContinuousAt.comp_continuousWithinAt (h_exp _) ?_
         exact continuousWithinAt_id.rpow_const (Or.inr (le_of_lt (lt_trans zero_lt_one hp)))
-    · have h_rpow : ∀ (x r : ℝ), x ∈ Ici 1 → ContinuousWithinAt (fun x => x ^ r) (Ici 1) x := by
+    · have h_rpow : ∀ (x r : ℝ), x ∈ Ici 1 → ContinuousWithinAt (fun x ↦ x ^ r) (Ici 1) x := by
         intro _ _ hx
         refine continuousWithinAt_id.rpow_const (Or.inl ?_)
         exact ne_of_gt (lt_of_lt_of_le zero_lt_one hx)
       refine integrable_of_isBigO_exp_neg (by norm_num : (0 : ℝ) < 1 / 2)
         (ContinuousOn.mul (fun x hx => h_rpow x s hx) (fun x hx => ?_)) (IsLittleO.isBigO ?_)
-      · change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Ici 1) x
+      · change ContinuousWithinAt ((fun x ↦ exp (- x)) ∘ (fun x ↦ x ^ p)) (Ici 1) x
         exact ContinuousAt.comp_continuousWithinAt (h_exp _) (h_rpow x p hx)
       · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by norm_num : (0 : ℝ) < 1) using 3
         rw [neg_mul, one_mul]
@@ -170,7 +170,7 @@ theorem integrable_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
 theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     ∫ r : ℝ in Ioi 0, (r : ℂ) * cexp (-b * (r : ℂ) ^ 2) = (2 * b)⁻¹ := by
   have hb' : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
-  have A : ∀ x : ℂ, HasDerivAt (fun x => -(2 * b)⁻¹ * cexp (-b * x ^ 2))
+  have A : ∀ x : ℂ, HasDerivAt (fun x ↦ -(2 * b)⁻¹ * cexp (-b * x ^ 2))
     (x * cexp (-b * x ^ 2)) x := by
     intro x
     convert ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
@@ -303,7 +303,7 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
       ∫ x in -c..0, cexp (-b * (x : ℂ) ^ 2) := by
     intro c
     have := intervalIntegral.integral_comp_sub_left (a := 0) (b := c)
-      (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
+      (fun x ↦ cexp (-b * (x : ℂ) ^ 2)) 0
     simpa [zero_sub, neg_sq, neg_zero] using this
   have t1 :=
     intervalIntegral_tendsto_integral_Ioi 0 (integrable_cexp_neg_mul_sq hb).integrableOn tendsto_id

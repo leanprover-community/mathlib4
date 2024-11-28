@@ -708,7 +708,7 @@ theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
 theorem ofFractionRing_eq :
     (ofFractionRing : FractionRing K[X] → RatFunc K) = IsLocalization.algEquiv K[X]⁰ _ _ :=
   funext fun x =>
-    Localization.induction_on x fun x => by
+    Localization.induction_on x fun x ↦ by
       simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 
@@ -716,7 +716,7 @@ theorem ofFractionRing_eq :
 theorem toFractionRing_eq :
     (toFractionRing : RatFunc K → FractionRing K[X]) = IsLocalization.algEquiv K[X]⁰ _ _ :=
   funext fun ⟨x⟩ =>
-    Localization.induction_on x fun x => by
+    Localization.induction_on x fun x ↦ by
       simp only [Localization.mk_eq_mk'_apply, ofFractionRing_mk', IsLocalization.algEquiv_apply,
         IsLocalization.map_mk', RingHom.id_apply]
 

@@ -449,7 +449,7 @@ theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ 
     exact Part.toOption_eq_none_iff.2 fun ho => h ho.of_bind
 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
-    (f.bind g).bind k = f.bind fun x => (g x).bind k :=
+    (f.bind g).bind k = f.bind fun x ↦ (g x).bind k :=
   ext fun a ↦ by
     simp only [mem_bind_iff]
     exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,

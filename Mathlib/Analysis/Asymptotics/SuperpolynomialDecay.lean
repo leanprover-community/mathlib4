@@ -69,7 +69,7 @@ theorem SuperpolynomialDecay.congr' (hf : SuperpolynomialDecay l k f) (hfg : f =
 
 theorem SuperpolynomialDecay.congr (hf : SuperpolynomialDecay l k f) (hfg : ∀ x, f x = g x) :
     SuperpolynomialDecay l k g := fun z =>
-  (hf z).congr fun x => (congr_arg fun a ↦ k x ^ z * a) <| hfg x
+  (hf z).congr fun x ↦ (congr_arg fun a ↦ k x ^ z * a) <| hfg x
 
 @[simp]
 theorem superpolynomialDecay_zero (l : Filter α) (k : α → β) : SuperpolynomialDecay l k 0 :=
@@ -113,13 +113,13 @@ theorem SuperpolynomialDecay.mul_param_pow (hf : SuperpolynomialDecay l k f) (n 
 
 theorem SuperpolynomialDecay.polynomial_mul [ContinuousAdd β] [ContinuousMul β]
     (hf : SuperpolynomialDecay l k f) (p : β[X]) :
-    SuperpolynomialDecay l k fun x => (p.eval <| k x) * f x :=
+    SuperpolynomialDecay l k fun x ↦ (p.eval <| k x) * f x :=
   Polynomial.induction_on' p (fun p q hp hq => by simpa [add_mul] using hp.add hq) fun n c => by
     simpa [mul_assoc] using (hf.param_pow_mul n).const_mul c
 
 theorem SuperpolynomialDecay.mul_polynomial [ContinuousAdd β] [ContinuousMul β]
     (hf : SuperpolynomialDecay l k f) (p : β[X]) :
-    SuperpolynomialDecay l k fun x => f x * (p.eval <| k x) :=
+    SuperpolynomialDecay l k fun x ↦ f x * (p.eval <| k x) :=
   (hf.polynomial_mul p).congr fun _ => mul_comm _ _
 
 end CommSemiring
@@ -159,7 +159,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
   rw [superpolynomialDecay_iff_abs_tendsto_zero] at hf ⊢
   refine fun z =>
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds (hf z)
-      (Eventually.of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => ?_)
+      (Eventually.of_forall fun x ↦ abs_nonneg _) (hfg.mono fun x hx => ?_)
   calc
     |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
     _ ≤ |k x ^ z| * |f x| := by gcongr _ * ?_; exact hx
@@ -177,12 +177,12 @@ variable [TopologicalSpace β] [Field β] (l k f)
 
 theorem superpolynomialDecay_mul_const_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => f n * c) ↔ SuperpolynomialDecay l k f :=
-  ⟨fun h ↦ (h.mul_const c⁻¹).congr fun x => by simp [mul_assoc, mul_inv_cancel₀ hc0], fun h =>
+  ⟨fun h ↦ (h.mul_const c⁻¹).congr fun x ↦ by simp [mul_assoc, mul_inv_cancel₀ hc0], fun h =>
     h.mul_const c⟩
 
 theorem superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => c * f n) ↔ SuperpolynomialDecay l k f :=
-  ⟨fun h ↦ (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
+  ⟨fun h ↦ (h.const_mul c⁻¹).congr fun x ↦ by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
     h.const_mul c⟩
 
 variable {l k f}
@@ -206,7 +206,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
     zero_mul m ▸
       Tendsto.mul_const m ((tendsto_zero_iff_abs_tendsto_zero _).1 hk.inv_tendsto_atTop)
   refine
-    tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (Eventually.of_forall fun x => abs_nonneg _)
+    tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (Eventually.of_forall fun x ↦ abs_nonneg _)
       ((eventually_map.1 hm).mp ?_)
   refine (hk.eventually_ne_atTop 0).mono fun x hk0 hx => ?_
   refine Eq.trans_le ?_ (mul_le_mul_of_nonneg_left hx <| abs_nonneg (k x)⁻¹)
@@ -297,7 +297,7 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
   have hk0 : ∀ᶠ x in l, k x ≠ 0 := hk.eventually_ne_atTop 0
   refine ⟨fun h z => ?_, fun h z => ?_⟩
   · refine isBigO_of_div_tendsto_nhds (hk0.mono fun x hx hxz ↦ absurd hxz (zpow_ne_zero _ hx)) 0 ?_
-    have : (fun a : α => k a ^ z)⁻¹ = fun a : α => k a ^ (-z) := funext fun x => by simp
+    have : (fun a : α => k a ^ z)⁻¹ = fun a : α => k a ^ (-z) := funext fun x ↦ by simp
     rw [div_eq_mul_inv, mul_comm f, this]
     exact h (-z)
   · suffices (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹ from

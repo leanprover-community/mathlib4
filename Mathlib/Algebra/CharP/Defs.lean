@@ -124,7 +124,7 @@ lemma «exists» : ∃ p, CharP R p :=
   letI := Classical.decEq R
   by_cases
     (fun H : ∀ p : ℕ, (p : R) = 0 → p = 0 =>
-      ⟨0, ⟨fun x => by rw [zero_dvd_iff]; exact ⟨H x, by rintro rfl; simp⟩⟩⟩)
+      ⟨0, ⟨fun x ↦ by rw [zero_dvd_iff]; exact ⟨H x, by rintro rfl; simp⟩⟩⟩)
     fun H =>
     ⟨Nat.find (not_forall.1 H),
       ⟨fun x =>

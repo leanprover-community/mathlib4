@@ -116,7 +116,7 @@ section Extend
 
 /-- Extension of maps to completions -/
 protected def extend (f : α → β) : hatα → β :=
-  if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
+  if UniformContinuous f then pkg.isDenseInducing.extend f else fun x ↦ f (pkg.dense.some x)
 
 variable {f : α → β}
 

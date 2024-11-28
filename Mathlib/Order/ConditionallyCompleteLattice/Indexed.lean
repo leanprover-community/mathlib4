@@ -126,7 +126,7 @@ theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x �
     iSup f ≤ iSup g := by
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty', iSup_of_empty']
-  · exact ciSup_le fun x => le_ciSup_of_le B x (H x)
+  · exact ciSup_le fun x ↦ le_ciSup_of_le B x (H x)
 
 theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : β} (hc : c ∈ s) :
     f c ≤ ⨆ i : s, f i :=
@@ -295,13 +295,13 @@ theorem ciSup_subtype' [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f
     (hf : BddAbove (Set.range (fun i : Subtype p ↦ f i i.prop)))
     (hf' : sSup ∅ ≤ ⨆ (i : Subtype p), f i i.prop) :
     ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
-  (ciSup_subtype (f := fun x => f x.val x.property) hf hf').symm
+  (ciSup_subtype (f := fun x ↦ f x.val x.property) hf hf').symm
 
 theorem ciInf_subtype' [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : ∀ i, p i → α}
     (hf : BddBelow (Set.range (fun i : Subtype p ↦ f i i.prop)))
     (hf' : ⨅ (i : Subtype p), f i i.prop ≤ sInf ∅) :
     ⨅ (i) (h), f i h = ⨅ x : Subtype p, f x x.property :=
-  (ciInf_subtype (f := fun x => f x.val x.property) hf hf').symm
+  (ciInf_subtype (f := fun x ↦ f x.val x.property) hf hf').symm
 
 theorem ciSup_subtype'' {ι} [Nonempty ι] {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :

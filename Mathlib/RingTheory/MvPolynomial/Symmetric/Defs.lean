@@ -165,8 +165,8 @@ end IsSymmetric
 def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
-    (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
-    (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x => x.2.rename e.symm)
+    (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x ↦ x.2.rename e)
+    (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x ↦ x.2.rename e.symm)
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
 

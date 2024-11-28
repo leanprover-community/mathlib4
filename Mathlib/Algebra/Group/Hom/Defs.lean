@@ -787,19 +787,19 @@ theorem MonoidHom.cancel_right [MulOneClass M] [MulOneClass N] [MulOneClass P]
 @[to_additive]
 theorem OneHom.cancel_left [One M] [One N] [One P] {g : OneHom N P} {f₁ f₂ : OneHom M N}
     (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ OneHom.ext fun x => hg <| by rw [← OneHom.comp_apply, h, OneHom.comp_apply],
+  ⟨fun h ↦ OneHom.ext fun x ↦ hg <| by rw [← OneHom.comp_apply, h, OneHom.comp_apply],
     fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem MulHom.cancel_left [Mul M] [Mul N] [Mul P] {g : N →ₙ* P} {f₁ f₂ : M →ₙ* N}
     (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ MulHom.ext fun x => hg <| by rw [← MulHom.comp_apply, h, MulHom.comp_apply],
+  ⟨fun h ↦ MulHom.ext fun x ↦ hg <| by rw [← MulHom.comp_apply, h, MulHom.comp_apply],
     fun h ↦ h ▸ rfl⟩
 
 @[to_additive]
 theorem MonoidHom.cancel_left [MulOneClass M] [MulOneClass N] [MulOneClass P]
     {g : N →* P} {f₁ f₂ : M →* N} (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ MonoidHom.ext fun x => hg <| by rw [← MonoidHom.comp_apply, h, MonoidHom.comp_apply],
+  ⟨fun h ↦ MonoidHom.ext fun x ↦ hg <| by rw [← MonoidHom.comp_apply, h, MonoidHom.comp_apply],
     fun h ↦ h ▸ rfl⟩
 
 section

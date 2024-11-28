@@ -358,10 +358,10 @@ lemma strictMono_div_right_of_pos (ha : 0 < a) : StrictMono (· / a) :=
   fun _b _c hbc ↦ div_lt_div_of_pos_right hbc ha
 
 theorem Monotone.div_const {β : Type*} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
-    (hc : 0 ≤ c) : Monotone fun x => f x / c := (monotone_div_right_of_nonneg hc).comp hf
+    (hc : 0 ≤ c) : Monotone fun x ↦ f x / c := (monotone_div_right_of_nonneg hc).comp hf
 
 theorem StrictMono.div_const {β : Type*} [Preorder β] {f : β → α} (hf : StrictMono f) {c : α}
-    (hc : 0 < c) : StrictMono fun x => f x / c := by
+    (hc : 0 < c) : StrictMono fun x ↦ f x / c := by
   simpa only [div_eq_mul_inv] using hf.mul_const (inv_pos.2 hc)
 
 -- see Note [lower instance priority]

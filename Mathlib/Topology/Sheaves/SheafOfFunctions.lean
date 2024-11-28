@@ -55,7 +55,7 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
     -- `x : ↑(iSup U)` an index `i : ι` such that `x` lies in `U i`
     choose index index_spec using fun x : ↑(iSup U) => Opens.mem_iSup.mp x.2
     -- Using this data, we can glue our functions together to a single section
-    let s : ∀ x : ↑(iSup U), T x := fun x => sf (index x) ⟨x.1, index_spec x⟩
+    let s : ∀ x : ↑(iSup U), T x := fun x ↦ sf (index x) ⟨x.1, index_spec x⟩
     refine ⟨s, ?_, ?_⟩
     · intro i
       funext x

@@ -182,7 +182,7 @@ def IsSt (x : ℝ*) (r : ℝ) :=
   ∀ δ : ℝ, 0 < δ → (r - δ : ℝ*) < x ∧ x < r + δ
 
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
-noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
+noncomputable def st : ℝ* → ℝ := fun x ↦ if h : ∃ r, IsSt x r then Classical.choose h else 0
 
 /-- A hyperreal number is infinitesimal if its standard part is 0 -/
 def Infinitesimal (x : ℝ*) :=

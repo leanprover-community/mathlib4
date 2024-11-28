@@ -160,7 +160,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
-  exact funext fun x => (hw x).symm
+  exact funext fun x ↦ (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _

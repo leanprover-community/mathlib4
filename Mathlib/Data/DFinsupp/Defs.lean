@@ -200,11 +200,11 @@ instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i
 
 instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
     IsLeftCancelAdd (Π₀ i, β i) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x ↦ add_left_cancel <| DFunLike.congr_fun h x
 
 instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancelAdd (β i)] :
     IsRightCancelAdd (Π₀ i, β i) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x ↦ add_right_cancel <| DFunLike.congr_fun h x
 
 instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
     IsCancelAdd (Π₀ i, β i) where
@@ -1238,11 +1238,11 @@ def mapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃
       (e i).toAddMonoidHom with
     toFun := mapRange (fun i x => e i x) fun i => (e i).map_zero
     invFun := mapRange (fun i x => (e i).symm x) fun i => (e i).symm.map_zero
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       rw [← mapRange_comp] <;>
         · simp_rw [AddEquiv.symm_comp_self]
           simp
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       rw [← mapRange_comp] <;>
         · simp_rw [AddEquiv.self_comp_symm]
           simp }

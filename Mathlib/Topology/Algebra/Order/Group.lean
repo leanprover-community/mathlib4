@@ -56,7 +56,7 @@ theorem continuous_abs : Continuous (abs : G → G) :=
   continuous_id.max continuous_neg
 
 protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun x => |f x|) l (𝓝 |a|) :=
+    Tendsto (fun x ↦ |f x|) l (𝓝 |a|) :=
   (continuous_abs.tendsto _).comp h
 
 theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
@@ -64,25 +64,25 @@ theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
   refine ⟨fun h ↦ (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h ↦ ?_⟩
   have : Tendsto (fun a ↦ -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
   exact
-    tendsto_of_tendsto_of_tendsto_of_le_of_le this h (fun x => neg_abs_le <| f x) fun x =>
+    tendsto_of_tendsto_of_tendsto_of_le_of_le this h (fun x ↦ neg_abs_le <| f x) fun x =>
       le_abs_self <| f x
 
 variable [TopologicalSpace α] {a : α} {s : Set α}
 
 @[fun_prop]
-protected theorem Continuous.abs (h : Continuous f) : Continuous fun x => |f x| :=
+protected theorem Continuous.abs (h : Continuous f) : Continuous fun x ↦ |f x| :=
   continuous_abs.comp h
 
 @[fun_prop]
-protected theorem ContinuousAt.abs (h : ContinuousAt f a) : ContinuousAt (fun x => |f x|) a :=
+protected theorem ContinuousAt.abs (h : ContinuousAt f a) : ContinuousAt (fun x ↦ |f x|) a :=
   Filter.Tendsto.abs h
 
 protected theorem ContinuousWithinAt.abs (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => |f x|) s a :=
+    ContinuousWithinAt (fun x ↦ |f x|) s a :=
   Filter.Tendsto.abs h
 
 @[fun_prop]
-protected theorem ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x => |f x|) s :=
+protected theorem ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x ↦ |f x|) s :=
   fun x hx => (h x hx).abs
 
 theorem tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=

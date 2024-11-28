@@ -54,7 +54,7 @@ variable {f}
 
 /-- The universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I where
-  toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
+  toFun := (fun x ↦ F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
   map_add' x y := by
     apply (mono_iff_injective F'.m).1
     · infer_instance

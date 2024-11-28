@@ -138,11 +138,11 @@ theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ i
 
 @[simp]
 theorem image2_singleton_left : image2 f {a} t = f a '' t :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 @[simp]
 theorem image2_singleton_right : image2 f s {b} = (fun a ↦ f a b) '' s :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 theorem image2_singleton : image2 f {a} {b} = {f a b} := by simp
 

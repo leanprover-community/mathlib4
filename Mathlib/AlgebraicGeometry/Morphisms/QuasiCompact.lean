@@ -297,7 +297,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     apply this
   intro i
   replace hn :=
-    congr_arg (fun x => X.presheaf.map (homOfLE (h₁ i)).op (f ^ (Finset.univ.sup n - n i)) * x)
+    congr_arg (fun x ↦ X.presheaf.map (homOfLE (h₁ i)).op (f ^ (Finset.univ.sup n - n i)) * x)
       (hn i)
   dsimp at hn
   simp only [← map_mul, ← map_pow] at hn

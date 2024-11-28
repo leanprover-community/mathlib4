@@ -466,7 +466,7 @@ theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| 
     Continuous g := by
   letI : CompleteSpace g.graph := completeSpace_coe_iff_isComplete.mpr hg.isComplete
   let φ₀ : E →ₗ[𝕜] E × F := LinearMap.id.prod g
-  have : Function.LeftInverse Prod.fst φ₀ := fun x => rfl
+  have : Function.LeftInverse Prod.fst φ₀ := fun x ↦ rfl
   let φ : E ≃ₗ[𝕜] g.graph :=
     (LinearEquiv.ofLeftInverse this).trans (LinearEquiv.ofEq _ _ g.graph_eq_range_prod.symm)
   let ψ : g.graph ≃L[𝕜] E :=

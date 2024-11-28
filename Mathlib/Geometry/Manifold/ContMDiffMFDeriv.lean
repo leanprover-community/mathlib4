@@ -70,8 +70,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     (hg : ContMDiffWithinAt J I m g t x₀) (hx₀ : x₀ ∈ t)
     (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiffOn I u) :
     ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
-      (inTangentCoordinates I I' g (fun x => f x (g x))
-        (fun x => mfderivWithin I I' (f x) u (g x)) x₀) t x₀ := by
+      (inTangentCoordinates I I' g (fun x ↦ f x (g x))
+        (fun x ↦ mfderivWithin I I' (f x) u (g x)) x₀) t x₀ := by
   -- first localize the result to a smaller set, to make sure everything happens in chart domains
   let t' := t ∩ g ⁻¹' ((extChartAt I (g x₀)).source)
   have ht't : t' ⊆ t := inter_subset_left
@@ -84,7 +84,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   -- register a few basic facts that maps send suitable neighborhoods to suitable neighborhoods,
   -- by continuity
   have hx₀gx₀ : (x₀, g x₀) ∈ t ×ˢ u := by simp [hx₀, hu hx₀]
-  have h4f : ContinuousWithinAt (fun x => f x (g x)) t x₀ := by
+  have h4f : ContinuousWithinAt (fun x ↦ f x (g x)) t x₀ := by
     change ContinuousWithinAt ((Function.uncurry f) ∘ (fun x ↦ (x, g x))) t x₀
     refine ContinuousWithinAt.comp hf.continuousWithinAt ?_ (fun y hy ↦ by simp [hy, hu hy])
     exact (continuousWithinAt_id.prod hg.continuousWithinAt)
@@ -219,8 +219,8 @@ theorem ContMDiffWithinAt.mfderivWithin_apply {x₀ : N'}
     (hg₂ : ContMDiffWithinAt J' 𝓘(𝕜, E) m g₂ v x₀) (hmn : m + 1 ≤ n) (h'g₁ : MapsTo g₁ v t)
     (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiffOn I u) :
     ContMDiffWithinAt J' 𝓘(𝕜, E') m
-      (fun x => (inTangentCoordinates I I' g (fun x => f x (g x))
-        (fun x => mfderivWithin I I' (f x) u (g x)) (g₁ x₀) (g₁ x)) (g₂ x)) v x₀ :=
+      (fun x ↦ (inTangentCoordinates I I' g (fun x ↦ f x (g x))
+        (fun x ↦ mfderivWithin I I' (f x) u (g x)) (g₁ x₀) (g₁ x)) (g₂ x)) v x₀ :=
   ((hf.mfderivWithin hg hg₁x₀ h'g hmn hu).comp_of_eq hg₁ h'g₁ rfl).clm_apply hg₂
 
 /-- The function that sends `x` to the `y`-derivative of `f (x, y)` at `g (x)` is `C^m` at `x₀`,
@@ -268,8 +268,8 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
     (hg : ContMDiffAt J I m g (g₁ x₀)) (hg₁ : ContMDiffAt J' J m g₁ x₀)
     (hg₂ : ContMDiffAt J' 𝓘(𝕜, E) m g₂ x₀) (hmn : m + 1 ≤ n) :
     ContMDiffAt J' 𝓘(𝕜, E') m
-      (fun x => inTangentCoordinates I I' g (fun x => f x (g x))
-        (fun x => mfderiv I I' (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
+      (fun x ↦ inTangentCoordinates I I' g (fun x ↦ f x (g x))
+        (fun x ↦ mfderiv I I' (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
   ((hf.mfderiv f g hg hmn).comp_of_eq hg₁ rfl).clm_apply hg₂
 
 end mfderiv
@@ -372,7 +372,7 @@ theorem tangentMap_tangentBundle_pure [Is : SmoothManifoldWithCorners I M] (p : 
     apply IsOpen.mem_nhds
     · apply (PartialHomeomorph.open_target _).preimage I.continuous_invFun
     · simp only [mfld_simps]
-  have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
+  have A : MDifferentiableAt I I.tangent (fun x ↦ @TotalSpace.mk M E (TangentSpace I) x 0) x :=
     haveI : ContMDiff I (I.prod 𝓘(𝕜, E)) ⊤ (zeroSection E (TangentSpace I : M → Type _)) :=
       Bundle.contMDiff_zeroSection 𝕜 (TangentSpace I : M → Type _)
     this.mdifferentiableAt le_top

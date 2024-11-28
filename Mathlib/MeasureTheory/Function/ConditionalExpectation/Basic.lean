@@ -138,7 +138,7 @@ theorem condexp_ae_eq_condexpL1 (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)
 
 theorem condexp_ae_eq_condexpL1CLM (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f|m] =ᵐ[μ] condexpL1CLM F' hm μ (hf.toL1 f) := by
-  refine (condexp_ae_eq_condexpL1 hm f).trans (Eventually.of_forall fun x => ?_)
+  refine (condexp_ae_eq_condexpL1 hm f).trans (Eventually.of_forall fun x ↦ ?_)
   rw [condexpL1_eq hf]
 
 theorem condexp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by

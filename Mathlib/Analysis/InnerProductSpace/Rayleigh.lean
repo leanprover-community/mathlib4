@@ -149,7 +149,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
   convert hc
   have : ‖x₀‖ ≠ 0 := by simp [hx₀]
-  have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
+  have := congr_arg (fun x ↦ ⟪x, x₀⟫_ℝ) hc
   field_simp [inner_smul_left, real_inner_self_eq_norm_mul_norm, sq] at this ⊢
   exact this
 

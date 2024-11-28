@@ -378,7 +378,7 @@ theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
 theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨆ i ∈ s, f i) ⊓ ⨆ j ∈ t, g j) = ⨆ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊓ g p.2 := by
   simp only [iSup_subtype', iSup_inf_iSup]
-  exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x => rfl
+  exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x ↦ rfl
 
 theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [sSup_eq_iSup, biSup_inf_biSup]

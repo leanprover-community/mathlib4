@@ -207,13 +207,13 @@ theorem openSegment_eq_image_lineMap (x y : E) :
 
 @[simp]
 theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] :=
-  Set.ext fun x => by
+  Set.ext fun x ↦ by
     simp_rw [segment_eq_image_lineMap, mem_image, exists_exists_and_eq_and, AffineMap.apply_lineMap]
 
 @[simp]
 theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
     f '' openSegment 𝕜 a b = openSegment 𝕜 (f a) (f b) :=
-  Set.ext fun x => by
+  Set.ext fun x ↦ by
     simp_rw [openSegment_eq_image_lineMap, mem_image, exists_exists_and_eq_and,
       AffineMap.apply_lineMap]
 
@@ -237,18 +237,18 @@ theorem mem_openSegment_translate (a : E) {x b c : E} :
   simp_rw [← vadd_eq_add, ← vadd_openSegment, vadd_mem_vadd_set_iff]
 
 theorem segment_translate_preimage (a b c : E) :
-    (fun x => a + x) ⁻¹' [a + b -[𝕜] a + c] = [b -[𝕜] c] :=
+    (fun x ↦ a + x) ⁻¹' [a + b -[𝕜] a + c] = [b -[𝕜] c] :=
   Set.ext fun _ => mem_segment_translate 𝕜 a
 
 theorem openSegment_translate_preimage (a b c : E) :
-    (fun x => a + x) ⁻¹' openSegment 𝕜 (a + b) (a + c) = openSegment 𝕜 b c :=
+    (fun x ↦ a + x) ⁻¹' openSegment 𝕜 (a + b) (a + c) = openSegment 𝕜 b c :=
   Set.ext fun _ => mem_openSegment_translate 𝕜 a
 
-theorem segment_translate_image (a b c : E) : (fun x => a + x) '' [b -[𝕜] c] = [a + b -[𝕜] a + c] :=
+theorem segment_translate_image (a b c : E) : (fun x ↦ a + x) '' [b -[𝕜] c] = [a + b -[𝕜] a + c] :=
   segment_translate_preimage 𝕜 a b c ▸ image_preimage_eq _ <| add_left_surjective a
 
 theorem openSegment_translate_image (a b c : E) :
-    (fun x => a + x) '' openSegment 𝕜 b c = openSegment 𝕜 (a + b) (a + c) :=
+    (fun x ↦ a + x) '' openSegment 𝕜 b c = openSegment 𝕜 (a + b) (a + c) :=
   openSegment_translate_preimage 𝕜 a b c ▸ image_preimage_eq _ <| add_left_surjective a
 
 lemma segment_inter_eq_endpoint_of_linearIndependent_sub
@@ -561,7 +561,7 @@ theorem openSegment_subset (x y : E × F) :
   exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
 
 theorem image_mk_segment_left (x₁ x₂ : E) (y : F) :
-    (fun x => (x, y)) '' [x₁ -[𝕜] x₂] = [(x₁, y) -[𝕜] (x₂, y)] := by
+    (fun x ↦ (x, y)) '' [x₁ -[𝕜] x₂] = [(x₁, y) -[𝕜] (x₂, y)] := by
   rw [segment_eq_image₂, segment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
   simp [Convex.combo_self ha.2.2]
@@ -573,7 +573,7 @@ theorem image_mk_segment_right (x : E) (y₁ y₂ : F) :
   simp [Convex.combo_self ha.2.2]
 
 theorem image_mk_openSegment_left (x₁ x₂ : E) (y : F) :
-    (fun x => (x, y)) '' openSegment 𝕜 x₁ x₂ = openSegment 𝕜 (x₁, y) (x₂, y) := by
+    (fun x ↦ (x, y)) '' openSegment 𝕜 x₁ x₂ = openSegment 𝕜 (x₁, y) (x₂, y) := by
   rw [openSegment_eq_image₂, openSegment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
   simp [Convex.combo_self ha.2.2]

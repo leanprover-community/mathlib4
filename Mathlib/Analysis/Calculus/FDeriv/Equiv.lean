@@ -339,7 +339,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
   have :
     (fun p : F × F => g p.1 - g p.2 - f'.symm (p.1 - p.2)) =O[𝓝 (a, a)] fun p : F × F =>
       f' (g p.1 - g p.2) - (p.1 - p.2) := by
-    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
+    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x ↦ ?_) fun _ => rfl
     simp
   refine .of_isLittleO <| this.trans_isLittleO ?_
   clear this
@@ -362,7 +362,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasFDerivAt g (f'.symm : F →L[𝕜] E) a := by
   have : (fun x : F => g x - g a - f'.symm (x - a)) =O[𝓝 a]
       fun x : F => f' (g x - g a) - (x - a) := by
-    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
+    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x ↦ ?_) fun _ => rfl
     simp
   refine HasFDerivAtFilter.of_isLittleO <| this.trans_isLittleO ?_
   clear this

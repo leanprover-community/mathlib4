@@ -75,7 +75,7 @@ theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
 theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
     r₁ = r₂ ↔ ∀ x, { y | r₁ x y } = { y | r₂ x y } :=
-  ⟨fun h _x => h ▸ rfl, fun h ↦ ext fun x => Set.ext_iff.1 <| h x⟩
+  ⟨fun h _x => h ▸ rfl, fun h ↦ ext fun x ↦ Set.ext_iff.1 <| h x⟩
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
   ⟨fun h ↦ ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
@@ -151,7 +151,7 @@ theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_clas
 
 @[simp]
 theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
-  Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
+  Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 
 /-- The equivalence between the quotient by an equivalence relation and its
 type of equivalence classes. -/
@@ -416,20 +416,20 @@ theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
 
 /-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
 theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+  Quotient.inductionOn' x fun x ↦ (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
 
 @[deprecated (since := "2024-10-19")] alias index_out' := index_out
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
-  Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
+  Quotient.inductionOn' x fun x ↦ Quotient.sound' <| hs.some_index x
 
 theorem class_of {x : α} : setOf (hs.setoid x) = s (hs.index x) :=
   Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
 
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
-  Quotient.inductionOn' x fun x => by
+  Quotient.inductionOn' x fun x ↦ by
     ext y
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
     exact Quotient.eq''
@@ -437,7 +437,7 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
 /-- Combine functions with disjoint domains into a new function.
 You can use the regular expression `def.*piecewise` to search for
 other ways to define piecewise functions in mathlib4. -/
-def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x ↦ f (hs.index x) x
 
 lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
   rfl

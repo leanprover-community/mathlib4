@@ -180,7 +180,7 @@ private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
   rw [mem_finMulAntidiag]
   refine ⟨?_, hn.ne_zero⟩
   unfold Nat.primeFactorsPiBij
-  rw [prod_fiberwise_of_maps_to, prod_attach (f := fun x => x)]
+  rw [prod_fiberwise_of_maps_to, prod_attach (f := fun x ↦ x)]
   · apply prod_primeFactors_of_squarefree hn
   · apply fun _ _ => mem_univ _
 

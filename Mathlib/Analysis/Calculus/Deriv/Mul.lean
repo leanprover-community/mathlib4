@@ -224,7 +224,7 @@ theorem HasDerivAt.mul_const (hc : HasDerivAt c c' x) (d : 𝔸) :
   rw [← hasDerivWithinAt_univ] at *
   exact hc.mul_const d
 
-theorem hasDerivAt_mul_const (c : 𝕜) : HasDerivAt (fun x => x * c) c x := by
+theorem hasDerivAt_mul_const (c : 𝕜) : HasDerivAt (fun x ↦ x * c) c x := by
   simpa only [one_mul] using (hasDerivAt_id' x).mul_const c
 
 theorem HasStrictDerivAt.mul_const (hc : HasStrictDerivAt c c' x) (d : 𝔸) :
@@ -250,7 +250,7 @@ theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u
       simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
 
 @[simp]
-theorem deriv_mul_const_field' (v : 𝕜') : (deriv fun x => u x * v) = fun x => deriv u x * v :=
+theorem deriv_mul_const_field' (v : 𝕜') : (deriv fun x ↦ u x * v) = fun x ↦ deriv u x * v :=
   funext fun _ => deriv_mul_const_field v
 
 theorem HasDerivWithinAt.const_mul (c : 𝔸) (hd : HasDerivWithinAt d d' s x) :
@@ -281,7 +281,7 @@ theorem deriv_const_mul_field (u : 𝕜') : deriv (fun y => u * v y) x = u * der
   simp only [mul_comm u, deriv_mul_const_field]
 
 @[simp]
-theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x => u * v x) = fun x => u * deriv v x :=
+theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x ↦ u * v x) = fun x ↦ u * deriv v x :=
   funext fun _ => deriv_const_mul_field u
 
 end Mul
@@ -354,42 +354,42 @@ section Div
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 theorem HasDerivAt.div_const (hc : HasDerivAt c c' x) (d : 𝕜') :
-    HasDerivAt (fun x => c x / d) (c' / d) x := by
+    HasDerivAt (fun x ↦ c x / d) (c' / d) x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
 theorem HasDerivWithinAt.div_const (hc : HasDerivWithinAt c c' s x) (d : 𝕜') :
-    HasDerivWithinAt (fun x => c x / d) (c' / d) s x := by
+    HasDerivWithinAt (fun x ↦ c x / d) (c' / d) s x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
 theorem HasStrictDerivAt.div_const (hc : HasStrictDerivAt c c' x) (d : 𝕜') :
-    HasStrictDerivAt (fun x => c x / d) (c' / d) x := by
+    HasStrictDerivAt (fun x ↦ c x / d) (c' / d) x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
 @[fun_prop]
 theorem DifferentiableWithinAt.div_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝕜') :
-    DifferentiableWithinAt 𝕜 (fun x => c x / d) s x :=
+    DifferentiableWithinAt 𝕜 (fun x ↦ c x / d) s x :=
   (hc.hasDerivWithinAt.div_const _).differentiableWithinAt
 
 @[simp, fun_prop]
 theorem DifferentiableAt.div_const (hc : DifferentiableAt 𝕜 c x) (d : 𝕜') :
-    DifferentiableAt 𝕜 (fun x => c x / d) x :=
+    DifferentiableAt 𝕜 (fun x ↦ c x / d) x :=
   (hc.hasDerivAt.div_const _).differentiableAt
 
 @[fun_prop]
 theorem DifferentiableOn.div_const (hc : DifferentiableOn 𝕜 c s) (d : 𝕜') :
-    DifferentiableOn 𝕜 (fun x => c x / d) s := fun x hx => (hc x hx).div_const d
+    DifferentiableOn 𝕜 (fun x ↦ c x / d) s := fun x hx => (hc x hx).div_const d
 
 @[simp, fun_prop]
 theorem Differentiable.div_const (hc : Differentiable 𝕜 c) (d : 𝕜') :
-    Differentiable 𝕜 fun x => c x / d := fun x => (hc x).div_const d
+    Differentiable 𝕜 fun x ↦ c x / d := fun x ↦ (hc x).div_const d
 
 theorem derivWithin_div_const (hc : DifferentiableWithinAt 𝕜 c s x)
     (d : 𝕜') (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x => c x / d) s x = derivWithin c s x / d := by
+    derivWithin (fun x ↦ c x / d) s x = derivWithin c s x / d := by
   simp [div_eq_inv_mul, derivWithin_const_mul, hc, hxs]
 
 @[simp]
-theorem deriv_div_const (d : 𝕜') : deriv (fun x => c x / d) x = deriv c x / d := by
+theorem deriv_div_const (d : 𝕜') : deriv (fun x ↦ c x / d) x = deriv c x / d := by
   simp only [div_eq_mul_inv, deriv_mul_const_field]
 
 end Div

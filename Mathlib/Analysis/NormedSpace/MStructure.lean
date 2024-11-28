@@ -87,7 +87,7 @@ namespace IsLprojection
 
 -- Porting note: The literature always uses uppercase 'L' for L-projections
 theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
-  ⟨h.proj.one_sub, fun x => by
+  ⟨h.proj.one_sub, fun x ↦ by
     rw [add_comm, sub_sub_cancel]
     exact h.Lnorm x⟩
 
@@ -98,7 +98,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
     Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by
     -- Porting note: Needed to fix function, which changes indent of following lines
-    refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
+    refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x ↦ by
       rw [← norm_sub_eq_zero_iff]
       have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
         calc
@@ -204,7 +204,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   Iff.rfl
 
 instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
-  ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
+  ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x ↦ by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
 @[simp]

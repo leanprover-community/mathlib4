@@ -88,14 +88,14 @@ theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf :
     AEStronglyMeasurable' m (c • f) μ := by
   rcases hf with ⟨f', h_f'_meas, hff'⟩
   refine ⟨c • f', h_f'_meas.const_smul c, ?_⟩
-  exact EventuallyEq.fun_comp hff' fun x => c • x
+  exact EventuallyEq.fun_comp hff' fun x ↦ c • x
 
 theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
     (hfm : AEStronglyMeasurable' m f μ) (c : β) :
-    AEStronglyMeasurable' m (fun x => (inner c (f x) : 𝕜)) μ := by
+    AEStronglyMeasurable' m (fun x ↦ (inner c (f x) : 𝕜)) μ := by
   rcases hfm with ⟨f', hf'_meas, hf_ae⟩
   refine
-    ⟨fun x => (inner c (f' x) : 𝕜), (@stronglyMeasurable_const _ _ m _ c).inner hf'_meas,
+    ⟨fun x ↦ (inner c (f' x) : 𝕜), (@stronglyMeasurable_const _ _ m _ c).inner hf'_meas,
       hf_ae.mono fun x hx => ?_⟩
   dsimp only
   rw [hx]
@@ -119,7 +119,7 @@ theorem ae_eq_mk {f : α → β} (hfm : AEStronglyMeasurable' m f μ) : f =ᵐ[�
 
 theorem continuous_comp {γ} [TopologicalSpace γ] {f : α → β} {g : β → γ} (hg : Continuous g)
     (hf : AEStronglyMeasurable' m f μ) : AEStronglyMeasurable' m (g ∘ f) μ :=
-  ⟨fun x => g (hf.mk _ x),
+  ⟨fun x ↦ g (hf.mk _ x),
     @Continuous.comp_stronglyMeasurable _ _ _ m _ _ _ _ hg hf.stronglyMeasurable_mk,
     hf.ae_eq_mk.mono fun x hx => by rw [Function.comp_apply, hx]⟩
 
@@ -378,7 +378,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine EventuallyEq.trans ?_ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
   refine (Lp.coeFn_neg _).trans ?_
   simp_rw [lpMeasSubgroup_coe]
-  exact Eventually.of_forall fun x => by rfl
+  exact Eventually.of_forall fun x ↦ by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f - g) =

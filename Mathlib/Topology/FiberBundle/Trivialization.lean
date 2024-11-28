@@ -623,7 +623,7 @@ theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁
   refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
     (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
   · exact continuous_const.prod_mk continuous_id
-  · exact fun x => e₁.mem_target.2 h₁
+  · exact fun x ↦ e₁.mem_target.2 h₁
   · intro x
     rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
 
@@ -693,7 +693,7 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) (Heq : ∀ p, proj p = a → e p = e' p) :
     Trivialization F proj :=
   e.piecewise e' (Iic a)
-    (Set.ext fun x => and_congr_left_iff.2 fun hx => by
+    (Set.ext fun x ↦ and_congr_left_iff.2 fun hx => by
       obtain rfl : x = a := mem_singleton_iff.1 (frontier_Iic_subset _ hx)
       simp [He, He'])
     fun p hp => Heq p <| frontier_Iic_subset _ hp.2

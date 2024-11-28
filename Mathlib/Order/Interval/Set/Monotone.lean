@@ -28,116 +28,116 @@ theorem antitone_Ioi : Antitone (Ioi : α → Set α) := fun _ _ => Ioi_subset_I
 
 theorem monotone_Iio : Monotone (Iio : α → Set α) := fun _ _ => Iio_subset_Iio
 
-protected theorem Monotone.Ici (hf : Monotone f) : Antitone fun x => Ici (f x) :=
+protected theorem Monotone.Ici (hf : Monotone f) : Antitone fun x ↦ Ici (f x) :=
   antitone_Ici.comp_monotone hf
 
-protected theorem MonotoneOn.Ici (hf : MonotoneOn f s) : AntitoneOn (fun x => Ici (f x)) s :=
+protected theorem MonotoneOn.Ici (hf : MonotoneOn f s) : AntitoneOn (fun x ↦ Ici (f x)) s :=
   antitone_Ici.comp_monotoneOn hf
 
-protected theorem Antitone.Ici (hf : Antitone f) : Monotone fun x => Ici (f x) :=
+protected theorem Antitone.Ici (hf : Antitone f) : Monotone fun x ↦ Ici (f x) :=
   antitone_Ici.comp hf
 
-protected theorem AntitoneOn.Ici (hf : AntitoneOn f s) : MonotoneOn (fun x => Ici (f x)) s :=
+protected theorem AntitoneOn.Ici (hf : AntitoneOn f s) : MonotoneOn (fun x ↦ Ici (f x)) s :=
   antitone_Ici.comp_antitoneOn hf
 
-protected theorem Monotone.Iic (hf : Monotone f) : Monotone fun x => Iic (f x) :=
+protected theorem Monotone.Iic (hf : Monotone f) : Monotone fun x ↦ Iic (f x) :=
   monotone_Iic.comp hf
 
-protected theorem MonotoneOn.Iic (hf : MonotoneOn f s) : MonotoneOn (fun x => Iic (f x)) s :=
+protected theorem MonotoneOn.Iic (hf : MonotoneOn f s) : MonotoneOn (fun x ↦ Iic (f x)) s :=
   monotone_Iic.comp_monotoneOn hf
 
-protected theorem Antitone.Iic (hf : Antitone f) : Antitone fun x => Iic (f x) :=
+protected theorem Antitone.Iic (hf : Antitone f) : Antitone fun x ↦ Iic (f x) :=
   monotone_Iic.comp_antitone hf
 
-protected theorem AntitoneOn.Iic (hf : AntitoneOn f s) : AntitoneOn (fun x => Iic (f x)) s :=
+protected theorem AntitoneOn.Iic (hf : AntitoneOn f s) : AntitoneOn (fun x ↦ Iic (f x)) s :=
   monotone_Iic.comp_antitoneOn hf
 
-protected theorem Monotone.Ioi (hf : Monotone f) : Antitone fun x => Ioi (f x) :=
+protected theorem Monotone.Ioi (hf : Monotone f) : Antitone fun x ↦ Ioi (f x) :=
   antitone_Ioi.comp_monotone hf
 
-protected theorem MonotoneOn.Ioi (hf : MonotoneOn f s) : AntitoneOn (fun x => Ioi (f x)) s :=
+protected theorem MonotoneOn.Ioi (hf : MonotoneOn f s) : AntitoneOn (fun x ↦ Ioi (f x)) s :=
   antitone_Ioi.comp_monotoneOn hf
 
-protected theorem Antitone.Ioi (hf : Antitone f) : Monotone fun x => Ioi (f x) :=
+protected theorem Antitone.Ioi (hf : Antitone f) : Monotone fun x ↦ Ioi (f x) :=
   antitone_Ioi.comp hf
 
-protected theorem AntitoneOn.Ioi (hf : AntitoneOn f s) : MonotoneOn (fun x => Ioi (f x)) s :=
+protected theorem AntitoneOn.Ioi (hf : AntitoneOn f s) : MonotoneOn (fun x ↦ Ioi (f x)) s :=
   antitone_Ioi.comp_antitoneOn hf
 
-protected theorem Monotone.Iio (hf : Monotone f) : Monotone fun x => Iio (f x) :=
+protected theorem Monotone.Iio (hf : Monotone f) : Monotone fun x ↦ Iio (f x) :=
   monotone_Iio.comp hf
 
-protected theorem MonotoneOn.Iio (hf : MonotoneOn f s) : MonotoneOn (fun x => Iio (f x)) s :=
+protected theorem MonotoneOn.Iio (hf : MonotoneOn f s) : MonotoneOn (fun x ↦ Iio (f x)) s :=
   monotone_Iio.comp_monotoneOn hf
 
-protected theorem Antitone.Iio (hf : Antitone f) : Antitone fun x => Iio (f x) :=
+protected theorem Antitone.Iio (hf : Antitone f) : Antitone fun x ↦ Iio (f x) :=
   monotone_Iio.comp_antitone hf
 
-protected theorem AntitoneOn.Iio (hf : AntitoneOn f s) : AntitoneOn (fun x => Iio (f x)) s :=
+protected theorem AntitoneOn.Iio (hf : AntitoneOn f s) : AntitoneOn (fun x ↦ Iio (f x)) s :=
   monotone_Iio.comp_antitoneOn hf
 
 protected theorem Monotone.Icc (hf : Monotone f) (hg : Antitone g) :
-    Antitone fun x => Icc (f x) (g x) :=
+    Antitone fun x ↦ Icc (f x) (g x) :=
   hf.Ici.inter hg.Iic
 
 protected theorem MonotoneOn.Icc (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
-    AntitoneOn (fun x => Icc (f x) (g x)) s :=
+    AntitoneOn (fun x ↦ Icc (f x) (g x)) s :=
   hf.Ici.inter hg.Iic
 
 protected theorem Antitone.Icc (hf : Antitone f) (hg : Monotone g) :
-    Monotone fun x => Icc (f x) (g x) :=
+    Monotone fun x ↦ Icc (f x) (g x) :=
   hf.Ici.inter hg.Iic
 
 protected theorem AntitoneOn.Icc (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
-    MonotoneOn (fun x => Icc (f x) (g x)) s :=
+    MonotoneOn (fun x ↦ Icc (f x) (g x)) s :=
   hf.Ici.inter hg.Iic
 
 protected theorem Monotone.Ico (hf : Monotone f) (hg : Antitone g) :
-    Antitone fun x => Ico (f x) (g x) :=
+    Antitone fun x ↦ Ico (f x) (g x) :=
   hf.Ici.inter hg.Iio
 
 protected theorem MonotoneOn.Ico (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
-    AntitoneOn (fun x => Ico (f x) (g x)) s :=
+    AntitoneOn (fun x ↦ Ico (f x) (g x)) s :=
   hf.Ici.inter hg.Iio
 
 protected theorem Antitone.Ico (hf : Antitone f) (hg : Monotone g) :
-    Monotone fun x => Ico (f x) (g x) :=
+    Monotone fun x ↦ Ico (f x) (g x) :=
   hf.Ici.inter hg.Iio
 
 protected theorem AntitoneOn.Ico (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
-    MonotoneOn (fun x => Ico (f x) (g x)) s :=
+    MonotoneOn (fun x ↦ Ico (f x) (g x)) s :=
   hf.Ici.inter hg.Iio
 
 protected theorem Monotone.Ioc (hf : Monotone f) (hg : Antitone g) :
-    Antitone fun x => Ioc (f x) (g x) :=
+    Antitone fun x ↦ Ioc (f x) (g x) :=
   hf.Ioi.inter hg.Iic
 
 protected theorem MonotoneOn.Ioc (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
-    AntitoneOn (fun x => Ioc (f x) (g x)) s :=
+    AntitoneOn (fun x ↦ Ioc (f x) (g x)) s :=
   hf.Ioi.inter hg.Iic
 
 protected theorem Antitone.Ioc (hf : Antitone f) (hg : Monotone g) :
-    Monotone fun x => Ioc (f x) (g x) :=
+    Monotone fun x ↦ Ioc (f x) (g x) :=
   hf.Ioi.inter hg.Iic
 
 protected theorem AntitoneOn.Ioc (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
-    MonotoneOn (fun x => Ioc (f x) (g x)) s :=
+    MonotoneOn (fun x ↦ Ioc (f x) (g x)) s :=
   hf.Ioi.inter hg.Iic
 
 protected theorem Monotone.Ioo (hf : Monotone f) (hg : Antitone g) :
-    Antitone fun x => Ioo (f x) (g x) :=
+    Antitone fun x ↦ Ioo (f x) (g x) :=
   hf.Ioi.inter hg.Iio
 
 protected theorem MonotoneOn.Ioo (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
-    AntitoneOn (fun x => Ioo (f x) (g x)) s :=
+    AntitoneOn (fun x ↦ Ioo (f x) (g x)) s :=
   hf.Ioi.inter hg.Iio
 
 protected theorem Antitone.Ioo (hf : Antitone f) (hg : Monotone g) :
-    Monotone fun x => Ioo (f x) (g x) :=
+    Monotone fun x ↦ Ioo (f x) (g x) :=
   hf.Ioi.inter hg.Iio
 
 protected theorem AntitoneOn.Ioo (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
-    MonotoneOn (fun x => Ioo (f x) (g x)) s :=
+    MonotoneOn (fun x ↦ Ioo (f x) (g x)) s :=
   hf.Ioi.inter hg.Iio
 
 end Ixx

@@ -632,7 +632,7 @@ theorem restr_univ {e : PartialHomeomorph X Y} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
-  refine PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
+  refine PartialHomeomorph.ext _ _ (fun x ↦ rfl) (fun x ↦ rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
 
 /-- The identity on the whole space as a partial homeomorphism. -/

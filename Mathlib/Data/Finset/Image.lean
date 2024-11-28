@@ -191,7 +191,7 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
-      (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
+      (s.filter fun x ↦ ∃ h, p ⟨x, h⟩).attach.map
         ⟨Subtype.map id <| filter_subset _ _, Subtype.map_injective _ injective_id⟩ :=
   eq_of_veq <| Multiset.filter_attach' _ _
 
@@ -373,7 +373,7 @@ theorem image_id [DecidableEq α] : s.image id = s :=
   ext fun _ => by simp only [mem_image, exists_prop, id, exists_eq_right]
 
 @[simp]
-theorem image_id' [DecidableEq α] : (s.image fun x => x) = s :=
+theorem image_id' [DecidableEq α] : (s.image fun x ↦ x) = s :=
   image_id
 
 theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.image (g ∘ f) :=
@@ -456,7 +456,7 @@ theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) 
 
 @[simp]
 theorem image_singleton (f : α → β) (a : α) : image f {a} = {f a} :=
-  ext fun x => by simpa only [mem_image, exists_prop, mem_singleton, exists_eq_left] using eq_comm
+  ext fun x ↦ by simpa only [mem_image, exists_prop, mem_singleton, exists_eq_left] using eq_comm
 
 @[simp]
 theorem image_insert [DecidableEq α] (f : α → β) (a : α) (s : Finset α) :
@@ -529,7 +529,7 @@ theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subty
 theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
     attach (insert a s) =
       insert (⟨a, mem_insert_self a s⟩ : { x // x ∈ insert a s })
-        ((attach s).image fun x => ⟨x.1, mem_insert_of_mem x.2⟩) :=
+        ((attach s).image fun x ↦ ⟨x.1, mem_insert_of_mem x.2⟩) :=
   ext fun ⟨x, hx⟩ =>
     ⟨Or.casesOn (mem_insert.1 hx)
         (fun h : x = a => fun _ => mem_insert.2 <| Or.inl <| Subtype.eq h) fun h : x ∈ s => fun _ =>
@@ -565,7 +565,7 @@ theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α)
   biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a ↦ {f a}) = s.image f :=
-  ext fun x => by simp only [mem_biUnion, mem_image, mem_singleton, eq_comm]
+  ext fun x ↦ by simp only [mem_biUnion, mem_image, mem_singleton, eq_comm]
 
 end Image
 
@@ -621,7 +621,7 @@ section Subtype
 elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map
-    ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
+    ⟨fun x ↦ ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
      fun _ _ H => Subtype.eq <| Subtype.mk.inj H⟩
 
 @[simp]

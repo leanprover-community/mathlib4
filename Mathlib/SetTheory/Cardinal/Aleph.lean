@@ -724,7 +724,7 @@ theorem aleph_le_beth (o : Ordinal) : ℵ_ o ≤ ℶ_ o := by
     exact (cantor _).trans_le (power_le_power_left two_ne_zero h)
   | H₃ o ho IH =>
     rw [aleph_limit ho, beth_limit ho]
-    exact ciSup_mono (bddAbove_of_small _) fun x => IH x.1 x.2
+    exact ciSup_mono (bddAbove_of_small _) fun x ↦ IH x.1 x.2
 
 theorem aleph0_le_beth (o : Ordinal) : ℵ₀ ≤ ℶ_ o :=
   (aleph0_le_aleph o).trans <| aleph_le_beth o

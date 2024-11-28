@@ -146,7 +146,7 @@ theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
 
 theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
-  Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
+  Ideal.ext fun x ↦ by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
 theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx => mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h =>

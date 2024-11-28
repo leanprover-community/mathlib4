@@ -69,7 +69,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
   simp_rw [subset_def, mem_inter_iff]
-  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
+  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x ↦ id⟩, fun y => ?_⟩ <;>
     simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
   · exact ⟨hxI.1, hd.2, hxI.2⟩
   · rintro ⟨h, h'⟩
@@ -79,7 +79,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
 
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
   rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
-      toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
+      toIocMod hp a = (fun x ↦ p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
   -- Porting note: added
   have : ContinuousNeg 𝕜 := TopologicalAddGroup.toContinuousNeg
   exact

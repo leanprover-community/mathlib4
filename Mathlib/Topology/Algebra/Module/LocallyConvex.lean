@@ -77,7 +77,7 @@ theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι �
     (hbasis : (𝓝 0).HasBasis p b) (hconvex : ∀ i, p i → Convex 𝕜 (b i)) :
     LocallyConvexSpace 𝕜 E := by
   refine LocallyConvexSpace.ofBases 𝕜 E (fun (x : E) (i : ι) => (x + ·) '' b i) (fun _ => p)
-    (fun x => ?_) fun x i hi => (hconvex i hi).translate x
+    (fun x ↦ ?_) fun x i hi => (hconvex i hi).translate x
   rw [← map_add_left_nhds_zero]
   exact hbasis.map _
 
@@ -94,7 +94,7 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
 instance (priority := 100) LocallyConvexSpace.toLocallyConnectedSpace [Module ℝ E]
     [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocallyConnectedSpace E :=
   locallyConnectedSpace_of_connected_bases _ _
-    (fun x => @LocallyConvexSpace.convex_basis ℝ _ _ _ _ _ _ x) fun _ _ hs => hs.2.isPreconnected
+    (fun x ↦ @LocallyConvexSpace.convex_basis ℝ _ _ _ _ _ _ x) fun _ _ hs => hs.2.isPreconnected
 
 end Module
 
@@ -141,9 +141,9 @@ theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}
   letI : TopologicalSpace E := sInf ts
   refine
     LocallyConvexSpace.ofBases 𝕜 E (fun _ => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
-      (fun x => fun If : Set ts × (ts → Set E) =>
+      (fun x ↦ fun If : Set ts × (ts → Set E) =>
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
-      (fun x => ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
+      (fun x ↦ ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
   exact hasBasis_iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ ↑i).mp (h (↑i) i.2) x
 
@@ -163,7 +163,7 @@ theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 
     (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ (t.induced f) := by
   letI : TopologicalSpace E := t.induced f
   refine LocallyConvexSpace.ofBases 𝕜 E (fun _ => preimage f)
-    (fun x => fun s : Set F => s ∈ 𝓝 (f x) ∧ Convex 𝕜 s) (fun x => ?_) fun x s ⟨_, hs⟩ =>
+    (fun x ↦ fun s : Set F => s ∈ 𝓝 (f x) ∧ Convex 𝕜 s) (fun x ↦ ?_) fun x s ⟨_, hs⟩ =>
     hs.linear_preimage f
   rw [nhds_induced]
   exact (LocallyConvexSpace.convex_basis <| f x).comap f

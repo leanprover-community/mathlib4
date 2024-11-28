@@ -437,8 +437,8 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
 where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
 @[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
-  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
-    fun x => by
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x ↦ x ^ y) (fun x ↦ x ^ (1 / y))
+    fun x ↦ by
       dsimp
       rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
 
@@ -733,8 +733,8 @@ theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ�
 where the inverse is `fun x : ℝ≥0∞ => x ^ (1 / y)`. -/
 @[simps! apply]
 def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0∞ ≃o ℝ≥0∞ :=
-  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
-    fun x => by
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x ↦ x ^ y) (fun x ↦ x ^ (1 / y))
+    fun x ↦ by
     dsimp
     rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
 

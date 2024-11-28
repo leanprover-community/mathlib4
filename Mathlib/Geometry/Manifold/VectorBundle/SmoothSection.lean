@@ -58,12 +58,12 @@ variable {s t : Cₛ^n⟮I; F, V⟯}
 
 @[simp]
 theorem coeFn_mk (s : ∀ x, V x)
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk x (s x)) :
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦ TotalSpace.mk x (s x)) :
     (mk s hs : ∀ x, V x) = s :=
   rfl
 
 protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦ TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
 
 @[deprecated (since := "2024-11-21")] alias smooth := ContMDiffSection.contMDiff
@@ -188,15 +188,15 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 end
 
 protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable hn
 
 protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable le_top
 
 protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x : V x)) x :=
   s.mdifferentiable x
 
 end ContMDiffSection

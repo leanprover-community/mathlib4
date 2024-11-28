@@ -402,7 +402,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
      the proof that `lhsFn = rhsFn` -/
   let some lhsFnEqRhsFn ← getEqProof lhsFn rhsFn | failure
   let motive ←
-    withLocalDeclD `x (← inferType lhsFn) fun x => do
+    withLocalDeclD `x (← inferType lhsFn) fun x ↦ do
       let motiveRhs := mkAppN x rhsArgs
       let motive ← if heqProofs then mkHEq lhs motiveRhs else mkEq lhs motiveRhs
       let hType ← mkEq lhsFn x

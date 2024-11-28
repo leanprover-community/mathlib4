@@ -84,7 +84,7 @@ theorem wellFounded_iff_no_descending_seq :
   · rintro ⟨h⟩
     exact ⟨fun f => not_acc_of_decreasing_seq f 0 (h _)⟩
   · intro h
-    exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
+    exact ⟨fun x ↦ acc_iff_no_decreasing_seq.2 inferInstance⟩
 
 theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
   rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]

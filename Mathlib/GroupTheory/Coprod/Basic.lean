@@ -168,14 +168,14 @@ theorem mk_eq_mk {w₁ w₂ : FreeMonoid (M ⊕ N)} : mk w₁ = mk w₂ ↔ copr
 /-- The natural embedding `M →* M ∗ N`. -/
 @[to_additive "The natural embedding `M →+ AddMonoid.Coprod M N`."]
 def inl : M →* M ∗ N where
-  toFun := fun x => mk (of (.inl x))
+  toFun := fun x ↦ mk (of (.inl x))
   map_one' := mk_eq_mk.2 fun _c hc => hc.2.2.1
   map_mul' := fun x y => mk_eq_mk.2 fun _c hc => hc.1 x y
 
 /-- The natural embedding `N →* M ∗ N`. -/
 @[to_additive "The natural embedding `N →+ AddMonoid.Coprod M N`."]
 def inr : N →* M ∗ N where
-  toFun := fun x => mk (of (.inr x))
+  toFun := fun x ↦ mk (of (.inr x))
   map_one' := mk_eq_mk.2 fun _c hc => hc.2.2.2
   map_mul' := fun x y => mk_eq_mk.2 fun _c hc => hc.2.1 x y
 
@@ -591,7 +591,7 @@ theorem inv_def (w : FreeMonoid (G ⊕ H)) :
 
 @[to_additive]
 instance : Group (G ∗ H) where
-  inv_mul_cancel := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_inv_mul_cancel x)
+  inv_mul_cancel := mk_surjective.forall.2 fun x ↦ mk_eq_mk.2 (con_inv_mul_cancel x)
 
 @[to_additive (attr := simp)]
 theorem closure_range_inl_union_inr :

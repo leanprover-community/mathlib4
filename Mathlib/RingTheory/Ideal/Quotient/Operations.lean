@@ -345,7 +345,7 @@ def Quotient.mkₐ (I : Ideal A) : A →ₐ[R₁] A ⧸ I :=
 
 theorem Quotient.algHom_ext {I : Ideal A} {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
     (h : f.comp (Quotient.mkₐ R₁ I) = g.comp (Quotient.mkₐ R₁ I)) : f = g :=
-  AlgHom.ext fun x => Quotient.inductionOn' x <| AlgHom.congr_fun h
+  AlgHom.ext fun x ↦ Quotient.inductionOn' x <| AlgHom.congr_fun h
 
 theorem Quotient.alg_map_eq (I : Ideal A) :
     algebraMap R₁ (A ⧸ I) = (algebraMap A (A ⧸ I)).comp (algebraMap R₁ A) :=
@@ -478,7 +478,7 @@ theorem quotientMap_algebraMap {J : Ideal A} {I : Ideal S} {f : A →+* S} {H : 
 
 theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J ≤ I.comap f) :
     (quotientMap I f H).comp (Quotient.mk J) = (Quotient.mk I).comp f :=
-  RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
+  RingHom.ext fun x ↦ by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 
 lemma ker_quotientMap_mk {I J : Ideal R} :
     RingHom.ker (quotientMap (J.map _) (Quotient.mk I) le_comap_map) = I.map (Quotient.mk J) := by
@@ -573,7 +573,7 @@ theorem quotient_map_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (H
 
 theorem quotient_map_comp_mkₐ {I : Ideal A} (J : Ideal B) (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
     (quotientMapₐ J f H).comp (Quotient.mkₐ R₁ I) = (Quotient.mkₐ R₁ J).comp f :=
-  AlgHom.ext fun x => by simp only [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
+  AlgHom.ext fun x ↦ by simp only [quotient_map_mkₐ, Quotient.mkₐ_eq_mk, AlgHom.comp_apply]
 
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
 where`J = f(I)`. -/

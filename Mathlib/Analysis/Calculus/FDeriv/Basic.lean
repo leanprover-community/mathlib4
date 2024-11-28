@@ -517,7 +517,7 @@ protected theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x 
   rw [h.unique h.differentiableAt.hasFDerivAt]
 
 theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x) : fderiv 𝕜 f = f' :=
-  funext fun x => (h x).fderiv
+  funext fun x ↦ (h x).fderiv
 
 variable (𝕜)
 
@@ -684,13 +684,13 @@ theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)
     simp [fderivWithin_zero_of_not_differentiableWithinAt, *]
 
 theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
-    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
+    (h : f =O[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
   simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
     h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
     h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 
-theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
+theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x ↦ ‖x - x₀‖ ^ n)
     (hn : 1 < n) : HasFDerivAt f (0 : E →L[𝕜] F) x₀ := by
   rw [← nhdsWithin_univ] at h
   exact (h.hasFDerivWithinAt (mem_univ _) hn).hasFDerivAt_of_univ
@@ -752,7 +752,7 @@ theorem DifferentiableOn.continuousOn (h : DifferentiableOn 𝕜 f s) : Continuo
 
 @[fun_prop]
 theorem Differentiable.continuous (h : Differentiable 𝕜 f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (h x).continuousAt
+  continuous_iff_continuousAt.2 fun x ↦ (h x).continuousAt
 
 protected theorem HasStrictFDerivAt.continuousAt (hf : HasStrictFDerivAt f f' x) :
     ContinuousAt f x :=
@@ -1003,7 +1003,7 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
 @[simp]
-theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
+theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x ↦ x) x :=
   (hasFDerivAt_id x).differentiableAt
 
 @[fun_prop]

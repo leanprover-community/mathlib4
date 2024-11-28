@@ -209,7 +209,7 @@ theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁
 
 theorem dlookup_map (l : List (Sigma β))
     {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
-    (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
+    (l.map fun x ↦ ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
   induction' l with b l IH
   · rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none']
   · rw [map_cons]
@@ -219,11 +219,11 @@ theorem dlookup_map (l : List (Sigma β))
 
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
     {f : α → α'} (hf : Function.Injective f) (a : α) :
-    (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
+    (l.map fun x ↦ ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
   rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id']
 
 theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
-    (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
+    (l.map fun x ↦ ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
 /-! ### `lookupAll` -/
@@ -576,7 +576,7 @@ theorem kextract_eq_dlookup_kerase (a : α) :
 
 /-- Remove entries with duplicate keys from `l : List (Sigma β)`. -/
 def dedupKeys : List (Sigma β) → List (Sigma β) :=
-  List.foldr (fun x => kinsert x.1 x.2) []
+  List.foldr (fun x ↦ kinsert x.1 x.2) []
 
 theorem dedupKeys_cons {x : Sigma β} (l : List (Sigma β)) :
     dedupKeys (x :: l) = kinsert x.1 x.2 (dedupKeys l) :=

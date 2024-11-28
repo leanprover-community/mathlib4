@@ -204,7 +204,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       let ι2 := { x // x ≠ i }
       classical
       have hc : Fintype.card ι2 = m + 1 := by
-        rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
+        rw [Fintype.card_of_subtype (Finset.univ.filter fun x ↦ x ≠ i)]
         · rw [Finset.filter_not]
           -- Porting note: removed `simp_rw [eq_comm]` and used `filter_eq'` instead of `filter_eq`
           rw [Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
@@ -431,7 +431,7 @@ spanned by that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
-  change ∃ r : ℝ, ∀ i, (fun x => dist x p = r) (s.points i) at hr
+  change ∃ r : ℝ, ∀ i, (fun x ↦ dist x p = r) (s.points i) at hr
   have hr : ∃ (r : ℝ), ∀ (a : P),
       a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
     cases' hr with r hr

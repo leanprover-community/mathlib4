@@ -384,7 +384,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
       classical
       refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_isInducing F E b).continuous
-        fun x => e.mem_source.mpr hb).snd }
+        fun x ↦ e.mem_source.mpr hb).snd }
 
 /-- Backwards map of `Trivialization.continuousLinearEquivAt`, defined everywhere. -/
 @[simps (config := .asFn) apply]
@@ -396,7 +396,7 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
       · rw [(FiberBundle.totalSpaceMk_isInducing F E b).continuous_iff]
         exact e.continuousOn_symm.comp_continuous (continuous_const.prod_mk continuous_id) fun x ↦
           mk_mem_prod hb (mem_univ x)
-      · refine continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
+      · refine continuous_zero.congr fun x ↦ (e.symm_apply_of_not_mem hb x).symm }
 
 variable {R}
 

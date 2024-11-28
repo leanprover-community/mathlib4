@@ -536,7 +536,7 @@ instance : Inhabited (DirectLimit G f) :=
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
   RingHom.mk'
-    { toFun := fun x => Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σi, G i))
+    { toFun := fun x ↦ Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σi, G i))
       map_one' := Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inl ⟨i, rfl⟩
       map_mul' := fun x y =>
         Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inr <| Or.inr ⟨i, x, y, rfl⟩ }

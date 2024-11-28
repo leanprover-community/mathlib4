@@ -488,11 +488,11 @@ lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀
   BddAbove.range_mono (β := βᵒᵈ) f h hbdd
 
 lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
+    (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x ↦ g (f x))) := by
   change BddAbove (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddAbove hf
 
 lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
-    (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
+    (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x ↦ g (f x))) := by
   change BddBelow (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddBelow hf

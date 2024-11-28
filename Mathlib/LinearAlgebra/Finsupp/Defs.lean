@@ -99,12 +99,12 @@ variable (s : Set α)
 
 /-- Interpret `Finsupp.subtypeDomain s` as a linear map. -/
 def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M where
-  toFun := subtypeDomain fun x => x ∈ s
+  toFun := subtypeDomain fun x ↦ x ∈ s
   map_add' _ _ := subtypeDomain_add
   map_smul' _ _ := ext fun _ => rfl
 
 theorem lsubtypeDomain_apply (f : α →₀ M) :
-    (lsubtypeDomain s : (α →₀ M) →ₗ[R] s →₀ M) f = subtypeDomain (fun x => x ∈ s) f :=
+    (lsubtypeDomain s : (α →₀ M) →ₗ[R] s →₀ M) f = subtypeDomain (fun x ↦ x ∈ s) f :=
   rfl
 
 end LSubtypeDomain

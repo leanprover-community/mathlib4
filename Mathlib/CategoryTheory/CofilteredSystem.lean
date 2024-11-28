@@ -327,7 +327,7 @@ variable [∀ j : J, Nonempty (F.obj j)] [∀ j : J, Finite (F.obj j)]
 include Fsur
 
 theorem eval_section_surjective_of_surjective (i : J) :
-    (fun s : F.sections => s.val i).Surjective := fun x => by
+    (fun s : F.sections => s.val i).Surjective := fun x ↦ by
   let s : Set (F.obj i) := {x}
   haveI := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)

@@ -431,7 +431,7 @@ theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
 @[simp]
 theorem repeat_zero (a : Fin n → α) :
     Fin.repeat 0 a = Fin.elim0 ∘ cast (Nat.zero_mul _) :=
-  funext fun x => (cast (Nat.zero_mul _) x).elim0
+  funext fun x ↦ (cast (Nat.zero_mul _) x).elim0
 
 @[simp]
 theorem repeat_one (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul _) := by

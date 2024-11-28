@@ -336,7 +336,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
   let e : cospan (F.map (D.ι i)) (F.map (D.ι j)) ≅
       cospan ((D.mapGlueData F).ι i) ((D.mapGlueData F).ι j) :=
     NatIso.ofComponents
-      (fun x => by
+      (fun x ↦ by
         cases x
         exacts [D.gluedIso F, Iso.refl _])
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)

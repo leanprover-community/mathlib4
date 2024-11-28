@@ -89,7 +89,7 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma interior_union_boundary_eq_univ : (I.interior M) ∪ (I.boundary M) = (univ : Set M) :=
-  eq_univ_of_forall fun x => (mem_union _ _ _).mpr (I.isInteriorPoint_or_isBoundaryPoint x)
+  eq_univ_of_forall fun x ↦ (mem_union _ _ _).mpr (I.isInteriorPoint_or_isBoundaryPoint x)
 
 /-- The interior and boundary of a manifold `M` are disjoint. -/
 lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by

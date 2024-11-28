@@ -205,7 +205,7 @@ theorem mapRange.addMonoidHom_toZeroHom (f : M →+ N) :
   ZeroHom.ext fun _ => rfl
 
 theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
-    mapRange f (map_zero f) m.sum = (m.map fun x => mapRange f (map_zero f) x).sum :=
+    mapRange f (map_zero f) m.sum = (m.map fun x ↦ mapRange f (map_zero f) x).sum :=
   (mapRange.addMonoidHom (f : M →+ N) : (α →₀ _) →+ _).map_multiset_sum _
 
 theorem mapRange_finset_sum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
@@ -218,11 +218,11 @@ def mapRange.addEquiv (f : M ≃+ N) : (α →₀ M) ≃+ (α →₀ N) :=
   { mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
     invFun := (mapRange f.symm f.symm.map_zero : (α →₀ N) → α →₀ M)
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       rw [← mapRange_comp _ _ _ _] <;> simp_rw [AddEquiv.symm_comp_self]
       · exact mapRange_id _
       · rfl
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       rw [← mapRange_comp _ _ _ _] <;> simp_rw [AddEquiv.self_comp_symm]
       · exact mapRange_id _
       · rfl }
@@ -617,7 +617,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
     (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g := by
   simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
-  exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
+  exact Finset.sum_preimage_of_bij f _ hf fun x ↦ g x (l x)
 
 theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
@@ -912,7 +912,7 @@ theorem subtypeDomain_eq_zero_iff {f : α →₀ M} (hf : ∀ x ∈ f.support, p
     f.subtypeDomain p = 0 ↔ f = 0 :=
   subtypeDomain_eq_zero_iff'.trans
     ⟨fun H =>
-      ext fun x => by
+      ext fun x ↦ by
         classical exact if hx : p x then H x hx else not_mem_support_iff.1 <| mt (hf x) hx,
       fun H x _ => by simp [H]⟩
 
@@ -1327,7 +1327,7 @@ instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →�
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
-    one_smul := fun x => ext fun y => one_smul R (x y)
+    one_smul := fun x ↦ ext fun y => one_smul R (x y)
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 
 instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]

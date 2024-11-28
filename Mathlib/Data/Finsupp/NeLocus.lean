@@ -33,7 +33,7 @@ variable [DecidableEq N] [Zero N] (f g : α →₀ N)
 /-- Given two finitely supported functions `f g : α →₀ N`, `Finsupp.neLocus f g` is the `Finset`
 where `f` and `g` differ. This generalizes `(f - g).support` to situations without subtraction. -/
 def neLocus (f g : α →₀ N) : Finset α :=
-  (f.support ∪ g.support).filter fun x => f x ≠ g x
+  (f.support ∪ g.support).filter fun x ↦ f x ≠ g x
 
 @[simp]
 theorem mem_neLocus {f g : α →₀ N} {a : α} : a ∈ f.neLocus g ↔ f a ≠ g a := by
@@ -76,7 +76,7 @@ section NeLocusAndMaps
 
 theorem subset_mapRange_neLocus [DecidableEq N] [Zero N] [DecidableEq M] [Zero M] (f g : α →₀ N)
     {F : N → M} (F0 : F 0 = 0) : (f.mapRange F F0).neLocus (g.mapRange F F0) ⊆ f.neLocus g :=
-  fun x => by simpa only [mem_neLocus, mapRange_apply, not_imp_not] using congr_arg F
+  fun x ↦ by simpa only [mem_neLocus, mapRange_apply, not_imp_not] using congr_arg F
 
 theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f : α →₀ M) (g₁ g₂ : α →₀ N)

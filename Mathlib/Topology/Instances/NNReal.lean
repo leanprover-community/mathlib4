@@ -105,7 +105,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
+  prf f hf := ⟨⟨fun x ↦ ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
@@ -172,7 +172,7 @@ theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a ↦ (f a :
   simp only [HasSum, ← coe_sum, tendsto_coe]
 
 protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
-    (hy : HasSum f y) : HasSum (fun x => Real.toNNReal (f x)) y.toNNReal := by
+    (hy : HasSum f y) : HasSum (fun x ↦ Real.toNNReal (f x)) y.toNNReal := by
   lift y to ℝ≥0 using hy.nonneg hf₀
   lift f to α → ℝ≥0 using hf₀
   simpa [hasSum_coe] using hy
@@ -184,12 +184,12 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
 @[norm_cast]
 theorem summable_coe {f : α → ℝ≥0} : (Summable fun a ↦ (f a : ℝ)) ↔ Summable f := by
   constructor
-  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x ↦ (f x).2⟩, hasSum_coe.1 ha⟩
   · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
     (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
-  Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
+  Iff.symm <| summable_coe (f := fun x ↦ ⟨f x, hf x⟩)
 
 @[norm_cast]
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) := by
@@ -199,7 +199,7 @@ theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
     (⟨∑' n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑' n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
-  NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
+  NNReal.eq <| Eq.symm <| coe_tsum (f := fun x ↦ ⟨f x, hf₁ x⟩)
 
 nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]

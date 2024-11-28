@@ -133,7 +133,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
 
 theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
     (hX : IsUniform X s ℙ μ) :
-    (fun x => (pdf X ℙ μ x).toReal) =ᵐ[μ] fun x =>
+    (fun x ↦ (pdf X ℙ μ x).toReal) =ᵐ[μ] fun x =>
       (s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x).toReal :=
   Filter.EventuallyEq.fun_comp (pdf_eq hms hX) ENNReal.toReal
 
@@ -153,8 +153,8 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
       (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
   refine hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) ?_
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
-  have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
-    (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
+  have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x ↦ ‖x‖₊ * ind x) x := fun x =>
+    (s.indicator_mul_right (fun x ↦ ↑‖x‖₊) ind).symm
   simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_nnnorm.coe_nnreal_ennreal]
@@ -255,7 +255,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm])
+      (tsum_congr fun x ↦ by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm])
     _ = ∑ x ∈ s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_eq_sum fun _ hx => if_neg fun h ↦ hx (Finset.mem_filter.2 h))
     _ = ∑ _x ∈ s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
@@ -289,7 +289,7 @@ theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card 
 @[simp]
 theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
-  Set.ext fun x => by simp [mem_support_iff]
+  Set.ext fun x ↦ by simp [mem_support_iff]
 
 theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
 
@@ -322,7 +322,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
           = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by
             simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
         _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b ∈ s.toFinset, (s.count b : ℝ≥0∞) :=
-          (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x)
+          (congr_arg (fun x ↦ (Multiset.card s : ℝ≥0∞)⁻¹ * x)
             (tsum_eq_sum fun a ha =>
               Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset]))
         _ = 1 := by
@@ -357,7 +357,7 @@ theorem toOuterMeasure_ofMultiset_apply :
     (ofMultiset s hs).toOuterMeasure t =
       (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
   simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
-  refine tsum_congr fun x => ?_
+  refine tsum_congr fun x ↦ ?_
   by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
 
 @[simp]

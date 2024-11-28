@@ -82,7 +82,7 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h :=
-    LinearMap.ext fun x => by simpa only using DFunLike.congr_fun h x
+    LinearMap.ext fun x ↦ by simpa only using DFunLike.congr_fun h x
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
@@ -574,7 +574,7 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
           rw [RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
             LinearMap.coe_toAddHom, RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
             one_smul]
-        right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by
+        right_inv := fun g => LinearMap.ext fun x ↦ LinearMap.ext fun s : S => by
           -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
           rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
             RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
@@ -632,7 +632,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     (g : X ⟶ (restrictScalars f).obj Y) : have : Module R Y := Module.compHom Y f
     X →ₗ[R] Y :=
   @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
-    { toFun := fun x => s • (g x : Y)
+    { toFun := fun x ↦ s • (g x : Y)
       map_add' := by
         intros
         dsimp only
@@ -803,11 +803,11 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
     homEquiv := fun _ _ ↦ ExtendRestrictScalarsAdj.homEquiv.{v,u₁,u₂} f
     unit := ExtendRestrictScalarsAdj.unit.{v,u₁,u₂} f
     counit := ExtendRestrictScalarsAdj.counit.{v,u₁,u₂} f
-    homEquiv_unit := fun {X Y g} ↦ LinearMap.ext fun x => by
+    homEquiv_unit := fun {X Y g} ↦ LinearMap.ext fun x ↦ by
       dsimp
       rw [ModuleCat.coe_comp, Function.comp_apply, restrictScalars.map_apply]
       rfl
-    homEquiv_counit := fun {X Y g} ↦ LinearMap.ext fun x => by
+    homEquiv_counit := fun {X Y g} ↦ LinearMap.ext fun x ↦ by
         induction x using TensorProduct.induction_on with
         | zero => rw [map_zero, map_zero]
         | tmul =>

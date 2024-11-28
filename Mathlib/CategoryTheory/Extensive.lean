@@ -226,7 +226,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+        fun {l'} h₁ _ => funext fun x ↦ hl' x (l' x) (congr_fun h₁ x).symm⟩
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
@@ -239,7 +239,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+        fun {l'} h₁ _ => funext fun x ↦ hl' x (l' x) (congr_fun h₁ x).symm⟩
   · intro Z f
     dsimp [Limits.Types.binaryCoproductCocone]
     delta Types.PullbackObj
@@ -248,11 +248,11 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
+      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x ↦ ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
       ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
-        fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
+        fun x ↦ ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
     · exact fun s x => dite _ (fun h ↦ s.inl <| eX.symm ⟨x, h⟩)
         fun h ↦ s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
@@ -336,7 +336,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       choose l hl hl' using this
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a ↦ (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
-          ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+          ContinuousMap.ext fun x ↦ hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm

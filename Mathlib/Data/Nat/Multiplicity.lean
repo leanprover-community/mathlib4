@@ -243,7 +243,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
       apply WithTop.coe_mono
       rw [log_pow hp.one_lt, ← card_union_of_disjoint hdisj, filter_union_right]
       have filter_le_Ico := (Ico 1 n.succ).card_filter_le
-        fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
+        fun x ↦ p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
       rwa [card_Ico 1 n.succ] at filter_le_Ico)
     (by rw [← hp.emultiplicity_pow_self]; exact emultiplicity_le_emultiplicity_choose_add hp _ _)
 

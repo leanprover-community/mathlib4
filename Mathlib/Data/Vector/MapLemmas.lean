@@ -49,7 +49,7 @@ theorem map_mapAccumr {s : σ₂} (f₁ : β → γ) :
 
 @[simp]
 theorem map_map (f₁ : β → γ) (f₂ : α → β) :
-    map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
+    map f₁ (map f₂ xs) = map (fun x ↦ f₁ <| f₂ x) xs := by
   induction xs <;> simp_all
 
 theorem map_pmap {p : α → Prop} (f₁ : β → γ) (f₂ : (a : α) → p a → β) (H : ∀ x ∈ xs.toList, p x):
@@ -273,7 +273,7 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
 -/
 @[simp]
 theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
-    mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
+    mapAccumr f xs s = (s, (map (fun x ↦ (f x s).snd) xs)) := by
   induction xs using revInductionOn <;> simp_all
 
 /--
@@ -293,7 +293,7 @@ theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ ×
 @[simp]
 theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
     (h : ∀ a s s', (f a s).snd = (f a s').snd) :
-    (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) :=
+    (mapAccumr f xs s).snd = (map (fun x ↦ (f x s).snd) xs) :=
   mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => h a s s')
 
 

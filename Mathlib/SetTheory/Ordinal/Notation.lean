@@ -1175,7 +1175,7 @@ noncomputable def repr (o : NONote) : Ordinal :=
   o.1.repr
 
 instance : ToString NONote :=
-  ⟨fun x => x.1.toString⟩
+  ⟨fun x ↦ x.1.toString⟩
 
 instance : Repr NONote :=
   ⟨fun x prec => x.1.repr' prec⟩

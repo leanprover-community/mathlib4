@@ -75,7 +75,7 @@ def sectionΓ'Bool : Γ' → Bool
   | _ => Inhabited.default
 
 theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
-  fun x => Bool.casesOn x rfl rfl
+  fun x ↦ Bool.casesOn x rfl rfl
 
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective (Exists.intro sectionΓ'Bool leftInverse_section_inclusion)
@@ -150,7 +150,7 @@ def encodingNatΓ' : Encoding ℕ where
   decode x := some (decodeNat (List.map sectionΓ'Bool x))
   decode_encode x :=
     congr_arg _ <| by
-      -- Porting note: `rw` can't unify `g ∘ f` with `fun x => g (f x)`, used `LeftInverse.id`
+      -- Porting note: `rw` can't unify `g ∘ f` with `fun x ↦ g (f x)`, used `LeftInverse.id`
       -- instead.
       rw [List.map_map, leftInverse_section_inclusion.id, List.map_id, decode_encodeNat]
 

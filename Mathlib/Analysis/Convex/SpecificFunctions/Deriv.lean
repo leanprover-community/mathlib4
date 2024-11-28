@@ -14,9 +14,9 @@ import Mathlib.Analysis.Convex.Deriv
 
 In this file we prove that certain specific functions are strictly convex, including the following:
 
-* `Even.strictConvexOn_pow` : For an even `n : ℕ` with `2 ≤ n`, `fun x => x ^ n` is strictly convex.
-* `strictConvexOn_pow` : For `n : ℕ`, with `2 ≤ n`, `fun x => x ^ n` is strictly convex on $[0,+∞)$.
-* `strictConvexOn_zpow` : For `m : ℤ` with `m ≠ 0, 1`, `fun x => x ^ m` is strictly convex on
+* `Even.strictConvexOn_pow` : For an even `n : ℕ` with `2 ≤ n`, `fun x ↦ x ^ n` is strictly convex.
+* `strictConvexOn_pow` : For `n : ℕ`, with `2 ≤ n`, `fun x ↦ x ^ n` is strictly convex on $[0,+∞)$.
+* `strictConvexOn_zpow` : For `m : ℤ` with `m ≠ 0, 1`, `fun x ↦ x ^ m` is strictly convex on
   $[0, +∞)$.
 * `strictConcaveOn_sin_Icc` : `sin` is strictly concave on $[0, π]$
 * `strictConcaveOn_cos_Icc` : `cos` is strictly concave on $[-π/2, π/2]$
@@ -51,7 +51,7 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
     (Nat.cast_pos.2 h)
 
 theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCommRing β] {f : α → β}
-    [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
+    [DecidablePred fun x ↦ f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x ↦ f x ≤ 0).card) :
     0 ≤ ∏ x ∈ s, f x :=
   calc
     0 ≤ ∏ x ∈ s, (if f x ≤ 0 then (-1 : β) else 1) * f x :=
@@ -106,13 +106,13 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
 section SqrtMulLog
 
 theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
-    HasDerivAt (fun x => √x * log x) ((2 + log x) / (2 * √x)) x := by
+    HasDerivAt (fun x ↦ √x * log x) ((2 + log x) / (2 * √x)) x := by
   convert (hasDerivAt_sqrt hx).mul (hasDerivAt_log hx) using 1
   rw [add_div, div_mul_cancel_left₀ two_ne_zero, ← div_eq_mul_inv, sqrt_div_self', add_comm,
     one_div, one_div, ← div_eq_inv_mul]
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
-    deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
+    deriv (fun x ↦ √x * log x) x = (2 + log x) / (2 * √x) := by
   cases' lt_or_le 0 x with hx hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
@@ -121,11 +121,11 @@ theorem deriv_sqrt_mul_log (x : ℝ) :
     rw [sqrt_eq_zero_of_nonpos hx, zero_mul]
 
 theorem deriv_sqrt_mul_log' :
-    (deriv fun x => √x * log x) = fun x => (2 + log x) / (2 * √x) :=
+    (deriv fun x ↦ √x * log x) = fun x ↦ (2 + log x) / (2 * √x) :=
   funext deriv_sqrt_mul_log
 
 theorem deriv2_sqrt_mul_log (x : ℝ) :
-    deriv^[2] (fun x => √x * log x) x = -log x / (4 * √x ^ 3) := by
+    deriv^[2] (fun x ↦ √x * log x) x = -log x / (4 * √x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   rcases le_or_lt x 0 with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow three_ne_zero, mul_zero, div_zero]
@@ -141,7 +141,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     ring
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
-    StrictConcaveOn ℝ (Set.Ioi 1) fun x => √x * log x := by
+    StrictConcaveOn ℝ (Set.Ioi 1) fun x ↦ √x * log x := by
   apply strictConcaveOn_of_deriv2_neg' (convex_Ioi 1) _ fun x hx => ?_
   · exact continuous_sqrt.continuousOn.mul
       (continuousOn_log.mono fun x hx => ne_of_gt (zero_lt_one.trans hx))

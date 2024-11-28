@@ -144,7 +144,7 @@ variable (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
   smul r p :=
     { r • p.toAddGroupSeminorm with
-      toFun := fun x => r • p x
+      toFun := fun x ↦ r • p x
       smul' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
@@ -152,7 +152,7 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (Seminorm 𝕜 E) where
-  smul_assoc r a p := ext fun x => smul_assoc r a (p x)
+  smul_assoc r a p := ext fun x ↦ smul_assoc r a (p x)
 
 theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
     ⇑(r • p) = r • ⇑p :=
@@ -166,7 +166,7 @@ theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (
 instance instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
-      toFun := fun x => p x + q x
+      toFun := fun x ↦ p x + q x
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 theorem coe_add (p q : Seminorm 𝕜 E) : ⇑(p + q) = p + q :=
@@ -272,7 +272,7 @@ variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
-    toFun := fun x => p (f x)
+    toFun := fun x ↦ p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
@@ -427,7 +427,7 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
 noncomputable instance instInf : Min (Seminorm 𝕜 E) where
   min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
-      toFun := fun x => ⨅ u : E, p u + q (x - u)
+      toFun := fun x ↦ ⨅ u : E, p u + q (x - u)
       smul' := by
         intro a x
         obtain rfl | ha := eq_or_ne a 0
@@ -508,7 +508,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
               (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, ?_⟩ i)
           <;> rw [mem_upperBounds, forall_mem_range]
           <;> exact fun j => hq (mem_image_of_mem _ j.2) _
-        neg' := fun x => by
+        neg' := fun x ↦ by
           simp only [iSup_apply]
           congr! 2
           rename_i _ _ _ i

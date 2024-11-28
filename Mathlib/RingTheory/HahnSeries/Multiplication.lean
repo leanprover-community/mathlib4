@@ -104,7 +104,7 @@ def of (R : Type*) [SMul R V] : HahnSeries Γ V ≃ HahnModule Γ R V :=
 @[elab_as_elim]
 def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
     ∀ x, motive x :=
-  fun x => h <| (of R).symm x
+  fun x ↦ h <| (of R).symm x
 
 @[ext]
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
@@ -474,10 +474,10 @@ instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
 instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
   { AddMonoidWithOne.unary,
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    one_mul := fun x => by
+    one_mul := fun x ↦ by
       ext
       exact single_zero_mul_coeff.trans (one_mul _)
-    mul_one := fun x => by
+    mul_one := fun x ↦ by
       ext
       exact mul_single_zero_coeff.trans (mul_one _) }
 

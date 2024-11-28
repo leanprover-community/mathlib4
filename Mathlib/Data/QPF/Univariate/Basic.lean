@@ -153,7 +153,7 @@ of trees.
 -/
 /-- does recursion on `q.P.W` using `g : F α → α` rather than `g : P α → α` -/
 def recF {α : Type _} (g : F α → α) : q.P.W → α
-  | ⟨a, f⟩ => g (abs ⟨a, fun x => recF g (f x)⟩)
+  | ⟨a, f⟩ => g (abs ⟨a, fun x ↦ recF g (f x)⟩)
 
 theorem recF_eq {α : Type _} (g : F α → α) (x : q.P.W) :
     recF g x = g (abs (q.P.map (recF g) x.dest)) := by
@@ -229,7 +229,7 @@ def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
 
 /-- access the underlying W-type of a fixpoint data type -/
 def fixToW : Fix F → q.P.W :=
-  Quotient.lift Wrepr (recF_eq_of_Wequiv fun x => @PFunctor.W.mk q.P (repr x))
+  Quotient.lift Wrepr (recF_eq_of_Wequiv fun x ↦ @PFunctor.W.mk q.P (repr x))
 
 /-- constructor of a type defined by a qpf -/
 def Fix.mk (x : F (Fix F)) : Fix F :=
@@ -255,8 +255,8 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     ← h, abs_repr, this]
 
 theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
-    Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
-  have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
+    Fix.mk (abs ⟨a, fun x ↦ ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
+  have : Fix.mk (abs ⟨a, fun x ↦ ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
     simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
@@ -322,7 +322,7 @@ open Functor (Liftp Liftr)
 
 /-- does recursion on `q.P.M` using `g : α → F α` rather than `g : α → P α` -/
 def corecF {α : Type _} (g : α → F α) : α → q.P.M :=
-  PFunctor.M.corec fun x => repr (g x)
+  PFunctor.M.corec fun x ↦ repr (g x)
 
 theorem corecF_eq {α : Type _} (g : α → F α) (x : α) :
     PFunctor.M.dest (corecF g x) = q.P.map (corecF g) (repr (g x)) := by
@@ -350,7 +350,7 @@ def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
 
 /-- destructor for type defined by `Cofix` -/
 def Cofix.dest : Cofix F → F (Cofix F) :=
-  Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))
+  Quot.lift (fun x ↦ Quot.mk Mcongr <$> abs (PFunctor.M.dest x))
     (by
       rintro x y ⟨r, pr, rxy⟩
       dsimp
@@ -455,7 +455,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
   abs {α} := by
     dsimp [Functor.Comp]
     intro p
-    exact abs ⟨p.1.1, fun x => abs ⟨p.1.2 x, fun y => p.2 ⟨x, y⟩⟩⟩
+    exact abs ⟨p.1.1, fun x ↦ abs ⟨p.1.2 x, fun y => p.2 ⟨x, y⟩⟩⟩
   repr {α} := by
     dsimp [Functor.Comp]
     intro y

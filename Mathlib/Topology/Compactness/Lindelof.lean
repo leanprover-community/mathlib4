@@ -364,7 +364,7 @@ theorem Set.Finite.isLindelof (hs : s.Finite) : IsLindelof s :=
 theorem IsLindelof.countable_of_discrete [DiscreteTopology X] (hs : IsLindelof s) :
     s.Countable := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
-  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, ht, _, hssubt⟩
+  rcases hs.elim_nhds_subcover (fun x ↦ {x}) fun x _ => this x with ⟨t, ht, _, hssubt⟩
   rw [biUnion_of_singleton] at hssubt
   exact ht.mono hssubt
 
@@ -573,7 +573,7 @@ theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X]
 
 theorem countable_cover_nhds_interior [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, interior (U x) = univ :=
-  let ⟨t, ht⟩ := isLindelof_univ.elim_countable_subcover (fun x => interior (U x))
+  let ⟨t, ht⟩ := isLindelof_univ.elim_countable_subcover (fun x ↦ interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, ⟨ht.1, univ_subset_iff.1 ht.2⟩⟩
 

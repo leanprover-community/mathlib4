@@ -61,7 +61,7 @@ namespace NumberField.Units
 section coe
 
 instance : CoeHTC (𝓞 K)ˣ K :=
-  ⟨fun x => algebraMap _ K (Units.val x)⟩
+  ⟨fun x ↦ algebraMap _ K (Units.val x)⟩
 
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
   RingOfIntegers.coe_injective.comp Units.ext

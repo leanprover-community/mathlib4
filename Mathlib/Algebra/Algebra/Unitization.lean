@@ -667,7 +667,7 @@ algebra homomorphism from the unitization into `C`. This is extended to an `Equi
 reasons. -/
 @[simps]
 def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
-  toFun := fun x => algebraMap R C x.fst + φ x.snd
+  toFun := fun x ↦ algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by
     induction x with
@@ -735,7 +735,7 @@ to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the uniti
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
-    map_star' := fun x => by
+    map_star' := fun x ↦ by
       induction x
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),

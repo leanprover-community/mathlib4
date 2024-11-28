@@ -116,7 +116,7 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
-    ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
+    ∫⋯∫⁻_{i}, f ∂μ = fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)
   let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
   ext1 x

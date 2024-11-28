@@ -178,7 +178,7 @@ theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f
 
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
-  refine le_antisymm (fun x => ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
+  refine le_antisymm (fun x ↦ ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
   simp_rw [iSup_eq_span, AddSubmonoid.iSup_eq_closure, mem_toAddSubmonoid, coe_toAddSubmonoid]
   intro hx
   refine Submodule.span_induction (fun x hx => ?_) ?_ (fun x y _ _ hx hy => ?_)
@@ -244,7 +244,7 @@ theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
 
 instance : IsCompactlyGenerated (Submodule R M) :=
   ⟨fun s =>
-    ⟨(fun x => span R {x}) '' s,
+    ⟨(fun x ↦ span R {x}) '' s,
       ⟨fun t ht => by
         rcases (Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
         apply singleton_span_isCompactElement, by

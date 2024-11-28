@@ -65,7 +65,7 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
-    HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
+    HasDerivAt (fun x ↦ bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   field_simp [Nat.cast_add_one_ne_zero k]
 
@@ -87,7 +87,7 @@ section BernoulliFourierCoeffs
 
 /-- The `n`-th Fourier coefficient of the `k`-th Bernoulli function on the interval `[0, 1]`. -/
 def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
-  fourierCoeffOn zero_lt_one (fun x => bernoulliFun k x) n
+  fourierCoeffOn zero_lt_one (fun x ↦ bernoulliFun k x) n
 
 /-- Recurrence relation (in `k`) for the `n`-th Fourier coefficient of `Bₖ`. -/
 theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :

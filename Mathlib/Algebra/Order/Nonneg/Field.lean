@@ -45,7 +45,7 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] {x y : α}
 
 instance inv : Inv { x : α // 0 ≤ x } :=
-  ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
+  ⟨fun x ↦ ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_inv (a : { x : α // 0 ≤ x }) : ((a⁻¹ : { x : α // 0 ≤ x }) : α) = (a : α)⁻¹ :=

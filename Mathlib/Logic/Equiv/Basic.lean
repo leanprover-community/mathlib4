@@ -247,7 +247,7 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕ β ≃ α' ⊕ β'`. This is `Sum.map` as an equivalence. -/
 @[simps apply]
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
-  ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
+  ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x ↦ by simp, fun x ↦ by simp⟩
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
 def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
@@ -460,7 +460,7 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
-  ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
+  ⟨fun s => s.elim (fun x ↦ ⟨false, x⟩) fun x ↦ ⟨true, x⟩, fun s =>
     match s with
     | ⟨false, a⟩ => inl a
     | ⟨true, b⟩ => inr b,
@@ -471,7 +471,7 @@ def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
 the type of all fibres of `f` and the total space `α`. -/
 @[simps]
 def sigmaFiberEquiv {α β : Type*} (f : α → β) : (Σ y : β, { x // f x = y }) ≃ α :=
-  ⟨fun x => ↑x.2, fun x => ⟨f x, x, rfl⟩, fun ⟨_, _, rfl⟩ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ ↑x.2, fun x ↦ ⟨f x, x, rfl⟩, fun ⟨_, _, rfl⟩ => rfl, fun _ => rfl⟩
 
 /-- Inhabited types are equivalent to `Option β` for some `β` by identifying `default` with `none`.
 -/
@@ -868,7 +868,7 @@ theorem sumArrowEquivProdArrow_symm_apply_inr {α β γ} (f : α → γ) (g : β
 
 /-- Type product is right distributive with respect to type sum up to an equivalence. -/
 def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
-  ⟨fun p => p.1.map (fun x => (x, p.2)) fun x => (x, p.2),
+  ⟨fun p => p.1.map (fun x ↦ (x, p.2)) fun x ↦ (x, p.2),
     fun s => s.elim (Prod.map inl id) (Prod.map inr id), by
       rintro ⟨_ | _, _⟩ <;> rfl, by rintro (⟨_, _⟩ | ⟨_, _⟩) <;> rfl⟩
 
@@ -1095,9 +1095,9 @@ def subtypeSubtypeEquivSubtypeExists (p : α → Prop) (q : Subtype p → Prop) 
 /-- A subtype of a subtype is equivalent to the subtype of elements satisfying both predicates. -/
 @[simps!]
 def subtypeSubtypeEquivSubtypeInter {α : Type u} (p q : α → Prop) :
-    { x : Subtype p // q x.1 } ≃ Subtype fun x => p x ∧ q x :=
+    { x : Subtype p // q x.1 } ≃ Subtype fun x ↦ p x ∧ q x :=
   (subtypeSubtypeEquivSubtypeExists p _).trans <|
-    subtypeEquivRight fun x => @exists_prop (q x) (p x)
+    subtypeEquivRight fun x ↦ @exists_prop (q x) (p x)
 
 /-- If the outer subtype has more restrictive predicate than the inner one,
 then we can drop the latter. -/
@@ -1110,19 +1110,19 @@ def subtypeSubtypeEquivSubtype {α} {p q : α → Prop} (h : ∀ {x}, q x → p 
 equivalent to the original type. -/
 @[simps apply symm_apply]
 def subtypeUnivEquiv {α} {p : α → Prop} (h : ∀ x, p x) : Subtype p ≃ α :=
-  ⟨fun x => x, fun x => ⟨x, h x⟩, fun _ => Subtype.eq rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ ⟨x, h x⟩, fun _ => Subtype.eq rfl, fun _ => rfl⟩
 
 /-- A subtype of a sigma-type is a sigma-type over a subtype. -/
 def subtypeSigmaEquiv {α} (p : α → Type v) (q : α → Prop) : { y : Sigma p // q y.1 } ≃ Σ x :
     Subtype q, p x.1 :=
-  ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, fun _ => rfl,
+  ⟨fun x ↦ ⟨⟨x.1.1, x.2⟩, x.1.2⟩, fun x ↦ ⟨⟨x.1.1, x.2⟩, x.1.2⟩, fun _ => rfl,
     fun _ => rfl⟩
 
 /-- A sigma type over a subtype is equivalent to the sigma set over the original type,
 if the fiber is empty outside of the subset -/
 def sigmaSubtypeEquivOfSubset {α} (p : α → Type v) (q : α → Prop) (h : ∀ x, p x → q x) :
     (Σ x : Subtype q, p x) ≃ Σ x : α, p x :=
-  (subtypeSigmaEquiv p q).symm.trans <| subtypeUnivEquiv fun x => h x.1 x.2
+  (subtypeSigmaEquiv p q).symm.trans <| subtypeUnivEquiv fun x ↦ h x.1 x.2
 
 /-- If a predicate `p : β → Prop` is true on the range of a map `f : α → β`, then
 `Σ y : {y // p y}, {x // f x = y}` is equivalent to `α`. -/
@@ -1191,8 +1191,8 @@ def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
 is equivalent to a product of subtypes. -/
 def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
     { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
-  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
-  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  toFun := fun x ↦ ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x ↦ ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
   left_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
   right_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
 
@@ -1218,7 +1218,7 @@ depending on whether they satisfy a predicate `p` or not. -/
 @[simps]
 def piEquivPiSubtypeProd {α : Type*} (p : α → Prop) (β : α → Type*) [DecidablePred p] :
     (∀ i : α, β i) ≃ (∀ i : { x // p x }, β i) × ∀ i : { x // ¬p x }, β i where
-  toFun f := (fun x => f x, fun x => f x)
+  toFun f := (fun x ↦ f x, fun x ↦ f x)
   invFun f x := if h : p x then f.1 ⟨x, h⟩ else f.2 ⟨x, h⟩
   right_inv := by
     rintro ⟨f, g⟩
@@ -1454,7 +1454,7 @@ theorem swap_comp_apply {a b x : α} (π : Perm α) :
   rfl
 
 theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j :=
-  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id]
+  funext fun x ↦ by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id]
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :
     f ∘ Equiv.swap i j = update (update f j (f i)) i (f j) := by
@@ -1463,7 +1463,7 @@ theorem comp_swap_eq_update (i j : α) (f : α → β) :
 @[simp]
 theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
     (e.symm.trans (swap a b)).trans e = swap (e a) (e b) :=
-  Equiv.ext fun x => by
+  Equiv.ext fun x ↦ by
     have : ∀ a, e.symm x = a ↔ x = e a := fun a ↦ by
       rw [@eq_comm _ (e.symm x)]
       constructor <;> intros <;> simp_all
@@ -1654,13 +1654,13 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
 
 theorem piCongrLeft_sum_inl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
-    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
+    piCongrLeft π e (sumPiEquivProdPi (fun x ↦ π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
 theorem piCongrLeft_sum_inr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
-    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
+    piCongrLeft π e (sumPiEquivProdPi (fun x ↦ π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
 
@@ -1730,7 +1730,7 @@ section BinaryOp
 
 variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
 
-theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x => by simp
+theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x ↦ by simp
 
 theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp [arrowCongr]
 

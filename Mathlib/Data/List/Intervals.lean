@@ -69,7 +69,7 @@ theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := 
   rw [Ico, Ico, map_add_range', Nat.add_sub_add_right m k, Nat.add_comm n k]
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
-    ((Ico n m).map fun x => x - k) = Ico (n - k) (m - k) := by
+    ((Ico n m).map fun x ↦ x - k) = Ico (n - k) (m - k) := by
   rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' _ _ _ h₁]
 
 @[simp]
@@ -128,18 +128,18 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
 theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
-    ((Ico n m).filter fun x => x < l) = Ico n m :=
+    ((Ico n m).filter fun x ↦ x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
     simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_True]
 
-theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
+theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x ↦ x < l) = [] :=
   filter_eq_nil_iff.2 fun k hk => by
      simp only [decide_eq_true_eq, not_lt]
      apply le_trans hln
      exact (mem.1 hk).1
 
 theorem filter_lt_of_ge {n m l : ℕ} (hlm : l ≤ m) :
-    ((Ico n m).filter fun x => x < l) = Ico n l := by
+    ((Ico n m).filter fun x ↦ x < l) = Ico n l := by
   rcases le_total n l with hnl | hln
   · rw [← append_consecutive hnl hlm, filter_append, filter_lt_of_top_le (le_refl l),
       filter_lt_of_le_bot (le_refl l), append_nil]
@@ -147,42 +147,42 @@ theorem filter_lt_of_ge {n m l : ℕ} (hlm : l ≤ m) :
 
 @[simp]
 theorem filter_lt (n m l : ℕ) :
-    ((Ico n m).filter fun x => x < l) = Ico n (min m l) := by
+    ((Ico n m).filter fun x ↦ x < l) = Ico n (min m l) := by
   rcases le_total m l with hml | hlm
   · rw [min_eq_left hml, filter_lt_of_top_le hml]
   · rw [min_eq_right hlm, filter_lt_of_ge hlm]
 
 theorem filter_le_of_le_bot {n m l : ℕ} (hln : l ≤ n) :
-    ((Ico n m).filter fun x => l ≤ x) = Ico n m :=
+    ((Ico n m).filter fun x ↦ l ≤ x) = Ico n m :=
   filter_eq_self.2 fun k hk => by
     rw [decide_eq_true_eq]
     exact le_trans hln (mem.1 hk).1
 
-theorem filter_le_of_top_le {n m l : ℕ} (hml : m ≤ l) : ((Ico n m).filter fun x => l ≤ x) = [] :=
+theorem filter_le_of_top_le {n m l : ℕ} (hml : m ≤ l) : ((Ico n m).filter fun x ↦ l ≤ x) = [] :=
   filter_eq_nil_iff.2 fun k hk => by
     rw [decide_eq_true_eq]
     exact not_le_of_gt (lt_of_lt_of_le (mem.1 hk).2 hml)
 
 theorem filter_le_of_le {n m l : ℕ} (hnl : n ≤ l) :
-    ((Ico n m).filter fun x => l ≤ x) = Ico l m := by
+    ((Ico n m).filter fun x ↦ l ≤ x) = Ico l m := by
   rcases le_total l m with hlm | hml
   · rw [← append_consecutive hnl hlm, filter_append, filter_le_of_top_le (le_refl l),
       filter_le_of_le_bot (le_refl l), nil_append]
   · rw [eq_nil_of_le hml, filter_le_of_top_le hml]
 
 @[simp]
-theorem filter_le (n m l : ℕ) : ((Ico n m).filter fun x => l ≤ x) = Ico (max n l) m := by
+theorem filter_le (n m l : ℕ) : ((Ico n m).filter fun x ↦ l ≤ x) = Ico (max n l) m := by
   rcases le_total n l with hnl | hln
   · rw [max_eq_right hnl, filter_le_of_le hnl]
   · rw [max_eq_left hln, filter_le_of_le_bot hln]
 
 theorem filter_lt_of_succ_bot {n m : ℕ} (hnm : n < m) :
-    ((Ico n m).filter fun x => x < n + 1) = [n] := by
+    ((Ico n m).filter fun x ↦ x < n + 1) = [n] := by
   have r : min m (n + 1) = n + 1 := (@inf_eq_right _ _ m (n + 1)).mpr hnm
   simp [filter_lt n m (n + 1), r]
 
 @[simp]
-theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => x ≤ n) = [n] := by
+theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x ↦ x ≤ n) = [n] := by
   rw [← filter_lt_of_succ_bot hnm]
   exact filter_congr fun _ _ => by
     simpa using Nat.lt_succ_iff.symm

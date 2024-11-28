@@ -102,7 +102,7 @@ theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
 
 @[simp]
 theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
+  ext fun x ↦ ext (fun _y => OneHomClass.map_one x)
 
 @[simp]
 theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
@@ -111,7 +111,7 @@ theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
 
 @[simp]
 nonrec theorem map_mul (f g : ContinuousMonoidHom A G) : map (f * g) = map f * map g :=
-  ext fun x => ext fun y => map_mul x (f y) (g y)
+  ext fun x ↦ ext fun y => map_mul x (f y) (g y)
 
 variable (A B C G)
 

@@ -166,7 +166,7 @@ instance decidableLT [LT R] [DecidableRel ((· < ·) : R → R → Prop)] :
 
 instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
-    le_refl := fun x => le_refl (untrop x)
+    le_refl := fun x ↦ le_refl (untrop x)
     le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
     lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le (α := R) }
 
@@ -355,7 +355,7 @@ instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩
 
 instance [Neg R] : Inv (Tropical R) :=
-  ⟨fun x => trop (-untrop x)⟩
+  ⟨fun x ↦ trop (-untrop x)⟩
 
 @[simp]
 theorem untrop_inv [Neg R] (x : Tropical R) : untrop x⁻¹ = -untrop x :=

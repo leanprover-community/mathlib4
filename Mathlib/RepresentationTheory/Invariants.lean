@@ -40,7 +40,7 @@ noncomputable def average : MonoidAlgebra k G :=
 theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     Finset.sum_congr, MonoidAlgebra.single_mul_single]
-  set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
+  set f : G → MonoidAlgebra k G := fun x ↦ Finsupp.single x 1
   show ⅟ (Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟ (Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
@@ -50,7 +50,7 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
 theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     Finset.sum_congr, MonoidAlgebra.single_mul_single]
-  set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
+  set f : G → MonoidAlgebra k G := fun x ↦ Finsupp.single x 1
   show ⅟ (Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟ (Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 

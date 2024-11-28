@@ -39,7 +39,7 @@ theorem zero_cpow_eq_nhds {b : ℂ} (hb : b ≠ 0) : (fun x : ℂ => (0 : ℂ) ^
   exact IsOpen.eventually_mem isOpen_ne hb
 
 theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
-    (fun x => x ^ b) =ᶠ[𝓝 a] fun x => exp (log x * b) := by
+    (fun x ↦ x ^ b) =ᶠ[𝓝 a] fun x ↦ exp (log x * b) := by
   suffices ∀ᶠ x : ℂ in 𝓝 a, x ≠ 0 from
     this.mono fun x hx ↦ by
       dsimp only
@@ -47,7 +47,7 @@ theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
   exact IsOpen.eventually_mem isOpen_ne ha
 
 theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
-    (fun x => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
+    (fun x ↦ x.1 ^ x.2) =ᶠ[𝓝 p] fun x ↦ exp (log x.1 * x.2) := by
   suffices ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0 from
     this.mono fun x hx ↦ by
       dsimp only
@@ -57,9 +57,9 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
   rw [isOpen_compl_iff]
   exact isClosed_eq continuous_fst continuous_const
 
--- Continuity of `fun x => a ^ x`: union of these two lemmas is optimal.
+-- Continuity of `fun x ↦ a ^ x`: union of these two lemmas is optimal.
 theorem continuousAt_const_cpow {a b : ℂ} (ha : a ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
-  have cpow_eq : (fun x : ℂ => a ^ x) = fun x => exp (log a * x) := by
+  have cpow_eq : (fun x : ℂ => a ^ x) = fun x ↦ exp (log a * x) := by
     ext1 b
     rw [cpow_def_of_ne_zero ha]
   rw [cpow_eq]
@@ -89,11 +89,11 @@ theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
 
 theorem Filter.Tendsto.cpow {l : Filter α} {f g : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (ha : a ∈ slitPlane) :
-    Tendsto (fun x => f x ^ g x) l (𝓝 (a ^ b)) :=
+    Tendsto (fun x ↦ f x ^ g x) l (𝓝 (a ^ b)) :=
   (@continuousAt_cpow (a, b) ha).tendsto.comp (hf.prod_mk_nhds hg)
 
 theorem Filter.Tendsto.const_cpow {l : Filter α} {f : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 b))
-    (h : a ≠ 0 ∨ b ≠ 0) : Tendsto (fun x => a ^ f x) l (𝓝 (a ^ b)) := by
+    (h : a ≠ 0 ∨ b ≠ 0) : Tendsto (fun x ↦ a ^ f x) l (𝓝 (a ^ b)) := by
   cases h with
   | inl h => exact (continuousAt_const_cpow h).tendsto.comp hf
   | inr h => exact (continuousAt_const_cpow' h).tendsto.comp hf
@@ -102,38 +102,38 @@ variable [TopologicalSpace α] {f g : α → ℂ} {s : Set α} {a : α}
 
 nonrec theorem ContinuousWithinAt.cpow (hf : ContinuousWithinAt f s a)
     (hg : ContinuousWithinAt g s a) (h0 : f a ∈ slitPlane) :
-    ContinuousWithinAt (fun x => f x ^ g x) s a :=
+    ContinuousWithinAt (fun x ↦ f x ^ g x) s a :=
   hf.cpow hg h0
 
 nonrec theorem ContinuousWithinAt.const_cpow {b : ℂ} (hf : ContinuousWithinAt f s a)
-    (h : b ≠ 0 ∨ f a ≠ 0) : ContinuousWithinAt (fun x => b ^ f x) s a :=
+    (h : b ≠ 0 ∨ f a ≠ 0) : ContinuousWithinAt (fun x ↦ b ^ f x) s a :=
   hf.const_cpow h
 
 nonrec theorem ContinuousAt.cpow (hf : ContinuousAt f a) (hg : ContinuousAt g a)
-    (h0 : f a ∈ slitPlane) : ContinuousAt (fun x => f x ^ g x) a :=
+    (h0 : f a ∈ slitPlane) : ContinuousAt (fun x ↦ f x ^ g x) a :=
   hf.cpow hg h0
 
 nonrec theorem ContinuousAt.const_cpow {b : ℂ} (hf : ContinuousAt f a) (h : b ≠ 0 ∨ f a ≠ 0) :
-    ContinuousAt (fun x => b ^ f x) a :=
+    ContinuousAt (fun x ↦ b ^ f x) a :=
   hf.const_cpow h
 
 theorem ContinuousOn.cpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
-    (h0 : ∀ a ∈ s, f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ g x) s := fun a ha =>
+    (h0 : ∀ a ∈ s, f a ∈ slitPlane) : ContinuousOn (fun x ↦ f x ^ g x) s := fun a ha =>
   (hf a ha).cpow (hg a ha) (h0 a ha)
 
 theorem ContinuousOn.const_cpow {b : ℂ} (hf : ContinuousOn f s) (h : b ≠ 0 ∨ ∀ a ∈ s, f a ≠ 0) :
-    ContinuousOn (fun x => b ^ f x) s := fun a ha => (hf a ha).const_cpow (h.imp id fun h ↦ h a ha)
+    ContinuousOn (fun x ↦ b ^ f x) s := fun a ha => (hf a ha).const_cpow (h.imp id fun h ↦ h a ha)
 
 theorem Continuous.cpow (hf : Continuous f) (hg : Continuous g)
-    (h0 : ∀ a, f a ∈ slitPlane) : Continuous fun x => f x ^ g x :=
+    (h0 : ∀ a, f a ∈ slitPlane) : Continuous fun x ↦ f x ^ g x :=
   continuous_iff_continuousAt.2 fun a ↦ hf.continuousAt.cpow hg.continuousAt (h0 a)
 
 theorem Continuous.const_cpow {b : ℂ} (hf : Continuous f) (h : b ≠ 0 ∨ ∀ a, f a ≠ 0) :
-    Continuous fun x => b ^ f x :=
+    Continuous fun x ↦ b ^ f x :=
   continuous_iff_continuousAt.2 fun a ↦ hf.continuousAt.const_cpow <| h.imp id fun h ↦ h a
 
 theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
-    (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
+    (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x ↦ f x ^ b) s :=
   hf.cpow continuousOn_const h
 
 @[fun_prop]
@@ -164,7 +164,7 @@ theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (a ^ �
   norm_cast
 
 theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
-    (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) := by
+    (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x ↦ exp (log x.1 * x.2) * cos (x.2 * π) := by
   suffices ∀ᶠ x : ℝ × ℝ in 𝓝 p, x.1 < 0 from
     this.mono fun x hx ↦ by
       dsimp only
@@ -172,7 +172,7 @@ theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
   exact IsOpen.eventually_mem (isOpen_lt continuous_fst continuous_const) hp_fst
 
 theorem rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
-    (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
+    (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x ↦ exp (log x.1 * x.2) := by
   suffices ∀ᶠ x : ℝ × ℝ in 𝓝 p, 0 < x.1 from
     this.mono fun x hx ↦ by
       dsimp only
@@ -259,23 +259,23 @@ theorem ContinuousOn.rpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
   (hf t ht).rpow (hg t ht) (h t ht)
 
 theorem Continuous.rpow (hf : Continuous f) (hg : Continuous g) (h : ∀ x, f x ≠ 0 ∨ 0 < g x) :
-    Continuous fun x => f x ^ g x :=
-  continuous_iff_continuousAt.2 fun x => hf.continuousAt.rpow hg.continuousAt (h x)
+    Continuous fun x ↦ f x ^ g x :=
+  continuous_iff_continuousAt.2 fun x ↦ hf.continuousAt.rpow hg.continuousAt (h x)
 
 nonrec theorem ContinuousWithinAt.rpow_const (hf : ContinuousWithinAt f s x) (h : f x ≠ 0 ∨ 0 ≤ p) :
-    ContinuousWithinAt (fun x => f x ^ p) s x :=
+    ContinuousWithinAt (fun x ↦ f x ^ p) s x :=
   hf.rpow_const h
 
 nonrec theorem ContinuousAt.rpow_const (hf : ContinuousAt f x) (h : f x ≠ 0 ∨ 0 ≤ p) :
-    ContinuousAt (fun x => f x ^ p) x :=
+    ContinuousAt (fun x ↦ f x ^ p) x :=
   hf.rpow_const h
 
 theorem ContinuousOn.rpow_const (hf : ContinuousOn f s) (h : ∀ x ∈ s, f x ≠ 0 ∨ 0 ≤ p) :
-    ContinuousOn (fun x => f x ^ p) s := fun x hx => (hf x hx).rpow_const (h x hx)
+    ContinuousOn (fun x ↦ f x ^ p) s := fun x hx => (hf x hx).rpow_const (h x hx)
 
 theorem Continuous.rpow_const (hf : Continuous f) (h : ∀ x, f x ≠ 0 ∨ 0 ≤ p) :
-    Continuous fun x => f x ^ p :=
-  continuous_iff_continuousAt.2 fun x => hf.continuousAt.rpow_const (h x)
+    Continuous fun x ↦ f x ^ p :=
+  continuous_iff_continuousAt.2 fun x ↦ hf.continuousAt.rpow_const (h x)
 
 end
 
@@ -328,7 +328,7 @@ theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.
 /-- See also `continuousAt_cpow_const` for a version that assumes `z ≠ 0` but makes no
 assumptions about `w`. -/
 theorem continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z ≠ 0) (hw : 0 < re w) :
-    ContinuousAt (fun x => x ^ w) z :=
+    ContinuousAt (fun x ↦ x ^ w) z :=
   Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw) (continuousAt_id.prod continuousAt_const)
 
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
@@ -364,8 +364,8 @@ theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x �
           ((continuous_id (X := ℝ)).prod_mk (continuous_const (y := y))).continuousAt
 
 theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
-    Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=
-  continuous_iff_continuousAt.mpr fun x => continuousAt_ofReal_cpow_const x y (Or.inl hs)
+    Continuous (fun x ↦ (x : ℂ) ^ y : ℝ → ℂ) :=
+  continuous_iff_continuousAt.mpr fun x ↦ continuousAt_ofReal_cpow_const x y (Or.inl hs)
 
 end Complex
 
@@ -464,7 +464,7 @@ private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0
 
 @[continuity, fun_prop]
 theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y := by
-  refine continuous_iff_continuousAt.2 fun x => ?_
+  refine continuous_iff_continuousAt.2 fun x ↦ ?_
   rcases lt_trichotomy (0 : ℝ) y with (hy | rfl | hy)
   · exact continuousAt_rpow_const_of_pos hy
   · simp only [rpow_zero]
@@ -483,5 +483,5 @@ theorem tendsto_const_mul_rpow_nhds_zero_of_pos {c : ℝ≥0∞} (hc : c ≠ ∞
 end ENNReal
 
 theorem Filter.Tendsto.ennrpow_const {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} (r : ℝ)
-    (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ r) f (𝓝 (a ^ r)) :=
+    (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x ↦ m x ^ r) f (𝓝 (a ^ r)) :=
   (ENNReal.continuous_rpow_const.tendsto a).comp hm

@@ -662,7 +662,7 @@ instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
 theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
-  @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
+  @T1Space.mk _ a fun x ↦ (T1Space.t1 x).mono h
 
 theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
     {s : Set X} {x x' : X} {y : Y} (hne : x' ≠ x) :
@@ -739,7 +739,7 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the proof was `hs.induction_on (by simp) fun x ↦ by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
@@ -1726,12 +1726,12 @@ protected theorem Set.EqOn.closure [T2Space X] {s : Set Y} {f g : Y → X} (h : 
 /-- If two continuous functions are equal on a dense set, then they are equal. -/
 theorem Continuous.ext_on [T2Space X] {s : Set Y} (hs : Dense s) {f g : Y → X} (hf : Continuous f)
     (hg : Continuous g) (h : EqOn f g s) : f = g :=
-  funext fun x => h.closure hf hg (hs x)
+  funext fun x ↦ h.closure hf hg (hs x)
 
 theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf₁ : ∀ x, Continuous (f x))
-    (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
-    (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
+    (hf₂ : ∀ y, Continuous fun x ↦ f x y) (hg₁ : ∀ x, Continuous (g x))
+    (hg₂ : ∀ y, Continuous fun x ↦ g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
   (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
     isClosed_biInter fun _ _ => isClosed_eq (hf₂ _) (hg₂ _)

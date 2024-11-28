@@ -110,7 +110,7 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
   letI := compatibleRingOfRingStructure K
   have exists_inv : ∀ x : K, x ≠ 0 → ∃ y : K, x * y = 1 :=
     existsInv.toProp_of_model
-  letI : Inv K := ⟨fun x => if hx0 : x = 0 then 0 else Classical.choose (exists_inv x hx0)⟩
+  letI : Inv K := ⟨fun x ↦ if hx0 : x = 0 then 0 else Classical.choose (exists_inv x hx0)⟩
   Field.ofMinimalAxioms K
     addAssoc.toProp_of_model
     zeroAdd.toProp_of_model

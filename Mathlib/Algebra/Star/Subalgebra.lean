@@ -93,7 +93,7 @@ theorem coe_toSubalgebra (S : StarSubalgebra R A) : (S.toSubalgebra : Set A) = S
 
 theorem toSubalgebra_injective :
     Function.Injective (toSubalgebra : StarSubalgebra R A → Subalgebra R A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
+  ext fun x ↦ by rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 
 theorem toSubalgebra_inj {S U : StarSubalgebra R A} : S.toSubalgebra = U.toSubalgebra ↔ S = U :=
   toSubalgebra_injective.eq_iff
@@ -744,7 +744,7 @@ variable [StarModule R B]
 protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
     A →⋆ₐ[R] S where
   toAlgHom := AlgHom.codRestrict f.toAlgHom S.toSubalgebra hf
-  map_star' := fun x => Subtype.ext (map_star f x)
+  map_star' := fun x ↦ Subtype.ext (map_star f x)
 
 @[simp]
 theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
@@ -762,7 +762,7 @@ theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (h
 
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
-  StarAlgHom.codRestrict f _ fun x => ⟨x, rfl⟩
+  StarAlgHom.codRestrict f _ fun x ↦ ⟨x, rfl⟩
 
 /-- The `StarAlgEquiv` onto the range corresponding to an injective `StarAlgHom`. -/
 @[simps]

@@ -93,7 +93,7 @@ variable {α : Type*}
 open Complex
 
 theorem Filter.Tendsto.cexp {l : Filter α} {f : α → ℂ} {z : ℂ} (hf : Tendsto f l (𝓝 z)) :
-    Tendsto (fun x => exp (f x)) l (𝓝 (exp z)) :=
+    Tendsto (fun x ↦ exp (f x)) l (𝓝 (exp z)) :=
   (continuous_exp.tendsto _).comp hf
 
 variable [TopologicalSpace α] {f : α → ℂ} {s : Set α} {x : α}
@@ -178,7 +178,7 @@ variable {α : Type*}
 open Real
 
 theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
-    Tendsto (fun x => exp (f x)) l (𝓝 (exp z)) :=
+    Tendsto (fun x ↦ exp (f x)) l (𝓝 (exp z)) :=
   (continuous_exp.tendsto _).comp hf
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
@@ -224,8 +224,8 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
 
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
-theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
-  (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x => (exp_neg x).symm
+theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x ↦ exp (-x)) atTop (𝓝 0) :=
+  (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x ↦ (exp_neg x).symm
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
@@ -241,16 +241,16 @@ theorem tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
-    IsBoundedUnder (· ≥ ·) l fun x => exp (f x) :=
+    IsBoundedUnder (· ≥ ·) l fun x ↦ exp (f x) :=
   isBoundedUnder_of ⟨0, fun _ => (exp_pos _).le⟩
 
 @[simp]
 theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
-    (IsBoundedUnder (· ≤ ·) l fun x => exp (f x)) ↔ IsBoundedUnder (· ≤ ·) l f :=
+    (IsBoundedUnder (· ≤ ·) l fun x ↦ exp (f x)) ↔ IsBoundedUnder (· ≤ ·) l f :=
   exp_monotone.isBoundedUnder_le_comp_iff tendsto_exp_atTop
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
-theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop := by
+theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x ↦ exp x / x ^ n) atTop atTop := by
   refine (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => ?_
   have hC₀ : 0 < C := zero_lt_one.trans_le hC₁
   have : 0 < (exp 1 * C)⁻¹ := inv_pos.2 (mul_pos (exp_pos _) hC₀)
@@ -271,14 +271,14 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
 
 /-- The function `x^n * exp(-x)` tends to `0` at `+∞`, for any natural number `n`. -/
 theorem tendsto_pow_mul_exp_neg_atTop_nhds_zero (n : ℕ) :
-    Tendsto (fun x => x ^ n * exp (-x)) atTop (𝓝 0) :=
-  (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
+    Tendsto (fun x ↦ x ^ n * exp (-x)) atTop (𝓝 0) :=
+  (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x ↦ by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is positive. -/
 theorem tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
-    Tendsto (fun x => (b * exp x + c) / x ^ n) atTop atTop := by
+    Tendsto (fun x ↦ (b * exp x + c) / x ^ n) atTop atTop := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp only [pow_zero, div_one]
     exact (tendsto_exp_atTop.const_mul_atTop hb).atTop_add tendsto_const_nhds
@@ -290,7 +290,7 @@ theorem tendsto_mul_exp_add_div_pow_atTop (b c : ℝ) (n : ℕ) (hb : 0 < b) :
 /-- The function `(x ^ n) / (b * exp x + c)` tends to `0` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is nonzero. -/
 theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
-    Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
+    Tendsto (fun x ↦ x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
   have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0) := by
     intro b' c' h
     convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
@@ -333,11 +333,11 @@ theorem comap_exp_atTop : comap exp atTop = atTop := by
 
 @[simp]
 theorem tendsto_exp_comp_atTop {f : α → ℝ} :
-    Tendsto (fun x => exp (f x)) l atTop ↔ Tendsto f l atTop := by
+    Tendsto (fun x ↦ exp (f x)) l atTop ↔ Tendsto f l atTop := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_atTop]
 
 theorem tendsto_comp_exp_atTop {f : ℝ → α} :
-    Tendsto (fun x => f (exp x)) atTop l ↔ Tendsto f atTop l := by
+    Tendsto (fun x ↦ f (exp x)) atTop l ↔ Tendsto f atTop l := by
   simp_rw [← comp_apply (g := exp), ← tendsto_map'_iff, map_exp_atTop]
 
 @[simp]
@@ -349,7 +349,7 @@ theorem comap_exp_nhdsWithin_Ioi_zero : comap exp (𝓝[>] 0) = atBot := by
   rw [← map_exp_atBot, comap_map exp_injective]
 
 theorem tendsto_comp_exp_atBot {f : ℝ → α} :
-    Tendsto (fun x => f (exp x)) atBot l ↔ Tendsto f (𝓝[>] 0) l := by
+    Tendsto (fun x ↦ f (exp x)) atBot l ↔ Tendsto f (𝓝[>] 0) l := by
   rw [← map_exp_atBot, tendsto_map'_iff]
   rfl
 
@@ -359,7 +359,7 @@ theorem comap_exp_nhds_zero : comap exp (𝓝 0) = atBot :=
 
 @[simp]
 theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
-    Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
+    Tendsto (fun x ↦ exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
 theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
@@ -382,45 +382,45 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 
 @[simp]
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
-    ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
+    ((fun x ↦ exp (f x)) =O[l] fun x ↦ exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
   Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun _ => exp_ne_zero _) <| by
     simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]
 theorem isTheta_exp_comp_exp_comp {f g : α → ℝ} :
-    ((fun x => exp (f x)) =Θ[l] fun x => exp (g x)) ↔
-      IsBoundedUnder (· ≤ ·) l fun x => |f x - g x| := by
+    ((fun x ↦ exp (f x)) =Θ[l] fun x ↦ exp (g x)) ↔
+      IsBoundedUnder (· ≤ ·) l fun x ↦ |f x - g x| := by
   simp only [isBoundedUnder_le_abs, ← isBoundedUnder_le_neg, neg_sub, IsTheta,
     isBigO_exp_comp_exp_comp, Pi.sub_def]
 
 @[simp]
 theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
-    ((fun x => exp (f x)) =o[l] fun x => exp (g x)) ↔ Tendsto (fun x => g x - f x) l atTop := by
+    ((fun x ↦ exp (f x)) =o[l] fun x ↦ exp (g x)) ↔ Tendsto (fun x ↦ g x - f x) l atTop := by
   simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
-    ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
+    ((fun _ => 1 : α → ℝ) =o[l] fun x ↦ exp (f x)) ↔ Tendsto f l atTop := by
   simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]
 
 /-- `Real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
 from below under `f`. -/
 @[simp]
 theorem isBigO_one_exp_comp {f : α → ℝ} :
-    ((fun _ => 1 : α → ℝ) =O[l] fun x => exp (f x)) ↔ IsBoundedUnder (· ≥ ·) l f := by
+    ((fun _ => 1 : α → ℝ) =O[l] fun x ↦ exp (f x)) ↔ IsBoundedUnder (· ≥ ·) l f := by
   simp only [← exp_zero, isBigO_exp_comp_exp_comp, Pi.sub_def, zero_sub, isBoundedUnder_le_neg]
 
 /-- `Real.exp (f x)` is bounded away from zero along a filter if and only if this filter is bounded
 from below under `f`. -/
 theorem isBigO_exp_comp_one {f : α → ℝ} :
-    (fun x => exp (f x)) =O[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l f := by
+    (fun x ↦ exp (f x)) =O[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l f := by
   simp only [isBigO_one_iff, norm_eq_abs, abs_exp, isBoundedUnder_le_exp_comp]
 
 /-- `Real.exp (f x)` is bounded away from zero and infinity along a filter `l` if and only if
 `|f x|` is bounded from above along this filter. -/
 @[simp]
 theorem isTheta_exp_comp_one {f : α → ℝ} :
-    (fun x => exp (f x)) =Θ[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l fun x => |f x| := by
+    (fun x ↦ exp (f x)) =Θ[l] (fun _ => 1 : α → ℝ) ↔ IsBoundedUnder (· ≤ ·) l fun x ↦ |f x| := by
   simp only [← exp_zero, isTheta_exp_comp_exp_comp, sub_zero]
 
 lemma summable_exp_nat_mul_iff {a : ℝ} :
@@ -465,7 +465,7 @@ theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := 
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 
 theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
-    Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
+    Tendsto (fun x ↦ exp (f x)) l (𝓝 0) ↔ Tendsto (fun x ↦ re (f x)) l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
   rfl
 

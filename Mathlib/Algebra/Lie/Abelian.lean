@@ -133,7 +133,7 @@ theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
     exact LieSubmodule.mono_lie_right ⊤ h
   · rw [mem_maxTrivSubmodule]
     rw [LieSubmodule.lie_eq_bot_iff] at h
-    exact fun x => h x (LieSubmodule.mem_top x) m hm
+    exact fun x ↦ h x (LieSubmodule.mem_top x) m hm
 
 theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
     IsTrivial L N ↔ N ≤ maxTrivSubmodule R L M :=
@@ -195,7 +195,7 @@ def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃
         rw [LieHom.lie_apply, sub_eq_zero, ← LinearMap.toFun_eq_coe] at hf; exact hf.symm}
   map_add' f g := by ext; simp
   map_smul' F G := by ext; simp
-  invFun F := ⟨F, fun x => by ext; simp⟩
+  invFun F := ⟨F, fun x ↦ by ext; simp⟩
   left_inv f := by simp
   right_inv F := by simp
 

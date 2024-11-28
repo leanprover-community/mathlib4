@@ -103,7 +103,7 @@ instance lieRing : LieRing (⨁ i, L i) :=
     lie_add := fun x y z => by
       refine DFinsupp.ext fun _ => ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
       simp only [zipWith_apply, add_apply, lie_add]
-    lie_self := fun x => by
+    lie_self := fun x ↦ by
       refine DFinsupp.ext fun _ => ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
       simp only [zipWith_apply, add_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by

@@ -293,7 +293,7 @@ theorem const_neg (x : β) : const (-x) = -const x :=
   rfl
 
 instance : Sub (CauSeq β abv) :=
-  ⟨fun f g => ofEq (f + -g) (fun x => f x - g x) fun i => by simp [sub_eq_add_neg]⟩
+  ⟨fun f g => ofEq (f + -g) (fun x ↦ f x - g x) fun i => by simp [sub_eq_add_neg]⟩
 
 @[simp, norm_cast]
 theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = (f : ℕ → β) - g :=

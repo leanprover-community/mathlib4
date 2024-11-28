@@ -158,8 +158,8 @@ variable {X Y Z : HopfAlgebraCat.{v} R}
 def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x ↦ BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.3) x
+    right_inv := fun x ↦ BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.4) x }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
     (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl

@@ -50,8 +50,8 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- choose a well founded order on `S`
   obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
-  set ind : α → ι := fun x => wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
-  have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wellFounded_lt.min_mem _ (hcov x)
+  set ind : α → ι := fun x ↦ wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
+  have mem_ind : ∀ x, x ∈ s (ind x) := fun x ↦ wellFounded_lt.min_mem _ (hcov x)
   have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := @fun x i hlt hxi =>
     wellFounded_lt.not_lt_min _ (hcov x) hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
@@ -79,7 +79,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     simp only [mem_iUnion, mem_ball, exists_prop]
   -- The sets `D n i` cover the whole space. Indeed, for each `x` we can choose `n` such that
   -- `ball x (3 / 2 ^ n) ⊆ s (ind x)`, then either `x ∈ D n i`, or `x ∈ D m i` for some `m < n`.
-  have Dcov : ∀ x, ∃ n i, x ∈ D n i := fun x => by
+  have Dcov : ∀ x, ∃ n i, x ∈ D n i := fun x ↦ by
     obtain ⟨n, hn⟩ : ∃ n : ℕ, ball x (3 * 2⁻¹ ^ n) ⊆ s (ind x) := by
       -- This proof takes 5 lines because we can't import `specific_limits` here
       rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩

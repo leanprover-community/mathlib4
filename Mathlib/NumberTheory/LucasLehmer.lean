@@ -260,8 +260,8 @@ theorem one_snd : (1 : X q).2 = 0 :=
 instance : Monoid (X q) :=
   { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
-    one_mul := fun x => by ext <;> simp
-    mul_one := fun x => by ext <;> simp }
+    one_mul := fun x ↦ by ext <;> simp
+    mul_one := fun x ↦ by ext <;> simp }
 
 instance : NatCast (X q) where
     natCast := fun n => ⟨n, 0⟩
@@ -399,7 +399,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   -- coercion from ℤ to X q
   dsimp at h
   rw [closed_form] at h
-  replace h := congr_arg (fun x => ω ^ 2 ^ p' * x) h
+  replace h := congr_arg (fun x ↦ ω ^ 2 ^ p' * x) h
   dsimp at h
   have t : 2 ^ p' + 2 ^ p' = 2 ^ (p' + 1) := by ring
   rw [mul_add, ← pow_add ω, t, ← mul_pow ω ωb (2 ^ p'), ω_mul_ωb, one_pow] at h

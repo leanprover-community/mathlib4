@@ -140,7 +140,7 @@ theorem NormedAddGroupHom.completion_toCompl (f : NormedAddGroupHom G H) :
 
 @[simp]
 theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.completion‖ = ‖f‖ :=
-  le_antisymm (ofLipschitz_norm_le _ _) <| opNorm_le_bound _ (norm_nonneg _) fun x => by
+  le_antisymm (ofLipschitz_norm_le _ _) <| opNorm_le_bound _ (norm_nonneg _) fun x ↦ by
     simpa using f.completion.le_opNorm x
 
 theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :

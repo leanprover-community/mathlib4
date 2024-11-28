@@ -649,7 +649,7 @@ Currently we have only one specific basis `uniformity_basis_dist_le` based on th
 More can be easily added if needed in the future. -/
 protected theorem mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
-    (𝓤 α).HasBasis p fun x => { p : α × α | dist p.1 p.2 ≤ f x } := by
+    (𝓤 α).HasBasis p fun x ↦ { p : α × α | dist p.1 p.2 ≤ f x } := by
   refine ⟨fun s => uniformity_basis_dist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
@@ -1064,18 +1064,18 @@ theorem Metric.uniformity_eq_comap_nhds_zero :
   simp [subset_def, Real.dist_0_eq_abs]
 
 theorem tendsto_uniformity_iff_dist_tendsto_zero {f : ι → α × α} {p : Filter ι} :
-    Tendsto f p (𝓤 α) ↔ Tendsto (fun x => dist (f x).1 (f x).2) p (𝓝 0) := by
+    Tendsto f p (𝓤 α) ↔ Tendsto (fun x ↦ dist (f x).1 (f x).2) p (𝓝 0) := by
   rw [Metric.uniformity_eq_comap_nhds_zero, tendsto_comap_iff, Function.comp_def]
 
 theorem Filter.Tendsto.congr_dist {f₁ f₂ : ι → α} {p : Filter ι} {a : α}
-    (h₁ : Tendsto f₁ p (𝓝 a)) (h : Tendsto (fun x => dist (f₁ x) (f₂ x)) p (𝓝 0)) :
+    (h₁ : Tendsto f₁ p (𝓝 a)) (h : Tendsto (fun x ↦ dist (f₁ x) (f₂ x)) p (𝓝 0)) :
     Tendsto f₂ p (𝓝 a) :=
   h₁.congr_uniformity <| tendsto_uniformity_iff_dist_tendsto_zero.2 h
 
 alias tendsto_of_tendsto_of_dist := Filter.Tendsto.congr_dist
 
 theorem tendsto_iff_of_dist {f₁ f₂ : ι → α} {p : Filter ι} {a : α}
-    (h : Tendsto (fun x => dist (f₁ x) (f₂ x)) p (𝓝 0)) : Tendsto f₁ p (𝓝 a) ↔ Tendsto f₂ p (𝓝 a) :=
+    (h : Tendsto (fun x ↦ dist (f₁ x) (f₂ x)) p (𝓝 0)) : Tendsto f₁ p (𝓝 a) ↔ Tendsto f₂ p (𝓝 a) :=
   Uniform.tendsto_congr <| tendsto_uniformity_iff_dist_tendsto_zero.2 h
 
 end Real
@@ -1128,7 +1128,7 @@ theorem mem_of_closed' {s : Set α} (hs : IsClosed s) {a : α} :
   simpa only [hs.closure_eq] using @mem_closure_iff _ _ s a
 
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
-  forall_congr' fun x => by
+  forall_congr' fun x ↦ by
     simp only [mem_closure_iff, Set.Nonempty, exists_prop, mem_inter_iff, mem_ball', and_comm]
 
 theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s, ball c r = univ := by
@@ -1136,7 +1136,7 @@ theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s,
     forall_comm (α := α)]
 
 theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ y, dist x (f y) < r :=
-  forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
+  forall_congr' fun x ↦ by simp only [mem_closure_iff, exists_range_iff]
 
 /-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
 theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}

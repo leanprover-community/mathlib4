@@ -235,12 +235,12 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   -- Porting note: Lean can't see through `(parallelPair f g).obj zero`
   haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
     show SubsemiringClass (Subring A) A by infer_instance
-  use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)
+  use s.ι.codRestrict _ fun x ↦ (ConcreteCategory.congr_hom s.condition x : _)
   constructor
   · ext
     rfl
   · intro m hm
-    exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
+    exact RingHom.ext fun x ↦ Subtype.ext <| ConcreteCategory.congr_hom hm x
 
 instance : IsLocalHom (equalizerFork f g).ι := by
   constructor

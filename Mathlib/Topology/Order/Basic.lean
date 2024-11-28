@@ -179,7 +179,7 @@ theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpa
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
     induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
-  refine le_of_nhds_le_nhds fun x => ?_
+  refine le_of_nhds_le_nhds fun x ↦ ?_
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal, Ioi, Iio, ← hf]
   refine inf_le_inf (le_iInf₂ fun a ha => ?_) (le_iInf₂ fun a ha => ?_)
   exacts [iInf₂_le (f a) ha, iInf₂_le (f a) ha]
@@ -495,7 +495,7 @@ theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology 
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
   let s := { x : α | ∃ y, x ⋖ y }
-  have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x => id
+  have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x ↦ id
   choose! y hy using this
   have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x := fun x z hx => (hy x hx).le_of_lt
   suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } by
@@ -515,7 +515,7 @@ theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology 
     apply exists_Ioc_subset_of_mem_nhds (ha.mem_nhds hx.2.1)
     simpa only [IsBot, not_forall, not_le] using hx.right.right.right
   choose! z hz h'z using this
-  have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
+  have : PairwiseDisjoint t fun x ↦ Ioc (z x) x := fun x xt x' x't hxx' => by
     rcases hxx'.lt_or_lt with (h' | h')
     · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
       refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
@@ -549,7 +549,7 @@ Then the family is countable.
 This is not a straightforward consequence of second-countability as some of these intervals might be
 empty (but in fact this can happen only for countably many of them). -/
 theorem Set.PairwiseDisjoint.countable_of_Ioo [OrderTopology α] [SecondCountableTopology α]
-    {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x => Ioo x (y x))
+    {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x ↦ Ioo x (y x))
     (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
     (h.subset diff_subset).countable_of_isOpen (fun _ _ => isOpen_Ioo)
@@ -578,7 +578,7 @@ theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
   -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
   -- (the intervals `(f x, z x)`) is at most countable.
   have fs_count : (f '' s).Countable := by
-    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
+    have A : (f '' s).PairwiseDisjoint fun x ↦ Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
       · exact (this v vs u us huv.symm (le_of_not_le hle)).symm

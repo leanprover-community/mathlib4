@@ -125,12 +125,12 @@ theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
 /-- Identity map is a relation homomorphism. -/
 @[refl, simps]
 protected def id (r : α → α → Prop) : r →r r :=
-  ⟨fun x => x, fun x => x⟩
+  ⟨fun x ↦ x, fun x ↦ x⟩
 
 /-- Composition of two relation homomorphisms is a relation homomorphism. -/
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
-  ⟨fun x => g (f x), fun h ↦ g.2 (f.2 h)⟩
+  ⟨fun x ↦ g (f x), fun h ↦ g.2 (f.2 h)⟩
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 protected def swap (f : r →r s) : swap r →r swap s :=
@@ -637,7 +637,7 @@ protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = 
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
     {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
-  ext fun x => by subst h₁; rfl
+  ext fun x ↦ by subst h₁; rfl
 
 /-- A relation isomorphism is also a relation isomorphism between dual relations. -/
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=

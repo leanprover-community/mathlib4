@@ -339,7 +339,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
       simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
-  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.mk''_surjective
+  exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
@@ -356,7 +356,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
       simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
-  exact _root_.rTensor_exact M (fun x => by simp [π]) Quotient.mk''_surjective
+  exact _root_.rTensor_exact M (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
   `Module.Flat.iff_lTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/
@@ -367,7 +367,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] [Small.{v'} M] : Flat R M ↔
   refine ⟨fun _ => lTensor_exact M, fun H => iff_lTensor_preserves_injective_linearMap' R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
-  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x => by
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp  hx
 
@@ -389,7 +389,7 @@ theorem iff_rTensor_exact' [Small.{v'} R] [Small.{v'} M] : Flat R M ↔
   refine ⟨fun _ => rTensor_exact M, fun H => iff_rTensor_preserves_injective_linearMap' R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
-  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x => by
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 

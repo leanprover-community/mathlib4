@@ -297,7 +297,7 @@ def extend [MeasurableSpace β] (f₁ : α →ₛ γ) (g : α → β) (hg : Meas
       (range_extend_subset _ _ _)
   measurableSet_fiber' := by
     letI : MeasurableSpace γ := ⊤; haveI : MeasurableSingletonClass γ := ⟨fun _ => trivial⟩
-    exact fun x => hg.measurable_extend f₁.measurable f₂.measurable (measurableSet_singleton _)
+    exact fun x ↦ hg.measurable_extend f₁.measurable f₂.measurable (measurableSet_singleton _)
 
 @[simp]
 theorem extend_apply [MeasurableSpace β] (f₁ : α →ₛ γ) {g : α → β} (hg : MeasurableEmbedding g)
@@ -430,7 +430,7 @@ theorem inf_apply [Min β] (f g : α →ₛ β) (a : α) : (f ⊓ g) a = f a ⊓
 
 @[to_additive (attr := simp)]
 theorem range_one [Nonempty α] [One β] : (1 : α →ₛ β).range = {1} :=
-  Finset.ext fun x => by simp [eq_comm]
+  Finset.ext fun x ↦ by simp [eq_comm]
 
 @[simp]
 theorem range_eq_empty_of_isEmpty {β} [hα : IsEmpty α] (f : α →ₛ β) : f.range = ∅ := by
@@ -668,7 +668,7 @@ theorem mem_image_of_mem_range_restrict {r : β} {s : Set α} {f : α →ₛ β}
 @[mono]
 theorem restrict_mono [Preorder β] (s : Set α) {f g : α →ₛ β} (H : f ≤ g) :
     f.restrict s ≤ g.restrict s :=
-  if hs : MeasurableSet s then fun x => by
+  if hs : MeasurableSet s then fun x ↦ by
     simp only [coe_restrict _ hs, indicator_le_indicator (H x)]
   else by simp only [restrict_of_not_measurable hs, le_refl]
 
@@ -1003,7 +1003,7 @@ open Finset Function
 
 theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
     support f = ⋃ y ∈ {y ∈ f.range | y ≠ 0}, f ⁻¹' {y} :=
-  Set.ext fun x => by
+  Set.ext fun x ↦ by
     simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
       mem_iUnion, Set.mem_range, mem_singleton_iff, exists_eq_right']
 
@@ -1211,7 +1211,7 @@ theorem Measurable.ennreal_induction {P : (α → ℝ≥0∞) → Prop}
         Disjoint (support f) (support g) → Measurable f → Measurable g → P f → P g → P (f + g))
     (h_iSup :
       ∀ ⦃f : ℕ → α → ℝ≥0∞⦄, (∀ n, Measurable (f n)) → Monotone f → (∀ n, P (f n)) →
-        P fun x => ⨆ n, f n x)
+        P fun x ↦ ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : P f := by
   convert h_iSup (fun n => (eapprox f n).measurable) (monotone_eapprox f) _ using 2
   · rw [iSup_eapprox_apply hf]
@@ -1236,7 +1236,7 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {P : (α → ℝ
         Disjoint (support f) (support g) → Measurable f → Measurable g → P f → P g → P (f + g))
     (h_iSup :
       ∀ ⦃f : ℕ → α → ℝ≥0∞⦄, (∀ n, Measurable (f n)) → Monotone f → (∀ n, P (f n)) →
-        P fun x => ⨆ n, f n x)
+        P fun x ↦ ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : P f := by
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) h_add h_iSup hf
   convert h_iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)

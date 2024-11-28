@@ -265,7 +265,7 @@ theorem cof_lsub_le_lift {ι} (f : ι → Ordinal) :
   convert cof_lsub_le.{max u v} fun i : ULift.{v, u} ι => f i.down
   exact
     lsub_eq_of_range_eq.{u, max u v, max u v}
-      (Set.ext fun x => ⟨fun ⟨i, hi⟩ => ⟨ULift.up.{v, u} i, hi⟩, fun ⟨i, hi⟩ => ⟨_, hi⟩⟩)
+      (Set.ext fun x ↦ ⟨fun ⟨i, hi⟩ => ⟨ULift.up.{v, u} i, hi⟩, fun ⟨i, hi⟩ => ⟨_, hi⟩⟩)
 
 theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
     a ≤ cof o ↔ ∀ {ι} (f : ι → Ordinal), lsub.{u, u} f = o → a ≤ #ι := by
@@ -478,7 +478,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         ⟨typein r a,
           Eq.symm <|
             Quotient.sound
-              ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ fun x y => ?_) fun x => ?_⟩⟩
+              ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ fun x y => ?_) fun x ↦ ?_⟩⟩
       · apply Sum.rec <;> [exact Subtype.val; exact fun _ => a]
       · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
           simp [Subrel, Order.Preimage, EmptyRelation]
@@ -736,7 +736,7 @@ theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder
   by_contra! h
   simp_rw [not_unbounded_iff] at h
   let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
-  refine h₂.not_le (le_trans (csInf_le' ⟨range f, fun x => ?_, rfl⟩) mk_range_le)
+  refine h₂.not_le (le_trans (csInf_le' ⟨range f, fun x ↦ ?_, rfl⟩) mk_range_le)
   rcases h₁ x with ⟨y, ⟨c, hc, hy⟩, hxy⟩
   exact ⟨f ⟨c, hc⟩, mem_range_self _, fun hxz => hxy (Trans.trans (wo.wf.lt_sup _ hy) hxz)⟩
 
@@ -862,7 +862,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     apply (h'.two_power_lt _).le
     rw [coe_setOf, card_typein, ← lt_ord, hr]
     apply typein_lt_type
-  · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
+  · refine @mk_le_of_injective α _ (fun x ↦ Subtype.mk {x} ?_) ?_
     · apply bounded_singleton
       rw [← hr]
       apply isLimit_ord ha
@@ -882,7 +882,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     intro s hs
     rw [hr] at hs
     exact lt_cof_type hs
-  · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
+  · refine @mk_le_of_injective α _ (fun x ↦ Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
       exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isLimit_ord h'.aleph0_le))
     · intro a b hab
@@ -933,7 +933,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
         · simp only [← card_typein, ← mk_sigma]
           exact
-            ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
+            ⟨Embedding.ofSurjective (fun x ↦ x.2.1) fun a =>
                 let ⟨b, h, ab⟩ := H a
                 ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
         · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
@@ -1200,7 +1200,7 @@ theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
     · simp only [Cardinal.prod_const, Cardinal.lift_id, ← Se, ← mk_sigma, power_def] at this ⊢
       refine lt_of_le_of_lt ?_ this
       refine ⟨Embedding.ofSurjective ?_ ?_⟩
-      · exact fun x => x.2.1
+      · exact fun x ↦ x.2.1
       · exact fun a =>
           let ⟨b, h, ab⟩ := H a
           ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩

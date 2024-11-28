@@ -640,7 +640,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
         simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
           Option.bind_eq_some] at h ⊢
-      refine h.imp fun x => And.imp (hf _ _) ?_
+      refine h.imp fun x ↦ And.imp (hf _ _) ?_
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
 
@@ -977,7 +977,7 @@ section
 open Partrec Computable
 
 theorem eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
-  Part.ext fun x => by
+  Part.ext fun x ↦ by
     refine evaln_complete.trans (Nat.rfindOpt_mono ?_).symm
     intro a m n hl; apply evaln_mono hl
 

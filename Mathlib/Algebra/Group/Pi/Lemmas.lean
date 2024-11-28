@@ -50,7 +50,7 @@ namespace MulHom
 
 @[to_additive]
 theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
-    fun x => f x * g x := rfl
+    fun x ↦ f x * g x := rfl
 
 end MulHom
 

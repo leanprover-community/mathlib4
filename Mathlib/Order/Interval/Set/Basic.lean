@@ -529,19 +529,19 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
 
 @[simp]
 theorem Icc_diff_left : Icc a b \ {a} = Ioc a b :=
-  ext fun x => by simp [lt_iff_le_and_ne, eq_comm, and_right_comm]
+  ext fun x ↦ by simp [lt_iff_le_and_ne, eq_comm, and_right_comm]
 
 @[simp]
 theorem Icc_diff_right : Icc a b \ {b} = Ico a b :=
-  ext fun x => by simp [lt_iff_le_and_ne, and_assoc]
+  ext fun x ↦ by simp [lt_iff_le_and_ne, and_assoc]
 
 @[simp]
 theorem Ico_diff_left : Ico a b \ {a} = Ioo a b :=
-  ext fun x => by simp [and_right_comm, ← lt_iff_le_and_ne, eq_comm]
+  ext fun x ↦ by simp [and_right_comm, ← lt_iff_le_and_ne, eq_comm]
 
 @[simp]
 theorem Ioc_diff_right : Ioc a b \ {b} = Ioo a b :=
-  ext fun x => by simp [and_assoc, ← lt_iff_le_and_ne]
+  ext fun x ↦ by simp [and_assoc, ← lt_iff_le_and_ne]
 
 @[simp]
 theorem Icc_diff_both : Icc a b \ {a, b} = Ioo a b := by
@@ -549,11 +549,11 @@ theorem Icc_diff_both : Icc a b \ {a, b} = Ioo a b := by
 
 @[simp]
 theorem Ici_diff_left : Ici a \ {a} = Ioi a :=
-  ext fun x => by simp [lt_iff_le_and_ne, eq_comm]
+  ext fun x ↦ by simp [lt_iff_le_and_ne, eq_comm]
 
 @[simp]
 theorem Iic_diff_right : Iic a \ {a} = Iio a :=
-  ext fun x => by simp [lt_iff_le_and_ne]
+  ext fun x ↦ by simp [lt_iff_le_and_ne]
 
 @[simp]
 theorem Ico_diff_Ioo_same (h : a < b) : Ico a b \ Ioo a b = {a} := by
@@ -585,7 +585,7 @@ theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
   rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 right_mem_Iic)]
 
 theorem Ioi_union_left : Ioi a ∪ {a} = Ici a :=
-  ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
+  ext fun x ↦ by simp [eq_comm, le_iff_eq_or_lt]
 
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
@@ -886,16 +886,16 @@ theorem Iio_subset_Iic_iff [DenselyOrdered α] : Iio a ⊆ Iic b ↔ a ≤ b := 
 
 
 theorem Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
-  eq_univ_of_forall fun x => (h.lt_or_le x).symm
+  eq_univ_of_forall fun x ↦ (h.lt_or_le x).symm
 
 theorem Iio_union_Ici_of_le (h : a ≤ b) : Iio b ∪ Ici a = univ :=
-  eq_univ_of_forall fun x => (h.le_or_lt x).symm
+  eq_univ_of_forall fun x ↦ (h.le_or_lt x).symm
 
 theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
-  eq_univ_of_forall fun x => (h.le_or_le x).symm
+  eq_univ_of_forall fun x ↦ (h.le_or_le x).symm
 
 theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
-  eq_univ_of_forall fun x => (h.lt_or_lt x).symm
+  eq_univ_of_forall fun x ↦ (h.lt_or_lt x).symm
 
 @[simp]
 theorem Iic_union_Ici : Iic a ∪ Ici a = univ :=
@@ -1404,11 +1404,11 @@ theorem Ioi_inter_Ioo : Set.Ioi a ∩ Set.Ioo b c = Set.Ioo (max a b) c := by
   rw [inter_comm, Ioo_inter_Ioi, max_comm]
 
 theorem Ioc_inter_Ioo_of_left_lt (h : b₁ < b₂) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioc (max a₁ a₂) b₁ :=
-  ext fun x => by
+  ext fun x ↦ by
     simp [and_assoc, @and_left_comm (x ≤ _), and_iff_left_iff_imp.2 fun h' => lt_of_le_of_lt h' h]
 
 theorem Ioc_inter_Ioo_of_right_le (h : b₂ ≤ b₁) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioo (max a₁ a₂) b₂ :=
-  ext fun x => by
+  ext fun x ↦ by
     simp [and_assoc, @and_left_comm (x ≤ _),
       and_iff_right_iff_imp.2 fun h' => (le_of_lt h').trans h]
 

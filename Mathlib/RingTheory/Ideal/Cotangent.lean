@@ -131,7 +131,7 @@ ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
-      fun x => by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
+      fun x ↦ by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e

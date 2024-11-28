@@ -765,7 +765,7 @@ protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
     exact isCycleOn_of_subsingleton _ _
   convert (hf.isCycle_subtypePerm hs).isCycleOn
   rw [eq_comm, Set.eq_univ_iff_forall]
-  exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
+  exact fun x ↦ ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
 
 -- TODO: Theory of order of an element under an action
 theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) {n : ℕ} :

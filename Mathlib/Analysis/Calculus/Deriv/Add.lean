@@ -50,7 +50,7 @@ nonrec theorem HasDerivWithinAt.add (hf : HasDerivWithinAt f f' s x)
   hf.add hg
 
 nonrec theorem HasDerivAt.add (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
-    HasDerivAt (fun x => f x + g x) (f' + g') x :=
+    HasDerivAt (fun x ↦ f x + g x) (f' + g') x :=
   hf.add hg
 
 theorem derivWithin_add (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
@@ -76,7 +76,7 @@ nonrec theorem HasDerivWithinAt.add_const (hf : HasDerivWithinAt f f' s x) (c : 
   hf.add_const c
 
 nonrec theorem HasDerivAt.add_const (hf : HasDerivAt f f' x) (c : F) :
-    HasDerivAt (fun x => f x + c) f' x :=
+    HasDerivAt (fun x ↦ f x + c) f' x :=
   hf.add_const c
 
 theorem derivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
@@ -103,7 +103,7 @@ nonrec theorem HasDerivWithinAt.const_add (c : F) (hf : HasDerivWithinAt f f' s 
   hf.const_add c
 
 nonrec theorem HasDerivAt.const_add (c : F) (hf : HasDerivAt f f' x) :
-    HasDerivAt (fun x => c + f x) f' x :=
+    HasDerivAt (fun x ↦ c + f x) f' x :=
   hf.const_add c
 
 theorem derivWithin_const_add (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
@@ -178,17 +178,17 @@ section Neg
 /-! ### Derivative of the negative of a function -/
 
 nonrec theorem HasDerivAtFilter.neg (h : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (fun x => -f x) (-f') x L := by simpa using h.neg.hasDerivAtFilter
+    HasDerivAtFilter (fun x ↦ -f x) (-f') x L := by simpa using h.neg.hasDerivAtFilter
 
 nonrec theorem HasDerivWithinAt.neg (h : HasDerivWithinAt f f' s x) :
-    HasDerivWithinAt (fun x => -f x) (-f') s x :=
+    HasDerivWithinAt (fun x ↦ -f x) (-f') s x :=
   h.neg
 
-nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (fun x => -f x) (-f') x :=
+nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (fun x ↦ -f x) (-f') x :=
   h.neg
 
 nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun x => -f x) (-f') x := by simpa using h.neg.hasStrictDerivAt
+    HasStrictDerivAt (fun x ↦ -f x) (-f') x := by simpa using h.neg.hasStrictDerivAt
 
 theorem derivWithin.neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun y => -f y) s x = -derivWithin f s x := by
@@ -198,7 +198,7 @@ theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
   simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
 
 @[simp]
-theorem deriv.neg' : (deriv fun y => -f y) = fun x => -deriv f x :=
+theorem deriv.neg' : (deriv fun y => -f y) = fun x ↦ -deriv f x :=
   funext fun _ => deriv.neg
 
 end Neg
@@ -218,7 +218,7 @@ theorem hasDerivWithinAt_neg : HasDerivWithinAt Neg.neg (-1) s x :=
 theorem hasDerivAt_neg : HasDerivAt Neg.neg (-1) x :=
   hasDerivAtFilter_neg _ _
 
-theorem hasDerivAt_neg' : HasDerivAt (fun x => -x) (-1) x :=
+theorem hasDerivAt_neg' : HasDerivAt (fun x ↦ -x) (-1) x :=
   hasDerivAtFilter_neg _ _
 
 theorem hasStrictDerivAt_neg : HasStrictDerivAt Neg.neg (-1) x :=
@@ -262,19 +262,19 @@ section Sub
 /-! ### Derivative of the difference of two functions -/
 
 theorem HasDerivAtFilter.sub (hf : HasDerivAtFilter f f' x L) (hg : HasDerivAtFilter g g' x L) :
-    HasDerivAtFilter (fun x => f x - g x) (f' - g') x L := by
+    HasDerivAtFilter (fun x ↦ f x - g x) (f' - g') x L := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 nonrec theorem HasDerivWithinAt.sub (hf : HasDerivWithinAt f f' s x)
-    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (fun x => f x - g x) (f' - g') s x :=
+    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (fun x ↦ f x - g x) (f' - g') s x :=
   hf.sub hg
 
 nonrec theorem HasDerivAt.sub (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
-    HasDerivAt (fun x => f x - g x) (f' - g') x :=
+    HasDerivAt (fun x ↦ f x - g x) (f' - g') x :=
   hf.sub hg
 
 theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
-    HasStrictDerivAt (fun x => f x - g x) (f' - g') x := by
+    HasStrictDerivAt (fun x ↦ f x - g x) (f' - g') x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 theorem derivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
@@ -288,15 +288,15 @@ theorem deriv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g
   (hf.hasDerivAt.sub hg.hasDerivAt).deriv
 
 theorem HasDerivAtFilter.sub_const (hf : HasDerivAtFilter f f' x L) (c : F) :
-    HasDerivAtFilter (fun x => f x - c) f' x L := by
+    HasDerivAtFilter (fun x ↦ f x - c) f' x L := by
   simpa only [sub_eq_add_neg] using hf.add_const (-c)
 
 nonrec theorem HasDerivWithinAt.sub_const (hf : HasDerivWithinAt f f' s x) (c : F) :
-    HasDerivWithinAt (fun x => f x - c) f' s x :=
+    HasDerivWithinAt (fun x ↦ f x - c) f' s x :=
   hf.sub_const c
 
 nonrec theorem HasDerivAt.sub_const (hf : HasDerivAt f f' x) (c : F) :
-    HasDerivAt (fun x => f x - c) f' x :=
+    HasDerivAt (fun x ↦ f x - c) f' x :=
   hf.sub_const c
 
 theorem derivWithin_sub_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
@@ -307,19 +307,19 @@ theorem deriv_sub_const (c : F) : deriv (fun y => f y - c) x = deriv f x := by
   simp only [deriv, fderiv_sub_const]
 
 theorem HasDerivAtFilter.const_sub (c : F) (hf : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (fun x => c - f x) (-f') x L := by
+    HasDerivAtFilter (fun x ↦ c - f x) (-f') x L := by
   simpa only [sub_eq_add_neg] using hf.neg.const_add c
 
 nonrec theorem HasDerivWithinAt.const_sub (c : F) (hf : HasDerivWithinAt f f' s x) :
-    HasDerivWithinAt (fun x => c - f x) (-f') s x :=
+    HasDerivWithinAt (fun x ↦ c - f x) (-f') s x :=
   hf.const_sub c
 
 theorem HasStrictDerivAt.const_sub (c : F) (hf : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun x => c - f x) (-f') x := by
+    HasStrictDerivAt (fun x ↦ c - f x) (-f') x := by
   simpa only [sub_eq_add_neg] using hf.neg.const_add c
 
 nonrec theorem HasDerivAt.const_sub (c : F) (hf : HasDerivAt f f' x) :
-    HasDerivAt (fun x => c - f x) (-f') x :=
+    HasDerivAt (fun x ↦ c - f x) (-f') x :=
   hf.const_sub c
 
 theorem derivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :

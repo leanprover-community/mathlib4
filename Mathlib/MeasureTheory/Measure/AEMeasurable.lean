@@ -170,7 +170,7 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
 
 @[fun_prop, measurability]
 theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun x => (f x, g x)) μ :=
+    AEMeasurable (fun x ↦ (f x, g x)) μ :=
   ⟨fun a ↦ (hf.mk f a, hg.mk g a), hf.measurable_mk.prod_mk hg.measurable_mk,
     EventuallyEq.prod_mk hf.ae_eq_mk hg.ae_eq_mk⟩
 
@@ -202,14 +202,14 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
   obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ := hf.exists_ae_eq_range_subset f_nn ⟨0, le_rfl⟩
-  exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
+  exact ⟨G, hG_meas, fun x ↦ hG_mem (mem_range_self x), hG_ae_eq⟩
 
 theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :
     AEMeasurable (codRestrict f s hfs) μ := by
   nontriviality α; inhabit α
   obtain ⟨g, g_meas, hg, fg⟩ : ∃ g : α → β, Measurable g ∧ range g ⊆ s ∧ f =ᵐ[μ] g :=
     h.exists_ae_eq_range_subset (Eventually.of_forall hfs) ⟨_, hfs default⟩
-  refine ⟨codRestrict g s fun x => hg (mem_range_self _), Measurable.subtype_mk g_meas, ?_⟩
+  refine ⟨codRestrict g s fun x ↦ hg (mem_range_self _), Measurable.subtype_mk g_meas, ?_⟩
   filter_upwards [fg] with x hx
   simpa [Subtype.ext_iff]
 
@@ -234,7 +234,7 @@ theorem MeasurableEmbedding.aemeasurable_map_iff {g : β → γ} (hf : Measurabl
     AEMeasurable g (μ.map f) ↔ AEMeasurable (g ∘ f) μ := by
   refine ⟨fun H => H.comp_measurable hf.measurable, ?_⟩
   rintro ⟨g₁, hgm₁, heq⟩
-  rcases hf.exists_measurable_extend hgm₁ fun x => ⟨g x⟩ with ⟨g₂, hgm₂, rfl⟩
+  rcases hf.exists_measurable_extend hgm₁ fun x ↦ ⟨g x⟩ with ⟨g₂, hgm₂, rfl⟩
   exact ⟨g₂, hgm₂, hf.ae_map_iff.2 heq⟩
 
 theorem MeasurableEmbedding.aemeasurable_comp_iff {g : β → γ} (hg : MeasurableEmbedding g)

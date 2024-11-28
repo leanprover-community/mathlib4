@@ -290,7 +290,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [Topolog
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean 4 fails to deduce implicit args
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
-    (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
+    (Continuous fun x ↦ (f x, g x)) ↔ Continuous f ∧ Continuous g :=
   (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
     (TopologicalSpace.induced Prod.snd _)).trans <|
     continuous_induced_rng.and continuous_induced_rng
@@ -369,7 +369,7 @@ theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × 
 
 @[continuity, fun_prop]
 theorem Continuous.prod_mk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => (f x, g x) :=
+    Continuous fun x ↦ (f x, g x) :=
   continuous_prod_mk.2 ⟨hf, hg⟩
 
 @[continuity]
@@ -582,7 +582,7 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
 
 @[fun_prop]
 theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
-    (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
+    (hg : ContinuousAt g x) : ContinuousAt (fun x ↦ (f x, g x)) x :=
   hf.prod_mk_nhds hg
 
 theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
@@ -700,7 +700,7 @@ theorem map_fst_nhds (x : X × Y) : map Prod.fst (𝓝 x) = 𝓝 x.1 :=
 
 /-- The first projection in a product of topological spaces sends open sets to open sets. -/
 theorem isOpenMap_fst : IsOpenMap (@Prod.fst X Y) :=
-  isOpenMap_iff_nhds_le.2 fun x => (map_fst_nhds x).ge
+  isOpenMap_iff_nhds_le.2 fun x ↦ (map_fst_nhds x).ge
 
 /-- `Prod.snd` maps neighborhood of `x : X × Y` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
@@ -718,7 +718,7 @@ theorem map_snd_nhds (x : X × Y) : map Prod.snd (𝓝 x) = 𝓝 x.2 :=
 
 /-- The second projection in a product of topological spaces sends open sets to open sets. -/
 theorem isOpenMap_snd : IsOpenMap (@Prod.snd X Y) :=
-  isOpenMap_iff_nhds_le.2 fun x => (map_snd_nhds x).ge
+  isOpenMap_iff_nhds_le.2 fun x ↦ (map_snd_nhds x).ge
 
 /-- A product set is open in a product space if and only if each factor is open, or one of them is
 empty -/
@@ -782,7 +782,7 @@ theorem IsClosed.prod {s₁ : Set X} {s₂ : Set Y} (h₁ : IsClosed s₁) (h₂
 
 /-- The product of two dense sets is a dense set. -/
 theorem Dense.prod {s : Set X} {t : Set Y} (hs : Dense s) (ht : Dense t) : Dense (s ×ˢ t) :=
-  fun x => by
+  fun x ↦ by
   rw [closure_prod_eq]
   exact ⟨hs x.1, ht x.2⟩
 
@@ -812,7 +812,7 @@ lemma Topology.isInducing_const_prod {x : X} {f : Y → Z} :
 
 @[simp]
 lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
-    IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
+    IsInducing (fun x ↦ (f x, y)) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, inf_top_eq]
 
@@ -844,7 +844,7 @@ alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
 
 @[deprecated (since := "2024-10-05")] alias IsOpenEmbedding.prod := IsOpenEmbedding.prodMap
 
-lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
+lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x ↦ (x, f x) :=
   .of_comp (continuous_id.prod_mk hf) continuous_fst .id
 
 @[deprecated (since := "2024-10-26")]
@@ -1050,7 +1050,7 @@ theorem continuous_subtype_val : Continuous (@Subtype.val X p) :=
   continuous_induced_dom
 
 theorem Continuous.subtype_val {f : Y → Subtype p} (hf : Continuous f) :
-    Continuous fun x => (f x : X) :=
+    Continuous fun x ↦ (f x : X) :=
   continuous_subtype_val.comp hf
 
 theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
@@ -1079,7 +1079,7 @@ theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
 
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
-    Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
+    Continuous fun x ↦ (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
 
 theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
@@ -1108,7 +1108,7 @@ theorem nhds_subtype_eq_comap {x : X} {h : p x} : 𝓝 (⟨x, h⟩ : Subtype p) 
   nhds_induced _ _
 
 theorem tendsto_subtype_rng {Y : Type*} {p : X → Prop} {l : Filter Y} {f : Y → Subtype p} :
-    ∀ {x : Subtype p}, Tendsto f l (𝓝 x) ↔ Tendsto (fun x => (f x : X)) l (𝓝 (x : X))
+    ∀ {x : Subtype p}, Tendsto f l (𝓝 x) ↔ Tendsto (fun x ↦ (f x : X)) l (𝓝 (x : X))
   | ⟨a, ha⟩ => by rw [nhds_subtype_eq_comap, tendsto_comap_iff]; rfl
 
 theorem closure_subtype {x : { a // p a }} {s : Set { a // p a }} :
@@ -1241,7 +1241,7 @@ theorem Continuous.quotient_lift {f : X → Y} (h : Continuous f) (hs : ∀ a b,
 
 theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
     (hs : ∀ a b, s a b → f a = f b) :
-    Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
+    Continuous (fun x ↦ Quotient.liftOn' x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
 @[continuity, fun_prop]
@@ -1417,7 +1417,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore @[continuity]
 @[to_additive "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
-    Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
+    Continuous fun x ↦ (Pi.mulSingle i x : ∀ i, π i) :=
   continuous_const.update _ continuous_id
 
 theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
@@ -1572,7 +1572,7 @@ variable [Finite ι] [∀ i, DiscreteTopology (π i)]
 
 /-- A finite product of discrete spaces is discrete. -/
 instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) :=
-  singletons_open_iff_discrete.mp fun x => by
+  singletons_open_iff_discrete.mp fun x ↦ by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
 

@@ -181,7 +181,7 @@ theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤)
-    n (fun {_} _ _ _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
+    n (fun {_} _ _ _hf => Algebra.eq_top_iff.2 fun x ↦ Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
@@ -240,7 +240,7 @@ instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
-  Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
+  Ideal.quotientKerAlgEquivOfSurjective fun x ↦ ⟨MvPolynomial.X x, by simp⟩
 
 instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f

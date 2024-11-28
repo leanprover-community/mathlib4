@@ -45,15 +45,15 @@ namespace PGame
   take a positive number of stones from it on their turn. -/
 noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
   ⟨o.toType, o.toType,
-    fun x => nim ((enumIsoToType o).symm x).val,
-    fun x => nim ((enumIsoToType o).symm x).val⟩
+    fun x ↦ nim ((enumIsoToType o).symm x).val,
+    fun x ↦ nim ((enumIsoToType o).symm x).val⟩
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
 theorem nim_def (o : Ordinal) : nim o =
     ⟨o.toType, o.toType,
-      fun x => nim ((enumIsoToType o).symm x).val,
-      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
+      fun x ↦ nim ((enumIsoToType o).symm x).val,
+      fun x ↦ nim ((enumIsoToType o).symm x).val⟩ := by
   rw [nim]
 
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim_def]; rfl

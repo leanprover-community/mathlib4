@@ -130,7 +130,7 @@ theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s 
 
 /-- The edist to a set depends continuously on the point -/
 @[continuity]
-theorem continuous_infEdist : Continuous fun x => infEdist x s :=
+theorem continuous_infEdist : Continuous fun x ↦ infEdist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
     simp only [one_mul, infEdist_le_infEdist_add_edist, forall₂_true_iff]
 
@@ -200,7 +200,7 @@ theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s :
 theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
   obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
-  let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
+  let F := fun n : ℕ => (fun x ↦ infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
   have F_subset : ∀ n, F n ⊆ U := fun n x hx ↦ by
     by_contra h
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
@@ -596,15 +596,15 @@ theorem coe_infNndist : (infNndist x s : ℝ) = infDist x s :=
   rfl
 
 /-- The minimal distance to a set (as `ℝ≥0`) is Lipschitz in point with constant 1 -/
-theorem lipschitz_infNndist_pt (s : Set α) : LipschitzWith 1 fun x => infNndist x s :=
+theorem lipschitz_infNndist_pt (s : Set α) : LipschitzWith 1 fun x ↦ infNndist x s :=
   LipschitzWith.of_le_add fun _ _ => infDist_le_infDist_add_dist
 
 /-- The minimal distance to a set (as `ℝ≥0`) is uniformly continuous in point -/
-theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x => infNndist x s :=
+theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x ↦ infNndist x s :=
   (lipschitz_infNndist_pt s).uniformContinuous
 
 /-- The minimal distance to a set (as `ℝ≥0`) is continuous in point -/
-theorem continuous_infNndist_pt (s : Set α) : Continuous fun x => infNndist x s :=
+theorem continuous_infNndist_pt (s : Set α) : Continuous fun x ↦ infNndist x s :=
   (uniformContinuous_infNndist_pt s).continuous
 
 /-! ### The Hausdorff distance as a function into `ℝ`. -/

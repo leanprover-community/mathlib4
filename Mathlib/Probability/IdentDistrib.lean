@@ -225,43 +225,43 @@ theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib
   ⟨fun hf => h.integrable_snd hf, fun hg => h.symm.integrable_snd hg⟩
 
 protected theorem norm [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => ‖f x‖) (fun x => ‖g x‖) μ ν :=
+    IdentDistrib (fun x ↦ ‖f x‖) (fun x ↦ ‖g x‖) μ ν :=
   h.comp measurable_norm
 
 protected theorem nnnorm [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => ‖f x‖₊) (fun x => ‖g x‖₊) μ ν :=
+    IdentDistrib (fun x ↦ ‖f x‖₊) (fun x ↦ ‖g x‖₊) μ ν :=
   h.comp measurable_nnnorm
 
 protected theorem pow [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) {n : ℕ} :
-    IdentDistrib (fun x => f x ^ n) (fun x => g x ^ n) μ ν :=
+    IdentDistrib (fun x ↦ f x ^ n) (fun x ↦ g x ^ n) μ ν :=
   h.comp (measurable_id.pow_const n)
 
 protected theorem sq [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => f x ^ 2) (fun x => g x ^ 2) μ ν :=
+    IdentDistrib (fun x ↦ f x ^ 2) (fun x ↦ g x ^ 2) μ ν :=
   h.comp (measurable_id.pow_const 2)
 
 protected theorem coe_nnreal_ennreal {f : α → ℝ≥0} {g : β → ℝ≥0} (h : IdentDistrib f g μ ν) :
-    IdentDistrib (fun x => (f x : ℝ≥0∞)) (fun x => (g x : ℝ≥0∞)) μ ν :=
+    IdentDistrib (fun x ↦ (f x : ℝ≥0∞)) (fun x ↦ (g x : ℝ≥0∞)) μ ν :=
   h.comp measurable_coe_nnreal_ennreal
 
 @[to_additive]
 theorem mul_const [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => f x * c) (fun x => g x * c) μ ν :=
+    IdentDistrib (fun x ↦ f x * c) (fun x ↦ g x * c) μ ν :=
   h.comp (measurable_mul_const c)
 
 @[to_additive]
 theorem const_mul [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => c * f x) (fun x => c * g x) μ ν :=
+    IdentDistrib (fun x ↦ c * f x) (fun x ↦ c * g x) μ ν :=
   h.comp (measurable_const_mul c)
 
 @[to_additive]
 theorem div_const [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => f x / c) (fun x => g x / c) μ ν :=
+    IdentDistrib (fun x ↦ f x / c) (fun x ↦ g x / c) μ ν :=
   h.comp (MeasurableDiv.measurable_div_const c)
 
 @[to_additive]
 theorem const_div [Div γ] [MeasurableDiv γ] (h : IdentDistrib f g μ ν) (c : γ) :
-    IdentDistrib (fun x => c / f x) (fun x => c / g x) μ ν :=
+    IdentDistrib (fun x ↦ c / f x) (fun x ↦ c / g x) μ ν :=
   h.comp (MeasurableDiv.measurable_const_div c)
 
 @[to_additive]

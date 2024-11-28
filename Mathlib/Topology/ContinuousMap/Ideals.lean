@@ -91,7 +91,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
 theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
-  exact isClosed_iInter fun x => isClosed_iInter fun _ =>
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun _ =>
     isClosed_eq (continuous_eval_const x) continuous_const
 
 variable {R}
@@ -207,7 +207,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     obtain ⟨g, hgI, hg, hgt⟩ := this
     refine ⟨f * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g, I.mul_mem_left f hgI, ?_⟩
     rw [nndist_eq_nnnorm]
-    refine (nnnorm_lt_iff _ hε).2 fun x => ?_
+    refine (nnnorm_lt_iff _ hε).2 fun x ↦ ?_
     simp only [coe_sub, coe_mul, Pi.sub_apply, Pi.mul_apply]
     by_cases hx : x ∈ t
     · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_coe, algebraMapCLM_apply,
@@ -261,7 +261,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       refine
         ⟨{y : X | g y ≠ 0} ∩ t,
           mem_nhdsWithin_iff_exists_mem_nhds_inter.mpr ⟨_, this, Set.Subset.rfl⟩,
-          ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.pow 2⟩, ?_, fun x hx =>
+          ⟨⟨fun x ↦ ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.pow 2⟩, ?_, fun x hx =>
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
@@ -307,7 +307,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
     exists_continuous_zero_one_of_isClosed isClosed_closure isClosed_singleton
       (Set.disjoint_singleton_right.mpr hx)
   exact
-    ⟨⟨fun x => g x, continuous_ofReal.comp (map_continuous g)⟩, by
+    ⟨⟨fun x ↦ g x, continuous_ofReal.comp (map_continuous g)⟩, by
       simpa only [coe_mk, ofReal_eq_zero] using fun x hx => hgs (subset_closure hx), by
       simpa only [coe_mk, hgx (Set.mem_singleton x), Pi.one_apply, RCLike.ofReal_one] using
         one_ne_zero⟩

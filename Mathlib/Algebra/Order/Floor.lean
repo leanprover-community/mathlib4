@@ -624,7 +624,7 @@ theorem ceil_int : (Int.ceil : ℤ → ℤ) = id :=
 
 @[simp]
 theorem fract_int : (Int.fract : ℤ → ℤ) = 0 :=
-  funext fun x => by simp [fract]
+  funext fun x ↦ by simp [fract]
 
 @[inherit_doc]
 notation "⌊" a "⌋" => Int.floor a
@@ -993,7 +993,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
 
 -- Porting note: in mathlib3 there was no need for the type annotation in `(m:α)`
 theorem preimage_fract (s : Set α) :
-    fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m : α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
+    fract ⁻¹' s = ⋃ m : ℤ, (fun x ↦ x - (m : α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
   simp only [mem_preimage, mem_iUnion, mem_inter_iff]
   refine ⟨fun h ↦ ⟨⌊x⌋, h, fract_nonneg x, fract_lt_one x⟩, ?_⟩

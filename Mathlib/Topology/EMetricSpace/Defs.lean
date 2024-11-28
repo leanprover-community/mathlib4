@@ -155,7 +155,7 @@ For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 `uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`. -/
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
-    (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
+    (𝓤 α).HasBasis p fun x ↦ { p : α × α | edist p.1 p.2 < f x } := by
   refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
@@ -169,7 +169,7 @@ accumulating to zero, then closed `f i`-neighborhoods of the diagonal form a bas
 For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_le'`. -/
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
-    (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
+    (𝓤 α).HasBasis p fun x ↦ { p : α × α | edist p.1 p.2 ≤ f x } := by
   refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
@@ -405,7 +405,7 @@ theorem ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r 
 def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=
-    ⟨fun x => by rw [edist_self]; exact ENNReal.coe_lt_top,
+    ⟨fun x ↦ by rw [edist_self]; exact ENNReal.coe_lt_top,
       fun h ↦ by rwa [edist_comm], fun hxy hyz =>
         lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
 
@@ -443,7 +443,7 @@ theorem tendsto_nhdsWithin_nhdsWithin {t : Set β} {a b} :
       ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, x ∈ s → edist x a < δ → f x ∈ t ∧ edist (f x) b < ε :=
   (nhdsWithin_basis_eball.tendsto_iff nhdsWithin_basis_eball).trans <|
     forall₂_congr fun ε _ => exists_congr fun δ => and_congr_right fun _ =>
-      forall_congr' fun x => by simp; tauto
+      forall_congr' fun x ↦ by simp; tauto
 
 theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔

@@ -583,7 +583,7 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
 
 theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
-  have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
+  have : ⇑f = (fun x ↦ x + f 0) ∘ fun x ↦ x * (f 1 - f 0) := by
     ext x
     change f x = x • (f 1 -ᵥ f 0) +ᵥ f 0
     rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]

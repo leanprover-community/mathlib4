@@ -137,7 +137,7 @@ variable {K} (C)
 noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDomain C] [Algebra K C]
     (hirr : Irreducible (cyclotomic n K)) : (L →ₐ[K] C) ≃ primitiveRoots n C :=
   (hζ.powerBasis K).liftEquiv.trans
-    { toFun := fun x => by
+    { toFun := fun x ↦ by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
         refine ⟨x.1, ?_⟩
@@ -145,7 +145,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.def,
           ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
           ← eval₂_eq_eval_map, ← aeval_def]
-      invFun := fun x => by
+      invFun := fun x ↦ by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
         refine ⟨x.1, ?_⟩

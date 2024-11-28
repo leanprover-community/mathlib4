@@ -274,7 +274,7 @@ lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a
   fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
-  Eq.symm <| eq_univ_of_forall fun x => by
+  Eq.symm <| eq_univ_of_forall fun x ↦ by
     rw [mem_insert_iff, mem_singleton_iff]
     exact Classical.propComplete x
 

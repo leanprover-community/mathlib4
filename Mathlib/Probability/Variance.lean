@@ -211,7 +211,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
       apply hX
       convert A.add B
       simp
-  · exact Eventually.of_forall fun x => sq_nonneg _
+  · exact Eventually.of_forall fun x ↦ sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 
 theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) :

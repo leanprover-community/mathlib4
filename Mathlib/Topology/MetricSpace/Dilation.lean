@@ -364,7 +364,7 @@ theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surject
 @[simp]
 theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ Dilation.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ Dilation.ext fun x ↦ hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 /-- A dilation from a metric space is a uniform inducing map -/
 theorem isUniformInducing : IsUniformInducing (f : α → β) :=

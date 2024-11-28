@@ -115,7 +115,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   toPerfectPairing := (IsReflexive.toPerfectPairingDual (R := R) (M := M)).flip
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
-    { toFun := fun x => IsReflective.coroot B x.2
+    { toFun := fun x ↦ IsReflective.coroot B x.2
       inj' := by
         intro x y hxy
         simp only [mem_setOf_eq] at hxy -- x* = y*

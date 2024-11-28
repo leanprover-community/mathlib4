@@ -41,7 +41,7 @@ rotation. -/
 def rotation : Circle →* ℂ ≃ₗᵢ[ℝ] ℂ where
   toFun a :=
     { DistribMulAction.toLinearEquiv ℝ ℂ a with
-      norm_map' := fun x => show |a * x| = |x| by rw [map_mul, Circle.abs_coe, one_mul] }
+      norm_map' := fun x ↦ show |a * x| = |x| by rw [map_mul, Circle.abs_coe, one_mul] }
   map_one' := LinearIsometryEquiv.ext <| by simp
   map_mul' a b := LinearIsometryEquiv.ext <| mul_smul a b
 
@@ -94,7 +94,7 @@ theorem LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re {f : ℂ →ₗ�
 theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) :
     z + conj z = f z + conj (f z) := by
   have : ‖f z - 1‖ = ‖z - 1‖ := by rw [← f.norm_map (z - 1), f.map_sub, h]
-  apply_fun fun x => x ^ 2 at this
+  apply_fun fun x ↦ x ^ 2 at this
   simp only [norm_eq_abs, ← normSq_eq_abs] at this
   rw [← ofReal_inj, ← mul_conj, ← mul_conj] at this
   rw [RingHom.map_sub, RingHom.map_sub] at this

@@ -192,7 +192,7 @@ theorem w_cases {α : TypeVec n} {C : P.W α → Prop}
     ∀ x, C x := P.w_ind fun a f' f _ih' => ih a f' f
 
 /-- W-types are functorial -/
-def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <$$> x
+def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x ↦ g <$$> x
 
 theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
@@ -228,7 +228,7 @@ abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ 
 theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
-      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) := by
+      P.objAppend1 a (g ⊚ f') fun x ↦ P.wMap g (f x) := by
   rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
 
 /-!

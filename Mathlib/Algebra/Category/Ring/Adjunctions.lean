@@ -50,7 +50,7 @@ def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => homEquiv
       homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
-        RingHom.ext fun x => eval₂_cast_comp f (Int.castRingHom Y) g x }
+        RingHom.ext fun x ↦ eval₂_cast_comp f (Int.castRingHom Y) g x }
 
 instance : (forget CommRingCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩

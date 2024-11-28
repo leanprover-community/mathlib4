@@ -260,7 +260,7 @@ theorem Tendsto.not_tendsto {f : α → β} {a : Filter α} {b₁ b₂ : Filter 
 protected theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
     [∀ x, Decidable (p x)] (h₀ : Tendsto f (l₁ ⊓ 𝓟 { x | p x }) l₂)
     (h₁ : Tendsto g (l₁ ⊓ 𝓟 { x | ¬p x }) l₂) :
-    Tendsto (fun x => if p x then f x else g x) l₁ l₂ := by
+    Tendsto (fun x ↦ if p x then f x else g x) l₁ l₂ := by
   simp only [tendsto_def, mem_inf_principal] at *
   intro s hs
   filter_upwards [h₀ s hs, h₁ s hs] with x hp₀ hp₁

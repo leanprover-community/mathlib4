@@ -177,7 +177,7 @@ theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
 protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n smoothTransition :=
   expNegInvGlue.contDiff.div
     (expNegInvGlue.contDiff.add <| expNegInvGlue.contDiff.comp <| contDiff_const.sub contDiff_id)
-    fun x => (pos_denom x).ne'
+    fun x ↦ (pos_denom x).ne'
 
 protected theorem contDiffAt {x : ℝ} {n : ℕ∞} : ContDiffAt ℝ n smoothTransition x :=
   smoothTransition.contDiff.contDiffAt

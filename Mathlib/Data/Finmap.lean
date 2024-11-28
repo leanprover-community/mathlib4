@@ -548,7 +548,7 @@ theorem union_empty {s₁ : Finmap β} : s₁ ∪ ∅ = s₁ :=
 
 theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup a = some b) :
     s.erase a ∪ singleton a b = s :=
-  ext_lookup fun x => by
+  ext_lookup fun x ↦ by
     by_cases h' : x = a
     · subst a
       rw [lookup_union_right not_mem_erase_self, lookup_singleton_eq, h]

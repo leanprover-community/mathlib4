@@ -135,7 +135,7 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
 
 @[simp]
 theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
-  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
+  Equiv.ext fun x ↦ Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
 
 end RemoveNone
 

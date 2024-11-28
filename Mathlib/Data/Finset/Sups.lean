@@ -69,7 +69,7 @@ theorem coe_sups : (↑(s ⊻ t) : Set α) = ↑s ⊻ ↑t :=
 
 theorem card_sups_le : #(s ⊻ t) ≤ #s * #t := card_image₂_le _ _ _
 
-theorem card_sups_iff : #(s ⊻ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊔ x.2 :=
+theorem card_sups_iff : #(s ⊻ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x ↦ x.1 ⊔ x.2 :=
   card_image₂_iff
 
 variable {s s₁ s₂ t t₁ t₂ u}
@@ -214,7 +214,7 @@ theorem coe_infs : (↑(s ⊼ t) : Set α) = ↑s ⊼ ↑t :=
 
 theorem card_infs_le : #(s ⊼ t) ≤ #s * #t := card_image₂_le _ _ _
 
-theorem card_infs_iff : #(s ⊼ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x => x.1 ⊓ x.2 :=
+theorem card_infs_iff : #(s ⊼ t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun x ↦ x.1 ⊓ x.2 :=
   card_image₂_iff
 
 variable {s s₁ s₂ t t₁ t₂ u}

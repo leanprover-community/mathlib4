@@ -170,7 +170,7 @@ instance : MonadStateOf σ (StateListT σ m) where
 @[always_inline]
 instance StateListT.monadControl : MonadControl m (StateListT σ m) where
   stM      := StateList σ
-  liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
+  liftWith := fun f => do let s ← get; liftM (f (fun x ↦ x s))
   restoreM := fun x _ => x
 
 end Mathlib.Meta.FunProp

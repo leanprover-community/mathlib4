@@ -239,11 +239,11 @@ variable (E)
 /-- The projection from a fiber bundle to its base is continuous. -/
 @[continuity]
 theorem continuous_proj : Continuous (π F E) :=
-  continuous_iff_continuousAt.2 fun x => (map_proj_nhds F x).le
+  continuous_iff_continuousAt.2 fun x ↦ (map_proj_nhds F x).le
 
 /-- The projection from a fiber bundle to its base is an open map. -/
 theorem isOpenMap_proj : IsOpenMap (π F E) :=
-  IsOpenMap.of_nhds_le fun x => (map_proj_nhds F x).ge
+  IsOpenMap.of_nhds_le fun x ↦ (map_proj_nhds F x).ge
 
 /-- The projection from a fiber bundle with a nonempty fiber to its base is a surjective
 map. -/
@@ -297,15 +297,15 @@ open Trivialization
 /-- Characterization of continuous functions (at a point, within a set) into a fiber bundle. -/
 theorem continuousWithinAt_totalSpace (f : X → TotalSpace F E) {s : Set X} {x₀ : X} :
     ContinuousWithinAt f s x₀ ↔
-      ContinuousWithinAt (fun x => (f x).proj) s x₀ ∧
-        ContinuousWithinAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ :=
+      ContinuousWithinAt (fun x ↦ (f x).proj) s x₀ ∧
+        ContinuousWithinAt (fun x ↦ ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ :=
   (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 
 /-- Characterization of continuous functions (at a point) into a fiber bundle. -/
 theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
     ContinuousAt f x₀ ↔
-      ContinuousAt (fun x => (f x).proj) x₀ ∧
-        ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
+      ContinuousAt (fun x ↦ (f x).proj) x₀ ∧
+        ContinuousAt (fun x ↦ ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
   (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 
 end FiberBundle
@@ -597,8 +597,8 @@ zero section of a vector bundle. Another example (not yet defined) would be the 
 section of the endomorphism bundle of a vector bundle. -/
 theorem continuous_const_section (v : F)
     (h : ∀ i j, ∀ x ∈ Z.baseSet i ∩ Z.baseSet j, Z.coordChange i j x v = v) :
-    Continuous (show B → Z.TotalSpace from fun x => ⟨x, v⟩) := by
-  refine continuous_iff_continuousAt.2 fun x => ?_
+    Continuous (show B → Z.TotalSpace from fun x ↦ ⟨x, v⟩) := by
+  refine continuous_iff_continuousAt.2 fun x ↦ ?_
   have A : Z.baseSet (Z.indexAt x) ∈ 𝓝 x :=
     IsOpen.mem_nhds (Z.isOpen_baseSet (Z.indexAt x)) (Z.mem_baseSet_at x)
   refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_

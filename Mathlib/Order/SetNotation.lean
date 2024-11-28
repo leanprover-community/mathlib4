@@ -97,7 +97,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -125,7 +125,7 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -202,7 +202,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
@@ -230,7 +230,7 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
+    withBindingBodyUnusedName fun x ↦ do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then

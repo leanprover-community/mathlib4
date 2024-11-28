@@ -42,7 +42,7 @@ theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (
   tendsto_iInf' i tendsto_comap
 
 theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
-    Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x => m x i) l (f i) := by
+    Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x ↦ m x i) l (f i) := by
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 
 /-- If a function tends to a product `Filter.pi f` of filters, then its `i`-th component tends to

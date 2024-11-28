@@ -30,13 +30,13 @@ namespace AlgebraicGeometry
 variable (X : Scheme)
 
 instance : T0Space X :=
-  T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
+  T0Space.of_open_cover fun x ↦ ⟨_, X.affineCover.covers x,
     (X.affineCover.map x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
     (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
+    quasiSober_of_open_cover (Set.range fun x ↦ Set.range <| (X.affineCover.map x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.map_prop i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofIsEmbedding _

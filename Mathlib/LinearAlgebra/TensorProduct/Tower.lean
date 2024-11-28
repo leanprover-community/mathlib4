@@ -161,7 +161,7 @@ canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map 
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
-    (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
+    (LinearMap.ext fun f => LinearMap.ext fun x ↦ LinearMap.ext fun y => lift_tmul f x y)
 
 /-- Heterobasic version of `TensorProduct.mk`:
 

@@ -234,7 +234,7 @@ open Classical in
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=
   if UniformContinuous f then isDenseInducing_pureCauchy.extend f
-  else fun x => f (nonempty_cauchyFilter_iff.1 ⟨x⟩).some
+  else fun x ↦ f (nonempty_cauchyFilter_iff.1 ⟨x⟩).some
 
 section T0Space
 

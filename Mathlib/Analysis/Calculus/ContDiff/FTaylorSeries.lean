@@ -245,7 +245,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
       HasFTaylorSeriesUpToOn n f p s ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y n) (p x n.succ).curryLeft s x) ∧
-          ContinuousOn (fun x => p x (n + 1)) s := by
+          ContinuousOn (fun x ↦ p x (n + 1)) s := by
   constructor
   · exact fun h ↦ ⟨h.of_le (mod_cast Nat.le_succ n),
       h.fderivWithin _ (mod_cast lt_add_one n), h.cont (n + 1) le_rfl⟩
@@ -274,8 +274,8 @@ set_option maxSynthPendingDepth 2 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
-    (HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
-      (fun x => (p x).shift)) s := by
+    (HasFTaylorSeriesUpToOn n (fun x ↦ continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+      (fun x ↦ (p x).shift)) s := by
   constructor
   · intro x _
     rfl
@@ -303,8 +303,8 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
-          HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
-            (fun x => (p x).shift) s := by
+          HasFTaylorSeriesUpToOn n (fun x ↦ continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+            (fun x ↦ (p x).shift) s := by
   constructor
   · intro H
     refine ⟨H.zero_eq, H.fderivWithin 0 (Nat.cast_lt.2 (Nat.succ_pos n)), ?_⟩
@@ -330,7 +330,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
         rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
     · intro m (hm : (m : WithTop ℕ∞) ≤ n.succ)
       cases' m with m
-      · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
+      · have : DifferentiableOn 𝕜 (fun x ↦ p x 0) s := fun x hx =>
           (Hfderiv_zero x hx).differentiableWithinAt
         exact this.continuousOn
       · refine (continuousMultilinearCurryRightEquiv' 𝕜 m E F).comp_continuousOn_iff.mp ?_
@@ -344,8 +344,8 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
     HasFTaylorSeriesUpToOn N f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
-          HasFTaylorSeriesUpToOn N (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
-            (fun x => (p x).shift) s := by
+          HasFTaylorSeriesUpToOn N (fun x ↦ continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+            (fun x ↦ (p x).shift) s := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [hasFTaylorSeriesUpToOn_top_iff_add hN 1] at h
     rw [hasFTaylorSeriesUpToOn_top_iff hN]
@@ -362,8 +362,8 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
-          HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
-            (fun x => (p x).shift) s := by
+          HasFTaylorSeriesUpToOn n (fun x ↦ continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+            (fun x ↦ (p x).shift) s := by
   match n with
   | ⊤ => exact hasFTaylorSeriesUpToOn_top_iff_right (by simp)
   | (⊤ : ℕ∞) => exact hasFTaylorSeriesUpToOn_top_iff_right (by simp)
@@ -379,7 +379,7 @@ derivative of `f` is the derivative of the `n`-th derivative of `f` along this s
 an uncurrying step to see it as a multilinear map in `n+1` variables..
 -/
 noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E[×n]→L[𝕜] F :=
-  Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
+  Nat.recOn n (fun x ↦ ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderivWithin 𝕜 rec s x)
 
 /-- Formal Taylor series associated to a function within a set. -/
@@ -604,7 +604,7 @@ structure HasFTaylorSeriesUpTo
   (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) : Prop where
   zero_eq : ∀ x, (p x 0).curry0 = f x
   fderiv : ∀ m : ℕ, m < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
-  cont : ∀ m : ℕ, m ≤ n → Continuous fun x => p x m
+  cont : ∀ m : ℕ, m ≤ n → Continuous fun x ↦ p x m
 
 theorem HasFTaylorSeriesUpTo.zero_eq' (h : HasFTaylorSeriesUpTo n f p) (x : E) :
     p x 0 = (continuousMultilinearCurryFin0 𝕜 E F).symm (f x) := by
@@ -616,7 +616,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
   constructor
   · intro H
     constructor
-    · exact fun x => H.zero_eq x (mem_univ x)
+    · exact fun x ↦ H.zero_eq x (mem_univ x)
     · intro m hm x
       rw [← hasFDerivWithinAt_univ]
       exact H.fderivWithin m hm x (mem_univ x)
@@ -675,7 +675,7 @@ theorem HasFTaylorSeriesUpTo.hasFDerivAt (h : HasFTaylorSeriesUpTo n f p) (hn : 
   exact (hasFTaylorSeriesUpToOn_univ_iff.2 h).hasFDerivWithinAt hn (mem_univ _)
 
 theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) :
-    Differentiable 𝕜 f := fun x => (h.hasFDerivAt hn x).differentiableAt
+    Differentiable 𝕜 f := fun x ↦ (h.hasFDerivAt hn x).differentiableAt
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. -/
@@ -683,7 +683,7 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpTo (n + 1 : ℕ) f p ↔
       (∀ x, (p x 0).curry0 = f x) ∧
         (∀ x, HasFDerivAt (fun y => p y 0) (p x 1).curryLeft x) ∧
-          HasFTaylorSeriesUpTo n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1)) fun x =>
+          HasFTaylorSeriesUpTo n (fun x ↦ continuousMultilinearCurryFin1 𝕜 E F (p x 1)) fun x =>
             (p x).shift := by
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
@@ -698,7 +698,7 @@ variable (𝕜)
 
 /-- The `n`-th derivative of a function, as a multilinear map, defined inductively. -/
 noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜] F :=
-  Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
+  Nat.recOn n (fun x ↦ ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 
 /-- Formal Taylor series associated to a function. -/

@@ -182,7 +182,7 @@ theorem norm_sup_sub_sup_le_norm (x y z : α) : ‖x ⊔ z - y ⊔ z‖ ≤ ‖x
 theorem norm_inf_sub_inf_le_norm (x y z : α) : ‖x ⊓ z - y ⊓ z‖ ≤ ‖x - y‖ :=
   solid (abs_inf_sub_inf_le_abs x y z)
 
-theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
+theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x ↦ x ⊔ z :=
   LipschitzWith.of_dist_le_mul fun x y => by
     rw [NNReal.coe_one, one_mul, dist_eq_norm, dist_eq_norm]
     exact norm_sup_sub_sup_le_norm x y z

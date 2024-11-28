@@ -67,7 +67,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
     exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
-  · exact Eventually.of_forall fun x => (ha.1 x.2).trans_lt hb
+  · exact Eventually.of_forall fun x ↦ (ha.1 x.2).trans_lt hb
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.infConvergenceClass [TopologicalSpace α] [LinearOrder α]
@@ -259,7 +259,7 @@ theorem isLUB_of_tendsto_atTop [TopologicalSpace α] [Preorder α] [OrderClosedT
   constructor
   · rintro _ ⟨b, rfl⟩
     exact hf.ge_of_tendsto ha b
-  · exact fun _ hb => le_of_tendsto' ha fun x => hb (Set.mem_range_self x)
+  · exact fun _ hb => le_of_tendsto' ha fun x ↦ hb (Set.mem_range_self x)
 
 theorem isGLB_of_tendsto_atBot [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Nonempty β] [SemilatticeInf β] {f : β → α} {a : α} (hf : Monotone f)

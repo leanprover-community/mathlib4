@@ -194,7 +194,7 @@ variable (K)
 theorem algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [Algebra.IsSeparable k K] :
     Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+  refine fun x ↦ ⟨-(minpoly k x).coeff 0, ?_⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsSeparable.isIntegral k x)
   have hsep : IsSeparable k x := Algebra.IsSeparable.isSeparable k x
   have h : (minpoly k x).degree = 1 :=

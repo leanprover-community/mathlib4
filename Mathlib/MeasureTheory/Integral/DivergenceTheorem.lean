@@ -111,7 +111,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ContinuousOn f (Box.Icc I))
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x)
-    (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Box.Icc I)) :
+    (Hi : IntegrableOn (fun x ↦ ∑ i, f' x (e i) i) (Box.Icc I)) :
     (∫ x in Box.Icc I, ∑ i, f' x (e i) i) =
       ∑ i : Fin (n + 1),
         ((∫ x in Box.Icc (I.face i), f (i.insertNth (I.upper i) x) i) -
@@ -188,9 +188,9 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
     boxes `((J k).face i).Icc` tend to the desired limit. The proof mostly repeats the one above. -/
   have hd : d ∈ Icc (I.lower i) (I.upper i) :=
     isClosed_Icc.mem_of_tendsto hcd (Eventually.of_forall hc)
-  have Hic : ∀ k, IntegrableOn (fun x => f (i.insertNth (c k) x) i) (Box.Icc (I.face i)) := fun k =>
+  have Hic : ∀ k, IntegrableOn (fun x ↦ f (i.insertNth (c k) x) i) (Box.Icc (I.face i)) := fun k =>
     (Box.continuousOn_face_Icc ((continuous_apply i).comp_continuousOn Hc) (hc k)).integrableOn_Icc
-  have Hid : IntegrableOn (fun x => f (i.insertNth d x) i) (Box.Icc (I.face i)) :=
+  have Hid : IntegrableOn (fun x ↦ f (i.insertNth d x) i) (Box.Icc (I.face i)) :=
     (Box.continuousOn_face_Icc ((continuous_apply i).comp_continuousOn Hc) hd).integrableOn_Icc
   have H :
     Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth d x) i) atTop
@@ -267,7 +267,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     (f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹)
     (s : Set ℝⁿ⁺¹) (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
     (Hd : ∀ x ∈ (Set.pi univ fun i => Ioo (a i) (b i)) \ s, HasFDerivAt f (f' x) x)
-    (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Icc a b)) :
+    (Hi : IntegrableOn (fun x ↦ ∑ i, f' x (e i) i) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' x (e i) i) =
       ∑ i : Fin (n + 1),
         ((∫ x in face i, f (frontFace i x) i) - ∫ x in face i, f (backFace i x) i) := by
@@ -299,12 +299,12 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
     (f' : Fin (n + 1) → ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] E) (s : Set ℝⁿ⁺¹)
     (hs : s.Countable) (Hc : ∀ i, ContinuousOn (f i) (Icc a b))
     (Hd : ∀ x ∈ (pi Set.univ fun i => Ioo (a i) (b i)) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x)
-    (Hi : IntegrableOn (fun x => ∑ i, f' i x (e i)) (Icc a b)) :
+    (Hi : IntegrableOn (fun x ↦ ∑ i, f' i x (e i)) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' i x (e i)) =
       ∑ i : Fin (n + 1), ((∫ x in face i, f i (frontFace i x)) -
         ∫ x in face i, f i (backFace i x)) :=
   integral_divergence_of_hasFDerivWithinAt_off_countable a b hle (fun x i => f i x)
-    (fun x => ContinuousLinearMap.pi fun i => f' i x) s hs (continuousOn_pi.2 Hc)
+    (fun x ↦ ContinuousLinearMap.pi fun i => f' i x) s hs (continuousOn_pi.2 Hc)
     (fun x hx => hasFDerivAt_pi.2 (Hd x hx)) Hi
 
 end
@@ -377,8 +377,8 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
     ∫ x in a..b, f' x = f b - f a := by
   set e : ℝ ≃L[ℝ] ℝ¹ := (ContinuousLinearEquiv.funUnique (Fin 1) ℝ ℝ).symm
-  have e_symm : ∀ x, e.symm x = x 0 := fun x => rfl
-  set F' : ℝ → ℝ →L[ℝ] E := fun x => smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
+  have e_symm : ∀ x, e.symm x = x 0 := fun x ↦ rfl
+  set F' : ℝ → ℝ →L[ℝ] E := fun x ↦ smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
   have hF' : ∀ x y, F' x y = y • f' x := fun x y => rfl
   calc
     ∫ x in a..b, f' x = ∫ x in Icc a b, f' x := by
@@ -434,7 +434,7 @@ theorem integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le (f
     (Hcf : ContinuousOn f (Icc a b)) (Hcg : ContinuousOn g (Icc a b))
     (Hdf : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2 \ s, HasFDerivAt f (f' x) x)
     (Hdg : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2 \ s, HasFDerivAt g (g' x) x)
-    (Hi : IntegrableOn (fun x => f' x (1, 0) + g' x (0, 1)) (Icc a b)) :
+    (Hi : IntegrableOn (fun x ↦ f' x (1, 0) + g' x (0, 1)) (Icc a b)) :
     (∫ x in Icc a b, f' x (1, 0) + g' x (0, 1)) =
       (((∫ x in a.1..b.1, g (x, b.2)) - ∫ x in a.1..b.1, g (x, a.2)) +
           ∫ y in a.2..b.2, f (b.1, y)) -
@@ -487,7 +487,7 @@ theorem integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (f g : ℝ 
       HasFDerivAt f (f' x) x)
     (Hdg : ∀ x ∈ Ioo (min a₁ b₁) (max a₁ b₁) ×ˢ Ioo (min a₂ b₂) (max a₂ b₂) \ s,
       HasFDerivAt g (g' x) x)
-    (Hi : IntegrableOn (fun x => f' x (1, 0) + g' x (0, 1)) ([[a₁, b₁]] ×ˢ [[a₂, b₂]])) :
+    (Hi : IntegrableOn (fun x ↦ f' x (1, 0) + g' x (0, 1)) ([[a₁, b₁]] ×ˢ [[a₂, b₂]])) :
     (∫ x in a₁..b₁, ∫ y in a₂..b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1)) =
       (((∫ x in a₁..b₁, g (x, b₂)) - ∫ x in a₁..b₁, g (x, a₂)) + ∫ y in a₂..b₂, f (b₁, y)) -
         ∫ y in a₂..b₂, f (a₁, y) := by

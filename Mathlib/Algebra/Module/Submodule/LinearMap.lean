@@ -204,7 +204,7 @@ theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Su
 
 theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
-    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x ↦ hf x.1 x.2 :=
   rfl
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}

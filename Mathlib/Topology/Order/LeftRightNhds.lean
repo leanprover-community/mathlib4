@@ -286,8 +286,8 @@ variable {l : Filter β} {f g : β → α}
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
   simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
   refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
-  · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
-  · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
+  · refine (Equiv.subLeft a).iInf_congr fun x ↦ ?_; simp [Ioi]
+  · refine (Equiv.subRight a).iInf_congr fun x ↦ ?_; simp [Iio]
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
@@ -307,29 +307,29 @@ theorem eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in �
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
 and `g` tends to `atTop` then `f + g` tends to `atTop`. -/
 theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x + g x) l atTop := by
+    Tendsto (fun x ↦ f x + g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
   refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
-  exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
+  exact (hf.eventually (lt_mem_nhds hC')).mono fun x ↦ le_of_lt
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
 and `g` tends to `atBot` then `f + g` tends to `atBot`. -/
 theorem Filter.Tendsto.add_atBot {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x + g x) l atBot :=
+    Tendsto (fun x ↦ f x + g x) l atBot :=
   Filter.Tendsto.add_atTop (α := αᵒᵈ) hf hg
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
 `atTop` and `g` tends to `C` then `f + g` tends to `atTop`. -/
 theorem Filter.Tendsto.atTop_add {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
-    Tendsto (fun x => f x + g x) l atTop := by
+    Tendsto (fun x ↦ f x + g x) l atTop := by
   conv in _ + _ => rw [add_comm]
   exact hg.add_atTop hf
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
 `atBot` and `g` tends to `C` then `f + g` tends to `atBot`. -/
 theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
-    Tendsto (fun x => f x + g x) l atBot := by
+    Tendsto (fun x ↦ f x + g x) l atBot := by
   conv in _ + _ => rw [add_comm]
   exact hg.add_atBot hf
 

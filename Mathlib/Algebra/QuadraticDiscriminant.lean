@@ -109,7 +109,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
   rw [discrim, sq]
   obtain ha | rfl | ha : a < 0 ∨ a = 0 ∨ 0 < a := lt_trichotomy a 0
   -- if a < 0
-  · have : Tendsto (fun x => (a * x + b) * x + c) atTop atBot :=
+  · have : Tendsto (fun x ↦ (a * x + b) * x + c) atTop atBot :=
       tendsto_atBot_add_const_right _ c
         ((tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop
           tendsto_id)
@@ -135,7 +135,7 @@ at least when the coefficient of the quadratic term is nonzero.
 -/
 theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * (x * x) + b * x + c) :
     discrim a b c < 0 := by
-  have : ∀ x : K, 0 ≤ a * (x * x) + b * x + c := fun x => le_of_lt (h x)
+  have : ∀ x : K, 0 ≤ a * (x * x) + b * x + c := fun x ↦ le_of_lt (h x)
   refine lt_of_le_of_ne (discrim_le_zero this) fun h' ↦ ?_
   have := h (-b / (2 * a))
   have : a * (-b / (2 * a)) * (-b / (2 * a)) + b * (-b / (2 * a)) + c = 0 := by

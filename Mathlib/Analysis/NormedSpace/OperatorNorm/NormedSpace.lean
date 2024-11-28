@@ -67,7 +67,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   simp only [Set.subset_def, Set.mem_preimage, mem_ball_zero_iff] at hε
   lift ε to ℝ≥0 using ε0.le
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x => ?_⟩
+  refine ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x ↦ ?_⟩
   by_cases hx : f x = 0
   · rw [← hx] at hf
     obtain rfl : x = 0 := Specializes.eq (specializes_iff_pure.2 <|
@@ -94,7 +94,7 @@ open Set Real
 /-- An operator is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
   Iff.intro
-    (fun hn => ContinuousLinearMap.ext fun x => norm_le_zero_iff.1
+    (fun hn => ContinuousLinearMap.ext fun x ↦ norm_le_zero_iff.1
       (calc
         _ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
         _ = _ := by rw [hn, zero_mul]))
@@ -164,7 +164,7 @@ variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ
 the operator norm. -/
 theorem norm_toContinuousLinearMap_comp [RingHomIsometric σ₁₂] (f : F →ₛₗᵢ[σ₂₃] G)
     {g : E →SL[σ₁₂] F} : ‖f.toContinuousLinearMap.comp g‖ = ‖g‖ :=
-  opNorm_ext (f.toContinuousLinearMap.comp g) g fun x => by
+  opNorm_ext (f.toContinuousLinearMap.comp g) g fun x ↦ by
     simp only [norm_map, coe_toContinuousLinearMap, coe_comp', Function.comp_apply]
 
 /-- Composing on the left with a linear isometry gives a linear isometry between spaces of

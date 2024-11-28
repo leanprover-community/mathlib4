@@ -196,7 +196,7 @@ theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
 @[to_additive]
 theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+  Set.ext fun x ↦ by simp [mem_sSup_of_directedOn Sne hS]
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
@@ -516,7 +516,7 @@ end Submonoid
 theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul N α] [MulAction M α]
     {s : Set M} (htop : Submonoid.closure s = ⊤)
     (hs : ∀ x ∈ s, ∀ (y : N) (z : α), (x • y) • z = x • y • z) : IsScalarTower M N α := by
-  refine ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x ?_ ?_⟩
+  refine ⟨fun x ↦ Submonoid.induction_of_closure_eq_top_left htop x ?_ ?_⟩
   · intro y z
     rw [one_smul, one_smul]
   · clear x
@@ -527,7 +527,7 @@ theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul
 theorem SMulCommClass.of_mclosure_eq_top {N α} [Monoid M] [SMul N α] [MulAction M α] {s : Set M}
     (htop : Submonoid.closure s = ⊤) (hs : ∀ x ∈ s, ∀ (y : N) (z : α), x • y • z = y • x • z) :
     SMulCommClass M N α := by
-  refine ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x ?_ ?_⟩
+  refine ⟨fun x ↦ Submonoid.induction_of_closure_eq_top_left htop x ?_ ?_⟩
   · intro y z
     rw [one_smul, one_smul]
   · clear x

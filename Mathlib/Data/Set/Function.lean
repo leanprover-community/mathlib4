@@ -42,7 +42,7 @@ section restrict
 
 /-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
 takes an argument `↥s` instead of `Subtype s`. -/
-def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
+def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x ↦ f x
 
 theorem restrict_def (s : Set α) : s.restrict (π := π) = fun f x ↦ f x := rfl
 
@@ -102,7 +102,7 @@ theorem restrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidabl
   restrict_ite_compl _ _ _
 
 theorem restrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
-    (range f).restrict (extend f g g') = fun x => g x.coe_prop.choose := by
+    (range f).restrict (extend f g g') = fun x ↦ g x.coe_prop.choose := by
   classical
   exact restrict_dite _ _
 
@@ -115,7 +115,7 @@ theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β →
 /-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
 @[simp]
 def restrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
-  fun x => f ⟨x.1, hst x.2⟩
+  fun x ↦ f ⟨x.1, hst x.2⟩
 
 theorem restrict₂_def {s t : Set α} (hst : s ⊆ t) :
     restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
@@ -142,7 +142,7 @@ theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β
 
 /-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
 has codomain `↥s` instead of `Subtype s`. -/
-def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x => ⟨f x, h x⟩
+def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x ↦ ⟨f x, h x⟩
 
 @[simp]
 theorem val_codRestrict_apply (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) (x : ι) :
@@ -209,7 +209,7 @@ theorem EqOn.image_eq_self {f : α → α} (h : Set.EqOn f id s) : f '' s = s :=
   rw [h.image_eq, image_id]
 
 theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t :=
-  ext fun x => and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]
+  ext fun x ↦ and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]
 
 theorem EqOn.mono (hs : s₁ ⊆ s₂) (hf : EqOn f₁ f₂ s₂) : EqOn f₁ f₂ s₁ := fun _ hx => hf (hs hx)
 
@@ -259,7 +259,7 @@ theorem codRestrict_restrict (h : ∀ x : s, f x ∈ t) :
 
 /-- Reverse of `Set.codRestrict_restrict`. -/
 theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :
-    h.restrict f s t = codRestrict (s.restrict f) t fun x => h x.2 :=
+    h.restrict f s t = codRestrict (s.restrict f) t fun x ↦ h x.2 :=
   rfl
 
 theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
@@ -440,7 +440,7 @@ lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreim
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
 
 lemma restrictPreimage_surjective (hf : Surjective f) : Surjective (t.restrictPreimage f) :=
-  fun x => ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
+  fun x ↦ ⟨⟨_, ((hf x).choose_spec.symm ▸ x.2 : _ ∈ t)⟩, Subtype.ext (hf x).choose_spec⟩
 
 lemma restrictPreimage_bijective (hf : Bijective f) : Bijective (t.restrictPreimage f) :=
   ⟨t.restrictPreimage_injective hf.1, t.restrictPreimage_surjective hf.2⟩
@@ -1381,7 +1381,7 @@ theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈
 
 @[simp]
 theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s.piecewise g f :=
-  funext fun x => if hx : x ∈ s then by simp [hx] else by simp [hx]
+  funext fun x ↦ if hx : x ∈ s then by simp [hx] else by simp [hx]
 
 @[simp]
 theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
@@ -1410,24 +1410,24 @@ theorem EqOn.piecewise_ite {f f' g : α → β} {t t'} (h : EqOn f g t) (h' : Eq
   (h.mono inter_subset_left).piecewise_ite' s (h'.mono inter_subset_left)
 
 theorem piecewise_preimage (f g : α → β) (t) : s.piecewise f g ⁻¹' t = s.ite (f ⁻¹' t) (g ⁻¹' t) :=
-  ext fun x => by by_cases x ∈ s <;> simp [*, Set.ite]
+  ext fun x ↦ by by_cases x ∈ s <;> simp [*, Set.ite]
 
 theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α} :
-    h x (s.piecewise f g x) = s.piecewise (fun x => h x (f x)) (fun x => h x (g x)) x := by
+    h x (s.piecewise f g x) = s.piecewise (fun x ↦ h x (f x)) (fun x ↦ h x (g x)) x := by
   by_cases hx : x ∈ s <;> simp [hx]
 
 theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
     {x : α} :
     h x (s.piecewise f g x) (s.piecewise f' g' x) =
-      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x := by
+      s.piecewise (fun x ↦ h x (f x) (f' x)) (fun x ↦ h x (g x) (g' x)) x := by
   by_cases hx : x ∈ s <;> simp [hx]
 
 theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :
-    (s.piecewise (fun x => h x (f x)) fun x => h x (g x)) = fun x => h x (s.piecewise f g x) :=
+    (s.piecewise (fun x ↦ h x (f x)) fun x ↦ h x (g x)) = fun x ↦ h x (s.piecewise f g x) :=
   funext fun _ => (apply_piecewise _ _ _ _).symm
 
 theorem piecewise_op₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i) :
-    (s.piecewise (fun x => h x (f x) (f' x)) fun x => h x (g x) (g' x)) = fun x =>
+    (s.piecewise (fun x ↦ h x (f x) (f' x)) fun x ↦ h x (g x) (g' x)) = fun x =>
       h x (s.piecewise f g x) (s.piecewise f' g' x) :=
   funext fun _ => (apply_piecewise₂ _ _ _ _ _ _).symm
 

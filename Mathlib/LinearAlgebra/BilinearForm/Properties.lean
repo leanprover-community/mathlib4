@@ -133,10 +133,10 @@ theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : 
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
-  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
+  fun x ↦ (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
-    (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
+    (B₁ - B₂).IsAlt := fun x ↦ (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x =>
   neg_eq_zero.mpr <| hB x
@@ -337,7 +337,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
-  · refine fun m hm => h _ fun x => ?_
+  · refine fun m hm => h _ fun x ↦ ?_
     rw [hm]
     rfl
   · intro m hm

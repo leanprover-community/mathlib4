@@ -489,7 +489,7 @@ theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ 
 alias SmoothWithinAt.mdifferentiableWithinAt := ContMDiffWithinAt.mdifferentiableWithinAt
 
 theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
-  fun x => (hf x).mdifferentiableAt hn
+  fun x ↦ (hf x).mdifferentiableAt hn
 
 @[deprecated (since := "2024-11-20")]
 alias SmoothAt.mdifferentiableAt := ContMDiffAt.mdifferentiableAt
@@ -507,7 +507,7 @@ theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : Contin
   fun x hx => (h x hx).continuousWithinAt
 
 theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (h x).continuousAt
+  continuous_iff_continuousAt.2 fun x ↦ (h x).continuousAt
 
 @[deprecated (since := "2024-11-20")]
 alias Smooth.mdifferentiableWithinAt := ContMDiff.mdifferentiableWithinAt
@@ -516,42 +516,42 @@ alias Smooth.mdifferentiableWithinAt := ContMDiff.mdifferentiableWithinAt
 
 theorem MDifferentiableWithinAt.prod_mk {f : M → M'} {g : M → M''}
     (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x) :
-    MDifferentiableWithinAt I (I'.prod I'') (fun x => (f x, g x)) s x :=
+    MDifferentiableWithinAt I (I'.prod I'') (fun x ↦ (f x, g x)) s x :=
   ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
 
 theorem MDifferentiableAt.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
     (hg : MDifferentiableAt I I'' g x) :
-    MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
+    MDifferentiableAt I (I'.prod I'') (fun x ↦ (f x, g x)) x :=
   ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
 
 theorem MDifferentiableWithinAt.prod_mk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
     (hg : MDifferentiableWithinAt I 𝓘(𝕜, E'') g s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s x :=
+    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) s x :=
   ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
 
 theorem MDifferentiableAt.prod_mk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableAt I 𝓘(𝕜, E') f x) (hg : MDifferentiableAt I 𝓘(𝕜, E'') g x) :
-    MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) x :=
+    MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) x :=
   ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
 
 theorem MDifferentiableOn.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableOn I I' f s)
     (hg : MDifferentiableOn I I'' g s) :
-    MDifferentiableOn I (I'.prod I'') (fun x => (f x, g x)) s := fun x hx =>
+    MDifferentiableOn I (I'.prod I'') (fun x ↦ (f x, g x)) s := fun x hx =>
   (hf x hx).prod_mk (hg x hx)
 
 theorem MDifferentiable.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiable I I' f)
-    (hg : MDifferentiable I I'' g) : MDifferentiable I (I'.prod I'') fun x => (f x, g x) := fun x =>
+    (hg : MDifferentiable I I'' g) : MDifferentiable I (I'.prod I'') fun x ↦ (f x, g x) := fun x =>
   (hf x).prod_mk (hg x)
 
 theorem MDifferentiableOn.prod_mk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) (hg : MDifferentiableOn I 𝓘(𝕜, E'') g s) :
-    MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s := fun x hx =>
+    MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) s := fun x hx =>
   (hf x hx).prod_mk_space (hg x hx)
 
 theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDifferentiable I 𝓘(𝕜, E') f)
-    (hg : MDifferentiable I 𝓘(𝕜, E'') g) : MDifferentiable I 𝓘(𝕜, E' × E'') fun x => (f x, g x) :=
-  fun x => (hf x).prod_mk_space (hg x)
+    (hg : MDifferentiable I 𝓘(𝕜, E'') g) : MDifferentiable I 𝓘(𝕜, E' × E'') fun x ↦ (f x, g x) :=
+  fun x ↦ (hf x).prod_mk_space (hg x)
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
     {y | writtenInExtChartAt I I'' x (g ∘ f) y =
@@ -1190,7 +1190,7 @@ theorem MDifferentiable.comp_mdifferentiableOn (hg : MDifferentiable I' I'' g)
   exact hg.comp hf (by simp)
 
 theorem MDifferentiable.comp (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I I' f) :
-    MDifferentiable I I'' (g ∘ f) := fun x => MDifferentiableAt.comp x (hg (f x)) (hf x)
+    MDifferentiable I I'' (g ∘ f) := fun x ↦ MDifferentiableAt.comp x (hg (f x)) (hf x)
 
 theorem tangentMapWithin_comp_at (p : TangentBundle I M)
     (hg : MDifferentiableWithinAt I' I'' g u (f p.1)) (hf : MDifferentiableWithinAt I I' f s p.1)

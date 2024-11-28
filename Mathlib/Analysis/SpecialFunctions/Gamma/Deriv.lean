@@ -38,7 +38,7 @@ namespace Complex
 section GammaHasDeriv
 
 /-- Rewrite the Gamma integral as an example of a Mellin transform. -/
-theorem GammaIntegral_eq_mellin : GammaIntegral = mellin fun x => ↑(Real.exp (-x)) :=
+theorem GammaIntegral_eq_mellin : GammaIntegral = mellin fun x ↦ ↑(Real.exp (-x)) :=
   funext fun s => by simp only [mellin, GammaIntegral, smul_eq_mul, mul_comm]
 
 /-- The derivative of the `Γ` integral, at any `s ∈ ℂ` with `1 < re s`, is given by the Mellin

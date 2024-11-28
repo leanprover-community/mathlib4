@@ -173,7 +173,7 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   rw [biInter_eq_iInter]
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
-  rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
+  rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x ↦ isClosed_Iic) H
       (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
   exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
 
@@ -494,11 +494,11 @@ conditionally complete linear order, and `K : Set β` is a compact set, then
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
-    Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
+    Tendsto (fun x ↦ sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```
 Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov). -/
 theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCompact K)
-    (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
+    (hf : Continuous ↿f) : Continuous fun x ↦ sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)
   · simp_rw [image_empty]
     exact continuous_const
@@ -508,7 +508,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
     hK.exists_sSup_image_eq_and_ge h0K
       (show Continuous fun y => f x y from hf.comp <| Continuous.Prod.mk x).continuousOn
   rw [ContinuousAt, h2y, tendsto_order]
-  have := tendsto_order.mp ((show Continuous fun x => f x y
+  have := tendsto_order.mp ((show Continuous fun x ↦ f x y
     from hf.comp <| continuous_id.prod_mk continuous_const).tendsto x)
   refine ⟨fun z hz => ?_, fun z hz => ?_⟩
   · refine (this.1 z hz).mono fun x' hx' =>
@@ -525,7 +525,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
     exact fun y' hy' => huv (mk_mem_prod hx' (hKv hy'))
 
 theorem IsCompact.continuous_sInf {f : γ → β → α} {K : Set β} (hK : IsCompact K)
-    (hf : Continuous ↿f) : Continuous fun x => sInf (f x '' K) :=
+    (hf : Continuous ↿f) : Continuous fun x ↦ sInf (f x '' K) :=
   IsCompact.continuous_sSup (α := αᵒᵈ) hK hf
 
 namespace ContinuousOn

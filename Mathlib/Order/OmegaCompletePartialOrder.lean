@@ -545,7 +545,7 @@ variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 -- https://github.com/leanprover-community/mathlib4/pull/15412
 open Chain in
 lemma ωScottContinuous.prodMk (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
-    ωScottContinuous fun x => (f x, g x) := ScottContinuousOn.prodMk (fun a b hab => by
+    ωScottContinuous fun x ↦ (f x, g x) := ScottContinuousOn.prodMk (fun a b hab => by
   use pair a b hab; exact range_pair a b hab) hf hg
 
 lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
@@ -733,7 +733,7 @@ theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x �
 set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
-    (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
+    (hg : Continuous' g) : Continuous' fun x ↦ if p then f x else g x := by
   split_ifs <;> simp [*]
 
 theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α →o β → Part γ) :
@@ -783,19 +783,19 @@ set_option linter.deprecated false
 
 @[deprecated ωScottContinuous.bind (since := "2024-05-29")]
 theorem bind_continuous' {β γ : Type v} (f : α → Part β) (g : α → β → Part γ) :
-    Continuous' f → Continuous' g → Continuous' fun x => f x >>= g x
+    Continuous' f → Continuous' g → Continuous' fun x ↦ f x >>= g x
   | ⟨hf, hf'⟩, ⟨hg, hg'⟩ =>
     Continuous.of_bundled' (OrderHom.partBind ⟨f, hf⟩ ⟨g, hg⟩)
       (by intro c; rw [ωSup_bind, ← hf', ← hg']; rfl)
 
 @[deprecated ωScottContinuous.map (since := "2024-05-29")]
 theorem map_continuous' {β γ : Type v} (f : β → γ) (g : α → Part β) (hg : Continuous' g) :
-    Continuous' fun x => f <$> g x := by
+    Continuous' fun x ↦ f <$> g x := by
   simp only [map_eq_bind_pure_comp]; apply bind_continuous' _ _ hg; apply const_continuous'
 
 @[deprecated ωScottContinuous.seq (since := "2024-05-29")]
 theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α → Part β) (hf : Continuous' f)
-    (hg : Continuous' g) : Continuous' fun x => f x <*> g x := by
+    (hg : Continuous' g) : Continuous' fun x ↦ f x <*> g x := by
   simp only [seq_eq_bind_map]
   apply bind_continuous' _ _ hf
   apply OmegaCompletePartialOrder.flip₂_continuous'
@@ -948,7 +948,7 @@ noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄
 /-- `Part.map` as a continuous function. -/
 @[simps! apply] -- Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
-  .copy (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
+  .copy (fun x ↦ f <$> g x) (bind g (const (pure ∘ f))) <| by
     ext1
     simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.partBind_coe, coe_apply,
       coe_toOrderHom, const_apply, Part.bind_eq_bind]
@@ -956,7 +956,7 @@ noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) 
 /-- `Part.seq` as a continuous function. -/
 @[simps! apply] -- Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
-  .copy (fun x => f x <*> g x) (bind f <| flip <| _root_.flip map g) <| by
+  .copy (fun x ↦ f x <*> g x) (bind f <| flip <| _root_.flip map g) <| by
       ext
       simp only [seq_eq_bind_map, Part.bind_eq_bind, Part.mem_bind_iff, flip_apply, _root_.flip,
         map_apply, bind_apply, Part.map_eq_map]

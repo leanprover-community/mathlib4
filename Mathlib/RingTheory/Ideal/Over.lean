@@ -96,7 +96,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
       (Ideal.quotientMap (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
         ((Quotient.mk P).comp C) := by
-  refine RingHom.ext fun x => ?_
+  refine RingHom.ext fun x ↦ ?_
   repeat' rw [RingHom.coe_comp, Function.comp_apply]
   rw [quotientMap_mk, coe_mapRingHom, map_C]
 
@@ -159,7 +159,7 @@ theorem Quotient.mk_smul_mk_quotient_map_quotient (x : R) (y : S) :
 
 instance Quotient.tower_quotient_map_quotient [Algebra R S] :
     IsScalarTower R (R ⧸ p) (S ⧸ map (algebraMap R S) p) :=
-  IsScalarTower.of_algebraMap_eq fun x => by
+  IsScalarTower.of_algebraMap_eq fun x ↦ by
     rw [Quotient.algebraMap_eq, Quotient.algebraMap_quotient_map_quotient,
       Quotient.mk_algebraMap]
 

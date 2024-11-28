@@ -137,7 +137,7 @@ instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpac
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G] :
     Group C^∞⟮I, N; I', G⟯ :=
   { SmoothMap.monoid with
-    inv := fun f => ⟨fun x => (f x)⁻¹, f.contMDiff.inv⟩
+    inv := fun f => ⟨fun x ↦ (f x)⁻¹, f.contMDiff.inv⟩
     inv_mul_cancel := fun a ↦ by ext; exact inv_mul_cancel _
     div := fun f g => ⟨f / g, f.contMDiff.div g.contMDiff⟩
     div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
@@ -312,7 +312,7 @@ is naturally a vector space over the ring of smooth functions from `N` to `𝕜`
 
 instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^∞⟮I, N; 𝕜⟯ C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.2 g.2⟩⟩
+  ⟨fun f g => ⟨fun x ↦ f x • g x, ContMDiff.smul f.2 g.2⟩⟩
 
 @[simp]
 theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^∞⟮I'', N'; 𝕜⟯)

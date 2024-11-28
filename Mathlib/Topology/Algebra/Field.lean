@@ -80,7 +80,7 @@ happens to be a field is enough.
 variable {𝕜 : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
 
 /--
-The map `fun x => a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
+The map `fun x ↦ a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
 when `a ≠ 0`.
 -/
 @[simps]

@@ -142,7 +142,7 @@ theorem toNonUnitalSubalgebra_injective :
     Function.Injective
       (toNonUnitalSubalgebra : NonUnitalStarSubalgebra R A → NonUnitalSubalgebra R A) :=
   fun S T h =>
-  ext fun x => by rw [← mem_toNonUnitalSubalgebra, ← mem_toNonUnitalSubalgebra, h]
+  ext fun x ↦ by rw [← mem_toNonUnitalSubalgebra, ← mem_toNonUnitalSubalgebra, h]
 
 theorem toNonUnitalSubalgebra_inj {S U : NonUnitalStarSubalgebra R A} :
     S.toNonUnitalSubalgebra = U.toNonUnitalSubalgebra ↔ S = U :=
@@ -191,7 +191,7 @@ theorem coe_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnital
 theorem toNonUnitalSubring_injective {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
     [Module R A] [Star A] :
     Function.Injective (toNonUnitalSubring : NonUnitalStarSubalgebra R A → NonUnitalSubring A) :=
-  fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
+  fun S T h => ext fun x ↦ by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
 
 theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
     [Star A] {S U : NonUnitalStarSubalgebra R A} :
@@ -871,7 +871,7 @@ lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : F) (x : A) :
 
 instance subsingleton_of_subsingleton [Subsingleton A] :
     Subsingleton (NonUnitalStarSubalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+  ⟨fun B C => ext fun x ↦ by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 instance _root_.NonUnitalStarAlgHom.subsingleton [Subsingleton (NonUnitalStarSubalgebra R A)] :
     Subsingleton (A →⋆ₙₐ[R] B) :=

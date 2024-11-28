@@ -111,7 +111,7 @@ theorem exists_disjoint_covering_ae :
       (t.PairwiseDisjoint fun p => p.2) ∧
       (∀ p : X × Set X, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
       μ (s \ ⋃ (p : X × Set X) (_ : p ∈ t), p.2) = 0 :=
-  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
+  v.covering s (fun x ↦ v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
 covering of almost every `s`. -/
@@ -184,7 +184,7 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
     exact ⟨s, mem_union_left _ hs, h's⟩
   covering := by
     intro s f fset ffine
-    let g : X → Set (Set X) := fun x => f x ∩ v.setsAt x
+    let g : X → Set (Set X) := fun x ↦ f x ∩ v.setsAt x
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ t ∈ g x, t ⊆ closedBall x ε := by
       intro x hx ε εpos
       obtain ⟨t, tf, ht⟩ : ∃ t ∈ f x, t ⊆ closedBall x (min ε δ) :=

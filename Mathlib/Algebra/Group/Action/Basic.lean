@@ -27,7 +27,7 @@ variable [Group α] [MulAction α β]
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 @[to_additive (attr := simps)]
 def MulAction.toPerm (a : α) : Equiv.Perm β :=
-  ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
+  ⟨fun x ↦ a • x, fun x ↦ a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddAction.toPerm
@@ -121,7 +121,7 @@ section Arrow
 def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
-    show (fun x => f ((1 : G)⁻¹ • x)) = f
+    show (fun x ↦ f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul x y f := by
     show (fun a ↦ f ((x*y)⁻¹ • a)) = (fun a ↦ f (y⁻¹ • x⁻¹ • a))

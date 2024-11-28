@@ -512,7 +512,7 @@ variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar
 
 instance instStar : Star C₀(α, β) where
   star f :=
-    { toFun := fun x => star (f x)
+    { toFun := fun x ↦ star (f x)
       continuous_toFun := (map_continuous f).star
       zero_at_infty' := by
         simpa only [star_zero] using (continuous_star.tendsto (0 : β)).comp (zero_at_infty f) }
@@ -525,8 +525,8 @@ theorem star_apply (f : C₀(α, β)) (x : α) : (star f) x = star (f x) :=
   rfl
 
 instance instStarAddMonoid [ContinuousAdd β] : StarAddMonoid C₀(α, β) where
-  star_involutive f := ext fun x => star_star (f x)
-  star_add f g := ext fun x => star_add (f x) (g x)
+  star_involutive f := ext fun x ↦ star_star (f x)
+  star_add f g := ext fun x ↦ star_add (f x) (g x)
 
 end Star
 
@@ -545,7 +545,7 @@ variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β
   [ContinuousStar β] [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
 instance instStarModule : StarModule 𝕜 C₀(α, β) where
-  star_smul k f := ext fun x => star_smul k (f x)
+  star_smul k f := ext fun x ↦ star_smul k (f x)
 
 end StarModule
 
@@ -556,7 +556,7 @@ variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousS
 
 instance instStarRing : StarRing C₀(α, β) :=
   { ZeroAtInftyContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+    star_mul := fun f g => ext fun x ↦ star_mul (f x) (g x) }
 
 end StarRing
 

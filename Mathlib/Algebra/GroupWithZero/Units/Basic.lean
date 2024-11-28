@@ -80,7 +80,7 @@ than partially) defined inverse function for some purposes, including for calcul
 
 Note that while this is in the `Ring` namespace for brevity, it requires the weaker assumption
 `MonoidWithZero M₀` instead of `Ring M₀`. -/
-noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
+noncomputable def inverse : M₀ → M₀ := fun x ↦ if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 @[simp]

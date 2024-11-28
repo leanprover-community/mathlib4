@@ -76,7 +76,7 @@ theorem measurePreserving_mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g :
 @[to_additive]
 theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
-    MeasurePreserving (fun x => g * f x) μ' μ :=
+    MeasurePreserving (fun x ↦ g * f x) μ' μ :=
   (measurePreserving_mul_left μ g).comp hf
 
 @[to_additive]
@@ -87,7 +87,7 @@ theorem measurePreserving_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 @[to_additive]
 theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
-    MeasurePreserving (fun x => f x * g) μ' μ :=
+    MeasurePreserving (fun x ↦ f x * g) μ' μ :=
   (measurePreserving_mul_right μ g).comp hf
 
 @[to_additive]

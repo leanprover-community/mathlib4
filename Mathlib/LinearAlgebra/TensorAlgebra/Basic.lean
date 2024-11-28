@@ -135,7 +135,7 @@ def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlg
     right_inv := fun F =>
       RingQuot.ringQuot_ext' _ _ _ <|
         FreeAlgebra.hom_ext <|
-          funext fun x => by
+          funext fun x ↦ by
             rw [ι]
             exact
               (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply _ _) }
@@ -211,7 +211,7 @@ def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=
 variable (M)
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x ↦ by
   simp [algebraMapInv]
 
 @[simp]

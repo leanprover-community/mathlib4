@@ -314,7 +314,7 @@ local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
   { ofStep k n with
     commutes' := by
-    -- Porting note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
+    -- Porting note: Originally `(fun x ↦ Ring.DirectLimit.of_f n.zero_le x)`
     -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
       intro x
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -364,7 +364,7 @@ def algEquivAlgebraicClosureAux :
     AlgebraicClosure k ≃ₐ[k] AlgebraicClosureAux k := by
   delta AlgebraicClosure
   exact Ideal.quotientKerAlgEquivOfSurjective
-    (fun x => ⟨MvPolynomial.X x, by simp⟩)
+    (fun x ↦ ⟨MvPolynomial.X x, by simp⟩)
 
 -- Those two instances are copy-pasta from the analogous instances for `SplittingField`
 instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=

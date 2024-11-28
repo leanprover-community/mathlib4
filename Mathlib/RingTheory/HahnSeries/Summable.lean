@@ -224,7 +224,7 @@ def Equiv (e : α ≃ β) (s : SummableFamily Γ R α) : SummableFamily Γ R β 
 theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hsum = s.hsum := by
   ext g
   simp only [hsum_coeff, Equiv_toFun]
-  exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
+  exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x ↦ rfl
 
 end AddCommMonoid
 

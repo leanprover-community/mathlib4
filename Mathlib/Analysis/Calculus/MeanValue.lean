@@ -95,7 +95,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     (bound : ∀ x ∈ Ico a b, f x = B x → f' x < B' x) : ∀ ⦃x⦄, x ∈ Icc a b → f x ≤ B x := by
   change Icc a b ⊆ { x | f x ≤ B x }
   set s := { x | f x ≤ B x } ∩ Icc a b
-  have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prod hB
+  have A : ContinuousOn (fun x ↦ (f x, B x)) (Icc a b) := hf.prod hB
   have : IsClosed s := by
     simp only [s, inter_comm]
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
@@ -603,7 +603,7 @@ theorem _root_.eq_of_fderiv_eq
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-  suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
+  suffices Set.univ.EqOn f g from funext fun x ↦ this <| mem_univ x
   exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
     uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
 

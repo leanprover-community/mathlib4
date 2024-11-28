@@ -401,25 +401,25 @@ open Real
 variable {α : Type*}
 
 theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
-    Tendsto (fun x => √(f x)) l (𝓝 (√x)) :=
+    Tendsto (fun x ↦ √(f x)) l (𝓝 (√x)) :=
   (continuous_sqrt.tendsto _).comp h
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
 nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => √(f x)) s x :=
+    ContinuousWithinAt (fun x ↦ √(f x)) s x :=
   h.sqrt
 
 @[fun_prop]
-nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => √(f x)) x :=
+nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x ↦ √(f x)) x :=
   h.sqrt
 
 @[fun_prop]
-theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => √(f x)) s :=
+theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x ↦ √(f x)) s :=
   fun x hx => (h x hx).sqrt
 
 @[continuity, fun_prop]
-theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => √(f x) :=
+theorem Continuous.sqrt (h : Continuous f) : Continuous fun x ↦ √(f x) :=
   continuous_sqrt.comp h
 
 namespace NNReal

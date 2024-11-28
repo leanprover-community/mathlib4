@@ -119,7 +119,7 @@ protected def mulRight (a : G) : Perm G :=
   (toUnits a).mulRight
 
 @[to_additive (attr := simp)]
-theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
+theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x ↦ x * a :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -128,7 +128,7 @@ theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ 
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive (attr := simp) "Extra simp lemma that `dsimp` can use. `simp` will never use this."]
-theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
+theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x ↦ x * a⁻¹ :=
   rfl
 
 @[to_additive]

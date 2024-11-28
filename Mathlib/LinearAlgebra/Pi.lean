@@ -220,7 +220,7 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
 theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type*}
     [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] :
     LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
-  LinearMap.ext fun x => by simp [Finset.univ_sum_single]
+  LinearMap.ext fun x ↦ by simp [Finset.univ_sum_single]
 
 variable {R φ}
 

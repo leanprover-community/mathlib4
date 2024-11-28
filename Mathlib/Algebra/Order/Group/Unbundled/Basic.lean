@@ -756,19 +756,19 @@ variable {β : Type*} [Group α] [Preorder α] [MulLeftMono α]
   [MulRightMono α] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem Monotone.inv (hf : Monotone f) : Antitone fun x ↦ (f x)⁻¹ := fun _ _ hxy =>
   inv_le_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem Antitone.inv (hf : Antitone f) : Monotone fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem Antitone.inv (hf : Antitone f) : Monotone fun x ↦ (f x)⁻¹ := fun _ _ hxy =>
   inv_le_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x => (f x)⁻¹) s :=
+theorem MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x ↦ (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
 
 @[to_additive]
-theorem AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x => (f x)⁻¹) s :=
+theorem AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x ↦ (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
 
 end
@@ -779,19 +779,19 @@ variable {β : Type*} [Group α] [Preorder α] [MulLeftStrictMono α]
   [MulRightStrictMono α] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x ↦ (f x)⁻¹ := fun _ _ hxy =>
   inv_lt_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun _ _ hxy =>
+theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x ↦ (f x)⁻¹ := fun _ _ hxy =>
   inv_lt_inv_iff.2 (hf hxy)
 
 @[to_additive]
-theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x => (f x)⁻¹) s :=
+theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x ↦ (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 
 @[to_additive]
-theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)⁻¹) s :=
+theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x ↦ (f x)⁻¹) s :=
   fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 
 end

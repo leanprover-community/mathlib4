@@ -71,7 +71,7 @@ def limitπAlgHom (j) :
   { SemiRingCat.limitπRingHom
       (F ⋙ forget₂ (AlgebraCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgebraCat.{w} R))).π.app j
-    commutes' := fun x => by
+    commutes' := fun x ↦ by
       simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply _ R,
         Types.Small.limitCone_pt, AlgEquiv.commutes]
       rfl

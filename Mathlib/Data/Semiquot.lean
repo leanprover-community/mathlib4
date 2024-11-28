@@ -92,7 +92,7 @@ def toTrunc (q : Semiquot α) : Trunc α :=
 /-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) : β :=
-  Trunc.liftOn q.2 (fun x => f x.1) fun x y => h _ x.2 _ y.2
+  Trunc.liftOn q.2 (fun x ↦ f x.1) fun x y => h _ x.2 _ y.2
 
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by
@@ -100,7 +100,7 @@ theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
 def map (f : α → β) (q : Semiquot α) : Semiquot β :=
-  ⟨f '' q.1, q.2.map fun x => ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
+  ⟨f '' q.1, q.2.map fun x ↦ ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
 
 @[simp]
 theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=

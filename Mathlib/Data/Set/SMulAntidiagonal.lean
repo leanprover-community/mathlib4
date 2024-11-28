@@ -109,7 +109,7 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s 
     exact fun a _ a_1 _ a_2 _ a_3 a_4 ↦ Preorder.le_trans a a_1 a_2 a_3 a_4
   obtain ⟨g, hg⟩ :=
     h1.exists_monotone_subseq (fun n => h.natEmbedding _ n) fun n => (h.natEmbedding _ n).2
-  obtain ⟨m, n, mn, h2'⟩ := h2 (fun x => (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
+  obtain ⟨m, n, mn, h2'⟩ := h2 (fun x ↦ (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
   refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
   exact eq_of_fst_le_fst_of_snd_le_snd (hg _ _ mn.le) h2'
 

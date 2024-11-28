@@ -317,7 +317,7 @@ theorem isTorsionBySet_span_singleton_iff : IsTorsionBySet R M (R ∙ a) ↔ IsT
 
 theorem isTorsionBySet_iff_subseteq_ker_lsmul :
     IsTorsionBySet R M s ↔ s ⊆ LinearMap.ker (LinearMap.lsmul R M) where
-  mp h r hr := LinearMap.mem_ker.mpr <| LinearMap.ext fun x => @h x ⟨r, hr⟩
+  mp h r hr := LinearMap.mem_ker.mpr <| LinearMap.ext fun x ↦ @h x ⟨r, hr⟩
   mpr | h, x, ⟨_, hr⟩ => DFunLike.congr_fun (LinearMap.mem_ker.mp (h hr)) x
 
 theorem isTorsionBy_iff_mem_ker_lsmul :
@@ -519,7 +519,7 @@ theorem isTorsionBy_quotient_iff (N : Submodule R M) (r : R) :
 
 theorem IsTorsionBy.quotient (N : Submodule R M) {r : R}
     (h : IsTorsionBy R M r) : IsTorsionBy R (M⧸N) r :=
-  (isTorsionBy_quotient_iff N r).mpr fun x => @h x ▸ N.zero_mem
+  (isTorsionBy_quotient_iff N r).mpr fun x ↦ @h x ▸ N.zero_mem
 
 theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
     IsTorsionBySet R (M⧸N) s ↔ ∀ x, ∀ r ∈ s, r • x ∈ N :=

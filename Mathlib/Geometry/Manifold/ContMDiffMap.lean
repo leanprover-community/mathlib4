@@ -110,7 +110,7 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two smooth maps `f` and `g`, this is the smooth map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨fun x => (f x, g x), f.2.prod_mk g.2⟩
+  ⟨fun x ↦ (f x, g x), f.2.prod_mk g.2⟩
 
 end ContMDiffMap
 

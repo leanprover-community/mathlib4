@@ -498,7 +498,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     match e with
     | x@(.app e a)       =>
         visit e true <|> do
-          -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
+          -- make sure that we don't treat `(fun x ↦ α) (n + 1)` as a type that depends on `Nat`
           guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
             if let some l := ignore n then

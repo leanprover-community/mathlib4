@@ -509,7 +509,7 @@ theorem sSup_atoms_le_eq (b : α) : sSup { a : α | IsAtom a ∧ a ≤ b } = b :
 
 @[simp]
 theorem sSup_atoms_eq_top : sSup { a : α | IsAtom a } = ⊤ := by
-  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_atoms_le_eq ⊤)
+  refine Eq.trans (congr rfl (Set.ext fun x ↦ ?_)) (sSup_atoms_le_eq ⊤)
   exact (and_iff_left le_top).symm
 
 theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c ≤ a → c ≤ b :=
@@ -705,15 +705,15 @@ def orderIsoBool : α ≃o Bool :=
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
   { inferInstanceAs (BoundedOrder α), IsSimpleOrder.distribLattice with
-    compl := fun x => if x = ⊥ then ⊤ else ⊥
+    compl := fun x ↦ if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
       rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top, SDiff.sdiff, compl]
-    inf_compl_le_bot := fun x => by
+    inf_compl_le_bot := fun x ↦ by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
       · simp
-    top_le_sup_compl := fun x => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
+    top_le_sup_compl := fun x ↦ by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
 
 end DecidableEq
 
@@ -988,7 +988,7 @@ variable [ComplementedLattice α]
 
 theorem isCoatomic_of_isAtomic_of_complementedLattice_of_isModular [IsAtomic α] :
     IsCoatomic α :=
-  ⟨fun x => by
+  ⟨fun x ↦ by
     rcases exists_isCompl x with ⟨y, xy⟩
     apply (eq_bot_or_exists_atom_le y).imp _ _
     · rintro rfl
@@ -1182,13 +1182,13 @@ theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
 
 instance : IsAtomistic (Set α) where
   eq_sSup_atoms s :=
-    ⟨(fun x => {x}) '' s, by rw [sSup_eq_sUnion, sUnion_image, biUnion_of_singleton],
+    ⟨(fun x ↦ {x}) '' s, by rw [sSup_eq_sUnion, sUnion_image, biUnion_of_singleton],
       by { rintro _ ⟨x, _, rfl⟩
            exact isAtom_singleton x }⟩
 
 instance : IsCoatomistic (Set α) where
   eq_sInf_coatoms s :=
-    ⟨(fun x => {x}ᶜ) '' sᶜ,
+    ⟨(fun x ↦ {x}ᶜ) '' sᶜ,
       by { rw [sInf_eq_sInter, sInter_image, ← compl_iUnion₂, biUnion_of_singleton, compl_compl] },
       by { rintro _ ⟨x, _, rfl⟩
            exact isCoatom_singleton_compl x }⟩

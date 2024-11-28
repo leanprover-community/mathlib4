@@ -50,7 +50,7 @@ theorem card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) 
   card_image_le.trans_eq <| card_product _ _
 
 theorem card_image₂_iff :
-    #(image₂ f s t) = #s * #t ↔ (s ×ˢ t : Set (α × β)).InjOn fun x => f x.1 x.2 := by
+    #(image₂ f s t) = #s * #t ↔ (s ×ˢ t : Set (α × β)).InjOn fun x ↦ f x.1 x.2 := by
   rw [← card_product, ← coe_product]
   exact card_image_iff
 
@@ -126,11 +126,11 @@ theorem image₂_eq_empty_iff : image₂ f s t = ∅ ↔ s = ∅ ∨ t = ∅ := 
 
 @[simp]
 theorem image₂_singleton_left : image₂ f {a} t = t.image fun b ↦ f a b :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 @[simp]
 theorem image₂_singleton_right : image₂ f s {b} = s.image fun a ↦ f a b :=
-  ext fun x => by simp
+  ext fun x ↦ by simp
 
 theorem image₂_singleton_left' : image₂ f {a} t = t.image (f a) :=
   image₂_singleton_left

@@ -381,7 +381,7 @@ theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
     fderiv 𝕜 f ⁻¹' s =
       { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ s } ∪
         { x | ¬DifferentiableAt 𝕜 f x } ∩ { _x | (0 : E →L[𝕜] F) ∈ s } :=
-    Set.ext fun x => mem_preimage.trans fderiv_mem_iff
+    Set.ext fun x ↦ mem_preimage.trans fderiv_mem_iff
   rw [this]
   exact
     (measurableSet_of_differentiableAt_of_isComplete _ _ hs.isComplete).union
@@ -389,7 +389,7 @@ theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
 
 @[measurability, fun_prop]
 theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E) :
-    Measurable fun x => fderiv 𝕜 f x y :=
+    Measurable fun x ↦ fderiv 𝕜 f x y :=
   (ContinuousLinearMap.measurable_apply y).comp (measurable_fderiv 𝕜 f)
 
 variable {𝕜}
@@ -709,13 +709,13 @@ theorem measurableSet_of_differentiableWithinAt_Ici :
 
 @[measurability, fun_prop]
 theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
-    Measurable fun x => derivWithin f (Ici x) x := by
+    Measurable fun x ↦ derivWithin f (Ici x) x := by
   refine measurable_of_isClosed fun s hs => ?_
   have :
-    (fun x => derivWithin f (Ici x) x) ⁻¹' s =
+    (fun x ↦ derivWithin f (Ici x) x) ⁻¹' s =
       { x | DifferentiableWithinAt ℝ f (Ici x) x ∧ derivWithin f (Ici x) x ∈ s } ∪
         { x | ¬DifferentiableWithinAt ℝ f (Ici x) x } ∩ { _x | (0 : F) ∈ s } :=
-    Set.ext fun x => mem_preimage.trans derivWithin_mem_iff
+    Set.ext fun x ↦ mem_preimage.trans derivWithin_mem_iff
   rw [this]
   exact
     (measurableSet_of_differentiableWithinAt_Ici_of_isComplete _ hs.isComplete).union
@@ -742,11 +742,11 @@ theorem stronglyMeasurable_derivWithin_Ici :
       exact closure_mono (inter_subset_inter_left _ Ioi_subset_Ici_self)
 
 theorem aemeasurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
-    AEMeasurable (fun x => derivWithin f (Ici x) x) μ :=
+    AEMeasurable (fun x ↦ derivWithin f (Ici x) x) μ :=
   (measurable_derivWithin_Ici f).aemeasurable
 
 theorem aestronglyMeasurable_derivWithin_Ici (μ : Measure ℝ) :
-    AEStronglyMeasurable (fun x => derivWithin f (Ici x) x) μ :=
+    AEStronglyMeasurable (fun x ↦ derivWithin f (Ici x) x) μ :=
   (stronglyMeasurable_derivWithin_Ici f).aestronglyMeasurable
 
 /-- The set of right differentiability points of a function taking values in a complete space is
@@ -757,7 +757,7 @@ theorem measurableSet_of_differentiableWithinAt_Ioi :
 
 @[measurability, fun_prop]
 theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
-    Measurable fun x => derivWithin f (Ioi x) x := by
+    Measurable fun x ↦ derivWithin f (Ioi x) x := by
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f
 
 theorem stronglyMeasurable_derivWithin_Ioi :
@@ -765,11 +765,11 @@ theorem stronglyMeasurable_derivWithin_Ioi :
   simpa [derivWithin_Ioi_eq_Ici] using stronglyMeasurable_derivWithin_Ici f
 
 theorem aemeasurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] (μ : Measure ℝ) :
-    AEMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
+    AEMeasurable (fun x ↦ derivWithin f (Ioi x) x) μ :=
   (measurable_derivWithin_Ioi f).aemeasurable
 
 theorem aestronglyMeasurable_derivWithin_Ioi (μ : Measure ℝ) :
-    AEStronglyMeasurable (fun x => derivWithin f (Ioi x) x) μ :=
+    AEStronglyMeasurable (fun x ↦ derivWithin f (Ioi x) x) μ :=
   (stronglyMeasurable_derivWithin_Ioi f).aestronglyMeasurable
 
 end RightDeriv

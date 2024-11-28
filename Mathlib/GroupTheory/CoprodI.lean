@@ -180,7 +180,7 @@ theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) 
   lift_comp_of' (.id _)
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
-    Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
+    Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x ↦ by
   simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
 
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by

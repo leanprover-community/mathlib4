@@ -152,7 +152,7 @@ theorem mapEquiv_symm (g : P ≃ₐ[R] P') :
 
 @[simp]
 theorem mapEquiv_refl : mapEquiv AlgEquiv.refl = RingEquiv.refl (FractionalIdeal S P) :=
-  RingEquiv.ext fun x => by simp
+  RingEquiv.ext fun x ↦ by simp
 
 theorem isFractional_span_iff {s : Set P} :
     IsFractional S (span R s) ↔ ∃ a ∈ S, ∀ b : P, b ∈ s → IsInteger R (a • b) :=
@@ -224,7 +224,7 @@ theorem mem_canonicalEquiv_apply {I : FractionalIdeal S P} {x : P'} :
 @[simp]
 theorem canonicalEquiv_symm : (canonicalEquiv S P P').symm = canonicalEquiv S P' P :=
   RingEquiv.ext fun I =>
-    SetLike.ext_iff.mpr fun x => by
+    SetLike.ext_iff.mpr fun x ↦ by
       rw [mem_canonicalEquiv_apply, canonicalEquiv, mapEquiv_symm, mapEquiv_apply,
         mem_map]
       exact ⟨fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩, fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩⟩
@@ -751,7 +751,7 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
   refine
     ⟨a_inv,
       Submodule.comap (Algebra.linearMap R₁ K) ↑(spanSingleton R₁⁰ (algebraMap R₁ K a_inv) * I),
-      nonzero, ext fun x => Iff.trans ⟨?_, ?_⟩ mem_singleton_mul.symm⟩
+      nonzero, ext fun x ↦ Iff.trans ⟨?_, ?_⟩ mem_singleton_mul.symm⟩
   · intro hx
     obtain ⟨x', hx'⟩ := ha x hx
     rw [Algebra.smul_def] at hx'

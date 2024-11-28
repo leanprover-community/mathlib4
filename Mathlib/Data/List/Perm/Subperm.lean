@@ -67,7 +67,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
       exact h₂.resolve_left fun e ↦ h₁ <| e.symm ▸ bm
     rcases append_of_mem bm with ⟨t₁, t₂, rfl⟩
     have st : t₁ ++ t₂ <+ t₁ ++ b :: t₂ := by simp
-    rcases ih (d₁.sublist st) (mt (fun x => st.subset x) h₁) am
+    rcases ih (d₁.sublist st) (mt (fun x ↦ st.subset x) h₁) am
         (Perm.cons_inv <| p.trans perm_middle) with
       ⟨t, p', s'⟩
     exact

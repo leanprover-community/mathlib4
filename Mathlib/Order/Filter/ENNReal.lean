@@ -34,8 +34,8 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
   let g := fun x : ℝ≥0∞ => a * x
   have hg_bij : Function.Bijective g :=
     Function.bijective_iff_has_inverse.mpr
-      ⟨fun x => a⁻¹ * x,
-        ⟨fun x => by simp [g, ← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x => by
+      ⟨fun x ↦ a⁻¹ * x,
+        ⟨fun x ↦ by simp [g, ← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x ↦ by
           simp [g, ← mul_assoc, ENNReal.mul_inv_cancel ha_zero ha_top]⟩⟩
   have hg_mono : StrictMono g :=
     Monotone.strictMono_of_injective (fun _ _ _ => by rwa [mul_le_mul_left ha_zero ha_top]) hg_bij.1
@@ -66,7 +66,7 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u * v) ≤ f.limsup u * f.limsup v :=
   calc
-    f.limsup (u * v) ≤ f.limsup fun x => f.limsup u * v x := by
+    f.limsup (u * v) ≤ f.limsup fun x ↦ f.limsup u * v x := by
       refine limsup_le_limsup ?_
       filter_upwards [@eventually_le_limsup _ f _ u] with x hx using mul_le_mul' hx le_rfl
     _ = f.limsup u * f.limsup v := limsup_const_mul

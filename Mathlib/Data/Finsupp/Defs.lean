@@ -956,7 +956,7 @@ instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x ↦ add_left_cancel <| DFunLike.congr_fun h x
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
@@ -977,7 +977,7 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
   simp [AddEquiv.finsuppUnique]
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x ↦ add_right_cancel <| DFunLike.congr_fun h x
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
@@ -1154,7 +1154,7 @@ verify `f (single a 1) = g (single a 1)`. -/
 @[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  addHom_ext fun x => DFunLike.congr_fun (H x)
+  addHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
@@ -1172,7 +1172,7 @@ theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
     (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
               g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
     f = g :=
-  mulHom_ext fun x => DFunLike.congr_fun (H x)
+  mulHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : α →₀ M) :

@@ -87,7 +87,7 @@ variable {β : Type*} {g : β → β} {h : β → α}
 open Function
 
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
-    h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
+    h ∘ g^[n] ≤ f^[n] ∘ h := fun x ↦ by
   apply hf.seq_le_seq n <;> intros <;>
     simp [iterate_succ', -iterate_succ, comp_apply, id_eq, le_refl]
   case hx => exact H _

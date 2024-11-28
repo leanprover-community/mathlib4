@@ -110,7 +110,7 @@ theorem Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ N
   ⟨r.numeric_imp, r.symm.numeric_imp⟩
 
 theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by
-  refine numeric_rec (C := fun x => ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
+  refine numeric_rec (C := fun x ↦ ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
     (fun xl xr xL xR hx _oxl _oxr IHxl IHxr => ?_) x ox y oy
   refine numeric_rec fun yl yr yL yR hy oyl oyr _IHyl _IHyr => ?_
   rw [mk_lf_mk, mk_lf_mk]; rintro (⟨i, h₁⟩ | ⟨j, h₁⟩) (⟨i, h₂⟩ | ⟨j, h₂⟩)

@@ -118,7 +118,7 @@ theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : 
     ⟨fun hf u hu => hf.comp hu, fun h =>
       ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 ?_⟩
   rintro s ⟨hbs, hsc⟩
-  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
+  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x ↦ mt fun hx => subset_closure hx⟩
   rw [← seqClosure_eq_closure]
   rintro ⟨u, hus, hu⟩
   exact hsc.mem_of_tendsto (h u hu) (Eventually.of_forall hus)

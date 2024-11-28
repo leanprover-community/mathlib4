@@ -82,7 +82,7 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
     constructor
     · intro H ι s hs
       obtain ⟨t, ht, ht'⟩ := H (Set.range s) hs
-      have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
+      have : ∀ x : t, ∃ i, s i = x := fun x ↦ ht x.prop
       choose f hf using this
       refine ⟨Finset.univ.image f, ht'.trans ?_⟩
       rw [Finset.sup_le_iff]
@@ -364,7 +364,7 @@ theorem sSup_compact_le_eq (b) :
 
 @[simp]
 theorem sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a } = ⊤ := by
-  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_compact_le_eq ⊤)
+  refine Eq.trans (congr rfl (Set.ext fun x ↦ ?_)) (sSup_compact_le_eq ⊤)
   exact (and_iff_left le_top).symm
 
 theorem le_iff_compact_le_imp {a b : α} :
@@ -509,7 +509,7 @@ theorem isCompactlyGenerated_of_wellFoundedGT [h : WellFoundedGT α] :
     IsCompactlyGenerated α := by
   rw [wellFoundedGT_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
   -- x is the join of the set of compact elements {x}
-  exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
+  exact ⟨fun x ↦ ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
 
 @[deprecated (since := "2024-10-07")]
 alias WellFounded.isSupFiniteCompact := WellFoundedGT.isSupFiniteCompact

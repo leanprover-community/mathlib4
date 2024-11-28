@@ -62,7 +62,7 @@ namespace WittVector
 
 /-- `f : α → β` induces a map from `𝕎 α` to `𝕎 β` by applying `f` componentwise.
 If `f` is a ring homomorphism, then so is `f`, see `WittVector.map f`. -/
-def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff)
+def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x ↦ mk _ (f ∘ x.coeff)
 
 namespace mapFun
 
@@ -70,7 +70,7 @@ namespace mapFun
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
   intros _ _ h
   ext p
-  exact hf (congr_arg (fun x => coeff x p) h : _)
+  exact hf (congr_arg (fun x ↦ coeff x p) h : _)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,

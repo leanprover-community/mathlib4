@@ -236,7 +236,7 @@ instance base_change [FormallyUnramified R A] :
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
   · subsingleton
-  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x ↦ AlgHom.congr_fun e (1 ⊗ₜ x)
 
 end BaseChange
 

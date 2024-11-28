@@ -169,7 +169,7 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   intro M _i1 _i2 _i3 _i4 h'
   letI : LieRingModule L M := LieRingModule.compLieHom M f
   letI : LieModule R L M := compLieHom M f
-  have hnp : ∀ x, IsNilpotent (toEnd R L M x) := fun x => h' (f x)
+  have hnp : ∀ x, IsNilpotent (toEnd R L M x) := fun x ↦ h' (f x)
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent R L M := h M hnp
   apply hf.lieModuleIsNilpotent surj_id
@@ -207,7 +207,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
     (LieSubalgebra.equivOfLe hKK').trans
       (LieEquiv.ofEq _ _ ((LieSubalgebra.coe_set_eq _ _).mpr hI₁.symm))
   have hI₃ : LieAlgebra.IsEngelian R I := e.isEngelian_iff.mp hK₁
-  exact LieSubmodule.isNilpotentOfIsNilpotentSpanSupEqTop hI₂ (h _) (hI₃ _ fun x => h x)
+  exact LieSubmodule.isNilpotentOfIsNilpotentSpanSupEqTop hI₂ (h _) (hI₃ _ fun x ↦ h x)
 
 attribute [local instance] LieSubalgebra.subsingleton_bot
 
@@ -243,7 +243,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
           K.coe_to_submodule_eq_iff]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
-      -- Porting note: was refine' hK₁ _ fun x => _
+      -- Porting note: was refine' hK₁ _ fun x ↦ _
       apply hK₁
       intro x
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)

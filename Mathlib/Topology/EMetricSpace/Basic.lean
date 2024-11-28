@@ -213,7 +213,7 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
-  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
+  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x ↦ ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 
@@ -226,7 +226,7 @@ theorem secondCountable_of_almost_dense_set
   have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε := by
     simpa only [univ_subset_iff] using hs
   rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
-  exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
+  exact ⟨⟨t, htc, fun x ↦ ht (mem_univ x)⟩⟩
 
 end SecondCountable
 

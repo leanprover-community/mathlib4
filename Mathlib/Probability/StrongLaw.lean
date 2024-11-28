@@ -173,7 +173,7 @@ theorem integral_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasur
 theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 0 ≤ f) {A : ℝ} :
     ∫ x, truncation f A x ∂μ ≤ ∫ x, f x ∂μ := by
   apply integral_mono_of_nonneg
-    (Eventually.of_forall fun x => ?_) hf (Eventually.of_forall fun x => ?_)
+    (Eventually.of_forall fun x ↦ ?_) hf (Eventually.of_forall fun x ↦ ?_)
   · exact truncation_nonneg _ (h'f x)
   · calc
       truncation f A x ≤ |truncation f A x| := le_abs_self _
@@ -184,7 +184,7 @@ theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 
 integral of the whole function. -/
 theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     Tendsto (fun A => ∫ x, truncation f A x ∂μ) atTop (𝓝 (∫ x, f x ∂μ)) := by
-  refine tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) ?_ ?_ ?_ ?_
+  refine tendsto_integral_filter_of_dominated_convergence (fun x ↦ abs (f x)) ?_ ?_ ?_ ?_
   · exact Eventually.of_forall fun A ↦ hf.aestronglyMeasurable.truncation
   · filter_upwards with A
     filter_upwards with x
@@ -312,7 +312,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
   let ρ : Measure ℝ := Measure.map X ℙ
   have Y2 : ∀ n, 𝔼[Y n ^ 2] = ∫ x in (0)..n, x ^ 2 ∂ρ := by
     intro n
-    change 𝔼[fun x => Y n x ^ 2] = _
+    change 𝔼[fun x ↦ Y n x ^ 2] = _
     rw [moment_truncation_eq_intervalIntegral_of_nonneg hint.1 two_ne_zero hnonneg]
   calc
     ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * 𝔼[Y j ^ 2] =
@@ -620,8 +620,8 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
     hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
   -- then consider separately the positive and the negative part, and apply the result
   -- for nonnegative functions to them.
-  let pos : ℝ → ℝ := fun x => max x 0
-  let neg : ℝ → ℝ := fun x => max (-x) 0
+  let pos : ℝ → ℝ := fun x ↦ max x 0
+  let neg : ℝ → ℝ := fun x ↦ max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
   have negm : Measurable neg := measurable_id'.neg.max measurable_const
   have A : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (pos ∘ X i) ω) / n) atTop (𝓝 𝔼[pos ∘ X 0]) :=

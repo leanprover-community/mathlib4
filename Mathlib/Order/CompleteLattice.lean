@@ -788,7 +788,7 @@ theorem Antitone.le_map_sInf [CompleteLattice β] {s : Set α} {f : α → β} (
 theorem OrderIso.map_iSup [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨆ i, x i) = ⨆ i, f (x i) :=
   eq_of_forall_ge_iff <| f.surjective.forall.2
-  fun x => by simp only [f.le_iff_le, iSup_le_iff]
+  fun x ↦ by simp only [f.le_iff_le, iSup_le_iff]
 
 theorem OrderIso.map_iInf [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨅ i, x i) = ⨅ i, f (x i) :=
@@ -810,11 +810,11 @@ theorem le_iInf_comp {ι' : Sort*} (f : ι' → α) (g : ι → ι') : ⨅ y, f 
 
 theorem Monotone.iSup_comp_eq [Preorder β] {f : β → α} (hf : Monotone f) {s : ι → β}
     (hs : ∀ x, ∃ i, x ≤ s i) : ⨆ x, f (s x) = ⨆ y, f y :=
-  le_antisymm (iSup_comp_le _ _) (iSup_mono' fun x => (hs x).imp fun _ hi => hf hi)
+  le_antisymm (iSup_comp_le _ _) (iSup_mono' fun x ↦ (hs x).imp fun _ hi => hf hi)
 
 theorem Monotone.iInf_comp_eq [Preorder β] {f : β → α} (hf : Monotone f) {s : ι → β}
     (hs : ∀ x, ∃ i, s i ≤ x) : ⨅ x, f (s x) = ⨅ y, f y :=
-  le_antisymm (iInf_mono' fun x => (hs x).imp fun _ hi => hf hi) (le_iInf_comp _ _)
+  le_antisymm (iInf_mono' fun x ↦ (hs x).imp fun _ hi => hf hi) (le_iInf_comp _ _)
 
 theorem Antitone.map_iSup_le [CompleteLattice β] {f : α → β} (hf : Antitone f) :
     f (iSup s) ≤ ⨅ i, f (s i) :=
@@ -990,11 +990,11 @@ theorem iInf_subtype : ∀ {p : ι → Prop} {f : Subtype p → α}, iInf f = �
 
 theorem iSup_subtype' {p : ι → Prop} {f : ∀ i, p i → α} :
     ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
-  (@iSup_subtype _ _ _ p fun x => f x.val x.property).symm
+  (@iSup_subtype _ _ _ p fun x ↦ f x.val x.property).symm
 
 theorem iInf_subtype' {p : ι → Prop} {f : ∀ i, p i → α} :
     ⨅ (i) (h : p i), f i h = ⨅ x : Subtype p, f x x.property :=
-  (@iInf_subtype _ _ _ p fun x => f x.val x.property).symm
+  (@iInf_subtype _ _ _ p fun x ↦ f x.val x.property).symm
 
 theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
   iSup_subtype
@@ -1244,11 +1244,11 @@ theorem iInf_le_iInf_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨅ 
 
 theorem iSup_insert {f : β → α} {s : Set β} {b : β} :
     ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x :=
-  Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
+  Eq.trans iSup_union <| congr_arg (fun x ↦ x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
 
 theorem iInf_insert {f : β → α} {s : Set β} {b : β} :
     ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x :=
-  Eq.trans iInf_union <| congr_arg (fun x => x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
+  Eq.trans iInf_union <| congr_arg (fun x ↦ x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
 
 theorem iSup_singleton {f : β → α} {b : β} : ⨆ x ∈ (singleton b : Set β), f x = f b := by simp
 
@@ -1308,11 +1308,11 @@ theorem inf_eq_iInf (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y :=
 
 theorem isGLB_biInf {s : Set β} {f : β → α} : IsGLB (f '' s) (⨅ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, iInf_subtype'] using
-    @isGLB_iInf α s _ (f ∘ fun x => (x : β))
+    @isGLB_iInf α s _ (f ∘ fun x ↦ (x : β))
 
 theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using
-    @isLUB_iSup α s _ (f ∘ fun x => (x : β))
+    @isLUB_iSup α s _ (f ∘ fun x ↦ (x : β))
 
 theorem iSup_sigma {p : β → Type*} {f : Sigma p → α} : ⨆ x, f x = ⨆ (i) (j), f ⟨i, j⟩ :=
   eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, Sigma.forall]

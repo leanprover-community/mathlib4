@@ -110,7 +110,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       simp only [AlgHom.coe_coe]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       simp only [MonoidHom.toFun_eq_coe]
       generalize_proofs _ _ h
       have key := hζ.autToPow_spec K ((hζ.powerBasis K).equivOfMinpoly ((hμ x).powerBasis K) h)

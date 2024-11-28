@@ -185,7 +185,7 @@ nonrec theorem map_id (f : Ultrafilter α) : f.map id = f :=
   coe_injective map_id
 
 @[simp]
-theorem map_id' (f : Ultrafilter α) : (f.map fun x => x) = f :=
+theorem map_id' (f : Ultrafilter α) : (f.map fun x ↦ x) = f :=
   map_id _
 
 @[simp]
@@ -276,7 +276,7 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
 /-- Monadic bind for ultrafilters, coming from the one on filters
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
-  ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
+  ofComplNotMemIff (Filter.bind ↑f fun x ↦ ↑(m x)) fun s => by
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
 
 instance instBind : Bind Ultrafilter :=

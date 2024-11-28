@@ -32,7 +32,7 @@ theorem hasDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^
 open scoped Topology
 
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
+    Tendsto (fun x ↦ abs (tan x)) (𝓝[≠] x) atTop := by
   simp only [tan_eq_sin_div_cos, ← norm_eq_abs, norm_div]
   have A : sin x ≠ 0 := fun h ↦ by simpa [*, sq] using sin_sq_add_cos_sq x
   have B : Tendsto cos (𝓝[≠] x) (𝓝[≠] 0) :=
@@ -41,7 +41,7 @@ theorem tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
     (tendsto_norm_nhdsWithin_zero.comp B).inv_tendsto_zero
 
 theorem tendsto_abs_tan_atTop (k : ℤ) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
+    Tendsto (fun x ↦ abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 
 @[simp]

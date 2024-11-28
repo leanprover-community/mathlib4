@@ -60,7 +60,7 @@ def swapFactorsAux :
       (∀ {x}, f x ≠ x → x ∈ l) → { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g }
   | [] => fun f h =>
     ⟨[],
-      Equiv.ext fun x => by
+      Equiv.ext fun x ↦ by
         rw [List.prod_nil]
         exact (Classical.not_not.1 (mt h (List.not_mem_nil _))).symm,
       by simp⟩
@@ -361,7 +361,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
     ← signAux_eq_signAux2 _ _ (e.trans e') fun _ _ => hs _]
   exact congr_arg signAux
-    (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply])
+    (Equiv.ext fun x ↦ by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply])
 
 /-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from

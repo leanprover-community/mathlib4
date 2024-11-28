@@ -200,7 +200,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
-    { app := fun x => yonedaEquiv.symm x.unop.2
+    { app := fun x ↦ yonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
         rw [comp_id, ← yonedaEquiv_symm_map]
@@ -404,7 +404,7 @@ a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is the
 determined by `φ`. -/
 noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type v₁) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
-    (Cocone.mk _ { app := fun x => coconeApp φ x.unop })
+    (Cocone.mk _ { app := fun x ↦ coconeApp φ x.unop })
 
 lemma yonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type v₁) {X : C} (f : yoneda.obj X ⟶ P) :
     yonedaEquiv (f ≫ presheafHom φ P) =

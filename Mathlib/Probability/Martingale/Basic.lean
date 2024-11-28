@@ -241,10 +241,10 @@ protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (h
   refine EventuallyLE.sup_le ?_ ?_
   · exact EventuallyLE.trans (hf.2.1 i j hij)
       (condexp_mono (hf.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
-        (Eventually.of_forall fun x => le_max_left _ _))
+        (Eventually.of_forall fun x ↦ le_max_left _ _))
   · exact EventuallyLE.trans (hg.2.1 i j hij)
       (condexp_mono (hg.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
-        (Eventually.of_forall fun x => le_max_right _ _))
+        (Eventually.of_forall fun x ↦ le_max_right _ _))
 
 protected theorem pos {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) : Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale

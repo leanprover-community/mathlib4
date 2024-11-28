@@ -632,10 +632,10 @@ noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom 
   { map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) with
     toFun := map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H))
     invFun := map S (h.symm : P →+* R) (T.le_comap_of_map_le (le_of_eq H'))
-    left_inv := fun x => by
+    left_inv := fun x ↦ by
       rw [map_map, map_unique _ (RingHom.id _), RingHom.id_apply]
       simp
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       rw [map_map, map_unique _ (RingHom.id _), RingHom.id_apply]
       simp }
 

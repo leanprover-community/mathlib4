@@ -574,7 +574,7 @@ def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     (∏ᶜ fun i => ∏ᶜ g i) ≅ (∏ᶜ fun p : Σ i, f i => g p.1 p.2) where
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
-  inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
+  inv := Pi.lift fun i => Pi.lift fun x ↦ Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
 #adaptation_note /-- nightly-2024-04-01
 The last proof was previously by `aesop_cat`. -/
@@ -594,7 +594,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
 def sigmaSigmaIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
-  hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
+  hom := Sigma.desc fun i => Sigma.desc fun x ↦ Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
   inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i => ∐ g i) i
 
 section Comparison

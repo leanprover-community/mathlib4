@@ -1403,7 +1403,7 @@ then we can substitute `u = f x` to get `∫ x in a..b, f' x • (g ∘ f) x = �
 theorem integral_comp_smul_deriv''' {f f' : ℝ → ℝ} {g : ℝ → G} (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g (f '' Ioo (min a b) (max a b))) (hg1 : IntegrableOn g (f '' [[a, b]]))
-    (hg2 : IntegrableOn (fun x => f' x • (g ∘ f) x) [[a, b]]) :
+    (hg2 : IntegrableOn (fun x ↦ f' x • (g ∘ f) x) [[a, b]]) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
   by_cases hG : CompleteSpace G; swap
   · simp [intervalIntegral, integral, hG]
@@ -1508,9 +1508,9 @@ theorem integral_comp_mul_deriv''' {a b : ℝ} {f f' : ℝ → ℝ} {g : ℝ →
     (hf : ContinuousOn f [[a, b]])
     (hff' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g (f '' Ioo (min a b) (max a b))) (hg1 : IntegrableOn g (f '' [[a, b]]))
-    (hg2 : IntegrableOn (fun x => (g ∘ f) x * f' x) [[a, b]]) :
+    (hg2 : IntegrableOn (fun x ↦ (g ∘ f) x * f' x) [[a, b]]) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ u in f a..f b, g u := by
-  have hg2' : IntegrableOn (fun x => f' x • (g ∘ f) x) [[a, b]] := by simpa [mul_comm] using hg2
+  have hg2' : IntegrableOn (fun x ↦ f' x • (g ∘ f) x) [[a, b]] := by simpa [mul_comm] using hg2
   simpa [mul_comm] using integral_comp_smul_deriv''' hf hff' hg_cont hg1 hg2'
 
 /-- Change of variables for continuous integrands. If `f` is continuous on `[a, b]` and has

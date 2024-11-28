@@ -95,7 +95,7 @@ variable (R R') in
 the value `1` on units. -/
 @[simps]
 noncomputable def trivial : MulChar R R' where
-  toFun := by classical exact fun x => if IsUnit x then 1 else 0
+  toFun := by classical exact fun x ↦ if IsUnit x then 1 else 0
   map_nonunit' := by
     intro a ha
     simp only [ha, if_false]
@@ -152,7 +152,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 
 /-- Turn a homomorphism between unit groups into a `MulChar`. -/
 noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
-  toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
+  toFun := by classical exact fun x ↦ if hx : IsUnit x then f hx.unit else 0
   map_one' := by
     have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.eq_iff.mp rfl
     simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]

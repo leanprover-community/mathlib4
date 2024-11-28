@@ -116,7 +116,7 @@ theorem proj_continuous : Continuous S.proj :=
   S.proj_isQuotientMap.continuous
 
 instance : DiscreteTopology S :=
-  singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
+  singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x ↦ by
     rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
@@ -137,7 +137,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   apply isClopen_preimage
 
 instance : Min (DiscreteQuotient X) :=
-  ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
+  ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x ↦ (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
   Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
@@ -222,7 +222,7 @@ end OfLE
 instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
-      isOpen_setOf_rel := fun x => by
+      isOpen_setOf_rel := fun x ↦ by
         convert isOpen_connectedComponent (x := x)
         ext y
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }

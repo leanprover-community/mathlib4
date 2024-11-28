@@ -50,7 +50,7 @@ instance fintypesUnion [DecidableEq α] {s : Set (Set α)} [Fintype s]
 lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
     [∀ w, Fintype (f w)] :
     Set.toFinset (⋃ (x : β), f x) =
-    Finset.biUnion (Finset.univ : Finset β) (fun x => (f x).toFinset) := by
+    Finset.biUnion (Finset.univ : Finset β) (fun x ↦ (f x).toFinset) := by
   ext v
   simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
 
@@ -188,7 +188,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
       I.Finite ∧
         ∃ σ : { i | i ∈ I } → Set α, (∀ i, (σ i).Finite) ∧ (∀ i, σ i ⊆ s i) ∧ t = ⋃ i, σ i :=
   let ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
-  ⟨I, Ifin, fun x => s x ∩ t, fun _ => tfin.subset inter_subset_right, fun _ =>
+  ⟨I, Ifin, fun x ↦ s x ∩ t, fun _ => tfin.subset inter_subset_right, fun _ =>
     inter_subset_left, by
     ext x
     rw [mem_iUnion]

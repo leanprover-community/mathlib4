@@ -165,7 +165,7 @@ theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
-  exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact lintegral_congr fun x ↦ tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     μ.withDensity (s.indicator f) = (μ.restrict s).withDensity f := by
@@ -178,8 +178,8 @@ theorem withDensity_indicator_one {s : Set α} (hs : MeasurableSet s) :
   rw [withDensity_indicator hs, withDensity_one]
 
 theorem withDensity_ofReal_mutuallySingular {f : α → ℝ} (hf : Measurable f) :
-    (μ.withDensity fun x => ENNReal.ofReal <| f x) ⟂ₘ
-      μ.withDensity fun x => ENNReal.ofReal <| -f x := by
+    (μ.withDensity fun x ↦ ENNReal.ofReal <| f x) ⟂ₘ
+      μ.withDensity fun x ↦ ENNReal.ofReal <| -f x := by
   set S : Set α := { x | f x < 0 }
   have hS : MeasurableSet S := measurableSet_lt hf measurable_const
   refine ⟨S, hS, ?_, ?_⟩
@@ -299,14 +299,14 @@ theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞}
 
 theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} :
-    AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
-      AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
+    AEMeasurable g (μ.withDensity fun x ↦ (f x : ℝ≥0∞)) ↔
+      AEMeasurable (fun x ↦ (f x : ℝ≥0∞) * g x) μ := by
   have t : ∃ f', Measurable f' ∧ f =ᵐ[μ] f' := hf
   rcases t with ⟨f', hf'_m, hf'_ae⟩
   constructor
   · rintro ⟨g', g'meas, hg'⟩
     have A : MeasurableSet {x | f' x ≠ 0} := hf'_m (measurableSet_singleton _).compl
-    refine ⟨fun x => f' x * g' x, hf'_m.coe_nnreal_ennreal.smul g'meas, ?_⟩
+    refine ⟨fun x ↦ f' x * g' x, hf'_m.coe_nnreal_ennreal.smul g'meas, ?_⟩
     apply ae_of_ae_restrict_of_ae_restrict_compl { x | f' x ≠ 0 }
     · rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnreal_ennreal] at hg'
       rw [ae_restrict_iff' A]
@@ -321,15 +321,15 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]
   · rintro ⟨g', g'meas, hg'⟩
-    refine ⟨fun x => ((f' x)⁻¹ : ℝ≥0∞) * g' x, hf'_m.coe_nnreal_ennreal.inv.smul g'meas, ?_⟩
+    refine ⟨fun x ↦ ((f' x)⁻¹ : ℝ≥0∞) * g' x, hf'_m.coe_nnreal_ennreal.inv.smul g'meas, ?_⟩
     rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnreal_ennreal]
     filter_upwards [hg', hf'_ae] with a hfga hff'a h'a
     rw [hff'a] at hfga h'a
     rw [← hfga, ← mul_assoc, ENNReal.inv_mul_cancel h'a ENNReal.coe_ne_top, one_mul]
 
 theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
-    AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
-      AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
+    AEMeasurable g (μ.withDensity fun x ↦ (f x : ℝ≥0∞)) ↔
+      AEMeasurable (fun x ↦ (f x : ℝ≥0∞) * g x) μ :=
   aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
 
 open MeasureTheory.SimpleFunc
@@ -428,7 +428,7 @@ theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
   refine iSup₂_le fun i i_meas => iSup_le fun hi => ?_
-  have A : f * i ≤ f * g := fun x => mul_le_mul_left' (hi x) _
+  have A : f * i ≤ f * g := fun x ↦ mul_le_mul_left' (hi x) _
   refine le_iSup₂_of_le (f * i) (f_meas.mul i_meas) ?_
   exact le_iSup_of_le A (le_of_eq (lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas))
 
@@ -438,12 +438,12 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) 
   refine le_antisymm (lintegral_withDensity_le_lintegral_mul μ f_meas g) ?_
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
   refine iSup₂_le fun i i_meas => iSup_le fun hi => ?_
-  have A : (fun x => (f x)⁻¹ * i x) ≤ g := by
+  have A : (fun x ↦ (f x)⁻¹ * i x) ≤ g := by
     intro x
     dsimp
     rw [mul_comm, ← div_eq_mul_inv]
     exact div_le_of_le_mul' (hi x)
-  refine le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.inv.mul i_meas) ?_)
+  refine le_iSup_of_le (fun x ↦ (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.inv.mul i_meas) ?_)
   refine le_iSup_of_le A ?_
   rw [lintegral_withDensity_eq_lintegral_mul _ f_meas (f_meas.inv.mul i_meas)]
   apply lintegral_mono_ae

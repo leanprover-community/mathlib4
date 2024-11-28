@@ -77,7 +77,7 @@ theorem permutationsAux2_append (t : α) (ts : List α) (r : List β) (ys : List
 
 /-- The `ts` argument to `permutationsAux2` can be folded into the `f` argument. -/
 theorem permutationsAux2_comp_append {t : α} {ts ys : List α} {r : List β} (f : List α → β) :
-    ((permutationsAux2 t [] r ys) fun x => f (x ++ ts)).2 = (permutationsAux2 t ts r ys f).2 := by
+    ((permutationsAux2 t [] r ys) fun x ↦ f (x ++ ts)).2 = (permutationsAux2 t ts r ys f).2 := by
   induction' ys with ys_hd _ ys_ih generalizing f
   · simp
   · simp [ys_ih fun xs => f (ys_hd :: xs)]
@@ -113,7 +113,7 @@ produced by inserting `t` into every non-terminal position of `ys` in order. As 
 -/
 theorem permutationsAux2_snd_eq (t : α) (ts : List α) (r : List β) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts r ys f).2 =
-      ((permutationsAux2 t [] [] ys id).2.map fun x => f (x ++ ts)) ++ r := by
+      ((permutationsAux2 t [] [] ys id).2.map fun x ↦ f (x ++ ts)) ++ r := by
   rw [← permutationsAux2_append, map_permutationsAux2, permutationsAux2_comp_append]
 
 theorem map_map_permutationsAux2 {α'} (g : α → α') (t : α) (ts ys : List α) :
@@ -330,7 +330,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     simp only [flatMap_map, permutations'Aux]
     show List.flatMap (permutations'Aux _ l) (fun a ↦ ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
-    refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
+    refine (flatMap_append_perm _ (fun x ↦ [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_flatMap, ← map_flatMap]
     exact Perm.refl _
   refine (((this _ _).append_left _).trans ?_).trans ((this _ _).append_left _).symm

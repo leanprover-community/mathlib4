@@ -71,7 +71,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
     OpenCover X := by
   have :=
     @CompactSpace.elim_nhds_subcover _ _ H (fun x : X => Set.range (𝒰.map (𝒰.f x)).base)
-      fun x => (IsOpenImmersion.isOpen_range (𝒰.map (𝒰.f x))).mem_nhds (𝒰.covers x)
+      fun x ↦ (IsOpenImmersion.isOpen_range (𝒰.map (𝒰.f x))).mem_nhds (𝒰.covers x)
   let t := this.choose
   have h : ∀ x : X, ∃ y : t, x ∈ Set.range (𝒰.map (𝒰.f y)).base := by
     intro x
@@ -81,10 +81,10 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
     exact ⟨⟨y, hy⟩, hy'⟩
   exact
     { J := t
-      obj := fun x => 𝒰.obj (𝒰.f x.1)
-      map := fun x => 𝒰.map (𝒰.f x.1)
-      f := fun x => (h x).choose
-      covers := fun x => (h x).choose_spec }
+      obj := fun x ↦ 𝒰.obj (𝒰.f x.1)
+      map := fun x ↦ 𝒰.map (𝒰.f x.1)
+      f := fun x ↦ (h x).choose
+      covers := fun x ↦ (h x).choose_spec }
 
 instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.J := by
   delta OpenCover.finiteSubcover; infer_instance

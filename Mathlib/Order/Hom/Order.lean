@@ -78,7 +78,7 @@ instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where
-  sInf s := ⟨fun x => ⨅ f ∈ s, (f : _) x, fun _ _ h => iInf₂_mono fun f _ => f.mono h⟩
+  sInf s := ⟨fun x ↦ ⨅ f ∈ s, (f : _) x, fun _ _ h => iInf₂_mono fun f _ => f.mono h⟩
 
 @[simp]
 theorem sInf_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
@@ -95,7 +95,7 @@ theorem coe_iInf {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
   funext x; simp [iInf_apply]
 
 instance [CompleteLattice β] : SupSet (α →o β) where
-  sSup s := ⟨fun x => ⨆ f ∈ s, (f : _) x, fun _ _ h => iSup₂_mono fun f _ => f.mono h⟩
+  sSup s := ⟨fun x ↦ ⨆ f ∈ s, (f : _) x, fun _ _ h => iSup₂_mono fun f _ => f.mono h⟩
 
 @[simp]
 theorem sSup_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :

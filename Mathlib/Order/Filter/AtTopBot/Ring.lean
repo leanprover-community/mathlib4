@@ -19,7 +19,7 @@ section OrderedSemiring
 variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
 
 theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x * g x) l atTop := by
+    Tendsto (fun x ↦ f x * g x) l atTop := by
   refine tendsto_atTop_mono' _ ?_ hg
   filter_upwards [hg.eventually (eventually_ge_atTop 0),
     hf.eventually (eventually_ge_atTop 1)] with _ using le_mul_of_one_le_left
@@ -43,21 +43,21 @@ section OrderedRing
 variable [OrderedRing α] {l : Filter β} {f g : β → α}
 
 theorem Tendsto.atTop_mul_atBot (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x * g x) l atBot := by
+    Tendsto (fun x ↦ f x * g x) l atBot := by
   have := hf.atTop_mul_atTop <| tendsto_neg_atBot_atTop.comp hg
   simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
 theorem Tendsto.atBot_mul_atTop (hf : Tendsto f l atBot) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x * g x) l atBot := by
-  have : Tendsto (fun x => -f x * g x) l atTop :=
+    Tendsto (fun x ↦ f x * g x) l atBot := by
+  have : Tendsto (fun x ↦ -f x * g x) l atTop :=
     (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop hg
   simpa only [Function.comp_def, neg_mul_eq_neg_mul, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
 theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x * g x) l atTop := by
-  have : Tendsto (fun x => -f x * -g x) l atTop :=
+    Tendsto (fun x ↦ f x * g x) l atTop := by
+  have : Tendsto (fun x ↦ -f x * -g x) l atTop :=
     (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop (tendsto_neg_atBot_atTop.comp hg)
   simpa only [neg_mul_neg] using this
 
@@ -67,12 +67,12 @@ section LinearOrderedSemiring
 
 variable [LinearOrderedSemiring α] {l : Filter β} {f : β → α}
 
-theorem Tendsto.atTop_of_const_mul {c : α} (hc : 0 < c) (hf : Tendsto (fun x => c * f x) l atTop) :
+theorem Tendsto.atTop_of_const_mul {c : α} (hc : 0 < c) (hf : Tendsto (fun x ↦ c * f x) l atTop) :
     Tendsto f l atTop :=
   tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (c * b)).mono
     fun _x hx => le_of_mul_le_mul_left hx hc
 
-theorem Tendsto.atTop_of_mul_const {c : α} (hc : 0 < c) (hf : Tendsto (fun x => f x * c) l atTop) :
+theorem Tendsto.atTop_of_mul_const {c : α} (hc : 0 < c) (hf : Tendsto (fun x ↦ f x * c) l atTop) :
     Tendsto f l atTop :=
   tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (b * c)).mono
     fun _x hx => le_of_mul_le_mul_right hx hc

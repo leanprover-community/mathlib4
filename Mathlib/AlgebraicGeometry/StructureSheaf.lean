@@ -109,7 +109,7 @@ theorem IsFraction.eq_mk' {U : Opens (PrimeSpectrum.Top R)} {f : ∀ x : U, Loca
             IsLocalization.mk' (Localization.AtPrime _) r
               (⟨s, hs⟩ : (x : PrimeSpectrum.Top R).asIdeal.primeCompl) := by
   rcases hf with ⟨r, s, h⟩
-  refine ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr ?_).symm⟩⟩
+  refine ⟨r, s, fun x ↦ ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr ?_).symm⟩⟩
   exact (h x).2.symm
 
 variable (R)
@@ -119,7 +119,7 @@ in the sense that if it holds on `U` it holds on any open subset `V` of `U`.
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations R) where
   pred {_} f := IsFraction f
-  res := by rintro V U i f ⟨r, s, w⟩; exact ⟨r, s, fun x => w (i x)⟩
+  res := by rintro V U i f ⟨r, s, w⟩; exact ⟨r, s, fun x ↦ w (i x)⟩
 
 /-- We will define the structure sheaf as
 the subsheaf of all dependent functions in `Π x : U, Localizations R x`
@@ -157,11 +157,11 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Subring (∀ x : U.unop, Localizations R x) where
   carrier := { f | (isLocallyFraction R).pred f }
   zero_mem' := by
-    refine fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
+    refine fun x ↦ ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
     · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
     · simp
   one_mem' := by
-    refine fun x => ⟨unop U, x.2, 𝟙 _, 1, 1, fun y => ⟨?_, ?_⟩⟩
+    refine fun x ↦ ⟨unop U, x.2, 𝟙 _, 1, 1, fun y => ⟨?_, ?_⟩⟩
     · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
     · simp
   add_mem' := by
@@ -295,7 +295,7 @@ In the square brackets we list the dependencies of a construction on the previou
 def const (f g : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, g ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
     (structureSheaf R).1.obj (op U) :=
-  ⟨fun x => IsLocalization.mk' _ f ⟨g, hu x x.2⟩, fun x =>
+  ⟨fun x ↦ IsLocalization.mk' _ f ⟨g, hu x x.2⟩, fun x =>
     ⟨U, x.2, 𝟙 _, f, g, fun y => ⟨hu y y.2, IsLocalization.mk'_spec _ _ _⟩⟩⟩
 
 @[simp]
@@ -330,7 +330,7 @@ theorem res_const' (f g : R) (V hv) :
   rfl
 
 theorem const_zero (f : R) (U hu) : const R 0 f U hu = 0 :=
-  Subtype.eq <| funext fun x => IsLocalization.mk'_eq_iff_eq_mul.2 <| by
+  Subtype.eq <| funext fun x ↦ IsLocalization.mk'_eq_iff_eq_mul.2 <| by
     rw [RingHom.map_zero]
     exact (mul_eq_zero_of_left rfl ((algebraMap R (Localizations R x)) _)).symm
 
@@ -344,7 +344,7 @@ theorem const_add (f₁ f₂ g₁ g₂ : R) (U hu₁ hu₂) :
     const R f₁ g₁ U hu₁ + const R f₂ g₂ U hu₂ =
       const R (f₁ * g₂ + f₂ * g₁) (g₁ * g₂) U fun x hx =>
         Submonoid.mul_mem _ (hu₁ x hx) (hu₂ x hx) :=
-  Subtype.eq <| funext fun x => Eq.symm <| IsLocalization.mk'_add _ _
+  Subtype.eq <| funext fun x ↦ Eq.symm <| IsLocalization.mk'_add _ _
     ⟨g₁, hu₁ x x.2⟩ ⟨g₂, hu₂ x x.2⟩
 
 theorem const_mul (f₁ f₂ g₁ g₂ : R) (U hu₁ hu₂) :

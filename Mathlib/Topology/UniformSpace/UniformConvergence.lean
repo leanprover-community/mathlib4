@@ -711,7 +711,7 @@ theorem tendstoLocallyUniformlyOn_iff_filter :
   constructor
   · rintro h x hx u hu
     obtain ⟨s, hs1, hs2⟩ := h u hu x hx
-    exact ⟨_, hs2, _, eventually_of_mem hs1 fun x => id, fun hi y hy => hi y hy⟩
+    exact ⟨_, hs2, _, eventually_of_mem hs1 fun x ↦ id, fun hi y hy => hi y hy⟩
   · rintro h u hu x hx
     obtain ⟨pa, hpa, pb, hpb, h⟩ := h x hx u hu
     exact ⟨pb, hpb, eventually_of_mem hpa fun i hi y hy => h hi hy⟩

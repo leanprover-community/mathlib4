@@ -305,7 +305,7 @@ section cast
 
 /-- Coercion of SL `n` `ℤ` to SL `n` `R` for a commutative ring `R`. -/
 instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
-  ⟨fun x => map (Int.castRingHom R) x⟩
+  ⟨fun x ↦ map (Int.castRingHom R) x⟩
 
 @[simp]
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :

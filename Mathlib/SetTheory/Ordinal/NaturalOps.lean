@@ -316,7 +316,7 @@ namespace NatOrdinal
 open Ordinal NaturalOps
 
 instance : Add NatOrdinal := ⟨nadd⟩
-instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
+instance : SuccAddOrder NatOrdinal := ⟨fun x ↦ (nadd_one x).symm⟩
 
 instance : AddLeftStrictMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩

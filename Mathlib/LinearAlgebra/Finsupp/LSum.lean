@@ -84,7 +84,7 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
   toFun F :=
     { toFun := fun d ↦ d.sum fun i => F i
-      map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
+      map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x ↦ (F x).toAddMonoidHom).map_add
       map_smul' := fun c f => by simp [sum_smul_index', smul_sum] }
   invFun F x := F.comp (lsingle x)
   left_inv F := by

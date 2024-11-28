@@ -103,7 +103,7 @@ isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconju
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
 theorem sSup_div_semiconj [CompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α) (g : G) :
-    Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
+    Function.Semiconj (fun x ↦ ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
   semiconj_of_isLUB f₁ f₂ (fun _ => isLUB_iSup) _
 
 /-- Consider two actions `f₁ f₂ : G → α → α` of a group on a conditionally complete lattice by order
@@ -114,7 +114,7 @@ This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphi
 cohomologie bornée][ghys87:groupes]. -/
 theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α)
     (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
-    Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
-  semiconj_of_isLUB f₁ f₂ (fun x => isLUB_csSup (range_nonempty _) (hbdd x)) _
+    Function.Semiconj (fun x ↦ ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
+  semiconj_of_isLUB f₁ f₂ (fun x ↦ isLUB_csSup (range_nonempty _) (hbdd x)) _
 
 end Function

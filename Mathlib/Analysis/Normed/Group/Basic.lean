@@ -888,11 +888,11 @@ section
 variable {l : Filter α} {f : α → E}
 
 @[to_additive Filter.Tendsto.norm]
-theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖) l (𝓝 ‖a‖) :=
+theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x ↦ ‖f x‖) l (𝓝 ‖a‖) :=
   tendsto_norm'.comp h
 
 @[to_additive Filter.Tendsto.nnnorm]
-theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
+theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x ↦ ‖f x‖₊) l (𝓝 ‖a‖₊) :=
   Tendsto.comp continuous_nnnorm'.continuousAt h
 
 end
@@ -902,38 +902,38 @@ section
 variable [TopologicalSpace α] {f : α → E}
 
 @[to_additive (attr := fun_prop) Continuous.norm]
-theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
+theorem Continuous.norm' : Continuous f → Continuous fun x ↦ ‖f x‖ :=
   continuous_norm'.comp
 
 @[to_additive (attr := fun_prop) Continuous.nnnorm]
-theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
+theorem Continuous.nnnorm' : Continuous f → Continuous fun x ↦ ‖f x‖₊ :=
   continuous_nnnorm'.comp
 
 @[to_additive (attr := fun_prop) ContinuousAt.norm]
-theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖) a :=
+theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x ↦ ‖f x‖) a :=
   Tendsto.norm' h
 
 @[to_additive (attr := fun_prop) ContinuousAt.nnnorm]
-theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
+theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x ↦ ‖f x‖₊) a :=
   Tendsto.nnnorm' h
 
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => ‖f x‖) s a :=
+    ContinuousWithinAt (fun x ↦ ‖f x‖) s a :=
   Tendsto.norm' h
 
 @[to_additive ContinuousWithinAt.nnnorm]
 theorem ContinuousWithinAt.nnnorm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => ‖f x‖₊) s a :=
+    ContinuousWithinAt (fun x ↦ ‖f x‖₊) s a :=
   Tendsto.nnnorm' h
 
 @[to_additive (attr := fun_prop) ContinuousOn.norm]
-theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x => ‖f x‖) s :=
+theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x ↦ ‖f x‖) s :=
   fun x hx => (h x hx).norm'
 
 @[to_additive (attr := fun_prop) ContinuousOn.nnnorm]
 theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
-    ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnnorm'
+    ContinuousOn (fun x ↦ ‖f x‖₊) s := fun x hx => (h x hx).nnnorm'
 
 end
 
@@ -999,7 +999,7 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
     SeminormedGroup E :=
   { PseudoMetricSpace.induced f toPseudoMetricSpace with
     -- Porting note: needed to add the instance explicitly, and `‹PseudoMetricSpace F›` failed
-    norm := fun x => ‖f x‖
+    norm := fun x ↦ ‖f x‖
     dist_eq := fun x y => by simp only [map_div, ← dist_eq_norm_div]; rfl }
 
 -- See note [reducible non-instances]
@@ -1044,11 +1044,11 @@ theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
   simp_rw [dist_eq_norm_div, ← norm_inv' (x⁻¹ / y), inv_div, div_inv_eq_mul, mul_comm]
 
 theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
-    ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
+    ‖m.sum‖ ≤ (m.map fun x ↦ ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero norm_add_le
 
 @[to_additive existing]
-theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum := by
+theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x ↦ ‖x‖).sum := by
   rw [← Multiplicative.ofAdd_le, ofAdd_multiset_prod, Multiset.map_map]
   refine Multiset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _
   · simp only [comp_apply, norm_one', ofAdd_zero]
@@ -1204,7 +1204,7 @@ theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
       fun n hn => by simpa [hg] using hv_pos n hn⟩
 
 @[to_additive]
-theorem nnnorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=
+theorem nnnorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x ↦ ‖x‖₊).sum :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     rw [Multiset.map_map]
@@ -1365,7 +1365,7 @@ lemma tendsto_norm_one' : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :
 
 @[to_additive]
 theorem tendsto_norm_div_self_punctured_nhds (a : E) :
-    Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
+    Tendsto (fun x ↦ ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
     tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
 
@@ -1396,7 +1396,7 @@ variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 /-! Some relations with `HasCompactSupport` -/
 
-theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ HasCompactSupport f :=
+theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x ↦ ‖f x‖) ↔ HasCompactSupport f :=
   hasCompactSupport_comp_left norm_eq_zero
 
 alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff

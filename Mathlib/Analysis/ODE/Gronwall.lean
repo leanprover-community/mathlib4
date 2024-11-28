@@ -39,11 +39,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 noncomputable def gronwallBound (δ K ε x : ℝ) : ℝ :=
   if K = 0 then δ + ε * x else δ * exp (K * x) + ε / K * (exp (K * x) - 1)
 
-theorem gronwallBound_K0 (δ ε : ℝ) : gronwallBound δ 0 ε = fun x => δ + ε * x :=
+theorem gronwallBound_K0 (δ ε : ℝ) : gronwallBound δ 0 ε = fun x ↦ δ + ε * x :=
   funext fun _ => if_pos rfl
 
 theorem gronwallBound_of_K_ne_0 {δ K ε : ℝ} (hK : K ≠ 0) :
-    gronwallBound δ K ε = fun x => δ * exp (K * x) + ε / K * (exp (K * x) - 1) :=
+    gronwallBound δ K ε = fun x ↦ δ * exp (K * x) + ε / K * (exp (K * x) - 1) :=
   funext fun _ => if_neg hK
 
 theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
@@ -103,7 +103,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     intro x hx ε' hε'
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
-    · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
+    · exact fun x ↦ hasDerivAt_gronwallBound_shift δ K ε' x a
     · intro x hx hfB
       rw [← hfB]
       apply lt_of_le_of_lt (bound x hx)

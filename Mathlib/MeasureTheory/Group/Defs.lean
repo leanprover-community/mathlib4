@@ -40,19 +40,19 @@ imply that the left (resp., right) multiplication is `AEMeasurable`.
 namespace MeasureTheory
 
 /-- A measure `μ : Measure α` is invariant under an additive action of `M` on `α` if for any
-measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x => c +ᵥ x` is equal
+measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x ↦ c +ᵥ x` is equal
 to the measure of `s`. -/
 class VAddInvariantMeasure (M α : Type*) [VAdd M α] {_ : MeasurableSpace α} (μ : Measure α) :
   Prop where
-  measure_preimage_vadd : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x => c +ᵥ x) ⁻¹' s) = μ s
+  measure_preimage_vadd : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x ↦ c +ᵥ x) ⁻¹' s) = μ s
 
 /-- A measure `μ : Measure α` is invariant under a multiplicative action of `M` on `α` if for any
-measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x => c • x` is equal
+measurable set `s : Set α` and `c : M`, the measure of its preimage under `fun x ↦ c • x` is equal
 to the measure of `s`. -/
 @[to_additive, mk_iff smulInvariantMeasure_iff]
 class SMulInvariantMeasure (M α : Type*) [SMul M α] {_ : MeasurableSpace α} (μ : Measure α) :
   Prop where
-  measure_preimage_smul : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x => c • x) ⁻¹' s) = μ s
+  measure_preimage_smul : ∀ (c : M) ⦃s : Set α⦄, MeasurableSet s → μ ((fun x ↦ c • x) ⁻¹' s) = μ s
 
 attribute [to_additive] smulInvariantMeasure_iff
 

@@ -349,7 +349,7 @@ protected theorem Set.EquicontinuousWithinAt.continuousWithinAt_of_mem {H : Set 
 /-- Each function of an equicontinuous family is continuous. -/
 theorem Equicontinuous.continuous {F : ι → X → α} (h : Equicontinuous F) (i : ι) :
     Continuous (F i) :=
-  continuous_iff_continuousAt.mpr fun x => (h x).continuousAt i
+  continuous_iff_continuousAt.mpr fun x ↦ (h x).continuousAt i
 
 /-- Each function of a family equicontinuous on `S` is continuous on `S`. -/
 theorem EquicontinuousOn.continuousOn {F : ι → X → α} {S : Set X} (h : EquicontinuousOn F S)
@@ -404,7 +404,7 @@ protected theorem Set.EquicontinuousWithinAt.mono {H H' : Set <| X → α} {S : 
 
 /-- Taking sub-families preserves equicontinuity. -/
 theorem Equicontinuous.comp {F : ι → X → α} (h : Equicontinuous F) (u : κ → ι) :
-    Equicontinuous (F ∘ u) := fun x => (h x).comp u
+    Equicontinuous (F ∘ u) := fun x ↦ (h x).comp u
 
 /-- Taking sub-families preserves equicontinuity on a subset. -/
 theorem EquicontinuousOn.comp {F : ι → X → α} {S : Set X} (h : EquicontinuousOn F S) (u : κ → ι) :
@@ -937,7 +937,7 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
 family `𝓕` is equicontinuous, then the limit is continuous. -/
 theorem Filter.Tendsto.continuous_of_equicontinuous {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : Equicontinuous F) : Continuous f :=
-  continuous_iff_continuousAt.mpr fun x => h₁.continuousAt_of_equicontinuousAt (h₂ x)
+  continuous_iff_continuousAt.mpr fun x ↦ h₁.continuousAt_of_equicontinuousAt (h₂ x)
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise on `S : Set X`* along some nontrivial
 filter, and if the family `𝓕` is equicontinuous, then the limit is continuous on `S`. -/

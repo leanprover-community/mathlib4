@@ -300,7 +300,7 @@ protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : Meas
 `exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const`,
 but replacing `Measurable.ite` by `Measurable.piecewise` in that example proof does not work. -/
 theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableSet { a : α | p a })
-    (hf : Measurable f) (hg : Measurable g) : Measurable fun x => ite (p x) (f x) (g x) :=
+    (hf : Measurable f) (hg : Measurable g) : Measurable fun x ↦ ite (p x) (f x) (g x) :=
   Measurable.piecewise hp hf hg
 
 @[measurability, fun_prop]
@@ -404,7 +404,7 @@ theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true}
   exact h
 
 theorem measurable_to_prop {f : α → Prop} (h : MeasurableSet (f ⁻¹' {True})) : Measurable f := by
-  refine measurable_to_countable' fun x => ?_
+  refine measurable_to_countable' fun x ↦ ?_
   by_cases hx : x
   · simpa [hx] using h
   · simpa only [hx, ← preimage_compl, Prop.compl_singleton, not_true, preimage_singleton_false]
@@ -412,19 +412,19 @@ theorem measurable_to_prop {f : α → Prop} (h : MeasurableSet (f ⁻¹' {True}
 
 theorem measurable_findGreatest' {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N : ℕ}
     (hN : ∀ k ≤ N, MeasurableSet { x | Nat.findGreatest (p x) N = k }) :
-    Measurable fun x => Nat.findGreatest (p x) N :=
+    Measurable fun x ↦ Nat.findGreatest (p x) N :=
   measurable_to_nat fun _ => hN _ N.findGreatest_le
 
 theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N}
-    (hN : ∀ k ≤ N, MeasurableSet { x | p x k }) : Measurable fun x => Nat.findGreatest (p x) N := by
+    (hN : ∀ k ≤ N, MeasurableSet { x | p x k }) : Measurable fun x ↦ Nat.findGreatest (p x) N := by
   refine measurable_findGreatest' fun k hk => ?_
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
 
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
-    (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
-  refine measurable_to_nat fun x => ?_
+    (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x ↦ Nat.find (hp x) := by
+  refine measurable_to_nat fun x ↦ ?_
   rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
   exact MeasurableSet.disjointed hm _
 
@@ -530,7 +530,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
-    Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
+    Measurable fun x ↦ (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, Subtype.coe_mk, hf hs.1]
 
 @[measurability]
@@ -575,7 +575,7 @@ theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (h
 
 theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
     {g : (sᶜ : Set α) → β} (hg : Measurable g) (hs : MeasurableSet s) :
-    Measurable fun x => if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ :=
+    Measurable fun x ↦ if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ :=
   measurable_of_restrict_of_restrict_compl hs (by simpa) (by simpa)
 
 theorem measurable_of_measurable_on_compl_finite [MeasurableSingletonClass α] {f : α → β}
@@ -699,7 +699,7 @@ theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncu
   hf.comp measurable_prod_mk_left
 
 theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (uncurry f)) {y : β} :
-    Measurable fun x => f x y :=
+    Measurable fun x ↦ f x y :=
   hf.comp measurable_prod_mk_right
 
 theorem measurable_prod {f : α → β × γ} :
@@ -723,7 +723,7 @@ theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t)
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t := by
   rcases h with ⟨⟨x, y⟩, hx, hy⟩
   refine ⟨fun hst => ?_, fun h ↦ h.1.prod h.2⟩
-  have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
+  have : MeasurableSet ((fun x ↦ (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
   have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prod_mk_left hst
   simp_all
 
@@ -743,10 +743,10 @@ instance Prod.instMeasurableSingletonClass
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
 
 theorem measurable_from_prod_countable' [Countable β]
-    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y))
+    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x ↦ f (x, y))
     (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) :
     Measurable f := fun s hs => by
-  have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ (measurableAtom y : Set β) := by
+  have : f ⁻¹' s = ⋃ y, ((fun x ↦ f (x, y)) ⁻¹' s) ×ˢ (measurableAtom y : Set β) := by
     ext1 ⟨x, y⟩
     simp only [mem_preimage, mem_iUnion, mem_prod]
     refine ⟨fun h ↦ ⟨y, h, mem_measurableAtom_self y⟩, ?_⟩
@@ -756,7 +756,7 @@ theorem measurable_from_prod_countable' [Countable β]
   exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
 
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
-    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
+    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x ↦ f (x, y)) :
     Measurable f :=
   measurable_from_prod_countable' hf (by simp +contextual)
 
@@ -764,7 +764,7 @@ theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass 
 @[measurability]
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
-    (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
+    (h : ∀ x, ∃ n, p n x) : Measurable fun x ↦ f (Nat.find (h x)) x :=
   have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
   this.comp (Measurable.prod_mk measurable_id (measurable_find h hp))
 
@@ -810,7 +810,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
   have hfm : Measurable f := measurable_iUnionLift _ _ t_meas
     (fun i => (hg i).comp measurable_subtype_coe)
   classical
-    refine ⟨fun x => if hx : x ∈ ⋃ i, t i then f ⟨x, hx⟩ else g default x,
+    refine ⟨fun x ↦ if hx : x ∈ ⋃ i, t i then f ⟨x, hx⟩ else g default x,
       hfm.dite ((hg default).comp measurable_subtype_coe) (.iUnion t_meas), fun i x hx => ?_⟩
     simp only [dif_pos (mem_iUnion.2 ⟨i, hx⟩)]
     exact iUnionLift_of_mem ⟨x, mem_iUnion.2 ⟨i, hx⟩⟩ hx
@@ -826,7 +826,7 @@ instance MeasurableSpace.pi [m : ∀ a, MeasurableSpace (π a)] : MeasurableSpac
 
 variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
-theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
+theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x ↦ g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
@@ -836,7 +836,7 @@ theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
-    Measurable fun x => g x a :=
+    Measurable fun x ↦ g x a :=
   (measurable_pi_apply a).comp hg
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
@@ -920,7 +920,7 @@ theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).
 
 variable (π) in
 theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → π i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg π h).mp (f x) :=
+    (hf : Measurable f) : Measurable fun x ↦ (congr_arg π h).mp (f x) :=
   (measurable_eq_mp π h).comp hf
 
 theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft π f) := by
@@ -1405,7 +1405,7 @@ instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
   ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
+  ⟨fun x ↦ ⟨xᶜ, x.prop.compl⟩⟩
 
 @[simp]
 theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑sᶜ = (sᶜ : Set α) :=

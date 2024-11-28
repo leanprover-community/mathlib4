@@ -36,7 +36,7 @@ def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
   map := (· • ·)
   map_id _ := funext <| MulAction.one_smul
-  map_comp f g := funext fun x => (smul_smul g f x).symm
+  map_comp f g := funext fun x ↦ (smul_smul g f x).symm
 
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
  from x to y is a scalar taking x to y. Due to implementation details, the object type
@@ -65,12 +65,12 @@ theorem π_obj (p : ActionCategory M X) : (π M X).obj p = SingleObj.star M :=
 
 variable {M X}
 
-/-- The canonical map `ActionCategory M X → X`. It is given by `fun x => x.snd`, but
+/-- The canonical map `ActionCategory M X → X`. It is given by `fun x ↦ x.snd`, but
   has a more explicit type. -/
-protected def back : ActionCategory M X → X := fun x => x.snd
+protected def back : ActionCategory M X → X := fun x ↦ x.snd
 
 instance : CoeTC X (ActionCategory M X) :=
-  ⟨fun x => ⟨(), x⟩⟩
+  ⟨fun x ↦ ⟨(), x⟩⟩
 
 @[simp]
 theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=

@@ -506,7 +506,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 @[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
-    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+    Measurable (fun x ↦ g (f x)) := Measurable.comp hg hf
 
 @[simp, fun_prop, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :

@@ -35,7 +35,7 @@ def discreteSieve (α : Type u) : Sieve α where
   downward_closed := fun ⟨x, hx⟩ g => ⟨x, fun y => hx <| g y⟩
 
 theorem discreteSieve_mem (α : Type u) : discreteSieve α ∈ typesGrothendieckTopology α :=
-  fun x => ⟨x, fun _ => rfl⟩
+  fun x ↦ ⟨x, fun _ => rfl⟩
 
 /-- The discrete presieve on a type, which only includes arrows whose domain is a singleton. -/
 def discretePresieve (α : Type u) : Presieve α :=
@@ -43,7 +43,7 @@ def discretePresieve (α : Type u) : Presieve α :=
 
 theorem generate_discretePresieve_mem (α : Type u) :
     Sieve.generate (discretePresieve α) ∈ typesGrothendieckTopology α :=
-  fun x => ⟨PUnit, id, fun _ => x, ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩, rfl⟩
+  fun x ↦ ⟨PUnit, id, fun _ => x, ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩, rfl⟩
 
 /-- The sheaf condition for `yoneda'`. -/
 theorem Presieve.isSheaf_yoneda' {α : Type u} :

@@ -44,7 +44,7 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (hx : x ∈ s) : Summable fun n => f n x := by
   haveI := Classical.decEq α
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
-  have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i ∈ t, f' i x) atTop s :=
+  have A : UniformCauchySeqOn (fun t : Finset α => fun x ↦ ∑ i ∈ t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
   -- Porting note: Lean 4 failed to find `f` by unification
   refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i ∈ t, f i x)
@@ -145,7 +145,7 @@ theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (
     intro x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
   · push_neg at h
-    have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
+    have : (fun x ↦ ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
     rw [this]
     exact differentiable_const 0
 
@@ -171,7 +171,7 @@ theorem deriv_tsum_apply (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n
 
 theorem fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) :
-    (fderiv 𝕜 fun y => ∑' n, f n y) = fun x => ∑' n, fderiv 𝕜 (f n) x := by
+    (fderiv 𝕜 fun y => ∑' n, f n y) = fun x ↦ ∑' n, fderiv 𝕜 (f n) x := by
   ext1 x
   exact fderiv_tsum_apply hu hf hf' hf0 x
 
@@ -189,7 +189,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) {k : ℕ}
     (hk : (k : ℕ∞) ≤ N) :
-    (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x => ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
+    (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x ↦ ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   induction' k with k IH
   · ext1 x
     simp_rw [iteratedFDeriv_zero_eq_comp]
@@ -221,7 +221,7 @@ class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th 
 for each `k ≤ N`. Then the series is also `C^N`. -/
 theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), k ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) :
-    ContDiff 𝕜 N fun x => ∑' i, f i x := by
+    ContDiff 𝕜 N fun x ↦ ∑' i, f i x := by
   rw [contDiff_iff_continuous_differentiable]
   constructor
   · intro m hm
@@ -249,7 +249,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, k ≤ N → Summable (v k))
     (h'f : ∀ k : ℕ, k ≤ N →
       ∀ᶠ i in (Filter.cofinite : Filter α), ∀ x : E, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) :
-    ContDiff 𝕜 N fun x => ∑' i, f i x := by
+    ContDiff 𝕜 N fun x ↦ ∑' i, f i x := by
   classical
     refine contDiff_iff_forall_nat_le.2 fun m hm => ?_
     let t : Set α :=
@@ -265,8 +265,8 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         exact (WithTop.coe_le_coe.2 hi).trans hm
       eventually_cofinite.2 A
     let T : Finset α := ht.toFinset
-    have : (fun x => ∑' i, f i x) = (fun x => ∑ i ∈ T, f i x) +
-        fun x => ∑' i : { i // i ∉ T }, f i x := by
+    have : (fun x ↦ ∑' i, f i x) = (fun x ↦ ∑ i ∈ T, f i x) +
+        fun x ↦ ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine (sum_add_tsum_subtype_compl ?_ T).symm
       refine .of_norm_bounded_eventually _ (hv 0 (zero_le _)) ?_

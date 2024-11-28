@@ -35,14 +35,14 @@ theorem proj_diagonal (i : n) (w : n → R) : (proj i).comp (toLin' (diagonal w)
 theorem diagonal_comp_single (w : n → R) (i : n) :
     (diagonal w).toLin'.comp (LinearMap.single R (fun _ : n => R) i) =
       w i • LinearMap.single R (fun _ : n => R) i :=
-  LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
+  LinearMap.ext fun x ↦ (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
 
 set_option linter.deprecated false in
 @[deprecated diagonal_comp_single (since := "2024-08-09")]
 theorem diagonal_comp_stdBasis (w : n → R) (i : n) :
     (diagonal w).toLin'.comp (LinearMap.stdBasis R (fun _ : n => R) i) =
       w i • LinearMap.stdBasis R (fun _ : n => R) i :=
-  LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
+  LinearMap.ext fun x ↦ (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
 
 theorem diagonal_toLin' (w : n → R) :
     toLin' (diagonal w) = LinearMap.pi fun i => w i • LinearMap.proj i :=

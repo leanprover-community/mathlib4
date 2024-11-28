@@ -189,7 +189,7 @@ lemma isInducing (hf : IsEmbedding f) : IsInducing f := hf.toIsInducing
 
 lemma mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
     IsEmbedding f :=
-  ⟨isInducing_iff_nhds.2 fun x => (induced x).symm, inj⟩
+  ⟨isInducing_iff_nhds.2 fun x ↦ (induced x).symm, inj⟩
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.mk' := mk'
@@ -299,7 +299,7 @@ alias isQuotientMap_iff_closed := isQuotientMap_iff_isClosed
 namespace IsQuotientMap
 
 protected theorem id : IsQuotientMap (@id X) :=
-  ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
+  ⟨fun x ↦ ⟨x, rfl⟩, coinduced_id.symm⟩
 
 protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotientMap (g ∘ f) :=
   ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩

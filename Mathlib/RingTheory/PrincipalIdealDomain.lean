@@ -266,7 +266,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
             WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ≠ 0 :=
           WellFounded.min_mem wf { x : R | x ∈ S ∧ x ≠ 0 } h
         ⟨WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h,
-          Submodule.ext fun x => ⟨fun hx =>
+          Submodule.ext fun x ↦ ⟨fun hx =>
             div_add_mod x (WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h) ▸
               (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉

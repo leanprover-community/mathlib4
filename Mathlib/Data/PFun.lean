@@ -76,7 +76,7 @@ def Dom (f : α →. β) : Set α :=
 theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := by simp [Dom, Part.dom_iff_mem]
 
 @[simp]
-theorem dom_mk (p : α → Prop) (f : ∀ a, p a → β) : (PFun.Dom fun x => ⟨p x, f x⟩) = { x | p x } :=
+theorem dom_mk (p : α → Prop) (f : ∀ a, p a → β) : (PFun.Dom fun x ↦ ⟨p x, f x⟩) = { x | p x } :=
   rfl
 
 theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=

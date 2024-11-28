@@ -206,7 +206,7 @@ def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
 
 variable {I} {K : Type w₃}
 
--- Porting note: Had to expand (C ∘ g) to (fun x => C (g x)) in lemma statement
+-- Porting note: Had to expand (C ∘ g) to (fun x ↦ C (g x)) in lemma statement
 -- so that the suitable category instances could be found
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]

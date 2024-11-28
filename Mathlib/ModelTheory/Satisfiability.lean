@@ -99,7 +99,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
   ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h ↦ by
     classical
       set M : Finset T → Type max u v := fun T0 : Finset T =>
-        (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
+        (h (T0.map (Function.Embedding.subtype fun x ↦ x ∈ T)) T0.map_subtype_subset).some.Carrier
       let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
       have h' : M' ⊨ T := by
         refine ⟨fun φ hφ => ?_⟩
@@ -108,7 +108,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
           Filter.Eventually.filter_mono (Ultrafilter.of_le _)
             (Filter.eventually_atTop.2
               ⟨{⟨φ, hφ⟩}, fun s h' =>
-                Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
+                Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x ↦ x ∈ T))
                   ?_⟩)
         simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
           Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]

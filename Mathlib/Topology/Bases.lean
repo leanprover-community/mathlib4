@@ -108,7 +108,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rintro _ ⟨t₁, ⟨hft₁, ht₁b⟩, rfl⟩ _ ⟨t₂, ⟨hft₂, ht₂b⟩, rfl⟩ x h
     exact ⟨_, ⟨_, ⟨hft₁.union hft₂, union_subset ht₁b ht₂b⟩, sInter_union t₁ t₂⟩, h, Subset.rfl⟩
   · rw [sUnion_image, iUnion₂_eq_univ_iff]
-    exact fun x => ⟨∅, ⟨finite_empty, empty_subset _⟩, sInter_empty.substr <| mem_univ x⟩
+    exact fun x ↦ ⟨∅, ⟨finite_empty, empty_subset _⟩, sInter_empty.substr <| mem_univ x⟩
   · rintro _ ⟨t, ⟨hft, htb⟩, rfl⟩
     exact hft.isOpen_sInter fun s hs ↦ GenerateOpen.basic _ <| htb hs
   · rw [← sInter_singleton t]
@@ -849,16 +849,16 @@ point `x` to a neighborhood of `x`, then for some countable set `s`, the neighbo
 `x ∈ s`, cover the whole space. -/
 theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (hf : ∀ x, f x ∈ 𝓝 x) :
     ∃ s : Set α, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
-  rcases isOpen_iUnion_countable (fun x => interior (f x)) fun x => isOpen_interior with
+  rcases isOpen_iUnion_countable (fun x ↦ interior (f x)) fun x ↦ isOpen_interior with
     ⟨s, hsc, hsU⟩
   suffices ⋃ x ∈ s, interior (f x) = univ from
     ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
   simp only [hsU, eq_univ_iff_forall, mem_iUnion]
-  exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
+  exact fun x ↦ ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 
 theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set α} {s : Set α}
     (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
-  have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)
+  have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x ↦ preimage_coe_mem_nhds_subtype.2 (hf x x.2)
   rcases countable_cover_nhds this with ⟨t, htc, htU⟩
   refine ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => ?_⟩
   simp only [biUnion_image, eq_univ_iff_forall, ← preimage_iUnion, mem_preimage] at htU ⊢

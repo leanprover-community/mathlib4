@@ -67,7 +67,7 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  neg_add_cancel := Quotient.ind <| fun x => Quot.sound (neg_add_cancel_equiv x)
+  neg_add_cancel := Quotient.ind <| fun x ↦ Quot.sound (neg_add_cancel_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv
@@ -941,7 +941,7 @@ theorem inv'_one_equiv : inv' 1 ≈ 1 :=
 
 /-- The inverse of a pre-game in terms of the inverse on positive pre-games. -/
 noncomputable instance : Inv PGame :=
-  ⟨by classical exact fun x => if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
+  ⟨by classical exact fun x ↦ if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
 
 noncomputable instance : Div PGame :=
   ⟨fun x y => x * y⁻¹⟩

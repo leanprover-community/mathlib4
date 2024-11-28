@@ -303,7 +303,7 @@ lemma LipschitzOnWith.div (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg
 
 @[to_additive]
 theorem LipschitzWith.div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
-    LipschitzWith (Kf + Kg) fun x => f x / g x := by
+    LipschitzWith (Kf + Kg) fun x ↦ f x / g x := by
   simpa only [div_eq_mul_inv] using hf.mul hg.inv
 
 @[to_additive]
@@ -320,7 +320,7 @@ namespace AntilipschitzWith
 
 @[to_additive]
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
-    AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x => f x * g x := by
+    AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x ↦ f x * g x := by
   letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]

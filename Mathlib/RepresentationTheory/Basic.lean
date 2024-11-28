@@ -412,11 +412,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
-    LinearMap.ext fun x => by
+    LinearMap.ext fun x ↦ by
       dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
-    LinearMap.ext fun x => by
+    LinearMap.ext fun x ↦ by
       dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 

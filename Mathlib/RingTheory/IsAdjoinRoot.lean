@@ -136,7 +136,7 @@ theorem map_self (h : IsAdjoinRoot S f) : h.map f = 0 := h.map_eq_zero_iff.mpr d
 
 @[simp]
 theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
-  Polynomial.induction_on p (fun x => by rw [aeval_C, h.algebraMap_apply])
+  Polynomial.induction_on p (fun x ↦ by rw [aeval_C, h.algebraMap_apply])
     (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
     rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
       RingHom.map_pow, map_X]
@@ -172,7 +172,7 @@ theorem ext_map (h h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h =
 for extensionality of the ring elements. -/
 @[ext]
 theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
-  h.ext_map h' fun x => by rw [← h.aeval_eq, ← h'.aeval_eq, eq]
+  h.ext_map h' fun x ↦ by rw [← h.aeval_eq, ← h'.aeval_eq, eq]
 
 section lift
 
@@ -368,9 +368,9 @@ theorem modByMonicHom_root (h : IsAdjoinRootMonic S f) (hdeg : 1 < natDegree f) 
 Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
-    { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
+    { toFun := fun x ↦ (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
       invFun := fun g => h.map (ofFinsupp (g.mapDomain Fin.val))
-      left_inv := fun x => by
+      left_inv := fun x ↦ by
         cases subsingleton_or_nontrivial R
         · subsingleton [h.subsingleton]
         simp only
@@ -570,8 +570,8 @@ def aequiv (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
   { h.liftHom h'.root h'.aeval_root with
     toFun := h.liftHom h'.root h'.aeval_root
     invFun := h'.liftHom h.root h.aeval_root
-    left_inv := fun x => by rw [← h.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq]
-    right_inv := fun x => by rw [← h'.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq] }
+    left_inv := fun x ↦ by rw [← h.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq]
+    right_inv := fun x ↦ by rw [← h'.map_repr x, liftHom_map, aeval_eq, liftHom_map, aeval_eq] }
 
 @[simp]
 theorem aequiv_map (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) (z : R[X]) :

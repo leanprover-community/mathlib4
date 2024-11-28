@@ -81,7 +81,7 @@ lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
 instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
-instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
+instance : IsEmpty (Language.order.Relations 0) := ⟨fun x ↦ by cases x⟩
 
 instance : Unique (Σ n, Language.order.Relations n) :=
   ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ =>
@@ -201,7 +201,7 @@ variable (L M)
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
 def orderStructure [LE M] : Language.order.Structure M where
-  RelMap | .le => (fun x => x 0 ≤ x 1)
+  RelMap | .le => (fun x ↦ x 0 ≤ x 1)
 
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is `≤`. -/
 class OrderedStructure [L.IsOrdered] [LE M] [L.Structure M] : Prop where
@@ -232,7 +232,7 @@ instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
 
-instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x => relMap_leSymb (S.subtype ∘ x)⟩
+instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x ↦ relMap_leSymb (S.subtype ∘ x)⟩
 
 @[simp]
 theorem Term.realize_le {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}

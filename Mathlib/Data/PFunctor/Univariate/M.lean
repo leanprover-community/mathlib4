@@ -94,7 +94,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
     simp only [truncate, Function.comp_def, eq_self_iff_true, heq_iff_eq]
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext y`
     rename_i n_ih a f y h₁
-    suffices (fun x => truncate (y x)) = f
+    suffices (fun x ↦ truncate (y x)) = f
       by simp [this]
     funext y
 

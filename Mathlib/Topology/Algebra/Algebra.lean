@@ -212,7 +212,7 @@ theorem eqOn_closure_adjoin [T2Space B] {s : Set A} {f g : A →A[R] B} (h : Set
 algebra maps equal on `s` are equal. -/
 theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
-  ext fun x => eqOn_closure_adjoin h (hs x)
+  ext fun x ↦ eqOn_closure_adjoin h (hs x)
 
 variable [TopologicalSemiring A]
 

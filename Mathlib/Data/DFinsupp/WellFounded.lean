@@ -66,7 +66,7 @@ variable [∀ i, Zero (α i)] (r : ι → ι → Prop) (s : ∀ i, α i → α i
   (`DFinsupp.Lex.acc_of_single`). -/
 theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
     Fibration (InvImage (GameAdd (DFinsupp.Lex r s) (DFinsupp.Lex r s)) snd) (DFinsupp.Lex r s)
-      fun x => piecewise x.2.1 x.2.2 x.1 := by
+      fun x ↦ piecewise x.2.1 x.2.2 x.1 := by
   rintro ⟨p, x₁, x₂⟩ x ⟨i, hr, hs⟩
   simp_rw [piecewise_apply] at hs hr
   split_ifs at hs with hp
@@ -152,7 +152,7 @@ theorem Lex.acc (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i)
 
 theorem Lex.wellFounded (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
     (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (DFinsupp.Lex r s) :=
-  ⟨fun x => by classical exact Lex.acc hbot hs x fun i _ => hr.apply i⟩
+  ⟨fun x ↦ by classical exact Lex.acc hbot hs x fun i _ => hr.apply i⟩
 
 theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
     [IsTrichotomous ι r] (hr : WellFounded (Function.swap r)) :

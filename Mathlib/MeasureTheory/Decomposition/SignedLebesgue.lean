@@ -232,8 +232,8 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     s.toJordanDecomposition =
       @JordanDecomposition.mk α _
-        (t.toJordanDecomposition.posPart + μ.withDensity fun x => ENNReal.ofReal (f x))
-        (t.toJordanDecomposition.negPart + μ.withDensity fun x => ENNReal.ofReal (-f x))
+        (t.toJordanDecomposition.posPart + μ.withDensity fun x ↦ ENNReal.ofReal (f x))
+        (t.toJordanDecomposition.negPart + μ.withDensity fun x ↦ ENNReal.ofReal (-f x))
         (by haveI := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
         (by haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
         (jordanDecomposition_add_withDensity_mutuallySingular hf htμ) := by
@@ -262,11 +262,11 @@ private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ}
   rw [VectorMeasure.equivMeasure.right_inv, totalVariation_mutuallySingular_iff] at htμ
   refine
     { posPart := by
-        use ⟨t.toJordanDecomposition.posPart, fun x => ENNReal.ofReal (f x)⟩
+        use ⟨t.toJordanDecomposition.posPart, fun x ↦ ENNReal.ofReal (f x)⟩
         refine ⟨hf.ennreal_ofReal, htμ.1, ?_⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
       negPart := by
-        use ⟨t.toJordanDecomposition.negPart, fun x => ENNReal.ofReal (-f x)⟩
+        use ⟨t.toJordanDecomposition.negPart, fun x ↦ ENNReal.ofReal (-f x)⟩
         refine ⟨hf.neg.ennreal_ofReal, htμ.2, ?_⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd] }
 
@@ -290,10 +290,10 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
   congr
   -- NB: `measurability` proves this `have`, but is slow.
   -- TODO: make `fun_prop` able to handle this
-  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
+  · have hfpos : Measurable fun x ↦ ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfpos htμ.1 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
-  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) :=
+  · have hfneg : Measurable fun x ↦ ENNReal.ofReal (-f x) :=
       -- NB: `measurability` proves this, but is slow.
       -- XXX: `fun_prop` doesn't work here yet
       (measurable_neg_iff.mpr hf).real_toNNReal.coe_nnreal_ennreal

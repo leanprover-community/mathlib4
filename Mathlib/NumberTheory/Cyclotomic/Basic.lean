@@ -103,7 +103,7 @@ theorem empty [h : IsCyclotomicExtension ∅ A B] : (⊥ : Subalgebra A B) = ⊤
 
 /-- If `IsCyclotomicExtension {1} A B`, then the image of `A` in `B` equals `B`. -/
 theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A B) = ⊤ :=
-  Algebra.eq_top_iff.2 fun x => by
+  Algebra.eq_top_iff.2 fun x ↦ by
     simpa [adjoin_singleton_one] using ((isCyclotomicExtension_iff _ _ _).1 h).2 x
 
 variable {A B}
@@ -123,7 +123,7 @@ variable (A B)
 theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
-  refine ⟨fun hn => ?_, fun x => ?_⟩
+  refine ⟨fun hn => ?_, fun x ↦ ?_⟩
   · cases' hn with hn hn
     · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
       refine ⟨algebraMap B C b, ?_⟩
@@ -153,10 +153,10 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
 -- Porting note: `R := A` was not needed.
-    · exact ⟨fun h ↦ h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    · exact ⟨fun h ↦ h.elim, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
     · rw [iff_singleton]
       exact ⟨⟨0, IsPrimitiveRoot.of_subsingleton 0⟩,
-        fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+        fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
 is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 }` given by
@@ -290,7 +290,7 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
   refine fg_adjoin_of_finite ?_ fun b hb => ?_
   · simp only [mem_singleton_iff, exists_eq_left]
     have : {b : B | b ^ (n : ℕ) = 1} = (nthRoots n (1 : B)).toFinset :=
-      Set.ext fun x => ⟨fun h ↦ by simpa using h, fun h ↦ by simpa using h⟩
+      Set.ext fun x ↦ ⟨fun h ↦ by simpa using h, fun h ↦ by simpa using h⟩
     rw [this]
     exact (nthRoots (↑n) 1).toFinset.finite_toSet
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hb
@@ -434,7 +434,7 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       congr
-      refine Set.ext fun x => ?_
+      refine Set.ext fun x ↦ ?_
       simp only [Polynomial.map_pow, mem_singleton_iff, Multiset.mem_toFinset, exists_eq_left,
         mem_setOf_eq, Polynomial.map_X, Polynomial.map_one, Finset.mem_coe, Polynomial.map_sub]
       simp only [mem_rootSet', map_sub, map_pow, aeval_one, aeval_X, sub_eq_zero, map_X,

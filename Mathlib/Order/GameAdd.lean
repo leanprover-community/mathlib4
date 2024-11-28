@@ -109,7 +109,7 @@ namespace Prod
 def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     C a b :=
-  @WellFounded.fix (α × β) (fun x => C x.1 x.2) _ (hα.prod_gameAdd hβ)
+  @WellFounded.fix (α × β) (fun x ↦ C x.1 x.2) _ (hα.prod_gameAdd hβ)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
 
 theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
@@ -204,7 +204,7 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
   -- Porting note: this was refactored for https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
   dsimp only [GameAdd, lift₂, DFunLike.coe, EquivLike.coe] at this
-  exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
+  exact @WellFounded.fix (α × α) (fun x ↦ C x.1 x.2) _ this.of_quotient_lift₂
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 
 theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)

@@ -846,7 +846,7 @@ theorem directed_distinctConstantsTheory :
 theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     L.distinctConstantsTheory s =
       ⋃ t : Finset s,
-        L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x => x ∈ s)) := by
+        L.distinctConstantsTheory (t.map (Function.Embedding.subtype fun x ↦ x ∈ s)) := by
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]

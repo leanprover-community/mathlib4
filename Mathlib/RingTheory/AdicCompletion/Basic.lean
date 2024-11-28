@@ -128,7 +128,7 @@ theorem induction_on {C : Hausdorffification I M → Prop} (x : Hausdorffificati
 variable (I M)
 
 instance : IsHausdorff I (Hausdorffification I M) :=
-  ⟨fun x => Quotient.inductionOn' x fun x hx =>
+  ⟨fun x ↦ Quotient.inductionOn' x fun x hx =>
     (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
       simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
@@ -154,7 +154,7 @@ theorem lift_comp_of (f : M →ₗ[R] N) : (lift I f).comp (of I M) = f :=
 /-- Uniqueness of lift. -/
 theorem lift_eq (f : M →ₗ[R] N) (g : Hausdorffification I M →ₗ[R] N) (hg : g.comp (of I M) = f) :
     g = lift I f :=
-  LinearMap.ext fun x => induction_on x fun x => by rw [lift_of, ← hg, LinearMap.comp_apply]
+  LinearMap.ext fun x ↦ induction_on x fun x ↦ by rw [lift_of, ← hg, LinearMap.comp_apply]
 
 end Hausdorffification
 

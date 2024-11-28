@@ -47,21 +47,21 @@ theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
   Metric.isClosed_ball.measurableSet
 
 @[measurability]
-theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
+theorem measurable_infDist {s : Set α} : Measurable fun x ↦ infDist x s :=
   (continuous_infDist_pt s).measurable
 
 @[measurability, fun_prop]
 theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infDist (f x) s :=
+    Measurable fun x ↦ infDist (f x) s :=
   measurable_infDist.comp hf
 
 @[measurability]
-theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
+theorem measurable_infNndist {s : Set α} : Measurable fun x ↦ infNndist x s :=
   (continuous_infNndist_pt s).measurable
 
 @[measurability, fun_prop]
 theorem Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infNndist (f x) s :=
+    Measurable fun x ↦ infNndist (f x) s :=
   measurable_infNndist.comp hf
 
 section
@@ -110,12 +110,12 @@ theorem measurable_edist_left : Measurable fun y => edist y x :=
   (continuous_id.edist continuous_const).measurable
 
 @[measurability]
-theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
+theorem measurable_infEdist {s : Set α} : Measurable fun x ↦ infEdist x s :=
   continuous_infEdist.measurable
 
 @[measurability, fun_prop]
 theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
-    Measurable fun x => infEdist (f x) s :=
+    Measurable fun x ↦ infEdist (f x) s :=
   measurable_infEdist.comp hf
 
 open Metric EMetric

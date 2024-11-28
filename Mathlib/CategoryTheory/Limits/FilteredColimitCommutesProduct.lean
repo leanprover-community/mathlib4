@@ -127,7 +127,7 @@ variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, 
 theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ Type u) :
     IsIso (colimitPointwiseProductToProductColimit F) := by
   -- We follow the proof in [Kashiwara2006], Prop. 3.1.11(ii)
-  refine (isIso_iff_bijective _).2 ⟨fun y y' hy => ?_, fun x => ?_⟩
+  refine (isIso_iff_bijective _).2 ⟨fun y y' hy => ?_, fun x ↦ ?_⟩
   · obtain ⟨ky, yk₀, hyk₀⟩ := Types.jointly_surjective' y
     obtain ⟨ky', yk₀', hyk₀'⟩ := Types.jointly_surjective' y'
     let k := IsFiltered.max ky ky'

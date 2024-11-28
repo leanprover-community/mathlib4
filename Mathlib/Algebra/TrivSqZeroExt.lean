@@ -631,7 +631,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
             x.1 •> (y.1 •> z.2 + y.2 <• z.1) + x.2 <• (y.1 * z.1)
           by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
     npow := fun n x => x ^ n
-    npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
+    npow_zero := fun x ↦ ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
     npow_succ := fun n x =>
       ext (pow_succ _ _)
         (by

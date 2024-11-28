@@ -86,7 +86,7 @@ theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
 
 theorem tendsto_approxOn_Lp_eLpNorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
     {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (hp_ne_top : p ≠ ∞) {μ : Measure β}
-    (hμ : ∀ᵐ x ∂μ, f x ∈ closure s) (hi : eLpNorm (fun x => f x - y₀) p μ < ∞) :
+    (hμ : ∀ᵐ x ∂μ, f x ∈ closure s) (hi : eLpNorm (fun x ↦ f x - y₀) p μ < ∞) :
     Tendsto (fun n => eLpNorm (⇑(approxOn f hf s y₀ h₀ n) - f) p μ) atTop (𝓝 0) := by
   by_cases hp_zero : p = 0
   · simpa only [hp_zero, eLpNorm_exponent_zero] using tendsto_const_nhds
@@ -100,19 +100,19 @@ theorem tendsto_approxOn_Lp_eLpNorm [OpensMeasurableSpace E] {f : β → E} (hf 
   -- We simply check the conditions of the Dominated Convergence Theorem:
   -- (1) The function "`p`-th power of distance between `f` and the approximation" is measurable
   have hF_meas :
-    ∀ n, Measurable fun x => (‖approxOn f hf s y₀ h₀ n x - f x‖₊ : ℝ≥0∞) ^ p.toReal := by
+    ∀ n, Measurable fun x ↦ (‖approxOn f hf s y₀ h₀ n x - f x‖₊ : ℝ≥0∞) ^ p.toReal := by
     simpa only [← edist_eq_coe_nnnorm_sub] using fun n =>
       (approxOn f hf s y₀ h₀ n).measurable_bind (fun y x => edist y (f x) ^ p.toReal) fun y =>
         (measurable_edist_right.comp hf).pow_const p.toReal
   -- (2) The functions "`p`-th power of distance between `f` and the approximation" are uniformly
-  -- bounded, at any given point, by `fun x => ‖f x - y₀‖ ^ p.toReal`
+  -- bounded, at any given point, by `fun x ↦ ‖f x - y₀‖ ^ p.toReal`
   have h_bound :
-    ∀ n, (fun x => (‖approxOn f hf s y₀ h₀ n x - f x‖₊ : ℝ≥0∞) ^ p.toReal) ≤ᵐ[μ] fun x =>
+    ∀ n, (fun x ↦ (‖approxOn f hf s y₀ h₀ n x - f x‖₊ : ℝ≥0∞) ^ p.toReal) ≤ᵐ[μ] fun x =>
         (‖f x - y₀‖₊ : ℝ≥0∞) ^ p.toReal :=
     fun n =>
     Eventually.of_forall fun x =>
       rpow_le_rpow (coe_mono (nnnorm_approxOn_le hf h₀ x n)) toReal_nonneg
-  -- (3) The bounding function `fun x => ‖f x - y₀‖ ^ p.toReal` has finite integral
+  -- (3) The bounding function `fun x ↦ ‖f x - y₀‖ ^ p.toReal` has finite integral
   have h_fin : (∫⁻ a : β, (‖f a - y₀‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ≠ ⊤ :=
     (lintegral_rpow_nnnorm_lt_top_of_eLpNorm_lt_top hp_zero hp_ne_top hi).ne
   -- (4) The functions "`p`-th power of distance between `f` and the approximation" tend pointwise
@@ -135,14 +135,14 @@ theorem memℒp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas 
     (hf : Memℒp f p μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Memℒp (fun _ => y₀) p μ) (n : ℕ) : Memℒp (approxOn f fmeas s y₀ h₀ n) p μ := by
   refine ⟨(approxOn f fmeas s y₀ h₀ n).aestronglyMeasurable, ?_⟩
-  suffices eLpNorm (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ < ⊤ by
-    have : Memℒp (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ :=
+  suffices eLpNorm (fun x ↦ approxOn f fmeas s y₀ h₀ n x - y₀) p μ < ⊤ by
+    have : Memℒp (fun x ↦ approxOn f fmeas s y₀ h₀ n x - y₀) p μ :=
       ⟨(approxOn f fmeas s y₀ h₀ n - const β y₀).aestronglyMeasurable, this⟩
     convert eLpNorm_add_lt_top this hi₀
     ext x
     simp
-  have hf' : Memℒp (fun x => ‖f x - y₀‖) p μ := by
-    have h_meas : Measurable fun x => ‖f x - y₀‖ := by
+  have hf' : Memℒp (fun x ↦ ‖f x - y₀‖) p μ := by
+    have h_meas : Measurable fun x ↦ ‖f x - y₀‖ := by
       simp only [← dist_eq_norm]
       exact (continuous_id.dist continuous_const).measurable.comp fmeas
     refine ⟨h_meas.aemeasurable.aestronglyMeasurable, ?_⟩
@@ -155,8 +155,8 @@ theorem memℒp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas 
     rw [Real.norm_eq_abs, abs_of_nonneg]
     positivity
   calc
-    eLpNorm (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ ≤
-        eLpNorm (fun x => ‖f x - y₀‖ + ‖f x - y₀‖) p μ :=
+    eLpNorm (fun x ↦ approxOn f fmeas s y₀ h₀ n x - y₀) p μ ≤
+        eLpNorm (fun x ↦ ‖f x - y₀‖ + ‖f x - y₀‖) p μ :=
       eLpNorm_mono_ae this
     _ < ⊤ := eLpNorm_add_lt_top hf' hf'
 
@@ -224,7 +224,7 @@ variable [MeasurableSpace E] [NormedAddCommGroup E]
 
 theorem tendsto_approxOn_L1_nnnorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
     {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] {μ : Measure β}
-    (hμ : ∀ᵐ x ∂μ, f x ∈ closure s) (hi : HasFiniteIntegral (fun x => f x - y₀) μ) :
+    (hμ : ∀ᵐ x ∂μ, f x ∈ closure s) (hi : HasFiniteIntegral (fun x ↦ f x - y₀) μ) :
     Tendsto (fun n => ∫⁻ x, ‖approxOn f hf s y₀ h₀ n x - f x‖₊ ∂μ) atTop (𝓝 0) := by
   simpa [eLpNorm_one_eq_lintegral_nnnorm] using
     tendsto_approxOn_Lp_eLpNorm hf h₀ one_ne_top hμ
@@ -268,7 +268,7 @@ A simple function `f : α →ₛ E` into a normed group `E` verifies, for a meas
 
 
 theorem exists_forall_norm_le (f : α →ₛ F) : ∃ C, ∀ x, ‖f x‖ ≤ C :=
-  exists_forall_le (f.map fun x => ‖x‖)
+  exists_forall_le (f.map fun x ↦ ‖x‖)
 
 theorem memℒp_zero (f : α →ₛ E) (μ : Measure α) : Memℒp f 0 μ :=
   memℒp_zero_iff_aestronglyMeasurable.mpr f.aestronglyMeasurable

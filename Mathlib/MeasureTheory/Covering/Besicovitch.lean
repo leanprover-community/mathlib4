@@ -527,7 +527,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     {τ : ℝ} (hτ : 1 < τ) (hN : IsEmpty (SatelliteConfig α N τ)) (s : Set α) (r : α → ℝ)
     (rpos : ∀ x ∈ s, 0 < r x) (rle : ∀ x ∈ s, r x ≤ 1) :
     ∃ t : Finset α, ↑t ⊆ s ∧ μ (s \ ⋃ x ∈ t, closedBall x (r x)) ≤ N / (N + 1) * μ s ∧
-      (t : Set α).PairwiseDisjoint fun x => closedBall x (r x) := by
+      (t : Set α).PairwiseDisjoint fun x ↦ closedBall x (r x) := by
   -- exclude the trivial case where `μ s = 0`.
   rcases le_or_lt (μ s) 0 with (hμs | hμs)
   · have : μ s = 0 := le_bot_iff.1 hμs
@@ -549,11 +549,11 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     covering `s`. Among these, one of them covers a proportion at least `1/N` of `s`. A large
     enough finite subfamily will then cover a proportion at least `1/(N+1)`. -/
   let a : BallPackage s α :=
-    { c := fun x => x
-      r := fun x => r x
-      rpos := fun x => rpos x x.2
+    { c := fun x ↦ x
+      r := fun x ↦ r x
+      rpos := fun x ↦ rpos x x.2
       r_bound := 1
-      r_le := fun x => rle x x.2 }
+      r_le := fun x ↦ rle x x.2 }
   rcases exist_disjoint_covering_families hτ hN a with ⟨u, hu, hu'⟩
   have u_count : ∀ i, (u i).Countable := by
     intro i
@@ -707,7 +707,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       haveI rI : ∀ x ∈ s', r x ∈ Ioo (0 : ℝ) 1 := fun x hx => (hr x hx).1.2
       exist_finset_disjoint_balls_large_measure μ hτ hN s' r (fun x hx => (rI x hx).1) fun x hx =>
         (rI x hx).2.le
-    refine ⟨t ∪ Finset.image (fun x => (x, r x)) v, Finset.subset_union_left, ⟨?_, ?_, ?_⟩, ?_⟩
+    refine ⟨t ∪ Finset.image (fun x ↦ (x, r x)) v, Finset.subset_union_left, ⟨?_, ?_, ?_⟩, ?_⟩
     · simp only [Finset.coe_union, pairwiseDisjoint_union, ht.1, true_and, Finset.coe_image]
       constructor
       · intro p hp q hq hpq
@@ -826,7 +826,7 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SFinite μ] (f
     (hR : ∀ x ∈ s, 0 < R x) :
     ∃ (t : Set α) (r : α → ℝ), t.Countable ∧ t ⊆ s ∧
       (∀ x ∈ t, r x ∈ f x ∩ Ioo 0 (R x)) ∧ μ (s \ ⋃ x ∈ t, closedBall x (r x)) = 0 ∧
-        t.PairwiseDisjoint fun x => closedBall x (r x) := by
+        t.PairwiseDisjoint fun x ↦ closedBall x (r x) := by
   let g x := f x ∩ Ioo 0 (R x)
   have hg : ∀ x ∈ s, ∀ δ > 0, (g x ∩ Ioo 0 δ).Nonempty := fun x hx δ δpos ↦ by
     rcases hf x hx (min δ (R x)) (lt_min δpos (hR x hx)) with ⟨r, hr⟩
@@ -867,7 +867,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
   obtain ⟨t0, r0, t0_count, t0s, hr0, μt0, t0_disj⟩ :
     ∃ (t0 : Set α) (r0 : α → ℝ), t0.Countable ∧ t0 ⊆ s ∧
       (∀ x ∈ t0, r0 x ∈ f x ∩ Ioo 0 (R x)) ∧ μ (s \ ⋃ x ∈ t0, closedBall x (r0 x)) = 0 ∧
-        t0.PairwiseDisjoint fun x => closedBall x (r0 x) :=
+        t0.PairwiseDisjoint fun x ↦ closedBall x (r0 x) :=
     exists_disjoint_closedBall_covering_ae μ f s hf R fun x hx => (hR x hx).1
   -- we have constructed an almost everywhere covering of `s` by disjoint balls. Let `s'` be the
   -- remaining set.
@@ -888,11 +888,11 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         Subset.trans (closedBall_subset_ball (hR'.2.2.trans_le (min_le_left _ _))) hr⟩
   choose! r1 hr1 using this
   let q : BallPackage s' α :=
-    { c := fun x => x
-      r := fun x => r1 x
-      rpos := fun x => (hr1 x.1 x.2).1.2.1
+    { c := fun x ↦ x
+      r := fun x ↦ r1 x
+      rpos := fun x ↦ (hr1 x.1 x.2).1.2.1
       r_bound := 1
-      r_le := fun x => (hr1 x.1 x.2).1.2.2.le }
+      r_le := fun x ↦ (hr1 x.1 x.2).1.2.2.le }
   -- by Besicovitch, we cover `s'` with at most `N` families of disjoint balls, all included in
   -- a suitable neighborhood `v` of `s'`.
   obtain ⟨S, S_disj, hS⟩ :
@@ -977,7 +977,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
             ∑' x : S i, μ (closedBall x (r x)) := by
           have : InjOn ((↑) : s' → α) (S i) := Subtype.val_injective.injOn
           let F : S i ≃ ((↑) : s' → α) '' S i := this.bijOn_image.equiv _
-          exact (F.tsum_eq fun x => μ (closedBall x (r x))).symm
+          exact (F.tsum_eq fun x ↦ μ (closedBall x (r x))).symm
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
           congr 1; ext x; have : (x : α) ∈ s' := x.1.2; simp only [s', r, if_pos this]
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
@@ -996,11 +996,11 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
       (∑' x : ↥(t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i), μ (closedBall x (r x))) ≤
           (∑' x : t0, μ (closedBall x (r x))) +
             ∑' x : ⋃ i : Fin N, ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
-        ENNReal.tsum_union_le (fun x => μ (closedBall x (r x))) _ _
+        ENNReal.tsum_union_le (fun x ↦ μ (closedBall x (r x))) _ _
       _ ≤
           (∑' x : t0, μ (closedBall x (r x))) +
             ∑ i : Fin N, ∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
-        (add_le_add le_rfl (ENNReal.tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
+        (add_le_add le_rfl (ENNReal.tsum_iUnion_le (fun x ↦ μ (closedBall x (r x))) _))
       _ ≤ μ s + ε / 2 + ∑ i : Fin N, ε / 2 / N := by
         gcongr
         apply B
@@ -1021,7 +1021,7 @@ protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ wher
   nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
   covering := by
     intro s f fsubset ffine
-    let g : α → Set ℝ := fun x => {r | 0 < r ∧ closedBall x r ∈ f x}
+    let g : α → Set ℝ := fun x ↦ {r | 0 < r ∧ closedBall x r ∈ f x}
     have A : ∀ x ∈ s, ∀ δ > 0, (g x ∩ Ioo 0 δ).Nonempty := by
       intro x xs δ δpos
       obtain ⟨t, tf, ht⟩ : ∃ (t : Set α), t ∈ f x ∧ t ⊆ closedBall x (δ / 2) :=
@@ -1039,9 +1039,9 @@ protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ wher
           t ⊆ s ∧
             (∀ x ∈ t, r x ∈ g x ∩ Ioo 0 1) ∧
               μ (s \ ⋃ x ∈ t, closedBall x (r x)) = 0 ∧
-                t.PairwiseDisjoint fun x => closedBall x (r x) :=
+                t.PairwiseDisjoint fun x ↦ closedBall x (r x) :=
       exists_disjoint_closedBall_covering_ae μ g s A (fun _ => 1) fun _ _ => zero_lt_one
-    let F : α → α × Set α := fun x => (x, closedBall x (r x))
+    let F : α → α × Set α := fun x ↦ (x, closedBall x (r x))
     refine ⟨F '' t, ?_, ?_, ?_, ?_⟩
     · rintro - ⟨x, hx, rfl⟩; exact ts hx
     · rintro p ⟨x, hx, rfl⟩ q ⟨y, hy, rfl⟩ hxy

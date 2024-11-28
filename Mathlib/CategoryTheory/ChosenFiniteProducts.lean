@@ -62,7 +62,7 @@ open MonoidalCategory
 The unique map to the terminal object.
 -/
 def toUnit (X : C) : X ⟶ 𝟙_ C :=
-  terminal.isLimit.lift <| .mk _ <| .mk (fun x => x.as.elim) fun x => x.as.elim
+  terminal.isLimit.lift <| .mk _ <| .mk (fun x ↦ x.as.elim) fun x ↦ x.as.elim
 
 instance (X : C) : Unique (X ⟶ 𝟙_ C) where
   default := toUnit _

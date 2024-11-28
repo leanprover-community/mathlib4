@@ -101,9 +101,9 @@ protected def const (c : ℝ) : StieltjesFunction where
 
 /-- The sum of two Stieltjes functions is a Stieltjes function. -/
 protected def add (f g : StieltjesFunction) : StieltjesFunction where
-  toFun := fun x => f x + g x
+  toFun := fun x ↦ f x + g x
   mono' := f.mono.add g.mono
-  right_continuous' := fun x => (f.right_continuous x).add (g.right_continuous x)
+  right_continuous' := fun x ↦ (f.right_continuous x).add (g.right_continuous x)
 
 instance : AddZeroClass StieltjesFunction where
   add := StieltjesFunction.add
@@ -435,8 +435,8 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
   refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
-  have h_le1 : ∀ x, f (x - 1) ≤ leftLim f x := fun x => Monotone.le_leftLim f.mono (sub_one_lt x)
-  have h_le2 : ∀ x, leftLim f x ≤ f x := fun x => Monotone.leftLim_le f.mono le_rfl
+  have h_le1 : ∀ x, f (x - 1) ≤ leftLim f x := fun x ↦ Monotone.le_leftLim f.mono (sub_one_lt x)
+  have h_le2 : ∀ x, leftLim f x ≤ f x := fun x ↦ Monotone.leftLim_le f.mono le_rfl
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le (hf.comp ?_) hf h_le1 h_le2
   rw [tendsto_atTop_atTop]
   exact fun y => ⟨y + 1, fun z hyz => by rwa [le_sub_iff_add_le]⟩
@@ -454,7 +454,7 @@ lemma isProbabilityMeasure (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
-  ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
+  ⟨fun x ↦ ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
 
 lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :

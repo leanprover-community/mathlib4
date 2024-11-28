@@ -307,12 +307,12 @@ protected theorem continuous : Continuous f :=
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : ContMDiffOn I 𝓘(ℝ, G) ⊤ g (chartAt H c).source) :
-    ContMDiff I 𝓘(ℝ, G) ⊤ fun x => f x • g x := by
+    ContMDiff I 𝓘(ℝ, G) ⊤ fun x ↦ f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source :=
   -- Porting note: was a more readable `calc`
   -- calc
-  --   x ∈ tsupport fun x => f x • g x := hx
+  --   x ∈ tsupport fun x ↦ f x • g x := hx
   --   _ ⊆ tsupport f := tsupport_smul_subset_left _ _
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx

@@ -181,7 +181,7 @@ instance : Mul (𝕎 R) :=
   ⟨fun x y => eval (wittMul p) ![x, y]⟩
 
 instance : Neg (𝕎 R) :=
-  ⟨fun x => eval (wittNeg p) ![x]⟩
+  ⟨fun x ↦ eval (wittNeg p) ![x]⟩
 
 instance hasNatPow : Pow (𝕎 R) ℕ :=
   ⟨fun x n => eval (wittPow p n) ![x]⟩

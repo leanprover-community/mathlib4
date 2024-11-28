@@ -234,27 +234,27 @@ theorem antitone_mul_left [ExistsAddOfLE α] [PosMulMono α]
 
 theorem antitone_mul_right [ExistsAddOfLE α] [MulPosMono α]
     [AddRightMono α] [AddRightReflectLE α]
-    {a : α} (ha : a ≤ 0) : Antitone fun x => x * a := fun _ _ b_le_c =>
+    {a : α} (ha : a ≤ 0) : Antitone fun x ↦ x * a := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_right b_le_c ha
 
 theorem Monotone.const_mul_of_nonpos [ExistsAddOfLE α] [PosMulMono α]
     [AddRightMono α] [AddRightReflectLE α]
-    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x => a * f x :=
+    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x ↦ a * f x :=
   (antitone_mul_left ha).comp_monotone hf
 
 theorem Monotone.mul_const_of_nonpos [ExistsAddOfLE α] [MulPosMono α]
     [AddRightMono α] [AddRightReflectLE α]
-    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x => f x * a :=
+    (hf : Monotone f) (ha : a ≤ 0) : Antitone fun x ↦ f x * a :=
   (antitone_mul_right ha).comp_monotone hf
 
 theorem Antitone.const_mul_of_nonpos [ExistsAddOfLE α] [PosMulMono α]
     [AddRightMono α] [AddRightReflectLE α]
-    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x => a * f x :=
+    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x ↦ a * f x :=
   (antitone_mul_left ha).comp hf
 
 theorem Antitone.mul_const_of_nonpos [ExistsAddOfLE α] [MulPosMono α]
     [AddRightMono α] [AddRightReflectLE α]
-    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x => f x * a :=
+    (hf : Antitone f) (ha : a ≤ 0) : Monotone fun x ↦ f x * a :=
   (antitone_mul_right ha).comp hf
 
 theorem Antitone.mul_monotone [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
@@ -347,27 +347,27 @@ theorem strictAnti_mul_left [ExistsAddOfLE α] [PosMulStrictMono α]
 
 theorem strictAnti_mul_right [ExistsAddOfLE α] [MulPosStrictMono α]
     [AddRightStrictMono α] [AddRightReflectLT α]
-    {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
+    {a : α} (ha : a < 0) : StrictAnti fun x ↦ x * a := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_right b_lt_c ha
 
 theorem StrictMono.const_mul_of_neg [ExistsAddOfLE α] [PosMulStrictMono α]
     [AddRightStrictMono α] [AddRightReflectLT α]
-    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x => a * f x :=
+    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x ↦ a * f x :=
   (strictAnti_mul_left ha).comp_strictMono hf
 
 theorem StrictMono.mul_const_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
     [AddRightStrictMono α] [AddRightReflectLT α]
-    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x => f x * a :=
+    (hf : StrictMono f) (ha : a < 0) : StrictAnti fun x ↦ f x * a :=
   (strictAnti_mul_right ha).comp_strictMono hf
 
 theorem StrictAnti.const_mul_of_neg [ExistsAddOfLE α] [PosMulStrictMono α]
     [AddRightStrictMono α] [AddRightReflectLT α]
-    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x => a * f x :=
+    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x ↦ a * f x :=
   (strictAnti_mul_left ha).comp hf
 
 theorem StrictAnti.mul_const_of_neg [ExistsAddOfLE α] [MulPosStrictMono α]
     [AddRightStrictMono α] [AddRightReflectLT α]
-    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x => f x * a :=
+    (hf : StrictAnti f) (ha : a < 0) : StrictMono fun x ↦ f x * a :=
   (strictAnti_mul_right ha).comp hf
 
 end Monotone

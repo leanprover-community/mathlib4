@@ -218,7 +218,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
   classical
     cases nonempty_fintype β
     refine
-      (congr rfl (ext fun x => ?_)).mp
+      (congr rfl (ext fun x ↦ ?_)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
                 (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
@@ -247,7 +247,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
           simp
       refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
       simp
-    refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
+    refine (congr rfl (ext fun x ↦ ?_)).mp (h.inter h')
     simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
       mem_setOf_eq]
     constructor

@@ -559,11 +559,11 @@ theorem prod_mono_left (t : NonUnitalSubsemiring S) :
 
 theorem prod_top (s : NonUnitalSubsemiring R) :
     s.prod (⊤ : NonUnitalSubsemiring S) = s.comap (NonUnitalRingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 theorem top_prod (s : NonUnitalSubsemiring S) :
     (⊤ : NonUnitalSubsemiring R).prod s = s.comap (NonUnitalRingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[simp]
 theorem top_prod_top : (⊤ : NonUnitalSubsemiring R).prod (⊤ : NonUnitalSubsemiring S) = ⊤ :=
@@ -597,7 +597,7 @@ theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonem
 
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+  Set.ext fun x ↦ by simp [mem_sSup_of_directedOn Sne hS]
 
 end NonUnitalSubsemiring
 
@@ -709,7 +709,7 @@ def nonUnitalSubsemiringCongr (h : s = t) : s ≃+* t :=
 def sofLeftInverse' {g : S → R} {f : F} (h : Function.LeftInverse g f) : R ≃+* srange f :=
   { srangeRestrict f with
     toFun := srangeRestrict f
-    invFun := fun x => g (subtype (srange f) x)
+    invFun := fun x ↦ g (subtype (srange f) x)
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

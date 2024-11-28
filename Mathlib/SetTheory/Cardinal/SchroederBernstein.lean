@@ -85,7 +85,7 @@ variable {ι : Type u} (β : ι → Type v)
 
 /-- `sets β` -/
 private abbrev sets :=
-  { s : Set (∀ i, β i) | ∀ i : ι, s.InjOn fun x => x i }
+  { s : Set (∀ i, β i) | ∀ i : ι, s.InjOn fun x ↦ x i }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
 there is an element that injects into the others.
@@ -113,7 +113,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e,
+  ⟨i, ⟨fun j => ⟨s.restrict (fun x ↦ x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo

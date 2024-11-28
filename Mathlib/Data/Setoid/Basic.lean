@@ -117,7 +117,7 @@ protected def prod (r : Setoid α) (s : Setoid β) :
     Setoid (α × β) where
   r x y := r x.1 y.1 ∧ s x.2 y.2
   iseqv :=
-    ⟨fun x => ⟨r.refl' x.1, s.refl' x.2⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩,
+    ⟨fun x ↦ ⟨r.refl' x.1, s.refl' x.2⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩,
       fun h₁ h₂ => ⟨r.trans' h₁.1 h₂.1, s.trans' h₁.2 h₂.2⟩⟩
 
 lemma prod_apply {r : Setoid α} {s : Setoid β} {x₁ x₂ : α} {y₁ y₂ : β} :
@@ -167,7 +167,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
 instance : Min (Setoid α) :=
   ⟨fun r s =>
     ⟨fun x y => r x y ∧ s x y,
-      ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
+      ⟨fun x ↦ ⟨r.refl' x, s.refl' x⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
         ⟨r.trans' h1.1 h2.1, s.trans' h1.2 h2.2⟩⟩⟩⟩
 
 /-- The infimum of 2 equivalence relations r and s is the same relation as the infimum
@@ -337,7 +337,7 @@ def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
   left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
-  right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
+  right_inv _ := funext fun x ↦ Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
@@ -366,7 +366,7 @@ variable (r : Setoid α) (f : α → β)
     bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
   Equiv.ofBijective
-    ((@Quotient.lift _ (Set.range f) (ker f) fun x => ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
+    ((@Quotient.lift _ (Set.range f) (ker f) fun x ↦ ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
       Subtype.ext_val h)
     ⟨fun x y h => ker_lift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
       fun ⟨_, z, hz⟩ =>

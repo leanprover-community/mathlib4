@@ -137,8 +137,8 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
   | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
     rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.abs
     show
-      abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
-        abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
+      abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x ↦ q.P.wMap g (f₀ x)) =
+        abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x ↦ q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
   | trans x y z _ _ ih₁ ih₂ =>
     apply MvQPF.WEquiv.trans
@@ -176,7 +176,7 @@ def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
 
 /-- Access W-type underlying `Fix F`  -/
 def fixToW : Fix F α → q.P.W α :=
-  Quotient.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
+  Quotient.lift wrepr (recF_eq_of_wEquiv α fun x ↦ q.P.wMk' (repr x))
 
 /-- Constructor for `Fix F` -/
 def Fix.mk (x : F (append1 α (Fix F α))) : Fix F α :=
@@ -203,8 +203,8 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 
 theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a → q.P.W α) :
-    Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦q.P.wMk a f' f⟧ := by
-  have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x => ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ := by
+    Fix.mk (abs ⟨a, q.P.appendContents f' fun x ↦ ⟦f x⟧⟩) = ⟦q.P.wMk a f' f⟧ := by
+  have : Fix.mk (abs ⟨a, q.P.appendContents f' fun x ↦ ⟦f x⟧⟩) = ⟦wrepr (q.P.wMk a f' f)⟧ := by
     apply Quot.sound; apply wEquiv.abs'
     rw [MvPFunctor.wDest'_wMk', abs_map, abs_repr, ← abs_map, MvPFunctor.map_eq]
     conv =>
@@ -232,7 +232,7 @@ theorem Fix.ind_rec {β : Type u} (g₁ g₂ : Fix F α → β)
   rw [← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
   congr 2
   rw [MvPFunctor.appendContents, appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
-  have : (g₁ ∘ fun x => ⟦f x⟧) = g₂ ∘ fun x => ⟦f x⟧ := by
+  have : (g₁ ∘ fun x ↦ ⟦f x⟧) = g₂ ∘ fun x ↦ ⟦f x⟧ := by
     ext x
     exact ih x
   rw [this]

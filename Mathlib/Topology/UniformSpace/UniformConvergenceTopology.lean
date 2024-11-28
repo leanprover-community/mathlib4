@@ -169,11 +169,11 @@ instance [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ[𝔖] β`. -/
 def UniformOnFun.ofFun (𝔖) : (α → β) ≃ (α →ᵤ[𝔖] β) :=
-  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+  ⟨fun x ↦ x, fun x ↦ x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `f : α →ᵤ β` as an element of `α → β`. -/
 def UniformFun.toFun : (α →ᵤ β) ≃ (α → β) :=
@@ -211,7 +211,7 @@ order to be able to state that it has a lower adjoint (see `UniformFun.gc`). -/
 protected theorem isBasis_gen (𝓑 : Filter <| β × β) :
     IsBasis (fun V : Set (β × β) => V ∈ 𝓑) (UniformFun.gen α β) :=
   ⟨⟨univ, univ_mem⟩, @fun U V hU hV =>
-    ⟨U ∩ V, inter_mem hU hV, fun _ huv => ⟨fun x => (huv x).left, fun x => (huv x).right⟩⟩⟩
+    ⟨U ∩ V, inter_mem hU hV, fun _ huv => ⟨fun x ↦ (huv x).left, fun x ↦ (huv x).right⟩⟩⟩
 
 /-- For `𝓕 : Filter (β × β)`, this is the set of all `UniformFun.gen α β V` for
 `V ∈ 𝓕` as a bundled `FilterBasis` over `(α →ᵤ β) × (α →ᵤ β)`. This will only be applied to
@@ -1138,7 +1138,7 @@ variable {α β γ ι : Type*} [UniformSpace β] [UniformSpace γ] {p : Filter �
 theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α → β) (f : α → β)
     (hF : ∀ i x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i x => g (F i x)) (fun x => g (f x)) p := by
+    TendstoUniformly (fun i x => g (F i x)) (fun x ↦ g (f x)) p := by
   rw [uniformContinuousOn_iff_restrict] at hg
   lift F to ι → α → s using hF with F' hF'
   lift f to α → s using hf with f' hf'
@@ -1151,7 +1151,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α �
 theorem UniformContinuousOn.comp_tendstoUniformly_eventually (s : Set β) (F : ι → α → β) (f : α → β)
     (hF : ∀ᶠ i in p, ∀ x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i => fun x => g (F i x)) (fun x => g (f x)) p := by
+    TendstoUniformly (fun i => fun x ↦ g (F i x)) (fun x ↦ g (f x)) p := by
   classical
   rw [eventually_iff_exists_mem] at hF
   obtain ⟨s', hs', hs⟩ := hF

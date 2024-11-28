@@ -73,11 +73,11 @@ theorem tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
 variable [TopologicalSpace α]
 
 theorem continuousOn_floor (n : ℤ) :
-    ContinuousOn (fun x => floor x : α → α) (Ico n (n + 1) : Set α) :=
+    ContinuousOn (fun x ↦ floor x : α → α) (Ico n (n + 1) : Set α) :=
   (continuousOn_congr <| floor_eq_on_Ico' n).mpr continuousOn_const
 
 theorem continuousOn_ceil (n : ℤ) :
-    ContinuousOn (fun x => ceil x : α → α) (Ioc (n - 1) n : Set α) :=
+    ContinuousOn (fun x ↦ ceil x : α → α) (Ioc (n - 1) n : Set α) :=
   (continuousOn_congr <| ceil_eq_on_Ioc' n).mpr continuousOn_const
 
 section OrderClosedTopology
@@ -120,37 +120,37 @@ theorem tendsto_ceil_right_pure_add_one (n : ℤ) :
     Tendsto (ceil : α → ℤ) (𝓝[>] n) (pure (n + 1)) := by
   simpa only [floor_intCast] using tendsto_ceil_right_pure_floor_add_one (n : α)
 
-theorem tendsto_floor_right (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
+theorem tendsto_floor_right (n : ℤ) : Tendsto (fun x ↦ floor x : α → α) (𝓝[≥] n) (𝓝[≥] n) :=
   ((tendsto_pure_pure _ _).comp (tendsto_floor_right_pure n)).mono_right <|
     pure_le_nhdsWithin le_rfl
 
-theorem tendsto_floor_right' (n : ℤ) : Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
+theorem tendsto_floor_right' (n : ℤ) : Tendsto (fun x ↦ floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
   (tendsto_floor_right n).mono_right inf_le_left
 
-theorem tendsto_ceil_left (n : ℤ) : Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝[≤] n) :=
+theorem tendsto_ceil_left (n : ℤ) : Tendsto (fun x ↦ ceil x : α → α) (𝓝[≤] n) (𝓝[≤] n) :=
   ((tendsto_pure_pure _ _).comp (tendsto_ceil_left_pure n)).mono_right <|
     pure_le_nhdsWithin le_rfl
 
 theorem tendsto_ceil_left' (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝 n) :=
+    Tendsto (fun x ↦ ceil x : α → α) (𝓝[≤] n) (𝓝 n) :=
   (tendsto_ceil_left n).mono_right inf_le_left
 
 theorem tendsto_floor_left (n : ℤ) :
-    Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝[≤] (n - 1)) :=
+    Tendsto (fun x ↦ floor x : α → α) (𝓝[<] n) (𝓝[≤] (n - 1)) :=
   ((tendsto_pure_pure _ _).comp (tendsto_floor_left_pure_sub_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_sub]; exact pure_le_nhdsWithin le_rfl
 
 theorem tendsto_ceil_right (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
+    Tendsto (fun x ↦ ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
   ((tendsto_pure_pure _ _).comp (tendsto_ceil_right_pure_add_one n)).mono_right <| by
     rw [← @cast_one α, ← cast_add]; exact pure_le_nhdsWithin le_rfl
 
 theorem tendsto_floor_left' (n : ℤ) :
-    Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝 (n - 1)) :=
+    Tendsto (fun x ↦ floor x : α → α) (𝓝[<] n) (𝓝 (n - 1)) :=
   (tendsto_floor_left n).mono_right inf_le_left
 
 theorem tendsto_ceil_right' (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
+    Tendsto (fun x ↦ ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
   (tendsto_ceil_right n).mono_right inf_le_left
 
 end OrderClosedTopology

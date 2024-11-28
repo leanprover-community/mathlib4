@@ -214,7 +214,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
 variable (f)
 
 theorem bUnion_ptsOfPeriod : ⋃ n > 0, ptsOfPeriod f n = periodicPts f :=
-  Set.ext fun x => by simp [mem_periodicPts]
+  Set.ext fun x ↦ by simp [mem_periodicPts]
 
 theorem iUnion_pNat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
   iSup_subtype.trans <| bUnion_ptsOfPeriod f
@@ -546,13 +546,13 @@ The period of a multiplicative action of `g` on `a` is the smallest positive `n`
 -/
 @[to_additive "The period of an additive action of `g` on `a` is the smallest positive `n`
 such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
-noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
+noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x ↦ m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
 @[to_additive "`AddAction.period m a` is definitionally equal to
 `Function.minimalPeriod (m +ᵥ ·) a`"]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
-    MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
+    MulAction.period m a = minimalPeriod (fun x ↦ m • x) a := rfl
 
 /-- `m ^ (period m a)` fixes `a`. -/
 @[to_additive (attr := simp) "`(period m a) • m` fixes `a`."]

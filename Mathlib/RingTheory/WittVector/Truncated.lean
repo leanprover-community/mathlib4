@@ -172,7 +172,7 @@ instance : Mul (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out * y.out)⟩
 
 instance : Neg (TruncatedWittVector p n R) :=
-  ⟨fun x => truncateFun n (-x.out)⟩
+  ⟨fun x ↦ truncateFun n (-x.out)⟩
 
 instance : Sub (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out - y.out)⟩

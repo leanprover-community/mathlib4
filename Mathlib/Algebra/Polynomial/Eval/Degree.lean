@@ -178,7 +178,7 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
-    eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
+    eval₂ f t (p.comp^[k] q) = (fun x ↦ eval₂ f x p)^[k] (eval₂ f t q) := by
   induction k with
   | zero => simp
   | succ k IH => rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
@@ -191,7 +191,7 @@ variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
 
 @[simp]
 theorem iterate_comp_eval :
-    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
+    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x ↦ p.eval x)^[k] (q.eval t) :=
   iterate_comp_eval₂ _
 
 end

@@ -50,7 +50,7 @@ attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFu
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
-  ⟨fun x => x.1⟩
+  ⟨fun x ↦ x.1⟩
 
 lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
     {f g : Y ⟶ X} (h : f = g) (hf : S f) :

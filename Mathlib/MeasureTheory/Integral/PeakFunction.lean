@@ -55,7 +55,7 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
     (hiφ : Tendsto (fun i ↦ ∫ x in t, φ i x ∂μ) l (𝓝 1))
     (h'iφ : ∀ᶠ i in l, AEStronglyMeasurable (φ i) (μ.restrict s))
     (hmg : IntegrableOn g s μ) (hcg : Tendsto g (𝓝[s] x₀) (𝓝 a)) :
-    ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ := by
+    ∀ᶠ i in l, IntegrableOn (fun x ↦ φ i x • g x) s μ := by
   obtain ⟨u, u_open, x₀u, ut, hu⟩ :
       ∃ u, IsOpen u ∧ x₀ ∈ u ∧ s ∩ u ⊆ t ∧ ∀ x ∈ u ∩ s, g x ∈ ball a 1 := by
     rcases mem_nhdsWithin.1 (Filter.inter_mem h'st (hcg (ball_mem_nhds _ zero_lt_one)))
@@ -67,12 +67,12 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
   filter_upwards [tendstoUniformlyOn_iff.1 (hlφ u u_open x₀u) 1 zero_lt_one,
     (tendsto_order.1 hiφ).2 1 zero_lt_one, h'iφ] with i hi h'i h''i
   have I : IntegrableOn (φ i) t μ := .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
-  have A : IntegrableOn (fun x => φ i x • g x) (s \ u) μ := by
+  have A : IntegrableOn (fun x ↦ φ i x • g x) (s \ u) μ := by
     refine Integrable.smul_of_top_right (hmg.mono diff_subset le_rfl) ?_
     apply memℒp_top_of_bound (h''i.mono_set diff_subset) 1
     filter_upwards [self_mem_ae_restrict (hs.diff u_open.measurableSet)] with x hx
     simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
-  have B : IntegrableOn (fun x => φ i x • g x) (s ∩ u) μ := by
+  have B : IntegrableOn (fun x ↦ φ i x • g x) (s ∩ u) μ := by
     apply Integrable.smul_of_top_left
     · exact IntegrableOn.mono_set I ut
     · apply
@@ -144,7 +144,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ ∫ x in t, ‖φ i x‖ * δ ∂μ := by
         apply setIntegral_mono_set
         · exact I.norm.mul_const _
-        · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
+        · exact Eventually.of_forall fun x ↦ mul_nonneg (norm_nonneg _) δpos.le
         · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply setIntegral_congr_fun ht fun x hx => ?_
@@ -274,7 +274,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     intro n x hx
     apply mul_nonneg (inv_nonneg.2 _) (pow_nonneg (hnc x hx) _)
     exact setIntegral_nonneg hs.measurableSet fun x hx => pow_nonneg (hnc x hx) _
-  have I : ∀ n, IntegrableOn (fun x => c x ^ n) s μ := fun n =>
+  have I : ∀ n, IntegrableOn (fun x ↦ c x ^ n) s μ := fun n =>
     ContinuousOn.integrableOn_compact hs (hc.pow n)
   have J : ∀ n, 0 ≤ᵐ[μ.restrict s] fun x : α => c x ^ n := by
     intro n

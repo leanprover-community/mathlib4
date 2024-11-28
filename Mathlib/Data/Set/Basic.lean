@@ -134,7 +134,7 @@ section SetCoe
 
 variable {α : Type u}
 
-instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
+instance (s : Set α) : CoeTC s α := ⟨fun x ↦ x.1⟩
 
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
@@ -152,11 +152,11 @@ theorem SetCoe.exists {s : Set α} {p : s → Prop} :
 
 theorem SetCoe.exists' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
     (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
-  (@SetCoe.exists _ _ fun x => p x.1 x.2).symm
+  (@SetCoe.exists _ _ fun x ↦ p x.1 x.2).symm
 
 theorem SetCoe.forall' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
     (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x.1 x.2 :=
-  (@SetCoe.forall _ _ fun x => p x.1 x.2).symm
+  (@SetCoe.forall _ _ fun x ↦ p x.1 x.2).symm
 
 @[simp]
 theorem set_coe_cast :
@@ -518,7 +518,7 @@ theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔
 @[deprecated (since := "2024-03-23")] alias ball_empty_iff := forall_mem_empty
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
-  ⟨fun x => x.2⟩
+  ⟨fun x ↦ x.2⟩
 
 @[simp]
 theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
@@ -545,7 +545,7 @@ theorem setOf_true : { _x : α | True } = univ :=
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
   eq_empty_iff_forall_not_mem.trans
-    ⟨fun H => ⟨fun x => H x trivial⟩, fun H x _ => @IsEmpty.false α H x⟩
+    ⟨fun H => ⟨fun x ↦ H x trivial⟩, fun H x _ => @IsEmpty.false α H x⟩
 
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
   not_isEmpty_of_nonempty α <| univ_eq_empty_iff.1 e.symm
@@ -582,7 +582,7 @@ theorem not_subset_iff_exists_mem_not_mem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
 
 theorem univ_unique [Unique α] : @Set.univ α = {default} :=
-  Set.ext fun x => iff_of_true trivial <| Subsingleton.elim x default
+  Set.ext fun x ↦ iff_of_true trivial <| Subsingleton.elim x default
 
 theorem ssubset_univ_iff : s ⊂ univ ↔ s ≠ univ :=
   lt_top_iff_ne_top
@@ -964,7 +964,7 @@ theorem insert_union_distrib (a : α) (s t : Set α) : insert a (s ∪ t) = inse
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h ↦ eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
-    congr_arg (fun x => insert x s)⟩
+    congr_arg (fun x ↦ insert x s)⟩
 
 -- useful in proofs by induction
 theorem forall_of_forall_insert {P : α → Prop} {a : α} {s : Set α} (H : ∀ x, x ∈ insert a s → P x)
@@ -1009,7 +1009,7 @@ def subtypeInsertEquivOption
 
 /- porting note: instance was in core in Lean3 -/
 instance : LawfulSingleton α (Set α) :=
-  ⟨fun x => Set.ext fun a ↦ by
+  ⟨fun x ↦ Set.ext fun a ↦ by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩
 
@@ -1432,7 +1432,7 @@ theorem inter_subset (a b c : Set α) : a ∩ b ⊆ c ↔ a ⊆ bᶜ ∪ c :=
   forall_congr' fun _ => and_imp.trans <| imp_congr_right fun _ => imp_iff_not_or
 
 theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s ⊆ t :=
-  (not_subset.trans <| exists_congr fun x => by simp [mem_compl]).symm
+  (not_subset.trans <| exists_congr fun x ↦ by simp [mem_compl]).symm
 
 /-! ### Lemmas about set difference -/
 
@@ -1871,7 +1871,7 @@ theorem ite_inter_of_inter_eq (t : Set α) {s₁ s₂ s : Set α} (h : s₁ ∩ 
 
 theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ u \ t ⊆ s' := by
   simp only [subset_def, ← forall_and]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   by_cases hx : x ∈ t <;> simp [*, Set.ite]
 
 theorem ite_eq_of_subset_left (t : Set α) {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) :
@@ -2086,35 +2086,35 @@ section Monotone
 variable {α β : Type*}
 
 theorem Monotone.inter [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ∩ g x :=
+    Monotone fun x ↦ f x ∩ g x :=
   hf.inf hg
 
 theorem MonotoneOn.inter [Preorder β] {f g : β → Set α} {s : Set β} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => f x ∩ g x) s :=
+    (hg : MonotoneOn g s) : MonotoneOn (fun x ↦ f x ∩ g x) s :=
   hf.inf hg
 
 theorem Antitone.inter [Preorder β] {f g : β → Set α} (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ∩ g x :=
+    Antitone fun x ↦ f x ∩ g x :=
   hf.inf hg
 
 theorem AntitoneOn.inter [Preorder β] {f g : β → Set α} {s : Set β} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => f x ∩ g x) s :=
+    (hg : AntitoneOn g s) : AntitoneOn (fun x ↦ f x ∩ g x) s :=
   hf.inf hg
 
 theorem Monotone.union [Preorder β] {f g : β → Set α} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ∪ g x :=
+    Monotone fun x ↦ f x ∪ g x :=
   hf.sup hg
 
 theorem MonotoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (fun x => f x ∪ g x) s :=
+    (hg : MonotoneOn g s) : MonotoneOn (fun x ↦ f x ∪ g x) s :=
   hf.sup hg
 
 theorem Antitone.union [Preorder β] {f g : β → Set α} (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ∪ g x :=
+    Antitone fun x ↦ f x ∪ g x :=
   hf.sup hg
 
 theorem AntitoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (fun x => f x ∪ g x) s :=
+    (hg : AntitoneOn g s) : AntitoneOn (fun x ↦ f x ∪ g x) s :=
   hf.sup hg
 
 namespace Set

@@ -164,7 +164,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         dsimp
         simp only [map_star, RCLike.star_def] }
   suffices rng = ⊤ from
-    fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
+    fun x ↦ show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
     Stone-Weierstrass theorem, it suffices to show that the image of the Gelfand transform separates
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
@@ -186,7 +186,7 @@ and the continuous functions on its `characterSpace`. -/
 noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) :=
   StarAlgEquiv.ofBijective
     (show A →⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) from
-      { gelfandTransform ℂ A with map_star' := fun x => gelfandTransform_map_star x })
+      { gelfandTransform ℂ A with map_star' := fun x ↦ gelfandTransform_map_star x })
     (gelfandTransform_bijective A)
 
 end ComplexCStarAlgebra

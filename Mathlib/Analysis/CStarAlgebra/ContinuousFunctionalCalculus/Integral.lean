@@ -59,7 +59,7 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
-  let fc : X → C(spectrum 𝕜 a, 𝕜) := fun x => ⟨_, (hf₁ x).restrict⟩
+  let fc : X → C(spectrum 𝕜 a, 𝕜) := fun x ↦ ⟨_, (hf₁ x).restrict⟩
   have fc_integrable : Integrable fc μ := by
     refine ⟨hf₂.aestronglyMeasurable, ?_⟩
     refine hbound_finite_integral.mono <| .of_forall fun x ↦ ?_
@@ -77,7 +77,7 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
 /-- The continuous functional calculus commutes with integration. -/
 lemma cfc_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
-    (hf : Continuous (fun x => (spectrum 𝕜 a).restrict (f x)).uncurry)
+    (hf : Continuous (fun x ↦ (spectrum 𝕜 a).restrict (f x)).uncurry)
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
@@ -114,7 +114,7 @@ lemma cfcₙ_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
-  let fc : X → C(quasispectrum 𝕜 a, 𝕜)₀ := fun x => ⟨⟨_, (hf₁ x).restrict⟩, hf₂ x⟩
+  let fc : X → C(quasispectrum 𝕜 a, 𝕜)₀ := fun x ↦ ⟨⟨_, (hf₁ x).restrict⟩, hf₂ x⟩
   have fc_integrable : Integrable fc μ := by
     refine ⟨hf₃.aestronglyMeasurable, ?_⟩
     refine hbound_finite_integral.mono <| .of_forall fun x ↦ ?_
@@ -133,7 +133,7 @@ lemma cfcₙ_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
 /-- The non-unital continuous functional calculus commutes with integration. -/
 lemma cfcₙ_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(quasispectrum 𝕜 a, 𝕜)₀]
-    (hf : Continuous (fun x => (quasispectrum 𝕜 a).restrict (f x)).uncurry)
+    (hf : Continuous (fun x ↦ (quasispectrum 𝕜 a).restrict (f x)).uncurry)
     (hf₂ : ∀ x, f x 0 = 0)
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :

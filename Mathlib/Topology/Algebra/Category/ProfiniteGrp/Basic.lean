@@ -94,7 +94,7 @@ instance : ConcreteCategory ProfiniteGrp where
   forget_faithful :=
     { map_injective := by
         intro G H f g h
-        exact DFunLike.ext _ _ <| fun x => congr_fun h x }
+        exact DFunLike.ext _ _ <| fun x ↦ congr_fun h x }
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
 compact and totally disconnected topological group.
@@ -215,7 +215,7 @@ abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt
   π :=
   { app := fun j => {
-      toFun := fun x => x.1 j
+      toFun := fun x ↦ x.1 j
       map_one' := rfl
       map_mul' := fun x y => rfl
       continuous_toFun := by
@@ -224,7 +224,7 @@ abbrev limitCone : Limits.Cone F where
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]
       congr
-      exact funext fun x => (x.2 f).symm }
+      exact funext fun x ↦ (x.2 f).symm }
 
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where

@@ -332,7 +332,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
     exact
       separable_prod'
         (fun x _hx y _hy hxy =>
-          @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
+          @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x ↦ f x)
             (fun x y hxy => Subtype.eq <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
         fun _ _ => separable_X_sub_C⟩
 
@@ -583,7 +583,7 @@ variable {F}
 theorem Algebra.isSeparable_iff :
     Algebra.IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ IsSeparable F x :=
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
-    fun h ↦ ⟨fun x => (h x).2⟩⟩
+    fun h ↦ ⟨fun x ↦ (h x).2⟩⟩
 
 variable {E : Type*}
 
@@ -694,13 +694,13 @@ include f
 variable {F} in
 theorem IsSeparable.of_algHom {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
   let _ : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
+  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x ↦ (f.commutes x).symm
   exact h.tower_bot
 
 
 variable (E') in
 theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSeparable F E :=
-  ⟨fun x => (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
+  ⟨fun x ↦ (Algebra.IsSeparable.isSeparable F (f x)).of_algHom⟩
 
 end
 
@@ -759,7 +759,7 @@ theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K p
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   classical
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
-  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
+  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x ↦ Multiset.mem_toFinset),
     ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 

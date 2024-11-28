@@ -269,11 +269,11 @@ theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : �
 @[simp]
 theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
     (i : ι) : (sumAddHom f).comp (singleAddHom β i) = f i :=
-  AddMonoidHom.ext fun x => sumAddHom_single f i x
+  AddMonoidHom.ext fun x ↦ sumAddHom_single f i x
 
 /-- While we didn't need decidable instances to define it, we do to reduce it to a sum -/
 theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
-    [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x => φ x := by
+    [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x ↦ φ x := by
   rcases f with ⟨f, s, hf⟩
   change (∑ i ∈ _, _) = ∑ i ∈ _ with _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]

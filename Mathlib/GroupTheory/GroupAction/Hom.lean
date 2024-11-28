@@ -267,12 +267,12 @@ theorem comp_apply
 @[to_additive (attr := simp)]
 theorem id_comp (f : X →ₑ[φ] Y) :
     (MulActionHom.id N).comp f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[to_additive (attr := simp)]
 theorem comp_id (f : X →ₑ[φ] Y) :
     f.comp (MulActionHom.id M) = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[to_additive (attr := simp)]
 theorem comp_assoc {Q T : Type*} [SMul Q T]
@@ -556,11 +556,11 @@ theorem comp_apply
 
 @[simp]
 theorem id_comp (f : A →ₑ+[φ] B) : comp (DistribMulActionHom.id N) f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[simp]
 theorem comp_id (f : A →ₑ+[φ] B) : f.comp (DistribMulActionHom.id M) = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[simp]
 theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
@@ -777,11 +777,11 @@ theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.Comp
 
 @[simp]
 theorem id_comp (f : R →ₑ+*[φ] S) : (MulSemiringActionHom.id N).comp f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 @[simp]
 theorem comp_id (f : R →ₑ+*[φ] S) : f.comp (MulSemiringActionHom.id M) = f :=
-  ext fun x => by rw [comp_apply, id_apply]
+  ext fun x ↦ by rw [comp_apply, id_apply]
 
 /-- The inverse of a bijective `MulSemiringActionHom` is a `MulSemiringActionHom`. -/
 @[simps]

@@ -143,7 +143,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
       fun h ↦ ?_⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
-    refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
+    refine h (ext fun x ↦ (apply_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
   · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
@@ -362,7 +362,7 @@ variable {R : Type*} [Ring R]
   `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
 
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
-  ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
+  ∃ c : ℝ, 0 < c ∧ (fun x ↦ (f x) ^ c) = g
 
 /-- Equivalence of multiplicative ring norms is reflexive. -/
 lemma equiv_refl (f : MulRingNorm R) : equiv f f := by

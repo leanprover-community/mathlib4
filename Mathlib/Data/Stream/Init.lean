@@ -81,7 +81,7 @@ theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stre
   ⟨by rw [← get_zero_cons x s, h, get_zero_cons],
     Stream'.ext fun n => by rw [← get_succ_cons n _ x, h, get_succ_cons]⟩
 
-theorem cons_injective_left (s : Stream' α) : Function.Injective fun x => cons x s :=
+theorem cons_injective_left (s : Stream' α) : Function.Injective fun x ↦ cons x s :=
   cons_injective2.left _
 
 theorem cons_injective_right (x : α) : Function.Injective (cons x) :=

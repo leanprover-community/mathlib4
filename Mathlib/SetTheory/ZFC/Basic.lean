@@ -239,7 +239,7 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
       exact mem_wf_aux H⟩
 
 theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
-  ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
+  ⟨fun x ↦ mem_wf_aux <| Equiv.refl x⟩
 
 instance : IsWellFounded PSet (· ∈ ·) :=
   ⟨mem_wf⟩
@@ -309,7 +309,7 @@ theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
 
 @[simp]
-theorem empty_subset (x : PSet.{u}) : (∅ : PSet) ⊆ x := fun x => x.elim
+theorem empty_subset (x : PSet.{u}) : (∅ : PSet) ⊆ x := fun x ↦ x.elim
 
 @[simp]
 theorem not_nonempty_empty : ¬PSet.Nonempty ∅ := by simp [PSet.Nonempty]
@@ -618,7 +618,7 @@ def evalAux :
   | 0 => ⟨fun a ↦ ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
     let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
-      @Quotient.lift _ _ PSet.setoid (fun x => evalAux.1 (a.f x)) fun _ _ h =>
+      @Quotient.lift _ _ PSet.setoid (fun x ↦ evalAux.1 (a.f x)) fun _ _ h =>
         evalAux.2 _ _ (a.2 _ _ h)
     ⟨F, fun b c h =>
       funext <|
@@ -677,13 +677,13 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
-    have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
+    have I : (x : ZFSet) → Definable n (F x) := fun x ↦ allDefinable (F x)
     refine @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, ?_⟩ _ ?_
     · dsimp only [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
-    refine funext fun q => Quotient.inductionOn q fun x => ?_
+    refine funext fun q => Quotient.inductionOn q fun x ↦ ?_
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 
@@ -855,7 +855,7 @@ instance : Insert ZFSet ZFSet :=
   ⟨ZFSet.Insert⟩
 
 instance : Singleton ZFSet ZFSet :=
-  ⟨fun x => insert x ∅⟩
+  ⟨fun x ↦ insert x ∅⟩
 
 instance : LawfulSingleton ZFSet ZFSet :=
   ⟨fun _ => rfl⟩
@@ -1598,7 +1598,7 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
 
 /-- Function value -/
 def fval (F A : Class.{u}) : Class.{u} :=
-  iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
+  iota fun y => ToSet (fun x ↦ F (ZFSet.pair x y)) A
 
 @[inherit_doc]
 infixl:100 " ′ " => fval

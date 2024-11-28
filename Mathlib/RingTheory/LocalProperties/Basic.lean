@@ -186,7 +186,7 @@ theorem RingHom.ofLocalizationSpan_iff_finite :
   · intro h s; exact h s
   · intro h s hs hs'
     obtain ⟨s', h₁, h₂⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
-    exact h s' h₂ fun x => hs' ⟨_, h₁ x.prop⟩
+    exact h s' h₂ fun x ↦ hs' ⟨_, h₁ x.prop⟩
 
 theorem RingHom.ofLocalizationSpanTarget_iff_finite :
     RingHom.OfLocalizationSpanTarget @P ↔ RingHom.OfLocalizationFiniteSpanTarget @P := by
@@ -198,7 +198,7 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
   · intro h s; exact h s
   · intro h s hs hs'
     obtain ⟨s', h₁, h₂⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
-    exact h s' h₂ fun x => hs' ⟨_, h₁ x.prop⟩
+    exact h s' h₂ fun x ↦ hs' ⟨_, h₁ x.prop⟩
 
 theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :

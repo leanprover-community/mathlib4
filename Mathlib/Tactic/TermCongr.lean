@@ -543,7 +543,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
     -- We do not yet support congruences in the binding domain for lambdas.
     discard <| resDom.defeq
-    withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+    withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x ↦ do
       let lhsb := lhs.bindingBody!.instantiate1 x
       let rhsb := rhs.bindingBody!.instantiate1 x
       let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb
@@ -568,7 +568,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     else
       -- We do not yet support congruences in the binding domain for dependent pi types.
       discard <| resDom.defeq
-      withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+      withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x ↦ do
         let lhsb := lhs.bindingBody!.instantiate1 x
         let rhsb := rhs.bindingBody!.instantiate1 x
         let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb

@@ -405,7 +405,7 @@ theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
 @[measurability]
-theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
+theorem aemeasurable_id' : AEMeasurable (fun x ↦ x) μ :=
   measurable_id.aemeasurable
 
 theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : δ → β} (hg : Measurable g)

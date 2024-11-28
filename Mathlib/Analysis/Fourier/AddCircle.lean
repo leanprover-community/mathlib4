@@ -25,7 +25,7 @@ This file contains basic results on Fourier series for functions on the additive
 * `haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`. (Note
   that this is not the same normalisation as the standard measure defined in `Integral.Periodic`,
   so we do not declare it as a `MeasureSpace` instance, to avoid confusion.)
-* for `n : ℤ`, `fourier n` is the monomial `fun x => exp (2 π i n x / T)`,
+* for `n : ℤ`, `fourier n` is the monomial `fun x ↦ exp (2 π i n x / T)`,
   bundled as a continuous map from `AddCircle T` to `ℂ`.
 * `fourierBasis` is the Hilbert basis of `Lp ℂ 2 haarAddCircle` given by the images of the
   monomials `fourier n`.
@@ -97,7 +97,7 @@ open AddCircle
 
 section Monomials
 
-/-- The family of exponential monomials `fun x => exp (2 π i n x / T)`, parametrized by `n : ℤ` and
+/-- The family of exponential monomials `fun x ↦ exp (2 π i n x / T)`, parametrized by `n : ℤ` and
 considered as bundled continuous maps from `ℝ / ℤ • T` to `ℂ`. -/
 def fourier (n : ℤ) : C(AddCircle T, ℂ) where
   toFun x := toCircle (n • x :)
@@ -161,7 +161,7 @@ theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
 
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
-  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.abs_coe _
+  have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x ↦ Circle.abs_coe _
   simp_rw [this]
   exact @ciSup_const _ _ _ Zero.instNonempty _
 
@@ -297,7 +297,7 @@ theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     smul_assoc, integral_smul]
 
 theorem fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
-    fourierCoeff (fun x => c * f x) n = c * fourierCoeff f n :=
+    fourierCoeff (fun x ↦ c * f x) n = c * fourierCoeff f n :=
   fourierCoeff.const_smul f c n
 
 /-- For a function on `ℝ`, the Fourier coefficients of `f` on `[a, b]` are defined as the
@@ -323,7 +323,7 @@ theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ
   apply fourierCoeff.const_smul
 
 theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
-    fourierCoeffOn hab (fun x => c * f x) n = c * fourierCoeffOn hab f n :=
+    fourierCoeffOn hab (fun x ↦ c * f x) n = c * fourierCoeffOn hab f n :=
   fourierCoeffOn.const_smul _ _ _ _
 
 theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :

@@ -104,10 +104,10 @@ theorem sum_smul_dirac [Countable α] [MeasurableSingletonClass α] (μ : Measur
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,
 write the measure of a set `s` as the sum of the measure of `{x}` for all `x ∈ s`. -/
 theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass α] (μ : Measure α)
-    (s : Set α) (hs : MeasurableSet s) : (∑' x : α, s.indicator (fun x => μ {x}) x) = μ s := by
+    (s : Set α) (hs : MeasurableSet s) : (∑' x : α, s.indicator (fun x ↦ μ {x}) x) = μ s := by
   classical
   calc
-    (∑' x : α, s.indicator (fun x => μ {x}) x) =
+    (∑' x : α, s.indicator (fun x ↦ μ {x}) x) =
       Measure.sum (fun a ↦ μ {a} • Measure.dirac a) s := by
       simp only [Measure.sum_apply _ hs, Measure.smul_apply, smul_eq_mul, Measure.dirac_apply,
         Set.indicator_apply, mul_ite, Pi.one_apply, mul_one, mul_zero]

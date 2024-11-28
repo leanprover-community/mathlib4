@@ -95,14 +95,14 @@ theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 
-theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
+theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x ↦ x * x) l).sum := by
   simp_rw [← pow_two, list_sum_sq]
 
 theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   multiset_sum_pow_char _ _
 
 theorem multiset_sum_mul_self (l : Multiset R) :
-    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
+    l.sum * l.sum = (Multiset.map (fun x ↦ x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
   sum_pow_char _ _ _

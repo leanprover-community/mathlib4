@@ -180,7 +180,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
 noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
   { colimitOne F,
     colimitMul F with
-    one_mul := fun x => by
+    one_mul := fun x ↦ by
       refine Quot.inductionOn x ?_
       intro x
       obtain ⟨j, x⟩ := x
@@ -188,7 +188,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
         one_mul, F.map_id]
       -- Porting note: `id_apply` does not work here, but the two sides are def-eq
       rfl
-    mul_one := fun x => by
+    mul_one := fun x ↦ by
       refine Quot.inductionOn x ?_
       intro x
       obtain ⟨j, x⟩ := x
@@ -288,12 +288,12 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
 @[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
-  fac t j := MonoidHom.ext fun x => congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
+  fac t j := MonoidHom.ext fun x ↦ congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
   uniq t m h := MonoidHom.ext fun y => congr_fun
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
-        fun j => funext fun x => DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
+        fun j => funext fun x ↦ DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :

@@ -68,27 +68,27 @@ theorem Ico_add_bij : BijOn (· + d) (Ico a b) (Ico (a + d) (b + d)) := by
 
 
 @[simp]
-theorem image_add_const_Ici : (fun x => x + a) '' Ici b = Ici (b + a) :=
+theorem image_add_const_Ici : (fun x ↦ x + a) '' Ici b = Ici (b + a) :=
   (Ici_add_bij _ _).image_eq
 
 @[simp]
-theorem image_add_const_Ioi : (fun x => x + a) '' Ioi b = Ioi (b + a) :=
+theorem image_add_const_Ioi : (fun x ↦ x + a) '' Ioi b = Ioi (b + a) :=
   (Ioi_add_bij _ _).image_eq
 
 @[simp]
-theorem image_add_const_Icc : (fun x => x + a) '' Icc b c = Icc (b + a) (c + a) :=
+theorem image_add_const_Icc : (fun x ↦ x + a) '' Icc b c = Icc (b + a) (c + a) :=
   (Icc_add_bij _ _ _).image_eq
 
 @[simp]
-theorem image_add_const_Ico : (fun x => x + a) '' Ico b c = Ico (b + a) (c + a) :=
+theorem image_add_const_Ico : (fun x ↦ x + a) '' Ico b c = Ico (b + a) (c + a) :=
   (Ico_add_bij _ _ _).image_eq
 
 @[simp]
-theorem image_add_const_Ioc : (fun x => x + a) '' Ioc b c = Ioc (b + a) (c + a) :=
+theorem image_add_const_Ioc : (fun x ↦ x + a) '' Ioc b c = Ioc (b + a) (c + a) :=
   (Ioc_add_bij _ _ _).image_eq
 
 @[simp]
-theorem image_add_const_Ioo : (fun x => x + a) '' Ioo b c = Ioo (b + a) (c + a) :=
+theorem image_add_const_Ioo : (fun x ↦ x + a) '' Ioo b c = Ioo (b + a) (c + a) :=
   (Ioo_add_bij _ _ _).image_eq
 
 /-!
@@ -97,27 +97,27 @@ theorem image_add_const_Ioo : (fun x => x + a) '' Ioo b c = Ioo (b + a) (c + a) 
 
 
 @[simp]
-theorem image_const_add_Ici : (fun x => a + x) '' Ici b = Ici (a + b) := by
+theorem image_const_add_Ici : (fun x ↦ a + x) '' Ici b = Ici (a + b) := by
   simp only [add_comm a, image_add_const_Ici]
 
 @[simp]
-theorem image_const_add_Ioi : (fun x => a + x) '' Ioi b = Ioi (a + b) := by
+theorem image_const_add_Ioi : (fun x ↦ a + x) '' Ioi b = Ioi (a + b) := by
   simp only [add_comm a, image_add_const_Ioi]
 
 @[simp]
-theorem image_const_add_Icc : (fun x => a + x) '' Icc b c = Icc (a + b) (a + c) := by
+theorem image_const_add_Icc : (fun x ↦ a + x) '' Icc b c = Icc (a + b) (a + c) := by
   simp only [add_comm a, image_add_const_Icc]
 
 @[simp]
-theorem image_const_add_Ico : (fun x => a + x) '' Ico b c = Ico (a + b) (a + c) := by
+theorem image_const_add_Ico : (fun x ↦ a + x) '' Ico b c = Ico (a + b) (a + c) := by
   simp only [add_comm a, image_add_const_Ico]
 
 @[simp]
-theorem image_const_add_Ioc : (fun x => a + x) '' Ioc b c = Ioc (a + b) (a + c) := by
+theorem image_const_add_Ioc : (fun x ↦ a + x) '' Ioc b c = Ioc (a + b) (a + c) := by
   simp only [add_comm a, image_add_const_Ioc]
 
 @[simp]
-theorem image_const_add_Ioo : (fun x => a + x) '' Ioo b c = Ioo (a + b) (a + c) := by
+theorem image_const_add_Ioo : (fun x ↦ a + x) '' Ioo b c = Ioo (a + b) (a + c) := by
   simp only [add_comm a, image_add_const_Ioo]
 
 end Set

@@ -51,13 +51,13 @@ I document here what features are not in the original:
   outParam, so this gets ignored. Similarly, matching it with `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
-  possible reduced key sequences. This is for terms of the form `fun x => f (?m x₁ .. xₙ)`, where
+  possible reduced key sequences. This is for terms of the form `fun x ↦ f (?m x₁ .. xₙ)`, where
   `?m` is a metavariable, and one of `x₁, .., xₙ` in `x`.
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `[⟨Continuous, 5⟩, *0, ⟨Real, 0⟩, *1, *2, λ, ⟨Real.exp⟩, *3]`
   and  `[⟨Continuous, 5⟩, *0, ⟨Real, 0⟩, *1, *2, ⟨Real.exp⟩]`
   so that it also comes up if you search with `Continuous Real.exp`.
-  Similarly, `Continuous fun x => f x + g x` is indexed by
+  Similarly, `Continuous fun x ↦ f x + g x` is indexed by
   both `[⟨Continuous, 1⟩, λ, ⟨HAdd.hAdd, 6⟩, *0, *0, *0, *1, *2, *3]`
   and  `[⟨Continuous, 1⟩, ⟨HAdd.hAdd, 5⟩, *0, *0, *0, *1, *2]`.
 
@@ -66,14 +66,14 @@ I document here what features are not in the original:
     is stored as just a number literal.
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmata such as `continuous_id'` redundant, which is the same as `continuous_id`,
-      with `id` replaced by `fun x => x`.
+      with `id` replaced by `fun x ↦ x`.
   - Any expressions involving `+`, `*`, `-`, `/` or `⁻¹` is normalized to not have a lambda
     in front and to always have the default amount of arguments.
-    e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
+    e.g. `(f + g) a` is stored as `f a + g a` and `fun x ↦ f x + g x` is stored as `f + g`.
     - This makes lemmata such as `MeasureTheory.integral_integral_add'` redundant, which is the
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
     - it also means that a lemma like `Continuous.mul` can be stated as talking about `f * g`
-      instead of `fun x => f x + g x`.
+      instead of `fun x ↦ f x + g x`.
 
 I have also made some changes in the implementation:
 
@@ -533,9 +533,9 @@ def etaExpand (args : Array Expr) (type : Expr) (lambdas : List FVarId) (goalAri
 
 
 /-- Normalize an application of a heterogeneous binary operator like `HAdd.hAdd`, using:
-- `f = fun x => f x` to increase the arity to 6
+- `f = fun x ↦ f x` to increase the arity to 6
 - `(f + g) a = f a + g a` to decrease the arity to 6
-- `(fun x => f x + g x) = f + g` to get rid of any lambdas in front -/
+- `(fun x ↦ f x + g x) = f + g` to get rid of any lambdas in front -/
 def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
     OptionT MetaM (Expr × Expr × Expr × List FVarId) := do
   let some (mkApp2 (.const instH' _) type inst) := args[3]? | failure
@@ -558,7 +558,7 @@ def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : 
     rhs := .app rhs arg
   distributeLambdas lambdas type lhs rhs
 where
-  /-- use that `(fun x => f x + g x) = f + g` -/
+  /-- use that `(fun x ↦ f x + g x) = f + g` -/
   distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr) :
     MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
@@ -582,7 +582,7 @@ Optionally return the `(type, lhs, rhs, lambdas)`. -/
 
 /-- Normalize an application of a unary operator like `Inv.inv`, using:
 - `f⁻¹ a = (f a)⁻¹` to decrease the arity to 3
-- `(fun x => (f a)⁻¹) = f⁻¹` to get rid of any lambdas in front -/
+- `(fun x ↦ (f a)⁻¹) = f⁻¹` to get rid of any lambdas in front -/
 def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
     OptionT MetaM (Expr × Expr × List FVarId) := do
   guard (args.size ≥ 3)
@@ -601,7 +601,7 @@ def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
     arg := .app arg arg'
   distributeLambdas lambdas type arg
 where
-  /-- use that `(fun x => (f x)⁻¹) = f⁻¹` -/
+  /-- use that `(fun x ↦ (f x)⁻¹) = f⁻¹` -/
   distributeLambdas (lambdas : List FVarId) (type arg : Expr) :
     MetaM (Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
@@ -671,7 +671,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
       let a ← argDTExpr a (isClass (← getEnv) s)
       return .proj s i a (← argDTExprs)
   | .fvar fvarId =>
-    /- we index `fun x => x` as `id` when not at the root -/
+    /- we index `fun x ↦ x` as `id` when not at the root -/
     if let fvarId' :: lambdas' := lambdas then
       if fvarId' == fvarId && args.isEmpty && !root then
         return ← withLams lambdas' do
@@ -797,7 +797,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
     let a ← argDTExpr a (isClass (← getEnv) s)
     return .proj s i a (← argDTExprs)
   | .fvar fvarId =>
-    /- we index `fun x => x` as `id` when not at the root -/
+    /- we index `fun x ↦ x` as `id` when not at the root -/
     if let fvarId' :: lambdas' := lambdas then
       if fvarId' == fvarId && args.isEmpty && !root then
         return ← withLams lambdas' do

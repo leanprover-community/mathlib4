@@ -534,7 +534,7 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R) :
 
 @[simp]
 theorem multiset_prod_span_singleton (m : Multiset R) :
-    (m.map fun x => Ideal.span {x}).prod = Ideal.span ({Multiset.prod m} : Set R) :=
+    (m.map fun x ↦ Ideal.span {x}).prod = Ideal.span ({Multiset.prod m} : Set R) :=
   Multiset.induction_on m (by simp) fun a m ih => by
     simp only [Multiset.map_cons, Multiset.prod_cons, ih, ← Ideal.span_singleton_mul_span_singleton]
 

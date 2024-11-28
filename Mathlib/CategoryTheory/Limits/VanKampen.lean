@@ -271,7 +271,7 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
     (c : Cocone F) (hc : ∀ x : C, IsVanKampenColimit (((evaluation C D).obj x).mapCocone c)) :
     IsVanKampenColimit c := by
   intro F' c' α f e hα
-  have := fun x => hc x (((evaluation C D).obj x).mapCocone c') (whiskerRight α _)
+  have := fun x ↦ hc x (((evaluation C D).obj x).mapCocone c') (whiskerRight α _)
       (((evaluation C D).obj x).map f)
       (by
         ext y
@@ -281,7 +281,7 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
   constructor
   · rintro ⟨hc'⟩ j
     refine ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ ?_⟩⟩
-    refine fun x => (isLimitMapConePullbackConeEquiv _ _).symm ?_
+    refine fun x ↦ (isLimitMapConePullbackConeEquiv _ _).symm ?_
     exact ((this x).mp ⟨isColimitOfPreserves _ hc'⟩ _).isLimit
   · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
       ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩

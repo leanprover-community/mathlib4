@@ -413,7 +413,7 @@ def shiftr : CompactExhaustion X where
   toFun n := Nat.casesOn n ∅ K
   isCompact' n := Nat.casesOn n isCompact_empty K.isCompact
   subset_interior_succ' n := Nat.casesOn n (empty_subset _) K.subset_interior_succ
-  iUnion_eq' := iUnion_eq_univ_iff.2 fun x => ⟨K.find x + 1, K.mem_find x⟩
+  iUnion_eq' := iUnion_eq_univ_iff.2 fun x ↦ ⟨K.find x + 1, K.mem_find x⟩
 
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by

@@ -250,7 +250,7 @@ theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBounde
   · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
       simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
         not_and, not_forall, not_le, exists_prop] at H
-      exact H fun x => le_of_lt
+      exact H fun x ↦ le_of_lt
     filter_upwards [eventually_lt_of_limsup_lt xa hf] with y hy
     contrapose! hy
     exact hx hy

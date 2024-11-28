@@ -56,7 +56,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
       edist z y ≤ min (min (δ / 2) r) (B (n + 1)) := hz
       _ ≤ r := le_trans (min_le_left _ _) (min_le_right _ _))
   choose! center radius Hpos HB Hball using this
-  refine fun x => (mem_closure_iff_nhds_basis nhds_basis_closed_eball).2 fun ε εpos => ?_
+  refine fun x ↦ (mem_closure_iff_nhds_basis nhds_basis_closed_eball).2 fun ε εpos => ?_
   /- `ε` is positive. We have to find a point in the ball of radius `ε` around `x` belonging to all
     `f n`. For this, we construct inductively a sequence `F n = (c n, r n)` such that the closed
     ball `closedBall (c n) (r n)` is included in the previous ball and in `f n`, and such that

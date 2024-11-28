@@ -160,7 +160,7 @@ variable {X}
 
 /-- The embedding of `X` into the free Lie algebra of `X` with coefficients in the commutative ring
 `R`. -/
-def of : X → FreeLieAlgebra R X := fun x => Quot.mk _ (lib.of R x)
+def of : X → FreeLieAlgebra R X := fun x ↦ Quot.mk _ (lib.of R x)
 
 variable {L : Type w} [LieRing L] [LieAlgebra R L]
 

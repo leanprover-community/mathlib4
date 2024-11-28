@@ -206,7 +206,7 @@ theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkele
 
 /-- Given a natural transformation `F₁ ⟶ F₂`, induce a natural transformation `map F₁ ⟶ map F₂`. -/
 def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂ where
-  app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
+  app X := Quotient.recOnSubsingleton X fun x ↦ ⟨⟨⟨k.app x⟩⟩⟩
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted
 from the original `map₂` proof. Lean needed an extensive amount explicit type
@@ -231,7 +231,7 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
   fun x =>
     { obj := fun y => map₂ObjMap F x y
       map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
-        (fun x => (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
+        (fun x ↦ (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
 
@@ -273,7 +273,7 @@ noncomputable def equivalence : ThinSkeleton C ≌ C where
   functor := fromThinSkeleton C
   inverse := toThinSkeleton C
   counitIso := NatIso.ofComponents fun X => Nonempty.some (Quotient.mk_out X)
-  unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>
+  unitIso := NatIso.ofComponents fun x ↦ Quotient.recOnSubsingleton x fun X =>
     eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)
 
 noncomputable instance fromThinSkeleton_isEquivalence : (fromThinSkeleton C).IsEquivalence :=
@@ -326,12 +326,12 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
   unit :=
     { app := fun X => by
         letI := isIsomorphicSetoid C
-        exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
+        exact Quotient.recOnSubsingleton X fun x ↦ homOfLE ⟨h.unit.app x⟩ }
       -- TODO: make quotient.rec_on_subsingleton' so the letI isn't needed
   counit :=
     { app := fun X => by
         letI := isIsomorphicSetoid D
-        exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
+        exact Quotient.recOnSubsingleton X fun x ↦ homOfLE ⟨h.counit.app x⟩ }
 
 end ThinSkeleton
 

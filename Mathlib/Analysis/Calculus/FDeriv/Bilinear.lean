@@ -94,7 +94,7 @@ protected theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap �
 
 @[fun_prop]
 theorem IsBoundedBilinearMap.differentiable (h : IsBoundedBilinearMap 𝕜 b) : Differentiable 𝕜 b :=
-  fun x => h.differentiableAt x
+  fun x ↦ h.differentiableAt x
 
 @[fun_prop]
 theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) :

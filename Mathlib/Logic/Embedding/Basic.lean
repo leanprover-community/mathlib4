@@ -256,7 +256,7 @@ theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) 
 /-- If `e₁` and `e₂` are embeddings,
   then so is `fun ⟨a, b⟩ ↦ ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
 def pprodMap {α β γ δ : Sort*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
-  ⟨fun x => ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
+  ⟨fun x ↦ ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
 
 section Sum
 
@@ -321,7 +321,7 @@ This embedding sends each `f : α → γ` to a function `g : β → γ` such tha
 noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) :
     (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
-    funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
+    funext fun x ↦ by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 
 /-- Restrict both domain and codomain of an embedding. -/
 protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
@@ -419,7 +419,7 @@ variable {α : Type*}
 into a sum of subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right. -/
 def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     { x // p x ∨ q x } ↪ { x // p x } ⊕ { x // q x } :=
-  ⟨fun x => if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
+  ⟨fun x ↦ if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
     intro x y
     dsimp only
     split_ifs <;> simp [Subtype.ext_iff]⟩
@@ -438,6 +438,6 @@ theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
 if `p x → q x` for all `x : α`. -/
 @[simps]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
-  ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
+  ⟨fun x ↦ ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
 
 end Subtype

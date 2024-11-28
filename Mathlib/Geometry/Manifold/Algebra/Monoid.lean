@@ -110,7 +110,7 @@ theorem ContMDiffOn.mul (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g
 
 @[to_additive]
 theorem ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
-    ContMDiff I' I n (f * g) := fun x => (hf x).mul (hg x)
+    ContMDiff I' I n (f * g) := fun x ↦ (hf x).mul (hg x)
 
 @[deprecated (since := "2024-11-21")] alias SmoothWithinAt.mul := ContMDiffWithinAt.mul
 @[deprecated (since := "2024-11-21")] alias SmoothAt.mul := ContMDiffAt.mul
@@ -329,7 +329,7 @@ theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I 
 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
-    ContMDiffWithinAt I' I n (fun x => ∏ i ∈ t, f i x) s x := by
+    ContMDiffWithinAt I' I n (fun x ↦ ∏ i ∈ t, f i x) s x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finset_prod' h
 
@@ -352,7 +352,7 @@ theorem contMDiffAt_finset_prod' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
 
 @[to_additive]
 theorem contMDiffAt_finset_prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
-    ContMDiffAt I' I n (fun x => ∏ i ∈ t, f i x) x :=
+    ContMDiffAt I' I n (fun x ↦ ∏ i ∈ t, f i x) x :=
   contMDiffWithinAt_finset_prod h
 
 @[to_additive]
@@ -368,7 +368,7 @@ theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
 
 @[to_additive]
 theorem contMDiffOn_finset_prod (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
-    ContMDiffOn I' I n (fun x => ∏ i ∈ t, f i x) s := fun x hx =>
+    ContMDiffOn I' I n (fun x ↦ ∏ i ∈ t, f i x) s := fun x hx =>
   contMDiffWithinAt_finset_prod fun i hi => h i hi x hx
 
 @[to_additive]
@@ -378,22 +378,22 @@ theorem ContMDiff.prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
-    ContMDiff I' I n (∏ i ∈ t, f i) := fun x => contMDiffAt_finset_prod' fun i hi => h i hi x
+    ContMDiff I' I n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finset_prod' fun i hi => h i hi x
 
 @[to_additive]
 theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
-    ContMDiff I' I n fun x => ∏ i ∈ t, f i x := fun x =>
+    ContMDiff I' I n fun x ↦ ∏ i ∈ t, f i x := fun x =>
   contMDiffAt_finset_prod fun i hi => h i hi x
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x :=
+    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x ↦ ∏ᶠ i, f i x :=
   fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 
 @[to_additive]
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
-    ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
+    ContMDiff I' I n fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
@@ -476,7 +476,7 @@ theorem ContMDiffOn.div_const (hf : ContMDiffOn I' I n f s) :
 
 @[to_additive]
 theorem ContMDiff.div_const (hf : ContMDiff I' I n f) :
-    ContMDiff I' I n (fun x ↦ f x / c) := fun x => (hf x).div_const c
+    ContMDiff I' I n (fun x ↦ f x / c) := fun x ↦ (hf x).div_const c
 
 @[deprecated (since := "2024-11-21")] alias SmoothWithinAt.div_const := ContMDiffWithinAt.div_const
 @[deprecated (since := "2024-11-21")] alias SmoothAt.div_const := ContMDiffAt.div_const

@@ -141,7 +141,7 @@ theorem hammingDist_zero_right (x : ∀ i, β i) : hammingDist x 0 = hammingNorm
 /-- Corresponds to `dist_zero_left`. -/
 @[simp]
 theorem hammingDist_zero_left : hammingDist (0 : ∀ i, β i) = hammingNorm :=
-  funext fun x => by rw [hammingDist_comm, hammingDist_zero_right]
+  funext fun x ↦ by rw [hammingDist_comm, hammingDist_zero_right]
 
 /-- Corresponds to `norm_nonneg`. -/
 theorem hammingNorm_nonneg {x : ∀ i, β i} : 0 ≤ hammingNorm x :=
@@ -390,7 +390,7 @@ instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 
 instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
-  ⟨fun x => hammingNorm (ofHamming x)⟩
+  ⟨fun x ↦ hammingNorm (ofHamming x)⟩
 
 @[simp, push_cast]
 theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=

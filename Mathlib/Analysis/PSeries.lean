@@ -473,6 +473,6 @@ theorem summable_pow_div_add {α : Type*} (x : α) [RCLike α] (q k : ℕ) (hq :
   apply Summable.const_div
   simpa [hq, Nat.cast_add, one_div, norm_inv, norm_pow, Complex.norm_eq_abs,
     RCLike.norm_natCast, Real.summable_nat_pow_inv, iff_true]
-    using summable_nat_add_iff (f := fun x => ‖1 / (x ^ q : α)‖) k
+    using summable_nat_add_iff (f := fun x ↦ ‖1 / (x ^ q : α)‖) k
 
 end shifted

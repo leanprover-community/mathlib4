@@ -213,8 +213,8 @@ theorem IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y μ) (hXp : 0 ≤ X) 
   four times. -/
 theorem IndepFun.integral_mul_of_integrable (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : integral μ (X * Y) = integral μ X * integral μ Y := by
-  let pos : ℝ → ℝ := fun x => max x 0
-  let neg : ℝ → ℝ := fun x => max (-x) 0
+  let pos : ℝ → ℝ := fun x ↦ max x 0
+  let neg : ℝ → ℝ := fun x ↦ max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
   have negm : Measurable neg := measurable_id'.neg.max measurable_const
   let Xp := pos ∘ X

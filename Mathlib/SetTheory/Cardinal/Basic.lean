@@ -987,7 +987,7 @@ namespace Cardinal
 
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
-  apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
+  apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x ↦ ⟨#x, mk_set_le x⟩
   rintro ⟨x, hx⟩
   simpa using le_mk_iff_exists_set.1 hx
 
@@ -1543,7 +1543,7 @@ lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardi
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
-  ext fun x => by simp only [mem_Iio, mem_range, eq_comm, lt_aleph0]
+  ext fun x ↦ by simp only [mem_Iio, mem_range, eq_comm, lt_aleph0]
 
 theorem mk_eq_nat_iff {α : Type u} {n : ℕ} : #α = n ↔ Nonempty (α ≃ Fin n) := by
   rw [← lift_mk_fin, ← lift_uzero #α, lift_mk_eq']
@@ -1589,7 +1589,7 @@ theorem aleph0_lt_mk_iff : ℵ₀ < #α ↔ Uncountable α := by
 theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
   aleph0_lt_mk_iff.mpr ‹_›
 
-instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
+instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x ↦ x < ℵ₀ :=
   ⟨fun _ hx =>
     let ⟨n, hn⟩ := lt_aleph0.mp hx
     ⟨n, hn.symm⟩⟩
@@ -2010,7 +2010,7 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
   -- Porting note: Needed to insert `mem_preimage.mp` below
-  use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
+  use Subtype.coind (fun x ↦ f x.1) fun x ↦ mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
@@ -2139,7 +2139,7 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
-  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
+  exact Subtype.isEmpty_of_false fun x ↦ mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
 
 end Cardinal
 

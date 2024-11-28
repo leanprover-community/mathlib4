@@ -94,7 +94,7 @@ instance instFunLike : FunLike 𝓢(E, F) E F where
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
     ∃ C : ℝ, 0 < C ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
   rcases f.decay' k n with ⟨C, hC⟩
-  exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
+  exact ⟨max C 1, by positivity, fun x ↦ (hC x).trans (le_max_left _ _)⟩
 
 /-- Every Schwartz function is smooth. -/
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
@@ -128,7 +128,7 @@ variable (f : 𝓢(E, F))
 
 /-- Auxiliary lemma, used in proving the more general result `isBigO_cocompact_rpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) := by
+    f =O[cocompact E] fun x ↦ ‖x‖ ^ (-k : ℤ) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
@@ -138,7 +138,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   exacts [hd' x, zpow_pos (norm_pos_iff.mpr hx) _]
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ s := by
+    f =O[cocompact E] fun x ↦ ‖x‖ ^ s := by
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
   refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
@@ -152,7 +152,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ k := by
+    f =O[cocompact E] fun x ↦ ‖x‖ ^ k := by
   simpa only [Real.rpow_intCast] using isBigO_cocompact_rpow f k
 
 end IsBigO
@@ -222,7 +222,7 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
       decay' := fun k n => by
-        refine ⟨f.seminormAux k n * (‖c‖ + 1), fun x => ?_⟩
+        refine ⟨f.seminormAux k n * (‖c‖ + 1), fun x ↦ ?_⟩
         have hc : 0 ≤ ‖c‖ := by positivity
         refine le_trans ?_ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans ?_)
         · apply Eq.le
@@ -236,16 +236,16 @@ theorem smul_apply {f : 𝓢(E, F)} {c : 𝕜} {x : E} : (c • f) x = c • f x
   rfl
 
 instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' F] : IsScalarTower 𝕜 𝕜' 𝓢(E, F) :=
-  ⟨fun a b f => ext fun x => smul_assoc a b (f x)⟩
+  ⟨fun a b f => ext fun x ↦ smul_assoc a b (f x)⟩
 
 instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 𝕜' 𝓢(E, F) :=
-  ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
+  ⟨fun a b f => ext fun x ↦ smul_comm a b (f x)⟩
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
   refine
     (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
-      fun x => (decay_smul_aux k n f c x).le.trans ?_
+      fun x ↦ (decay_smul_aux k n f c x).le.trans ?_
   rw [mul_assoc]
   exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 
@@ -295,7 +295,7 @@ section Neg
 instance instNeg : Neg 𝓢(E, F) :=
   ⟨fun f =>
     ⟨-f, (f.smooth _).neg, fun k n =>
-      ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
+      ⟨f.seminormAux k n, fun x ↦ (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
 
 end Neg
 
@@ -327,7 +327,7 @@ instance instSub : Sub 𝓢(E, F) :=
   ⟨fun f g =>
     ⟨f - g, (f.smooth _).sub (g.smooth _), by
       intro k n
-      refine ⟨f.seminormAux k n + g.seminormAux k n, fun x => ?_⟩
+      refine ⟨f.seminormAux k n + g.seminormAux k n, fun x ↦ ?_⟩
       refine le_trans ?_ (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))
       rw [sub_eq_add_neg]
       rw [← decay_neg_aux k n g x]

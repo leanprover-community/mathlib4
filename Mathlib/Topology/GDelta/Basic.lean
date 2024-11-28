@@ -113,7 +113,7 @@ theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
   haveI := hs.to_subtype
-  exact .iInter fun x => ht x x.2
+  exact .iInter fun x ↦ ht x x.2
 
 @[deprecated (since := "2024-02-15")] alias isGδ_biInter := IsGδ.biInter
 

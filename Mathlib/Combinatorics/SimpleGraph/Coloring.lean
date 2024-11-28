@@ -416,7 +416,7 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
     (C : G.Coloring α) : s.card ≤ Fintype.card α := by
   rw [isClique_iff_induce_eq] at h
-  have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x => x ∈ ↑s) G
+  have f : G.induce ↑s ↪g G := Embedding.comap (Function.Embedding.subtype fun x ↦ x ∈ ↑s) G
   rw [h] at f
   convert Fintype.card_le_of_injective _ (C.comp f.toHom).injective_of_top_hom using 1
   simp

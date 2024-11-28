@@ -162,7 +162,7 @@ theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
 instance : Monoid CircleDeg1Lift where
   mul f g :=
     { toOrderHom := f.1.comp g.1
-      map_add_one' := fun x => by simp [map_add_one] }
+      map_add_one' := fun x ↦ by simp [map_add_one] }
   one := ⟨.id, fun _ => rfl⟩
   mul_one _ := rfl
   one_mul _ := rfl
@@ -349,21 +349,21 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
 /-- Monotone circle maps form a lattice with respect to the pointwise order -/
 noncomputable instance : Lattice CircleDeg1Lift where
   sup f g :=
-    { toFun := fun x => max (f x) (g x)
+    { toFun := fun x ↦ max (f x) (g x)
       monotone' := fun _ _ h => max_le_max (f.mono h) (g.mono h)
       -- TODO: generalize to `Monotone.max`
-      map_add_one' := fun x => by simp [max_add_add_right] }
+      map_add_one' := fun x ↦ by simp [max_add_add_right] }
   le f g := ∀ x, f x ≤ g x
   le_refl f x := le_refl (f x)
   le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
-  le_antisymm _ _ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
+  le_antisymm _ _ h₁₂ h₂₁ := ext fun x ↦ le_antisymm (h₁₂ x) (h₂₁ x)
   le_sup_left f g x := le_max_left (f x) (g x)
   le_sup_right f g x := le_max_right (f x) (g x)
   sup_le _ _ _ h₁ h₂ x := max_le (h₁ x) (h₂ x)
   inf f g :=
-    { toFun := fun x => min (f x) (g x)
+    { toFun := fun x ↦ min (f x) (g x)
       monotone' := fun _ _ h => min_le_min (f.mono h) (g.mono h)
-      map_add_one' := fun x => by simp [min_add_add_right] }
+      map_add_one' := fun x ↦ by simp [min_add_add_right] }
   inf_le_left f g x := min_le_left (f x) (g x)
   inf_le_right f g x := min_le_right (f x) (g x)
   le_inf _ _ _ h₂ h₃ x := le_min (h₂ x) (h₃ x)
@@ -382,7 +382,7 @@ theorem iterate_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f^[n] :=
 theorem iterate_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
   iterate_monotone n h
 
-theorem pow_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x => by
+theorem pow_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x ↦ by
   simp only [coe_pow, iterate_mono h n x]
 
 theorem pow_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f ^ n := fun _ _ h => pow_mono h n
@@ -469,12 +469,12 @@ theorem dist_map_zero_lt_of_semiconjBy {f g₁ g₂ : CircleDeg1Lift} (h : Semic
 
 protected theorem tendsto_atBot : Tendsto f atBot atBot :=
   tendsto_atBot_mono f.map_le_of_map_zero <| tendsto_atBot_add_const_left _ _ <|
-    (tendsto_atBot_mono fun x => (ceil_lt_add_one x).le) <|
+    (tendsto_atBot_mono fun x ↦ (ceil_lt_add_one x).le) <|
       tendsto_atBot_add_const_right _ _ tendsto_id
 
 protected theorem tendsto_atTop : Tendsto f atTop atTop :=
   tendsto_atTop_mono f.le_map_of_map_zero <| tendsto_atTop_add_const_left _ _ <|
-    (tendsto_atTop_mono fun x => (sub_one_lt_floor x).le) <| by
+    (tendsto_atTop_mono fun x ↦ (sub_one_lt_floor x).le) <| by
       simpa [sub_eq_add_neg] using tendsto_atTop_add_const_right _ _ tendsto_id
 
 theorem continuous_iff_surjective : Continuous f ↔ Function.Surjective f :=
@@ -701,10 +701,10 @@ theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.
       mul_div_cancel_left₀ (M₀ := ℝ) _ (Nat.cast_add_one_ne_zero _), tendsto_const_nhds]
 
 theorem translationNumber_le_of_le_add {z : ℝ} (hz : ∀ x, f x ≤ x + z) : τ f ≤ z :=
-  translationNumber_translate z ▸ translationNumber_mono fun x => (hz x).trans_eq (add_comm _ _)
+  translationNumber_translate z ▸ translationNumber_mono fun x ↦ (hz x).trans_eq (add_comm _ _)
 
 theorem le_translationNumber_of_add_le {z : ℝ} (hz : ∀ x, x + z ≤ f x) : z ≤ τ f :=
-  translationNumber_translate z ▸ translationNumber_mono fun x => (add_comm _ _).trans_le (hz x)
+  translationNumber_translate z ▸ translationNumber_mono fun x ↦ (add_comm _ _).trans_le (hz x)
 
 theorem translationNumber_le_of_le_add_int {x : ℝ} {m : ℤ} (h : f x ≤ x + m) : τ f ≤ m :=
   le_of_tendsto' (f.tendsto_translation_number' x) fun n =>
@@ -834,7 +834,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   -- Equality of translation number guarantees that for each `x`
   -- the set `{f₂ g⁻¹ (f₁ g x) | g : G}` is bounded above.
   have : ∀ x, BddAbove (range fun g => f₂ g⁻¹ (f₁ g x)) := by
-    refine fun x => ⟨x + 2, ?_⟩
+    refine fun x ↦ ⟨x + 2, ?_⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
       rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,
@@ -853,8 +853,8 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
-  refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x => ?_⟩,
-    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
+  refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x ↦ ?_⟩,
+    csSup_div_semiconj F₂ F₁ fun x ↦ ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)

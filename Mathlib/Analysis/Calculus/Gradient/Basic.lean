@@ -147,7 +147,7 @@ theorem HasGradientAt.gradient (h : HasGradientAt f f' x) : ∇ f x = f' :=
   h.differentiableAt.hasGradientAt.unique h
 
 theorem gradient_eq {f' : F → F} (h : ∀ x, HasGradientAt f (f' x) x) : ∇ f = f' :=
-  funext fun x => (h x).gradient
+  funext fun x ↦ (h x).gradient
 
 section OneDimension
 
@@ -315,7 +315,7 @@ theorem gradient_const : ∇ (fun _ => c) x = 0 := by
 
 @[simp]
 theorem gradient_const' : (∇ fun _ : 𝕜 => c) = fun _ => 0 :=
-  funext fun x => gradient_const x c
+  funext fun x ↦ gradient_const x c
 
 end Const
 

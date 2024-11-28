@@ -163,7 +163,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
 
 @[simp]
 theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
-  funext fun x => ofVectorSpace_apply_self K V x
+  funext fun x ↦ ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
@@ -243,7 +243,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   let B := Basis.ofVectorSpaceIndex K V
   let hB := Basis.ofVectorSpace K V
   have hB₀ : _ := hB.linearIndependent.to_subtype_range
-  have : LinearIndependent K (fun x => x : f '' B → V') := by
+  have : LinearIndependent K (fun x ↦ x : f '' B → V') := by
     have h₁ : LinearIndependent K ((↑) : ↥(f '' Set.range (Basis.ofVectorSpace K V)) → V') :=
       LinearIndependent.image_subtype (f := f) hB₀ (show Disjoint _ _ by simp [hf_inj])
     rwa [Basis.range_ofVectorSpace K V] at h₁

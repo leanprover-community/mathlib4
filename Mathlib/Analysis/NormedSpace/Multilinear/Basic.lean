@@ -317,7 +317,7 @@ theorem restr_norm_le {k n : ℕ} (f : MultilinearMap 𝕜 (fun _ : Fin n => G) 
   convert H _ using 2
   simp only [apply_dite norm, Fintype.prod_dite, prod_const ‖z‖, Finset.card_univ,
     Fintype.card_of_subtype sᶜ fun _ => mem_compl, card_compl, Fintype.card_fin, hk, mk_coe, ←
-    (s.orderIsoOfFin hk).symm.bijective.prod_comp fun x => ‖v x‖]
+    (s.orderIsoOfFin hk).symm.bijective.prod_comp fun x ↦ ‖v x‖]
   convert rfl
 
 end MultilinearMap
@@ -454,7 +454,7 @@ theorem opNorm_le_iff {f : ContinuousMultilinearMap 𝕜 E G} {C : ℝ} (hC : 0 
 
 /-- The operator norm satisfies the triangle inequality. -/
 theorem opNorm_add_le (f g : ContinuousMultilinearMap 𝕜 E G) : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
-  opNorm_le_bound (add_nonneg (opNorm_nonneg f) (opNorm_nonneg g)) fun x => by
+  opNorm_le_bound (add_nonneg (opNorm_nonneg f) (opNorm_nonneg g)) fun x ↦ by
     rw [add_mul]
     exact norm_add_le_of_le (le_opNorm _ _) (le_opNorm _ _)
 
@@ -639,7 +639,7 @@ variable {G} (E)
 @[simp]
 theorem norm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖ = ‖x‖ := by
   apply le_antisymm
-  · refine opNorm_le_bound (norm_nonneg _) fun x => ?_
+  · refine opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
     rw [Fintype.prod_empty, mul_one, constOfIsEmpty_apply]
   · simpa using (constOfIsEmpty 𝕜 E x).le_opNorm 0
 
@@ -965,11 +965,11 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
   MultilinearMap.mkContinuous
     { toFun := fun m =>
         LinearMap.mkContinuous
-          { toFun := fun x => f x m
+          { toFun := fun x ↦ f x m
             map_add' := fun x y => by simp only [map_add, ContinuousMultilinearMap.add_apply]
             map_smul' := fun c x => by
               simp only [ContinuousMultilinearMap.smul_apply, map_smul, RingHom.id_apply] }
-          (‖f‖ * ∏ i, ‖m i‖) fun x => by
+          (‖f‖ * ∏ i, ‖m i‖) fun x ↦ by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
       map_update_add' := fun m i x y => by
@@ -1008,7 +1008,7 @@ which is a linear map from `ContinuousMultilinearMap 𝕜 E G` to `MultilinearMa
 def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous
-    { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
+    { toFun := fun x ↦ (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' := fun x y => by
         ext1
         simp only [_root_.map_add]
@@ -1017,7 +1017,7 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
         ext1
         simp only [_root_.map_smul]
         rfl }
-    (max C 0) fun x => by
+    (max C 0) fun x ↦ by
       rw [LinearMap.coe_mk, AddHom.coe_mk] -- Porting note: added
       exact ((f x).mkContinuous_norm_le' _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]

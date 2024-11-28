@@ -78,7 +78,7 @@ noncomputable def limitConeOfTerminalAndPullbacks [HasTerminal C] [HasPullbacks 
           (terminal.from (F.obj ⟨WalkingPair.right⟩))
       π :=
         Discrete.natTrans fun x =>
-          Discrete.casesOn x fun x => WalkingPair.casesOn x (pullback.fst _ _) (pullback.snd _ _) }
+          Discrete.casesOn x fun x ↦ WalkingPair.casesOn x (pullback.fst _ _) (pullback.snd _ _) }
   isLimit :=
     isBinaryProductOfIsTerminalIsPullback F _ terminalIsTerminal _ _ (pullbackIsPullback _ _)
 
@@ -185,7 +185,7 @@ noncomputable def colimitCoconeOfInitialAndPushouts [HasInitial C] [HasPushouts 
     { pt := pushout (initial.to (F.obj ⟨WalkingPair.left⟩)) (initial.to (F.obj ⟨WalkingPair.right⟩))
       ι :=
         Discrete.natTrans fun x =>
-          Discrete.casesOn x fun x => WalkingPair.casesOn x (pushout.inl _ _) (pushout.inr _ _) }
+          Discrete.casesOn x fun x ↦ WalkingPair.casesOn x (pushout.inl _ _) (pushout.inr _ _) }
   isColimit := isBinaryCoproductOfIsInitialIsPushout F _ initialIsInitial _ _ (pushoutIsPushout _ _)
 
 variable (C)

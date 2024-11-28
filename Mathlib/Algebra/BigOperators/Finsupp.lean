@@ -260,7 +260,7 @@ theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M
   simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply, exists_prop]
 
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
-    (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
+    (Finset.sum s f).support ⊆ s.biUnion fun x ↦ (f x).support := by
   rw [← Finset.sup_eq_biUnion]
   induction s using Finset.cons_induction_on with
   | h₁ => rfl
@@ -317,7 +317,7 @@ theorem prod_add_index' [AddZeroClass M] [CommMonoid N] {f g : α →₀ M} {h :
 
 @[simp]
 theorem sum_hom_add_index [AddZeroClass M] [AddCommMonoid N] {f g : α →₀ M} (h : α → M →+ N) :
-    ((f + g).sum fun x => h x) = (f.sum fun x => h x) + g.sum fun x => h x :=
+    ((f + g).sum fun x ↦ h x) = (f.sum fun x ↦ h x) + g.sum fun x ↦ h x :=
   sum_add_index' (fun a ↦ (h a).map_zero) fun a ↦ (h a).map_add
 
 @[simp]
@@ -334,7 +334,7 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
   toFun F :=
     { toFun := fun f ↦ f.sum fun x ↦ F x
       map_zero' := Finset.sum_empty
-      map_add' := fun _ _ => sum_add_index' (fun x => (F x).map_zero) fun x => (F x).map_add }
+      map_add' := fun _ _ => sum_add_index' (fun x ↦ (F x).map_zero) fun x ↦ (F x).map_add }
   invFun F x := F.comp (singleAddHom x)
   left_inv F := by
     ext
@@ -348,7 +348,7 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
 
 @[simp]
 theorem liftAddHom_apply [AddCommMonoid M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
-    (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x => F x :=
+    (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x ↦ F x :=
   rfl
 
 @[simp]

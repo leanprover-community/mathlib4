@@ -160,7 +160,7 @@ protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f
 theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
     (h : ∀ a₁ : α, a₁ ≠ a₂ → isSome (f a₁)) : Injective f :=
   HasLeftInverse.injective
-    ⟨fun b ↦ Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
+    ⟨fun b ↦ Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x ↦ by
       classical
         cases hfx : f x
         · have : x = a₂ := not_imp_comm.1 (h x) (hfx.symm ▸ by simp)

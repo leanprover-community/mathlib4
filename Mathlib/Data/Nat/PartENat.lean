@@ -598,7 +598,7 @@ end WithTop
 /-- Coercion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
-  fun x => match x with
+  fun x ↦ match x with
   | Option.none => none
   | Option.some n => some n
 

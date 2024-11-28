@@ -172,7 +172,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- so we get that out of the way here.
   by_cases nX : Nonempty X
   swap
-  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
+  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x ↦ False.elim (nX ⟨x⟩), nA.choose_spec⟩
   /-
     The strategy now is to pick a family of continuous functions `g x y` in `A`
     with the property that `g x y x = f x` and `g x y y = f y`
@@ -200,7 +200,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- and still equal to `f x` at `x`.
   -- Since `X` is compact, for every `x` there is some finset `ys t`
   -- so the union of the `U x y` for `y ∈ ys x` still covers everything.
-  let ys : X → Finset X := fun x => (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
+  let ys : X → Finset X := fun x ↦ (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose
   let ys_w : ∀ x, ⋃ y ∈ ys x, U x y = ⊤ := fun x =>
     (CompactSpace.elim_nhds_subcover (U x) (U_nhd_y x)).choose_spec
   have ys_nonempty : ∀ x, (ys x).Nonempty := fun x =>
@@ -218,7 +218,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     exact ⟨y, ym, zm⟩
   have h_eq : ∀ x, (h x : X → ℝ) x = f x := by intro x; simp [w₁]
   -- For each `x`, we define `W x` to be `{z | h x z < f z + ε}`,
-  let W : X → Set X := fun x => {z | (h x : X → ℝ) z < f z + ε}
+  let W : X → Set X := fun x ↦ {z | (h x : X → ℝ) z < f z + ε}
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
@@ -235,7 +235,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- Finally our candidate function is the infimum over `x ∈ xs` of the `h x`.
   -- This function is then globally less than `f z + ε`.
   let k : (L : Type _) :=
-    ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
+    ⟨xs.inf' xs_nonempty fun x ↦ (h x : C(X, ℝ)),
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
   refine ⟨k.1, ?_, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
@@ -463,7 +463,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Ring A]
     {φ ψ : C(s, ℝ) →ₐ[ℝ] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
   suffices (⊤ : Subalgebra ℝ C(s, ℝ)) ≤ AlgHom.equalizer φ ψ from
-    AlgHom.ext fun x => this (by trivial)
+    AlgHom.ext fun x ↦ this (by trivial)
   rw [← polynomialFunctions.topologicalClosure s]
   exact Subalgebra.topologicalClosure_minimal (polynomialFunctions s)
     (polynomialFunctions.le_equalizer s φ ψ h) (isClosed_eq hφ hψ)
@@ -476,7 +476,7 @@ theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [RCLike 𝕜] [Ring 
     {φ ψ : C(s, 𝕜) →⋆ₐ[𝕜] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
   suffices (⊤ : StarSubalgebra 𝕜 C(s, 𝕜)) ≤ StarAlgHom.equalizer φ ψ from
-    StarAlgHom.ext fun x => this mem_top
+    StarAlgHom.ext fun x ↦ this mem_top
   rw [← polynomialFunctions.starClosure_topologicalClosure s]
   exact StarSubalgebra.topologicalClosure_minimal
     (polynomialFunctions.starClosure_le_equalizer s φ ψ h) (isClosed_eq hφ hψ)

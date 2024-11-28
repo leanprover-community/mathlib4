@@ -505,7 +505,7 @@ the lemma uses `[ContinuousAdd]`. -/
 theorem LowerSemicontinuous.add' {f g : α → γ} (hf : LowerSemicontinuous f)
     (hg : LowerSemicontinuous g)
     (hcont : ∀ x, ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
-    LowerSemicontinuous fun z => f z + g z := fun x => (hf x).add' (hg x) (hcont x)
+    LowerSemicontinuous fun z => f z + g z := fun x ↦ (hf x).add' (hg x) (hcont x)
 
 variable [ContinuousAdd γ]
 
@@ -562,7 +562,7 @@ theorem lowerSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
 
 theorem lowerSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuous (f i)) : LowerSemicontinuous fun z => ∑ i ∈ a, f i z :=
-  fun x => lowerSemicontinuousAt_sum fun i hi => ha i hi x
+  fun x ↦ lowerSemicontinuousAt_sum fun i hi => ha i hi x
 
 end
 
@@ -662,7 +662,7 @@ theorem lowerSemicontinuousOn_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, Lo
   lowerSemicontinuousWithinAt_tsum fun i => h i x hx
 
 theorem lowerSemicontinuous_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuous (f i)) :
-    LowerSemicontinuous fun x' => ∑' i, f i x' := fun x => lowerSemicontinuousAt_tsum fun i => h i x
+    LowerSemicontinuous fun x' => ∑' i, f i x' := fun x ↦ lowerSemicontinuousAt_tsum fun i => h i x
 
 end
 
@@ -946,7 +946,7 @@ the lemma uses `[ContinuousAdd]`. -/
 theorem UpperSemicontinuous.add' {f g : α → γ} (hf : UpperSemicontinuous f)
     (hg : UpperSemicontinuous g)
     (hcont : ∀ x, ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
-    UpperSemicontinuous fun z => f z + g z := fun x => (hf x).add' (hg x) (hcont x)
+    UpperSemicontinuous fun z => f z + g z := fun x ↦ (hf x).add' (hg x) (hcont x)
 
 variable [ContinuousAdd γ]
 
@@ -997,7 +997,7 @@ theorem upperSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
 
 theorem upperSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuous (f i)) : UpperSemicontinuous fun z => ∑ i ∈ a, f i z :=
-  fun x => upperSemicontinuousAt_sum fun i hi => ha i hi x
+  fun x ↦ upperSemicontinuousAt_sum fun i hi => ha i hi x
 
 end
 
@@ -1057,7 +1057,7 @@ theorem upperSemicontinuous_ciInf {f : ι → α → δ'} (bdd : ∀ x, BddBelow
   upperSemicontinuousAt_ciInf (Eventually.of_forall bdd) fun i => h i x
 
 theorem upperSemicontinuous_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuous (f i)) :
-    UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x => upperSemicontinuousAt_iInf fun i => h i x
+    UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x ↦ upperSemicontinuousAt_iInf fun i => h i x
 
 theorem upperSemicontinuous_biInf {p : ι → Prop} {f : ∀ i, p i → α → δ}
     (h : ∀ i hi, UpperSemicontinuous (f i hi)) :

@@ -1149,7 +1149,7 @@ theorem map_id (s : Multiset α) : map id s = s :=
   Quot.inductionOn s fun _l => congr_arg _ <| List.map_id _
 
 @[simp]
-theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
+theorem map_id' (s : Multiset α) : map (fun x ↦ x) s = s :=
   map_id s
 
 -- Porting note: was a `simp` lemma in mathlib3
@@ -1370,7 +1370,7 @@ theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (s) :
   Quot.inductionOn s fun l H => congr_arg _ <| List.map_pmap g f l H
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
-    ∀ H, pmap f s H = s.attach.map fun x => f x.1 (H _ x.2) :=
+    ∀ H, pmap f s H = s.attach.map fun x ↦ f x.1 (H _ x.2) :=
   Quot.inductionOn s fun l H => congr_arg _ <| List.pmap_eq_map_attach f l H
 
 -- @[simp] -- Porting note: Left hand does not simplify
@@ -1918,11 +1918,11 @@ theorem filterMap_eq_filter : filterMap (Option.guard p) = filter p :=
       congr; funext a; simp
 
 theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (s : Multiset α) :
-    filterMap g (filterMap f s) = filterMap (fun x => (f x).bind g) s :=
+    filterMap g (filterMap f s) = filterMap (fun x ↦ (f x).bind g) s :=
   Quot.inductionOn s fun l => congr_arg ofList <| List.filterMap_filterMap f g l
 
 theorem map_filterMap (f : α → Option β) (g : β → γ) (s : Multiset α) :
-    map g (filterMap f s) = filterMap (fun x => (f x).map g) s :=
+    map g (filterMap f s) = filterMap (fun x ↦ (f x).map g) s :=
   Quot.inductionOn s fun l => congr_arg ofList <| List.map_filterMap f g l
 
 theorem filterMap_map (f : α → β) (g : β → Option γ) (s : Multiset α) :
@@ -1930,11 +1930,11 @@ theorem filterMap_map (f : α → β) (g : β → Option γ) (s : Multiset α) :
   Quot.inductionOn s fun l => congr_arg ofList <| List.filterMap_map f g l
 
 theorem filter_filterMap (f : α → Option β) (p : β → Prop) [DecidablePred p] (s : Multiset α) :
-    filter p (filterMap f s) = filterMap (fun x => (f x).filter p) s :=
+    filter p (filterMap f s) = filterMap (fun x ↦ (f x).filter p) s :=
   Quot.inductionOn s fun l => congr_arg ofList <| List.filter_filterMap f p l
 
 theorem filterMap_filter (f : α → Option β) (s : Multiset α) :
-    filterMap f (filter p s) = filterMap (fun x => if p x then f x else none) s :=
+    filterMap f (filter p s) = filterMap (fun x ↦ if p x then f x else none) s :=
   Quot.inductionOn s fun l => congr_arg ofList <| by simpa using List.filterMap_filter p f l
 
 @[simp]
@@ -2000,7 +2000,7 @@ theorem countP_add (s t) : countP p (s + t) = countP p s + countP p t := by
 theorem countP_nsmul (s) (n : ℕ) : countP p (n • s) = n * countP p s := by
   induction n <;> simp [*, succ_nsmul, succ_mul, zero_nsmul]
 
-theorem card_eq_countP_add_countP (s) : card s = countP p s + countP (fun x => ¬p x) s :=
+theorem card_eq_countP_add_countP (s) : card s = countP p s + countP (fun x ↦ ¬p x) s :=
   Quot.inductionOn s fun l => by simp [l.length_eq_countP_add_countP p]
 
 /-- `countP p`, the number of elements of a multiset satisfying `p`, promoted to an

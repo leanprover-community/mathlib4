@@ -99,7 +99,7 @@ theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
 -- Why is this so slow?
 @[simp]
 theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m • p = p :=
-  Polynomial.induction_on p (fun x => by rw [Polynomial.smul_C, smul])
+  Polynomial.induction_on p (fun x ↦ by rw [Polynomial.smul_C, smul])
     (fun p q ihp ihq => by rw [smul_add, ihp, ihq]) fun n x _ => by
     rw [smul_mul', Polynomial.smul_C, smul, smul_pow', Polynomial.smul_X]
 
@@ -266,7 +266,7 @@ instance normal : Normal (FixedPoints.subfield G F) F where
 
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
-  exact ⟨fun x => by
+  exact ⟨fun x ↦ by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
     erw [IsSeparable, ← minpoly_eq_minpoly,

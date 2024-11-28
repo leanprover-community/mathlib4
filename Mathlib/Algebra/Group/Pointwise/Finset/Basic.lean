@@ -195,7 +195,7 @@ protected def inv : Inv (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.inv Finset.neg
 
 @[to_additive]
-theorem inv_def : s⁻¹ = s.image fun x => x⁻¹ :=
+theorem inv_def : s⁻¹ = s.image fun x ↦ x⁻¹ :=
   rfl
 
 @[to_additive] lemma image_inv_eq_inv (s : Finset α) : s.image (·⁻¹) = s⁻¹ := rfl

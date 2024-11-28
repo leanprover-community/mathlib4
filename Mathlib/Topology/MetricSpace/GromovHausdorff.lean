@@ -96,7 +96,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases Setoid.symm h with ⟨e⟩
     have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
-    use fun x => f x, isometry_subtype_coe.comp f.isometry
+    use fun x ↦ f x, isometry_subtype_coe.comp f.isometry
     erw [range_comp, f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
     have f :=
@@ -108,7 +108,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
     exact ⟨cast E f⟩
 
 theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace p :=
-  eq_toGHSpace_iff.2 ⟨fun x => x, isometry_subtype_coe, Subtype.range_coe⟩
+  eq_toGHSpace_iff.2 ⟨fun x ↦ x, isometry_subtype_coe, Subtype.range_coe⟩
 
 section
 
@@ -214,10 +214,10 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
       (range_nonempty _).image _⟩
   have AX : ⟦A⟧ = toGHSpace X := by
     rw [eq_toGHSpace_iff]
-    exact ⟨fun x => F (Φ' x), (kuratowskiEmbedding.isometry _).comp IΦ', range_comp _ _⟩
+    exact ⟨fun x ↦ F (Φ' x), (kuratowskiEmbedding.isometry _).comp IΦ', range_comp _ _⟩
   have BY : ⟦B⟧ = toGHSpace Y := by
     rw [eq_toGHSpace_iff]
-    exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
+    exact ⟨fun x ↦ F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
   refine csInf_le ⟨0, ?_⟩ ?_
   · simp only [lowerBounds, mem_image, mem_prod, mem_setOf_eq, Prod.exists, and_imp,
       forall_exists_index]
@@ -559,7 +559,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       _ ≤ 2 * (ε₂ / 2 + δ) := by linarith
   -- glue `X` and `Y` along the almost matching subsets
   letI : MetricSpace (X ⊕ Y) :=
-    glueMetricApprox (fun x : s => (x : X)) (fun x => Φ x) (ε₂ / 2 + δ) (by linarith) this
+    glueMetricApprox (fun x : s => (x : X)) (fun x ↦ Φ x) (ε₂ / 2 + δ) (by linarith) this
   let Fl := @Sum.inl X Y
   let Fr := @Sum.inr X Y
   have Il : Isometry Fl := Isometry.of_dist_eq fun x y => rfl
@@ -655,8 +655,8 @@ instance : SecondCountableTopology GHSpace := by
     the fact that `N p = N q`, this constructs `Ψ` between `s p` and `s q`, and then
     composing with the canonical inclusion we get `Φ`. -/
   have Npq : N p = N q := (Sigma.mk.inj_iff.1 hpq).1
-  let Ψ : s p → s q := fun x => (E q).symm (Fin.cast Npq ((E p) x))
-  let Φ : s p → q.Rep := fun x => Ψ x
+  let Ψ : s p → s q := fun x ↦ (E q).symm (Fin.cast Npq ((E p) x))
+  let Φ : s p → q.Rep := fun x ↦ Ψ x
   -- Use the almost isometry `Φ` to show that `p.rep` and `q.rep`
   -- are within controlled Gromov-Hausdorff distance.
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
@@ -807,8 +807,8 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
   -- It remains to show that if `F p = F q`, then `p` and `q` are `ε`-close
   rintro ⟨p, pt⟩ ⟨q, qt⟩ hpq
   have Npq : N p = N q := Fin.ext_iff.1 (Sigma.mk.inj_iff.1 hpq).1
-  let Ψ : s p → s q := fun x => (E q).symm (Fin.cast Npq ((E p) x))
-  let Φ : s p → q.Rep := fun x => Ψ x
+  let Ψ : s p → s q := fun x ↦ (E q).symm (Fin.cast Npq ((E p) x))
+  let Φ : s p → q.Rep := fun x ↦ Ψ x
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
     -- to prove the main inequality, argue that `s p` is `ε`-dense in `p`, and `s q` is `ε`-dense
     -- in `q`, and `s p` and `s q` are almost isometric. Then closeness follows

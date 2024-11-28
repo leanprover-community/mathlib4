@@ -117,7 +117,7 @@ section Group
 variable [Group G]
 
 @[to_additive (attr := simp)]
-theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x => x ^ n ^ j :=
+theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x ↦ x ^ n ^ j :=
   letI : MulAction ℤ G :=
     { smul := fun n g => g ^ n
       one_smul := zpow_one

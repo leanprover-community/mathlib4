@@ -245,7 +245,7 @@ theorem _root_.ContinuousOn.clog {f : α → ℂ} {s : Set α} (h₁ : Continuou
 nonrec
 theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
     (h₂ : ∀ x, f x ∈ slitPlane) : Continuous fun t => log (f t) :=
-  continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
+  continuous_iff_continuousAt.2 fun x ↦ h₁.continuousAt.clog (h₂ x)
 
 end LogDeriv
 

@@ -216,19 +216,19 @@ theorem Convex.vadd (hs : Convex 𝕜 s) (z : E) : Convex 𝕜 (z +ᵥ s) := by
   simp_rw [← image_vadd, vadd_eq_add, ← singleton_add]
   exact (convex_singleton _).add hs
 
-theorem Convex.translate (hs : Convex 𝕜 s) (z : E) : Convex 𝕜 ((fun x => z + x) '' s) :=
+theorem Convex.translate (hs : Convex 𝕜 s) (z : E) : Convex 𝕜 ((fun x ↦ z + x) '' s) :=
   hs.vadd _
 
 /-- The translation of a convex set is also convex. -/
 theorem Convex.translate_preimage_right (hs : Convex 𝕜 s) (z : E) :
-    Convex 𝕜 ((fun x => z + x) ⁻¹' s) := by
+    Convex 𝕜 ((fun x ↦ z + x) ⁻¹' s) := by
   intro x hx y hy a b ha hb hab
   have h := hs hx hy ha hb hab
   rwa [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul] at h
 
 /-- The translation of a convex set is also convex. -/
 theorem Convex.translate_preimage_left (hs : Convex 𝕜 s) (z : E) :
-    Convex 𝕜 ((fun x => x + z) ⁻¹' s) := by
+    Convex 𝕜 ((fun x ↦ x + z) ⁻¹' s) := by
   simpa only [add_comm] using hs.translate_preimage_right z
 
 section OrderedAddCommMonoid
@@ -396,7 +396,7 @@ theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun
   hs.linear_preimage (LinearMap.lsmul _ _ c)
 
 theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) :
-    Convex 𝕜 ((fun x => z + c • x) '' s) := by
+    Convex 𝕜 ((fun x ↦ z + c • x) '' s) := by
   simpa only [← image_smul, ← image_vadd, image_image] using (hs.smul c).vadd z
 
 end AddCommMonoid
@@ -594,7 +594,7 @@ theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) �
   simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
 
 theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
-  refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
+  refine fun f hf g hg a b ha hb hab => ⟨fun x ↦ ?_, ?_⟩
   · apply_rules [add_nonneg, mul_nonneg, hf.1, hg.1]
   · erw [Finset.sum_add_distrib]
     simp only [Pi.smul_apply] -- Porting note: `erw` failed to rewrite with `← Finset.smul_sum`

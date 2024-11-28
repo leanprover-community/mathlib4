@@ -119,7 +119,7 @@ theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux
 
 theorem revzip_powersetAux_lemma {α : Type*} [DecidableEq α] (l : List α) {l' : List (Multiset α)}
     (H : ∀ ⦃x : _ × _⦄, x ∈ revzip l' → x.1 + x.2 = ↑l) :
-    revzip l' = l'.map fun x => (x, (l : Multiset α) - x) := by
+    revzip l' = l'.map fun x ↦ (x, (l : Multiset α) - x) := by
   have :
     Forall₂ (fun (p : Multiset α × Multiset α) (s : Multiset α) => p = (s, ↑l - s)) (revzip l')
       ((revzip l').map Prod.fst) := by

@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 We continue in the setting of `Mathlib.Topology.Algebra.Module.WeakBilin`,
 which defines the weak topology given two vector spaces `E` and `F` over a commutative semiring
 `𝕜` and a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`. The weak topology on `E` is the coarsest topology
-such that for all `y : F` every map `fun x => B x y` is continuous.
+such that for all `y : F` every map `fun x ↦ B x y` is continuous.
 
 In this file, we consider two special cases.
 In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-* topology,
@@ -163,7 +163,7 @@ end Ring
 end WeakDual
 
 /-- The weak topology is the topology coarsest topology on `E` such that all functionals
-`fun x => v x` are continuous. -/
+`fun x ↦ v x` are continuous. -/
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip

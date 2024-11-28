@@ -1477,7 +1477,7 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     neg := Neg.neg
     sub := _
     sub_eq_add_neg := fun _ _ => rfl
-    neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+    neg_add_cancel := fun x ↦ TensorProduct.neg_add_cancel x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
     zsmul_succ' := by simp [add_comm, TensorProduct.one_smul, TensorProduct.add_smul]

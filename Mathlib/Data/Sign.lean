@@ -125,7 +125,7 @@ instance : BoundedOrder SignType where
   bot_le := LE.of_neg
 
 instance : HasDistribNeg SignType :=
-  { neg_neg := fun x => by cases x <;> rfl
+  { neg_neg := fun x ↦ by cases x <;> rfl
     neg_mul := fun x y => by cases x <;> cases y <;> rfl
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
 

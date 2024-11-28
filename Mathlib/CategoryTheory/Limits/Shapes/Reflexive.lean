@@ -273,7 +273,7 @@ namespace WalkingParallelPair
 /-- The inclusion functor forgetting the common section -/
 @[simps!]
 def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair where
-  obj := fun x => match x with
+  obj := fun x ↦ match x with
     | one => WalkingReflexivePair.zero
     | zero => WalkingReflexivePair.one
   map := fun f => match f with

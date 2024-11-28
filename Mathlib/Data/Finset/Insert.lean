@@ -389,7 +389,7 @@ theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
 
 @[simp, norm_cast]
 theorem coe_insert (a : α) (s : Finset α) : ↑(insert a s) = (insert a s : Set α) :=
-  Set.ext fun x => by simp only [mem_coe, mem_insert, Set.mem_insert_iff]
+  Set.ext fun x ↦ by simp only [mem_coe, mem_insert, Set.mem_insert_iff]
 
 theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ insert y (s : Set α) := by
   simp
@@ -412,7 +412,7 @@ theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
   insert_eq_of_mem <| mem_singleton_self _
 
 theorem Insert.comm (a b : α) (s : Finset α) : insert a (insert b s) = insert b (insert a s) :=
-  ext fun x => by simp only [mem_insert, or_left_comm]
+  ext fun x ↦ by simp only [mem_insert, or_left_comm]
 
 @[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by
@@ -427,7 +427,7 @@ theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
   Insert.comm a b ∅
 
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s :=
-  ext fun x => by simp only [mem_insert, ← or_assoc, or_self_iff]
+  ext fun x ↦ by simp only [mem_insert, ← or_assoc, or_self_iff]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
@@ -657,7 +657,7 @@ theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
 
 open scoped List in
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
-  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
+  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x ↦ by
     simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
 
 open scoped List in

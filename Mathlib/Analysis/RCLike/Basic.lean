@@ -825,7 +825,7 @@ lemma toStarOrderedRing : StarOrderedRing K :=
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
-    (h_nonneg_iff := fun x => by
+    (h_nonneg_iff := fun x ↦ by
       rw [nonneg_iff]
       refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
       rintro ⟨s, rfl⟩
@@ -932,7 +932,7 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
 
 /-- The real part in an `RCLike` field, as a continuous linear map. -/
 noncomputable def reCLM : K →L[ℝ] ℝ :=
-  reLm.mkContinuous 1 fun x => by
+  reLm.mkContinuous 1 fun x ↦ by
     rw [one_mul]
     exact abs_re_le_norm x
 
@@ -958,7 +958,7 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
 
 /-- The imaginary part in an `RCLike` field, as a continuous linear map. -/
 noncomputable def imCLM : K →L[ℝ] ℝ :=
-  imLm.mkContinuous 1 fun x => by
+  imLm.mkContinuous 1 fun x ↦ by
     rw [one_mul]
     exact abs_im_le_norm x
 

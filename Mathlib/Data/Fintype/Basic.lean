@@ -115,7 +115,7 @@ theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
 
 @[simp]
 theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
-  Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
+  Finset.ext fun x ↦ iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 @[simp]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
@@ -282,7 +282,7 @@ theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
 
 @[simp]
 theorem compl_filter (p : α → Prop) [DecidablePred p] [∀ x, Decidable ¬p x] :
-    (univ.filter p)ᶜ = univ.filter fun x => ¬p x :=
+    (univ.filter p)ᶜ = univ.filter fun x ↦ ¬p x :=
   ext <| by simp
 
 theorem compl_ne_univ_iff_nonempty (s : Finset α) : sᶜ ≠ univ ↔ s.Nonempty := by
@@ -409,13 +409,13 @@ instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α
 end BundledHoms
 
 instance decidableInjectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] :
-    DecidablePred (Injective : (α → β) → Prop) := fun x => by unfold Injective; infer_instance
+    DecidablePred (Injective : (α → β) → Prop) := fun x ↦ by unfold Injective; infer_instance
 
 instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
-    DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
+    DecidablePred (Surjective : (α → β) → Prop) := fun x ↦ by unfold Surjective; infer_instance
 
 instance decidableBijectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
-    DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
+    DecidablePred (Bijective : (α → β) → Prop) := fun x ↦ by unfold Bijective; infer_instance
 
 instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
     Decidable (Function.RightInverse f g) :=
@@ -442,7 +442,7 @@ instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
 associated to the predicate is a fintype. -/
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     Fintype { x // p x } :=
-  ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
+  ⟨⟨s.1.pmap Subtype.mk fun x ↦ (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
 /-- Construct a fintype from a finset with the same elements. -/
@@ -564,7 +564,7 @@ noncomputable def ofInjective [Fintype β] (f : α → β) (H : Function.Injecti
   if hα : Nonempty α then
     letI := Classical.inhabited_of_nonempty hα
     ofSurjective (invFun f) (invFun_surjective H)
-  else ⟨∅, fun x => (hα ⟨x⟩).elim⟩
+  else ⟨∅, fun x ↦ (hα ⟨x⟩).elim⟩
 
 /-- If `f : α ≃ β` and `α` is a fintype, then `β` is also a fintype. -/
 def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
@@ -614,7 +614,7 @@ theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a 
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
     @Set.toFinset _ p (Fintype.ofFinset s H) = s :=
-  Finset.ext fun x => by rw [@mem_toFinset _ _ (id _), H]
+  Finset.ext fun x ↦ by rw [@mem_toFinset _ _ (id _), H]
 
 /-- Membership of a set with a `Fintype` instance is decidable.
 
@@ -874,7 +874,7 @@ theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 
 instance Bool.fintype : Fintype Bool :=
-  ⟨⟨{true, false}, by simp⟩, fun x => by cases x <;> simp⟩
+  ⟨⟨{true, false}, by simp⟩, fun x ↦ by cases x <;> simp⟩
 
 @[simp]
 theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
@@ -958,7 +958,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
-  Subtype.fintype fun x => x ∈ s
+  Subtype.fintype fun x ↦ x ∈ s
 
 namespace Fintype
 variable [Fintype α]
@@ -999,8 +999,8 @@ instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
-  if h : α then Fintype.ofEquiv (β h) ⟨fun x => ⟨h, x⟩, PSigma.snd, fun _ => rfl, fun ⟨_, _⟩ => rfl⟩
-  else ⟨∅, fun x => (h x.1).elim⟩
+  if h : α then Fintype.ofEquiv (β h) ⟨fun x ↦ ⟨h, x⟩, PSigma.snd, fun _ => rfl, fun ⟨_, _⟩ => rfl⟩
+  else ⟨∅, fun x ↦ (h x.1).elim⟩
 
 instance PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
     Fintype (Σ'a, β a) :=
@@ -1016,7 +1016,7 @@ instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintyp
     Fintype (∀ hp : p, α hp) :=
   if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
   else ⟨singleton fun h ↦ (hp h).elim, fun h ↦ mem_singleton.2
-    (funext fun x => by contradiction)⟩
+    (funext fun x ↦ by contradiction)⟩
 
 theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp

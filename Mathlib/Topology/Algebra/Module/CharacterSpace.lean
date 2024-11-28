@@ -101,7 +101,7 @@ theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgH
 
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
-    ContinuousLinearMap.ext fun x => by
+    ContinuousLinearMap.ext fun x ↦ by
       rw [show x = 0 from Subsingleton.elim x 0, map_zero, map_zero] ⟩
 
 variable (𝕜 A)

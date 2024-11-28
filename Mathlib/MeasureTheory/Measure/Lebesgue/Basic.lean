@@ -455,8 +455,8 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
   classical
     rw [Measure.prod_apply]
     · have h :
-        (fun x => volume { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) }) =
-          s.indicator fun x => ENNReal.ofReal (g x - f x) := by
+        (fun x ↦ volume { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) }) =
+          s.indicator fun x ↦ ENNReal.ofReal (g x - f x) := by
         funext x
         rw [indicator_apply]
         split_ifs with h

@@ -84,7 +84,7 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
   refine
-    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by
+    card_le_card_of_injOn (@fun x ↦ ((x.1, x.1), x.2, x.2)) (by
     -- Porting note: changed this from a `simp` proof without `only` because of a timeout
       simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
         implies_true]) fun a _ b _ => ?_
@@ -175,7 +175,7 @@ variable [CommGroup α] [Fintype α] (s t : Finset α)
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   simp only [mulEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
-  let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
+  let f : α × α × α → (α × α) × α × α := fun x ↦ ((x.1 * x.2.2, x.1 * x.2.1), x.2)
   have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
     simp_rw [Prod.ext_iff] at h

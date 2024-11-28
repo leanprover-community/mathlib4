@@ -240,7 +240,7 @@ theorem rel_foldr : ((R ⇒ P ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldr foldr
   | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => hfg hab (rel_foldr (@hfg) hxy hs)
 
 theorem rel_filter {p : α → Bool} {q : β → Bool}
-    (hpq : (R ⇒ (· ↔ ·)) (fun x => p x) (fun x => q x)) :
+    (hpq : (R ⇒ (· ↔ ·)) (fun x ↦ p x) (fun x ↦ q x)) :
     (Forall₂ R ⇒ Forall₂ R) (filter p) (filter q)
   | _, _, Forall₂.nil => Forall₂.nil
   | a :: as, b :: bs, Forall₂.cons h₁ h₂ => by

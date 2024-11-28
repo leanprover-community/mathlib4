@@ -40,7 +40,7 @@ theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
   Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
 
 noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
-    DecidablePred (· ∈ s ×ˢ t) := fun x => inferInstanceAs (Decidable (x.1 ∈ s ∧ x.2 ∈ t))
+    DecidablePred (· ∈ s ×ˢ t) := fun x ↦ inferInstanceAs (Decidable (x.1 ∈ s ∧ x.2 ∈ t))
 
 @[gcongr]
 theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆ s₂ ×ˢ t₂ :=
@@ -186,7 +186,7 @@ theorem preimage_prod_map_prod (f : α → β) (g : γ → δ) (s : Set β) (t :
   rfl
 
 theorem mk_preimage_prod (f : γ → α) (g : γ → β) :
-    (fun x => (f x, g x)) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
+    (fun x ↦ (f x, g x)) ⁻¹' s ×ˢ t = f ⁻¹' s ∩ g ⁻¹' t :=
   rfl
 
 @[simp]
@@ -254,8 +254,8 @@ theorem prod_univ_range_eq {m₂ : β → δ} :
   ext <| by simp [range]
 
 theorem range_pair_subset (f : α → β) (g : α → γ) :
-    (range fun x => (f x, g x)) ⊆ range f ×ˢ range g := by
-  have : (fun x => (f x, g x)) = Prod.map f g ∘ fun x => (x, x) := funext fun x => rfl
+    (range fun x ↦ (f x, g x)) ⊆ range f ×ˢ range g := by
+  have : (fun x ↦ (f x, g x)) = Prod.map f g ∘ fun x ↦ (x, x) := funext fun x ↦ rfl
   rw [this, ← range_prod_map]
   apply range_comp_subset_range
 
@@ -278,7 +278,7 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
     s ×ˢ t ⊆ f ⁻¹' W ↔ ∀ a b, a ∈ s → b ∈ t → f (a, b) ∈ W := by simp [subset_def]
 
 theorem image_prod_mk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
-    (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by
+    (fun x ↦ (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by
   rintro _ ⟨x, hx, rfl⟩
   exact mk_mem_prod (mem_image_of_mem f hx) (mem_image_of_mem g hx)
 
@@ -371,18 +371,18 @@ section Mono
 variable [Preorder α] {f : α → Set β} {g : α → Set γ}
 
 theorem _root_.Monotone.set_prod (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ×ˢ g x :=
+    Monotone fun x ↦ f x ×ˢ g x :=
   fun _ _ h => prod_mono (hf h) (hg h)
 
 theorem _root_.Antitone.set_prod (hf : Antitone f) (hg : Antitone g) :
-    Antitone fun x => f x ×ˢ g x :=
+    Antitone fun x ↦ f x ×ˢ g x :=
   fun _ _ h => prod_mono (hf h) (hg h)
 
 theorem _root_.MonotoneOn.set_prod (hf : MonotoneOn f s) (hg : MonotoneOn g s) :
-    MonotoneOn (fun x => f x ×ˢ g x) s := fun _ ha _ hb h => prod_mono (hf ha hb h) (hg ha hb h)
+    MonotoneOn (fun x ↦ f x ×ˢ g x) s := fun _ ha _ hb h => prod_mono (hf ha hb h) (hg ha hb h)
 
 theorem _root_.AntitoneOn.set_prod (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
-    AntitoneOn (fun x => f x ×ˢ g x) s := fun _ ha _ hb h => prod_mono (hf ha hb h) (hg ha hb h)
+    AntitoneOn (fun x ↦ f x ×ˢ g x) s := fun _ ha _ hb h => prod_mono (hf ha hb h) (hg ha hb h)
 
 end Mono
 
@@ -400,7 +400,7 @@ section Diagonal
 variable {α : Type*} {s t : Set α}
 
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-  Nonempty.elim ‹_› fun x => ⟨_, mem_diagonal x⟩
+  Nonempty.elim ‹_› fun x ↦ ⟨_, mem_diagonal x⟩
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
@@ -411,7 +411,7 @@ theorem preimage_coe_coe_diagonal (s : Set α) :
   simp [Set.diagonal]
 
 @[simp]
-theorem range_diag : (range fun x => (x, x)) = diagonal α := by
+theorem range_diag : (range fun x ↦ (x, x)) = diagonal α := by
   ext ⟨x, y⟩
   simp [diagonal, eq_comm]
 
@@ -423,13 +423,13 @@ theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ 
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diag_preimage_prod (s t : Set α) : (fun x ↦ (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
+theorem diag_preimage_prod_self (s : Set α) : (fun x ↦ (x, x)) ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+theorem diag_image (s : Set α) : (fun x ↦ (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
   rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
@@ -575,7 +575,7 @@ theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
   disjoint_left.mpr fun _ hd ho => ho.2.2 hd
 
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
-  ext fun x => by
+  ext fun x ↦ by
     simp only [mem_offDiag, mem_inter_iff]
     tauto
 
@@ -631,7 +631,7 @@ theorem pi_univ_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
 theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := fun _ hx i hi => h i hi <| hx i hi
 
 theorem pi_inter_distrib : (s.pi fun i => t i ∩ t₁ i) = s.pi t ∩ s.pi t₁ :=
-  ext fun x => by simp only [forall_and, mem_pi, mem_inter_iff]
+  ext fun x ↦ by simp only [forall_and, mem_pi, mem_inter_iff]
 
 theorem pi_congr (h : s₁ = s₂) (h' : ∀ i ∈ s₁, t₁ i = t₂ i) : s₁.pi t₁ = s₂.pi t₂ :=
   h ▸ ext fun _ => forall₂_congr fun i hi => h' i hi ▸ Iff.rfl
@@ -662,7 +662,7 @@ theorem univ_pi_eq_empty_iff : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by
 
 @[simp]
 theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α i)) = ∅ :=
-  univ_pi_eq_empty_iff.2 <| h.elim fun x => ⟨x, rfl⟩
+  univ_pi_eq_empty_iff.2 <| h.elim fun x ↦ ⟨x, rfl⟩
 
 @[simp]
 theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by

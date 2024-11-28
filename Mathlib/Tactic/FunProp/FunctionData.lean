@@ -10,7 +10,7 @@ import Mathlib.Tactic.FunProp.Mor
 /-!
 ## `funProp` data structure holding information about a function
 
-`FunctionData` holds data about function in the form `fun x => f x₁ ... xₙ`.
+`FunctionData` holds data about function in the form `fun x ↦ f x₁ ... xₙ`.
 -/
 
 namespace Mathlib
@@ -100,7 +100,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
       }
 
 /-- Result of `getFunctionData?`. It returns function data if the function is in the form
-`fun x => f y₁ ... yₙ`. Two other cases are `fun x => let y := ...` or `fun x y => ...` -/
+`fun x ↦ f y₁ ... yₙ`. Two other cases are `fun x ↦ let y := ...` or `fun x y => ...` -/
 inductive MaybeFunctionData where
   /-- Can't generate function data as function body has let binder. -/
   | letE (f : Expr)
@@ -129,7 +129,7 @@ def getFunctionData? (f : Expr)
   let .forallE xName xType _ _ ← instantiateMVars (← inferType f)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
-  withLocalDeclD xName xType fun x => do
+  withLocalDeclD xName xType fun x ↦ do
     let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold cfg) |> headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
@@ -180,7 +180,7 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
       return .none
 
 
-/-- Decomposes `fun x => f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
+/-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
 
 Returns none if:
   - `n=0`
@@ -257,11 +257,11 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     return (f, g)
 
 
-/-- Decompose function `fun x => f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
+/-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
 
 The result is:
 ```
-(fun (yᵢ',yⱼ',...) => f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x => (yᵢ, yⱼ, ...))
+(fun (yᵢ',yⱼ',...) => f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x ↦ (yᵢ, yⱼ, ...))
 ```
 
 This is not possible if `yₗ` for `l ∉ #[i,j,...]` still contains `x`.

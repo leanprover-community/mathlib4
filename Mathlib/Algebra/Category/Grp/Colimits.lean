@@ -215,7 +215,7 @@ def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
   desc s := descMorphism F s
-  uniq s m w := DFunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
+  uniq s m w := DFunLike.ext _ _ fun x ↦ Quot.inductionOn x fun x ↦ by
     change (m : ColimitType F →+ s.pt) _ = (descMorphism F s : ColimitType F →+ s.pt) _
     induction x using Prequotient.recOn with
     | of j x => exact DFunLike.congr_fun (w j) x

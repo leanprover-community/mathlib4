@@ -60,7 +60,7 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 
 attribute [local ext] Complex.ext
 
-theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
+theorem re_surjective : Surjective re := fun x ↦ ⟨⟨x, 0⟩, rfl⟩
 
 theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
 

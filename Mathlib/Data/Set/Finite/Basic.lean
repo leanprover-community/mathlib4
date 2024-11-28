@@ -281,11 +281,11 @@ structure. -/
 def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
   haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
-  Fintype.ofFinset (s.toFinset.attach.biUnion fun x => (t x).toFinset) fun x => by simp
+  Fintype.ofFinset (s.toFinset.attach.biUnion fun x ↦ (t x).toFinset) fun x ↦ by simp
 
 instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
-  Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
+  Fintype.ofFinset (s.toFinset.biUnion fun x ↦ (t x).toFinset) <| by simp
 
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
@@ -618,7 +618,7 @@ theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β 
   aesop
 
 theorem finite_range_ite {p : α → Prop} [DecidablePred p] {f g : α → β} (hf : (range f).Finite)
-    (hg : (range g).Finite) : (range fun x => if p x then f x else g x).Finite :=
+    (hg : (range g).Finite) : (range fun x ↦ if p x then f x else g x).Finite :=
   (hf.union hg).subset range_ite_subset
 
 theorem finite_range_const {c : β} : (range fun _ : α => c).Finite :=
@@ -856,7 +856,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Finite (f '' s) := finite_coe_iff.mpr h_fin
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
-            ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
+            ((f '' s).codRestrict (s.restrict f) fun x ↦ ⟨x, x.property, rfl⟩)
   contrapose! h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
@@ -896,7 +896,7 @@ theorem Finite.exists_lt_map_eq_of_forall_mem [LinearOrder α] [Infinite α] {t 
   exact ⟨a, b, h⟩
 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :
-    (range fun x => Nat.findGreatest (P x) b).Finite :=
+    (range fun x ↦ Nat.findGreatest (P x) b).Finite :=
   (finite_le_nat b).subset <| range_subset_iff.2 fun _ => Nat.findGreatest_le _
 
 theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)

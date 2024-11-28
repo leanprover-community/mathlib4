@@ -629,7 +629,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine x.recOnSubsingleton fun x => ?_
+    refine x.recOnSubsingleton fun x ↦ ?_
     cases' x with x hx
     cases' x with _ x
     · simp at hx
@@ -692,7 +692,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
     ext hy
     convert_to Sym2.pairOther a x = _
     · have : ∀ {c e h}, @Eq.ndrec (Sym2 α) (Sym2.mk x)
-          (fun x => a ∈ x → α) (fun _ => Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
+          (fun x ↦ a ∈ x → α) (fun _ => Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
           intro _ e _; subst e; rfl
       apply this
     · rw [mem_iff] at hy

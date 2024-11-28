@@ -146,7 +146,7 @@ def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i => by apply Fi
 theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
   -- Porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
-  refine funext (fun x => ?_)
+  refine funext (fun x ↦ ?_)
   cases x
   · apply h₁
   · apply congr_fun h₀
@@ -223,7 +223,7 @@ theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Typ
   eq_of_drop_last_eq rfl rfl
 
 theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
-  funext fun x => by apply Fin2.elim0 x -- Porting note: `by apply` is necessary?
+  funext fun x ↦ by apply Fin2.elim0 x -- Porting note: `by apply` is necessary?
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type u} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (@id _ α ::: g₁ ∘ g₀) = (id ::: g₁) ⊚ (id ::: g₀) :=
@@ -500,7 +500,7 @@ theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :
 /-- given a predicate vector `p` over vector `α`, `Subtype_ p` is the type of vectors
 that contain an `α` that satisfies `p` -/
 def Subtype_ : ∀ {n} {α : TypeVec.{u} n}, (α ⟹ «repeat» n Prop) → TypeVec n
-  | _, _, p, Fin2.fz => Subtype fun x => p Fin2.fz x
+  | _, _, p, Fin2.fz => Subtype fun x ↦ p Fin2.fz x
   | _, _, p, Fin2.fs i => Subtype_ (dropFun p) i
 
 /-- projection on `Subtype_` -/

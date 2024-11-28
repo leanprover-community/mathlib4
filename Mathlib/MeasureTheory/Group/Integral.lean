@@ -51,7 +51,7 @@ left-invariant measure. -/
       left-invariant measure."] -- Porting note: was `@[simp]`
 theorem integral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (g * x) ∂μ) = ∫ x, f x ∂μ := by
-  have h_mul : MeasurableEmbedding fun x => g * x := (MeasurableEquiv.mulLeft g).measurableEmbedding
+  have h_mul : MeasurableEmbedding fun x ↦ g * x := (MeasurableEquiv.mulLeft g).measurableEmbedding
   rw [← h_mul.integral_map, map_mul_left_eq_self]
 
 /-- Translating a function by right-multiplication does not change its integral with respect to a
@@ -61,7 +61,7 @@ right-invariant measure. -/
       right-invariant measure."] -- Porting note: was `@[simp]`
 theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x * g) ∂μ) = ∫ x, f x ∂μ := by
-  have h_mul : MeasurableEmbedding fun x => x * g :=
+  have h_mul : MeasurableEmbedding fun x ↦ x * g :=
     (MeasurableEquiv.mulRight g).measurableEmbedding
   rw [← h_mul.integral_map, map_mul_right_eq_self]
 
@@ -121,7 +121,7 @@ theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInv
 @[to_additive] -- Porting note: was `@[simp]`
 theorem integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
     [IsMulLeftInvariant μ] (x' : G) : (∫ x, f (x' / x) ∂μ) = ∫ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv, integral_inv_eq_self (fun x => f (x' * x)) μ,
+  simp_rw [div_eq_mul_inv, integral_inv_eq_self (fun x ↦ f (x' * x)) μ,
     integral_mul_left_eq_self f x']
 
 end MeasurableMul

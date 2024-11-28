@@ -177,7 +177,7 @@ lemma _root_.ContinuousOn.compCM (hg : ContinuousOn g s) (hf : ContinuousOn f s)
   (hg a ha).compCM (hf a ha)
 
 lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
-    Continuous fun x => (g x).comp (f x) :=
+    Continuous fun x ↦ (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
 end Functorial
@@ -478,7 +478,7 @@ theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) 
     intro x
     obtain ⟨x₀, rfl⟩ := hf.surjective x
     exact (Gf x₀).continuous
-  let G : X → C(Y, Z) := fun x => ⟨_, h x⟩
+  let G : X → C(Y, Z) := fun x ↦ ⟨_, h x⟩
   have : Continuous G := by
     rw [hf.continuous_iff]
     exact Gf.continuous

@@ -39,7 +39,7 @@ protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : Loca
   ⟨t, ht₁, ht₂.subset fun i hi => hi.mono <| inter_subset_inter (hg i) Subset.rfl⟩
 
 theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
-    LocallyFinite (f ∘ g) := fun x => by
+    LocallyFinite (f ∘ g) := fun x ↦ by
   let ⟨t, htx, htf⟩ := hf x
   refine ⟨t, htx, htf.preimage <| ?_⟩
   exact hg.mono fun i (hi : Set.Nonempty _) => hi.left
@@ -136,12 +136,12 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by
   choose U hUx hU using hf
-  choose N hN using fun x => (hU x).bddAbove
+  choose N hN using fun x ↦ (hU x).bddAbove
   replace hN : ∀ (x), ∀ n > N x, ∀ y ∈ U x, f (n + 1) y = f n y :=
     fun x n hn y hy => by_contra fun hne => hn.lt.not_le <| hN x ⟨y, hne, hy⟩
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y :=
     fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
-  refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
+  refine ⟨fun x ↦ f (N x + 1) x, fun x ↦ ?_⟩
   filter_upwards [Filter.prod_mem_prod (eventually_gt_atTop (N x)) (hUx x)]
   rintro ⟨n, y⟩ ⟨hn : N x < n, hy : y ∈ U x⟩
   calc

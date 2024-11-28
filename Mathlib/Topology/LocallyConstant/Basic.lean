@@ -107,12 +107,12 @@ protected theorem comp {f : X → Y} (hf : IsLocallyConstant f) (g : Y → Z) :
   exact hf _
 
 theorem prod_mk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
-    (hf' : IsLocallyConstant f') : IsLocallyConstant fun x => (f x, f' x) :=
+    (hf' : IsLocallyConstant f') : IsLocallyConstant fun x ↦ (f x, f' x) :=
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
 
 theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
-    (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=
+    (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x ↦ h (f x) (g x) :=
   (hf.prod_mk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
 
 theorem comp_continuous [TopologicalSpace Y] {g : Y → Z} {f : X → Y} (hg : IsLocallyConstant g)
@@ -157,7 +157,7 @@ theorem one [One Y] : IsLocallyConstant (1 : X → Y) := IsLocallyConstant.const
 
 @[to_additive]
 theorem inv [Inv Y] ⦃f : X → Y⦄ (hf : IsLocallyConstant f) : IsLocallyConstant f⁻¹ :=
-  hf.comp fun x => x⁻¹
+  hf.comp fun x ↦ x⁻¹
 
 @[to_additive]
 theorem mul [Mul Y] ⦃f g : X → Y⦄ (hf : IsLocallyConstant f) (hg : IsLocallyConstant g) :
@@ -328,7 +328,7 @@ theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] (f : LocallyConstant 
     ∃ y, f = const X y := by
   rcases Classical.em (Nonempty X) with (⟨⟨x⟩⟩ | hX)
   · exact ⟨f x, f.eq_const x⟩
-  · exact ⟨Classical.arbitrary Y, ext fun x => (hX ⟨x⟩).elim⟩
+  · exact ⟨Classical.arbitrary Y, ext fun x ↦ (hX ⟨x⟩).elim⟩
 
 /-- Push forward of locally constant maps under any map, by post-composition. -/
 def map (f : Y → Z) (g : LocallyConstant X Y) : LocallyConstant X Z :=

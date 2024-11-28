@@ -394,7 +394,7 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
 @[to_additive]
 lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
     (l : List α) :
-    ((l.filter p).map f).prod * ((l.filter fun x => ¬p x).map f).prod = (l.map f).prod := by
+    ((l.filter p).map f).prod * ((l.filter fun x ↦ ¬p x).map f).prod = (l.map f).prod := by
   rw [← prod_map_ite]
   simp only [ite_self]
 
@@ -414,13 +414,13 @@ variable [Group G]
 
 /-- This is the `List.prod` version of `mul_inv_rev` -/
 @[to_additive "This is the `List.sum` version of `add_neg_rev`"]
-theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).reverse.prod
+theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x ↦ x⁻¹).reverse.prod
   | [] => by simp
   | x :: xs => by simp [prod_inv_reverse xs]
 
 /-- A non-commutative variant of `List.prod_reverse` -/
 @[to_additive "A non-commutative variant of `List.sum_reverse`"]
-theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => x⁻¹).prod⁻¹ := by
+theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x ↦ x⁻¹).prod⁻¹ := by
   simp [prod_inv_reverse]
 
 /-- Counterpart to `List.prod_take_succ` when we have an inverse operation -/
@@ -458,7 +458,7 @@ variable [CommGroup G]
 
 /-- This is the `List.prod` version of `mul_inv` -/
 @[to_additive "This is the `List.sum` version of `add_neg`"]
-theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
+theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x ↦ x⁻¹).prod
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv xs]
 
@@ -482,7 +482,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
-    (l.map fun x => if x = a then f x else g x).prod
+    (l.map fun x ↦ if x = a then f x else g x).prod
       = (f a / g a) ^ (l.count a) * (l.map g).prod := by
   induction l with
   | nil => simp
@@ -582,7 +582,7 @@ variable [DecidableEq α]
 
 /-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
 theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
-    ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
+    ((l.dedup.filter p).map fun x ↦ l.count x).sum = l.countP p := by
   induction l with
   | nil => simp
   | cons a as h =>
@@ -607,7 +607,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         · exact ha'.2.symm
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
-    (l.dedup.map fun x => l.count x).sum = l.length := by
+    (l.dedup.map fun x ↦ l.count x).sum = l.length := by
   simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
 
 end List

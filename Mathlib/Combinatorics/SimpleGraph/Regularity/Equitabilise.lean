@@ -168,7 +168,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
     (P.equitabilise h).parts =
       {u ∈ (P.equitabilise h).parts | #u = m} ∪ {u ∈ (P.equitabilise h).parts | #u = m + 1} := by
     rw [← filter_or, filter_true_of_mem]
-    exact fun x => card_eq_of_mem_parts_equitabilise
+    exact fun x ↦ card_eq_of_mem_parts_equitabilise
   nth_rw 2 [hunion]
   rw [sum_union, sum_const_nat fun x hx => (mem_filter.1 hx).2,
     sum_const_nat fun x hx => (mem_filter.1 hx).2, P.card_filter_equitabilise_big]
@@ -178,7 +178,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
   exact (hb i h).symm.trans (ha i h)
 
 theorem card_parts_equitabilise (hm : m ≠ 0) : #(P.equitabilise h).parts = a + b := by
-  rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
+  rw [← filter_true_of_mem fun x ↦ card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀

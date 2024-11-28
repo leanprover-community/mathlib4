@@ -64,14 +64,14 @@ theorem sub_smul_dslope (f : 𝕜 → E) (a b : 𝕜) : (b - a) • dslope f a b
   rcases eq_or_ne b a with (rfl | hne) <;> simp [dslope_of_ne, *]
 
 theorem dslope_sub_smul_of_ne (f : 𝕜 → E) (h : b ≠ a) :
-    dslope (fun x => (x - a) • f x) a b = f b := by
+    dslope (fun x ↦ (x - a) • f x) a b = f b := by
   rw [dslope_of_ne _ h, slope_sub_smul _ h.symm]
 
 theorem eqOn_dslope_sub_smul (f : 𝕜 → E) (a : 𝕜) :
-    EqOn (dslope (fun x => (x - a) • f x) a) f {a}ᶜ := fun _ => dslope_sub_smul_of_ne f
+    EqOn (dslope (fun x ↦ (x - a) • f x) a) f {a}ᶜ := fun _ => dslope_sub_smul_of_ne f
 
 theorem dslope_sub_smul [DecidableEq 𝕜] (f : 𝕜 → E) (a : 𝕜) :
-    dslope (fun x => (x - a) • f x) a = update f a (deriv (fun x => (x - a) • f x) a) :=
+    dslope (fun x ↦ (x - a) • f x) a = update f a (deriv (fun x ↦ (x - a) • f x) a) :=
   eq_update_iff.2 ⟨dslope_same _ _, eqOn_dslope_sub_smul f a⟩
 
 @[simp]
@@ -80,7 +80,7 @@ theorem continuousAt_dslope_same : ContinuousAt (dslope f a) a ↔ Differentiabl
 
 theorem ContinuousWithinAt.of_dslope (h : ContinuousWithinAt (dslope f a) s b) :
     ContinuousWithinAt f s b := by
-  have : ContinuousWithinAt (fun x => (x - a) • dslope f a x + f a) s b :=
+  have : ContinuousWithinAt (fun x ↦ (x - a) • dslope f a x + f a) s b :=
     ((continuousWithinAt_id.sub continuousWithinAt_const).smul h).add continuousWithinAt_const
   simpa only [sub_smul_dslope, sub_add_cancel] using this
 

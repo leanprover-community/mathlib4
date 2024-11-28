@@ -188,7 +188,7 @@ def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunctio
       naturality := fun _ _ _ => MonoidHom.ext fun _ => Units.ext rfl }
   counit :=
     { app := fun X => Units.coeHom X
-      naturality := by intros; exact MonoidHom.ext fun x => rfl } }
+      naturality := by intros; exact MonoidHom.ext fun x ↦ rfl } }
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
@@ -214,7 +214,7 @@ def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.un
         naturality := fun _ _ _ => MonoidHom.ext fun _ => Units.ext rfl }
     counit :=
       { app := fun X => Units.coeHom X
-        naturality := by intros; exact MonoidHom.ext fun x => rfl } }
+        naturality := by intros; exact MonoidHom.ext fun x ↦ rfl } }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

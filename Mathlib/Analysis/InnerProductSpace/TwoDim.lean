@@ -193,7 +193,7 @@ theorem inner_rightAngleRotationAux₁_right (x y : E) :
 oriented real inner product space of dimension 2. -/
 def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
   { o.rightAngleRotationAux₁ with
-    norm_map' := fun x => by
+    norm_map' := fun x ↦ by
       dsimp
       refine le_antisymm ?_ ?_
       · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h

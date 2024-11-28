@@ -64,10 +64,10 @@ theorem eLpNorm_one_condexp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
     eLpNorm (μ[f|m]) 1 μ ≤ eLpNorm (μ[(|f|)|m]) 1 μ := by
       refine eLpNorm_mono_ae ?_
       filter_upwards [condexp_mono hf hf.abs
-        (ae_of_all μ (fun x => le_abs_self (f x) : ∀ x, f x ≤ |f x|)),
+        (ae_of_all μ (fun x ↦ le_abs_self (f x) : ∀ x, f x ≤ |f x|)),
         EventuallyLE.trans (condexp_neg f).symm.le
           (condexp_mono hf.neg hf.abs
-          (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
+          (ae_of_all μ (fun x ↦ neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
       rw [eLpNorm_one_eq_lintegral_nnnorm, eLpNorm_one_eq_lintegral_nnnorm, ←
@@ -81,7 +81,7 @@ theorem eLpNorm_one_condexp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       have : 0 ≤ᵐ[μ] μ[(|f|)|m] := by
         rw [← condexp_zero]
         exact condexp_mono (integrable_zero _ _ _) hf.abs
-          (ae_of_all μ (fun x => abs_nonneg (f x) : ∀ x, 0 ≤ |f x|))
+          (ae_of_all μ (fun x ↦ abs_nonneg (f x) : ∀ x, 0 ≤ |f x|))
       filter_upwards [this] with x hx
       exact abs_eq_self.2 hx
 
@@ -124,14 +124,14 @@ theorem setIntegral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator (hnm _ hs)]
     refine integral_congr_ae ?_
-    have : (fun x => |(μ[s.indicator f|m]) x|) =ᵐ[μ] fun x => |s.indicator (μ[f|m]) x| :=
+    have : (fun x ↦ |(μ[s.indicator f|m]) x|) =ᵐ[μ] fun x ↦ |s.indicator (μ[f|m]) x| :=
       (condexp_indicator hfint hs).fun_comp abs
-    refine EventuallyEq.trans (Eventually.of_forall fun x => ?_) this.symm
+    refine EventuallyEq.trans (Eventually.of_forall fun x ↦ ?_) this.symm
     rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
     simp only [Real.norm_eq_abs]
   rw [this, ← integral_indicator (hnm _ hs)]
   refine (integral_abs_condexp_le _).trans
-    (le_of_eq <| integral_congr_ae <| Eventually.of_forall fun x => ?_)
+    (le_of_eq <| integral_congr_ae <| Eventually.of_forall fun x ↦ ?_)
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 
 @[deprecated (since := "2024-04-17")]
@@ -277,9 +277,9 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     exact hx.mul tendsto_const_nhds
   · exact hg.norm.const_mul c
   · exact integrable_condexp.norm.const_mul c
-  · refine fun n => Eventually.of_forall fun x => ?_
+  · refine fun n => Eventually.of_forall fun x ↦ ?_
     exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right (hfs_bound n x) (norm_nonneg _))
-  · refine fun n => Eventually.of_forall fun x => ?_
+  · refine fun n => Eventually.of_forall fun x ↦ ?_
     exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right (hfs_bound n x) (norm_nonneg _))
   · intro n
     simp_rw [← Pi.mul_apply]
