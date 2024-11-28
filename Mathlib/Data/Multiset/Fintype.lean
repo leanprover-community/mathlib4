@@ -280,8 +280,22 @@ lemma consEquiv_symm_none {v : α} :
       ⟨v, ⟨m.count v, (count_cons_self v m) ▸ (Nat.lt_add_one _)⟩⟩ :=
   rfl
 
+@[simp]
+lemma consEquiv_symm_some {v : α} {x : m} :
+    (consEquiv (v := v)).symm (some x) =
+      ⟨x, x.2.castLE (count_le_count_cons ..)⟩ :=
+  rfl
+
 lemma coe_consEquiv_of_ne {v : α} (x : v ::ₘ m) (hx : ↑x ≠ v) :
-    ↑(consEquiv x) = some x.1 := by simp [consEquiv, hx]
+    consEquiv x = some ⟨x.1, x.2.cast (by simp [hx])⟩ := by
+  simp [consEquiv, hx]
+  rfl
+
+lemma coe_consEquiv_of_eq_of_eq {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : x.2 = m.count v) :
+    consEquiv x = none := by simp [consEquiv, hx, hx2]
+
+lemma coe_consEquiv_of_eq_of_lt {v : α} (x : v ::ₘ m) (hx : ↑x = v) (hx2 : x.2 < m.count v) :
+    consEquiv x = some ⟨x.1, ⟨x.2, by simpa [hx]⟩⟩ := by simp [consEquiv, hx, hx2.ne]
 
 /--
 There is some equivalence between `m` and `m.map f` which respects `f`.
