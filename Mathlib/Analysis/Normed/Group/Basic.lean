@@ -379,9 +379,17 @@ theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_re
 theorem norm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖ = ‖a ^ n‖ := by
   rcases le_total 0 n with hn | hn <;> simp [hn, abs_of_nonneg, abs_of_nonpos]
 
-@[to_additive (attr := simp) norm_neg_one_pow_zsmul]
-theorem norm_zpow_neg_one_pow (a : E) (n : ℕ) : ‖a ^ ((-1) ^ n : ℤ)‖ = ‖a‖ := by
-  simp [← norm_zpow_abs]
+@[to_additive (attr := simp) norm_natAbs_smul]
+theorem norm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖ = ‖a ^ n‖ := by
+  rw [← zpow_natCast, ← Int.abs_eq_natAbs, norm_zpow_abs]
+
+@[to_additive norm_isUnit_zsmul]
+theorem norm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖ = ‖a‖ := by
+  rw [← norm_pow_natAbs, Int.isUnit_iff_natAbs_eq.mp hn, pow_one]
+
+@[simp]
+theorem norm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖ = ‖a‖ :=
+  norm_isUnit_zsmul a n.isUnit
 
 open scoped symmDiff in
 @[to_additive]
