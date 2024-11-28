@@ -3130,6 +3130,7 @@ import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.GroupTheory.Goursat
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.CardCommute
