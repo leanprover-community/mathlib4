@@ -2985,6 +2985,7 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.Perfect
@@ -4198,6 +4199,7 @@ import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
