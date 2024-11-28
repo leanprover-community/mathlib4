@@ -192,12 +192,6 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
-  -- TODO: these instances are exactly the ones we wanted to avoid!
-  -- Probably best to change `colimit_no_zero_smul_divisor`
-  have : ∀ {c c' : ModuleCat R}, FunLike (c ⟶ c') ((forget (ModuleCat R)).obj c) ((forget (ModuleCat R)).obj c') :=
-    ConcreteCategory.instFunLike
-  have : ∀ {c c' : ModuleCat R}, LinearMapClass (c ⟶ c') R ((forget (ModuleCat R)).obj c) ((forget (ModuleCat R)).obj c') :=
-    sorry
   refine Limits.Concrete.colimit_no_zero_smul_divisor
     _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
     _ hst
@@ -245,7 +239,8 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
-          germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _) (iWV := homOfLE inf_le_left) _ <|
+          germ_ext (C := ModuleCat R) (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
+            (iWV := homOfLE inf_le_left) _ <|
           Subtype.eq <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
   obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
@@ -299,7 +294,7 @@ theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x) (h
 @[simp]
 theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) (s : (tildeInModuleCat M).1.obj (op U)) :
-    stalkToFiberLinearMap M x
+    (stalkToFiberLinearMap M x).hom
       (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ : _) :=
   DFunLike.ext_iff.1 (ModuleCat.hom_ext_iff.mp (germ_comp_stalkToFiberLinearMap M U x hx)) s
 
@@ -315,7 +310,7 @@ theorem toStalk_comp_stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
   rw [toStalk, Category.assoc, germ_comp_stalkToFiberLinearMap]; rfl
 
 theorem stalkToFiberLinearMap_toStalk (x : PrimeSpectrum.Top R) (m : M) :
-    (stalkToFiberLinearMap M x) (toStalk M x m) =
+    (stalkToFiberLinearMap M x).hom (toStalk M x m) =
     LocalizedModule.mk m 1 :=
   LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (toStalk_comp_stalkToFiberLinearMap M x)) _
 
@@ -360,7 +355,7 @@ theorem res_const (f : M) (g : R) (U hu V hv i) :
 
 @[simp]
 theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.primeCompl) :
-    localizationToStalk M x (LocalizedModule.mk f s) =
+    (localizationToStalk M x).hom (LocalizedModule.mk f s) =
       (tildeInModuleCat M).germ (PrimeSpectrum.basicOpen (s : R)) x s.2
         (const M f s (PrimeSpectrum.basicOpen s) fun _ => id) :=
   (Module.End_isUnit_iff _ |>.1 (isUnit_toStalk M x s)).injective <| by
@@ -390,7 +385,8 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   hom := stalkToFiberLinearMap M x
   inv := localizationToStalk M x
-  hom_inv_id := TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ModuleCat.hom_ext <| LinearMap.ext fun s ↦ by
+  hom_inv_id := TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ModuleCat.hom_ext <|
+      LinearMap.ext fun s ↦ by
     show localizationToStalk M x (stalkToFiberLinearMap M x (M.tildeInModuleCat.germ U x hxU s)) =
       M.tildeInModuleCat.germ U x hxU s
     rw [stalkToFiberLinearMap_germ]
@@ -398,15 +394,19 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
       exists_const _ _ s x hxU
     rw [← res_apply M U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk]
     exact (tildeInModuleCat M).germ_ext V hxV (homOfLE hg) iVU <| hs ▸ rfl
-  inv_hom_id := by ext x; exact x.induction_on (fun _ _ => by simp)
+  inv_hom_id := by ext x; exact x.induction_on (fun _ _ => by
+    simp only [hom_comp, LinearMap.coe_comp, Function.comp_apply, hom_id, LinearMap.id_coe, id_eq]
+    rw [localizationToStalk_mk, stalkToFiberLinearMap_germ]
+    simp)
 
 instance (x : PrimeSpectrum.Top R) :
-    IsLocalizedModule x.asIdeal.primeCompl (toStalk M x) := by
+    IsLocalizedModule x.asIdeal.primeCompl (toStalk M x).hom := by
   convert IsLocalizedModule.of_linearEquiv
     (hf := localizedModuleIsLocalizedModule (M := M) x.asIdeal.primeCompl)
     (e := (stalkIso M x).symm.toLinearEquiv)
-  simp only [of_coe, show (stalkIso M x).symm.toLinearEquiv.toLinearMap = (stalkIso M x).inv by rfl,
-    stalkIso_inv]
+  ext
+  simp only [of_coe,
+    show (stalkIso M x).symm.toLinearEquiv.toLinearMap = (stalkIso M x).inv.hom by rfl]
   erw [LocalizedModule.lift_comp]
 
 end Tilde
