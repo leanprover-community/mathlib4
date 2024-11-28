@@ -511,25 +511,27 @@ instance isLocalization : IsLocalization (Submonoid.powers (X : R[X])) R[T;T⁻�
       rintro rfl
       exact ⟨1, rfl⟩ }
 
-theorem mk'_mul_T (p : R[X]) (n : ℕ) : 
-  IsLocalization.mk' R[T;T⁻¹] p (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) * T n = 
+theorem mk'_mul_T (p : R[X]) (n : ℕ) :
+  IsLocalization.mk' R[T;T⁻¹] p (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) * T n =
     toLaurent p := by
   rw [←toLaurent_X_pow, ←algebraMap_eq_toLaurent, IsLocalization.mk'_spec, algebraMap_eq_toLaurent]
 
-theorem mk'_eq (p : R[X]) (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] p 
+theorem mk'_eq (p : R[X]) (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] p
   (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) = toLaurent p * T (-n) := by
   rw [←IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
   exact mk'_mul_T p n
 
 theorem mk'_one_X_pow (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] 1
-  (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by 
+  (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by
   rw [mk'_eq 1 n, toLaurent_one, one_mul]
 
-theorem mk'_one_X : IsLocalization.mk' R[T;T⁻¹] 1 
+theorem mk'_one_X : IsLocalization.mk' R[T;T⁻¹] 1
   (⟨X,1,pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
   convert mk'_one_X_pow 1
   exact (pow_one X).symm
 
+/-- Given a ring homomorphism `f : R →+* S` and a unit `x` in `S`, the induced homomorphism
+`R[T;T⁻¹] →+* S` sending `T` to `x`. -/
 def lift : R[T;T⁻¹] →+* S :=
   IsLocalization.lift (M := Submonoid.powers (X : R[X])) (g := Polynomial.eval₂RingHom f x) (by
     rintro ⟨y, n, rfl⟩
@@ -547,19 +549,19 @@ theorem lift_T_n (n : ℕ) : lift f x hx (T n) = x ^ n := by
   rw [←Polynomial.toLaurent_X_pow, lift_toLaurent, eval₂_X_pow f x]
 
 @[simp]
-theorem lift_T_neg_n (n : ℕ) : lift f x hx (T (-n)) = (IsUnit.unit hx)⁻¹ ^ n := by
+theorem lift_T_neg_n (n : ℕ) : lift f x hx (T (-n)) = hx.unit⁻¹ ^ n := by
   rw [←mk'_one_X_pow]
   unfold lift
-  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ←mul_pow, 
+  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ←mul_pow,
     IsUnit.mul_val_inv, one_pow]
 
-theorem lift_T (n : ℤ) : lift f x hx (T n) = if (0 ≤ n) then (x ^ n.toNat) else 
-  ((IsUnit.unit hx)⁻¹ ^ (-n).toNat) := by
+theorem lift_T (n : ℤ) : lift f x hx (T n) =
+  if (0 ≤ n) then (x ^ n.toNat) else (hx.unit⁻¹ ^ (-n).toNat) := by
   by_cases hn : 0 ≤ n
   · lift n to ℕ using hn
-    simp only [lift_T_n, Nat.cast_nonneg, if_true, Int.toNat_ofNat]
+    rw [if_pos (Int.ofNat_zero_le n), Int.toNat_ofNat, lift_T_n]
   · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
-    rwa [if_neg, lift_T_neg_n, neg_neg, Int.toNat_ofNat]
+    rw [if_neg hn, lift_T_neg_n, neg_neg, Int.toNat_ofNat]
 
 @[simp]
 theorem lift_C (r : R) : lift f x hx (C r) = f r := by
@@ -570,11 +572,11 @@ theorem lift_C_mul_T_n (r : R) (n : ℕ) : lift f x hx (C r * T n) = f r * x ^ n
   rw [←Polynomial.toLaurent_C_mul_T, lift_toLaurent, eval₂_monomial]
 
 @[simp]
-theorem lift_C_mul_T_neg_n (r : R) (n : ℕ) : lift f x hx (C r * T (-n)) = 
-  f r * (IsUnit.unit hx)⁻¹ ^ n := by rw [map_mul, lift_T_neg_n, lift_C]
+theorem lift_C_mul_T_neg_n (r : R) (n : ℕ) : lift f x hx (C r * T (-n)) =
+  f r * hx.unit⁻¹ ^ n := by rw [map_mul, lift_T_neg_n, lift_C]
 
-theorem lift_C_mul_T (r : R) (n : ℤ) : lift f x hx (C r * T n) = 
-  if (0 ≤ n) then f r * x ^ n.toNat else f r * (IsUnit.unit hx)⁻¹ ^ (-n).toNat := by
+theorem lift_C_mul_T (r : R) (n : ℤ) : lift f x hx (C r * T n) =
+  if (0 ≤ n) then f r * x ^ n.toNat else f r * hx.unit⁻¹ ^ (-n).toNat := by
   by_cases hn : 0 ≤ n
   · lift n to ℕ using hn
     rw [map_mul, lift_C, lift_T_n, if_pos (Int.ofNat_zero_le n), Int.toNat_ofNat]
