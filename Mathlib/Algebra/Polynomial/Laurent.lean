@@ -393,7 +393,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   revert f
   refine Finset.induction_on s ?_ ?_ <;> clear s
   · intro f hf
-    rw [Finset.map_empty, Finsupp.support_eq_empty, ←toLaurent_eq_zero]
+    rw [Finset.map_empty, Finsupp.support_eq_empty, toLaurent_eq_zero]
     exact Polynomial.support_eq_empty.mp hf
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
