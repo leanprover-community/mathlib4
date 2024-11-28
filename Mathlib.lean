@@ -365,6 +365,7 @@ import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Opposite
@@ -614,6 +615,7 @@ import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Antidiag.Finsupp
+import Mathlib.Algebra.Order.Antidiag.Nat
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Archimedean.Basic
@@ -742,6 +744,7 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Algebra.Order.Ring.Cone
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Nat
@@ -1086,6 +1089,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Analysis.BoxIntegral.UnitPartition
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.CStarAlgebra.Classes
@@ -2194,6 +2198,7 @@ import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Covering
 import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.Combinatorics.Quiver.SingleObj
@@ -2900,6 +2905,7 @@ import Mathlib.Data.Vector3
 import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
+import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
@@ -2986,6 +2992,7 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.Perfect
@@ -3058,6 +3065,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
@@ -3124,6 +3132,7 @@ import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.GroupTheory.Goursat
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.CardCommute
@@ -3342,6 +3351,7 @@ import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.BaseChange
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Block
@@ -4199,6 +4209,7 @@ import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
