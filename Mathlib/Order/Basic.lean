@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Subtype
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Spread
