@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 
 import Mathlib.Logic.Function.Defs
+import Mathlib.Logic.IsEmpty
 
 /-!
 # Relator for functions, pairs, sums, and lists.
@@ -84,6 +85,18 @@ lemma BiTotal.rel_exists (h : BiTotal R) :
 
 lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') : LeftUnique R :=
   fun a b c (ac : R a c) (bc : R b c) => (he ac bc).mpr ((he bc bc).mp rfl)
+
+@[simp]
+theorem left_total_empty  {R : α → β → Prop} [IsEmpty α] : LeftTotal R := by
+  simp only [LeftTotal, IsEmpty.forall_iff]
+
+@[simp]
+theorem right_total_empty {R : α → β → Prop} [IsEmpty β] : RightTotal R := by
+  simp only [RightTotal, IsEmpty.forall_iff]
+
+@[simp]
+theorem bi_total_empty {R : α → β → Prop} [IsEmpty α] [IsEmpty β] : BiTotal R := by
+  simp only [BiTotal, left_total_empty, right_total_empty, and_self]
 
 end
 
