@@ -405,6 +405,7 @@ then `closure h ≤ closure k`. -/
 @[to_additive
       "Additive subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
       then `closure h ≤ closure k`"]
+@[gcongr]
 theorem closure_mono ⦃h k : Set G⦄ (h' : h ⊆ k) : closure h ≤ closure k :=
   (Subgroup.gi G).gc.monotone_l h'
 
