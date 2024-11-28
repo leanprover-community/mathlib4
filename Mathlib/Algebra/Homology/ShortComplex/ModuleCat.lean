@@ -48,26 +48,12 @@ lemma moduleCat_exact_iff :
 lemma moduleCat_exact_iff_ker_sub_range :
     S.Exact ↔ LinearMap.ker S.g.hom ≤ LinearMap.range S.f.hom := by
   rw [moduleCat_exact_iff]
-  constructor
-  · intro h x₂ hx₂
-    exact h x₂ hx₂
-  · intro h x₂ hx₂
-    exact h hx₂
+  aesop
 
 lemma moduleCat_exact_iff_range_eq_ker :
     S.Exact ↔ LinearMap.range S.f.hom = LinearMap.ker S.g.hom := by
   rw [moduleCat_exact_iff_ker_sub_range]
-  constructor
-  · intro h
-    ext x
-    constructor
-    · rintro ⟨y, hy⟩
-      rw [← hy]
-      simp only [LinearMap.mem_ker, moduleCat_zero_apply]
-    · intro hx
-      exact h hx
-  · intro h
-    rw [h]
+  aesop
 
 variable {S}
 
@@ -95,9 +81,7 @@ morphisms `f` and `g` and the assumption `LinearMap.range f ≤ LinearMap.ker g`
 @[simps]
 def moduleCatMkOfKerLERange {X₁ X₂ X₃ : ModuleCat.{v} R} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
     (hfg : LinearMap.range f.hom ≤ LinearMap.ker g.hom) : ShortComplex (ModuleCat.{v} R) :=
-  ShortComplex.mk f g (by
-    ext
-    exact hfg ⟨_, rfl⟩)
+  ShortComplex.mk f g (by aesop)
 
 lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (hfg : LinearMap.range f.hom = LinearMap.ker g.hom) :
@@ -128,16 +112,9 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   H := S.moduleCatHomology
   i := ModuleCat.asHom (LinearMap.ker S.g.hom).subtype
   π := S.moduleCatHomologyπ
-  wi := by
-    ext ⟨_, hx⟩
-    exact hx
+  wi := by aesop
   hi := ModuleCat.kernelIsLimit _
-  wπ := by
-    ext (x : S.X₁)
-    dsimp
-    erw [Submodule.Quotient.mk_eq_zero]
-    rw [LinearMap.mem_range]
-    apply exists_apply_eq_apply
+  wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.asHom S.moduleCatToCycles)
 
 @[simp]
