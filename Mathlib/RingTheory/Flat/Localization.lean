@@ -13,13 +13,13 @@ In this file we show that localizations are flat, and flatness is a local proper
 
 ## Main result
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
-* `Module.flat_iff_localization` : Let `Rₚ` a localization of `CommRing R` and `M` be a module
-  over `Rₚ`. Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
-* `Module.flat_of_isLocalized_maximal` : Let `M` be a module over `CommRing R`. If the localization
-  of `M` at each maximal ideal `P` is flat over `Rₚ`, then `M` is flat over `R`.
-* `Module.flat_of_isLocalized_span` : Let `M` be a module over `CommRing R` and `S` be a set that
-  spans `R`. If the localization of `M` at each `s : S` is flat over `Localization.Away s`,
-  then `M` is flat over `R`.
+* `Module.flat_iff_of_isLocalization` : Let `Rₚ` a localization of a commutative ring `R`
+  and `M` be a module over `Rₚ`. Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
+* `Module.flat_of_isLocalized_maximal` : Let `M` be a module over a commutative ring `R`.
+  If the localization of `M` at each maximal ideal `P` is flat over `Rₚ`, then `M` is flat over `R`.
+* `Module.flat_of_isLocalized_span` : Let `M` be a module over a commutative ring `R`
+  and `S` be a set that spans `R`. If the localization of `M` at each `s : S` is flat
+  over `Localization.Away s`, then `M` is flat over `R`.
 -/
 
 open IsLocalizedModule LocalizedModule LinearMap TensorProduct
@@ -43,7 +43,7 @@ instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.fl
 namespace Module
 
 include p in
-theorem flat_iff_localization : Flat S M ↔ Flat R M :=
+theorem flat_iff_of_isLocalization : Flat S M ↔ Flat R M :=
   have := isLocalizedModule_id p M S
   have := IsLocalization.flat S p
   ⟨fun _ ↦ .trans R S M, fun _ ↦ .of_isLocalizedModule S p .id⟩
