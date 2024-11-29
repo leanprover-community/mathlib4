@@ -12,7 +12,7 @@ This file defines trees of depth ω in the sense of descriptive set theory.
 
 ## Main declarations
 
-* `Tree A`: A (possibly infinite) tree of depth at most ω with nodes in A
+* `Tree A`: a (possibly infinite) tree of depth at most `ω` with nodes in `A`
 -/
 
 namespace Descriptive
