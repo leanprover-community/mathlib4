@@ -58,7 +58,7 @@ theorem smnueval_eq_sum : smnueval p x = p.sum (smul_ppow x) := by
 theorem smnueval_zero : smnueval (0 : ℕ+ →₀ R ) x = (0 : S) := by
   simp only [smnueval_eq_sum, Finsupp.sum_zero_index]
 
-theorem smnueval_X : smnueval (Finsupp.single 1 1) x = x ^ (1 : ℕ+) := by
+theorem smnueval_X : smnueval (Finsupp.single 1 (1 : R)) x = x ^ (1 : ℕ+) := by
   simp only [smnueval_eq_sum, smul_ppow, zero_smul, Finsupp.sum_single_index, one_smul]
 
 theorem smnueval_monomial (r : R) (n : ℕ+) : smnueval (Finsupp.single n r) x = r • x ^ n := by

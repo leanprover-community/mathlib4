@@ -34,8 +34,7 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 
 noncomputable section
 
-variable {Γ Γ' R U V W X Y : Type*} [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+variable {Γ Γ₁ Γ₂ R U V W X Y : Type*}
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
 `R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`. -/
@@ -49,7 +48,7 @@ section Coeff
 
 open HahnModule
 
-variable [PartialOrder Γ]
+variable [PartialOrder Γ] [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 @[ext]
 theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
@@ -123,20 +122,20 @@ end Coeff
 
 section Module
 
-variable [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [IsOrderedCancelVAdd Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
+variable [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ₁] [AddAction Γ Γ₁]
+  [IsOrderedCancelVAdd Γ Γ₁] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
   [Module R V] [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
-def HahnSMul (x : HahnSeries Γ R) (A : HVertexOperator Γ' R V W) :
-    HVertexOperator Γ' R V W where
+def HahnSMul (x : HahnSeries Γ R) (A : HVertexOperator Γ₁ R V W) :
+    HVertexOperator Γ₁ R V W where
   toFun v := x • (A v)
   map_add' u v := by simp only [map_add, smul_add]
   map_smul' r v := by
     simp only [map_smul, RingHom.id_apply]
     exact (HahnModule.smul_comm r x (A v)).symm
 
-instance instHahnModule : Module (HahnSeries Γ R) (HVertexOperator Γ' R V W) where
+instance instHahnModule : Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W) where
   smul x A := HahnSMul x A
   one_smul _ := by
     ext _ _
@@ -160,24 +159,60 @@ instance instHahnModule : Module (HahnSeries Γ R) (HVertexOperator Γ' R V W) w
     simp only [zero_smul, LinearMap.zero_apply, HahnModule.of_symm_zero, HahnSeries.zero_coeff]
 
 @[simp]
-theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ' R V W} {v : V} :
+theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} :
     (x • A) v = x • (A v) :=
   rfl
 
 end  Module
 
+section CoeffOps
+
+variable [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+
+/-- Switch factors in a product.  -/
+def switch (A : (Γ₁ × Γ) → V →ₗ[R] W) : (Γ × Γ₁) → V →ₗ[R] W :=
+  fun g ↦ A (g.2, g.1)
+
+lemma switch_apply (A : (Γ₁ × Γ) → V →ₗ[R] W) (a : Γ × Γ₁) (v : V) :
+    (switch A a) v = (A (a.2, a.1)) v := by
+  rfl
+
+-- commutator
+
+/-- Apply a right associator. -/
+def assoc_right (A : ((Γ × Γ₁) × Γ₂) → V →ₗ[R] W) : (Γ × (Γ₁ × Γ₂)) → V →ₗ[R] W :=
+  fun g ↦ A ((g.1, g.2.1), g.2.2)
+
+lemma assoc_right_apply (A : ((Γ × Γ₁) × Γ₂)  → V →ₗ[R] W) (a : Γ × (Γ₁ × Γ₂)) (v : V) :
+    (assoc_right A a) v = A ((a.1, a.2.1), a.2.2) v :=
+  rfl
+
+/-- Apply a left associator. -/
+def assoc_left (A : (Γ × (Γ₁ × Γ₂)) → V →ₗ[R] W) :
+    ((Γ × Γ₁) × Γ₂) → V →ₗ[R] W :=
+  fun g ↦ A (g.1.1, (g.1.2, g.2))
+
+lemma assoc_left_apply (A : (Γ × (Γ₁ × Γ₂)) → V →ₗ[R] W) (a : (Γ × Γ₁) × Γ₂) (v : V) :
+    (assoc_left A a) v = A (a.1.1, (a.1.2, a.2)) v :=
+  rfl
+
+-- scalar action by finsupps.
+
+end CoeffOps
+
 section Products
 
-variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ'] {R : Type*}
-  [CommRing R] {U V W : Type*} [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
-  [AddCommGroup W] [Module R W] (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V)
+variable [OrderedCancelAddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ₁]
+  [CommRing R] [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W]
 
 open HahnModule
 
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
 @[simps]
-def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
+def compHahnSeries (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u : U) :
+    HahnSeries Γ₁ (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
@@ -185,23 +220,23 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     exact fun g' hg' hAB => hg' (by simp [hAB])
 
 @[simp]
-theorem compHahnSeries.add (u v : U) :
+theorem compHahnSeries.add (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u v : U) :
     compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
   simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
   rw [← @HahnSeries.add_coeff]
 
 @[simp]
-theorem compHahnSeries.smul {U : Type*} [AddCommGroup U] [Module R U]
-    (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V) (r : R) (u : U) :
-    compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
+theorem compHahnSeries.smul (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (r : R)
+    (u : U) : compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
   rw [HahnSeries.smul_coeff]
   simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
-def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
+def comp (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) :
+    HVertexOperator (Γ₁ ×ₗ Γ) R U W where
   toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
   map_add' u v := by
     ext g
@@ -214,7 +249,7 @@ def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
     exact rfl
 
 @[simp]
-theorem comp_coeff (g : Γ' ×ₗ Γ) :
+theorem comp_coeff (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (g : Γ₁ ×ₗ Γ) :
     (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
@@ -222,23 +257,23 @@ theorem comp_coeff (g : Γ' ×ₗ Γ) :
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
 factor. -/
-def ResLeft (A : HVertexOperator (Γ' ×ₗ Γ) R V W) (g' : Γ'):  HVertexOperator Γ R V W :=
+def ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁):  HVertexOperator Γ R V W :=
   HVertexOperator.of_coeff (fun g => coeff A (toLex (g', g)))
     (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).isPWO_support' _)
 
-theorem coeff_ResLeft (A : HVertexOperator (Γ' ×ₗ Γ) R V W) (g' : Γ') (g : Γ) :
+theorem coeff_ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁) (g : Γ) :
     coeff (ResLeft A g') g = coeff A (toLex (g', g)) :=
   rfl
 
 /-- The left residue as a linear map. -/
 @[simps]
-def ResLeft.linearMap (g' : Γ'):
-    HVertexOperator (Γ' ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
+def ResLeft.linearMap (g' : Γ₁):
+    HVertexOperator (Γ₁ ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
   toFun A := ResLeft A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') (v : V) :
+theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (v : V) :
     (Function.support (fun (g : Γ) => (coeff A (toLex (g, g'))) v)).IsPWO := by
   refine Set.IsPWO.mono (Set.PartiallyWellOrderedOn.imageProdLex (A v).isPWO_support') ?_
   simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Set.mem_image,
@@ -247,27 +282,112 @@ theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ') R V W) (g'
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the right
 factor. -/
-def ResRight (A : HVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') : HVertexOperator Γ R V W :=
+def ResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) : HVertexOperator Γ R V W :=
   HVertexOperator.of_coeff (fun g => coeff A (toLex (g, g')))
     (fun v => coeff_left_lex_supp.isPWO A g' v)
 
-theorem coeff_ResRight (A : HVertexOperator (Γ ×ₗ Γ') R V W) (g' : Γ') (g : Γ) :
+theorem coeff_ResRight (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (g : Γ) :
     coeff (ResRight A g') g = coeff A (toLex (g, g')) := rfl
 
 /-- The right residue as a linear map. -/
 @[simps]
-def ResRight.linearMap (g' : Γ') :
-    HVertexOperator (Γ ×ₗ Γ') R V W →ₗ[R] HVertexOperator Γ R V W where
+def ResRight.linearMap (g' : Γ₁) :
+    HVertexOperator (Γ ×ₗ Γ₁) R V W →ₗ[R] HVertexOperator Γ R V W where
   toFun A := ResRight A g'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 end Products
 
-section Binomial
+section PiLex -- Order.PiLex
+
+/-! We consider permutations on Lex Pi types. We need this for the following situation:
+To describe locality of vertex operators, we want to say that
+`(X - Y) ^ N • A(X) B(Y) = (X - Y) ^ N • B(Y) A(X)`. However, the left side naturally lies in
+`V →ₗ[R] V((X))((Y))` while the right side lies in `V →ₗ[R] V((Y))((X))`. We can compare them by
+forgetting the Hahn series structure, and showing that the coefficient functions are equal after
+switching variables. One way to phrase this is that applying `(HahnModule.of R).symm` then
+`HahnSeries.coeff`, we get functions to `ℤ ×ₗ ℤ`. Composing with `ofLex` yields functions `ℤ × ℤ`.
+
+One way to look at locality is that for any `u ∈ V`, we have `Y ^ k • A(X)B(Y)u ∈ V((X))[[Y]]` for
+suitably large `k`, and `X ^ m • B(Y)A(X)u ∈ V((Y))[[X]]` for suitably large `m`.  We conclude that
+locality means there are `k,m,N` such that both `X ^ m * Y ^ k * (X - Y) ^ N • A(X) B(Y) u` and
+`X ^ m * Y ^ k * (X - Y) ^ N • B(Y) A(X) u` lie in `V[[X,Y]]`, and are equal there.
+
+One problem is that I want to say that `(X - Y) ^ N` expanded in `R((X))((Y))` is the same as
+`(X - Y) ^ N` expanded in `R((Y))((X))`. Thus, I would like some API for transferring polynomials
+along variable permutations. Switching variables on `(X - Y) ^ N` is the same as multiplying by
+`(-1) ^ N`, but when we have more variables, a permutation yields more than just a sign change.
+
+Perhaps it is best to have lemmas identifying UnitBinomial with HahnSeries finsupps, so that
+permutations still yield Hahn series.  I think we only need 3 variables most of the time, so
+permutations on `(X - Y) ^ k * (X - Z) ^ m * (Y - Z) ^ n` may be enough. For Dong's Lemma, I need
+to use the fact that `(X - Z) = (X - Y) + (Y - Z)`.
+
+So, maybe I should make a notation `X i` for the variable, and the field `A (X i)` a type synonym
+for `A`, so Hahn series on `ℤ ×ₗ ⋯ ×ₗ ℤ` are given by `V((X 1)) ⋯ ((X n))`.
+
+See Algebra.MvPolynomial.Basic:
+
+def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
+  AddMonoidAlgebra R (σ →₀ ℕ)
+
+def X (n : σ) : MvPolynomial σ R :=
+  monomial (Finsupp.single n 1) 1
+
+def rename (f : σ → τ) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
+  aeval (X ∘ f)
+
+@[simps apply]
+def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R :=
+  { rename f with
+    toFun := rename f
+    invFun := rename f.symm
+    left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id]
+    right_inv := fun p => by rw [rename_rename, f.self_comp_symm, rename_id] }
+
+Wrong: Define a vertex operator as `HVertexOperator (σ → ℤ) R V V` for a singleton type `σ`?
+
+Composition gives ProdLex types, so composite types in general should be PiLex, using an ordered
+version of `consPiProdEquiv`. Comparison should take place using `rename` along permutations.
+Associativity is delicate: we have `Γ₁ ×ₗ (Γ₂ ×ₗ Γ₃)` and `(Γ₁ ×ₗ Γ₂) ×ₗ Γ₃`, so we need something
+like a `LexAssoc` operation.  We say two `VertexOperators` `Commute` if transposition yields an
+identity on coefficients, and they are `IsLocal` if they `Commute` after multiplying by transposed
+binomials. We say two `VertexOperators` `IsAssociate` if their coefficients match (need a variable
+change from `X` to `X + Y` here?), and `IsWeakAssociate` if they associate after multiplying by
+suitable binomials.  In general, associativity of intertwining operators needs some analytic input,
+like from differential equations?
+
+
+
+theorem `Pi.lex_desc` {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι}
+    (h₁ : i ≤ j) (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f := sorry
+
+Define binomials `X i - X j` as `varMinus i j` for `i j : σ`.  Or maybe `varMinus hij` for
+`hij : i < j`. This might make it hard to compare `varMinus i j` with `varMinus j i` for
+a permuted order. Binomials are also Finsupps, so we can make a function to MvPolynomial, and
+compare them that way. Since this is special to vertex operators, perhaps this should go in the
+vertex operator file.
+
+-/
+
+variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
+
+/-- The lexicographic relation on `Π i : ι, β i`, where `ι` is ordered by `r`,
+  and each `β i` is ordered by `s`. -/
+def Lexx (x y : ∀ i, β i) : Prop :=
+  ∃ i, (∀ j, r j i → x j = y j) ∧ s (x i) (y i)
+
+theorem xxx (x y : ∀ i, β i) : Lexx r s x y ↔ Pi.Lex r s x y := Iff.rfl
+
+
 
 theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ ℤ) := by decide
 --#find_home! lex_basis_lt --[Mathlib.Data.Prod.Lex]
+
+end PiLex
+
+section Binomial -- delete this. Important adaptations go to VertexOperator.lean
 
 theorem toLex_vAdd_of_sub (k l m n : ℤ) :
     toLex ((m : ℤ) , (n : ℤ)) +ᵥ toLex (k - m, l - n) = toLex (k, l) := by
@@ -366,6 +486,7 @@ operators. -/
 
 open TensorProduct
 
+variable [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 /-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
 operators on the tensor product. May be unnecessary. -/
 def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
@@ -384,13 +505,19 @@ theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
 
 section Composition
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommGroup U] [Module R U] [AddCommGroup X]
+/-! Given heterogeneous vertex operators `Y_{UV}^W : U ⊗ V → W((z))` and
+`Y_{WX}^Y : W ⊗ X → Y((w))`, we wish to compose them to get a heterogeneous vertex operator
+`U ⊗ V ⊗ X → Y((w))((z))`.
+
+-/
+
+variable [PartialOrder Γ] [PartialOrder Γ₁] [AddCommGroup U] [Module R U] [AddCommGroup X]
 [Module R X]  [AddCommGroup Y] [Module R Y]
 
 /-- Left iterated vertex operator. -/
 def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) X)
-    (B : HVertexOperator Γ' R (X ⊗[R] W) Y) :
-    ((U ⊗[R] V) ⊗[R] W) →ₗ[R] HahnModule Γ R (HahnModule Γ' R Y) :=
+    (B : HVertexOperator Γ₁ R (X ⊗[R] W) Y) :
+    ((U ⊗[R] V) ⊗[R] W) →ₗ[R] HahnModule Γ R (HahnModule Γ₁ R Y) :=
   (HahnModule.map B) ∘ₗ HahnModule.rightTensorMap ∘ₗ (TensorProduct.map A LinearMap.id)
 
 /-!

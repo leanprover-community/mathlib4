@@ -219,12 +219,49 @@ theorem factorial_smul_hasseDeriv_linear (k : ℕ) :
 
 end HasseDerivative
 
+section Binomial
+
+/-!
+Given a totally ordered fintype `σ`, we consider binomials in `HahnSeries (PiLex σ Z) R`.
+Define binomials `X i - X j` as `varMinus hij` for `hij : i < j`.
+Need to add API for comparing `varMinus i j` with `varMinus j i`(and their ℕ-powers) under permuted
+order and associativity equivalences. Binomials are also Finsupps, so we can make a
+function to MvPolynomial, and compare them that way.
+
+-/
+
+end Binomial
+
 section Local
 
-variable (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (n : ℕ)
 
 open HVertexOperator
+
+/-- Two vertex operators commute if composition in the opposite order yields switched
+coefficients. This should be replaced with locality at order zero. -/
+def Commute : Prop := switch (comp A B).coeff = (comp B A).coeff
+
+lemma commute_symm : Commute A B ↔ Commute B A := by
+  dsimp only [Commute, comp]
+  constructor
+  · intro h
+    ext g u
+    rw [funext_iff] at h
+    specialize h (g.2, g.1)
+    rw [LinearMap.ext_iff] at h
+    specialize h u
+    simp_all only [switch_apply, LinearMap.coe_mk, AddHom.coe_mk, Equiv.symm_apply_apply,
+      Prod.mk.eta, coeff_apply]
+  · intro h
+    ext g u
+    rw [funext_iff] at h
+    specialize h (g.2, g.1)
+    rw [LinearMap.ext_iff] at h
+    specialize h u
+    simp_all only [switch_apply, LinearMap.coe_mk, AddHom.coe_mk, Equiv.symm_apply_apply,
+      Prod.mk.eta, coeff_apply]
 
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
@@ -233,8 +270,8 @@ def IsLocalToOrderLeq : Prop :=
   ∀ (k l : ℤ), ((subLeft R)^n • (comp A B)).coeff (toLex (k, l)) =
     ((subRight R)^n • (comp B A)).coeff (toLex (l, k))
 
-theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq R V A B n) :
-    IsLocalToOrderLeq R V A B (n + m) := by
+theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
+    IsLocalToOrderLeq A B (n + m) := by
   induction m with
   | zero => exact h
   | succ m ih =>
@@ -465,12 +502,36 @@ theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) =
 
 --residue products with 1, interaction with Hasse derivatives.
 
+/-- A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x). For any integers k,l,m, and any
+n satisfying (k₀ - k) + (l₀ - l) + (m₀ - m) - 1 ≤ n, the previous equation times
+(x-y)^m(y-z)^l(x-z)^k(y-z)^n holds.  Here, k₀ is locality order of AC, l₀ is order of BC, m₀ is
+order of AB. -/
+lemma comp_local (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
+    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
+    (hBC : isLocaltoOrderLeq B C m) :
+    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp (comp A B) C =
+    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp C (comp A B) := by
+
+
 /-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
 for all integers `n`. -/
-theorem local_to_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
+theorem local_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
     (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
-    (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (k + l + m) := by
-  sorry
+    (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (resProd A B n) C (k + l + m - n + 3) := by
+  sorry  -- suffices to show triple products are equal after multiplying by
+  --`(X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l`
+
+Cauchy-Jacobi : `[A(x),[B(y),C(z)]] + [B(y),[C(z),A(x)]] + [C(z),[A(x),B(y)]] = 0`.  This means, for
+any k,l,m ∈ ℤ, the `x^k y^l z^m` coefficient vanishes, or equivalently, the usual Jacobi for
+`A.coeff k`, `B.coeff l`, and `C.coeff m`. We expand the 12 terms as cancelling Hahn series, and
+multiply by integer powers of `(x-y)`, `(x-z)`, and `(y-z)`.
+
+It may be better to work on the level of coefficient functions for locality. Then, commutators are
+just formal functions, and we can multiply by Finsupps.  So IsLocal means commutator is annihilated
+by a power of `(X-Y)`.
+
+
+
 -/
 
 end ResidueProduct
