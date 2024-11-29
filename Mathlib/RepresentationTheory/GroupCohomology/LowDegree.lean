@@ -209,7 +209,6 @@ theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1, ModuleCat.asHom_hom,
     ModuleCat.hom_asHom, Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
     zero_comp, comp_zero, ModuleCat.hom_zero]
-   
 
 end Differentials
 
