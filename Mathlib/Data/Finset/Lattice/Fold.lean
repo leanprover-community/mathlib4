@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
@@ -819,13 +818,6 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_sup' {α β : Type*} [AddMonoid β] [LinearOrder β]
-    [AddLeftMono β] [AddRightMono β]
-    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
-    s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
-  let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
-  (map_finset_sup' ns hs _).symm
-
 /-- To rewrite from right to left, use `Finset.sup'_comp_eq_image`. -/
 @[simp]
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
@@ -857,6 +849,11 @@ lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
+
+@[gcongr]
+lemma sup'_mono_fun {hs : s.Nonempty} {f g : β → α} (h : ∀ b ∈ s, f b ≤ g b) :
+    s.sup' hs f ≤ s.sup' hs g := sup'_le _ _ fun b hb ↦ (h b hb).trans (le_sup' _ hb)
+
 end Sup'
 
 section Inf'
@@ -973,13 +970,6 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
     (f : F) {s : Finset ι} (hs) (g : ι → α) :
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
-
-lemma nsmul_inf' {α β : Type*} [AddMonoid β] [LinearOrder β]
-    [AddLeftMono β] [AddRightMono β]
-    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
-    s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
-  let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
-  (map_finset_inf' ns hs _).symm
 
 /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]

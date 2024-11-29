@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Finset.Sort
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
