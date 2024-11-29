@@ -424,6 +424,15 @@ noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H)
       (F'.isUniversalOfIsLeftKanExtension α))
     (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F)
 
+/-- If `F` admits a pointwise left Kan extension along `L`, then any left Kan extension of `F`
+along `L` is a pointwise left Kan extension. -/
+noncomputable def isPointwiseLeftKanExtensionOfHasLeftKanExtension
+    [HasPointwiseLeftKanExtension L F] {E : LeftExtension L F} (hE : E.IsUniversal) :
+    E.IsPointwiseLeftKanExtension :=
+  have : E.right.IsLeftKanExtension E.hom := ⟨⟨hE⟩⟩
+  LeftExtension.isPointwiseLeftKanExtensionEquivOfIso (StructuredArrow.eta _).symm
+    (isPointwiseLeftKanExtensionOfIsLeftKanExtension _ _)
+
 end
 
 section
@@ -523,6 +532,15 @@ noncomputable def isPointwiseRightKanExtensionOfIsRightKanExtension (F' : D ⥤ 
     (IsLimit.conePointUniqueUpToIso (pointwiseRightKanExtensionIsUniversal L F)
       (F'.isUniversalOfIsRightKanExtension α))
     (pointwiseRightKanExtensionIsPointwiseRightKanExtension L F)
+
+/-- If `F` admits a pointwise right Kan extension along `L`, then any right Kan extension of `F`
+along `L` is a pointwise right Kan extension. -/
+noncomputable def isPointwiseRightKanExtensionOfHasRightKanExtension
+    [HasPointwiseRightKanExtension L F] {E : RightExtension L F} (hE : E.IsUniversal) :
+    E.IsPointwiseRightKanExtension :=
+  have : E.left.IsRightKanExtension E.hom := ⟨⟨hE⟩⟩
+  RightExtension.isPointwiseRightKanExtensionEquivOfIso (CostructuredArrow.eta _).symm
+    (isPointwiseRightKanExtensionOfIsRightKanExtension _ _)
 
 end
 
