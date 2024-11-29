@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Conj
 The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
-We check `Action V G ≌ (singleObj G ⥤ V)`,
+We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
 and construct the restriction functors `res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G`.
 -/
 
@@ -56,7 +56,9 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657),
+-- but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
+-- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
 attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
 variable (G : MonCat.{u})
@@ -111,7 +113,6 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext h
@@ -196,7 +197,7 @@ def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
-  NatIso.ofComponents fun M => NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun M => NatIso.ofComponents fun _ => Iso.refl _
 
 end FunctorCategoryEquivalence
 
@@ -215,6 +216,12 @@ def functorCategoryEquivalence : Action V G ≌ SingleObj G ⥤ V where
   inverse := inverse
   unitIso := unitIso
   counitIso := counitIso
+
+instance : (FunctorCategoryEquivalence.functor (V := V) (G := G)).IsEquivalence :=
+  (functorCategoryEquivalence V G).isEquivalence_functor
+
+instance : (FunctorCategoryEquivalence.inverse (V := V) (G := G)).IsEquivalence :=
+  (functorCategoryEquivalence V G).isEquivalence_inverse
 
 /-
 porting note: these two lemmas are redundant with the projections created by the @[simps]
@@ -258,13 +265,13 @@ def functorCategoryEquivalenceCompEvaluation :
     (functorCategoryEquivalence V G).functor ⋙ (evaluation _ _).obj PUnit.unit ≅ forget V G :=
   Iso.refl _
 
-noncomputable instance instPreservesLimitsForget [HasLimits V] :
-    Limits.PreservesLimits (forget V G) :=
-  Limits.preservesLimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
+noncomputable instance preservesLimits_forget [HasLimits V] :
+    PreservesLimits (forget V G) :=
+  Limits.preservesLimits_of_natIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
-noncomputable instance instPreservesColimitsForget [HasColimits V] :
+noncomputable instance preservesColimits_forget [HasColimits V] :
     PreservesColimits (forget V G) :=
-  preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
+  preservesColimits_of_natIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
 -- TODO construct categorical images?
 end Forget
@@ -284,7 +291,7 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
       simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
-  counitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 variable (V)
 

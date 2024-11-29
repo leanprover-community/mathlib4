@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -775,5 +776,22 @@ theorem det_conj' {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
     det (M⁻¹ * N * M) = det N := by rw [← h.unit_spec, ← coe_units_inv, det_units_conj']
 
 end Det
+
+/-! ### More results about traces -/
+
+
+section trace
+
+variable [Fintype m] [DecidableEq m]
+
+/-- A variant of `Matrix.trace_units_conj`. -/
+theorem trace_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
+    trace (M * N * M⁻¹) = trace N := by rw [← h.unit_spec, ← coe_units_inv, trace_units_conj]
+
+/-- A variant of `Matrix.trace_units_conj'`. -/
+theorem trace_conj' {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
+    trace (M⁻¹ * N * M) = trace N := by rw [← h.unit_spec, ← coe_units_inv, trace_units_conj']
+
+end trace
 
 end Matrix

@@ -7,6 +7,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Derangements on types

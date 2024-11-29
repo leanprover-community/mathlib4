@@ -109,7 +109,7 @@ theorem goldConj_ne_zero : ψ ≠ 0 :=
 
 theorem neg_one_lt_goldConj : -1 < ψ := by
   rw [neg_lt, ← inv_gold]
-  exact inv_lt_one one_lt_gold
+  exact inv_lt_one_of_one_lt₀ one_lt_gold
 
 /-!
 ## Irrationality
@@ -201,7 +201,7 @@ theorem Real.coe_fib_eq' :
 
 /-- Binet's formula as a dependent equality. -/
 theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
-  rw [← Function.funext_iff, Real.coe_fib_eq']
+  rw [← funext_iff, Real.coe_fib_eq']
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by

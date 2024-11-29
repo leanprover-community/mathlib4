@@ -312,7 +312,7 @@ Single Variable Real Analysis:
   Differentiability:
     derivative at a point: 'HasDerivAt'
     differentiable functions: 'HasDerivAt'
-    derivative of a composition of functions: 'deriv.comp'
+    derivative of a composition of functions: 'deriv_comp'
     derivative of the inverse of a function: 'HasStrictDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'

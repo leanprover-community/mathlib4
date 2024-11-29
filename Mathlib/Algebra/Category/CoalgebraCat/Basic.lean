@@ -62,7 +62,7 @@ lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
 /-- A type alias for `CoalgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : CoalgebraCat.{v} R) :=
+structure Hom (V W : CoalgebraCat.{v} R) where
   /-- The underlying `CoalgHom` -/
   toCoalgHom : V →ₗc[R] W
 
@@ -100,7 +100,7 @@ instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toCoalgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=

@@ -16,16 +16,12 @@ exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset
 open Nat Finset
 open scoped Pointwise
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 /-- The divisors of a product of natural numbers are the pointwise product of the divisors of the
 factors. -/
 lemma Nat.divisors_mul (m n : ℕ) : divisors (m * n) = divisors m * divisors n := by
   ext k
   simp_rw [mem_mul, mem_divisors, dvd_mul, mul_ne_zero_iff, ← exists_and_left, ← exists_and_right]
-  simp only [_root_.and_assoc, _root_.and_comm, and_left_comm]
+  simp only [and_assoc, and_comm, and_left_comm]
 
 /-- `Nat.divisors` as a `MonoidHom`. -/
 @[simps]

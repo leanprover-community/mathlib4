@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.Data.Sign
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.Abs
 
 /-!
 # Real quadratic forms

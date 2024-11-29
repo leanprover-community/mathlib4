@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.Grade
+import Mathlib.Order.Nat
 
 /-!
 # Finsets and multisets form a graded order
@@ -47,7 +48,7 @@ lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := by simp [← bot_covBy_iff, co
 instance instGradeMinOrder : GradeMinOrder ℕ (Multiset α) where
   grade := card
   grade_strictMono := card_strictMono
-  covBy_grade s t := CovBy.card_multiset
+  covBy_grade _ _ := CovBy.card_multiset
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
 @[simp] lemma grade_eq (m : Multiset α) : grade ℕ m = card m := rfl

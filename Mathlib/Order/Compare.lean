@@ -52,18 +52,18 @@ theorem swap_eq_iff_eq_swap {o o' : Ordering} : o.swap = o' ↔ o = o'.swap := b
   rw [← swap_inj, swap_swap]
 
 theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = lt ↔ a < b)
-  | lt, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
+  | lt, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
   | eq, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h' h).elim⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
-  | lt, a, b, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
-  | eq, a, b, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
-  | gt, a, b, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
+  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
+  | eq, _, _, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
+  | gt, _, _, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
 
 theorem Compares.eq_eq [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o = eq ↔ a = b)
   | lt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_lt h h').elim⟩
-  | eq, a, b, h => ⟨fun _ => h, fun _ => rfl⟩
+  | eq, _, _, h => ⟨fun _ => h, fun _ => rfl⟩
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (ne_of_gt h h').elim⟩
 
 theorem Compares.eq_gt [Preorder α] {o} {a b : α} (h : Compares o a b) : o = gt ↔ b < a :=
@@ -137,8 +137,7 @@ theorem cmp_swap [Preorder α] [@DecidableRel α (· < ·)] (a b : α) : (cmp a 
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂
 
--- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
-@[simp, nolint simpNF]
+@[simp]
 theorem cmpLE_toDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) :
     cmpLE (toDual x) (toDual y) = cmpLE y x :=
   rfl
@@ -148,8 +147,7 @@ theorem cmpLE_ofDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : αᵒᵈ) :
     cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
   rfl
 
--- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
-@[simp, nolint simpNF]
+@[simp]
 theorem cmp_toDual [LT α] [@DecidableRel α (· < ·)] (x y : α) :
     cmp (toDual x) (toDual y) = cmp y x :=
   rfl

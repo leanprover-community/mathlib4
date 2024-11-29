@@ -95,7 +95,7 @@ of the localization. -/
 @[simps]
 def strictUniversalPropertyFixedTargetId (hW : W ≤ MorphismProperty.isomorphisms C) :
     StrictUniversalPropertyFixedTarget (𝟭 C) W E where
-  inverts X Y f hf := hW f hf
+  inverts _ _ f hf := hW f hf
   lift F _ := F
   fac F hF := by
     cases F

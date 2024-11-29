@@ -100,9 +100,9 @@ class Shelf (α : Type u) where
 A *unital shelf* is a shelf equipped with an element `1` such that, for all elements `x`,
 we have both `x ◃ 1` and `1 ◃ x` equal `x`.
 -/
-class UnitalShelf (α : Type u) extends Shelf α, One α :=
-(one_act : ∀ a : α, act 1 a = a)
-(act_one : ∀ a : α, act a 1 = a)
+class UnitalShelf (α : Type u) extends Shelf α, One α where
+  one_act : ∀ a : α, act 1 a = a
+  act_one : ∀ a : α, act a 1 = a
 
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
@@ -599,11 +599,11 @@ def EnvelGroup (R : Type*) [Rack R] :=
 -- TODO: is there a non-invasive way of defining the instance directly?
 instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul a b :=
-    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
+    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun _ _ _ _ ⟨ha⟩ ⟨hb⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
   one := ⟦unit⟧
   inv a :=
-    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun a a' ⟨ha⟩ =>
+    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
@@ -643,9 +643,9 @@ open PreEnvelGroupRel'
 theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandle.Conj G) :
     ∀ {a b : PreEnvelGroup R},
       PreEnvelGroupRel' R a b → toEnvelGroup.mapAux f a = toEnvelGroup.mapAux f b
-  | a, _, PreEnvelGroupRel'.refl => rfl
-  | a, b, PreEnvelGroupRel'.symm h => (well_def f h).symm
-  | a, b, PreEnvelGroupRel'.trans hac hcb => Eq.trans (well_def f hac) (well_def f hcb)
+  | _, _, PreEnvelGroupRel'.refl => rfl
+  | _, _, PreEnvelGroupRel'.symm h => (well_def f h).symm
+  | _, _, PreEnvelGroupRel'.trans hac hcb => Eq.trans (well_def f hac) (well_def f hcb)
   | _, _, PreEnvelGroupRel'.congr_mul ha hb => by
     simp [toEnvelGroup.mapAux, well_def f ha, well_def f hb]
   | _, _, congr_inv ha => by simp [toEnvelGroup.mapAux, well_def f ha]
@@ -664,7 +664,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
     (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G) where
   toFun f :=
     { toFun := fun x =>
-        Quotient.liftOn x (toEnvelGroup.mapAux f) fun a b ⟨hab⟩ =>
+        Quotient.liftOn x (toEnvelGroup.mapAux f) fun _ _ ⟨hab⟩ =>
           toEnvelGroup.mapAux.well_def f hab
       map_one' := by
         change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1

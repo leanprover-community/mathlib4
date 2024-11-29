@@ -180,8 +180,7 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
   · rw [add_zero] at hpq
     simp [hpq]
   have h2p : 1 < 1 / p := by
-    rw [one_div]
-    apply one_lt_inv hp
+    rw [one_div, one_lt_inv₀ hp]
     linarith
   have h2pq : (1 / p)⁻¹ + (1 / q)⁻¹ = 1 := by simp [hp.ne', hq.ne', hpq]
   have := ENNReal.lintegral_mul_le_Lp_mul_Lq μ ⟨h2p, h2pq⟩ (hf.pow_const p) (hg.pow_const q)

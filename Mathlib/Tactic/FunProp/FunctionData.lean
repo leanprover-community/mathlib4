@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
@@ -88,7 +87,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
 
       let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
+        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
         |>.filterMap id
 
       return {
@@ -164,7 +163,7 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
   if let .some name := f.fn.constName? then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
-      let arity := info.type.forallArity
+      let arity := info.type.getNumHeadForalls
       match compare arity f.args.size with
       | .eq => return .exact
       | .lt => return .overApplied

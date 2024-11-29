@@ -147,6 +147,12 @@ theorem snd_comp_inr [Zero R] : snd ∘ (inr : M → tsze R M) = id :=
 
 end
 
+theorem fst_surjective [Nonempty M] : Function.Surjective (fst : tsze R M → R) :=
+  Prod.fst_surjective
+
+theorem snd_surjective [Nonempty R] : Function.Surjective (snd : tsze R M → M) :=
+  Prod.snd_surjective
+
 theorem inl_injective [Zero M] : Function.Injective (inl : R → tsze R M) :=
   Function.LeftInverse.injective <| fst_inl _
 
@@ -225,6 +231,16 @@ instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
 instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
   Prod.instModule
+
+/-- The trivial square-zero extension is nontrivial if it is over a nontrivial ring. -/
+instance instNontrivial_of_left {R M : Type*} [Nontrivial R] [Nonempty M] :
+    Nontrivial (TrivSqZeroExt R M) :=
+  fst_surjective.nontrivial
+
+/-- The trivial square-zero extension is nontrivial if it is over a nontrivial module. -/
+instance instNontrivial_of_right {R M : Type*} [Nonempty R] [Nontrivial M] :
+    Nontrivial (TrivSqZeroExt R M) :=
+  snd_surjective.nontrivial
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
@@ -854,10 +870,9 @@ section Algebra
 
 variable (S : Type*) (R R' : Type u) (M : Type v)
 variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
-variable [Algebra S R] [Algebra S R'] [Module S M]
-variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
-variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
+variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
 instance algebra' : Algebra S (tsze R M) :=
   { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with

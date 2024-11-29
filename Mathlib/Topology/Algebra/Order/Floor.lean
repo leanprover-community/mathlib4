@@ -206,7 +206,7 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
         (tendsto_id.prod_map (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
         simp [nhdsWithin_prod_eq, nhdsWithin_univ]
   · replace ht : t ≠ ⌊t⌋ := fun ht' => ht ⟨_, ht'⟩
-    refine (h.continuousAt ?_).comp (continuousAt_id.prod_map (continuousAt_fract ht))
+    refine (h.continuousAt ?_).comp (continuousAt_id.prodMap (continuousAt_fract ht))
     exact prod_mem_nhds univ_mem (Icc_mem_nhds (fract_pos.2 ht) (fract_lt_one _))
 
 theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}
