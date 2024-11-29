@@ -6,7 +6,6 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
-import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 
