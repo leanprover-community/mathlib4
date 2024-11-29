@@ -1190,6 +1190,12 @@ lemma isBigO_one_nhds_ne_iff [TopologicalSpace α] {a : α} :
   · apply le_max_right
   · exact (hb hb').trans (le_max_left ..)
 
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+    [TopologicalSpace α] {f : α → E} {x : α} :
+    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
+  convert (Asymptotics.isLittleO_one_iff (f' := fun (y : α) ↦ f y - f x) (l := 𝓝 x) (F := E)).symm
+  exact tendsto_sub_nhds_zero_iff.symm
+
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :
