@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 We define the absolute Galois group of a field `K` and its topological abelianization.
 
 ## Main definitions
-- `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^al/K`, where `K^sep` is
+- `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^sep/K`, where `K^sep` is
   "the" separable closure of `K`.
 - `Field.absoluteGaloisGroupAbelianization` : The topological abelianization of
   `Field.absoluteGaloisGroup K`, that is, the quotient of `Field.absoluteGaloisGroup K` by the
@@ -34,8 +34,8 @@ variable (K : Type*) [Field K]
 
 /-! ### The absolute Galois group -/
 
-/-- The absolute Galois group of `K`, defined as the Galois group of the field extension `K^al/K`,
-  where `K^al` is an algebraic closure of `K`. -/
+/-- The absolute Galois group of `K`, defined as the Galois group of the field extension `K^sep/K`,
+  where `K^sep` is the separable closure of `K`. -/
 def absoluteGaloisGroup := SeparableClosure K ≃ₐ[K] SeparableClosure K
 
 local notation "G_K" => absoluteGaloisGroup
