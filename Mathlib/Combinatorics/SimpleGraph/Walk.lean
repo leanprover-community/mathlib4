@@ -754,7 +754,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
 @[simp]
-theorem reverse_support_tail_nodup_iff {u : V} {p : G.Walk u u} :
+theorem reverse_support_tail_nodup {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]
   refine List.nodup_tail_reverse p.support ?h
