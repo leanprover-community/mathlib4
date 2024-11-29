@@ -14,7 +14,7 @@ function.
 Note: this API is designed to be useful when defining the counit of the adjunction between
 the functor which takes a set to the condensed set corresponding to locally constant maps to that
 set, and the forgetful functor from the category of condensed sets to the category of sets
-(see PR #14027).
+(see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
 
 
@@ -29,7 +29,7 @@ variable [TopologicalSpace S]
 /-- The canonical map from the disjoint union induced by `f` to `S`. -/
 @[simps apply]
 def sigmaIsoHom : C((x : Fiber f) × x.val, S) where
-  toFun := fun ⟨a, x⟩ ↦ x.val
+  toFun | ⟨a, x⟩ => x.val
 
 lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
   rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
@@ -43,7 +43,7 @@ lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
 
 /-- The inclusion map from a component of the disjoint union induced by `f` into `S`. -/
 def sigmaIncl (a : Fiber f) : C(a.val, S) where
-  toFun := fun x ↦ x.val
+  toFun x := x.val
 
 /-- The inclusion map from a fiber of a composition into the intermediate fiber. -/
 def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fiber (g ∘ f))
@@ -53,7 +53,7 @@ def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fiber (g ∘ f))
     have := x.prop
     simp only [sigmaIncl, ContinuousMap.coe_mk, Fiber.mem_iff_eq_image, comp_apply] at this
     rw [Fiber.mem_iff_eq_image, Fiber.mk_image, this, ← Fiber.map_preimage_eq_image]
-    rfl⟩
+    simp [sigmaIncl]⟩
 
 variable (l : LocallyConstant S Y) [CompactSpace S]
 

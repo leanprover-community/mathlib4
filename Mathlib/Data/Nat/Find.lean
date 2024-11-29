@@ -11,7 +11,7 @@ import Batteries.WF
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
+variable {m n k : ℕ} {p q : ℕ → Prop}
 
 namespace Nat
 
@@ -26,10 +26,10 @@ variable [DecidablePred p] (H : ∃ n, p n)
 
 private def wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
-    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun a => this _ _ (Nat.le_add_left _ _)
+    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
     Nat.recOn m
-      (fun k kn =>
+      (fun _ kn =>
         ⟨_, fun y r =>
           match y, r with
           | _, ⟨rfl, a⟩ => absurd pn (a _ kn)⟩)
@@ -46,7 +46,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
         have : ∀ n ≤ m, ¬p n := fun n h =>
           Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
-    0 fun n h => absurd h (Nat.not_lt_zero _)
+    0 fun _ h => absurd h (Nat.not_lt_zero _)
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
@@ -106,7 +106,6 @@ lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0)
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 
--- Porting note (#10618): removing `simp` attribute as `simp` can prove it
 lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
   Nat.pos_iff_ne_zero.trans (Nat.find_eq_zero _).not
 
