@@ -357,7 +357,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   exact normalizedFactors_irreducible hf
 
 open Set Classical in
-/-- Let `Q` be a lift of factor of the minimal polynomial of a `x` generator of `S` over `R`, taken
+/-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via
 `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
 `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
