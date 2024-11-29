@@ -100,33 +100,40 @@ def rightOpping : (Cᵒᵖ ⥤ D)ᵒᵖ ⥤ (C ⥤ Dᵒᵖ) where
 
 end
 
-variable {C D H I : Type u} [Category.{u} C] [Category.{u} D] [Category.{u} H] [Category.{u} I]
+-- variable {C D H I : Type u} [Category.{u} C] [Category.{u} D] [Category.{u} H] [Category.{u} I]
+variable {C : Type u₁} {D : Type u₂} {H : Type u₃} {I : Type u₄}
+variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} H] [Category.{v₄} I]
+
+-- These universes would force all categories to be locally small in my example...
 
 noncomputable def goalEquiv (L : C ⥤ D) (F : C ⥤ H) (E : LeftExtension L F)
     (hE : E.IsPointwiseLeftKanExtension)
     (h : H) [PreservesLeftKanExtension L F (yoneda.obj h).rightOp] (d : D) :
-    (E.right.obj d ⟶ h) ≃ (L.op ⋙ (yoneda.obj d) ⟶ F.op ⋙ (yoneda.obj h)) := by
+    (E.right.obj d ⟶ h) ≃
+      (L.op ⋙ (yoneda.obj d) ⋙ uliftFunctor.{v₃} ⟶ F.op ⋙ (yoneda.obj h) ⋙ uliftFunctor.{v₂}) := by
   let h₀ : ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).IsUniversal :=
     LeftExtension.isUniversalOfPreserves (yoneda.obj h).rightOp hE.isUniversal
   let q : (L.op ⋙ E.right.op) ⋙ yoneda.obj h ⟶ F.op ⋙ yoneda.obj h :=
     whiskerRight (NatTrans.op E.hom) (yoneda.obj h)
   let h₁ : ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).op.IsUniversal :=
     LeftExtension.isUniversal_op h₀
-  let h₂ : ((RightExtension.postcomp₂ ((opOpEquivalence (Type u)).functor)).obj
+  let h₂ : ((RightExtension.postcomp₂ ((opOpEquivalence _).functor)).obj
     ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).op).IsUniversal :=
     RightExtension.isUniversalOfPreserves _ h₁
   let hx : (Functor.op E.right ⋙ yoneda.obj h).IsRightKanExtension q :=
     ⟨⟨h₂⟩⟩
-  let r' := homEquivOfIsRightKanExtension (Functor.op E.right ⋙ yoneda.obj h) q (yoneda.obj d)
+  let hx' : (Functor.op E.right ⋙ yoneda.obj h ⋙ uliftFunctor.{v₂}).IsRightKanExtension (whiskerRight q uliftFunctor.{v₂}) :=
+    sorry
+  let r' := homEquivOfIsRightKanExtension (Functor.op E.right ⋙ yoneda.obj h ⋙ uliftFunctor.{v₂}) (whiskerRight q uliftFunctor.{v₂}) (yoneda.obj d ⋙ uliftFunctor.{v₃})
   let r'' := (yonedaEquiv.symm.trans r')
   exact r''
 
 noncomputable def goalIso (L : C ⥤ D) (F : C ⥤ H) (E : LeftExtension L F)
     (hE : E.IsPointwiseLeftKanExtension) (h : H)
     [PreservesLeftKanExtension L F (yoneda.obj h).rightOp] :
-    E.right.op ⋙ yoneda.obj h ≅ yoneda.op ⋙ ((whiskeringLeft _ _ _).obj L.op).op ⋙
+    E.right.op ⋙ yoneda.obj h ⋙ uliftFunctor.{u₁} ≅ yoneda.op ⋙ ((whiskeringLeft _ _ _).obj L.op).op ⋙
       yoneda.obj (F.op ⋙ yoneda.obj h) :=
-  NatIso.ofComponents (fun d => Equiv.toIso (goalEquiv L F E hE h d.unop)) sorry
+  NatIso.ofComponents (fun d => Equiv.toIso (Equiv.ulift.trans <| goalEquiv L F E hE h d.unop)) sorry
 
 
 end Functor
