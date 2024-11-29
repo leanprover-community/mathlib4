@@ -1106,7 +1106,6 @@ section LinearOrder
 
 variable [LinearOrder α] {s : Finset ι} (H : s.Nonempty) {f : ι → α} {a : α}
 
-@[simp]
 theorem comp_sup_eq_sup_comp_of_nonempty [OrderBot α] [SemilatticeSup β] [OrderBot β]
     {g : α → β} (mono_g : Monotone g) (H : s.Nonempty) : g (s.sup f) = s.sup (g ∘ f) := by
   rw [← Finset.sup'_eq_sup H, ← Finset.sup'_eq_sup H]
