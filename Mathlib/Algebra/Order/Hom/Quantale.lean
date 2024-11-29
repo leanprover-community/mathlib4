@@ -64,6 +64,9 @@ structure AddQuantaleHom (α β : Type*)
   [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
   extends α →ₙ+ β, sSupHom α β
 
+/-- Converts an AddQuantaleHom to a sSupHom -/
+add_decl_doc AddQuantaleHom.tosSupHom
+
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ+q " => AddQuantaleHom
 
@@ -83,6 +86,9 @@ you should parametrize over
 structure QuantaleHom (α β : Type*)
   [Semigroup α] [CompleteLattice α] [Semigroup β] [CompleteLattice β]
   extends α →ₙ* β, sSupHom α β
+
+/-- Converts a QuantaleHom to a sSupHom -/
+add_decl_doc QuantaleHom.tosSupHom
 
 /-- Infix notation for `QuantaleHom`. -/
 infixr:25 " →ₙ*q " => QuantaleHom
