@@ -82,30 +82,26 @@ def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
 def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
   ∃ a b : D, a ≠ b ∧ f.HasMaxCutPropertyAt a b
 
-/-- Fractional operation is a finite unordered collection of D^m → D possibly with duplicates. -/
+/-- Fractional operation is a nonempty finite multiset of `D^m → D`. -/
 abbrev FractionalOperation (D : Type*) (m : ℕ) : Type _ :=
-  Multiset ((Fin m → D) → D)
+  { m : Multiset ((Fin m → D) → D) // m ≠ ∅ }
 
 variable {m : ℕ}
 
 /-- Arity of the "output" of the fractional operation. -/
 @[simp]
 def FractionalOperation.size (ω : FractionalOperation D m) : ℕ :=
-  Multiset.card.toFun ω
+  Multiset.card.toFun ω.val
 
-/-- Fractional operation is valid iff nonempty. -/
-def FractionalOperation.IsValid (ω : FractionalOperation D m) : Prop :=
-  ω ≠ ∅
-
-/-- Valid fractional operation contains an operation. -/
-lemma FractionalOperation.IsValid.contains {ω : FractionalOperation D m} (valid : ω.IsValid) :
-    ∃ g : (Fin m → D) → D, g ∈ ω :=
-  Multiset.exists_mem_of_ne_zero valid
+/-- Every fractional operation contains an operation. -/
+lemma FractionalOperation.contains (ω : FractionalOperation D m) :
+    ∃ g : (Fin m → D) → D, g ∈ ω.val :=
+  Multiset.exists_mem_of_ne_zero ω.property
 
 /-- Fractional operation applied to a transposed table of values. -/
 def FractionalOperation.tt {ι : Type*} (ω : FractionalOperation D m) (x : Fin m → ι → D) :
     Multiset (ι → D) :=
-  ω.map (fun (g : (Fin m → D) → D) (i : ι) => g ((Function.swap x) i))
+  ω.val.map (fun (g : (Fin m → D) → D) (i : ι) => g ((Function.swap x) i))
 
 /-- Cost function admits given fractional operation, i.e., `ω` improves `f` in the `≤` sense. -/
 def Function.AdmitsFractional {n : ℕ} (f : (Fin n → D) → C) (ω : FractionalOperation D m) : Prop :=
@@ -119,7 +115,7 @@ def FractionalOperation.IsFractionalPolymorphismFor
 
 /-- Fractional operation is symmetric. -/
 def FractionalOperation.IsSymmetric (ω : FractionalOperation D m) : Prop :=
-  ∀ x y : (Fin m → D), List.Perm (List.ofFn x) (List.ofFn y) → ∀ g ∈ ω, g x = g y
+  ∀ x y : (Fin m → D), List.Perm (List.ofFn x) (List.ofFn y) → ∀ g ∈ ω.val, g x = g y
 
 /-- Fractional operation is a symmetric fractional polymorphism for given VCSP template. -/
 def FractionalOperation.IsSymmetricFractionalPolymorphismFor
@@ -151,7 +147,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
     {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)
-    {ω : FractionalOperation D 2} (valid : ω.IsValid) (symmega : ω.IsSymmetric) :
+    {ω : FractionalOperation D 2} (symmega : ω.IsSymmetric) :
     ¬ f.AdmitsFractional ω := by
   intro contr
   obtain ⟨a, b, hab, mcfab⟩ := mcf
@@ -166,17 +162,17 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
       apply Multiset.sum_lt_sum
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)
-      · obtain ⟨g, _⟩ := valid.contains
+      · obtain ⟨g, _⟩ := ω.contains
         have : (fun i => g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
           simp only [FractionalOperation.tt, Multiset.mem_map]
           use g
         exact ⟨_, this, mcfab.rows_lt_aux hab symmega this⟩
     rw [two_nsmul, two_nsmul]
     exact add_lt_add half_sharp half_sharp
-  have impos : 2 • (ω.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
+  have impos : 2 • (ω.val.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
     convert lt_of_lt_of_le sharp contr
     simp [FractionalOperation.tt, Multiset.map_map]
   have rhs_swap : ω.size • 2 • f ![a, b] = 2 • ω.size • f ![a, b] := nsmul_left_comm ..
-  have distrib : (ω.map (fun _ => f ![a, b])).sum = ω.size • f ![a, b] := by simp
+  have distrib : (ω.val.map (fun _ => f ![a, b])).sum = ω.size • f ![a, b] := by simp
   rw [rhs_swap, distrib] at impos
   exact ne_of_lt impos rfl
