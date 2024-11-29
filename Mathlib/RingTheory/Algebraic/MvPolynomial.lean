@@ -21,13 +21,6 @@ namespace MvPolynomial
 
 variable {σ : Type*} (R : Type*) [CommRing R]
 
--- TODO: move to suitable place
-private theorem rename_polynomial_aeval_X
-    {σ τ R : Type*} [CommSemiring R] (f : σ → τ) (i : σ) (p : R[X]) :
-    rename f (Polynomial.aeval (X i) p) = Polynomial.aeval (X (f i) : MvPolynomial τ R) p := by
-  rw [← AlgHom.comp_apply]
-  congr 1; ext1; simp
-
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :
     Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
@@ -60,7 +53,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
     ext1
     · ext1
       simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq]
-    · simp [Set.subtypeInsertEquivOption, rename_polynomial_aeval_X, h1]
+    · simp [Set.subtypeInsertEquivOption, h1]
   simpa only [h2, v, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
 
