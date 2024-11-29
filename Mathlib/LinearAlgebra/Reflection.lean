@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.Tactic.Polyrith
 
 /-!
 # Reflections in linear algebra
@@ -145,12 +146,11 @@ section
 
 open Int Polynomial.Chebyshev
 
-variable {x y : M} {f g : Dual R M} (hf : f x = 2) (hg : g y = 2) (z : M)
+variable {x y : M} {f g : Dual R M} (hf : f x = 2) (hg : g y = 2)
 
 local notation:max "t" => f y * g x - 2
 local notation:max "S_eval_t" n:max => Polynomial.eval t (S R n)
 
-set_option maxHeartbeats 400000 in
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is a natural number and $z \in M$. -/
 lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M) :
     ((reflection hf * reflection hg) ^ m) z =
@@ -171,28 +171,20 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M) :
       simpa using congr_arg (Polynomial.eval t) (S_sq_add_S_sq R k)
     -- Apply the inductive hypothesis.
     rw [pow_succ', LinearEquiv.mul_apply, ih, LinearEquiv.mul_apply]
-    /- TODO: Write a tactic that puts module-valued expressions in a normal form. Such a tactic
-    would perform most of the next three steps automatically. -/
-    -- Expand everything out and use `hf`, `hg`.
-    simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
-      smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
-    -- Sort the terms so that the multiples of `x` appear first, then `y`, then `z`.
-    simp only [add_comm z (_ • x), add_right_comm _ z (_ • x),
-      add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x),
-      add_comm z (_ • y), add_right_comm _ z (_ • y)]
-    -- Combine like terms.
-    simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+    -- Expand out all the reflections and use `hf`, `hg`.
+    simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can either be written in the form `2 * k` or `2 * k + 1`.
     obtain ⟨k, even | odd⟩ := Int.even_or_odd' m
     · /- The goal contains many expressions of the form `S_eval_t n`. We may rewrite all of them as
       `S_eval_t (-2 + k)`, `S_eval_t (-1 + k)`, or `S_eval_t k`. -/
       push_cast
-      simp_rw [even, add_assoc (2 * k), add_comm (2 * k),
+      simp_rw [even, add_sub_assoc (2 * k), sub_eq_add_neg (2 * k), add_comm (2 * k),
         add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
       norm_num
-      /- Now, equate the coefficients of `x` and `y` on both sides. These linear combinations were
+      /- Now, equate the coefficients on both sides. These linear combinations were
       found using `polyrith`. -/
-      congr 2
+      match_scalars
+      · rfl
       · linear_combination (norm := ring_nf) (-g z * f y * S_eval_t (-1 + k) +
             f z * S_eval_t (-1 + k)) * S_eval_t_sub_two k +
           (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
@@ -201,12 +193,13 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M) :
     · /- The goal contains many expressions of the form `S_eval_t n`. We may rewrite all of them as
       `S_eval_t (-1 + k)`, `S_eval_t k`, or `S_eval_t (1 + k)`. -/
       push_cast
-      simp_rw [odd, add_assoc (2 * k), add_comm (2 * k),
+      simp_rw [odd, add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
         add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
       norm_num
-      /- Now, equate the coefficients of `x` and `y` on both sides. These linear combinations were
+      /- Now, equate the coefficients on both sides. These linear combinations were
       found using `polyrith`. -/
-      congr 2
+      match_scalars
+      · rfl
       · linear_combination (norm := ring_nf) (-g z * f y * S_eval_t k +
             f z * S_eval_t k) * S_eval_t_sub_two (k + 1) +
           (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
@@ -252,30 +245,20 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ) :
   | hp m ih =>
     -- Apply the inductive hypothesis.
     rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
-    -- Expand everything out and use `hf`, `hg`.
-    simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
-      smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
-    -- Sort the terms so that the multiples of `x` appear first, then `y`.
-    simp only [add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x)]
-    -- Combine like terms.
-    simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+    -- Expand out all the reflections and use `hf`, `hg`.
+    simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- Equate coefficients of `x` and `y`.
-    congr 2
+    match_scalars
     · linear_combination (norm := ring_nf) -S_eval_t_sub_two (m + 1)
     · ring_nf
   | hn m ih =>
     -- Apply the inductive hypothesis.
     rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
       reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
-    -- Expand everything out and use `hf`, `hg`.
-    simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
-      smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
-    -- Sort the terms so that the multiples of `x` appear first, then `y`.
-    simp only [add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x)]
-    -- Combine like terms.
-    simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+    -- Expand out all the reflections and use `hf`, `hg`.
+    simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- Equate coefficients of `x` and `y`.
-    congr 2
+    match_scalars
     · linear_combination (norm := ring_nf) -S_eval_t_sub_two (-m)
     · linear_combination (norm := ring_nf) g x * S_eval_t_sub_two (-m)
 
@@ -291,15 +274,10 @@ lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ) :
     (reflection hg * (reflection hf * reflection hg) ^ m) x =
       (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t m * -g x) • y := by
   rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self]
-  -- Expand everything out and use `hf`, `hg`.
-  simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
-    smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
-  -- Sort the terms so that the multiples of `x` appear first, then `y`.
-  simp only [add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x)]
-  -- Combine like terms.
-  simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+  -- Expand out all the reflections and use `hf`, `hg`.
+  simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
   -- Equate coefficients of `x` and `y`.
-  ring_nf
+  module
 
 /-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is a natural number. -/
 lemma reflection_mul_reflection_mul_reflection_pow_apply_self (m : ℕ) :
