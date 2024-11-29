@@ -192,7 +192,7 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
 
 /- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
 *positive* weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
-theorem geom_mean_arith_mean_weighted_eq_iff_aux (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+theorem geom_mean_eq_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
   by_cases A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
@@ -227,12 +227,12 @@ theorem geom_mean_arith_mean_weighted_eq_iff_aux (w z : ι → ℝ) (hw : ∀ i 
 
 /- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
 weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
-theorem geom_mean_arith_mean_weighted_eq_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
   have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by aesop
   have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by aesop
-  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_arith_mean_weighted_eq_iff_aux]
+  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff_of_pos]
   · simp
   · simp (config := { contextual := true }) [(hw _ _).gt_iff_ne]
   · rwa [sum_filter_ne_zero]
@@ -241,13 +241,13 @@ theorem geom_mean_arith_mean_weighted_eq_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
 /- **AM-GM inequality - strict inequality condition**: This theorem provides the strict inequality
 condition for the *positive* weighted version of the AM-GM inequality for real-valued nonnegative
 functions. -/
-theorem geom_mean_lt_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k:= by
   constructor
   · intro h
     by_contra! h_contra
-    rw [(geom_mean_arith_mean_weighted_eq_iff_aux s w z hw hw' hz).mpr ?_] at h
+    rw [(geom_mean_eq_arith_mean_weighted_iff_of_pos s w z hw hw' hz).mpr ?_] at h
     · exact (lt_self_iff_false _).mp h
     · intro j hjs
       rw [← arith_mean_weighted_of_constant s w (fun _ => z j) (z j) hw' fun _ _ => congrFun rfl]
@@ -256,7 +256,7 @@ theorem geom_mean_lt_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
     have := geom_mean_le_arith_mean_weighted s w z (fun i a => le_of_lt (hw i a)) hw' hz
     by_contra! h
     apply le_antisymm this at h
-    apply (geom_mean_arith_mean_weighted_eq_iff_aux s w z hw hw' hz).mp at h
+    apply (geom_mean_eq_arith_mean_weighted_iff_of_pos s w z hw hw' hz).mp at h
     simp only [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
 
 end Real
