@@ -117,7 +117,7 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
       map_id := fun _ => f.map_one
       map_comp := fun x y => f.map_mul y x }
   invFun f :=
-    { toFun := fun x => f.map ((toEnd M) x)
+    { toFun := fun x ↦ f.map ((toEnd M) x)
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
   left_inv := by aesop_cat

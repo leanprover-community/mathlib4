@@ -102,7 +102,7 @@ variable {M}
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
-  { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
+  { toFun := fun m ↦ RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
       rw [← map_add (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.add
@@ -128,14 +128,14 @@ def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlg
             simp only [Algebra.smul_def, FreeAlgebra.lift_ι_apply, LinearMap.map_smulₛₗ,
               RingHom.id_apply, map_mul, AlgHom.commutes, map_add]⟩
     invFun := fun F => F.toLinearMap.comp (ι R)
-    left_inv := fun f => by
+    left_inv := fun f ↦ by
       rw [ι]
       ext1 x
       exact (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply f x)
     right_inv := fun F =>
       RingQuot.ringQuot_ext' _ _ _ <|
         FreeAlgebra.hom_ext <|
-          funext fun x => by
+          funext fun x ↦ by
             rw [ι]
             exact
               (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (FreeAlgebra.lift_ι_apply _ _) }
@@ -211,7 +211,7 @@ def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=
 variable (M)
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| TensorAlgebra R M) := fun x ↦ by
   simp [algebraMapInv]
 
 @[simp]
@@ -269,7 +269,7 @@ variable {R}
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := lift_ι_apply _ _
@@ -302,7 +302,7 @@ def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) 
   (MultilinearMap.mkPiAlgebraFin R n (TensorAlgebra R M)).compLinearMap fun _ => ι R
 
 @[simp]
-theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i => ι R (x i)).prod :=
+theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i ↦ ι R (x i)).prod :=
   rfl
 
 variable {R M}

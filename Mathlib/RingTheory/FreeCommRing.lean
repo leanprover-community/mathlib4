@@ -109,7 +109,7 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
   have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
   have h1 : C 1 := neg_neg (1 : FreeCommRing α) ▸ hn _ hn1
   FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ ha _ _ hn1 h1)
-    (fun m => Multiset.induction_on m h1 fun a m ih => by
+    (fun m ↦ Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
       apply of_cons)
     (fun _ ih => hn _ ih) ha
@@ -122,7 +122,7 @@ variable {R : Type v} [CommRing R] (f : α → R)
 currently exist. -/
 private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R) where
   toFun f :=
-    { toFun := fun s => (s.toAdd.map f).prod
+    { toFun := fun s ↦ (s.toAdd.map f).prod
       map_mul' := fun x y =>
         calc
           _ = Multiset.prod (Multiset.map f x + Multiset.map f y) := by
@@ -131,12 +131,12 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
           _ = _ := Multiset.prod_add _ _
       map_one' := rfl }
   invFun F x := F (Multiplicative.ofAdd ({x} : Multiset α))
-  left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
+  left_inv f := funext fun x ↦ show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
     let x' := x.toAdd
-    show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
-      erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
+    show (Multiset.map (fun a ↦ F' {a}) x').sum = F' x' by
+      erw [← Multiset.map_map (fun x ↦ F' x) (fun x ↦ {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
@@ -209,7 +209,7 @@ end IsSupported
 /-- The restriction map from `FreeCommRing α` to `FreeCommRing s` where `s : Set α`, defined
   by sending all variables not in `s` to zero. -/
 def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* FreeCommRing s :=
-  lift (fun a => if H : a ∈ s then of ⟨a, H⟩ else 0)
+  lift (fun a ↦ if H : a ∈ s then of ⟨a, H⟩ else 0)
 
 section Restriction
 
@@ -226,7 +226,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   fun hps : IsSupported (of p) s => by
   haveI := Classical.decPred s
   have : ∀ x, IsSupported x s →
-        ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
+        ∃ n : ℤ, lift (fun a ↦ if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
     refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
@@ -268,7 +268,7 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
 
 theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite s ∧ IsSupported x s :=
   FreeCommRing.induction_on x ⟨∅, Set.finite_empty, isSupported_neg isSupported_one⟩
-    (fun p => ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
+    (fun p ↦ ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
     (fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
       ⟨s ∪ t, hfs.union hft,
         isSupported_add (isSupported_upwards hxs Set.subset_union_left)
@@ -334,7 +334,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 
 variable (α)
 
-protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
+protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x ↦ by
   induction x with
   | hn1 =>
     use -1
@@ -386,7 +386,7 @@ end FreeRing
 /-- The free commutative ring on `α` is isomorphic to the polynomial ring over ℤ with
     variables in `α` -/
 def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ :=
-  RingEquiv.ofHomInv (FreeCommRing.lift <| (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
+  RingEquiv.ofHomInv (FreeCommRing.lift <| (fun a ↦ MvPolynomial.X a : α → MvPolynomial α ℤ))
     (MvPolynomial.eval₂Hom (Int.castRingHom (FreeCommRing α)) FreeCommRing.of)
     (by ext; simp) (by ext <;> simp)
 

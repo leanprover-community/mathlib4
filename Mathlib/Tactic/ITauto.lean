@@ -336,7 +336,7 @@ def Proof.check : Lean.NameMap IProp → Proof → Option IProp
 -/
 
 /-- Get a new name in the pattern `h0, h1, h2, ...` -/
-@[inline] def freshName : StateM Nat Name := fun n => (Name.mkSimple s!"h{n}", n + 1)
+@[inline] def freshName : StateM Nat Name := fun n ↦ (Name.mkSimple s!"h{n}", n + 1)
 
 /-- The context during proof search is a map from propositions to proof values. -/
 def Context := Lean.RBMap IProp Proof IProp.cmp

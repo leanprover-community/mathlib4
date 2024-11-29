@@ -69,7 +69,7 @@ lemma abs_pow_eq_one (a : α) (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
   exacts [(pow_abs _ _).symm, (one_pow _).symm]
 
 @[simp] lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
-  abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
+  abs_by_cases (fun x ↦ x * x = a * a) rfl (neg_mul_neg a a)
 
 @[simp]
 lemma abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]

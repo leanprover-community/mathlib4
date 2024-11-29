@@ -330,7 +330,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
+  refine ⟨fun h ↦ ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -397,7 +397,7 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s,
     rw [rel_iff'] at hpq
     have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem =>
       Hq a (Sym2.mk_eq_mk_iff.2 hpq ▸ hmem : a ∈ Sym2.mk q)
-    have h : ∀ {s₂ e H}, Eq.ndrec (motive := fun s => (∀ a ∈ s, P a) → Sym2 β) (g p) (b := s₂) e H =
+    have h : ∀ {s₂ e H}, Eq.ndrec (motive := fun s ↦ (∀ a ∈ s, P a) → Sym2 β) (g p) (b := s₂) e H =
       g p Hp := by
       rintro s₂ rfl _
       rfl
@@ -506,7 +506,7 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
-  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
+  fun z ↦ z.recOnSubsingleton fun a ↦ decidable_of_iff' _ (isDiag_iff_proj_eq a)
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
@@ -536,12 +536,12 @@ theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym �
   Iff.rfl
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_not_mem fun e => _
+  apply Set.eq_empty_of_forall_not_mem fun e ↦ _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 
 theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ := by
-  apply Set.eq_univ_of_forall fun e => _
+  apply Set.eq_univ_of_forall fun e ↦ _
   apply Sym2.ind
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 
@@ -558,7 +558,7 @@ theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r)
   other_ne (fromRel_irreflexive.mp irrefl hz) h
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
-    DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
+    DecidablePred (· ∈ Sym2.fromRel sym) := fun z ↦ z.recOnSubsingleton fun _ => h _ _
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
@@ -575,7 +575,7 @@ theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
   rfl
 
 theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
-  Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
+  Set.ext fun z ↦ Sym2.ind (fun _ _ => Iff.rfl) z
 
 end Relations
 
@@ -629,7 +629,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine x.recOnSubsingleton fun x => ?_
+    refine x.recOnSubsingleton fun x ↦ ?_
     cases' x with x hx
     cases' x with _ x
     · simp at hx
@@ -692,7 +692,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
     ext hy
     convert_to Sym2.pairOther a x = _
     · have : ∀ {c e h}, @Eq.ndrec (Sym2 α) (Sym2.mk x)
-          (fun x => a ∈ x → α) (fun _ => Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
+          (fun x ↦ a ∈ x → α) (fun _ => Sym2.pairOther a x) c e h = Sym2.pairOther a x := by
           intro _ e _; subst e; rfl
       apply this
     · rw [mem_iff] at hy

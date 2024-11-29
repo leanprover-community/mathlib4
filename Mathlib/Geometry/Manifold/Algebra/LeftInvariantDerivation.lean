@@ -113,21 +113,21 @@ theorem leibniz : X (f * f') = f • X f' + f' • X f :=
   X.leibniz' _ _
 
 instance : Zero (LeftInvariantDerivation I G) :=
-  ⟨⟨0, fun g => by simp only [_root_.map_zero]⟩⟩
+  ⟨⟨0, fun g ↦ by simp only [_root_.map_zero]⟩⟩
 
 instance : Inhabited (LeftInvariantDerivation I G) :=
   ⟨0⟩
 
 instance : Add (LeftInvariantDerivation I G) where
   add X Y :=
-    ⟨X + Y, fun g => by
+    ⟨X + Y, fun g ↦ by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
-  neg X := ⟨-X, fun g => by simp [left_invariant']⟩
+  neg X := ⟨-X, fun g ↦ by simp [left_invariant']⟩
 
 instance : Sub (LeftInvariantDerivation I G) where
-  sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
+  sub X Y := ⟨X - Y, fun g ↦ by simp [left_invariant']⟩
 
 @[simp]
 theorem coe_add : ⇑(X + Y) = X + Y :=
@@ -155,16 +155,16 @@ theorem lift_zero :
   rfl
 
 instance hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+  smul r X := ⟨r • X.1, fun g ↦ by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
 instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+  smul r X := ⟨r • X.1, fun g ↦ by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
 instance : AddCommGroup (LeftInvariantDerivation I G) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul, left_invariant']⟩
+  smul r X := ⟨r • X.1, fun g ↦ by simp_rw [LinearMap.map_smul, left_invariant']⟩
 
 variable (r)
 
@@ -221,7 +221,7 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
 
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
-    ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
+    ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g ↦ by
       ext f
       have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
       have hY := Derivation.congr_fun (left_invariant' g Y) (X f)

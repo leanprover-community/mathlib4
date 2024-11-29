@@ -128,7 +128,7 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
 continuous linear map, gives a new formal multilinear series `p.compContinuousLinearMap u`. -/
 def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
-    FormalMultilinearSeries 𝕜 E G := fun n => (p n).compContinuousLinearMap fun _ : Fin n => u
+    FormalMultilinearSeries 𝕜 E G := fun n ↦ (p n).compContinuousLinearMap fun _ : Fin n => u
 
 @[simp]
 theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) (n : ℕ)
@@ -142,7 +142,7 @@ variable [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [IsScalarTower 𝕜 𝕜
 /-- Reinterpret a formal `𝕜'`-multilinear series as a formal `𝕜`-multilinear series. -/
 @[simp]
 protected def restrictScalars (p : FormalMultilinearSeries 𝕜' E F) :
-    FormalMultilinearSeries 𝕜 E F := fun n => (p n).restrictScalars 𝕜
+    FormalMultilinearSeries 𝕜 E F := fun n ↦ (p n).restrictScalars 𝕜
 
 end FormalMultilinearSeries
 
@@ -160,7 +160,7 @@ as multilinear maps into `E →L[𝕜] F`. If `p` is the Taylor series (`HasFTay
 function, then `p.shift` is the Taylor series of the derivative of the function. Note that the
 `p.sum` of a Taylor series `p` does not give the original function; for a formal multilinear
 series that sums to the derivative of `p.sum`, see `HasFPowerSeriesOnBall.fderiv`. -/
-def shift : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) := fun n => (p n.succ).curryRight
+def shift : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) := fun n ↦ (p n.succ).curryRight
 
 /-- Adding a zeroth term to a formal multilinear series taking values in `E →L[𝕜] F`. This
 corresponds to starting from a Taylor series (`HasFTaylorSeriesUpTo`) for the derivative of a
@@ -184,7 +184,7 @@ namespace ContinuousLinearMap
 left gives a new formal multilinear series `f.compFormalMultilinearSeries p` whose general term
 is `f ∘ pₙ`. -/
 def compFormalMultilinearSeries (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F) :
-    FormalMultilinearSeries 𝕜 E G := fun n => f.compContinuousMultilinearMap (p n)
+    FormalMultilinearSeries 𝕜 E G := fun n ↦ f.compContinuousMultilinearMap (p n)
 
 @[simp]
 theorem compFormalMultilinearSeries_apply (f : F →L[𝕜] G) (p : FormalMultilinearSeries 𝕜 E F)
@@ -232,12 +232,12 @@ noncomputable def order (p : FormalMultilinearSeries 𝕜 E F) : ℕ :=
 @[simp]
 theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp [order]
 
-theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
+theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h ↦ by simp [h] at hp
 
-theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
+theorem order_eq_find [DecidablePred fun n ↦ p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
     p.order = Nat.find hp := by convert Nat.sInf_def hp
 
-theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
+theorem order_eq_find' [DecidablePred fun n ↦ p n ≠ 0] (hp : p ≠ 0) :
     p.order = Nat.find (FormalMultilinearSeries.ne_iff.mp hp) :=
   order_eq_find _
 
@@ -296,7 +296,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 /-- The formal counterpart of `dslope`, corresponding to the expansion of `(f z - f 0) / z`. If `f`
 has `p` as a power series, then `dslope f` has `fslope p` as a power series. -/
 noncomputable def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMultilinearSeries 𝕜 𝕜 E :=
-  fun n => (p (n + 1)).curryLeft 1
+  fun n ↦ (p (n + 1)).curryLeft 1
 
 @[simp]
 theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by

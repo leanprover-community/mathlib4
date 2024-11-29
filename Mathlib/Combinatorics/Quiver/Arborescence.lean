@@ -112,7 +112,7 @@ def geodesicSubtree : WideSubquiver V := fun a b =>
   { e | ∃ p : Path r a, shortestPath r b = p.cons e }
 
 noncomputable instance geodesicArborescence : Arborescence (geodesicSubtree r) :=
-  arborescenceMk r (fun a => (shortestPath r a).length)
+  arborescenceMk r (fun a ↦ (shortestPath r a).length)
     (by
       rintro a b ⟨e, p, h⟩
       simp_rw [h, Path.length_cons, Nat.lt_succ_iff]

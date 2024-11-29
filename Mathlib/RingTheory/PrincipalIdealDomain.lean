@@ -131,11 +131,11 @@ theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r 
   exact Ideal.span_singleton_generator _
 
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
-  (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])
+  (mem_iff_eq_smul_generator S).trans (exists_congr fun a ↦ by simp only [mul_comm, smul_eq_mul])
 
 theorem prime_generator_of_isPrime (S : Ideal R) [S.IsPrincipal] [is_prime : S.IsPrime]
     (ne_bot : S ≠ ⊥) : Prime (generator S) :=
-  ⟨fun h => ne_bot ((eq_bot_iff_generator_eq_zero S).2 h), fun h =>
+  ⟨fun h ↦ ne_bot ((eq_bot_iff_generator_eq_zero S).2 h), fun h =>
     is_prime.ne_top (S.eq_top_of_isUnit_mem (generator_mem S) h), fun _ _ => by
     simpa only [← mem_iff_generator_dvd S] using is_prime.2⟩
 
@@ -266,7 +266,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
             WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ≠ 0 :=
           WellFounded.min_mem wf { x : R | x ∈ S ∧ x ≠ 0 } h
         ⟨WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h,
-          Submodule.ext fun x => ⟨fun hx =>
+          Submodule.ext fun x ↦ ⟨fun hx =>
             div_add_mod x (WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h) ▸
               (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
@@ -279,7 +279,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
               fun hx =>
                 let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
                 hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
-      else ⟨0, Submodule.ext fun a => by
+      else ⟨0, Submodule.ext fun a ↦ by
             rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
             exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
               fun h₁ => h₁.symm ▸ S.zero_mem⟩⟩⟩

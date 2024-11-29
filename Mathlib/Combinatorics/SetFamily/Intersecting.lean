@@ -43,7 +43,7 @@ def Intersecting (s : Set α) : Prop :=
 theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting := fun _a ha _b hb =>
   hs (h ha) (h hb)
 
-theorem Intersecting.not_bot_mem (hs : s.Intersecting) : ⊥ ∉ s := fun h => hs h h disjoint_bot_left
+theorem Intersecting.not_bot_mem (hs : s.Intersecting) : ⊥ ∉ s := fun h ↦ hs h h disjoint_bot_left
 
 theorem Intersecting.ne_bot (hs : s.Intersecting) (ha : a ∈ s) : a ≠ ⊥ :=
   ne_of_mem_of_not_mem ha hs.not_bot_mem
@@ -66,11 +66,11 @@ theorem intersecting_insert :
   ⟨fun h =>
     ⟨h.mono <| subset_insert _ _, h.ne_bot <| mem_insert _ _, fun _b hb =>
       h (mem_insert _ _) <| mem_insert_of_mem _ hb⟩,
-    fun h => h.1.insert h.2.1 h.2.2⟩
+    fun h ↦ h.1.insert h.2.1 h.2.2⟩
 
 theorem intersecting_iff_pairwise_not_disjoint :
     s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} := by
-  refine ⟨fun h => ⟨fun a ha b hb _ => h ha hb, ?_⟩, fun h a ha b hb hab => ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ha b hb _ => h ha hb, ?_⟩, fun h a ha b hb hab => ?_⟩
   · rintro rfl
     exact intersecting_singleton.1 h rfl
   have := h.1.eq ha hb (Classical.not_not.2 hab)
@@ -88,7 +88,7 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
     s.Intersecting ↔ s = ∅ := by
   refine
     subsingleton_of_subsingleton.intersecting.trans
-      ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem ?_, ?_⟩
+      ⟨not_imp_comm.2 fun h ↦ subsingleton_of_subsingleton.eq_singleton_of_mem ?_, ?_⟩
   · obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
     rwa [Subsingleton.elim ⊥ a]
   · rintro rfl
@@ -128,10 +128,10 @@ theorem Intersecting.exists_mem_finset [DecidableEq α] {𝒜 : Set (Finset α)}
 variable [BooleanAlgebra α]
 
 theorem Intersecting.not_compl_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
-    aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
+    aᶜ ∉ s := fun h ↦ hs ha h disjoint_compl_right
 
 theorem Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
-  fun h => hs ha h disjoint_compl_left
+  fun h ↦ hs ha h disjoint_compl_left
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by
@@ -158,7 +158,7 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
       rw [Fintype.card, ← this, Nat.two_mul, card_disjUnion, card_map]
     rw [← coe_eq_univ, disjUnion_eq_union, coe_union, coe_map, Function.Embedding.coeFn_mk,
       image_eq_preimage_of_inverse compl_compl compl_compl]
-    refine eq_univ_of_forall fun a => ?_
+    refine eq_univ_of_forall fun a ↦ ?_
     simp_rw [mem_union, mem_preimage]
     by_contra! ha
     refine s.ne_insert_of_not_mem _ ha.1 (h _ ?_ <| s.subset_insert _)
@@ -181,7 +181,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
   push_neg at h
   obtain ⟨t, ht, hst⟩ := h
-  refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
+  refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u ↦ And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le Nat.two_pos, mul_comm]
   exact ht.card_le
 

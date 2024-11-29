@@ -73,15 +73,15 @@ noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c�
     { left := t₁.lift ((fst L R).mapCone s)
       right := t₂.lift ((snd L R).mapCone s)
       w :=
-        (isLimitOfPreserves R t₂).hom_ext fun j => by
+        (isLimitOfPreserves R t₂).hom_ext fun j ↦ by
           rw [coneOfPreserves_pt_hom, assoc, assoc, (isLimitOfPreserves R t₂).fac,
             limitAuxiliaryCone_π_app, ← L.map_comp_assoc, t₁.fac, R.mapCone_π_app,
             ← R.map_comp, t₂.fac]
           exact (s.π.app j).w }
   uniq s m w := by
     apply CommaMorphism.ext
-    · exact t₁.uniq ((fst L R).mapCone s) _ (fun j => by simp [← w])
-    · exact t₂.uniq ((snd L R).mapCone s) _ (fun j => by simp [← w])
+    · exact t₁.uniq ((fst L R).mapCone s) _ (fun j ↦ by simp [← w])
+    · exact t₂.uniq ((snd L R).mapCone s) _ (fun j ↦ by simp [← w])
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
 in the comma category. -/
@@ -121,15 +121,15 @@ noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L
     { left := t₁.desc ((fst L R).mapCocone s)
       right := t₂.desc ((snd L R).mapCocone s)
       w :=
-        (isColimitOfPreserves L t₁).hom_ext fun j => by
+        (isColimitOfPreserves L t₁).hom_ext fun j ↦ by
           rw [coconeOfPreserves_pt_hom, (isColimitOfPreserves L t₁).fac_assoc,
             colimitAuxiliaryCocone_ι_app, assoc, ← R.map_comp, t₂.fac, L.mapCocone_ι_app, ←
             L.map_comp_assoc, t₁.fac]
           exact (s.ι.app j).w }
   uniq s m w := by
     apply CommaMorphism.ext
-    · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j => by simp [← w])
-    · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j => by simp [← w])
+    · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j ↦ by simp [← w])
+    · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j ↦ by simp [← w])
 
 instance hasLimit (F : J ⥤ Comma L R) [HasLimit (F ⋙ fst L R)] [HasLimit (F ⋙ snd L R)]
     [PreservesLimit (F ⋙ snd L R) R] : HasLimit F :=

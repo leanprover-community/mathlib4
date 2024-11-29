@@ -32,27 +32,27 @@ theorem hasDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^
 open scoped Topology
 
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
+    Tendsto (fun x ↦ abs (tan x)) (𝓝[≠] x) atTop := by
   simp only [tan_eq_sin_div_cos, ← norm_eq_abs, norm_div]
-  have A : sin x ≠ 0 := fun h => by simpa [*, sq] using sin_sq_add_cos_sq x
+  have A : sin x ≠ 0 := fun h ↦ by simpa [*, sq] using sin_sq_add_cos_sq x
   have B : Tendsto cos (𝓝[≠] x) (𝓝[≠] 0) :=
     hx ▸ (hasDerivAt_cos x).tendsto_punctured_nhds (neg_ne_zero.2 A)
   exact continuous_sin.continuousWithinAt.norm.mul_atTop (norm_pos_iff.2 A)
     (tendsto_norm_nhdsWithin_zero.comp B).inv_tendsto_zero
 
 theorem tendsto_abs_tan_atTop (k : ℤ) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
+    Tendsto (fun x ↦ abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 
 @[simp]
 theorem continuousAt_tan {x : ℂ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
-  refine ⟨fun hc h₀ => ?_, fun h => (hasDerivAt_tan h).continuousAt⟩
+  refine ⟨fun hc h₀ => ?_, fun h ↦ (hasDerivAt_tan h).continuousAt⟩
   exact not_tendsto_nhds_of_tendsto_atTop (tendsto_abs_tan_of_cos_eq_zero h₀) _
     (hc.norm.tendsto.mono_left inf_le_left)
 
 @[simp]
 theorem differentiableAt_tan {x : ℂ} : DifferentiableAt ℂ tan x ↔ cos x ≠ 0 :=
-  ⟨fun h => continuousAt_tan.1 h.continuousAt, fun h => (hasDerivAt_tan h).differentiableAt⟩
+  ⟨fun h ↦ continuousAt_tan.1 h.continuousAt, fun h ↦ (hasDerivAt_tan h).differentiableAt⟩
 
 @[simp]
 theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
@@ -63,6 +63,6 @@ theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
 
 @[simp]
 theorem contDiffAt_tan {x : ℂ} {n : WithTop ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
-  ⟨fun h => continuousAt_tan.1 h.continuousAt, contDiff_sin.contDiffAt.div contDiff_cos.contDiffAt⟩
+  ⟨fun h ↦ continuousAt_tan.1 h.continuousAt, contDiff_sin.contDiffAt.div contDiff_cos.contDiffAt⟩
 
 end Complex

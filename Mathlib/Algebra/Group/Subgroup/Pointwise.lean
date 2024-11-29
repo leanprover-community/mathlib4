@@ -190,7 +190,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   suffices ∃ h, C x h from this.snd
-  refine iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => ?_) ?_ fun x y => ?_
+  refine iSup_induction S (C := fun x ↦ ∃ h, C x h) hx (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, hp i _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -289,13 +289,13 @@ theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {
 
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
+    (fun y ↦ h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y ↦ h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
 -- Porting note: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
+    (fun y ↦ h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y ↦ h • y) '' s) :=
   smul_opposite_image_mul_preimage' g h s
 
 /-! ### Pointwise action -/
@@ -354,7 +354,7 @@ theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) 
 
 instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
     IsCentralScalar α (Subgroup G) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f ↦ S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
@@ -504,7 +504,7 @@ theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
 
 instance pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
     IsCentralScalar α (AddSubgroup A) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f ↦ S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
 
 end Monoid
 

@@ -138,7 +138,7 @@ theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
     (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) : adjointAux hT y = x₀ :=
-  hT.eq_of_inner_left fun v => (adjointAux_inner hT _ _).trans (hx₀ v).symm
+  hT.eq_of_inner_left fun v ↦ (adjointAux_inner hT _ _).trans (hx₀ v).symm
 
 variable (T)
 
@@ -160,7 +160,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
-  exact funext fun x => (hw x).symm
+  exact funext fun x ↦ (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
@@ -205,7 +205,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
-  refine LinearPMap.adjoint_apply_eq ?_ _ fun v => ?_
+  refine LinearPMap.adjoint_apply_eq ?_ _ fun v ↦ ?_
   · -- Porting note: was simply `hp` as an argument above
     simpa using hp
   · simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]

@@ -417,7 +417,7 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
     [𝒟 : EnrichedCategory (Type v) D] : EnrichedFunctor (Type v) C D ≃ C ⥤ D where
   toFun F :=
     { obj := fun X => F.obj X
-      map := fun f => F.map _ _ f
+      map := fun f ↦ F.map _ _ f
       map_id := fun X => congr_fun (F.map_id X) PUnit.unit
       map_comp := fun f g => congr_fun (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=

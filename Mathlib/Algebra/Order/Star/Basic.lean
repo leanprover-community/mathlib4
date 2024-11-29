@@ -56,7 +56,7 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
     [StarRing R] : Prop where
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
-    ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
+    ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s ↦ star s * s) ∧ y = x + p
 
 namespace StarOrderedRing
 
@@ -93,7 +93,7 @@ If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
-    refine ⟨fun h => ?_, ?_⟩
+    refine ⟨fun h ↦ ?_, ?_⟩
     · obtain ⟨p, hp⟩ := (h_le_iff x y).mp h
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
     · rintro ⟨p, hp, hpxy⟩

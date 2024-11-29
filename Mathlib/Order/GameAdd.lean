@@ -91,7 +91,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine Acc.intro _ fun h => ?_
+  refine Acc.intro _ fun h ↦ ?_
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 
@@ -109,7 +109,7 @@ namespace Prod
 def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     C a b :=
-  @WellFounded.fix (α × β) (fun x => C x.1 x.2) _ (hα.prod_gameAdd hβ)
+  @WellFounded.fix (α × β) (fun x ↦ C x.1 x.2) _ (hα.prod_gameAdd hβ)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
 
 theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
@@ -177,7 +177,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine Acc.intro _ fun s => ?_
+  refine Acc.intro _ fun s ↦ ?_
   induction' s with c d
   rw [Sym2.GameAdd]
   dsimp
@@ -191,7 +191,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
 
 /-- The `Sym2.GameAdd` relation on well-founded inputs is well-founded. -/
 theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameAdd rα) :=
-  ⟨fun i => Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
+  ⟨fun i ↦ Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
 
 namespace Sym2
 
@@ -204,7 +204,7 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
   -- Porting note: this was refactored for https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
   dsimp only [GameAdd, lift₂, DFunLike.coe, EquivLike.coe] at this
-  exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
+  exact @WellFounded.fix (α × α) (fun x ↦ C x.1 x.2) _ this.of_quotient_lift₂
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 
 theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)

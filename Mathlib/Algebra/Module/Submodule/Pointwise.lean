@@ -488,7 +488,7 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
-      fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
+      fun h ↦ ⟨m, h, (one_smul _ _).symm⟩⟩
   mul_smul s t x := le_antisymm
     (set_smul_le _ _ _ <| by rintro _ _ ⟨_, _, _, _, rfl⟩ _; rw [mul_smul]; aesop)
     (set_smul_le _ _ _ fun r m hr hm ↦ by

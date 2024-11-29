@@ -353,7 +353,7 @@ theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : 
 /-- A subsemiring `S` includes `closure s` if and only if it includes `s`. -/
 @[simp]
 theorem closure_le {s : Set R} {t : Subsemiring R} : closure s ≤ t ↔ s ⊆ t :=
-  ⟨Set.Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Set.Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 /-- Subsemiring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
@@ -601,10 +601,10 @@ theorem prod_mono_left (t : Subsemiring S) : Monotone fun s : Subsemiring R => s
   fun _ _ hs => prod_mono hs (le_refl t)
 
 theorem prod_top (s : Subsemiring R) : s.prod (⊤ : Subsemiring S) = s.comap (RingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 theorem top_prod (s : Subsemiring S) : (⊤ : Subsemiring R).prod s = s.comap (RingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[simp]
 theorem top_prod_top : (⊤ : Subsemiring R).prod (⊤ : Subsemiring S) = ⊤ :=
@@ -639,7 +639,7 @@ theorem mem_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
 
 theorem coe_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+  Set.ext fun x ↦ by simp [mem_sSup_of_directedOn Sne hS]
 
 end Subsemiring
 
@@ -653,7 +653,7 @@ open Subsemiring
 
 /-- Restriction of a ring homomorphism to a subsemiring of the codomain. -/
 def codRestrict (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) : R →+* s :=
-  { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun := fun n => ⟨f n, h n⟩ }
+  { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun := fun n ↦ ⟨f n, h n⟩ }
 
 @[simp]
 theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : R) :
@@ -662,7 +662,7 @@ theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : 
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=
-  (f.domRestrict s').codRestrict s fun x => h x x.2
+  (f.domRestrict s').codRestrict s fun x ↦ h x x.2
 
 @[simp]
 theorem coe_restrict_apply (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) (x : s') :
@@ -727,7 +727,7 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subsemirings. -/
 def inclusion {S T : Subsemiring R} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x ↦ h x.2
 
 @[simp]
 theorem rangeS_subtype (s : Subsemiring R) : s.subtype.rangeS = s :=
@@ -768,8 +768,8 @@ def subsemiringCongr (h : s = t) : s ≃+* t :=
 `RingHom.rangeS`. -/
 def ofLeftInverseS {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.rangeS :=
   { f.rangeSRestrict with
-    toFun := fun x => f.rangeSRestrict x
-    invFun := fun x => (g ∘ f.rangeS.subtype) x
+    toFun := fun x ↦ f.rangeSRestrict x
+    invFun := fun x ↦ (g ∘ f.rangeS.subtype) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

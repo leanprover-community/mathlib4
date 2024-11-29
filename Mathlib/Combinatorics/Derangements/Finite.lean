@@ -46,7 +46,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
     simp only
-      [card_ofFinset (s := Finset.filter (fun x => x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
+      [card_ofFinset (s := Finset.filter (fun x ↦ x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
       Set.mem_compl_singleton_iff, Finset.filter_ne' _ a,
       Finset.card_erase_of_mem (Finset.mem_univ a), Finset.card_fin, add_tsub_cancel_right,
       card_fin]

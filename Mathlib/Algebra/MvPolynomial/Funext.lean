@@ -36,9 +36,9 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     simp only [map_zero]
-    refine Polynomial.funext fun q => ?_
+    refine Polynomial.funext fun q ↦ ?_
     rw [Polynomial.eval_zero]
-    apply ih fun x => ?_
+    apply ih fun x ↦ ?_
     calc _ = _ := eval_polynomial_eval_finSuccEquiv p _
          _ = 0 := h _
 

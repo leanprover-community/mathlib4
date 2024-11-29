@@ -104,7 +104,7 @@ theorem frontier_thickening_disjoint (A : Set α) :
   refine (pairwise_disjoint_on _).2 fun r₁ r₂ hr => ?_
   rcases le_total r₁ 0 with h₁ | h₁
   · simp [thickening_of_nonpos h₁]
-  refine ((disjoint_singleton.2 fun h => hr.ne ?_).preimage _).mono (frontier_thickening_subset _)
+  refine ((disjoint_singleton.2 fun h ↦ hr.ne ?_).preimage _).mono (frontier_thickening_subset _)
     (frontier_thickening_subset _)
   apply_fun ENNReal.toReal at h
   rwa [ENNReal.toReal_ofReal h₁, ENNReal.toReal_ofReal (h₁.trans hr.le)] at h
@@ -201,7 +201,7 @@ theorem mem_cthickening_of_dist_le {α : Type*} [PseudoMetricSpace α] (x y : α
   exact ENNReal.ofReal_le_ofReal h'
 
 theorem cthickening_eq_preimage_infEdist (δ : ℝ) (E : Set α) :
-    cthickening δ E = (fun x => infEdist x E) ⁻¹' Iic (ENNReal.ofReal δ) :=
+    cthickening δ E = (fun x ↦ infEdist x E) ⁻¹' Iic (ENNReal.ofReal δ) :=
   rfl
 
 /-- The closed thickening is a closed set. -/

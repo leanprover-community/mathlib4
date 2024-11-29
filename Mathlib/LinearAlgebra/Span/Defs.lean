@@ -323,7 +323,7 @@ section
 variable {p p'}
 
 theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← span_eq p, ← span_eq p', ← span_union] at h
     refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
@@ -377,7 +377,7 @@ theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :
     exact h H⟩
 
 theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (rfl | ⟨⟨_⟩⟩)
       exact ⟨1, by simp⟩
@@ -461,7 +461,7 @@ theorem span_singleton_le_iff_mem (m : M) (p : Submodule R M) : (R ∙ m) ≤ p 
   rw [span_le, singleton_subset_iff, SetLike.mem_coe]
 
 theorem iSup_span {ι : Sort*} (p : ι → Set M) : ⨆ i, span R (p i) = span R (⋃ i, p i) :=
-  le_antisymm (iSup_le fun i => span_mono <| subset_iUnion _ i) <|
+  le_antisymm (iSup_le fun i ↦ span_mono <| subset_iUnion _ i) <|
     span_le.mpr <| iUnion_subset fun i _ hm => mem_iSup_of_mem i <| subset_span hm
 
 theorem iSup_eq_span {ι : Sort*} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by

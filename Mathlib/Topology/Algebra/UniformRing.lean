@@ -75,7 +75,7 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
   convert di.extend_Z_bilin di this
 
 theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun b ↦ f b * g b :=
   Continuous.comp continuous_mul (Continuous.prod_mk hf hg : _)
 
 instance ring : Ring (Completion α) :=
@@ -84,18 +84,18 @@ instance ring : Ring (Completion α) :=
     zero_mul := fun a =>
       Completion.induction_on a
         (isClosed_eq (Continuous.mul continuous_const continuous_id) continuous_const)
-        fun a => by rw [← coe_zero, ← coe_mul, zero_mul]
+        fun a ↦ by rw [← coe_zero, ← coe_mul, zero_mul]
     mul_zero := fun a =>
       Completion.induction_on a
         (isClosed_eq (Continuous.mul continuous_id continuous_const) continuous_const)
-        fun a => by rw [← coe_zero, ← coe_mul, mul_zero]
+        fun a ↦ by rw [← coe_zero, ← coe_mul, mul_zero]
     one_mul := fun a =>
       Completion.induction_on a
-        (isClosed_eq (Continuous.mul continuous_const continuous_id) continuous_id) fun a => by
+        (isClosed_eq (Continuous.mul continuous_const continuous_id) continuous_id) fun a ↦ by
         rw [← coe_one, ← coe_mul, one_mul]
     mul_one := fun a =>
       Completion.induction_on a
-        (isClosed_eq (Continuous.mul continuous_id continuous_const) continuous_id) fun a => by
+        (isClosed_eq (Continuous.mul continuous_id continuous_const) continuous_id) fun a ↦ by
         rw [← coe_one, ← coe_mul, mul_one]
     mul_assoc := fun a b c =>
       Completion.induction_on₃ a b c
@@ -184,7 +184,7 @@ variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalR
 theorem map_smul_eq_mul_coe (r : R) :
     Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
-  refine Completion.induction_on x ?_ fun a => ?_
+  refine Completion.induction_on x ?_ fun a ↦ ?_
   · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
@@ -192,7 +192,7 @@ instance algebra : Algebra R (Completion A) :=
   { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
     commutes' := fun r x =>
       Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
-        fun a => by
+        fun a ↦ by
         simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
     smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x }
 

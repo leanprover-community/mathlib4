@@ -42,7 +42,7 @@ theorem monic_zero_iff_subsingleton' :
   Polynomial.monic_zero_iff_subsingleton.trans
     ⟨by
       intro
-      simp [eq_iff_true_of_subsingleton], fun h => subsingleton_iff.mpr h.2⟩
+      simp [eq_iff_true_of_subsingleton], fun h ↦ subsingleton_iff.mpr h.2⟩
 
 theorem Monic.as_sum (hp : p.Monic) :
     p = X ^ p.natDegree + ∑ i ∈ range p.natDegree, C (p.coeff i) * X ^ i := by
@@ -235,7 +235,7 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   exact hm.natDegree_eq_zero_iff_eq_one.mp this.1
 
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
-  ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
+  ⟨hm.eq_one_of_isUnit, fun h ↦ h.symm ▸ isUnit_one⟩
 
 theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
   obtain ⟨u, rfl⟩ := hpq
@@ -260,7 +260,7 @@ theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s,
   monic_multiset_prod_of_monic s.1 f hs
 
 theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : ∀ i ∈ t, Monic (f i)) :
-    nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
+    nextCoeff (t.map f).prod = (t.map fun i ↦ nextCoeff (f i)).sum := by
   revert h
   refine Multiset.induction_on t ?_ fun a t ih ht => ?_
   · simp only [Multiset.not_mem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
@@ -496,7 +496,7 @@ theorem Monic.mul_natDegree_lt_iff (h : Monic p) {q : R[X]} :
     (p * q).natDegree < p.natDegree ↔ p ≠ 1 ∧ q = 0 := by
   by_cases hq : q = 0
   · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simpa [hq, ← h.natDegree_eq_zero_iff_eq_one]
-    exact ⟨fun h => h.ne', fun h => lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
+    exact ⟨fun h ↦ h.ne', fun h ↦ lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
   · simp [h.natDegree_mul', hq]
 
 theorem Monic.mul_right_eq_zero_iff (h : Monic p) {q : R[X]} : p * q = 0 ↔ q = 0 := by

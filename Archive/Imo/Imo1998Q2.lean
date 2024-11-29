@@ -88,7 +88,7 @@ theorem JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
 
 /-- The set of contestants on which two judges agree. -/
 def agreedContestants [Fintype C] (p : JudgePair J) : Finset C :=
-  Finset.univ.filter fun c => p.Agree r c
+  Finset.univ.filter fun c ↦ p.Agree r c
 section
 
 variable [Fintype J] [Fintype C]
@@ -164,8 +164,8 @@ variable [Fintype J]
 
 theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1) (c : C) :
     2 * z * z + 2 * z + 1 ≤ (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card := by
-  let x := (Finset.univ.filter fun j => r c j).card
-  let y := (Finset.univ.filter fun j => ¬r c j).card
+  let x := (Finset.univ.filter fun j ↦ r c j).card
+  let y := (Finset.univ.filter fun j ↦ ¬r c j).card
   have h : (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card = x * x + y * y := by
     simp [x, y, ← Finset.filter_product_card]
   rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.ofNat_add, Int.ofNat_mul]

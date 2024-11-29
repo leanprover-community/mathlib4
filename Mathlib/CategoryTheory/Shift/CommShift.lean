@@ -282,7 +282,7 @@ lemma app_shift (a : A) (X : C) :
 end
 
 instance of_iso_inv [NatTrans.CommShift e.hom A] :
-  NatTrans.CommShift e.inv A := ⟨fun a => by
+  NatTrans.CommShift e.inv A := ⟨fun a ↦ by
   ext X
   dsimp
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← comm_app_assoc,
@@ -301,12 +301,12 @@ variable (F₁) in
 instance id : NatTrans.CommShift (𝟙 F₁) A := ⟨by aesop_cat⟩
 
 instance comp [NatTrans.CommShift τ A] [NatTrans.CommShift τ' A] :
-    NatTrans.CommShift (τ ≫ τ') A := ⟨fun a => by
+    NatTrans.CommShift (τ ≫ τ') A := ⟨fun a ↦ by
   ext X
   simp [comm_app_assoc, comm_app]⟩
 
 instance whiskerRight [NatTrans.CommShift τ A] :
-    NatTrans.CommShift (whiskerRight τ G) A := ⟨fun a => by
+    NatTrans.CommShift (whiskerRight τ G) A := ⟨fun a ↦ by
   ext X
   simp only [Functor.comp_obj, whiskerRight_twice, comp_app,
     whiskerRight_app, Functor.comp_map, whiskerLeft_app,
@@ -318,7 +318,7 @@ instance whiskerRight [NatTrans.CommShift τ A] :
 variable {G G'} (F₁)
 
 instance whiskerLeft [NatTrans.CommShift τ'' A] :
-    NatTrans.CommShift (whiskerLeft F₁ τ'') A := ⟨fun a => by
+    NatTrans.CommShift (whiskerLeft F₁ τ'') A := ⟨fun a ↦ by
   ext X
   simp only [Functor.comp_obj, comp_app, whiskerRight_app, whiskerLeft_app, whiskerLeft_twice,
     Functor.commShiftIso_comp_hom_app, Category.assoc, ← NatTrans.naturality_assoc, comm_app]⟩
@@ -369,7 +369,7 @@ lemma ofIso_compatibility :
     letI := ofIso e A
     NatTrans.CommShift e.hom A := by
   letI := ofIso e A
-  refine ⟨fun a => ?_⟩
+  refine ⟨fun a ↦ ?_⟩
   dsimp [commShiftIso, ofIso]
   rw [← whiskerLeft_comp_assoc, e.hom_inv_id, whiskerLeft_id', id_comp]
 

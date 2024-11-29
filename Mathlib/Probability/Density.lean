@@ -208,7 +208,7 @@ nonrec theorem ae_lt_top [IsFiniteMeasure ℙ] {μ : Measure E} {X : Ω → E} :
   rnDeriv_lt_top (map X ℙ) μ
 
 nonrec theorem ofReal_toReal_ae_eq [IsFiniteMeasure ℙ] {X : Ω → E} :
-    (fun x => ENNReal.ofReal (pdf X ℙ μ x).toReal) =ᵐ[μ] pdf X ℙ μ :=
+    (fun x ↦ ENNReal.ofReal (pdf X ℙ μ x).toReal) =ᵐ[μ] pdf X ℙ μ :=
   ofReal_toReal_ae_eq ae_lt_top
 
 section IntegralPDFMul
@@ -224,7 +224,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] {f : E → F}
     (hf : AEStronglyMeasurable f μ) :
-    Integrable (fun x => (pdf X ℙ μ x).toReal • f x) μ ↔ Integrable (fun x => f (X x)) ℙ := by
+    Integrable (fun x ↦ (pdf X ℙ μ x).toReal • f x) μ ↔ Integrable (fun x ↦ f (X x)) ℙ := by
   -- Porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous)
@@ -290,10 +290,10 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
 
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
     (hgi : ∫⁻ x, ‖f x‖₊ * g x ≠ ∞) :
-    HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
+    HasFiniteIntegral fun x ↦ f x * (pdf X ℙ volume x).toReal := by
   rw [HasFiniteIntegral]
-  have : (fun x => ↑‖f x‖₊ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖₊ := by
-    refine ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x => (‖f x‖₊ : ℝ≥0∞))
+  have : (fun x ↦ ↑‖f x‖₊ * g x) =ᵐ[volume] fun x ↦ ‖f x * (pdf X ℙ volume x).toReal‖₊ := by
+    refine ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x ↦ (‖f x‖₊ : ℝ≥0∞))
       (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
     simp_rw [← smul_eq_mul, nnnorm_smul, ENNReal.coe_mul, smul_eq_mul]
     refine Filter.EventuallyEq.mul (ae_eq_refl _) ?_

@@ -188,12 +188,12 @@ superset `t ⊇ s` such that each measure `μ i` takes the same value on `s` and
 theorem exists_measurable_superset_forall_eq [Countable ι] (μ : ι → Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = μ i s := by
   simpa only [← measure_eq_trim] using
-    OuterMeasure.exists_measurable_superset_forall_eq_trim (fun i => (μ i).toOuterMeasure) s
+    OuterMeasure.exists_measurable_superset_forall_eq_trim (fun i ↦ (μ i).toOuterMeasure) s
 
 theorem exists_measurable_superset₂ (μ ν : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s ∧ ν t = ν s := by
   simpa only [Bool.forall_bool.trans and_comm] using
-    exists_measurable_superset_forall_eq (fun b => cond b μ ν) s
+    exists_measurable_superset_forall_eq (fun b ↦ cond b μ ν) s
 
 theorem exists_measurable_superset_of_null (h : μ s = 0) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0 :=
   h ▸ exists_measurable_superset μ s
@@ -214,7 +214,7 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
-  refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ measure_union_lt_top h.1 h.2⟩
   · exact (measure_mono Set.subset_union_left).trans_lt h
   · exact (measure_mono Set.subset_union_right).trans_lt h
 
@@ -232,7 +232,7 @@ theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = 
 theorem exists_measure_pos_of_not_measure_iUnion_null [Countable ι] {s : ι → Set α}
     (hs : μ (⋃ n, s n) ≠ 0) : ∃ n, 0 < μ (s n) := by
   contrapose! hs
-  exact measure_iUnion_null fun n => nonpos_iff_eq_zero.1 (hs n)
+  exact measure_iUnion_null fun n ↦ nonpos_iff_eq_zero.1 (hs n)
 
 theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < ∞ :=
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
@@ -405,7 +405,7 @@ theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
 @[measurability]
-theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
+theorem aemeasurable_id' : AEMeasurable (fun x ↦ x) μ :=
   measurable_id.aemeasurable
 
 theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : δ → β} (hg : Measurable g)

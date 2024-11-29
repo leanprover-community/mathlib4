@@ -26,7 +26,7 @@ theorem prod_insertNone (f : Option α → M) (s : Finset α) :
 @[to_additive]
 theorem mul_prod_eq_prod_insertNone (f : α → M) (x : M) (s : Finset α) :
     x * ∏ i ∈ s, f i = ∏ i ∈ insertNone s, i.elim x f :=
-  (prod_insertNone (fun i => i.elim x f) _).symm
+  (prod_insertNone (fun i ↦ i.elim x f) _).symm
 
 @[to_additive]
 theorem prod_eraseNone (f : α → M) (s : Finset (Option α)) :

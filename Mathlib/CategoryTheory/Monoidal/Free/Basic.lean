@@ -127,7 +127,7 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
     that there is only one equivalence class -- this is the monoidal coherence theorem. -/
 def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
   ⟨HomEquiv,
-    ⟨fun f => HomEquiv.refl f, @fun f g => HomEquiv.symm f g, @fun _ _ _ hfg hgh =>
+    ⟨fun f ↦ HomEquiv.refl f, @fun f g => HomEquiv.symm f g, @fun _ _ _ hfg hgh =>
       HomEquiv.trans hfg hgh⟩⟩
 
 attribute [instance] setoidHom

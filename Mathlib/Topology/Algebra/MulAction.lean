@@ -98,32 +98,32 @@ theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*}
 @[to_additive]
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
     (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 a)) :
-    Tendsto (fun x => f x • g x) l (𝓝 <| c • a) :=
+    Tendsto (fun x ↦ f x • g x) l (𝓝 <| c • a) :=
   (continuous_smul.tendsto _).comp (hf.prod_mk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
-    (a : X) : Tendsto (fun x => f x • a) l (𝓝 (c • a)) :=
+    (a : X) : Tendsto (fun x ↦ f x • a) l (𝓝 (c • a)) :=
   hf.smul tendsto_const_nhds
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
 @[to_additive]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
-    ContinuousWithinAt (fun x => f x • g x) s b :=
+    ContinuousWithinAt (fun x ↦ f x • g x) s b :=
   Filter.Tendsto.smul hf hg
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
-    ContinuousAt (fun x => f x • g x) b :=
+    ContinuousAt (fun x ↦ f x • g x) b :=
   Filter.Tendsto.smul hf hg
 
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
+    ContinuousOn (fun x ↦ f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
 
 @[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
+theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f x • g x :=
   continuous_smul.comp (hf.prod_mk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
@@ -274,7 +274,7 @@ theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
 theorem continuousSMul_inf {t₁ t₂ : TopologicalSpace X} [@ContinuousSMul M X _ _ t₁]
     [@ContinuousSMul M X _ _ t₂] : @ContinuousSMul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
-  refine continuousSMul_iInf fun b => ?_
+  refine continuousSMul_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps

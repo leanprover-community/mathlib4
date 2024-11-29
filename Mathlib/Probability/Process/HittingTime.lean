@@ -48,12 +48,12 @@ before `m` then the hitting time is simply `m`).
 
 The hitting time is a stopping time if the process is adapted and discrete. -/
 noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) : Ω → ι :=
-  fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
+  fun x ↦ if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
 #adaptation_note /-- nightly-2024-03-16: added to replace simp [hitting] -/
 theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hitting u s n m =
-    fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
+    fun x ↦ if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
   rfl
 
 section Inequalities
@@ -153,7 +153,7 @@ theorem hitting_le_iff_of_exists [WellFoundedLT ι] {m : ι}
       obtain ⟨k₁, hk₁_mem, hk₁_s⟩ := h_exists
       obtain ⟨k₂, hk₂_mem, hk₂_s⟩ := h'
       refine ⟨min k₁ k₂, ⟨le_min hk₁_mem.1 hk₂_mem.1, min_le_min hk₁_mem.2 hk₂_mem.2⟩, ?_⟩
-      exact min_rec' (fun j => u j ω ∈ s) hk₁_s hk₂_s
+      exact min_rec' (fun j ↦ u j ω ∈ s) hk₁_s hk₂_s
     obtain ⟨k, hk₁, hk₂⟩ := h''
     refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hitting_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
@@ -215,7 +215,7 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFounde
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
   intro i
   rcases le_or_lt n' i with hi | hi
-  · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x => (hitting_le x).trans hi
+  · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x ↦ (hitting_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hitting u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
       ext x
@@ -241,7 +241,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
     [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
-    IsStoppingTime f fun x => hitting u s (τ x) N x := by
+    IsStoppingTime f fun x ↦ hitting u s (τ x) N x := by
   intro n
   have h₁ : {x | hitting u s (τ x) N x ≤ n} =
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) ∪
@@ -255,7 +255,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     rintro m hm rfl
     exact lt_of_lt_of_le hm (le_hitting (hτbdd _) _)
   rw [h₁, h₂, Set.union_empty]
-  exact MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
+  exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter (hitting_isStoppingTime hf hs n)
 
 section CompleteLattice

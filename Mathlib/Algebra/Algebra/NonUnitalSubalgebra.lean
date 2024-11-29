@@ -71,7 +71,7 @@ instance instNonUnitalSubsemiringClass :
   zero_mem {s} := s.zero_mem'
 
 instance instSMulMemClass : SMulMemClass (NonUnitalSubalgebra R A) R A where
-  smul_mem := @fun s => s.smul_mem'
+  smul_mem := @fun s ↦ s.smul_mem'
 
 theorem mem_carrier {s : NonUnitalSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -94,7 +94,7 @@ theorem toNonUnitalSubsemiring_injective :
     Function.Injective
       (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A) :=
   fun S T h =>
-  ext fun x => by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
+  ext fun x ↦ by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
 
 theorem toNonUnitalSubsemiring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubsemiring = U.toNonUnitalSubsemiring ↔ S = U :=
@@ -109,7 +109,7 @@ theorem coe_toSubmodule (S : NonUnitalSubalgebra R A) : (↑S.toSubmodule : Set 
 
 theorem toSubmodule_injective :
     Function.Injective (toSubmodule : NonUnitalSubalgebra R A → Submodule R A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
+  ext fun x ↦ by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
 
 theorem toSubmodule_inj {S U : NonUnitalSubalgebra R A} : S.toSubmodule = U.toSubmodule ↔ S = U :=
   toSubmodule_injective.eq_iff
@@ -163,7 +163,7 @@ theorem coe_toNonUnitalSubring (S : NonUnitalSubalgebra R A) :
 
 theorem toNonUnitalSubring_injective :
     Function.Injective (toNonUnitalSubring : NonUnitalSubalgebra R A → NonUnitalSubring A) :=
-  fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
+  fun S T h => ext fun x ↦ by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
 
 theorem toNonUnitalSubring_inj {S U : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
@@ -809,7 +809,7 @@ theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
   simp [Set.ext_iff, NonUnitalAlgebra.mem_bot]
 
 theorem eq_top_iff {S : NonUnitalSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
-  ⟨fun h x => by rw [h]; exact mem_top, fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+  ⟨fun h x => by rw [h]; exact mem_top, fun h ↦ by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
 @[simp]
 theorem range_id : NonUnitalAlgHom.range (NonUnitalAlgHom.id R A) = ⊤ :=
@@ -858,7 +858,7 @@ theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) =
   ext <| Set.ext_iff.1 <| (NonUnitalSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+  ⟨fun B C => ext fun x ↦ by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 variable [NonUnitalNonAssocSemiring B] [Module R B]
 
@@ -972,7 +972,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
   subst hT
   exact
       { toFun :=
-          Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
+          Set.iUnionLift (fun i ↦ ↑(K i)) (fun i x => f i x)
             (fun i j x hxi hxj => by
               let ⟨k, hik, hjk⟩ := dir i j
               simp only
@@ -990,7 +990,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           dsimp
           apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
           all_goals simp
-        map_smul' := fun r => by
+        map_smul' := fun r ↦ by
           dsimp
           apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
             (fun _ _ => rfl)

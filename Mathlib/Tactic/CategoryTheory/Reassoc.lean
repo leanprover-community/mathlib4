@@ -45,7 +45,7 @@ produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
 def reassocExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
+  mapForallTelescope (fun e ↦ do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
 /--
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are

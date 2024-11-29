@@ -54,7 +54,7 @@ open List
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
 protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
   | [] => fun _ => PUnit.unit
-  | i :: is => fun f => (f i, TProd.mk is f)
+  | i :: is => fun f ↦ (f i, TProd.mk is f)
 
 instance [∀ i, Inhabited (α i)] : Inhabited (TProd α l) :=
   ⟨TProd.mk l default⟩
@@ -122,7 +122,7 @@ theorem mk_elim (hnd : l.Nodup) (h : ∀ i, i ∈ l) (v : TProd α l) : TProd.mk
 
 /-- Pi-types are equivalent to iterated products. -/
 def piEquivTProd (hnd : l.Nodup) (h : ∀ i, i ∈ l) : (∀ i, α i) ≃ TProd α l :=
-  ⟨TProd.mk l, TProd.elim' h, fun f => funext fun i => elim_mk l f (h i), mk_elim hnd h⟩
+  ⟨TProd.mk l, TProd.elim' h, fun f ↦ funext fun i ↦ elim_mk l f (h i), mk_elim hnd h⟩
 
 end TProd
 

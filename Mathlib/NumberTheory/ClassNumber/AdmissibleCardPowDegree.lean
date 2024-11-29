@@ -110,12 +110,12 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- If `b` is already small enough, then the remainders are equal and we are done.
   by_cases le_b : b.natDegree ≤ ⌈-log ε / log (Fintype.card Fq)⌉₊
   · obtain ⟨i₀, i₁, i_ne, mod_eq⟩ :=
-      exists_eq_polynomial le_rfl b le_b (fun i => A i % b) fun i => EuclideanDomain.mod_lt (A i) hb
+      exists_eq_polynomial le_rfl b le_b (fun i ↦ A i % b) fun i ↦ EuclideanDomain.mod_lt (A i) hb
     refine ⟨i₀, i₁, i_ne, ?_⟩
     rwa [mod_eq, sub_self, map_zero, Int.cast_zero]
   -- Otherwise, it suffices to choose two elements whose difference is of small enough degree.
   rw [not_le] at le_b
-  obtain ⟨i₀, i₁, i_ne, deg_lt⟩ := exists_approx_polynomial_aux le_rfl b (fun i => A i % b) fun i =>
+  obtain ⟨i₀, i₁, i_ne, deg_lt⟩ := exists_approx_polynomial_aux le_rfl b (fun i ↦ A i % b) fun i =>
     EuclideanDomain.mod_lt (A i) hb
   use i₀, i₁, i_ne
   -- Again, if the remainders are equal we are done.
@@ -204,7 +204,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
       t' i = j → (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε := by
     by_contra! hg
     obtain ⟨j₀, j₁, j_ne, approx⟩ := exists_approx_polynomial hb hε
-      (Fin.cons (A 0) fun j => A (Fin.succ (Classical.choose (hg j))))
+      (Fin.cons (A 0) fun j ↦ A (Fin.succ (Classical.choose (hg j))))
     revert j_ne approx
     refine Fin.cases ?_ (fun j₀ => ?_) j₀ <;>
       refine Fin.cases (fun j_ne approx => ?_) (fun j₁ j_ne approx => ?_) j₁
@@ -230,7 +230,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     rw [AbsoluteValue.map_sub]
     exact hj _ hi
   -- And otherwise, we can just take any `j`, since those are empty.
-  refine ⟨j, fun i => ⟨hj i, fun hi => ?_⟩⟩
+  refine ⟨j, fun i ↦ ⟨hj i, fun hi => ?_⟩⟩
   have := exists_nonempty_j ⟨t' i, ⟨i, rfl⟩, fun i' hi' => anti_archim' hi ((ht' _ _).mp hi')⟩
   contradiction
 
@@ -243,7 +243,7 @@ theorem exists_partition_polynomial (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : Fq[
   obtain ⟨t, ht⟩ := exists_partition_polynomial_aux n hε hb A
   exact ⟨t, fun i₀ i₁ hi => (ht i₀ i₁).mp hi⟩
 
-/-- `fun p => Fintype.card Fq ^ degree p` is an admissible absolute value.
+/-- `fun p ↦ Fintype.card Fq ^ degree p` is an admissible absolute value.
 We set `q ^ degree 0 = 0`. -/
 noncomputable def cardPowDegreeIsAdmissible :
     IsAdmissible (cardPowDegree : AbsoluteValue Fq[X] ℤ) :=

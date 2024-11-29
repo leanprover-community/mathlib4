@@ -87,7 +87,7 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     finsuppAntidiag (insert a s) n = (antidiagonal n).biUnion
       (fun p : μ × μ =>
         (finsuppAntidiag s p.snd).attach.map
-        ⟨fun f => Finsupp.update f.val a p.fst,
+        ⟨fun f ↦ Finsupp.update f.val a p.fst,
         (fun ⟨f, hf⟩ ⟨g, hg⟩ hfg => Subtype.ext <| by
           simp only [mem_val, mem_finsuppAntidiag] at hf hg
           simp only [DFunLike.ext_iff] at hfg ⊢

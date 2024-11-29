@@ -48,7 +48,7 @@ theorem measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ :
   Measurable.of_comap_le <| le_iSup_of_le s <| le_iSup_of_le hs <| le_rfl
 
 theorem measurable_of_measurable_coe (f : β → Measure α)
-    (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b => f b s) : Measurable f :=
+    (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b ↦ f b s) : Measurable f :=
   Measurable.of_le_map <|
     iSup₂_le fun s hs =>
       MeasurableSpace.comap_le_iff_le_map.2 <| by rw [MeasurableSpace.map_comp]; exact h s hs
@@ -61,7 +61,7 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
   · exact (Measure.measurable_coe hs).comp measurable_snd
 
 theorem measurable_measure {μ : α → Measure β} :
-    Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=
+    Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b ↦ μ b s :=
   ⟨fun hμ _s hs => (measurable_coe hs).comp hμ, measurable_of_measurable_coe μ⟩
 
 theorem measurable_map (f : α → β) (hf : Measurable f) :
@@ -78,7 +78,7 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine .iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine .iSup fun n ↦ Finset.measurable_sum _ fun i _ => ?_
   refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 
@@ -116,14 +116,14 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
       Monotone (fun n μ => ∑ r ∈ s n, r * f n r μ) →
       ⨆ n, ∑ r ∈ s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r ∈ s n, r * f n r μ ∂m by
     refine
-      this (fun n => SimpleFunc.range (SimpleFunc.eapprox f n))
+      this (fun n ↦ SimpleFunc.range (SimpleFunc.eapprox f n))
         (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) ?_ ?_
     · exact fun n r => measurable_coe (SimpleFunc.measurableSet_preimage _ _)
     · exact fun n m h μ => SimpleFunc.lintegral_mono (SimpleFunc.monotone_eapprox _ h) le_rfl
   intro s f hf hm
   rw [lintegral_iSup _ hm]
   swap
-  · exact fun n => Finset.measurable_sum _ fun r _ => (hf _ _).const_mul _
+  · exact fun n ↦ Finset.measurable_sum _ fun r _ => (hf _ _).const_mul _
   congr
   funext n
   rw [lintegral_finset_sum (s n)]
@@ -159,7 +159,7 @@ lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m 
   ext s hs
   rw [bind_apply hs measurable_const, lintegral_const, smul_apply, smul_eq_mul, mul_comm]
 
-theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m => bind m g :=
+theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m ↦ bind m g :=
   measurable_join.comp (measurable_map _ hg)
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)
@@ -167,7 +167,7 @@ theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
 
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
-    (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a => bind (f a) g := by
+    (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a ↦ bind (f a) g := by
   ext1 s hs
   erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]

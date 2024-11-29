@@ -93,7 +93,7 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
     · simp [h]
     · simp only [h, ↓reduceIte]
       rw [not_isMax_iff] at h
-      exact le_csInf h (fun b => le_of_lt)
+      exact le_csInf h (fun b ↦ le_of_lt)
   max_of_succ_le hs := by
     by_contra h
     simp [h] at hs

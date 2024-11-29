@@ -132,11 +132,11 @@ instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrref
 
 instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
     IsIrrefl α (fun a b => decide (r a b) = true) where
-  irrefl := fun a => by simpa using irrefl a
+  irrefl := fun a ↦ by simpa using irrefl a
 
 instance IsRefl.decide [DecidableRel r] [IsRefl α r] :
     IsRefl α (fun a b => decide (r a b) = true) where
-  refl := fun a => by simpa using refl a
+  refl := fun a ↦ by simpa using refl a
 
 instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
     IsTrans α (fun a b => decide (r a b) = true) where

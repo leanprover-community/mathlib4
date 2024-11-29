@@ -112,7 +112,7 @@ end Part
 namespace Part
 
 instance hasFix : Fix (Part α) :=
-  ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
+  ⟨fun f ↦ Part.fix (fun x u => f (x u)) ()⟩
 
 end Part
 

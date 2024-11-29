@@ -26,7 +26,7 @@ syntax (name := funPropTacStx)
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      (fun r ↦ do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/
@@ -39,7 +39,7 @@ def funPropTac : Tactic
       let goalType ← goal.getType
 
       -- the whnf and telescope is here because the goal can be
-      -- `∀ y, let f := fun x => x + y; Continuous fun x => x + f x`
+      -- `∀ y, let f := fun x ↦ x + y; Continuous fun x ↦ x + f x`
       -- However it is still not complete solution. How should we deal with mix of let and forall?
       withReducible <| forallTelescopeReducing (← whnfR goalType) fun _ type => do
         unless (← getFunProp? type).isSome do
@@ -62,7 +62,7 @@ def funPropTac : Tactic
       let namesToUnfold : Array Name :=
         match names with
         | none => #[]
-        | .some ns => ns.getElems.map (fun n => n.getId)
+        | .some ns => ns.getElems.map (fun n ↦ n.getId)
 
       let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
 

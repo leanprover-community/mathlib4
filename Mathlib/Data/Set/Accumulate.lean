@@ -50,6 +50,6 @@ theorem iUnion_accumulate [Preorder α] : ⋃ x, Accumulate s x = ⋃ x, s x := 
   · simp only [subset_def, mem_iUnion, exists_imp, mem_accumulate]
     intro z x x' ⟨_, hz⟩
     exact ⟨x', hz⟩
-  · exact iUnion_mono fun i => subset_accumulate
+  · exact iUnion_mono fun i ↦ subset_accumulate
 
 end Set

@@ -309,8 +309,8 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
       · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
       -- Porting note: `le_iSup` needed some help
       refine
-        iSup_le fun i => (edist_triangle _ (g i) _).trans <| add_le_add
-            (le_iSup (fun k => edist (f k) (g k)) i) (le_iSup (fun k => edist (g k) (h k)) i)
+        iSup_le fun i ↦ (edist_triangle _ (g i) _).trans <| add_le_add
+            (le_iSup (fun k ↦ edist (f k) (g k)) i) (le_iSup (fun k ↦ edist (g k) (h k)) i)
     · simp only [edist_eq_sum (zero_lt_one.trans_le hp)]
       calc
         (∑ i, edist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤
@@ -329,8 +329,8 @@ use outside this file. -/
 theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
-  obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
-  refine ne_of_lt ((iSup_le fun i => ?_).trans_lt (@ENNReal.coe_lt_top M))
+  obtain ⟨M, hM⟩ := Finite.exists_le fun i ↦ (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
+  refine ne_of_lt ((iSup_le fun i ↦ ?_).trans_lt (@ENNReal.coe_lt_top M))
   simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
 
@@ -356,19 +356,19 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     · rw [edist_eq_iSup, dist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
-      · refine le_antisymm (ciSup_le fun i => ?_) ?_
+      · refine le_antisymm (ciSup_le fun i ↦ ?_) ?_
         · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
             PseudoMetricSpace.edist_dist]
           -- Porting note: `le_iSup` needed some help
-          exact le_iSup (fun k => edist (f k) (g k)) i
-        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg ?_) (iSup_le fun i => ?_)
+          exact le_iSup (fun k ↦ edist (f k) (g k)) i
+        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg ?_) (iSup_le fun i ↦ ?_)
           · rintro - ⟨i, rfl⟩
             exact dist_nonneg
           · change PseudoMetricSpace.edist _ _ ≤ _
             rw [PseudoMetricSpace.edist_dist]
             -- Porting note: `le_ciSup` needed some help
             exact ENNReal.ofReal_le_ofReal
-              (le_ciSup (Finite.bddAbove_range (fun k => dist (f k) (g k))) i)
+              (le_ciSup (Finite.bddAbove_range (fun k ↦ dist (f k) (g k))) i)
     · have A : ∀ i, edist (f i) (g i) ^ p.toReal ≠ ⊤ := fun i =>
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
       simp only [edist_eq_sum (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
@@ -381,7 +381,7 @@ theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i))
   simp_rw [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
     forall_true_left, WithLp.equiv_pi_apply]
   rcases p.dichotomy with (rfl | h)
-  · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
+  · simpa only [edist_eq_iSup] using le_iSup fun i ↦ edist (x i) (y i)
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
     intro i
@@ -399,7 +399,7 @@ theorem antilipschitzWith_equiv_aux :
   · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero,
       ENNReal.coe_one, one_mul, iSup_le_iff]
     -- Porting note: `Finset.le_sup` needed some help
-    exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
+    exact fun i ↦ Finset.le_sup (f := fun i ↦ edist (x i) (y i)) (Finset.mem_univ i)
   · have pos : 0 < p.toReal := zero_lt_one.trans_le h
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
     have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
@@ -409,7 +409,7 @@ theorem antilipschitzWith_equiv_aux :
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
           (∑ _i, edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
         gcongr with i
-        exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
+        exact Finset.le_sup (f := fun i ↦ edist (x i) (y i)) (Finset.mem_univ i)
       _ =
           ((Fintype.card ι : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
             edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
@@ -696,9 +696,9 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
     PiLp p α ≃ₗᵢ[𝕜] PiLp p β where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
-      ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
+      ≪≫ₗ (LinearEquiv.piCongrRight fun i ↦ (e i).toLinearEquiv)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
-  norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
+  norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x ↦ by
     simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
       Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
@@ -711,18 +711,18 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_apply (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) (x : PiLp p α) :
     LinearIsometryEquiv.piLpCongrRight p e x =
-      (WithLp.equiv p _).symm (fun i => e i (x i)) :=
+      (WithLp.equiv p _).symm (fun i ↦ e i (x i)) :=
   rfl
 
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_refl :
-    LinearIsometryEquiv.piLpCongrRight p (fun i => .refl 𝕜 (α i)) = .refl _ _ :=
+    LinearIsometryEquiv.piLpCongrRight p (fun i ↦ .refl 𝕜 (α i)) = .refl _ _ :=
   rfl
 
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_symm (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) :
     (LinearIsometryEquiv.piLpCongrRight p e).symm =
-      LinearIsometryEquiv.piLpCongrRight p (fun i => (e i).symm) :=
+      LinearIsometryEquiv.piLpCongrRight p (fun i ↦ (e i).symm) :=
   rfl
 
 @[simp high]
@@ -743,13 +743,13 @@ variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
 def _root_.LinearIsometryEquiv.piLpCurry :
-    PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i => PiLp p (α i)) where
+    PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i ↦ PiLp p (α i)) where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
       ≪≫ₗ LinearEquiv.piCurry 𝕜 α
       ≪≫ₗ (LinearEquiv.piCongrRight fun _ => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
-  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
+  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x ↦ by
     simp_rw [← coe_nnnorm, NNReal.coe_inj]
     obtain rfl | hp := eq_or_ne p ⊤
     · simp_rw [← PiLp.nnnorm_equiv, Pi.nnnorm_def, ← PiLp.nnnorm_equiv, Pi.nnnorm_def]
@@ -763,12 +763,12 @@ def _root_.LinearIsometryEquiv.piLpCurry :
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_apply
     (f : PiLp p (fun i : Sigma κ => α i.1 i.2)) :
     _root_.LinearIsometryEquiv.piLpCurry 𝕜 p α f =
-      (WithLp.equiv _ _).symm (fun i => (WithLp.equiv _ _).symm <|
+      (WithLp.equiv _ _).symm (fun i ↦ (WithLp.equiv _ _).symm <|
         Sigma.curry (WithLp.equiv _ _ f) i) :=
   rfl
 
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_symm_apply
-    (f : PiLp p (fun i => PiLp p (α i))) :
+    (f : PiLp p (fun i ↦ PiLp p (α i))) :
     (_root_.LinearIsometryEquiv.piLpCurry 𝕜 p α).symm f =
       (WithLp.equiv _ _).symm (Sigma.uncurry fun i j => f i j) :=
   rfl
@@ -789,7 +789,7 @@ theorem nnnorm_equiv_symm_single (i : ι) (b : β i) :
   | top =>
     simp_rw [nnnorm_eq_ciSup, WithLp.equiv_symm_pi_apply]
     refine
-      ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
+      ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j ↦ ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
       · rw [Pi.single_eq_same]
       · rw [Pi.single_eq_of_ne' hij, nnnorm_zero]

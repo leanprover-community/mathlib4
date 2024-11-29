@@ -407,7 +407,7 @@ def inr : B →ₙₐ[R] A × B :=
 variable {R A B}
 
 @[simp]
-theorem coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
+theorem coe_inl : (inl R A B : A → A × B) = fun x ↦ (x, 0) :=
   rfl
 
 theorem inl_apply (x : A) : inl R A B x = (x, 0) :=

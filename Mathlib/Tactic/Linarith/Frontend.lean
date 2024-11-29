@@ -296,7 +296,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
 -- to only those that are comparisons over the type `restr_type`.
 -- -/
 -- def filterHyps (restr_type : Expr) (hyps : List Expr) : MetaM (List Expr) :=
---   hyps.filterM (fun h => do
+--   hyps.filterM (fun h ↦ do
 --     let ht ← inferType h
 --     match getContrLemma ht with
 --     | some (_, htype) => isDefEq htype restr_type

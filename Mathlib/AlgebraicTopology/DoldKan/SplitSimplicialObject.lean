@@ -173,7 +173,7 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
     (toKaroubi _).obj s.nondegComplex ≅ N₁.obj X where
   hom :=
     { f :=
-        { f := fun n => (s.cofan _).inj (IndexSet.id (op [n])) ≫ PInfty.f n
+        { f := fun n ↦ (s.cofan _).inj (IndexSet.id (op [n])) ≫ PInfty.f n
           comm' := fun i j _ => by
             dsimp
             rw [assoc, assoc, assoc, πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty,
@@ -184,7 +184,7 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
         rw [id_comp, assoc, PInfty_f_idem] }
   inv :=
     { f :=
-        { f := fun n => s.πSummand (IndexSet.id (op [n]))
+        { f := fun n ↦ s.πSummand (IndexSet.id (op [n]))
           comm' := fun i j _ => by
             dsimp
             slice_rhs 1 1 => rw [← id_comp (K[X].d i j)]

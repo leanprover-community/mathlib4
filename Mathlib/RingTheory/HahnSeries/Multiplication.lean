@@ -104,7 +104,7 @@ def of (R : Type*) [SMul R V] : HahnSeries Γ V ≃ HahnModule Γ R V :=
 @[elab_as_elim]
 def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
     ∀ x, motive x :=
-  fun x => h <| (of R).symm x
+  fun x ↦ h <| (of R).symm x
 
 @[ext]
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
@@ -360,7 +360,7 @@ protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring
   simp only [map_coeff, mul_coeff, ZeroHom.coe_coe, map_sum, map_mul]
   refine Eq.symm (sum_subset (fun gh hgh => ?_) (fun gh hgh hz => ?_))
   · simp_all only [mem_addAntidiagonal, mem_support, map_coeff, ZeroHom.coe_coe, ne_eq, and_true]
-    exact ⟨fun h => hgh.1 (map_zero f ▸ congrArg f h), fun h => hgh.2.1 (map_zero f ▸ congrArg f h)⟩
+    exact ⟨fun h ↦ hgh.1 (map_zero f ▸ congrArg f h), fun h ↦ hgh.2.1 (map_zero f ▸ congrArg f h)⟩
   · simp_all only [mem_addAntidiagonal, mem_support, ne_eq, map_coeff, ZeroHom.coe_coe, and_true,
       not_and, not_not]
     by_cases h : f (x.coeff gh.1) = 0
@@ -474,10 +474,10 @@ instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
 instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
   { AddMonoidWithOne.unary,
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    one_mul := fun x => by
+    one_mul := fun x ↦ by
       ext
       exact single_zero_mul_coeff.trans (one_mul _)
-    mul_one := fun x => by
+    mul_one := fun x ↦ by
       ext
       exact mul_single_zero_coeff.trans (mul_one _) }
 

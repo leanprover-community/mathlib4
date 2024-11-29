@@ -64,7 +64,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
     _ = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
       congr_arg _ <|
         congr_arg card <|
-          Finset.ext fun i => by
+          Finset.ext fun i ↦ by
             simp only [mem_Ico, Nat.lt_succ_iff,
               fin.pow_dvd_iff_le_multiplicity, mem_filter,
               and_assoc, and_congr_right_iff, iff_and_self]
@@ -243,7 +243,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
       apply WithTop.coe_mono
       rw [log_pow hp.one_lt, ← card_union_of_disjoint hdisj, filter_union_right]
       have filter_le_Ico := (Ico 1 n.succ).card_filter_le
-        fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
+        fun x ↦ p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
       rwa [card_Ico 1 n.succ] at filter_le_Ico)
     (by rw [← hp.emultiplicity_pow_self]; exact emultiplicity_le_emultiplicity_choose_add hp _ _)
 
@@ -259,13 +259,13 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
   · simp [choose_eq_zero_of_lt hkp]
-  refine emultiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
+  refine emultiplicity_ne_zero.1 fun h ↦ hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
   have H := hp.emultiplicity_choose_prime_pow_add_emultiplicity hkp.le hk
   rw [h, zero_add, emultiplicity_eq_coe] at H
   exact H.1
 
 theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
-  refine ⟨fun h => ⟨?_, ?_⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
 
 end Prime
@@ -273,7 +273,7 @@ end Prime
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_
-  · exact fun h => False.elim <| h rfl
+  · exact fun h ↦ False.elim <| h rfl
   · intro b n ih h
     by_cases hn : n = 0
     · subst hn

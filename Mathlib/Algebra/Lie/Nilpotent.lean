@@ -231,7 +231,7 @@ theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent R L M] :
 
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 theorem isNilpotent_iff : IsNilpotent R L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ :=
-  ⟨fun h => h.nilpotent, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.nilpotent, fun h ↦ ⟨h⟩⟩
 
 section
 variable {R L M}
@@ -240,7 +240,7 @@ variable [LieModule R L M]
 theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule R L M) :
     LieModule.IsNilpotent R L N ↔ ∃ k, N.lcs k = ⊥ := by
   rw [isNilpotent_iff]
-  refine exists_congr fun k => ?_
+  refine exists_congr fun k ↦ ?_
   rw [N.lowerCentralSeries_eq_lcs_comap k, LieSubmodule.comap_incl_eq_bot,
     inf_eq_right.mpr (N.lcs_le_self k)]
 
@@ -329,7 +329,7 @@ theorem nilpotencyLength_eq_zero_iff [IsNilpotent R L M] :
   change sInf s = 0 ↔ _
   rw [← LieSubmodule.subsingleton_iff R L M, ← subsingleton_iff_bot_eq_top, ←
     lowerCentralSeries_zero, @eq_comm (LieSubmodule R L M)]
-  refine ⟨fun h => h ▸ Nat.sInf_mem hs, fun h => ?_⟩
+  refine ⟨fun h ↦ h ▸ Nat.sInf_mem hs, fun h ↦ ?_⟩
   rw [Nat.sInf_eq_zero]
   exact Or.inl h
 
@@ -514,7 +514,7 @@ theorem ucs_eq_top_iff (k : ℕ) : N.ucs k = ⊤ ↔ LieModule.lowerCentralSerie
 
 theorem _root_.LieModule.isNilpotent_iff_exists_ucs_eq_top :
     LieModule.IsNilpotent R L M ↔ ∃ k, (⊥ : LieSubmodule R L M).ucs k = ⊤ := by
-  rw [LieModule.isNilpotent_iff]; exact exists_congr fun k => by simp [ucs_eq_top_iff]
+  rw [LieModule.isNilpotent_iff]; exact exists_congr fun k ↦ by simp [ucs_eq_top_iff]
 
 theorem ucs_comap_incl (k : ℕ) :
     ((⊥ : LieSubmodule R L M).ucs k).comap N.incl = (⊥ : LieSubmodule R L N).ucs k := by
@@ -725,7 +725,7 @@ theorem LieHom.isNilpotent_range [IsNilpotent R L] (f : L →ₗ⁅R⁆ L') : Is
 `(ad R L).range`. -/
 @[simp]
 theorem LieAlgebra.isNilpotent_range_ad_iff : IsNilpotent R (ad R L).range ↔ IsNilpotent R L := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · have : (ad R L).ker = center R L := by simp
     exact
       LieAlgebra.nilpotent_of_nilpotent_quotient (le_of_eq this)

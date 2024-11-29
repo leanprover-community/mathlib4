@@ -35,10 +35,10 @@ def get (s : Stream' α) (n : ℕ) : α := s n
 abbrev head (s : Stream' α) : α := s.get 0
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-def tail (s : Stream' α) : Stream' α := fun i => s.get (i + 1)
+def tail (s : Stream' α) : Stream' α := fun i ↦ s.get (i + 1)
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : ℕ) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
+def drop (n : ℕ) (s : Stream' α) : Stream' α := fun i ↦ s.get (i + n)
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
 def All (p : α → Prop) (s : Stream' α) := ∀ n, p (get s n)
@@ -48,18 +48,18 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
-  ⟨fun s a => Any (fun b => a = b) s⟩
+  ⟨fun s a => Any (fun b ↦ a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
-def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
+def map (f : α → β) (s : Stream' α) : Stream' β := fun n ↦ f (get s n)
 
 /-- Zip two streams using a binary operation:
 `Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
 def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
-  fun n => f (get s₁ n) (get s₂ n)
+  fun n ↦ f (get s₁ n) (get s₂ n)
 
 /-- Enumerate a stream by tagging each element with its index. -/
-def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
+def enum (s : Stream' α) : Stream' (ℕ × α) := fun n ↦ (n, s.get n)
 
 /-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α := fun _ => a
@@ -70,7 +70,7 @@ def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
   | n + 1 => f (iterate f a n)
 
-def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
+def corec (f : α → β) (g : α → α) : α → Stream' β := fun a ↦ map f (iterate g a)
 
 def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
@@ -94,7 +94,7 @@ infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
 def even (s : Stream' α) : Stream' α :=
-  corec head (fun s => tail (tail s)) s
+  corec head (fun s ↦ tail (tail s)) s
 
 /-- Elements of a stream with odd indices. -/
 def odd (s : Stream' α) : Stream' α :=
@@ -145,12 +145,12 @@ def pure (a : α) : Stream' α :=
   const a
 
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
-def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
+def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n ↦ (get f n) (get s n)
 
 infixl:75 " ⊛ " => apply
 -- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
-def nats : Stream' ℕ := fun n => n
+def nats : Stream' ℕ := fun n ↦ n
 
 end Stream'

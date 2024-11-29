@@ -46,7 +46,7 @@ section MulZeroClass
 variable [MulZeroClass M₀] {a b : M₀}
 
 theorem left_ne_zero_of_mul : a * b ≠ 0 → a ≠ 0 :=
-  mt fun h => mul_eq_zero_of_left h b
+  mt fun h ↦ mul_eq_zero_of_left h b
 
 theorem right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
   mt (mul_eq_zero_of_right a)
@@ -110,7 +110,7 @@ def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
 /-- In a monoid with zero, zero equals one if and only if all elements of that semiring
 are equal. -/
 theorem subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
-  ⟨fun h => haveI := uniqueOfZeroEqOne h; inferInstance, fun h => @Subsingleton.elim _ h _ _⟩
+  ⟨fun h ↦ haveI := uniqueOfZeroEqOne h; inferInstance, fun h ↦ @Subsingleton.elim _ h _ _⟩
 
 alias ⟨subsingleton_of_zero_eq_one, _⟩ := subsingleton_iff_zero_eq_one
 
@@ -245,12 +245,12 @@ section GroupWithZero
 variable [GroupWithZero G₀] {a b x : G₀}
 
 theorem GroupWithZero.mul_right_injective (h : x ≠ 0) :
-    Function.Injective fun y => x * y := fun y y' w => by
-  simpa only [← mul_assoc, inv_mul_cancel₀ h, one_mul] using congr_arg (fun y => x⁻¹ * y) w
+    Function.Injective fun y ↦ x * y := fun y y' w => by
+  simpa only [← mul_assoc, inv_mul_cancel₀ h, one_mul] using congr_arg (fun y ↦ x⁻¹ * y) w
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
-    Function.Injective fun y => y * x := fun y y' w => by
-  simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
+    Function.Injective fun y ↦ y * x := fun y y' w => by
+  simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y ↦ y * x⁻¹) w
 
 @[simp]
 theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
@@ -273,7 +273,7 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
 instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
   { ‹GroupWithZero G₀› with
     inv := Inv.inv,
-    inv_inv := fun a => by
+    inv_inv := fun a ↦ by
       by_cases h : a = 0
       · simp [h]
       · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
@@ -377,10 +377,10 @@ theorem ne_zero_of_one_div_ne_zero {a : G₀} (h : 1 / a ≠ 0) : a ≠ 0 := fun
 theorem eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
   Classical.byCases (fun ha => ha) fun ha => ((one_div_ne_zero ha) h).elim
 
-theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
+theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g ↦ a * g := fun g =>
   ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel₀ h]⟩
 
-theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
+theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g ↦ g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel₀ h]⟩
 
 lemma zero_zpow : ∀ n : ℤ, n ≠ 0 → (0 : G₀) ^ n = 0

@@ -151,7 +151,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     rcases hf' with ⟨m, hm⟩
     let Y := NonemptyFinLinOrd.of (ULift (Fin 2))
     let p₁ : B ⟶ Y :=
-      ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
+      ⟨fun b ↦ if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -159,7 +159,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
           exact h₁ (lt_of_le_of_lt h h₂)
         · rfl⟩
     let p₂ : B ⟶ Y :=
-      ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
+      ⟨fun b ↦ if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -188,8 +188,8 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       rw [epi_iff_surjective] at hf
       intro y
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
-    let φ : Y → X := fun y => (H y).some.1
-    have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
+    let φ : Y → X := fun y ↦ (H y).some.1
+    have hφ : ∀ y : Y, f (φ y) = y := fun y ↦ (H y).some.2
     refine IsSplitEpi.mk' ⟨⟨φ, ?_⟩, ?_⟩
     swap
     · ext b
@@ -210,8 +210,8 @@ instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
     letI : NonemptyFiniteLinearOrder (Set.image f ⊤) := ⟨by infer_instance⟩
     let I := NonemptyFinLinOrd.of (Set.image f ⊤)
-    let e : X ⟶ I := ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.monotone h⟩
-    let m : I ⟶ Y := ⟨fun y => y.1, by tauto⟩
+    let e : X ⟶ I := ⟨fun x ↦ ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.monotone h⟩
+    let m : I ⟶ Y := ⟨fun y ↦ y.1, by tauto⟩
     haveI : Epi e := by
       rw [epi_iff_surjective]
       rintro ⟨_, y, h, rfl⟩

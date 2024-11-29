@@ -318,7 +318,7 @@ continuous functions on a compact space. -/
 theorem tendsto_iff_tendstoUniformly :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (fun i a => F i a) f p := by
   rw [tendsto_iff_forall_isCompact_tendstoUniformlyOn, ← tendstoUniformlyOn_univ]
-  exact ⟨fun h => h univ isCompact_univ, fun h K _hK => h.mono (subset_univ K)⟩
+  exact ⟨fun h ↦ h univ isCompact_univ, fun h K _hK => h.mono (subset_univ K)⟩
 
 end CompactDomain
 

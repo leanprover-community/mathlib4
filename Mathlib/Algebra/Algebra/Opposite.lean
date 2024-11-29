@@ -42,7 +42,7 @@ instance instAlgebra : Algebra R Aᵐᵒᵖ where
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
       Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
-  commutes' r := MulOpposite.rec' fun x => by
+  commutes' r := MulOpposite.rec' fun x ↦ by
     simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
 @[simp]
@@ -73,7 +73,7 @@ an algebra homomorphism from `Aᵐᵒᵖ`. -/
 def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐᵒᵖ →ₐ[R] B :=
   { f.toRingHom.fromOpposite hf with
     toFun := f ∘ unop
-    commutes' := fun r => f.commutes r }
+    commutes' := fun r ↦ f.commutes r }
 
 @[simp]
 theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
@@ -92,7 +92,7 @@ an algebra homomorphism to `Bᵐᵒᵖ`. -/
 def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →ₐ[R] Bᵐᵒᵖ :=
   { f.toRingHom.toOpposite hf with
     toFun := op ∘ f
-    commutes' := fun r => unop_injective <| f.commutes r }
+    commutes' := fun r ↦ unop_injective <| f.commutes r }
 
 @[simp]
 theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
@@ -108,8 +108,8 @@ theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
-  toFun f := { RingHom.op f.toRingHom with commutes' := fun r => unop_injective <| f.commutes r }
-  invFun f := { RingHom.unop f.toRingHom with commutes' := fun r => op_injective <| f.commutes r }
+  toFun f := { RingHom.op f.toRingHom with commutes' := fun r ↦ unop_injective <| f.commutes r }
+  invFun f := { RingHom.unop f.toRingHom with commutes' := fun r ↦ op_injective <| f.commutes r }
   left_inv _f := AlgHom.ext fun _a => rfl
   right_inv _f := AlgHom.ext fun _a => rfl
 
@@ -137,10 +137,10 @@ This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
   toFun f :=
     { RingEquiv.op f.toRingEquiv with
-      commutes' := fun r => MulOpposite.unop_injective <| f.commutes r }
+      commutes' := fun r ↦ MulOpposite.unop_injective <| f.commutes r }
   invFun f :=
     { RingEquiv.unop f.toRingEquiv with
-      commutes' := fun r => MulOpposite.op_injective <| f.commutes r }
+      commutes' := fun r ↦ MulOpposite.op_injective <| f.commutes r }
   left_inv _f := AlgEquiv.ext fun _a => rfl
   right_inv _f := AlgEquiv.ext fun _a => rfl
 

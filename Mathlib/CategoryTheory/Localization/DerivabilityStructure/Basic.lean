@@ -84,7 +84,7 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor 
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔
       TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom :=
-    ⟨fun h => h.guitartExact', fun h => ⟨inferInstance, h⟩⟩
+    ⟨fun h ↦ h.guitartExact', fun h ↦ ⟨inferInstance, h⟩⟩
   rw [this]
   let e' := (Φ.catCommSq W₁.Q W₂.Q).iso
   let E₁ := Localization.uniq W₁.Q L₁ W₁

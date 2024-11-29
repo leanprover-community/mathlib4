@@ -141,7 +141,7 @@ theorem isIso {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso (coyoneda.map f)] : IsIso f :
 /-- The identity functor on `Type` is isomorphic to the coyoneda functor coming from `PUnit`. -/
 def punitIso : coyoneda.obj (Opposite.op PUnit) ≅ 𝟭 (Type v₁) :=
   NatIso.ofComponents fun X =>
-    { hom := fun f => f ⟨⟩
+    { hom := fun f ↦ f ⟨⟩
       inv := fun x _ => x }
 
 /-- Taking the `unop` of morphisms is a natural isomorphism. -/
@@ -814,7 +814,7 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     F.op ⋙ yoneda.obj (F.obj X) ⋙ uliftFunctor.{v₁} ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
   NatIso.ofComponents
     (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
-    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+    (fun f ↦ by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
@@ -822,7 +822,7 @@ def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
     (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
   NatIso.ofComponents
     (fun Y => Equiv.toIso (hF.homEquiv.symm.trans Equiv.ulift.symm))
-    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+    (fun f ↦ by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
@@ -831,7 +831,7 @@ def compYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ 
       (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₁} ≅
       yoneda ⋙ (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIso _)
-    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+    (fun f ↦ by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
@@ -839,7 +839,7 @@ def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v�
     (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ≅
       yoneda ⋙ (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIsoMaxRight _)
-    (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+    (fun f ↦ by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 end Functor.FullyFaithful
 

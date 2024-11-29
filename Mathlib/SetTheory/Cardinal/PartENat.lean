@@ -60,7 +60,7 @@ theorem aleph0_toPartENat : toPartENat ℵ₀ = ⊤ :=
   toPartENat_apply_of_aleph0_le le_rfl
 
 theorem toPartENat_surjective : Surjective toPartENat := fun x =>
-  PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n => ⟨n, toPartENat_natCast n⟩
+  PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n ↦ ⟨n, toPartENat_natCast n⟩
 
 @[deprecated (since := "2024-02-15")] alias toPartENat_eq_top_iff_le_aleph0 := toPartENat_eq_top
 

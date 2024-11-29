@@ -70,7 +70,7 @@ theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
     simp only [mem_setOf_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
       (· ∘ ·), mem_Iic, le_principal_iff]
 
-theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by
+theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s ↦ { l' | s ∈ l' } := by
   simpa only [Function.comp_def, Iic_principal] using nhds_eq l
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
@@ -78,7 +78,7 @@ protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Fil
   simp only [nhds_eq', tendsto_lift', mem_setOf_eq]
 
 protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
-    HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
+    HasBasis (𝓝 l) p fun i ↦ Iic (𝓟 (s i)) := by
   rw [nhds_eq]
   exact h.lift' monotone_principal.Iic
 
@@ -93,7 +93,7 @@ instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l
   HasCountableBasis.isCountablyGenerated <| ⟨hb.nhds, Set.to_countable _⟩
 
 theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
-    HasBasis (𝓝 l) p fun i => { l' | s i ∈ l' } := by simpa only [Iic_principal] using h.nhds
+    HasBasis (𝓝 l) p fun i ↦ { l' | s i ∈ l' } := by simpa only [Iic_principal] using h.nhds
 
 protected theorem mem_nhds_iff {l : Filter α} {S : Set (Filter α)} :
     S ∈ 𝓝 l ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ S :=
@@ -125,7 +125,7 @@ theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i)
 
 @[simp]
 theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
-  simpa only [iInf_bool_eq] using nhds_iInf fun b => cond b l₁ l₂
+  simpa only [iInf_bool_eq] using nhds_iInf fun b ↦ cond b l₁ l₂
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
   Monotone.of_map_inf nhds_inf
@@ -136,7 +136,7 @@ theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
-  refine ⟨fun h => ?_, fun h => monotone_nhds h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ monotone_nhds h⟩
   rw [← Iic_subset_Iic, ← sInter_nhds, ← sInter_nhds]
   exact sInter_subset_sInter h
 

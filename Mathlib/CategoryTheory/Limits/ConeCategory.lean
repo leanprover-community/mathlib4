@@ -90,14 +90,14 @@ lemma Cone.toStructuredArrow_comp_toUnder_comp_forget {F : J ⥤ C} (c : Cone F)
 def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
     Cone (c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _) where
   pt := Under.mk (𝟙 c.pt)
-  π := { app := fun j => Under.homMk (c.π.app j) (by simp) }
+  π := { app := fun j ↦ Under.homMk (c.π.app j) (by simp) }
 
 /-- The limit cone for `F : J ⥤ C` lifts to a cocone in `Under (limit F)` with cone point
     `𝟙 (limit F)`. This is automatically also a limit cone. -/
 noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
     Cone (limit.toStructuredArrow F ⋙ StructuredArrow.toUnder _ _) where
   pt := Under.mk (𝟙 (limit F))
-  π := { app := fun j => Under.homMk (limit.π F j) (by simp) }
+  π := { app := fun j ↦ Under.homMk (limit.π F j) (by simp) }
 
 /-- `c.toUnder` is a lift of `c` under the forgetful functor. -/
 @[simps!]
@@ -108,7 +108,7 @@ def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone
 @[simps!]
 def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
     Cone (G ⋙ StructuredArrow.proj X F ⋙ F) where
-  π := { app := fun j => (G.obj j).hom }
+  π := { app := fun j ↦ (G.obj j).hom }
 
 /-- Given a cone `c : Cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point.
@@ -117,7 +117,7 @@ arrows over `X` with `f` as the cone point.
 def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} (f : X ⟶ F.obj c.pt) :
     Cone ((F.mapCone c).toStructuredArrow ⋙ StructuredArrow.map f ⋙ StructuredArrow.pre _ K F) where
   pt := StructuredArrow.mk f
-  π := { app := fun j => StructuredArrow.homMk (c.π.app j) rfl }
+  π := { app := fun j ↦ StructuredArrow.homMk (c.π.app j) rfl }
 
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
@@ -133,7 +133,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   obj c := ⟨c.left, c.hom⟩
   map f :=
     { hom := f.left
-      w := fun j => by
+      w := fun j ↦ by
         convert congr_fun (congr_arg NatTrans.app f.w) j
         dsimp
         simp }
@@ -151,7 +151,7 @@ def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (co
 def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTerminal c :=
   IsLimit.isoUniqueConeMorphism.toEquiv.trans
     { toFun := fun _ => IsTerminal.ofUnique _
-      invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
+      invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a ↦ IsTerminal.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
 
@@ -164,7 +164,7 @@ theorem hasLimitsOfShape_iff_isLeftAdjoint_const :
     HasLimitsOfShape J C ↔ IsLeftAdjoint (const J : C ⥤ _) :=
   calc
     HasLimitsOfShape J C ↔ ∀ F : J ⥤ C, HasLimit F :=
-      ⟨fun h => h.has_limit, fun h => HasLimitsOfShape.mk⟩
+      ⟨fun h ↦ h.has_limit, fun h ↦ HasLimitsOfShape.mk⟩
     _ ↔ ∀ F : J ⥤ C, HasTerminal (Cone F) := forall_congr' hasLimit_iff_hasTerminal_cone
     _ ↔ ∀ F : J ⥤ C, HasTerminal (CostructuredArrow (const J) F) :=
       (forall_congr' fun F => (Cone.equivCostructuredArrow F).hasTerminal_iff)
@@ -248,7 +248,7 @@ lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Coco
 def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
     Cocone (c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _) where
   pt := Over.mk (𝟙 c.pt)
-  ι := { app := fun j => Over.homMk (c.ι.app j) (by simp) }
+  ι := { app := fun j ↦ Over.homMk (c.ι.app j) (by simp) }
 
 /-- The colimit cocone for `F : J ⥤ C` lifts to a cocone in `Over (colimit F)` with cone point
     `𝟙 (colimit F)`. This is automatically also a colimit cocone. -/
@@ -256,7 +256,7 @@ def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
 noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
     Cocone (colimit.toCostructuredArrow F ⋙ CostructuredArrow.toOver _ _) where
   pt := Over.mk (𝟙 (colimit F))
-  ι := { app := fun j => Over.homMk (colimit.ι F j) (by simp) }
+  ι := { app := fun j ↦ Over.homMk (colimit.ι F j) (by simp) }
 
 /-- `c.toOver` is a lift of `c` under the forgetful functor. -/
 @[simps!]
@@ -267,7 +267,7 @@ def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).map
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :
     Cocone (G ⋙ CostructuredArrow.proj F X ⋙ F) where
-  ι := { app := fun j => (G.obj j).hom }
+  ι := { app := fun j ↦ (G.obj j).hom }
 
 /-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
     costructured arrows over `X` with `f` as the cone point. -/
@@ -276,7 +276,7 @@ def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) 
     (f : F.obj c.pt ⟶ X) : Cocone ((F.mapCocone c).toCostructuredArrow ⋙
       CostructuredArrow.map f ⋙ CostructuredArrow.pre _ _ _) where
   pt := CostructuredArrow.mk f
-  ι := { app := fun j => CostructuredArrow.homMk (c.ι.app j) rfl }
+  ι := { app := fun j ↦ CostructuredArrow.homMk (c.ι.app j) rfl }
 
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/
@@ -292,7 +292,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
   obj c := ⟨c.right, c.hom⟩
   map f :=
     { hom := f.right
-      w := fun j => by
+      w := fun j ↦ by
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
         dsimp
         simp }
@@ -310,7 +310,7 @@ def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (
 def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c :=
   IsColimit.isoUniqueCoconeMorphism.toEquiv.trans
     { toFun := fun _ => IsInitial.ofUnique _
-      invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
+      invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a ↦ IsInitial.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
 
@@ -323,7 +323,7 @@ theorem hasColimitsOfShape_iff_isRightAdjoint_const :
     HasColimitsOfShape J C ↔ IsRightAdjoint (const J : C ⥤ _) :=
   calc
     HasColimitsOfShape J C ↔ ∀ F : J ⥤ C, HasColimit F :=
-      ⟨fun h => h.has_colimit, fun h => HasColimitsOfShape.mk⟩
+      ⟨fun h ↦ h.has_colimit, fun h ↦ HasColimitsOfShape.mk⟩
     _ ↔ ∀ F : J ⥤ C, HasInitial (Cocone F) := forall_congr' hasColimit_iff_hasInitial_cocone
     _ ↔ ∀ F : J ⥤ C, HasInitial (StructuredArrow F (const J)) :=
       (forall_congr' fun F => (Cocone.equivStructuredArrow F).hasInitial_iff)

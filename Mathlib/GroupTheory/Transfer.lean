@@ -85,7 +85,7 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
-  { toFun := fun g => diff ϕ T (g • T)
+  { toFun := fun g ↦ diff ϕ T (g • T)
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     map_one' := by beta_reduce; rw [one_smul, diff_self]
     -- Porting note: added `simp only` (not just beta reduction)
@@ -112,7 +112,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
       _ = _ := Finset.prod_sigma _ _ _
       _ = _ := by
-        refine Fintype.prod_congr _ _ (fun q => ?_)
+        refine Fintype.prod_congr _ _ (fun q ↦ ?_)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
@@ -137,7 +137,7 @@ theorem transfer_eq_pow_aux (g : G)
         (QuotientGroup.out_conj_pow_minimalPeriod_mem H g q)
     let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
       (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod (g • ·) q.out
-    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out
+    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q ↦ key q.out
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
@@ -216,7 +216,7 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
-  funext fun g => transferSylow_eq_pow P hP g g.2
+  funext fun g ↦ transferSylow_eq_pow P hP g g.2
 
 /-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
 complement. -/

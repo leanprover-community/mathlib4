@@ -77,7 +77,7 @@ section Mem
 --         simp [DArray.iterateAux] <;> apply Or.inl <;> unfold read at e <;>
 --             have H : j = ⟨i, h⟩ := Fin.eq_of_veq je <;>
 --           rwa [← H, e],
---       fun m => by
+--       fun m ↦ by
 --       simp [DArray.iterateAux, List.Mem] at m
 --       cases' m with e m'
 --       exact ⟨⟨i, h⟩, Nat.lt_succ_self _, Eq.symm e⟩
@@ -218,8 +218,8 @@ section ToArray
 --   hEq_of_hEq_of_eq
 --       (@Eq.drecOn
 --         (fun m (e : a.toList.length = m) =>
---           HEq (DArray.mk fun v => a.toList.nthLe v.1 v.2)
---             (@DArray.mk m (fun _ => α) fun v => a.toList.nthLe v.1 <| e.symm ▸ v.2))
+--           HEq (DArray.mk fun v ↦ a.toList.nthLe v.1 v.2)
+--             (@DArray.mk m (fun _ => α) fun v ↦ a.toList.nthLe v.1 <| e.symm ▸ v.2))
 --         a.toList_length HEq.rfl) <|
 --     DArray.ext fun ⟨i, h⟩ => toList_nthLe i h _
 

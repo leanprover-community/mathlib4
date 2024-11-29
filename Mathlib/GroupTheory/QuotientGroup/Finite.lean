@@ -49,7 +49,7 @@ noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
 /-- If `F` and `coker(F →* G)` are finite, then `G` is finite. -/
 @[to_additive "If `F` and `coker(F →+ G)` are finite, then `G` is finite."]
 noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
-  fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
+  fintypeOfKerLeRange _ (mk' f.range) fun x ↦ (eq_one_iff x).mp
 
 @[to_additive]
 lemma _root_.Finite.of_finite_quot_finite_subgroup {H : Subgroup G} [Finite H] [Finite (G ⧸ H)] :

@@ -230,7 +230,7 @@ instance mono_r {A : C} : Mono (r A) := by
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
-    refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
+    refine Fork.IsLimit.mk _ (fun s ↦ Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
       apply Limits.prod.hom_ext <;> simp
     · intro s m h
@@ -303,7 +303,7 @@ attribute [local instance] hasSub
 -- We write `-f` for `0 - f`.
 /-- Negation of morphisms in a `NonPreadditiveAbelian` category. -/
 def hasNeg {X Y : C} : Neg (X ⟶ Y) where
-  neg := fun f => 0 - f
+  neg := fun f ↦ 0 - f
 
 attribute [local instance] hasNeg
 
@@ -402,7 +402,7 @@ def preadditive : Preadditive C where
       zero := 0
       zero_add := neg_neg
       add_zero := add_zero
-      neg := fun f => -f
+      neg := fun f ↦ -f
       neg_add_cancel := neg_add_cancel
       sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
       add_comm := add_comm

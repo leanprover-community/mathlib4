@@ -196,7 +196,7 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
+  ext c₁ c₂ <| fun x ↦ IsGLB.unique (c₁.closure_isGLB x) <|
     (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
@@ -265,7 +265,7 @@ theorem sInf_isClosed {c : ClosureOperator α} {S : Set α}
 
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
-  le_antisymm (le_closure_iff.1 <| iSup_le fun i => c.monotone <| le_iSup f i) <|
+  le_antisymm (le_closure_iff.1 <| iSup_le fun i ↦ c.monotone <| le_iSup f i) <|
     c.monotone <| iSup_mono fun _ => c.le_closure _
 
 @[simp]
@@ -460,7 +460,7 @@ theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
 
 theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
-  exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
+  exact ⟨fun h S => h.trans, fun h ↦ h _ le_rfl⟩
 
 theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
   ((l.le_iff_subset _ _).2 h₁).antisymm h₂

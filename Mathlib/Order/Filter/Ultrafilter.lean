@@ -74,7 +74,7 @@ theorem eq_of_le {f g : Ultrafilter α} (h : (f : Filter α) ≤ g) : f = g :=
 
 @[simp, norm_cast]
 theorem coe_le_coe {f g : Ultrafilter α} : (f : Filter α) ≤ g ↔ f = g :=
-  ⟨fun h => eq_of_le h, fun h => h ▸ le_rfl⟩
+  ⟨fun h ↦ eq_of_le h, fun h ↦ h ▸ le_rfl⟩
 
 @[simp, norm_cast]
 theorem coe_inj : (f : Filter α) = g ↔ f = g :=
@@ -91,7 +91,7 @@ theorem le_of_inf_neBot' (f : Ultrafilter α) {g : Filter α} (hg : NeBot (g ⊓
   f.le_of_inf_neBot <| by rwa [inf_comm]
 
 theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) ↔ ↑f ≤ g :=
-  ⟨le_of_inf_neBot f, fun h => (inf_of_le_left h).symm ▸ f.neBot⟩
+  ⟨le_of_inf_neBot f, fun h ↦ (inf_of_le_left h).symm ▸ f.neBot⟩
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
   rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
@@ -100,7 +100,7 @@ theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑
 theorem compl_not_mem_iff : sᶜ ∉ f ↔ s ∈ f :=
   ⟨fun hsc =>
     le_principal_iff.1 <|
-      f.le_of_inf_neBot ⟨fun h => hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
+      f.le_of_inf_neBot ⟨fun h ↦ hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
     compl_not_mem⟩
 
 @[simp]
@@ -170,7 +170,7 @@ theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finit
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
-  ofComplNotMemIff (map m f) fun s => @compl_not_mem_iff _ f (m ⁻¹' s)
+  ofComplNotMemIff (map m f) fun s ↦ @compl_not_mem_iff _ f (m ⁻¹' s)
 
 @[simp, norm_cast]
 theorem coe_map (m : α → β) (f : Ultrafilter α) : (map m f : Filter β) = Filter.map m ↑f :=
@@ -185,7 +185,7 @@ nonrec theorem map_id (f : Ultrafilter α) : f.map id = f :=
   coe_injective map_id
 
 @[simp]
-theorem map_id' (f : Ultrafilter α) : (f.map fun x => x) = f :=
+theorem map_id' (f : Ultrafilter α) : (f.map fun x ↦ x) = f :=
   map_id _
 
 @[simp]
@@ -229,7 +229,7 @@ nonrec theorem comap_comap (f : Ultrafilter γ) {m : α → β} {n : β → γ} 
 
 /-- The principal ultrafilter associated to a point `x`. -/
 instance : Pure Ultrafilter :=
-  ⟨fun a => ofComplNotMemIff (pure a) fun s => by simp⟩
+  ⟨fun a ↦ ofComplNotMemIff (pure a) fun s ↦ by simp⟩
 
 @[simp]
 theorem mem_pure {a : α} {s : Set α} : s ∈ (pure a : Ultrafilter α) ↔ a ∈ s :=
@@ -276,7 +276,7 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
 /-- Monadic bind for ultrafilters, coming from the one on filters
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
-  ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
+  ofComplNotMemIff (Filter.bind ↑f fun x ↦ ↑(m x)) fun s ↦ by
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
 
 instance instBind : Bind Ultrafilter :=
@@ -390,7 +390,7 @@ theorem tendsto_iff_ultrafilter (f : α → β) (l₁ : Filter α) (l₂ : Filte
   simpa only [tendsto_iff_comap] using le_iff_ultrafilter
 
 theorem exists_ultrafilter_iff {f : Filter α} : (∃ u : Ultrafilter α, ↑u ≤ f) ↔ NeBot f :=
-  ⟨fun ⟨_, uf⟩ => neBot_of_le uf, fun h => @exists_ultrafilter_le _ _ h⟩
+  ⟨fun ⟨_, uf⟩ => neBot_of_le uf, fun h ↦ @exists_ultrafilter_le _ _ h⟩
 
 theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monotone p) :
     (∀ f : Filter α, NeBot f → f ≤ g → p f) ↔ ∀ f : Ultrafilter α, ↑f ≤ g → p f := by

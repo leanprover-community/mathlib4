@@ -123,7 +123,7 @@ theorem toWeakDual_eq_iff (x' y' : Dual 𝕜 E) : toWeakDual x' = toWeakDual y' 
   Function.Injective.eq_iff <| LinearEquiv.injective toWeakDual
 
 theorem toWeakDual_continuous : Continuous fun x' : Dual 𝕜 E => toWeakDual x' :=
-  WeakBilin.continuous_of_continuous_eval _ fun z => (inclusionInDoubleDual 𝕜 E z).continuous
+  WeakBilin.continuous_of_continuous_eval _ fun z ↦ (inclusionInDoubleDual 𝕜 E z).continuous
 
 /-- For a normed space `E`, according to `toWeakDual_continuous` the "identity mapping"
 `Dual 𝕜 E → WeakDual 𝕜 E` is continuous. This definition implements it as a continuous linear

@@ -121,10 +121,10 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
 instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
   le :=
     Quotient.lift₂ (· ≤ ·) fun (_ _ _ _ : α) h₁ h₂ =>
-      propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
+      propext ⟨fun h ↦ h₁.2.trans <| h.trans h₂.1, fun h ↦ h₁.1.trans <| h.trans h₂.2⟩
   lt :=
     Quotient.lift₂ (· < ·) fun (_ _ _ _ : α) h₁ h₂ =>
-      propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
+      propext ⟨fun h ↦ h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
                 h₁.1.trans_lt <| h.trans_le h₂.2⟩
   le_refl a := Quotient.inductionOn' a le_refl
   le_trans a b c := Quotient.inductionOn₃' a b c fun _ _ _ => le_trans
@@ -230,8 +230,8 @@ def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
   toFun := (Quotient.map' id) fun _ _ => And.symm
   invFun := (Quotient.map' id) fun _ _ => And.symm
-  left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
+  left_inv a := Quotient.inductionOn' a fun a ↦ by simp_rw [Quotient.map'_mk'', id]
+  right_inv a := Quotient.inductionOn' a fun a ↦ by simp_rw [Quotient.map'_mk'', id]
   map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
 
 @[simp]

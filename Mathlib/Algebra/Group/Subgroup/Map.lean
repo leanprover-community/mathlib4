@@ -380,7 +380,7 @@ def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
   left_inv sg := by simp [Subgroup.comap_comap]
   right_inv sh := by simp [Subgroup.comap_comap]
   map_rel_iff' {sg1 sg2} :=
-    ⟨fun h => by simpa [Subgroup.comap_comap] using
+    ⟨fun h ↦ by simpa [Subgroup.comap_comap] using
       Subgroup.comap_mono (f := (f.symm : H →* G)) h, Subgroup.comap_mono⟩
 
 /--
@@ -396,7 +396,7 @@ def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup 
   left_inv sg := by simp [Subgroup.map_map]
   right_inv sh := by simp [Subgroup.map_map]
   map_rel_iff' {sg1 sg2} :=
-    ⟨fun h => by simpa [Subgroup.map_map] using
+    ⟨fun h ↦ by simpa [Subgroup.map_map] using
       Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
 
 end MulEquiv

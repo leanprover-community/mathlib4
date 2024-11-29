@@ -21,53 +21,53 @@ section OrderedGroup
 variable [OrderedAddCommGroup β] (l : Filter α) {f g : α → β}
 
 theorem tendsto_atTop_add_left_of_le' (C : β) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_left' _ _ _ l (fun x => -f x) (fun x => f x + g x) (-C) (by simpa)
+    Tendsto (fun x ↦ f x + g x) l atTop :=
+  @tendsto_atTop_of_add_bdd_above_left' _ _ _ l (fun x ↦ -f x) (fun x ↦ f x + g x) (-C) (by simpa)
     (by simpa)
 
 theorem tendsto_atBot_add_left_of_ge' (C : β) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x + g x) l atBot :=
+    Tendsto (fun x ↦ f x + g x) l atBot :=
   @tendsto_atTop_add_left_of_le' _ βᵒᵈ _ _ _ _ C hf hg
 
 theorem tendsto_atTop_add_left_of_le (C : β) (hf : ∀ x, C ≤ f x) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x + g x) l atTop :=
+    Tendsto (fun x ↦ f x + g x) l atTop :=
   tendsto_atTop_add_left_of_le' l C (univ_mem' hf) hg
 
 theorem tendsto_atBot_add_left_of_ge (C : β) (hf : ∀ x, f x ≤ C) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x + g x) l atBot :=
+    Tendsto (fun x ↦ f x + g x) l atBot :=
   @tendsto_atTop_add_left_of_le _ βᵒᵈ _ _ _ _ C hf hg
 
 theorem tendsto_atTop_add_right_of_le' (C : β) (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, C ≤ g x) :
-    Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_right' _ _ _ l (fun x => f x + g x) (fun x => -g x) (-C)
+    Tendsto (fun x ↦ f x + g x) l atTop :=
+  @tendsto_atTop_of_add_bdd_above_right' _ _ _ l (fun x ↦ f x + g x) (fun x ↦ -g x) (-C)
     (by simp [hg]) (by simp [hf])
 
 theorem tendsto_atBot_add_right_of_ge' (C : β) (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ C) :
-    Tendsto (fun x => f x + g x) l atBot :=
+    Tendsto (fun x ↦ f x + g x) l atBot :=
   @tendsto_atTop_add_right_of_le' _ βᵒᵈ _ _ _ _ C hf hg
 
 theorem tendsto_atTop_add_right_of_le (C : β) (hf : Tendsto f l atTop) (hg : ∀ x, C ≤ g x) :
-    Tendsto (fun x => f x + g x) l atTop :=
+    Tendsto (fun x ↦ f x + g x) l atTop :=
   tendsto_atTop_add_right_of_le' l C hf (univ_mem' hg)
 
 theorem tendsto_atBot_add_right_of_ge (C : β) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
-    Tendsto (fun x => f x + g x) l atBot :=
+    Tendsto (fun x ↦ f x + g x) l atBot :=
   @tendsto_atTop_add_right_of_le _ βᵒᵈ _ _ _ _ C hf hg
 
 theorem tendsto_atTop_add_const_left (C : β) (hf : Tendsto f l atTop) :
-    Tendsto (fun x => C + f x) l atTop :=
+    Tendsto (fun x ↦ C + f x) l atTop :=
   tendsto_atTop_add_left_of_le' l C (univ_mem' fun _ => le_refl C) hf
 
 theorem tendsto_atBot_add_const_left (C : β) (hf : Tendsto f l atBot) :
-    Tendsto (fun x => C + f x) l atBot :=
+    Tendsto (fun x ↦ C + f x) l atBot :=
   @tendsto_atTop_add_const_left _ βᵒᵈ _ _ _ C hf
 
 theorem tendsto_atTop_add_const_right (C : β) (hf : Tendsto f l atTop) :
-    Tendsto (fun x => f x + C) l atTop :=
+    Tendsto (fun x ↦ f x + C) l atTop :=
   tendsto_atTop_add_right_of_le' l C hf (univ_mem' fun _ => le_refl C)
 
 theorem tendsto_atBot_add_const_right (C : β) (hf : Tendsto f l atBot) :
-    Tendsto (fun x => f x + C) l atBot :=
+    Tendsto (fun x ↦ f x + C) l atBot :=
   @tendsto_atTop_add_const_right _ βᵒᵈ _ _ _ C hf
 
 theorem map_neg_atBot : map (Neg.neg : β → β) atBot = atTop :=
@@ -91,11 +91,11 @@ theorem tendsto_neg_atBot_atTop : Tendsto (Neg.neg : β → β) atBot atTop :=
 variable {l}
 
 @[simp]
-theorem tendsto_neg_atTop_iff : Tendsto (fun x => -f x) l atTop ↔ Tendsto f l atBot :=
+theorem tendsto_neg_atTop_iff : Tendsto (fun x ↦ -f x) l atTop ↔ Tendsto f l atBot :=
   (OrderIso.neg β).tendsto_atBot_iff
 
 @[simp]
-theorem tendsto_neg_atBot_iff : Tendsto (fun x => -f x) l atBot ↔ Tendsto f l atTop :=
+theorem tendsto_neg_atBot_iff : Tendsto (fun x ↦ -f x) l atBot ↔ Tendsto f l atTop :=
   (OrderIso.neg β).tendsto_atTop_iff
 
 end OrderedGroup

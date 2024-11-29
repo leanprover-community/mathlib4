@@ -106,7 +106,7 @@ instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
-  ⟨fun a x => fun t => a * x t⟩
+  ⟨fun a x => fun t ↦ a * x t⟩
 
 instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
 
@@ -117,7 +117,7 @@ def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ 
 local infixl:70 " ⊗ " => mul
 
 theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
-    cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by
+    cast (congr_arg (Holor α) eq) a = fun t ↦ a (cast (congr_arg HolorIndex eq.symm) t) := by
   subst eq; rfl
 
 def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds₂ ++ ds₃)) :=
@@ -140,18 +140,18 @@ theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : 
     HEq (mul (mul x y) z) (mul x (mul y z)) := by simp [cast_heq, mul_assoc0, assocLeft]
 
 theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
-    x ⊗ (y + z) = x ⊗ y + x ⊗ z := funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
+    x ⊗ (y + z) = x ⊗ y + x ⊗ z := funext fun t ↦ left_distrib (x t.take) (y t.drop) (z t.drop)
 
 theorem mul_right_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₁) (z : Holor α ds₂) :
-    (x + y) ⊗ z = x ⊗ z + y ⊗ z := funext fun t => add_mul (x t.take) (y t.take) (z t.drop)
+    (x + y) ⊗ z = x ⊗ z + y ⊗ z := funext fun t ↦ add_mul (x t.take) (y t.take) (z t.drop)
 
 @[simp]
 nonrec theorem zero_mul {α : Type} [Ring α] (x : Holor α ds₂) : (0 : Holor α ds₁) ⊗ x = 0 :=
-  funext fun t => zero_mul (x (HolorIndex.drop t))
+  funext fun t ↦ zero_mul (x (HolorIndex.drop t))
 
 @[simp]
 nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : Holor α ds₂) = 0 :=
-  funext fun t => mul_zero (x (HolorIndex.take t))
+  funext fun t ↦ mul_zero (x (HolorIndex.take t))
 
 theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
@@ -176,7 +176,7 @@ theorem holor_index_cons_decomp (p : HolorIndex (d :: ds) → Prop) :
 /-- Two holors are equal if all their slices are equal. -/
 theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x = slice y) : x = y :=
   funext fun t : HolorIndex (d :: ds) =>
-    holor_index_cons_decomp (fun t => x t = y t) t fun i is hiis =>
+    holor_index_cons_decomp (fun t ↦ x t = y t) t fun i is hiis =>
       have hiisdds : Forall₂ (· < ·) (i :: is) (d :: ds) := by rw [← hiis]; exact t.2
       have hid : i < d := (forall₂_cons.1 hiisdds).1
       have hisds : Forall₂ (· < ·) is ds := (forall₂_cons.1 hiisdds).2
@@ -193,7 +193,7 @@ theorem slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor
 
 theorem slice_add [Add α] (i : ℕ) (hid : i < d) (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) :
     slice x i hid + slice y i hid = slice (x + y) i hid :=
-  funext fun t => by simp [slice, (· + ·), Add.add]
+  funext fun t ↦ by simp [slice, (· + ·), Add.add]
 
 theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d :: ds)) i hid = 0 :=
   rfl
@@ -294,7 +294,7 @@ theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankM
     have h_summands :
       ∀ i : { x // x ∈ Finset.range d },
         CPRankMax ds.prod (unitVec d i.1 ⊗ slice x i.1 (mem_range.1 i.2)) :=
-      fun i => cprankMax_mul _ _ _ (cprankMax_upper_bound (slice x i.1 (mem_range.1 i.2)))
+      fun i ↦ cprankMax_mul _ _ _ (cprankMax_upper_bound (slice x i.1 (mem_range.1 i.2)))
     have h_dds_prod : (List.cons d ds).prod = Finset.card (Finset.range d) * prod ds := by
       simp [Finset.card_range]
     have :
@@ -313,12 +313,12 @@ theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankM
 /-- The CP rank of a holor `x`: the smallest N such that
   `x` can be written as the sum of N holors of rank at most 1. -/
 noncomputable def cprank [Ring α] (x : Holor α ds) : Nat :=
-  @Nat.find (fun n => CPRankMax n x) (Classical.decPred _) ⟨ds.prod, cprankMax_upper_bound x⟩
+  @Nat.find (fun n ↦ CPRankMax n x) (Classical.decPred _) ⟨ds.prod, cprankMax_upper_bound x⟩
 
 theorem cprank_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, cprank x ≤ ds.prod :=
   fun {ds} x =>
   letI := Classical.decPred fun n : ℕ => CPRankMax n x
-  Nat.find_min' ⟨ds.prod, show (fun n => CPRankMax n x) ds.prod from cprankMax_upper_bound x⟩
+  Nat.find_min' ⟨ds.prod, show (fun n ↦ CPRankMax n x) ds.prod from cprankMax_upper_bound x⟩
     (cprankMax_upper_bound x)
 
 end Holor

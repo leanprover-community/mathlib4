@@ -189,30 +189,30 @@ theorem right_not_mem_Ioo : b ∉ Ioo a b :=
   Finset.right_not_mem_Ioo
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
-    ((Ico a b).filter fun x => x < c) = ∅ := by
+    ((Ico a b).filter fun x ↦ x < c) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_left hca]
   rfl
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
-    ((Ico a b).filter fun x => x < c) = Ico a b := by
+    ((Ico a b).filter fun x ↦ x < c) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_right_le hbc]
 
 theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
-    ((Ico a b).filter fun x => x < c) = Ico a c := by
+    ((Ico a b).filter fun x ↦ x < c) = Ico a c := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_right hcb]
   rfl
 
 theorem Ico_filter_le_of_le_left [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
-    ((Ico a b).filter fun x => c ≤ x) = Ico a b := by
+    ((Ico a b).filter fun x ↦ c ≤ x) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_le_left hca]
 
 theorem Ico_filter_le_of_right_le [DecidablePred (b ≤ ·)] :
-    ((Ico a b).filter fun x => b ≤ x) = ∅ := by
+    ((Ico a b).filter fun x ↦ b ≤ x) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_right_le]
   rfl
 
 theorem Ico_filter_le_of_left_le [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
-    ((Ico a b).filter fun x => c ≤ x) = Ico c b := by
+    ((Ico a b).filter fun x ↦ c ≤ x) = Ico c b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_left_le hac]
   rfl
 
@@ -245,7 +245,7 @@ theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico 
   Multiset.inter_eq_zero_iff_disjoint.2 <| Ico_disjoint_Ico h
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
-    ((Ico a b).filter fun x => x ≤ a) = {a} := by
+    ((Ico a b).filter fun x ↦ x ≤ a) = {a} := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_left hab]
   rfl
 
@@ -280,11 +280,11 @@ theorem Ico_inter_Ico : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [Ico, Ico, Ico, ← Finset.inter_val, Finset.Ico_inter_Ico]
 
 @[simp]
-theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
+theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x ↦ x < c) = Ico a (min b c) := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_lt]
 
 @[simp]
-theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (max a c) b := by
+theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x ↦ c ≤ x) = Ico (max a c) b := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_le]
 
 @[simp]

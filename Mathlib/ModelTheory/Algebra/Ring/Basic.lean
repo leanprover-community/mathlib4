@@ -221,9 +221,9 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     CompatibleRing R :=
   { funMap := fun {n} f =>
       match n, f with
-      | _, .add => fun x => x 0 + x 1
-      | _, .mul => fun x => x 0 * x 1
-      | _, .neg => fun x => -x 0
+      | _, .add => fun x ↦ x 0 + x 1
+      | _, .mul => fun x ↦ x 0 * x 1
+      | _, .neg => fun x ↦ -x 0
       | _, .zero => fun _ => 0
       | _, .one => fun _ => 1
     funMap_add := fun _ => rfl,
@@ -250,8 +250,8 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_fun' := fun {n} f => by
         cases f <;> simp
       map_rel' := fun {n} f => by cases f },
-    left_inv := fun f => by ext; rfl
-    right_inv := fun f => by ext; rfl }
+    left_inv := fun f ↦ by ext; rfl
+    right_inv := fun f ↦ by ext; rfl }
 
 variable (R : Type*) [Language.ring.Structure R]
 
@@ -274,7 +274,7 @@ abbrev mulOfRingStructure : Mul R :=
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev negOfRingStructure : Neg R :=
-  { neg := fun x => funMap negFunc ![x] }
+  { neg := fun x ↦ funMap negFunc ![x] }
 
 /-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
 

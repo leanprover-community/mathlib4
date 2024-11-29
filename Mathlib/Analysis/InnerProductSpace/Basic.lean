@@ -173,7 +173,7 @@ norm. -/
 def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E :=
   { c with
-    nonneg_re := fun x => by
+    nonneg_re := fun x ↦ by
       rw [← InnerProductSpace.norm_sq_eq_inner]
       apply sq_nonneg }
 
@@ -184,7 +184,7 @@ norm. -/
 def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
-    nonneg_re := fun x => by
+    nonneg_re := fun x ↦ by
       rw [← InnerProductSpace.norm_sq_eq_inner]
       apply sq_nonneg
     definite := fun x hx =>
@@ -391,9 +391,9 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 /-- Seminormed group structure constructed from an `PreInnerProductSpace.Core` structure -/
 def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
-    { toFun := fun x => √(re ⟪x, x⟫)
+    { toFun := fun x ↦ √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      neg' := fun x ↦ by simp only [inner_neg_left, neg_neg, inner_neg_right]
       add_le' := fun x y => by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
@@ -458,9 +458,9 @@ attribute [local instance] toNorm
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
 def toNormedAddCommGroup : NormedAddCommGroup F :=
   AddGroupNorm.toNormedAddCommGroup
-    { toFun := fun x => √(re ⟪x, x⟫)
+    { toFun := fun x ↦ √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      neg' := fun x ↦ by simp only [inner_neg_left, neg_neg, inner_neg_right]
       add_le' := fun x y => by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
@@ -499,7 +499,7 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProduct
     InnerProductSpace 𝕜 F :=
   letI : NormedSpace 𝕜 F := @InnerProductSpace.Core.toNormedSpace 𝕜 F _ _ _ cd
   { cd with
-    norm_sq_eq_inner := fun x => by
+    norm_sq_eq_inner := fun x ↦ by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
       have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
       simp [h₁, sq_sqrt, h₂] }
@@ -617,13 +617,13 @@ theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
 /-- An inner product with a sum on the left, `Finsupp` version. -/
 protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+  convert sum_inner (𝕜 := 𝕜) l.support (fun a ↦ l a • v a) x
   simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
 protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+  convert inner_sum (𝕜 := 𝕜) l.support (fun a ↦ l a • v a) x
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
@@ -795,7 +795,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
-    · exact fun h => False.elim (h hi)
+    · exact fun h ↦ False.elim (h hi)
   simpa [hg, hz] using h'
 
 end BasicProperties
@@ -944,7 +944,7 @@ orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
     Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
-  refine ⟨fun h => h.comp f f.injective, fun h => ?_⟩
+  refine ⟨fun h ↦ h.comp f f.injective, fun h ↦ ?_⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
   exact h.comp f.symm f.symm.injective
 
@@ -979,26 +979,26 @@ adapted from the corresponding development of the theory of linearly independent
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 
-theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
+theorem orthonormal_empty : Orthonormal 𝕜 (fun x ↦ x : (∅ : Set E) → E) := by
   classical
   simp [orthonormal_subtype_iff_ite]
 
 variable {𝕜 E}
 
 theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
-    (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
-    Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
+    (h : ∀ i, Orthonormal 𝕜 (fun x ↦ x : s i → E)) :
+    Orthonormal 𝕜 (fun x ↦ x : (⋃ i, s i) → E) := by
   classical
   rw [orthonormal_subtype_iff_ite]
   rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
   obtain ⟨k, hik, hjk⟩ := hs i j
-  have h_orth : Orthonormal 𝕜 (fun x => x : s k → E) := h k
+  have h_orth : Orthonormal 𝕜 (fun x ↦ x : s k → E) := h k
   rw [orthonormal_subtype_iff_ite] at h_orth
   exact h_orth x (hik hxi) y (hjk hyj)
 
 theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· ⊆ ·) s)
-    (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x => ((x : a) : E))) :
-    Orthonormal 𝕜 (fun x => x : ⋃₀ s → E) := by
+    (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x ↦ ((x : a) : E))) :
+    Orthonormal 𝕜 (fun x ↦ x : ⋃₀ s → E) := by
   rw [Set.sUnion_eq_iUnion]; exact orthonormal_iUnion_of_directed hs.directed_val (by simpa using h)
 
 /-- Given an orthonormal set `v` of vectors in `E`, there exists a maximal orthonormal set
@@ -1266,7 +1266,7 @@ for all `x`.
 -/
 theorem ext_inner_map (S T : V →ₗ[ℂ] V) : (∀ x : V, ⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ) ↔ S = T := by
   rw [← sub_eq_zero, ← inner_map_self_eq_zero]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x ↦ ?_
   rw [LinearMap.sub_apply, inner_sub_left, sub_eq_zero]
 
 end Complex
@@ -1294,7 +1294,7 @@ theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E)
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
-  ⟨f, fun x => by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
+  ⟨f, fun x ↦ by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
 
 @[simp]
 theorem LinearMap.coe_isometryOfInner (f : E →ₗ[𝕜] E') (h) : ⇑(f.isometryOfInner h) = f :=
@@ -1411,7 +1411,7 @@ theorem Orthonormal.equiv_apply {ι' : Type*} {v : Basis ι 𝕜 E} (hv : Orthon
 theorem Orthonormal.equiv_trans {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
     (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') {v'' : Basis ι'' 𝕜 E''} (hv'' : Orthonormal 𝕜 v'')
     (e' : ι' ≃ ι'') : (hv.equiv hv' e).trans (hv'.equiv hv'' e') = hv.equiv hv'' (e.trans e') :=
-  v.ext_linearIsometryEquiv fun i => by
+  v.ext_linearIsometryEquiv fun i ↦ by
     simp only [LinearIsometryEquiv.trans_apply, Orthonormal.equiv_apply, e.coe_trans,
       Function.comp_apply]
 
@@ -1521,7 +1521,7 @@ def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
     inner_add_right fun _ _ _ => inner_smul_right _ _ _
 
 @[simp]
-theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w ↦ ⟪v, w⟫ :=
   rfl
 
 @[simp]
@@ -1548,7 +1548,7 @@ def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
     simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply]
 
 @[simp]
-theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w ↦ ⟪v, w⟫ :=
   rfl
 
 @[simp]
@@ -1605,7 +1605,7 @@ variable {ι : Type*} {ι' : Type*} {E' : Type*} [SeminormedAddCommGroup E'] [In
 @[simp]
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
     hv.equiv hv (Equiv.refl ι) = LinearIsometryEquiv.refl 𝕜 E :=
-  v.ext_linearIsometryEquiv fun i => by
+  v.ext_linearIsometryEquiv fun i ↦ by
     simp only [Orthonormal.equiv_apply, Equiv.coe_refl, id, LinearIsometryEquiv.coe_refl]
 
 @[simp]
@@ -1624,7 +1624,7 @@ variable (𝕜)
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
-    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
+    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y ↦ norm_inner_le_norm _ _) ?_
   rcases (norm_nonneg x).eq_or_gt with (h | h)
   · simp [h]
   · refine (mul_le_mul_right h).mp ?_
@@ -1748,7 +1748,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       x = 0 ∨ ∃ r : 𝕜, y = r • x,
       x = 0 ∨ y ∈ 𝕜 ∙ x] := by
   tfae_have 1 → 2 := by
-    refine fun h => or_iff_not_imp_left.2 fun hx₀ => ?_
+    refine fun h ↦ or_iff_not_imp_left.2 fun hx₀ => ?_
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)
     rw [← sq_eq_sq₀, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
@@ -1758,7 +1758,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
-  tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
+  tfae_have 2 → 3 := fun h ↦ h.imp_right fun h' => ⟨_, h'⟩
   tfae_have 3 → 1 := by
     rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_mul_norm,
@@ -1852,7 +1852,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
     ⟪x, y⟫_ℝ / (‖x‖ * ‖y‖) = -1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
   rw [← neg_eq_iff_eq_neg, ← neg_div, ← inner_neg_right, ← norm_neg y,
     real_inner_div_norm_mul_norm_eq_one_iff, (@neg_surjective ℝ _).exists]
-  refine Iff.rfl.and (exists_congr fun r => ?_)
+  refine Iff.rfl.and (exists_congr fun r ↦ ?_)
   rw [neg_pos, neg_smul, neg_inj]
 
 /-- If the inner product of two unit vectors is `1`, then the two vectors are equal. One form of
@@ -1916,12 +1916,12 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
     ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
-  refine tsum_le_of_sum_le' ?_ fun s => hv.sum_inner_products_le x
+  refine tsum_le_of_sum_le' ?_ fun s ↦ hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 
 /-- The sum defined in Bessel's inequality is summable. -/
 theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
-    Summable fun i => ‖⟪v i, x⟫‖ ^ 2 := by
+    Summable fun i ↦ ‖⟪v i, x⟫‖ ^ 2 := by
   use ⨆ s : Finset ι, ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2
   apply hasSum_of_isLUB_of_nonneg
   · intro b
@@ -1968,7 +1968,7 @@ instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 
   { Submodule.normedSpace W with
     inner := fun x y => ⟪(x : E), (y : E)⟫
     conj_symm := fun _ _ => inner_conj_symm _ _
-    norm_sq_eq_inner := fun x => norm_sq_eq_inner (x : E)
+    norm_sq_eq_inner := fun x ↦ norm_sq_eq_inner (x : E)
     add_left := fun _ _ _ => inner_add_left _ _ _
     smul_left := fun _ _ _ => inner_smul_left _ _ _ }
 
@@ -2026,7 +2026,7 @@ variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProdu
   {V : ∀ i, G i →ₗᵢ[𝕜] E}
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
-    OrthogonalFamily 𝕜 (fun _i : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
+    OrthogonalFamily 𝕜 (fun _i : ι => 𝕜) fun i ↦ LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   fun i j hij a b => by simp [inner_smul_left, inner_smul_right, hv.2 hij]
 
 section
@@ -2041,11 +2041,11 @@ theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) 
 
 theorem OrthogonalFamily.inner_right_dfinsupp
     [∀ (i) (x : G i), Decidable (x ≠ 0)] [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
-    ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
+    ⟪V i v, l.sum fun j ↦ V j⟫ = ⟪v, l i⟫ :=
   calc
-    ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
-      DFinsupp.inner_sum (fun j => V j) l (V i v)
-    _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
+    ⟪V i v, l.sum fun j ↦ V j⟫ = l.sum fun j ↦ fun w ↦ ⟪V i v, V j w⟫ :=
+      DFinsupp.inner_sum (fun j ↦ V j) l (V i v)
+    _ = l.sum fun j ↦ fun w ↦ ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
       simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
@@ -2060,7 +2060,7 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
   calc
     ⟪V i v, ∑ j : ι, V j (l j)⟫ = ∑ j : ι, ⟪V i v, V j (l j)⟫ := by rw [inner_sum]
     _ = ∑ j, ite (i = j) ⟪V i v, V j (l j)⟫ 0 :=
-      (congr_arg (Finset.sum Finset.univ) <| funext fun j => hV.eq_ite v (l j))
+      (congr_arg (Finset.sum Finset.univ) <| funext fun j ↦ hV.eq_ite v (l j))
     _ = ⟪v, l i⟫ := by
       simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, if_true]
 
@@ -2087,7 +2087,7 @@ theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
 /-- The composition of an orthogonal family of subspaces with an injective function is also an
 orthogonal family. -/
 theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Injective f) :
-    OrthogonalFamily 𝕜 (fun g => G (f g)) fun g => V (f g) :=
+    OrthogonalFamily 𝕜 (fun g ↦ G (f g)) fun g ↦ V (f g) :=
   fun _i _j hij v w => hV (hf.ne hij) v w
 
 theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
@@ -2099,7 +2099,7 @@ theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_fa
   rintro ⟨i, v⟩ ⟨j, w⟩ hvw
   by_cases hij : i = j
   · subst hij
-    have : v ≠ w := fun h => by
+    have : v ≠ w := fun h ↦ by
       subst h
       exact hvw rfl
     simpa only [LinearIsometry.inner_map_map] using (hv_family i).2 this
@@ -2109,7 +2109,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
     ‖(∑ i ∈ s₁, V i (f i)) - ∑ i ∈ s₂, V i (f i)‖ ^ 2 =
       (∑ i ∈ s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖f i‖ ^ 2 := by
   rw [← Finset.sum_sdiff_sub_sum_sdiff, sub_eq_add_neg, ← Finset.sum_neg_distrib]
-  let F : ∀ i, G i := fun i => if i ∈ s₁ then f i else -f i
+  let F : ∀ i, G i := fun i ↦ if i ∈ s₁ then f i else -f i
   have hF₁ : ∀ i ∈ s₁ \ s₂, F i = f i := fun i hi => if_pos (Finset.sdiff_subset hi)
   have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
@@ -2132,7 +2132,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
 /-- A family `f` of mutually-orthogonal elements of `E` is summable, if and only if
 `(fun i ↦ ‖f i‖ ^ 2)` is summable. -/
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :
-    (Summable fun i => V i (f i)) ↔ Summable fun i => ‖f i‖ ^ 2 := by
+    (Summable fun i ↦ V i (f i)) ↔ Summable fun i ↦ ‖f i‖ ^ 2 := by
   classical
     simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, Real.norm_eq_abs]
     constructor
@@ -2163,13 +2163,13 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
-        · exact fun i => sq_nonneg _
+        · exact fun i ↦ sq_nonneg _
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
         convert H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
-        · exact fun i => sq_nonneg _
+        · exact fun i ↦ sq_nonneg _
       linarith
 
 end
@@ -2192,7 +2192,7 @@ variable {ι : Type*} {G : ι → Type*}
 elements each from a different subspace in the family is linearly independent. In particular, the
 pairwise intersections of elements of the family are 0. -/
 theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
-    (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
+    (hV : OrthogonalFamily 𝕜 (fun i ↦ V i) fun i ↦ (V i).subtypeₗᵢ) :
     iSupIndep V := by
   classical
   apply iSupIndep_of_dfinsupp_lsum_injective
@@ -2203,14 +2203,14 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   ext i
   suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
   calc
-    ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
+    ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i ↦ (V i).subtype) v⟫ := by
       simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 
 theorem DirectSum.IsInternal.collectedBasis_orthonormal [DecidableEq ι] {V : ι → Submodule 𝕜 E}
-    (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    (hV_sum : DirectSum.IsInternal fun i => V i) {α : ι → Type*}
+    (hV : OrthogonalFamily 𝕜 (fun i ↦ V i) fun i ↦ (V i).subtypeₗᵢ)
+    (hV_sum : DirectSum.IsInternal fun i ↦ V i) {α : ι → Type*}
     {v_family : ∀ i, Basis (α i) 𝕜 (V i)} (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
     Orthonormal 𝕜 (hV_sum.collectedBasis v_family) := by
   simpa only [hV_sum.collectedBasis_coe] using hV.orthonormal_sigma_orthonormal hv_family
@@ -2307,24 +2307,24 @@ theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
 variable {α : Type*}
 
 theorem Filter.Tendsto.inner {f g : α → E} {l : Filter α} {x y : E} (hf : Tendsto f l (𝓝 x))
-    (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t => ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
+    (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t ↦ ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
   (continuous_inner.tendsto _).comp (hf.prod_mk_nhds hg)
 
 variable [TopologicalSpace α] {f g : α → E} {x : α} {s : Set α}
 
 theorem ContinuousWithinAt.inner (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun t => ⟪f t, g t⟫) s x :=
+    ContinuousWithinAt (fun t ↦ ⟪f t, g t⟫) s x :=
   Filter.Tendsto.inner hf hg
 
 theorem ContinuousAt.inner (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun t => ⟪f t, g t⟫) x :=
+    ContinuousAt (fun t ↦ ⟪f t, g t⟫) x :=
   Filter.Tendsto.inner hf hg
 
 theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
+    ContinuousOn (fun t ↦ ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
 
 @[continuity]
-theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
+theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t ↦ ⟪f t, g t⟫ :=
   continuous_iff_continuousAt.2 fun _x => hf.continuousAt.inner hg.continuousAt
 
 end Continuous
@@ -2392,7 +2392,7 @@ theorem inner_mk_mk (x y : E) :
 instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
   conj_symm := Quotient.ind₂ inner_conj_symm
-  add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
+  add_left := Quotient.ind fun x ↦ Quotient.ind₂ <| inner_add_left x
   smul_left := Quotient.ind₂ inner_smul_left
 
 end SeparationQuotient
@@ -2425,7 +2425,7 @@ theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inn
 protected theorem continuous_inner :
     Continuous (uncurry inner : Completion E × Completion E → 𝕜) := by
   let inner' : E →+ E →+ 𝕜 :=
-    { toFun := fun x => (innerₛₗ 𝕜 x).toAddMonoidHom
+    { toFun := fun x ↦ (innerₛₗ 𝕜 x).toAddMonoidHom
       map_zero' := by ext x; exact inner_zero_left _
       map_add' := fun x y => by ext z; exact inner_add_left _ _ _ }
   have : Continuous fun p : E × E => inner' p.1 p.2 := continuous_inner
@@ -2445,7 +2445,7 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
     Completion.induction_on x
       (isClosed_eq (continuous_norm.pow 2)
         (continuous_re.comp (Continuous.inner continuous_id' continuous_id')))
-      fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
+      fun a ↦ by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
   conj_symm x y :=
     Completion.induction_on₂ x y
       (isClosed_eq (continuous_conj.comp (Continuous.inner continuous_snd continuous_fst))

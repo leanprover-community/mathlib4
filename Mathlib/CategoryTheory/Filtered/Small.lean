@@ -90,7 +90,7 @@ private noncomputable def AbstractFilteredClosure : Type (max v w) :=
 
 /-- The surjection from the abstract filtered closure to the actual filtered closure in `C`. -/
 private noncomputable def abstractFilteredClosureRealization : AbstractFilteredClosure f → C :=
-  fun x => (bundledAbstractFilteredClosure f x.1).2 x.2
+  fun x ↦ (bundledAbstractFilteredClosure f x.1).2 x.2
 
 end FilteredClosureSmall
 
@@ -225,7 +225,7 @@ private noncomputable def AbstractCofilteredClosure : Type (max v w) :=
 /-- Implementation detail for the instance
     `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
 private noncomputable def abstractCofilteredClosureRealization : AbstractCofilteredClosure f → C :=
-  fun x => (bundledAbstractCofilteredClosure f x.1).2 x.2
+  fun x ↦ (bundledAbstractCofilteredClosure f x.1).2 x.2
 
 end CofilteredClosureSmall
 

@@ -43,20 +43,20 @@ def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
 
 theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
     [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
-    MellinConvergent (fun t => c • f t) s := by
+    MellinConvergent (fun t ↦ c • f t) s := by
   simpa only [MellinConvergent, smul_comm] using hf.smul c
 
 theorem MellinConvergent.cpow_smul {f : ℝ → E} {s a : ℂ} :
-    MellinConvergent (fun t => (t : ℂ) ^ a • f t) s ↔ MellinConvergent f (s + a) := by
+    MellinConvergent (fun t ↦ (t : ℂ) ^ a • f t) s ↔ MellinConvergent f (s + a) := by
   refine integrableOn_congr_fun (fun t ht => ?_) measurableSet_Ioi
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
 nonrec theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : MellinConvergent f s) (a : ℂ) :
-    MellinConvergent (fun t => f t / a) s := by
+    MellinConvergent (fun t ↦ f t / a) s := by
   simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using hf.div_const a
 
 theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : 0 < a) :
-    MellinConvergent (fun t => f (a * t)) s ↔ MellinConvergent f s := by
+    MellinConvergent (fun t ↦ f (a * t)) s ↔ MellinConvergent f s := by
   have := integrableOn_Ioi_comp_mul_left_iff (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) 0 ha
   rw [mul_zero] at this
   have h1 : EqOn (fun t : ℝ => (↑(a * t) : ℂ) ^ (s - 1) • f (a * t))
@@ -69,7 +69,7 @@ theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha :
     IntegrableOn, IntegrableOn, integrable_smul_iff h2]
 
 theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a ≠ 0) :
-    MellinConvergent (fun t => f (t ^ a)) s ↔ MellinConvergent f (s / a) := by
+    MellinConvergent (fun t ↦ f (t ^ a)) s ↔ MellinConvergent f (s / a) := by
   refine Iff.trans ?_ (integrableOn_Ioi_comp_rpow_iff' _ ha)
   rw [MellinConvergent]
   refine integrableOn_congr_fun (fun t ht => ?_) measurableSet_Ioi
@@ -95,19 +95,19 @@ def mellinInv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
 theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
-    mellin (fun t => (t : ℂ) ^ a • f t) s = mellin f (s + a) := by
+    mellin (fun t ↦ (t : ℂ) ^ a • f t) s = mellin f (s + a) := by
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
 theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
-    mellin (fun t => c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
+    mellin (fun t ↦ c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
 
-theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
+theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t ↦ f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
-    mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
+    mellin (fun t ↦ f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
   convention. The interesting case is `a ≠ 0` -/
   rcases eq_or_ne a 0 with rfl|ha
@@ -125,7 +125,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
-    mellin (fun t => f (a * t)) s = (a : ℂ) ^ (-s) • mellin f s := by
+    mellin (fun t ↦ f (a * t)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simp_rw [mellin]
   have : EqOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f (a * t))
       (fun t : ℝ => (a : ℂ) ^ (1 - s) • (fun u : ℝ => (u : ℂ) ^ (s - 1) • f u) (a * t))
@@ -142,10 +142,10 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
 
 theorem mellin_comp_mul_right (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
-    mellin (fun t => f (t * a)) s = (a : ℂ) ^ (-s) • mellin f s := by
+    mellin (fun t ↦ f (t * a)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simpa only [mul_comm] using mellin_comp_mul_left f s ha
 
-theorem mellin_comp_inv (f : ℝ → E) (s : ℂ) : mellin (fun t => f t⁻¹) s = mellin f (-s) := by
+theorem mellin_comp_inv (f : ℝ → E) (s : ℂ) : mellin (fun t ↦ f t⁻¹) s = mellin f (-s) := by
   simp_rw [← rpow_neg_one, mellin_comp_rpow _ _ _, abs_neg, abs_one,
     inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one]
 
@@ -155,12 +155,12 @@ def HasMellin (f : ℝ → E) (s : ℂ) (m : E) : Prop :=
   MellinConvergent f s ∧ mellin f s = m
 
 theorem hasMellin_add {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
-    (hg : MellinConvergent g s) : HasMellin (fun t => f t + g t) s (mellin f s + mellin g s) :=
+    (hg : MellinConvergent g s) : HasMellin (fun t ↦ f t + g t) s (mellin f s + mellin g s) :=
   ⟨by simpa only [MellinConvergent, smul_add] using hf.add hg, by
     simpa only [mellin, smul_add] using integral_add hf hg⟩
 
 theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
-    (hg : MellinConvergent g s) : HasMellin (fun t => f t - g t) s (mellin f s - mellin g s) :=
+    (hg : MellinConvergent g s) : HasMellin (fun t ↦ f t - g t) s (mellin f s - mellin g s) :=
   ⟨by simpa only [MellinConvergent, smul_sub] using hf.sub hg, by
     simpa only [mellin, smul_sub] using integral_sub hf hg⟩
 
@@ -227,7 +227,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
       measurableSet_Ioo
     exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
   · apply HasFiniteIntegral.mono'
-    · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
+    · show HasFiniteIntegral (fun t ↦ d * t ^ (s - b - 1)) _
       refine (Integrable.hasFiniteIntegral ?_).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
@@ -282,7 +282,7 @@ theorem isBigO_rpow_top_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E}
     (fun t : ℝ => log t • f t) =O[atTop] (· ^ (-b)) := by
   refine
     ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).isBigO.smul hf).congr'
-      (Eventually.of_forall fun t => by rfl)
+      (Eventually.of_forall fun t ↦ by rfl)
       ((eventually_gt_atTop 0).mp (Eventually.of_forall fun t ht => ?_))
   simp only
   rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel_left]
@@ -299,7 +299,7 @@ theorem isBigO_rpow_zero_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E
     · simp_rw [Function.comp_apply, ← one_div, log_div one_ne_zero (ne_of_gt ht), Real.log_one,
         zero_sub, neg_neg]
     · simp_rw [Function.comp_apply, inv_rpow (le_of_lt ht), ← rpow_neg (le_of_lt ht), neg_sub]
-  refine (this.isBigO.smul hf).congr' (Eventually.of_forall fun t => by rfl)
+  refine (this.isBigO.smul hf).congr' (Eventually.of_forall fun t ↦ by rfl)
       (eventually_nhdsWithin_iff.mpr (Eventually.of_forall fun t ht => ?_))
   simp_rw [smul_eq_mul, ← rpow_add ht]
   congr 1
@@ -311,8 +311,8 @@ with derivative equal to the Mellin transform of `log • f`. -/
 theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     {f : ℝ → E} {s : ℂ} (hfc : LocallyIntegrableOn f (Ioi 0)) (hf_top : f =O[atTop] (· ^ (-a)))
     (hs_top : s.re < a) (hf_bot : f =O[𝓝[>] 0] (· ^ (-b))) (hs_bot : b < s.re) :
-    MellinConvergent (fun t => log t • f t) s ∧
-      HasDerivAt (mellin f) (mellin (fun t => log t • f t) s) s := by
+    MellinConvergent (fun t ↦ log t • f t) s ∧
+      HasDerivAt (mellin f) (mellin (fun t ↦ log t • f t) s) s := by
   set F : ℂ → ℝ → E := fun (z : ℂ) (t : ℝ) => (t : ℂ) ^ (z - 1) • f t
   set F' : ℂ → ℝ → E := fun (z : ℂ) (t : ℝ) => ((t : ℂ) ^ (z - 1) * log t) • f t
   -- A convenient radius of ball within which we can uniformly bound the derivative.
@@ -323,7 +323,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       ⟨min w w', lt_min hw1 hw1', (min_le_right _ _).trans_lt hw2', (min_le_left _ _).trans_lt hw2⟩
   let bound : ℝ → ℝ := fun t : ℝ => (t ^ (s.re + v - 1) + t ^ (s.re - v - 1)) * |log t| * ‖f t‖
   have h1 : ∀ᶠ z : ℂ in 𝓝 s, AEStronglyMeasurable (F z) (volume.restrict <| Ioi 0) := by
-    refine Eventually.of_forall fun z => AEStronglyMeasurable.smul ?_ hfc.aestronglyMeasurable
+    refine Eventually.of_forall fun z ↦ AEStronglyMeasurable.smul ?_ hfc.aestronglyMeasurable
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt fun t ht => ?_
     exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
@@ -403,7 +403,7 @@ section ExpDecay
 /-- If `f` is locally integrable, decays exponentially at infinity, and is `O(x ^ (-b))` at 0, then
 its Mellin transform converges for `b < s.re`. -/
 theorem mellinConvergent_of_isBigO_rpow_exp [NormedSpace ℂ E] {a b : ℝ} (ha : 0 < a) {f : ℝ → E}
-    {s : ℂ} (hfc : LocallyIntegrableOn f <| Ioi 0) (hf_top : f =O[atTop] fun t => exp (-a * t))
+    {s : ℂ} (hfc : LocallyIntegrableOn f <| Ioi 0) (hf_top : f =O[atTop] fun t ↦ exp (-a * t))
     (hf_bot : f =O[𝓝[>] 0] (· ^ (-b))) (hs_bot : b < s.re) : MellinConvergent f s :=
   mellinConvergent_of_isBigO_rpow hfc (hf_top.trans (isLittleO_exp_neg_mul_rpow_atTop ha _).isBigO)
     (lt_add_one _) hf_bot hs_bot
@@ -412,7 +412,7 @@ theorem mellinConvergent_of_isBigO_rpow_exp [NormedSpace ℂ E] {a b : ℝ} (ha 
 its Mellin transform is holomorphic on `b < s.re`. -/
 theorem mellin_differentiableAt_of_isBigO_rpow_exp [NormedSpace ℂ E] {a b : ℝ}
     (ha : 0 < a) {f : ℝ → E} {s : ℂ} (hfc : LocallyIntegrableOn f <| Ioi 0)
-    (hf_top : f =O[atTop] fun t => exp (-a * t)) (hf_bot : f =O[𝓝[>] 0] (· ^ (-b)))
+    (hf_top : f =O[atTop] fun t ↦ exp (-a * t)) (hf_bot : f =O[𝓝[>] 0] (· ^ (-b)))
     (hs_bot : b < s.re) : DifferentiableAt ℂ (mellin f) s :=
   mellin_differentiableAt_of_isBigO_rpow hfc
     (hf_top.trans (isLittleO_exp_neg_mul_rpow_atTop ha _).isBigO) (lt_add_one _) hf_bot hs_bot
@@ -442,7 +442,7 @@ theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
 
 /-- The Mellin transform of a power function restricted to `Ioc 0 1`. -/
 theorem hasMellin_cpow_Ioc (a : ℂ) {s : ℂ} (hs : 0 < re s + re a) :
-    HasMellin (indicator (Ioc 0 1) (fun t => ↑t ^ a : ℝ → ℂ)) s (1 / (s + a)) := by
+    HasMellin (indicator (Ioc 0 1) (fun t ↦ ↑t ^ a : ℝ → ℂ)) s (1 / (s + a)) := by
   have := hasMellin_one_Ioc (by rwa [add_re] : 0 < (s + a).re)
   simp_rw [HasMellin, ← MellinConvergent.cpow_smul, ← mellin_cpow_smul, ← indicator_smul,
     smul_eq_mul, mul_one] at this

@@ -493,7 +493,7 @@ instance stalkFunctor_preserves_mono (x : X) :
 
 theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
     ∀ x, Mono <| (stalkFunctor C x).map f.1 :=
-  fun x => Functor.map_mono (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) f
+  fun x ↦ Functor.map_mono (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) f
 
 theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
     Mono f :=

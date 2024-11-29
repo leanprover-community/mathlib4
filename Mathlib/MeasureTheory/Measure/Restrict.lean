@@ -271,12 +271,12 @@ theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwi
   simp only [restrict_apply, ht, inter_iUnion]
   exact
     measure_iUnion₀ (hd.mono fun i j h => h.mono inter_subset_right inter_subset_right)
-      fun i => ht.nullMeasurableSet.inter (hm i)
+      fun i ↦ ht.nullMeasurableSet.inter (hm i)
 
 theorem restrict_iUnion_apply [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) {t : Set α} (ht : MeasurableSet t) :
     μ.restrict (⋃ i, s i) t = ∑' i, μ.restrict (s i) t :=
-  restrict_iUnion_apply_ae hd.aedisjoint (fun i => (hm i).nullMeasurableSet) ht
+  restrict_iUnion_apply_ae hd.aedisjoint (fun i ↦ (hm i).nullMeasurableSet) ht
 
 theorem restrict_iUnion_apply_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed (· ⊆ ·) s)
     {t : Set α} (ht : MeasurableSet t) : μ.restrict (⋃ i, s i) t = ⨆ i, μ.restrict (s i) t := by
@@ -345,7 +345,7 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
-  refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => ?_⟩
+  refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h ↦ ?_⟩
   ext1 t ht
   have D : Directed (· ⊆ ·) fun t : Finset ι => ⋃ i ∈ t, s i :=
     Monotone.directed_le fun t₁ t₂ ht => biUnion_subset_biUnion_left ht
@@ -461,12 +461,12 @@ theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (h
 
 @[simp]
 theorem restrict_sum (μ : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
-    (sum μ).restrict s = sum fun i => (μ i).restrict s :=
+    (sum μ).restrict s = sum fun i ↦ (μ i).restrict s :=
   ext fun t ht => by simp only [sum_apply, restrict_apply, ht, ht.inter hs]
 
 @[simp]
 theorem restrict_sum_of_countable [Countable ι] (μ : ι → Measure α) (s : Set α) :
-    (sum μ).restrict s = sum fun i => (μ i).restrict s := by
+    (sum μ).restrict s = sum fun i ↦ (μ i).restrict s := by
   ext t ht
   simp_rw [sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
 
@@ -476,15 +476,15 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
   exact h htν
 
 theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
-    (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
+    (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i ↦ μ.restrict (s i) :=
   ext fun t ht => by simp only [sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
 
 theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
-    (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
-  restrict_iUnion_ae hd.aedisjoint fun i => (hm i).nullMeasurableSet
+    (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i ↦ μ.restrict (s i) :=
+  restrict_iUnion_ae hd.aedisjoint fun i ↦ (hm i).nullMeasurableSet
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
-    μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
+    μ.restrict (⋃ i, s i) ≤ sum fun i ↦ μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_iUnion_le (t ∩ s ·)
 
 end Measure
@@ -492,8 +492,8 @@ end Measure
 @[simp]
 theorem ae_restrict_iUnion_eq [Countable ι] (s : ι → Set α) :
     ae (μ.restrict (⋃ i, s i)) = ⨆ i, ae (μ.restrict (s i)) :=
-  le_antisymm ((ae_sum_eq fun i => μ.restrict (s i)) ▸ ae_mono restrict_iUnion_le) <|
-    iSup_le fun i => ae_mono <| restrict_mono (subset_iUnion s i) le_rfl
+  le_antisymm ((ae_sum_eq fun i ↦ μ.restrict (s i)) ▸ ae_mono restrict_iUnion_le) <|
+    iSup_le fun i ↦ ae_mono <| restrict_mono (subset_iUnion s i) le_rfl
 
 @[simp]
 theorem ae_restrict_union_eq (s t : Set α) :
@@ -643,7 +643,7 @@ theorem le_ae_restrict : ae μ ⊓ 𝓟 s ≤ ae (μ.restrict s) := fun _s hs =>
 theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s := by
   ext t
   simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_setOf,
-    Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
+    Classical.not_imp, fun a ↦ and_comm (a := a ∈ s) (b := ¬a ∈ t)]
   rfl
 
 lemma ae_restrict_le (hs : MeasurableSet s) : ae (μ.restrict s) ≤ ae μ :=
@@ -752,7 +752,7 @@ theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) =
   · congr
     simp only [image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
   · exact Subtype.coe_injective
-  · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
+  · exact fun t ↦ MeasurableSet.nullMeasurableSet_subtype_coe hu
 
 theorem volume_subtype_coe_le_volume (hu : NullMeasurableSet u) (t : Set u) :
     volume (((↑) : u → δ) '' t) ≤ volume t :=
@@ -866,7 +866,7 @@ theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
     volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
   rw [volume_set_coe_def,
     comap_apply₀ _ _ Subtype.coe_injective
-      (fun h => MeasurableSet.nullMeasurableSet_subtype_coe hs)
+      (fun h ↦ MeasurableSet.nullMeasurableSet_subtype_coe hs)
       (measurable_subtype_coe ht).nullMeasurableSet,
     image_preimage_eq_inter_range, Subtype.range_coe]
 
@@ -922,7 +922,7 @@ theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
   · rw [mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem ht hs]
     exact id
   rw [mem_map_indicator_ae_iff_of_zero_nmem ht, mem_map_restrict_ae_iff hs]
-  exact fun h => measure_mono_null (Set.inter_subset_left.trans Set.subset_union_left) h
+  exact fun h ↦ measure_mono_null (Set.inter_subset_left.trans Set.subset_union_left) h
 
 variable [Zero β]
 
@@ -958,7 +958,7 @@ theorem indicator_meas_zero (hs : μ s = 0) : indicator s f =ᵐ[μ] 0 :=
 theorem ae_eq_restrict_iff_indicator_ae_eq {g : α → β} (hs : MeasurableSet s) :
     f =ᵐ[μ.restrict s] g ↔ s.indicator f =ᵐ[μ] s.indicator g := by
   rw [Filter.EventuallyEq, ae_restrict_iff' hs]
-  refine ⟨fun h => ?_, fun h => ?_⟩ <;> filter_upwards [h] with x hx
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> filter_upwards [h] with x hx
   · by_cases hxs : x ∈ s
     · simp [hxs, hx hxs]
     · simp [hxs]

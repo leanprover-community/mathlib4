@@ -449,13 +449,13 @@ instance : Inhabited (Cycle α) :=
 @[elab_as_elim, induction_eliminator]
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn' s fun l ↦ by
     refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
 def Mem (s : Cycle α) (a : α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
+  Quot.liftOn s (fun l ↦ a ∈ l) fun _ _ e => propext <| e.mem_iff
 
 instance : Membership α (Cycle α) :=
   ⟨Mem⟩
@@ -472,7 +472,7 @@ instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
 
 instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
-  Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
+  Quotient.recOnSubsingleton' s fun l ↦ show Decidable (x ∈ l) from inferInstance
 
 /-- Reverse a `s : Cycle α` by reversing the underlying `List`. -/
 nonrec def reverse (s : Cycle α) : Cycle α :=
@@ -633,7 +633,7 @@ theorem mem_map {β : Type*} {f : α → β} {b : β} {s : Cycle α} :
 
 /-- The `Multiset` of lists that can make the cycle. -/
 def lists (s : Cycle α) : Multiset (List α) :=
-  Quotient.liftOn' s (fun l => (l.cyclicPermutations : Multiset (List α))) fun l₁ l₂ h => by
+  Quotient.liftOn' s (fun l ↦ (l.cyclicPermutations : Multiset (List α))) fun l₁ l₂ h => by
     simpa using h.cyclicPermutations.perm
 
 @[simp]
@@ -642,7 +642,7 @@ theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations
 
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn' s fun l ↦ by
     rw [lists, Quotient.liftOn'_mk'']
     simp
 
@@ -822,7 +822,7 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
 
 theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
-  Quotient.inductionOn s fun l => by
+  Quotient.inductionOn s fun l ↦ by
     cases' l with a l
     · rfl
     · simp [← concat_eq_append, ← List.map_concat, List.chain_map f]

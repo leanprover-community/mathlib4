@@ -162,7 +162,7 @@ theorem Dvd.intro_left (c : α) (h : c * a = b) : a ∣ b :=
 alias dvd_of_mul_left_eq := Dvd.intro_left
 
 theorem exists_eq_mul_left_of_dvd (h : a ∣ b) : ∃ c, b = c * a :=
-  Dvd.elim h fun c => fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))
+  Dvd.elim h fun c ↦ fun H1 : b = a * c => Exists.intro c (Eq.trans H1 (mul_comm a c))
 
 theorem dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
   ⟨exists_eq_mul_left_of_dvd, by
@@ -170,7 +170,7 @@ theorem dvd_iff_exists_eq_mul_left : a ∣ b ↔ ∃ c, b = c * a :=
     exact ⟨c, mul_comm _ _⟩⟩
 
 theorem Dvd.elim_left {P : Prop} (h₁ : a ∣ b) (h₂ : ∀ c, b = c * a → P) : P :=
-  Exists.elim (exists_eq_mul_left_of_dvd h₁) fun c => fun h₃ : b = c * a => h₂ c h₃
+  Exists.elim (exists_eq_mul_left_of_dvd h₁) fun c ↦ fun h₃ : b = c * a => h₂ c h₃
 
 @[simp]
 theorem dvd_mul_left (a b : α) : a ∣ b * a :=

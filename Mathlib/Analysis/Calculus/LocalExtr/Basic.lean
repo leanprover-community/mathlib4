@@ -74,9 +74,9 @@ is that we require `c n → ∞` instead of `‖c n‖ → ∞`. One can think a
 as `tangentConeAt NNReal` but we have no theory of normed semifields yet. -/
 def posTangentConeAt (s : Set E) (x : E) : Set E :=
   { y : E | ∃ (c : ℕ → ℝ) (d : ℕ → E), (∀ᶠ n in atTop, x + d n ∈ s) ∧
-    Tendsto c atTop atTop ∧ Tendsto (fun n => c n • d n) atTop (𝓝 y) }
+    Tendsto c atTop atTop ∧ Tendsto (fun n ↦ c n • d n) atTop (𝓝 y) }
 
-theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
+theorem posTangentConeAt_mono : Monotone fun s ↦ posTangentConeAt s a := by
   rintro s t hst y ⟨c, d, hd, hc, hcd⟩
   exact ⟨c, d, mem_of_superset hd fun h hn => hst hn, hc, hcd⟩
 
@@ -125,7 +125,7 @@ theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos (h : IsLocalMaxOn f s a)
   have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
   suffices ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0 from
     le_of_tendsto (hf.lim atTop hd hc' hcd) this
-  replace hd : Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0)) :=
+  replace hd : Tendsto (fun n ↦ a + d n) atTop (𝓝[s] (a + 0)) :=
     tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add (tangentConeAt.lim_zero _ hc' hcd), hd⟩
   rw [add_zero] at hd
   filter_upwards [hd.eventually h, hc.eventually_ge_atTop 0] with n hfn hcn

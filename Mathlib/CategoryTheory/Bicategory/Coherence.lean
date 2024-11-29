@@ -139,7 +139,7 @@ def normalizeIso {a : B} :
 theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     normalizeAux p f = normalizeAux p g := by
   rcases η with ⟨η'⟩
-  apply @congr_fun _ _ fun p => normalizeAux p f
+  apply @congr_fun _ _ fun p ↦ normalizeAux p f
   clear p η
   induction η' with
   | vcomp _ _ _ _ => apply Eq.trans <;> assumption
@@ -168,7 +168,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
   | whisker_right h η' ih =>
     dsimp
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih, comp_whiskerRight]
-    have := dcongr_arg (fun x => (normalizeIso x h).hom) (normalizeAux_congr p (Quot.mk _ η'))
+    have := dcongr_arg (fun x ↦ (normalizeIso x h).hom) (normalizeAux_congr p (Quot.mk _ η'))
     dsimp at this; simp [this]
   | _ => simp
 
@@ -193,7 +193,7 @@ def normalize (B : Type u) [Quiver.{v + 1} B] :
 /-- Auxiliary definition for `normalizeEquiv`. -/
 def normalizeUnitIso (a b : FreeBicategory B) :
     𝟭 (a ⟶ b) ≅ (normalize B).mapFunctor a b ⋙ @inclusionPath B _ a b :=
-  NatIso.ofComponents (fun f => (λ_ f).symm ≪≫ normalizeIso nil f)
+  NatIso.ofComponents (fun f ↦ (λ_ f).symm ≪≫ normalizeIso nil f)
     (by
       intro f g η
       erw [leftUnitor_inv_naturality_assoc, assoc]
@@ -203,7 +203,7 @@ def normalizeUnitIso (a b : FreeBicategory B) :
 /-- Normalization as an equivalence of categories. -/
 def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
-    (Discrete.natIso fun f => eqToIso (by
+    (Discrete.natIso fun f ↦ eqToIso (by
       obtain ⟨f⟩ := f
       induction f with
       | nil => rfl

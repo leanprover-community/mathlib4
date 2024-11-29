@@ -28,7 +28,7 @@ open Topology
 
 /-- If the iterates `f^[n] x` converge to `y` and `f` is continuous at `y`,
 then `y` is a fixed point for `f`. -/
-theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => f^[n] x) atTop (𝓝 y))
+theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y))
     (hf : ContinuousAt f y) : IsFixedPt f y := by
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).1 ?_) hy
   simp only [iterate_succ' f]

@@ -41,7 +41,7 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
 
 theorem isSheaf_iff_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤)
     (F : Presheaf C X) : F.IsSheaf ↔ Nonempty (IsTerminal <| F.obj <| op ⊥) :=
-  ⟨fun h => ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ =>
+  ⟨fun h ↦ ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ =>
     isSheaf_of_isTerminal_of_indiscrete hind F it⟩
 
 theorem isSheaf_on_punit_of_isTerminal (F : Presheaf C (TopCat.of PUnit))
@@ -50,6 +50,6 @@ theorem isSheaf_on_punit_of_isTerminal (F : Presheaf C (TopCat.of PUnit))
 
 theorem isSheaf_on_punit_iff_isTerminal (F : Presheaf C (TopCat.of PUnit)) :
     F.IsSheaf ↔ Nonempty (IsTerminal <| F.obj <| op ⊥) :=
-  ⟨fun h => ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ => isSheaf_on_punit_of_isTerminal F it⟩
+  ⟨fun h ↦ ⟨Sheaf.isTerminalOfEmpty ⟨F, h⟩⟩, fun ⟨it⟩ => isSheaf_on_punit_of_isTerminal F it⟩
 
 end TopCat.Presheaf

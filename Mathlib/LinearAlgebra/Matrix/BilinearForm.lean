@@ -69,7 +69,7 @@ variable [Fintype n] [Fintype o]
 
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₁ (n → R₁)) :
     -- Porting note: had to hint the base ring even though it should be clear from context...
-    Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₁ := R₁) (fun j => Pi.single j 1) B₂) = B₂ := by
+    Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₁ := R₁) (fun j ↦ Pi.single j 1) B₂) = B₂ := by
   rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, toLinearMap₂'Aux_toMatrix₂Aux]
 
 section ToMatrix'
@@ -367,12 +367,12 @@ theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matr
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nondegenerate) :
     M.toBilin'.Nondegenerate := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toBilin'_apply'] using hx y
+  h.eq_zero_of_ortho fun y ↦ by simpa only [toBilin'_apply'] using hx y
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
     M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
-  ⟨fun h v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
+  ⟨fun h v hv => h v fun w ↦ (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=

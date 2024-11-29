@@ -30,6 +30,6 @@ theorem isFiltered_of_nonempty_limit_colimit_to_colimit_limit
   let _ (j : Jᵒᵖ) : Unique ((colimit (F.op ⋙ coyoneda).flip).obj j) :=
     ((colimitObjIsoColimitCompEvaluation (F.op ⋙ coyoneda).flip _ ≪≫
       Coyoneda.colimitCoyonedaIso _)).toEquiv.unique
-  exact ⟨Types.Limit.mk (colimit (F.op ⋙ coyoneda).flip) (fun j => default) (by subsingleton)⟩
+  exact ⟨Types.Limit.mk (colimit (F.op ⋙ coyoneda).flip) (fun j ↦ default) (by subsingleton)⟩
 
 end CategoryTheory

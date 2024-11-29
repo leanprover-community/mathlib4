@@ -55,7 +55,7 @@ theorem measurable_apply [MeasurableSpace F] [BorelSpace F] (x : E) :
 @[measurability]
 theorem measurable_apply' [MeasurableSpace E] [OpensMeasurableSpace E] [MeasurableSpace F]
     [BorelSpace F] : Measurable fun (x : E) (f : E →L[𝕜] F) => f x :=
-  measurable_pi_lambda _ fun f => f.measurable
+  measurable_pi_lambda _ fun f ↦ f.measurable
 
 @[measurability]
 theorem measurable_coe [MeasurableSpace F] [BorelSpace F] :
@@ -72,12 +72,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpac
 
 @[fun_prop, measurability]
 theorem Measurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : Measurable φ) (v : F) :
-    Measurable fun a => φ a v :=
+    Measurable fun a ↦ φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).measurable.comp hφ
 
 @[measurability]
 theorem AEMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} {μ : Measure α}
-    (hφ : AEMeasurable φ μ) (v : F) : AEMeasurable (fun a => φ a v) μ :=
+    (hφ : AEMeasurable φ μ) (v : F) : AEMeasurable (fun a ↦ φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 E v).measurable.comp_aemeasurable hφ
 
 end ContinuousLinearMapNontriviallyNormedField
@@ -89,11 +89,11 @@ variable [BorelSpace 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 
   [BorelSpace E]
 
 theorem measurable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
-    (Measurable fun x => f x • c) ↔ Measurable f :=
+    (Measurable fun x ↦ f x • c) ↔ Measurable f :=
   (isClosedEmbedding_smul_left hc).measurableEmbedding.measurable_comp_iff
 
 theorem aemeasurable_smul_const {f : α → 𝕜} {μ : Measure α} {c : E} (hc : c ≠ 0) :
-    AEMeasurable (fun x => f x • c) μ ↔ AEMeasurable f μ :=
+    AEMeasurable (fun x ↦ f x • c) μ ↔ AEMeasurable f μ :=
   (isClosedEmbedding_smul_left hc).measurableEmbedding.aemeasurable_comp_iff
 
 end NormedSpace

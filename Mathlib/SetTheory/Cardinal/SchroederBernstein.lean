@@ -46,7 +46,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
   set F : Set α →o Set α :=
-    { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
+    { toFun := fun s ↦ (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
   set s : Set α := F.lfp
@@ -85,7 +85,7 @@ variable {ι : Type u} (β : ι → Type v)
 
 /-- `sets β` -/
 private abbrev sets :=
-  { s : Set (∀ i, β i) | ∀ i : ι, s.InjOn fun x => x i }
+  { s : Set (∀ i, β i) | ∀ i : ι, s.InjOn fun x ↦ x i }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
 there is an element that injects into the others.
@@ -106,14 +106,14 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           have : insert f s ∈ sets β := fun i x hx y hy => by
             cases' hx with hx hx <;> cases' hy with hy hy; · simp [hx, hy]
             · subst x
-              exact fun e => (hf i y hy e.symm).elim
+              exact fun e ↦ (hf i y hy e.symm).elim
             · subst y
-              exact fun e => (hf i x hx e).elim
+              exact fun e ↦ (hf i x hx e).elim
             · exact hs.prop i hx hy
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e,
+  ⟨i, ⟨fun j ↦ ⟨s.restrict (fun x ↦ x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo
@@ -123,7 +123,7 @@ end Wo
 instance. -/
 -- Porting note: `ULift.{max u v, u} α` was `ULift α`
 theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
-  match @min_injective Bool (fun b => cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
+  match @min_injective Bool (fun b ↦ cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
     with
   | ⟨true, ⟨h⟩⟩ =>
     let ⟨f, hf⟩ := h false

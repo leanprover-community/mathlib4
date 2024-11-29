@@ -71,7 +71,7 @@ variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
 
 @[simp]
 theorem disjUnion_eq_union (s t h) : @disjUnion α s t h = s ∪ t :=
-  ext fun a => by simp
+  ext fun a ↦ by simp
 
 @[simp]
 theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := by
@@ -127,7 +127,7 @@ theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
 
 @[simp]
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a :=
-  ext fun x => by
+  ext fun x ↦ by
     simp +contextual only [mem_erase, mem_insert, and_congr_right_iff,
       false_or, iff_self, imp_true_iff]
 
@@ -136,16 +136,16 @@ theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s)
 
 theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     erase (insert a s) b = insert a (erase s b) :=
-  ext fun x => by
+  ext fun x ↦ by
     have : x ≠ b ∧ x = a ↔ x = a := and_iff_right_of_imp fun hx => hx.symm ▸ h
     simp only [mem_erase, mem_insert, and_or_left, this]
 
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
-    erase (cons a s ha) b = cons a (erase s b) fun h => ha <| erase_subset _ _ h := by
+    erase (cons a s ha) b = cons a (erase s b) fun h ↦ ha <| erase_subset _ _ h := by
   simp only [cons_eq_insert, erase_insert_of_ne hb]
 
 @[simp] theorem insert_erase (h : a ∈ s) : insert a (erase s a) = s :=
-  ext fun x => by
+  ext fun x ↦ by
     simp only [mem_insert, mem_erase, or_and_left, dec_em, true_and]
     apply or_iff_right_of_imp
     rintro rfl
@@ -164,7 +164,7 @@ theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :
     _ = _ := insert_erase h
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
-  refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_subset_of_ssubset h <| erase_ssubset ha⟩
+  refine ⟨fun h ↦ ?_, fun ⟨a, ha, h⟩ => ssubset_of_subset_of_ssubset h <| erase_ssubset ha⟩
   obtain ⟨a, ht, hs⟩ := not_subset.1 h.2
   exact ⟨a, ht, subset_erase.2 ⟨h.1, hs⟩⟩
 
@@ -177,7 +177,7 @@ theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ erase s a ⊆ t := by
   simp only [subset_iff, or_iff_not_imp_left, mem_erase, mem_insert, and_imp]
-  exact forall_congr' fun x => forall_swap
+  exact forall_congr' fun x ↦ forall_swap
 
 theorem erase_insert_subset (a : α) (s : Finset α) : erase (insert a s) a ⊆ s :=
   subset_insert_iff.1 <| Subset.rfl
@@ -191,7 +191,7 @@ theorem subset_insert_iff_of_not_mem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ 
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
 
-theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => erase s a :=
+theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s ↦ erase s a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 
 end Erase
@@ -356,7 +356,7 @@ theorem disjoint_filter_filter' (s t : Finset α)
 
 theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
-    Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
+    Disjoint (s.filter p) (t.filter fun a ↦ ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
 
 @[deprecated (since := "2024-10-01")] alias filter_inter_filter_neg_eq := disjoint_filter_filter_neg
@@ -378,12 +378,12 @@ variable [DecidableEq α]
 theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.filter p ∪ s₂.filter p :=
   ext fun _ => by simp only [mem_filter, mem_union, or_and_right]
 
-theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x :=
-  ext fun x => by simp [mem_filter, mem_union, ← and_or_left]
+theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x ↦ p x ∨ q x :=
+  ext fun x ↦ by simp [mem_filter, mem_union, ← and_or_left]
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
-    (s.filter fun i => i ∈ t) = s ∩ t :=
-  ext fun i => by simp [mem_filter, mem_inter]
+    (s.filter fun i ↦ i ∈ t) = s ∩ t :=
+  ext fun i ↦ by simp [mem_filter, mem_inter]
 
 theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
   ext
@@ -405,14 +405,14 @@ theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (fi
   ext x
   simp only [and_assoc, mem_filter, iff_self, mem_erase]
 
-theorem filter_or (s : Finset α) : (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q :=
+theorem filter_or (s : Finset α) : (s.filter fun a ↦ p a ∨ q a) = s.filter p ∪ s.filter q :=
   ext fun _ => by simp [mem_filter, mem_union, and_or_left]
 
-theorem filter_and (s : Finset α) : (s.filter fun a => p a ∧ q a) = s.filter p ∩ s.filter q :=
+theorem filter_and (s : Finset α) : (s.filter fun a ↦ p a ∧ q a) = s.filter p ∩ s.filter q :=
   ext fun _ => by simp [mem_filter, mem_inter, and_comm, and_left_comm, and_self_iff, and_assoc]
 
-theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p :=
-  ext fun a => by
+theorem filter_not (s : Finset α) : (s.filter fun a ↦ ¬p a) = s \ s.filter p :=
+  ext fun a ↦ by
     simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 
@@ -466,7 +466,7 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
   split_ifs with h
   · ext
     simp only [mem_filter, mem_singleton, decide_eq_true_eq]
-    refine ⟨fun h => h.2.symm, ?_⟩
+    refine ⟨fun h ↦ h.2.symm, ?_⟩
     rintro rfl
     exact ⟨h, rfl⟩
   · ext
@@ -479,16 +479,16 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
   This is equivalent to `filter_eq` with the equality the other way.
 -/
 theorem filter_eq' [DecidableEq β] (s : Finset β) (b : β) :
-    (s.filter fun a => a = b) = ite (b ∈ s) {b} ∅ :=
+    (s.filter fun a ↦ a = b) = ite (b ∈ s) {b} ∅ :=
   _root_.trans (filter_congr fun _ _ => by simp_rw [@eq_comm _ b]) (filter_eq s b)
 
 theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
-    (s.filter fun a => b ≠ a) = s.erase b := by
+    (s.filter fun a ↦ b ≠ a) = s.erase b := by
   ext
   simp only [mem_filter, mem_erase, Ne, decide_not, Bool.not_eq_true', decide_eq_false_iff_not]
   tauto
 
-theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
+theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a ↦ a ≠ b) = s.erase b :=
   _root_.trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
@@ -496,7 +496,7 @@ theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
   (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => h.top_le x trivial
 
 theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
-    (s.filter p ∪ s.filter fun a => ¬p a) = s :=
+    (s.filter p ∪ s.filter fun a ↦ ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 
 end

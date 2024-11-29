@@ -305,7 +305,7 @@ section cast
 
 /-- Coercion of SL `n` `ℤ` to SL `n` `R` for a commutative ring `R`. -/
 instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
-  ⟨fun x => map (Int.castRingHom R) x⟩
+  ⟨fun x ↦ map (Int.castRingHom R) x⟩
 
 @[simp]
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
@@ -321,7 +321,7 @@ variable [Fact (Even (Fintype.card n))]
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
 instance instNeg : Neg (SpecialLinearGroup n R) :=
-  ⟨fun g => ⟨-g, by
+  ⟨fun g ↦ ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]

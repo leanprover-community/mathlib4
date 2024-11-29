@@ -25,7 +25,7 @@ section NormedField
 `x → a`, `x ≠ a`. -/
 theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedField 𝕜] [Norm E] {a : 𝕜}
     {f : 𝕜 → E} (h : IsBoundedUnder (· ≤ ·) (𝓝[≠] a) (norm ∘ f)) :
-    f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
+    f =o[𝓝[≠] a] fun x ↦ (x - a)⁻¹ := by
   refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
   simp only [Function.comp_def, norm_inv]
   exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
@@ -37,13 +37,13 @@ section LinearOrderedField
 variable {𝕜 : Type*} [LinearOrderedField 𝕜]
 
 theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
-    (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
+    (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x ↦ x ^ ((p : ℤ) - q) := by
   apply (eventually_gt_atTop (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne']
 
 theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
-    (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atBot] fun x => x ^ ((p : ℤ) - q) := by
+    (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atBot] fun x ↦ x ^ ((p : ℤ) - q) := by
   apply (eventually_lt_atBot (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne]
@@ -67,13 +67,13 @@ section NormedLinearOrderedField
 variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
 
 theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
-    (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
+    (fun x : 𝕜 => x ^ p) =o[atTop] fun x ↦ x ^ q := by
   refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
 
 theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → 𝕜} {l : Filter α}
-    (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
-    Tendsto (fun x => ‖v x‖) l atTop := by
+    (huv : u =O[l] v) (hu : Tendsto (fun x ↦ ‖u x‖) l atTop) :
+    Tendsto (fun x ↦ ‖v x‖) l atTop := by
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
   rw [IsBigOWith] at hcuv
   convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
@@ -86,10 +86,10 @@ section Real
 open Finset
 
 theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
-    (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i ∈ range n, g i) atTop atTop) :
-    (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
-  have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
-  have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n => by
+    (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n ↦ ∑ i ∈ range n, g i) atTop atTop) :
+    (fun n ↦ ∑ i ∈ range n, f i) =o[atTop] fun n ↦ ∑ i ∈ range n, g i := by
+  have A : ∀ i, ‖g i‖ = g i := fun i ↦ Real.norm_of_nonneg (hg i)
+  have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n ↦ by
     rwa [Real.norm_eq_abs, abs_sum_of_nonneg']
   apply isLittleO_iff.2 fun ε εpos => _
   intro ε εpos
@@ -97,7 +97,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
     simpa only [A, eventually_atTop] using isLittleO_iff.mp h (half_pos εpos)
   have : (fun _ : ℕ => ∑ i ∈ range N, f i) =o[atTop] fun n : ℕ => ∑ i ∈ range n, g i := by
     apply isLittleO_const_left.2
-    exact Or.inr (h'g.congr fun n => (B n).symm)
+    exact Or.inr (h'g.congr fun n ↦ (B n).symm)
   filter_upwards [isLittleO_iff.1 this (half_pos εpos), Ici_mem_atTop N] with n hn Nn
   calc
     ‖∑ i ∈ range n, f i‖ = ‖(∑ i ∈ range N, f i) + ∑ i ∈ Ico N n, f i‖ := by
@@ -117,8 +117,8 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
 
 theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
-    (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => (n : ℝ) := by
-  have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
+    (fun n ↦ ∑ i ∈ range n, f i) =o[atTop] fun n ↦ (n : ℝ) := by
+  have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i ↦ zero_le_one
   simp only [sum_const, card_range, Nat.smul_one_eq_cast] at this
   exact this tendsto_natCast_atTop_atTop
 

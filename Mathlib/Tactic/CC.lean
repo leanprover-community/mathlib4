@@ -142,7 +142,7 @@ def roots (s : CCState) : List Expr :=
   CCState.rootsCore s true
 
 instance : ToMessageData CCState :=
-  ⟨fun s => CCState.ppEqcs s true⟩
+  ⟨fun s ↦ CCState.ppEqcs s true⟩
 
 /-- Continue to append following expressions in the equivalence class of `e` to `r` until `f` is
 found. -/

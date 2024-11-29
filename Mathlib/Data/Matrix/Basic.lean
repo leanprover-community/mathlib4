@@ -252,7 +252,7 @@ variable (R)
 def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
   { diagonalRingHom n α with
     toFun := diagonal
-    commutes' := fun r => (algebraMap_eq_diagonal r).symm }
+    commutes' := fun r ↦ (algebraMap_eq_diagonal r).symm }
 
 end Algebra
 
@@ -580,7 +580,7 @@ coefficients. This is `Matrix.map` as an `AlgHom`. -/
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
     toFun := fun M => M.map f
-    commutes' := fun r => Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
+    commutes' := fun r ↦ Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
 
 @[simp]
 theorem mapMatrix_id : (AlgHom.id R α).mapMatrix = AlgHom.id R (Matrix m m α) :=
@@ -709,7 +709,7 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
   { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
     transposeRingEquiv m α with
     toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
 
 variable {R m α}

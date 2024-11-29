@@ -55,7 +55,7 @@ def runDefEqTactic (m : Option FVarId → Expr → MetaM Expr)
     (checkDefEq : Bool := true) :
     TacticM Unit := withMainContext do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc?))
-    (atLocal := fun h => liftMetaTactic1 fun mvarId => do
+    (atLocal := fun h ↦ liftMetaTactic1 fun mvarId => do
       let ty ← h.getType
       let ty' ← m h (← instantiateMVars ty)
       if Expr.equal ty ty' then
@@ -92,7 +92,7 @@ elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
 This also exists as a `conv`-mode tactic.
 
 This means that whenever there is an applied lambda expression such as
-`(fun x => f x) y` then the argument is substituted into the lambda expression
+`(fun x ↦ f x) y` then the argument is substituted into the lambda expression
 yielding an expression such as `f y`.
 -/
 elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
@@ -280,7 +280,7 @@ into an eta-expanded "normal form."
 This also exists as a `conv`-mode tactic.
 
 For example, if `f` takes two arguments, then `f` becomes `fun x y => f x y`
-and `f x` becomes `fun y => f x y`.
+and `f x` becomes `fun y ↦ f x y`.
 
 This can be useful to turn, for example, a raw `HAdd.hAdd` into `fun x y => x + y`.
 -/

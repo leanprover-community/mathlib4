@@ -58,10 +58,10 @@ theorem coe_product (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 
-theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
+theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i ↦ by
   simp +contextual [mem_image]
 
-theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i => by
+theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i ↦ by
   simp +contextual [mem_image]
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
@@ -102,13 +102,13 @@ theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset 
     exact Set.image_swap_prod _ _
 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    s ×ˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
+    s ×ˢ t = s.biUnion fun a ↦ t.image fun b ↦ (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
-    s ×ˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
+    s ×ˢ t = t.biUnion fun b ↦ s.image fun a ↦ (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
@@ -116,7 +116,7 @@ theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : F
 /-- See also `Finset.sup_product_left`. -/
 @[simp]
 theorem product_biUnion [DecidableEq γ] (s : Finset α) (t : Finset β) (f : α × β → Finset γ) :
-    (s ×ˢ t).biUnion f = s.biUnion fun a => t.biUnion fun b => f (a, b) := by
+    (s ×ˢ t).biUnion f = s.biUnion fun a ↦ t.biUnion fun b ↦ f (a, b) := by
   classical simp_rw [product_eq_biUnion, biUnion_biUnion, image_biUnion]
 
 @[simp]
@@ -184,7 +184,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
 
 @[simp]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.product h.2⟩
 
 @[simp]
 theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
@@ -198,7 +198,7 @@ theorem singleton_product {a : α} :
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i ↦ (i, b), Prod.mk.inj_right _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
@@ -276,7 +276,7 @@ theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
 
 @[simp]
 theorem diag_card : (diag s).card = s.card := by
-  suffices diag s = s.image fun a => (a, a) by
+  suffices diag s = s.image fun a ↦ (a, a) by
     rw [this]
     apply card_image_of_injOn
     exact fun x1 _ x2 _ h3 => (Prod.mk.inj h3).1
@@ -294,7 +294,7 @@ theorem diag_card : (diag s).card = s.card := by
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
   suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; omega
   by rw [← card_product, diag, offDiag]
-     conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
+     conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a ↦ a.1 = a.2)]
 
 @[mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
@@ -314,12 +314,12 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
-  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
+  conv_rhs => rw [← filter_union_filter_neg_eq (fun a ↦ a.1 = a.2) (s ×ˢ s)]
   rfl
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
+  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a ↦ a.1 = a.2)
 
 theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by
   rw [← diag_union_offDiag, union_comm, union_sdiff_self,
@@ -329,7 +329,7 @@ theorem product_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by
   rw [← diag_union_offDiag, union_sdiff_self, sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _)]
 
 theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag :=
-  ext fun x => by simpa only [mem_diag, mem_inter] using and_and_right
+  ext fun x ↦ by simpa only [mem_diag, mem_inter] using and_and_right
 
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by
@@ -367,7 +367,7 @@ theorem offDiag_filter_lt_eq_filter_le {ι}
     [PartialOrder ι] [DecidableEq ι]
     [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
     (s : Finset ι) :
-    s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
+    s.offDiag.filter (fun i ↦ i.1 < i.2) = s.offDiag.filter (fun i ↦ i.1 ≤ i.2) := by
   rw [Finset.filter_inj']
   rintro ⟨i, j⟩
   simp_rw [mem_offDiag, and_imp]

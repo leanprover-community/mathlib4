@@ -58,7 +58,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
     { desc := fun s =>
         colimit.desc (liftToFinsetObj F)
           { pt := s.pt
-            ι := { app := fun _ => Sigma.desc fun x => s.ι.app x } }
+            ι := { app := fun _ => Sigma.desc fun x ↦ s.ι.app x } }
       uniq := fun s m h => by
         apply colimit.hom_ext
         rintro t
@@ -77,7 +77,7 @@ coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
-  map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
+  map := fun β => { app := fun _ => Sigma.map (fun x ↦ β.app x.val) }
 
 end CoproductsFromFiniteFiltered
 
@@ -170,7 +170,7 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     { lift := fun s =>
         limit.lift (liftToFinsetObj F)
           { pt := s.pt
-            π := { app := fun _ => Pi.lift fun x => s.π.app x } }
+            π := { app := fun _ => Pi.lift fun x ↦ s.π.app x } }
       uniq := fun s m h => by
         apply limit.hom_ext
         rintro t
@@ -189,7 +189,7 @@ coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
   obj := liftToFinsetObj
-  map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
+  map := fun β => { app := fun _ => Pi.map (fun x ↦ β.app x.val) }
 
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/

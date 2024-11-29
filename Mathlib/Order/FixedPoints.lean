@@ -85,9 +85,9 @@ theorem isLeast_lfp : IsLeast (fixedPoints f) f.lfp :=
 theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ f.lfp → p (f a))
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (sSup s)) : p f.lfp := by
   set s := { a | a ≤ f.lfp ∧ p a }
-  specialize hSup s fun a => And.right
+  specialize hSup s fun a ↦ And.right
   suffices sSup s = f.lfp from this ▸ hSup
-  have h : sSup s ≤ f.lfp := sSup_le fun b => And.left
+  have h : sSup s ≤ f.lfp := sSup_le fun b ↦ And.left
   have hmem : f (sSup s) ∈ s := ⟨f.map_le_lfp h, step _ hSup h⟩
   exact h.antisymm (f.lfp_le <| le_sSup hmem)
 
@@ -187,7 +187,7 @@ theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y)
 @[simp]
 theorem nextFixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
     f.nextFixed x hx ≤ y ↔ x ≤ y :=
-  ⟨fun h => (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
+  ⟨fun h ↦ (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
 
 @[simp]
 theorem le_prevFixed_iff {x : α} (hx : f x ≤ x) {y : fixedPoints f} :

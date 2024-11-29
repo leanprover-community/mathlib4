@@ -178,23 +178,23 @@ section EMetric
 variable [PseudoEMetricSpace α] {f g : α → ℝ} {Kf Kg : ℝ≥0}
 
 protected theorem max (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
-    LipschitzWith (max Kf Kg) fun x => max (f x) (g x) := by
+    LipschitzWith (max Kf Kg) fun x ↦ max (f x) (g x) := by
   simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prod hg)
 
 protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
-    LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
+    LipschitzWith (max Kf Kg) fun x ↦ min (f x) (g x) := by
   simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prod hg)
 
-theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
+theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x ↦ max (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.max (LipschitzWith.const a)
 
-theorem const_max (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max a (f x) := by
+theorem const_max (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x ↦ max a (f x) := by
   simpa only [max_comm] using hf.max_const a
 
-theorem min_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => min (f x) a := by
+theorem min_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x ↦ min (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.min (LipschitzWith.const a)
 
-theorem const_min (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => min a (f x) := by
+theorem const_min (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x ↦ min a (f x) := by
   simpa only [min_comm] using hf.min_const a
 
 end EMetric
@@ -255,7 +255,7 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
 
 theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set α} {t : Set β}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t)
-    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a => f a b) s)
+    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a ↦ f a b) s)
     (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) : Bornology.IsBounded (Set.image2 f s t) :=
   Metric.isBounded_iff_ediam_ne_top.2 <|
     ne_top_of_le_ne_top
@@ -289,24 +289,24 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ}
 
 /-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
-    LocallyLipschitz (fun x => min (f x) (g x)) :=
+    LocallyLipschitz (fun x ↦ min (f x) (g x)) :=
   lipschitzWith_min.locallyLipschitz.comp (hf.prod hg)
 
 /-- The maximum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma max (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
-    LocallyLipschitz (fun x => max (f x) (g x)) :=
+    LocallyLipschitz (fun x ↦ max (f x) (g x)) :=
   lipschitzWith_max.locallyLipschitz.comp (hf.prod hg)
 
-theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max (f x) a :=
+theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x ↦ max (f x) a :=
   hf.max (LocallyLipschitz.const a)
 
-theorem const_max (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max a (f x) := by
+theorem const_max (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x ↦ max a (f x) := by
   simpa [max_comm] using (hf.max_const a)
 
-theorem min_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min (f x) a :=
+theorem min_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x ↦ min (f x) a :=
   hf.min (LocallyLipschitz.const a)
 
-theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min a (f x) := by
+theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x ↦ min a (f x) := by
   simpa [min_comm] using (hf.min_const a)
 
 end Real
@@ -338,7 +338,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
   · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken (zero_le _), eqOn_empty _ _⟩
   have : Nonempty s := by simp only [hs, nonempty_coe_sort]
   let g := fun y : α => iInf fun x : s => f x + K * dist y x
-  have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by
+  have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y ↦ by
     rcases hs with ⟨z, hz⟩
     refine ⟨f z - K * dist y z, ?_⟩
     rintro w ⟨t, rfl⟩
@@ -348,11 +348,11 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
       f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
       _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
-    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) ?_
+    refine le_antisymm (le_ciInf fun y ↦ hf.le_add_mul hx y.2) ?_
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
   refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => ?_, E⟩
   rw [← sub_le_iff_le_add]
-  refine le_ciInf fun z => ?_
+  refine le_ciInf fun z ↦ ?_
   rw [sub_le_iff_le_add]
   calc
     g x ≤ f z + K * dist x z := ciInf_le (B x) _
@@ -366,13 +366,13 @@ extension to the whole space. The same result for the space `ℓ^∞ (ι, ℝ)` 
 type `ι` is implemented in `LipschitzOnWith.extend_lp_infty`. -/
 theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set α}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) : ∃ g : α → ι → ℝ, LipschitzWith K g ∧ EqOn f g s := by
-  have : ∀ i, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s := fun i => by
+  have : ∀ i, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x ↦ f x i) g s := fun i ↦ by
     have : LipschitzOnWith K (fun x : α => f x i) s :=
       LipschitzOnWith.of_dist_le_mul fun x hx y hy =>
         (dist_le_pi_dist _ _ i).trans (hf.dist_le_mul x hx y hy)
     exact this.extend_real
   choose g hg using this
   refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => ?_, fun x hx ↦ ?_⟩
-  · exact (dist_pi_le_iff (mul_nonneg K.2 dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
+  · exact (dist_pi_le_iff (mul_nonneg K.2 dist_nonneg)).2 fun i ↦ (hg i).1.dist_le_mul x y
   · ext1 i
     exact (hg i).2 hx

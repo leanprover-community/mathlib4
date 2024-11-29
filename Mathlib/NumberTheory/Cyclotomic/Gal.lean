@@ -102,7 +102,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
             IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
               ((zeta_spec n K L).pow_of_coprime _ (ZMod.val_coe_unit_coprime t)) h
           exact ((zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible h).symm.trans hr)
-    left_inv := fun f => by
+    left_inv := fun f ↦ by
       simp only [MonoidHom.toFun_eq_coe]
       apply AlgEquiv.coe_algHom_injective
       apply (hζ.powerBasis K).algHom_ext
@@ -110,7 +110,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       simp only [AlgHom.coe_coe]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
-    right_inv := fun x => by
+    right_inv := fun x ↦ by
       simp only [MonoidHom.toFun_eq_coe]
       generalize_proofs _ _ h
       have key := hζ.autToPow_spec K ((hζ.powerBasis K).equivOfMinpoly ((hμ x).powerBasis K) h)

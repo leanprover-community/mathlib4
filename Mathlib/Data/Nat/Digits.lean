@@ -585,7 +585,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 /-! ### Binary -/
 
 
-theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
+theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b ↦ cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
   · simp

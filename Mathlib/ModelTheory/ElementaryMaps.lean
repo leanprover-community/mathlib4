@@ -104,7 +104,7 @@ theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
 theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   intro x y
   have h :=
-    φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i => if i = 0 then x else y
+    φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i ↦ if i = 0 then x else y
   rw [Formula.realize_equal, Formula.realize_equal] at h
   simp only [Nat.one_ne_zero, Term.realize, Fin.one_eq_zero_iff, if_true, eq_self_iff_true,
     Function.comp_apply, if_false] at h
@@ -261,7 +261,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
           rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
-      refine ⟨b, fun h => hb (Eq.mp ?_ ((ih _).2 h))⟩
+      refine ⟨b, fun h ↦ hb (Eq.mp ?_ ((ih _).2 h))⟩
       rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
 
 /-- Bundles an embedding satisfying the Tarski-Vaught test as an elementary embedding. -/

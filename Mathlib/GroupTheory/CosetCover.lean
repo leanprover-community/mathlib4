@@ -98,7 +98,7 @@ theorem index_le_of_leftCoset_cover_const : H.index ≤ s.card := by
 @[to_additive]
 theorem pairwiseDisjoint_leftCoset_cover_const_of_index_eq (hind : H.index = s.card) :
     Set.PairwiseDisjoint s (g · • (H : Set G)) := by
-  have : Fintype (G ⧸ H) := fintypeOfIndexNeZero fun h => by
+  have : Fintype (G ⧸ H) := fintypeOfIndexNeZero fun h ↦ by
     rw [hind, Finset.card_eq_zero] at h
     rw [h, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
     exact Set.empty_ne_univ hcovers
@@ -158,7 +158,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
       exact Finset.mem_erase.mpr ⟨this.2, Finset.mem_image_of_mem H this.1⟩
     have hK (k : κ) : K k ≠ H j := ((Finset.mem_erase.mp (hK' k)).left ·)
     replace hcovers : ⋃ k ∈ Finset.univ, f k • (K k : Set G) = Set.univ :=
-        Set.iUnion₂_eq_univ_iff.mpr fun y => by
+        Set.iUnion₂_eq_univ_iff.mpr fun y ↦ by
       rw [← s.filter_union_filter_neg_eq (H · = H j), Finset.set_biUnion_union] at hcovers
       cases (Set.mem_union _ _ _).mp (hcovers.superset (Set.mem_univ y)) with
       | inl hy =>
@@ -180,7 +180,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
         finiteIndex_of_leftCoset_cover_const hcovers'⟩
     -- Otherwise, by the induction hypothesis, one of the subgroups `H k ≠ H j` has finite index.
     have hn' : (Finset.univ.image K).card < n := hn ▸ by
-      refine ((Finset.card_le_card fun x => ?_).trans_lt <|
+      refine ((Finset.card_le_card fun x ↦ ?_).trans_lt <|
         Finset.card_erase_lt_of_mem (Finset.mem_image_of_mem H hj))
       rw [mem_image_univ_iff_mem_range, Set.mem_range]
       exact fun ⟨k, hk⟩ => hk ▸ hK' k
@@ -206,12 +206,12 @@ theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex :
 @[to_additive]
 theorem leftCoset_cover_filter_FiniteIndex_aux
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
-    (⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ) ∧
+    (⋃ k ∈ s.filter (fun i ↦ (H i).FiniteIndex), g k • (H k : Set G) = Set.univ) ∧
       (1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹) ∧
       (∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 → Set.PairwiseDisjoint
-        (s.filter (fun i => (H i).FiniteIndex)) (fun i ↦ g i • (H i : Set G))) := by
+        (s.filter (fun i ↦ (H i).FiniteIndex)) (fun i ↦ g i • (H i : Set G))) := by
   classical
-  let D := ⨅ k ∈ s.filter (fun i => (H i).FiniteIndex), H k
+  let D := ⨅ k ∈ s.filter (fun i ↦ (H i).FiniteIndex), H k
   -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
   have hD : D.FiniteIndex := finiteIndex_iInf' _ <| by simp
   have hD_le {i} (hi : i ∈ s) (hfi : (H i).FiniteIndex) : D ≤ H i :=
@@ -224,11 +224,11 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
   let f (k : κ) : G := g k.1 * k.2.val
   let K (k : κ) : Subgroup G := if (H k.1).FiniteIndex then D else H k.1
   have hcovers' : ⋃ k ∈ Finset.univ, f k • (K k : Set G) = Set.univ := by
-    rw [← s.filter_union_filter_neg_eq (fun i => (H i).FiniteIndex)] at hcovers
-    rw [← hcovers, ← Finset.univ.filter_union_filter_neg_eq (fun k => (H k.1).FiniteIndex),
+    rw [← s.filter_union_filter_neg_eq (fun i ↦ (H i).FiniteIndex)] at hcovers
+    rw [← hcovers, ← Finset.univ.filter_union_filter_neg_eq (fun k ↦ (H k.1).FiniteIndex),
       Finset.set_biUnion_union, Finset.set_biUnion_union]
     apply congrArg₂ (· ∪ ·) <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
-        refine Set.iUnion_congr fun i => ?_
+        refine Set.iUnion_congr fun i ↦ ?_
     · by_cases hfi : (H i).FiniteIndex <;>
         simp [← Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ht, hfi]
     · by_cases hfi : (H i).FiniteIndex <;>
@@ -265,7 +265,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       simpa [K, hfi] using hHD i hfi
   refine ⟨?_, ?_, ?_⟩
   · rw [← hcovers', Set.iUnion_sigma, Set.iUnion_subtype]
-    refine Set.iUnion_congr fun i => ?_
+    refine Set.iUnion_congr fun i ↦ ?_
     rw [Finset.mem_filter, Set.iUnion_and]
     refine Set.iUnion_congr fun hi => ?_
     by_cases hfi : (H i).FiniteIndex <;>
@@ -304,7 +304,7 @@ Then the cosets of subgroups of infinite index may be omitted from the covering.
 @[to_additive]
 theorem leftCoset_cover_filter_FiniteIndex
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
-    ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
+    ⋃ k ∈ s.filter (fun i ↦ (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
   (leftCoset_cover_filter_FiniteIndex_aux hcovers).1
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
@@ -322,7 +322,7 @@ then the cosets of the subgroups of finite index are pairwise disjoint. -/
 theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
     ∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 →
-      Set.PairwiseDisjoint (s.filter (fun i => (H i).FiniteIndex))
+      Set.PairwiseDisjoint (s.filter (fun i ↦ (H i).FiniteIndex))
         (fun i ↦ g i • (H i : Set G)) :=
   (leftCoset_cover_filter_FiniteIndex_aux hcovers).2.2
 

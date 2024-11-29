@@ -67,7 +67,7 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  neg_add_cancel := Quotient.ind <| fun x => Quot.sound (neg_add_cancel_equiv x)
+  neg_add_cancel := Quotient.ind <| fun x ↦ Quot.sound (neg_add_cancel_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv
@@ -898,8 +898,8 @@ definition, the sets and elements are inductively generated. -/
 def inv' : PGame → PGame
   | ⟨l, r, L, R⟩ =>
     let l' := { i // 0 < L i }
-    let L' : l' → PGame := fun i => L i.1
-    let IHl' : l' → PGame := fun i => inv' (L i.1)
+    let L' : l' → PGame := fun i ↦ L i.1
+    let IHl' : l' → PGame := fun i ↦ inv' (L i.1)
     let IHr i := inv' (R i)
     let x := mk l r L R
     ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr x, invVal L' R IHl' IHr x⟩
@@ -912,7 +912,7 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
-  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
+  refine ⟨?_, ?_, fun i ↦ ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -929,7 +929,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   have : IsEmpty { _i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
-  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩ <;> dsimp
+  refine ⟨?_, ?_, fun i ↦ ?_, IsEmpty.elim ?_⟩ <;> dsimp
   · apply Equiv.equivPUnit
   · apply Equiv.equivOfIsEmpty
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -941,7 +941,7 @@ theorem inv'_one_equiv : inv' 1 ≈ 1 :=
 
 /-- The inverse of a pre-game in terms of the inverse on positive pre-games. -/
 noncomputable instance : Inv PGame :=
-  ⟨by classical exact fun x => if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
+  ⟨by classical exact fun x ↦ if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
 
 noncomputable instance : Div PGame :=
   ⟨fun x y => x * y⁻¹⟩

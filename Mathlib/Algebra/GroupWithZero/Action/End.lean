@@ -48,8 +48,8 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 See note [reducible non-instances]. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
-    smul_one := fun x => smul_one (f x),
-    smul_mul := fun x => smul_mul' (f x) }
+    smul_one := fun x ↦ smul_one (f x),
+    smul_mul := fun x ↦ smul_mul' (f x) }
 
 end Monoid
 

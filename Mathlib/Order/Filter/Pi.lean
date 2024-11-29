@@ -42,7 +42,7 @@ theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (
   tendsto_iInf' i tendsto_comap
 
 theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
-    Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x => m x i) l (f i) := by
+    Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x ↦ m x i) l (f i) := by
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 
 /-- If a function tends to a product `Filter.pi f` of filters, then its `i`-th component tends to
@@ -55,14 +55,14 @@ theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i
 
 @[mono]
 theorem pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
-  iInf_mono fun i => comap_mono <| h i
+  iInf_mono fun i ↦ comap_mono <| h i
 
 theorem mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹' s ∈ pi f :=
   mem_iInf_of_mem i <| preimage_mem_comap hs
 
 theorem pi_mem_pi {I : Set ι} (hI : I.Finite) (h : ∀ i ∈ I, s i ∈ f i) : I.pi s ∈ pi f := by
   rw [pi_def, biInter_eq_iInter]
-  refine mem_iInf_of_iInter hI (fun i => ?_) Subset.rfl
+  refine mem_iInf_of_iInter hI (fun i ↦ ?_) Subset.rfl
   exact preimage_mem_comap (h i i.2)
 
 theorem mem_pi {s : Set (∀ i, α i)} :
@@ -84,7 +84,7 @@ theorem mem_of_pi_mem_pi [∀ i, NeBot (f i)] {I : Set ι} (h : I.pi s ∈ pi f)
   classical
   rcases mem_pi.1 h with ⟨I', -, t, htf, hts⟩
   refine mem_of_superset (htf i) fun x hx => ?_
-  have : ∀ i, (t i).Nonempty := fun i => nonempty_of_mem (htf i)
+  have : ∀ i, (t i).Nonempty := fun i ↦ nonempty_of_mem (htf i)
   choose g hg using this
   have : update g i x ∈ I'.pi t := fun j _ => by
     rcases eq_or_ne j i with (rfl | hne) <;> simp [*]
@@ -104,8 +104,8 @@ theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
 theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
-      fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
-  simpa [Set.pi_def] using hasBasis_iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
+      fun If : Set ι × ∀ i, ι' i => If.1.pi fun i ↦ s i <| If.2 i := by
+  simpa [Set.pi_def] using hasBasis_iInf' fun i ↦ (h i).comap (eval i : (∀ j, α j) → α i)
 
 theorem le_pi_principal (s : (i : ι) → Set (α i)) :
     𝓟 (univ.pi s) ≤ pi fun i ↦ 𝓟 (s i) :=
@@ -127,19 +127,19 @@ theorem pi_inf_principal_univ_pi_eq_bot :
   · simp only [inf_principal_eq_bot, mem_pi]
     contrapose!
     rintro (hsf : ∀ i, ∃ᶠ x in f i, x ∈ s i) I - t htf hts
-    have : ∀ i, (s i ∩ t i).Nonempty := fun i => ((hsf i).and_eventually (htf i)).exists
+    have : ∀ i, (s i ∩ t i).Nonempty := fun i ↦ ((hsf i).and_eventually (htf i)).exists
     choose x hxs hxt using this
     exact hts (fun i _ => hxt i) (mem_univ_pi.2 hxs)
   · simp only [inf_principal_eq_bot]
     rintro ⟨i, hi⟩
-    filter_upwards [mem_pi_of_mem i hi] with x using mt fun h => h i trivial
+    filter_upwards [mem_pi_of_mem i hi] with x using mt fun h ↦ h i trivial
 
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
   classical
   rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
-  refine exists_congr fun i => ?_
+  refine exists_congr fun i ↦ ?_
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']
 
 @[simp]
@@ -180,9 +180,9 @@ theorem pi_le_pi [∀ i, NeBot (f₁ i)] : pi f₁ ≤ pi f₂ ↔ ∀ i, f₁ i
 
 @[simp]
 theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
-  refine ⟨fun h => ?_, congr_arg pi⟩
+  refine ⟨fun h ↦ ?_, congr_arg pi⟩
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
-  haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
+  haveI : ∀ i, NeBot (f₂ i) := fun i ↦ neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)
 
 theorem tendsto_piMap_pi {β : ι → Type*} {f : ∀ i, α i → β i} {l : ∀ i, Filter (α i)}
@@ -242,20 +242,20 @@ theorem coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filte
 
 @[mono]
 theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
-  iSup_mono fun i => comap_mono (hf i)
+  iSup_mono fun i ↦ comap_mono (hf i)
 
 variable {β : ι → Type*} {m : ∀ i, α i → β i}
 
 theorem map_pi_map_coprodᵢ_le :
-    map (fun k : ∀ i, α i => fun i => m i (k i)) (Filter.coprodᵢ f) ≤
-      Filter.coprodᵢ fun i => map (m i) (f i) := by
+    map (fun k : ∀ i, α i => fun i ↦ m i (k i)) (Filter.coprodᵢ f) ≤
+      Filter.coprodᵢ fun i ↦ map (m i) (f i) := by
   simp only [le_def, mem_map, mem_coprodᵢ_iff]
   intro s h i
   obtain ⟨t, H, hH⟩ := h i
   exact ⟨{ x : α i | m i x ∈ t }, H, fun x hx => hH hx⟩
 
 theorem Tendsto.pi_map_coprodᵢ {g : ∀ i, Filter (β i)} (h : ∀ i, Tendsto (m i) (f i) (g i)) :
-    Tendsto (fun k : ∀ i, α i => fun i => m i (k i)) (Filter.coprodᵢ f) (Filter.coprodᵢ g) :=
+    Tendsto (fun k : ∀ i, α i => fun i ↦ m i (k i)) (Filter.coprodᵢ f) (Filter.coprodᵢ g) :=
   map_pi_map_coprodᵢ_le.trans (coprodᵢ_mono h)
 
 end CoprodCat

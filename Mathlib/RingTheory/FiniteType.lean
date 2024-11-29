@@ -93,7 +93,7 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
-  refine ⟨⟨s, eq_top_iff.2 fun b => ?_⟩⟩
+  refine ⟨⟨s, eq_top_iff.2 fun b ↦ ?_⟩⟩
   have le : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S s) := by
     apply (Algebra.adjoin_le _ : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S ↑s))
     simp only [Subalgebra.coe_restrictScalars]
@@ -201,7 +201,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   rfl
 
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
-  S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
+  S.fg_top.symm.trans ⟨fun h ↦ ⟨h⟩, fun h ↦ h.out⟩
 
 end FiniteType
 
@@ -240,7 +240,7 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg 
   exact Algebra.FiniteType.of_surjective hf
     { g with
       toFun := g
-      commutes' := fun a => rfl }
+      commutes' := fun a ↦ rfl }
     hg
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
@@ -368,8 +368,8 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
     ∃ G : Finset M, Algebra.adjoin R (of' R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
   letI : DecidableEq M := Classical.decEq M
-  use Finset.biUnion S fun f => f.support
-  have : (Finset.biUnion S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
+  use Finset.biUnion S fun f ↦ f.support
+  have : (Finset.biUnion S fun f ↦ f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
     simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
@@ -378,7 +378,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
-  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -394,7 +394,7 @@ theorem mem_closure_of_mem_span_closure [Nontrivial R] {m : M} {S : Set M}
   let S' := @Submonoid.closure (Multiplicative M) Multiplicative.mulOneClass S
   have h' : Submonoid.map (of R M) S' = Submonoid.closure ((fun x : M => (of R M) x) '' S) :=
     MonoidHom.map_mclosure _ _
-  rw [Set.image_congr' (show ∀ x, of' R M x = of R M x from fun x => of'_eq_of x), ← h'] at h
+  rw [Set.image_congr' (show ∀ x, of' R M x = of R M x from fun x ↦ of'_eq_of x), ← h'] at h
   simpa using of'_mem_span.1 h
 
 end Ring
@@ -466,9 +466,9 @@ variable {R M}
 finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
     FiniteType R R[M] ↔ AddMonoid.FG M := by
-  refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
-  refine AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
+  refine AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m ↦ ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
     simp only [hS, top_toSubmodule, Submodule.mem_top]
   rw [adjoin_eq_span] at hm
@@ -541,8 +541,8 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
     ∃ G : Finset M, Algebra.adjoin R (of R M '' G) = ⊤ := by
   obtain ⟨S, hS⟩ := h
   letI : DecidableEq M := Classical.decEq M
-  use Finset.biUnion S fun f => f.support
-  have : (Finset.biUnion S fun f => f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
+  use Finset.biUnion S fun f ↦ f.support
+  have : (Finset.biUnion S fun f ↦ f.support : Set M) = ⋃ f ∈ S, (f.support : Set M) := by
     simp only [Finset.set_biUnion_coe, Finset.coe_biUnion]
   rw [this]
   exact support_gen_of_gen' hS
@@ -551,7 +551,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
-  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -625,7 +625,7 @@ theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
   ⟨fun h =>
     Monoid.fg_iff_add_fg.2 <|
       AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R M,
-    fun h => @MonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
+    fun h ↦ @MonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
 
 /-- If `MonoidAlgebra R M` is of finite type then `M` is finitely generated. -/
 theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R (MonoidAlgebra R M)] :

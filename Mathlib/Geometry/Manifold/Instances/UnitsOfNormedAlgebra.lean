@@ -71,7 +71,7 @@ instance : LieGroup 𝓘(𝕜, R) Rˣ where
     apply ContMDiff.of_comp_isOpenEmbedding Units.isOpenEmbedding_val
     have : (val : Rˣ → R) ∘ (fun x : Rˣ => x⁻¹) = Ring.inverse ∘ val := by ext; simp
     rw [this, ContMDiff]
-    refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)
+    refine fun x ↦ ContMDiffAt.comp x ?_ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ring_inverse _ _
 

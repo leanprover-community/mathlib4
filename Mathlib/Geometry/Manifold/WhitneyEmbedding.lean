@@ -119,7 +119,7 @@ theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCover
     ContinuousLinearEquiv.ofFinrankEq finrank_euclideanSpace_fin.symm
   refine ⟨_, eEF ∘ f.embeddingPiTangent,
     eEF.toDiffeomorph.contMDiff.comp f.embeddingPiTangent.contMDiff,
-    eEF.injective.comp f.embeddingPiTangent_injective, fun x => ?_⟩
+    eEF.injective.comp f.embeddingPiTangent_injective, fun x ↦ ?_⟩
   rw [mfderiv_comp _ eEF.differentiableAt.mdifferentiableAt
       (f.embeddingPiTangent.contMDiff.mdifferentiableAt le_top),
     eEF.mfderiv_eq]

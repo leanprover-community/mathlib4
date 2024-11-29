@@ -54,8 +54,8 @@ protected def directSum :
     refine LinearMap.flip ?_
     refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
     refine AlgebraTensorModule.curry ?_
-    exact DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
-  · refine DirectSum.toModule S _ _ fun i => ?_
+    exact DirectSum.lof S (ι₁ × ι₂) (fun i ↦ M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
+  · refine DirectSum.toModule S _ _ fun i ↦ ?_
     exact AlgebraTensorModule.map (DirectSum.lof S _ M₁ i.1) (DirectSum.lof R _ M₂ i.2)
   · refine DirectSum.linearMap_ext S fun ⟨i₁, i₂⟩ => ?_
     refine TensorProduct.AlgebraTensorModule.ext fun m₁ m₂ => ?_
@@ -80,8 +80,8 @@ protected def directSum :
         (lift <|
           DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| DirectSum.toModule R _ _ fun i₂ =>
                 LinearMap.flip <| curry <|
-                  DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))
-        (DirectSum.toModule R _ _ fun i => map (DirectSum.lof R _ _ _) (DirectSum.lof R _ _ _)) _
+                  DirectSum.lof R (ι₁ × ι₂) (fun i ↦ M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))
+        (DirectSum.toModule R _ _ fun i ↦ map (DirectSum.lof R _ _ _) (DirectSum.lof R _ _ _)) _
         _ <;>
     [ext ⟨i₁, i₂⟩ x₁ x₂ : 4, ext i₁ i₂ x₁ x₂ : 5]
   repeat'
@@ -99,7 +99,7 @@ protected def directSum :
             (φ := fun i₁ => LinearMap.flip <|
               DirectSum.toModule (R := R) (M := M₂) (N := ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2)
               (φ := fun i₂ => LinearMap.flip <| curry <|
-                  DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))))
+                  DirectSum.lof R (ι₁ × ι₂) (fun i ↦ M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))))
         (DirectSum.toModule
           (R := R)
           (M := fun i : ι₁ × ι₂ => M₁ i.1 ⊗[R] M₂ i.2)
@@ -118,7 +118,7 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
   LinearEquiv.ofLinear
     (lift <|
       DirectSum.toModule R _ _ fun _ =>
-        (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i => M₁ i ⊗[R] M₂') _)
+        (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i ↦ M₁ i ⊗[R] M₂') _)
     (DirectSum.toModule R _ _ fun _ => rTensor _ (DirectSum.lof R ι₁ _ _))
     (DirectSum.linearMap_ext R fun i =>
       TensorProduct.ext <|
@@ -143,13 +143,13 @@ variable {M₁ M₁' M₂ M₂'}
 @[simp]
 theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
     TensorProduct.directSum R S M₁ M₂ (DirectSum.lof S ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) =
-      DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
+      DirectSum.lof S (ι₁ × ι₂) (fun i ↦ M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
   simp [TensorProduct.directSum]
 
 @[simp]
 theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
     (TensorProduct.directSum R S M₁ M₂).symm
-      (DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
+      (DirectSum.lof S (ι₁ × ι₂) (fun i ↦ M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
       (DirectSum.lof S ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
   rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
 

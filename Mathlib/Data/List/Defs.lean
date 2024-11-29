@@ -62,7 +62,7 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM fun a => (tac a) $> a
+  List.firstM fun a ↦ (tac a) $> a
 
 /-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
 true. `findM?` short-circuits, so `p` is not necessarily run on every `a` in
@@ -284,7 +284,7 @@ def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l �
       -- pattern matching on `hx` too makes this not reducible!
       let ⟨a, ha⟩ :=
         chooseX ls
-          (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
+          (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e ↦ pl <| e ▸ h₂, h₂⟩)
       ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,
@@ -326,7 +326,7 @@ map₂Left' prod.mk [1] ['a', 'b'] = ([(1, some 'a')], ['b'])
 @[simp]
 def map₂Left' (f : α → Option β → γ) : List α → List β → List γ × List β
   | [], bs => ([], bs)
-  | a :: as, [] => ((a :: as).map fun a => f a none, [])
+  | a :: as, [] => ((a :: as).map fun a ↦ f a none, [])
   | a :: as, b :: bs =>
     let rec' := map₂Left' f as bs
     (f a (some b) :: rec'.fst, rec'.snd)
@@ -361,7 +361,7 @@ map₂Left f as bs = (map₂Left' f as bs).fst
 @[simp]
 def map₂Left (f : α → Option β → γ) : List α → List β → List γ
   | [], _ => []
-  | a :: as, [] => (a :: as).map fun a => f a none
+  | a :: as, [] => (a :: as).map fun a ↦ f a none
   | a :: as, b :: bs => f a (some b) :: map₂Left f as bs
 
 /-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each

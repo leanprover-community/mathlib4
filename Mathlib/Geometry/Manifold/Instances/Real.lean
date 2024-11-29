@@ -169,7 +169,7 @@ model for manifolds with corners -/
 def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
-  invFun x := ⟨fun i => max (x i) 0, fun i => by simp only [le_refl, or_true, le_max_iff]⟩
+  invFun x := ⟨fun i ↦ max (x i) 0, fun i ↦ by simp only [le_refl, or_true, le_max_iff]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
@@ -189,7 +189,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
-    (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
+    (continuous_pi fun i ↦ (continuous_id.max continuous_const).comp (continuous_apply i)) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]

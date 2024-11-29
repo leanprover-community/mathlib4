@@ -67,7 +67,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
     exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
-  · exact Eventually.of_forall fun x => (ha.1 x.2).trans_lt hb
+  · exact Eventually.of_forall fun x ↦ (ha.1 x.2).trans_lt hb
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.infConvergenceClass [TopologicalSpace α] [LinearOrder α]
@@ -86,7 +86,7 @@ theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
   suffices Tendsto (rangeFactorization f) atTop atTop from
     (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
-  exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
+  exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b ↦ b.2.imp fun a ha => ha.ge
 
 theorem tendsto_atBot_isLUB (h_anti : Antitone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_anti.dual_left ha using 1
@@ -181,7 +181,7 @@ instance Pi.supConvergenceClass
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine ⟨fun f s h => ?_⟩
   simp only [isLUB_pi, ← range_restrict] at h
-  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
+  exact tendsto_pi_nhds.2 fun i ↦ tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
 
 instance Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
@@ -259,7 +259,7 @@ theorem isLUB_of_tendsto_atTop [TopologicalSpace α] [Preorder α] [OrderClosedT
   constructor
   · rintro _ ⟨b, rfl⟩
     exact hf.ge_of_tendsto ha b
-  · exact fun _ hb => le_of_tendsto' ha fun x => hb (Set.mem_range_self x)
+  · exact fun _ hb => le_of_tendsto' ha fun x ↦ hb (Set.mem_range_self x)
 
 theorem isGLB_of_tendsto_atBot [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Nonempty β] [SemilatticeInf β] {f : β → α} {a : α} (hf : Monotone f)
@@ -292,7 +292,7 @@ theorem iSup_eq_iSup_subseq_of_monotone {ι₁ ι₂ α : Type*} [Preorder ι₂
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : i ≤ φ j) => hf hj) (hφ.eventually <| eventually_ge_atTop i).exists)
-    (iSup_mono' fun i => ⟨φ i, le_rfl⟩)
+    (iSup_mono' fun i ↦ ⟨φ i, le_rfl⟩)
 
 theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type*} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
@@ -300,7 +300,7 @@ theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type*} [Preorder ι₂
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : φ j ≤ i) => hf hj) (hφ.eventually <| eventually_le_atBot i).exists)
-    (iSup_mono' fun i => ⟨φ i, le_rfl⟩)
+    (iSup_mono' fun i ↦ ⟨φ i, le_rfl⟩)
 
 theorem iInf_eq_iInf_subseq_of_monotone {ι₁ ι₂ α : Type*} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)

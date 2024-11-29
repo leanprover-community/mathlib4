@@ -56,9 +56,9 @@ theorem SupIrred.not_isMin (ha : SupIrred a) : ¬IsMin a :=
 theorem SupPrime.not_isMin (ha : SupPrime a) : ¬IsMin a :=
   ha.1
 
-theorem IsMin.not_supIrred (ha : IsMin a) : ¬SupIrred a := fun h => h.1 ha
+theorem IsMin.not_supIrred (ha : IsMin a) : ¬SupIrred a := fun h ↦ h.1 ha
 
-theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
+theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h ↦ h.1 ha
 
 @[simp]
 theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a := by
@@ -75,7 +75,7 @@ protected theorem SupPrime.supIrred : SupPrime a → SupIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.ge
 
 theorem SupPrime.le_sup (ha : SupPrime a) : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
-  ⟨fun h => ha.2 h, fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
+  ⟨fun h ↦ ha.2 h, fun h ↦ h.elim le_sup_of_le_left le_sup_of_le_right⟩
 
 variable [OrderBot α] {s : Finset ι} {f : ι → α}
 
@@ -140,10 +140,10 @@ def InfPrime (a : α) : Prop :=
   ¬IsMax a ∧ ∀ ⦃b c⦄, b ⊓ c ≤ a → b ≤ a ∨ c ≤ a
 
 @[simp]
-theorem IsMax.not_infIrred (ha : IsMax a) : ¬InfIrred a := fun h => h.1 ha
+theorem IsMax.not_infIrred (ha : IsMax a) : ¬InfIrred a := fun h ↦ h.1 ha
 
 @[simp]
-theorem IsMax.not_infPrime (ha : IsMax a) : ¬InfPrime a := fun h => h.1 ha
+theorem IsMax.not_infPrime (ha : IsMax a) : ¬InfPrime a := fun h ↦ h.1 ha
 
 @[simp]
 theorem not_infIrred : ¬InfIrred a ↔ IsMax a ∨ ∃ b c, b ⊓ c = a ∧ a < b ∧ a < c :=
@@ -157,7 +157,7 @@ protected theorem InfPrime.infIrred : InfPrime a → InfIrred a :=
   And.imp_right fun h b c ha => by simpa [← ha] using h ha.le
 
 theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ a :=
-  ⟨fun h => ha.2 h, fun h => h.elim inf_le_of_left_le inf_le_of_right_le⟩
+  ⟨fun h ↦ ha.2 h, fun h ↦ h.elim inf_le_of_left_le inf_le_of_right_le⟩
 
 variable [OrderTop α] {s : Finset ι} {f : ι → α}
 

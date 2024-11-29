@@ -142,7 +142,7 @@ def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
         fun ctor fields => do
           let m ← mkFreshExprSyntheticOpaqueMVar target
           let args := fields.map Expr.fvar
-          let args₀ ← args.mapM fun a => do
+          let args₀ ← args.mapM fun a ↦ do
             let b := xtype.occurs (← inferType a)
             return (b, a)
           mapConstructor
@@ -187,7 +187,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
 def mkInstanceNameForTypeExpr (type : Expr) : TermElabM Name := do
   let result ← do
     let ref ← IO.mkRef ""
-    Meta.forEachExpr type fun e => do
+    Meta.forEachExpr type fun e ↦ do
       if e.isForall then ref.modify (· ++ "ForAll")
       else if e.isProp then ref.modify (· ++ "Prop")
       else if e.isType then ref.modify (· ++ "Type")
@@ -252,9 +252,9 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
 def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
     (deps : List DerivingHandler := [])
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
-    DerivingHandler := fun a => do
+    DerivingHandler := fun a ↦ do
   let #[n] := a | return false -- mutually inductive types are not supported yet
-  let ok ← deps.mapM fun f => f a
+  let ok ← deps.mapM fun f ↦ f a
   unless ok.and do return false
   liftTermElabM <| mkOneInstance n cls tac mkInst
   return true
@@ -273,7 +273,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
     s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s
     if b then
       let hs ← getPropHyps
-      s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
+      s ← hs.foldlM (fun s f => f.getDecl >>= fun d ↦ s.add (.fvar f) #[] d.toExpr) s
     return { simpTheorems := #[s] }
   let .app (.app (.const ``LawfulFunctor _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
@@ -348,8 +348,8 @@ def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List E
   let args' ← args₁.mapM (fun (y : Bool × Expr) =>
       if y.1 then return (true, mkAppN (.fvar ad) #[g.appFn!, applInst, α, β, f, y.2])
       else traverseField n g.appFn! f α y.2)
-  let gargs := args'.filterMap (fun y => if y.1 then some y.2 else none)
-  let v ← mkFunCtor c (args₀.map (fun e => (false, e)) ++ args')
+  let gargs := args'.filterMap (fun y ↦ if y.1 then some y.2 else none)
+  let v ← mkFunCtor c (args₀.map (fun e ↦ (false, e)) ++ args')
   let pureInst ← mkAppOptM ``Applicative.toPure #[none, applInst]
   let constr' ← mkAppOptM ``Pure.pure #[none, pureInst, none, v]
   let r ← gargs.foldlM
@@ -364,7 +364,7 @@ where
     | (true, x) :: xs =>
       let n ← mkFreshUserName `x
       let t ← inferType x
-      withLocalDeclD n t.appArg! fun y => mkFunCtor c xs (fvars.push y) (aargs.push y)
+      withLocalDeclD n t.appArg! fun y ↦ mkFunCtor c xs (fvars.push y) (aargs.push y)
     | (false, x) :: xs => mkFunCtor c xs fvars (aargs.push x)
     | [] => liftM <| mkAppOptM c (aargs.map some) >>= mkLambdaFVars fvars
 
@@ -382,7 +382,7 @@ def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
         fun ctor fields => do
           let m ← mkFreshExprSyntheticOpaqueMVar target
           let args := fields.map Expr.fvar
-          let args₀ ← args.mapM fun a => do
+          let args₀ ← args.mapM fun a ↦ do
             let b := xtype.occurs (← inferType a)
             return (b, a)
           traverseConstructor
@@ -466,7 +466,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s
     if b then
       let hs ← getPropHyps
-      s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
+      s ← hs.foldlM (fun s f => f.getDecl >>= fun d ↦ s.add (.fvar f) #[] d.toExpr) s
     pure <|
     { config := { failIfUnchanged := false, unfoldPartialApp := true },
       simpTheorems := #[s] }

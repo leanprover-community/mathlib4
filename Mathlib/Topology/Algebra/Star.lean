@@ -41,25 +41,25 @@ theorem tendsto_star (a : R) : Tendsto star (𝓝 a) (𝓝 (star a)) :=
   continuousAt_star
 
 theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto f l (𝓝 y)) :
-    Tendsto (fun x => star (f x)) l (𝓝 (star y)) :=
+    Tendsto (fun x ↦ star (f x)) l (𝓝 (star y)) :=
   (continuous_star.tendsto y).comp h
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
 @[continuity, fun_prop]
-theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
+theorem Continuous.star (hf : Continuous f) : Continuous fun x ↦ star (f x) :=
   continuous_star.comp hf
 
 @[fun_prop]
-theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x => star (f x)) x :=
+theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x ↦ star (f x)) x :=
   continuousAt_star.comp hf
 
 @[fun_prop]
-theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star (f x)) s :=
+theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x ↦ star (f x)) s :=
   continuous_star.comp_continuousOn hf
 
 theorem ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => star (f x)) s x :=
+    ContinuousWithinAt (fun x ↦ star (f x)) s x :=
   Filter.Tendsto.star hf
 
 /-- The star operation bundled as a continuous map. -/
@@ -79,7 +79,7 @@ instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [Continuous
 
 instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i) where
-  continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
+  continuous_star := continuous_pi fun i ↦ Continuous.star (continuous_apply i)
 
 instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩

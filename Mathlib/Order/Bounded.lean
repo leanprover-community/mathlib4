@@ -91,7 +91,7 @@ theorem unbounded_lt_of_unbounded_le [Preorder α] (h : Unbounded (· ≤ ·) s)
 
 theorem bounded_le_iff_bounded_lt [Preorder α] [NoMaxOrder α] :
     Bounded (· ≤ ·) s ↔ Bounded (· < ·) s := by
-  refine ⟨fun h => ?_, bounded_le_of_bounded_lt⟩
+  refine ⟨fun h ↦ ?_, bounded_le_of_bounded_lt⟩
   obtain ⟨a, ha⟩ := h
   obtain ⟨b, hb⟩ := exists_gt a
   exact ⟨b, fun c hc => lt_of_le_of_lt (ha c hc) hb⟩

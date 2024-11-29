@@ -42,7 +42,7 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
       limit.lift (F ⊗ G)
         { pt := limit F ⊗ limit G
           π :=
-            { app := fun j => limit.π F j ⊗ limit.π G j
+            { app := fun j ↦ limit.π F j ⊗ limit.π G j
               naturality := fun j j' f => by
                 dsimp
                 simp only [Category.id_comp, ← tensor_comp, limit.w] } })

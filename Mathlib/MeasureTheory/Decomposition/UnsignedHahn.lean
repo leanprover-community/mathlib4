@@ -32,13 +32,13 @@ variable {α : Type*} [MeasurableSpace α] {μ ν : Measure α}
 theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s, MeasurableSet s ∧ (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧
       ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
-  let d : Set α → ℝ := fun s => ((μ s).toNNReal : ℝ) - (ν s).toNNReal
+  let d : Set α → ℝ := fun s ↦ ((μ s).toNNReal : ℝ) - (ν s).toNNReal
   let c : Set ℝ := d '' { s | MeasurableSet s }
   let γ : ℝ := sSup c
   have hμ : ∀ s, μ s ≠ ∞ := measure_ne_top μ
   have hν : ∀ s, ν s ≠ ∞ := measure_ne_top ν
-  have to_nnreal_μ : ∀ s, ((μ s).toNNReal : ℝ≥0∞) = μ s := fun s => ENNReal.coe_toNNReal <| hμ _
-  have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
+  have to_nnreal_μ : ∀ s, ((μ s).toNNReal : ℝ≥0∞) = μ s := fun s ↦ ENNReal.coe_toNNReal <| hμ _
+  have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s ↦ ENNReal.coe_toNNReal <| hν _
   have d_split s t (ht : MeasurableSet t) : d s = d (s \ t) + d (s ∩ t) := by
     dsimp only [d]
     rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
@@ -47,14 +47,14 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     simp only [sub_eq_add_neg, neg_add]
     abel
   have d_Union (s : ℕ → Set α) (hm : Monotone s) :
-    Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋃ n, s n))) := by
+    Tendsto (fun n ↦ d (s n)) atTop (𝓝 (d (⋃ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
       refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal ?_).comp <|
         tendsto_measure_iUnion_atTop hm
     · exact hμ _
     · exact hν _
   have d_Inter (s : ℕ → Set α) (hs : ∀ n, MeasurableSet (s n)) (hm : ∀ n m, n ≤ m → s m ⊆ s n) :
-        Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋂ n, s n))) := by
+        Tendsto (fun n ↦ d (s n)) atTop (𝓝 (d (⋂ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
       refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal <| ?_).comp <|
         tendsto_measure_iInter_atTop (fun n ↦ (hs n).nullMeasurableSet) hm ?_
@@ -73,8 +73,8 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     exact ⟨s, hs, hlt⟩
   rcases Classical.axiom_of_choice this with ⟨e, he⟩
   change ℕ → Set α at e
-  have he₁ : ∀ n, MeasurableSet (e n) := fun n => (he n).1
-  have he₂ : ∀ n, γ - (1 / 2) ^ n < d (e n) := fun n => (he n).2
+  have he₁ : ∀ n, MeasurableSet (e n) := fun n ↦ (he n).1
+  have he₂ : ∀ n, γ - (1 / 2) ^ n < d (e n) := fun n ↦ (he n).2
   let f : ℕ → ℕ → Set α := fun n m => (Finset.Ico n (m + 1)).inf e
   have hf n m : MeasurableSet (f n m) := by
     simp only [f, Finset.inf_eq_iInf]
@@ -118,12 +118,12 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
           tendsto_const_nhds.mul <|
             tendsto_pow_atTop_nhds_zero_of_lt_one (le_of_lt <| half_pos <| zero_lt_one)
               (half_lt_self zero_lt_one)
-    have hd : Tendsto (fun m => d (⋂ n, f m n)) atTop (𝓝 (d (⋃ m, ⋂ n, f m n))) := by
+    have hd : Tendsto (fun m ↦ d (⋂ n, f m n)) atTop (𝓝 (d (⋃ m, ⋂ n, f m n))) := by
       refine d_Union _ ?_
       exact fun n m hnm =>
-        subset_iInter fun i => Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm <| le_rfl
-    refine le_of_tendsto_of_tendsto' hγ hd fun m => ?_
-    have : Tendsto (fun n => d (f m n)) atTop (𝓝 (d (⋂ n, f m n))) := by
+        subset_iInter fun i ↦ Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm <| le_rfl
+    refine le_of_tendsto_of_tendsto' hγ hd fun m ↦ ?_
+    have : Tendsto (fun n ↦ d (f m n)) atTop (𝓝 (d (⋂ n, f m n))) := by
       refine d_Inter _ ?_ ?_
       · intro n
         exact hf _ _
@@ -133,7 +133,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     change γ - 2 * (1 / 2) ^ m ≤ d (f m n)
     refine le_trans ?_ (le_d_f _ _ hmn)
     exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos <| zero_lt_one) _)
-  have hs : MeasurableSet s := MeasurableSet.iUnion fun n => MeasurableSet.iInter fun m => hf _ _
+  have hs : MeasurableSet s := MeasurableSet.iUnion fun n ↦ MeasurableSet.iInter fun m ↦ hf _ _
   refine ⟨s, hs, ?_, ?_⟩
   · intro t ht hts
     have : 0 ≤ d t :=

@@ -71,7 +71,7 @@ While we may want to switch to this behavior later, doing it mid-port will break
 /-- Coercion of a `PartialHomeomorph` to function.
 Note that a `PartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
-  ⟨fun e => e.toFun'⟩
+  ⟨fun e ↦ e.toFun'⟩
 
 /-- The inverse of a partial homeomorphism -/
 @[symm]
@@ -230,7 +230,7 @@ theorem eventually_ne_nhdsWithin {x} (hx : x ∈ e.source) :
     ∀ᶠ x' in 𝓝[≠] x, e x' ≠ e x :=
   eventually_nhdsWithin_iff.2 <|
     (e.eventually_left_inverse hx).mono fun x' hx' =>
-      mt fun h => by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
+      mt fun h ↦ by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
 
 theorem nhdsWithin_source_inter {x} (hx : x ∈ e.source) (s : Set X) : 𝓝[e.source ∩ s] x = 𝓝[s] x :=
   nhdsWithin_inter_of_mem (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds e.open_source hx)
@@ -454,7 +454,7 @@ theorem symm_apply_mem_iff (h : e.IsImage s t) (hy : y ∈ e.target) : e.symm y 
 
 @[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
   h.toPartialEquiv.mapsTo
@@ -632,7 +632,7 @@ theorem restr_univ {e : PartialHomeomorph X Y} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
-  refine PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
+  refine PartialHomeomorph.ext _ _ (fun x ↦ rfl) (fun x ↦ rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
 
 /-- The identity on the whole space as a partial homeomorphism. -/
@@ -909,7 +909,7 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
 @[simps toPartialEquiv]
 def pi : PartialHomeomorph (∀ i, X i) (∀ i, Y i) where
-  toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
+  toPartialEquiv := PartialEquiv.pi fun i ↦ (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
   open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
   continuousOn_toFun := continuousOn_pi.2 fun i =>
@@ -1050,8 +1050,8 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
-    left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
-    right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
+    left_inv := fun a ↦ Subtype.ext (e.left_inv (hs a.2))
+    right_inv := fun b ↦ Subtype.eq <| e.right_inv (h₂ b.2)
     continuous_toFun := (e.continuousOn.mono hs).restrict_mapsTo h₁
     continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
 

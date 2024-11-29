@@ -243,8 +243,8 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     intro n a
     refine Int.induction_on n ?_ ?_ ?_
     · simpa only [T_zero, mul_one] using h_C a
-    · exact fun m => h_C_mul_T m a
-    · exact fun m => h_C_mul_T_Z m a
+    · exact fun m ↦ h_C_mul_T m a
+    · exact fun m ↦ h_C_mul_T_Z m a
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.toFun n) * T n) := by
     apply Finset.induction
     · convert h_C 0
@@ -270,7 +270,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
     M p := by
-  refine p.induction_on (fun a => ?_) (fun {p q} => h_add p q) ?_ ?_ <;>
+  refine p.induction_on (fun a ↦ ?_) (fun {p q} => h_add p q) ?_ ?_ <;>
       try exact fun n f _ => h_C_mul_T _ f
   convert h_C_mul_T 0 a
   exact (mul_one _).symm
@@ -313,7 +313,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
 @[simp]
 theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
-  refine fun f => f.induction_on' ?_ ?_
+  refine fun f ↦ f.induction_on' ?_ ?_
   · intro f g hf hg
     simp only [hf, hg, _root_.map_add]
   · intro n r
@@ -330,7 +330,7 @@ theorem _root_.Polynomial.toLaurent_injective :
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
-  ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
+  ⟨fun h ↦ Polynomial.toLaurent_injective h, congr_arg _⟩
 
 theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
   map_ne_zero_iff _ Polynomial.toLaurent_injective
@@ -422,7 +422,7 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
-  refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
@@ -501,7 +501,7 @@ theorem isLocalization : IsLocalization (Submonoid.powers (X : R[X])) R[T;T⁻¹
       obtain ⟨n, rfl⟩ := ht
       rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
       exact isUnit_T ↑n
-    surj' := fun f => by
+    surj' := fun f ↦ by
       induction' f using LaurentPolynomial.induction_on_mul_T with f n
       have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩

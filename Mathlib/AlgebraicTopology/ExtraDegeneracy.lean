@@ -141,7 +141,7 @@ namespace StandardSimplex
 /-- When `[HasZero X]`, the shift of a map `f : Fin n → X`
 is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
-  dite (i = 0) (fun _ => 0) fun h => f (i.pred h)
+  dite (i = 0) (fun _ => 0) fun h ↦ f (i.pred h)
 
 @[simp]
 theorem shiftFun_0 {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
@@ -258,8 +258,8 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     (fun i =>
       dite (i = 0)
         (fun _ => WidePullback.base _ ≫ S.section_)
-        (fun h => WidePullback.π _ (i.pred h)))
-    fun i => by
+        (fun h ↦ WidePullback.π _ (i.pred h)))
+    fun i ↦ by
       dsimp
       split_ifs with h
       · subst h
@@ -293,7 +293,7 @@ theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
 noncomputable def extraDegeneracy :
     SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
-  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i => by rw [id_comp]
+  s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i ↦ by rw [id_comp]
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by
     dsimp
@@ -387,7 +387,7 @@ noncomputable def homotopyEquiv {C : Type*} [Category C] [Preadditive C] [HasZer
         · exfalso
           exact hij h
         · simp only [eq_self_iff_true]
-      comm := fun i => by
+      comm := fun i ↦ by
         rcases i with _|i
         · rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
           dsimp

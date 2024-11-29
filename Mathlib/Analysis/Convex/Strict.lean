@@ -85,7 +85,7 @@ theorem Directed.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Dir
 theorem DirectedOn.strictConvex_sUnion {S : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) S)
     (hS : ∀ s ∈ S, StrictConvex 𝕜 s) : StrictConvex 𝕜 (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact (directedOn_iff_directed.1 hdir).strictConvex_iUnion fun s => hS _ s.2
+  exact (directedOn_iff_directed.1 hdir).strictConvex_iUnion fun s ↦ hS _ s.2
 
 end SMul
 
@@ -189,7 +189,7 @@ variable [AddCancelCommMonoid E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => z + x) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun x ↦ z + x) ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
   refine preimage_interior_subset_interior_preimage (continuous_add_left _) ?_
   have h := hs hx hy ((add_right_injective _).ne hxy) ha hb hab
@@ -197,7 +197,7 @@ theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.preimage_add_left (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => x + z) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun x ↦ x + z) ⁻¹' s) := by
   simpa only [add_comm] using hs.preimage_add_right z
 
 end AddCancelCommMonoid
@@ -225,11 +225,11 @@ theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
       (add_mem_add (hs hv hx hvx ha hb hab) <| ht.convex hw hy ha.le hb.le hab)
 
 theorem StrictConvex.add_left (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => z + x) '' s) := by
+    StrictConvex 𝕜 ((fun x ↦ z + x) '' s) := by
   simpa only [singleton_add] using (strictConvex_singleton z).add hs
 
 theorem StrictConvex.add_right (hs : StrictConvex 𝕜 s) (z : E) :
-    StrictConvex 𝕜 ((fun x => x + z) '' s) := by simpa only [add_comm] using hs.add_left z
+    StrictConvex 𝕜 ((fun x ↦ x + z) '' s) := by simpa only [add_comm] using hs.add_left z
 
 /-- The translation of a strictly convex set is also strictly convex. -/
 theorem StrictConvex.vadd (hs : StrictConvex 𝕜 s) (x : E) : StrictConvex 𝕜 (x +ᵥ s) :=
@@ -267,7 +267,7 @@ variable [AddCommGroup E] [Module 𝕜 E] [NoZeroSMulDivisors 𝕜 E] [Continuou
   {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
-    StrictConvex 𝕜 ((fun z => c • z) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun z ↦ c • z) ⁻¹' s) := by
   classical
     obtain rfl | hc := eq_or_ne c 0
     · simp_rw [zero_smul, preimage_const]
@@ -304,7 +304,7 @@ theorem StrictConvex.add_smul_mem (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy
     (hy : y ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • y ∈ interior s := by
   have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> field_simp
   rw [h]
-  exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
+  exact hs hx hxy (fun h ↦ hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
     (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)
 
 theorem StrictConvex.smul_mem_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)

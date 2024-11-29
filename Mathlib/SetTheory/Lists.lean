@@ -139,7 +139,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
   simp [mem_def, or_and_right, exists_or]
 
 theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
-  refine ⟨fun h => ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
+  refine ⟨fun h ↦ ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
   cases' h with l a' a'' l l' e m s
   · cases a
@@ -234,7 +234,7 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
         (match b, l with
         | true, l => D l
         | false, _ => PUnit)
-    by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
+    by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l ↦ (this l).2⟩
   intros b l
   induction' l with a b a l IH₁ IH
   · exact ⟨C0 _, ⟨⟩⟩
@@ -256,7 +256,7 @@ theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
   | ⟨_, Lists'.cons' _ _⟩, _ => rfl
 
 theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
-  refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
   cases' h with _ _ _ h₁ h₂
   · simp [Lists'.Subset.refl]
   · exact ⟨h₁, h₂⟩
@@ -264,7 +264,7 @@ theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ �
 attribute [refl] Equiv.refl
 
 theorem equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
-  ⟨fun h => by cases h; rfl, fun h => h ▸ Equiv.refl _⟩
+  ⟨fun h ↦ by cases h; rfl, fun h ↦ h ▸ Equiv.refl _⟩
 
 @[symm]
 theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
@@ -375,7 +375,7 @@ end Lists
 namespace Lists'
 
 theorem mem_equiv_left {l : Lists' α true} : ∀ {a a'}, a ~ a' → (a ∈ l ↔ a' ∈ l) :=
-  suffices ∀ {a a'}, a ~ a' → a ∈ l → a' ∈ l from fun e => ⟨this e, this e.symm⟩
+  suffices ∀ {a a'}, a ~ a' → a ∈ l → a' ∈ l from fun e ↦ ⟨this e, this e.symm⟩
   fun e₁ ⟨_, m₃, e₂⟩ => ⟨_, m₃, e₁.symm.trans e₂⟩
 
 theorem mem_of_subset {a} {l₁ l₂ : Lists' α true} (s : l₁ ⊆ l₂) : a ∈ l₁ → a ∈ l₂

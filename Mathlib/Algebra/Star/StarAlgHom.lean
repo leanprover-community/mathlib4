@@ -246,7 +246,7 @@ instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
   { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
     inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
     zero_mul := fun _ => ext fun _ => rfl
-    mul_zero := fun f => ext fun _ => map_zero f }
+    mul_zero := fun f ↦ ext fun _ => map_zero f }
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙₐ[R] B) : A → B) = 0 :=
@@ -506,7 +506,7 @@ variable {R A B C}
 @[simps!]
 def prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : A →⋆ₙₐ[R] B × C :=
   { f.toNonUnitalAlgHom.prod g.toNonUnitalAlgHom with
-    map_star' := fun x => by simp [map_star, Prod.star_def] }
+    map_star' := fun x ↦ by simp [map_star, Prod.star_def] }
 
 theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
@@ -551,7 +551,7 @@ def inr : B →⋆ₙₐ[R] A × B :=
 variable {R A B}
 
 @[simp]
-theorem coe_inl : (inl R A B : A → A × B) = fun x => (x, 0) :=
+theorem coe_inl : (inl R A B : A → A × B) = fun x ↦ (x, 0) :=
   rfl
 
 theorem inl_apply (x : A) : inl R A B x = (x, 0) :=
@@ -588,7 +588,7 @@ variable {R A B C}
 /-- The `Pi.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : A →⋆ₐ[R] B × C :=
-  { f.toAlgHom.prod g.toAlgHom with map_star' := fun x => by simp [Prod.star_def, map_star] }
+  { f.toAlgHom.prod g.toAlgHom with map_star' := fun x ↦ by simp [Prod.star_def, map_star] }
 
 theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
@@ -748,7 +748,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
-    map_star' := fun b => by
+    map_star' := fun b ↦ by
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_star e (inv e b)).symm
     map_smul' := fun r b => by

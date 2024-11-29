@@ -111,7 +111,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inr z) := by
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
-  refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
+  refine le_ciInf_add fun p ↦ ciInf_le_of_le ⟨0, ?_⟩ p ?_
   · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
@@ -120,9 +120,9 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
     glueDist Φ Ψ ε (.inl x) (.inl z) ≤
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inl z) := by
   simp_rw [glueDist, add_add_add_comm _ ε, add_assoc]
-  refine le_ciInf_add fun p => ?_
+  refine le_ciInf_add fun p ↦ ?_
   rw [add_left_comm, add_assoc, ← two_mul]
-  refine le_ciInf_add fun q => ?_
+  refine le_ciInf_add fun q ↦ ?_
   rw [dist_comm z]
   linarith [dist_triangle4 x (Φ p) (Φ q) z, dist_triangle_left (Ψ p) (Ψ q) y, (abs_le.1 (H p q)).2]
 
@@ -384,7 +384,7 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
       calc
         1 ≤ Sigma.dist ⟨i, x⟩ ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := hy.trans_le (min_le_right _ _)
-  · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
+  · refine fun H => isOpen_sigma_iff.2 fun i ↦ Metric.isOpen_iff.2 fun x hx => ?_
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
     refine ⟨ε, εpos, fun y hy => ?_⟩
@@ -427,9 +427,9 @@ theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σk, E k) :=
 
 /-- A disjoint union of complete metric spaces is complete. -/
 protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σi, E i) := by
-  set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
+  set s : ι → Set (Σi, E i) := fun i ↦ Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
-  have hc : ∀ i, IsComplete (s i) := fun i => by
+  have hc : ∀ i, IsComplete (s i) := fun i ↦ by
     simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).isUniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>

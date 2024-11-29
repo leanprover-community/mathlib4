@@ -95,7 +95,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     (bound : ∀ x ∈ Ico a b, f x = B x → f' x < B' x) : ∀ ⦃x⦄, x ∈ Icc a b → f x ≤ B x := by
   change Icc a b ⊆ { x | f x ≤ B x }
   set s := { x | f x ≤ B x } ∩ Icc a b
-  have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prod hB
+  have A : ContinuousOn (fun x ↦ (f x, B x)) (Icc a b) := hf.prod hB
   have : IsClosed s := by
     simp only [s, inter_comm]
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
@@ -107,7 +107,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
       A x (Ico_subset_Icc_self xab) (IsOpen.mem_nhds (isOpen_lt continuous_fst continuous_snd) hxB)
     have : ∀ᶠ x in 𝓝[>] x, f x < B x := nhdsWithin_le_of_mem (Icc_mem_nhdsWithin_Ioi xab) this
-    exact this.mono fun y => le_of_lt
+    exact this.mono fun y ↦ le_of_lt
   · rcases exists_between (bound x xab hxB) with ⟨r, hfr, hrB⟩
     specialize hf' x xab r hfr
     have HB : ∀ᶠ z in 𝓝[>] x, r < slope B x z :=
@@ -165,7 +165,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
       exact (lt_add_iff_pos_right _).2 hr
     exact hx
   intro x hx
-  have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 :=
+  have : ContinuousWithinAt (fun r ↦ B x + r * (x - a)) (Ioi 0) 0 :=
     continuousWithinAt_const.add (continuousWithinAt_id.mul continuousWithinAt_const)
   convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
@@ -603,7 +603,7 @@ theorem _root_.eq_of_fderiv_eq
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-  suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
+  suffices Set.univ.EqOn f g from funext fun x ↦ this <| mem_univ x
   exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
     uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
 
@@ -674,7 +674,7 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← deriv_fderiv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (fun z ↦ by ext; simp [← deriv_fderiv, hf']) _ _
 
 end Convex
 
@@ -815,7 +815,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
           refine nhdsWithin_eq_nhdsWithin' (s := Ioi a) (Ioi_mem_nhds hz''.1) ?_
           simp only [Ioc_inter_Ioi, le_refl, sup_of_le_left]
           ext y
-          exact ⟨fun h => ⟨mem_Icc_of_Ioc h, mem_of_mem_inter_left h⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
+          exact ⟨fun h ↦ ⟨mem_Icc_of_Ioc h, mem_of_mem_inter_left h⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
         rw [← hfinal]
         exact self_mem_nhdsWithin
       have hcont : ContinuousOn f (Icc a b) := by
@@ -946,7 +946,7 @@ theorem Convex.image_sub_lt_mul_sub_of_deriv_lt {D : Set ℝ} (hD : Convex ℝ D
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (lt_hf' : ∀ x ∈ interior D, deriv f x < C) (x : ℝ) (hx : x ∈ D) (y : ℝ) (hy : y ∈ D)
     (hxy : x < y) : f y - f x < C * (y - x) :=
-  have hf'_gt : ∀ x ∈ interior D, -C < deriv (fun y => -f y) x := fun x hx => by
+  have hf'_gt : ∀ x ∈ interior D, -C < deriv (fun y ↦ -f y) x := fun x hx => by
     rw [deriv.neg, neg_lt_neg_iff]
     exact lt_hf' x hx
   by linarith [hD.mul_sub_lt_image_sub_of_lt_deriv hf.neg hf'.neg hf'_gt x hx y hy hxy]
@@ -966,7 +966,7 @@ theorem Convex.image_sub_le_mul_sub_of_deriv_le {D : Set ℝ} (hD : Convex ℝ D
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (le_hf' : ∀ x ∈ interior D, deriv f x ≤ C) (x : ℝ) (hx : x ∈ D) (y : ℝ) (hy : y ∈ D)
     (hxy : x ≤ y) : f y - f x ≤ C * (y - x) :=
-  have hf'_ge : ∀ x ∈ interior D, -C ≤ deriv (fun y => -f y) x := fun x hx => by
+  have hf'_ge : ∀ x ∈ interior D, -C ≤ deriv (fun y ↦ -f y) x := fun x hx => by
     rw [deriv.neg, neg_le_neg_iff]
     exact le_hf' x hx
   by linarith [hD.mul_sub_le_image_sub_of_le_deriv hf.neg hf'.neg hf'_ge x hx y hy hxy]
@@ -1133,7 +1133,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ∃ z ∈ segment ℝ x y, f y - f x = f' z (y - x) := by
   -- Use `g = AffineMap.lineMap x y` to parametrize the segment
-  set g : ℝ → E := fun t => AffineMap.lineMap x y t
+  set g : ℝ → E := fun t ↦ AffineMap.lineMap x y t
   set I := Icc (0 : ℝ) 1
   have hsub : Ioo (0 : ℝ) 1 ⊆ I := Ioo_subset_Icc_self
   have hmaps : MapsTo g I s := hs.mapsTo_lineMap xs ys

@@ -410,15 +410,15 @@ lemma exists_root_eq_smul_of_mem_weylGroup {w : M ≃ₗ[R] M} (hw : w ∈ P.wey
 /-- The permutation representation of the Weyl group induced by `reflection_perm`. -/
 def weylGroupToPerm : P.weylGroup →* Equiv.Perm ι where
   toFun w :=
-  { toFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w.2 i).choose
-    invFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w⁻¹.2 i).choose
-    left_inv := fun i => by
+  { toFun := fun i ↦ (P.exists_root_eq_smul_of_mem_weylGroup w.2 i).choose
+    invFun := fun i ↦ (P.exists_root_eq_smul_of_mem_weylGroup w⁻¹.2 i).choose
+    left_inv := fun i ↦ by
       obtain ⟨w, hw⟩ := w
       apply P.root.injective
       rw [(P.exists_root_eq_smul_of_mem_weylGroup ((Subgroup.inv_mem_iff P.weylGroup).mpr hw)
           ((P.exists_root_eq_smul_of_mem_weylGroup hw i).choose)).choose_spec,
         (P.exists_root_eq_smul_of_mem_weylGroup hw i).choose_spec, inv_smul_smul]
-    right_inv := fun i => by
+    right_inv := fun i ↦ by
       obtain ⟨w, hw⟩ := w
       have hw' : w⁻¹ ∈ P.weylGroup := (Subgroup.inv_mem_iff P.weylGroup).mpr hw
       apply P.root.injective

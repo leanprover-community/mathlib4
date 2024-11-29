@@ -62,7 +62,7 @@ theorem coe_toSubsemiring (S : Subalgebra R A) : (↑S.toSubsemiring : Set A) = 
 
 theorem toSubsemiring_injective :
     Function.Injective (toSubsemiring : Subalgebra R A → Subsemiring A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
+  ext fun x ↦ by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
 
 theorem toSubsemiring_inj {S U : Subalgebra R A} : S.toSubsemiring = U.toSubsemiring ↔ S = U :=
   toSubsemiring_injective.eq_iff
@@ -199,7 +199,7 @@ theorem coe_toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R
 
 theorem toSubring_injective {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] :
     Function.Injective (toSubring : Subalgebra R A → Subring A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubring, ← mem_toSubring, h]
+  ext fun x ↦ by rw [← mem_toSubring, ← mem_toSubring, h]
 
 theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     {S U : Subalgebra R A} : S.toSubring = U.toSubring ↔ S = U :=
@@ -276,7 +276,7 @@ which can quickly get expensive.
 instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     [IsScalarTower R' R A] :
     Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
+  { (algebraMap R' A).codRestrict S fun x ↦ by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
         Algebra.algebraMap_eq_smul_one]
       exact algebraMap_mem S
@@ -356,7 +356,7 @@ def toSubmoduleEquiv (S : Subalgebra R A) : toSubmodule S ≃ₗ[R] S :=
 @[simps! coe toSubsemiring]
 def map (f : A →ₐ[R] B) (S : Subalgebra R A) : Subalgebra R B :=
   { S.toSubsemiring.map (f : A →+* B) with
-    algebraMap_mem' := fun r => f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
+    algebraMap_mem' := fun r ↦ f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
 
 theorem map_mono {S₁ S₂ : Subalgebra R A} {f : A →ₐ[R] B} : S₁ ≤ S₂ → S₁.map f ≤ S₂.map f :=
   Set.image_subset f
@@ -451,7 +451,7 @@ def toSubalgebra (p : Submodule R A) (h_one : (1 : A) ∈ p)
   { p with
     mul_mem' := fun hx hy ↦ h_mul _ _ hx hy
     one_mem' := h_one
-    algebraMap_mem' := fun r => by
+    algebraMap_mem' := fun r ↦ by
       rw [Algebra.algebraMap_eq_smul_one]
       exact p.smul_mem _ h_one }
 
@@ -489,7 +489,7 @@ variable (φ : A →ₐ[R] B)
 /-- Range of an `AlgHom` as a subalgebra. -/
 @[simps! coe toSubsemiring]
 protected def range (φ : A →ₐ[R] B) : Subalgebra R B :=
-  { φ.toRingHom.rangeS with algebraMap_mem' := fun r => ⟨algebraMap R A r, φ.commutes r⟩ }
+  { φ.toRingHom.rangeS with algebraMap_mem' := fun r ↦ ⟨algebraMap R A r, φ.commutes r⟩ }
 
 @[simp]
 theorem mem_range (φ : A →ₐ[R] B) {y : B} : y ∈ φ.range ↔ ∃ x, φ x = y :=
@@ -506,7 +506,7 @@ theorem range_comp_le_range (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f)
 
 /-- Restrict the codomain of an algebra homomorphism. -/
 def codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₐ[R] S :=
-  { RingHom.codRestrict (f : A →+* B) S hf with commutes' := fun r => Subtype.eq <| f.commutes r }
+  { RingHom.codRestrict (f : A →+* B) S hf with commutes' := fun r ↦ Subtype.eq <| f.commutes r }
 
 @[simp]
 theorem val_comp_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
@@ -588,7 +588,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
       exact e.commutes _ }
 
@@ -603,7 +603,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 @[simps toSubsemiring]
 def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
-    algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
+    algebraMap_mem' := fun r ↦ Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
 
 variable {R}
 
@@ -771,7 +771,7 @@ theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
-  ⟨fun h x => by rw [h]; exact mem_top, fun h => by
+  ⟨fun h x => by rw [h]; exact mem_top, fun h ↦ by
     ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
 theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
@@ -811,7 +811,7 @@ theorem surjective_algebraMap_iff :
 
 theorem bijective_algebraMap_iff {R A : Type*} [Field R] [Semiring A] [Nontrivial A]
     [Algebra R A] : Function.Bijective (algebraMap R A) ↔ (⊤ : Subalgebra R A) = ⊥ :=
-  ⟨fun h => surjective_algebraMap_iff.1 h.2, fun h =>
+  ⟨fun h ↦ surjective_algebraMap_iff.1 h.2, fun h =>
     ⟨(algebraMap R A).injective, surjective_algebraMap_iff.2 h⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the base ring. -/
@@ -845,7 +845,7 @@ def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
   AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl rfl
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+  ⟨fun B C => ext fun x ↦ by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsingleton (A →ₐ[R] B) :=
   ⟨fun f g =>
@@ -856,7 +856,7 @@ instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsinglet
 
 instance _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] :
     Subsingleton (A ≃ₐ[R] B) :=
-  ⟨fun f g => AlgEquiv.ext fun x => AlgHom.ext_iff.mp (Subsingleton.elim f.toAlgHom g.toAlgHom) x⟩
+  ⟨fun f g => AlgEquiv.ext fun x ↦ AlgHom.ext_iff.mp (Subsingleton.elim f.toAlgHom g.toAlgHom) x⟩
 
 instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
     Subsingleton (A ≃ₐ[R] B) :=
@@ -1126,7 +1126,7 @@ variable {R : Type*} [Semiring R]
 /-- A subsemiring is an `ℕ`-subalgebra. -/
 @[simps toSubsemiring]
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
-  { S with algebraMap_mem' := fun i => natCast_mem S i }
+  { S with algebraMap_mem' := fun i ↦ natCast_mem S i }
 
 @[simp]
 theorem mem_subalgebraOfSubsemiring {x : R} {S : Subsemiring R} :

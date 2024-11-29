@@ -47,7 +47,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 
         rpow_zero, one_mul, neg_mul]
       all_goals positivity
     _ = (b ^ p⁻¹)⁻¹ * ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * (x ^ q * rexp (-x ^ p)) := by
-      rw [integral_comp_mul_left_Ioi (fun x => b ^ (-p⁻¹ * q) * (x ^ q * exp (- x ^ p))) 0,
+      rw [integral_comp_mul_left_Ioi (fun x ↦ b ^ (-p⁻¹ * q) * (x ^ q * exp (- x ^ p))) 0,
         mul_zero, smul_eq_mul]
       all_goals positivity
     _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by

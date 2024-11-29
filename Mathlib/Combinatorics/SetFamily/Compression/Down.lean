@@ -45,7 +45,7 @@ def nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α)
 /-- Image of the elements of `𝒜` which contain `a` under removing `a`. Finsets that do not contain
 `a` such that `insert a s ∈ 𝒜`. -/
 def memberSubfamily (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
-  {s ∈ 𝒜 | a ∈ s}.image fun s => erase s a
+  {s ∈ 𝒜 | a ∈ s}.image fun s ↦ erase s a
 
 @[simp]
 theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 ∧ a ∉ s := by
@@ -54,7 +54,7 @@ theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 
 @[simp]
 theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ 𝒜 ∧ a ∉ s := by
   simp_rw [memberSubfamily, mem_image, mem_filter]
-  refine ⟨?_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
+  refine ⟨?_, fun h ↦ ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
   rintro ⟨s, ⟨hs1, hs2⟩, rfl⟩
   rw [insert_erase hs2]
   exact ⟨hs1, not_mem_erase _ _⟩
@@ -80,12 +80,12 @@ theorem memberSubfamily_union (a : α) (𝒜 ℬ : Finset (Finset α)) :
 theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     #(𝒜.memberSubfamily a) + #(𝒜.nonMemberSubfamily a) = #𝒜 := by
   rw [memberSubfamily, nonMemberSubfamily, card_image_of_injOn]
-  · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s => (a ∈ s))]
+  · conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun s ↦ (a ∈ s))]
   · apply (erase_injOn' _).mono
     simp
 
 theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
-    𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s => s.erase a := by
+    𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s ↦ s.erase a := by
   ext s
   simp only [mem_union, mem_memberSubfamily, mem_nonMemberSubfamily, mem_image, exists_prop]
   constructor
@@ -222,19 +222,19 @@ theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ �
   refine
     or_congr_right
       (and_congr_left fun hs =>
-        ⟨?_, fun h => ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
+        ⟨?_, fun h ↦ ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
   rintro ⟨t, ht, rfl⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem ht hs).symm)]
 
 theorem erase_mem_compression (hs : s ∈ 𝒜) : s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem, and_self_iff]
-  refine (em _).imp_right fun h => ⟨h, ?_⟩
+  refine (em _).imp_right fun h ↦ ⟨h, ?_⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem hs h).symm)]
 
 -- This is a special case of `erase_mem_compression` once we have `compression_idem`.
 theorem erase_mem_compression_of_mem_compression : s ∈ 𝓓 a 𝒜 → s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem]
-  refine Or.imp (fun h => ⟨h.2, h.2⟩) fun h => ?_
+  refine Or.imp (fun h ↦ ⟨h.2, h.2⟩) fun h ↦ ?_
   rwa [erase_eq_of_not_mem (insert_ne_self.1 <| ne_of_mem_of_not_mem h.2 h.1)]
 
 theorem mem_compression_of_insert_mem_compression (h : insert a s ∈ 𝓓 a 𝒜) : s ∈ 𝓓 a 𝒜 := by
@@ -247,7 +247,7 @@ theorem mem_compression_of_insert_mem_compression (h : insert a s ∈ 𝓓 a �
 @[simp]
 theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a 𝒜) = 𝓓 a 𝒜 := by
   ext s
-  refine mem_compression.trans ⟨?_, fun h => Or.inl ⟨h, erase_mem_compression_of_mem_compression h⟩⟩
+  refine mem_compression.trans ⟨?_, fun h ↦ Or.inl ⟨h, erase_mem_compression_of_mem_compression h⟩⟩
   rintro (h | h)
   · exact h.1
   · cases h.1 (mem_compression_of_insert_mem_compression h.2)
@@ -257,8 +257,8 @@ theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a �
 theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : #(𝓓 a 𝒜) = #𝒜 := by
   rw [compression, card_disjUnion, filter_image,
     card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_union_of_disjoint]
-  · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
-  · exact disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
+  · conv_rhs => rw [← filter_union_filter_neg_eq (fun s ↦ (erase s a ∈ 𝒜)) 𝒜]
+  · exact disjoint_filter_filter_neg 𝒜 𝒜 (fun s ↦ (erase s a ∈ 𝒜))
   intro s hs
   rw [mem_coe, mem_filter] at hs
   exact not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm

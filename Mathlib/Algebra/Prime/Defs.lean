@@ -52,7 +52,7 @@ theorem not_unit : ¬IsUnit p :=
 theorem not_dvd_one : ¬p ∣ 1 :=
   mt (isUnit_of_dvd_one ·) hp.not_unit
 
-theorem ne_one : p ≠ 1 := fun h => hp.2.1 (h.symm ▸ isUnit_one)
+theorem ne_one : p ≠ 1 := fun h ↦ hp.2.1 (h.symm ▸ isUnit_one)
 
 theorem dvd_or_dvd {a b : M} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
   hp.2.2 a b h
@@ -85,10 +85,10 @@ theorem dvd_pow_iff_dvd {a : M} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣
 end Prime
 
 @[simp]
-theorem not_prime_zero : ¬Prime (0 : M) := fun h => h.ne_zero rfl
+theorem not_prime_zero : ¬Prime (0 : M) := fun h ↦ h.ne_zero rfl
 
 @[simp]
-theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_unit isUnit_one
+theorem not_prime_one : ¬Prime (1 : M) := fun h ↦ h.not_unit isUnit_one
 
 end Prime
 
@@ -116,7 +116,7 @@ end Irreducible
 
 theorem irreducible_iff [Monoid M] {p : M} :
     Irreducible p ↔ ¬IsUnit p ∧ ∀ a b, p = a * b → IsUnit a ∨ IsUnit b :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 @[simp]
 theorem not_irreducible_one [Monoid M] : ¬Irreducible (1 : M) := by simp [irreducible_iff]
@@ -143,7 +143,7 @@ theorem irreducible_or_factor {M} [Monoid M] (x : M) (h : ¬IsUnit x) :
   simp? [h, irreducible_iff] at H ⊢ says
     simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
       true_and] at H ⊢
-  refine fun a b h => by_contradiction fun o => ?_
+  refine fun a b h => by_contradiction fun o ↦ ?_
   simp? [not_or] at o says simp only [not_or] at o
   exact H _ o.1 _ o.2 h.symm
 

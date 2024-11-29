@@ -60,7 +60,7 @@ theorem mem_erase {a b : α} {s : Finset α} : a ∈ erase s b ↔ a ≠ b ∧ a
 theorem not_mem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
   s.2.not_mem_erase
 
-theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h => (mem_erase.1 h).1
+theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h ↦ (mem_erase.1 h).1
 
 theorem mem_of_mem_erase : b ∈ erase s a → b ∈ s :=
   Multiset.mem_of_mem_erase
@@ -79,7 +79,7 @@ theorem erase_eq_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : erase s a =
 
 @[simp]
 theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=
-  ⟨fun h => h ▸ not_mem_erase _ _, erase_eq_of_not_mem⟩
+  ⟨fun h ↦ h ▸ not_mem_erase _ _, erase_eq_of_not_mem⟩
 
 theorem erase_ne_self : s.erase a ≠ s ↔ a ∈ s :=
   erase_eq_self.not_left
@@ -91,7 +91,7 @@ theorem erase_subset (a : α) (s : Finset α) : erase s a ⊆ s :=
   Multiset.erase_subset _ _
 
 theorem subset_erase {a : α} {s t : Finset α} : s ⊆ t.erase a ↔ s ⊆ t ∧ a ∉ s :=
-  ⟨fun h => ⟨h.trans (erase_subset _ _), fun ha => not_mem_erase _ _ (h ha)⟩,
+  ⟨fun h ↦ ⟨h.trans (erase_subset _ _), fun ha => not_mem_erase _ _ (h ha)⟩,
    fun h _b hb => mem_erase.2 ⟨ne_of_mem_of_not_mem hb h.2, h.1 hb⟩⟩
 
 @[simp, norm_cast]
@@ -106,7 +106,7 @@ theorem erase_right_comm {a b : α} {s : Finset α} : erase (erase s a) b = eras
   rw [@and_comm (x ≠ a)]
 
 theorem erase_inj {x y : α} (s : Finset α) (hx : x ∈ s) : s.erase x = s.erase y ↔ x = y := by
-  refine ⟨fun h => eq_of_mem_of_not_mem_erase hx ?_, congr_arg _⟩
+  refine ⟨fun h ↦ eq_of_mem_of_not_mem_erase hx ?_, congr_arg _⟩
   rw [← h]
   simp
 

@@ -22,7 +22,7 @@ namespace Fin
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
   | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
-    SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
+    SuccOrder.ofCore (fun i ↦ if i < Fin.last n then i + 1 else i)
       (by
         intro a ha b
         rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha
@@ -36,7 +36,7 @@ instance : ∀ {n : ℕ}, SuccOrder (Fin n)
         rw [if_neg ha.not_lt])
 
 @[simp]
-theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a + 1 else a :=
+theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a ↦ if a < Fin.last n then a + 1 else a :=
   rfl
 
 @[simp]
@@ -46,7 +46,7 @@ theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a +
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
-    PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
+    PredOrder.ofCore (fun x ↦ if x = 0 then 0 else x - 1)
       (by
         intro a ha b
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha

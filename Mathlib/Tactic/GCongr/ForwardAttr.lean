@@ -28,12 +28,12 @@ initialize forwardExt : PersistentEnvExtension Name (Name × ForwardExt)
     (List Name × List (Name × ForwardExt)) ←
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s => do
+    addImportedFn := fun s ↦ do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
         return (n, ← mkForwardExt n) :: dt
       pure ([], dt)
     addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
+    exportEntriesFn := fun s ↦ s.1.reverse.toArray
   }
 
 initialize registerBuiltinAttribute {

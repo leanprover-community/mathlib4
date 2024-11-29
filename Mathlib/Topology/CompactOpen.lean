@@ -107,7 +107,7 @@ alias embedding_postcomp := isEmbedding_postcomp
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
-theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
+theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g ↦ g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 
@@ -177,7 +177,7 @@ lemma _root_.ContinuousOn.compCM (hg : ContinuousOn g s) (hf : ContinuousOn f s)
   (hg a ha).compCM (hf a ha)
 
 lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
-    Continuous fun x => (g x).comp (f x) :=
+    Continuous fun x ↦ (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
 end Functorial
@@ -292,12 +292,12 @@ alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_ind
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
-    Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
+    Tendsto (fun i ↦ (F i).restrict s) l (𝓝 (f.restrict s)) :=
   (continuous_restrict s).continuousAt.tendsto.comp hFf
 
 theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → C(X, Y)) (f : C(X, Y)) :
     Tendsto F l (𝓝 f) ↔
-      ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
+      ∀ K, IsCompact K → Tendsto (fun i ↦ (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
   simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
@@ -306,7 +306,7 @@ it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
     {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(X, Y)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
-      ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
+      ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i ↦ (F i).restrict s) l (𝓝 f) := by
   constructor
   · rintro ⟨f, hf⟩ s _
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
@@ -474,11 +474,11 @@ variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [Topo
 theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
-  have h : ∀ x : X, Continuous fun y => g (x, y) := by
+  have h : ∀ x : X, Continuous fun y ↦ g (x, y) := by
     intro x
     obtain ⟨x₀, rfl⟩ := hf.surjective x
     exact (Gf x₀).continuous
-  let G : X → C(Y, Z) := fun x => ⟨_, h x⟩
+  let G : X → C(Y, Z) := fun x ↦ ⟨_, h x⟩
   have : Continuous G := by
     rw [hf.continuous_iff]
     exact Gf.continuous

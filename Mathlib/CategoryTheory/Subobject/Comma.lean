@@ -100,7 +100,7 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
-    refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
+    refine ⟨fun h ↦ Subobject.mk_le_mk_of_comm ?_ ?_, fun h ↦ ?_⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
     · aesop_cat
@@ -205,7 +205,7 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
-    refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
+    refine ⟨fun h ↦ Subobject.mk_le_mk_of_comm ?_ ?_, fun h ↦ ?_⟩
     · refine (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 ?_)).op
       dsimp
       simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,

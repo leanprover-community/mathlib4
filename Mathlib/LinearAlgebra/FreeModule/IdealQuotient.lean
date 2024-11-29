@@ -52,10 +52,10 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
       exact ⟨c i, this c i⟩
     · rintro ha
       choose c hc using ha
-      exact ⟨c, b'.ext_elem fun i => Eq.trans (hc i) (this c i).symm⟩
+      exact ⟨c, b'.ext_elem fun i ↦ Eq.trans (hc i) (this c i).symm⟩
   -- Now we map everything through the linear equiv `S ≃ₗ (ι → R)`,
   -- which maps `I` to `I' := Π i, a i ℤ`.
-  let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => span ({a i} : Set R)
+  let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i ↦ span ({a i} : Set R)
   have : Submodule.map (b'.equivFun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
     ext x
     simp only [I', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
@@ -65,7 +65,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
-      refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
+      refine ⟨∑ i, x i • b' i, fun i ↦ ?_, ?_⟩ <;> rw [b'.repr_sum_self]
       · exact hdvd i
   refine ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
     (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
@@ -73,7 +73,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
   classical
     let this :=
-      Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
+      Submodule.quotientPi (show _ → Submodule R R from fun i ↦ span ({a i} : Set R))
     exact this
 
 /-- Ideal quotients over a free finite extension of `ℤ` are isomorphic to a direct product of
@@ -83,7 +83,7 @@ noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I
   let a := I.smithCoeffs b hI
   let e := I.quotientEquivPiSpan b hI
   let e' : (∀ i : ι, ℤ ⧸ span ({a i} : Set ℤ)) ≃+ ∀ i : ι, ZMod (a i).natAbs :=
-    AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
+    AddEquiv.piCongrRight fun i ↦ ↑(Int.quotientSpanEquivZMod (a i))
   (↑(e : (S ⧸ I) ≃ₗ[ℤ] _) : S ⧸ I ≃+ _).trans e'
 
 /-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.

@@ -218,7 +218,7 @@ submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `
 theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤)
     (x : M) (H : ∀ r : s, ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M') : x ∈ M' := by
   obtain ⟨s', hs₁, hs₂⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
+  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M' := fun r ↦ H ⟨_, hs₁ r.2⟩
   choose n₁ n₂ using H
   let N := s'.attach.sup n₁
   have hs' := Ideal.span_pow_eq_top (s' : Set R) hs₂ N
@@ -252,7 +252,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   refine fun hx => span_induction ?_ ?_ ?_ ?_ (mem_smul_span.mp hx)
   · simp only [Set.mem_iUnion, Set.mem_range, Set.mem_singleton_iff]
     rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
-    refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
+    refine ⟨Finsupp.single i y, fun j ↦ ?_, ?_⟩
     · letI := Classical.decEq ι
       rw [Finsupp.single_apply]
       split_ifs
@@ -262,10 +262,10 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
     simp
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
   · rintro x y - - ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
-    refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
+    refine ⟨ax + ay, fun i ↦ I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
       intros <;> simp only [zero_smul, add_smul]
   · rintro c x - ⟨a, ha, rfl⟩
-    refine ⟨c • a, fun i => I.mul_mem_left c (ha i), ?_⟩
+    refine ⟨c • a, fun i ↦ I.mul_mem_left c (ha i), ?_⟩
     rw [Finsupp.sum_smul_index, Finsupp.smul_sum] <;> intros <;> simp only [zero_smul, mul_smul]
 
 theorem mem_ideal_smul_span_iff_exists_sum' {ι : Type*} (s : Set ι) (f : ι → M) (x : M) :
@@ -387,7 +387,7 @@ theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
       J.eq_bot_iff.mpr fun j hj =>
         let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+    fun h ↦ by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
 instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
@@ -534,13 +534,13 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R) :
 
 @[simp]
 theorem multiset_prod_span_singleton (m : Multiset R) :
-    (m.map fun x => Ideal.span {x}).prod = Ideal.span ({Multiset.prod m} : Set R) :=
+    (m.map fun x ↦ Ideal.span {x}).prod = Ideal.span ({Multiset.prod m} : Set R) :=
   Multiset.induction_on m (by simp) fun a m ih => by
     simp only [Multiset.map_cons, Multiset.prod_cons, ih, ← Ideal.span_singleton_mul_span_singleton]
 
 theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
     (hI : Set.Pairwise (↑s) (IsCoprime on I)) :
-    (s.inf fun i => Ideal.span ({I i} : Set R)) = Ideal.span {∏ i ∈ s, I i} := by
+    (s.inf fun i ↦ Ideal.span ({I i} : Set R)) = Ideal.span {∏ i ∈ s, I i} := by
   ext x
   simp only [Submodule.mem_finset_inf, Ideal.mem_span_singleton]
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
@@ -774,7 +774,7 @@ theorem radical_idem : radical (radical I) = radical I :=
 variable {I}
 
 theorem IsRadical.radical_le_iff (hJ : J.IsRadical) : I.radical ≤ J ↔ I ≤ J :=
-  ⟨le_trans le_radical, fun h => hJ.radical ▸ radical_mono h⟩
+  ⟨le_trans le_radical, fun h ↦ hJ.radical ▸ radical_mono h⟩
 
 theorem radical_le_radical_iff : radical I ≤ radical J ↔ I ≤ radical J :=
   (radical_isRadical J).radical_le_iff
@@ -784,7 +784,7 @@ theorem radical_eq_top : radical I = ⊤ ↔ I = ⊤ :=
     (eq_top_iff_one _).2 <|
       let ⟨n, hn⟩ := (eq_top_iff_one _).1 h
       @one_pow R _ n ▸ hn,
-    fun h => h.symm ▸ radical_top R⟩
+    fun h ↦ h.symm ▸ radical_top R⟩
 
 theorem IsPrime.isRadical (H : IsPrime I) : I.IsRadical := fun _ ⟨n, hrni⟩ =>
   H.mem_of_pow_mem n hrni
@@ -798,8 +798,8 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
 
 theorem disjoint_powers_iff_not_mem (y : R) (hI : I.IsRadical) :
     Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
-  refine ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
-      fun h => disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
+  refine ⟨fun h ↦ Set.disjoint_left.1 h (Submonoid.mem_powers _),
+      fun h ↦ disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
   rintro x ⟨⟨n, rfl⟩, hx'⟩
   exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
 
@@ -1024,7 +1024,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
             Set.union_eq_self_of_subset_right hfji] at h
         exact h
       specialize ih hp' hn' h'
-      refine ih.imp id (Or.imp id (Exists.imp fun k => ?_))
+      refine ih.imp id (Or.imp id (Exists.imp fun k ↦ ?_))
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
@@ -1085,7 +1085,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
   suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i by
-    have aux := fun h => (bex_def.2 <| this h)
+    have aux := fun h ↦ (bex_def.2 <| this h)
     simp_rw [exists_prop] at aux
     refine ⟨aux, fun ⟨i, his, hi⟩ ↦ Set.Subset.trans hi ?_⟩
     apply Set.subset_biUnion_of_mem (show i ∈ (↑s : Set ι) from his)
@@ -1151,7 +1151,7 @@ theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸
-      ⟨fun h => eq_top_iff.mpr (Ideal.le_of_dvd h), fun h => ⟨⊤, by rw [mul_top, h]⟩⟩)
+      ⟨fun h ↦ eq_top_iff.mpr (Ideal.le_of_dvd h), fun h ↦ ⟨⊤, by rw [mul_top, h]⟩⟩)
 
 instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
@@ -1190,10 +1190,10 @@ theorem range_finsuppTotal :
     LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
-  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
+  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i ↦ (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)
+    refine ⟨a.mapRange (fun r ↦ if h : r ∈ I then ⟨r, h⟩ else 0)
       (by simp only [Submodule.zero_mem, ↓reduceDIte]; rfl), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr

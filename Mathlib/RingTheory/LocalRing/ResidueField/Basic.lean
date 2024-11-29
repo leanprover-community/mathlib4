@@ -64,7 +64,7 @@ namespace ResidueField
 def lift {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S) [IsLocalHom f] :
     IsLocalRing.ResidueField R →+* S :=
   Ideal.Quotient.lift _ f fun a ha =>
-    by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
+    by_contradiction fun h ↦ ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 
 theorem lift_comp_residue {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S)
     [IsLocalHom f] : (lift f).comp (residue R) = f :=
@@ -176,7 +176,7 @@ instance finiteDimensional_of_noetherian [IsNoetherian R S] :
     isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
   convert isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R (maximalIdeal S)).toLinearMap
     (LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective)
-  exact Algebra.algebra_ext _ _ (fun r => rfl)
+  exact Algebra.algebra_ext _ _ (fun r ↦ rfl)
 
 -- We want to be able to refer to `hfin`
 set_option linter.unusedVariables false in

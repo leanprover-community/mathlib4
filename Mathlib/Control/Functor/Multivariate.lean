@@ -40,11 +40,11 @@ variable {α β : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 /-- predicate lifting over multivariate functors -/
 def LiftP {α : TypeVec n} (P : ∀ i, α i → Prop) (x : F α) : Prop :=
-  ∃ u : F (fun i => Subtype (P i)), (fun i => @Subtype.val _ (P i)) <$$> u = x
+  ∃ u : F (fun i ↦ Subtype (P i)), (fun i ↦ @Subtype.val _ (P i)) <$$> u = x
 
 /-- relational lifting over multivariate functors -/
 def LiftR {α : TypeVec n} (R : ∀ {i}, α i → α i → Prop) (x y : F α) : Prop :=
-  ∃ u : F (fun i => { p : α i × α i // R p.fst p.snd }),
+  ∃ u : F (fun i ↦ { p : α i × α i // R p.fst p.snd }),
     (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.fst) <$$> u = x ∧
       (fun i (t : { p : α i × α i // R p.fst p.snd }) => t.val.snd) <$$> u = y
 
@@ -176,7 +176,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
   · intros
     rw [MvFunctor.map_map]
     dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
-    suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
+    suffices (fun i ↦ Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
 

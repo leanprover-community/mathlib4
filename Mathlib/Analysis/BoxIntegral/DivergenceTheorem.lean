@@ -92,9 +92,9 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       ‖f' (Pi.single i (I.upper i - I.lower i)) -
           (f (e (I.upper i) y) - f (e (I.lower i) y))‖ ≤
         2 * ε * diam (Box.Icc I) := fun y hy ↦ by
-    set g := fun y => f y - a - f' (y - x) with hg
+    set g := fun y ↦ f y - a - f' (y - x) with hg
     change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε
-    clear_value g; obtain rfl : f = fun y => a + f' (y - x) + g y := by simp [hg]
+    clear_value g; obtain rfl : f = fun y ↦ a + f' (y - x) + g y := by simp [hg]
     convert_to ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
     · congr 1
       have := Fin.insertNth_sub_same (α := fun _ ↦ ℝ) i (I.upper i) (I.lower i) y
@@ -146,10 +146,10 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] E) (s : Set (Fin (n + 1) → ℝ))
     (hs : s.Countable) (Hs : ∀ x ∈ s, ContinuousWithinAt f (Box.Icc I) x)
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x) (i : Fin (n + 1)) :
-    HasIntegral.{0, u, u} I GP (fun x => f' x (Pi.single i 1)) BoxAdditiveMap.volume
-      (integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.upper i) x))
+    HasIntegral.{0, u, u} I GP (fun x ↦ f' x (Pi.single i 1)) BoxAdditiveMap.volume
+      (integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.upper i) x))
           BoxAdditiveMap.volume -
-        integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x))
+        integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.lower i) x))
           BoxAdditiveMap.volume) := by
   /- Note that `f` is continuous on `I.Icc`, hence it is integrable on the faces of all boxes
     `J ≤ I`, thus the difference of integrals over `x i = J.upper i` and `x i = J.lower i` is a
@@ -158,12 +158,12 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     by_cases hxs : x ∈ s
     exacts [Hs x hxs, (Hd x ⟨hx, hxs⟩).continuousWithinAt]
   set fI : ℝ → Box (Fin n) → E := fun y J =>
-    integral.{0, u, u} J GP (fun x => f (i.insertNth y x)) BoxAdditiveMap.volume
+    integral.{0, u, u} J GP (fun x ↦ f (i.insertNth y x)) BoxAdditiveMap.volume
   set fb : Icc (I.lower i) (I.upper i) → Fin n →ᵇᵃ[↑(I.face i)] E := fun x =>
     (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.2) volume).toBoxAdditive
   set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x _ J => rfl
   -- Thus our statement follows from some local estimates.
-  change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
+  change HasIntegral I GP (fun x ↦ f' x (Pi.single i 1)) _ (F I)
   refine HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le ?_ ?_ _ s hs ?_ ?_
   ·-- We use the volume as an upper estimate.
     exact (volume : Measure (Fin (n + 1) → ℝ)).toBoxAdditive.restrict _ le_top
@@ -196,7 +196,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     have Hl : J.lower i ∈ Icc (J.lower i) (J.upper i) := Set.left_mem_Icc.2 (J.lower_le_upper i)
     have Hu : J.upper i ∈ Icc (J.lower i) (J.upper i) := Set.right_mem_Icc.2 (J.lower_le_upper i)
     have Hi : ∀ x ∈ Icc (J.lower i) (J.upper i),
-        Integrable.{0, u, u} (J.face i) GP (fun y => f (i.insertNth x y))
+        Integrable.{0, u, u} (J.face i) GP (fun y ↦ f (i.insertNth x y))
           BoxAdditiveMap.volume := fun x hx =>
       integrable_of_continuousOn _ (Box.continuousOn_face_Icc (Hc.mono <| Box.le_iff_Icc.1 hJI) hx)
         volume
@@ -261,11 +261,11 @@ theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
     (s : Set (Fin (n + 1) → ℝ)) (hs : s.Countable)
     (Hs : ∀ x ∈ s, ContinuousWithinAt f (Box.Icc I) x)
     (Hd : ∀ x ∈ (Box.Icc I) \ s, HasFDerivWithinAt f (f' x) (Box.Icc I) x) :
-    HasIntegral.{0, u, u} I GP (fun x => ∑ i, f' x (Pi.single i 1) i) BoxAdditiveMap.volume
+    HasIntegral.{0, u, u} I GP (fun x ↦ ∑ i, f' x (Pi.single i 1) i) BoxAdditiveMap.volume
       (∑ i,
-        (integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.upper i) x) i)
+        (integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.upper i) x) i)
             BoxAdditiveMap.volume -
-          integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x) i)
+          integral.{0, u, u} (I.face i) GP (fun x ↦ f (i.insertNth (I.lower i) x) i)
             BoxAdditiveMap.volume)) := by
   refine HasIntegral.sum fun i _ => ?_
   simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs

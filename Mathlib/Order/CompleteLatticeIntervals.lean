@@ -165,8 +165,8 @@ conditionally complete linear order. -/
 noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
     [OrdConnected s] : ConditionallyCompleteLinearOrder s :=
   subsetConditionallyCompleteLinearOrder s
-    (fun h => sSup_within_of_ordConnected h)
-    (fun h => sInf_within_of_ordConnected h)
+    (fun h ↦ sSup_within_of_ordConnected h)
+    (fun h ↦ sInf_within_of_ordConnected h)
 
 end OrdConnected
 

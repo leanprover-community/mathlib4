@@ -40,7 +40,7 @@ open Classical in
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=
   if hf : Integrable f μ then
-    { measureOf' := fun s => if MeasurableSet s then ∫ x in s, f x ∂μ else 0
+    { measureOf' := fun s ↦ if MeasurableSet s then ∫ x in s, f x ∂μ else 0
       empty' := by simp
       not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by
@@ -71,7 +71,7 @@ theorem withDensityᵥ_neg : μ.withDensityᵥ (-f) = -μ.withDensityᵥ f := by
   · rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg, neg_zero]
     rwa [integrable_neg_iff]
 
-theorem withDensityᵥ_neg' : (μ.withDensityᵥ fun x => -f x) = -μ.withDensityᵥ f :=
+theorem withDensityᵥ_neg' : (μ.withDensityᵥ fun x ↦ -f x) = -μ.withDensityᵥ f :=
   withDensityᵥ_neg
 
 @[simp]
@@ -86,7 +86,7 @@ theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
   · exact hg.integrableOn.restrict MeasurableSet.univ
 
 theorem withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
-    (μ.withDensityᵥ fun x => f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=
+    (μ.withDensityᵥ fun x ↦ f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=
   withDensityᵥ_add hf hg
 
 @[simp]
@@ -95,7 +95,7 @@ theorem withDensityᵥ_sub (hf : Integrable f μ) (hg : Integrable g μ) :
   rw [sub_eq_add_neg, sub_eq_add_neg, withDensityᵥ_add hf hg.neg, withDensityᵥ_neg]
 
 theorem withDensityᵥ_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
-    (μ.withDensityᵥ fun x => f x - g x) = μ.withDensityᵥ f - μ.withDensityᵥ g :=
+    (μ.withDensityᵥ fun x ↦ f x - g x) = μ.withDensityᵥ f - μ.withDensityᵥ g :=
   withDensityᵥ_sub hf hg
 
 @[simp]
@@ -113,7 +113,7 @@ theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norme
 
 theorem withDensityᵥ_smul' {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (f : α → E) (r : 𝕜) :
-    (μ.withDensityᵥ fun x => r • f x) = r • μ.withDensityᵥ f :=
+    (μ.withDensityᵥ fun x ↦ r • f x) = r • μ.withDensityᵥ f :=
   withDensityᵥ_smul f r
 
 theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity {f : α → ℝ≥0} {g : α → E}
@@ -160,12 +160,12 @@ theorem WithDensityᵥEq.congr_ae {f g : α → E} (h : f =ᵐ[μ] g) :
 theorem Integrable.withDensityᵥ_eq_iff [CompleteSpace E]
     {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     μ.withDensityᵥ f = μ.withDensityᵥ g ↔ f =ᵐ[μ] g :=
-  ⟨fun hfg => hf.ae_eq_of_withDensityᵥ_eq hg hfg, fun h => WithDensityᵥEq.congr_ae h⟩
+  ⟨fun hfg => hf.ae_eq_of_withDensityᵥ_eq hg hfg, fun h ↦ WithDensityᵥEq.congr_ae h⟩
 
 section SignedMeasure
 
 theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : (∫⁻ x, f x ∂μ) ≠ ∞) :
-    (μ.withDensityᵥ fun x => (f x).toReal) =
+    (μ.withDensityᵥ fun x ↦ (f x).toReal) =
       @toSignedMeasure α _ (μ.withDensity f) (isFiniteMeasure_withDensity hf) := by
   have hfi := integrable_toReal_of_lintegral_ne_top hfm hf
   haveI := isFiniteMeasure_withDensity hf
@@ -179,9 +179,9 @@ theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) 
 theorem withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part {f : α → ℝ}
     (hfi : Integrable f μ) :
     μ.withDensityᵥ f =
-      @toSignedMeasure α _ (μ.withDensity fun x => ENNReal.ofReal <| f x)
+      @toSignedMeasure α _ (μ.withDensity fun x ↦ ENNReal.ofReal <| f x)
           (isFiniteMeasure_withDensity_ofReal hfi.2) -
-        @toSignedMeasure α _ (μ.withDensity fun x => ENNReal.ofReal <| -f x)
+        @toSignedMeasure α _ (μ.withDensity fun x ↦ ENNReal.ofReal <| -f x)
           (isFiniteMeasure_withDensity_ofReal hfi.neg.2) := by
   haveI := isFiniteMeasure_withDensity_ofReal hfi.2
   haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2

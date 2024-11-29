@@ -361,7 +361,7 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
             subst h
             apply Classical.choose_spec h'
     else by rw [hpi, dif_neg h'] at h; contradiction,
-  fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
+  fun e ↦ e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
@@ -659,7 +659,7 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
 ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
-      funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
+      funext (fun x ↦ by simp only [comp_apply, hf.extend_apply])⟩,
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 
 lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
@@ -675,7 +675,7 @@ theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g �
 
 lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsThrough g f) :
     extend f g e' ∘ f = g :=
-  funext fun a => hf.extend_apply e' a
+  funext fun a ↦ hf.extend_apply e' a
 
 @[simp]
 lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=

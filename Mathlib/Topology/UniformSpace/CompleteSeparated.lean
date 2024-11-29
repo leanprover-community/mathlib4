@@ -53,6 +53,6 @@ variable {γ : Type*} [UniformSpace γ] [CompleteSpace γ] [T0Space γ]
 
 theorem continuous_extend_of_cauchy {e : α → β} {f : α → γ} (de : IsDenseInducing e)
     (h : ∀ b : β, Cauchy (map f (comap e <| 𝓝 b))) : Continuous (de.extend f) :=
-  de.continuous_extend fun b => CompleteSpace.complete (h b)
+  de.continuous_extend fun b ↦ CompleteSpace.complete (h b)
 
 end IsDenseInducing

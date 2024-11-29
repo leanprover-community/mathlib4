@@ -147,7 +147,7 @@ theorem tendsto_comap {f : α → β} {x : Filter β} : Tendsto f (comap f x) x 
 @[simp]
 theorem tendsto_comap_iff {f : α → β} {g : β → γ} {a : Filter α} {c : Filter γ} :
     Tendsto f a (c.comap g) ↔ Tendsto (g ∘ f) a c :=
-  ⟨fun h => tendsto_comap.comp h, fun h => map_le_iff_le_comap.mp <| by rwa [map_map]⟩
+  ⟨fun h ↦ tendsto_comap.comp h, fun h ↦ map_le_iff_le_comap.mp <| by rwa [map_map]⟩
 
 theorem tendsto_comap'_iff {m : α → β} {f : Filter α} {g : Filter β} {i : γ → α} (h : range i ∈ f) :
     Tendsto (m ∘ i) (comap i f) g ↔ Tendsto m f g := by
@@ -198,7 +198,7 @@ theorem tendsto_iInf' {f : α → β} {x : ι → Filter α} {y : Filter β} (i 
 
 theorem tendsto_iInf_iInf {f : α → β} {x : ι → Filter α} {y : ι → Filter β}
     (h : ∀ i, Tendsto f (x i) (y i)) : Tendsto f (iInf x) (iInf y) :=
-  tendsto_iInf.2 fun i => tendsto_iInf' i (h i)
+  tendsto_iInf.2 fun i ↦ tendsto_iInf' i (h i)
 
 @[simp]
 theorem tendsto_sup {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} :
@@ -218,7 +218,7 @@ theorem tendsto_iSup {f : α → β} {x : ι → Filter α} {y : Filter β} :
 
 theorem tendsto_iSup_iSup {f : α → β} {x : ι → Filter α} {y : ι → Filter β}
     (h : ∀ i, Tendsto f (x i) (y i)) : Tendsto f (iSup x) (iSup y) :=
-  tendsto_iSup.2 fun i => (h i).mono_right <| le_iSup _ _
+  tendsto_iSup.2 fun i ↦ (h i).mono_right <| le_iSup _ _
 
 @[simp] theorem tendsto_principal {f : α → β} {l : Filter α} {s : Set β} :
     Tendsto f l (𝓟 s) ↔ ∀ᶠ a in l, f a ∈ s := by
@@ -249,7 +249,7 @@ theorem tendsto_pure_left {f : α → β} {a : α} {l : Filter β} :
 @[simp]
 theorem map_inf_principal_preimage {f : α → β} {s : Set β} {l : Filter α} :
     map f (l ⊓ 𝓟 (f ⁻¹' s)) = map f l ⊓ 𝓟 s :=
-  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
+  Filter.ext fun t ↦ by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
 
 /-- If two filters are disjoint, then a function cannot tend to both of them along a non-trivial
 filter. -/
@@ -260,7 +260,7 @@ theorem Tendsto.not_tendsto {f : α → β} {a : Filter α} {b₁ b₂ : Filter 
 protected theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
     [∀ x, Decidable (p x)] (h₀ : Tendsto f (l₁ ⊓ 𝓟 { x | p x }) l₂)
     (h₁ : Tendsto g (l₁ ⊓ 𝓟 { x | ¬p x }) l₂) :
-    Tendsto (fun x => if p x then f x else g x) l₁ l₂ := by
+    Tendsto (fun x ↦ if p x then f x else g x) l₁ l₂ := by
   simp only [tendsto_def, mem_inf_principal] at *
   intro s hs
   filter_upwards [h₀ s hs, h₁ s hs] with x hp₀ hp₁
@@ -270,7 +270,7 @@ protected theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α →
 
 protected theorem Tendsto.if' {α β : Type*} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β}
     {p : α → Prop} [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
-    Tendsto (fun a => if p a then f a else g a) l₁ l₂ :=
+    Tendsto (fun a ↦ if p a then f a else g a) l₁ l₂ :=
   (tendsto_inf_left hf).if (tendsto_inf_left hg)
 
 protected theorem Tendsto.piecewise {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {s : Set α}

@@ -59,7 +59,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"
 
-  let lvls := info.levelParams.map (fun l => Level.param l)
+  let lvls := info.levelParams.map (fun l ↦ Level.param l)
   let e := mkAppN (.const declName lvls) xs
   let path ← DiscrTree.mkPath e {}
 
@@ -96,7 +96,7 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
   if decls.size > 1 then
     throwError "\
 fun_prop bug: expression {← ppExpr e} matches multiple function properties
-{decls.map (fun d => d.funPropName)}"
+{decls.map (fun d ↦ d.funPropName)}"
 
   let decl := decls[0]!
   unless decl.funArgId < e.getAppNumArgs do return none
@@ -107,7 +107,7 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
-/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
+/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x ↦ f x y z` -/
 def isFunPropGoal (e : Expr) : MetaM Bool := do
   forallTelescope e fun _ b =>
   return (← getFunProp? b).isSome
@@ -130,7 +130,7 @@ open Elab Term in
 /-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+    (fun r ↦ do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try

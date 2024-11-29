@@ -26,7 +26,7 @@ we state it for a complete uniform space with countably generated uniformity fil
 instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : BaireSpace X := by
   let _ := UniformSpace.pseudoMetricSpace X
   refine ⟨fun f ho hd => ?_⟩
-  let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
+  let B : ℕ → ℝ≥0∞ := fun n ↦ 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := fun n ↦
     ENNReal.div_pos one_ne_zero <| ENNReal.pow_ne_top ENNReal.coe_ne_top
   /- Translate the density assumption into two functions `center` and `radius` associating
@@ -56,7 +56,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
       edist z y ≤ min (min (δ / 2) r) (B (n + 1)) := hz
       _ ≤ r := le_trans (min_le_left _ _) (min_le_right _ _))
   choose! center radius Hpos HB Hball using this
-  refine fun x => (mem_closure_iff_nhds_basis nhds_basis_closed_eball).2 fun ε εpos => ?_
+  refine fun x ↦ (mem_closure_iff_nhds_basis nhds_basis_closed_eball).2 fun ε εpos => ?_
   /- `ε` is positive. We have to find a point in the ball of radius `ε` around `x` belonging to all
     `f n`. For this, we construct inductively a sequence `F n = (c n, r n)` such that the closed
     ball `closedBall (c n) (r n)` is included in the previous ball and in `f n`, and such that
@@ -64,21 +64,21 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     limit which belongs to all the `f n`. -/
   let F : ℕ → X × ℝ≥0∞ := fun n =>
     Nat.recOn n (Prod.mk x (min ε (B 0))) fun n p => Prod.mk (center n p.1 p.2) (radius n p.1 p.2)
-  let c : ℕ → X := fun n => (F n).1
-  let r : ℕ → ℝ≥0∞ := fun n => (F n).2
+  let c : ℕ → X := fun n ↦ (F n).1
+  let r : ℕ → ℝ≥0∞ := fun n ↦ (F n).2
   have rpos : ∀ n, 0 < r n := by
     intro n
     induction n with
     | zero => exact lt_min εpos (Bpos 0)
     | succ n hn => exact Hpos n (c n) (r n) hn.ne'
-  have r0 : ∀ n, r n ≠ 0 := fun n => (rpos n).ne'
+  have r0 : ∀ n, r n ≠ 0 := fun n ↦ (rpos n).ne'
   have rB : ∀ n, r n ≤ B n := by
     intro n
     cases n with
     | zero => exact min_le_right _ _
     | succ n => exact HB n (c n) (r n) (r0 n)
   have incl : ∀ n, closedBall (c (n + 1)) (r (n + 1)) ⊆ closedBall (c n) (r n) ∩ f n :=
-    fun n => Hball n (c n) (r n) (r0 n)
+    fun n ↦ Hball n (c n) (r n) (r0 n)
   have cdist : ∀ n, edist (c n) (c (n + 1)) ≤ B n := by
     intro n
     rw [edist_comm]

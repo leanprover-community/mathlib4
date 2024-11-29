@@ -162,7 +162,7 @@ theorem log_eq_one_iff' {b n : ℕ} : log b n = 1 ↔ b ≤ n ∧ n < b * b := b
 
 theorem log_eq_one_iff {b n : ℕ} : log b n = 1 ↔ n < b * b ∧ 1 < b ∧ b ≤ n :=
   log_eq_one_iff'.trans
-    ⟨fun h => ⟨h.2, lt_mul_self_iff.1 (h.1.trans_lt h.2), h.1⟩, fun h => ⟨h.2.2, h.1⟩⟩
+    ⟨fun h ↦ ⟨h.2, lt_mul_self_iff.1 (h.1.trans_lt h.2), h.1⟩, fun h ↦ ⟨h.2.2, h.1⟩⟩
 
 theorem log_mul_base {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) : log b (n * b) = log b n + 1 := by
   apply log_eq_of_pow_le_of_lt_pow <;> rw [pow_succ', Nat.mul_comm b]
@@ -174,7 +174,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
   | x + 1 => (pow_log_le_self b x.succ_ne_zero).trans (x + 1).le_succ
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
-  refine monotone_nat_of_le_succ fun n => ?_
+  refine monotone_nat_of_le_succ fun n ↦ ?_
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _
@@ -192,7 +192,7 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
     c ^ log b n ≤ b ^ log b n := Nat.pow_le_pow_left hb _
     _ ≤ n := pow_log_le_self _ hn
 
-theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
+theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b ↦ log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
   log_anti_left (Set.mem_Iio.1 hc) hb
 
 @[simp]
@@ -272,7 +272,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
-    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
+    refine ⟨fun h ↦ (clog_of_right_le_one h b).le, ?_⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb

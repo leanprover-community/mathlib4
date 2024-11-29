@@ -98,7 +98,7 @@ alias UniformInducing.of_comp_iff := IsUniformInducing.of_comp_iff
 
 theorem IsUniformInducing.basis_uniformity {f : α → β} (hf : IsUniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
-    (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
+    (𝓤 α).HasBasis p fun i ↦ Prod.map f f ⁻¹' s i :=
   hf.1 ▸ H.comap _
 
 @[deprecated (since := "2024-10-05")]
@@ -496,7 +496,7 @@ theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dens
     (h : ∀ f : Filter β, Cauchy f → ∃ x : α, map m f ≤ 𝓝 x) : CompleteSpace α :=
   ⟨fun {f : Filter α} (hf : Cauchy f) =>
     let p : Set (α × α) → Set α → Set α := fun s t => { y : α | ∃ x : α, x ∈ t ∧ (x, y) ∈ s }
-    let g := (𝓤 α).lift fun s => f.lift' (p s)
+    let g := (𝓤 α).lift fun s ↦ f.lift' (p s)
     have mp₀ : Monotone p := fun _ _ h _ _ ⟨x, xs, xa⟩ => ⟨x, xs, h xa⟩
     have mp₁ : ∀ {s}, Monotone (p s) := fun h _ ⟨y, ya, yxs⟩ => ⟨y, h ya, yxs⟩
     have : f ≤ g := le_iInf₂ fun _ hs => le_iInf₂ fun _ ht =>

@@ -57,7 +57,7 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
   ⟨r, (algebraMap_eq_smul_one r).symm⟩
 
 theorem mem_one' {x : A} : x ∈ (1 : SubMulAction R A) ↔ ∃ y, algebraMap R A y = x :=
-  exists_congr fun r => by rw [algebraMap_eq_smul_one]
+  exists_congr fun r ↦ by rw [algebraMap_eq_smul_one]
 
 end SubMulAction
 

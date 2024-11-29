@@ -94,7 +94,7 @@ variable {ι : Type u}
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
-  PowerSeries.mk fun n => if n ∈ s then 1 else 0
+  PowerSeries.mk fun n ↦ if n ∈ s then 1 else 0
 
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
@@ -160,7 +160,7 @@ theorem num_series' [Field α] (i : ℕ) :
   · simp [zero_pow]
 
 def mkOdd : ℕ ↪ ℕ :=
-  ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
+  ⟨fun i ↦ 2 * i + 1, fun x y h => by linarith⟩
 
 -- The main workhorse of the partition theorem proof.
 theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
@@ -174,9 +174,9 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   set φ : (a : Nat.Partition n) →
     a ∈ filter (fun p ↦ (∀ (j : ℕ), Multiset.count j p.parts ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) univ →
     ℕ →₀ ℕ := fun p _ => {
-      toFun := fun i => Multiset.count i p.parts • i
-      support := Finset.filter (fun i => i ≠ 0) p.parts.toFinset
-      mem_support_toFun := fun a => by
+      toFun := fun i ↦ Multiset.count i p.parts • i
+      support := Finset.filter (fun i ↦ i ≠ 0) p.parts.toFinset
+      mem_support_toFun := fun a ↦ by
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
@@ -332,7 +332,7 @@ sequences are ultimately the same (since the factor converges to 0 as m tends to
 It's enough to not take the limit though, and just consider large enough `m`.
 -/
 theorem same_gf [Field α] (m : ℕ) :
-    (partialOddGF m * (range m).prod fun i => 1 - (X : PowerSeries α) ^ (m + i + 1)) =
+    (partialOddGF m * (range m).prod fun i ↦ 1 - (X : PowerSeries α) ^ (m + i + 1)) =
       partialDistinctGF m := by
   rw [partialOddGF, partialDistinctGF]
   induction' m with m ih

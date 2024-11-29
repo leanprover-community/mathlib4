@@ -153,7 +153,7 @@ def toString (n : SearchNode) : MetaM String := do
   | some (_, e, false) => do let pp ← ppExpr e; pure s!"rw [{pp}]"
   | none => pure ""
   return s!"depth: {n.history.size}\n\
-    history: {n.history.map fun p => hash p % 10000}\n\
+    history: {n.history.map fun p ↦ hash p % 10000}\n\
     {tac}\n\
     -- {n.ppGoal}\n\
     distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
@@ -191,7 +191,7 @@ def lastIdx (n : SearchNode) : Nat :=
   | none => 0
 
 instance : Ord SearchNode where
-  compare := compareOn fun n => toLex (toLex (n.ppGoal.length, n.lastIdx), n.ppGoal)
+  compare := compareOn fun n ↦ toLex (toLex (n.ppGoal.length, n.lastIdx), n.ppGoal)
 
 /--
 A somewhat arbitrary penalty function.
@@ -271,15 +271,15 @@ def search (n : SearchNode)
     prio estimator (rewrites hyps moduleRef forbidden) n
   let search ←
     if ← isTracingEnabledFor `rw_search then do
-      pure <| search.mapM fun n => do trace[rw_search] "{← toString n}"; pure n
+      pure <| search.mapM fun n ↦ do trace[rw_search] "{← toString n}"; pure n
     else
       pure search
   let search := if stopAtRfl then
-    search.mapM compute_rfl? |>.takeUpToFirst fun n => n.rfl? = some true
+    search.mapM compute_rfl? |>.takeUpToFirst fun n ↦ n.rfl? = some true
   else
     search
   return if stopAtDistZero then
-    search.map (fun r => r.compute_dist?) |>.takeUpToFirst (fun r => r.dist? = some 0)
+    search.map (fun r ↦ r.compute_dist?) |>.takeUpToFirst (fun r ↦ r.dist? = some 0)
   else
     search
 

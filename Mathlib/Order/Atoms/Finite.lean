@@ -60,7 +60,7 @@ end Fintype
 namespace Bool
 
 instance : IsSimpleOrder Bool :=
-  ⟨fun a => by
+  ⟨fun a ↦ by
     rw [← Finset.mem_singleton, Or.comm, ← Finset.mem_insert, top_eq_true, bot_eq_false, ←
       Fintype.univ_bool]
     apply Finset.mem_univ⟩
@@ -74,7 +74,7 @@ open Finset
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
     IsCoatomic α := by
-  refine IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => ?_
+  refine IsCoatomic.mk fun b ↦ or_iff_not_imp_left.2 fun ht => ?_
   obtain ⟨c, hc, hmax⟩ :=
     Set.Finite.exists_maximal_wrt id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
   refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩

@@ -276,7 +276,7 @@ instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
 theorem LieIdeal.solvable_iff_le_radical [IsNoetherian R L] (I : LieIdeal R L) :
     IsSolvable R I ↔ I ≤ radical R L :=
-  ⟨fun h => le_sSup h, fun h => le_solvable_ideal_solvable h inferInstance⟩
+  ⟨fun h ↦ le_sSup h, fun h ↦ le_solvable_ideal_solvable h inferInstance⟩
 
 theorem center_le_radical : center R L ≤ radical R L :=
   have h : IsSolvable R (center R L) := inferInstance

@@ -81,7 +81,7 @@ lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimits D]
   intro A
   specialize hG A
   choose ι B f g using hG
-  let B' : ι → StructuredArrow A G := fun i => StructuredArrow.mk (f i)
+  let B' : ι → StructuredArrow A G := fun i ↦ StructuredArrow.mk (f i)
   have hB' : ∀ A' : StructuredArrow A G, ∃ i, Nonempty (B' i ⟶ A') := by
     intro A'
     obtain ⟨i, _, t⟩ := g _ A'.hom

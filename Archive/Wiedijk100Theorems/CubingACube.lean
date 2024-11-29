@@ -189,7 +189,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     · exact lt_of_le_of_ne (b_add_w_le_one h) hc
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
-  rw [mem_iUnion]; use i'; refine ⟨?_, fun j => hi' j.succ⟩
+  rw [mem_iUnion]; use i'; refine ⟨?_, fun j ↦ hi' j.succ⟩
   have : i ≠ i' := by rintro rfl; apply not_le_of_lt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
@@ -275,7 +275,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rcases v.1 c.b_mem_bottom with ⟨_, ⟨i, rfl⟩, hi⟩
   have h2i : i ∈ bcubes cs c :=
-    ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
+    ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j ↦ c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
   have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne]; norm_num
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
@@ -304,7 +304,7 @@ variable [Finite ι]
 
 /-- There is a smallest cube in the valley -/
 theorem exists_mi : ∃ i ∈ bcubes cs c, ∀ i' ∈ bcubes cs c, (cs i).w ≤ (cs i').w :=
-  (bcubes cs c).exists_min_image (fun i => (cs i).w) (Set.toFinite _) (nonempty_bcubes h v)
+  (bcubes cs c).exists_min_image (fun i ↦ (cs i).w) (Set.toFinite _) (nonempty_bcubes h v)
 
 /-- We let `mi` be the (index for the) smallest cube in the valley `c` -/
 def mi : ι :=
@@ -518,7 +518,7 @@ variable [Finite ι] [Nontrivial ι]
 
 include h in
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
-  strictAnti_nat_of_succ_lt fun k => by
+  strictAnti_nat_of_succ_lt fun k ↦ by
     let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]
     apply w_lt_w h v (mi_mem_bcubes : mi h v ∈ _)
 

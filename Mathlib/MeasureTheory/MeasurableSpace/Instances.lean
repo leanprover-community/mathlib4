@@ -45,7 +45,7 @@ instance IterateMulAct.instDiscreteMeasurableSpace {α : Type*} {f : α → α} 
 
 instance (priority := 100) Subsingleton.measurableSingletonClass
     {α} [MeasurableSpace α] [Subsingleton α] : MeasurableSingletonClass α := by
-  refine ⟨fun i => ?_⟩
+  refine ⟨fun i ↦ ?_⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 

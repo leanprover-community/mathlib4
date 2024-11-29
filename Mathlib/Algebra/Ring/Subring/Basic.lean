@@ -456,7 +456,7 @@ theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : 
 /-- A subring `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
 theorem closure_le {s : Set R} {t : Subring R} : closure s ≤ t ↔ s ⊆ t :=
-  ⟨Set.Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Set.Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 /-- Subring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
@@ -521,7 +521,7 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Submonoid.closure s : Set R) :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     induction h using closure_induction with
     | mem _ hx => exact AddSubgroup.subset_closure (Submonoid.subset_closure hx)
     | zero => exact zero_mem _
@@ -538,7 +538,7 @@ theorem mem_closure_iff {s : Set R} {x} :
       | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
       | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
       | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
-    fun h => by
+    fun h ↦ by
       induction h using AddSubgroup.closure_induction with
       | mem x hx =>
         induction hx using Submonoid.closure_induction with
@@ -668,10 +668,10 @@ theorem prod_mono_left (t : Subring S) : Monotone fun s : Subring R => s.prod t 
   prod_mono hs (le_refl t)
 
 theorem prod_top (s : Subring R) : s.prod (⊤ : Subring S) = s.comap (RingHom.fst R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 theorem top_prod (s : Subring S) : (⊤ : Subring R).prod s = s.comap (RingHom.snd R S) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[simp]
 theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
@@ -707,7 +707,7 @@ theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : Di
 
 theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+  Set.ext fun x ↦ by simp [mem_sSup_of_directedOn Sne hS]
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=
@@ -733,7 +733,7 @@ open Subring
 
 This is the bundled version of `Set.rangeFactorization`. -/
 def rangeRestrict (f : R →+* S) : R →+* f.range :=
-  f.codRestrict f.range fun x => ⟨x, rfl⟩
+  f.codRestrict f.range fun x ↦ ⟨x, rfl⟩
 
 @[simp]
 theorem coe_rangeRestrict (f : R →+* S) (x : R) : (f.rangeRestrict x : S) = f x :=
@@ -802,7 +802,7 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x ↦ h x.2
 
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
@@ -839,8 +839,8 @@ def subringCongr (h : s = t) : s ≃+* t :=
 `RingHom.range`. -/
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
-    toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ f.range.subtype) x
+    toFun := fun x ↦ f.rangeRestrict x
+    invFun := fun x ↦ (g ∘ f.range.subtype) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

@@ -42,7 +42,7 @@ theorem IsLowerSet.memberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
   exact And.imp (h <| insert_subset_insert _ hts) (mt <| @hts _)
 
 theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
-    𝒜.memberSubfamily a ⊆ 𝒜.nonMemberSubfamily a := fun s => by
+    𝒜.memberSubfamily a ⊆ 𝒜.nonMemberSubfamily a := fun s ↦ by
   rw [mem_memberSubfamily, mem_nonMemberSubfamily]
   exact And.imp_left (h <| subset_insert _ _)
 

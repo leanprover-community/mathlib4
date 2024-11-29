@@ -140,7 +140,7 @@ theorem range_polarization_domRestrict_le_span_coroot :
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
   refine (mem_span_range_iff_exists_fun R).mpr ?_
-  use fun i => (P.toPerfectPairing x) (P.coroot i)
+  use fun i ↦ (P.toPerfectPairing x) (P.coroot i)
   simp
 
 end CommRing
@@ -157,7 +157,7 @@ theorem rootForm_self_zero_iff (x : M) :
     P.RootForm x x = 0 ↔ ∀ i, P.coroot' i x = 0 := by
   simp only [rootForm_apply_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
     Polarization_apply, map_sum, map_smul, smul_eq_mul]
-  convert Finset.sum_mul_self_eq_zero_iff Finset.univ fun i => P.coroot' i x
+  convert Finset.sum_mul_self_eq_zero_iff Finset.univ fun i ↦ P.coroot' i x
   simp
 
 lemma rootForm_root_self_pos (j : ι) :

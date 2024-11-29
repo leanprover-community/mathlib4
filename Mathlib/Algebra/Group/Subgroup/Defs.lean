@@ -88,7 +88,7 @@ attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
-  ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
+  ⟨fun h ↦ inv_inv x ▸ inv_mem h, inv_mem⟩
 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
@@ -130,7 +130,7 @@ namespace InvMemClass
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
 instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
   [InvMemClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+  ⟨fun a ↦ ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
@@ -212,7 +212,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
+  MonoidHom.mk' (fun x ↦ ⟨x, h x.prop⟩) fun _ _=> rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -449,7 +449,7 @@ instance one : One H :=
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an inverse."]
 instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+  ⟨fun a ↦ ⟨a⁻¹, H.inv_mem a.2⟩⟩
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits a subtraction."]
@@ -534,7 +534,7 @@ theorem subtype_injective : Function.Injective (Subgroup.subtype H) :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
+  MonoidHom.mk' (fun x ↦ ⟨x, h x.2⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
 theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by

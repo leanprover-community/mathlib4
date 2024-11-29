@@ -189,10 +189,10 @@ theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => completionHom X ≫ f
-          invFun := fun f => extensionHom f
-          left_inv := fun f => by dsimp; rw [extension_comp_coe]
-          right_inv := fun f => by
+        { toFun := fun f ↦ completionHom X ≫ f
+          invFun := fun f ↦ extensionHom f
+          left_inv := fun f ↦ by dsimp; rw [extension_comp_coe]
+          right_inv := fun f ↦ by
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
               ‹_› _ }

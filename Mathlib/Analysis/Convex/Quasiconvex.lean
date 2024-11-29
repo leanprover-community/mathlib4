@@ -71,7 +71,7 @@ theorem QuasilinearOn.dual : QuasilinearOn 𝕜 s f → QuasilinearOn 𝕜 s (to
   And.symm
 
 theorem Convex.quasiconvexOn_of_convex_le (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | f x ≤ r }) :
-    QuasiconvexOn 𝕜 s f := fun r => hs.inter (h r)
+    QuasiconvexOn 𝕜 s f := fun r ↦ hs.inter (h r)
 
 theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | r ≤ f x }) :
     QuasiconcaveOn 𝕜 s f :=
@@ -210,7 +210,7 @@ theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : Quasilinea
 
 theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrderedAddCommMonoid β]
     (hs : Convex 𝕜 s) : QuasilinearOn 𝕜 s f ↔ MonotoneOn f s ∨ AntitoneOn f s :=
-  ⟨fun h => h.monotoneOn_or_antitoneOn, fun h =>
-    h.elim (fun h => h.quasilinearOn hs) fun h => h.quasilinearOn hs⟩
+  ⟨fun h ↦ h.monotoneOn_or_antitoneOn, fun h =>
+    h.elim (fun h ↦ h.quasilinearOn hs) fun h ↦ h.quasilinearOn hs⟩
 
 end LinearOrderedField

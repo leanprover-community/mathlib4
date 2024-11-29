@@ -129,7 +129,7 @@ theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in h
 
 /-- A sample infinitesimal hyperreal -/
 noncomputable def epsilon : ℝ* :=
-  ofSeq fun n => n⁻¹
+  ofSeq fun n ↦ n⁻¹
 
 /-- A sample infinite hyperreal -/
 noncomputable def omega : ℝ* := ofSeq Nat.cast
@@ -182,7 +182,7 @@ def IsSt (x : ℝ*) (r : ℝ) :=
   ∀ δ : ℝ, 0 < δ → (r - δ : ℝ*) < x ∧ x < r + δ
 
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
-noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
+noncomputable def st : ℝ* → ℝ := fun x ↦ if h : ∃ r, IsSt x r then Classical.choose h else 0
 
 /-- A hyperreal number is infinitesimal if its standard part is 0 -/
 def Infinitesimal (x : ℝ*) :=
@@ -474,7 +474,7 @@ theorem infinitePos_of_tendsto_top {f : ℕ → ℝ} (hf : Tendsto f atTop atTop
     InfinitePos (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atTop.mp hf
   let ⟨i, hi⟩ := hf' (r + 1)
-  have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
+  have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a ↦ lt_imp_lt_of_le_imp_le (hi a)
   have hS : { a : ℕ | r < f a }ᶜ ⊆ { a : ℕ | a ≤ i } := by
     simp only [Set.compl_setOf, not_lt]
     exact fun a har => le_of_lt (hi' a (lt_of_le_of_lt har (lt_add_one _)))
@@ -484,7 +484,7 @@ theorem infiniteNeg_of_tendsto_bot {f : ℕ → ℝ} (hf : Tendsto f atTop atBot
     InfiniteNeg (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atBot.mp hf
   let ⟨i, hi⟩ := hf' (r - 1)
-  have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
+  have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a ↦ lt_imp_lt_of_le_imp_le (hi a)
   have hS : { a : ℕ | f a < r }ᶜ ⊆ { a : ℕ | a ≤ i } := by
     simp only [Set.compl_setOf, not_lt]
     exact fun a har => le_of_lt (hi' a (lt_of_lt_of_le (sub_one_lt _) har))
@@ -572,7 +572,7 @@ nonrec theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesim
 
 -- Porting note: swapped LHS and RHS, added `@[simp]`
 @[simp] theorem infinitesimal_neg {x : ℝ*} : Infinitesimal (-x) ↔ Infinitesimal x :=
-  ⟨fun h => neg_neg x ▸ h.neg, Infinitesimal.neg⟩
+  ⟨fun h ↦ neg_neg x ▸ h.neg, Infinitesimal.neg⟩
 
 nonrec theorem Infinitesimal.mul {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
     Infinitesimal (x * y) := by simpa only [mul_zero] using hx.mul hy
@@ -602,7 +602,7 @@ theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
           inv_lt_of_inv_lt₀ (coe_lt_coe.2 hr) (by convert hip r⁻¹)⟩,
       inv_pos.2 <| hip 0⟩,
     fun ⟨hi, hp⟩ r =>
-    @_root_.by_cases (r = 0) (↑r < x) (fun h => Eq.substr h (inv_pos.mp hp)) fun h =>
+    @_root_.by_cases (r = 0) (↑r < x) (fun h ↦ Eq.substr h (inv_pos.mp hp)) fun h =>
       lt_of_le_of_lt (coe_le_coe.2 (le_abs_self r))
         ((inv_lt_inv₀ (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
           ((infinitesimal_def.mp hi) |r|⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩

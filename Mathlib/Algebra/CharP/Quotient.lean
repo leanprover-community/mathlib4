@@ -34,7 +34,7 @@ theorem quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 :
 inherits the characteristic of the underlying ring. -/
 theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
     (h : ∀ x : ℕ, (x : R) ∈ I → (x : R) = 0) : CharP (R ⧸ I) p :=
-  ⟨fun x => by
+  ⟨fun x ↦ by
     rw [← cast_eq_zero_iff R p x, ← map_natCast (Ideal.Quotient.mk I)]
     refine Ideal.Quotient.eq.trans (?_ : ↑x - 0 ∈ I ↔ _)
     rw [sub_zero]

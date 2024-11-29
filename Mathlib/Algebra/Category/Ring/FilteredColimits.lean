@@ -60,7 +60,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
-    mul_zero := fun x => by
+    mul_zero := fun x ↦ by
       refine Quot.inductionOn x ?_; clear x; intro x
       obtain ⟨j, x⟩ := x
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
@@ -68,7 +68,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       dsimp
       rw [mul_zero x]
       rfl
-    zero_mul := fun x => by
+    zero_mul := fun x ↦ by
       refine Quot.inductionOn x ?_; clear x; intro x
       obtain ⟨j, x⟩ := x
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
@@ -135,7 +135,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   uniq t _ h :=
     RingHom.coe_inj <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget SemiRingCat)).uniq
-        ((forget SemiRingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
+        ((forget SemiRingCat).mapCocone t) _ fun j ↦ funext fun x ↦ RingHom.congr_fun (h j) x
 
 instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ SemiRingCat MonCat.{u}) where
@@ -195,7 +195,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   uniq t _ h :=
     RingHom.coe_inj <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget CommSemiRingCat)).uniq
-        ((forget CommSemiRingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
+        ((forget CommSemiRingCat).mapCocone t) _ fun j ↦ funext fun x ↦ RingHom.congr_fun (h j) x
 
 instance forget₂SemiRing_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommSemiRingCat SemiRingCat.{u}) where
@@ -258,7 +258,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   uniq t _ h :=
     RingHom.coe_inj <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget RingCat)).uniq
-        ((forget RingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
+        ((forget RingCat).mapCocone t) _ fun j ↦ funext fun x ↦ RingHom.congr_fun (h j) x
 
 instance forget₂SemiRing_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ RingCat SemiRingCat.{u}) where
@@ -318,7 +318,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   uniq t _ h :=
     RingHom.coe_inj <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget CommRingCat)).uniq
-        ((forget CommRingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
+        ((forget CommRingCat).mapCocone t) _ fun j ↦ funext fun x ↦ RingHom.congr_fun (h j) x
 
 instance forget₂Ring_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommRingCat RingCat.{u}) where

@@ -212,9 +212,9 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   refine ⟨?_, AB_not_prime, hi_AB⟩
   -- Used to prove that `2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1)`.
   have ha₁ : (b ^ 2 - 1) * (A * B - 1) = b * (b ^ (p - 1) - 1) * (b ^ p + b) := by
-    apply_fun fun x => x * (b ^ 2 - 1) at AB_id
+    apply_fun fun x ↦ x * (b ^ 2 - 1) at AB_id
     rw [Nat.div_mul_cancel hd] at AB_id
-    apply_fun fun x => x - (b ^ 2 - 1) at AB_id
+    apply_fun fun x ↦ x - (b ^ 2 - 1) at AB_id
     nth_rw 2 [← one_mul (b ^ 2 - 1)] at AB_id
     rw [← Nat.mul_sub_right_distrib, mul_comm] at AB_id
     rw [AB_id]
@@ -357,7 +357,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
 
 theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by
   -- Based on the proof of `Nat.frequently_atTop_modEq_one`
-  refine Filter.frequently_atTop.2 fun n => ?_
+  refine Filter.frequently_atTop.2 fun n ↦ ?_
   obtain ⟨p, hp⟩ := exists_infinite_pseudoprimes h n
   exact ⟨p, hp.2, hp.1⟩
 

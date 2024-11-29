@@ -602,7 +602,7 @@ theorem ext {g h : M ⊗ N →ₗ[R] P} (H : (mk R M N).compr₂ g = (mk R M N).
 
 attribute [local ext high] ext
 
-example : M → N → (M → N → P) → P := fun m => flip fun f => f m
+example : M → N → (M → N → P) → P := fun m ↦ flip fun f ↦ f m
 
 variable (R M N P)
 
@@ -625,7 +625,7 @@ with the property that its composition with the canonical bilinear map `M → N 
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₗ[R] N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ[R] P :=
   { uncurry R M N P with
-    invFun := fun f => (mk R M N).compr₂ f
+    invFun := fun f ↦ (mk R M N).compr₂ f
     left_inv := fun _ => LinearMap.ext₂ fun _ _ => lift.tmul _ _
     right_inv := fun _ => ext' fun _ _ => lift.tmul _ _ }
 
@@ -763,8 +763,8 @@ protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
   refine
       LinearEquiv.ofLinear (lift <| lift <| comp (lcurry R _ _ _) <| mk _ _ _)
         (lift <| comp (uncurry R _ _ _) <| curry <| mk _ _ _)
-        (ext <| LinearMap.ext fun m => ext' fun n p => ?_)
-        (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => ?_) <;>
+        (ext <| LinearMap.ext fun m ↦ ext' fun n p => ?_)
+        (ext <| flip_inj <| LinearMap.ext fun p ↦ ext' fun m n => ?_) <;>
     repeat'
       first
         |rw [lift.tmul]|rw [compr₂_apply]|rw [comp_apply]|rw [mk_apply]|rw [flip_apply]
@@ -1477,7 +1477,7 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     neg := Neg.neg
     sub := _
     sub_eq_add_neg := fun _ _ => rfl
-    neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+    neg_add_cancel := fun x ↦ TensorProduct.neg_add_cancel x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
     zsmul_succ' := by simp [add_comm, TensorProduct.one_smul, TensorProduct.add_smul]

@@ -314,12 +314,12 @@ abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶
   limMap (Discrete.natTrans fun X => p X.as)
 
 @[simp]
-lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
+lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a ↦ 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
   ext; simp
 
 lemma Pi.map_comp_map {f g h : α → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h a) :
-    Pi.map q ≫ Pi.map q' = Pi.map (fun a => q a ≫ q' a) := by
+    Pi.map q ≫ Pi.map q' = Pi.map (fun a ↦ q a ≫ q' a) := by
   ext; simp
 
 instance Pi.map_mono {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b)
@@ -331,14 +331,14 @@ instance Pi.map_mono {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, 
     factors. -/
 def Pi.map' {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] (p : β → α)
     (q : ∀ (b : β), f (p b) ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
-  Pi.lift (fun a => Pi.π _ _ ≫ q a)
+  Pi.lift (fun a ↦ Pi.π _ _ ≫ q a)
 
 @[reassoc (attr := simp)]
 lemma Pi.map'_comp_π {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] (p : β → α)
     (q : ∀ (b : β), f (p b) ⟶ g b) (b : β) : Pi.map' p q ≫ Pi.π g b = Pi.π f (p b) ≫ q b :=
   limit.lift_π _ _
 
-lemma Pi.map'_id_id {f : α → C} [HasProduct f] : Pi.map' id (fun a => 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
+lemma Pi.map'_id_id {f : α → C} [HasProduct f] : Pi.map' id (fun a ↦ 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
   ext; simp
 
 @[simp]
@@ -349,17 +349,17 @@ lemma Pi.map'_id {f g : α → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b 
 lemma Pi.map'_comp_map' {f : α → C} {g : β → C} {h : γ → C} [HasProduct f] [HasProduct g]
     [HasProduct h] (p : β → α) (p' : γ → β) (q : ∀ (b : β), f (p b) ⟶ g b)
     (q' : ∀ (c : γ), g (p' c) ⟶ h c) :
-    Pi.map' p q ≫ Pi.map' p' q' = Pi.map' (p ∘ p') (fun c => q (p' c) ≫ q' c) := by
+    Pi.map' p q ≫ Pi.map' p' q' = Pi.map' (p ∘ p') (fun c ↦ q (p' c) ≫ q' c) := by
   ext; simp
 
 lemma Pi.map'_comp_map {f : α → C} {g h : β → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (p : β → α) (q : ∀ (b : β), f (p b) ⟶ g b) (q' : ∀ (b : β), g b ⟶ h b) :
-    Pi.map' p q ≫ Pi.map q' = Pi.map' p (fun b => q b ≫ q' b) := by
+    Pi.map' p q ≫ Pi.map q' = Pi.map' p (fun b ↦ q b ≫ q' b) := by
   ext; simp
 
 lemma Pi.map_comp_map' {f g : α → C} {h : β → C} [HasProduct f] [HasProduct g] [HasProduct h]
     (p : β → α) (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (b : β), g (p b) ⟶ h b) :
-    Pi.map q ≫ Pi.map' p q' = Pi.map' p (fun b => q (p b) ≫ q' b) := by
+    Pi.map q ≫ Pi.map' p q' = Pi.map' p (fun b ↦ q (p b) ≫ q' b) := by
   ext; simp
 
 lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p p' : β → α}
@@ -382,19 +382,19 @@ section
 /- In this section, we provide some API for products when we are given a functor
 `Discrete α ⥤ C` instead of a map `α → C`. -/
 
-variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
+variable (X : Discrete α ⥤ C) [HasProduct (fun j ↦ X.obj (Discrete.mk j))]
 
 /-- A limit cone for `X : Discrete α ⥤ C` that is given
-by `∏ᶜ (fun j => X.obj (Discrete.mk j))`. -/
+by `∏ᶜ (fun j ↦ X.obj (Discrete.mk j))`. -/
 @[simps]
 def Pi.cone : Cone X where
-  pt := ∏ᶜ (fun j => X.obj (Discrete.mk j))
+  pt := ∏ᶜ (fun j ↦ X.obj (Discrete.mk j))
   π := Discrete.natTrans (fun _ => Pi.π _ _)
 
 /-- The cone `Pi.cone X` is a limit cone. -/
 def productIsProduct' :
     IsLimit (Pi.cone X) where
-  lift s := Pi.lift (fun j => s.π.app ⟨j⟩)
+  lift s := Pi.lift (fun j ↦ s.π.app ⟨j⟩)
   fac s := by simp
   uniq s m hm := by
     dsimp
@@ -404,9 +404,9 @@ def productIsProduct' :
 
 variable [HasLimit X]
 
-/-- The isomorphism `∏ᶜ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
+/-- The isomorphism `∏ᶜ (fun j ↦ X.obj (Discrete.mk j)) ≅ limit X`. -/
 def Pi.isoLimit :
-    ∏ᶜ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
+    ∏ᶜ (fun j ↦ X.obj (Discrete.mk j)) ≅ limit X :=
   IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
 
 @[reassoc (attr := simp)]
@@ -429,12 +429,12 @@ abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, 
   colimMap (Discrete.natTrans fun X => p X.as)
 
 @[simp]
-lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
+lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a ↦ 𝟙 (f a)) = 𝟙 (∐ f) := by
   ext; simp
 
 lemma Sigma.map_comp_map {f g h : α → C} [HasCoproduct f] [HasCoproduct g] [HasCoproduct h]
     (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h a) :
-    Sigma.map q ≫ Sigma.map q' = Sigma.map (fun a => q a ≫ q' a) := by
+    Sigma.map q ≫ Sigma.map q' = Sigma.map (fun a ↦ q a ≫ q' a) := by
   ext; simp
 
 instance Sigma.map_epi {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b)
@@ -446,7 +446,7 @@ instance Sigma.map_epi {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : �
     factors. -/
 def Sigma.map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g] (p : α → β)
     (q : ∀ (a : α), f a ⟶ g (p a)) : ∐ f ⟶ ∐ g :=
-  Sigma.desc (fun a => q a ≫ Sigma.ι _ _)
+  Sigma.desc (fun a ↦ q a ≫ Sigma.ι _ _)
 
 @[reassoc (attr := simp)]
 lemma Sigma.ι_comp_map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g]
@@ -455,7 +455,7 @@ lemma Sigma.ι_comp_map' {f : α → C} {g : β → C} [HasCoproduct f] [HasCopr
   colimit.ι_desc _ _
 
 lemma Sigma.map'_id_id {f : α → C} [HasCoproduct f] :
-    Sigma.map' id (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
+    Sigma.map' id (fun a ↦ 𝟙 (f a)) = 𝟙 (∐ f) := by
   ext; simp
 
 @[simp]
@@ -466,17 +466,17 @@ lemma Sigma.map'_id {f g : α → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ 
 lemma Sigma.map'_comp_map' {f : α → C} {g : β → C} {h : γ → C} [HasCoproduct f] [HasCoproduct g]
     [HasCoproduct h] (p : α → β) (p' : β → γ) (q : ∀ (a : α), f a ⟶ g (p a))
     (q' : ∀ (b : β), g b ⟶ h (p' b)) :
-    Sigma.map' p q ≫ Sigma.map' p' q' = Sigma.map' (p' ∘ p) (fun a => q a ≫ q' (p a)) := by
+    Sigma.map' p q ≫ Sigma.map' p' q' = Sigma.map' (p' ∘ p) (fun a ↦ q a ≫ q' (p a)) := by
   ext; simp
 
 lemma Sigma.map'_comp_map {f : α → C} {g h : β → C} [HasCoproduct f] [HasCoproduct g]
     [HasCoproduct h] (p : α → β) (q : ∀ (a : α), f a ⟶ g (p a)) (q' : ∀ (b : β), g b ⟶ h b) :
-    Sigma.map' p q ≫ Sigma.map q' = Sigma.map' p (fun a => q a ≫ q' (p a)) := by
+    Sigma.map' p q ≫ Sigma.map q' = Sigma.map' p (fun a ↦ q a ≫ q' (p a)) := by
   ext; simp
 
 lemma Sigma.map_comp_map' {f g : α → C} {h : β → C} [HasCoproduct f] [HasCoproduct g]
     [HasCoproduct h] (p : α → β) (q : ∀ (a : α), f a ⟶ g a) (q' : ∀ (a : α), g a ⟶ h (p a)) :
-    Sigma.map q ≫ Sigma.map' p q' = Sigma.map' p (fun a => q a ≫ q' a) := by
+    Sigma.map q ≫ Sigma.map' p q' = Sigma.map' p (fun a ↦ q a ≫ q' a) := by
   ext; simp
 
 lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct g]
@@ -500,19 +500,19 @@ section
 /- In this section, we provide some API for coproducts when we are given a functor
 `Discrete α ⥤ C` instead of a map `α → C`. -/
 
-variable (X : Discrete α ⥤ C) [HasCoproduct (fun j => X.obj (Discrete.mk j))]
+variable (X : Discrete α ⥤ C) [HasCoproduct (fun j ↦ X.obj (Discrete.mk j))]
 
 /-- A colimit cocone for `X : Discrete α ⥤ C` that is given
-by `∐ (fun j => X.obj (Discrete.mk j))`. -/
+by `∐ (fun j ↦ X.obj (Discrete.mk j))`. -/
 @[simps]
 def Sigma.cocone : Cocone X where
-  pt := ∐ (fun j => X.obj (Discrete.mk j))
+  pt := ∐ (fun j ↦ X.obj (Discrete.mk j))
   ι := Discrete.natTrans (fun _ => Sigma.ι (fun j ↦ X.obj ⟨j⟩) _)
 
 /-- The cocone `Sigma.cocone X` is a colimit cocone. -/
 def coproductIsCoproduct' :
     IsColimit (Sigma.cocone X) where
-  desc s := Sigma.desc (fun j => s.ι.app ⟨j⟩)
+  desc s := Sigma.desc (fun j ↦ s.ι.app ⟨j⟩)
   fac s := by simp
   uniq s m hm := by
     dsimp
@@ -522,9 +522,9 @@ def coproductIsCoproduct' :
 
 variable [HasColimit X]
 
-/-- The isomorphism `∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X`. -/
+/-- The isomorphism `∐ (fun j ↦ X.obj (Discrete.mk j)) ≅ colimit X`. -/
 def Sigma.isoColimit :
-    ∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X :=
+    ∐ (fun j ↦ X.obj (Discrete.mk j)) ≅ colimit X :=
   IsColimit.coconePointUniqueUpToIso (coproductIsCoproduct' X) (colimit.isColimit X)
 
 @[reassoc (attr := simp)]
@@ -545,8 +545,8 @@ and up to isomorphism in the factors, are isomorphic.
 @[simps]
 def Pi.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasProduct f] [HasProduct g] : ∏ᶜ f ≅ ∏ᶜ g where
-  hom := Pi.map' e.symm fun k => (w (e.symm k)).inv ≫ eqToHom (by simp)
-  inv := Pi.map' e fun j => (w j).hom
+  hom := Pi.map' e.symm fun k ↦ (w (e.symm k)).inv ≫ eqToHom (by simp)
+  inv := Pi.map' e fun j ↦ (w j).hom
 
 /-- Two coproducts which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
@@ -554,48 +554,48 @@ and up to isomorphism in the factors, are isomorphic.
 @[simps]
 def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasCoproduct f] [HasCoproduct g] : ∐ f ≅ ∐ g where
-  hom := Sigma.map' e fun j => (w j).inv
-  inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
+  hom := Sigma.map' e fun j ↦ (w j).inv
+  inv := Sigma.map' e.symm fun k ↦ eqToHom (by simp) ≫ (w (e.symm k)).hom
 
 #adaptation_note /-- nightly-2024-04-01
 The last proof was previously by `aesop_cat`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
-    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
+    [∀ i, HasProduct (g i)] [HasProduct fun i ↦ ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
-    { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
-      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
+    { cone := Fan.mk (∏ᶜ fun i ↦ ∏ᶜ g i) (fun X => Pi.π (fun i ↦ ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
+      isLimit := mkFanLimit _ (fun s ↦ Pi.lift fun b ↦ Pi.lift fun c ↦ s.proj ⟨b, c⟩)
         (by aesop_cat)
         (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
 def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
-    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
-    (∏ᶜ fun i => ∏ᶜ g i) ≅ (∏ᶜ fun p : Σ i, f i => g p.1 p.2) where
+    [∀ i, HasProduct (g i)] [HasProduct fun i ↦ ∏ᶜ g i] :
+    (∏ᶜ fun i ↦ ∏ᶜ g i) ≅ (∏ᶜ fun p : Σ i, f i => g p.1 p.2) where
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
-  inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
+  inv := Pi.lift fun i ↦ Pi.lift fun x ↦ Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
 #adaptation_note /-- nightly-2024-04-01
 The last proof was previously by `aesop_cat`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
-    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
+    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i ↦ ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_colimit := Nonempty.intro
-    { cocone := Cofan.mk (∐ fun i => ∐ g i)
-        (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
+    { cocone := Cofan.mk (∐ fun i ↦ ∐ g i)
+        (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i ↦ ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
+        (fun s ↦ Sigma.desc fun b ↦ Sigma.desc fun c ↦ s.inj ⟨b, c⟩)
         (by aesop_cat)
         (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
 def sigmaSigmaIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
-    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
-    (∐ fun i => ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
-  hom := Sigma.desc fun i => Sigma.desc fun x => Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
-  inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i => ∐ g i) i
+    [∀ i, HasCoproduct (g i)] [HasCoproduct fun i ↦ ∐ g i] :
+    (∐ fun i ↦ ∐ g i) ≅ (∐ fun p : Σ i, f i => g p.1 p.2) where
+  hom := Sigma.desc fun i ↦ Sigma.desc fun x ↦ Sigma.ι (fun p : Σ i, f i => g p.1 p.2) ⟨i, x⟩
+  inv := Sigma.desc fun ⟨i, x⟩ => Sigma.ι (g i) x ≫ Sigma.ι (fun i ↦ ∐ g i) i
 
 section Comparison
 
@@ -604,37 +604,37 @@ variable (f : β → C)
 
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product
 of `f`, see `PreservesProduct.ofIsoComparison`. -/
-def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
-    G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b => G.obj (f b) :=
-  Pi.lift fun b => G.map (Pi.π f b)
+def piComparison [HasProduct f] [HasProduct fun b ↦ G.obj (f b)] :
+    G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b ↦ G.obj (f b) :=
+  Pi.lift fun b ↦ G.map (Pi.π f b)
 
 @[reassoc (attr := simp)]
-theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b : β) :
+theorem piComparison_comp_π [HasProduct f] [HasProduct fun b ↦ G.obj (f b)] (b : β) :
     piComparison G f ≫ Pi.π _ b = G.map (Pi.π f b) :=
   limit.lift_π _ (Discrete.mk b)
 
 @[reassoc (attr := simp)]
-theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
-    (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
+theorem map_lift_piComparison [HasProduct f] [HasProduct fun b ↦ G.obj (f b)] (P : C)
+    (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j ↦ G.map (g j) := by
   ext j
   simp only [Discrete.functor_obj, Category.assoc, piComparison_comp_π, ← G.map_comp,
     limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
 of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
-def sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] :
-    ∐ (fun b => G.obj (f b)) ⟶ G.obj (∐ f) :=
-  Sigma.desc fun b => G.map (Sigma.ι f b)
+def sigmaComparison [HasCoproduct f] [HasCoproduct fun b ↦ G.obj (f b)] :
+    ∐ (fun b ↦ G.obj (f b)) ⟶ G.obj (∐ f) :=
+  Sigma.desc fun b ↦ G.map (Sigma.ι f b)
 
 @[reassoc (attr := simp)]
-theorem ι_comp_sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] (b : β) :
+theorem ι_comp_sigmaComparison [HasCoproduct f] [HasCoproduct fun b ↦ G.obj (f b)] (b : β) :
     Sigma.ι _ b ≫ sigmaComparison G f = G.map (Sigma.ι f b) :=
   colimit.ι_desc _ (Discrete.mk b)
 
 @[reassoc (attr := simp)]
-theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] (P : C)
+theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b ↦ G.obj (f b)] (P : C)
     (g : ∀ j, f j ⟶ P) :
-    sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
+    sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j ↦ G.map (g j) := by
   ext j
   simp only [Discrete.functor_obj, ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
     Cofan.mk_pt, Cofan.mk_ι_app]
@@ -665,7 +665,7 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
   fun _ : Type w =>
   { has_limit := fun F =>
       HasLimit.mk
-        ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
+        ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j ↦ F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
 
 instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C] (J : Type w) :
@@ -691,7 +691,7 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
         congr
         subsingleton)) }
   isLimit :=
-    { lift := fun s => s.π.app default
+    { lift := fun s ↦ s.π.app default
       fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h
@@ -719,7 +719,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
         congr
         subsingleton)) }
   isColimit :=
-    { desc := fun s => s.ι.app default
+    { desc := fun s ↦ s.ι.app default
       fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h

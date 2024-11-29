@@ -29,7 +29,7 @@ when the `trace.linarith` option is set to true.
 -/
 def linarithTraceProofs {α} [ToMessageData α] (s : α) (l : List Expr) : MetaM Unit := do
   trace[linarith] "{s}"
-  trace[linarith] (← l.mapM fun e => do instantiateMVars (← inferType e))
+  trace[linarith] (← l.mapM fun e ↦ do instantiateMVars (← inferType e))
 
 /-! ### Linear expressions -/
 
@@ -160,7 +160,7 @@ that is, it represents the fact `0 < 0`.
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 
 instance Comp.ToFormat : ToFormat Comp :=
-  ⟨fun p => format p.coeffs ++ toString p.str ++ "0"⟩
+  ⟨fun p ↦ format p.coeffs ++ toString p.str ++ "0"⟩
 
 /-! ### Parsing into linear form -/
 

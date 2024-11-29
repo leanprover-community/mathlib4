@@ -69,7 +69,7 @@ theorem eventually_nhdsSet_iff_forall {p : X → Prop} :
   mem_nhdsSet_iff_forall
 
 theorem hasBasis_nhdsSet (s : Set X) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
-  ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
+  ⟨fun t ↦ by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 
 @[simp]
 lemma lift'_nhdsSet_interior (s : Set X) : (𝓝ˢ s).lift' interior = 𝓝ˢ s :=

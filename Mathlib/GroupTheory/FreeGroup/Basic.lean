@@ -270,14 +270,14 @@ to `x⁻¹` -/
   reduces to `-x`."]
 theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b)] :=
   Iff.intro
-    (fun h => by
+    (fun h ↦ by
       have h₁ : Red ((x, not b) :: (x, b) :: L) [(x, not b)] := cons_cons h
       have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single Step.cons_not_rev
       let ⟨L', h₁, h₂⟩ := church_rosser h₁ h₂
       rw [singleton_iff] at h₁
       subst L'
       assumption)
-    fun h => (cons_cons h).tail Step.cons_not
+    fun h ↦ (cons_cons h).tail Step.cons_not
 
 @[to_additive]
 theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
@@ -321,7 +321,7 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
   @reflTransGen_of_transitive_reflexive
     _ (fun a b => b <+ a) _ _ _
-    (fun l => List.Sublist.refl l)
+    (fun l ↦ List.Sublist.refl l)
     (fun _a _b _c hab hbc => List.Sublist.trans hbc hab)
     (fun _ _ => Red.Step.sublist)
 
@@ -508,11 +508,11 @@ theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (in
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :
     Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) ↔ Red.Step L₁ L₂ :=
-  ⟨fun h => by simpa only [invRev_invRev] using h.invRev, fun h => h.invRev⟩
+  ⟨fun h ↦ by simpa only [invRev_invRev] using h.invRev, fun h ↦ h.invRev⟩
 
 @[to_additive (attr := simp)]
 theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
-  ⟨fun h => by simpa only [invRev_invRev] using h.invRev, fun h => h.invRev⟩
+  ⟨fun h ↦ by simpa only [invRev_invRev] using h.invRev, fun h ↦ h.invRev⟩
 
 @[to_additive]
 instance : Group (FreeGroup α) where
@@ -561,7 +561,7 @@ variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
 @[to_additive "Given `f : α → β` with `β` an additive group, the canonical map
   `list (α × bool) → β`"]
 def Lift.aux : List (α × Bool) → β := fun L =>
-  List.prod <| L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹
+  List.prod <| L.map fun x ↦ cond x.2 (f x.1) (f x.1)⁻¹
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
@@ -593,7 +593,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
 variable {f}
 
 @[to_additive (attr := simp)]
-theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f x.1)⁻¹) :=
+theorem lift.mk : lift f (mk L) = List.prod (L.map fun x ↦ cond x.2 (f x.1) (f x.1)⁻¹) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -656,20 +656,20 @@ variable {β : Type v} (f : α → β) {x y : FreeGroup α}
   the additive free group over `α` to the additive free group over `β`."]
 def map : FreeGroup α →* FreeGroup β :=
   MonoidHom.mk'
-    (Quot.map (List.map fun x => (f x.1, x.2)) fun L₁ L₂ H => by cases H; simp)
+    (Quot.map (List.map fun x ↦ (f x.1, x.2)) fun L₁ L₂ H => by cases H; simp)
     (by rintro ⟨L₁⟩ ⟨L₂⟩; simp)
 
 variable {f}
 
 @[to_additive (attr := simp)]
-theorem map.mk : map f (mk L) = mk (L.map fun x => (f x.1, x.2)) :=
+theorem map.mk : map f (mk L) = mk (L.map fun x ↦ (f x.1, x.2)) :=
   rfl
 
 @[to_additive (attr := simp)]
 theorem map.id (x : FreeGroup α) : map id x = x := by rcases x with ⟨L⟩; simp [List.map_id']
 
 @[to_additive (attr := simp)]
-theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
+theorem map.id' (x : FreeGroup α) : map (fun z ↦ z) x = x :=
   map.id x
 
 @[to_additive]
@@ -696,7 +696,7 @@ theorem map.unique (g : FreeGroup α →* FreeGroup β)
 
 @[to_additive]
 theorem map_eq_lift : map f x = lift (of ∘ f) x :=
-  Eq.symm <| map.unique _ fun x => by simp
+  Eq.symm <| map.unique _ fun x ↦ by simp
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
@@ -741,7 +741,7 @@ def prod : FreeGroup α →* α :=
 variable {x y}
 
 @[to_additive (attr := simp)]
-theorem prod_mk : prod (mk L) = List.prod (L.map fun x => cond x.2 x.1 x.1⁻¹) :=
+theorem prod_mk : prod (mk L) = List.prod (L.map fun x ↦ cond x.2 x.1 x.1⁻¹) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -772,7 +772,7 @@ def sum : α :=
 variable {x y}
 
 @[simp]
-theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
+theorem sum_mk : sum (mk L) = List.sum (L.map fun x ↦ cond x.2 x.1 (-x.1)) :=
   rfl
 
 @[simp]
@@ -878,17 +878,17 @@ theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (
 @[to_additive]
 instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
   (id_map := fun x =>
-    FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])
+    FreeGroup.induction_on x (map_one id) (fun x ↦ map_pure id x) (fun x ih => by rw [map_inv, ih])
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
   (pure_bind := fun x f => pure_bind f x)
   (bind_assoc := fun x =>
     FreeGroup.induction_on x
       (by intros; iterate 3 rw [one_bind])
-      (fun x => by intros; iterate 2 rw [pure_bind])
+      (fun x ↦ by intros; iterate 2 rw [pure_bind])
       (fun x ih => by intros; (iterate 3 rw [inv_bind]); rw [ih])
       (fun x y ihx ihy => by intros; (iterate 3 rw [mul_bind]); rw [ihx, ihy]))
   (bind_pure_comp := fun f x =>
-    FreeGroup.induction_on x (by rw [one_bind, map_one]) (fun x => by rw [pure_bind, map_pure])
+    FreeGroup.induction_on x (by rw [one_bind, map_one]) (fun x ↦ by rw [pure_bind, map_pure])
       (fun x ih => by rw [inv_bind, map_inv, ih]) fun x y ihx ihy => by
       rw [mul_bind, map_mul, ihx, ihy])
 

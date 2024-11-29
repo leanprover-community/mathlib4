@@ -62,7 +62,7 @@ def natLERec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
 
 @[simp]
 theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
-    (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
+    (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k ↦ f' k) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
@@ -105,7 +105,7 @@ variable [DirectedSystem G fun i j h => f i j h]
 
 @[simp]
 theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
-    (unify f (fun a => .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
+    (unify f (fun a ↦ .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
       _root_.trans (le_of_eq hj.symm) (refl _)) = x := by
   ext a
   rw [unify]
@@ -145,12 +145,12 @@ noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.S
   funMap F x :=
     ⟨_,
       funMap F
-        (unify f x (Classical.choose (Finite.bddAbove_range fun a => (x a).1))
-          (Classical.choose_spec (Finite.bddAbove_range fun a => (x a).1)))⟩
+        (unify f x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1))
+          (Classical.choose_spec (Finite.bddAbove_range fun a ↦ (x a).1)))⟩
   RelMap R x :=
     RelMap R
-      (unify f x (Classical.choose (Finite.bddAbove_range fun a => (x a).1))
-        (Classical.choose_spec (Finite.bddAbove_range fun a => (x a).1)))
+      (unify f x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1))
+        (Classical.choose_spec (Finite.bddAbove_range fun a ↦ (x a).1)))
 
 end DirectLimit
 
@@ -202,20 +202,20 @@ variable [Nonempty ι]
 theorem exists_unify_eq {α : Type*} [Finite α] {x y : α → Σˣ f} (xy : x ≈ y) :
     ∃ (i : ι) (hx : i ∈ upperBounds (range (Sigma.fst ∘ x)))
       (hy : i ∈ upperBounds (range (Sigma.fst ∘ y))), unify f x i hx = unify f y i hy := by
-  obtain ⟨i, hi⟩ := Finite.bddAbove_range (Sum.elim (fun a => (x a).1) fun a => (y a).1)
+  obtain ⟨i, hi⟩ := Finite.bddAbove_range (Sum.elim (fun a ↦ (x a).1) fun a ↦ (y a).1)
   rw [Sum.elim_range, upperBounds_union] at hi
   simp_rw [← Function.comp_apply (f := Sigma.fst)] at hi
-  exact ⟨i, hi.1, hi.2, funext fun a => (equiv_iff G f _ _).1 (xy a)⟩
+  exact ⟨i, hi.1, hi.2, funext fun a ↦ (equiv_iff G f _ _).1 (xy a)⟩
 
 theorem funMap_equiv_unify {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     funMap F x ≈ .mk f _ (funMap F (unify f x i hi)) :=
-  funMap_unify_equiv G f F x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
+  funMap_unify_equiv G f F x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1)) i _ hi
 
 theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     RelMap R x = RelMap R (unify f x i hi) :=
-  relMap_unify_equiv G f R x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
+  relMap_unify_equiv G f R x (Classical.choose (Finite.bddAbove_range fun a ↦ (x a).1)) i _ hi
 
 /-- The direct limit `setoid` respects the structure `sigmaStructure`, so quotienting by it
   gives rise to a valid structure. -/
@@ -239,7 +239,7 @@ noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) 
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
-    funMap F (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
+    funMap F (fun a ↦ (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
   simp only [funMap_quotient_mk', Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
@@ -249,16 +249,16 @@ theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x 
 
 @[simp]
 theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x : Fin n → G i} :
-    RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
+    RelMap R (fun a ↦ (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
   rw [relMap_quotient_mk']
   obtain ⟨k, _, _⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
-  rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i]
+  rw [relMap_equiv_unify G f R (fun a ↦ .mk f i (x a)) i]
   rw [unify_sigma_mk_self]
 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :
-    ∃ (i : ι) (y : α → G i), x = fun a => ⟦.mk f i (y a)⟧ := by
-  obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a => (x a).out.1
+    ∃ (i : ι) (y : α → G i), x = fun a ↦ ⟦.mk f i (y a)⟧ := by
+  obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a ↦ (x a).out.1
   refine ⟨i, unify f (Quotient.out ∘ x) i hi, ?_⟩
   ext a
   rw [Quotient.eq_mk_iff_out, unify]
@@ -274,7 +274,7 @@ variable (L ι)
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i : ι) : G i ↪[L] DirectLimit G f where
-  toFun := fun a => ⟦.mk f i a⟧
+  toFun := fun a ↦ ⟦.mk f i a⟧
   inj' x y h := by
     rw [Quotient.eq] at h
     obtain ⟨j, h1, _, h3⟩ := h
@@ -285,7 +285,7 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     rfl
   map_rel' := by
     intro n R x
-    change RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
+    change RelMap R (fun a ↦ (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
     simp only [relMap_quotient_mk'_sigma_mk']
 
 
@@ -375,7 +375,7 @@ theorem lift_of {i} (x : G i) : lift L ι G f g Hg (of L ι G f i x) = g i x := 
 
 theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
     F x =
-      lift L ι G f (fun i => F.comp <| of L ι G f i)
+      lift L ι G f (fun i ↦ F.comp <| of L ι G f i)
         (fun i j hij x => by rw [F.comp_apply, F.comp_apply, of_f]) x :=
   DirectLimit.inductionOn x fun i x => by rw [lift_of]; rfl
 
@@ -419,7 +419,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
   refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
-  · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
+  · exact Set.countable_iUnion fun i ↦ Set.Countable.image (Classical.choose_spec (h i).out).1 _
   · rw [eq_top_iff, Substructure.closure_iUnion]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]

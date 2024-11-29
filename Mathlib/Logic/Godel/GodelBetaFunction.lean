@@ -58,7 +58,7 @@ variable {m : ℕ}
 
 private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
-private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
+private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i ↦ (i + 1) * (supOfSeq a)! + 1
 
 lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₁ : a i < supOfSeq a :=

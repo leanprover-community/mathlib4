@@ -29,7 +29,7 @@ theorem eq_zero_of_zero_dvd (h : 0 ∣ a) : a = 0 :=
     product with zero equals `a` iff `a` equals zero. -/
 @[simp]
 theorem zero_dvd_iff : 0 ∣ a ↔ a = 0 :=
-  ⟨eq_zero_of_zero_dvd, fun h => by
+  ⟨eq_zero_of_zero_dvd, fun h ↦ by
     rw [h]
     exact ⟨0, by simp⟩⟩
 
@@ -43,13 +43,13 @@ end SemigroupWithZero
  `a*b` divides `a*c` iff `b` divides `c`. -/
 theorem mul_dvd_mul_iff_left [CancelMonoidWithZero α] {a b c : α} (ha : a ≠ 0) :
     a * b ∣ a * c ↔ b ∣ c :=
-  exists_congr fun d => by rw [mul_assoc, mul_right_inj' ha]
+  exists_congr fun d ↦ by rw [mul_assoc, mul_right_inj' ha]
 
 /-- Given two elements `a`, `b` of a commutative `CancelMonoidWithZero` and a nonzero
   element `c`, `a*c` divides `b*c` iff `a` divides `b`. -/
 theorem mul_dvd_mul_iff_right [CancelCommMonoidWithZero α] {a b c : α} (hc : c ≠ 0) :
     a * c ∣ b * c ↔ a ∣ b :=
-  exists_congr fun d => by rw [mul_right_comm, mul_left_inj' hc]
+  exists_congr fun d ↦ by rw [mul_right_comm, mul_left_inj' hc]
 
 section CommMonoidWithZero
 

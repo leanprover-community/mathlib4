@@ -463,8 +463,8 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   fapply
     ((gluing 𝒰 f g).openCover.pushforwardIso
           (limit.isoLimitCone ⟨_, gluedIsLimit 𝒰 f g⟩).inv).copy
-      𝒰.J (fun i => pullback (𝒰.map i ≫ f) g)
-      (fun i => pullback.map _ _ _ _ (𝒰.map i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
+      𝒰.J (fun i ↦ pullback (𝒰.map i ≫ f) g)
+      (fun i ↦ pullback.map _ _ _ _ (𝒰.map i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
       (Equiv.refl 𝒰.J) fun _ => Iso.refl _
   rintro (i : 𝒰.J)
   simp_rw [Cover.pushforwardIso_J, Cover.pushforwardIso_map, GlueData.openCover_map,
@@ -476,9 +476,9 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
 def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   fapply
     ((openCoverOfLeft 𝒰 g f).pushforwardIso (pullbackSymmetry _ _).hom).copy 𝒰.J
-      (fun i => pullback f (𝒰.map i ≫ g))
-      (fun i => pullback.map _ _ _ _ (𝟙 _) (𝒰.map i) (𝟙 _) (by simp) (Category.comp_id _))
-      (Equiv.refl _) fun i => pullbackSymmetry _ _
+      (fun i ↦ pullback f (𝒰.map i ≫ g))
+      (fun i ↦ pullback.map _ _ _ _ (𝟙 _) (𝒰.map i) (𝟙 _) (by simp) (Category.comp_id _))
+      (Equiv.refl _) fun i ↦ pullbackSymmetry _ _
   intro i
   dsimp [Cover.bind]
   apply pullback.hom_ext <;> simp
@@ -489,7 +489,7 @@ def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).OpenCover := by
   fapply
-    ((openCoverOfLeft 𝒰X f g).bind fun x => openCoverOfRight 𝒰Y (𝒰X.map x ≫ f) g).copy
+    ((openCoverOfLeft 𝒰X f g).bind fun x ↦ openCoverOfRight 𝒰Y (𝒰X.map x ≫ f) g).copy
       (𝒰X.J × 𝒰Y.J) (fun ij => pullback (𝒰X.map ij.1 ≫ f) (𝒰Y.map ij.2 ≫ g))
       (fun ij =>
         pullback.map _ _ _ _ (𝒰X.map ij.1) (𝒰Y.map ij.2) (𝟙 _) (Category.comp_id _)

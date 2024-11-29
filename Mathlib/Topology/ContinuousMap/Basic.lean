@@ -58,8 +58,8 @@ The continuous functions from `α` to `β` are the same as the plain functions w
 -/
 @[simps]
 def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
-  ⟨fun f => f,
-    fun f => ⟨f, continuous_of_discreteTopology⟩,
+  ⟨fun f ↦ f,
+    fun f ↦ ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
@@ -137,16 +137,16 @@ theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f 
 @[simp]
 theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
+  ⟨fun h ↦ ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 
 @[simp]
 theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
-  ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+  ⟨const _ b₁, const _ b₂, fun h ↦ hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
 section Prod
 
@@ -327,7 +327,7 @@ of sets in `α` which contain a neighbourhood of each point in `α` and (2) the 
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := (↑)
-  let F : ∀ i : A, C(i, β) := fun i => F i i.prop
+  let F : ∀ i : A, C(i, β) := fun i ↦ F i i.prop
   refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
   intro x
   obtain ⟨s, hs, hsx⟩ := hA x

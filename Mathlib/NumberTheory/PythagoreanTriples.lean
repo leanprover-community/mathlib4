@@ -74,7 +74,7 @@ theorem mul (h : PythagoreanTriple x y z) (k : ℤ) : PythagoreanTriple (k * x) 
 `(x, y, z)` is also a triple. -/
 theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
     PythagoreanTriple (k * x) (k * y) (k * z) ↔ PythagoreanTriple x y z := by
-  refine ⟨?_, fun h => h.mul k⟩
+  refine ⟨?_, fun h ↦ h.mul k⟩
   simp only [PythagoreanTriple]
   intro h
   rw [← mul_left_inj' (mul_ne_zero hk hk)]

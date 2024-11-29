@@ -301,7 +301,7 @@ instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α)
     induction a
     · exact fun _ => ⟨b, (zero_add b).symm⟩
     induction b
-    · exact fun h => (WithBot.not_coe_le_bot _ h).elim
+    · exact fun h ↦ (WithBot.not_coe_le_bot _ h).elim
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩

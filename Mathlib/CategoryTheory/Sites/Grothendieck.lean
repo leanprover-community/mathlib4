@@ -128,7 +128,7 @@ theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ 
     R ∈ J X :=
   J.transitive' hS R h
 
-theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
+theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h ↦ h.symm ▸ J.top_mem X
 
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
@@ -155,7 +155,7 @@ theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J 
 
 @[simp]
 theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X :=
-  ⟨fun h => ⟨J.superset_covering inf_le_left h, J.superset_covering inf_le_right h⟩, fun t =>
+  ⟨fun h ↦ ⟨J.superset_covering inf_le_left h, J.superset_covering inf_le_right h⟩, fun t =>
     intersection_covering _ t.1 t.2⟩
 
 theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)

@@ -335,7 +335,7 @@ theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimi
     dsimp; simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
       Functor.const_obj_obj, IsInitial.to_self, Functor.map_id]
     dsimp [inv]; simp only [Category.id_comp, Category.comp_id, and_self]
-    apply @Classical.choose_spec _ (fun x => x = 𝟙 F.obj j) _
+    apply @Classical.choose_spec _ (fun x ↦ x = 𝟙 F.obj j) _
   ⟩⟩
 
 instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :

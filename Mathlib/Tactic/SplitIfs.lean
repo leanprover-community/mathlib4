@@ -43,7 +43,7 @@ match loc with
 
 /-- Return the condition and decidable instance of an `if` expression to case split. -/
 private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
-  match e.find? fun e => (e.isIte || e.isDIte) && !(e.getArg! 1 5).hasLooseBVars with
+  match e.find? fun e ↦ (e.isIte || e.isDIte) && !(e.getArg! 1 5).hasLooseBVars with
   | some iteApp =>
     let cond := iteApp.getArg! 1 5
     let dec := iteApp.getArg! 2 5

@@ -135,12 +135,12 @@ def MAbs.insertProof (prop pf : Expr) : MAbs Unit := do
 
 /-- Runs `x` with an additional local variable. -/
 def MAbs.withLocal {α : Type} (fvar : Expr) (x : MAbs α) : MAbs α :=
-  withReader (fun r => {r with fvars := r.fvars.push fvar}) x
+  withReader (fun r ↦ {r with fvars := r.fvars.push fvar}) x
 
 /-- Runs `x` with an increased recursion depth and the initial local context, clearing `fvars`. -/
 def MAbs.withRecurse {α : Type} (x : MAbs α) : MAbs α := do
   withLCtx (← read).initLCtx (← getLocalInstances) do
-    withReader (fun r => {r with fvars := #[], depth := r.depth + 1}) x
+    withReader (fun r ↦ {r with fvars := #[], depth := r.depth + 1}) x
 
 /--
 Computes expected types for each argument to `f`,
@@ -365,7 +365,7 @@ partial def withGeneralizedProofs {α : Type} [Nonempty α] (e : Expr) (ty? : Op
         withNewLocalInstances fvars 0 do
           let e' := e.replace proofToFVar.get?
           trace[Tactic.generalize_proofs] "after: e' = {e}"
-          modify fun s => { s with propToFVar }
+          modify fun s ↦ { s with propToFVar }
           k fvars pfs e'
   go 0 #[] #[] (proofToFVar := {}) (propToFVar := propToFVar)
 
@@ -508,7 +508,7 @@ elab (name := generalizeProofsElab) "generalize_proofs" config:Parser.Tactic.opt
     match expandOptLocation (Lean.mkOptionalNode loc?) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)
     | .targets t target => pure (← getFVarIds t, target)
-  liftMetaTactic1 fun g => do
+  liftMetaTactic1 fun g ↦ do
     let (pfs, g) ← g.generalizeProofs fvars target config
     -- Rename the proofs using `hs` and record info
     g.withContext do

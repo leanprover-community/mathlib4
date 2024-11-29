@@ -195,7 +195,7 @@ instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_z
 
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
-    { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
+    { toFun := fun m ↦ ⁅x, f m⁆ - f ⁅x, m⁆
       map_add' := fun m n => by
         simp only [lie_add, LinearMap.map_add]
         abel
@@ -810,7 +810,7 @@ theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t �
 
 instance : Module R (M →ₗ⁅R,L⁆ N) :=
   Function.Injective.module R
-    { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
+    { toFun := fun f ↦ f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
     coe_injective coe_smul
 
 end LieModuleHom

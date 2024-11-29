@@ -61,7 +61,7 @@ open Polynomial
 /-- The cardinality of a field is at most `n` times the cardinality of the image of a degree `n`
   polynomial -/
 theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 0 < p.degree) :
-    Fintype.card R ≤ natDegree p * #(univ.image fun x => eval x p) :=
+    Fintype.card R ≤ natDegree p * #(univ.image fun x ↦ eval x p) :=
   Finset.card_le_mul_card_image _ _ (fun a _ =>
     calc
       _ = #(p - C a).roots.toFinset :=
@@ -101,8 +101,8 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
   classical
     have : (∏ x ∈ (@univ Kˣ _).erase (-1), x) = 1 :=
       prod_involution (fun x _ => x⁻¹) (by simp)
-        (fun a => by simp +contextual [Units.inv_eq_self_iff])
-        (fun a => by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
+        (fun a ↦ by simp +contextual [Units.inv_eq_self_iff])
+        (fun a ↦ by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 
 theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
@@ -142,7 +142,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   -- ... and leaves G unchanged
   have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
   -- Therefore the sum of x over a G is the sum of a x over G
-  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
+  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x ↦ ((x : Kˣ) : K)
   -- ... and the former is the sum of x over G.
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
   simp only [h_unchanged, mulLeftEmbedding_apply, Subgroup.coe_mul, Units.val_mul, ← mul_sum,
@@ -198,7 +198,7 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
     rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
-  refine hzero.resolve_left fun h => ha ?_
+  refine hzero.resolve_left fun h ↦ ha ?_
   ext
   rw [← sub_eq_zero]
   simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one, Units.val_one, h]
@@ -270,7 +270,7 @@ is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
 theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
-    { toFun := fun x => x ^ i
+    { toFun := fun x ↦ x ^ i
       map_one' := by simp
       map_mul' := by intros; simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance

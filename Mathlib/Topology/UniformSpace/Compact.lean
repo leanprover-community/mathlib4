@@ -67,7 +67,7 @@ then `{⋃ x ∈ K, UniformSpace.ball x (V i) | p i}` is a basis of `𝓝ˢ K`.
 Here "`{s i | p i}` is a basis of a filter `l`" means `Filter.HasBasis l p s`. -/
 theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {V : ι → Set (α × α)}
     (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K) :
-    (𝓝ˢ K).HasBasis p fun i => ⋃ x ∈ K, ball x (V i) where
+    (𝓝ˢ K).HasBasis p fun i ↦ ⋃ x ∈ K, ball x (V i) where
   mem_iff' U := by
     constructor
     · intro H
@@ -87,7 +87,7 @@ theorem Disjoint.exists_uniform_thickening {A B : Set α} (hA : IsCompact A) (hB
   rw [(hA.nhdsSet_basis_uniformity (Filter.basis_sets _)).mem_iff] at this
   rcases this with ⟨U, hU, hUAB⟩
   rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-  refine ⟨V, hV, Set.disjoint_left.mpr fun x => ?_⟩
+  refine ⟨V, hV, Set.disjoint_left.mpr fun x ↦ ?_⟩
   simp only [mem_iUnion₂]
   rintro ⟨a, ha, hxa⟩ ⟨b, hb, hxb⟩
   rw [mem_ball_symmetry hVsymm] at hxa hxb

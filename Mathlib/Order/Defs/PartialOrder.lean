@@ -123,7 +123,7 @@ lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ 
 alias eq_of_le_of_le := le_antisymm
 
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
-  ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
+  ⟨fun e ↦ ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
 
 lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_le h₁ <| mt (le_antisymm h₁) h₂

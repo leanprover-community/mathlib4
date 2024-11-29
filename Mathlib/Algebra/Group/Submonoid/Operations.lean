@@ -306,7 +306,7 @@ theorem comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
-  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h ↦ ⟨_, h, rfl⟩⟩
 
 section GaloisCoinsertion
 
@@ -470,11 +470,11 @@ theorem prod_mono {s₁ s₂ : Submonoid M} {t₁ t₂ : Submonoid N} (hs : s₁
 
 @[to_additive prod_top]
 theorem prod_top (s : Submonoid M) : s.prod (⊤ : Submonoid N) = s.comap (MonoidHom.fst M N) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 @[to_additive top_prod]
 theorem top_prod (s : Submonoid N) : (⊤ : Submonoid M).prod s = s.comap (MonoidHom.snd M N) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[to_additive (attr := simp) top_prod_top]
 theorem top_prod_top : (⊤ : Submonoid M).prod (⊤ : Submonoid N) = ⊤ :=
@@ -709,7 +709,7 @@ lemma injective_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
 @[to_additive "Restriction of an `AddMonoid` hom to its range interpreted as a submonoid."]
 def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
-  (f.codRestrict (mrange f)) fun x => ⟨x, rfl⟩
+  (f.codRestrict (mrange f)) fun x ↦ ⟨x, rfl⟩
 
 @[to_additive (attr := simp)]
 theorem coe_mrangeRestrict {N} [MulOneClass N] (f : M →* N) (x : M) :
@@ -864,7 +864,7 @@ theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ 
 @[to_additive
       "The `AddMonoid` hom associated to an inclusion of submonoids."]
 def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
-  S.subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x ↦ h x.2
 
 @[to_additive (attr := simp)]
 theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
@@ -1005,7 +1005,7 @@ instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
+  ⟨fun a ↦ (smul_assoc (a : M') : _)⟩
 
 section SMul
 variable [SMul M' α] {S : Submonoid M'}
@@ -1016,7 +1016,7 @@ variable [SMul M' α] {S : Submonoid M'}
 lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
 
 instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
-  ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
+  ⟨fun h ↦ Subtype.ext <| eq_of_smul_eq_smul h⟩
 
 end SMul
 end MulOneClass

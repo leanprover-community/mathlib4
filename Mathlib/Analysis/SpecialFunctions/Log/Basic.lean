@@ -72,7 +72,7 @@ theorem log_exp (x : ℝ) : log (exp x) = x :=
 
 theorem surjOn_log : SurjOn log (Ioi 0) univ := fun x _ => ⟨exp x, exp_pos x, log_exp x⟩
 
-theorem log_surjective : Surjective log := fun x => ⟨exp x, log_exp x⟩
+theorem log_surjective : Surjective log := fun x ↦ ⟨exp x, log_exp x⟩
 
 @[simp]
 theorem range_log : range log = univ :=
@@ -365,11 +365,11 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
     rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 
 theorem tendsto_pow_log_div_mul_add_atTop (a b : ℝ) (n : ℕ) (ha : a ≠ 0) :
-    Tendsto (fun x => log x ^ n / (a * x + b)) atTop (𝓝 0) :=
+    Tendsto (fun x ↦ log x ^ n / (a * x + b)) atTop (𝓝 0) :=
   ((tendsto_div_pow_mul_exp_add_atTop a b n ha.symm).comp tendsto_log_atTop).congr' <| by
     filter_upwards [eventually_gt_atTop (0 : ℝ)] with x hx using by simp [exp_log hx]
 
-theorem isLittleO_pow_log_id_atTop {n : ℕ} : (fun x => log x ^ n) =o[atTop] id := by
+theorem isLittleO_pow_log_id_atTop {n : ℕ} : (fun x ↦ log x ^ n) =o[atTop] id := by
   rw [Asymptotics.isLittleO_iff_tendsto']
   · simpa using tendsto_pow_log_div_mul_add_atTop 1 0 n one_ne_zero
   filter_upwards [eventually_ne_atTop (0 : ℝ)] with x h₁ h₂ using (h₁ h₂).elim
@@ -392,27 +392,27 @@ open Real
 variable {α : Type*}
 
 theorem Filter.Tendsto.log {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) (hx : x ≠ 0) :
-    Tendsto (fun x => log (f x)) l (𝓝 (log x)) :=
+    Tendsto (fun x ↦ log (f x)) l (𝓝 (log x)) :=
   (continuousAt_log hx).tendsto.comp h
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {a : α}
 
 @[fun_prop]
-theorem Continuous.log (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) : Continuous fun x => log (f x) :=
+theorem Continuous.log (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) : Continuous fun x ↦ log (f x) :=
   continuousOn_log.comp_continuous hf h₀
 
 @[fun_prop]
 nonrec theorem ContinuousAt.log (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
-    ContinuousAt (fun x => log (f x)) a :=
+    ContinuousAt (fun x ↦ log (f x)) a :=
   hf.log h₀
 
 nonrec theorem ContinuousWithinAt.log (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
-    ContinuousWithinAt (fun x => log (f x)) s a :=
+    ContinuousWithinAt (fun x ↦ log (f x)) s a :=
   hf.log h₀
 
 @[fun_prop]
 theorem ContinuousOn.log (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :
-    ContinuousOn (fun x => log (f x)) s := fun x hx => (hf x hx).log (h₀ x hx)
+    ContinuousOn (fun x ↦ log (f x)) s := fun x hx => (hf x hx).log (h₀ x hx)
 
 end Continuity
 

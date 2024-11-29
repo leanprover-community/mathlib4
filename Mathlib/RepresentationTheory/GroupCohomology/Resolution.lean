@@ -107,10 +107,10 @@ def actionDiagonalSucc (G : Type u) [Group G] :
             (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
-    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
+    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i ↦ (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
-  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine Prod.ext rfl (funext fun x => ?_)
+  · exact Prod.ext rfl (funext fun x ↦ Fin.elim0 x)
+  · refine Prod.ext rfl (funext fun x ↦ ?_)
     /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -118,11 +118,11 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Action.tensorHom, Equiv.piFinSuccAbove_symm_apply, tensor_apply, types_id_apply,
         tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
         Fin.insertNth_zero']
-      refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
+      refine' Fin.cases (Fin.cons_zero _ _) (fun i ↦ _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
     dsimp [actionDiagonalSucc]
     erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
-    exact Fin.cases rfl (fun i => rfl) x
+    exact Fin.cases rfl (fun i ↦ rfl) x
 
 theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
     (actionDiagonalSucc G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
@@ -146,7 +146,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     funext x
     dsimp [actionDiagonalSucc]
     erw [hn, Fin.consEquiv_apply]
-    refine Fin.cases ?_ (fun i => ?_) x
+    refine Fin.cases ?_ (fun i ↦ ?_) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
       rfl
@@ -171,7 +171,7 @@ variable {k G n}
 
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
-      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
+      single (f 0) 1 ⊗ₜ single (fun i ↦ (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
   dsimp [diagonalSucc]
   erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
@@ -201,7 +201,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
 
 theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     (diagonalSucc k G n).inv.hom (Finsupp.single g r ⊗ₜ f) =
-      Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f => single (g • partialProd f) r) f := by
+      Finsupp.lift (Gⁿ⁺¹ →₀ k) k Gⁿ (fun f ↦ single (g • partialProd f) r) f := by
   refine f.induction ?_ ?_
   · simp only [TensorProduct.tmul_zero, map_zero]
   · intro a b x _ _ hx
@@ -211,7 +211,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     (diagonalSucc k G n).inv.hom (g ⊗ₜ Finsupp.single f r) =
-      Finsupp.lift _ k G (fun a => single (a • partialProd f) r) g := by
+      Finsupp.lift _ k G (fun a ↦ single (a • partialProd f) r) g := by
   refine g.induction ?_ ?_
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x _ _ hx
@@ -364,7 +364,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) <| MonCat.of G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := fun x => x ∘ f.unop.toOrderHom
+    { hom := fun x ↦ x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -379,8 +379,8 @@ variable [Monoid G]
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
 def cechNerveTerminalFromIso :
     cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
-  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
+  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f ↦ by
+    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j ↦ ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -483,7 +483,7 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
-  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
+  refine Finsupp.lhom_ext' fun x ↦ LinearMap.ext_ring ?_
   dsimp [groupCohomology.resolution]
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
@@ -556,7 +556,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
         (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
-        LinearMap.id fun i => rfl,
+        LinearMap.id fun i ↦ rfl,
       LinearMap.id_comp]
     rfl
   · congr
@@ -571,7 +571,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
 
 theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
-  refine LinearMap.ext fun x => ?_
+  refine LinearMap.ext fun x ↦ ?_
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,

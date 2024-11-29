@@ -165,7 +165,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
   · rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
       monomial_smul_apply]
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
-    rw [← Finset.sum_ite_eq (Finset.range (Nat.succ n)) f_n (fun x => f_a • g (n - x))]
+    rw [← Finset.sum_ite_eq (Finset.range (Nat.succ n)) f_n (fun x ↦ f_a • g (n - x))]
     congr
     ext x
     split_ifs
@@ -253,7 +253,7 @@ def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by
     refine (Finsupp.sum_smul_index' ?_).trans ?_
-    · exact fun i => smul_zero _
+    · exact fun i ↦ smul_zero _
     · simp_rw [RingHom.id_apply, Finsupp.smul_sum]
       congr
       ext i c

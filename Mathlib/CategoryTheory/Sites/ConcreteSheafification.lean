@@ -50,7 +50,7 @@ attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFu
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
-  ⟨fun x => x.1⟩
+  ⟨fun x ↦ x.1⟩
 
 lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
     {f g : Y ⟶ X} (h : f = g) (hf : S f) :
@@ -281,7 +281,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   let IS : S.Arrow := I.fromMiddle
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
-  apply_fun fun e => e IW at hh
+  apply_fun fun e ↦ e IW at hh
   convert hh using 1
   · exact x.congr_apply I.middle_spec.symm _
   · exact y.congr_apply I.middle_spec.symm _
@@ -297,7 +297,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
-  apply_fun fun e => e I at hh
+  apply_fun fun e ↦ e I at hh
   exact hh
 
 /-- An auxiliary definition to be used in the proof of `exists_of_sep` below.
@@ -396,7 +396,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply sep P S _ _
     intro I
     apply_fun Meq.equiv _ _ at h
-    apply_fun fun e => e I at h
+    apply_fun fun e ↦ e I at h
     convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
   · rintro (x : (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
@@ -563,7 +563,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
-    refine colimit.hom_ext (fun j => ?_)
+    refine colimit.hom_ext (fun j ↦ ?_)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
 
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
@@ -571,8 +571,8 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
-        { toFun := fun e => J.toSheafify P ≫ e.val
-          invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
+        { toFun := fun e ↦ J.toSheafify P ≫ e.val
+          invFun := fun e ↦ ⟨J.sheafifyLift e Q.2⟩
           left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
@@ -589,6 +589,6 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
   (sheafToPresheaf J D).map_mono _
 
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
-  ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
+  ⟨fun m ↦ by infer_instance, fun m ↦ by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 
 end CategoryTheory

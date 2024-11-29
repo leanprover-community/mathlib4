@@ -157,7 +157,7 @@ theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ �
 /-- The inner content of a supremum of opens is at most the sum of the individual inner contents. -/
 theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
-  have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
+  have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i ↦ μ (K i) := by
     intro t K
     refine Finset.induction_on t ?_ ?_
     · simp only [μ.empty, nonpos_iff_eq_zero, Finset.sum_empty, Finset.sup_empty]
@@ -166,10 +166,10 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
       exact le_trans (μ.sup_le _ _) (add_le_add_left ih _)
   refine iSup₂_le fun K hK => ?_
   obtain ⟨t, ht⟩ :=
-    K.isCompact.elim_finite_subcover _ (fun i => (U i).isOpen) (by rwa [← Opens.coe_iSup])
+    K.isCompact.elim_finite_subcover _ (fun i ↦ (U i).isOpen) (by rwa [← Opens.coe_iSup])
   rcases K.isCompact.finite_compact_cover t (SetLike.coe ∘ U) (fun i _ => (U i).isOpen) ht with
     ⟨K', h1K', h2K', h3K'⟩
-  let L : ℕ → Compacts G := fun n => ⟨K' n, h1K' n⟩
+  let L : ℕ → Compacts G := fun n ↦ ⟨K' n, h1K' n⟩
   convert le_trans (h3 t L) _
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
@@ -186,7 +186,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
 theorem innerContent_iUnion_nat [R1Space G] ⦃U : ℕ → Set G⦄
     (hU : ∀ i : ℕ, IsOpen (U i)) :
     μ.innerContent ⟨⋃ i : ℕ, U i, isOpen_iUnion hU⟩ ≤ ∑' i : ℕ, μ.innerContent ⟨U i, hU i⟩ := by
-  have := μ.innerContent_iSup_nat fun i => ⟨U i, hU i⟩
+  have := μ.innerContent_iSup_nat fun i ↦ ⟨U i, hU i⟩
   rwa [Opens.iSup_def] at this
 
 theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K.map f f.continuous) = μ K)

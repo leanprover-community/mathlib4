@@ -153,17 +153,17 @@ instance [Inhabited C] : Inhabited (Algebra T) :=
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => T.η.app X ≫ f.f
+        { toFun := fun f ↦ T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
               h := by
                 dsimp
                 simp [← Y.assoc, ← T.μ.naturality_assoc] }
-          left_inv := fun f => by
+          left_inv := fun f ↦ by
             ext
             dsimp
             simp
-          right_inv := fun f => by
+          right_inv := fun f ↦ by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
             apply Category.comp_id } }
@@ -393,11 +393,11 @@ def adj : G.forget ⊣ G.cofree :=
               h := by
                 dsimp
                 simp [← Coalgebra.coassoc_assoc] }
-          invFun := fun g => g.f ≫ G.ε.app Y
-          left_inv := fun f => by
+          invFun := fun g ↦ g.f ≫ G.ε.app Y
+          left_inv := fun f ↦ by
             dsimp
             rw [Category.assoc, G.ε.naturality, Functor.id_map, X.counit_assoc]
-          right_inv := fun g => by
+          right_inv := fun g ↦ by
             ext1; dsimp
             rw [Functor.map_comp, g.h_assoc, cofree_obj_a, Comonad.right_counit]
             apply comp_id } }

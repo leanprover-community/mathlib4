@@ -36,18 +36,18 @@ section
 
 variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
-theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
+theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x ↦ f x ^ 2) μ := by
   simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.two_ne_top
 
 theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
-    Memℒp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
+    Memℒp f 2 μ ↔ Integrable (fun x ↦ ‖f x‖ ^ 2) μ := by
   rw [← memℒp_one_iff_integrable]
   convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.two_ne_top).symm
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
 
 theorem memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
-    Memℒp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
+    Memℒp f 2 μ ↔ Integrable (fun x ↦ f x ^ 2) μ := by
   convert memℒp_two_iff_integrable_sq_norm hf using 3
   simp
 
@@ -60,22 +60,22 @@ variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpac
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
+theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a ↦ ⟪c, f a⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
     (Eventually.of_forall fun _ => norm_inner_le_norm _ _)
 
-theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
+theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a ↦ ⟪f a, c⟫) p μ :=
   hf.of_le_mul (c := ‖c‖) (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
-    (Eventually.of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
+    (Eventually.of_forall fun x ↦ by rw [mul_comm]; exact norm_inner_le_norm _ _)
 
 variable {f : α → E}
 
 theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
-    Integrable (fun x => ⟪c, f x⟫) μ := by
+    Integrable (fun x ↦ ⟪c, f x⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 
 theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
-    Integrable (fun x => ⟪f x, c⟫) μ := by
+    Integrable (fun x ↦ ⟪f x, c⟫) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
@@ -104,7 +104,7 @@ variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
-    eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
+    eLpNorm (fun x ↦ ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
   have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp [zero_le_one]
   rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
@@ -148,7 +148,7 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
   norm_cast
   rw [integral_eq_lintegral_of_nonneg_ae]
   rotate_left
-  · exact Filter.Eventually.of_forall fun x => sq_nonneg _
+  · exact Filter.Eventually.of_forall fun x ↦ sq_nonneg _
   · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
   congr
   ext1 x
@@ -172,14 +172,14 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
     exact Lp.eLpNorm_lt_top f
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :
-    AEEqFun.mk (fun x => ⟪f x, g x⟫)
+    AEEqFun.mk (fun x ↦ ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
       Lp 𝕜 1 μ := by
   simp_rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_aeeqFun]; exact eLpNorm_inner_lt_top f g
 
 theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=
   (integrable_congr
-        (AEEqFun.coeFn_mk (fun x => ⟪f x, g x⟫)
+        (AEEqFun.coeFn_mk (fun x ↦ ⟪f x, g x⟫)
           ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)))).mp
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 

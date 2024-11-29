@@ -369,7 +369,7 @@ def functorFrom : Grothendieck F ⥤ E where
 /-- `Grothendieck.ι F c` composed with `Grothendieck.functorFrom` is isomorphic a functor on a fiber
 on `F` supplied as the first argument to `Grothendieck.functorFrom`. -/
 def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp) ≅ fib c :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [hom_id])
+  NatIso.ofComponents (fun _ => Iso.refl _) (fun f ↦ by simp [hom_id])
 
 end FunctorFrom
 

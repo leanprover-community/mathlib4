@@ -59,7 +59,7 @@ protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
 
 -- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
---   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
+--   ⟨fun f ↦ ⟨f, f.contMDiff.continuous⟩⟩
 
 attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
@@ -110,10 +110,10 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two smooth maps `f` and `g`, this is the smooth map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨fun x => (f x, g x), f.2.prod_mk g.2⟩
+  ⟨fun x ↦ (f x, g x), f.2.prod_mk g.2⟩
 
 end ContMDiffMap
 
 instance ContinuousLinearMap.hasCoeToContMDiffMap :
     Coe (E →L[𝕜] E') C^n⟮𝓘(𝕜, E), E; 𝓘(𝕜, E'), E'⟯ :=
-  ⟨fun f => ⟨f, f.contMDiff⟩⟩
+  ⟨fun f ↦ ⟨f, f.contMDiff⟩⟩

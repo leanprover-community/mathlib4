@@ -66,7 +66,7 @@ theorem iUnion_mem_generateMeasurableRec {s : Set (Set α)} {i : Ordinal} {f : �
     (hf : ∀ n, ∃ j < i, f n ∈ generateMeasurableRec s j) :
     ⋃ n, f n ∈ generateMeasurableRec s i := by
   unfold generateMeasurableRec
-  exact mem_union_right _ ⟨fun n => ⟨f n, let ⟨j, hj, hf⟩ := hf n; mem_iUnion₂.2 ⟨j, hj, hf⟩⟩, rfl⟩
+  exact mem_union_right _ ⟨fun n ↦ ⟨f n, let ⟨j, hj, hf⟩ := hf n; mem_iUnion₂.2 ⟨j, hj, hf⟩⟩, rfl⟩
 
 theorem generateMeasurableRec_mono (s : Set (Set α)) : Monotone (generateMeasurableRec s) := by
   intro i j h x hx
@@ -114,10 +114,10 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     exact ⟨_, (isLimit_omega 1).succ_lt hj,
       compl_mem_generateMeasurableRec (Order.lt_succ j) hj'⟩
   · intro f H
-    choose I hI using fun n => (H n).1
+    choose I hI using fun n ↦ (H n).1
     simp_rw [exists_prop] at hI
-    refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n => (hI n).1,
-      iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
+    refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n ↦ (hI n).1,
+      iUnion_mem_generateMeasurableRec fun n ↦ ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
     rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
     exact aleph0_lt_aleph_one
 
@@ -125,7 +125,7 @@ theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
   apply WellFoundedLT.induction i
   exact fun i IH t ht => generateMeasurableRec_induction .basic .empty
-    (fun u _ ⟨j, hj, hj'⟩ => .compl _ (IH j hj hj')) (fun f H => .iUnion _ fun n => (H n).1) ht
+    (fun u _ ⟨j, hj, hj'⟩ => .compl _ (IH j hj hj')) (fun f H => .iUnion _ fun n ↦ (H n).1) ht
 
 /-- `generateMeasurableRec s ω₁` generates precisely the smallest sigma-algebra containing `s`. -/
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :

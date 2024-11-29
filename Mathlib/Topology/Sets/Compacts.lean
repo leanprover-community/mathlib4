@@ -112,7 +112,7 @@ theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
 
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
-    (↑(s.sup f) : Set α) = s.sup fun i => ↑(f i) := by
+    (↑(s.sup f) : Set α) = s.sup fun i ↦ ↑(f i) := by
   refine Finset.cons_induction_on s rfl fun a s _ h => ?_
   simp_rw [Finset.sup_cons, coe_sup, sup_eq_union]
   congr

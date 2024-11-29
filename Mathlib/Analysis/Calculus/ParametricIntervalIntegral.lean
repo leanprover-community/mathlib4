@@ -33,11 +33,11 @@ nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
     (hF_int : IntervalIntegrable (F x₀) μ a b)
     (hF'_meas : AEStronglyMeasurable F' (μ.restrict (Ι a b)))
     (h_lip : ∀ᵐ t ∂μ, t ∈ Ι a b →
-      LipschitzOnWith (Real.nnabs <| bound t) (fun x => F x t) (ball x₀ ε))
+      LipschitzOnWith (Real.nnabs <| bound t) (fun x ↦ F x t) (ball x₀ ε))
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasFDerivAt (fun x => F x t) (F' t) x₀) :
+    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasFDerivAt (fun x ↦ F x t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
-      HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
+      HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   rw [← ae_restrict_iff' measurableSet_uIoc] at h_lip h_diff
   simp only [intervalIntegrable_iff] at hF_int bound_integrable ⊢
   simp only [intervalIntegral_eq_integral_uIoc]
@@ -56,8 +56,8 @@ nonrec theorem hasFDerivAt_integral_of_dominated_of_fderiv_le
     (hF'_meas : AEStronglyMeasurable (F' x₀) (μ.restrict (Ι a b)))
     (h_bound : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, ‖F' x t‖ ≤ bound t)
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, HasFDerivAt (fun x => F x t) (F' x t) x) :
-    HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
+    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, HasFDerivAt (fun x ↦ F x t) (F' x t) x) :
+    HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
   rw [← ae_restrict_iff' measurableSet_uIoc] at h_bound h_diff
   simp only [intervalIntegrable_iff] at hF_int bound_integrable
   simp only [intervalIntegral_eq_integral_uIoc]
@@ -73,11 +73,11 @@ nonrec theorem hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → ℝ →
     (hF_int : IntervalIntegrable (F x₀) μ a b)
     (hF'_meas : AEStronglyMeasurable F' (μ.restrict (Ι a b)))
     (h_lipsch : ∀ᵐ t ∂μ, t ∈ Ι a b →
-      LipschitzOnWith (Real.nnabs <| bound t) (fun x => F x t) (ball x₀ ε))
+      LipschitzOnWith (Real.nnabs <| bound t) (fun x ↦ F x t) (ball x₀ ε))
     (bound_integrable : IntervalIntegrable (bound : ℝ → ℝ) μ a b)
-    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasDerivAt (fun x => F x t) (F' t) x₀) :
+    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasDerivAt (fun x ↦ F x t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
-      HasDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
+      HasDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   rw [← ae_restrict_iff' measurableSet_uIoc] at h_lipsch h_diff
   simp only [intervalIntegrable_iff] at hF_int bound_integrable ⊢
   simp only [intervalIntegral_eq_integral_uIoc]
@@ -96,9 +96,9 @@ nonrec theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (hF'_meas : AEStronglyMeasurable (F' x₀) (μ.restrict (Ι a b)))
     (h_bound : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, ‖F' x t‖ ≤ bound t)
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, HasDerivAt (fun x => F x t) (F' x t) x) :
+    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, HasDerivAt (fun x ↦ F x t) (F' x t) x) :
     IntervalIntegrable (F' x₀) μ a b ∧
-      HasDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
+      HasDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
   rw [← ae_restrict_iff' measurableSet_uIoc] at h_bound h_diff
   simp only [intervalIntegrable_iff] at hF_int bound_integrable ⊢
   simp only [intervalIntegral_eq_integral_uIoc]

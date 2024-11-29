@@ -45,9 +45,9 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
+    map_zero' := AddMonoidHom.ext fun r ↦ show (0 : R) • r = 0 by simp
     map_add' := fun x y =>
-      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
+      AddMonoidHom.ext fun r ↦ show (x + y) • r = x • r + y • r by simp [add_smul] }
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/
@@ -104,7 +104,7 @@ theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : @SMul.smul ℤ 
 should normally have exactly one `ℤ`-module structure by design. -/
 def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
+  uniq P := (Module.ext' P _) fun n ↦ by convert int_smul_eq_zsmul P n
 
 end AddCommGroup
 

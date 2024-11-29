@@ -84,8 +84,8 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [IsLocalRin
   maximal ideal of `R`. -/
 theorem irreducible_iff_uniformizer (ϖ : R) : Irreducible ϖ ↔ maximalIdeal R = Ideal.span {ϖ} :=
   ⟨fun hϖ => (eq_maximalIdeal (isMaximal_of_irreducible hϖ)).symm,
-    fun h => irreducible_of_span_eq_maximalIdeal ϖ
-      (fun e => not_a_field R <| by rwa [h, span_singleton_eq_bot]) h⟩
+    fun h ↦ irreducible_of_span_eq_maximalIdeal ϖ
+      (fun e ↦ not_a_field R <| by rwa [h, span_singleton_eq_bot]) h⟩
 
 theorem _root_.Irreducible.maximalIdeal_eq {ϖ : R} (h : Irreducible ϖ) :
     maximalIdeal R = Ideal.span {ϖ} :=

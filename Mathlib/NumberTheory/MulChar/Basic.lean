@@ -95,7 +95,7 @@ variable (R R') in
 the value `1` on units. -/
 @[simps]
 noncomputable def trivial : MulChar R R' where
-  toFun := by classical exact fun x => if IsUnit x then 1 else 0
+  toFun := by classical exact fun x ↦ if IsUnit x then 1 else 0
   map_nonunit' := by
     intro a ha
     simp only [ha, if_false]
@@ -152,7 +152,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 
 /-- Turn a homomorphism between unit groups into a `MulChar`. -/
 noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
-  toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
+  toFun := by classical exact fun x ↦ if hx : IsUnit x then f hx.unit else 0
   map_one' := by
     have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.eq_iff.mp rfl
     simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]
@@ -275,7 +275,7 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
   { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => MonoidWithZero.inverse (χ a)
+    toFun := fun a ↦ MonoidWithZero.inverse (χ a)
     map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
 
 noncomputable instance hasInv : Inv (MulChar R R') :=
@@ -422,7 +422,7 @@ theorem IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ
 @[simps]
 def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
   { f.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => f (χ a)
+    toFun := fun a ↦ f (χ a)
     map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
 
 @[simp]
@@ -469,7 +469,7 @@ theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' �
   obtain ⟨a, ha⟩ := hχ
   use a
   simp_rw [ringHomComp_apply, ← RingHom.map_one f]
-  exact fun h => ha (hf h)
+  exact fun h ↦ ha (hf h)
 
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
 theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :

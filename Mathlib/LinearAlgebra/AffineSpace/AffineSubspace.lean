@@ -100,7 +100,7 @@ theorem mem_spanPoints (p : P) (s : Set P) : p ∈ s → p ∈ spanPoints k s
   | hp => ⟨p, hp, 0, Submodule.zero_mem _, (zero_vadd V p).symm⟩
 
 /-- A set is contained in its `spanPoints`. -/
-theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p => mem_spanPoints k p s
+theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p ↦ mem_spanPoints k p s
 
 /-- The `spanPoints` of a set is nonempty if and only if that set is. -/
 @[simp]
@@ -110,7 +110,7 @@ theorem spanPoints_nonempty (s : Set P) : (spanPoints k s).Nonempty ↔ s.Nonemp
     rw [Set.not_nonempty_iff_eq_empty, Set.not_nonempty_iff_eq_empty]
     intro h
     simp [h, spanPoints]
-  · exact fun h => h.mono (subset_spanPoints _ _)
+  · exact fun h ↦ h.mono (subset_spanPoints _ _)
 
 /-- Adding a point in the affine span and a vector in the spanning submodule produces a point in the
 affine span. -/
@@ -241,13 +241,13 @@ theorem vsub_mem_direction {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s)
 vector is in the direction. -/
 theorem vadd_mem_iff_mem_direction {s : AffineSubspace k P} (v : V) {p : P} (hp : p ∈ s) :
     v +ᵥ p ∈ s ↔ v ∈ s.direction :=
-  ⟨fun h => by simpa using vsub_mem_direction h hp, fun h => vadd_mem_of_mem_direction h hp⟩
+  ⟨fun h ↦ by simpa using vsub_mem_direction h hp, fun h ↦ vadd_mem_of_mem_direction h hp⟩
 
 /-- Adding a vector in the direction to a point produces a point in the subspace if and only if
 the original point is in the subspace. -/
 theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
     {p : P} : v +ᵥ p ∈ s ↔ p ∈ s := by
-  refine ⟨fun h => ?_, fun h => vadd_mem_of_mem_direction hv h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ vadd_mem_of_mem_direction hv h⟩
   convert vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
   simp
 
@@ -335,7 +335,7 @@ theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2
 /-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
 abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
-  zero_vadd := fun a => by
+  zero_vadd := fun a ↦ by
     ext
     exact zero_vadd _ _
   add_vadd a b c := by
@@ -384,7 +384,7 @@ theorem injective_subtype (s : AffineSubspace k P) [Nonempty s] : Function.Injec
 equal. -/
 theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h₁ : p ∈ s₁)
     (h₂ : p ∈ s₂) : s₁ = s₂ ↔ s₁.direction = s₂.direction :=
-  ⟨fun h => h ▸ rfl, fun h => ext_of_direction_eq h ⟨p, h₁, h₂⟩⟩
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ ext_of_direction_eq h ⟨p, h₁, h₂⟩⟩
 
 /-- Construct an affine subspace from a point and a direction. -/
 def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
@@ -426,7 +426,7 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
 if their difference is in that direction. -/
 theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
     p₂ ∈ mk' p₁ direction ↔ p₂ -ᵥ p₁ ∈ direction := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← direction_mk' p₁ direction]
     exact vsub_mem_direction h (self_mem_mk' _ _)
   · rw [← vsub_vadd p₂ p₁]
@@ -552,7 +552,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
       { carrier := ∅
         smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
     bot_le := fun _ _ => False.elim
-    sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
+    sSup := fun s ↦ affineSpan k (⋃ s' ∈ s, (s' : Set P))
     sInf := fun s =>
       mk (⋂ s' ∈ s, (s' : Set P)) fun c p1 p2 p3 hp1 hp2 hp3 =>
         Set.mem_iInter₂.2 fun s2 hs2 => by
@@ -615,7 +615,7 @@ variable (P)
 protected def gi : GaloisInsertion (affineSpan k) ((↑) : AffineSubspace k P → Set P) where
   choice s _ := affineSpan k s
   gc s1 _s2 :=
-    ⟨fun h => Set.Subset.trans (subset_spanPoints k s1) h, spanPoints_subset_coe_of_subset_coe⟩
+    ⟨fun h ↦ Set.Subset.trans (subset_spanPoints k s1) h, spanPoints_subset_coe_of_subset_coe⟩
   le_l_u _ := subset_spanPoints k _
   choice_eq _ _ := rfl
 
@@ -653,7 +653,7 @@ theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p�
 @[simp]
 theorem preimage_coe_affineSpan_singleton (x : P) :
     ((↑) : affineSpan k ({x} : Set P) → P) ⁻¹' {x} = univ :=
-  eq_univ_of_forall fun y => (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
+  eq_univ_of_forall fun y ↦ (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
 
 /-- The span of a union of sets is the sup of their spans. -/
 theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ affineSpan k t :=
@@ -914,7 +914,7 @@ theorem inter_eq_singleton_of_nonempty_of_isCompl {s1 s2 : AffineSubspace k P}
     have hqp : q -ᵥ p ∈ s1.direction ⊓ s2.direction :=
       ⟨vsub_mem_direction hq1 hp.1, vsub_mem_direction hq2 hp.2⟩
     rwa [hd.inf_eq_bot, Submodule.mem_bot, vsub_eq_zero_iff_eq] at hqp
-  · exact fun h => h.symm ▸ hp
+  · exact fun h ↦ h.symm ▸ hp
 
 /-- Coercing a subspace to a set then taking the affine span produces the original subspace. -/
 @[simp]
@@ -1092,7 +1092,7 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
   refine Exists.elim ?_ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- Porting note: Lean couldn't infer the motive
-  refine affineSpan_induction (p := fun y => ∃ z, p y z) h ?_ ?_
+  refine affineSpan_induction (p := fun y ↦ ∃ z, p y z) h ?_ ?_
   · exact fun y hy => ⟨subset_affineSpan _ _ hy, mem y hy⟩
   · exact fun c u v w hu hv hw =>
       Exists.elim hu fun hu' hu =>
@@ -1121,7 +1121,7 @@ end WithLocalInstance
 spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
-    affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
+    affineSpan k ({p} ∪ (fun v ↦ v +ᵥ p) '' s) = ⊤ := by
   convert ext_of_direction_eq _
       ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton _)), mem_top k V p⟩
   rw [direction_affineSpan, direction_top,
@@ -1429,7 +1429,7 @@ theorem map_bot : (⊥ : AffineSubspace k P₁).map f = ⊥ :=
 
 @[simp]
 theorem map_eq_bot_iff {s : AffineSubspace k P₁} : s.map f = ⊥ ↔ s = ⊥ := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rwa [← coe_eq_bot_iff, coe_map, image_eq_empty, coe_eq_bot_iff] at h
   · rw [h, map_bot]
 
@@ -1664,7 +1664,7 @@ theorem Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s�
 
 @[simp]
 theorem parallel_bot_iff_eq_bot {s : AffineSubspace k P} : s ∥ ⊥ ↔ s = ⊥ := by
-  refine ⟨fun h => ?_, fun h => h ▸ Parallel.refl _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ Parallel.refl _⟩
   rcases h with ⟨v, h⟩
   rwa [eq_comm, map_eq_bot_iff] at h
 
@@ -1674,7 +1674,7 @@ theorem bot_parallel_iff_eq_bot {s : AffineSubspace k P} : ⊥ ∥ s ↔ s = ⊥
 
 theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubspace k P} :
     s₁ ∥ s₂ ↔ s₁.direction = s₂.direction ∧ (s₁ = ⊥ ↔ s₂ = ⊥) := by
-  refine ⟨fun h => ⟨h.direction_eq, ?_, ?_⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨h.direction_eq, ?_, ?_⟩, fun h ↦ ?_⟩
   · rintro rfl
     exact bot_parallel_iff_eq_bot.1 h
   · rintro rfl

@@ -86,12 +86,12 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
   let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s => do
+    addImportedFn := fun s ↦ do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt (kss, n) => do
         pure (insert kss (← mkPositivityExt n) dt)
       pure ([], dt)
     addEntryFn := fun (entries, s) ((kss, n), ext) => ((kss, n) :: entries, insert kss ext s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
+    exportEntriesFn := fun s ↦ s.1.reverse.toArray
   }
 
 initialize registerBuiltinAttribute {
@@ -430,7 +430,7 @@ example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 ```
 -/
 elab (name := positivity) "positivity" : tactic => do
-  liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+  liftMetaTactic fun g ↦ do Meta.Positivity.positivity g; pure []
 
 end Positivity
 

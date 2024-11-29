@@ -25,7 +25,7 @@ namespace Prime
 variable [CommMonoidWithZero α] {p : α}
 
 theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset α} : p ∣ s.prod → ∃ a ∈ s, p ∣ a :=
-  Multiset.induction_on s (fun h => (hp.not_dvd_one h).elim) fun a s ih h =>
+  Multiset.induction_on s (fun h ↦ (hp.not_dvd_one h).elim) fun a s ih h =>
     have : p ∣ a * s.prod := by simpa using h
     match hp.dvd_or_dvd this with
     | Or.inl h => ⟨a, Multiset.mem_cons_self a s, h⟩
@@ -34,7 +34,7 @@ theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset α} : p ∣ s.prod 
       ⟨a, Multiset.mem_cons_of_mem has, h⟩
 
 theorem exists_mem_multiset_map_dvd (hp : Prime p) {s : Multiset β} {f : β → α} :
-    p ∣ (s.map f).prod → ∃ a ∈ s, p ∣ f a := fun h => by
+    p ∣ (s.map f).prod → ∃ a ∈ s, p ∣ f a := fun h ↦ by
   simpa only [exists_prop, Multiset.mem_map, exists_exists_and_eq_and] using
     hp.exists_mem_multiset_dvd h
 
@@ -124,7 +124,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
     apply mul_dvd_mul_left a
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)
-      fun a => (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
+      fun a ↦ (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
     have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)
     have a_prime := h a (Multiset.mem_cons_self a s)
     have b_prime := h b (Multiset.mem_cons_of_mem b_in_s)
@@ -157,8 +157,8 @@ theorem prod_mk {p : Multiset α} : (p.map Associates.mk).prod = Associates.mk p
 theorem finset_prod_mk {p : Finset β} {f : β → α} :
     (∏ i ∈ p, Associates.mk (f i)) = Associates.mk (∏ i ∈ p, f i) := by
   -- Porting note: added
-  have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
-    funext fun x => Function.comp_apply
+  have : (fun i ↦ Associates.mk (f i)) = Associates.mk ∘ f :=
+    funext fun x ↦ Function.comp_apply
   rw [Finset.prod_eq_multiset_prod, this, ← Multiset.map_map, prod_mk,
     ← Finset.prod_eq_multiset_prod]
 
@@ -220,7 +220,7 @@ theorem Prime.dvd_finset_prod_iff {S : Finset α} {p : M} (pp : Prime p) (g : α
 
 theorem Prime.not_dvd_finset_prod {S : Finset α} {p : M} (pp : Prime p) {g : α → M}
     (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
-  exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+  exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a ↦ not_and.2 (hS a)
 
 theorem Prime.dvd_finsupp_prod_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=

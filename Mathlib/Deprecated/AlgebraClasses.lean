@@ -97,10 +97,10 @@ local infixl:50 " ≈ " => @Equiv _ r
 theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
 
 @[deprecated "No deprecation message was provided."  (since := "2024-07-30")]
-theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
+theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h ↦ h.1
 
 @[deprecated "No deprecation message was provided."  (since := "2024-07-30")]
-theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
+theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h ↦ h.2
 
 variable [IsStrictWeakOrder α r]
 
@@ -145,7 +145,7 @@ theorem isStrictWeakOrder_of_isTotalPreorder {α : Sort u} {le : α → α → P
       have hbc : le b c := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) ncb)
       have hac : le a c := trans_of le hab hbc
       have hca : le c a := trans_of le hcb hba
-      And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
+      And.intro (fun n ↦ absurd hca (Iff.mp (h _ _) n)) fun n ↦ absurd hac (Iff.mp (h _ _) n) }
 
 section LinearOrder
 variable {α : Type*} [LinearOrder α]

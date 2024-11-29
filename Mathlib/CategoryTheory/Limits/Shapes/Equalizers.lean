@@ -152,10 +152,10 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
   functor := walkingParallelPairOp
   inverse := walkingParallelPairOp.leftOp
   unitIso :=
-    NatIso.ofComponents (fun j => eqToIso (by cases j <;> rfl))
+    NatIso.ofComponents (fun j ↦ eqToIso (by cases j <;> rfl))
       (by rintro _ _ (_ | _ | _) <;> simp)
   counitIso :=
-    NatIso.ofComponents (fun j => eqToIso (by
+    NatIso.ofComponents (fun j ↦ eqToIso (by
             induction' j with X
             cases X <;> rfl))
       (fun {i} {j} f => by
@@ -165,7 +165,7 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       have : f = g.op := rfl
       rw [this]
       cases i <;> cases j <;> cases g <;> rfl)
-  functor_unitIso_comp := fun j => by cases j <;> rfl
+  functor_unitIso_comp := fun j ↦ by cases j <;> rfl
 
 @[simp]
 theorem walkingParallelPairOpEquiv_unitIso_zero :
@@ -224,7 +224,7 @@ theorem parallelPair_functor_obj {F : WalkingParallelPair ⥤ C} (j : WalkingPar
 @[simps!]
 def diagramIsoParallelPair (F : WalkingParallelPair ⥤ C) :
     F ≅ parallelPair (F.map left) (F.map right) :=
-  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_|_|_) <;> simp)
+  NatIso.ofComponents (fun j ↦ eqToIso <| by cases j <;> rfl) (by rintro _ _ (_|_|_) <;> simp)
 
 /-- Construct a morphism between parallel pairs. -/
 def parallelPairHom {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X') (q : Y ⟶ Y')
@@ -449,7 +449,7 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     same `s` for all parts. -/
 def Fork.IsLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) : IsLimit t :=
-  Fork.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w => (create s).2.2 w
+  Fork.IsLimit.mk t (fun s ↦ (create s).1) (fun s ↦ (create s).2.1) fun s _ w => (create s).2.2 w
 
 /-- This is a slightly more convenient method to verify that a cofork is a colimit cocone. It
     only asks for a proof of facts that carry any mathematical content -/
@@ -468,7 +468,7 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
 def Cofork.IsColimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Cofork f g)
     (create : ∀ s : Cofork f g, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π
                                     ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) : IsColimit t :=
-  Cofork.IsColimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
+  Cofork.IsColimit.mk t (fun s ↦ (create s).1) (fun s ↦ (create s).2.1) fun s _ w =>
     (create s).2.2 w
 
 /-- Noncomputably make a limit cone from the existence of unique factorizations. -/
@@ -766,7 +766,7 @@ def idFork (h : f = g) : Fork f g :=
 
 /-- The identity on `X` is an equalizer of `(f, g)`, if `f = g`. -/
 def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
-  Fork.IsLimit.mk _ (fun s => Fork.ι s) (fun _ => Category.comp_id _) fun s m h => by
+  Fork.IsLimit.mk _ (fun s ↦ Fork.ι s) (fun _ => Category.comp_id _) fun s m h => by
     convert h
     exact (Category.comp_id _).symm
 
@@ -924,7 +924,7 @@ def idCofork (h : f = g) : Cofork f g :=
 
 /-- The identity on `Y` is a coequalizer of `(f, g)`, where `f = g`. -/
 def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
-  Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun _ => Category.id_comp _) fun s m h => by
+  Cofork.IsColimit.mk _ (fun s ↦ Cofork.π s) (fun _ => Category.id_comp _) fun s m h => by
     convert h
     exact (Category.id_comp _).symm
 

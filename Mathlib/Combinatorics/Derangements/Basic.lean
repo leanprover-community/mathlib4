@@ -52,7 +52,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
   calc
     derangements (Subtype p) ≃ { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } //
         ∀ a, a ∈ fixedPoints f → ¬p a } := by
-      refine (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => ?_, ?_⟩
+      refine (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f ↦ ⟨fun hf a hfa ha => ?_, ?_⟩
       · refine hf ⟨a, ha⟩ (Subtype.ext ?_)
         simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
         Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
@@ -65,7 +65,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
     _ ≃ { f : Perm α // ∃ _h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
       subtypeSubtypeEquivSubtypeExists _ _
     _ ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
-      subtypeEquivRight fun f => by
+      subtypeEquivRight fun f ↦ by
         simp_rw [exists_prop, ← forall_and, ← iff_iff_implies_and_implies]
 
 universe u
@@ -90,17 +90,17 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ { f : Perm α // fixedPoints f = {a} } ⊕ { f : Perm α // fixedPoints f = ∅ } := by
-      refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
+      refine Equiv.sumCongr (subtypeEquivRight fun f ↦ ?_) (subtypeEquivRight fun f ↦ ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
       · rw [Set.eq_empty_iff_forall_not_mem]
-        exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
+        exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h ↦ ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ derangements ({a}ᶜ : Set α) ⊕ derangements α := by
       -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine
         Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
-            subtypeEquivRight fun x => ?_).symm
-          (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
+            subtypeEquivRight fun x ↦ ?_).symm
+          (subtypeEquivRight fun f ↦ mem_derangements_iff_fixedPoints_eq_empty.symm)
       rw [eq_comm, Set.ext_iff]
       simp_rw [Set.mem_compl_iff, Classical.not_not]
 
@@ -144,7 +144,7 @@ theorem RemoveNone.fiber_some (a : α) :
     use Equiv.Perm.decomposeOption.symm (some a, f)
     constructor
     · intro x
-      apply_fun fun x => Equiv.swap none (some a) x
+      apply_fun fun x ↦ Equiv.swap none (some a) x
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       cases' x with x
       · simp

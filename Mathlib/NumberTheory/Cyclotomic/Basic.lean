@@ -88,7 +88,7 @@ theorem iff_adjoin_eq_top :
     IsCyclotomicExtension S A B ↔
       (∀ n : ℕ+, n ∈ S → ∃ r : B, IsPrimitiveRoot r n) ∧
         adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1} = ⊤ :=
-  ⟨fun h => ⟨fun _ => h.exists_prim_root, Algebra.eq_top_iff.2 h.adjoin_roots⟩, fun h =>
+  ⟨fun h ↦ ⟨fun _ => h.exists_prim_root, Algebra.eq_top_iff.2 h.adjoin_roots⟩, fun h =>
     ⟨h.1 _, Algebra.eq_top_iff.1 h.2⟩⟩
 
 /-- A reformulation of `IsCyclotomicExtension` in the case `S` is a singleton. -/
@@ -103,7 +103,7 @@ theorem empty [h : IsCyclotomicExtension ∅ A B] : (⊥ : Subalgebra A B) = ⊤
 
 /-- If `IsCyclotomicExtension {1} A B`, then the image of `A` in `B` equals `B`. -/
 theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A B) = ⊤ :=
-  Algebra.eq_top_iff.2 fun x => by
+  Algebra.eq_top_iff.2 fun x ↦ by
     simpa [adjoin_singleton_one] using ((isCyclotomicExtension_iff _ _ _).1 h).2 x
 
 variable {A B}
@@ -123,14 +123,14 @@ variable (A B)
 theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
-  refine ⟨fun hn => ?_, fun x => ?_⟩
+  refine ⟨fun hn => ?_, fun x ↦ ?_⟩
   · cases' hn with hn hn
     · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
       refine ⟨algebraMap B C b, ?_⟩
       exact hb.map_of_injective h
     · exact ((isCyclotomicExtension_iff _ _ _).1 hT).1 hn
   · refine adjoin_induction (hx := ((isCyclotomicExtension_iff T B _).1 hT).2 x)
-      (fun c ⟨n, hn⟩ => subset_adjoin ⟨n, Or.inr hn.1, hn.2⟩) (fun b => ?_)
+      (fun c ⟨n, hn⟩ => subset_adjoin ⟨n, Or.inr hn.1, hn.2⟩) (fun b ↦ ?_)
       (fun x y _ _ hx hy => Subalgebra.add_mem _ hx hy)
       fun x y _ _ hx hy => Subalgebra.mul_mem _ hx hy
     let f := IsScalarTower.toAlgHom A B C
@@ -153,10 +153,10 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
 -- Porting note: `R := A` was not needed.
-    · exact ⟨fun h => h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    · exact ⟨fun h ↦ h.elim, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
     · rw [iff_singleton]
       exact ⟨⟨0, IsPrimitiveRoot.of_subsingleton 0⟩,
-        fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+        fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
 is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 }` given by
@@ -173,7 +173,7 @@ theorem union_right [h : IsCyclotomicExtension (S ∪ T) A B] :
     · rintro x (⟨n, hn⟩ | ⟨n, hn⟩)
       · exact ⟨n, Or.inl hn.1, hn.2⟩
       · exact ⟨n, Or.inr hn.1, hn.2⟩
-  refine ⟨fun hn => ((isCyclotomicExtension_iff _ A _).1 h).1 (mem_union_right S hn), fun b => ?_⟩
+  refine ⟨fun hn => ((isCyclotomicExtension_iff _ A _).1 h).1 (mem_union_right S hn), fun b ↦ ?_⟩
   replace h := ((isCyclotomicExtension_iff _ _ _).1 h).2 b
   rwa [this, adjoin_union_eq_adjoin_adjoin, Subalgebra.mem_restrictScalars] at h
 
@@ -182,7 +182,7 @@ then `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 }` is a cyc
 given by roots of unity of order in `S`. -/
 theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
     IsCyclotomicExtension S A (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}) := by
-  refine ⟨@fun n hn => ?_, fun b => ?_⟩
+  refine ⟨@fun n hn => ?_, fun b ↦ ?_⟩
   · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 h).1 (hS hn)
     refine ⟨⟨b, subset_adjoin ⟨n, hn, hb.pow_eq_one⟩⟩, ?_⟩
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
@@ -290,7 +290,7 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
   refine fg_adjoin_of_finite ?_ fun b hb => ?_
   · simp only [mem_singleton_iff, exists_eq_left]
     have : {b : B | b ^ (n : ℕ) = 1} = (nthRoots n (1 : B)).toFinset :=
-      Set.ext fun x => ⟨fun h => by simpa using h, fun h => by simpa using h⟩
+      Set.ext fun x ↦ ⟨fun h ↦ by simpa using h, fun h ↦ by simpa using h⟩
     rw [this]
     exact (nthRoots (↑n) 1).toFinset.finite_toSet
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hb
@@ -390,7 +390,7 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
     adjoin_roots := fun ⟨x, hx⟩ => by
       refine
         adjoin_induction
-          (hx := hx) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
+          (hx := hx) (fun b hb => ?_) (fun a ↦ ?_) (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
           (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
       · rw [Set.mem_singleton_iff] at hb
         refine subset_adjoin ?_
@@ -434,7 +434,7 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       congr
-      refine Set.ext fun x => ?_
+      refine Set.ext fun x ↦ ?_
       simp only [Polynomial.map_pow, mem_singleton_iff, Multiset.mem_toFinset, exists_eq_left,
         mem_setOf_eq, Polynomial.map_X, Polynomial.map_one, Finset.mem_coe, Polynomial.map_sub]
       simp only [mem_rootSet', map_sub, map_pow, aeval_one, aeval_X, sub_eq_zero, map_X,
@@ -617,7 +617,7 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
   adjoin_roots x := by
     obtain ⟨x, hx⟩ := x
     refine
-      adjoin_induction (fun y hy => ?_) (fun a => ?_) (fun y z _ _ hy hz => ?_)
+      adjoin_induction (fun y hy => ?_) (fun a ↦ ?_) (fun y z _ _ hy hz => ?_)
         (fun y z  _ _ hy hz => ?_) hx
     · refine subset_adjoin ?_
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
@@ -639,7 +639,7 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
       Algebra.adjoin_induction
         (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
             (CyclotomicField.isCyclotomicExtension n K)).2 x)
-        (fun y hy => ?_) (fun k => ?_) ?_ ?_
+        (fun y hy => ?_) (fun k ↦ ?_) ?_ ?_
 -- Porting note: the last goal was `by simpa` that now fails.
     · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simp; rfl⟩
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance

@@ -84,7 +84,7 @@ theorem coeff_natDegree : coeff p (natDegree p) = leadingCoeff p :=
 
 @[simp]
 theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
-  ⟨fun h => support_eq_empty.1 (Finset.max_eq_bot.1 h), fun h => h.symm ▸ rfl⟩
+  ⟨fun h ↦ support_eq_empty.1 (Finset.max_eq_bot.1 h), fun h ↦ h.symm ▸ rfl⟩
 
 theorem degree_ne_bot : degree p ≠ ⊥ ↔ p ≠ 0 := degree_eq_bot.not
 
@@ -362,7 +362,7 @@ theorem leadingCoeff_eq_zero : leadingCoeff p = 0 ↔ p = 0 :=
   ⟨fun h =>
     Classical.by_contradiction fun hp =>
       mt mem_support_iff.1 (Classical.not_not.2 h) (mem_of_max (degree_eq_natDegree hp)),
-    fun h => h.symm ▸ leadingCoeff_zero⟩
+    fun h ↦ h.symm ▸ leadingCoeff_zero⟩
 
 theorem leadingCoeff_ne_zero : leadingCoeff p ≠ 0 ↔ p ≠ 0 := by rw [Ne, leadingCoeff_eq_zero]
 
@@ -383,7 +383,7 @@ theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p :
 theorem degree_erase_lt (hp : p ≠ 0) : degree (p.erase (natDegree p)) < degree p := by
   apply lt_of_le_of_ne (degree_erase_le _ _)
   rw [degree_eq_natDegree hp, degree, support_erase]
-  exact fun h => not_mem_erase _ _ (mem_of_max h)
+  exact fun h ↦ not_mem_erase _ _ (mem_of_max h)
 
 theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) ≤ max (degree p) n := by
   classical
@@ -394,7 +394,7 @@ theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) �
     exact le_rfl
 
 theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
-    degree (∑ i ∈ s, f i) ≤ s.sup fun b => degree (f b) :=
+    degree (∑ i ∈ s, f i) ≤ s.sup fun b ↦ degree (f b) :=
   Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
     fun a s has ih =>
     calc

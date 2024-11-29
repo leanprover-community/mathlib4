@@ -311,7 +311,7 @@ theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
 /-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
 theorem bddAbove_union [IsDirected α (· ≤ ·)] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
-  ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
 /-- In a codirected order, the union of bounded below sets is bounded below. -/
@@ -329,7 +329,7 @@ then `a ⊔ b` is the least upper bound of `s ∪ t`. -/
 theorem IsLUB.union [SemilatticeSup γ] {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b) :
     IsLUB (s ∪ t) (a ⊔ b) :=
   ⟨fun _ h =>
-    h.casesOn (fun h => le_sup_of_le_left <| hs.left h) fun h => le_sup_of_le_right <| ht.left h,
+    h.casesOn (fun h ↦ le_sup_of_le_left <| hs.left h) fun h ↦ le_sup_of_le_right <| ht.left h,
     fun _ hc =>
     sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)⟩
 
@@ -425,7 +425,7 @@ theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : 
   rcases eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i | hj_lt_i
   · exact Or.inl hj_eq_i
   · right
-    exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
+    exact Set.ext fun k ↦ ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
 
 theorem glb_Ioi_eq_self_or_Ioi_eq_Ici [PartialOrder γ] {j : γ} (i : γ) (hj : IsGLB (Ioi i) j) :
     j = i ∨ Ioi i = Ici j :=
@@ -701,7 +701,7 @@ theorem IsGLB.nonempty [NoMaxOrder α] (hs : IsGLB s a) : s.Nonempty :=
   hs.dual.nonempty
 
 theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonempty :=
-  (Nonempty.elim ha) fun x => (not_bddAbove_iff'.1 h x).imp fun _ ha => ha.1
+  (Nonempty.elim ha) fun x ↦ (not_bddAbove_iff'.1 h x).imp fun _ ha => ha.1
 
 theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :=
   @nonempty_of_not_bddAbove αᵒᵈ _ _ _ h
@@ -852,13 +852,13 @@ theorem IsLeast.unique (Ha : IsLeast s a) (Hb : IsLeast s b) : a = b :=
   le_antisymm (Ha.right Hb.left) (Hb.right Ha.left)
 
 theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
-  Iff.intro Ha.unique fun h => h ▸ Ha
+  Iff.intro Ha.unique fun h ↦ h ▸ Ha
 
 theorem IsGreatest.unique (Ha : IsGreatest s a) (Hb : IsGreatest s b) : a = b :=
   le_antisymm (Hb.right Ha.left) (Ha.right Hb.left)
 
 theorem IsGreatest.isGreatest_iff_eq (Ha : IsGreatest s a) : IsGreatest s b ↔ a = b :=
-  Iff.intro Ha.unique fun h => h ▸ Ha
+  Iff.intro Ha.unique fun h ↦ h ▸ Ha
 
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb

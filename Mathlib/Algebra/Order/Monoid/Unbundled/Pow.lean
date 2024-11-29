@@ -168,7 +168,7 @@ theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ 
     exact mul_le_mul' (pow_le_pow_left' hab k) hab
 
 @[to_additive Monotone.const_nsmul]
-theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
+theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a ↦ f a ^ n
   | 0 => by simpa using monotone_const
   | n + 1 => by
     simp_rw [pow_succ]
@@ -196,7 +196,7 @@ variable [MulLeftMono M]
 -- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
 theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ x :=
-  ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one' h hn, fun h => one_le_pow_of_one_le' h n⟩
+  ⟨le_imp_le_of_lt_imp_lt fun h ↦ pow_lt_one' h hn, fun h ↦ one_le_pow_of_one_le' h n⟩
 
 @[to_additive]
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
@@ -280,7 +280,7 @@ theorem Left.pow_lt_one_iff [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n)
 theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
-  ⟨fun H => not_le.mp fun k => H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+  ⟨fun H => not_le.mp fun k ↦ H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 end LinearOrder
 

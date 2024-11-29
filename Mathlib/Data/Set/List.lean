@@ -20,7 +20,7 @@ variable {α β : Type*} (l : List α)
 namespace Set
 
 theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
-  refine antisymm (range_subset_iff.2 fun l => forall_mem_map.2 fun y _ => mem_range_self _)
+  refine antisymm (range_subset_iff.2 fun l ↦ forall_mem_map.2 fun y _ => mem_range_self _)
       fun l hl => ?_
   induction l with
   | nil => exact ⟨[], rfl⟩
@@ -40,14 +40,14 @@ theorem range_list_get : range l.get = { x | x ∈ l } := by
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
-  refine (range_subset_iff.2 fun n => ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
+  refine (range_subset_iff.2 fun n ↦ ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
-    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get?_eq_get _⟩]
+    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k ↦ ⟨_, get?_eq_get _⟩]
 
 @[simp]
 theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=
   calc
-    (range fun n => l[n]?.getD d) = (fun o : Option α => o.getD d) '' range l.get? := by
+    (range fun n ↦ l[n]?.getD d) = (fun o : Option α => o.getD d) '' range l.get? := by
       simp [← range_comp, Function.comp_def]
     _ = insert d { x | x ∈ l } := by
       simp only [range_list_get?, image_insert_eq, Option.getD, image_image, image_id']
@@ -63,7 +63,7 @@ end Set
 /-- If each element of a list can be lifted to some type, then the whole list can be
 lifted to this type. -/
 instance List.canLift (c) (p) [CanLift α β c p] :
-    CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
+    CanLift (List α) (List β) (List.map c) fun l ↦ ∀ x ∈ l, p x where
   prf l H := by
     rw [← Set.mem_range, Set.range_list_map]
     exact fun a ha => CanLift.prf a (H a ha)

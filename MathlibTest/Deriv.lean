@@ -4,7 +4,7 @@ import Mathlib
 
 open Real
 
-example (x : ℝ) : deriv (fun x => cos x + 2 * sin x) x = -sin x + 2 * cos x := by
+example (x : ℝ) : deriv (fun x ↦ cos x + 2 * sin x) x = -sin x + 2 * cos x := by
   simp
 
 example (x : ℝ) :

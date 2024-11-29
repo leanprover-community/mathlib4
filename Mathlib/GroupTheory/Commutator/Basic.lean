@@ -83,7 +83,7 @@ theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁,
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
   refine forall_congr' fun p =>
-    forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => ?_
+    forall_congr' fun _hp => forall_congr' fun q ↦ forall_congr' fun hq => ?_
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
 
 /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/
@@ -184,7 +184,7 @@ See `commutator_pi_pi_of_finite` for equality given `Fintype η`.
 -/
 theorem commutator_pi_pi_le {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
     (H K : ∀ i, Subgroup (Gs i)) :
-    ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ ≤ Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ :=
+    ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ ≤ Subgroup.pi Set.univ fun i ↦ ⁅H i, K i⁆ :=
   commutator_le.mpr fun _p hp _q hq i hi => commutator_mem_commutator (hp i hi) (hq i hi)
 
 end Subgroup

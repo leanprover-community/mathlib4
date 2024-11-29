@@ -245,7 +245,7 @@ theorem exists_multiset_roots [DecidableEq R] :
     if h : ∃ x, IsRoot p x then
       let ⟨x, hx⟩ := h
       have hpd : 0 < degree p := degree_pos_of_root hp hx
-      have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
+      have hd0 : p /ₘ (X - C x) ≠ 0 := fun h ↦ by
         rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
       #adaptation_note
       /--

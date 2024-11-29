@@ -317,7 +317,7 @@ variable
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
 def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
-  let ι : ULift.{w} WalkingPair → Opens X := fun j => WalkingPair.casesOn j.down U V
+  let ι : ULift.{w} WalkingPair → Opens X := fun j ↦ WalkingPair.casesOn j.down U V
   have hι : U ⊔ V = iSup ι := by
     ext
     rw [Opens.coe_iSup, Set.mem_iUnion]

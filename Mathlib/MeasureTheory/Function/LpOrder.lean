@@ -59,12 +59,12 @@ instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
 theorem _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊔ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
-    (Filter.Eventually.of_forall fun x => norm_sup_le_add (f x) (g x))
+    (Filter.Eventually.of_forall fun x ↦ norm_sup_le_add (f x) (g x))
 
 theorem _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊓ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
-    (Filter.Eventually.of_forall fun x => norm_inf_le_add (f x) (g x))
+    (Filter.Eventually.of_forall fun x ↦ norm_inf_le_add (f x) (g x))
 
 theorem _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
   hf.sup hf.neg
@@ -84,7 +84,7 @@ theorem coeFn_sup (f g : Lp E p μ) : ⇑(f ⊔ g) =ᵐ[μ] ⇑f ⊔ ⇑g :=
 theorem coeFn_inf (f g : Lp E p μ) : ⇑(f ⊓ g) =ᵐ[μ] ⇑f ⊓ ⇑g :=
   AEEqFun.coeFn_inf _ _
 
-theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
+theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x ↦ |f x| :=
   AEEqFun.coeFn_abs _
 
 noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :

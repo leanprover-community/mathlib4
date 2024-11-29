@@ -53,7 +53,7 @@ theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
 
 @[simp]
 theorem powerset_mono {s t : Finset α} : powerset s ⊆ powerset t ↔ s ⊆ t :=
-  ⟨fun h => mem_powerset.1 <| h <| mem_powerset_self _, fun st _u h =>
+  ⟨fun h ↦ mem_powerset.1 <| h <| mem_powerset_self _, fun st _u h =>
     mem_powerset.2 <| Subset.trans (mem_powerset.1 h) st⟩
 
 theorem powerset_injective : Injective (powerset : Finset α → Finset (Finset α)) :=
@@ -190,7 +190,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
   refine
-    ⟨fun h => h.2, fun h => by
+    ⟨fun h ↦ h.2, fun h ↦ by
       rw [h]
       exact ⟨empty_subset s, rfl⟩⟩
 
@@ -217,7 +217,7 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
     s.powersetCard (s.card + n) = ∅ := by simpa
 
 theorem powersetCard_eq_filter {n} {s : Finset α} :
-    powersetCard n s = (powerset s).filter fun x => x.card = n := by
+    powersetCard n s = (powerset s).filter fun x ↦ x.card = n := by
   ext
   simp [mem_powersetCard]
 
@@ -257,9 +257,9 @@ theorem pairwise_disjoint_powersetCard (s : Finset α) :
 
 theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
-      (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
+      (range (s.card + 1)).disjiUnion (fun i ↦ powersetCard i s)
         (s.pairwise_disjoint_powersetCard.set_pairwise _) := by
-  refine ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩
+  refine ext fun a ↦ ⟨fun ha => ?_, fun ha => ?_⟩
   · rw [mem_disjiUnion]
     exact
       ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_card (mem_powerset.mp ha))),
@@ -268,7 +268,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
 
 theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
-    Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
+    Finset.powerset s = (range (s.card + 1)).biUnion fun i ↦ powersetCard i s := by
   simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s
 
 theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.card) :
@@ -288,12 +288,12 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
-  ext fun t => by
+  ext fun t ↦ by
     simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical
       intro h
-      have : map f (filter (fun x => (f x ∈ t)) s) = t := by
+      have : map f (filter (fun x ↦ (f x ∈ t)) s) = t := by
         ext x
         simp only [mem_map, mem_filter, decide_eq_true_eq]
         exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,

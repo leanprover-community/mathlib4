@@ -52,7 +52,7 @@ theorem div_down [Div α] : (x / y).down = x.down / y.down :=
 
 @[to_additive]
 instance inv [Inv α] : Inv (ULift α) :=
-  ⟨fun f => ⟨f.down⁻¹⟩⟩
+  ⟨fun f ↦ ⟨f.down⁻¹⟩⟩
 
 @[to_additive (attr := simp)]
 theorem inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=

@@ -180,7 +180,7 @@ def elabCHoleExpand : Term.TermElab := fun stx expectedType? =>
 
 /-- Replace all `term` antiquotations in a term using the given `expand` function. -/
 def processAntiquot (t : Term) (expand : Term → Term.TermElabM Term) : Term.TermElabM Term := do
-  let t' ← t.raw.replaceM fun s => do
+  let t' ← t.raw.replaceM fun s ↦ do
     if s.isAntiquots then
       let ks := s.antiquotKinds
       unless ks.any (fun (k, _) => k == `term) do
@@ -197,7 +197,7 @@ is of the expected type. -/
 def elaboratePattern (t : Term) (expectedType? : Option Expr) (forLhs : Bool) :
     Term.TermElabM Expr :=
   Term.withoutErrToSorry do
-    let t' ← processAntiquot t (fun h => if forLhs then `(cHole% lhs $h) else `(cHole% rhs $h))
+    let t' ← processAntiquot t (fun h ↦ if forLhs then `(cHole% lhs $h) else `(cHole% rhs $h))
     Term.elabTermEnsuringType t' expectedType?
 
 /-! ### Congruence generation -/
@@ -543,7 +543,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
     -- We do not yet support congruences in the binding domain for lambdas.
     discard <| resDom.defeq
-    withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+    withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x ↦ do
       let lhsb := lhs.bindingBody!.instantiate1 x
       let rhsb := rhs.bindingBody!.instantiate1 x
       let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb
@@ -568,7 +568,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     else
       -- We do not yet support congruences in the binding domain for dependent pi types.
       discard <| resDom.defeq
-      withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+      withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x ↦ do
         let lhsb := lhs.bindingBody!.instantiate1 x
         let rhsb := rhs.bindingBody!.instantiate1 x
         let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb

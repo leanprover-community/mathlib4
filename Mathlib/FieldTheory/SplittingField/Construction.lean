@@ -72,7 +72,7 @@ theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : fa
 
 lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type v} [CommRing A]
     [IsDomain A] [Algebra K A] (a : A), aeval a f ≠ 0 ∨ aeval a g ≠ 0 := by
-  refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hx _ => ?_⟩
+  refine ⟨fun h ↦ aeval_ne_zero_of_isCoprime h, fun h ↦ isCoprime_of_dvd _ _ ?_ fun x hx _ => ?_⟩
   · replace h := @h K _ _ _ 0
     contrapose! h
     rw [h.left, h.right, map_zero, and_self]
@@ -163,14 +163,14 @@ theorem algebraMap_succ (n : ℕ) (f : K[X]) :
 protected theorem splits (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f :=
-  Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K],
+  Nat.recOn (motive := fun n ↦ ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f) n
     (fun {_} _ _ hf =>
       splits_of_degree_le_one _
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
     rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
-      ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
+      ← X_sub_C_mul_removeFactor f fun h ↦ by rw [h] at hf; cases hf]
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
 
 theorem adjoin_rootSet (n : ℕ) :
@@ -181,7 +181,7 @@ theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n),
         Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤)
-    n (fun {_} _ _ _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
+    n (fun {_} _ _ _hf => Algebra.eq_top_iff.2 fun x ↦ Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
@@ -240,7 +240,7 @@ instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
 def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingFieldAux f.natDegree f :=
-  Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
+  Ideal.quotientKerAlgEquivOfSurjective fun x ↦ ⟨MvPolynomial.X x, by simp⟩
 
 instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f

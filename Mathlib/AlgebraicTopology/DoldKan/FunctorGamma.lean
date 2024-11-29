@@ -290,7 +290,7 @@ def Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C where
   map {K K'} f :=
     { F := Γ₀.map f
       f := f.f
-      comm := fun n => by
+      comm := fun n ↦ by
         dsimp
         simp only [← Splitting.cofan_inj_id, (Γ₀.splitting K).ι_desc]
         rfl }
@@ -317,7 +317,7 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
   · intro h
     exact (Nat.succ_ne_self n) (congr_arg SimplexCategory.len h)
-  · exact fun h => Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
+  · exact fun h ↦ Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
   exact eq
 
 @[reassoc (attr := simp)]

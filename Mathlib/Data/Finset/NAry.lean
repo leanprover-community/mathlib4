@@ -50,7 +50,7 @@ theorem card_image₂_le (f : α → β → γ) (s : Finset α) (t : Finset β) 
   card_image_le.trans_eq <| card_product _ _
 
 theorem card_image₂_iff :
-    #(image₂ f s t) = #s * #t ↔ (s ×ˢ t : Set (α × β)).InjOn fun x => f x.1 x.2 := by
+    #(image₂ f s t) = #s * #t ↔ (s ×ˢ t : Set (α × β)).InjOn fun x ↦ f x.1 x.2 := by
   rw [← card_product, ← coe_product]
   exact card_image_iff
 
@@ -77,10 +77,10 @@ theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t
 theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 
-theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a => f a b) ⊆ image₂ f s t :=
+theorem image_subset_image₂_left (hb : b ∈ t) : s.image (fun a ↦ f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ ha => mem_image₂_of_mem ha hb
 
-theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) ⊆ image₂ f s t :=
+theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b ↦ f a b) ⊆ image₂ f s t :=
   image_subset_iff.2 fun _ => mem_image₂_of_mem ha
 
 theorem forall_image₂_iff {p : γ → Prop} :
@@ -91,10 +91,10 @@ theorem forall_image₂_iff {p : γ → Prop} :
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_image₂_iff
 
-theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.image fun b => f a b) ⊆ u := by
+theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.image fun b ↦ f a b) ⊆ u := by
   simp_rw [image₂_subset_iff, image_subset_iff]
 
-theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
+theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a ↦ f a b) ⊆ u := by
   simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
 
 @[simp]
@@ -125,12 +125,12 @@ theorem image₂_eq_empty_iff : image₂ f s t = ∅ ↔ s = ∅ ∨ t = ∅ := 
   simp_rw [← not_nonempty_iff_eq_empty, image₂_nonempty_iff, not_and_or]
 
 @[simp]
-theorem image₂_singleton_left : image₂ f {a} t = t.image fun b => f a b :=
-  ext fun x => by simp
+theorem image₂_singleton_left : image₂ f {a} t = t.image fun b ↦ f a b :=
+  ext fun x ↦ by simp
 
 @[simp]
-theorem image₂_singleton_right : image₂ f s {b} = s.image fun a => f a b :=
-  ext fun x => by simp
+theorem image₂_singleton_right : image₂ f s {b} = s.image fun a ↦ f a b :=
+  ext fun x ↦ by simp
 
 theorem image₂_singleton_left' : image₂ f {a} t = t.image (f a) :=
   image₂_singleton_left
@@ -149,14 +149,14 @@ theorem image₂_union_right [DecidableEq β] : image₂ f s (t ∪ t') = image�
 
 @[simp]
 theorem image₂_insert_left [DecidableEq α] :
-    image₂ f (insert a s) t = (t.image fun b => f a b) ∪ image₂ f s t :=
+    image₂ f (insert a s) t = (t.image fun b ↦ f a b) ∪ image₂ f s t :=
   coe_injective <| by
     push_cast
     exact image2_insert_left
 
 @[simp]
 theorem image₂_insert_right [DecidableEq β] :
-    image₂ f s (insert b t) = (s.image fun a => f a b) ∪ image₂ f s t :=
+    image₂ f s (insert b t) = (s.image fun a ↦ f a b) ∪ image₂ f s t :=
   coe_injective <| by
     push_cast
     exact image2_insert_right
@@ -199,14 +199,14 @@ variable (s t)
 theorem card_image₂_singleton_left (hf : Injective (f a)) : #(image₂ f {a} t) = #t := by
   rw [image₂_singleton_left, card_image_of_injective _ hf]
 
-theorem card_image₂_singleton_right (hf : Injective fun a => f a b) :
+theorem card_image₂_singleton_right (hf : Injective fun a ↦ f a b) :
     #(image₂ f s {b}) = #s := by rw [image₂_singleton_right, card_image_of_injective _ hf]
 
 theorem image₂_singleton_inter [DecidableEq β] (t₁ t₂ : Finset β) (hf : Injective (f a)) :
     image₂ f {a} (t₁ ∩ t₂) = image₂ f {a} t₁ ∩ image₂ f {a} t₂ := by
   simp_rw [image₂_singleton_left, image_inter _ _ hf]
 
-theorem image₂_inter_singleton [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective fun a => f a b) :
+theorem image₂_inter_singleton [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective fun a ↦ f a b) :
     image₂ f (s₁ ∩ s₂) {b} = image₂ f s₁ {b} ∩ image₂ f s₂ {b} := by
   simp_rw [image₂_singleton_right, image_inter _ _ hf]
 
@@ -217,19 +217,19 @@ theorem card_le_card_image₂_left {s : Finset α} (hs : s.Nonempty) (hf : ∀ a
   exact card_le_card (image₂_subset_right <| singleton_subset_iff.2 ha)
 
 theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
-    (hf : ∀ b, Injective fun a => f a b) : #s ≤ #(image₂ f s t) := by
+    (hf : ∀ b, Injective fun a ↦ f a b) : #s ≤ #(image₂ f s t) := by
   obtain ⟨b, hb⟩ := ht
   rw [← card_image₂_singleton_right _ (hf b)]
   exact card_le_card (image₂_subset_left <| singleton_subset_iff.2 hb)
 
 variable {s t}
 
-theorem biUnion_image_left : (s.biUnion fun a => t.image <| f a) = image₂ f s t :=
+theorem biUnion_image_left : (s.biUnion fun a ↦ t.image <| f a) = image₂ f s t :=
   coe_injective <| by
     push_cast
     exact Set.iUnion_image_left _
 
-theorem biUnion_image_right : (t.biUnion fun b => s.image fun a => f a b) = image₂ f s t :=
+theorem biUnion_image_right : (t.biUnion fun b ↦ s.image fun a ↦ f a b) = image₂ f s t :=
   coe_injective <| by
     push_cast
     exact Set.iUnion_image_right _
@@ -431,7 +431,7 @@ theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a 
 applications are disjoint (but not necessarily distinct!), then the size of `t` divides the size of
 `Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
-    (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : #t ∣ #(image₂ f s t) := by
+    (hs : ((fun a ↦ t.image <| f a) '' s).PairwiseDisjoint id) : #t ∣ #(image₂ f s t) := by
   classical
   induction' s using Finset.induction with a s _ ih
   · simp
@@ -451,8 +451,8 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
 /-- If each partial application of `f` is injective, and images of `t` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `s` divides the size of
 `Finset.image₂ f s t`. -/
-theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
-    (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
+theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a ↦ f a b)
+    (ht : ((fun b ↦ s.image fun a ↦ f a b) '' t).PairwiseDisjoint id) :
     #s ∣ #(image₂ f s t) := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
 
 /-- If a `Finset` is a subset of the image of two `Set`s under a binary operation,

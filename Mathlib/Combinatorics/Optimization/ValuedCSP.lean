@@ -110,7 +110,7 @@ def FractionalOperation.tt {ι : Type*} (ω : FractionalOperation D m) (x : Fin 
 /-- Cost function admits given fractional operation, i.e., `ω` improves `f` in the `≤` sense. -/
 def Function.AdmitsFractional {n : ℕ} (f : (Fin n → D) → C) (ω : FractionalOperation D m) : Prop :=
   ∀ x : (Fin m → (Fin n → D)),
-    m • ((ω.tt x).map f).sum ≤ ω.size • Finset.univ.sum (fun i => f (x i))
+    m • ((ω.tt x).map f).sum ≤ ω.size • Finset.univ.sum (fun i ↦ f (x i))
 
 /-- Fractional operation is a fractional polymorphism for given VCSP template. -/
 def FractionalOperation.IsFractionalPolymorphismFor
@@ -145,7 +145,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
       exact hab.symm
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
-  show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
+  show o (fun j ↦ ![![a, b], ![b, a]] j 0) = o (fun j ↦ ![![a, b], ![b, a]] j 1)
   convert symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
 
@@ -167,7 +167,7 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)
       · obtain ⟨g, _⟩ := valid.contains
-        have : (fun i => g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
+        have : (fun i ↦ g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
           simp only [FractionalOperation.tt, Multiset.mem_map]
           use g
         exact ⟨_, this, mcfab.rows_lt_aux hab symmega this⟩

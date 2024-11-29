@@ -24,7 +24,7 @@ open scoped ComplexConjugate
 namespace Complex
 
 theorem isCauSeq_abs_exp (z : ℂ) :
-    IsCauSeq _root_.abs fun n => ∑ m ∈ range n, abs (z ^ m / m.factorial) :=
+    IsCauSeq _root_.abs fun n ↦ ∑ m ∈ range n, abs (z ^ m / m.factorial) :=
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
@@ -36,14 +36,14 @@ theorem isCauSeq_abs_exp (z : ℂ) :
 
 noncomputable section
 
-theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m ∈ range n, z ^ m / m.factorial :=
+theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n ↦ ∑ m ∈ range n, z ^ m / m.factorial :=
   (isCauSeq_abs_exp z).of_abv
 
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
 the complex exponential function -/
 @[pp_nodot]
 def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
-  ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
+  ⟨fun n ↦ ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 
 /-- The complex exponential function, defined via its Taylor series -/
 -- Porting note: removed `irreducible` attribute, so I can prove things
@@ -188,7 +188,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
-  { toFun := fun z => exp z.toAdd,
+  { toFun := fun z ↦ exp z.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -689,7 +689,7 @@ nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
-  { toFun := fun x => exp x.toAdd,
+  { toFun := fun x ↦ exp x.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -993,7 +993,7 @@ theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_on
 
 @[bound]
 theorem exp_pos (x : ℝ) : 0 < exp x :=
-  (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h => by
+  (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h ↦ by
     rw [← neg_neg x, Real.exp_neg]
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 

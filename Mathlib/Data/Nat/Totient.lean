@@ -46,10 +46,10 @@ theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
-    { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta] }
+    { toFun := fun m ↦ ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+      invFun := fun m ↦ ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+      left_inv := fun m ↦ by simp only [Subtype.coe_mk, Subtype.coe_eta]
+      right_inv := fun m ↦ by simp only [Subtype.coe_mk, Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -193,7 +193,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
             exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩)
     _ = _ := by
       have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero
-      have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
+      have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a ↦ by
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]
@@ -211,7 +211,7 @@ theorem totient_prime {p : ℕ} (hp : p.Prime) : φ p = p - 1 := by
   rw [← pow_one p, totient_prime_pow hp] <;> simp
 
 theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Prime := by
-  refine ⟨fun h => ?_, totient_prime⟩
+  refine ⟨fun h ↦ ?_, totient_prime⟩
   replace hp : 1 < p := by
     apply lt_of_le_of_ne
     · rwa [succ_le_iff]
@@ -251,7 +251,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | n + 3 => by
     have : 3 ≤ n + 3 := le_add_self
     simp only [succ_succ_ne_one, false_or]
-    exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
+    exact ⟨fun h ↦ not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
@@ -286,7 +286,7 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
     φ n = (n / ∏ p ∈ n.primeFactors, p) * ∏ p ∈ n.primeFactors, (p - 1) := by
   rw [← mul_div_left n.totient, totient_mul_prod_primeFactors, mul_comm,
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
-  exact prod_pos (fun p => pos_of_mem_primeFactors)
+  exact prod_pos (fun p ↦ pos_of_mem_primeFactors)
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :

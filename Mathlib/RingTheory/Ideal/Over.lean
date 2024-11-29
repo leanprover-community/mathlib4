@@ -78,7 +78,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
       (map_surjective (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))) Ideal.Quotient.mk_surjective)]
   refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
   refine fun p hp =>
-    polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
+    polynomial_mem_ideal_of_coeff_mem_ideal P p fun n ↦ Ideal.Quotient.eq_zero_iff_mem.mp ?_
   simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
 
 /-- The identity in this lemma asserts that the "obvious" square
@@ -96,7 +96,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
       (Ideal.quotientMap (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
         ((Quotient.mk P).comp C) := by
-  refine RingHom.ext fun x => ?_
+  refine RingHom.ext fun x ↦ ?_
   repeat' rw [RingHom.coe_comp, Function.comp_apply]
   rw [quotientMap_mk, coe_mapRingHom, map_C]
 
@@ -159,7 +159,7 @@ theorem Quotient.mk_smul_mk_quotient_map_quotient (x : R) (y : S) :
 
 instance Quotient.tower_quotient_map_quotient [Algebra R S] :
     IsScalarTower R (R ⧸ p) (S ⧸ map (algebraMap R S) p) :=
-  IsScalarTower.of_algebraMap_eq fun x => by
+  IsScalarTower.of_algebraMap_eq fun x ↦ by
     rw [Quotient.algebraMap_eq, Quotient.algebraMap_quotient_map_quotient,
       Quotient.mk_algebraMap]
 
@@ -365,7 +365,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
   refine _root_.trans ?_ (_root_.trans (congr_arg (comap (Ideal.Quotient.mk
     (comap (algebraMap R S) I))) hQ') ?_)
   · rw [comap_comap]
-    exact congr_arg (comap · Q') (RingHom.ext fun r => rfl)
+    exact congr_arg (comap · Q') (RingHom.ext fun r ↦ rfl)
   · refine _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 ?_)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 

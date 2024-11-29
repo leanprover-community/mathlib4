@@ -60,9 +60,9 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 
 attribute [local ext] Complex.ext
 
-theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
+theorem re_surjective : Surjective re := fun x ↦ ⟨⟨x, 0⟩, rfl⟩
 
-theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
+theorem im_surjective : Surjective im := fun y ↦ ⟨⟨0, y⟩, rfl⟩
 
 @[simp]
 theorem range_re : range re = univ :=
@@ -101,7 +101,7 @@ theorem ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
 theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
 
 -- Porting note: made coercion explicit
-instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
+instance canLift : CanLift ℂ ℝ (↑) fun z ↦ z.im = 0 where
   prf z hz := ⟨z.re, ext rfl hz.symm⟩
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
@@ -183,7 +183,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
 -- replaced by `Complex.ofReal_ofNat`
 
 instance : Neg ℂ :=
-  ⟨fun z => ⟨-z.re, -z.im⟩⟩
+  ⟨fun z ↦ ⟨-z.re, -z.im⟩⟩
 
 @[simp]
 theorem neg_re (z : ℂ) : (-z).re = -z.re :=
@@ -342,13 +342,13 @@ instance addCommGroup : AddCommGroup ℂ :=
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
-    natCast := fun n => ⟨n, 0⟩
+    natCast := fun n ↦ ⟨n, 0⟩
     natCast_zero := by
       ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
-    intCast := fun n => ⟨n, 0⟩
+    intCast := fun n ↦ ⟨n, 0⟩
     intCast_ofNat := fun _ => by ext <;> rfl
-    intCast_negSucc := fun n => by
+    intCast_negSucc := fun n ↦ by
       ext
       · simp [AddGroupWithOne.intCast_negSucc]
         show -(1 : ℝ) + (-n) = -(↑(n + 1))
@@ -502,14 +502,14 @@ theorem conj_neg_I : conj (-I) = I :=
   Complex.ext_iff.2 <| by simp
 
 theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
-  ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
+  ⟨fun h ↦ ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
     rw [e, conj_ofReal]⟩
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h => ⟨_, h.symm⟩⟩
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h ↦ ⟨_, h.symm⟩⟩
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
-  ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
+  ⟨fun h ↦ add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 
 -- `simpNF` complains about this being provable by `RCLike.star_def` even
@@ -595,7 +595,7 @@ theorem normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
   ⟨fun h =>
     ext (eq_zero_of_mul_self_add_mul_self_eq_zero h)
       (eq_zero_of_mul_self_add_mul_self_eq_zero <| (add_comm _ _).trans h),
-    fun h => h.symm ▸ normSq_zero⟩
+    fun h ↦ h.symm ▸ normSq_zero⟩
 
 @[simp]
 theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
@@ -692,7 +692,7 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 
 
 noncomputable instance : Inv ℂ :=
-  ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
+  ⟨fun z ↦ conj z * ((normSq z)⁻¹ : ℝ)⟩
 
 theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
   rfl

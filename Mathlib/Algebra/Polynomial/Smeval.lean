@@ -134,7 +134,7 @@ def smeval.linearMap : R[X] →ₗ[R] S where
 theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
-    ⇑(leval r) = fun p => p.smeval r := by
+    ⇑(leval r) = fun p ↦ p.smeval r := by
   rw [funext_iff]
   intro
   rw [leval_apply, smeval_def, eval_eq_sum]
@@ -348,7 +348,7 @@ theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [A
   exact rfl
 
 theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
+    (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p ↦ aeval_eq_smeval x p
 
 end Algebra
 

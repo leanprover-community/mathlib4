@@ -63,7 +63,7 @@ def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = 
   toFun m :=
     { toFun := f m
       map_add' := H3 m
-      map_smul' := fun c => H4 c m }
+      map_smul' := fun c ↦ H4 c m }
   map_add' m₁ m₂ := LinearMap.ext <| H1 m₁ m₂
   map_smul' c m := LinearMap.ext <| H2 c m
 
@@ -90,7 +90,7 @@ theorem mk₂'_apply (f : M → N → Pₗ) {H1 H2 H3 H4} (m : M) (n : N) :
     (mk₂' R S f H1 H2 H3 H4 : M →ₗ[R] N →ₗ[S] Pₗ) m n = f m n := rfl
 
 theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m n, f m n = g m n) : f = g :=
-  LinearMap.ext fun m => LinearMap.ext fun n => H m n
+  LinearMap.ext fun m ↦ LinearMap.ext fun n ↦ H m n
 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
   LinearMap.congr_fun (LinearMap.congr_fun h x) y

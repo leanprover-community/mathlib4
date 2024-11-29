@@ -252,7 +252,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
     fun _ =>
-    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
+    ⟨fun x y => Submonoid.ext fun i ↦ Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
@@ -262,7 +262,7 @@ theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
 
 @[to_additive]
 instance [Subsingleton M] : Unique (Submonoid M) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
 instance [Nontrivial M] : Nontrivial (Submonoid M) :=

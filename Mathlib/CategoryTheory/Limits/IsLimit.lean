@@ -152,7 +152,7 @@ theorem lift_comp_conePointUniqueUpToIso_inv {r s t : Cone F} (P : IsLimit s) (Q
 
 /-- Transport evidence that a cone is a limit cone across an isomorphism of cones. -/
 def ofIsoLimit {r t : Cone F} (P : IsLimit r) (i : r ≅ t) : IsLimit t :=
-  IsLimit.mkConeMorphism (fun s => P.liftConeMorphism s ≫ i.hom) fun s m => by
+  IsLimit.mkConeMorphism (fun s ↦ P.liftConeMorphism s ≫ i.hom) fun s m => by
     rw [← i.comp_inv_eq]; apply P.uniq_cone_morphism
 
 @[simp]
@@ -190,8 +190,8 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 variable {t : Cone F}
 
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
-    m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
-  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
+    m = h.lift { pt := W, π := { app := fun b ↦ m ≫ t.π.app b } } :=
+  h.uniq { pt := W, π := { app := fun b ↦ m ≫ t.π.app b } } m fun _ => rfl
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/
@@ -206,7 +206,7 @@ the image of a limit cone is a limit cone.
 def ofRightAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Cone F ⥤ Cone G}
     {right : Cone G ⥤ Cone F}
     (adj : left ⊣ right) {c : Cone G} (t : IsLimit c) : IsLimit (right.obj c) :=
-  mkConeMorphism (fun s => adj.homEquiv s c (t.liftConeMorphism _))
+  mkConeMorphism (fun s ↦ adj.homEquiv s c (t.liftConeMorphism _))
     fun _ _ => (Adjunction.eq_homEquiv_apply _ _ _).2 t.uniq_cone_morphism
 
 /-- Given two functors which have equivalent categories of cones, we can transport a limiting cone
@@ -306,7 +306,7 @@ def ofWhiskerEquivalence {s : Cone F} (e : K ≌ J) (P : IsLimit (s.whisker e.fu
 /-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is.
 -/
 def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h ↦ h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 
 /-- A limit cone extended by an isomorphism is a limit cone. -/
 def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
@@ -380,9 +380,9 @@ def homIso' (h : IsLimit t) (W : C) :
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   h.homIso W ≪≫
     { hom := fun π =>
-        ⟨fun j => π.app j, fun f => by convert ← (π.naturality f).symm; apply id_comp⟩
+        ⟨fun j ↦ π.app j, fun f ↦ by convert ← (π.naturality f).symm; apply id_comp⟩
       inv := fun p =>
-        { app := fun j => p.1 j
+        { app := fun j ↦ p.1 j
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 
 /-- If G : C → D is a faithful functor which sends t to a limit cone,
@@ -395,8 +395,8 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
     fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
-      refine ht.uniq (mapCone G s) _ fun j => ?_
-      convert ← congrArg (fun f => G.map f) (w j)
+      refine ht.uniq (mapCone G s) _ fun j ↦ ?_
+      convert ← congrArg (fun f ↦ G.map f) (w j)
       apply G.map_comp }
 
 /-- If `F` and `G` are naturally isomorphic, then `F.mapCone c` being a limit implies
@@ -415,7 +415,7 @@ def isoUniqueConeMorphism {t : Cone F} : IsLimit t ≅ ∀ s, Unique (s ⟶ t) w
     { default := h.liftConeMorphism s
       uniq := fun _ => h.uniq_cone_morphism }
   inv h :=
-    { lift := fun s => (h s).default.hom
+    { lift := fun s ↦ (h s).default.hom
       uniq := fun s f w => congrArg ConeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 
 namespace OfNatIso
@@ -603,7 +603,7 @@ theorem coconePointUniqueUpToIso_inv_desc {r s t : Cocone F} (P : IsColimit s) (
 
 /-- Transport evidence that a cocone is a colimit cocone across an isomorphism of cocones. -/
 def ofIsoColimit {r t : Cocone F} (P : IsColimit r) (i : r ≅ t) : IsColimit t :=
-  IsColimit.mkCoconeMorphism (fun s => i.inv ≫ P.descCoconeMorphism s) fun s m => by
+  IsColimit.mkCoconeMorphism (fun s ↦ i.inv ≫ P.descCoconeMorphism s) fun s m => by
     rw [i.eq_inv_comp]; apply P.uniq_cocone_morphism
 
 @[simp]
@@ -644,12 +644,12 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
       h.desc
         { pt := W
           ι :=
-            { app := fun b => t.ι.app b ≫ m
+            { app := fun b ↦ t.ι.app b ≫ m
               naturality := by intros; erw [← assoc, t.ι.naturality, comp_id, comp_id] } } :=
   h.uniq
     { pt := W
       ι :=
-        { app := fun b => t.ι.app b ≫ m
+        { app := fun b ↦ t.ι.app b ≫ m
           naturality := _ } }
     m fun _ => rfl
 
@@ -666,7 +666,7 @@ def ofLeftAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Coco
     {right : Cocone F ⥤ Cocone G} (adj : left ⊣ right) {c : Cocone G} (t : IsColimit c) :
     IsColimit (left.obj c) :=
   mkCoconeMorphism
-    (fun s => (adj.homEquiv c s).symm (t.descCoconeMorphism _)) fun _ _ =>
+    (fun s ↦ (adj.homEquiv c s).symm (t.descCoconeMorphism _)) fun _ _ =>
     (Adjunction.homEquiv_apply_eq _ _ _).1 t.uniq_cocone_morphism
 
 /-- Given two functors which have equivalent categories of cocones,
@@ -769,7 +769,7 @@ def ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J) (P : IsColimit (s.whisker 
 -/
 def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
     IsColimit s ≃ IsColimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h ↦ h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 
 /-- A colimit cocone extended by an isomorphism is a colimit cocone. -/
 def extendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit s) :
@@ -851,9 +851,9 @@ def homIso' (h : IsColimit t) (W : C) :
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   h.homIso W ≪≫
     { hom := fun ι =>
-        ⟨fun j => ι.app j, fun {j} {j'} f => by convert ← ι.naturality f; apply comp_id⟩
+        ⟨fun j ↦ ι.app j, fun {j} {j'} f => by convert ← ι.naturality f; apply comp_id⟩
       inv := fun p =>
-        { app := fun j => p.1 j
+        { app := fun j ↦ p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
 
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
@@ -866,8 +866,8 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
     fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
-      refine ht.uniq (mapCocone G s) _ fun j => ?_
-      convert ← congrArg (fun f => G.map f) (w j)
+      refine ht.uniq (mapCocone G s) _ fun j ↦ ?_
+      convert ← congrArg (fun f ↦ G.map f) (w j)
       apply G.map_comp }
 
 /-- If `F` and `G` are naturally isomorphic, then `F.mapCocone c` being a colimit implies
@@ -886,7 +886,7 @@ def isoUniqueCoconeMorphism {t : Cocone F} : IsColimit t ≅ ∀ s, Unique (t �
     { default := h.descCoconeMorphism s
       uniq := fun _ => h.uniq_cocone_morphism }
   inv h :=
-    { desc := fun s => (h s).default.hom
+    { desc := fun s ↦ (h s).default.hom
       uniq := fun s f w => congrArg CoconeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 
 namespace OfNatIso

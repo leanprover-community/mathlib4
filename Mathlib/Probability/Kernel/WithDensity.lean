@@ -44,7 +44,7 @@ with image 0 otherwise. If `Function.uncurry f` is measurable, it satisfies
 noncomputable def withDensity (κ : Kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0∞) :
     Kernel α β :=
   @dite _ (Measurable (Function.uncurry f)) (Classical.dec _) (fun hf =>
-    (⟨fun a => (κ a).withDensity (f a),
+    (⟨fun a ↦ (κ a).withDensity (f a),
       by
         refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
         simp_rw [withDensity_apply _ hs]
@@ -126,11 +126,11 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
 theorem withDensity_kernel_sum [Countable ι] (κ : ι → Kernel α β) (hκ : ∀ i, IsSFiniteKernel (κ i))
     (f : α → β → ℝ≥0∞) :
     @withDensity _ _ _ _ (Kernel.sum κ) (isSFiniteKernel_sum hκ) f =
-      Kernel.sum fun i => withDensity (κ i) f := by
+      Kernel.sum fun i ↦ withDensity (κ i) f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext1 a
     simp_rw [sum_apply, Kernel.withDensity_apply _ hf, sum_apply,
-      withDensity_sum (fun n => κ n a) (f a)]
+      withDensity_sum (fun n ↦ κ n a) (f a)]
   · simp_rw [withDensity_of_not_measurable _ hf]
     exact sum_zero.symm
 
@@ -155,9 +155,9 @@ lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ�
 
 theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
-    withDensity κ (∑' n, f n) = Kernel.sum fun n => withDensity κ (f n) := by
-  have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => ENNReal.summable
-  have h_sum : Summable fun n => f n := Pi.summable.mpr h_sum_a
+    withDensity κ (∑' n, f n) = Kernel.sum fun n ↦ withDensity κ (f n) := by
+  have h_sum_a : ∀ a, Summable fun n ↦ f n a := fun a ↦ Pi.summable.mpr fun b ↦ ENNReal.summable
+  have h_sum : Summable fun n ↦ f n := Pi.summable.mpr h_sum_a
   ext a s hs
   rw [sum_apply' _ a hs, Kernel.withDensity_apply' κ _ a s]
   swap
@@ -165,13 +165,13 @@ theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ]
       ext1 p
       simp only [Function.uncurry_def]
       rw [tsum_apply h_sum, tsum_apply (h_sum_a _), tsum_apply]
-      exact Pi.summable.mpr fun p => ENNReal.summable
+      exact Pi.summable.mpr fun p ↦ ENNReal.summable
     rw [this]
     exact Measurable.ennreal_tsum' hf
-  have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b => f n a b) b ∂κ a := by
+  have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b ↦ f n a b) b ∂κ a := by
     congr with b
     rw [tsum_apply h_sum, tsum_apply (h_sum_a a)]
-  rw [this, lintegral_tsum fun n => (Measurable.of_uncurry_left (hf n)).aemeasurable]
+  rw [this, lintegral_tsum fun n ↦ (Measurable.of_uncurry_left (hf n)).aemeasurable]
   congr with n
   rw [Kernel.withDensity_apply' _ (hf n) a s]
 
@@ -181,7 +181,7 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
     (hB_top : B ≠ ∞) (hf_B : ∀ a b, f a b ≤ B) : IsFiniteKernel (withDensity κ f) := by
   by_cases hf : Measurable (Function.uncurry f)
   · exact ⟨⟨B * IsFiniteKernel.bound κ, ENNReal.mul_lt_top hB_top.lt_top
-      (IsFiniteKernel.bound_lt_top κ), fun a => by
+      (IsFiniteKernel.bound_lt_top κ), fun a ↦ by
         rw [Kernel.withDensity_apply' κ hf a Set.univ]
         calc
           ∫⁻ b in Set.univ, f a b ∂κ a ≤ ∫⁻ _ in Set.univ, B ∂κ a := lintegral_mono (hf_B a)
@@ -217,8 +217,8 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     exact ⟨min_eq_left ((h_le a b n hn).trans (le_add_of_nonneg_right zero_le_one)),
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
-    have h_sum_a : ∀ a, Summable fun n => fs n a := by
-      refine fun a => Pi.summable.mpr fun b => ?_
+    have h_sum_a : ∀ a, Summable fun n ↦ fs n a := by
+      refine fun a ↦ Pi.summable.mpr fun b ↦ ?_
       suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
         summable_of_ne_finset_zero this
       intro n hn_not_mem
@@ -240,7 +240,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     exact ⟨⌈(f a b).toReal⌉₊, fun n hn => (min_eq_left (h_le a b n hn)).symm⟩
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · exact fun _ => (hf.min measurable_const).sub (hf.min measurable_const)
-  refine isSFiniteKernel_sum fun n => ?_
+  refine isSFiniteKernel_sum fun n ↦ ?_
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
   refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => ?_
   -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `norm_cast`
@@ -255,7 +255,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
 `withDensity κ f` is s-finite. -/
 nonrec theorem IsSFiniteKernel.withDensity (κ : Kernel α β) [IsSFiniteKernel κ]
     (hf_ne_top : ∀ a b, f a b ≠ ∞) : IsSFiniteKernel (withDensity κ f) := by
-  have h_eq_sum : withDensity κ f = Kernel.sum fun i => withDensity (seq κ i) f := by
+  have h_eq_sum : withDensity κ f = Kernel.sum fun i ↦ withDensity (seq κ i) f := by
     rw [← withDensity_kernel_sum _ _]
     congr
     exact (kernel_sum_seq κ).symm

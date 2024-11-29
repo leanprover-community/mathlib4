@@ -30,7 +30,7 @@ variable [SMul M α] [SMul N α] (a : M) (b : α) (x : Option α)
 
 @[to_additive Option.VAdd]
 instance : SMul M (Option α) :=
-  ⟨fun a => Option.map <| (a • ·)⟩
+  ⟨fun a ↦ Option.map <| (a • ·)⟩
 
 @[to_additive]
 theorem smul_def : a • x = x.map (a • ·) :=
@@ -62,7 +62,7 @@ instance [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (Option
 
 @[to_additive]
 instance [FaithfulSMul M α] : FaithfulSMul M (Option α) :=
-  ⟨fun h => eq_of_smul_eq_smul fun b : α => by injection h (some b)⟩
+  ⟨fun h ↦ eq_of_smul_eq_smul fun b : α => by injection h (some b)⟩
 
 end SMul
 

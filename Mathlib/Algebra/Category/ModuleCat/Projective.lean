@@ -28,7 +28,7 @@ open scoped Module
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · letI : Module.Projective R (ModuleCat.of R P) := h
     exact ⟨fun E X epi => Module.projective_lifting_property _ _
       ((ModuleCat.epi_iff_surjective _).mp epi)⟩
@@ -58,7 +58,7 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
             Finsupp.basisSingleOne
         f := Finsupp.basisSingleOne.constr ℕ _root_.id
         epi := (epi_iff_range_eq_top _).mpr
-            (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
+            (range_eq_top.2 fun m ↦ ⟨Finsupp.single m (1 : R), by
               -- Porting note: simp [Finsupp.linearCombination_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]

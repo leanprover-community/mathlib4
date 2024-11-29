@@ -327,10 +327,10 @@ theorem num_mem_carrier_iff (hm : 0 < m) (q : Spec.T A⁰_ f)
 
 theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
-  refine fun i => (q.2.mem_or_mem ?_).elim id id
+  refine fun i ↦ (q.2.mem_or_mem ?_).elim id id
   change (.mk ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
   simp_rw [← pow_add, map_add, add_pow, mul_comm, ← nsmul_eq_mul]
-  let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
+  let g : ℕ → A⁰_ f := fun j ↦ (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
         -- Porting note: inlining `l`, `r` causes a "can't synth HMul A⁰_ f A⁰_ f ?" error
@@ -380,7 +380,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
 variable (hm : 0 < m) (q : Spec.T A⁰_ f)
 include hm
 
-theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
+theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i ↦ by
   convert Submodule.zero_mem q.1 using 1
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
     HomogeneousLocalization.val_zero]; simp_rw [map_zero, zero_pow hm.ne']
@@ -425,8 +425,8 @@ def carrier.asIdeal : Ideal A where
 
 theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 :=
   fun i a ha j =>
-  (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
-    fun h => by
+  (em (i = j)).elim (fun h ↦ h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
+    fun h ↦ by
     simpa only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 

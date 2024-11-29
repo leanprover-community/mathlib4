@@ -224,7 +224,7 @@ instance : UniformGroup (α →ᵤ G) :=
 @[to_additive]
 protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
-    (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, toFun f x ∈ b i } := by
+    (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i ↦ { f : α →ᵤ G | ∀ x, toFun f x ∈ b i } := by
   convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) h.uniformity_of_nhds_one
   simp
 

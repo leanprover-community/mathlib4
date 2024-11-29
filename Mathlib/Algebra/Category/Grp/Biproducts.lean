@@ -44,7 +44,7 @@ def binaryProductLimitCone (G H : AddCommGrp.{u}) : Limits.LimitCone (pair G H) 
               WalkingPair.casesOn j (AddMonoidHom.fst G H) (AddMonoidHom.snd G H)
           naturality := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟨⟩⟩⟩ <;> rfl } }
   isLimit :=
-    { lift := fun s => AddMonoidHom.prod (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩)
+    { lift := fun s ↦ AddMonoidHom.prod (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩)
       fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
       uniq := fun s m w => by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
@@ -105,7 +105,7 @@ def lift (s : Fan f) : s.pt ⟶ AddCommGrp.of (∀ j, f j) where
 def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   cone :=
     { pt := AddCommGrp.of (∀ j, f j)
-      π := Discrete.natTrans fun j => Pi.evalAddMonoidHom (fun j => f j) j.as }
+      π := Discrete.natTrans fun j ↦ Pi.evalAddMonoidHom (fun j ↦ f j) j.as }
   isLimit :=
     { lift := lift.{_, u} f
       fac := fun _ _ => rfl
@@ -129,7 +129,7 @@ noncomputable def biproductIsoPi (f : J → AddCommGrp.{u}) :
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π (f : J → AddCommGrp.{u}) (j : J) :
-    (biproductIsoPi f).inv ≫ biproduct.π f j = Pi.evalAddMonoidHom (fun j => f j) j :=
+    (biproductIsoPi f).inv ≫ biproduct.π f j = Pi.evalAddMonoidHom (fun j ↦ f j) j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 
 end AddCommGrp

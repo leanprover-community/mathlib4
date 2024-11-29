@@ -173,7 +173,7 @@ namespace Set
 theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]
-  exact surjective_unpair.iUnion_comp (fun x => s x.fst ×ˢ t x.snd)
+  exact surjective_unpair.iUnion_comp (fun x ↦ s x.fst ×ˢ t x.snd)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iUnion_unpair {α} (f : ℕ → ℕ → Set α) :

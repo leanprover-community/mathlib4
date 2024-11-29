@@ -136,31 +136,31 @@ variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable
 include hf
 
 @[measurability]
-theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
+theorem Measurable.exp : Measurable fun x ↦ Real.exp (f x) :=
   Real.measurable_exp.comp hf
 
 @[measurability]
-theorem Measurable.log : Measurable fun x => log (f x) :=
+theorem Measurable.log : Measurable fun x ↦ log (f x) :=
   measurable_log.comp hf
 
 @[measurability]
-theorem Measurable.cos : Measurable fun x => Real.cos (f x) :=
+theorem Measurable.cos : Measurable fun x ↦ Real.cos (f x) :=
   Real.measurable_cos.comp hf
 
 @[measurability]
-theorem Measurable.sin : Measurable fun x => Real.sin (f x) :=
+theorem Measurable.sin : Measurable fun x ↦ Real.sin (f x) :=
   Real.measurable_sin.comp hf
 
 @[measurability]
-theorem Measurable.cosh : Measurable fun x => Real.cosh (f x) :=
+theorem Measurable.cosh : Measurable fun x ↦ Real.cosh (f x) :=
   Real.measurable_cosh.comp hf
 
 @[measurability]
-theorem Measurable.sinh : Measurable fun x => Real.sinh (f x) :=
+theorem Measurable.sinh : Measurable fun x ↦ Real.sinh (f x) :=
   Real.measurable_sinh.comp hf
 
 @[measurability]
-theorem Measurable.sqrt : Measurable fun x => √(f x) :=
+theorem Measurable.sqrt : Measurable fun x ↦ √(f x) :=
   continuous_sqrt.measurable.comp hf
 
 end RealComposition
@@ -173,31 +173,31 @@ variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable
 include hf
 
 @[measurability]
-theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=
+theorem Measurable.cexp : Measurable fun x ↦ Complex.exp (f x) :=
   Complex.measurable_exp.comp hf
 
 @[measurability]
-theorem Measurable.ccos : Measurable fun x => Complex.cos (f x) :=
+theorem Measurable.ccos : Measurable fun x ↦ Complex.cos (f x) :=
   Complex.measurable_cos.comp hf
 
 @[measurability]
-theorem Measurable.csin : Measurable fun x => Complex.sin (f x) :=
+theorem Measurable.csin : Measurable fun x ↦ Complex.sin (f x) :=
   Complex.measurable_sin.comp hf
 
 @[measurability]
-theorem Measurable.ccosh : Measurable fun x => Complex.cosh (f x) :=
+theorem Measurable.ccosh : Measurable fun x ↦ Complex.cosh (f x) :=
   Complex.measurable_cosh.comp hf
 
 @[measurability]
-theorem Measurable.csinh : Measurable fun x => Complex.sinh (f x) :=
+theorem Measurable.csinh : Measurable fun x ↦ Complex.sinh (f x) :=
   Complex.measurable_sinh.comp hf
 
 @[measurability]
-theorem Measurable.carg : Measurable fun x => arg (f x) :=
+theorem Measurable.carg : Measurable fun x ↦ arg (f x) :=
   measurable_arg.comp hf
 
 @[measurability]
-theorem Measurable.clog : Measurable fun x => Complex.log (f x) :=
+theorem Measurable.clog : Measurable fun x ↦ Complex.log (f x) :=
   measurable_log.comp hf
 
 end ComplexComposition

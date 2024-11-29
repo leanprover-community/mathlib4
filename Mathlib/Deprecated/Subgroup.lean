@@ -97,9 +97,9 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 @[to_additive]
 theorem IsSubgroup.iInter {ι : Sort*} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.iInter s) :=
-  { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
+  { IsSubmonoid.iInter fun y ↦ (hs y).toIsSubmonoid with
     inv_mem := fun h =>
-      Set.mem_iInter.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
+      Set.mem_iInter.2 fun y ↦ IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
 
 @[to_additive]
 theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set G}
@@ -108,7 +108,7 @@ theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set
   { inv_mem := fun ha =>
       let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
       Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
-    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i => (hs i).toIsSubmonoid) directed }
+    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i ↦ (hs i).toIsSubmonoid) directed }
 
 end Group
 
@@ -121,7 +121,7 @@ include hs
 
 @[to_additive]
 theorem inv_mem_iff : a⁻¹ ∈ s ↔ a ∈ s :=
-  ⟨fun h => by simpa using hs.inv_mem h, inv_mem hs⟩
+  ⟨fun h ↦ by simpa using hs.inv_mem h, inv_mem hs⟩
 
 @[to_additive]
 theorem mul_mem_cancel_right (h : a ∈ s) : b * a ∈ s ↔ b ∈ s :=
@@ -162,7 +162,7 @@ theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgrou
 theorem Additive.isNormalAddSubgroup_iff [Group G] {s : Set G} :
     @IsNormalAddSubgroup (Additive G) _ s ↔ IsNormalSubgroup s :=
   ⟨by rintro ⟨h₁, h₂⟩; exact @IsNormalSubgroup.mk G _ _ (Additive.isAddSubgroup_iff.1 h₁) @h₂,
-    fun h => Additive.isNormalAddSubgroup h⟩
+    fun h ↦ Additive.isNormalAddSubgroup h⟩
 
 theorem Multiplicative.isNormalSubgroup [AddGroup A] {s : Set A} (hs : IsNormalAddSubgroup s) :
     @IsNormalSubgroup (Multiplicative A) _ s :=
@@ -174,7 +174,7 @@ theorem Multiplicative.isNormalSubgroup_iff [AddGroup A] {s : Set A} :
   ⟨by
     rintro ⟨h₁, h₂⟩
     exact @IsNormalAddSubgroup.mk A _ _ (Multiplicative.isSubgroup_iff.1 h₁) @h₂,
-    fun h => Multiplicative.isNormalSubgroup h⟩
+    fun h ↦ Multiplicative.isNormalSubgroup h⟩
 
 namespace IsSubgroup
 

@@ -72,7 +72,7 @@ def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
 scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
 
 theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v : Matrix m n α) :
-    (fun j => u ⬝ᵥ fun i => v i j) ⬝ᵥ w = u ⬝ᵥ fun i => v i ⬝ᵥ w := by
+    (fun j ↦ u ⬝ᵥ fun i ↦ v i j) ⬝ᵥ w = u ⬝ᵥ fun i ↦ v i ⬝ᵥ w := by
   simpa [dotProduct, Finset.mul_sum, Finset.sum_mul, mul_assoc] using Finset.sum_comm
 
 theorem dotProduct_comm [AddCommMonoid α] [CommSemigroup α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
@@ -158,7 +158,7 @@ theorem dotProduct_diagonal (i : m) : v ⬝ᵥ diagonal w i = v i * w i := by
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 
 @[simp]
-theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j => diagonal w j i) = v i * w i := by
+theorem dotProduct_diagonal' (i : m) : (v ⬝ᵥ fun j ↦ diagonal w j i) = v i * w i := by
   have : ∀ j ≠ i, v j * diagonal w j i = 0 := fun j hij => by
     simp [diagonal_apply_ne _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
@@ -244,7 +244,7 @@ This is currently only defined when `m` is finite. -/
 @[default_instance 100]
 instance [Fintype m] [Mul α] [AddCommMonoid α] :
     HMul (Matrix l m α) (Matrix m n α) (Matrix l n α) where
-  hMul M N := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
+  hMul M N := fun i k => (fun j ↦ M i j) ⬝ᵥ fun j ↦ N j k
 
 theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
     {i k} : (M * N) i k = ∑ j, M i j * N j k :=
@@ -253,7 +253,7 @@ theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N
 instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
 
 theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
-    {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k :=
+    {i k} : (M * N) i k = (fun j ↦ M i j) ⬝ᵥ fun j ↦ N j k :=
   rfl
 
 theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
@@ -327,13 +327,13 @@ theorem mul_diagonal [Fintype n] [DecidableEq n] (d : n → α) (M : Matrix m n 
 
 @[simp]
 theorem diagonal_mul_diagonal [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
-    diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i := by
+    diagonal d₁ * diagonal d₂ = diagonal fun i ↦ d₁ i * d₂ i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
 
 theorem diagonal_mul_diagonal' [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
-    diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i :=
+    diagonal d₁ * diagonal d₂ = diagonal fun i ↦ d₁ i * d₂ i :=
   diagonal_mul_diagonal _ _
 
 theorem smul_eq_diagonal_mul [Fintype m] [DecidableEq m] (M : Matrix m n α) (a : α) :
@@ -535,7 +535,7 @@ The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `M
 so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
 -/
 def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
-  | i => (fun j => M i j) ⬝ᵥ v
+  | i => (fun j ↦ M i j) ⬝ᵥ v
 
 @[inherit_doc]
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
@@ -549,7 +549,7 @@ The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `M
 so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
 -/
 def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
-  | j => v ⬝ᵥ fun i => M i j
+  | j => v ⬝ᵥ fun i ↦ M i j
 
 @[inherit_doc]
 scoped infixl:73 " ᵥ* " => Matrix.vecMul
@@ -643,12 +643,12 @@ theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (j : n) (x : R) : M *ᵥ Pi.single j x = fun i => M i j * x :=
+    (j : n) (x : R) : M *ᵥ Pi.single j x = fun i ↦ M i j * x :=
   funext fun _ => dotProduct_single _ _ _
 
 @[simp]
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
+    (i : m) (x : R) : Pi.single i x ᵥ* M = fun j ↦ x * M i j :=
   funext fun _ => single_dotProduct _ _ _
 
 theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
@@ -664,14 +664,14 @@ theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
     (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
   ext i
   rw [mulVec_diagonal]
-  exact Pi.apply_single (fun i x => v i * x) (fun i => mul_zero _) j x i
+  exact Pi.apply_single (fun i x => v i * x) (fun i ↦ mul_zero _) j x i
 
 -- @[simp] -- Porting note: not in simpNF
 theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : (Pi.single j x) ᵥ* (diagonal v) = Pi.single j (x * v j) := by
   ext i
   rw [vecMul_diagonal]
-  exact Pi.apply_single (fun i x => x * v i) (fun i => zero_mul _) j x i
+  exact Pi.apply_single (fun i x => x * v i) (fun i ↦ zero_mul _) j x i
 
 end NonUnitalNonAssocSemiring
 
@@ -704,10 +704,10 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
-theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = fun i => ∑ j, A i j := by
+theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = fun i ↦ ∑ j, A i j := by
   ext; simp [mulVec, dotProduct]
 
-theorem vec_one_mul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = fun j => ∑ i, A i j := by
+theorem vec_one_mul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = fun j ↦ ∑ i, A i j := by
   ext; simp [vecMul, dotProduct]
 
 variable [Fintype m] [Fintype n] [DecidableEq m]

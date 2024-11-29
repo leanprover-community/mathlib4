@@ -246,7 +246,7 @@ lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : ι → E} {c : E [⋀^ι]→
 
 theorem hasSum_eval {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
     {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
-    HasSum (fun a => p a m) (q m) :=
+    HasSum (fun a ↦ p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 
 theorem tsum_eval [T2Space F] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F} (hp : Summable p)

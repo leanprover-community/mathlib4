@@ -29,12 +29,12 @@ section
 
 /-- The composition of `C.d i (c.next i) ≫ f (c.next i) i`. -/
 def dNext (i : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X i ⟶ D.X i) :=
-  AddMonoidHom.mk' (fun f => C.d i (c.next i) ≫ f (c.next i) i) fun _ _ =>
+  AddMonoidHom.mk' (fun f ↦ C.d i (c.next i) ≫ f (c.next i) i) fun _ _ =>
     Preadditive.comp_add _ _ _ _ _ _
 
 /-- `f (c.next i) i`. -/
 def fromNext (i : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.xNext i ⟶ D.X i) :=
-  AddMonoidHom.mk' (fun f => f (c.next i) i) fun _ _ => rfl
+  AddMonoidHom.mk' (fun f ↦ f (c.next i) i) fun _ _ => rfl
 
 @[simp]
 theorem dNext_eq_dFrom_fromNext (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) :
@@ -63,7 +63,7 @@ theorem dNext_comp_right (f : ∀ i j, C.X i ⟶ D.X j) (g : D ⟶ E) (i : ι) :
 
 /-- The composition `f j (c.prev j) ≫ D.d (c.prev j) j`. -/
 def prevD (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.X j) :=
-  AddMonoidHom.mk' (fun f => f j (c.prev j) ≫ D.d (c.prev j) j) fun _ _ =>
+  AddMonoidHom.mk' (fun f ↦ f j (c.prev j) ≫ D.d (c.prev j) j) fun _ _ =>
     Preadditive.add_comp _ _ _ _ _ _
 
 lemma prevD_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel (c.prev i) i) :
@@ -73,7 +73,7 @@ lemma prevD_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel (c.pr
 
 /-- `f j (c.prev j)`. -/
 def toPrev (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.xPrev j) :=
-  AddMonoidHom.mk' (fun f => f j (c.prev j)) fun _ _ => rfl
+  AddMonoidHom.mk' (fun f ↦ f j (c.prev j)) fun _ _ => rfl
 
 @[simp]
 theorem prevD_eq_toPrev_dTo (f : ∀ i j, C.X i ⟶ D.X j) (j : ι) :
@@ -132,11 +132,11 @@ def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
   toFun h :=
     { hom := fun i j => h.hom i j
       zero := fun _ _ w => h.zero _ _ w
-      comm := fun i => by simp [h.comm] }
+      comm := fun i ↦ by simp [h.comm] }
   invFun h :=
     { hom := fun i j => h.hom i j
       zero := fun _ _ w => h.zero _ _ w
-      comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
+      comm := fun i ↦ by simpa [sub_eq_iff_eq_add] using h.comm i }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
@@ -807,7 +807,7 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
     split_ifs with h
     · rw [ho.comm (c.prev i)]
       dsimp [dFrom, dTo, fromNext, toPrev]
-      rw [congr_arg (fun j => d K (c.prev i) j ≫ ho.hom j (c.prev i)) (c.next_eq' h)]
+      rw [congr_arg (fun j ↦ d K (c.prev i) j ≫ ho.hom j (c.prev i)) (c.next_eq' h)]
     · abel
   comm₂ := ho.comm i
   comm₃ := by
@@ -815,7 +815,7 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
     split_ifs with h
     · rw [ho.comm (c.next i)]
       dsimp [dFrom, dTo, fromNext, toPrev]
-      rw [congr_arg (fun j => ho.hom (c.next i) j ≫ L.d j (c.next i)) (c.prev_eq' h)]
+      rw [congr_arg (fun j ↦ ho.hom (c.next i) j ≫ L.d j (c.next i)) (c.prev_eq' h)]
     · abel
 
 lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.HasHomology i] :

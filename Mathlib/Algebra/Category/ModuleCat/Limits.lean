@@ -110,9 +110,9 @@ def limitCone : Cone F where
 -/
 def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
   refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
-    (fun s => ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
+    (fun s ↦ ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
-    (fun s => rfl)
+    (fun s ↦ rfl)
   · intro x y
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_add]
     rw [← equivShrink_add]
@@ -260,7 +260,7 @@ def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCoc
   uniq s m h := by
     have :
       s.ι.app = fun i =>
-        LinearMap.comp m (DirectLimit.of R ι (fun i => G i) (fun i j H => f i j H) i) := by
+        LinearMap.comp m (DirectLimit.of R ι (fun i ↦ G i) (fun i j H => f i j H) i) := by
       funext i
       rw [← h]
       rfl

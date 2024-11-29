@@ -121,7 +121,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
     exact mul_mem_left _ _ hs
 
 theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
-    (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
+    (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i ↦ f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
     Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
@@ -136,8 +136,8 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
-  have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
+  have hf : (f.support.sum fun a ↦ f a * a) = 1 := hf -- Porting note: was `change ... at hf`
+  have := sum_pow_mem_span_pow f.support (fun a ↦ f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this
   rintro _ hx
@@ -198,7 +198,7 @@ variable {R : Type*} [CommSemiring R]
 
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
-  have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
+  have : ¬_ := fun h ↦ hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
   push_neg at this ⊢
   obtain ⟨x, hx, not_unit⟩ := this
@@ -234,12 +234,12 @@ This result actually holds for all division semirings, but we lack the predicate
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
   · exact
-      ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
+      ⟨fun h ↦ (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
   push_neg
   simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
-  exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
+  exact ⟨fun h ↦ ⟨h⟩, fun h ↦ h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)

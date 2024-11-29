@@ -49,7 +49,7 @@ theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB
 
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
   ⟨fun hA => ⟨hA.mono subset_union_left, hA.mono subset_union_right⟩, fun hA _x hx =>
-    hx.elim (fun h => hA.1 h) fun h => hA.2 h⟩
+    hx.elim (fun h ↦ hA.1 h) fun h ↦ hA.2 h⟩
 
 alias ⟨_, sized.union⟩ := sized_union
 
@@ -132,7 +132,7 @@ theorem eq_of_mem_slice (h₁ : A ∈ 𝒜 # r₁) (h₂ : A ∈ 𝒜 # r₂) : 
 
 /-- Elements in distinct slices must be distinct. -/
 theorem ne_of_mem_slice (h₁ : A₁ ∈ 𝒜 # r₁) (h₂ : A₂ ∈ 𝒜 # r₂) : r₁ ≠ r₂ → A₁ ≠ A₂ :=
-  mt fun h => (sized_slice h₁).symm.trans ((congr_arg card h).trans (sized_slice h₂))
+  mt fun h ↦ (sized_slice h₁).symm.trans ((congr_arg card h).trans (sized_slice h₂))
 
 theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice 𝒜) := fun _ _ _ _ hmn =>
   disjoint_filter.2 fun _s _hs hm hn => hmn <| hm.symm.trans hn

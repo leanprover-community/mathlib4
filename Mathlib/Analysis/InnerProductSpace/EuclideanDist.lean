@@ -110,8 +110,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [Nor
   [NormedSpace ℝ G] [FiniteDimensional ℝ G] {f g : F → G} {n : ℕ∞}
 
 theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (h : ∀ x, f x ≠ g x) :
-    ContDiff ℝ n fun x => Euclidean.dist (f x) (g x) := by
+    ContDiff ℝ n fun x ↦ Euclidean.dist (f x) (g x) := by
   simp only [Euclidean.dist]
   apply ContDiff.dist ℝ
   exacts [(toEuclidean (E := G)).contDiff.comp hf,
-    (toEuclidean (E := G)).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
+    (toEuclidean (E := G)).contDiff.comp hg, fun x ↦ toEuclidean.injective.ne (h x)]

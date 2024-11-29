@@ -71,7 +71,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     HasSum (fun k : ℕ => (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
   let f (k : ℕ) := (1 : ℝ) / (2 * k + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ k
-  change HasSum (fun k => f (k + 1)) _
+  change HasSum (fun k ↦ f (k + 1)) _
   rw [hasSum_nat_add_iff]
   convert (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
   · ext k
@@ -88,7 +88,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
 theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ) :=
   antitone_nat_of_succ_le fun n =>
-    sub_nonneg.mp <| (log_stirlingSeq_diff_hasSum n).nonneg fun m => by positivity
+    sub_nonneg.mp <| (log_stirlingSeq_diff_hasSum n).nonneg fun m ↦ by positivity
 
 /-- We have a bound for successive elements in the sequence `log (stirlingSeq k)`.
 -/
@@ -134,7 +134,7 @@ theorem log_stirlingSeq_bounded_aux :
     ∃ c : ℝ, ∀ n : ℕ, log (stirlingSeq 1) - log (stirlingSeq (n + 1)) ≤ c := by
   let d : ℝ := ∑' k : ℕ, (1 : ℝ) / (↑(k + 1) : ℝ) ^ 2
   use 1 / 4 * d
-  let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq (k + 1))
+  let log_stirlingSeq' : ℕ → ℝ := fun k ↦ log (stirlingSeq (k + 1))
   intro n
   have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
     convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
@@ -153,7 +153,7 @@ theorem log_stirlingSeq_bounded_aux :
 /-- The sequence `log_stirlingSeq` is bounded below for `n ≥ 1`. -/
 theorem log_stirlingSeq_bounded_by_constant : ∃ c, ∀ n : ℕ, c ≤ log (stirlingSeq (n + 1)) := by
   obtain ⟨d, h⟩ := log_stirlingSeq_bounded_aux
-  exact ⟨log (stirlingSeq 1) - d, fun n => sub_le_comm.mp (h n)⟩
+  exact ⟨log (stirlingSeq 1) - d, fun n ↦ sub_le_comm.mp (h n)⟩
 
 /-- The sequence `stirlingSeq` is positive for `n > 0`  -/
 theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirlingSeq; positivity
@@ -162,7 +162,7 @@ theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirli
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
   cases' log_stirlingSeq_bounded_by_constant with c h
-  refine ⟨exp c, exp_pos _, fun n => ?_⟩
+  refine ⟨exp c, exp_pos _, fun n ↦ ?_⟩
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
   exact h n
 

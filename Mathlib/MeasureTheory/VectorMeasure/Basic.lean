@@ -58,7 +58,7 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
   empty' : measureOf' ∅ = 0
   not_measurable' ⦃i : Set α⦄ : ¬MeasurableSet i → measureOf' i = 0
   m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
-    HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
+    HasSum (fun i ↦ measureOf' (f i)) (measureOf' (⋃ i, f i))
 
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
@@ -87,7 +87,7 @@ theorem not_measurable (v : VectorMeasure α M) {i : Set α} (hi : ¬MeasurableS
   v.not_measurable' hi
 
 theorem m_iUnion (v : VectorMeasure α M) {f : ℕ → Set α} (hf₁ : ∀ i, MeasurableSet (f i))
-    (hf₂ : Pairwise (Disjoint on f)) : HasSum (fun i => v (f i)) (v (⋃ i, f i)) :=
+    (hf₂ : Pairwise (Disjoint on f)) : HasSum (fun i ↦ v (f i)) (v (⋃ i, f i)) :=
   v.m_iUnion' hf₁ hf₂
 
 theorem coe_injective : @Function.Injective (VectorMeasure α M) (Set α → M) (⇑) := fun v w h => by
@@ -115,7 +115,7 @@ theorem ext {s t : VectorMeasure α M} (h : ∀ i : Set α, MeasurableSet i → 
 variable [Countable β] {v : VectorMeasure α M} {f : β → Set α}
 
 theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
-    HasSum (fun i => v (f i)) (v (⋃ i, f i)) := by
+    HasSum (fun i ↦ v (f i)) (v (⋃ i, f i)) := by
   rcases Countable.exists_injective_nat β with ⟨e, he⟩
   rw [← hasSum_extend_zero he]
   convert m_iUnion v (f := Function.extend e f fun _ ↦ ∅) _ _
@@ -139,7 +139,7 @@ theorem of_disjoint_iUnion_nat (v : VectorMeasure α M) {f : ℕ → Set α}
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]
-  exacts [fun b => Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
+  exacts [fun b ↦ Bool.casesOn b hB hA, pairwise_disjoint_on_bool.2 h]
 
 theorem of_add_of_diff {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B) (h : A ⊆ B) :
     v A + v (B \ A) = v B := by
@@ -347,7 +347,7 @@ theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFinit
 
 theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] : μ.toSignedMeasure = ν.toSignedMeasure ↔ μ = ν := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext1 i hi
     have : μ.toSignedMeasure i = ν.toSignedMeasure i := by rw [h]
     rwa [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi,
@@ -387,7 +387,7 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
     simp only
     rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
-    exact tsum_congr fun n => if_pos (hf₁ n)
+    exact tsum_congr fun n ↦ if_pos (hf₁ n)
 
 theorem toENNRealVectorMeasure_apply_measurable {μ : Measure α} {i : Set α} (hi : MeasurableSet i) :
     μ.toENNRealVectorMeasure i = μ i :=
@@ -460,13 +460,13 @@ open Classical in
 /-- The pushforward of a vector measure along a function. -/
 def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
-    { measureOf' := fun s => if MeasurableSet s then v (f ⁻¹' s) else 0
+    { measureOf' := fun s ↦ if MeasurableSet s then v (f ⁻¹' s) else 0
       empty' := by simp
       not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro g hg₁ hg₂
         simp only
-        convert v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
+        convert v.m_iUnion (fun i ↦ hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
         · rw [if_pos (hg₁ _)]
         · rw [Set.preimage_iUnion, if_pos (MeasurableSet.iUnion hg₁)] }
   else 0
@@ -559,13 +559,13 @@ open Classical in
 /-- The restriction of a vector measure on some set. -/
 def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
-    { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
+    { measureOf' := fun s ↦ if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
       not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro f hf₁ hf₂
         simp only
-        convert v.m_iUnion (fun n => (hf₁ n).inter hi)
+        convert v.m_iUnion (fun n ↦ (hf₁ n).inter hi)
             (hf₂.mono fun i j => Disjoint.mono inf_le_left inf_le_left)
         · rw [if_pos (hf₁ _)]
         · rw [Set.iUnion_inter, if_pos (MeasurableSet.iUnion hf₁)] }
@@ -723,7 +723,7 @@ variable (v w : VectorMeasure α M)
 theorem restrict_le_restrict_iff {i : Set α} (hi : MeasurableSet i) :
     v ≤[i] w ↔ ∀ ⦃j⦄, MeasurableSet j → j ⊆ i → v j ≤ w j :=
   ⟨fun h j hj₁ hj₂ => restrict_eq_self v hi hj₁ hj₂ ▸ restrict_eq_self w hi hj₁ hj₂ ▸ h j hj₁,
-    fun h => le_iff.1 fun _ hj =>
+    fun h ↦ le_iff.1 fun _ hj =>
       (restrict_apply v hi hj).symm ▸ (restrict_apply w hi hj).symm ▸
       h (hj.inter hi) Set.inter_subset_right⟩
 
@@ -775,7 +775,7 @@ nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) :
 
 @[simp]
 theorem neg_le_neg_iff {i : Set α} (hi : MeasurableSet i) : -w ≤[i] -v ↔ v ≤[i] w :=
-  ⟨fun h => neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ hi h, fun h => neg_le_neg _ _ hi h⟩
+  ⟨fun h ↦ neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ hi h, fun h ↦ neg_le_neg _ _ hi h⟩
 
 end
 
@@ -789,21 +789,21 @@ theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, Measura
   refine restrict_le_restrict_of_subset_le v w fun a ha₁ ha₂ => ?_
   have ha₃ : ⋃ n, a ∩ disjointed f n = a := by
     rwa [← Set.inter_iUnion, iUnion_disjointed, Set.inter_eq_left]
-  have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=
+  have ha₄ : Pairwise (Disjoint on fun n ↦ a ∩ disjointed f n) :=
     (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   rw [← ha₃, v.of_disjoint_iUnion _ ha₄, w.of_disjoint_iUnion _ ha₄]
-  · refine tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) ?_ ?_) ?_ ?_
+  · refine tsum_le_tsum (fun n ↦ (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) ?_ ?_) ?_ ?_
     · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
     · exact Set.Subset.trans Set.inter_subset_right (disjointed_subset _ _)
-    · refine (v.m_iUnion (fun n => ?_) ?_).summable
+    · refine (v.m_iUnion (fun n ↦ ?_) ?_).summable
       · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
       · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
-    · refine (w.m_iUnion (fun n => ?_) ?_).summable
+    · refine (w.m_iUnion (fun n ↦ ?_) ?_).summable
       · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
       · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   · intro n
     exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-  · exact fun n => ha₁.inter (MeasurableSet.disjointed hf₁ n)
+  · exact fun n ↦ ha₁.inter (MeasurableSet.disjointed hf₁ n)
 
 theorem restrict_le_restrict_countable_iUnion [Countable β] {f : β → Set α}
     (hf₁ : ∀ b, MeasurableSet (f b)) (hf₂ : ∀ b, v ≤[f b] w) : v ≤[⋃ b, f b] w := by
@@ -1057,12 +1057,12 @@ theorem neg_right {N : Type*} [AddCommGroup N] [TopologicalSpace N] [Topological
 @[simp]
 theorem neg_left_iff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : -v ⟂ᵥ w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg v ▸ h.neg_left, neg_left⟩
+  ⟨fun h ↦ neg_neg v ▸ h.neg_left, neg_left⟩
 
 @[simp]
 theorem neg_right_iff {N : Type*} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : v ⟂ᵥ -w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg w ▸ h.neg_right, neg_right⟩
+  ⟨fun h ↦ neg_neg w ▸ h.neg_right, neg_right⟩
 
 end MutuallySingular
 
@@ -1074,12 +1074,12 @@ open Classical in
 def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     @VectorMeasure α m M _ _ :=
   @VectorMeasure.mk α m M _ _
-    (fun i => if MeasurableSet[m] i then v i else 0)
+    (fun i ↦ if MeasurableSet[m] i then v i else 0)
     (by dsimp only; rw [if_pos (@MeasurableSet.empty _ m), v.empty])
     (fun i hi => by dsimp only; rw [if_neg hi])
     (fun f hf₁ hf₂ => by
       dsimp only
-      have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
+      have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k ↦ hle _ (hf₁ k)
       convert v.m_iUnion hf₁' hf₂ using 1
       · ext n
         rw [if_pos (hf₁ n)]
@@ -1132,7 +1132,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       s.empty]
     rfl
   · intro f hf₁ hf₂
-    have h₁ : ∀ n, MeasurableSet (i ∩ f n) := fun n => hi₁.inter (hf₁ n)
+    have h₁ : ∀ n, MeasurableSet (i ∩ f n) := fun n ↦ hi₁.inter (hf₁ n)
     have h₂ : Pairwise (Disjoint on fun n : ℕ => i ∩ f n) := by
       intro n m hnm
       exact ((hf₂ hnm).inf_left' i).inf_right' i
@@ -1141,7 +1141,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ Set.inter_subset_left hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
-    · refine tsum_congr fun n => ?_
+    · refine tsum_congr fun n ↦ ?_
       simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
     · exact (NNReal.summable_mk h).2 (s.m_iUnion h₁ h₂).summable
 

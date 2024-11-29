@@ -120,7 +120,7 @@ theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse 
 @[deprecated (since := "2024-07-29")] alias getElem?_zip_with := getElem?_zipWith'
 
 theorem get?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
+    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g ↦ (l₂.get? i).map g := by
   simp [getElem?_zipWith']
 
 @[deprecated (since := "2024-07-29")] alias get?_zip_with := get?_zipWith'

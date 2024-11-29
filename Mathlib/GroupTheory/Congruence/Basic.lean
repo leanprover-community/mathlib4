@@ -58,7 +58,7 @@ protected def prod (c : Con M) (d : Con N) : Con (M × N) :=
 /-- The product of an indexed collection of congruence relations. -/
 @[to_additive "The product of an indexed collection of additive congruence relations."]
 def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
-  { @piSetoid _ _ fun i => (C i).toSetoid with
+  { @piSetoid _ _ fun i ↦ (C i).toSetoid with
     mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
 
 /-- Makes an isomorphism of quotients by two congruence relations, given that the relations are
@@ -154,7 +154,7 @@ def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ 
 to the `AddSubmonoid` of `M × M` whose elements are `(x, y)` such that `x`
 is related to `y` by `c`."]
 instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
-  ⟨fun c => c.submonoid⟩
+  ⟨fun c ↦ c.submonoid⟩
 
 @[to_additive]
 theorem mem_coe {c : Con M} {x y} : (x, y) ∈ (↑c : Submonoid (M × M)) ↔ (x, y) ∈ c :=
@@ -184,7 +184,7 @@ variable {f : M →* P}
 constant on `c`'s equivalence classes, `f` has the same image as the homomorphism that `f` induces
 on the quotient."]
 theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom.mrange f :=
-  Submonoid.ext fun x => ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
+  Submonoid.ext fun x ↦ ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
 
 /-- Given a monoid homomorphism `f`, the induced homomorphism on the quotient by `f`'s kernel has
     the same image as `f`. -/
@@ -218,8 +218,8 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
   { kerLift f with
     toFun := kerLift f
     invFun := (↑) ∘ g
-    left_inv := fun x => kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
-    right_inv := fun x => by (conv_rhs => rw [← hf x]); rfl }
+    left_inv := fun x ↦ kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
+    right_inv := fun x ↦ by (conv_rhs => rw [← hf x]); rfl }
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 

@@ -107,7 +107,7 @@ info: Unfolds for (fun x => x) (1 + 1):
 /--
 info: Unfolds for fun x => id x:
 · id
-· fun a => a
+· fun a ↦ a
 -/
 #guard_msgs in
 #unfold? fun x => id x

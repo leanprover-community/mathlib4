@@ -135,7 +135,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli' n`. -/
 def bernoulli'PowerSeries :=
-  mk fun n => algebraMap ℚ A (bernoulli' n / n !)
+  mk fun n ↦ algebraMap ℚ A (bernoulli' n / n !)
 
 theorem bernoulli'PowerSeries_mul_exp_sub_one :
     bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
@@ -160,7 +160,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
 theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
-  let B := mk fun n => bernoulli' n / (n ! : ℚ)
+  let B := mk fun n ↦ bernoulli' n / (n ! : ℚ)
   suffices (B - evalNegHom B) * (exp ℚ - 1) = X * (exp ℚ - 1) by
     cases' mul_eq_mul_right_iff.mp this with h h <;>
       simp only [PowerSeries.ext_iff, evalNegHom, coeff_X] at h
@@ -243,7 +243,7 @@ theorem bernoulli_spec' (n : ℕ) :
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli n`. -/
 def bernoulliPowerSeries :=
-  mk fun n => algebraMap ℚ A (bernoulli n / n !)
+  mk fun n ↦ algebraMap ℚ A (bernoulli n / n !)
 
 theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
@@ -257,7 +257,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   cases' n with n
   · simp
   rw [if_neg n.succ_succ_ne_one]
-  have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
+  have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m ↦ mod_cast factorial_ne_zero m
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
   simp only [CharP.cast_eq_zero, zero_add, inv_one, map_one, sub_self, mul_zero, add_eq]
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
@@ -276,11 +276,11 @@ the proof provided here. -/
 theorem sum_range_pow (n p : ℕ) :
     (∑ k ∈ range n, (k : ℚ) ^ p) =
       ∑ i ∈ range (p + 1), bernoulli i * ((p + 1).choose i) * (n : ℚ) ^ (p + 1 - i) / (p + 1) := by
-  have hne : ∀ m : ℕ, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
+  have hne : ∀ m : ℕ, (m ! : ℚ) ≠ 0 := fun m ↦ mod_cast factorial_ne_zero m
   -- compute the Cauchy product of two power series
   have h_cauchy :
-    ((mk fun p => bernoulli p / p !) * mk fun q => coeff ℚ (q + 1) (exp ℚ ^ n)) =
-      mk fun p => ∑ i ∈ range (p + 1),
+    ((mk fun p ↦ bernoulli p / p !) * mk fun q ↦ coeff ℚ (q + 1) (exp ℚ ^ n)) =
+      mk fun p ↦ ∑ i ∈ range (p + 1),
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
     ext q : 1
     let f a b := bernoulli a / a ! * coeff ℚ (b + 1) (exp ℚ ^ n)
@@ -308,7 +308,7 @@ theorem sum_range_pow (n p : ℕ) :
       (∑ i ∈ range (p + 1),
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)!) * p ! := by
     suffices
-      (mk fun p => ∑ k ∈ range n, (k : ℚ) ^ p * algebraMap ℚ ℚ p !⁻¹) =
+      (mk fun p ↦ ∑ k ∈ range n, (k : ℚ) ^ p * algebraMap ℚ ℚ p !⁻¹) =
         mk fun p =>
           ∑ i ∈ range (p + 1), bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! by
       rw [← div_eq_iff (hne p), div_eq_mul_inv, sum_mul]
@@ -319,7 +319,7 @@ theorem sum_range_pow (n p : ℕ) :
       simp only [exp, PowerSeries.ext_iff, Ne, not_forall]
       use 1
       simp [factorial_ne_zero]
-    have h_r : exp ℚ ^ n - 1 = X * mk fun p => coeff ℚ (p + 1) (exp ℚ ^ n) := by
+    have h_r : exp ℚ ^ n - 1 = X * mk fun p ↦ coeff ℚ (p + 1) (exp ℚ ^ n) := by
       have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
@@ -356,7 +356,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   have hle := Nat.le_add_left 1 n
   have hne : (p + 1 + 1 : ℚ) ≠ 0 := by norm_cast
   have h1 : ∀ r : ℚ, r * (p + 1 + 1) * (n : ℚ) ^ p.succ / (p + 1 + 1 : ℚ) = r * (n : ℚ) ^ p.succ :=
-      fun r => by rw [mul_div_right_comm, mul_div_cancel_right₀ _ hne]
+      fun r ↦ by rw [mul_div_right_comm, mul_div_cancel_right₀ _ hne]
   have h2 : f 1 + (n : ℚ) ^ p.succ = 1 / 2 * (n : ℚ) ^ p.succ := by
     simp_rw [f, bernoulli_one, choose_one_right, succ_sub_succ_eq_sub, cast_succ, tsub_zero, h1]
     ring
@@ -379,7 +379,7 @@ theorem sum_Ico_pow (n p : ℕ) :
     _ = (∑ i ∈ range p, f i.succ.succ) + 1 / 2 * (n : ℚ) ^ p.succ + f 0 := by rw [h2]
     -- convert from `bernoulli` to `bernoulli'`
     _ = (∑ i ∈ range p, f' i.succ.succ) + f' 1 + f' 0 := by
-      simpa [f, f', h1, fun i => show i + 2 = i + 1 + 1 from rfl]
+      simpa [f, f', h1, fun i ↦ show i + 2 = i + 1 + 1 from rfl]
     -- rejoin the first two terms of the sum
     _ = ∑ i ∈ range p.succ.succ, f' i := by simp_rw [sum_range_succ']
 

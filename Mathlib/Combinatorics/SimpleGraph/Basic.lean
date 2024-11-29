@@ -168,7 +168,7 @@ protected theorem irrefl {v : V} : ¬G.Adj v v :=
   G.loopless v
 
 theorem adj_comm (u v : V) : G.Adj u v ↔ G.Adj v u :=
-  ⟨fun x => G.symm x, fun x => G.symm x⟩
+  ⟨fun x ↦ G.symm x, fun x ↦ G.symm x⟩
 
 @[symm]
 theorem adj_symm (h : G.Adj u v) : G.Adj v u :=
@@ -288,7 +288,7 @@ theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
   sInf_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G, hG⟩ := hs
-      exact fun h => (h _ hG).ne
+      exact fun h ↦ (h _ hG).ne
 
 theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
@@ -313,7 +313,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     bot_le := fun _ _ _ h => h.elim
     sdiff_eq := fun x y => by
       ext v w
-      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+      refine ⟨fun h ↦ ⟨h.1, ⟨?_, h.2⟩⟩, fun h ↦ ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
     inf_compl_le_bot := fun _ _ _ h => False.elim <| h.2.2 h.1
@@ -329,7 +329,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     sInf := sInf
     sInf_le := fun _ _ hG _ _ hab => hab.1 hG
     le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
-    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
+    iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -572,7 +572,7 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := 
 @[simp]
 theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
-  exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
+  exact ⟨fun h ↦ h.1, fun h ↦ ⟨h, G.ne_of_adj h⟩⟩
 
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
@@ -668,7 +668,7 @@ theorem incidenceSet_inter_incidenceSet_of_not_adj (h : ¬G.Adj a b) (hn : a ≠
 
 instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     DecidablePred (· ∈ G.incidenceSet v) :=
-  inferInstanceAs <| DecidablePred fun e => e ∈ G.edgeSet ∧ v ∈ e
+  inferInstanceAs <| DecidablePred fun e ↦ e ∈ G.edgeSet ∧ v ∈ e
 
 @[simp]
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
@@ -749,7 +749,7 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
-  inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
+  inferInstanceAs <| DecidablePred fun u ↦ u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
 
 theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by

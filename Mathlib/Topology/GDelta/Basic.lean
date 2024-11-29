@@ -103,7 +103,7 @@ alias ⟨IsGδ.eq_iInter_nat, _⟩ := isGδ_iff_eq_iInter_nat
 protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, IsGδ (s i)) :
     IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
-  obtain rfl : s = fun i => ⋂₀ T i := funext hTs
+  obtain rfl : s = fun i ↦ ⋂₀ T i := funext hTs
   refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
 
@@ -113,7 +113,7 @@ theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
   haveI := hs.to_subtype
-  exact .iInter fun x => ht x x.2
+  exact .iInter fun x ↦ ht x x.2
 
 @[deprecated (since := "2024-02-15")] alias isGδ_biInter := IsGδ.biInter
 

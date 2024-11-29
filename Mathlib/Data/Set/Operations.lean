@@ -148,12 +148,12 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 @[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
-def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
+def rangeFactorization (f : ι → α) : ι → range f := fun i ↦ ⟨f i, mem_range_self i⟩
 
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
-noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
+noncomputable def rangeSplitting (f : α → β) : range f → α := fun x ↦ x.2.choose
 
 -- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=

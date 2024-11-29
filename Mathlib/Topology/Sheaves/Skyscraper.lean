@@ -55,7 +55,7 @@ def skyscraperPresheaf : Presheaf C X where
     if h : p₀ ∈ unop V then eqToHom <| by dsimp; rw [if_pos h, if_pos (by simpa using i.unop.le h)]
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   map_id U :=
-    (em (p₀ ∈ U.unop)).elim (fun h => dif_pos h) fun h =>
+    (em (p₀ ∈ U.unop)).elim (fun h ↦ dif_pos h) fun h =>
       ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext _ _
   map_comp {U V W} iVU iWV := by
     by_cases hW : p₀ ∈ unop W
@@ -186,14 +186,14 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
   let h1 : ∃ U : OpenNhds y, p₀ ∉ U.1 :=
     let ⟨U, ho, h₀, hy⟩ := not_specializes_iff_exists_open.mp h
     ⟨⟨⟨U, ho⟩, h₀⟩, hy⟩
-  { desc := fun c => eqToHom (if_neg h1.choose_spec).symm ≫ c.ι.app (op h1.choose)
+  { desc := fun c ↦ eqToHom (if_neg h1.choose_spec).symm ≫ c.ι.app (op h1.choose)
     fac := fun c U => by
       change _ = c.ι.app (op U.unop)
       simp only [← c.w (homOfLE <| @inf_le_left _ _ h1.choose U.unop).op, ←
         c.w (homOfLE <| @inf_le_right _ _ h1.choose U.unop).op, ← Category.assoc]
       congr 1
       refine ((if_neg ?_).symm.ndrec terminalIsTerminal).hom_ext _ _
-      exact fun h => h1.choose_spec h.1
+      exact fun h ↦ h1.choose_spec h.1
     uniq := fun c f H => by
       dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
       rw [← Category.id_comp f, ← H, ← Category.assoc]

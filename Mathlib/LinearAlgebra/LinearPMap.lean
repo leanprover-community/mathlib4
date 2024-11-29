@@ -62,7 +62,7 @@ theorem ext {f g : E →ₗ.[R] F} (h : f.domain = g.domain)
   rcases f with ⟨f_dom, f⟩
   rcases g with ⟨g_dom, g⟩
   obtain rfl : f_dom = g_dom := h
-  obtain rfl : f = g := LinearMap.ext fun x => h' rfl
+  obtain rfl : f = g := LinearMap.ext fun x ↦ h' rfl
   rfl
 
 @[simp]
@@ -109,7 +109,7 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       intro c₁ c₂ h
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
-    { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
+    { toFun := fun z ↦ Classical.choose (mem_span_singleton.1 z.prop) • y
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
@@ -260,7 +260,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
       ∀ (x : f.domain) (y : g.domain) (z : ↥(f.domain ⊔ g.domain)),
         (x : E) + y = ↑z → fg z = f x + g y := by
   choose x hx y hy hxy using fun z : ↥(f.domain ⊔ g.domain) => mem_sup.1 z.prop
-  set fg := fun z => f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
+  set fg := fun z ↦ f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
   have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
@@ -379,7 +379,7 @@ instance instMulAction : MulAction M (E →ₗ.[R] F) where
 end SMul
 
 instance instNeg : Neg (E →ₗ.[R] F) :=
-  ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
+  ⟨fun f ↦ ⟨f.domain, -f.toFun⟩⟩
 
 @[simp]
 theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
@@ -389,7 +389,7 @@ theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     ext x y hxy
     · rfl
     · simp only [neg_apply, neg_neg]
@@ -416,11 +416,11 @@ instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
     · simp only [add_apply, hxy, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     ext x y hxy
     · simp [add_domain]
     · simp only [add_apply, hxy, zero_apply, zero_add],
-  fun f => by
+  fun f ↦ by
     ext x y hxy
     · simp [add_domain]
     · simp only [add_apply, hxy, zero_apply, add_zero]⟩
@@ -552,7 +552,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     -- Porting note: + `← bex_def`
     rwa [Set.exists_mem_image, ← bex_def, SetCoe.exists'] at this
-  set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
+  set f : ↥(sSup (domain '' c)) → F := fun x ↦ (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
     intro p x y hxy
@@ -640,13 +640,13 @@ def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
   domain := f.domain.prod g.domain
   toFun :=
     -- Porting note: This is just
-    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun +`
-    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun`,
+    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x ↦ x.2.1).toFun +`
+    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x ↦ x.2.2).toFun`,
     HAdd.hAdd
       (α := f.domain.prod g.domain →ₗ[R] G)
       (β := f.domain.prod g.domain →ₗ[R] G)
-      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun
-      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun
+      (f.comp (LinearPMap.fst f.domain g.domain) fun x ↦ x.2.1).toFun
+      (g.comp (LinearPMap.snd f.domain g.domain) fun x ↦ x.2.2).toFun
 
 @[simp]
 theorem coprod_apply (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) (x) :
@@ -893,7 +893,7 @@ Helper definition for `LinearPMap`. -/
 noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
     g.map (LinearMap.fst R E F) →ₗ[R] F where
-  toFun := fun x => valFromGraph hg x.2
+  toFun := fun x ↦ valFromGraph hg x.2
   map_add' := fun v w => by
     have hadd := (g.map (LinearMap.fst R E F)).add_mem v.2 w.2
     have hvw := valFromGraph_mem hg hadd

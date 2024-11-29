@@ -359,7 +359,7 @@ theorem comp_const (γ : Type*) [Preorder γ] (f : α →o β) (c : α) :
 `OrderHom`. -/
 @[simps]
 protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
-  ⟨fun x => (f x, g x), fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
+  ⟨fun x ↦ (f x, g x), fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
 
 @[mono]
 theorem prod_mono {f₁ f₂ : α →o β} (hf : f₁ ≤ f₂) {g₁ g₂ : α →o γ} (hg : g₁ ≤ g₂) :
@@ -437,7 +437,7 @@ def coeFnHom : (α →o β) →o α → β where
   toFun f := f
   monotone' _ _ h := h
 
-/-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
+/-- Function application `fun f ↦ f a` (for fixed `a`) is a monotone function from the
 monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`. -/
 @[simps! (config := .asFn)]
 def apply (x : α) : (α →o β) →o β :=
@@ -989,7 +989,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
   have gf : ∀ a : α, a = g (f a) := by
     intro
     rw [← cmp_eq_eq_iff, h, cmp_self_eq_eq]
-  { toFun := f, invFun := g, left_inv := fun a => (gf a).symm,
+  { toFun := f, invFun := g, left_inv := fun a ↦ (gf a).symm,
     right_inv := by
       intro
       rw [← cmp_eq_eq_iff, ← h, cmp_self_eq_eq],
@@ -1011,11 +1011,11 @@ def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G 
   left_inv := DFunLike.congr_fun h₂
   right_inv := DFunLike.congr_fun h₁
   map_rel_iff' := @fun a b =>
-    ⟨fun h => by
+    ⟨fun h ↦ by
       replace h := map_rel g h
       rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
         show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
-      fun h => (f : α →o β).monotone h⟩
+      fun h ↦ (f : α →o β).monotone h⟩
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
@@ -1037,7 +1037,7 @@ variable [Preorder α] [Preorder β]
 /-- If `e` is an equivalence with monotone forward and inverse maps, then `e` is an
 order isomorphism. -/
 def toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) : α ≃o β :=
-  ⟨e, ⟨fun h => by simpa only [e.symm_apply_apply] using h₂ h, fun h => h₁ h⟩⟩
+  ⟨e, ⟨fun h ↦ by simpa only [e.symm_apply_apply] using h₂ h, fun h ↦ h₁ h⟩⟩
 
 @[simp]
 theorem coe_toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
@@ -1134,14 +1134,14 @@ theorem Codisjoint.map_orderIso [SemilatticeSup α] [OrderTop α] [SemilatticeSu
 @[simp]
 theorem disjoint_map_orderIso_iff [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) : Disjoint (f a) (f b) ↔ Disjoint a b :=
-  ⟨fun h => f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_orderIso f.symm,
-   fun h => h.map_orderIso f⟩
+  ⟨fun h ↦ f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_orderIso f.symm,
+   fun h ↦ h.map_orderIso f⟩
 
 @[simp]
 theorem codisjoint_map_orderIso_iff [SemilatticeSup α] [OrderTop α] [SemilatticeSup β] [OrderTop β]
     {a b : α} (f : α ≃o β) : Codisjoint (f a) (f b) ↔ Codisjoint a b :=
-  ⟨fun h => f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_orderIso f.symm,
-   fun h => h.map_orderIso f⟩
+  ⟨fun h ↦ f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_orderIso f.symm,
+   fun h ↦ h.map_orderIso f⟩
 
 namespace WithBot
 
@@ -1271,10 +1271,10 @@ theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
   ⟨h.1.map_orderIso _, h.2.map_orderIso _⟩
 
 theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
-  ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
+  ⟨f.isCompl, fun h ↦ f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
 
 theorem OrderIso.complementedLattice [ComplementedLattice α] (f : α ≃o β) : ComplementedLattice β :=
-  ⟨fun x => by
+  ⟨fun x ↦ by
     obtain ⟨y, hy⟩ := exists_isCompl (f.symm x)
     rw [← f.symm_apply_apply y] at hy
     exact ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩

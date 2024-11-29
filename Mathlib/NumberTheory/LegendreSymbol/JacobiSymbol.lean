@@ -174,7 +174,7 @@ protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0
 
 /-- The symbol `J(a | b)` vanishes if and only if `b ≠ 0` and `a` and `b` are not coprime. -/
 theorem eq_zero_iff {a : ℤ} {b : ℕ} : J(a | b) = 0 ↔ b ≠ 0 ∧ a.gcd b ≠ 1 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases eq_or_ne b 0 with hb | hb
     · rw [hb, zero_right] at h; cases h
     exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ => by
@@ -235,14 +235,14 @@ theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p)
   exact legendreSym.prime_dvd_of_eq_neg_one h hxy
 
 /-- We can pull out a product over a list in the first argument of the Jacobi symbol. -/
-theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a => J(a | n)).prod := by
+theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a ↦ J(a | n)).prod := by
   induction' l with n l' ih
   · simp only [List.prod_nil, List.map_nil, one_left]
   · rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]
 
 /-- We can pull out a product over a list in the second argument of the Jacobi symbol. -/
 theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
-    J(a | l.prod) = (l.map fun n => J(a | n)).prod := by
+    J(a | l.prod) = (l.map fun n ↦ J(a | n)).prod := by
   induction' l with n l' ih
   · simp only [List.prod_nil, one_right, List.map_nil]
   · have hn := hl n (List.mem_cons_self n l')
@@ -393,7 +393,7 @@ theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
       ⟨fun h' =>
         let h := h'.symm
         ?_,
-        fun h => ?_⟩ <;>
+        fun h ↦ ?_⟩ <;>
     rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]
 
 end qrSign
@@ -405,7 +405,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
-    { toFun := fun x => qrSign x a * J(x | a)
+    { toFun := fun x ↦ qrSign x a * J(x | a)
       map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         -- Porting note: `simp_rw` on line 423 replaces `rw` to allow the rewrite rules to be

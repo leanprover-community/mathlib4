@@ -217,9 +217,9 @@ protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose
 
 @[simp]
 theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose ↔ μ ≤ ν :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     convert YoungDiagram.le_of_transpose_le h
-    simp, fun h => by
+    simp, fun h ↦ by
     rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 
@@ -250,7 +250,7 @@ as the smallest `j` such that `(i, j) ∉ μ`. -/
 
 /-- The `i`-th row of a Young diagram consists of the cells whose first coordinate is `i`. -/
 def row (μ : YoungDiagram) (i : ℕ) : Finset (ℕ × ℕ) :=
-  μ.cells.filter fun c => c.fst = i
+  μ.cells.filter fun c ↦ c.fst = i
 
 theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.row i ↔ c ∈ μ ∧ c.fst = i := by
   simp [row]
@@ -273,7 +273,7 @@ def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
   push_neg
-  exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
+  exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h ↦ h _ (by rfl)⟩
 
 theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
   ext ⟨a, b⟩
@@ -303,7 +303,7 @@ This section has an identical API to the rows section. -/
 
 /-- The `j`-th column of a Young diagram consists of the cells whose second coordinate is `j`. -/
 def col (μ : YoungDiagram) (j : ℕ) : Finset (ℕ × ℕ) :=
-  μ.cells.filter fun c => c.snd = j
+  μ.cells.filter fun c ↦ c.snd = j
 
 theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.col j ↔ c ∈ μ ∧ c.snd = j := by
   simp [col]

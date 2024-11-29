@@ -87,7 +87,7 @@ theorem cardinal_le_rank {ι : Type v} {v : ι → M}
   simpa using hv.cardinal_lift_le_rank
 
 theorem cardinal_le_rank' {s : Set M}
-    (hs : LinearIndependent R (fun x => x : s → M)) : #s ≤ Module.rank R M :=
+    (hs : LinearIndependent R (fun x ↦ x : s → M)) : #s ≤ Module.rank R M :=
   hs.cardinal_le_rank
 
 end LinearIndependent

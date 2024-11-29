@@ -131,7 +131,7 @@ instance : CompleteLattice (TwoSidedIdeal R) where
 
 lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
     (1 : R) ∈ I ↔ I = ⊤ :=
-  ⟨fun h => eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩
+  ⟨fun h ↦ eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩
 
 alias ⟨eq_top, one_mem⟩ := one_mem_iff
 

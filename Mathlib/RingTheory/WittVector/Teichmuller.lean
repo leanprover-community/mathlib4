@@ -38,7 +38,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 The `0`-th coefficient of `teichmullerFun p r` is `r`, and all others are `0`.
 -/
 def teichmullerFun (r : R) : 𝕎 R :=
-  ⟨fun n => if n = 0 then r else 0⟩
+  ⟨fun n ↦ if n = 0 then r else 0⟩
 
 /-!
 ## `teichmuller` is a monoid homomorphism

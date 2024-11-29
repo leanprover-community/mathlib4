@@ -62,7 +62,7 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   -- Assign `B` to `Cat.{v, u}`
   let _ ← isDefEq B (.const ``Cat [v, u])
   -- Assign the right bicategory instance to `Cat.{v, u}`
-  let some inst ← args.findM? fun x => do
+  let some inst ← args.findM? fun x ↦ do
       return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
     | throwError "Can not find the argument for the bicategory instance of the bicategory in which \
       the equality is taking place."
@@ -89,7 +89,7 @@ Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = �
 (possibly after a `∀` binder), produce the equation `∀ (X : C), f.app X = g.app X`, and simplify
 it using basic lemmas about `NatTrans.app`. -/
 def toAppExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType catAppSimp (← mkAppM ``NatTrans.congr_app #[e])) e
+  mapForallTelescope (fun e ↦ do simpType catAppSimp (← mkAppM ``NatTrans.congr_app #[e])) e
 
 /--
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms

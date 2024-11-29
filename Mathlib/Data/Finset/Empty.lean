@@ -74,7 +74,7 @@ theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.No
 
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
   let ⟨x, hx⟩ := h
-  ⟨fun h => h x hx, fun h _ _ => h⟩
+  ⟨fun h ↦ h x hx, fun h _ _ => h⟩
 
 theorem Nonempty.to_subtype {s : Finset α} : s.Nonempty → Nonempty s :=
   nonempty_coe_sort.2
@@ -129,7 +129,7 @@ theorem eq_empty_of_forall_not_mem {s : Finset α} (H : ∀ x, x ∉ s) : s = �
 
 theorem eq_empty_iff_forall_not_mem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s :=
   -- Porting note: used `id`
-  ⟨by rintro rfl x; apply not_mem_empty, fun h => eq_empty_of_forall_not_mem h⟩
+  ⟨by rintro rfl x; apply not_mem_empty, fun h ↦ eq_empty_of_forall_not_mem h⟩
 
 @[simp]
 theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
@@ -154,7 +154,7 @@ theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   nonempty_iff_ne_empty.not.trans not_not
 
 theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
-  by_cases Or.inl fun h => Or.inr (nonempty_of_ne_empty h)
+  by_cases Or.inl fun h ↦ Or.inr (nonempty_of_ne_empty h)
 
 @[simp, norm_cast]
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ :=

@@ -71,7 +71,7 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
     Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) :=
-  @disjoint_iff _ (fun i => (α' i)ᵒᵈ) _ _ _ _
+  @disjoint_iff _ (fun i ↦ (α' i)ᵒᵈ) _ _ _ _
 
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by

@@ -224,8 +224,8 @@ continuous multilinear map taking values in the space of functions `∀ i, M' i`
 def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
     [∀ i, Module R (M' i)] (f : ∀ i, ContinuousMultilinearMap R M₁ (M' i)) :
     ContinuousMultilinearMap R M₁ (∀ i, M' i) where
-  cont := continuous_pi fun i => (f i).coe_continuous
-  toMultilinearMap := MultilinearMap.pi fun i => (f i).toMultilinearMap
+  cont := continuous_pi fun i ↦ (f i).coe_continuous
+  toMultilinearMap := MultilinearMap.pi fun i ↦ (f i).toMultilinearMap
 
 @[simp]
 theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
@@ -276,13 +276,13 @@ then `g (f₁ m₁, ..., fₙ mₙ)` is again a continuous multilinear map, that
 `g.compContinuousLinearMap f`. -/
 def compContinuousLinearMap (g : ContinuousMultilinearMap R M₁' M₄)
     (f : ∀ i : ι, M₁ i →L[R] M₁' i) : ContinuousMultilinearMap R M₁ M₄ :=
-  { g.toMultilinearMap.compLinearMap fun i => (f i).toLinearMap with
-    cont := g.cont.comp <| continuous_pi fun j => (f j).cont.comp <| continuous_apply _ }
+  { g.toMultilinearMap.compLinearMap fun i ↦ (f i).toLinearMap with
+    cont := g.cont.comp <| continuous_pi fun j ↦ (f j).cont.comp <| continuous_apply _ }
 
 @[simp]
 theorem compContinuousLinearMap_apply (g : ContinuousMultilinearMap R M₁' M₄)
     (f : ∀ i : ι, M₁ i →L[R] M₁' i) (m : ∀ i, M₁ i) :
-    g.compContinuousLinearMap f m = g fun i => f i <| m i :=
+    g.compContinuousLinearMap f m = g fun i ↦ f i <| m i :=
   rfl
 
 /-- Composing a continuous multilinear map with a continuous linear map gives again a
@@ -386,14 +386,14 @@ sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions wit
 `r n ∈ Aₙ`. This follows from multilinearity by expanding successively with respect to each
 coordinate. -/
 theorem map_sum_finset [DecidableEq ι] :
-    (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) :=
+    (f fun i ↦ ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i ↦ g i (r i) :=
   f.toMultilinearMap.map_sum_finset _ _
 
 /-- If `f` is continuous multilinear, then `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` is the sum of
 `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions `r`. This follows from
 multilinearity by expanding successively with respect to each coordinate. -/
 theorem map_sum [DecidableEq ι] [∀ i, Fintype (α i)] :
-    (f fun i => ∑ j, g i j) = ∑ r : ∀ i, α i, f fun i => g i (r i) :=
+    (f fun i ↦ ∑ j, g i j) = ∑ r : ∀ i, α i, f fun i ↦ g i (r i) :=
   f.toMultilinearMap.map_sum _
 
 end ApplySum
@@ -436,7 +436,7 @@ section TopologicalAddGroup
 variable [TopologicalAddGroup M₂]
 
 instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
-  ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
+  ⟨fun f ↦ { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
 @[simp]
 theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
@@ -464,13 +464,13 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
   (f : ContinuousMultilinearMap R M₁ M₂)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
-    f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m :=
+    f (s.piecewise (fun i ↦ c i • m i) m) = (∏ i ∈ s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 
 /-- Multiplicativity of a continuous multilinear map along all coordinates at the same time,
 writing `f (fun i ↦ c i • m i)` as `(∏ i, c i) • f m`. -/
 theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
-    (f fun i => c i • m i) = (∏ i, c i) • f m :=
+    (f fun i ↦ c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
 end CommSemiring
@@ -557,7 +557,7 @@ variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Topologi
 See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
 protected def mkPiAlgebraFin : A[×n]→L[R] A where
   cont := by
-    change Continuous fun m => (List.ofFn m).prod
+    change Continuous fun m ↦ (List.ofFn m).prod
     simp_rw [List.ofFn_eq_map]
     exact continuous_list_prod _ fun i _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebraFin R n A

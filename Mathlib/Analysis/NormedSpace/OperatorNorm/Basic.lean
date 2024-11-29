@@ -90,7 +90,7 @@ variable (𝕜 E)
 /-- Given a unit-length element `x` of a normed space `E` over a field `𝕜`, the natural linear
     isometry map from `𝕜` to `E` by taking multiples of `x`. -/
 def _root_.LinearIsometry.toSpanSingleton {v : E} (hv : ‖v‖ = 1) : 𝕜 →ₗᵢ[𝕜] E :=
-  { LinearMap.toSpanSingleton 𝕜 E v with norm_map' := fun x => by simp [norm_smul, hv] }
+  { LinearMap.toSpanSingleton 𝕜 E v with norm_map' := fun x ↦ by simp [norm_smul, hv] }
 
 variable {𝕜 E}
 
@@ -149,13 +149,13 @@ theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM 
 theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   opNorm_le_bound f hMp fun x =>
-    (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
+    (ne_or_eq ‖x‖ 0).elim (hM x) fun h ↦ by
       simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 
 @[deprecated (since := "2024-02-02")] alias op_norm_le_bound' := opNorm_le_bound'
 
 theorem opNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) : ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by
+  f.opNorm_le_bound K.2 fun x ↦ by
     simpa only [dist_zero_right, f.map_zero] using hf.dist_le_mul x 0
 
 @[deprecated (since := "2024-02-02")] alias op_norm_le_of_lipschitz := opNorm_le_of_lipschitz
@@ -187,7 +187,7 @@ theorem opNorm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
 where it is `0`. It means that one can not do better than an inequality in general. -/
 theorem norm_id_le : ‖id 𝕜 E‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one fun x => by simp
+  opNorm_le_bound _ zero_le_one fun x ↦ by simp
 
 section
 
@@ -348,7 +348,7 @@ instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
   csInf_le bounds_bddBelow
-    ⟨mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _), fun x => by
+    ⟨mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _), fun x ↦ by
       rw [mul_assoc]
       exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 
@@ -390,8 +390,8 @@ variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 
 @[simp]
 theorem norm_restrictScalars (f : E →L[𝕜] Fₗ) : ‖f.restrictScalars 𝕜'‖ = ‖f‖ :=
-  le_antisymm (opNorm_le_bound _ (norm_nonneg _) fun x => f.le_opNorm x)
-    (opNorm_le_bound _ (norm_nonneg _) fun x => f.le_opNorm x)
+  le_antisymm (opNorm_le_bound _ (norm_nonneg _) fun x ↦ f.le_opNorm x)
+    (opNorm_le_bound _ (norm_nonneg _) fun x ↦ f.le_opNorm x)
 
 variable (𝕜 E Fₗ 𝕜') (𝕜'' : Type*) [Ring 𝕜'']
 variable [Module 𝕜'' Fₗ] [ContinuousConstSMul 𝕜'' Fₗ]
@@ -445,7 +445,7 @@ end LinearMap
 namespace LinearIsometry
 
 theorem norm_toContinuousLinearMap_le (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ ≤ 1 :=
-  f.toContinuousLinearMap.opNorm_le_bound zero_le_one fun x => by simp
+  f.toContinuousLinearMap.opNorm_le_bound zero_le_one fun x ↦ by simp
 
 end LinearIsometry
 

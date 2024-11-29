@@ -67,7 +67,7 @@ Input: a list of pairs associated to each argument of the constructor consisting
 of (1) an fvar for this argument and (2) a name to use for this argument in patterns.
 
 For example, given `#[(a, x), (b, y)]` with `x : Nat` and `y : Fin x`, then this function
-returns `Sigma (fun x => Fin x)` and `⟨a, b⟩`.
+returns `Sigma (fun x ↦ Fin x)` and `⟨a, b⟩`.
 
 Always returns a `Type*`. Uses `Unit`, `PLift`, and `Sigma`. Avoids using `PSigma` since
 the `Fintype` instances for it go through `Sigma`s anyway.
@@ -213,8 +213,8 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
       let mut invFun ← `(term| fun $invFunAlts:matchAlt*)
       if indVal.numCtors == 0 then
         -- Empty matches don't elaborate, so use `nomatch` here.
-        toFun ← `(term| fun x => nomatch x)
-        invFun ← `(term| fun x => nomatch x)
+        toFun ← `(term| fun x ↦ nomatch x)
+        invFun ← `(term| fun x ↦ nomatch x)
       let equivBody ← `(term| { toFun := $toFun,
                                 invFun := $invFun,
                                 right_inv := by intro x; cases x <;> rfl

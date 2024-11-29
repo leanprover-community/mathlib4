@@ -114,7 +114,7 @@ theorem gauge_nonneg (x : E) : 0 ≤ gauge s x :=
   Real.sInf_nonneg fun _ hx => hx.1.le
 
 theorem gauge_neg (symmetric : ∀ x ∈ s, -x ∈ s) (x : E) : gauge s (-x) = gauge s x := by
-  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x => ⟨fun h => by simpa using symmetric _ h, symmetric x⟩
+  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x ↦ ⟨fun h ↦ by simpa using symmetric _ h, symmetric x⟩
   simp_rw [gauge_def', smul_neg, this]
 
 theorem gauge_neg_set_neg (x : E) : gauge (-s) (-x) = gauge s x := by
@@ -132,7 +132,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
   simp_rw [Set.mem_iInter, Set.mem_setOf_eq]
-  refine ⟨fun h r hr => ?_, fun h => le_of_forall_pos_lt_add fun ε hε => ?_⟩
+  refine ⟨fun h r hr => ?_, fun h ↦ le_of_forall_pos_lt_add fun ε hε => ?_⟩
   · have hr' := ha.trans_lt hr
     rw [mem_smul_set_iff_inv_smul_mem₀ hr'.ne']
     obtain ⟨δ, δ_pos, hδr, hδ⟩ := exists_lt_of_gauge_lt hs₂ (h.trans_lt hr)
@@ -195,7 +195,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
     Convex ℝ { x | gauge s x ≤ a } := by
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs h₀ absorbs ha]
-    exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
+    exact convex_iInter fun i ↦ convex_iInter fun _ => hs.smul _
   · -- Porting note: `convert` needed help
     convert convex_empty (𝕜 := ℝ) (E := E)
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
@@ -502,7 +502,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpx₂),
       inv_mul_lt_iff₀ hpx₂, mul_one]
     exact lt_mul_of_one_lt_left hpx one_lt_two
-  refine IsGLB.csInf_eq ⟨fun r => ?_, fun r hr => le_of_forall_pos_le_add fun ε hε => ?_⟩ hp
+  refine IsGLB.csInf_eq ⟨fun r ↦ ?_, fun r hr => le_of_forall_pos_le_add fun ε hε => ?_⟩ hp
   · rintro ⟨hr, y, hy, rfl⟩
     rw [p.mem_ball_zero] at hy
     rw [map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos hr]

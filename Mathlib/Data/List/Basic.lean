@@ -68,7 +68,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
     {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by
   by_cases hab : a = b
   · exact Or.inl hab
-  · exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
+  · exact ((List.mem_cons.1 h).elim Or.inl (fun h ↦ Or.inr ⟨hab, h⟩))
 
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
@@ -81,12 +81,12 @@ lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
-  ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
+  ⟨fun m ↦ let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
 
 @[simp]
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
     (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
-  ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
+  ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h ↦ ⟨f x, h, hf _⟩⟩
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
@@ -127,7 +127,7 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 
 /-! ### set-theoretic notation of lists -/
 
-instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
+instance instSingletonList : Singleton α (List α) := ⟨fun x ↦ [x]⟩
 
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
@@ -417,10 +417,10 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 
-theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
+theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x ↦ ⟨[x], rfl⟩
 
 theorem surjective_head? : Surjective (@head? α) :=
-  Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
+  Option.forall.2 ⟨⟨[], rfl⟩, fun x ↦ ⟨[x], rfl⟩⟩
 
 theorem surjective_tail : Surjective (@tail α)
   | [] => ⟨[], rfl⟩
@@ -643,7 +643,7 @@ theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l�
 
 instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+ l₂)
   | [], _ => isTrue <| nil_sublist _
-  | _ :: _, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
+  | _ :: _, [] => isFalse fun h ↦ List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
     if h : a = b then
       @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <| h ▸ cons_sublist_cons.symm
@@ -681,11 +681,11 @@ variable [DecidableEq α]
 theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
   rw [indexOf, findIdx_cons, beq_self_eq_true, cond]
 
--- fun e => if_pos e
+-- fun e ↦ if_pos e
 theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
   | e => by rw [← e]; exact indexOf_cons_self b l
 
--- fun n => if_neg n
+-- fun n ↦ if_neg n
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
@@ -713,8 +713,8 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_neg h]; exact succ_le_succ ih
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
-   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
+  ⟨fun h ↦ Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
+   fun al => (lt_of_le_of_ne indexOf_le_length) fun h ↦ indexOf_eq_length.1 h al⟩
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
@@ -816,12 +816,12 @@ theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
 
 theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     indexOf x l = indexOf y l ↔ x = y :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have x_eq_y :
         get l ⟨indexOf x l, indexOf_lt_length.2 hx⟩ =
         get l ⟨indexOf y l, indexOf_lt_length.2 hy⟩ := by
       simp only [h]
-    simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
+    simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h ↦ by subst h; rfl⟩
 
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
@@ -850,7 +850,7 @@ end deprecated
 theorem modifyTailIdx_modifyTailIdx {f g : List α → List α} (m : ℕ) :
     ∀ (n) (l : List α),
       (l.modifyTailIdx f n).modifyTailIdx g (m + n) =
-        l.modifyTailIdx (fun l => (f l).modifyTailIdx g m) n
+        l.modifyTailIdx (fun l ↦ (f l).modifyTailIdx g m) n
   | 0, _ => rfl
   | _ + 1, [] => rfl
   | n + 1, a :: l => congr_arg (List.cons a) (modifyTailIdx_modifyTailIdx m n l)
@@ -861,7 +861,7 @@ alias modifyNthTail_modifyNthTail := modifyTailIdx_modifyTailIdx
 theorem modifyTailIdx_modifyTailIdx_le {f g : List α → List α} (m n : ℕ) (l : List α)
     (h : n ≤ m) :
     (l.modifyTailIdx f n).modifyTailIdx g m =
-      l.modifyTailIdx (fun l => (f l).modifyTailIdx g (m - n)) n := by
+      l.modifyTailIdx (fun l ↦ (f l).modifyTailIdx g (m - n)) n := by
   rcases Nat.exists_eq_add_of_le h with ⟨m, rfl⟩
   rw [Nat.add_comm, modifyTailIdx_modifyTailIdx, Nat.add_sub_cancel]
 
@@ -1233,7 +1233,7 @@ theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, 
   simp [getElem_scanl_zero]
 
 theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
-    ((scanl f b l).get? i).bind fun x => (l.get? i).map fun y => f x y := by
+    ((scanl f b l).get? i).bind fun x ↦ (l.get? i).map fun y ↦ f x y := by
   induction' l with hd tl hl generalizing b i
   · symm
     simp only [Option.bind_eq_none', get?, forall₂_true_iff, not_false_iff, Option.map_none',
@@ -1377,9 +1377,9 @@ theorem foldrM_eq_foldr (f : α → β → m β) (b l) :
 attribute [simp] mapM mapM'
 
 theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
-    List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
+    List.foldlM f b l = foldl (fun mb a => mb >>= fun b ↦ f b a) (pure b) l := by
   suffices h :
-    ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
+    ∀ mb : m β, (mb >>= fun b ↦ List.foldlM f b l) = foldl (fun mb a => mb >>= fun b ↦ f b a) mb l
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
@@ -1440,7 +1440,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
 /-- The original list `L` can be recovered by flattening the lists produced by `splitOnP p L`,
 interspersed with the elements `L.filter p`. -/
 theorem splitOnP_spec (as : List α) :
-    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x => [x]) ++ [[]])) = as := by
+    flatten (zipWith (· ++ ·) (splitOnP p as) (((as.filter p).map fun x ↦ [x]) ++ [[]])) = as := by
   induction as with
   | nil => rfl
   | cons a as' ih =>
@@ -1758,20 +1758,20 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 
 -- TODO rename to `map_filter` when the deprecated `map_filter` is removed from Lean.
 lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
-    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
-    (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+    [DecidablePred fun b ↦ ∃ a, p a ∧ f a = b] :
+    (l.filter p).map f = (l.map f).filter fun b ↦ ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
-      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ => mem_of_mem_filter) := by
+      (l.filter fun x ↦ ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun _ => mem_of_mem_filter) := by
   classical
   refine map_injective_iff.2 Subtype.coe_injective ?_
   simp [comp_def, map_filter' _ Subtype.coe_injective]
 
 -- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
 lemma filter_attach (l : List α) (p : α → Bool) :
-    (l.attach.filter fun x => p x : List {x // x ∈ l}) =
+    (l.attach.filter fun x ↦ p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun _ => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
@@ -1846,7 +1846,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
       · exact IH hx
 
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
-    takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
+    takeWhile p (takeWhile q l) = takeWhile (fun a ↦ p a ∧ q a) l := by
   induction' l with hd tl IH
   · simp
   · by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]
@@ -2004,7 +2004,7 @@ section Map₂Left'
 -- simplifier because `map₂Left'` is marked `@[simp]`.
 @[simp]
 theorem map₂Left'_nil_right (f : α → Option β → γ) (as) :
-    map₂Left' f as [] = (as.map fun a => f a none, []) := by cases as <;> rfl
+    map₂Left' f as [] = (as.map fun a ↦ f a none, []) := by cases as <;> rfl
 
 end Map₂Left'
 
@@ -2041,7 +2041,7 @@ section ZipLeft'
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipLeft'_nil_right : zipLeft' as ([] : List β) = (as.map fun a => (a, none), []) := by
+theorem zipLeft'_nil_right : zipLeft' as ([] : List β) = (as.map fun a ↦ (a, none), []) := by
   cases as <;> rfl
 
 @[simp]
@@ -2050,7 +2050,7 @@ theorem zipLeft'_nil_left : zipLeft' ([] : List α) bs = ([], bs) :=
 
 @[simp]
 theorem zipLeft'_cons_nil :
-    zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a => (a, none), []) :=
+    zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a ↦ (a, none), []) :=
   rfl
 
 @[simp]
@@ -2069,7 +2069,7 @@ section ZipRight'
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipRight'_nil_left : zipRight' ([] : List α) bs = (bs.map fun b => (none, b), []) := by
+theorem zipRight'_nil_left : zipRight' ([] : List α) bs = (bs.map fun b ↦ (none, b), []) := by
   cases bs <;> rfl
 
 @[simp]
@@ -2078,7 +2078,7 @@ theorem zipRight'_nil_right : zipRight' as ([] : List β) = ([], as) :=
 
 @[simp]
 theorem zipRight'_nil_cons :
-    zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b => (none, b), []) :=
+    zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b ↦ (none, b), []) :=
   rfl
 
 @[simp]
@@ -2099,7 +2099,7 @@ variable (f : α → Option β → γ) (as : List α)
 -- The definitional equalities for `map₂Left` can already be used by the
 -- simplifier because `map₂Left` is marked `@[simp]`.
 @[simp]
-theorem map₂Left_nil_right : map₂Left f as [] = as.map fun a => f a none := by cases as <;> rfl
+theorem map₂Left_nil_right : map₂Left f as [] = as.map fun a ↦ f a none := by cases as <;> rfl
 
 theorem map₂Left_eq_map₂Left' : ∀ as bs, map₂Left f as bs = (map₂Left' f as bs).fst
   | [], _ => by simp
@@ -2157,7 +2157,7 @@ section ZipLeft
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipLeft_nil_right : zipLeft as ([] : List β) = as.map fun a => (a, none) := by
+theorem zipLeft_nil_right : zipLeft as ([] : List β) = as.map fun a ↦ (a, none) := by
   cases as <;> rfl
 
 @[simp]
@@ -2166,7 +2166,7 @@ theorem zipLeft_nil_left : zipLeft ([] : List α) bs = [] :=
 
 @[simp]
 theorem zipLeft_cons_nil :
-    zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a => (a, none) :=
+    zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a ↦ (a, none) :=
   rfl
 
 @[simp]
@@ -2194,7 +2194,7 @@ section ZipRight
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipRight_nil_left : zipRight ([] : List α) bs = bs.map fun b => (none, b) := by
+theorem zipRight_nil_left : zipRight ([] : List α) bs = bs.map fun b ↦ (none, b) := by
   cases bs <;> rfl
 
 @[simp]
@@ -2203,7 +2203,7 @@ theorem zipRight_nil_right : zipRight as ([] : List β) = [] :=
 
 @[simp]
 theorem zipRight_nil_cons :
-    zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b => (none, b) :=
+    zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b ↦ (none, b) :=
   rfl
 
 @[simp]
@@ -2348,7 +2348,7 @@ section lookup
 variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
-    lookup a (as.map fun x => (x, f x)) = some (f a) := by
+    lookup a (as.map fun x ↦ (x, f x)) = some (f a) := by
   induction' as with a' as ih
   · exact (List.not_mem_nil _ h).elim
   · by_cases ha : a = a'

@@ -181,13 +181,13 @@ section CanonicallyOrderedCommMonoid
 variable [CanonicallyOrderedCommMonoid M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
-  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
+  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h ↦ by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩
 
-@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
-  refine monotone_nat_of_le_succ fun n => ?_
+@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
   cases' lt_or_le n L.length with h h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul

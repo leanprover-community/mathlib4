@@ -48,7 +48,7 @@ theorem inv_right₀ (h : SemiconjBy a x y) : SemiconjBy a x⁻¹ y⁻¹ := by
 
 @[simp]
 theorem inv_right_iff₀ : SemiconjBy a x⁻¹ y⁻¹ ↔ SemiconjBy a x y :=
-  ⟨fun h => inv_inv x ▸ inv_inv y ▸ h.inv_right₀, inv_right₀⟩
+  ⟨fun h ↦ inv_inv x ▸ inv_inv y ▸ h.inv_right₀, inv_right₀⟩
 
 theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x / x') (y / y') := by

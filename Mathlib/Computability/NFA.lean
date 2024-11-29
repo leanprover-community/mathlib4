@@ -140,6 +140,6 @@ theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   constructor
   · rintro ⟨S, hS₁, hS₂⟩
     rwa [Set.mem_singleton_iff.mp hS₂] at hS₁
-  · exact fun h => ⟨M.eval x, h, rfl⟩
+  · exact fun h ↦ ⟨M.eval x, h, rfl⟩
 
 end DFA

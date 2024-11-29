@@ -49,7 +49,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
-      map := fun g => F.map (𝟙 X, g)
+      map := fun g ↦ F.map (𝟙 X, g)
       map_id := fun Y => by simp only [F.map_id]; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
       map_comp := fun f g => by simp [← F.map_comp]}
   map f :=
@@ -91,7 +91,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents fun d => NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun d ↦ NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/

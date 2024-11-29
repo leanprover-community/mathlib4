@@ -172,7 +172,7 @@ instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul �
 @[simp]
 theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
     {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) :
-    ⇑(f • g) = fun x => f x • g x :=
+    ⇑(f • g) = fun x ↦ f x • g x :=
   rfl
 
 theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
@@ -351,7 +351,7 @@ variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar
 
 instance : Star C_c(α, β) where
   star f :=
-    { toFun := fun x => star (f x)
+    { toFun := fun x ↦ star (f x)
       continuous_toFun := (map_continuous f).star
       hasCompactSupport' := by
         rw [HasCompactSupport, tsupport]
@@ -370,11 +370,11 @@ theorem star_apply (f : C_c(α, β)) (x : α) : (star f) x = star (f x) :=
   rfl
 
 instance [TrivialStar β] : TrivialStar C_c(α, β) where
-    star_trivial f := ext fun x => star_trivial (f x)
+    star_trivial f := ext fun x ↦ star_trivial (f x)
 
 instance [ContinuousAdd β] : StarAddMonoid C_c(α, β) where
-  star_involutive f := ext fun x => star_star (f x)
-  star_add f g := ext fun x => star_add (f x) (g x)
+  star_involutive f := ext fun x ↦ star_star (f x)
+  star_add f g := ext fun x ↦ star_add (f x) (g x)
 
 end Star
 
@@ -384,7 +384,7 @@ variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β
   [ContinuousStar β] [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
 instance : StarModule 𝕜 C_c(α, β) where
-  star_smul k f := ext fun x => star_smul k (f x)
+  star_smul k f := ext fun x ↦ star_smul k (f x)
 
 end StarModule
 
@@ -395,7 +395,7 @@ variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousS
 
 instance : StarRing C_c(α, β) :=
   { CompactlySupportedContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+    star_mul := fun f g => ext fun x ↦ star_mul (f x) (g x) }
 
 end StarRing
 

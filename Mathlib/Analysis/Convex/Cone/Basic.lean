@@ -165,7 +165,7 @@ instance : CompleteLattice (ConvexCone 𝕜 E) :=
     inf := (· ⊓ ·)
     sInf := InfSet.sInf
     sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
-    sSup := fun s => sInf { T | ∀ S ∈ s, S ≤ T }
+    sSup := fun s ↦ sInf { T | ∀ S ∈ s, S ≤ T }
     le_sup_left := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.1 hx
     le_sup_right := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.2 hx
     sup_le := fun _ _ c ha hb _ hx => mem_sInf.1 hx c ⟨ha, hb⟩
@@ -260,7 +260,7 @@ variable [AddCommMonoid E]
 variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
 
 theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
+  ⟨fun h ↦ inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
 
 end MulAction
 
@@ -596,7 +596,7 @@ theorem convexHull_toCone_isLeast (s : Set E) :
     IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
   convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
-  exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
+  exact ⟨fun h ↦ convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 
 theorem convexHull_toCone_eq_sInf (s : Set E) :
     (convex_convexHull 𝕜 s).toCone _ = sInf { t : ConvexCone 𝕜 E | s ⊆ t } :=

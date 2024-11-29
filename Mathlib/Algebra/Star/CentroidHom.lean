@@ -31,7 +31,7 @@ variable [NonUnitalNonAssocSemiring α] [StarRing α]
 
 instance : Star (CentroidHom α) where
   star f :=
-  { toFun := fun a => star (f (star a))
+  { toFun := fun a ↦ star (f (star a))
     map_zero' := by
       simp only [star_zero, map_zero]
     map_add' := fun a b => by simp only [star_add, map_add]
@@ -46,7 +46,7 @@ instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_add _ _ := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
-  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a =>
+  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g ↦ ext (fun a =>
     calc
       g (star (f (star a))) = star (star g (f (star a))) := by rw [star_apply, star_star]
       _ = star ((star g * f) (star a)) := rfl

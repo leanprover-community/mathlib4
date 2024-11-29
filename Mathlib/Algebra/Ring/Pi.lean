@@ -94,26 +94,26 @@ homomorphism `Pi.nonUnitalRingHom f : γ →+* Π a, β a` given by
 @[simps]
 protected def nonUnitalRingHom {γ : Type w} [∀ i, NonUnitalNonAssocSemiring (f i)]
     [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i) : γ →ₙ+* ∀ i, f i :=
-  { Pi.mulHom fun i => (g i).toMulHom, Pi.addMonoidHom fun i => (g i).toAddMonoidHom with
+  { Pi.mulHom fun i ↦ (g i).toMulHom, Pi.addMonoidHom fun i ↦ (g i).toAddMonoidHom with
     toFun := fun x b => g b x }
 
 theorem nonUnitalRingHom_injective {γ : Type w} [Nonempty I]
     [∀ i, NonUnitalNonAssocSemiring (f i)] [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.nonUnitalRingHom g) :=
-  mulHom_injective (fun i => (g i).toMulHom) hg
+  mulHom_injective (fun i ↦ (g i).toMulHom) hg
 
 /-- A family of ring homomorphisms `f a : γ →+* β a` defines a ring homomorphism
 `Pi.ringHom f : γ →+* Π a, β a` given by `Pi.ringHom f x b = f b x`. -/
 @[simps]
 protected def ringHom {γ : Type w} [∀ i, NonAssocSemiring (f i)] [NonAssocSemiring γ]
     (g : ∀ i, γ →+* f i) : γ →+* ∀ i, f i :=
-  { Pi.monoidHom fun i => (g i).toMonoidHom, Pi.addMonoidHom fun i => (g i).toAddMonoidHom with
+  { Pi.monoidHom fun i ↦ (g i).toMonoidHom, Pi.addMonoidHom fun i ↦ (g i).toAddMonoidHom with
     toFun := fun x b => g b x }
 
 theorem ringHom_injective {γ : Type w} [Nonempty I] [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.ringHom g) :=
-  monoidHom_injective (fun i => (g i).toMonoidHom) hg
+  monoidHom_injective (fun i ↦ (g i).toMonoidHom) hg
 
 end Pi
 
@@ -140,7 +140,7 @@ non-unital ring homomorphism `f` between `α` and `β`. -/
 @[simps]
 protected def NonUnitalRingHom.compLeft {α β : Type*} [NonUnitalNonAssocSemiring α]
     [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type*) : (I → α) →ₙ+* I → β :=
-  { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
+  { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h ↦ f ∘ h }
 
 end NonUnitalRingHom
 
@@ -170,6 +170,6 @@ homomorphism `f` between `α` and `β`. -/
 @[simps]
 protected def RingHom.compLeft {α β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
     (f : α →+* β) (I : Type*) : (I → α) →+* I → β :=
-  { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
+  { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h ↦ f ∘ h }
 
 end RingHom

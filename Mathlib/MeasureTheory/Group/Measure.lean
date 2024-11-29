@@ -47,12 +47,12 @@ theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) 
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul]
 instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
-  ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩
+  ⟨fun g ↦ by rw [Measure.map_smul, map_mul_left_eq_self]⟩
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul]
 instance isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
     IsMulRightInvariant (c • μ) :=
-  ⟨fun g => by rw [Measure.map_smul, map_mul_right_eq_self]⟩
+  ⟨fun g ↦ by rw [Measure.map_smul, map_mul_right_eq_self]⟩
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul_nnreal]
 instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
@@ -76,7 +76,7 @@ theorem measurePreserving_mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g :
 @[to_additive]
 theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
-    MeasurePreserving (fun x => g * f x) μ' μ :=
+    MeasurePreserving (fun x ↦ g * f x) μ' μ :=
   (measurePreserving_mul_left μ g).comp hf
 
 @[to_additive]
@@ -87,7 +87,7 @@ theorem measurePreserving_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 @[to_additive]
 theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
-    MeasurePreserving (fun x => f x * g) μ' μ :=
+    MeasurePreserving (fun x ↦ f x * g) μ' μ :=
   (measurePreserving_mul_right μ g).comp hf
 
 @[to_additive]
@@ -98,24 +98,24 @@ instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α]
 /-- An alternative way to prove that `μ` is left invariant under multiplication. -/
 @[to_additive " An alternative way to prove that `μ` is left invariant under addition. "]
 theorem forall_measure_preimage_mul_iff (μ : Measure G) :
-    (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h => g * h) ⁻¹' A) = μ A) ↔
+    (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h ↦ g * h) ⁻¹' A) = μ A) ↔
       IsMulLeftInvariant μ := by
   trans ∀ g, map (g * ·) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
+    refine forall_congr' fun g ↦ forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 /-- An alternative way to prove that `μ` is right invariant under multiplication. -/
 @[to_additive " An alternative way to prove that `μ` is right invariant under addition. "]
 theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
-    (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h => h * g) ⁻¹' A) = μ A) ↔
+    (∀ (g : G) (A : Set G), MeasurableSet A → μ ((fun h ↦ h * g) ⁻¹' A) = μ A) ↔
       IsMulRightInvariant μ := by
   trans ∀ g, map (· * g) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
+    refine forall_congr' fun g ↦ forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
-  exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  exact ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 @[to_additive]
 instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
@@ -141,7 +141,7 @@ instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite 
 theorem isMulLeftInvariant_map {H : Type*} [MeasurableSpace H] [Mul H] [MeasurableMul H]
     [IsMulLeftInvariant μ] (f : G →ₙ* H) (hf : Measurable f) (h_surj : Surjective f) :
     IsMulLeftInvariant (Measure.map f μ) := by
-  refine ⟨fun h => ?_⟩
+  refine ⟨fun h ↦ ?_⟩
   rw [map_map (measurable_const_mul _) hf]
   obtain ⟨g, rfl⟩ := h_surj h
   conv_rhs => rw [← map_mul_left_eq_self μ g]
@@ -220,33 +220,33 @@ theorem measurePreserving_div_right (μ : Measure G) [IsMulRightInvariant μ] (g
 "We shorten this from `measure_preimage_add_left`, since left invariant is the preferred option for
 measures in this formalization."]
 theorem measure_preimage_mul (μ : Measure G) [IsMulLeftInvariant μ] (g : G) (A : Set G) :
-    μ ((fun h => g * h) ⁻¹' A) = μ A :=
+    μ ((fun h ↦ g * h) ⁻¹' A) = μ A :=
   calc
-    μ ((fun h => g * h) ⁻¹' A) = map (fun h => g * h) μ A :=
+    μ ((fun h ↦ g * h) ⁻¹' A) = map (fun h ↦ g * h) μ A :=
       ((MeasurableEquiv.mulLeft g).map_apply A).symm
     _ = μ A := by rw [map_mul_left_eq_self μ g]
 
 @[to_additive (attr := simp)]
 theorem measure_preimage_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) (A : Set G) :
-    μ ((fun h => h * g) ⁻¹' A) = μ A :=
+    μ ((fun h ↦ h * g) ⁻¹' A) = μ A :=
   calc
-    μ ((fun h => h * g) ⁻¹' A) = map (fun h => h * g) μ A :=
+    μ ((fun h ↦ h * g) ⁻¹' A) = map (fun h ↦ h * g) μ A :=
       ((MeasurableEquiv.mulRight g).map_apply A).symm
     _ = μ A := by rw [map_mul_right_eq_self μ g]
 
 @[to_additive]
 theorem map_mul_left_ae (μ : Measure G) [IsMulLeftInvariant μ] (x : G) :
-    Filter.map (fun h => x * h) (ae μ) = ae μ :=
+    Filter.map (fun h ↦ x * h) (ae μ) = ae μ :=
   ((MeasurableEquiv.mulLeft x).map_ae μ).trans <| congr_arg ae <| map_mul_left_eq_self μ x
 
 @[to_additive]
 theorem map_mul_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
-    Filter.map (fun h => h * x) (ae μ) = ae μ :=
+    Filter.map (fun h ↦ h * x) (ae μ) = ae μ :=
   ((MeasurableEquiv.mulRight x).map_ae μ).trans <| congr_arg ae <| map_mul_right_eq_self μ x
 
 @[to_additive]
 theorem map_div_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
-    Filter.map (fun t => t / x) (ae μ) = ae μ :=
+    Filter.map (fun t ↦ t / x) (ae μ) = ae μ :=
   ((MeasurableEquiv.divRight x).map_ae μ).trans <| congr_arg ae <| map_div_right_eq_self μ x
 
 @[to_additive]
@@ -365,23 +365,23 @@ instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvarian
 
 @[to_additive]
 theorem measurePreserving_div_left (μ : Measure G) [IsInvInvariant μ] [IsMulLeftInvariant μ]
-    (g : G) : MeasurePreserving (fun t => g / t) μ μ := by
+    (g : G) : MeasurePreserving (fun t ↦ g / t) μ μ := by
   simp_rw [div_eq_mul_inv]
   exact (measurePreserving_mul_left μ g).comp (measurePreserving_inv μ)
 
 @[to_additive]
 theorem map_div_left_eq_self (μ : Measure G) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
-    map (fun t => g / t) μ = μ :=
+    map (fun t ↦ g / t) μ = μ :=
   (measurePreserving_div_left μ g).map_eq
 
 @[to_additive]
 theorem measurePreserving_mul_right_inv (μ : Measure G) [IsInvInvariant μ] [IsMulLeftInvariant μ]
-    (g : G) : MeasurePreserving (fun t => (g * t)⁻¹) μ μ :=
+    (g : G) : MeasurePreserving (fun t ↦ (g * t)⁻¹) μ μ :=
   (measurePreserving_inv μ).comp <| measurePreserving_mul_left μ g
 
 @[to_additive]
 theorem map_mul_right_inv_eq_self (μ : Measure G) [IsInvInvariant μ] [IsMulLeftInvariant μ]
-    (g : G) : map (fun t => (g * t)⁻¹) μ = μ :=
+    (g : G) : map (fun t ↦ (g * t)⁻¹) μ = μ :=
   (measurePreserving_mul_right_inv μ g).map_eq
 
 end DivisionMonoid
@@ -392,7 +392,7 @@ variable [Group G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
 
 @[to_additive]
 theorem map_div_left_ae (μ : Measure G) [IsMulLeftInvariant μ] [IsInvInvariant μ] (x : G) :
-    Filter.map (fun t => x / t) (ae μ) = ae μ :=
+    Filter.map (fun t ↦ x / t) (ae μ) = ae μ :=
   ((MeasurableEquiv.divLeft x).map_ae μ).trans <| congr_arg ae <| map_div_left_eq_self μ x
 
 end Group
@@ -569,7 +569,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
   have A : ∀ L : Set G, IsCompact L → ∃ g : G, Disjoint L (g • K) := fun L hL =>
     exists_disjoint_smul_of_isCompact hL hK
   choose! g hg using A
-  set L : ℕ → Set G := fun n => (fun T => T ∪ g T • K)^[n] K
+  set L : ℕ → Set G := fun n ↦ (fun T => T ∪ g T • K)^[n] K
   have Lcompact : ∀ n, IsCompact (L n) := by
     intro n
     induction' n with n IH
@@ -592,13 +592,13 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
           exact measure_union' (hg _ (Lcompact _)) (Lclosed _).measurableSet
         _ = (n + 1 + 1 : ℕ) * μ K := by
           simp only [IH, measure_smul, add_mul, Nat.cast_add, Nat.cast_one, one_mul]
-  have N : Tendsto (fun n => μ (L n)) atTop (𝓝 (∞ * μ K)) := by
+  have N : Tendsto (fun n ↦ μ (L n)) atTop (𝓝 (∞ * μ K)) := by
     simp_rw [M]
     apply ENNReal.Tendsto.mul_const _ (Or.inl ENNReal.top_ne_zero)
     exact ENNReal.tendsto_nat_nhds_top.comp (tendsto_add_atTop_nat _)
   simp only [ENNReal.top_mul', K_pos.ne', if_false] at N
   apply top_le_iff.1
-  exact le_of_tendsto' N fun n => measure_mono (subset_univ _)
+  exact le_of_tendsto' N fun n ↦ measure_mono (subset_univ _)
 
 @[to_additive]
 lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
@@ -648,7 +648,7 @@ the converse as an instance, since that would loop type-class inference, and we 
 `IsAddLeftInvariant` as the default hypothesis in abelian groups."]
 instance (priority := 100) IsMulLeftInvariant.isMulRightInvariant {μ : Measure G}
     [IsMulLeftInvariant μ] : IsMulRightInvariant μ :=
-  ⟨fun g => by simp_rw [mul_comm, map_mul_left_eq_self]⟩
+  ⟨fun g ↦ by simp_rw [mul_comm, map_mul_left_eq_self]⟩
 
 end CommSemigroup
 
@@ -788,7 +788,7 @@ See Note [lower instance priority]"]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
         set_mem := fun _ => mem_univ _
-        finite := fun n => IsCompact.measure_lt_top <| isCompact_compactCovering G n
+        finite := fun n ↦ IsCompact.measure_lt_top <| isCompact_compactCovering G n
         spanning := iUnion_compactCovering G }⟩⟩
 
 @[to_additive]

@@ -236,7 +236,7 @@ protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι �
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
     toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    commutes' := fun c ↦ by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
 
 @[simp]
 theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
@@ -322,7 +322,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' := fun c ↦ by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
@@ -415,7 +415,7 @@ variable {R S : Type*}
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
-    commutes' := fun n => by simp }
+    commutes' := fun n ↦ by simp }
 
 @[simp]
 lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
@@ -426,7 +426,7 @@ lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  { f with commutes' := fun n ↦ by simp }
 
 @[simp]
 lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
@@ -512,11 +512,11 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
-    toFun := fun a => m • a
+    toFun := fun a ↦ m • a
     commutes' := smul_algebraMap _ }
 
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
-  eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
+  eq_of_smul_eq_smul fun r ↦ AlgHom.ext_iff.1 h r
 
 end MulSemiringAction

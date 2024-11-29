@@ -135,7 +135,7 @@ section InitsTails
 theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
   | s, [] =>
     suffices s = nil ↔ s <+: nil by simpa only [inits, mem_singleton]
-    ⟨fun h => h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
+    ⟨fun h ↦ h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
   | s, a :: t =>
     suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+: a :: t by simpa
     ⟨fun o =>
@@ -168,20 +168,20 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
           | _, t, ⟨[], rfl⟩ => Or.inl rfl
           | s, t, ⟨b :: l, he⟩ => List.noConfusion he fun _ lt => Or.inr ⟨l, lt⟩⟩
 
-theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t => a :: t := by
+theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t ↦ a :: t := by
   simp
 
 theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails := by simp
 
 @[simp]
-theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
+theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l ↦ s ++ l
   | [], [] => by simp
   | [], a :: t => by simp
   | a :: s, t => by simp [inits_append s t, Function.comp_def]
 
 @[simp]
 theorem tails_append :
-    ∀ s t : List α, tails (s ++ t) = (s.tails.map fun l => l ++ t) ++ t.tails.tail
+    ∀ s t : List α, tails (s ++ t) = (s.tails.map fun l ↦ l ++ t) ++ t.tails.tail
   | [], [] => by simp
   | [], a :: t => by simp
   | a :: s, t => by simp [tails_append s t]

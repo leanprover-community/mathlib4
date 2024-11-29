@@ -266,7 +266,7 @@ theorem add_hom {X Y : Action V G} (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom
 
 @[simp]
 theorem sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
-    (s.sum f).hom = s.sum fun i => (f i).hom :=
+    (s.sum f).hom = s.sum fun i ↦ (f i).hom :=
   (forget V G).map_sum f s
 
 end Preadditive

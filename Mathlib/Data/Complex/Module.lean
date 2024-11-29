@@ -128,10 +128,10 @@ open Submodule
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
   Basis.ofEquivFun
-    { toFun := fun z => ![z.re, z.im]
-      invFun := fun c => c 0 + c 1 • I
-      left_inv := fun z => by simp
-      right_inv := fun c => by
+    { toFun := fun z ↦ ![z.re, z.im]
+      invFun := fun c ↦ c 0 + c 1 • I
+      left_inv := fun z ↦ by simp
+      right_inv := fun c ↦ by
         ext i
         fin_cases i <;> simp
       map_add' := fun z z' => by simp
@@ -145,7 +145,7 @@ theorem coe_basisOneI_repr (z : ℂ) : ⇑(basisOneI.repr z) = ![z.re, z.im] :=
 theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
   funext fun i =>
     Basis.apply_eq_iff.mpr <|
-      Finsupp.ext fun j => by
+      Finsupp.ext fun j ↦ by
         fin_cases i <;> fin_cases j <;>
           -- Porting note: removed `only`, consider squeezing again
           simp [coe_basisOneI_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,
@@ -260,7 +260,7 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp ?_ ?_ <;>
-    refine fun h => algHom_ext ?_
+    refine fun h ↦ algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/

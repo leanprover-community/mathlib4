@@ -266,7 +266,7 @@ theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [A
     [Module 𝕜 M] (h : Module.finrank 𝕜 M = 0) (f : M →ₗ[𝕜] M) :
     LinearMap.det (f : M →ₗ[𝕜] M) = 1 := by
   classical
-    refine @LinearMap.det_cases M _ 𝕜 _ _ _ (fun t => t = 1) f ?_ rfl
+    refine @LinearMap.det_cases M _ 𝕜 _ _ _ (fun t ↦ t = 1) f ?_ rfl
     intro s b
     have : IsEmpty s := by
       rw [← Fintype.card_eq_zero_iff]
@@ -482,7 +482,7 @@ theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R
   exact Matrix.det_isEmpty
 
 /-- `Basis.det` is not the zero map. -/
-theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
+theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h ↦ by simpa [h] using e.det_self
 
 theorem Basis.smul_det {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M]
     (g : G) (v : ι → M) :
@@ -521,11 +521,11 @@ theorem AlternatingMap.eq_smul_basis_det (f : M [⋀^ι]→ₗ[R] R) : f = f e �
 @[simp]
 theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e = 0 ↔ f = 0 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases nonempty_fintype ι
     letI := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h ↦ h.symm ▸ AlternatingMap.zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=
@@ -598,7 +598,7 @@ theorem Basis.det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
     (Matrix.det fun i j => (e.unitsSMul w).repr (f j) i) =
       (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j => e.repr (f j) i
   simp only [e.repr_unitsSMul]
-  convert Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
+  convert Matrix.det_mul_column (fun i ↦ (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
   simp [← Finset.prod_inv_distrib]
 
 /-- The determinant of a basis constructed by `unitsSMul` is the product of the given units. -/

@@ -463,8 +463,8 @@ end Sum
 
 instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] :
     DistribMulAction S (QuadraticMap R M N) where
-  mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
-  one_smul Q := ext fun x => by simp only [QuadraticMap.smul_apply, one_smul]
+  mul_smul a b Q := ext fun x ↦ by simp only [smul_apply, mul_smul]
+  one_smul Q := ext fun x ↦ by simp only [QuadraticMap.smul_apply, one_smul]
   smul_add a Q Q' := by
     ext
     simp only [add_apply, smul_apply, smul_add]
@@ -780,7 +780,7 @@ theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :
 
 @[simp] theorem _root_.QuadraticMap.toQuadraticMap_polarBilin (Q : QuadraticMap R M N) :
     toQuadraticMap (polarBilin Q) = 2 • Q :=
-  QuadraticMap.ext fun x => (polar_self _ x).trans <| by simp
+  QuadraticMap.ext fun x ↦ (polar_self _ x).trans <| by simp
 
 theorem _root_.QuadraticMap.polarBilin_injective (h : IsUnit (2 : R)) :
     Function.Injective (polarBilin : QuadraticMap R M N → _) := by
@@ -1092,7 +1092,7 @@ theorem not_anisotropic_iff_exists (Q : QuadraticMap R M N) :
 
 theorem Anisotropic.eq_zero_iff {Q : QuadraticMap R M N} (h : Anisotropic Q) {x : M} :
     Q x = 0 ↔ x = 0 :=
-  ⟨h x, fun h => h.symm ▸ map_zero Q⟩
+  ⟨h x, fun h ↦ h.symm ▸ map_zero Q⟩
 
 end Semiring
 
@@ -1130,7 +1130,7 @@ theorem PosDef.smul {R} [LinearOrderedCommRing R] [Module R M] [Module R N] [Pos
 variable {n : Type*}
 
 theorem PosDef.nonneg {Q : QuadraticMap R₂ M N} (hQ : PosDef Q) (x : M) : 0 ≤ Q x :=
-  (eq_or_ne x 0).elim (fun h => h.symm ▸ (map_zero Q).symm.le) fun h => (hQ _ h).le
+  (eq_or_ne x 0).elim (fun h ↦ h.symm ▸ (map_zero Q).symm.le) fun h ↦ (hQ _ h).le
 
 theorem PosDef.anisotropic {Q : QuadraticMap R₂ M N} (hQ : Q.PosDef) : Q.Anisotropic :=
   fun x hQx => by_contradiction fun hx =>
@@ -1144,7 +1144,7 @@ theorem posDef_of_nonneg {Q : QuadraticMap R₂ M N} (h : ∀ x, 0 ≤ Q x) (h0 
   fun x hx => lt_of_le_of_ne (h x) (Ne.symm fun hQx => hx <| h0 _ hQx)
 
 theorem posDef_iff_nonneg {Q : QuadraticMap R₂ M N} : PosDef Q ↔ (∀ x, 0 ≤ Q x) ∧ Q.Anisotropic :=
-  ⟨fun h => ⟨h.nonneg, h.anisotropic⟩, fun ⟨n, a⟩ => posDef_of_nonneg n a⟩
+  ⟨fun h ↦ ⟨h.nonneg, h.anisotropic⟩, fun ⟨n, a⟩ => posDef_of_nonneg n a⟩
 
 theorem PosDef.add [AddLeftStrictMono N]
     (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef Q') :
@@ -1154,7 +1154,7 @@ theorem PosDef.add [AddLeftStrictMono N]
 theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedSemiring A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=
-  fun _x hx => mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
+  fun _x hx => mul_self_pos.2 fun h ↦ hx <| LinearMap.ker_eq_bot'.mp hf _ h
 
 end PosDef
 
@@ -1262,7 +1262,7 @@ theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm
     (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, ¬B.IsOrtho x x := by
   lift B to QuadraticForm R M using hB₂ with Q
   obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticMap_ne_zero hB₁
-  exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
+  exact ⟨x, fun h ↦ hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
 
 open Module
 
@@ -1297,7 +1297,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         have := (isCompl_span_singleton_orthogonal hx).disjoint
         rw [Submodule.disjoint_def] at this
         have := this (c • x) (Submodule.smul_mem _ _ <| Submodule.mem_span_singleton_self _) hy
-        exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ map_zero _)
+        exact (smul_eq_zero.1 this).resolve_right fun h ↦ hx <| h.symm ▸ map_zero _)
       (by
         intro y
         refine ⟨-B x y / B x x, fun z hz => ?_⟩
@@ -1307,7 +1307,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
   intro j i
-  refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
+  refine Fin.cases ?_ (fun i ↦ ?_) i <;> refine Fin.cases ?_ (fun j ↦ ?_) j <;> intro hij <;>
     simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
   · exact (hij rfl).elim
   · rw [IsOrtho, ← hB₂]
@@ -1363,7 +1363,7 @@ theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClas
 theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M]
     [Invertible (2 : R)] (Q : QuadraticForm R M) (v : Basis ι R M)
     (hv₂ : (associated (R := R) Q).IsOrthoᵢ v) :
-    Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
+    Q.basisRepr v = weightedSumSquares _ fun i ↦ Q (v i) := by
   ext w
   rw [basisRepr_apply, ← @associated_eq_self_apply R, map_sum, weightedSumSquares_apply]
   refine sum_congr rfl fun j hj => ?_

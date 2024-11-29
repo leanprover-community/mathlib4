@@ -234,7 +234,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
   have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
   have hdVW : Disjoint V W := disjoint_left.mpr fun x hxV hxW => hxW.2 (hV x hxV)
   have hUVW : U ⊆ V ∪ W := fun x hx =>
-    (eq_or_ne ‖f x‖ ‖f c‖).imp (fun h => ⟨hx, fun y hy => (hm hy).out.trans_eq h.symm⟩)
+    (eq_or_ne ‖f x‖ ‖f c‖).imp (fun h ↦ ⟨hx, fun y hy => (hm hy).out.trans_eq h.symm⟩)
       (And.intro hx)
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
 
@@ -351,9 +351,9 @@ theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
 theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
     (hf : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMin (norm ∘ f) c) :
     (∀ᶠ z in 𝓝 c, f z = f c) ∨ f c = 0 := by
-  refine or_iff_not_imp_right.mpr fun h => ?_
+  refine or_iff_not_imp_right.mpr fun h ↦ ?_
   have h1 : ∀ᶠ z in 𝓝 c, f z ≠ 0 := hf.self_of_nhds.continuousAt.eventually_ne h
-  have h2 : IsLocalMax (norm ∘ f)⁻¹ c := hc.inv (h1.mono fun z => norm_pos_iff.mpr)
+  have h2 : IsLocalMax (norm ∘ f)⁻¹ c := hc.inv (h1.mono fun z ↦ norm_pos_iff.mpr)
   have h3 : IsLocalMax (norm ∘ f⁻¹) c := by refine h2.congr (Eventually.of_forall ?_); simp
   have h4 : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f⁻¹ z := by filter_upwards [hf, h1] with z h using h.inv
   filter_upwards [eventually_eq_of_isLocalMax_norm h4 h3] with z using inv_inj.mp

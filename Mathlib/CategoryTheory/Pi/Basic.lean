@@ -272,16 +272,16 @@ variable {F G : ∀ i, C i ⥤ D i}
 -/
 @[simps]
 def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
-  hom := NatTrans.pi (fun i => (e i).hom)
-  inv := NatTrans.pi (fun i => (e i).inv)
+  hom := NatTrans.pi (fun i ↦ (e i).hom)
+  inv := NatTrans.pi (fun i ↦ (e i).inv)
 
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
 def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
     (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G where
-  hom := NatTrans.pi' (fun i => (e i).hom)
-  inv := NatTrans.pi' (fun i => (e i).inv)
+  hom := NatTrans.pi' (fun i ↦ (e i).hom)
+  inv := NatTrans.pi' (fun i ↦ (e i).inv)
 
 end NatIso
 
@@ -293,7 +293,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro _ i
     exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
-    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
+    exact ⟨fun i ↦ inv (f i), by aesop_cat, by aesop_cat⟩
 
 variable (C)
 
@@ -322,15 +322,15 @@ attribute [local simp] eqToHom_map
 @[simps]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (∀ j, C (e j)) ≌ (∀ i, C i) where
-  functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
+  functor := Functor.pi' (fun i ↦ Pi.eval _ (e.symm i) ⋙
     (Pi.eqToEquivalence C (by simp)).functor)
   inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
   unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
-    (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
+    (Pi.evalCompEqToEquivalenceFunctor (fun j ↦ C (e j)) (e.symm_apply_apply i')).symm ≪≫
     isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
     (Functor.pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'CompEval _ _).symm ≪≫
     (Functor.associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
+  counitIso := NatIso.pi' (fun i ↦ (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (Functor.pi'CompEval _ _) _ ≪≫
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
     (Functor.leftUnitor _).symm)
@@ -340,11 +340,11 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
 def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
     (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) where
   functor := Functor.prod' (Pi.eval C' none)
-    (Functor.pi' (fun i => (Pi.eval _ (some i))))
-  inverse := Functor.pi' (fun i => match i with
+    (Functor.pi' (fun i ↦ (Pi.eval _ (some i))))
+  inverse := Functor.pi' (fun i ↦ match i with
     | none => Prod.fst _ _
     | some i => Prod.snd _ _ ⋙ (Pi.eval _ i))
-  unitIso := NatIso.pi' (fun i => match i with
+  unitIso := NatIso.pi' (fun i ↦ match i with
     | none => Iso.refl _
     | some _ => Iso.refl _)
   counitIso := by exact Iso.refl _
@@ -358,14 +358,14 @@ variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 into a single equivalence. -/
 @[simps]
 def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
-  functor := Functor.pi (fun i => (E i).functor)
-  inverse := Functor.pi (fun i => (E i).inverse)
-  unitIso := NatIso.pi (fun i => (E i).unitIso)
-  counitIso := NatIso.pi (fun i => (E i).counitIso)
+  functor := Functor.pi (fun i ↦ (E i).functor)
+  inverse := Functor.pi (fun i ↦ (E i).inverse)
+  unitIso := NatIso.pi (fun i ↦ (E i).unitIso)
+  counitIso := NatIso.pi (fun i ↦ (E i).counitIso)
 
 instance (F : ∀ i, C i ⥤ D i) [∀ i, (F i).IsEquivalence] :
     (Functor.pi F).IsEquivalence :=
-  (pi (fun i => (F i).asEquivalence)).isEquivalence_functor
+  (pi (fun i ↦ (F i).asEquivalence)).isEquivalence_functor
 
 end Equivalence
 

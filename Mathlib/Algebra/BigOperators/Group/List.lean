@@ -160,19 +160,19 @@ theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
 @[to_additive]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) (hl : l ≠ []) :
-    (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
+    (l.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
   match l, hl with | x :: xs, hl => induction xs generalizing x <;> aesop
 
 @[to_additive]
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
-    (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
+    (l.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
   rw [prod, prod, prod, foldr_map, foldr_map, foldr_map,
     ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
-    (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
+    (l.map fun i ↦ f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
 @[to_additive]
@@ -190,7 +190,7 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
 @[to_additive]
 theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
-  refine ⟨fun h => ?_, prod_isUnit⟩
+  refine ⟨fun h ↦ ?_, prod_isUnit⟩
   induction L with
   | nil => exact fun m' h' => False.elim (not_mem_nil m' h')
   | cons m L ih =>
@@ -377,7 +377,7 @@ lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length =
 
 @[to_additive]
 lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : List α) :
-    (l.map fun a => if p a then f a else g a).prod =
+    (l.map fun a ↦ if p a then f a else g a).prod =
       ((l.filter p).map f).prod * ((l.filter fun a ↦ ¬p a).map g).prod := by
   induction l with
   | nil => simp
@@ -394,7 +394,7 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
 @[to_additive]
 lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
     (l : List α) :
-    ((l.filter p).map f).prod * ((l.filter fun x => ¬p x).map f).prod = (l.map f).prod := by
+    ((l.filter p).map f).prod * ((l.filter fun x ↦ ¬p x).map f).prod = (l.map f).prod := by
   rw [← prod_map_ite]
   simp only [ite_self]
 
@@ -414,13 +414,13 @@ variable [Group G]
 
 /-- This is the `List.prod` version of `mul_inv_rev` -/
 @[to_additive "This is the `List.sum` version of `add_neg_rev`"]
-theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).reverse.prod
+theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x ↦ x⁻¹).reverse.prod
   | [] => by simp
   | x :: xs => by simp [prod_inv_reverse xs]
 
 /-- A non-commutative variant of `List.prod_reverse` -/
 @[to_additive "A non-commutative variant of `List.sum_reverse`"]
-theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => x⁻¹).prod⁻¹ := by
+theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x ↦ x⁻¹).prod⁻¹ := by
   simp [prod_inv_reverse]
 
 /-- Counterpart to `List.prod_take_succ` when we have an inverse operation -/
@@ -458,7 +458,7 @@ variable [CommGroup G]
 
 /-- This is the `List.prod` version of `mul_inv` -/
 @[to_additive "This is the `List.sum` version of `add_neg`"]
-theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
+theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x ↦ x⁻¹).prod
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv xs]
 
@@ -482,7 +482,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
-    (l.map fun x => if x = a then f x else g x).prod
+    (l.map fun x ↦ if x = a then f x else g x).prod
       = (f a / g a) ^ (l.count a) * (l.map g).prod := by
   induction l with
   | nil => simp
@@ -582,7 +582,7 @@ variable [DecidableEq α]
 
 /-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
 theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
-    ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
+    ((l.dedup.filter p).map fun x ↦ l.count x).sum = l.countP p := by
   induction l with
   | nil => simp
   | cons a as h =>
@@ -607,7 +607,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         · exact ha'.2.symm
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
-    (l.dedup.map fun x => l.count x).sum = l.length := by
+    (l.dedup.map fun x ↦ l.count x).sum = l.length := by
   simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
 
 end List

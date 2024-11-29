@@ -29,11 +29,11 @@ variable {X : Type*}
 
 /-- The group homomorphism `FreeAbelianGroup X →+ (X →₀ ℤ)`. -/
 def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
-  FreeAbelianGroup.lift fun x => Finsupp.single x (1 : ℤ)
+  FreeAbelianGroup.lift fun x ↦ Finsupp.single x (1 : ℤ)
 
 /-- The group homomorphism `(X →₀ ℤ) →+ FreeAbelianGroup X`. -/
 def Finsupp.toFreeAbelianGroup : (X →₀ ℤ) →+ FreeAbelianGroup X :=
-  Finsupp.liftAddHom fun x => (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
+  Finsupp.liftAddHom fun x ↦ (smulAddHom ℤ (FreeAbelianGroup X)).flip (FreeAbelianGroup.of x)
 
 open Finsupp FreeAbelianGroup
 

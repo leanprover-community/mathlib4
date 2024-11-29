@@ -61,7 +61,7 @@ theorem coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) := by
 theorem lt_zero_iff {n : WithBot ℕ} : n < 0 ↔ n = ⊥ := WithBot.lt_coe_bot
 
 theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x := by
-  refine ⟨zero_lt_one.trans_le, fun h => ?_⟩
+  refine ⟨zero_lt_one.trans_le, fun h ↦ ?_⟩
   cases x
   · exact (not_lt_bot h).elim
   · rwa [← WithBot.coe_zero, WithBot.coe_lt_coe, ← Nat.add_one_le_iff, zero_add,

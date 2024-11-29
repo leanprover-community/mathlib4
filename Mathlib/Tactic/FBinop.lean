@@ -128,7 +128,7 @@ private def hasCoeS (fromS toS : SRec) (x : Expr) : TermElabM Bool := do
   let some fromType ← applyS fromS x | return false
   let some toType ← applyS toS x | return false
   trace[Elab.fbinop] m!"fromType = {fromType}, toType = {toType}"
-  withLocalDeclD `v fromType fun v => do
+  withLocalDeclD `v fromType fun v ↦ do
     match ← coerceSimple? v toType with
     | .some _ => return true
     | .none   => return false
@@ -163,17 +163,17 @@ where
         let some (S, x) ← extractS type
           | return -- Rather than marking as incomparable, let's hope there's a coercion!
         match (← get).maxS? with
-        | none     => modify fun s => { s with maxS? := S }
+        | none     => modify fun s ↦ { s with maxS? := S }
         | some maxS =>
           let some maxSx ← applyS maxS x | return -- Same here.
           unless ← withNewMCtxDepth <| isDefEqGuarded maxSx type do
             if ← hasCoeS S maxS x then
               return ()
             else if ← hasCoeS maxS S x then
-              modify fun s => { s with maxS? := S }
+              modify fun s ↦ { s with maxS? := S }
             else
               trace[Elab.fbinop] "uncomparable types: {maxSx}, {type}"
-              modify fun s => { s with hasUncomparable := true }
+              modify fun s ↦ { s with hasUncomparable := true }
 
 private def mkBinOp (f : Expr) (lhs rhs : Expr) : TermElabM Expr := do
   elabAppArgs f #[] #[Arg.expr lhs, Arg.expr rhs] (expectedType? := none)
@@ -183,7 +183,7 @@ private def mkBinOp (f : Expr) (lhs rhs : Expr) : TermElabM Expr := do
 private def toExprCore (t : Tree) : TermElabM Expr := do
   match t with
   | .term _ trees e =>
-    modifyInfoState (fun s => { s with trees := s.trees ++ trees }); return e
+    modifyInfoState (fun s ↦ { s with trees := s.trees ++ trees }); return e
   | .binop ref f lhs rhs =>
     withRef ref <| withInfoContext' ref (mkInfo := mkTermInfo .anonymous ref) do
       let lhs ← toExprCore lhs

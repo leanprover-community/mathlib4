@@ -43,7 +43,7 @@ theorem eventually_cofinite {p : α → Prop} : (∀ᶠ x in cofinite, p x) ↔ 
 
 theorem hasBasis_cofinite : HasBasis cofinite (fun s : Set α => s.Finite) compl :=
   ⟨fun s =>
-    ⟨fun h => ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ =>
+    ⟨fun h ↦ ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ =>
       htf.subset <| compl_subset_comm.2 hts⟩⟩
 
 instance cofinite_neBot [Infinite α] : NeBot (@cofinite α) :=
@@ -106,12 +106,12 @@ theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
 
 /-- The coproduct of the cofinite filters on two types is the cofinite filter on their product. -/
 theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) = cofinite :=
-  Filter.coext fun s => by
+  Filter.coext fun s ↦ by
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
 
 theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
-    (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
-  Filter.coext fun s => by
+    (Filter.coprodᵢ fun i ↦ (cofinite : Filter (α i))) = cofinite :=
+  Filter.coext fun s ↦ by
     simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
 
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
@@ -211,7 +211,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
     refine ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim ?_ (le_trans ha₀.le)⟩
-    exact fun h => others_bigger a ⟨h, has⟩
+    exact fun h ↦ others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
     push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
@@ -220,7 +220,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
 theorem Filter.Tendsto.exists_forall_le [Nonempty α] [LinearOrder β] {f : α → β}
     (hf : Tendsto f cofinite atTop) : ∃ a₀, ∀ a, f a₀ ≤ f a :=
   let ⟨a₀, _, ha₀⟩ := hf.exists_within_forall_le univ_nonempty
-  ⟨a₀, fun a => ha₀ a (mem_univ _)⟩
+  ⟨a₀, fun a ↦ ha₀ a (mem_univ _)⟩
 
 theorem Filter.Tendsto.exists_within_forall_ge [LinearOrder β] {s : Set α} (hs : s.Nonempty)
     {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atBot) :

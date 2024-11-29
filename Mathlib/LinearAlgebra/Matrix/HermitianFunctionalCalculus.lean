@@ -63,7 +63,7 @@ calculus of a Hermitian matrix. This is an auxiliary definition and is not inten
 for use outside of this file. -/
 @[simps]
 noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n 𝕜) where
-  toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
+  toFun := fun g ↦ (eigenvectorUnitary hA : Matrix n n 𝕜) *
     diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
   map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]

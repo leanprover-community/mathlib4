@@ -287,7 +287,7 @@ conjugate root of some element `algebraMap R S r` in the image of the base ring,
 theorem isConjRoot_iff_eq_algebraMap_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {r : R}
     {x : S} (hf : Function.Injective (algebraMap R S)) :
     IsConjRoot R (algebraMap R S r) x ↔ x = algebraMap R S r :=
-    ⟨fun h => eq_algebraMap_of_injective h hf, fun h => h.symm ▸ rfl⟩
+    ⟨fun h ↦ eq_algebraMap_of_injective h hf, fun h ↦ h.symm ▸ rfl⟩
 
 /--
 An element `x` is a conjugate root of some element `algebraMap R S r` in the image of the base ring
@@ -315,7 +315,7 @@ conjugate root of `0` if and only if `x = 0`.
 -/
 theorem isConjRoot_zero_iff_eq_zero_of_injective [Nontrivial R] {x : S} [NoZeroSMulDivisors R S]
     (hf : Function.Injective (algebraMap R S)) : IsConjRoot R 0 x ↔ x = 0 :=
-  ⟨fun h => eq_zero_of_injective h hf, fun h => h.symm ▸ rfl⟩
+  ⟨fun h ↦ eq_zero_of_injective h hf, fun h ↦ h.symm ▸ rfl⟩
 
 /--
 `x` is a conjugate root of `0` if and only if `x = 0`.
@@ -340,7 +340,7 @@ a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
 theorem ne_zero_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {x y : S} (hx : x ≠ 0)
     (h : IsConjRoot R x y) (hf : Function.Injective (algebraMap R S)) : y ≠ 0 :=
-  fun g => hx (eq_zero_of_injective (g ▸ h.symm) hf)
+  fun g ↦ hx (eq_zero_of_injective (g ▸ h.symm) hf)
 
 /--
 If `y` is a conjugate root of a nonzero element `x`, then `y` is not zero.

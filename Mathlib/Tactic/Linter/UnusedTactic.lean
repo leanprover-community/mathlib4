@@ -164,7 +164,7 @@ variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool)
       args.forM getTactics
     if isTacKind k then
       if let some r := stx.getRange? true then
-        modify fun m => m.insert r stx
+        modify fun m ↦ m.insert r stx
 
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/
@@ -220,7 +220,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     | return
   let trees ← getInfoTrees
   let go : M Unit := do
-    getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
+    getTactics (← ignoreTacticKindsRef.get) (fun k ↦ tactics.contains k || convs.contains k) stx
     eraseUsedTacticsList trees
   let (_, map) ← go.run {}
   let unused := map.toArray

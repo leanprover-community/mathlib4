@@ -250,7 +250,7 @@ theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ 
   norm_mul_le x
 
 /-- In a seminormed ring, the right-multiplication `AddMonoidHom` is bounded. -/
-theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
+theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y ↦ by
   rw [mul_comm]
   exact norm_mul_le y x
 

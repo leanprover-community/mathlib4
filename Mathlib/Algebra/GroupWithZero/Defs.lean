@@ -65,7 +65,7 @@ variable [Mul M₀] [Zero M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
 theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
   IsRightCancelMulZero.mul_right_cancel_of_ne_zero hb h
 
-theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
+theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a ↦ a * b :=
   fun _ _ => mul_right_cancel₀ hb
 
 end IsRightCancelMulZero
@@ -246,7 +246,7 @@ equals zero. -/
 @[simp]
 theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   ⟨eq_zero_or_eq_zero_of_mul_eq_zero,
-    fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
+    fun o ↦ o.elim (fun h ↦ mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
 
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/

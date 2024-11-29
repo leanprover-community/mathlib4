@@ -44,7 +44,7 @@ theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A)
 
 theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
-  refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
   simp only [Algebra.smul_def]
   exact (h.comp continuous_fst).mul continuous_snd
 
@@ -167,7 +167,7 @@ definitional equalities. -/
 def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
   toAlgHom := {
     toRingHom := (f : A →A[R] B).toRingHom.copy f' h
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       simp only [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
         MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_copy, AlgHomClass.commutes f r] }
   cont := show Continuous f' from h.symm ▸ f.continuous
@@ -200,7 +200,7 @@ theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
   coe_inj.mp (ext_id _ _ _)
 
 theorem ext_ring_iff [TopologicalSpace R] {f g : R →A[R] A} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, fun _ => ext_ring ⟩
+  ⟨fun h ↦ h ▸ rfl, fun _ => ext_ring ⟩
 
 /-- If two continuous algebra maps are equal on a set `s`, then they are equal on the closure
 of the `Algebra.adjoin` of this set. -/
@@ -212,7 +212,7 @@ theorem eqOn_closure_adjoin [T2Space B] {s : Set A} {f g : A →A[R] B} (h : Set
 algebra maps equal on `s` are equal. -/
 theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
-  ext fun x => eqOn_closure_adjoin h (hs x)
+  ext fun x ↦ eqOn_closure_adjoin h (hs x)
 
 variable [TopologicalSemiring A]
 

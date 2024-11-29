@@ -37,7 +37,7 @@ variable (b : Basis ι R M)
 
 section Coord
 
-theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b.coord i m := by
+theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m ↦ ∑ᶠ i, b.coord i m := by
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
@@ -144,10 +144,10 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
     simpa [span_singleton_eq_top_iff, Set.range_unique] using b.span_eq
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
-      { toFun := fun f => f default • x
-        invFun := fun y => Finsupp.single default (w y).choose
-        left_inv := fun f => Finsupp.unique_ext ?_
-        right_inv := fun y => ?_
+      { toFun := fun f ↦ f default • x
+        invFun := fun y ↦ Finsupp.single default (w y).choose
+        left_inv := fun f ↦ Finsupp.unique_ext ?_
+        right_inv := fun y ↦ ?_
         map_add' := fun y z => ?_
         map_smul' := fun c y => ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]
@@ -204,7 +204,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   -- This then expresses `x` as a linear combination
   -- of elements of `w` which are in the range of `b`,
   let u : ι ↪ w :=
-    ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
+    ⟨fun i ↦ ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
   simp_rw [Finsupp.linearCombination_apply] at e
   change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
@@ -226,7 +226,7 @@ protected noncomputable def mk : Basis ι R M :=
   .ofRepr
     { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
       invFun := Finsupp.linearCombination _ v
-      left_inv := fun x => hli.linearCombination_repr ⟨x, _⟩
+      left_inv := fun x ↦ hli.linearCombination_repr ⟨x, _⟩
       right_inv := fun _ => hli.repr_eq rfl }
 
 @[simp]
@@ -272,16 +272,16 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
   Basis.mk (linearIndependent_span hli) <| by
     intro x _
     have : ∀ i, v i ∈ span R (range v) := fun i ↦ subset_span (Set.mem_range_self _)
-    have h₁ : (((↑) : span R (range v) → M) '' range fun i => ⟨v i, this i⟩) = range v := by
+    have h₁ : (((↑) : span R (range v) → M) '' range fun i ↦ ⟨v i, this i⟩) = range v := by
       simp only [SetLike.coe_sort_coe, ← Set.range_comp]
       rfl
-    have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
+    have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i ↦ ⟨v i, this i⟩)) =
         span R (range v) := by
       rw [← span_image, Submodule.coe_subtype]
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
-        (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
+        (span R (Set.range fun i ↦ Subtype.mk (v i) (this i))) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩
@@ -353,7 +353,7 @@ theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι
 
 /-- A version of `unitsSMul` that uses `IsUnit`. -/
 def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
-  unitsSMul v fun i => (hw i).unit
+  unitsSMul v fun i ↦ (hw i).unit
 
 theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (w i)) (i : ι) :
     v.isUnitSMul hw i = w i • v i :=
@@ -396,7 +396,7 @@ noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) : Basis (Fin (n + 1)) R O :=
   mkFinCons ⟨y, yO⟩ (b.map (Submodule.comapSubtypeEquivOfLe hNO).symm)
     (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
-    fun z => hsp z z.2
+    fun z ↦ hsp z z.2
 
 @[simp]
 theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
@@ -456,7 +456,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
   intro N' N'_le x x_mem x_ortho
   apply rank_ih
   intro m v hli
-  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
+  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i ↦ ⟨v i, N'_le (v i).2⟩) ?_)
   convert hli.fin_cons' x _ ?_
   · ext i
     refine Fin.cases ?_ ?_ i <;> simp
@@ -553,7 +553,7 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
     m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by
   refine
     ⟨fun hm i => ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
-      fun h => ?_⟩
+      fun h ↦ ?_⟩
   rw [← b.linearCombination_repr m, Finsupp.linearCombination_apply S _]
   refine sum_mem fun i _ => ?_
   obtain ⟨_, h⟩ := h i

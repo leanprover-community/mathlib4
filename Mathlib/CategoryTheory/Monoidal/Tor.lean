@@ -46,7 +46,7 @@ def Tor (n : ℕ) : C ⥤ C ⥤ C where
 def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
-      map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
+      map := fun f ↦ NatTrans.leftDerived ((tensoringRight C).map f) n }
 
 -- Porting note: the `checkType` linter complains about the automatically generated
 -- lemma `Tor'_map_app`, but not about this one

@@ -356,7 +356,7 @@ theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i)
 instance : PartialOrder (Con M) where
   le_refl _ _ _ := id
   le_trans _ _ _ h1 h2 _ _ h := h2 <| h1 h
-  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h => hc h, fun h => hd h⟩
+  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h ↦ hc h, fun h ↦ hd h⟩
 
 /-- The complete lattice of congruence relations on a given type with a multiplication. -/
 @[to_additive "The complete lattice of additive congruence relations on a given type with
@@ -559,7 +559,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
           ⟨fun h =>
             let ⟨a, b, hx, hy, H⟩ := h
             d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-            fun h => ⟨_, _, rfl, rfl, h⟩⟩
+            fun h ↦ ⟨_, _, rfl, rfl, h⟩⟩
   right_inv d :=
     -- Porting note: by exact needed for unknown reason
     by exact
@@ -635,7 +635,7 @@ instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
 
 @[to_additive existing AddCon.Quotient.nsmul]
 instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
-  pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
+  pow x n := Quotient.map' (fun x ↦ x ^ n) (fun _ _ => c.pow n) x
 
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
@@ -714,7 +714,7 @@ variable [Group M] (c : Con M)
 /-- Multiplicative congruence relations preserve inversion. -/
 @[to_additive "Additive congruence relations preserve negation."]
 protected theorem inv {x y} (h : c x y) : c x⁻¹ y⁻¹ :=
-  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [inv_mul_cancel, c.refl 1]) h
+  c.map_of_mul_left_rel_one Inv.inv (fun x ↦ by simp only [inv_mul_cancel, c.refl 1]) h
 
 /-- Multiplicative congruence relations preserve division. -/
 @[to_additive "Additive congruence relations preserve subtraction."]
@@ -745,13 +745,13 @@ instance hasDiv : Div c.Quotient :=
     subtraction. -/
 instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
     SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
+  ⟨fun z ↦ (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
     division. -/
 @[to_additive existing AddCon.Quotient.zsmul]
 instance zpowinst : Pow c.Quotient ℤ :=
-  ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
+  ⟨fun x z => Quotient.map' (fun x ↦ x ^ z) (fun _ _ h => c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is

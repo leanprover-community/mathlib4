@@ -228,7 +228,7 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅)
     (hdt : Directed (· ⊇ ·) t) : ∃ i : ι, s ∩ t i = ∅ :=
   let ⟨t, ht⟩ :=
-    hs.elim_directed_cover (compl ∘ t) (fun i => (htc i).isOpen_compl)
+    hs.elim_directed_cover (compl ∘ t) (fun i ↦ (htc i).isOpen_compl)
       (by
         simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
           mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using hst)
@@ -279,7 +279,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   apply mt ((htc i₀).elim_directed_family_closed t htcl)
   push_neg
   simp only [← nonempty_iff_ne_empty] at htn ⊢
-  refine ⟨htd, fun i => ?_⟩
+  refine ⟨htd, fun i ↦ ?_⟩
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
 
@@ -303,8 +303,8 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
     (htcl : ∀ i, IsClosed (t i)) : (⋂ i, t i).Nonempty :=
   have tmono : Antitone t := antitone_nat_of_succ_le htd
   have htd : Directed (· ⊇ ·) t := tmono.directed_ge
-  have : ∀ i, t i ⊆ t 0 := fun i => tmono <| Nat.zero_le i
-  have htc : ∀ i, IsCompact (t i) := fun i => ht0.of_isClosed_subset (htcl i) (this i)
+  have : ∀ i, t i ⊆ t 0 := fun i ↦ tmono <| Nat.zero_le i
+  have htc : ∀ i, IsCompact (t i) := fun i ↦ ht0.of_isClosed_subset (htcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
 
 @[deprecated (since := "2024-02-28")]
@@ -316,7 +316,7 @@ theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs
     (hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i) :
     ∃ b', b' ⊆ b ∧ Set.Finite b' ∧ s ⊆ ⋃ i ∈ b', c i := by
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
-  rcases hs.elim_finite_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
+  rcases hs.elim_finite_subcover (fun i ↦ c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
   refine ⟨Subtype.val '' d.toSet, ?_, d.finite_toSet.image _, ?_⟩
   · simp
   · rwa [biUnion_image]
@@ -330,7 +330,7 @@ theorem isCompact_of_finite_subcover
   simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
     (nhds_basis_opens _).disjoint_iff_left] at h
   choose U hU hUf using h
-  refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩
+  refine ⟨s, U, fun x ↦ (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩
   refine compl_not_mem (le_principal_iff.1 hfs) ?_
   refine mem_of_superset ((biInter_finset_mem t).2 fun x _ => hUf x) ?_
   rw [subset_compl_comm, compl_iInter₂]
@@ -345,7 +345,7 @@ theorem isCompact_of_finite_subfamily_closed
     IsCompact s :=
   isCompact_of_finite_subcover fun U hUo hsU => by
     rw [← disjoint_compl_right_iff_subset, compl_iUnion, disjoint_iff] at hsU
-    rcases h (fun i => (U i)ᶜ) (fun i => (hUo _).isClosed_compl) hsU with ⟨t, ht⟩
+    rcases h (fun i ↦ (U i)ᶜ) (fun i ↦ (hUo _).isClosed_compl) hsU with ⟨t, ht⟩
     refine ⟨t, ?_⟩
     rwa [← disjoint_compl_right_iff_subset, compl_iUnion₂, disjoint_iff]
 
@@ -475,15 +475,15 @@ theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
-  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, _, hst⟩
+  rcases hs.elim_nhds_subcover (fun x ↦ {x}) fun x _ => this x with ⟨t, _, hst⟩
   simp only [← t.set_biUnion_coe, biUnion_of_singleton] at hst
   exact t.finite_toSet.subset hst
 
 theorem isCompact_iff_finite [DiscreteTopology X] : IsCompact s ↔ s.Finite :=
-  ⟨fun h => h.finite_of_discrete, fun h => h.isCompact⟩
+  ⟨fun h ↦ h.finite_of_discrete, fun h ↦ h.isCompact⟩
 
 theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪ t) := by
-  rw [union_eq_iUnion]; exact isCompact_iUnion fun b => by cases b <;> assumption
+  rw [union_eq_iUnion]; exact isCompact_iUnion fun b ↦ by cases b <;> assumption
 
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
@@ -498,14 +498,14 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
   suffices ∃ i, V i ⊆ W from this.imp fun i hi => hi.trans hWU
   by_contra! H
-  replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
+  replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i ↦ Set.inter_compl_nonempty_iff.mpr (H i)
   have : (⋂ i, V i ∩ Wᶜ).Nonempty := by
     refine
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun i j => ?_) H
-        (fun i => (hV_cpct i).inter_right W_op.isClosed_compl) fun i =>
+        (fun i ↦ (hV_cpct i).inter_right W_op.isClosed_compl) fun i =>
         (hV_closed i).inter W_op.isClosed_compl
     rcases hV i j with ⟨k, hki, hkj⟩
-    refine ⟨k, ⟨fun x => ?_, fun x => ?_⟩⟩ <;> simp only [and_imp, mem_inter_iff, mem_compl_iff] <;>
+    refine ⟨k, ⟨fun x ↦ ?_, fun x ↦ ?_⟩⟩ <;> simp only [and_imp, mem_inter_iff, mem_compl_iff] <;>
       tauto
   have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]
   contradiction
@@ -518,13 +518,13 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
   have : b ∘ f' = f := funext hf'
   subst this
   obtain ⟨t, ht⟩ :=
-    hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+    hUc.elim_finite_subcover (b ∘ f') (fun i ↦ hb.isOpen (Set.mem_range_self _)) (by rw [e])
   classical
   refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
   · refine Set.Subset.trans ht ?_
     simp only [Set.iUnion_subset_iff]
     intro i hi
-    erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+    erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i ↦ b i.1]
     exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
   · apply Set.iUnion₂_subset
     rintro i hi
@@ -624,7 +624,7 @@ theorem Tendsto.isCompact_insert_range {f : ℕ → X} {x} (hf : Tendsto f atTop
   Filter.Tendsto.isCompact_insert_range_of_cofinite <| Nat.cofinite_eq_atTop.symm ▸ hf
 
 theorem hasBasis_coclosedCompact :
-    (Filter.coclosedCompact X).HasBasis (fun s => IsClosed s ∧ IsCompact s) compl := by
+    (Filter.coclosedCompact X).HasBasis (fun s ↦ IsClosed s ∧ IsCompact s) compl := by
   simp only [Filter.coclosedCompact, iInf_and']
   refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isCompact_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
@@ -726,7 +726,7 @@ instance (priority := 10) Subsingleton.compactSpace [Subsingleton X] : CompactSp
   ⟨subsingleton_univ.isCompact⟩
 
 theorem isCompact_univ_iff : IsCompact (univ : Set X) ↔ CompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
   h.isCompact_univ
@@ -748,7 +748,7 @@ theorem compactSpace_of_finite_subfamily_closed
     (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → ⋂ i, t i = ∅ →
       ∃ u : Finset ι, ⋂ i ∈ u, t i = ∅) :
     CompactSpace X where
-  isCompact_univ := isCompact_of_finite_subfamily_closed fun t => by simpa using h t
+  isCompact_univ := isCompact_of_finite_subfamily_closed fun t ↦ by simpa using h t
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
@@ -830,7 +830,7 @@ theorem exists_nhds_ne_neBot (X : Type*) [TopologicalSpace X] [CompactSpace X] [
 
 theorem finite_cover_nhds_interior [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Finset X, ⋃ x ∈ t, interior (U x) = univ :=
-  let ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x => interior (U x))
+  let ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x ↦ interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, univ_subset_iff.1 ht⟩
 
@@ -894,7 +894,7 @@ theorem isClosedMap_fst_of_compactSpace [CompactSpace Y] : IsClosedMap (Prod.fst
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
-  exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
+  exists_subset_nhds_of_isCompact' hV (fun i ↦ (hV_closed i).isCompact) hV_closed hU
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is compact
   if and only if `s` is compact. -/
@@ -994,9 +994,9 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
   rw [isCompact_iff_ultrafilter_le_nhds'] at hs ht ⊢
   intro f hfs
   obtain ⟨x : X, sx : x ∈ s, hx : map Prod.fst f.1 ≤ 𝓝 x⟩ :=
-    hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x => And.left)
+    hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x ↦ And.left)
   obtain ⟨y : Y, ty : y ∈ t, hy : map Prod.snd f.1 ≤ 𝓝 y⟩ :=
-    ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x => And.right)
+    ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x ↦ And.right)
   rw [map_le_iff_le_comap] at hx hy
   refine ⟨⟨x, y⟩, ⟨sx, ty⟩, ?_⟩
   rw [nhds_prod_eq]; exact le_inf hx hy
@@ -1022,7 +1022,7 @@ instance {X : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)] [∀ i, 
     CompactSpace (Σi, X i) := by
   refine ⟨?_⟩
   rw [Sigma.univ]
-  exact isCompact_iUnion fun i => isCompact_range continuous_sigmaMk
+  exact isCompact_iUnion fun i ↦ isCompact_range continuous_sigmaMk
 
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/
@@ -1058,10 +1058,10 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
   simp only [isCompact_iff_ultrafilter_le_nhds, nhds_pi, le_pi, le_principal_iff]
   intro h f hfs
   have : ∀ i : ι, ∃ x, x ∈ s i ∧ Tendsto (Function.eval i) f (𝓝 x) := by
-    refine fun i => h i (f.map _) (mem_map.2 ?_)
+    refine fun i ↦ h i (f.map _) (mem_map.2 ?_)
     exact mem_of_superset hfs fun x hx => hx i
   choose x hx using this
-  exact ⟨x, fun i => (hx i).left, fun i => (hx i).right⟩
+  exact ⟨x, fun i ↦ (hx i).left, fun i ↦ (hx i).right⟩
 
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
 theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
@@ -1070,7 +1070,7 @@ theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
   simp only [← mem_univ_pi, setOf_mem_eq]
 
 instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=
-  ⟨by rw [← pi_univ univ]; exact isCompact_univ_pi fun i => isCompact_univ⟩
+  ⟨by rw [← pi_univ univ]; exact isCompact_univ_pi fun i ↦ isCompact_univ⟩
 
 instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) :=
   Pi.compactSpace
@@ -1093,8 +1093,8 @@ protected lemma Pi.exists_compact_superset_iff {s : Set (Π i, X i)} :
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
 type `Π d, X d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `X d`. -/
 theorem Filter.coprodᵢ_cocompact {X : ι → Type*} [∀ d, TopologicalSpace (X d)] :
-    (Filter.coprodᵢ fun d => Filter.cocompact (X d)) = Filter.cocompact (∀ d, X d) := by
-  refine le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) ?_
+    (Filter.coprodᵢ fun d ↦ Filter.cocompact (X d)) = Filter.cocompact (∀ d, X d) := by
+  refine le_antisymm (iSup_le fun i ↦ Filter.comap_cocompact_le (continuous_apply i)) ?_
   refine compl_surjective.forall.2 fun s H => ?_
   simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢
   choose K hKc htK using H

@@ -173,7 +173,7 @@ variable {k P1}
 
 theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     f.linear = 0 ↔ ∃ q, f = const k P1 q := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · use f (Classical.arbitrary P1)
     ext
     rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,
@@ -277,15 +277,15 @@ instance : AddCommGroup (P1 →ᵃ[k] V2) :=
 from `P1` to the vector space `V2` corresponding to `P2`. -/
 instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
-    ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
+    ⟨fun p ↦ f p +ᵥ g p, f.linear + g.linear,
       fun p v => by simp [vadd_vadd, add_right_comm]⟩
-  zero_vadd f := ext fun p => zero_vadd _ (f p)
-  add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
+  zero_vadd f := ext fun p ↦ zero_vadd _ (f p)
+  add_vadd f₁ f₂ f₃ := ext fun p ↦ add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
-    ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
+    ⟨fun p ↦ f p -ᵥ g p, f.linear - g.linear, fun p v => by
       simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub, sub_add_eq_add_sub]⟩
-  vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
-  vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
+  vsub_vadd' f g := ext fun p ↦ vsub_vadd (f p) (g p)
+  vadd_vsub' f g := ext fun p ↦ vadd_vsub (f p) (g p)
 
 @[simp]
 theorem vadd_apply (f : P1 →ᵃ[k] V2) (g : P1 →ᵃ[k] P2) (p : P1) : (f +ᵥ g) p = f p +ᵥ g p :=
@@ -443,7 +443,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
   ((LinearMap.id : k →ₗ[k] k).smulRight (p₁ -ᵥ p₀)).toAffineMap +ᵥ const k k p₀
 
-theorem coe_lineMap (p₀ p₁ : P1) : (lineMap p₀ p₁ : k → P1) = fun c => c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
+theorem coe_lineMap (p₀ p₁ : P1) : (lineMap p₀ p₁ : k → P1) = fun c ↦ c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
   rfl
 
 theorem lineMap_apply (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c = c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
@@ -583,7 +583,7 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
 
 theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
-  have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
+  have : ⇑f = (fun x ↦ x + f 0) ∘ fun x ↦ x * (f 1 - f 0) := by
     ext x
     change f x = x • (f 1 -ᵥ f 0) +ᵥ f 0
     rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]
@@ -694,7 +694,7 @@ variable (fp : (i : ι) → (P1 →ᵃ[k] φp i)) (fv : (i : ι) → (P1 →ᵃ[
 theorem pi_apply (c : P1) (i : ι) : pi fp c i = fp i c :=
   rfl
 
-theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
+theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i ↦ (fp i).comp g) :=
   rfl
 
 theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by

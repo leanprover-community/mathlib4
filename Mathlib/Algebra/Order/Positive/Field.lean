@@ -18,7 +18,7 @@ variable {K : Type*} [LinearOrderedField K]
 
 namespace Positive
 
-instance Subtype.inv : Inv { x : K // 0 < x } := ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
+instance Subtype.inv : Inv { x : K // 0 < x } := ⟨fun x ↦ ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
 theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
@@ -33,6 +33,6 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
 
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
   { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
-    inv_mul_cancel := fun a => Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
+    inv_mul_cancel := fun a ↦ Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
 
 end Positive

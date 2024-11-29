@@ -85,7 +85,7 @@ theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
   by_cases hf : f = 0; · simp [hf]
   ext i
-  refine ⟨fun h => integralNormalization_support h, ?_⟩
+  refine ⟨fun h ↦ integralNormalization_support h, ?_⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
   split_ifs with hi <;> simp [hf, hfi, hi]
@@ -125,7 +125,7 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
         rw [integralNormalization_coeff_ne_natDegree hi, mul_assoc, ← pow_add,
           tsub_add_cancel_of_le this]
     _ = f p.leadingCoeff ^ (natDegree p - 1) * eval₂ f z p := by
-      simp_rw [eval₂_eq_sum, sum_def, fun i => mul_comm (coeff p i), RingHom.map_mul,
+      simp_rw [eval₂_eq_sum, sum_def, fun i ↦ mul_comm (coeff p i), RingHom.map_mul,
                RingHom.map_pow, mul_assoc, ← Finset.mul_sum]
       congr 1
       exact p.support.sum_attach fun i ↦ f (p.coeff i) * z ^ i

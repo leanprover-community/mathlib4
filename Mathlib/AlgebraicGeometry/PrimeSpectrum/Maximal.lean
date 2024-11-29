@@ -48,7 +48,7 @@ instance zariskiTopology : TopologicalSpace <| MaximalSpectrum R :=
   PrimeSpectrum.zariskiTopology.induced toPrimeSpectrum
 
 instance : T1Space <| MaximalSpectrum R :=
-  ⟨fun x => isClosed_induced_iff.mpr
+  ⟨fun x ↦ isClosed_induced_iff.mpr
     ⟨{toPrimeSpectrum x}, (isClosed_singleton_iff_isMaximal _).mpr x.IsMaximal, by
       simpa only [← image_singleton] using preimage_image_eq {x} toPrimeSpectrum_injective⟩⟩
 

@@ -102,7 +102,7 @@ def PseudoEqual (P : C) (f g : Over P) : Prop :=
   ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
 theorem pseudoEqual_refl {P : C} : Reflexive (PseudoEqual P) :=
-  fun f => ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
+  fun f ↦ ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
 
 theorem pseudoEqual_symm {P : C} : Symmetric (PseudoEqual P) :=
   fun _ _ ⟨R, p, q, ep, Eq, comm⟩ => ⟨R, q, p, Eq, ep, comm.symm⟩
@@ -251,7 +251,7 @@ theorem zero_apply {P : C} (Q : C) (a : P) : (0 : P ⟶ Q) a = 0 :=
     simp
 
 /-- An extensionality lemma for being the zero arrow. -/
-theorem zero_morphism_ext {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → f = 0 := fun h => by
+theorem zero_morphism_ext {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → f = 0 := fun h ↦ by
   rw [← Category.id_comp f]
   exact (pseudoZero_iff (𝟙 P ≫ f : Over Q)).1 (h (𝟙 P))
 
@@ -280,7 +280,7 @@ theorem zero_of_map_zero {P Q : C} (f : P ⟶ Q) : Function.Injective f → ∀ 
 
 /-- A morphism that only maps the zero pseudoelement to zero is a monomorphism. -/
 theorem mono_of_zero_of_map_zero {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0 → a = 0) → Mono f :=
-  fun h => (mono_iff_cancel_zero _).2 fun _ g hg =>
+  fun h ↦ (mono_iff_cancel_zero _).2 fun _ g hg =>
     (pseudoZero_iff (g : Over P)).1 <|
       h _ <| show f g = 0 from (pseudoZero_iff (g ≫ f : Over Q)).2 hg
 
@@ -344,7 +344,7 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 end
 
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
-  fun h => by simp [over_coe_def, pseudoApply_mk', Over.coe_hom, h]
+  fun h ↦ by simp [over_coe_def, pseudoApply_mk', Over.coe_hom, h]
 
 section
 
@@ -429,7 +429,7 @@ morphisms is the same. -/
 theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
-  refine Submodule.ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩
+  refine Submodule.ext fun a ↦ ⟨fun ha => ?_, fun ha => ?_⟩
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine ⟨q a'', ?_⟩

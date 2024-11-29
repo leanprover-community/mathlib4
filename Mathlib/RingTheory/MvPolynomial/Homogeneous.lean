@@ -489,7 +489,7 @@ theorem sum_homogeneousComponent :
   ext1 d
   suffices φ.totalDegree < d.support.sum d → 0 = coeff d φ by
     simpa [coeff_sum, coeff_homogeneousComponent]
-  exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
+  exact fun h ↦ (coeff_eq_zero_of_totalDegree_lt h).symm
 
 theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     (h : p ∈ homogeneousSubmodule σ R n) :
@@ -529,7 +529,7 @@ theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
 theorem decomposition.decompose'_eq :
     decomposition.decompose' = fun φ : MvPolynomial σ R =>
       DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (φ.support.image Finsupp.degree)
-        fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
+        fun m ↦ ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
   rw [degree_eq_weight_one]
   rfl
 

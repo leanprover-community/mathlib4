@@ -62,10 +62,10 @@ theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁�
 
 @[simp]
 theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
-  ⟨fun h => by simpa using isCaratheodory_compl m h, isCaratheodory_compl m⟩
+  ⟨fun h ↦ by simpa using isCaratheodory_compl m h, isCaratheodory_compl m⟩
 
 theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
-    IsCaratheodory m (s₁ ∪ s₂) := fun t => by
+    IsCaratheodory m (s₁ ∪ s₂) := fun t ↦ by
   rw [h₁ t, h₂ (t ∩ s₁), h₂ (t \ s₁), h₁ (t ∩ (s₁ ∪ s₂)), inter_diff_assoc _ _ s₁,
     Set.inter_assoc _ _ s₁, inter_eq_self_of_subset_right Set.subset_union_left,
     union_diff_left, h₂ (t ∩ s₁)]
@@ -120,12 +120,12 @@ theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCar
       apply (isCaratheodory_iff_le' m).mpr
       intro t
       have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
-        convert measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
+        convert measure_iUnion_le (μ := m) fun i ↦ t ∩ s i using 1
         · simp [inter_iUnion]
         · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
       refine le_trans (add_le_add_right hp _) ?_
       rw [ENNReal.iSup_add]
-      refine iSup_le fun n => le_trans (add_le_add_left ?_ _)
+      refine iSup_le fun n ↦ le_trans (add_le_add_left ?_ _)
         (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
       refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i
@@ -143,7 +143,7 @@ theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : 
     m (⋃ i, s i) = ∑' i, m (s i) := by
   refine le_antisymm (measure_iUnion_le s) ?_
   rw [ENNReal.tsum_eq_iSup_nat]
-  refine iSup_le fun n => ?_
+  refine iSup_le fun n ↦ ?_
   have := @isCaratheodory_sum _ m _ h hd univ n
   simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
@@ -183,18 +183,18 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) :
     MeasurableSet[(OuterMeasure.ofFunction m h₀).caratheodory] s := by
   apply (isCaratheodory_iff_le _).mpr
-  refine fun t => le_iInf fun f => le_iInf fun hf => ?_
+  refine fun t ↦ le_iInf fun f ↦ le_iInf fun hf => ?_
   refine
     le_trans
-      (add_le_add ((iInf_le_of_le fun i => f i ∩ s) <| iInf_le _ ?_)
-        ((iInf_le_of_le fun i => f i \ s) <| iInf_le _ ?_))
+      (add_le_add ((iInf_le_of_le fun i ↦ f i ∩ s) <| iInf_le _ ?_)
+        ((iInf_le_of_le fun i ↦ f i \ s) <| iInf_le _ ?_))
       ?_
   · rw [← iUnion_inter]
     exact inter_subset_inter_left _ hf
   · rw [← iUnion_diff]
     exact diff_subset_diff_left hf
   · rw [← ENNReal.tsum_add]
-    exact ENNReal.tsum_le_tsum fun i => hs _
+    exact ENNReal.tsum_le_tsum fun i ↦ hs _
 
 theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) : MeasurableSet[(boundedBy m).caratheodory] s := by
@@ -221,7 +221,7 @@ theorem le_add_caratheodory (m₁ m₂ : OuterMeasure α) :
 
 theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
     ⨅ i, (m i).caratheodory ≤ (sum m).caratheodory := fun s h t => by
-  simp [fun i => MeasurableSpace.measurableSet_iInf.1 h i t, ENNReal.tsum_add]
+  simp [fun i ↦ MeasurableSpace.measurableSet_iInf.1 h i t, ENNReal.tsum_add]
 
 theorem le_smul_caratheodory (a : ℝ≥0∞) (m : OuterMeasure α) :
     m.caratheodory ≤ (a • m).caratheodory := fun s h t => by

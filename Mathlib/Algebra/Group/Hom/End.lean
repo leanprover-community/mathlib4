@@ -47,7 +47,7 @@ instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
 
 instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
-    intCast := fun z => z • (1 : AddMonoid.End M),
+    intCast := fun z ↦ z • (1 : AddMonoid.End M),
     intCast_ofNat := natCast_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 

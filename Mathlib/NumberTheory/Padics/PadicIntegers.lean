@@ -171,7 +171,7 @@ theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by simp
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
-def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : ℤ_[p] :=
+def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n ↦ seq n) : ℤ_[p] :=
   ⟨⟦⟨_, h⟩⟧,
     show ↑(PadicSeq.norm _) ≤ (1 : ℝ) by
       rw [PadicSeq.norm]
@@ -201,7 +201,7 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
   this.completeSpace_coe
 
-instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
+instance : Norm ℤ_[p] := ⟨fun z ↦ ‖(z : ℚ_[p])‖⟩
 
 variable {p}
 
@@ -279,8 +279,8 @@ theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by simp
 
-private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a => ‖a‖ :=
-  ⟨fun n => f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
+private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a ↦ ‖a‖ :=
+  ⟨fun n ↦ f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
 
 variable (p)
 
@@ -394,7 +394,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
 
 theorem isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases isUnit_iff_dvd_one.1 h with ⟨w, eq⟩
     refine le_antisymm (norm_le_one _) ?_
     have := mul_le_mul_of_nonneg_left (norm_le_one w) (norm_nonneg z)
@@ -564,7 +564,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
       refine ⟨m, fun n hn => lt_of_le_of_lt ?_ hm⟩
       rw [← neg_sub, norm_neg]
       exact hx hn
-    · refine ⟨x'.lim, fun n => ?_⟩
+    · refine ⟨x'.lim, fun n ↦ ?_⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := by
         apply zpow_pos
         exact mod_cast hp.1.pos
@@ -619,7 +619,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
         Subtype.coe_mk, Nat.cast_pow]
   exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
-    exact fun h => ⟨1, by rw [h]⟩
+    exact fun h ↦ ⟨1, by rw [h]⟩
 
 end FractionRing
 

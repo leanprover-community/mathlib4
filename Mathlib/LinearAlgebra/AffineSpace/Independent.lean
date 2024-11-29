@@ -98,7 +98,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
     · intro h
       rw [linearIndependent_iff']
       intro s g hg i hi
-      set f : ι → k := fun x => if hx : x = i1 then -∑ y ∈ s, g y else g ⟨x, hx⟩ with hfdef
+      set f : ι → k := fun x ↦ if hx : x = i1 then -∑ y ∈ s, g y else g ⟨x, hx⟩ with hfdef
       let s2 : Finset ι := insert i1 (s.map (Embedding.subtype _))
       have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by
         intro x
@@ -115,11 +115,11 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         rw [dif_pos rfl]
         exact neg_add_cancel _
       have hs2 : s2.weightedVSub p f = (0 : V) := by
-        set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
-        set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
+        set f2 : ι → V := fun x ↦ f x • (p x -ᵥ p i1) with hf2def
+        set g2 : { x // x ≠ i1 } → V := fun x ↦ g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
           simp only [g2, hf2def]
-          refine fun x => ?_
+          refine fun x ↦ ?_
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
           Finset.weightedVSubOfPoint_insert, Finset.weightedVSubOfPoint_apply,
@@ -131,11 +131,11 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       intro s w hw hs i hi
       rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s w p hw (p i1), ←
         s.weightedVSubOfPoint_erase w p i1, Finset.weightedVSubOfPoint_apply] at hs
-      let f : ι → V := fun i => w i • (p i -ᵥ p i1)
-      have hs2 : (∑ i ∈ (s.erase i1).subtype fun i => i ≠ i1, f i) = 0 := by
+      let f : ι → V := fun i ↦ w i • (p i -ᵥ p i1)
+      have hs2 : (∑ i ∈ (s.erase i1).subtype fun i ↦ i ≠ i1, f i) = 0 := by
         rw [← hs]
-        convert Finset.sum_subtype_of_mem f fun x => Finset.ne_of_mem_erase
-      have h2 := h ((s.erase i1).subtype fun i => i ≠ i1) (fun x => w x) hs2
+        convert Finset.sum_subtype_of_mem f fun x ↦ Finset.ne_of_mem_erase
+      have h2 := h ((s.erase i1).subtype fun i ↦ i ≠ i1) (fun x ↦ w x) hs2
       simp_rw [Finset.mem_subtype] at h2
       have h2b : ∀ i ∈ s, i ≠ i1 → w i = 0 := fun i his hi =>
         h2 ⟨i, hi⟩ (Finset.mem_erase_of_ne_of_mem hi his)
@@ -144,12 +144,12 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
 /-- A set is affinely independent if and only if the differences from
 a base point in that set are linearly independent. -/
 theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} (hp₁ : p₁ ∈ s) :
-    AffineIndependent k (fun p => p : s → P) ↔
-      LinearIndependent k (fun v => v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → V) := by
-  rw [affineIndependent_iff_linearIndependent_vsub k (fun p => p : s → P) ⟨p₁, hp₁⟩]
+    AffineIndependent k (fun p ↦ p : s → P) ↔
+      LinearIndependent k (fun v ↦ v : (fun p ↦ (p -ᵥ p₁ : V)) '' (s \ {p₁}) → V) := by
+  rw [affineIndependent_iff_linearIndependent_vsub k (fun p ↦ p : s → P) ⟨p₁, hp₁⟩]
   constructor
   · intro h
-    have hv : ∀ v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
+    have hv : ∀ v : (fun p ↦ (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
       (vsub_left_injective p₁).mem_set_image.1 ((vadd_vsub (v : V) p₁).symm ▸ v.property)
     let f : (fun p : P => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → { x : s // x ≠ ⟨p₁, hp₁⟩ } := fun x =>
       ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_diff (hv x)⟩, fun hx =>
@@ -168,14 +168,14 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
 given a point `p₁`, the vectors added to `p₁` and `p₁` itself are
 affinely independent. -/
 theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Set V}
-    (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k (fun v => v : s → V) ↔
-    AffineIndependent k (fun p => p : ({p₁} ∪ (fun v => v +ᵥ p₁) '' s : Set P) → P) := by
+    (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k (fun v ↦ v : s → V) ↔
+    AffineIndependent k (fun p ↦ p : ({p₁} ∪ (fun v ↦ v +ᵥ p₁) '' s : Set P) → P) := by
   rw [affineIndependent_set_iff_linearIndependent_vsub k
       (Set.mem_union_left _ (Set.mem_singleton p₁))]
-  have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
+  have h : (fun p ↦ (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v ↦ v +ᵥ p₁) '' s) \ {p₁}) = s := by
     simp_rw [Set.union_diff_left, Set.image_diff (vsub_left_injective p₁), Set.image_image,
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
-    exact Set.diff_singleton_eq_self fun h => hs 0 h rfl
+    exact Set.diff_singleton_eq_self fun h ↦ hs 0 h rfl
   rw [h]
 
 /-- A family is affinely independent if and only if any affine
@@ -259,10 +259,10 @@ independent.
 
 This is the affine version of `LinearIndependent.units_smul`. -/
 theorem AffineIndependent.units_lineMap {p : ι → P} (hp : AffineIndependent k p) (j : ι)
-    (w : ι → Units k) : AffineIndependent k fun i => AffineMap.lineMap (p j) (p i) (w i : k) := by
+    (w : ι → Units k) : AffineIndependent k fun i ↦ AffineMap.lineMap (p j) (p i) (w i : k) := by
   rw [affineIndependent_iff_linearIndependent_vsub k _ j] at hp ⊢
   simp only [AffineMap.lineMap_vsub_left, AffineMap.coe_const, AffineMap.lineMap_same, const_apply]
-  exact hp.units_smul fun i => w i
+  exact hp.units_smul fun i ↦ w i
 
 theorem AffineIndependent.indicator_eq_of_affineCombination_eq {p : ι → P}
     (ha : AffineIndependent k p) (s₁ s₂ : Finset ι) (w₁ w₂ : ι → k) (hw₁ : ∑ i ∈ s₁, w₁ i = 1)
@@ -312,9 +312,9 @@ protected theorem AffineIndependent.subtype {p : ι → P} (ha : AffineIndepende
 /-- If an indexed family of points is affinely independent, so is the
 corresponding set of points. -/
 protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent k p) :
-    AffineIndependent k (fun x => x : Set.range p → P) := by
-  let f : Set.range p → ι := fun x => x.property.choose
-  have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
+    AffineIndependent k (fun x ↦ x : Set.range p → P) := by
+  let f : Set.range p → ι := fun x ↦ x.property.choose
+  have hf : ∀ x, p (f x) = x := fun x ↦ x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
   convert ha.comp_embedding fe
   ext
@@ -332,17 +332,17 @@ theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
 
 /-- If a set of points is affinely independent, so is any subset. -/
 protected theorem AffineIndependent.mono {s t : Set P}
-    (ha : AffineIndependent k (fun x => x : t → P)) (hs : s ⊆ t) :
-    AffineIndependent k (fun x => x : s → P) :=
+    (ha : AffineIndependent k (fun x ↦ x : t → P)) (hs : s ⊆ t) :
+    AffineIndependent k (fun x ↦ x : s → P) :=
   ha.comp_embedding (s.embeddingOfSubset t hs)
 
 /-- If the range of an injective indexed family of points is affinely
 independent, so is that family. -/
 theorem AffineIndependent.of_set_of_injective {p : ι → P}
-    (ha : AffineIndependent k (fun x => x : Set.range p → P)) (hi : Function.Injective p) :
+    (ha : AffineIndependent k (fun x ↦ x : Set.range p → P)) (hi : Function.Injective p) :
     AffineIndependent k p :=
   ha.comp_embedding
-    (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
+    (⟨fun i ↦ ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
       ι ↪ Set.range p)
 
 section Composition
@@ -438,7 +438,7 @@ protected theorem AffineIndependent.mem_affineSpan_iff [Nontrivial k] {p : ι �
       AffineIndependent.exists_mem_inter_of_exists_mem_inter_affineSpan ha hs
         (mem_affineSpan k (Set.mem_image_of_mem _ (Set.mem_singleton _)))
     rwa [← Set.nonempty_def, Set.inter_singleton_nonempty] at h
-  · exact fun h => mem_affineSpan k (Set.mem_image_of_mem p h)
+  · exact fun h ↦ mem_affineSpan k (Set.mem_image_of_mem p h)
 
 /-- If a family is affinely independent, a point in the family is not
 in the affine span of the other points, if the underlying ring is
@@ -457,7 +457,7 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     simp only [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w ((↑) : t → V) hw 0,
       vsub_eq_sub, Finset.weightedVSubOfPoint_apply, sub_zero] at hwt
     let f : ∀ x : V, x ∈ t → k := fun x hx => w ⟨x, hx⟩
-    refine ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp [hi]⟩
+    refine ⟨fun x ↦ if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp [hi]⟩
     on_goal 1 =>
       suffices (∑ e ∈ t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
         convert this
@@ -507,7 +507,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
         vectorSpan k ({s.affineCombination k p w₁, s.affineCombination k p w₂} : Set P) ↔
       ∃ r : k, ∀ i ∈ s, w i = r * (w₁ i - w₂ i) := by
   rw [mem_vectorSpan_pair]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨r, hr⟩
     refine ⟨r, fun i hi => ?_⟩
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr
@@ -551,8 +551,8 @@ variable [AffineSpace V P] {ι : Type*}
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
 theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
-    (h : AffineIndependent k (fun p => p : s → P)) :
-    ∃ t : Set P, s ⊆ t ∧ AffineIndependent k (fun p => p : t → P) ∧ affineSpan k t = ⊤ := by
+    (h : AffineIndependent k (fun p ↦ p : s → P)) :
+    ∃ t : Set P, s ⊆ t ∧ AffineIndependent k (fun p ↦ p : t → P) ∧ affineSpan k t = ⊤ := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p₁, hp₁⟩)
   · have p₁ : P := AddTorsor.nonempty.some
     let hsv := Basis.ofVectorSpace k V
@@ -564,7 +564,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
       simpa [hsv] using hsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     exact
-      ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
+      ⟨{p₁} ∪ (fun v ↦ v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
         affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt⟩
   · rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁] at h
     let bsv := Basis.extend h
@@ -576,7 +576,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
-    refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
+    refine ⟨{p₁} ∪ (fun v ↦ v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
     · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
       simp [Set.image_image]
     · use hsvi
@@ -634,14 +634,14 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
   classical
     intro s w hw hs
     let s' : Finset { y // y ≠ i } := s.subtype (· ≠ i)
-    let p' : { y // y ≠ i } → P := fun x => p x
+    let p' : { y // y ≠ i } → P := fun x ↦ p x
     by_cases his : i ∈ s ∧ w i ≠ 0
     · refine False.elim (hi ?_)
       let wm : ι → k := -(w i)⁻¹ • w
       have hms : s.weightedVSub p wm = (0 : V) := by simp [wm, hs]
       have hwm : ∑ i ∈ s, wm i = 0 := by simp [wm, ← Finset.mul_sum, hw]
       have hwmi : wm i = -1 := by simp [wm, his.2]
-      let w' : { y // y ≠ i } → k := fun x => wm x
+      let w' : { y // y ≠ i } → k := fun x ↦ wm x
       have hw' : ∑ x ∈ s', w' x = 1 := by
         simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
@@ -655,7 +655,7 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
         s.affineCombination_subtype_eq_filter]
       exact affineCombination_mem_affineSpan hw' p'
     · rw [not_and_or, Classical.not_not] at his
-      let w' : { y // y ≠ i } → k := fun x => w x
+      let w' : { y // y ≠ i } → k := fun x ↦ w x
       have hw' : ∑ x ∈ s', w' x = 0 := by
         simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [Finset.sum_filter_of_ne, hw]
@@ -901,7 +901,7 @@ faces are given by the same subset of points. -/
 theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ : Finset (Fin (n + 1))}
     {m₁ m₂ : ℕ} (h₁ : #fs₁ = m₁ + 1) (h₂ : #fs₂ = m₂ + 1) :
     fs₁.centroid k s.points = fs₂.centroid k s.points ↔ fs₁ = fs₂ := by
-  refine ⟨fun h => ?_, @congrArg _ _ fs₁ fs₂ (fun z => Finset.centroid k z s.points)⟩
+  refine ⟨fun h ↦ ?_, @congrArg _ _ fs₁ fs₂ (fun z ↦ Finset.centroid k z s.points)⟩
   rw [Finset.centroid_eq_affineCombination_fintype,
     Finset.centroid_eq_affineCombination_fintype] at h
   have ha :=

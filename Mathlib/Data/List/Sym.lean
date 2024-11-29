@@ -35,7 +35,7 @@ section Sym2
 If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
-  | x :: xs => (x :: xs).map (fun y => s(x, y)) ++ xs.sym2
+  | x :: xs => (x :: xs).map (fun y ↦ s(x, y)) ++ xs.sym2
 
 theorem sym2_map (f : α → β) (xs : List α) :
     (xs.map f).sym2 = xs.sym2.map (Sym2.map f) := by
@@ -225,7 +225,7 @@ section Sym
 protected def sym : (n : ℕ) → List α → List (Sym α n)
   | 0, _ => [.nil]
   | _, [] => []
-  | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p => x ::ₛ p) ++ xs.sym (n + 1)
+  | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p ↦ x ::ₛ p) ++ xs.sym (n + 1)
 
 variable {xs ys : List α} {n : ℕ}
 

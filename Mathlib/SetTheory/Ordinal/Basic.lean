@@ -279,7 +279,7 @@ instance partialOrder : PartialOrder Ordinal where
   lt_iff_le_not_le a b :=
     Quotient.inductionOn₂ a b fun _ _ =>
       ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.transInitial g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
-        f.principalSumRelIso.recOn (fun g => ⟨g⟩) fun g => (h ⟨g.symm.toInitialSeg⟩).elim⟩
+        f.principalSumRelIso.recOn (fun g ↦ ⟨g⟩) fun g ↦ (h ⟨g.symm.toInitialSeg⟩).elim⟩
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
@@ -287,7 +287,7 @@ instance partialOrder : PartialOrder Ordinal where
 instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
-      (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
+      (InitialSeg.total r s).recOn (fun f ↦ Or.inl ⟨f⟩) fun f ↦ Or.inr ⟨f⟩
     decidableLE := Classical.decRel _ }
 
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
@@ -595,7 +595,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
   see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
-  Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
+  Quotient.liftOn o (fun w ↦ type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
@@ -876,7 +876,7 @@ instance : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
 instance : SuccOrder Ordinal.{u} :=
-  SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
+  SuccOrder.ofSuccLeIff (fun o ↦ o + 1) succ_le_iff'
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
@@ -988,7 +988,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
 `Ordinal.{v}` as a principal segment when `u < v`. -/
 def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
-    refine fun b => inductionOn b ?_; intro β s _
+    refine fun b ↦ inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · cases' h with a e
       rw [← e]
@@ -1005,7 +1005,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       intro α r _ hf
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
-      · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
+      · exact fun b ↦ enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
       · refine fun a b h => (typein_lt_typein r).1 ?_
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
@@ -1071,7 +1071,7 @@ def ord (c : Cardinal) : Ordinal :=
       suffices ∀ {α β}, α ≈ β → F α ≤ F β from
         fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
-      refine le_ciInf_iff'.2 fun i => ?_
+      refine le_ciInf_iff'.2 fun i ↦ ?_
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
       exact
         (ciInf_le' _
@@ -1117,7 +1117,7 @@ theorem card_surjective : Function.Surjective card :=
 
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
-  gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
+  gc_ord_card.toGaloisCoinsertion fun c ↦ c.card_ord.le
 
 theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
   gc_ord_card.l_u_le _
@@ -1296,7 +1296,7 @@ theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   apply lift_lt_univ'
 
 theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
     cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
@@ -1305,7 +1305,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
     exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     let ⟨a, h', e⟩ := lt_lift_iff.1 h
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩

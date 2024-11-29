@@ -105,7 +105,7 @@ def ContinuousLinearMap.uncurryLeft
     ContinuousMultilinearMap 𝕜 Ei G :=
   (@LinearMap.uncurryLeft 𝕜 n Ei G _ _ _ _ _
       (ContinuousMultilinearMap.toMultilinearMapLinear.comp f.toLinearMap)).mkContinuous
-    ‖f‖ fun m => by exact ContinuousLinearMap.norm_map_tail_le f m
+    ‖f‖ fun m ↦ by exact ContinuousLinearMap.norm_map_tail_le f m
 
 @[simp]
 theorem ContinuousLinearMap.uncurryLeft_apply
@@ -130,7 +130,7 @@ def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) 
         ext m
         exact
           f.cons_smul m c x }-- then register its continuity thanks to its boundedness properties.
-    ‖f‖ fun x => by
+    ‖f‖ fun x ↦ by
       rw [LinearMap.coe_mk, AddHom.coe_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
 
@@ -172,10 +172,10 @@ def continuousMultilinearCurryLeftEquiv :
       invFun := ContinuousLinearMap.uncurryLeft
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
-    (fun f => by
+    (fun f ↦ by
       simp only [LinearEquiv.coe_mk]
       exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
-    (fun f => by
+    (fun f ↦ by
       simp only [LinearEquiv.coe_symm_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
 
@@ -214,7 +214,7 @@ def ContinuousMultilinearMap.uncurryRight
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
     ContinuousMultilinearMap 𝕜 Ei G :=
   let f' : MultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →ₗ[𝕜] G) :=
-    { toFun := fun m => (f m).toLinearMap
+    { toFun := fun m ↦ (f m).toLinearMap
       map_update_add' := fun m i x y => by simp
       map_update_smul' := fun m i c x => by simp }
   (@MultilinearMap.uncurryRight 𝕜 n Ei G _ _ _ _ _ f').mkContinuous ‖f‖ fun m =>
@@ -241,7 +241,7 @@ def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G)
       map_update_smul' := fun m i c x => by
         ext
         simp }
-  f'.mkContinuous ‖f‖ fun m => by
+  f'.mkContinuous ‖f‖ fun m ↦ by
     simp only [f', MultilinearMap.coe_mk]
     exact LinearMap.mkContinuous_norm_le _ (by positivity) _
 
@@ -286,10 +286,10 @@ def continuousMultilinearCurryRightEquiv :
       invFun := ContinuousMultilinearMap.uncurryRight
       left_inv := ContinuousMultilinearMap.uncurry_curryRight
       right_inv := ContinuousMultilinearMap.curry_uncurryRight }
-    (fun f => by
+    (fun f ↦ by
       simp only [curryRight, LinearEquiv.coe_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
-    (fun f => by
+    (fun f ↦ by
       simp only [uncurryRight, LinearEquiv.coe_symm_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
 
@@ -404,7 +404,7 @@ theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : 
   obtain rfl : x = 0 := Subsingleton.elim _ _
   refine le_antisymm (by simpa using f.le_opNorm 0) ?_
   have : ‖ContinuousMultilinearMap.uncurry0 𝕜 G f.curry0‖ ≤ ‖f.curry0‖ :=
-    ContinuousMultilinearMap.opNorm_le_bound (norm_nonneg _) fun m => by
+    ContinuousMultilinearMap.opNorm_le_bound (norm_nonneg _) fun m ↦ by
       simp [-ContinuousMultilinearMap.apply_zero_uncurry0]
   simpa [-Matrix.zero_empty] using this
 
@@ -508,7 +508,7 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
     (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G')) :
     ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' :=
   MultilinearMap.mkContinuous
-    (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
+    (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m ↦ by
     simpa [Fintype.prod_sum_type, mul_assoc] using
       (f (m ∘ Sum.inl)).le_of_opNorm_le (f.le_opNorm _) (m ∘ Sum.inr)
 
@@ -538,13 +538,13 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
       map_smul' := fun c f => by
         ext
         rfl
-      left_inv := fun f => by
+      left_inv := fun f ↦ by
         ext m
         exact congr_arg f (Sum.elim_comp_inl_inr m)
-      right_inv := fun f => by
+      right_inv := fun f ↦ by
         ext m₁ m₂
         rfl }
-    (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by
+    (fun f ↦ MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f ↦ by
       simp only [LinearEquiv.coe_symm_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
 
@@ -568,13 +568,13 @@ variable {𝕜 G G'}
 @[simp]
 theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
-      f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
+      f fun i ↦ Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
   rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
     (f : G[×k]→L[𝕜] G[×l]→L[𝕜] G') (m : Fin n → G) : (curryFinFinset 𝕜 G G' hk hl).symm f m =
-      f (fun i => m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
+      f (fun i ↦ m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 

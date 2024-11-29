@@ -83,7 +83,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
             aesop_cat )
         simpa using (f.naturality ψ).symm }
   invFun g :=
-    { app := fun y => yonedaEquiv (y.hom ≫ g)
+    { app := fun y ↦ yonedaEquiv (y.hom ≫ g)
       naturality := fun {X₁ X₂} φ => by
         dsimp
         rw [← CostructuredArrow.w φ]
@@ -200,7 +200,7 @@ noncomputable def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
-    { app := fun x => yonedaEquiv.symm x.unop.2
+    { app := fun x ↦ yonedaEquiv.symm x.unop.2
       naturality := fun {x₁ x₂} f => by
         dsimp
         rw [comp_id, ← yonedaEquiv_symm_map]
@@ -404,7 +404,7 @@ a natural transformation `φ : F ⋙ yoneda ⟶ yoneda ⋙ G`, this is the
 determined by `φ`. -/
 noncomputable def presheafHom (P : Cᵒᵖ ⥤ Type v₁) : P ⟶ F.op ⋙ G.obj P :=
   (colimitOfRepresentable P).desc
-    (Cocone.mk _ { app := fun x => coconeApp φ x.unop })
+    (Cocone.mk _ { app := fun x ↦ coconeApp φ x.unop })
 
 lemma yonedaEquiv_ι_presheafHom (P : Cᵒᵖ ⥤ Type v₁) {X : C} (f : yoneda.obj X ⟶ P) :
     yonedaEquiv (f ≫ presheafHom φ P) =
@@ -526,7 +526,7 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
 
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
-  desc := fun s => by
+  desc := fun s ↦ by
     refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
     intros X Y f
     ext t
@@ -575,7 +575,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
   let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
-  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
+  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i ↦ by simp)
 
 end
 

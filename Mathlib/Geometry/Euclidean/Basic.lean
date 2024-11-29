@@ -338,7 +338,7 @@ the subspace. -/
 theorem orthogonalProjection_eq_self_iff {s : AffineSubspace ℝ P} [Nonempty s]
     [HasOrthogonalProjection s.direction] {p : P} : ↑(orthogonalProjection s p) = p ↔ p ∈ s := by
   constructor
-  · exact fun h => h ▸ orthogonalProjection_mem p
+  · exact fun h ↦ h ▸ orthogonalProjection_mem p
   · intro h
     have hp : p ∈ (s : Set P) ∩ mk' p s.directionᗮ := ⟨h, self_mem_mk' p _⟩
     rw [inter_eq_singleton_orthogonalProjection p] at hp
@@ -472,7 +472,7 @@ general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] :
     P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
-    (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
+    (fun p ↦ ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
     (_root_.reflection s.direction) (↑(Classical.arbitrary s))
     (by
       intro p

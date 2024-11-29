@@ -120,7 +120,7 @@ theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s
 symmetric power.
 -/
 def ofVector : Vector α n → Sym α n :=
-  fun x => ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
+  fun x ↦ ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
 
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
@@ -308,7 +308,7 @@ instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
   ⟨Quotient.mk' (Vector.replicate n default)⟩
 
 instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
-  ⟨fun s => by
+  ⟨fun s ↦ by
     obtain ⟨a, -⟩ := exists_mem s
     exact isEmptyElim a⟩
 
@@ -410,7 +410,7 @@ theorem attach_nil : (nil : Sym α 0).attach = nil :=
 @[simp]
 theorem attach_cons (x : α) (s : Sym α n) :
     (cons x s).attach =
-      cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x => ⟨x, mem_cons_of_mem x.prop⟩) :=
+      cons ⟨x, mem_cons_self _ _⟩ (s.attach.map fun x ↦ ⟨x, mem_cons_of_mem x.prop⟩) :=
   coe_injective <| Multiset.attach_cons _ _
 
 /-- Change the length of a `Sym` using an equality.

@@ -74,7 +74,7 @@ variable (c)
 @[simp]
 theorem ofScalars_series_eq_iff [Nontrivial E] (c' : ℕ → 𝕜) :
     ofScalars E c = ofScalars E c' ↔ c = c' :=
-  ⟨fun e => ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
+  ⟨fun e ↦ ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
 
 theorem ofScalars_apply_zero (n : ℕ) :
     (ofScalars E c n fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by
@@ -113,7 +113,7 @@ theorem ofScalars_apply_eq' (x : E) :
 noncomputable def ofScalarsSum := (ofScalars E c).sum
 
 theorem ofScalars_sum_eq (x : E) : ofScalarsSum c x =
-    ∑' n, c n • x ^ n := tsum_congr fun n => ofScalars_apply_eq c x n
+    ∑' n, c n • x ^ n := tsum_congr fun n ↦ ofScalars_apply_eq c x n
 
 theorem ofScalarsSum_eq_tsum : ofScalarsSum c =
     fun (x : E) => ∑' n : ℕ, c n • x ^ n := funext (ofScalars_sum_eq c)

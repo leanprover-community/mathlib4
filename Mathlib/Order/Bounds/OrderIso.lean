@@ -28,7 +28,7 @@ theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds
 -- Porting note: by simps were `fun _ _ => f.le_iff_le` and `fun _ _ => f.symm.le_iff_le`
 @[simp]
 theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
-  ⟨fun h => IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>
+  ⟨fun h ↦ IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>
     (IsLUB.of_image (by simp)) <| (f.symm_image_image s).symm ▸ h⟩
 
 theorem isLUB_image' {s : Set α} {x : α} : IsLUB (f '' s) (f x) ↔ IsLUB s x := by

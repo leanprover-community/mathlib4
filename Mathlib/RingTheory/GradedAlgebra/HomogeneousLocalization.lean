@@ -237,8 +237,8 @@ instance : CommMonoid (NumDenSameDeg 𝒜 x) where
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
-    ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
-      @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
+    ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i ↦ ↥(𝒜 i)) _ _ n _ c.num,
+      @GradedMonoid.GMonoid.gnpow _ (fun i ↦ ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
         · simpa only [coe_gnpow, pow_zero] using Submonoid.one_mem _
         · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
@@ -547,10 +547,10 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   simp [mul_comm f.den.1, Localization.mk_eq_monoidOf_mk']
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
-  ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
+  ⟨⟨0, 1, fun r ↦ by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
 
 instance isLocalRing : IsLocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
-  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
     simpa only [← isUnit_iff_isUnit_val, val_sub, val_one]
       using IsLocalRing.isUnit_or_isUnit_one_sub_self _
 

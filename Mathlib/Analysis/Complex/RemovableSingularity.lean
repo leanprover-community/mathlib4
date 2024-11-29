@@ -55,9 +55,9 @@ theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s
 
 theorem differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c) :
     DifferentiableOn ℂ (dslope f c) s ↔ DifferentiableOn ℂ f s :=
-  ⟨fun h => h.of_dslope, fun h =>
+  ⟨fun h ↦ h.of_dslope, fun h =>
     (differentiableOn_compl_singleton_and_continuousAt_iff hc).mp <|
-      ⟨Iff.mpr (differentiableOn_dslope_of_nmem fun h => h.2 rfl) (h.mono diff_subset),
+      ⟨Iff.mpr (differentiableOn_dslope_of_nmem fun h ↦ h.2 rfl) (h.mono diff_subset),
         continuousAt_dslope_same.2 <| h.differentiableAt hc⟩⟩
 
 /-- **Removable singularity** theorem: if `s` is a neighborhood of `c : ℂ`, a function `f : ℂ → E`
@@ -65,9 +65,9 @@ is complex differentiable on `s \ {c}`, and $f(z) - f(c)=o((z-c)^{-1})$, then `f
 equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `s`. -/
 theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c)
     (hd : DifferentiableOn ℂ f (s \ {c}))
-    (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
+    (ho : (fun z ↦ f z - f c) =o[𝓝[≠] c] fun z ↦ (z - c)⁻¹) :
     DifferentiableOn ℂ (update f c (limUnder (𝓝[≠] c) f)) s := by
-  set F : ℂ → E := fun z => (z - c) • f z
+  set F : ℂ → E := fun z ↦ (z - c) • f z
   suffices DifferentiableOn ℂ F (s \ {c}) ∧ ContinuousAt F c by
     rw [differentiableOn_compl_singleton_and_continuousAt_iff hc, ← differentiableOn_dslope hc,
       dslope_sub_smul] at this
@@ -77,7 +77,7 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
   refine ⟨(differentiableOn_id.sub_const _).smul hd, ?_⟩
   rw [← continuousWithinAt_compl_self]
   have H := ho.tendsto_inv_smul_nhds_zero
-  have H' : Tendsto (fun z => (z - c) • f c) (𝓝[≠] c) (𝓝 (F c)) :=
+  have H' : Tendsto (fun z ↦ (z - c) • f c) (𝓝[≠] c) (𝓝 (F c)) :=
     (continuousWithinAt_id.tendsto.sub tendsto_const_nhds).smul tendsto_const_nhds
   simpa [← smul_add, ContinuousWithinAt] using H.add H'
 
@@ -86,7 +86,7 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
 be equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `{c} ∪ s`. -/
 theorem differentiableOn_update_limUnder_insert_of_isLittleO {f : ℂ → E} {s : Set ℂ} {c : ℂ}
     (hc : s ∈ 𝓝[≠] c) (hd : DifferentiableOn ℂ f s)
-    (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
+    (ho : (fun z ↦ f z - f c) =o[𝓝[≠] c] fun z ↦ (z - c)⁻¹) :
     DifferentiableOn ℂ (update f c (limUnder (𝓝[≠] c) f)) (insert c s) :=
   differentiableOn_update_limUnder_of_isLittleO (insert_mem_nhds_iff.2 hc)
     (hd.mono fun _ hz => hz.1.resolve_left hz.2) ho
@@ -106,7 +106,7 @@ theorem differentiableOn_update_limUnder_of_bddAbove {f : ℂ → E} {s : Set �
 punctured neighborhood of `c` and $f(z) - f(c)=o((z-c)^{-1})$, then `f` has a limit at `c`. -/
 theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO {f : ℂ → E} {c : ℂ}
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z)
-    (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
+    (ho : (fun z ↦ f z - f c) =o[𝓝[≠] c] fun z ↦ (z - c)⁻¹) :
     Tendsto f (𝓝[≠] c) (𝓝 <| limUnder (𝓝[≠] c) f) := by
   rw [eventually_nhdsWithin_iff] at hd
   have : DifferentiableOn ℂ f ({z | z ≠ c → DifferentiableAt ℂ f z} \ {c}) := fun z hz =>
@@ -118,7 +118,7 @@ theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO {f : �
 bounded on a punctured neighborhood of `c`, then `f` has a limit at `c`. -/
 theorem tendsto_limUnder_of_differentiable_on_punctured_nhds_of_bounded_under {f : ℂ → E} {c : ℂ}
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z)
-    (hb : IsBoundedUnder (· ≤ ·) (𝓝[≠] c) fun z => ‖f z - f c‖) :
+    (hb : IsBoundedUnder (· ≤ ·) (𝓝[≠] c) fun z ↦ ‖f z - f c‖) :
     Tendsto f (𝓝[≠] c) (𝓝 <| limUnder (𝓝[≠] c) f) :=
   tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO hd hb.isLittleO_sub_self_inv
 

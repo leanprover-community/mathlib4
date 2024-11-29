@@ -72,21 +72,21 @@ theorem range_eq_image_mulTSupport_or (f : X → α) :
   (wcovBy_insert _ _).eq_or_eq (image_subset_range _ _) (range_subset_insert_image_mulTSupport f)
 
 theorem tsupport_mul_subset_left {α : Type*} [MulZeroClass α] {f g : X → α} :
-    (tsupport fun x => f x * g x) ⊆ tsupport f :=
+    (tsupport fun x ↦ f x * g x) ⊆ tsupport f :=
   closure_mono (support_mul_subset_left _ _)
 
 theorem tsupport_mul_subset_right {α : Type*} [MulZeroClass α] {f g : X → α} :
-    (tsupport fun x => f x * g x) ⊆ tsupport g :=
+    (tsupport fun x ↦ f x * g x) ⊆ tsupport g :=
   closure_mono (support_mul_subset_right _ _)
 
 end One
 
 theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α] [SMulWithZero M α]
-    (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport f :=
+    (f : X → M) (g : X → α) : (tsupport fun x ↦ f x • g x) ⊆ tsupport f :=
   closure_mono <| support_smul_subset_left f g
 
 theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZeroClass M α]
-    (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport g :=
+    (f : X → M) (g : X → α) : (tsupport fun x ↦ f x • g x) ⊆ tsupport g :=
   closure_mono <| support_smul_subset_right f g
 
 @[to_additive]
@@ -110,7 +110,7 @@ theorem not_mem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[�
 @[to_additive]
 theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
+  continuous_iff_continuousAt.2 fun x ↦ (em _).elim (hf x) fun hx =>
     (@continuousAt_const _ _ _ _ _ 1).congr (not_mem_mulTSupport_iff_eventuallyEq.mp hx).symm
 
 end
@@ -214,7 +214,7 @@ alias comp_closedEmbedding := comp_isClosedEmbedding
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
-    HasCompactMulSupport fun x => m (f x) (f₂ x) := by
+    HasCompactMulSupport fun x ↦ m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
   filter_upwards [hf, hf₂] with x hx hx₂
   simp_rw [hx, hx₂, Pi.one_apply, hm]
@@ -384,14 +384,14 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
 are non-zero. "]
 theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
-    (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
+    (hlf : LocallyFinite fun i ↦ mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι), ∃ n, n ∈ 𝓝 x ∧ (n ⊆ ⋂ i ∈ is, U i) ∧
-      ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is := by
+      ∀ z ∈ n, (mulSupport fun i ↦ f i z) ⊆ is := by
   obtain ⟨n, hn, hnf⟩ := hlf x
   classical
-    let is := hnf.toFinset.filter fun i => x ∈ U i
-    let js := hnf.toFinset.filter fun j => x ∉ U j
+    let is := hnf.toFinset.filter fun i ↦ x ∈ U i
+    let js := hnf.toFinset.filter fun j ↦ x ∉ U j
     refine
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
         inter_subset_right, fun z hz => ?_⟩
@@ -404,7 +404,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
       simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
         and_imp] at hz
-      suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
+      suffices (mulSupport fun i ↦ f i z) ⊆ hnf.toFinset by
         refine hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => ?_
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩
         contrapose hz

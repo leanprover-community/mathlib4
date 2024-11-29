@@ -50,7 +50,7 @@ noncomputable def concat (f : C(Icc a b, E)) (g : C(Icc b c, E)) :
     C(Icc a c, E) := by
   by_cases hb : f ⊤ = g ⊥
   · let h (t : α) : E := if t ≤ b then IccExtendCM f t else IccExtendCM g t
-    suffices Continuous h from ⟨fun t => h t, by fun_prop⟩
+    suffices Continuous h from ⟨fun t ↦ h t, by fun_prop⟩
     apply Continuous.if_le (by fun_prop) (by fun_prop) continuous_id continuous_const
     rintro x rfl
     simpa [IccExtendCM, projIccCM]
@@ -86,7 +86,7 @@ theorem concat_right (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : b ≤ t) :
 theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {G : ι → C(Icc b c, E)}
     (hfg : ∀ᶠ i in p, (F i) ⊤ = (G i) ⊥) (hfg' : f ⊤ = g ⊥)
     (hf : Tendsto F p (𝓝 f)) (hg : Tendsto G p (𝓝 g)) :
-    Tendsto (fun i => concat (F i) (G i)) p (𝓝 (concat f g)) := by
+    Tendsto (fun i ↦ concat (F i) (G i)) p (𝓝 (concat f g)) := by
   rw [tendsto_nhds_compactOpen] at hf hg ⊢
   rintro K hK U hU hfgU
   have h : b ∈ Icc a c := ⟨Fact.out, Fact.out⟩

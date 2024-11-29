@@ -127,7 +127,7 @@ alias openEmbedding := isOpenEmbedding
 -/
 def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
-  inv := ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
+  inv := ⟨fun x ↦ ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
     given by taking preimages under f. -/
@@ -382,7 +382,7 @@ theorem inclusion'_top_functor (X : TopCat) :
   refine CategoryTheory.Functor.ext ?_ ?_
   · intro U
     ext x
-    exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
+    exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h ↦ ⟨⟨x, trivial⟩, h, rfl⟩⟩
   · subsingleton
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :

@@ -194,7 +194,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- I had to uglify this
   dsimp [stalkSpecializes, Hom.stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
-  refine colimit.hom_ext fun j => ?_
+  refine colimit.hom_ext fun j ↦ ?_
   induction j with | h j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,

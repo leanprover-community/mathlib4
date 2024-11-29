@@ -64,10 +64,10 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
   refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine Quotient.ind' fun x => ?_
-    refine Quotient.ind' fun y => ?_
+    refine Quotient.ind' fun x ↦ ?_
+    refine Quotient.ind' fun y ↦ ?_
     exact (key x y).mpr
-  · refine Quotient.ind' fun x => ?_
+  · refine Quotient.ind' fun x ↦ ?_
     obtain ⟨y, hy⟩ := hf x
     exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
 
@@ -298,7 +298,7 @@ theorem relindex_le_of_le_left (hHK : H ≤ K) (hHL : H.relindex L ≠ 0) :
 @[to_additive]
 theorem relindex_le_of_le_right (hKL : K ≤ L) (hHL : H.relindex L ≠ 0) :
     H.relindex K ≤ H.relindex L :=
-  Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLE H hKL) fun h => (hHL h).elim
+  Finite.card_le_of_embedding' (quotientSubgroupOfEmbeddingOfLE H hKL) fun h ↦ (hHL h).elim
 
 @[to_additive]
 theorem relindex_ne_zero_trans (hHK : H.relindex K ≠ 0) (hKL : K.relindex L ≠ 0) :
@@ -363,7 +363,7 @@ theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
     QuotientGroup.subgroup_eq_top_of_subsingleton H (Nat.card_eq_one_iff_unique.mp h).1,
-    fun h => (congr_arg index h).trans index_top⟩
+    fun h ↦ (congr_arg index h).trans index_top⟩
 
 @[to_additive (attr := simp) relindex_eq_one]
 theorem relindex_eq_one : H.relindex K = 1 ↔ K ≤ H :=
@@ -534,7 +534,7 @@ instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
 @[to_additive]
 theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).FiniteIndex) : (⨅ i, f i).FiniteIndex :=
-  ⟨index_iInf_ne_zero fun i => (hf i).finiteIndex⟩
+  ⟨index_iInf_ne_zero fun i ↦ (hf i).finiteIndex⟩
 
 @[to_additive]
 theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
@@ -546,7 +546,7 @@ theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
 @[to_additive]
 instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
     (H.subgroupOf K).FiniteIndex :=
-  ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
+  ⟨fun h ↦ H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
 
 variable {H K}
 

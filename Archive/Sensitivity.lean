@@ -63,7 +63,7 @@ instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (ie. the image of zero). -/
-def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
+def π {n : ℕ} : Q n.succ → Q n := fun p ↦ p ∘ Fin.succ
 
 namespace Q
 
@@ -177,7 +177,7 @@ end V
 /-- The basis of `V` indexed by the hypercube, defined inductively. -/
 noncomputable def e : ∀ {n}, Q n → V n
   | 0 => fun _ => (1 : ℝ)
-  | Nat.succ _ => fun x => cond (x 0) (e (π x), 0) (0, e (π x))
+  | Nat.succ _ => fun x ↦ cond (x 0) (e (π x), 0) (0, e (π x))
 
 @[simp]
 theorem e_zero_apply (x : Q 0) : e x = (1 : ℝ) :=
@@ -212,8 +212,8 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   · dsimp [ε] at h; exact h fun _ => true
   · cases' v with v₁ v₂
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
-      [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
-      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
+      [let q : Q n.succ := fun i ↦ if h : i = 0 then true else p (i.pred h);
+      let q : Q n.succ := fun i ↦ if h : i = 0 then false else p (i.pred h)]
     all_goals
       specialize h q
       first
@@ -412,7 +412,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
-    exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
+    exact epsilon_total fun p ↦ abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
   let s := √ (m + 1)
   suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
@@ -428,7 +428,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       erw [(f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
            Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
-      (norm_sum_le _ fun p => coeffs y p * _)
+      (norm_sum_le _ fun p ↦ coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
     _ = ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y p| := by

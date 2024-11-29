@@ -200,7 +200,7 @@ variable [ConditionallyCompleteLattice α]
 
 theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
     s.sup' H f = sSup (f '' s) :=
-  eq_of_forall_ge_iff fun a => by
+  eq_of_forall_ge_iff fun a ↦ by
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (H.to_set.image f)]
 
 theorem inf'_eq_csInf_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :

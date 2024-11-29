@@ -64,7 +64,7 @@ variable {s : Finset α} {a b : α}
 This differs from `insert a ∅` in that it does not require a `DecidableEq` instance for `α`.
 -/
 instance : Singleton α (Finset α) :=
-  ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
+  ⟨fun a ↦ ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
 theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
@@ -128,7 +128,7 @@ theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈
     exact ⟨Finset.mem_singleton_self _, fun _ => Finset.mem_singleton.1⟩
   · ext
     rw [Finset.mem_singleton]
-    exact ⟨t.right _, fun r => r.symm ▸ t.left⟩
+    exact ⟨t.right _, fun r ↦ r.symm ▸ t.left⟩
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
@@ -203,7 +203,7 @@ theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = 
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
-  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
+  ‹Nonempty α›.elim fun a ↦ ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
@@ -300,7 +300,7 @@ theorem cons_subset_cons {hs ht} : s.cons a hs ⊆ t.cons a ht ↔ s ⊆ t := by
   rwa [← coe_subset, coe_cons, coe_cons, Set.insert_subset_insert_iff, coe_subset]
 
 theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), s.cons a h ⊆ t := by
-  refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
+  refine ⟨fun h ↦ ?_, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
 
@@ -385,17 +385,17 @@ theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b =
 
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
-  ext fun a => by simp
+  ext fun a ↦ by simp
 
 @[simp, norm_cast]
 theorem coe_insert (a : α) (s : Finset α) : ↑(insert a s) = (insert a s : Set α) :=
-  Set.ext fun x => by simp only [mem_coe, mem_insert, Set.mem_insert_iff]
+  Set.ext fun x ↦ by simp only [mem_coe, mem_insert, Set.mem_insert_iff]
 
 theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ insert y (s : Set α) := by
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a ↦ by ext; simp⟩
 
 @[simp]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
@@ -403,7 +403,7 @@ theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
 
 @[simp]
 theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
-  ⟨fun h => h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
+  ⟨fun h ↦ h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
 
 theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
@@ -412,7 +412,7 @@ theorem pair_eq_singleton (a : α) : ({a, a} : Finset α) = {a} :=
   insert_eq_of_mem <| mem_singleton_self _
 
 theorem Insert.comm (a b : α) (s : Finset α) : insert a (insert b s) = insert b (insert a s) :=
-  ext fun x => by simp only [mem_insert, or_left_comm]
+  ext fun x ↦ by simp only [mem_insert, or_left_comm]
 
 @[norm_cast]
 theorem coe_pair {a b : α} : (({a, b} : Finset α) : Set α) = {a, b} := by
@@ -427,7 +427,7 @@ theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
   Insert.comm a b ∅
 
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s :=
-  ext fun x => by simp only [mem_insert, ← or_assoc, or_self_iff]
+  ext fun x ↦ by simp only [mem_insert, ← or_assoc, or_self_iff]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
@@ -461,9 +461,9 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h ↦ eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
-theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
+theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a ↦ insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
 
 theorem ssubset_iff : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := mod_cast @Set.ssubset_iff_insert α s t
@@ -538,7 +538,7 @@ lemma Nonempty.exists_cons_eq {α} {s : Finset α} (hs : s.Nonempty) : ∃ t a h
 def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
   toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.2).resolve_left h⟩
-  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
+  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z ↦ ⟨z, mem_insert_of_mem z.2⟩
   left_inv y := by
     by_cases h : ↑y = x
     · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
@@ -657,7 +657,7 @@ theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
 
 open scoped List in
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
-  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
+  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x ↦ by
     simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
 
 open scoped List in

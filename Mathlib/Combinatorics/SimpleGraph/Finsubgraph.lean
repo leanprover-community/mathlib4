@@ -158,10 +158,10 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
     intro G'
     haveI : Fintype (G'.unop.val.verts : Type u) := G'.unop.property.fintype
     haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.fintype
-    exact Fintype.ofInjective (fun f => f.toFun) RelHom.coe_fn_injective
+    exact Fintype.ofInjective (fun f ↦ f.toFun) RelHom.coe_fn_injective
   -- Use compactness to obtain a section.
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (finsubgraphHomFunctor G F)
-  refine ⟨⟨fun v => ?_, ?_⟩⟩
+  refine ⟨⟨fun v ↦ ?_, ?_⟩⟩
   · -- Map each vertex using the homomorphism provided for its singleton subgraph.
     exact
       (u (Opposite.op (singletonFinsubgraph v))).toFun

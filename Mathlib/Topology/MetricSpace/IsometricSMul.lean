@@ -54,7 +54,7 @@ theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X
 @[to_additive]
 instance (priority := 100) IsometricSMul.to_continuousConstSMul [PseudoEMetricSpace X] [SMul M X]
     [IsometricSMul M X] : ContinuousConstSMul M X :=
-  ⟨fun c => (isometry_smul X c).continuous⟩
+  ⟨fun c ↦ (isometry_smul X c).continuous⟩
 
 @[to_additive]
 instance (priority := 100) IsometricSMul.opposite_of_comm [PseudoEMetricSpace X] [SMul M X]
@@ -89,7 +89,7 @@ theorem edist_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a b c
 
 @[to_additive]
 theorem isometry_mul_right [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M] (a : M) :
-    Isometry fun x => x * a :=
+    Isometry fun x ↦ x * a :=
   isometry_smul M (MulOpposite.op a)
 
 @[to_additive (attr := simp)]
@@ -220,7 +220,7 @@ theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_ball (MulOpposite.op a) b r
 
@@ -231,7 +231,7 @@ theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ≥0�
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_closedBall [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_closedBall (MulOpposite.op a) b r
 
@@ -349,7 +349,7 @@ theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ) :
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_ball (MulOpposite.op a) b r
 
@@ -360,7 +360,7 @@ theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ) :
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_right_closedBall [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
+    (fun x ↦ x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_closedBall (MulOpposite.op a) b r
 
@@ -373,22 +373,22 @@ variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
 
 @[to_additive]
 instance [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) :=
-  ⟨fun c => (isometry_smul X c).prod_map (isometry_smul Y c)⟩
+  ⟨fun c ↦ (isometry_smul X c).prod_map (isometry_smul Y c)⟩
 
 @[to_additive]
 instance Prod.isometricSMul' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] [Mul N]
     [PseudoEMetricSpace N] [IsometricSMul N N] : IsometricSMul (M × N) (M × N) :=
-  ⟨fun c => (isometry_smul M c.1).prod_map (isometry_smul N c.2)⟩
+  ⟨fun c ↦ (isometry_smul M c.1).prod_map (isometry_smul N c.2)⟩
 
 @[to_additive]
 instance Prod.isometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M]
     [Mul N] [PseudoEMetricSpace N] [IsometricSMul Nᵐᵒᵖ N] :
     IsometricSMul (M × N)ᵐᵒᵖ (M × N) :=
-  ⟨fun c => (isometry_mul_right c.unop.1).prod_map (isometry_mul_right c.unop.2)⟩
+  ⟨fun c ↦ (isometry_mul_right c.unop.1).prod_map (isometry_mul_right c.unop.2)⟩
 
 @[to_additive]
 instance Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X :=
-  ⟨fun c => isometry_smul X (c : M)⟩
+  ⟨fun c ↦ isometry_smul X (c : M)⟩
 
 @[to_additive]
 instance : IsometricSMul M Xᵐᵒᵖ :=
@@ -396,7 +396,7 @@ instance : IsometricSMul M Xᵐᵒᵖ :=
 
 @[to_additive]
 instance ULift.isometricSMul : IsometricSMul (ULift M) X :=
-  ⟨fun c => by simpa only using isometry_smul X c.down⟩
+  ⟨fun c ↦ by simpa only using isometry_smul X c.down⟩
 
 @[to_additive]
 instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
@@ -405,22 +405,22 @@ instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
-  ⟨fun c => .piMap (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
+  ⟨fun c ↦ .piMap (fun _ => (c • ·)) fun i ↦ isometry_smul (X i) c⟩
 
 @[to_additive]
 instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
-  ⟨fun c => .piMap (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
+  ⟨fun c ↦ .piMap (fun i ↦ (c i • ·)) fun _ => isometry_smul _ _⟩
 
 @[to_additive]
 instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsometricSMul (M i)ᵐᵒᵖ (M i)] :
     IsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
-  ⟨fun c => .piMap (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
+  ⟨fun c ↦ .piMap (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
 
 instance Additive.isometricVAdd : IsometricVAdd (Additive M) X :=
-  ⟨fun c => isometry_smul X c.toMul⟩
+  ⟨fun c ↦ isometry_smul X c.toMul⟩
 
 instance Additive.isometricVAdd' [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] :
     IsometricVAdd (Additive M) (Additive M) :=
@@ -432,7 +432,7 @@ instance Additive.isometricVAdd'' [Mul M] [PseudoEMetricSpace M] [IsometricSMul 
 
 instance Multiplicative.isometricSMul {M X} [VAdd M X] [PseudoEMetricSpace X]
     [IsometricVAdd M X] : IsometricSMul (Multiplicative M) X :=
-  ⟨fun c => isometry_vadd X c.toAdd⟩
+  ⟨fun c ↦ isometry_vadd X c.toAdd⟩
 
 instance Multiplicative.isometricSMul' [Add M] [PseudoEMetricSpace M] [IsometricVAdd M M] :
     IsometricSMul (Multiplicative M) (Multiplicative M) :=

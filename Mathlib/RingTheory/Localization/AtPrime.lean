@@ -134,7 +134,7 @@ theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.prim
   ⟨fun h hx =>
     (isPrime_of_isPrime_disjoint I.primeCompl S I hI disjoint_compl_left).ne_top <|
       (Ideal.map (algebraMap R S) I).eq_top_of_isUnit_mem (Ideal.mem_map_of_mem _ hx) h,
-    fun h => map_units S ⟨x, h⟩⟩
+    fun h ↦ map_units S ⟨x, h⟩⟩
 
 -- Can't use typeclasses to infer the `IsLocalRing` instance, so use an `optParam` instead
 -- (since `IsLocalRing` is a `Prop`, there should be no unification issues.)
@@ -146,7 +146,7 @@ theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
 
 theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
-  Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
+  Ideal.ext fun x ↦ by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
 theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx => mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h =>
@@ -246,7 +246,7 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
     [hK : K.IsPrime] (f : R →+* S) (hIJ : I = J.comap f) (g : S →+* P) (hJK : J = K.comap g) :
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =
       (localRingHom J K g hJK).comp (localRingHom I J f hIJ) :=
-  localRingHom_unique _ _ _ _ fun r => by
+  localRingHom_unique _ _ _ _ fun r ↦ by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
 end Localization

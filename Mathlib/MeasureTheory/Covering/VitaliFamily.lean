@@ -108,10 +108,10 @@ include h
 theorem exists_disjoint_covering_ae :
     ∃ t : Set (X × Set X),
       (∀ p : X × Set X, p ∈ t → p.1 ∈ s) ∧
-      (t.PairwiseDisjoint fun p => p.2) ∧
+      (t.PairwiseDisjoint fun p ↦ p.2) ∧
       (∀ p : X × Set X, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
       μ (s \ ⋃ (p : X × Set X) (_ : p ∈ t), p.2) = 0 :=
-  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
+  v.covering s (fun x ↦ v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
 covering of almost every `s`. -/
@@ -123,7 +123,7 @@ protected def index : Set (X × Set X) :=
 for `p ∈ h.index`, such that these sets form a disjoint covering of almost every `s`. -/
 @[nolint unusedArguments]
 protected def covering (_h : FineSubfamilyOn v f s) : X × Set X → Set X :=
-  fun p => p.2
+  fun p ↦ p.2
 
 theorem index_subset : ∀ p : X × Set X, p ∈ h.index → p.1 ∈ s :=
   h.exists_disjoint_covering_ae.choose_spec.1
@@ -184,7 +184,7 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
     exact ⟨s, mem_union_left _ hs, h's⟩
   covering := by
     intro s f fset ffine
-    let g : X → Set (Set X) := fun x => f x ∩ v.setsAt x
+    let g : X → Set (Set X) := fun x ↦ f x ∩ v.setsAt x
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ t ∈ g x, t ⊆ closedBall x ε := by
       intro x hx ε εpos
       obtain ⟨t, tf, ht⟩ : ∃ t ∈ f x, t ⊆ closedBall x (min ε δ) :=

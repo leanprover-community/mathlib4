@@ -224,7 +224,7 @@ section Neg
 variable [Neg R]
 
 -- Porting note: removed `simps`, added simp lemmas manually
-instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+instance : Neg ℍ[R,c₁,c₂] := ⟨fun a ↦ ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp] theorem neg_re : (-a).re = -a.re := rfl
 
@@ -675,7 +675,7 @@ theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re :=
 
 theorem eq_re_iff_mem_range_coe {a : ℍ[R,c₁,c₂]} :
     a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R,c₁,c₂]) :=
-  ⟨fun h => ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
+  ⟨fun h ↦ ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
 
 section CharZero
 
@@ -705,7 +705,7 @@ def starAe : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R,c₁,c₂]ᵐᵒᵖ :=
     toFun := op ∘ star
     invFun := star ∘ unop
     map_mul' := fun x y => by simp
-    commutes' := fun r => by simp }
+    commutes' := fun r ↦ by simp }
 
 @[simp]
 theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂] ≃ₐ[R] _) = op ∘ star :=
@@ -1173,7 +1173,7 @@ variable [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg]
     at h
   · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
@@ -1218,7 +1218,7 @@ variable [LinearOrderedField R] (a b : ℍ[R])
 
 @[simps (config := .lemmasOnly)]
 instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
+  ⟨fun a ↦ (normSq a)⁻¹ • star a⟩
 
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial,

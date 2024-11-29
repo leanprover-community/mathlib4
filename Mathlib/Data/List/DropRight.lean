@@ -127,7 +127,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
     by_contra
     rwa [length_nil, lt_self_iff_false] at h
   · rw [dropWhile]
-    refine ⟨fun h => ?_, fun h => ?_⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · intro _ H
       rw [get] at H
       refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons_self _ _))
@@ -155,7 +155,7 @@ variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  exact fun h => dropWhile_get_zero_not p l h
+  exact fun h ↦ dropWhile_get_zero_not p l h
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
@@ -199,7 +199,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, ne_eq, not_false_eq_true,
       getLast_append_of_ne_nil, getLast_singleton, reduceCtorEq]
-    refine ⟨fun h => ?_ , fun h => ?_⟩
+    refine ⟨fun h ↦ ?_ , fun h ↦ ?_⟩
     · split at h <;> simp_all
     · simp [h]
 

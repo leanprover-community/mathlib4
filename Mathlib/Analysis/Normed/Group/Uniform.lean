@@ -25,7 +25,7 @@ variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isometricSMul_right : IsometricSMul Eᵐᵒᵖ E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
+  ⟨fun a ↦ Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
 
 @[to_additive]
 theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
@@ -181,7 +181,7 @@ variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : 
 
 @[to_additive]
 instance NormedGroup.to_isometricSMul_left : IsometricSMul E E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
+  ⟨fun a ↦ Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
 
 @[to_additive (attr := simp)]
 theorem dist_self_mul_right (a b : E) : dist a (a * b) = ‖b‖ := by
@@ -303,7 +303,7 @@ lemma LipschitzOnWith.div (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg
 
 @[to_additive]
 theorem LipschitzWith.div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
-    LipschitzWith (Kf + Kg) fun x => f x / g x := by
+    LipschitzWith (Kf + Kg) fun x ↦ f x / g x := by
   simpa only [div_eq_mul_inv] using hf.mul hg.inv
 
 @[to_additive]
@@ -320,7 +320,7 @@ namespace AntilipschitzWith
 
 @[to_additive]
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
-    AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x => f x * g x := by
+    AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x ↦ f x * g x := by
   letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
@@ -391,10 +391,10 @@ end SeparationQuotient
 
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)
-    (hv : CauchySeq fun n => ∏ k ∈ range (n + 1), v k) :
-    CauchySeq fun n => ∏ k ∈ range (n + 1), u k := by
-  let d : ℕ → E := fun n => ∏ k ∈ range (n + 1), u k / v k
-  rw [show (fun n => ∏ k ∈ range (n + 1), u k) = d * fun n => ∏ k ∈ range (n + 1), v k
+    (hv : CauchySeq fun n ↦ ∏ k ∈ range (n + 1), v k) :
+    CauchySeq fun n ↦ ∏ k ∈ range (n + 1), u k := by
+  let d : ℕ → E := fun n ↦ ∏ k ∈ range (n + 1), u k / v k
+  rw [show (fun n ↦ ∏ k ∈ range (n + 1), u k) = d * fun n ↦ ∏ k ∈ range (n + 1), v k
       by ext n; simp [d]]
   suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn

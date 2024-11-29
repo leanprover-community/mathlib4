@@ -106,7 +106,7 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
 
 /-- Every nonzero natural number has a unique prime factorization -/
 theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h =>
-  eq_of_factorization_eq ha hb fun p => by simp [h]
+  eq_of_factorization_eq ha hb fun p ↦ by simp [h]
 
 @[simp]
 theorem factorization_zero : factorization 0 = 0 := by ext; simp [factorization]
@@ -162,7 +162,7 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `#S = 2` and `g = id`. -/
 theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
-    (S.prod g).factorization = S.sum fun x => (g x).factorization := by
+    (S.prod g).factorization = S.sum fun x ↦ (g x).factorization := by
   classical
     ext p
     refine Finset.induction_on' S ?_ ?_

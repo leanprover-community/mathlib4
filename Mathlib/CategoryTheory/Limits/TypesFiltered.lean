@@ -55,9 +55,9 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       ∀ i j xi xj,
         t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
     IsColimit t := by
-  let α : t.pt → J := fun x => (hsurj x).choose
-  let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
-  have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
+  let α : t.pt → J := fun x ↦ (hsurj x).choose
+  let f : ∀ (x : t.pt), F.obj (α x) := fun x ↦ (hsurj x).choose_spec.choose
+  have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x ↦ (hsurj x).choose_spec.choose_spec
   exact
     { desc := fun s x => s.ι.app _ (f x)
       fac := fun s j => by

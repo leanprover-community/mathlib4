@@ -79,7 +79,7 @@ variable [SMul M X]
 @[to_additive]
 instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
     [UniformContinuousConstSMul M X] : ContinuousConstSMul M X :=
-  ⟨fun c => (uniformContinuous_const_smul c).continuous⟩
+  ⟨fun c ↦ (uniformContinuous_const_smul c).continuous⟩
 
 variable {M X Y}
 
@@ -163,7 +163,7 @@ variable [SMul M X]
 
 @[to_additive]
 noncomputable instance : SMul M (Completion X) :=
-  ⟨fun c => Completion.map (c • ·)⟩
+  ⟨fun c ↦ Completion.map (c • ·)⟩
 
 @[to_additive]
 theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
@@ -180,7 +180,7 @@ instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
     refine Eq.trans ?_ (congr_fun this.symm x)
-    exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
+    exact congr_arg (fun f ↦ Completion.map f x) (funext (smul_assoc _ _))⟩
 
 @[to_additive]
 instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
@@ -189,12 +189,12 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     have hmn : m • n • x = (Completion.map (SMul.smul m) ∘ Completion.map (SMul.smul n)) x := rfl
     have hnm : n • m • x = (Completion.map (SMul.smul n) ∘ Completion.map (SMul.smul m)) x := rfl
     rw [hmn, hnm, map_comp, map_comp]
-    · exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
+    · exact congr_arg (fun f ↦ Completion.map f x) (funext (smul_comm _ _))
     repeat' exact uniformContinuous_const_smul _⟩
 
 @[to_additive]
 instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) :=
-  ⟨fun c a => (congr_arg fun f => Completion.map f a) <| funext (op_smul_eq_smul c)⟩
+  ⟨fun c a => (congr_arg fun f ↦ Completion.map f a) <| funext (op_smul_eq_smul c)⟩
 
 variable {M X}
 variable [UniformContinuousConstSMul M X]
@@ -209,9 +209,9 @@ end SMul
 noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
   smul := (· • ·)
-  one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
+  one_smul := ext' (continuous_const_smul _) continuous_id fun a ↦ by rw [← coe_smul, one_smul]
   mul_smul x y :=
-    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by
+    ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a ↦ by
       simp only [← coe_smul, mul_smul]
 
 end Completion

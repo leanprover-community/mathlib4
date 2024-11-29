@@ -268,7 +268,7 @@ theorem IsBaseChange.iff_lift_unique :
         ∀ [Module R Q] [Module S Q],
           ∀ [IsScalarTower R S Q],
             ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     intros Q _ _ _ _ g
     exact ⟨h.lift g, h.lift_comp g, fun g' e => h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
     IsBaseChange.of_lift_unique f⟩
@@ -468,7 +468,7 @@ theorem Algebra.pushoutDesc_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semi
 theorem Algebra.lift_algHom_comp_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) :
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R S S') = f :=
-  AlgHom.ext fun x => (Algebra.pushoutDesc_left S' f g H x : _)
+  AlgHom.ext fun x ↦ (Algebra.pushoutDesc_left S' f g H x : _)
 
 @[simp]
 theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
@@ -483,7 +483,7 @@ theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Sem
 theorem Algebra.lift_algHom_comp_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) :
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R R' S') = g :=
-  AlgHom.ext fun x => (Algebra.pushoutDesc_right S' f g H x : _)
+  AlgHom.ext fun x ↦ (Algebra.pushoutDesc_right S' f g H x : _)
 
 @[ext (iff := false)]
 theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]

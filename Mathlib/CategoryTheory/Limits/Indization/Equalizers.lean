@@ -56,7 +56,7 @@ theorem isIndObject_limit_comp_yoneda_comp_colim
   apply IsIndObject.map (HasLimit.isoOfNatIso (colimitFlipIsoCompColim G)).hom
   apply IsIndObject.map (colimitLimitIso G).hom
   apply isIndObject_colimit
-  exact fun i => IsIndObject.map (limitObjIsoLimitCompEvaluation _ _).inv (hF i)
+  exact fun i ↦ IsIndObject.map (limitObjIsoLimitCompEvaluation _ _).inv (hF i)
 
 end
 

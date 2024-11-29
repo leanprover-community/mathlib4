@@ -165,7 +165,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
     (hfφ : HasConstantSpeedOnWith (f ∘ φ) s l) (hf : HasConstantSpeedOnWith f (φ '' s) l') ⦃x : ℝ⦄
-    (xs : x ∈ s) : EqOn φ (fun y => l / l' * (y - x) + φ x) s := by
+    (xs : x ∈ s) : EqOn φ (fun y ↦ l / l' * (y - x) + φ x) s := by
   rintro y ys
   rw [← sub_eq_iff_eq_add, mul_comm, ← mul_div_assoc, eq_div_iff (NNReal.coe_ne_zero.mpr hl')]
   rw [hasConstantSpeedOnWith_iff_variationOnFromTo_eq] at hf
@@ -196,7 +196,7 @@ theorem HasUnitSpeedOn.Icc_Icc {x y z : ℝ} (hfs : HasUnitSpeedOn f (Icc x y))
 monotonically maps `s` onto `t`, then `φ` is just a translation (on `s`).
 -/
 theorem unique_unit_speed {φ : ℝ → ℝ} (φm : MonotoneOn φ s) (hfφ : HasUnitSpeedOn (f ∘ φ) s)
-    (hf : HasUnitSpeedOn f (φ '' s)) ⦃x : ℝ⦄ (xs : x ∈ s) : EqOn φ (fun y => y - x + φ x) s := by
+    (hf : HasUnitSpeedOn f (φ '' s)) ⦃x : ℝ⦄ (xs : x ∈ s) : EqOn φ (fun y ↦ y - x + φ x) s := by
   dsimp only [HasUnitSpeedOn] at hf hfφ
   convert HasConstantSpeedOnWith.ratio one_ne_zero φm hfφ hf xs using 3
   norm_num

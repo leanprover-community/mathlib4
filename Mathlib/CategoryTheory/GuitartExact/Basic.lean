@@ -233,7 +233,7 @@ class GuitartExact : Prop where
 lemma guitartExact_iff_isConnected_rightwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
       IsConnected (w.StructuredArrowRightwards g) :=
-  ⟨fun h => h.isConnected_rightwards, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.isConnected_rightwards, fun h ↦ ⟨h⟩⟩
 
 lemma guitartExact_iff_isConnected_downwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),

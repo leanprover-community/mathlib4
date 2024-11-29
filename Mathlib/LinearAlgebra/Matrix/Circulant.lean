@@ -71,22 +71,22 @@ theorem Fin.circulant_inj {n} {v w : Fin n → α} : circulant v = circulant w �
   (Fin.circulant_injective n).eq_iff
 
 theorem transpose_circulant [AddGroup n] (v : n → α) :
-    (circulant v)ᵀ = circulant fun i => v (-i) := by ext; simp
+    (circulant v)ᵀ = circulant fun i ↦ v (-i) := by ext; simp
 
 theorem conjTranspose_circulant [Star α] [AddGroup n] (v : n → α) :
-    (circulant v)ᴴ = circulant (star fun i => v (-i)) := by ext; simp
+    (circulant v)ᴴ = circulant (star fun i ↦ v (-i)) := by ext; simp
 
-theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i => v (-i)
+theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i ↦ v (-i)
   | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | _ + 1 => Matrix.transpose_circulant
 
 theorem Fin.conjTranspose_circulant [Star α] :
-    ∀ {n} (v : Fin n → α), (circulant v)ᴴ = circulant (star fun i => v (-i))
+    ∀ {n} (v : Fin n → α), (circulant v)ᴴ = circulant (star fun i ↦ v (-i))
   | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | _ + 1 => Matrix.conjTranspose_circulant
 
 theorem map_circulant [Sub n] (v : n → α) (f : α → β) :
-    (circulant v).map f = circulant fun i => f (v i) :=
+    (circulant v).map f = circulant fun i ↦ f (v i) :=
   ext fun _ _ => rfl
 
 theorem circulant_neg [Neg α] [Sub n] (v : n → α) : circulant (-v) = -circulant v :=
@@ -155,7 +155,7 @@ theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype
 /-- Note we use `↑i = 0` instead of `i = 0` as `Fin 0` has no `0`.
 This means that we cannot state this with `Pi.single` as we did with `Matrix.circulant_single`. -/
 theorem Fin.circulant_ite (α) [Zero α] [One α] :
-    ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
+    ∀ n, circulant (fun i ↦ ite (i.1 = 0) 1 0 : Fin n → α) = 1
   | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | n + 1 => by
     rw [← circulant_single_one]

@@ -49,7 +49,7 @@ is a unit.
 -/
 noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
   | 0 => ↑a⁻¹
-  | n + 1 => succNthValUnits n a A fun i => inverseCoeff a A i.val
+  | n + 1 => succNthValUnits n a A fun i ↦ inverseCoeff a A i.val
 
 /--
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
@@ -99,7 +99,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)
   cases' n with n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
   rw [iterate_verschiebung_mul] at hab
-  apply_fun fun x => coeff x 1 at hab
+  apply_fun fun x ↦ coeff x 1 at hab
   simp only [coeff_p_one, Nat.add_succ, add_comm _ n, Function.iterate_succ', Function.comp_apply,
     verschiebung_coeff_add_one, verschiebung_coeff_zero] at hab
   exact (one_ne_zero hab).elim

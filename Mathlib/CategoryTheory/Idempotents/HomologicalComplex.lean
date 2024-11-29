@@ -93,19 +93,19 @@ on objects -/
 @[simps]
 def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c) where
   X :=
-    { X := fun n => (K.X n).X
+    { X := fun n ↦ (K.X n).X
       d := fun i j => (K.d i j).f
       shape := fun i j hij => hom_eq_zero_iff.mp (K.shape i j hij)
       d_comp_d' := fun i j k _ _ => by
         simpa only [comp_f] using hom_eq_zero_iff.mp (K.d_comp_d i j k) }
-  p := { f := fun n => (K.X n).p }
+  p := { f := fun n ↦ (K.X n).p }
 
 /-- The functor `HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C c)`,
 on morphisms -/
 @[simps]
 def map {K L : HomologicalComplex (Karoubi C) c} (f : K ⟶ L) : obj K ⟶ obj L where
   f :=
-    { f := fun n => (f.f n).f
+    { f := fun n ↦ (f.f n).f
       comm' := fun i j hij => by simpa only [comp_f] using hom_ext_iff.mp (f.comm' i j hij) }
 
 end Inverse
@@ -130,7 +130,7 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
   hom :=
     { app := fun P =>
         { f :=
-            { f := fun n => P.p.f n
+            { f := fun n ↦ P.p.f n
               comm' := fun i j _ => by
                 dsimp
                 simp only [HomologicalComplex.Hom.comm, HomologicalComplex.Hom.comm_assoc,
@@ -147,7 +147,7 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
   inv :=
     { app := fun P =>
         { f :=
-            { f := fun n => P.p.f n
+            { f := fun n ↦ P.p.f n
               comm' := fun i j _ => by
                 dsimp
                 simp only [HomologicalComplex.Hom.comm, assoc, HomologicalComplex.p_idem] }

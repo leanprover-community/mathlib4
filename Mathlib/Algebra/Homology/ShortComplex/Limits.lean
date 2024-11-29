@@ -34,26 +34,26 @@ def isLimitOfIsLimitπ (c : Cone F)
     { τ₁ := h₁.lift (π₁.mapCone s)
       τ₂ := h₂.lift (π₂.mapCone s)
       τ₃ := h₃.lift (π₃.mapCone s)
-      comm₁₂ := h₂.hom_ext (fun j => by
+      comm₁₂ := h₂.hom_ext (fun j ↦ by
         have eq₁ := h₁.fac (π₁.mapCone s)
         have eq₂ := h₂.fac (π₂.mapCone s)
-        have eq₁₂ := fun j => (c.π.app j).comm₁₂
-        have eq₁₂' := fun j => (s.π.app j).comm₁₂
+        have eq₁₂ := fun j ↦ (c.π.app j).comm₁₂
+        have eq₁₂' := fun j ↦ (s.π.app j).comm₁₂
         dsimp at eq₁ eq₂ eq₁₂ eq₁₂' ⊢
         rw [assoc, assoc, ← eq₁₂, reassoc_of% eq₁, eq₂, eq₁₂'])
-      comm₂₃ := h₃.hom_ext (fun j => by
+      comm₂₃ := h₃.hom_ext (fun j ↦ by
         have eq₂ := h₂.fac (π₂.mapCone s)
         have eq₃ := h₃.fac (π₃.mapCone s)
-        have eq₂₃ := fun j => (c.π.app j).comm₂₃
-        have eq₂₃' := fun j => (s.π.app j).comm₂₃
+        have eq₂₃ := fun j ↦ (c.π.app j).comm₂₃
+        have eq₂₃' := fun j ↦ (s.π.app j).comm₂₃
         dsimp at eq₂ eq₃ eq₂₃ eq₂₃' ⊢
         rw [assoc, assoc, ← eq₂₃, reassoc_of% eq₂, eq₃, eq₂₃']) }
   fac s j := by ext <;> apply IsLimit.fac
   uniq s m hm := by
     ext
-    · exact h₁.uniq (π₁.mapCone s) _ (fun j => π₁.congr_map (hm j))
-    · exact h₂.uniq (π₂.mapCone s) _ (fun j => π₂.congr_map (hm j))
-    · exact h₃.uniq (π₃.mapCone s) _ (fun j => π₃.congr_map (hm j))
+    · exact h₁.uniq (π₁.mapCone s) _ (fun j ↦ π₁.congr_map (hm j))
+    · exact h₂.uniq (π₂.mapCone s) _ (fun j ↦ π₂.congr_map (hm j))
+    · exact h₃.uniq (π₃.mapCone s) _ (fun j ↦ π₃.congr_map (hm j))
 
 section
 
@@ -65,7 +65,7 @@ of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
   Cone.mk (ShortComplex.mk (limMap (whiskerLeft F π₁Toπ₂)) (limMap (whiskerLeft F π₂Toπ₃))
       (by aesop_cat))
-    { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
+    { app := fun j ↦ Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
         (by aesop_cat) (by aesop_cat)
       naturality := fun _ _ f => by
         ext
@@ -163,18 +163,18 @@ def isColimitOfIsColimitπ (c : Cocone F)
     { τ₁ := h₁.desc (π₁.mapCocone s)
       τ₂ := h₂.desc (π₂.mapCocone s)
       τ₃ := h₃.desc (π₃.mapCocone s)
-      comm₁₂ := h₁.hom_ext (fun j => by
+      comm₁₂ := h₁.hom_ext (fun j ↦ by
         have eq₁ := h₁.fac (π₁.mapCocone s)
         have eq₂ := h₂.fac (π₂.mapCocone s)
-        have eq₁₂ := fun j => (c.ι.app j).comm₁₂
-        have eq₁₂' := fun j => (s.ι.app j).comm₁₂
+        have eq₁₂ := fun j ↦ (c.ι.app j).comm₁₂
+        have eq₁₂' := fun j ↦ (s.ι.app j).comm₁₂
         dsimp at eq₁ eq₂ eq₁₂ eq₁₂' ⊢
         rw [reassoc_of% (eq₁ j), eq₁₂', reassoc_of% eq₁₂, eq₂])
-      comm₂₃ := h₂.hom_ext (fun j => by
+      comm₂₃ := h₂.hom_ext (fun j ↦ by
         have eq₂ := h₂.fac (π₂.mapCocone s)
         have eq₃ := h₃.fac (π₃.mapCocone s)
-        have eq₂₃ := fun j => (c.ι.app j).comm₂₃
-        have eq₂₃' := fun j => (s.ι.app j).comm₂₃
+        have eq₂₃ := fun j ↦ (c.ι.app j).comm₂₃
+        have eq₂₃' := fun j ↦ (s.ι.app j).comm₂₃
         dsimp at eq₂ eq₃ eq₂₃ eq₂₃' ⊢
         rw [reassoc_of% (eq₂ j), eq₂₃', reassoc_of% eq₂₃, eq₃]) }
   fac s j := by
@@ -184,9 +184,9 @@ def isColimitOfIsColimitπ (c : Cocone F)
     · apply IsColimit.fac h₃
   uniq s m hm := by
     ext
-    · exact h₁.uniq (π₁.mapCocone s) _ (fun j => π₁.congr_map (hm j))
-    · exact h₂.uniq (π₂.mapCocone s) _ (fun j => π₂.congr_map (hm j))
-    · exact h₃.uniq (π₃.mapCocone s) _ (fun j => π₃.congr_map (hm j))
+    · exact h₁.uniq (π₁.mapCocone s) _ (fun j ↦ π₁.congr_map (hm j))
+    · exact h₂.uniq (π₂.mapCocone s) _ (fun j ↦ π₂.congr_map (hm j))
+    · exact h₃.uniq (π₃.mapCocone s) _ (fun j ↦ π₃.congr_map (hm j))
 
 section
 
@@ -198,7 +198,7 @@ of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
   Cocone.mk (ShortComplex.mk (colimMap (whiskerLeft F π₁Toπ₂)) (colimMap (whiskerLeft F π₂Toπ₃))
       (by aesop_cat))
-    { app := fun j => Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
+    { app := fun j ↦ Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
         (colimit.ι (F ⋙ π₃) _) (by aesop_cat) (by aesop_cat)
       naturality := fun _ _ f => by
         ext

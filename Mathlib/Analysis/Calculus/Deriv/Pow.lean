@@ -60,7 +60,7 @@ theorem deriv_pow : deriv (fun x : 𝕜 => x ^ n) x = (n : 𝕜) * x ^ (n - 1) :
   (hasDerivAt_pow n x).deriv
 
 @[simp]
-theorem deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x => (n : 𝕜) * x ^ (n - 1) :=
+theorem deriv_pow' : (deriv fun x : 𝕜 => x ^ n) = fun x ↦ (n : 𝕜) * x ^ (n - 1) :=
   funext fun _ => deriv_pow n
 
 theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
@@ -68,19 +68,19 @@ theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
   (hasDerivWithinAt_pow n x s).derivWithin hxs
 
 theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
-    HasDerivWithinAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
+    HasDerivWithinAt (fun y ↦ c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
   (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
 
 theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
-    HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
+    HasDerivAt (fun y ↦ c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.pow n
 
 theorem derivWithin_pow' (hc : DifferentiableWithinAt 𝕜 c s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x => c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
+    derivWithin (fun x ↦ c x ^ n) s x = (n : 𝕜) * c x ^ (n - 1) * derivWithin c s x :=
   (hc.hasDerivWithinAt.pow n).derivWithin hxs
 
 @[simp]
 theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
-    deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
+    deriv (fun x ↦ c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   (hc.hasDerivAt.pow n).deriv

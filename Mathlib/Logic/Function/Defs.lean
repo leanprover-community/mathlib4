@@ -34,7 +34,7 @@ Thus this usage is no longer allowed: -/
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]
 def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
-    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
+    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x ↦ f (g x)
 
 infixr:80 " ∘' " => Function.dcomp
 
@@ -69,7 +69,7 @@ def Injective (f : α → β) : Prop :=
   ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 
 theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
-    Injective (g ∘ f) := fun _a₁ _a₂ => fun h => hf (hg h)
+    Injective (g ∘ f) := fun _a₁ _a₂ => fun h ↦ hf (hg h)
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
@@ -121,7 +121,7 @@ theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α}
   injf h
 
 theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
-  fun y => ⟨g y, h y⟩
+  fun y ↦ ⟨g y, h y⟩
 
 theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
   | ⟨_finv, inv⟩ => inv.surjective
@@ -136,7 +136,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
 
 theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
 
-theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
+theorem surjective_id : Surjective (@id α) := fun a ↦ ⟨a, rfl⟩
 
 theorem bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩

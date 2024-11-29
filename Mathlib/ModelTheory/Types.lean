@@ -64,7 +64,7 @@ namespace CompleteType
 attribute [coe] CompleteType.toTheory
 
 instance Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :=
-  ⟨fun p => p.toTheory, fun p q h => by
+  ⟨fun p ↦ p.toTheory, fun p q h => by
     cases p
     cases q
     congr ⟩
@@ -190,7 +190,7 @@ attribute [-instance] FirstOrder.Language.withConstants_expansion
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
   obtain ⟨M⟩ := p.isMaximal.1
-  refine ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), ?_⟩
+  refine ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a ↦ (L.con a : M), ?_⟩
   refine SetLike.ext fun φ => ?_
   simp only [CompleteType.mem_typeOf]
   refine

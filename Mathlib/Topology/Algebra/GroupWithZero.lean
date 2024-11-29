@@ -49,25 +49,25 @@ variable [DivInvMonoid G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : �
   {l : Filter α}
 
 theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G₀) :
-    Tendsto (fun a => f a / y) l (𝓝 (x / y)) := by
+    Tendsto (fun a ↦ f a / y) l (𝓝 (x / y)) := by
   simpa only [div_eq_mul_inv] using hf.mul tendsto_const_nhds
 
 variable [TopologicalSpace α]
 
 nonrec theorem ContinuousAt.div_const {a : α} (hf : ContinuousAt f a) (y : G₀) :
-    ContinuousAt (fun x => f x / y) a :=
+    ContinuousAt (fun x ↦ f x / y) a :=
   hf.div_const y
 
 nonrec theorem ContinuousWithinAt.div_const {a} (hf : ContinuousWithinAt f s a) (y : G₀) :
-    ContinuousWithinAt (fun x => f x / y) s a :=
+    ContinuousWithinAt (fun x ↦ f x / y) s a :=
   hf.div_const _
 
 theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
-    ContinuousOn (fun x => f x / y) s := by
+    ContinuousOn (fun x ↦ f x / y) s := by
   simpa only [div_eq_mul_inv] using hf.mul continuousOn_const
 
 @[continuity, fun_prop]
-theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
+theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x ↦ f x / y := by
   simpa only [div_eq_mul_inv] using hf.mul continuous_const
 
 end DivConst
@@ -103,27 +103,27 @@ theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) {0}ᶜ := f
 We use the name `Filter.Tendsto.inv₀` as `Filter.Tendsto.inv` is already used in multiplicative
 topological groups. -/
 theorem Filter.Tendsto.inv₀ {a : G₀} (hf : Tendsto f l (𝓝 a)) (ha : a ≠ 0) :
-    Tendsto (fun x => (f x)⁻¹) l (𝓝 a⁻¹) :=
+    Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 a⁻¹) :=
   (tendsto_inv₀ ha).comp hf
 
 variable [TopologicalSpace α]
 
 nonrec theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f a ≠ 0) :
-    ContinuousWithinAt (fun x => (f x)⁻¹) s a :=
+    ContinuousWithinAt (fun x ↦ (f x)⁻¹) s a :=
   hf.inv₀ ha
 
 @[fun_prop]
 nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
-    ContinuousAt (fun x => (f x)⁻¹) a :=
+    ContinuousAt (fun x ↦ (f x)⁻¹) a :=
   hf.inv₀ ha
 
 @[continuity, fun_prop]
-theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
-  continuous_iff_continuousAt.2 fun x => (hf.tendsto x).inv₀ (h0 x)
+theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x ↦ (f x)⁻¹ :=
+  continuous_iff_continuousAt.2 fun x ↦ (hf.tendsto x).inv₀ (h0 x)
 
 @[fun_prop]
 theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
-    ContinuousOn (fun x => (f x)⁻¹) s := fun x hx => (hf x hx).inv₀ (h0 x hx)
+    ContinuousOn (fun x ↦ (f x)⁻¹) s := fun x hx => (hf x hx).inv₀ (h0 x hx)
 
 end Inv₀
 
@@ -168,7 +168,7 @@ theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 
 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
-    Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
+    Tendsto (fun n ↦ f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
   refine ⟨fun hfg => ?_, fun hf => hf.mul hg⟩
   rw [← mul_div_cancel_right₀ x hy]
   refine Tendsto.congr' ?_ (hfg.div hg hy)
@@ -198,16 +198,16 @@ theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p 
 
 @[fun_prop]
 theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
-    Continuous (fun x => f x / g x) := by
+    Continuous (fun x ↦ f x / g x) := by
   simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
 @[fun_prop]
 theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
-    ContinuousAt (fun x => f x / g x) a := ContinuousAt.div hf hg h₀
+    ContinuousAt (fun x ↦ f x / g x) a := ContinuousAt.div hf hg h₀
 
 @[fun_prop]
 theorem ContinuousOn.div₀ (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
-    ContinuousOn (fun x => f x / g x) s := ContinuousOn.div hf hg h₀
+    ContinuousOn (fun x ↦ f x / g x) s := ContinuousOn.div hf hg h₀
 
 /-- The function `f x / g x` is discontinuous when `g x = 0`. However, under appropriate
 conditions, `h x (f x / g x)` is still continuous.  The condition is that if `g a = 0` then `h x y`
@@ -217,8 +217,8 @@ also `Filter.prod_top` and `Filter.mem_prod_top`. -/
 theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (hf : ContinuousAt f a)
     (hg : ContinuousAt g a) (hh : g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : g a = 0 → Tendsto (↿h) (𝓝 a ×ˢ ⊤) (𝓝 (h a 0))) :
-    ContinuousAt (fun x => h x (f x / g x)) a := by
-  show ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
+    ContinuousAt (fun x ↦ h x (f x / g x)) a := by
+  show ContinuousAt (↿h ∘ fun x ↦ (x, f x / g x)) a
   by_cases hga : g a = 0
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]
@@ -230,7 +230,7 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
 theorem Continuous.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (hf : Continuous f)
     (hg : Continuous g) (hh : ∀ a, g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : ∀ a, g a = 0 → Tendsto (↿h) (𝓝 a ×ˢ ⊤) (𝓝 (h a 0))) :
-    Continuous fun x => h x (f x / g x) :=
+    Continuous fun x ↦ h x (f x / g x) :=
   continuous_iff_continuousAt.mpr fun a =>
     hf.continuousAt.comp_div_cases _ hg.continuousAt (hh a) (h2h a)
 
@@ -313,7 +313,7 @@ section ZPow
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
 
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
-    ContinuousAt (fun x => x ^ m) x := by
+    ContinuousAt (fun x ↦ x ^ m) x := by
   cases' m with m m
   · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
@@ -324,27 +324,27 @@ theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0
   (continuousAt_zpow₀ _ _ (Or.inl hx)).continuousWithinAt
 
 theorem Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf : Tendsto f l (𝓝 a)) (m : ℤ)
-    (h : a ≠ 0 ∨ 0 ≤ m) : Tendsto (fun x => f x ^ m) l (𝓝 (a ^ m)) :=
+    (h : a ≠ 0 ∨ 0 ≤ m) : Tendsto (fun x ↦ f x ^ m) l (𝓝 (a ^ m)) :=
   (continuousAt_zpow₀ _ m h).tendsto.comp hf
 
 variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
 @[fun_prop]
 nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
-    ContinuousAt (fun x => f x ^ m) a :=
+    ContinuousAt (fun x ↦ f x ^ m) a :=
   hf.zpow₀ m h
 
 nonrec theorem ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : ℤ)
-    (h : f a ≠ 0 ∨ 0 ≤ m) : ContinuousWithinAt (fun x => f x ^ m) s a :=
+    (h : f a ≠ 0 ∨ 0 ≤ m) : ContinuousWithinAt (fun x ↦ f x ^ m) s a :=
   hf.zpow₀ m h
 
 @[fun_prop]
 theorem ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s, f a ≠ 0 ∨ 0 ≤ m) :
-    ContinuousOn (fun x => f x ^ m) s := fun a ha => (hf a ha).zpow₀ m (h a ha)
+    ContinuousOn (fun x ↦ f x ^ m) s := fun a ha => (hf a ha).zpow₀ m (h a ha)
 
 @[continuity, fun_prop]
 theorem Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 ∨ 0 ≤ m) :
-    Continuous fun x => f x ^ m :=
-  continuous_iff_continuousAt.2 fun x => (hf.tendsto x).zpow₀ m (h0 x)
+    Continuous fun x ↦ f x ^ m :=
+  continuous_iff_continuousAt.2 fun x ↦ (hf.tendsto x).zpow₀ m (h0 x)
 
 end ZPow

@@ -112,11 +112,11 @@ theorem prod_mono_left (H : Subgroup N) : Monotone fun K : Subgroup G => K.prod 
 
 @[to_additive prod_top]
 theorem prod_top (K : Subgroup G) : K.prod (⊤ : Subgroup N) = K.comap (MonoidHom.fst G N) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_fst]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_fst]
 
 @[to_additive top_prod]
 theorem top_prod (H : Subgroup N) : (⊤ : Subgroup G).prod H = H.comap (MonoidHom.snd G N) :=
-  ext fun x => by simp [mem_prod, MonoidHom.coe_snd]
+  ext fun x ↦ by simp [mem_prod, MonoidHom.coe_snd]
 
 @[to_additive (attr := simp) top_prod_top]
 theorem top_prod_top : (⊤ : Subgroup G).prod (⊤ : Subgroup N) = ⊤ :=
@@ -169,7 +169,7 @@ variable {η : Type*} {f : η → Type*}
   `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`."]
 def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
     Submonoid (∀ i, f i) where
-  carrier := I.pi fun i => (s i).carrier
+  carrier := I.pi fun i ↦ (s i).carrier
   one_mem' i _ := (s i).one_mem
   mul_mem' hp hq i hI := (s i).mul_mem (hp i hI) (hq i hI)
 
@@ -183,12 +183,12 @@ variable [∀ i, Group (f i)]
       of submodules `s : Π i, AddSubgroup f i`, `pi I s` is the `AddSubgroup` of dependent functions
       `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`."]
 def pi (I : Set η) (H : ∀ i, Subgroup (f i)) : Subgroup (∀ i, f i) :=
-  { Submonoid.pi I fun i => (H i).toSubmonoid with
+  { Submonoid.pi I fun i ↦ (H i).toSubmonoid with
     inv_mem' := fun hp i hI => (H i).inv_mem (hp i hI) }
 
 @[to_additive]
 theorem coe_pi (I : Set η) (H : ∀ i, Subgroup (f i)) :
-    (pi I H : Set (∀ i, f i)) = Set.pi I fun i => (H i : Set (f i)) :=
+    (pi I H : Set (∀ i, f i)) = Set.pi I fun i ↦ (H i : Set (f i)) :=
   rfl
 
 @[to_additive]
@@ -197,15 +197,15 @@ theorem mem_pi (I : Set η) {H : ∀ i, Subgroup (f i)} {p : ∀ i, f i} :
   Iff.rfl
 
 @[to_additive]
-theorem pi_top (I : Set η) : (pi I fun i => (⊤ : Subgroup (f i))) = ⊤ :=
-  ext fun x => by simp [mem_pi]
+theorem pi_top (I : Set η) : (pi I fun i ↦ (⊤ : Subgroup (f i))) = ⊤ :=
+  ext fun x ↦ by simp [mem_pi]
 
 @[to_additive]
 theorem pi_empty (H : ∀ i, Subgroup (f i)) : pi ∅ H = ⊤ :=
-  ext fun x => by simp [mem_pi]
+  ext fun x ↦ by simp [mem_pi]
 
 @[to_additive]
-theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
+theorem pi_bot : (pi Set.univ fun i ↦ (⊥ : Subgroup (f i))) = ⊥ :=
   (eq_bot_iff_forall _).mpr fun p hp => by
     simp only [mem_pi, mem_bot] at *
     ext j
@@ -242,7 +242,7 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
       have : MonoidHom.mulSingle f i x = 1 :=
         h (MonoidHom.mulSingle f i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
       simpa using congr_fun this i
-    · exact fun h x hx => funext fun i => h _ _ (hx i trivial)
+    · exact fun h x hx => funext fun i ↦ h _ _ (hx i trivial)
 
 end Pi
 
@@ -343,7 +343,7 @@ instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).No
 @[to_additive]
 theorem normalizer_eq_top : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
-    ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
+    ⟨fun h ↦ ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
       ⟨fun hb => h.conj_mem b hb a, fun hb => by rwa [h.mem_comm_iff, inv_mul_cancel_left] at hb⟩⟩
 
 @[to_additive]
@@ -358,7 +358,7 @@ variable {N : Type*} [Group N]
 /-- The preimage of the normalizer is contained in the normalizer of the preimage. -/
 @[to_additive "The preimage of the normalizer is contained in the normalizer of the preimage."]
 theorem le_normalizer_comap (f : N →* G) :
-    H.normalizer.comap f ≤ (H.comap f).normalizer := fun x => by
+    H.normalizer.comap f ≤ (H.comap f).normalizer := fun x ↦ by
   simp only [mem_normalizer_iff, mem_comap]
   intro h n
   simp [h (f n)]

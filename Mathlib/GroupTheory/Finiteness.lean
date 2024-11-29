@@ -85,23 +85,23 @@ attribute [to_additive] Monoid.FG
 variable {M N}
 
 theorem Monoid.fg_def : Monoid.FG M ↔ (⊤ : Submonoid M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem AddMonoid.fg_def : AddMonoid.FG N ↔ (⊤ : AddSubmonoid N).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 /-- An equivalent expression of `Monoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
       "An equivalent expression of `AddMonoid.FG` in terms of `Set.Finite` instead of `Finset`."]
 theorem Monoid.fg_iff :
     Monoid.FG M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
-  ⟨fun h => (Submonoid.fg_iff ⊤).1 h.out, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
+  ⟨fun h ↦ (Submonoid.fg_iff ⊤).1 h.out, fun h ↦ ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
 
 theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) :=
-  ⟨fun h => ⟨(Submonoid.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Submonoid.fg_iff_add_fg ⊤).2 h.out⟩⟩
+  ⟨fun h ↦ ⟨(Submonoid.fg_iff_add_fg ⊤).1 h.out⟩, fun h ↦ ⟨(Submonoid.fg_iff_add_fg ⊤).2 h.out⟩⟩
 
 theorem AddMonoid.fg_iff_mul_fg : AddMonoid.FG N ↔ Monoid.FG (Multiplicative N) :=
-  ⟨fun h => ⟨(AddSubmonoid.fg_iff_mul_fg ⊤).1 h.out⟩, fun h =>
+  ⟨fun h ↦ ⟨(AddSubmonoid.fg_iff_mul_fg ⊤).1 h.out⟩, fun h =>
     ⟨(AddSubmonoid.fg_iff_mul_fg ⊤).2 h.out⟩⟩
 
 instance AddMonoid.fg_of_monoid_fg [Monoid.FG M] : AddMonoid.FG (Additive M) :=
@@ -139,7 +139,7 @@ theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
   conv_rhs => rw [← N.mrange_subtype, MonoidHom.mrange_eq_map]
-  exact ⟨fun h => h.out.map N.subtype, fun h => ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
+  exact ⟨fun h ↦ h.out.map N.subtype, fun h ↦ ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
 
 @[to_additive]
 theorem Monoid.fg_of_surjective {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M')
@@ -241,16 +241,16 @@ attribute [to_additive] Group.FG
 variable {G H}
 
 theorem Group.fg_def : Group.FG G ↔ (⊤ : Subgroup G).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem AddGroup.fg_def : AddGroup.FG H ↔ (⊤ : AddSubgroup H).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 /-- An equivalent expression of `Group.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
       "An equivalent expression of `AddGroup.fg` in terms of `Set.Finite` instead of `Finset`."]
 theorem Group.fg_iff : Group.FG G ↔ ∃ S : Set G, Subgroup.closure S = (⊤ : Subgroup G) ∧ S.Finite :=
-  ⟨fun h => (Subgroup.fg_iff ⊤).1 h.out, fun h => ⟨(Subgroup.fg_iff ⊤).2 h⟩⟩
+  ⟨fun h ↦ (Subgroup.fg_iff ⊤).1 h.out, fun h ↦ ⟨(Subgroup.fg_iff ⊤).2 h⟩⟩
 
 @[to_additive]
 theorem Group.fg_iff' :
@@ -261,7 +261,7 @@ theorem Group.fg_iff' :
 @[to_additive "An additive group is finitely generated if and only
 if it is finitely generated as an additive monoid."]
 theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
-  ⟨fun h => Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h =>
+  ⟨fun h ↦ Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h =>
     Group.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).2 (Monoid.fg_def.1 h)⟩
 
 @[to_additive (attr := simp)]
@@ -270,10 +270,10 @@ theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
     (Subgroup.fg_iff_submonoid_fg _).symm
 
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
-  ⟨fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
+  ⟨fun h ↦ ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h ↦ ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
 
 theorem AddGroup.fg_iff_mul_fg : AddGroup.FG H ↔ Group.FG (Multiplicative H) :=
-  ⟨fun h => ⟨(AddSubgroup.fg_iff_mul_fg ⊤).1 h.out⟩, fun h =>
+  ⟨fun h ↦ ⟨(AddSubgroup.fg_iff_mul_fg ⊤).1 h.out⟩, fun h =>
     ⟨(AddSubgroup.fg_iff_mul_fg ⊤).2 h.out⟩⟩
 
 instance AddGroup.fg_of_group_fg [Group.FG G] : AddGroup.FG (Additive G) :=

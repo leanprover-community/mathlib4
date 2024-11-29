@@ -29,7 +29,7 @@ then decompositions of an object as a biproduct of the family have uniquely defi
 We state this as:
 ```
 theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β → ι}
-    (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
+    (i : (⨁ fun a ↦ s (f a)) ≅ ⨁ fun b ↦ s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a
 ```
 
 This is preliminary to defining semisimple categories.
@@ -71,7 +71,7 @@ and matrix entries in `i`-th block living in the endomorphisms of `s i`. -/
 @[simps]
 noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Finite α] [Finite β]
     {f : α → ι} {g : β → ι} :
-    ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃
+    ((⨁ fun a ↦ s (f a)) ⟶ ⨁ fun b ↦ s (g b)) ≃
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) where
   toFun z i j k :=
     eqToHom
@@ -112,7 +112,7 @@ variable [Preadditive C] [HasFiniteBiproducts C]
 @[simps!]
 noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]
     [Finite β] {f : α → ι} {g : β → ι} :
-    ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃+
+    ((⨁ fun a ↦ s (f a)) ⟶ ⨁ fun b ↦ s (g b)) ≃+
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) :=
   { o.matrixDecomposition with
     map_add' := fun w z => by
@@ -122,7 +122,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
 
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f : α → ι} (i : ι) :
-    o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
+    o.matrixDecomposition (𝟙 (⨁ fun a ↦ s (f a))) i = 1 := by
   ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
@@ -137,8 +137,8 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     rw [this, comp_zero]
 
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
-    [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
-    (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
+    [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a ↦ s (f a)) ⟶ ⨁ fun b ↦ s (g b))
+    (w : (⨁ fun b ↦ s (g b)) ⟶ ⨁ fun c ↦ s (h c)) (i : ι) :
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
@@ -165,7 +165,7 @@ variable {R : Type*} [Semiring R] [Linear R C]
 @[simps]
 noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]
     [Finite β] {f : α → ι} {g : β → ι} :
-    ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃ₗ[R]
+    ((⨁ fun a ↦ s (f a)) ⟶ ⨁ fun b ↦ s (g b)) ≃ₗ[R]
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) :=
   { o.matrixDecompositionAddEquiv with
     map_smul' := fun w z => by
@@ -188,9 +188,9 @@ for which each `End (s i)` is a ring with invariant basis number (e.g. if each `
 if two direct sums over `s` are isomorphic, then they have the same multiplicities.
 -/
 theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Finite α] [Finite β] {f : α → ι}
-    {g : β → ι} (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) :
+    {g : β → ι} (i : (⨁ fun a ↦ s (f a)) ≅ ⨁ fun b ↦ s (g b)) :
     ∃ e : α ≃ β, ∀ a, g (e a) = f a := by
-  refine ⟨Equiv.ofPreimageEquiv ?_, fun a => Equiv.ofPreimageEquiv_map _ _⟩
+  refine ⟨Equiv.ofPreimageEquiv ?_, fun a ↦ Equiv.ofPreimageEquiv_map _ _⟩
   intro c
   apply Nonempty.some
   apply Cardinal.eq.1

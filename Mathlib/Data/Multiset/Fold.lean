@@ -68,7 +68,7 @@ theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
 
 theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
-    (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
+    (s.map fun i ↦ (t i).fold op (b i)).fold op b₀ := by
   induction' s using Multiset.induction_on with a ha ih
   · rw [zero_bind, map_zero, map_zero, fold_zero]
   · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
@@ -77,7 +77,7 @@ theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
   foldr_singleton _ _ _
 
 theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
-    (s.map fun x => f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
+    (s.map fun x ↦ f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=
   Multiset.induction_on s (by simp) (fun a b h => by
     rw [map_cons, fold_cons_left, h, map_cons, fold_cons_left, map_cons,
       fold_cons_right, ha.assoc, ← ha.assoc (g a), hc.comm (g a),
@@ -105,11 +105,11 @@ end Fold
 open Nat
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
-  ⟨(s.map fun a => count a s).fold max 0,
-    le_iff_count.2 fun a => by
+  ⟨(s.map fun a ↦ count a s).fold max 0,
+    le_iff_count.2 fun a ↦ by
       rw [count_nsmul]; by_cases h : a ∈ s
       · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
-        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
+        have : count a s ≤ fold max 0 (map (fun a ↦ count a s) (a ::ₘ erase s a)) := by
           simp [le_max_left]
         rw [cons_erase h] at this
         simpa [mul_succ] using this

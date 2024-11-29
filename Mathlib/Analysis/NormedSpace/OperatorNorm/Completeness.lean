@@ -48,7 +48,7 @@ def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} 
     -- Then `‖g x‖ ≤ C * ‖x‖` for all `g ∈ s`, `x : E`, hence `‖f x‖ ≤ C * ‖x‖` for all `x`.
     have : ∀ x, IsClosed { g : E' → F | ‖g x‖ ≤ C * ‖x‖ } := fun x =>
       isClosed_Iic.preimage (@continuous_apply E' (fun _ => F) _ x).norm
-    refine ⟨C, fun x => (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf⟩
+    refine ⟨C, fun x ↦ (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf⟩
     exact g.le_of_opNorm_le (hC _ hg) _
 
 /-- Let `f : E → F` be a map, let `g : α → E →SL[σ₁₂] F` be a family of continuous (semi)linear maps
@@ -72,10 +72,10 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   -- Since `b → 0`, it suffices to show that `‖f n x - g x‖ ≤ b n * ‖x‖` for all `n` and `x`.
   suffices ∀ n x, ‖f n x - g x‖ ≤ b n * ‖x‖ from
     tendsto_iff_norm_sub_tendsto_zero.2
-    (squeeze_zero (fun n => norm_nonneg _) (fun n => opNorm_le_bound _ (hb₀ n) (this n)) hb_lim)
+    (squeeze_zero (fun n ↦ norm_nonneg _) (fun n ↦ opNorm_le_bound _ (hb₀ n) (this n)) hb_lim)
   intro n x
   -- Note that `f m x → g x`, hence `‖f n x - f m x‖ → ‖f n x - g x‖` as `m → ∞`
-  have : Tendsto (fun m => ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
+  have : Tendsto (fun m ↦ ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
     (tendsto_const_nhds.sub <| tendsto_pi_nhds.1 hg _).norm
   -- Thus it suffices to verify `‖f n x - f m x‖ ≤ b n * ‖x‖` for `m ≥ n`.
   refine le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => ?_⟩)
@@ -88,11 +88,11 @@ instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
   -- We show that every Cauchy sequence converges.
   refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   -- The evaluation at any point `v : E` is Cauchy.
-  have cau : ∀ v, CauchySeq fun n => f n v := fun v => hf.map (lipschitz_apply v).uniformContinuous
+  have cau : ∀ v, CauchySeq fun n ↦ f n v := fun v ↦ hf.map (lipschitz_apply v).uniformContinuous
   -- We assemble the limits points of those Cauchy sequences
   -- (which exist as `F` is complete)
   -- into a function which we call `G`.
-  choose G hG using fun v => cauchySeq_tendsto_of_complete (cau v)
+  choose G hG using fun v ↦ cauchySeq_tendsto_of_complete (cau v)
   -- Next, we show that this `G` is a continuous linear map.
   -- This is done in `ContinuousLinearMap.ofTendstoOfBoundedRange`.
   set Glin : E' →SL[σ₁₂] F :=
@@ -150,7 +150,7 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
-  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => ?_)
+  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x ↦ ?_)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
     isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
   refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf
@@ -197,8 +197,8 @@ def extend : Fₗ →SL[σ₁₂] F :=
       · intro x y
         simp only [eq, ← e.map_add]
         exact f.map_add _ _
-    map_smul' := fun k => by
-      refine fun b => h_dense.induction_on b ?_ ?_
+    map_smul' := fun k ↦ by
+      refine fun b ↦ h_dense.induction_on b ?_ ?_
       · exact isClosed_eq (cont.comp (continuous_const_smul _))
           ((continuous_const_smul _).comp cont)
       · intro x

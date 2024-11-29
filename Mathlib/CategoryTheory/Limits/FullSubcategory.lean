@@ -101,7 +101,7 @@ def createsColimitFullSubcategoryInclusion (F : J ⥤ FullSubcategory P)
 def createsLimitFullSubcategoryInclusionOfClosed (h : ClosedUnderLimitsOfShape J P)
     (F : J ⥤ FullSubcategory P) [HasLimit (F ⋙ fullSubcategoryInclusion P)] :
     CreatesLimit F (fullSubcategoryInclusion P) :=
-  createsLimitFullSubcategoryInclusion F (h.limit fun j => (F.obj j).property)
+  createsLimitFullSubcategoryInclusion F (h.limit fun j ↦ (F.obj j).property)
 
 /-- If `P` is closed under limits of shape `J`, then the inclusion creates such limits. -/
 def createsLimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderLimitsOfShape J P)
@@ -124,7 +124,7 @@ theorem hasLimitsOfShape_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
 def createsColimitFullSubcategoryInclusionOfClosed (h : ClosedUnderColimitsOfShape J P)
     (F : J ⥤ FullSubcategory P) [HasColimit (F ⋙ fullSubcategoryInclusion P)] :
     CreatesColimit F (fullSubcategoryInclusion P) :=
-  createsColimitFullSubcategoryInclusion F (h.colimit fun j => (F.obj j).property)
+  createsColimitFullSubcategoryInclusion F (h.colimit fun j ↦ (F.obj j).property)
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
 def createsColimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderColimitsOfShape J P)

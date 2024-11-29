@@ -164,7 +164,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           inferInstance
       prop := trivial }
     π := {
-      app := fun j => (TopCat.limitCone FF).π.app j
+      app := fun j ↦ (TopCat.limitCone FF).π.app j
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
@@ -214,7 +214,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       -- into a one-field-structure.
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
-    apply_fun fun e => (e y).down.1 at H
+    apply_fun fun e ↦ (e y).down.1 at H
     dsimp [Z] at H
     change 0 = φ y at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H

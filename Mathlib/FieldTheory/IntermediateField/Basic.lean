@@ -646,7 +646,7 @@ theorem mem_restrictScalars {E : IntermediateField L' L} {x : L} :
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
-  fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
+  fun U V H => ext fun x ↦ by rw [← mem_restrictScalars K, H, mem_restrictScalars]
 
 end RestrictScalars
 

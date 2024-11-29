@@ -173,10 +173,10 @@ theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : X.Opens} (hU : IsAffineO
 
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
-  let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
+  let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x ↦ Scheme.affineCover _
   have (i) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
-    ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
+    ((Z.affineCover.pullbackCover g).bind fun x ↦ Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_
     (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) ‹_›) ?_
@@ -297,7 +297,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; rw [hs]
+      · refine fun i ↦ homOfLE ?_; rw [hs]
         -- Porting note: have to add argument explicitly
         exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
       · exact le_of_eq hs

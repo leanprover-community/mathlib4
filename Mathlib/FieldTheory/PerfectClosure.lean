@@ -136,7 +136,7 @@ instance instMul : Mul (PerfectClosure K p) :=
             mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 * (frobenius K p)^[x.1] y.2))
           (mul_aux_right K p x))
       fun x1 x2 (H : R K p x1 x2) =>
-      funext fun e => Quot.inductionOn e fun y => mul_aux_left K p x1 x2 y H⟩
+      funext fun e ↦ Quot.inductionOn e fun y ↦ mul_aux_left K p x1 x2 y H⟩
 
 @[simp]
 theorem mk_mul_mk (x y : ℕ × K) :
@@ -201,7 +201,7 @@ instance instAdd : Add (PerfectClosure K p) :=
             mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 + (frobenius K p)^[x.1] y.2))
           (add_aux_right K p x))
       fun x1 x2 (H : R K p x1 x2) =>
-      funext fun e => Quot.inductionOn e fun y => add_aux_left K p x1 x2 y H⟩
+      funext fun e ↦ Quot.inductionOn e fun y ↦ add_aux_left K p x1 x2 y H⟩
 
 @[simp]
 theorem mk_add_mk (x y : ℕ × K) :
@@ -286,11 +286,11 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
     -- Porting note: added `zero_mul`, `mul_zero`
-    zero_mul := fun a => by
+    zero_mul := fun a ↦ by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
       simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero_right]
-    mul_zero := fun a => by
+    mul_zero := fun a ↦ by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
       simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero_right]
@@ -413,7 +413,7 @@ instance instReduced : IsReduced (PerfectClosure K p) where
 instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
   bijective_frobenius := by
     let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
-      liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
+      liftOn e (fun x ↦ mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
     refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
@@ -433,7 +433,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
+        refine fun e ↦ liftOn e (fun x ↦ (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
         rintro - - ⟨n, x⟩
         simp [f.map_frobenius]
       map_one' := f.map_one

@@ -45,7 +45,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) (fun {i hi} => ?_) ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
-    refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => ?_
+    refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h ↦ ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
   · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
@@ -78,7 +78,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) ?_ ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
-    refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h => ?_
+    refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h ↦ ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
   · induction' n with n hn
@@ -204,7 +204,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       rw [← pow_add, ← (hf _ (aux i hi)).2, ← Algebra.smul_def, smul_smul, mul_comm _ p, smul_smul]
     simp only [add_mul, smul_mul_assoc, one_mul, sum_mul, sum_congr rfl this]
   · rw [aeval_eq_sum_range,
-      Finset.add_sum_erase (range (Q.natDegree + 1)) fun i => Q.coeff i • B.gen ^ i]
+      Finset.add_sum_erase (range (Q.natDegree + 1)) fun i ↦ Q.coeff i • B.gen ^ i]
     simp
 
 theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [CommRing B]
@@ -260,7 +260,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       exact Subalgebra.zero_mem _
   -- It is enough to prove that all coefficients of `Q` are divisible by `p`, by induction.
   -- The base case is `dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt`.
-  refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => ?_) hQ
+  refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i ↦ ?_) hQ
   induction' i using Nat.case_strong_induction_on with j hind
   · intro _
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
@@ -303,7 +303,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         ← (hf (k + P.natDegree - 1) _).2, mul_smul_comm]
       rw [(minpoly.monic hBint).natDegree_map, add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
       · exact Nat.zero_le _
-      · refine one_le_iff_ne_zero.2 fun h => ?_
+      · refine one_le_iff_ne_zero.2 fun h ↦ ?_
         rw [h] at hk
         simp at hk
 
@@ -326,7 +326,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       sum_congr rfl hg, add_comm] at hQ
     -- We multiply this equality by `B.gen ^ (P.natDegree-(j+2))`, so we can use `hf₁` on the terms
     -- we didn't know were multiples of `p`, and we take the norm on both sides.
-    replace hQ := congr_arg (fun x => x * B.gen ^ (P.natDegree - (j + 2))) hQ
+    replace hQ := congr_arg (fun x ↦ x * B.gen ^ (P.natDegree - (j + 2))) hQ
     simp_rw [sum_map, addLeftEmbedding_apply, add_mul, sum_mul, mul_assoc] at hQ
     rw [← insert_erase
       (mem_range.2 (tsub_pos_iff_lt.2 <| Nat.lt_of_succ_lt_succ <| mem_range.1 hj)),
@@ -347,7 +347,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       rw [(minpoly.monic hBint).natDegree_map (algebraMap R L)]
       rw [add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
       · exact _root_.zero_le _
-      · refine one_le_iff_ne_zero.2 fun h => ?_
+      · refine one_le_iff_ne_zero.2 fun h ↦ ?_
         rw [h] at hk
         simp at hk
     obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)

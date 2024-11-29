@@ -63,7 +63,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
       uniq := fun f =>
         t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
   invFun u :=
-    { lift := fun s => (u s.pt).default
+    { lift := fun s ↦ (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
@@ -106,9 +106,9 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     IsColimit (⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
   toFun t X :=
     { default := t.desc ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩
-      uniq := fun f => t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
+      uniq := fun f ↦ t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
   invFun u :=
-    { desc := fun s => (u s.pt).default
+    { desc := fun s ↦ (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
@@ -329,7 +329,7 @@ In `limitOfDiagramInitial` we show it is a limit cone. -/
 def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
   pt := F.obj X
   π :=
-    { app := fun j => F.map (tX.to j)
+    { app := fun j ↦ F.map (tX.to j)
       naturality := fun j j' k => by
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
@@ -371,7 +371,7 @@ In `colimitOfDiagramTerminal` we show it is a colimit cocone. -/
 def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F where
   pt := F.obj X
   ι :=
-    { app := fun j => F.map (tX.from j)
+    { app := fun j ↦ F.map (tX.from j)
       naturality := fun j j' k => by
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }

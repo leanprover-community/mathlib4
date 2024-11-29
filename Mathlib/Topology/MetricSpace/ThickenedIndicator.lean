@@ -112,7 +112,7 @@ This statement is for the unbundled `ℝ≥0∞`-valued functions `thickenedIndi
 bounded continuous functions. -/
 theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
-    Tendsto (fun n => thickenedIndicatorAux (δseq n) E) atTop
+    Tendsto (fun n ↦ thickenedIndicatorAux (δseq n) E) atTop
       (𝓝 (indicator (closure E) fun _ => (1 : ℝ≥0∞))) := by
   rw [tendsto_pi_nhds]
   intro x

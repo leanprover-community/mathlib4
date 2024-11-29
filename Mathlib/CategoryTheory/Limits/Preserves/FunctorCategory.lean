@@ -114,7 +114,7 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category C] {D : Ty
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
     ⟨fun c {hc} => ⟨by
-      apply evaluationJointlyReflectsLimits _ (fun k => ?_)
+      apply evaluationJointlyReflectsLimits _ (fun k ↦ ?_)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact isLimitOfPreserves _ hc⟩⟩⟩
 
@@ -148,7 +148,7 @@ instance whiskeringRight_preservesColimitsOfShape {C : Type*} [Category C] {D : 
     PreservesColimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
     ⟨fun c {hc} => ⟨by
-      apply evaluationJointlyReflectsColimits _ (fun k => ?_)
+      apply evaluationJointlyReflectsColimits _ (fun k ↦ ?_)
       change IsColimit (((evaluation _ _).obj k ⋙ F).mapCocone c)
       exact isColimitOfPreserves _ hc⟩⟩⟩
 
@@ -200,13 +200,13 @@ lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
 lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]
     (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteLimits (F ⋙ (evaluation D E).obj d)) :
     PreservesFiniteLimits F :=
-  ⟨fun J _ _ => preservesLimitsOfShape_of_evaluation F J fun k => (h k).preservesFiniteLimits _⟩
+  ⟨fun J _ _ => preservesLimitsOfShape_of_evaluation F J fun k ↦ (h k).preservesFiniteLimits _⟩
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
 lemma preservesFiniteColimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]
     (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteColimits (F ⋙ (evaluation D E).obj d)) :
     PreservesFiniteColimits F :=
-  ⟨fun J _ _ => preservesColimitsOfShape_of_evaluation F J fun k => (h k).preservesFiniteColimits _⟩
+  ⟨fun J _ _ => preservesColimitsOfShape_of_evaluation F J fun k ↦ (h k).preservesFiniteColimits _⟩
 
 end
 
@@ -229,7 +229,7 @@ noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _
       NatIso.ofComponents (fun X => (colimitObjIsoColimitCompEvaluation _ _) ≪≫
           (by exact HasColimit.isoOfNatIso (Iso.refl _)) ≪≫
           (colimitObjIsoColimitCompEvaluation _ _).symm)
-        (fun {F G} η => colimit_obj_ext (fun j => by simp [← NatTrans.comp_app_assoc]))
+        (fun {F G} η => colimit_obj_ext (fun j ↦ by simp [← NatTrans.comp_app_assoc]))
     preservesLimitsOfShape_of_natIso (i ≪≫ colimitFlipIsoCompColim _).symm)
 
 end
@@ -246,7 +246,7 @@ noncomputable instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _
       NatIso.ofComponents (fun X => (limitObjIsoLimitCompEvaluation _ _) ≪≫
           (by exact HasLimit.isoOfNatIso (Iso.refl _)) ≪≫
           (limitObjIsoLimitCompEvaluation _ _).symm)
-        (fun {F G} η => limit_obj_ext (fun j => by simp [← NatTrans.comp_app]))
+        (fun {F G} η => limit_obj_ext (fun j ↦ by simp [← NatTrans.comp_app]))
     preservesColimitsOfShape_of_natIso (i ≪≫ limitFlipIsoCompLim _).symm)
 
 end

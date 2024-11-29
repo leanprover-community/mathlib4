@@ -146,7 +146,7 @@ def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
 variable (M)
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| ExteriorAlgebra R M) := fun x ↦ by
   simp [algebraMapInv]
 
 @[simp]
@@ -184,7 +184,7 @@ variable {M}
 `ExteriorAlgebra.ι` to `TrivSqZeroExt.inr`. -/
 def toTrivSqZeroExt [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     ExteriorAlgebra R M →ₐ[R] TrivSqZeroExt R M :=
-  lift R ⟨TrivSqZeroExt.inrHom R M, fun m => TrivSqZeroExt.inr_mul_inr R m m⟩
+  lift R ⟨TrivSqZeroExt.inrHom R M, fun m ↦ TrivSqZeroExt.inr_mul_inr R m m⟩
 
 @[simp]
 theorem toTrivSqZeroExt_ι [Module Rᵐᵒᵖ M] [IsCentralScalar R M] (x : M) :
@@ -200,7 +200,7 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
-theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
+theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x ↦ by
   -- Porting note: Original proof didn't have `letI` and `haveI`
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -219,7 +219,7 @@ theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := toTrivSqZeroExt_ι _
@@ -249,7 +249,7 @@ theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
   CliffordAlgebra.ι_mul_ι_add_swap_of_isOrtho <| .all _ _
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
-    (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
+    (ι R <| f i) * (List.ofFn fun i ↦ ι R <| f i).prod = 0 := by
   induction n with
   | zero => exact i.elim0
   | succ n hn =>
@@ -257,7 +257,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
-        congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
+        congr_arg (ι R (f 0) * ·) <| hn (fun i ↦ f <| Fin.succ i) (i.pred h)
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
@@ -292,7 +292,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
         · convert mul_zero (ι R (f 0))
           refine
             hn
-              (fun i => f <| Fin.succ i) (x.pred hx)
+              (fun i ↦ f <| Fin.succ i) (x.pred hx)
               (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) ?_
               (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
@@ -301,7 +301,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
 
 variable {R}
 
-theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn fun i => ι R (v i)).prod :=
+theorem ιMulti_apply {n : ℕ} (v : Fin n → M) : ιMulti R n v = (List.ofFn fun i ↦ ι R (v i)).prod :=
   rfl
 
 @[simp]
@@ -330,7 +330,7 @@ lemma ιMulti_range (n : ℕ) :
   rw [ιMulti_apply]
   apply Submodule.pow_subset_pow
   rw [Set.mem_pow]
-  exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
+  exact ⟨fun i ↦ ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
 of the exterior algebra. -/
@@ -340,7 +340,7 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
   rw [exteriorPower, Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
   obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
-  refine ⟨fun i => ιInv (f i).1, ?_⟩
+  refine ⟨fun i ↦ ιInv (f i).1, ?_⟩
   rw [ιMulti_apply]
   congr with i
   obtain ⟨v, hv⟩ := (f i).prop
@@ -350,7 +350,7 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
 family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
 abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
     (s : {s : Finset I // Finset.card s = n}) : ExteriorAlgebra R M :=
-  ιMulti R n fun i => v (Finset.orderIsoOfFin _ s.prop i)
+  ιMulti R n fun i ↦ v (Finset.orderIsoOfFin _ s.prop i)
 
 variable {R}
 
@@ -429,7 +429,7 @@ open Function in
 @[simp]
 lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
     LeftInverse (map g) (map f) ↔ LeftInverse g f := by
-  refine ⟨fun h x => ?_, fun h => CliffordAlgebra.leftInverse_map_of_leftInverse _ _ h⟩
+  refine ⟨fun h x => ?_, fun h ↦ CliffordAlgebra.leftInverse_map_of_leftInverse _ _ h⟩
   simpa using h (ι _ x)
 
 /-- A morphism of modules that admits a linear retraction induces an injective morphism of

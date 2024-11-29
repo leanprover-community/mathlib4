@@ -76,7 +76,7 @@ theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
   rfl
 
 @[to_additive]
-theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
+theorem mul_def [∀ i, Mul <| f i] : x * y = fun i ↦ x i * y i :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -88,7 +88,7 @@ theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x 
 
 @[to_additive]
 instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
-  ⟨fun s x => fun i => s • x i⟩
+  ⟨fun s x => fun i ↦ s • x i⟩
 
 @[to_additive existing instSMul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
@@ -99,7 +99,7 @@ theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^
   rfl
 
 @[to_additive (attr := to_additive) (reorder := 5 6) smul_def]
-theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
+theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i ↦ x i ^ b :=
   rfl
 
 @[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
@@ -120,7 +120,7 @@ theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
   rfl
 
 @[to_additive]
-theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i => (x i)⁻¹ :=
+theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i ↦ (x i)⁻¹ :=
   rfl
 
 @[to_additive]
@@ -139,7 +139,7 @@ theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
   rfl
 
 @[to_additive]
-theorem div_def [∀ i, Div <| f i] : x / y = fun i => x i / y i :=
+theorem div_def [∀ i, Div <| f i] : x / y = fun i ↦ x i / y i :=
   rfl
 
 @[to_additive]
@@ -309,13 +309,13 @@ theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 
 @[to_additive]
 theorem mulSingle_op {g : I → Type*} [∀ i, One (g i)] (op : ∀ i, f i → g i)
     (h : ∀ i, op i 1 = 1) (i : I) (x : f i) :
-    mulSingle i (op i x) = fun j => op j (mulSingle i x j) :=
+    mulSingle i (op i x) = fun j ↦ op j (mulSingle i x j) :=
   Eq.symm <| funext <| apply_mulSingle op h i x
 
 @[to_additive]
 theorem mulSingle_op₂ {g₁ g₂ : I → Type*} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
     (op : ∀ i, g₁ i → g₂ i → f i) (h : ∀ i, op i 1 1 = 1) (i : I) (x₁ : g₁ i) (x₂ : g₂ i) :
-    mulSingle i (op i x₁ x₂) = fun j => op j (mulSingle i x₁ j) (mulSingle i x₂ j) :=
+    mulSingle i (op i x₁ x₂) = fun j ↦ op j (mulSingle i x₁ j) (mulSingle i x₂ j) :=
   Eq.symm <| funext <| apply_mulSingle₂ op h i x₁ x₂
 
 variable (f)
@@ -418,7 +418,7 @@ def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surje
 @[to_additive]
 theorem Subsingleton.pi_mulSingle_eq {α : Type*} [DecidableEq I] [Subsingleton I] [One α]
     (i : I) (x : α) : Pi.mulSingle i x = fun _ => x :=
-  funext fun j => by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
+  funext fun j ↦ by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
 
 namespace Sum
 

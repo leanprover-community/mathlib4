@@ -99,7 +99,7 @@ theorem zero_apply {V W : SemiNormedGrp} (x : V) : (0 : V ⟶ W) x = 0 :=
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp where
 
 theorem isZero_of_subsingleton (V : SemiNormedGrp) [Subsingleton V] : Limits.IsZero V := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 
@@ -146,7 +146,7 @@ theorem hom_ext {M N : SemiNormedGrp₁} (f g : M ⟶ N) (w : (f : M → N) = (g
 instance : ConcreteCategory.{u} SemiNormedGrp₁ where
   forget :=
     { obj := fun X => X
-      map := fun f => f }
+      map := fun f ↦ f }
   forget_faithful := { }
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
@@ -183,7 +183,7 @@ def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.NormNoninc) (i' : f.inv
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
     { obj := fun X => X
-      map := fun f => f.1 }
+      map := fun f ↦ f.1 }
 
 @[simp]
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
@@ -220,7 +220,7 @@ theorem zero_apply {V W : SemiNormedGrp₁} (x : V) : (0 : V ⟶ W) x = 0 :=
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGrp₁ where
 
 theorem isZero_of_subsingleton (V : SemiNormedGrp₁) [Subsingleton V] : Limits.IsZero V := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 

@@ -129,7 +129,7 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
 instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) := lexOrd
 
 theorem compare_def [Ord α] [Ord β] : @compare (α ×ₗ β) _ =
-    compareLex (compareOn fun x => (ofLex x).1) (compareOn fun x => (ofLex x).2) := rfl
+    compareLex (compareOn fun x ↦ (ofLex x).1) (compareOn fun x ↦ (ofLex x).2) := rfl
 
 theorem _root_.lexOrd_eq [Ord α] [Ord β] : @lexOrd α β _ _ = instOrdLexProd := rfl
 

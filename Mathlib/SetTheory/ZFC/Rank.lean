@@ -27,7 +27,7 @@ namespace PSet
 
 /-- The ordinal rank of a pre-set -/
 noncomputable def rank : PSet.{u} → Ordinal.{u}
-  | ⟨_, A⟩ => lsub fun a => rank (A a)
+  | ⟨_, A⟩ => lsub fun a ↦ rank (A a)
 
 theorem rank_congr : ∀ {x y : PSet}, Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
@@ -49,7 +49,7 @@ theorem rank_lt_of_mem : ∀ {x y : PSet}, y ∈ x → rank y < rank x
 theorem rank_le_iff {o : Ordinal} : ∀ {x : PSet}, rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o
   | ⟨_, A⟩ =>
     ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h =>
-      lsub_le fun a => h (Mem.mk A a)⟩
+      lsub_le fun a ↦ h (Mem.mk A a)⟩
 
 theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
   rw [← not_iff_not, not_lt, rank_le_iff]
@@ -72,7 +72,7 @@ theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
     · simp [rank_lt_of_mem h]
   · apply max_le
     · exact (rank_lt_of_mem (mem_insert x y)).succ_le
-    · exact rank_mono (subset_iff.2 fun z => mem_insert_of_mem x)
+    · exact rank_mono (subset_iff.2 fun z ↦ mem_insert_of_mem x)
 
 @[simp]
 theorem rank_singleton : rank {x} = succ (rank x) :=
@@ -190,7 +190,7 @@ theorem le_succ_rank_sUnion : rank x ≤ succ (rank (⋃₀ x)) := by
 
 @[simp]
 theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
-    rank (range f) = lsub fun i => rank (f i) := by
+    rank (range f) = lsub fun i ↦ rank (f i) := by
   apply (lsub_le _).antisymm'
   · simpa [rank_le_iff] using lt_lsub _
   · simp [rank_lt_of_mem]

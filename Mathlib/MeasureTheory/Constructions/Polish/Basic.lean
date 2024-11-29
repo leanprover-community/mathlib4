@@ -144,7 +144,7 @@ instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpa
 /-- A product of countably many standard Borel spaces is standard Borel. -/
 instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, MeasurableSpace (α n)]
     [∀ n, StandardBorelSpace (α n)] : StandardBorelSpace (∀ n, α n) :=
-  letI := fun n => upgradeStandardBorel (α n)
+  letI := fun n ↦ upgradeStandardBorel (α n)
   inferInstance
 
 end instances
@@ -219,7 +219,7 @@ theorem AnalyticSet.image_of_continuousOn {β : Type*} [TopologicalSpace β] {s 
   have : f '' s = range (f ∘ g) := by rw [range_comp, gs]
   rw [this]
   apply analyticSet_range_of_polishSpace
-  apply hf.comp_continuous g_cont fun x => _
+  apply hf.comp_continuous g_cont fun x ↦ _
   rw [← gs]
   exact mem_range_self
 
@@ -245,12 +245,12 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     exact
       isClosed_eq ((f_cont n).comp (continuous_apply n)) ((f_cont i₀).comp (continuous_apply i₀))
   haveI : PolishSpace t := t_closed.polishSpace
-  let F : t → α := fun x => f i₀ ((x : γ) i₀)
+  let F : t → α := fun x ↦ f i₀ ((x : γ) i₀)
   have F_cont : Continuous F := (f_cont i₀).comp ((continuous_apply i₀).comp continuous_subtype_val)
   have F_range : range F = ⋂ n : ι, s n := by
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
-      refine mem_iInter.2 fun n => ?_
+      refine mem_iInter.2 fun n ↦ ?_
       have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n : _)
       rw [← this, ← f_range n]
       exact mem_range_self _
@@ -261,7 +261,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
         exact mem_iInter.1 hy n
       choose x hx using A
       have xt : x ∈ t := by
-        refine mem_iInter.2 fun n => ?_
+        refine mem_iInter.2 fun n ↦ ?_
         simp [hx]
       refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
@@ -371,14 +371,14 @@ theorem MeasurablySeparable.iUnion [Countable ι] {α : Type*} [MeasurableSpace 
     (h : ∀ m n, MeasurablySeparable (s m) (t n)) : MeasurablySeparable (⋃ n, s n) (⋃ m, t m) := by
   choose u hsu htu hu using h
   refine ⟨⋃ m, ⋂ n, u m n, ?_, ?_, ?_⟩
-  · refine iUnion_subset fun m => subset_iUnion_of_subset m ?_
-    exact subset_iInter fun n => hsu m n
+  · refine iUnion_subset fun m ↦ subset_iUnion_of_subset m ?_
+    exact subset_iInter fun n ↦ hsu m n
   · simp_rw [disjoint_iUnion_left, disjoint_iUnion_right]
     intro n m
     apply Disjoint.mono_right _ (htu m n)
     apply iInter_subset
-  · refine MeasurableSet.iUnion fun m => ?_
-    exact MeasurableSet.iInter fun n => hu m n
+  · refine MeasurableSet.iUnion fun m ↦ ?_
+    exact MeasurableSet.iInter fun n ↦ hu m n
 
 /-- The hard part of the Lusin separation theorem saying that two disjoint analytic sets are
 contained in disjoint Borel sets (see the full statement in `AnalyticSet.measurablySeparable`).
@@ -418,8 +418,8 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   choose F hFn hFx hFy using this
   let p0 : A := ⟨⟨0, fun _ => 0, fun _ => 0⟩, by simp [hfg]⟩
   -- construct inductively decreasing sequences of cylinders whose images are not separated
-  let p : ℕ → A := fun n => F^[n] p0
-  have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [p, iterate_succ', Function.comp]
+  let p : ℕ → A := fun n ↦ F^[n] p0
+  have prec : ∀ n, p (n + 1) = F (p n) := fun n ↦ by simp only [p, iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := by
     intro n
@@ -449,8 +449,8 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
       exact hmn
     rw [prec, I, IH]
   -- denote by `x` and `y` the limit points of these two sequences of cylinders.
-  set x : ℕ → ℕ := fun n => (p (n + 1)).1.2.1 n with hx
-  set y : ℕ → ℕ := fun n => (p (n + 1)).1.2.2 n with hy
+  set x : ℕ → ℕ := fun n ↦ (p (n + 1)).1.2.1 n with hx
+  set y : ℕ → ℕ := fun n ↦ (p (n + 1)).1.2.2 n with hy
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
@@ -537,7 +537,7 @@ standard Borel space. -/
 theorem measurableSet_preimage_iff_of_surjective [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f) (hsurj : Surjective f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
-  refine ⟨fun h => ?_, fun h => hf h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ hf h⟩
   rcases exists_opensMeasurableSpace_of_countablySeparated Z with ⟨τ, _, _, _⟩
   apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]
@@ -685,25 +685,25 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
       ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  let F : ℕ → Set β := fun n => ⋃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), E s
+  let F : ℕ → Set β := fun n ↦ ⋃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), E s
   -- it is enough to show that `range f = ⋂ F n`, as the latter set is obviously measurable.
   suffices range f = ⋂ n, F n by
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
       intro b
       refine isClosed_closure.measurableSet.inter ?_
-      refine MeasurableSet.iInter fun s => ?_
+      refine MeasurableSet.iInter fun s ↦ ?_
       exact MeasurableSet.iInter fun hs => (q_meas _).diff (q_meas _)
     have F_meas : ∀ n, MeasurableSet (F n) := by
       intro n
-      refine MeasurableSet.iUnion fun s => ?_
+      refine MeasurableSet.iUnion fun s ↦ ?_
       exact MeasurableSet.iUnion fun _ => E_meas _
     rw [this]
-    exact MeasurableSet.iInter fun n => F_meas n
+    exact MeasurableSet.iInter fun n ↦ F_meas n
   -- we check both inclusions.
   apply Subset.antisymm
   -- we start with the easy inclusion `range f ⊆ ⋂ F n`. One just needs to unfold the definitions.
   · rintro x ⟨y, rfl⟩
-    refine mem_iInter.2 fun n => ?_
+    refine mem_iInter.2 fun n ↦ ?_
     obtain ⟨s, sb, ys, hs⟩ : ∃ (s : Set γ), s ∈ b ∧ y ∈ s ∧ s ⊆ ball y (u n / 2) := by
       apply hb.mem_nhds_iff.1
       exact ball_mem_nhds _ (half_pos (u_pos n))
@@ -714,7 +714,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     refine mem_iUnion.2 ⟨⟨s, sb⟩, ?_⟩
     refine mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, ?_⟩
     apply mem_inter (subset_closure (mem_image_of_mem _ ys))
-    refine mem_iInter.2 fun t => mem_iInter.2 fun ht => ⟨?_, ?_⟩
+    refine mem_iInter.2 fun t ↦ mem_iInter.2 fun ht => ⟨?_, ?_⟩
     · apply hq1
       exact mem_image_of_mem _ ys
     · apply disjoint_left.1 (hq2 ⟨(t, ⟨s, sb⟩), ht.symm⟩)
@@ -722,7 +722,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
   -- Now, let us prove the harder inclusion `⋂ F n ⊆ range f`.
   · intro x hx
     -- pick for each `n` a good set `s n` of small diameter for which `x ∈ E (s n)`.
-    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
+    have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n ↦ by
       simpa only [F, mem_iUnion] using mem_iInter.1 hx n
     choose s hs hxs using C1
     have C2 : ∀ n, (s n).1.Nonempty := by
@@ -747,9 +747,9 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       exact A.2 B.1
     -- the points `y n` are nearby, and therefore they form a Cauchy sequence.
     have cauchy_y : CauchySeq y := by
-      have : Tendsto (fun n => 2 * u n) atTop (𝓝 0) := by
+      have : Tendsto (fun n ↦ 2 * u n) atTop (𝓝 0) := by
         simpa only [mul_zero] using u_lim.const_mul 2
-      refine cauchySeq_of_le_tendsto_0' (fun n => 2 * u n) (fun m n hmn => ?_) this
+      refine cauchySeq_of_le_tendsto_0' (fun n ↦ 2 * u n) (fun m n hmn => ?_) this
       rcases I m n with ⟨z, zsm, zsn⟩
       calc
         dist (y m) (y n) ≤ dist (y m) z + dist z (y n) := dist_triangle _ _ _
@@ -772,7 +772,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       apply Metric.mem_nhds_iff.1
       exact f_cont.continuousAt.preimage_mem_nhds (v_open.mem_nhds fzv)
     obtain ⟨n, hn⟩ : ∃ n, u n + dist (y n) z < δ :=
-      haveI : Tendsto (fun n => u n + dist (y n) z) atTop (𝓝 0) := by
+      haveI : Tendsto (fun n ↦ u n + dist (y n) z) atTop (𝓝 0) := by
         simpa only [add_zero] using u_lim.add (tendsto_iff_dist_tendsto_zero.1 y_lim)
       ((tendsto_order.1 this).2 _ δpos).exists
     -- for large enough `n`, the image of `s n` is contained in `v`, by continuity of `f`.
@@ -926,7 +926,7 @@ lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
 theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
     [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
-    MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
+    MeasurableSet { x | ∃ c, Tendsto (fun n ↦ f n x) l (𝓝 c) } := by
   rcases l.eq_or_neBot with rfl | hl
   · simp
   letI := upgradePolishSpace γ
@@ -934,7 +934,7 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }
   have : ∀ x, (map (f · x) l ×ˢ map (f · x) l).HasAntitoneBasis fun n =>
-      ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x => (hu.map _).prod (hu.map _)
+      ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x ↦ (hu.map _).prod (hu.map _)
   simp_rw [and_iff_right (hl.map _),
     Filter.HasBasis.le_basis_iff (this _).toHasBasis Metric.uniformity_basis_dist_inv_nat_succ,
     Set.setOf_forall]

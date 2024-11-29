@@ -263,15 +263,15 @@ protected theorem iInf {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHom
     (⨅ i, f i).IsHomogeneous 𝒜 := by
   intro i x hx
   simp only [Ideal.mem_iInf] at hx ⊢
-  exact fun j => h _ _ (hx j)
+  exact fun j ↦ h _ _ (hx j)
 
 theorem iSup₂ {κ : Sort*} {κ' : κ → Sort*} {f : ∀ i, κ' i → Ideal A}
     (h : ∀ i j, (f i j).IsHomogeneous 𝒜) : (⨆ (i) (j), f i j).IsHomogeneous 𝒜 :=
-  IsHomogeneous.iSup fun i => IsHomogeneous.iSup <| h i
+  IsHomogeneous.iSup fun i ↦ IsHomogeneous.iSup <| h i
 
 theorem iInf₂ {κ : Sort*} {κ' : κ → Sort*} {f : ∀ i, κ' i → Ideal A}
     (h : ∀ i j, (f i j).IsHomogeneous 𝒜) : (⨅ (i) (j), f i j).IsHomogeneous 𝒜 :=
-  IsHomogeneous.iInf fun i => IsHomogeneous.iInf <| h i
+  IsHomogeneous.iInf fun i ↦ IsHomogeneous.iInf <| h i
 
 theorem sSup {ℐ : Set (Ideal A)} (h : ∀ I ∈ ℐ, Ideal.IsHomogeneous 𝒜 I) :
     (sSup ℐ).IsHomogeneous 𝒜 := by

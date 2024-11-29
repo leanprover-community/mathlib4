@@ -60,7 +60,7 @@ The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable 
 -/
 def isFractionPrelocal : PrelocalPredicate (Localizations M) where
   pred {_} f := isFraction M f
-  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
+  res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x ↦ w (i x)⟩
 
 /--
 For any open subset `U ⊆ Spec R`, `IsLocallyFraction` is the predicate expressing that a function
@@ -314,8 +314,8 @@ in `U`), this is `m / r` seen as a section of `M^~` over `U`.
 def const (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
     (tildeInModuleCat M).obj (op U) :=
-  ⟨fun x => LocalizedModule.mk m ⟨r, hu x x.2⟩, fun x =>
-    ⟨U, x.2, 𝟙 _, m, r, fun y => ⟨hu _ y.2, by
+  ⟨fun x ↦ LocalizedModule.mk m ⟨r, hu x x.2⟩, fun x =>
+    ⟨U, x.2, 𝟙 _, m, r, fun y ↦ ⟨hu _ y.2, by
       simpa only [LocalizedModule.mkLinearMap_apply, LocalizedModule.smul'_mk,
         LocalizedModule.mk_eq] using ⟨1, by simp⟩⟩⟩⟩
 
@@ -330,7 +330,7 @@ theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectru
     ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f : M) (g : R) (hg : _),
       const M f g V hg = (tildeInModuleCat M).map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
-  ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.eq <| funext fun y => by
+  ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.eq <| funext fun y ↦ by
     obtain ⟨h1, (h2 : g • s.1 ⟨y, _⟩ = LocalizedModule.mk f 1)⟩ := hfg y
     exact show LocalizedModule.mk f ⟨g, by exact h1⟩ = s.1 (iVU y) by
       set x := s.1 (iVU y); change g • x = _ at h2; clear_value x
@@ -358,7 +358,7 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   fapply TopCat.Presheaf.germ_ext (W := PrimeSpectrum.basicOpen s.1) (hxW := s.2)
   · exact homOfLE le_top
   · exact 𝟙 _
-  refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
+  refine Subtype.eq <| funext fun y ↦ show LocalizedModule.mk f 1 = _ from ?_
   #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     added this refine hack to be able to add type hint in `change` -/
   refine (?_ : @Eq ?ty _ _)

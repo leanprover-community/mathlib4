@@ -197,7 +197,7 @@ It is useful, e.g., to verify if the proof-irrelevant part of a definition depen
 -/
 def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform (skipConstInApp := true) e
-    (pre := fun e => do
+    (pre := fun e ↦ do
       if (← Meta.isProof e) then
         return .continue (← mkSyntheticSorry (← inferType e))
       else
@@ -463,7 +463,7 @@ where
       This function handles nested existentials. -/
   go (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
     let xn ← mkFreshUserName `x
-    withLocalDeclD xn A fun x => do
+    withLocalDeclD xn A fun x ↦ do
       let px := p.beta #[x]
       let notPx := mkNot px
       let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx

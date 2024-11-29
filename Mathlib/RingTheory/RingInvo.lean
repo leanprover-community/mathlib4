@@ -78,8 +78,8 @@ instance : RingInvoClass (RingInvo R) R where
 /-- Construct a ring involution from a ring homomorphism. -/
 def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) : RingInvo R :=
   { f with
-    invFun := fun r => (f r.unop).unop
-    left_inv := fun r => involution r
+    invFun := fun r ↦ (f r.unop).unop
+    left_inv := fun r ↦ involution r
     right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
 

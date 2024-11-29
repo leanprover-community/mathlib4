@@ -53,7 +53,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
   constructor
   · change _ → z ∈ map_ideal M S I
-    refine fun h => Ideal.mem_sInf.1 h fun z hz => ?_
+    refine fun h ↦ Ideal.mem_sInf.1 h fun z hz => ?_
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
     use ⟨Z, 1⟩
@@ -125,7 +125,7 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
     · intro x y hxy
       rw [Ideal.mem_comap, RingHom.map_mul] at hxy
       exact h.mem_or_mem hxy
-  · refine fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 ?_), ?_⟩
+  · refine fun h ↦ ⟨fun hJ => h.left.ne_top (eq_top_iff.2 ?_), ?_⟩
     · rwa [eq_top_iff, ← (orderEmbedding M S).le_iff_le] at hJ
     · intro x y hxy
       obtain ⟨a, s, ha⟩ := mk'_surjective M x
@@ -156,7 +156,7 @@ def orderIsoOfPrime :
   map_rel_iff' := by
     rintro I I'
     constructor
-    · exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
+    · exact (fun h ↦ show I.val ≤ I'.val from map_comap M S I.val ▸
         map_comap M S I'.val ▸ Ideal.map_mono h)
     exact fun h x hx => h hx
 

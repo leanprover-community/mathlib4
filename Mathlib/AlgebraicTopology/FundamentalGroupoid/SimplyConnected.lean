@@ -78,7 +78,7 @@ attribute [local instance] Path.Homotopic.setoid
 theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
-  ⟨by intro; constructor <;> infer_instance, fun h => by
+  ⟨by intro; constructor <;> infer_instance, fun h ↦ by
     cases h; rw [simply_connected_iff_unique_homotopic]
     exact ⟨inferInstance, fun x y => ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
 

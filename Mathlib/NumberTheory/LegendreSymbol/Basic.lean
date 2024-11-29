@@ -283,7 +283,7 @@ theorem mod_four_ne_three_of_sq_eq_neg_sq' {x y : ZMod p} (hy : y ≠ 0) (hxy : 
     p % 4 ≠ 3 :=
   @mod_four_ne_three_of_sq_eq_neg_one p _ (x / y)
     (by
-      apply_fun fun z => z / y ^ 2 at hxy
+      apply_fun fun z ↦ z / y ^ 2 at hxy
       rwa [neg_div, ← div_pow, ← div_pow, div_self hy, one_pow] at hxy)
 
 theorem mod_four_ne_three_of_sq_eq_neg_sq {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 = -y ^ 2) :

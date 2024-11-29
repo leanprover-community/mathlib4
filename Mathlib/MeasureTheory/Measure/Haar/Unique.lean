@@ -1005,7 +1005,7 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
 theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
     {n : ℤ} (hn : n ≠ 0) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
-    MeasurePreserving (fun x => f x ^ n) μ' μ :=
+    MeasurePreserving (fun x ↦ f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf
 
 end CommGroup

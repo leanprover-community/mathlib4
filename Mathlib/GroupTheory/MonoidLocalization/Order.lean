@@ -82,7 +82,7 @@ instance partialOrder : PartialOrder (Localization s) where
 instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
-      Localization.induction_on c fun c => by
+      Localization.induction_on c fun c ↦ by
         simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab ⊢
         exact mul_le_mul_left' hab _
   le_of_mul_le_mul_left := fun a b c =>

@@ -124,7 +124,7 @@ variable [DecidableEq α] (s : Cycle α)
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
 def formPerm : ∀ s : Cycle α, Nodup s → Equiv.Perm α :=
-  fun s => Quotient.hrecOn s (fun l _ => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
+  fun s ↦ Quotient.hrecOn s (fun l _ => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
     apply Function.hfunext
     · ext
       exact h.nodup_iff
@@ -193,7 +193,7 @@ variable [Fintype α] [DecidableEq α] (p : Equiv.Perm α) (x : α)
 until looping. That means when `f x = x`, `toList f x = []`.
 -/
 def toList : List α :=
-  (List.range (cycleOf p x).support.card).map fun k => (p ^ k) x
+  (List.range (cycleOf p x).support.card).map fun k ↦ (p ^ k) x
 
 @[simp]
 theorem toList_one : toList (1 : Perm α) x = [] := by simp [toList, cycleOf_one]
@@ -454,7 +454,7 @@ The forward direction is implemented by finding this `Cycle α` using `Fintype.c
 -/
 def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=
   let f : { s : Cycle α // s.Nodup ∧ s.Nontrivial } → { f : Perm α // IsCycle f } :=
-    fun s => ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
+    fun s ↦ ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
   { toFun := Fintype.bijInv (show Function.Bijective f by
       rw [Function.bijective_iff_existsUnique]
       rintro ⟨f, hf⟩

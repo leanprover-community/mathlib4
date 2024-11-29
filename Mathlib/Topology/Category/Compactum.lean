@@ -109,7 +109,7 @@ instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
-  ⟨fun f => f.f⟩
+  ⟨fun f ↦ f.f⟩
 
 instance : HasLimits Compactum :=
   hasLimits_of_hasLimits_createsLimits forget
@@ -332,7 +332,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   exact finiteInterClosure.basic (@hT t ht)
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
-  fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
+  fun h ↦ le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
 
 -- All the hard work above boils down to this `T2Space` instance.
 instance {X : Compactum} : T2Space X := by
@@ -425,7 +425,7 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.toFun) h
+    apply congrArg (fun f ↦ f.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 def isoOfTopologicalSpace {D : CompHaus} :

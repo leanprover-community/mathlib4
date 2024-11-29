@@ -121,7 +121,7 @@ class CompletelyDistribLattice (α : Type u) extends CompleteLattice α, Biheyti
 
 theorem le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
     (⨆ g : ∀ a, κ a, ⨅ a, f a (g a)) ≤ ⨅ a, ⨆ b, f a b :=
-  iSup_le fun _ => le_iInf fun a => le_trans (iInf_le _ a) (le_iSup _ _)
+  iSup_le fun _ => le_iInf fun a ↦ le_trans (iInf_le _ a) (le_iSup _ _)
 
 lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
     ⨆ a, ⨅ b, f a b ≤ ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
@@ -237,9 +237,9 @@ lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
     _ = ⨅ a : range (range <| f ·), ⨆ b : a.1, b.1 := by
       simp_rw [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
     _ = _ := minAx.iInf_iSup_eq _
-    _ ≤ _ := iSup_le fun g => by
-      refine le_trans ?_ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).2
-      refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
+    _ ≤ _ := iSup_le fun g ↦ by
+      refine le_trans ?_ <| le_iSup _ fun a ↦ Classical.choose (g ⟨_, a, rfl⟩).2
+      refine le_iInf fun a ↦ le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
 
 lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
@@ -248,14 +248,14 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
   let _ := minAx.toCompleteLattice
   refine le_antisymm iSup_iInf_le ?_
   rw [minAx.iInf_iSup_eq']
-  refine iSup_le fun g => ?_
-  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
+  refine iSup_le fun g ↦ ?_
+  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h ↦ by
     push_neg at h
     choose h hh using h
     have := hh _ h rfl
     contradiction
   refine le_trans ?_ (le_iSup _ a)
-  refine le_iInf fun b => ?_
+  refine le_iInf fun b ↦ ?_
   obtain ⟨h, rfl, rfl⟩ := ha b
   exact iInf_le _ _
 
@@ -329,7 +329,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
-      exact le_iInf fun a => le_of_lt (hf a)
+      exact le_iInf fun a ↦ le_of_lt (hf a)
     else
       refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
@@ -340,7 +340,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       have : ∀ a, lhs ≤ g a (f a) := fun a =>
         (h (g a (f a))).resolve_left (by simpa using hf a)
       refine le_trans ?_ (le_iSup _ f)
-      exact le_iInf fun a => this _
+      exact le_iInf fun a ↦ this _
 
 section Frame
 
@@ -378,7 +378,7 @@ theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
 theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨆ i ∈ s, f i) ⊓ ⨆ j ∈ t, g j) = ⨆ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊓ g p.2 := by
   simp only [iSup_subtype', iSup_inf_iSup]
-  exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x => rfl
+  exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x ↦ rfl
 
 theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [sSup_eq_iSup, biSup_inf_biSup]
@@ -407,7 +407,7 @@ theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
   refine (le_iSup_inf_iSup f g).antisymm ?_
   rw [iSup_inf_iSup]
-  refine iSup_mono' fun i => ?_
+  refine iSup_mono' fun i ↦ ?_
   rcases directed_of (· ≤ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 
@@ -582,7 +582,7 @@ variable [CompleteBooleanAlgebra α] {s : Set α} {f : ι → α}
 
 theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
-    (compl_le_of_compl_le <| le_iInf fun i => compl_le_of_compl_le <|
+    (compl_le_of_compl_le <| le_iInf fun i ↦ compl_le_of_compl_le <|
       le_iSup (HasCompl.compl ∘ f) i)
     (iSup_le fun _ => compl_le_compl <| iInf_le _ _)
 

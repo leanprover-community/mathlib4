@@ -62,8 +62,8 @@ The pullback cone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a limit if `f` is 
 shown in `mono_of_pullback_is_id`.
 -/
 def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f) :=
-  IsLimit.mk _ (fun s => s.fst) (fun _ => Category.comp_id _)
-    (fun s => by rw [← cancel_mono f, Category.comp_id, s.condition]) fun s m m₁ _ => by
+  IsLimit.mk _ (fun s ↦ s.fst) (fun _ => Category.comp_id _)
+    (fun s ↦ by rw [← cancel_mono f, Category.comp_id, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 
 /--
@@ -134,8 +134,8 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨fun {W} i₁ i₂ h => by
     ext
-    · simpa using congrArg (fun f => f ≫ prod.fst) h
-    · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
+    · simpa using congrArg (fun f ↦ f ≫ prod.fst) h
+    · simpa using congrArg (fun f ↦ f ≫ prod.snd) h⟩
 
 /-- The pullback of `f, g` is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
@@ -246,8 +246,8 @@ The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` 
 shown in `epi_of_isColimit_mk_id_id`.
 -/
 def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
-  IsColimit.mk _ (fun s => s.inl) (fun _ => Category.id_comp _)
-    (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
+  IsColimit.mk _ (fun s ↦ s.inl) (fun _ => Category.id_comp _)
+    (fun s ↦ by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 
 /-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
@@ -271,7 +271,7 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
       rw [← Category.assoc]; apply congrArg (· ≫ inr s) hhy
     IsColimit (PushoutCocone.mk _ _ (show x ≫ s.inl = y ≫ s.inr from
           (cancel_epi h).1 <| by rw [reassoc₁, reassoc₂, s.condition])) :=
-  PushoutCocone.isColimitAux' _ fun t => ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
+  PushoutCocone.isColimitAux' _ fun t ↦ ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
     rw [← hhx, ← hhy, Category.assoc, Category.assoc, t.condition]),
       ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
         apply PushoutCocone.IsColimit.hom_ext hs
@@ -319,8 +319,8 @@ instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by
     ext
-    · simpa using congrArg (fun f => coprod.inl ≫ f) h
-    · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
+    · simpa using congrArg (fun f ↦ coprod.inl ≫ f) h
+    · simpa using congrArg (fun f ↦ coprod.inr ≫ f) h⟩
 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]

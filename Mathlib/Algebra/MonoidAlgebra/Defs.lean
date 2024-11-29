@@ -180,10 +180,10 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k 
       simp only [mul_def]
       refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
         simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
-    zero_mul := fun f => by
+    zero_mul := fun f ↦ by
       simp only [mul_def]
       exact sum_zero_index
-    mul_zero := fun f => by
+    mul_zero := fun f ↦ by
       simp only [mul_def]
       exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero }
 
@@ -244,13 +244,13 @@ variable [Semiring k] [MulOneClass G]
 
 instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
-    natCast := fun n => single 1 n
+    natCast := fun n ↦ single 1 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
-    one_mul := fun f => by
+    one_mul := fun f ↦ by
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
-    mul_one := fun f => by
+    mul_one := fun f ↦ by
       simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
         mul_one, sum_single] }
 
@@ -318,10 +318,10 @@ instance nonUnitalRing [Ring k] [Semigroup G] : NonUnitalRing (MonoidAlgebra k G
 instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G) :=
   { MonoidAlgebra.addCommGroup,
     MonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 1 (z : k)
+    intCast := fun z ↦ single 1 (z : k)
     -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_ofNat := fun n ↦ by simp; rfl
+    intCast_negSucc := fun n ↦ by simp; rfl }
 
 theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
@@ -451,7 +451,7 @@ theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
     (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) : (f * g) x = ∑ p ∈ s, f p.1 * g p.2 := by
   classical exact
-      let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
+      let F : G × G → k := fun p ↦ if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
         (f * g) x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := mul_apply f g x
         _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [Finset.sum_product]
@@ -526,7 +526,7 @@ def ofMagma [Mul G] : G →ₙ* MonoidAlgebra k G where
 @[simps]
 def of [MulOneClass G] : G →* MonoidAlgebra k G :=
   { ofMagma k G with
-    toFun := fun a => single a 1
+    toFun := fun a ↦ single a 1
     map_one' := rfl }
 
 end
@@ -574,7 +574,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
-  f.mul_single_apply_aux fun a => by rw [mul_one]
+  f.mul_single_apply_aux fun a ↦ by rw [mul_one]
 
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
@@ -602,7 +602,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (single (1 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux fun a => by rw [one_mul]
+  f.single_mul_apply_aux fun a ↦ by rw [one_mul]
 
 theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x) g' = 0 := by
@@ -965,10 +965,10 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
       simp only [mul_def]
       refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
         simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
-    zero_mul := fun f => by
+    zero_mul := fun f ↦ by
       simp only [mul_def]
       exact sum_zero_index
-    mul_zero := fun f => by
+    mul_zero := fun f ↦ by
       simp only [mul_def]
       exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero
     nsmul := fun n f => n • f
@@ -1037,13 +1037,13 @@ variable [Semiring k] [AddZeroClass G]
 
 instance nonAssocSemiring : NonAssocSemiring k[G] :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    natCast := fun n => single 0 n
+    natCast := fun n ↦ single 0 n
     natCast_zero := by simp
     natCast_succ := fun _ => by simp; rfl
-    one_mul := fun f => by
+    one_mul := fun f ↦ by
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
-    mul_one := fun f => by
+    mul_one := fun f ↦ by
       simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
         mul_one, sum_single] }
 
@@ -1111,10 +1111,10 @@ instance nonUnitalRing [Ring k] [AddSemigroup G] : NonUnitalRing k[G] :=
 instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
   { AddMonoidAlgebra.addCommGroup,
     AddMonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 0 (z : k)
+    intCast := fun z ↦ single 0 (z : k)
     -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_ofNat := fun n ↦ by simp; rfl
+    intCast_negSucc := fun n ↦ by simp; rfl }
 
 theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
@@ -1290,11 +1290,11 @@ def ofMagma [Add G] : Multiplicative G →ₙ* k[G] where
 /-- Embedding of a magma with zero into its magma algebra. -/
 def of [AddZeroClass G] : Multiplicative G →* k[G] :=
   { ofMagma k G with
-    toFun := fun a => single a 1
+    toFun := fun a ↦ single a 1
     map_one' := rfl }
 
 /-- Embedding of a magma with zero `G`, into its magma algebra, having `G` as source. -/
-def of' : G → k[G] := fun a => single a 1
+def of' : G → k[G] := fun a ↦ single a 1
 
 end
 
@@ -1339,7 +1339,7 @@ theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
 
 theorem mul_single_zero_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (f * single (0 : G) r) x = f x * r :=
-  f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
+  f.mul_single_apply_aux r _ _ _ fun a ↦ by rw [add_zero]
 
 theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = d + g) : (x * single g r) g' = 0 :=
@@ -1351,7 +1351,7 @@ theorem single_mul_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
 
 theorem single_zero_mul_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (single (0 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
+  f.single_mul_apply_aux r _ _ _ fun a ↦ by rw [zero_add]
 
 theorem single_mul_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = g + d) : (single g r * x) g' = 0 :=

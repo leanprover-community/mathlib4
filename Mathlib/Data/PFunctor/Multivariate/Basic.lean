@@ -114,11 +114,11 @@ def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m
 variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
 
 /-- Constructor for functor composition -/
-def comp.mk (x : P (fun i => Q i α)) : comp P Q α :=
+def comp.mk (x : P (fun i ↦ Q i α)) : comp P Q α :=
   ⟨⟨x.1, fun _ a => (x.2 _ a).1⟩, fun i a => (x.snd a.fst a.snd.fst).snd i a.snd.snd⟩
 
 /-- Destructor for functor composition -/
-def comp.get (x : comp P Q α) : P (fun i => Q i α) :=
+def comp.get (x : comp P Q α) : P (fun i ↦ Q i α) :=
   ⟨x.1.1, fun i a => ⟨x.fst.snd i a, fun (j : Fin2 m) (b : (Q i).B _ j) => x.snd j ⟨i, ⟨a, b⟩⟩⟩⟩
 
 theorem comp.get_map (f : α ⟹ β) (x : comp P Q α) :
@@ -126,7 +126,7 @@ theorem comp.get_map (f : α ⟹ β) (x : comp P Q α) :
   rfl
 
 @[simp]
-theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
+theorem comp.get_mk (x : P (fun i ↦ Q i α)) : comp.get (comp.mk x) = x := by
   rfl
 
 @[simp]

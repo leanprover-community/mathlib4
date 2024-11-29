@@ -79,7 +79,7 @@ theorem symm (h : ν ⟂ₘ μ) : μ ⟂ₘ ν :=
   ⟨iᶜ, hi.compl, hit, (compl_compl i).symm ▸ his⟩
 
 theorem comm : μ ⟂ₘ ν ↔ ν ⟂ₘ μ :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 @[simp]
 theorem zero_left : 0 ⟂ₘ μ :=
@@ -106,7 +106,7 @@ theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ �
   choose s hsm hsμ hsν using H
   refine ⟨⋂ i, s i, MeasurableSet.iInter hsm, ?_, ?_⟩
   · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
-    exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
+    exact fun i ↦ measure_mono_null (iInter_subset _ _) (hsμ i)
   · rwa [compl_iInter, measure_iUnion_null_iff]
 
 @[simp]

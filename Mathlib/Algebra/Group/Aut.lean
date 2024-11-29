@@ -110,7 +110,7 @@ protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a
 
 /-- `MulAut.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
-  ⟨ fun h => MulEquiv.ext h ⟩
+  ⟨ fun h ↦ MulEquiv.ext h ⟩
 
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
@@ -118,8 +118,8 @@ See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct
 where `conj G` acts on `G` by conjugation. -/
 def conj [Group G] : G →* MulAut G where
   toFun g :=
-    { toFun := fun h => g * h * g⁻¹
-      invFun := fun h => g⁻¹ * h * g
+    { toFun := fun h ↦ g * h * g⁻¹
+      invFun := fun h ↦ g⁻¹ * h * g
       left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, inv_mul_cancel, mul_one]
       right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
@@ -225,7 +225,7 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
-  ⟨fun h => AddEquiv.ext h⟩
+  ⟨fun h ↦ AddEquiv.ext h⟩
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
 homomorphism mapping addition in `G` into multiplication in the automorphism group `AddAut G`
@@ -233,9 +233,9 @@ homomorphism mapping addition in `G` into multiplication in the automorphism gro
 def conj [AddGroup G] : G →+ Additive (AddAut G) where
   toFun g :=
     @Additive.ofMul (AddAut G)
-      { toFun := fun h => g + h + -g
+      { toFun := fun h ↦ g + h + -g
         -- this definition is chosen to match `MulAut.conj`
-        invFun := fun h => -g + h + g
+        invFun := fun h ↦ -g + h + g
         left_inv := fun _ => by
           simp only [add_assoc, neg_add_cancel_left, neg_add_cancel, add_zero]
         right_inv := fun _ => by

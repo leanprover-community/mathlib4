@@ -382,7 +382,7 @@ where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest i
 `y` differ. Not registered as a global instance by default. -/
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 idRel) : MetricSpace (∀ n, E n) :=
-  haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
+  haveI : ∀ n, DiscreteTopology (E n) := fun n ↦ discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
     dist_comm := PiNat.dist_comm
     dist_self := PiNat.dist_self
@@ -421,9 +421,9 @@ def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
 attribute [local instance] PiNat.metricSpace
 
 protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
-  refine Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) ?_
+  refine Metric.complete_of_convergent_controlled_sequences (fun n ↦ (1 / 2) ^ n) (by simp) ?_
   intro u hu
-  refine ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => ?_⟩
+  refine ⟨fun n ↦ u n n, tendsto_pi_nhds.2 fun i ↦ ?_⟩
   refine tendsto_const_nhds.congr' ?_
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
@@ -557,7 +557,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
   classical
-  set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
+  set f := fun x ↦ if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
   refine ⟨f, fs, ?_, ?_⟩
   -- check that the range of `f` is `s`.
@@ -656,7 +656,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ Continuous f :=
     exists_retraction_of_isClosed hs hne
   have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.eq <| fs x x.2
-  exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
+  exact ⟨rangeFactorization f, A, fun x ↦ ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
 end PiNat
 
@@ -679,11 +679,11 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
-  let g : s → α := fun x => x.2.some
+  let g : s → α := fun x ↦ x.2.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
     (mem_iInter.1 x.2.some_mem n : _)
   have g_cont : Continuous g := by
-    refine continuous_iff_continuousAt.2 fun y => ?_
+    refine continuous_iff_continuousAt.2 fun y ↦ ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
     rcases eq_or_ne x y with (rfl | hne)
     · simp
@@ -731,9 +731,9 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
         (tendsto_pow_atTop_nhds_zero_of_lt_one I0.le I1).const_mul _
       rw [mul_zero] at this
       exact
-        squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
-    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
-      (fun n => isBounded_closedBall) (fun N ↦ ?_) L
+        squeeze_zero (fun n ↦ diam_nonneg) (fun n ↦ diam_closedBall (pow_nonneg I0.le _)) this
+    refine nonempty_iInter_of_nonempty_biInter (fun n ↦ isClosed_ball)
+      (fun n ↦ isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
@@ -776,7 +776,7 @@ theorem dist_eq_tsum (x y : ∀ i, F i) :
 
 theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
+  refine .of_nonneg_of_le (fun i ↦ ?_) (fun i ↦ min_le_left _ _)
     summable_geometric_two_encode
   exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
 
@@ -854,7 +854,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
             refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
-            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
+            refine tsum_le_tsum (fun i ↦ min_le_left _ _) ?_ ?_
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i ∈ K, δ) + ε / 2 := by

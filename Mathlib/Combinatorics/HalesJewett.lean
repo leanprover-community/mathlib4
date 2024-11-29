@@ -271,7 +271,7 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   distinct_colors : (lines.map AlmostMono.color).Nodup
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
-  refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
+  refine ⟨⟨0, fun _ => none, fun h ↦ ?_, Multiset.nodup_zero⟩⟩
   simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`
@@ -295,7 +295,7 @@ def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (ι ⊕ ι') 
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 
-theorem apply_def (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x := rfl
+theorem apply_def (l : Line α ι) (x : α) : l x = fun i ↦ (l.idxFun i).getD x := rfl
 
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
   simp only [Option.getD_none, h, l.apply_def]
@@ -342,8 +342,8 @@ private theorem exists_mono_in_high_dimension' :
       forall_imp fun _ =>
         Exists.imp fun ι =>
           Exists.imp fun _ h C =>
-            let ⟨l, c, lc⟩ := h fun v => C (e ∘ v)
-            ⟨l.map e, c, e.forall_congr_right.mp fun x => by rw [← lc x, Line.map_apply]⟩)
+            let ⟨l, c, lc⟩ := h fun v ↦ C (e ∘ v)
+            ⟨l.map e, c, e.forall_congr_right.mp fun x ↦ by rw [← lc x, Line.map_apply]⟩)
   (by
     -- This deals with the degenerate case where `α` is empty.
     intro κ _
@@ -401,7 +401,7 @@ private theorem exists_mono_in_high_dimension' :
     -- If `C'` has a monochromatic line, then so does `C`. We use this in two places below.
     have mono_of_mono : (∃ l, IsMono C' l) → ∃ l, IsMono C l := by
       rintro ⟨l, c, hl⟩
-      refine ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => ?_⟩
+      refine ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x ↦ ?_⟩
       rw [Line.horizontal_apply, ← hl, ← hl']
     -- By choice of `ι`, `C'` either has `r` color-focused lines or a monochromatic line.
     specialize hι C'
@@ -418,11 +418,11 @@ private theorem exists_mono_in_high_dimension' :
       · apply p.has_color
     -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
     -- and adding to this the vertical line obtained by the focus point and `l`.
-    refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
+    refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x ↦ ?_⟩,
             Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
     -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
-    · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩
+    · refine fun p ↦ ⟨p.line.prod (l'.map some), p.color, fun x ↦ ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
     -- The vertical line is almost monochromatic.
     · rw [vertical_apply, ← congr_fun (hl' x), Line.map_apply]
@@ -445,7 +445,7 @@ theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [F
   let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
-    ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
+    ⟨l, c.down, fun x ↦ by rw [← hc x, Function.comp_apply]⟩⟩
 
 end Line
 
@@ -454,15 +454,15 @@ monoid, and `S` is a finite subset, then there exists a monochromatic homothetic
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
-  specialize hι fun v => C <| ∑ i, v i
+  specialize hι fun v ↦ C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
+  set s : Finset ι := Finset.univ.filter (fun i ↦ l.idxFun i = none) with hs
   refine
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
       c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
-  · exact fun m => m
+  · exact fun m ↦ m
   intro x xs
   rw [← hl ⟨x, xs⟩]
   clear hl; congr

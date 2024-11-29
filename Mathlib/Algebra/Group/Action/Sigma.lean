@@ -31,7 +31,7 @@ variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α 
 
 @[to_additive Sigma.VAdd]
 instance : SMul M (Σi, α i) :=
-  ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
+  ⟨fun a ↦ (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
 theorem smul_def : a • x = x.map id fun _ => (a • ·) :=
@@ -63,11 +63,11 @@ instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsC
 /-- This is not an instance because `i` becomes a metavariable. -/
 @[to_additive "This is not an instance because `i` becomes a metavariable."]
 protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
-  ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (Sigma.ext_iff.1 <| h <| mk i a).2⟩
+  ⟨fun h ↦ eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (Sigma.ext_iff.1 <| h <| mk i a).2⟩
 
 @[to_additive]
 instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
-  (Nonempty.elim ‹_›) fun i => Sigma.FaithfulSMul' i
+  (Nonempty.elim ‹_›) fun i ↦ Sigma.FaithfulSMul' i
 
 end SMul
 

@@ -39,11 +39,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 noncomputable def gronwallBound (δ K ε x : ℝ) : ℝ :=
   if K = 0 then δ + ε * x else δ * exp (K * x) + ε / K * (exp (K * x) - 1)
 
-theorem gronwallBound_K0 (δ ε : ℝ) : gronwallBound δ 0 ε = fun x => δ + ε * x :=
+theorem gronwallBound_K0 (δ ε : ℝ) : gronwallBound δ 0 ε = fun x ↦ δ + ε * x :=
   funext fun _ => if_pos rfl
 
 theorem gronwallBound_of_K_ne_0 {δ K ε : ℝ} (hK : K ≠ 0) :
-    gronwallBound δ K ε = fun x => δ * exp (K * x) + ε / K * (exp (K * x) - 1) :=
+    gronwallBound δ K ε = fun x ↦ δ * exp (K * x) + ε / K * (exp (K * x) - 1) :=
   funext fun _ => if_neg hK
 
 theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
@@ -60,7 +60,7 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     ring
 
 theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
-    HasDerivAt (fun y => gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
+    HasDerivAt (fun y ↦ gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
   convert (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
   rw [id, mul_one]
 
@@ -103,7 +103,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     intro x hx ε' hε'
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
-    · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
+    · exact fun x ↦ hasDerivAt_gronwallBound_shift δ K ε' x a
     · intro x hx hfB
       rw [← hfB]
       apply lt_of_le_of_lt (bound x hx)
@@ -148,7 +148,7 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) := by
   simp only [dist_eq_norm] at ha ⊢
-  have h_deriv : ∀ t ∈ Ico a b, HasDerivWithinAt (fun t => f t - g t) (f' t - g' t) (Ici t) t :=
+  have h_deriv : ∀ t ∈ Ico a b, HasDerivWithinAt (fun t ↦ f t - g t) (f' t - g' t) (Ici t) t :=
     fun t ht => (hf' t ht).sub (hg' t ht)
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
@@ -174,7 +174,7 @@ theorem dist_le_of_approx_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith) hf hf'
+  dist_le_of_approx_trajectories_ODE_of_mem (fun t ↦ (hv t).lipschitzOnWith) hf hf'
     f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
 
 include hv in
@@ -212,7 +212,7 @@ theorem dist_le_of_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg
+  dist_le_of_trajectories_ODE_of_mem (fun t ↦ (hv t).lipschitzOnWith) hf hf' hfs hg
     hg' (fun _ _ => trivial) ha
 
 include hv in
@@ -353,5 +353,5 @@ theorem ODE_solution_unique
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
+  ODE_solution_unique_of_mem_Icc_right (fun t ↦ (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha

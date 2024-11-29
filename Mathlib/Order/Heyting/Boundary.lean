@@ -119,7 +119,7 @@ theorem hnot_hnot_sup_boundary (a : α) : ￢￢a ⊔ ∂ a = a := by
   exact hnot_hnot_le
 
 theorem hnot_eq_top_iff_exists_boundary : ￢a = ⊤ ↔ ∃ b, ∂ b = a :=
-  ⟨fun h => ⟨a, by rw [boundary, h, inf_top_eq]⟩, by
+  ⟨fun h ↦ ⟨a, by rw [boundary, h, inf_top_eq]⟩, by
     rintro ⟨b, rfl⟩
     exact hnot_boundary _⟩
 

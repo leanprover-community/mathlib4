@@ -197,7 +197,7 @@ theorem C_content_dvd (p : R[X]) : C p.content ∣ p :=
 theorem isPrimitive_iff_content_eq_one {p : R[X]} : p.IsPrimitive ↔ p.content = 1 := by
   rw [← normalize_content, normalize_eq_one, IsPrimitive]
   simp_rw [← dvd_content_iff_C_dvd]
-  exact ⟨fun h => h p.content (dvd_refl p.content), fun h r hdvd => isUnit_of_dvd_unit hdvd h⟩
+  exact ⟨fun h ↦ h p.content (dvd_refl p.content), fun h r hdvd => isUnit_of_dvd_unit hdvd h⟩
 
 theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content = 1 :=
   isPrimitive_iff_content_eq_one.mp hp
@@ -263,7 +263,7 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
-  have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
+  have hcont : p.content ≠ 0 := fun h ↦ hpzero (content_eq_zero_iff.1 h)
   replace hcont := Function.Injective.ne (NoZeroSMulDivisors.algebraMap_injective R S) hcont
   rw [map_zero] at hcont
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
@@ -272,7 +272,7 @@ theorem eval₂_primPart_eq_zero {S : Type*} [CommRing S] [IsDomain S] {f : R �
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp
-  have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
+  have hcont : p.content ≠ 0 := fun h ↦ hpzero (content_eq_zero_iff.1 h)
   replace hcont := Function.Injective.ne hinj hcont
   rw [map_zero] at hcont
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
@@ -363,7 +363,7 @@ theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
 
 theorem IsPrimitive.dvd_primPart_iff_dvd {p q : R[X]} (hp : p.IsPrimitive) (hq : q ≠ 0) :
     p ∣ q.primPart ↔ p ∣ q := by
-  refine ⟨fun h => h.trans (Dvd.intro_left _ q.eq_C_content_mul_primPart.symm), fun h => ?_⟩
+  refine ⟨fun h ↦ h.trans (Dvd.intro_left _ q.eq_C_content_mul_primPart.symm), fun h ↦ ?_⟩
   rcases h with ⟨r, rfl⟩
   apply Dvd.intro _
   rw [primPart_mul hq, hp.primPart_eq]
@@ -374,7 +374,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     have h : ∃ (n : ℕ) (r : R[X]), r.natDegree = n ∧ r.IsPrimitive ∧ p ∣ r ∧ q ∣ r :=
       ⟨(p * q).natDegree, p * q, rfl, hp.mul hq, dvd_mul_right _ _, dvd_mul_left _ _⟩
     rcases Nat.find_spec h with ⟨r, rdeg, rprim, pr, qr⟩
-    refine ⟨r, rprim, fun s => ⟨?_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
+    refine ⟨r, rprim, fun s ↦ ⟨?_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
     suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s from
       hs s.natDegree s rfl
     clear s
@@ -425,7 +425,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with
       ⟨r, rprim, hr⟩
-    refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
+    refine ⟨C (lcm p.content q.content) * r, fun s ↦ ?_⟩
     by_cases hs : s = 0
     · simp [hs]
     by_cases hpq : C (lcm p.content q.content) = 0

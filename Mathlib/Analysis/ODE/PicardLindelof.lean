@@ -165,7 +165,7 @@ protected theorem continuous : Continuous f :=
 
 /-- Each curve in `PicardLindelof.FunSpace` is continuous. -/
 def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
-  ⟨fun f => ⟨f, f.continuous⟩, fun f g h => by cases f; cases g; simpa using h⟩
+  ⟨fun f ↦ ⟨f, f.continuous⟩, fun f g h => by cases f; cases g; simpa using h⟩
 
 instance : MetricSpace v.FunSpace :=
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
@@ -204,7 +204,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
 
 theorem continuous_vComp : Continuous f.vComp := by
   have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
-  refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
+  refine ContinuousOn.comp_continuous v.continuousOn this fun x ↦ ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 
 theorem norm_vComp_le (t : ℝ) : ‖f.vComp t‖ ≤ v.C :=
@@ -279,7 +279,7 @@ theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
     dist (next^[n] f₁) (next^[n] f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
-  refine dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans ?_
+  refine dist_le_of_forall fun t ↦ (dist_iterate_next_apply_le _ _ _ _).trans ?_
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
   gcongr
 

@@ -39,7 +39,7 @@ instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
   { AddSubmonoidClass.toAddMonoid s with
     one := ⟨_, one_mem s⟩
-    natCast := fun n => ⟨n, natCast_mem s n⟩
+    natCast := fun n ↦ ⟨n, natCast_mem s n⟩
     natCast_zero := Subtype.ext Nat.cast_zero
     natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
 

@@ -165,8 +165,8 @@ instance instPreorderSum : Preorder (α ⊕ β) :=
         · exact hba.not_lt (inl_lt_inl_iff.1 hab)
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
       · rintro ⟨⟨hab⟩ | ⟨hab⟩, hba⟩
-        · exact LiftRel.inl (hab.lt_of_not_le fun h => hba <| LiftRel.inl h)
-        · exact LiftRel.inr (hab.lt_of_not_le fun h => hba <| LiftRel.inr h) }
+        · exact LiftRel.inl (hab.lt_of_not_le fun h ↦ hba <| LiftRel.inl h)
+        · exact LiftRel.inr (hab.lt_of_not_le fun h ↦ hba <| LiftRel.inr h) }
 
 theorem inl_mono : Monotone (inl : α → α ⊕ β) := fun _ _ => LiftRel.inl
 
@@ -205,28 +205,28 @@ instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder
 @[simp]
 theorem noMinOrder_iff [LT α] [LT β] : NoMinOrder (α ⊕ β) ↔ NoMinOrder α ∧ NoMinOrder β :=
   ⟨fun _ =>
-    ⟨⟨fun a => by
+    ⟨⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_lt (inl a : α ⊕ β)
         · exact ⟨b, inl_lt_inl_iff.1 h⟩
         · exact (not_inr_lt_inl h).elim⟩,
-      ⟨fun a => by
+      ⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_lt (inr a : α ⊕ β)
         · exact (not_inl_lt_inr h).elim
         · exact ⟨b, inr_lt_inr_iff.1 h⟩⟩⟩,
-    fun h => @Sum.noMinOrder _ _ _ _ h.1 h.2⟩
+    fun h ↦ @Sum.noMinOrder _ _ _ _ h.1 h.2⟩
 
 @[simp]
 theorem noMaxOrder_iff [LT α] [LT β] : NoMaxOrder (α ⊕ β) ↔ NoMaxOrder α ∧ NoMaxOrder β :=
   ⟨fun _ =>
-    ⟨⟨fun a => by
+    ⟨⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_gt (inl a : α ⊕ β)
         · exact ⟨b, inl_lt_inl_iff.1 h⟩
         · exact (not_inl_lt_inr h).elim⟩,
-      ⟨fun a => by
+      ⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_gt (inr a : α ⊕ β)
         · exact (not_inr_lt_inl h).elim
         · exact ⟨b, inr_lt_inr_iff.1 h⟩⟩⟩,
-    fun h => @Sum.noMaxOrder _ _ _ _ h.1 h.2⟩
+    fun h ↦ @Sum.noMaxOrder _ _ _ _ h.1 h.2⟩
 
 instance denselyOrdered [LT α] [LT β] [DenselyOrdered α] [DenselyOrdered β] :
     DenselyOrdered (α ⊕ β) :=
@@ -251,7 +251,7 @@ theorem denselyOrdered_iff [LT α] [LT β] :
         obtain ⟨c | c, ha, hb⟩ := @exists_between (α ⊕ β) _ _ _ _ (inr_lt_inr_iff.2 h)
         · exact (not_inl_lt_inr hb).elim
         · exact ⟨c, inr_lt_inr_iff.1 ha, inr_lt_inr_iff.1 hb⟩⟩⟩,
-    fun h => @Sum.denselyOrdered _ _ _ _ h.1 h.2⟩
+    fun h ↦ @Sum.denselyOrdered _ _ _ _ h.1 h.2⟩
 
 @[simp]
 theorem swap_le_swap_iff [LE α] [LE β] {a b : α ⊕ β} : a.swap ≤ b.swap ↔ a ≤ b :=
@@ -346,8 +346,8 @@ instance preorder : Preorder (α ⊕ₗ β) :=
         · exact hba.not_lt (inr_lt_inr_iff.1 hab)
         · exact not_inr_lt_inl hab
       · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
-        · exact Lex.inl (hab.lt_of_not_le fun h => hba <| Lex.inl h)
-        · exact Lex.inr (hab.lt_of_not_le fun h => hba <| Lex.inr h)
+        · exact Lex.inl (hab.lt_of_not_le fun h ↦ hba <| Lex.inl h)
+        · exact Lex.inr (hab.lt_of_not_le fun h ↦ hba <| Lex.inr h)
         · exact Lex.sep _ _ }
 
 theorem toLex_mono : Monotone (@toLex (α ⊕ β)) := fun _ _ h => h.lex

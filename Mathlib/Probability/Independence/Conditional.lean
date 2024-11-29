@@ -717,7 +717,7 @@ theorem iCondIndepFun.condIndepFun_finset {β : ι → Type*}
 theorem iCondIndepFun.condIndepFun_prod_mk {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iCondIndepFun m' hm' m f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
+    CondIndepFun m' hm' (fun a ↦ (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
 
 open Finset in
@@ -801,7 +801,7 @@ end CommMonoid
 
 theorem iCondIndepSet.iCondIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β}
     {s : ι → Set Ω} (hs : iCondIndepSet m' hm' s μ) :
-    iCondIndepFun m' hm' (fun _n => m) (fun n => (s n).indicator fun _ω => 1) μ :=
+    iCondIndepFun m' hm' (fun _n => m) (fun n ↦ (s n).indicator fun _ω => 1) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 end CondIndepFun

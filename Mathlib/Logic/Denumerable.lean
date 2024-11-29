@@ -83,7 +83,7 @@ def mk' {α} (e : α ≃ ℕ) : Denumerable α where
 way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
-    decode_inv := fun n => by
+    decode_inv := fun n ↦ by
       -- Porting note: replaced `simp`
       simp_rw [Option.mem_def, decode_ofEquiv e, encode_ofEquiv e, decode_eq_ofNat,
         Option.map_some', Option.some_inj, exists_eq_left', Equiv.apply_symm_apply,
@@ -111,7 +111,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 
 /-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
-  ⟨fun n => by
+  ⟨fun n ↦ by
     cases n with
     | zero =>
       refine ⟨none, ?_, encode_none⟩
@@ -123,7 +123,7 @@ instance option : Denumerable (Option α) :=
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
-  ⟨fun n => by
+  ⟨fun n ↦ by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
       Option.mem_def, Sum.exists]
@@ -135,7 +135,7 @@ variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
-  ⟨fun n => by simp [decodeSigma]⟩
+  ⟨fun n ↦ by simp [decodeSigma]⟩
 
 @[simp]
 theorem sigma_ofNat_val (n : ℕ) :
@@ -226,7 +226,7 @@ theorem lt_succ_self (x : s) : x < succ x :=
     _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
-  ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
+  ⟨fun h ↦ le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
     lt_of_le_of_lt h (lt_succ_self _)⟩
 
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
@@ -237,7 +237,7 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
 theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
-      ((List.range x).filter fun y => y ∈ s).pmap
+      ((List.range x).filter fun y ↦ y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
         (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
@@ -245,7 +245,7 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
     have wf : ∀ m : s, List.maximum t = m → ↑m < x := fun m hmax => by
       simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m
-    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h ↦ List.not_mem_nil (⊥ : s) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     cases' ofNat_surjective_aux m.2 with a ha
     refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
@@ -292,11 +292,11 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
         insert ↑(ofNat s n) {x ∈ range (ofNat s n) | x ∈ s} := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
-        ⟨fun h => by
+        ⟨fun h ↦ by
           simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
          fun h =>
-          h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
+          h.elim (fun h ↦ h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
     simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
@@ -329,7 +329,7 @@ end Denumerable
 
 /-- See also `nonempty_encodable`, `nonempty_fintype`. -/
 theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
-  (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
+  (nonempty_encodable α).map fun h ↦ @Denumerable.ofEncodableOfInfinite _ h _
 
 theorem nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=

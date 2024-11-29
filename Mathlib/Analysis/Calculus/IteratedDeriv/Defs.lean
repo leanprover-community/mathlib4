@@ -111,8 +111,8 @@ derivatives are differentiable, then the function is `C^n`. This is not an equiv
 but this is an equivalence when the set has unique derivatives, see
 `contDiffOn_iff_continuousOn_differentiableOn_deriv`. -/
 theorem contDiffOn_of_continuousOn_differentiableOn_deriv {n : ℕ∞}
-    (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x => iteratedDerivWithin m f s x) s)
-    (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (fun x => iteratedDerivWithin m f s x) s) :
+    (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x ↦ iteratedDerivWithin m f s x) s)
+    (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (fun x ↦ iteratedDerivWithin m f s x) s) :
     ContDiffOn 𝕜 n f s := by
   apply contDiffOn_of_continuousOn_differentiableOn
   · simpa only [iteratedFDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_continuousOn_iff]

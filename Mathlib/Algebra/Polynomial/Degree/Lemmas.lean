@@ -78,7 +78,7 @@ theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < 
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
-  refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ natDegree_add_le_of_degree_le h qn⟩
   refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm => ?_
   convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
@@ -180,7 +180,7 @@ theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.co
 
 theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :
-    degree (s.sum f) = s.sup fun i => degree (f i) := by
+    degree (s.sum f) = s.sup fun i ↦ degree (f i) := by
   classical
   induction' s using Finset.induction_on with x s hx IH
   · simp
@@ -190,7 +190,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     · rw [← IH, sup_eq_right.mpr H.le, degree_add_eq_right_of_degree_lt H]
     · rcases s.eq_empty_or_nonempty with (rfl | hs)
       · simp
-      obtain ⟨y, hy, hy'⟩ := Finset.exists_mem_eq_sup s hs fun i => degree (f i)
+      obtain ⟨y, hy, hy'⟩ := Finset.exists_mem_eq_sup s hs fun i ↦ degree (f i)
       rw [IH, hy'] at H
       by_cases hx0 : f x = 0
       · simp [hx0, IH]
@@ -205,7 +205,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
 
 theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on natDegree ∘ f)) :
-    natDegree (s.sum f) = s.sup fun i => natDegree (f i) := by
+    natDegree (s.sum f) = s.sup fun i ↦ natDegree (f i) := by
   by_cases H : ∃ x ∈ s, f x ≠ 0
   · obtain ⟨x, hx, hx'⟩ := H
     have hs : s.Nonempty := ⟨x, hx⟩

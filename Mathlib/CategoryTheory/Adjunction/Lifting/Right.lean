@@ -77,7 +77,7 @@ equalizer of something (i.e. a regular mono).
 -/
 def unitEqualises [∀ X : B, RegularMono (adj₁.unit.app X)] (X : B) :
     IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
-  Fork.IsLimit.mk' _ fun s => by
+  Fork.IsLimit.mk' _ fun s ↦ by
     refine ⟨(RegularMono.lift' (adj₁.unit.app X) s.ι ?_).1, ?_, ?_⟩
     · rw [← cancel_mono (adj₁.unit.app (RegularMono.Z (adj₁.unit.app X)))]
       rw [assoc, ← adj₁.unit_naturality RegularMono.left]

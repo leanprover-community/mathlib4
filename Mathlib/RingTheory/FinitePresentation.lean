@@ -64,7 +64,7 @@ variable {R A B}
 /-- An algebra over a Noetherian ring is finitely generated if and only if it is finitely
 presented. -/
 theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
-  refine ⟨fun h => ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
+  refine ⟨fun h ↦ ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine ⟨n, f, hf, ?_⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
@@ -237,7 +237,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       apply Subalgebra.restrictScalars_injective R
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
-    letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
+    letI g : t → AX := fun x ↦ MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
     refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
@@ -314,7 +314,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
     have := fun i : Fin m => hf (f' <| X i)
     choose h hh using this
     let aeval_h : RXm →ₐ[R] RXn := aeval h
-    let g' : Fin n → RXn := fun i => X i - aeval_h (g i)
+    let g' : Fin n → RXn := fun i ↦ X i - aeval_h (g i)
     refine ⟨Finset.univ.image g' ∪ s.image aeval_h, ?_⟩
     simp only [Finset.coe_image, Finset.coe_union, Finset.coe_univ, Set.image_univ]
     have hh' : ∀ x, f (aeval_h x) = f' x := by
@@ -323,7 +323,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
       simp_rw [AlgHom.coe_toRingHom, hh]
       rw [AlgHom.comp_algebraMap, ← aeval_eq_eval₂Hom,
         -- Porting note: added line below
-        ← funext fun i => Function.comp_apply (f := ↑f') (g := MvPolynomial.X),
+        ← funext fun i ↦ Function.comp_apply (f := ↑f') (g := MvPolynomial.X),
         ← aeval_unique]
     let s' := Set.range g' ∪ aeval_h '' s
     have leI : Ideal.span s' ≤ RingHom.ker f.toRingHom := by

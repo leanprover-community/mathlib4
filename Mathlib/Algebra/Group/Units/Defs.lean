@@ -92,7 +92,7 @@ instance : CoeHead αˣ α :=
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
 instance instInv : Inv αˣ :=
-  ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
+  ⟨fun u ↦ ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
 /- porting note: the result of these definitions is syntactically equal to `Units.val` because of
@@ -222,7 +222,7 @@ theorem inv_mul_cancel_left (a : αˣ) (b : α) : (↑a⁻¹ : α) * (a * b) = b
 
 @[to_additive]
 theorem inv_mul_eq_iff_eq_mul {b c : α} : ↑a⁻¹ * b = c ↔ b = a * c :=
-  ⟨fun h => by rw [← h, mul_inv_cancel_left], fun h => by rw [h, inv_mul_cancel_left]⟩
+  ⟨fun h ↦ by rw [← h, mul_inv_cancel_left], fun h ↦ by rw [h, inv_mul_cancel_left]⟩
 
 @[to_additive]
 instance instMonoid : Monoid αˣ :=
@@ -258,7 +258,7 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance instGroup : Group αˣ where
-  inv_mul_cancel := fun u => ext u.inv_val
+  inv_mul_cancel := fun u ↦ ext u.inv_val
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
@@ -432,7 +432,7 @@ end Monoid
 
 @[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
-  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
+  ⟨fun h ↦ h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
 
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
@@ -446,7 +446,7 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
     (fun ⟨v, hv⟩ => by
       have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [← hv, Units.val_mul]
       rwa [mul_assoc, Units.mul_inv, mul_one] at this)
-    fun v => v.mul u.isUnit
+    fun v ↦ v.mul u.isUnit
 
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
@@ -472,8 +472,8 @@ namespace IsUnit
 
 @[to_additive (attr := simp)]
 theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
-  ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
-   fun h => IsUnit.mul h.1 h.2⟩
+  ⟨fun h ↦ ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
+   fun h ↦ IsUnit.mul h.1 h.2⟩
 
 section Monoid
 
@@ -608,13 +608,13 @@ variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
-  inv := fun a => ↑(h a).unit⁻¹
+  inv := fun a ↦ ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
-    inv_mul_cancel := fun a => by
+    inv_mul_cancel := fun a ↦ by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
@@ -622,7 +622,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,
-    inv_mul_cancel := fun a => by
+    inv_mul_cancel := fun a ↦ by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 

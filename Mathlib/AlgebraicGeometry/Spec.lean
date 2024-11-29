@@ -217,7 +217,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
       (Spec.sheafedSpaceMap f).stalkMap p :=
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
-      Localization.localRingHom_unique _ _ _ _ fun x => by
+      Localization.localRingHom_unique _ _ _ _ fun x ↦ by
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644 and https://github.com/leanprover-community/mathlib4/pull/8386
         rw [stalkIso_hom, stalkIso_inv]
         erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
@@ -286,7 +286,7 @@ instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` failed to pick up one of the three lemmas
-  refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm
+  refine RingHom.ext fun x ↦ Subtype.ext <| funext fun x' => ?_; symm
   apply Localization.localRingHom_to_map
 
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/

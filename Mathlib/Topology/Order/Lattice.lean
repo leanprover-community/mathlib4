@@ -76,7 +76,7 @@ theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => 
 
 @[continuity, fun_prop]
 theorem Continuous.inf [Min L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
+    (hg : Continuous g) : Continuous fun x ↦ f x ⊓ g x :=
   continuous_inf.comp (hf.prod_mk hg : _)
 
 @[continuity]
@@ -85,7 +85,7 @@ theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => 
 
 @[continuity, fun_prop]
 theorem Continuous.sup [Max L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
+    (hg : Continuous g) : Continuous fun x ↦ f x ⊔ g x :=
   continuous_sup.comp (hf.prod_mk hg : _)
 
 namespace Filter.Tendsto
@@ -99,7 +99,7 @@ lemma sup_nhds' [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tend
   (continuous_sup.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 
 lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
+    Tendsto (fun i ↦ f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
   hf.sup_nhds' hg
 
 lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
@@ -107,7 +107,7 @@ lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tend
   (continuous_inf.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 
 lemma inf_nhds [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
+    Tendsto (fun i ↦ f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
   hf.inf_nhds' hg
 
 end SupInf

@@ -90,7 +90,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
 cardinality is the same as that of a transcendence basis. -/
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) : #K = #ι :=
-  have : ℵ₀ ≤ #ι := le_of_not_lt fun h => not_le_of_gt hK <|
+  have : ℵ₀ ≤ #ι := le_of_not_lt fun h ↦ not_le_of_gt hK <|
     calc
       #K ≤ max (max #R #ι) ℵ₀ := cardinal_le_max_transcendence_basis v hv
       _ ≤ _ := max_le (max_le hR (le_of_lt h)) le_rfl

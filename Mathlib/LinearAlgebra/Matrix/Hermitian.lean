@@ -81,7 +81,7 @@ theorem IsHermitian.submatrix {A : Matrix n n α} (h : A.IsHermitian) (f : m →
 @[simp]
 theorem isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
     (A.submatrix e e).IsHermitian ↔ A.IsHermitian :=
-  ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
+  ⟨fun h ↦ by simpa using h.submatrix e.symm, fun h ↦ h.submatrix _⟩
 
 end Star
 
@@ -239,7 +239,7 @@ theorem IsHermitian.inv [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.
 @[simp]
 theorem isHermitian_inv [Fintype m] [DecidableEq m] (A : Matrix m m α) [Invertible A] :
     A⁻¹.IsHermitian ↔ A.IsHermitian :=
-  ⟨fun h => by rw [← inv_inv_of_invertible A]; exact IsHermitian.inv h, IsHermitian.inv⟩
+  ⟨fun h ↦ by rw [← inv_inv_of_invertible A]; exact IsHermitian.inv h, IsHermitian.inv⟩
 
 theorem IsHermitian.adjugate [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA : A.IsHermitian) :
     A.adjugate.IsHermitian := by simp [IsHermitian, adjugate_conjTranspose, hA.eq]
@@ -264,7 +264,7 @@ theorem IsHermitian.coe_re_apply_self {A : Matrix n n α} (h : A.IsHermitian) (i
 
 /-- The diagonal elements of a complex hermitian matrix are real. -/
 theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
-    (fun i => (re (A.diag i) : α)) = A.diag :=
+    (fun i ↦ (re (A.diag i) : α)) = A.diag :=
   funext h.coe_re_apply_self
 
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/

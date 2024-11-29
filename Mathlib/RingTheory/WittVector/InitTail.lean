@@ -54,7 +54,7 @@ section
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
 def select (P : ℕ → Prop) (x : 𝕎 R) : 𝕎 R :=
-  mk p fun n => if P n then x.coeff n else 0
+  mk p fun n ↦ if P n then x.coeff n else 0
 
 section Select
 
@@ -81,7 +81,7 @@ instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := 
 
 variable [hp : Fact p.Prime]
 
-theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
+theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i ↦ ¬P i) x = x := by
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]
   have : IsPoly p fun {R} [CommRing R] x ↦ select P x + select (fun i ↦ ¬P i) x :=
@@ -91,7 +91,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   simp only [RingHom.map_add]
   suffices
     (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
-        (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
+        (bind₁ (selectPoly fun i ↦ ¬P i)) (wittPolynomial p ℤ n) =
       wittPolynomial p ℤ n by
     apply_fun aeval x.coeff at this
     simpa only [map_add, aeval_bind₁, ← coeff_select]
@@ -106,15 +106,15 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
     (x + y).coeff n = x.coeff n + y.coeff n := by
-  let P : ℕ → Prop := fun n => y.coeff n = 0
+  let P : ℕ → Prop := fun n ↦ y.coeff n = 0
   haveI : DecidablePred P := Classical.decPred P
-  set z := mk p fun n => if P n then x.coeff n else y.coeff n
+  set z := mk p fun n ↦ if P n then x.coeff n else y.coeff n
   have hx : select P z = x := by
     ext1 n; rw [select, coeff_mk, coeff_mk]
     split_ifs with hn
     · rfl
     · rw [(h n).resolve_right hn]
-  have hy : select (fun i => ¬P i) z = y := by
+  have hy : select (fun i ↦ ¬P i) z = y := by
     ext1 n; rw [select, coeff_mk, coeff_mk]
     split_ifs with hn
     · exact hn.symm
@@ -136,13 +136,13 @@ and all other coefficients are `0`.
 See `WittVector.tail` for the complementary part.
 -/
 def init (n : ℕ) : 𝕎 R → 𝕎 R :=
-  select fun i => i < n
+  select fun i ↦ i < n
 
 /-- `WittVector.tail n x` is the Witt vector of which the first `n` coefficients are `0`
 and all other coefficients are those from `x`.
 See `WittVector.init` for the complementary part. -/
 def tail (n : ℕ) : 𝕎 R → 𝕎 R :=
-  select fun i => n ≤ i
+  select fun i ↦ n ≤ i
 
 @[simp]
 theorem init_add_tail (x : 𝕎 R) (n : ℕ) : init n x + tail n x = x := by
@@ -221,7 +221,7 @@ variable (p)
 
 /-- `WittVector.init n x` is polynomial in the coefficients of `x`. -/
 theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ => init n :=
-  select_isPoly (P := fun i => i < n)
+  select_isPoly (P := fun i ↦ i < n)
 
 end
 

@@ -15,7 +15,7 @@ theorem ex1 (a b c : Nat) (h : a = b) : a + c = b + c := by
 theorem ex2 (a b : Nat) (h : a = b) : ∀ c, a + c = b + c := by
   congr!
 
-theorem ex3 (a b : Nat) (h : a = b) : (fun c => a + c) = (fun c => b + c) := by
+theorem ex3 (a b : Nat) (h : a = b) : (fun c ↦ a + c) = (fun c ↦ b + c) := by
   congr!
 
 theorem ex4 (a b : Nat) : Fin (a + b) = Fin (b + a) := by
@@ -202,7 +202,7 @@ example (w : walk α x y) (w' : walk α x' y') (f : α → β) : HEq (w.map f) (
   exact test_sorry
 
 def MySet (α : Type _) := α → Prop
-def MySet.image (f : α → β) (s : MySet α) : MySet β := fun y => ∃ x, s x ∧ f x = y
+def MySet.image (f : α → β) (s : MySet α) : MySet β := fun y ↦ ∃ x, s x ∧ f x = y
 
 -- Testing for equality between what are technically partially applied functions
 example (s t : MySet α) (f g : α → β) (h1 : s = t) (h2 : f = g) :
@@ -235,14 +235,14 @@ example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
 
 set_option linter.unusedVariables false in
 example {ls : List ℕ} :
-    ls.map (fun x => (ls.map (fun y => 1 + y)).sum + 1) =
-      ls.map (fun x => (ls.map (fun y => Nat.succ y)).sum + 1) := by
+    ls.map (fun x ↦ (ls.map (fun y ↦ 1 + y)).sum + 1) =
+      ls.map (fun x ↦ (ls.map (fun y ↦ Nat.succ y)).sum + 1) := by
   congr! 6 with - y
   guard_target = 1 + y = y.succ
   rw [Nat.add_comm]
 
 example {ls : List ℕ} {f g : ℕ → ℕ} {h : ∀ x, f x = g x} :
-    ls.map (fun x => f x + 3) = ls.map (fun x => g x + 3) := by
+    ls.map (fun x ↦ f x + 3) = ls.map (fun x ↦ g x + 3) := by
   congr! 3 with x -- it's a little too powerful and will get to `f = g`
   exact h x
 

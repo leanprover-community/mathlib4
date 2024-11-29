@@ -61,9 +61,9 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
-  refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
+  refine ⟨fun i ↦ f.val ⟨i, h i.property⟩, ?_⟩
   cases' f.property with hinj hc
-  refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
+  refine ⟨?_, fun i ↦ hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh
 
@@ -141,7 +141,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
         simp only
         rw [← hu (CategoryTheory.homOfLE subi).op, ← hu (CategoryTheory.homOfLE subi').op]
         let uii' := u (Opposite.op ({i, i'} : Finset ι))
-        exact fun h => Subtype.mk_eq_mk.mp (uii'.property.1 h)
+        exact fun h ↦ Subtype.mk_eq_mk.mp (uii'.property.1 h)
       · -- Show that it maps each index to the corresponding finite set
         intro i
         apply (u (Opposite.op ({i} : Finset ι))).property.2
@@ -158,7 +158,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
 finite set is finite. -/
 instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
     [∀ a : α, Fintype (Rel.image r {a})] (A : Finset α) : Fintype (Rel.image r A) := by
-  have h : Rel.image r A = (A.biUnion fun a => (Rel.image r {a}).toFinset : Set β) := by
+  have h : Rel.image r A = (A.biUnion fun a ↦ (Rel.image r {a}).toFinset : Set β) := by
     ext
     -- Porting note: added `Set.mem_toFinset`
     simp [Rel.image, (Set.mem_toFinset)]

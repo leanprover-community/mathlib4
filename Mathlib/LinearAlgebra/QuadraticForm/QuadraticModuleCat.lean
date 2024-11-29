@@ -82,14 +82,14 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
 instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := fun f => f.toIsometry }
+      map := fun f ↦ f.toIsometry }
   forget_faithful :=
     { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => f.toIsometry.toLinearMap }
+      map := fun f ↦ f.toIsometry.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : QuadraticModuleCat R) :

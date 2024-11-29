@@ -54,7 +54,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
 `e` to the literal booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
-        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
+        (∀ f, e'.eval f = e.eval (fun w ↦ (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
   | lit b => ⟨lit b, ◾⟩
@@ -71,7 +71,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       have ⟨t', ht₁, ht₂, ht₃⟩ := normalize (l.insert v true) t
       have ⟨e', he₁, he₂, he₃⟩ := normalize (l.insert v false) e
       ⟨if t' = e' then t' else .ite (var v) t' e', by
-        refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
+        refine ⟨fun f ↦ ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
           simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
@@ -105,6 +105,6 @@ recall IfNormalization :=
   { Z : IfExpr → IfExpr // ∀ e, (Z e).normalized ∧ (Z e).eval = e.eval }
 
 example : IfNormalization :=
-  ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+  ⟨_, fun e ↦ ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
 
 end IfExpr

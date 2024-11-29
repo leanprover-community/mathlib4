@@ -59,7 +59,7 @@ theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : �
 theorem eventually_countable_forall [Countable ι] {p : α → ι → Prop} :
     (∀ᶠ x in l, ∀ i, p x i) ↔ ∀ i, ∀ᶠ x in l, p x i := by
   simpa only [Filter.Eventually, setOf_forall] using
-    @countable_iInter_mem _ _ l _ _ fun i => { x | p x i }
+    @countable_iInter_mem _ _ l _ _ fun i ↦ { x | p x i }
 
 theorem eventually_countable_ball {ι : Type*} {S : Set ι} (hS : S.Countable)
     {p : α → ∀ i ∈ S, Prop} :
@@ -73,15 +73,15 @@ theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : 
 
 theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
+  (EventuallyLE.countable_iUnion fun i ↦ (h i).le).antisymm
+    (EventuallyLE.countable_iUnion fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
   haveI := hS.toEncodable
-  exact EventuallyLE.countable_iUnion fun i => h i i.2
+  exact EventuallyLE.countable_iUnion fun i ↦ h i i.2
 
 theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
@@ -92,19 +92,19 @@ theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countabl
 theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs =>
-    mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
+    mem_iInter.2 fun i ↦ hst _ (mem_iInter.1 hs i)
 
 theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iInter fun i => (h i).symm.le)
+  (EventuallyLE.countable_iInter fun i ↦ (h i).le).antisymm
+    (EventuallyLE.countable_iInter fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
   haveI := hS.toEncodable
-  exact EventuallyLE.countable_iInter fun i => h i i.2
+  exact EventuallyLE.countable_iInter fun i ↦ h i i.2
 
 theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
@@ -260,7 +260,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
 theorem le_countableGenerate_iff_of_countableInterFilter {f : Filter α} [CountableInterFilter f] :
     f ≤ countableGenerate g ↔ g ⊆ f.sets := by
   constructor <;> intro h
-  · exact subset_trans (fun s => CountableGenerateSets.basic) h
+  · exact subset_trans (fun s ↦ CountableGenerateSets.basic) h
   intro s hs
   induction hs with
   | basic hs => exact h hs
@@ -273,7 +273,7 @@ variable (g)
 /-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 theorem countableGenerate_isGreatest :
     IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
-  refine ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, ?_⟩
+  refine ⟨⟨inferInstance, fun s ↦ CountableGenerateSets.basic⟩, ?_⟩
   rintro f ⟨fct, hf⟩
   rwa [@le_countableGenerate_iff_of_countableInterFilter _ _ _ fct]
 

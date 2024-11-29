@@ -55,7 +55,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 This is mainly useful as an auxiliary construction for `WittVector.verschiebung_nonzero`.
 -/
 def shift (x : 𝕎 R) (n : ℕ) : 𝕎 R :=
-  @mk' p R fun i => x.coeff (n + i)
+  @mk' p R fun i ↦ x.coeff (n + i)
 
 theorem shift_coeff (x : 𝕎 R) (n k : ℕ) : (x.shift n).coeff k = x.coeff (n + k) :=
   rfl
@@ -106,7 +106,7 @@ instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
     rintro ⟨ha, hb⟩
     rcases verschiebung_nonzero ha with ⟨na, wa, hwa0, rfl⟩
     rcases verschiebung_nonzero hb with ⟨nb, wb, hwb0, rfl⟩
-    refine ne_of_apply_ne (fun x => x.coeff (na + nb)) ?_
+    refine ne_of_apply_ne (fun x ↦ x.coeff (na + nb)) ?_
     dsimp only
     rw [iterate_verschiebung_mul_coeff, zero_coeff]
     exact mul_ne_zero (pow_ne_zero _ hwa0) (pow_ne_zero _ hwb0)⟩

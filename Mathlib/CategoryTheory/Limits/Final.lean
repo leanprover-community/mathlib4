@@ -278,8 +278,8 @@ for any `G : D ⥤ E`.
 def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
   functor := extendCocone
   inverse := Cocones.whiskering F
-  unitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun c ↦ Cocones.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c ↦ Cocones.ext (Iso.refl _)
 
 variable {G}
 
@@ -359,7 +359,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
 colimit is isomorpic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
-  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+  NatIso.ofComponents (fun G => colimitIso F G) fun f ↦ by
     simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
       colim_map, colimitIso_hom]
     ext
@@ -463,7 +463,7 @@ end Final
 -/
 theorem final_of_colimit_comp_coyoneda_iso_pUnit
     (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
-  ⟨fun d => by
+  ⟨fun d ↦ by
     have : Nonempty (StructuredArrow d F) := by
       have := (I d).inv PUnit.unit
       obtain ⟨j, y, rfl⟩ := Limits.Types.jointly_surjective'.{v, v} this
@@ -484,7 +484,7 @@ theorem final_of_colimit_comp_coyoneda_iso_pUnit
     the presheaf `colimit (F ⋙ yoneda)`. -/
 theorem final_of_isTerminal_colimit_comp_yoneda
     (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
-  refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine final_of_colimit_comp_coyoneda_iso_pUnit _ (fun d ↦ ?_)
   refine Types.isTerminalEquivIsoPUnit _ ?_
   let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
   exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
@@ -572,7 +572,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
   obj c :=
     { pt := c.pt
       π :=
-        { app := fun d => c.π.app (lift F d) ≫ G.map (homToLift F d)
+        { app := fun d ↦ c.π.app (lift F d) ≫ G.map (homToLift F d)
           naturality := fun X Y f => by
             dsimp; simp only [Category.id_comp, Category.assoc]
             -- This would be true if we'd chosen `lift F Y` to be `lift F X`
@@ -628,8 +628,8 @@ for any `G : D ⥤ E`.
 def conesEquiv : Cone (F ⋙ G) ≌ Cone G where
   functor := extendCone
   inverse := Cones.whiskering F
-  unitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
-  counitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
+  unitIso := NatIso.ofComponents fun c ↦ Cones.ext (Iso.refl _)
+  counitIso := NatIso.ofComponents fun c ↦ Cones.ext (Iso.refl _)
 
 variable {G}
 
@@ -698,7 +698,7 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
 limit is isomorpic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
-  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f ↦ by
     simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
       Iso.symm_hom, limitIso_inv]
     ext
@@ -913,7 +913,7 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     Final.homToLift F X ≫ F.map (IsFiltered.leftToMax _ _),
     ⟨Final.homToLift F Y ≫ F.map (IsFiltered.rightToMax _ _), trivial⟩⟩
   cocone_maps {X Y} f g := by
-    let P : StructuredArrow X F → Prop := fun h => ∃ (Z : C) (q₁ : h.right ⟶ Z)
+    let P : StructuredArrow X F → Prop := fun h ↦ ∃ (Z : C) (q₁ : h.right ⟶ Z)
       (q₂ : Final.lift F Y ⟶ Z), h.hom ≫ F.map q₁ = f ≫ Final.homToLift F Y ≫ F.map q₂
     rsuffices ⟨Z, q₁, q₂, h⟩ : Nonempty (P (StructuredArrow.mk (g ≫ Final.homToLift F Y)))
     · refine ⟨F.obj (IsFiltered.coeq q₁ q₂),
@@ -970,14 +970,14 @@ open Functor
 /-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
 instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
     Final (pre X T S) := by
-  refine ⟨fun f => ?_⟩
+  refine ⟨fun f ↦ ?_⟩
   rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
   exact Final.out f.right
 
 /-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
 instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
     Initial (CostructuredArrow.pre T S X) := by
-  refine ⟨fun f => ?_⟩
+  refine ⟨fun f ↦ ?_⟩
   rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
   exact Initial.out f.left
 
@@ -997,7 +997,7 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
     StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
   obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
     (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
-  map := fun g => StructuredArrow.homMk
+  map := fun g ↦ StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
     (by simp only [StructuredArrow.mk_right]

@@ -99,4 +99,4 @@ theorem SameRay.eq_of_norm_eq (h : SameRay ℝ x y) (hn : ‖x‖ = ‖y‖) : x
 
 /-- The norms of two vectors on the same ray are equal if and only if they are equal. -/
 theorem SameRay.norm_eq_iff (h : SameRay ℝ x y) : ‖x‖ = ‖y‖ ↔ x = y :=
-  ⟨h.eq_of_norm_eq, fun h => h ▸ rfl⟩
+  ⟨h.eq_of_norm_eq, fun h ↦ h ▸ rfl⟩

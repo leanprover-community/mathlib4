@@ -167,7 +167,7 @@ theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → 
   CommaMorphism.ext (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right = g.right :=
-  ⟨fun h => h ▸ rfl, ext f g⟩
+  ⟨fun h ↦ h ▸ rfl, ext f g⟩
 
 instance proj_faithful : (proj S T).Faithful where
   map_injective {_ _} := ext
@@ -503,7 +503,7 @@ theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) 
   CommaMorphism.ext h (Subsingleton.elim _ _)
 
 theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left = g.left :=
-  ⟨fun h => h ▸ rfl, ext f g⟩
+  ⟨fun h ↦ h ▸ rfl, ext f g⟩
 
 instance proj_faithful : (proj S T).Faithful where map_injective {_ _} := ext
 

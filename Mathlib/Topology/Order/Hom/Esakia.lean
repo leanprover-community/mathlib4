@@ -85,11 +85,11 @@ instance (priority := 100) EsakiaHomClass.toPseudoEpimorphismClass [TopologicalS
 
 instance [Preorder α] [Preorder β] [PseudoEpimorphismClass F α β] :
     CoeTC F (PseudoEpimorphism α β) :=
-  ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
+  ⟨fun f ↦ ⟨f, exists_map_eq_of_map_le f⟩⟩
 
 instance [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
     [EsakiaHomClass F α β] : CoeTC F (EsakiaHom α β) :=
-  ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
+  ⟨fun f ↦ ⟨f, exists_map_eq_of_map_le f⟩⟩
 
 end Hom
 
@@ -191,12 +191,12 @@ theorem id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f
 @[simp]
 theorem cancel_right {g₁ g₂ : PseudoEpimorphism β γ} {f : PseudoEpimorphism α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 
 @[simp]
 theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end PseudoEpimorphism
 
@@ -305,11 +305,11 @@ theorem id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : EsakiaHom β γ} {f : EsakiaHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 
 @[simp]
 theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end EsakiaHom

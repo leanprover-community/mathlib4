@@ -112,7 +112,7 @@ lemma LE_monotone : Monotone t.LE := by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by omega
     apply this
-  have H_zero : H 0 := fun n => by
+  have H_zero : H 0 := fun n ↦ by
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX => by
@@ -135,7 +135,7 @@ lemma GE_antitone : Antitone t.GE := by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by omega
     apply this
-  have H_zero : H 0 := fun n => by
+  have H_zero : H 0 := fun n ↦ by
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX => by

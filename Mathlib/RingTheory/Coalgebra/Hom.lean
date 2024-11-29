@@ -102,10 +102,10 @@ instance funLike : FunLike (A →ₗc[R] B) A B where
     congr
 
 instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
-  map_add := fun f => f.map_add'
-  map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp
-  map_comp_comul := fun f => f.map_comp_comul
+  map_add := fun f ↦ f.map_add'
+  map_smulₛₗ := fun f ↦ f.map_smul'
+  counit_comp := fun f ↦ f.counit_comp
+  map_comp_comul := fun f ↦ f.map_comp_comul
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]
@@ -285,7 +285,7 @@ theorem counitCoalgHom_toLinearMap :
 variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
-  ⟨fun f g => CoalgHom.ext fun x => by
+  ⟨fun f g => CoalgHom.ext fun x ↦ by
     have hf := CoalgHomClass.counit_comp_apply f x
     have hg := CoalgHomClass.counit_comp_apply g x
     simp_all only [CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp, CoalgHom.coe_toLinearMap,

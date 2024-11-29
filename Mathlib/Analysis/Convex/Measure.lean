@@ -41,7 +41,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     suffices to prove that `∀ n, μ (s ∩ ball x (n + 1)) = 0`; the latter set is bounded.
     -/
   suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → IsBounded t → μ (frontier t) = 0 by
-    let B : ℕ → Set E := fun n => ball x (n + 1)
+    let B : ℕ → Set E := fun n ↦ ball x (n + 1)
     have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 := by
       refine measure_iUnion_null fun n =>
         H _ (hs.inter (convex_ball _ _)) ?_ (isBounded_ball.subset inter_subset_right)

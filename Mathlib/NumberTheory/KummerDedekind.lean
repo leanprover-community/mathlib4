@@ -74,7 +74,7 @@ theorem conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy =
   simpa only [mul_one] using hy 1
 
 theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
-  ⟨fun h => h, fun h => h⟩
+  ⟨fun h ↦ h, fun h ↦ h⟩
 
 theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
   simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
@@ -130,7 +130,7 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
         apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
       · simp only [RingHom.map_mul, mul_comm (algebraMap R S p) (l a)]
         rfl
-  refine Finset.sum_induction _ (fun u => u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
+  refine Finset.sum_induction _ (fun u ↦ u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
       (fun a b => ?_) ?_ ?_
   · rintro ⟨z, hz, rfl⟩ ⟨y, hy, rfl⟩
     rw [← RingHom.map_add]
@@ -163,8 +163,8 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           simp only [ha.right, map_add, _root_.map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
-    refine ⟨fun h => ?_,
-      fun h => (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
+    refine ⟨fun h ↦ ?_,
+      fun h ↦ (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
     obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg
@@ -195,7 +195,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
       comap_map_eq_map_adjoin_of_coprime_conductor hx h_alg] at hu
   · -- Surjectivity follows from the surjectivity of the canonical map `R<x> → S ⧸ (I * S)`,
     -- which in turn follows from the fact that `I * S + (conductor R x) = S`.
-    refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y => ?_
+    refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y ↦ ?_
     obtain ⟨z, hz⟩ := Ideal.Quotient.mk_surjective y
     have : z ∈ conductor R x ⊔ I.map (algebraMap R S) := by
       suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp only [this, Submodule.mem_top]

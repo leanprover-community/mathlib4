@@ -70,7 +70,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
-  ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
+  ⟨fun a ↦ by rw [deterministic_apply hf]; infer_instance⟩
 
 theorem lintegral_deterministic' {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     (hf : Measurable f) : ∫⁻ x, f x ∂deterministic g hg a = f (g a) := by
@@ -268,13 +268,13 @@ alias set_lintegral_restrict := setLIntegral_restrict
 
 instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (κ.restrict hs) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   rw [restrict_apply' κ hs a MeasurableSet.univ]
   exact measure_le_bound κ a _
 
 instance IsSFiniteKernel.restrict (κ : Kernel α β) [IsSFiniteKernel κ] (hs : MeasurableSet s) :
     IsSFiniteKernel (κ.restrict hs) := by
-  refine ⟨⟨fun n => Kernel.restrict (seq κ n) hs, inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ Kernel.restrict (seq κ n) hs, inferInstance, ?_⟩⟩
   ext1 a
   simp_rw [sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← sum_apply, kernel_sum_seq]
 
@@ -290,7 +290,7 @@ noncomputable def comapRight (κ : Kernel α β) (hf : MeasurableEmbedding f) : 
   toFun a := (κ a).comap f
   measurable' := by
     refine Measure.measurable_measure.mpr fun t ht => ?_
-    have : (fun a => Measure.comap f (κ a) t) = fun a => κ a (f '' t) := by
+    have : (fun a ↦ Measure.comap f (κ a) t) = fun a ↦ κ a (f '' t) := by
       ext1 a
       rw [Measure.comap_apply _ hf.injective _ _ ht]
       exact fun s' hs' ↦ hf.measurableSet_image.mpr hs'
@@ -304,7 +304,7 @@ theorem comapRight_apply (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : �
 theorem comapRight_apply' (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : α) {t : Set γ}
     (ht : MeasurableSet t) : comapRight κ hf a t = κ a (f '' t) := by
   rw [comapRight_apply,
-    Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
+    Measure.comap_apply _ hf.injective (fun s ↦ hf.measurableSet_image.mpr) _ ht]
 
 @[simp]
 lemma comapRight_id (κ : Kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
@@ -312,26 +312,26 @@ lemma comapRight_id (κ : Kernel α β) : comapRight κ MeasurableEmbedding.id =
 
 theorem IsMarkovKernel.comapRight (κ : Kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
-  refine ⟨fun a => ⟨?_⟩⟩
+  refine ⟨fun a ↦ ⟨?_⟩⟩
   rw [comapRight_apply' κ hf a MeasurableSet.univ]
   simp only [Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq]
   exact hκ a
 
 instance IsFiniteKernel.comapRight (κ : Kernel α β) [IsFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsFiniteKernel (comapRight κ hf) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   rw [comapRight_apply' κ hf a .univ]
   exact measure_le_bound κ a _
 
 protected instance IsSFiniteKernel.comapRight (κ : Kernel α β) [IsSFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsSFiniteKernel (comapRight κ hf) := by
-  refine ⟨⟨fun n => comapRight (seq κ n) hf, inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ comapRight (seq κ n) hf, inferInstance, ?_⟩⟩
   ext1 a
   rw [sum_apply]
   simp_rw [comapRight_apply _ hf]
   have :
-    (Measure.sum fun n => Measure.comap f (seq κ n a)) =
-      Measure.comap f (Measure.sum fun n => seq κ n a) := by
+    (Measure.sum fun n ↦ Measure.comap f (seq κ n a)) =
+      Measure.comap f (Measure.sum fun n ↦ seq κ n a) := by
     ext1 t ht
     rw [Measure.comap_apply _ hf.injective (fun s' => hf.measurableSet_image.mpr) _ ht,
       Measure.sum_apply _ ht, Measure.sum_apply _ (hf.measurableSet_image.mpr ht)]
@@ -360,19 +360,19 @@ theorem piecewise_apply' (a : α) (t : Set β) :
 
 instance IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
     IsMarkovKernel (piecewise hs κ η) := by
-  refine ⟨fun a => ⟨?_⟩⟩
+  refine ⟨fun a ↦ ⟨?_⟩⟩
   rw [piecewise_apply', measure_univ, measure_univ, ite_self]
 
 instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (piecewise hs κ η) := by
-  refine ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), ?_, fun a => ?_⟩⟩
+  refine ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), ?_, fun a ↦ ?_⟩⟩
   · exact max_lt (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η)
   rw [piecewise_apply']
   exact (ite_le_sup _ _ _).trans (sup_le_sup (measure_le_bound _ _ _) (measure_le_bound _ _ _))
 
 protected instance IsSFiniteKernel.piecewise [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (piecewise hs κ η) := by
-  refine ⟨⟨fun n => piecewise hs (seq κ n) (seq η n), inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ piecewise hs (seq κ n) (seq η n), inferInstance, ?_⟩⟩
   ext1 a
   simp_rw [sum_apply, Kernel.piecewise_apply]
   split_ifs <;> exact (measure_sum_seq _ a).symm

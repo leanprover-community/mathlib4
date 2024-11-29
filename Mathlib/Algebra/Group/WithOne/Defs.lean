@@ -79,7 +79,7 @@ instance mul [Mul α] : Mul (WithOne α) :=
 
 @[to_additive]
 instance inv [Inv α] : Inv (WithOne α) :=
-  ⟨fun a => Option.map Inv.inv a⟩
+  ⟨fun a ↦ Option.map Inv.inv a⟩
 
 @[to_additive]
 instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
@@ -151,7 +151,7 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 
 @[to_additive]
-instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
+instance canLift : CanLift (WithOne α) α (↑) fun a ↦ a ≠ 1 where
   prf _ := ne_one_iff_exists.1
 
 @[to_additive (attr := simp, norm_cast)]

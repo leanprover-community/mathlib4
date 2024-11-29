@@ -204,7 +204,7 @@ theorem f1 : ∀ a : F, 1 + a = 1 := by boom
 
 @[simp]
 theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
-  single_apply_eq_zero.mpr fun h => h
+  single_apply_eq_zero.mpr fun h ↦ h
 
 @[simp]
 theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
@@ -216,7 +216,7 @@ theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
 
 @[simp]
 theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
-  single_apply_eq_zero.mpr fun h => h.symm
+  single_apply_eq_zero.mpr fun h ↦ h.symm
 
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is

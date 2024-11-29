@@ -523,7 +523,7 @@ instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β]
     PseudoMetricSpace (WithLp p (α × β)) :=
   ((prodPseudoMetricAux p α β).replaceUniformity
     (prod_aux_uniformity_eq p α β).symm).replaceBornology
-    fun s => Filter.ext_iff.1 (prod_aux_cobounded_eq p α β).symm sᶜ
+    fun s ↦ Filter.ext_iff.1 (prod_aux_cobounded_eq p α β).symm sᶜ
 
 /-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/

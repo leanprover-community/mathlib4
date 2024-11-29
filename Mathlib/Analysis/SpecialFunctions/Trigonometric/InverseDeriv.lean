@@ -70,7 +70,7 @@ theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
 
 theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Ici x) x ↔ x ≠ -1 := by
-  refine ⟨?_, fun h => (hasDerivWithinAt_arcsin_Ici h).differentiableWithinAt⟩
+  refine ⟨?_, fun h ↦ (hasDerivWithinAt_arcsin_Ici h).differentiableWithinAt⟩
   rintro h rfl
   have : sin ∘ arcsin =ᶠ[𝓝[≥] (-1 : ℝ)] id := by
     filter_upwards [Icc_mem_nhdsWithin_Ici ⟨le_rfl, neg_lt_self (zero_lt_one' ℝ)⟩] with x using
@@ -80,18 +80,18 @@ theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
 
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
-  refine ⟨fun h => ?_, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
   rw [← neg_neg x, ← image_neg_Ici] at h
   have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
   simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
 
 theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x ≠ -1 ∧ x ≠ 1 :=
-  ⟨fun h => ⟨differentiableWithinAt_arcsin_Ici.1 h.differentiableWithinAt,
+  ⟨fun h ↦ ⟨differentiableWithinAt_arcsin_Ici.1 h.differentiableWithinAt,
       differentiableWithinAt_arcsin_Iic.1 h.differentiableWithinAt⟩,
-    fun h => (hasDerivAt_arcsin h.1 h.2).differentiableAt⟩
+    fun h ↦ (hasDerivAt_arcsin h.1 h.2).differentiableAt⟩
 
 @[simp]
-theorem deriv_arcsin : deriv arcsin = fun x => 1 / √(1 - x ^ 2) := by
+theorem deriv_arcsin : deriv arcsin = fun x ↦ 1 / √(1 - x ^ 2) := by
   funext x
   by_cases h : x ≠ -1 ∧ x ≠ 1
   · exact (hasDerivAt_arcsin h.1 h.2).deriv
@@ -101,16 +101,16 @@ theorem deriv_arcsin : deriv arcsin = fun x => 1 / √(1 - x ^ 2) := by
 
 theorem differentiableOn_arcsin : DifferentiableOn ℝ arcsin {-1, 1}ᶜ := fun _x hx =>
   (differentiableAt_arcsin.2
-      ⟨fun h => hx (Or.inl h), fun h => hx (Or.inr h)⟩).differentiableWithinAt
+      ⟨fun h ↦ hx (Or.inl h), fun h ↦ hx (Or.inr h)⟩).differentiableWithinAt
 
 theorem contDiffOn_arcsin {n : WithTop ℕ∞} : ContDiffOn ℝ n arcsin {-1, 1}ᶜ := fun _x hx =>
   (contDiffAt_arcsin (mt Or.inl hx) (mt Or.inr hx)).contDiffWithinAt
 
 theorem contDiffAt_arcsin_iff {x : ℝ} {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 :=
-  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt <|
+  ⟨fun h ↦ or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt <|
       ENat.one_le_iff_ne_zero_withTop.mpr hn,
-    fun h => h.elim (fun hn => hn.symm ▸ (contDiff_zero.2 continuous_arcsin).contDiffAt) fun hx =>
+    fun h ↦ h.elim (fun hn => hn.symm ▸ (contDiff_zero.2 continuous_arcsin).contDiffAt) fun hx =>
       contDiffAt_arcsin hx.1 hx.2⟩
 
 end Arcsin
@@ -149,8 +149,8 @@ theorem differentiableAt_arccos {x : ℝ} : DifferentiableAt ℝ arccos x ↔ x 
   (differentiableAt_const _).sub_iff_right.trans differentiableAt_arcsin
 
 @[simp]
-theorem deriv_arccos : deriv arccos = fun x => -(1 / √(1 - x ^ 2)) :=
-  funext fun x => (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
+theorem deriv_arccos : deriv arccos = fun x ↦ -(1 / √(1 - x ^ 2)) :=
+  funext fun x ↦ (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
 
 theorem differentiableOn_arccos : DifferentiableOn ℝ arccos {-1, 1}ᶜ :=
   differentiableOn_arcsin.const_sub _
@@ -160,7 +160,7 @@ theorem contDiffOn_arccos {n : WithTop ℕ∞} : ContDiffOn ℝ n arccos {-1, 1}
 
 theorem contDiffAt_arccos_iff {x : ℝ} {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
-  refine Iff.trans ⟨fun h => ?_, fun h => ?_⟩ contDiffAt_arcsin_iff <;>
+  refine Iff.trans ⟨fun h ↦ ?_, fun h ↦ ?_⟩ contDiffAt_arcsin_iff <;>
     simpa [arccos] using (contDiffAt_const (c := π / 2)).sub h
 
 end Arccos

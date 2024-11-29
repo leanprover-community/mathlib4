@@ -63,21 +63,21 @@ def BiUnique : Prop := LeftUnique R ∧ RightUnique R
 variable {R}
 
 lemma RightTotal.rel_forall (h : RightTotal R) :
-    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∀i, p i) (fun q => ∀i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p ↦ ∀i, p i) (fun q ↦ ∀i, q i) :=
   fun _ _ Hrel H b => Exists.elim (h b) (fun _ Rab => Hrel Rab (H _))
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
-    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p ↦ ∃i, p i) (fun q ↦ ∃i, q i) :=
   fun _ _ Hrel ⟨a, pa⟩ => (h a).imp fun _ Rab => Hrel Rab pa
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
-    ((R ⇒ Iff) ⇒ Iff) (fun p => ∀i, p i) (fun q => ∀i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (fun p ↦ ∀i, p i) (fun q ↦ ∀i, q i) :=
   fun _ _ Hrel =>
     ⟨fun H b => Exists.elim (h.right b) (fun _ Rab => (Hrel Rab).mp (H _)),
       fun H a => Exists.elim (h.left a) (fun _ Rab => (Hrel Rab).mpr (H _))⟩
 
 lemma BiTotal.rel_exists (h : BiTotal R) :
-    ((R ⇒ Iff) ⇒ Iff) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (fun p ↦ ∃i, p i) (fun q ↦ ∃i, q i) :=
   fun _ _ Hrel =>
     ⟨fun ⟨a, pa⟩ => (h.left a).imp fun _ Rab => (Hrel Rab).1 pa,
       fun ⟨b, qb⟩ => (h.right b).imp fun _ Rab => (Hrel Rab).2 qb⟩
@@ -94,7 +94,7 @@ lemma rel_not : (Iff ⇒ Iff) Not Not :=
   fun _ _ h => not_congr h
 
 lemma bi_total_eq {α : Type u₁} : Relator.BiTotal (@Eq α) :=
-  { left := fun a => ⟨a, rfl⟩, right := fun a => ⟨a, rfl⟩ }
+  { left := fun a ↦ ⟨a, rfl⟩, right := fun a ↦ ⟨a, rfl⟩ }
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 variable {r : α → β → Prop}
@@ -112,7 +112,7 @@ lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
   fun _ _ h₁ _ _ h₂ => iff_congr h₁ h₂
 
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
-  fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ <| h.symm ▸ h₂, fun h => hr.left h₁ <| h.symm ▸ h₂⟩
+  fun _ _ h₁ _ _ h₂ => ⟨fun h ↦ hr.right h₁ <| h.symm ▸ h₂, fun h ↦ hr.left h₁ <| h.symm ▸ h₂⟩
 
 open Function
 

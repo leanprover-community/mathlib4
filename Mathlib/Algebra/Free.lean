@@ -360,7 +360,7 @@ variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
-  (DFunLike.ext _ _) fun x => AssocQuotient.induction_on x <| DFunLike.congr_fun h
+  (DFunLike.ext _ _) fun x ↦ AssocQuotient.induction_on x <| DFunLike.congr_fun h
 
 /-- Lifts a magma homomorphism `α → β` to a semigroup homomorphism `Magma.AssocQuotient α → β`
 given a semigroup `β`. -/

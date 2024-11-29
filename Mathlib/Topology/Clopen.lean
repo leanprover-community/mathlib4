@@ -27,7 +27,7 @@ protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.1
 
 theorem isClopen_iff_frontier_eq_empty : IsClopen s ↔ frontier s = ∅ := by
   rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, diff_eq_empty]
-  refine ⟨fun h => (h.1.trans h.2.symm).subset, fun h => ?_⟩
+  refine ⟨fun h ↦ (h.1.trans h.2.symm).subset, fun h ↦ ?_⟩
   exact ⟨(h.trans interior_subset).antisymm subset_closure,
     interior_subset.antisymm (subset_closure.trans h)⟩
 
@@ -48,7 +48,7 @@ theorem IsClopen.compl (hs : IsClopen s) : IsClopen sᶜ :=
 
 @[simp]
 theorem isClopen_compl_iff : IsClopen sᶜ ↔ IsClopen s :=
-  ⟨fun h => compl_compl s ▸ IsClopen.compl h, IsClopen.compl⟩
+  ⟨fun h ↦ compl_compl s ▸ IsClopen.compl h, IsClopen.compl⟩
 
 theorem IsClopen.diff (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s \ t) :=
   hs.inter ht.compl

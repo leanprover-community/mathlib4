@@ -274,17 +274,17 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
   let b := Module.basisUnique ι h
   let h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
-    { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
-      invFun := fun f => f default • v
+    { toFun := fun w ↦ Finsupp.single default (b.repr w default / b.repr v default)
+      invFun := fun f ↦ f default • v
       map_add' := by simp [add_div]
       map_smul' := by simp [mul_div]
-      left_inv := fun w => by
+      left_inv := fun w ↦ by
         apply_fun b.repr using b.repr.toEquiv.injective
         apply_fun Equiv.finsuppUnique
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel₀ _ h
-      right_inv := fun f => by
+      right_inv := fun f ↦ by
         ext
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
@@ -356,7 +356,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  ⟨fun h => Module.finite_def.2 <| (fg_top s).2 h, fun h => (fg_top s).1 <| Module.finite_def.1 h⟩
+  ⟨fun h ↦ Module.finite_def.2 <| (fg_top s).2 h, fun h ↦ (fg_top s).1 <| Module.finite_def.1 h⟩
 
 /-- A submodule contained in a finite-dimensional submodule is
 finite-dimensional. -/
@@ -394,7 +394,7 @@ work well with typeclass search. -/
 instance finiteDimensional_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule K V)
     [∀ i, FiniteDimensional K (S i)] : FiniteDimensional K (s.sup S : Submodule K V) := by
   refine
-    @Finset.sup_induction _ _ _ _ s S (fun i => FiniteDimensional K ↑i) (finiteDimensional_bot K V)
+    @Finset.sup_induction _ _ _ _ s S (fun i ↦ FiniteDimensional K ↑i) (finiteDimensional_bot K V)
       ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finiteDimensional_sup S₁ S₂
@@ -523,7 +523,7 @@ are also inverse to each other on the other side. -/
 theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (hfg : f * g = 1) :
     g * f = 1 := by
   have ginj : Injective g :=
-    HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
+    HasLeftInverse.injective ⟨f, fun x ↦ show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
   let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
     (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
@@ -722,7 +722,7 @@ section finrank_eq_one
 -/
 theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
-  ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
+  ⟨fun h ↦ by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (linearIndependent_singleton nz)
         (by

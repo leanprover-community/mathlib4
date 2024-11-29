@@ -33,7 +33,7 @@ This set is the same as `{x : ↑A | ↑x ∈ B}`.
 scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
 /-- Coercion using `(Subtype.val '' ·)` -/
-instance {α : Type*} {s : Set α} : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
+instance {α : Type*} {s : Set α} : CoeHead (Set s) (Set α) := ⟨fun t ↦ (Subtype.val '' t)⟩
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--

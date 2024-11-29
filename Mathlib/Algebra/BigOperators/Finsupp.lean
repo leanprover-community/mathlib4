@@ -170,7 +170,7 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
 theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
     f.prod g = g a (f a) := by
-  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
+  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h ↦ ?_)
   · exact h₀ b (mem_support_iff.mp hb₁) hb₂
   · simp only [not_mem_support_iff] at h
     rw [h]
@@ -253,14 +253,14 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
   coe_finset_sum _ _
 
 theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} :
-    (f.sum g).support ⊆ f.support.biUnion fun a => (g a (f a)).support := by
+    (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f a)).support := by
   have : ∀ c, (f.sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
     let ⟨a, ha, ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨a, mem_support_iff.mp ha, ne⟩
   simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply, exists_prop]
 
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
-    (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
+    (Finset.sum s f).support ⊆ s.biUnion fun x ↦ (f x).support := by
   rw [← Finset.sup_eq_biUnion]
   induction s using Finset.cons_induction_on with
   | h₁ => rfl
@@ -317,8 +317,8 @@ theorem prod_add_index' [AddZeroClass M] [CommMonoid N] {f g : α →₀ M} {h :
 
 @[simp]
 theorem sum_hom_add_index [AddZeroClass M] [AddCommMonoid N] {f g : α →₀ M} (h : α → M →+ N) :
-    ((f + g).sum fun x => h x) = (f.sum fun x => h x) + g.sum fun x => h x :=
-  sum_add_index' (fun a => (h a).map_zero) fun a => (h a).map_add
+    ((f + g).sum fun x ↦ h x) = (f.sum fun x ↦ h x) + g.sum fun x ↦ h x :=
+  sum_add_index' (fun a ↦ (h a).map_zero) fun a ↦ (h a).map_add
 
 @[simp]
 theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
@@ -326,7 +326,7 @@ theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
     ((f + g).prod fun a b => h a (Multiplicative.ofAdd b)) =
       (f.prod fun a b => h a (Multiplicative.ofAdd b)) *
         g.prod fun a b => h a (Multiplicative.ofAdd b) :=
-  prod_add_index' (fun a => (h a).map_one) fun a => (h a).map_mul
+  prod_add_index' (fun a ↦ (h a).map_one) fun a ↦ (h a).map_mul
 
 /-- The canonical isomorphism between families of additive monoid homomorphisms `α → (M →+ N)`
 and monoid homomorphisms `(α →₀ M) →+ N`. -/
@@ -334,7 +334,7 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
   toFun F :=
     { toFun := fun f ↦ f.sum fun x ↦ F x
       map_zero' := Finset.sum_empty
-      map_add' := fun _ _ => sum_add_index' (fun x => (F x).map_zero) fun x => (F x).map_add }
+      map_add' := fun _ _ => sum_add_index' (fun x ↦ (F x).map_zero) fun x ↦ (F x).map_add }
   invFun F x := F.comp (singleAddHom x)
   left_inv F := by
     ext
@@ -348,7 +348,7 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
 
 @[simp]
 theorem liftAddHom_apply [AddCommMonoid M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
-    (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x => F x :=
+    (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x ↦ F x :=
   rfl
 
 @[simp]
@@ -407,14 +407,14 @@ theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → 
 @[simp]
 theorem liftAddHom_comp_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
     ((liftAddHom (α := α) (M := M) (N := N)) f).comp (singleAddHom a) = f a :=
-  AddMonoidHom.ext fun b => liftAddHom_apply_single f a b
+  AddMonoidHom.ext fun b ↦ liftAddHom_apply_single f a b
 
 theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
     (f : α → M →+ N) :
     g.comp ((liftAddHom (α := α) (M := M) (N := N)) f) =
-      (liftAddHom (α := α) (M := M) (N := P)) fun a => g.comp (f a) :=
+      (liftAddHom (α := α) (M := M) (N := P)) fun a ↦ g.comp (f a) :=
   liftAddHom.symm_apply_eq.1 <|
-    funext fun a => by
+    funext fun a ↦ by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 
 theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}
@@ -452,7 +452,7 @@ theorem multiset_sum_sum_index [AddCommMonoid M] [AddCommMonoid N] (f : Multiset
 theorem support_sum_eq_biUnion {α : Type*} {ι : Type*} {M : Type*} [DecidableEq α]
     [AddCommMonoid M] {g : ι → α →₀ M} (s : Finset ι)
     (h : ∀ i₁ i₂, i₁ ≠ i₂ → Disjoint (g i₁).support (g i₂).support) :
-    (∑ i ∈ s, g i).support = s.biUnion fun i => (g i).support := by
+    (∑ i ∈ s, g i).support = s.biUnion fun i ↦ (g i).support := by
   classical
   -- Porting note: apply Finset.induction_on s was not working; refine does.
   refine Finset.induction_on s ?_ ?_

@@ -134,7 +134,7 @@ open Set
 @[to_additive (attr := simp)
 "An additive submonoid `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
-  ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 /-- Submonoid closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
@@ -356,7 +356,7 @@ def ofClosureMEqTopLeft {M N} [Monoid M] [Monoid N] {s : Set M} (f : M → N) (h
   toFun := f
   map_one' := h1
   map_mul' x :=
-    dense_induction (p := _) _ hs hmul fun y => by rw [one_mul, h1, one_mul]
+    dense_induction (p := _) _ hs hmul fun y ↦ by rw [one_mul, h1, one_mul]
       (fun a b ha hb y => by rw [mul_assoc, ha, ha, hb, mul_assoc]) x
 
 @[to_additive (attr := simp, norm_cast)]

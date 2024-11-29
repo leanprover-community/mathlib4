@@ -117,7 +117,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
-      ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
+      ⟨fun b ↦ @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
@@ -165,7 +165,7 @@ private def root' : G :=
 -- Porting note: removed noncomputable. This is already declared at the beginning of the section.
 def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
-  | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
+  | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e ↦ of e) fun e ↦ inv (of e)
 
 /-- For every vertex `a`, there is a canonical hom from the root, given by the path in the tree. -/
 def treeHom (a : G) : root' T ⟶ a :=
@@ -216,7 +216,7 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     in the complement of the tree. -/
 lemma endIsFree : IsFreeGroup (End (root' T)) :=
   IsFreeGroup.ofUniqueLift ((wideSubquiverEquivSetTotal <| wideSubquiverSymmetrify T)ᶜ : Set _)
-    (fun e => loopOfHom T (of e.val.hom))
+    (fun e ↦ loopOfHom T (of e.val.hom))
     (by
       intro X _ f
       let f' : Labelling (Generators G) X := fun a b e =>
@@ -268,7 +268,7 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
   rw [← @WeaklyConnectedComponent.eq (Generators G), eq_comm, ← FreeGroup.of_injective.eq_iff, ←
     mul_inv_eq_one]
   let X := FreeGroup (WeaklyConnectedComponent <| Generators G)
-  let f : G → X := fun g => FreeGroup.of (WeaklyConnectedComponent.mk g)
+  let f : G → X := fun g ↦ FreeGroup.of (WeaklyConnectedComponent.mk g)
   let F : G ⥤ CategoryTheory.SingleObj.{u} (X : Type u) := SingleObj.differenceFunctor f
   change (F.map p) = ((@CategoryTheory.Functor.const G _ _ (SingleObj.category X)).obj ()).map p
   congr; ext
@@ -280,7 +280,7 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/
 instance generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
     RootedConnected (symgen r) :=
-  ⟨fun b => path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_preconnected_groupoid r b)⟩
+  ⟨fun b ↦ path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_preconnected_groupoid r b)⟩
 
 /-- A vertex group in a free connected groupoid is free. With some work one could drop the
 connectedness assumption, by looking at connected components. -/

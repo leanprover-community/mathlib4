@@ -232,13 +232,13 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
     (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[>] a) = atBot :=
-  comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by
+  comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h ↦ by
     simpa only [OrderDual.exists, dual_Ioo] using hs h
 
 theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
     map ((↑) : s → α) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
-  · have : IsEmpty s := ⟨fun x => hb'.subset (hb x.2)⟩
+  · have : IsEmpty s := ⟨fun x ↦ hb'.subset (hb x.2)⟩
     rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
   · rw [← comap_coe_nhdsWithin_Iio_of_Ioo_subset hb fun _ => hs a ha, map_comap_of_mem]
     rw [Subtype.range_val]
@@ -309,22 +309,22 @@ theorem tendsto_comp_coe_Iio_atTop :
 
 @[simp]
 theorem tendsto_Ioo_atTop {f : β → Ioo a b} :
-    Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] b) := by
+    Tendsto f l atTop ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[<] b) := by
   rw [← comap_coe_Ioo_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 
 @[simp]
 theorem tendsto_Ioo_atBot {f : β → Ioo a b} :
-    Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioo_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
 
 @[simp]
 theorem tendsto_Ioi_atBot {f : β → Ioi a} :
-    Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
+    Tendsto f l atBot ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioi_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
 
 @[simp]
 theorem tendsto_Iio_atTop {f : β → Iio a} :
-    Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] a) := by
+    Tendsto f l atTop ↔ Tendsto (fun x ↦ (f x : α)) l (𝓝[<] a) := by
   rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 
 instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by

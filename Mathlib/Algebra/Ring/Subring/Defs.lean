@@ -93,7 +93,7 @@ theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zs
 namespace SubringClass
 
 instance (priority := 75) toHasIntCast : IntCast s :=
-  ⟨fun n => ⟨n, intCast_mem s n⟩⟩
+  ⟨fun n ↦ ⟨n, intCast_mem s n⟩⟩
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
@@ -300,7 +300,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   SubmonoidClass.coe_pow x n
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
-  ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
+  ⟨fun h ↦ Subtype.ext (Trans.trans h s.coe_zero.symm), fun h ↦ h.symm ▸ s.coe_zero⟩
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=

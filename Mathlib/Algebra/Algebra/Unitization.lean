@@ -647,7 +647,7 @@ theorem algHom_ext {F : Type*}
 lemma algHom_ext'' {F : Type*}
     [FunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
-  algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
+  algHom_ext h (fun r ↦ by simp only [AlgHomClass.commutes])
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext 1100]
@@ -667,7 +667,7 @@ algebra homomorphism from the unitization into `C`. This is extended to an `Equi
 reasons. -/
 @[simps]
 def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
-  toFun := fun x => algebraMap R C x.fst + φ x.snd
+  toFun := fun x ↦ algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by
     induction x with
@@ -688,7 +688,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
           zero_add, φ.map_add]
         rw [add_add_add_comm]
-  commutes' := fun r => by
+  commutes' := fun r ↦ by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
 
@@ -735,7 +735,7 @@ to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the uniti
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
-    map_star' := fun x => by
+    map_star' := fun x ↦ by
       induction x
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),

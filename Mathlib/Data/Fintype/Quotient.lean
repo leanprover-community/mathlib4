@@ -195,7 +195,7 @@ truncation type, then there is corresponding term in the truncation of the produ
 def finChoice (q : ∀ i, Trunc (α i)) : Trunc (∀ i, α i) :=
   Quotient.map' id (fun _ _ _ => trivial) (Quotient.finChoice q)
 
-theorem finChoice_eq (f : ∀ i, α i) : (Trunc.finChoice fun i => Trunc.mk (f i)) = Trunc.mk f :=
+theorem finChoice_eq (f : ∀ i, α i) : (Trunc.finChoice fun i ↦ Trunc.mk (f i)) = Trunc.mk f :=
   Subsingleton.elim _ _
 
 /-- Lift a function on `∀ i, α i` to a function on `∀ i, Trunc (α i)`. -/

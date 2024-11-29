@@ -189,7 +189,7 @@ lemma isInducing (hf : IsEmbedding f) : IsInducing f := hf.toIsInducing
 
 lemma mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
     IsEmbedding f :=
-  ⟨isInducing_iff_nhds.2 fun x => (induced x).symm, inj⟩
+  ⟨isInducing_iff_nhds.2 fun x ↦ (induced x).symm, inj⟩
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.mk' := mk'
@@ -299,7 +299,7 @@ alias isQuotientMap_iff_closed := isQuotientMap_iff_isClosed
 namespace IsQuotientMap
 
 protected theorem id : IsQuotientMap (@id X) :=
-  ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
+  ⟨fun x ↦ ⟨x, rfl⟩, coinduced_id.symm⟩
 
 protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotientMap (g ∘ f) :=
   ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩
@@ -387,7 +387,7 @@ theorem of_inverse {f' : Y → X} (h : Continuous f') (l_inv : LeftInverse f f')
 theorem isQuotientMap (open_map : IsOpenMap f) (cont : Continuous f) (surj : Surjective f) :
     IsQuotientMap f :=
   isQuotientMap_iff.2
-    ⟨surj, fun s => ⟨fun h => h.preimage cont, fun h => surj.image_preimage s ▸ open_map _ h⟩⟩
+    ⟨surj, fun s ↦ ⟨fun h ↦ h.preimage cont, fun h ↦ surj.image_preimage s ▸ open_map _ h⟩⟩
 
 @[deprecated (since := "2024-10-22")]
 alias to_quotientMap := isQuotientMap
@@ -642,7 +642,7 @@ alias IsOpenEmbedding.of_isEmbedding := IsEmbedding.isOpenEmbedding_of_surjectiv
 alias _root_.Embedding.toOpenEmbedding_of_surjective := IsEmbedding.isOpenEmbedding_of_surjective
 
 lemma isOpenEmbedding_iff_isEmbedding_isOpenMap : IsOpenEmbedding f ↔ IsEmbedding f ∧ IsOpenMap f :=
-  ⟨fun h => ⟨h.1, h.isOpenMap⟩, fun h => .of_isEmbedding_isOpenMap h.1 h.2⟩
+  ⟨fun h ↦ ⟨h.1, h.isOpenMap⟩, fun h ↦ .of_isEmbedding_isOpenMap h.1 h.2⟩
 
 @[deprecated (since := "2024-10-26")]
 alias isOpenEmbedding_iff_embedding_open := isOpenEmbedding_iff_isEmbedding_isOpenMap
@@ -659,7 +659,7 @@ theorem IsOpenEmbedding.of_continuous_injective_isOpenMap
 
 lemma isOpenEmbedding_iff_continuous_injective_isOpenMap :
     IsOpenEmbedding f ↔ Continuous f ∧ Injective f ∧ IsOpenMap f :=
-  ⟨fun h => ⟨h.continuous, h.injective, h.isOpenMap⟩, fun h =>
+  ⟨fun h ↦ ⟨h.continuous, h.injective, h.isOpenMap⟩, fun h =>
     .of_continuous_injective_isOpenMap h.1 h.2.1 h.2.2⟩
 
 @[deprecated (since := "2024-10-30")]
@@ -725,7 +725,7 @@ lemma isClosedMap (hf : IsClosedEmbedding f) : IsClosedMap f :=
 
 lemma isClosed_iff_image_isClosed (hf : IsClosedEmbedding f) {s : Set X} :
     IsClosed s ↔ IsClosed (f '' s) :=
-  ⟨hf.isClosedMap s, fun h => by
+  ⟨hf.isClosedMap s, fun h ↦ by
     rw [← preimage_image_eq s hf.injective]
     exact h.preimage hf.continuous⟩
 

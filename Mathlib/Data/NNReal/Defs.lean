@@ -82,7 +82,7 @@ instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
   rfl
 
-instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
+instance canLift : CanLift ℝ ℝ≥0 toReal fun r ↦ 0 ≤ r :=
   Subtype.canLift _
 
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
@@ -587,7 +587,7 @@ theorem lt_of_toNNReal_lt {r p : ℝ} (h : r.toNNReal < p.toNNReal) : r < p :=
 
 theorem toNNReal_lt_toNNReal_iff_of_nonneg {r p : ℝ} (hr : 0 ≤ r) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
-  toNNReal_lt_toNNReal_iff'.trans ⟨And.left, fun h => ⟨h, lt_of_le_of_lt hr h⟩⟩
+  toNNReal_lt_toNNReal_iff'.trans ⟨And.left, fun h ↦ ⟨h, lt_of_le_of_lt hr h⟩⟩
 
 lemma toNNReal_le_toNNReal_iff' {r p : ℝ} : r.toNNReal ≤ p.toNNReal ↔ r ≤ p ∨ r ≤ 0 := by
   simp_rw [← not_lt, toNNReal_lt_toNNReal_iff', not_and_or]

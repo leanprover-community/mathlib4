@@ -59,7 +59,7 @@ theorem mem_classes (r : Setoid α) (y) : { x | r x y } ∈ r.classes :=
   ⟨y, rfl⟩
 
 theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
-    (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
+    (Setoid.ker f).classes ⊆ Set.range fun y ↦ { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩
@@ -75,16 +75,16 @@ theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
 theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
     r₁ = r₂ ↔ ∀ x, { y | r₁ x y } = { y | r₂ x y } :=
-  ⟨fun h _x => h ▸ rfl, fun h => ext fun x => Set.ext_iff.1 <| h x⟩
+  ⟨fun h _x => h ▸ rfl, fun h ↦ ext fun x ↦ Set.ext_iff.1 <| h x⟩
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
-  ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
+  ⟨fun h ↦ ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
     subst c
     exact r.trans' hx (r.symm' hy)⟩
 
 /-- Two equivalence relations are equal iff their equivalence classes are equal. -/
 theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r₂.classes :=
-  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
 
 /-- The empty set is not an equivalence class. -/
 theorem empty_not_mem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
@@ -146,12 +146,12 @@ def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     relation r equals r. -/
 theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_classes = r :=
   ext fun x _y =>
-    ⟨fun h => r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
+    ⟨fun h ↦ r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
       eq_of_mem_classes (r.mem_classes x) (r.refl' x) hb hx ▸ r.symm' h⟩
 
 @[simp]
 theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
-  Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
+  Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 
 /-- The equivalence between the quotient by an equivalence relation and its
 type of equivalence classes. -/
@@ -314,7 +314,7 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
-  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
+  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h ↦ (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
   index x := (ex x).choose
@@ -353,7 +353,7 @@ theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 
 theorem mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
-  ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h => h ▸ hs.mem_index _⟩
+  ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h ↦ h ▸ hs.mem_index _⟩
 
 theorem eq (i) : s i = { x | hs.index x = i } :=
   Set.ext fun _ => hs.mem_iff_index_eq
@@ -416,20 +416,20 @@ theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
 
 /-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
 theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+  Quotient.inductionOn' x fun x ↦ (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
 
 @[deprecated (since := "2024-10-19")] alias index_out' := index_out
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
-  Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
+  Quotient.inductionOn' x fun x ↦ Quotient.sound' <| hs.some_index x
 
 theorem class_of {x : α} : setOf (hs.setoid x) = s (hs.index x) :=
   Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
 
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
-  Quotient.inductionOn' x fun x => by
+  Quotient.inductionOn' x fun x ↦ by
     ext y
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
     exact Quotient.eq''
@@ -437,7 +437,7 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
 /-- Combine functions with disjoint domains into a new function.
 You can use the regular expression `def.*piecewise` to search for
 other ways to define piecewise functions in mathlib4. -/
-def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x ↦ f (hs.index x) x
 
 lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
   rfl
@@ -449,7 +449,7 @@ domains and pairwise disjoint ranges can be glued together
 to form an injective function. -/
 theorem piecewise_inj {β : Type*} {f : ι → α → β}
     (h_injOn : ∀ i, InjOn (f i) (s i))
-    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i ↦ (f i) '' (s i)) :
     Injective (piecewise hs f) := by
   intro x y h
   suffices hs.index x = hs.index y by

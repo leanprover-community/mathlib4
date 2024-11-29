@@ -139,16 +139,16 @@ noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
 instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
     HasColimitsOfShape (Discrete α) (Ind C) := by
   refine ⟨fun F => ?_⟩
-  let I : α → Type v := fun s => (F.obj ⟨s⟩).presentation.I
-  let G : ∀ s, I s ⥤ C := fun s => (F.obj ⟨s⟩).presentation.F
-  let iso : Discrete.functor (fun s => Pi.eval I s ⋙ G s) ⋙
+  let I : α → Type v := fun s ↦ (F.obj ⟨s⟩).presentation.I
+  let G : ∀ s, I s ⥤ C := fun s ↦ (F.obj ⟨s⟩).presentation.F
+  let iso : Discrete.functor (fun s ↦ Pi.eval I s ⋙ G s) ⋙
       (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim ≅ F := by
-    refine Discrete.natIso (fun s => ?_)
+    refine Discrete.natIso (fun s ↦ ?_)
     refine (Functor.Final.colimitIso (Pi.eval I s.as) (G s.as ⋙ Ind.yoneda)) ≪≫ ?_
     exact Ind.colimitPresentationCompYoneda _
   -- The actual proof happens during typeclass resolution in the following line, which deduces
   -- ```
-  -- HasColimit Discrete.functor (fun s => Pi.eval I s ⋙ G s) ⋙
+  -- HasColimit Discrete.functor (fun s ↦ Pi.eval I s ⋙ G s) ⋙
   --    (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim
   -- ```
   -- from the fact that finite limits commute with filtered colimits and from the fact that

@@ -137,7 +137,7 @@ def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
 
-instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
+instance canLift : CanLift (WithBot α) α (↑) fun r ↦ r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 
 instance instTop [Top α] : Top (WithBot α) where
@@ -337,7 +337,7 @@ theorem monotone_iff {f : WithBot α → β} :
   ⟨fun h ↦ ⟨h.comp WithBot.coe_mono, fun _ ↦ h bot_le⟩, fun h ↦
     WithBot.forall.2
       ⟨WithBot.forall.2 ⟨fun _ => le_rfl, fun x _ => h.2 x⟩, fun _ =>
-        WithBot.forall.2 ⟨fun h => (not_coe_le_bot _ h).elim,
+        WithBot.forall.2 ⟨fun h ↦ (not_coe_le_bot _ h).elim,
           fun _ hle => h.1 (coe_le_coe.1 hle)⟩⟩⟩
 
 @[simp]
@@ -347,11 +347,11 @@ theorem monotone_map_iff {f : α → β} : Monotone (WithBot.map f) ↔ Monotone
 alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 
 theorem strictMono_iff {f : WithBot α → β} :
-    StrictMono f ↔ StrictMono (fun a => f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
-  ⟨fun h => ⟨h.comp WithBot.coe_strictMono, fun _ => h (bot_lt_coe _)⟩, fun h =>
+    StrictMono f ↔ StrictMono (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
+  ⟨fun h ↦ ⟨h.comp WithBot.coe_strictMono, fun _ => h (bot_lt_coe _)⟩, fun h =>
     WithBot.forall.2
       ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun _ =>
-        WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
+        WithBot.forall.2 ⟨fun h ↦ (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 
 theorem strictAnti_iff {f : WithBot α → β} :
     StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
@@ -449,7 +449,7 @@ instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (Wit
   | none, _ => isTrue fun _ h => Option.noConfusion h
   | Option.some x, Option.some y =>
       if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
-  | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
+  | Option.some x, none => isFalse fun h ↦ by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
 
 instance decidableLT [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithBot α) (· < ·)
   | none, Option.some x => isTrue <| by exists x, rfl; rintro _ ⟨⟩
@@ -521,7 +521,7 @@ theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α]
 instance noTopOrder [LE α] [NoTopOrder α] [Nonempty α] : NoTopOrder (WithBot α) :=
   ⟨by
     apply recBotCoe
-    · exact ‹Nonempty α›.elim fun a => ⟨a, not_coe_le_bot a⟩
+    · exact ‹Nonempty α›.elim fun a ↦ ⟨a, not_coe_le_bot a⟩
 
     · intro a
       obtain ⟨b, h⟩ := exists_not_le a
@@ -532,7 +532,7 @@ instance noMaxOrder [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot 
   ⟨by
     apply WithBot.recBotCoe
     · apply ‹Nonempty α›.elim
-      exact fun a => ⟨a, WithBot.bot_lt_coe a⟩
+      exact fun a ↦ ⟨a, WithBot.bot_lt_coe a⟩
 
     · intro a
       obtain ⟨b, ha⟩ := exists_gt a
@@ -719,7 +719,7 @@ def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
   rfl
 
-instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
+instance canLift : CanLift (WithTop α) α (↑) fun r ↦ r ≠ ⊤ where
   prf x h := ⟨x.untop h, coe_untop _ _⟩
 
 instance instBot [Bot α] : Bot (WithTop α) where
@@ -1080,7 +1080,7 @@ theorem coe_mono : Monotone (fun a : α => (a : WithTop α)) := fun _ _ => coe_l
 
 theorem monotone_iff {f : WithTop α → β} :
     Monotone f ↔ Monotone (fun (a : α) => f a) ∧ ∀ x : α, f x ≤ f ⊤ :=
-  ⟨fun h => ⟨h.comp WithTop.coe_mono, fun _ => h le_top⟩, fun h =>
+  ⟨fun h ↦ ⟨h.comp WithTop.coe_mono, fun _ => h le_top⟩, fun h =>
     WithTop.forall.2
       ⟨WithTop.forall.2 ⟨fun _ => le_rfl, fun _ h => (not_top_le_coe _ h).elim⟩, fun x =>
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_le_coe.1 hle)⟩⟩⟩
@@ -1093,7 +1093,7 @@ alias ⟨_, _root_.Monotone.withTop_map⟩ := monotone_map_iff
 
 theorem strictMono_iff {f : WithTop α → β} :
     StrictMono f ↔ StrictMono (fun (a : α) => f a) ∧ ∀ x : α, f x < f ⊤ :=
-  ⟨fun h => ⟨h.comp WithTop.coe_strictMono, fun _ => h (coe_lt_top _)⟩, fun h =>
+  ⟨fun h ↦ ⟨h.comp WithTop.coe_strictMono, fun _ => h (coe_lt_top _)⟩, fun h =>
     WithTop.forall.2
       ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h => (not_top_lt h).elim⟩, fun x =>
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩

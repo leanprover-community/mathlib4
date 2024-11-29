@@ -12,12 +12,12 @@ import Mathlib.Analysis.Normed.Group.NullSubmodule
 
 We consider an inner product space `E` over `𝕜`, which is either `ℝ` or `ℂ`. We define
 `toDualMap`, a conjugate-linear isometric embedding of `E` into its dual, which maps an element
-`x` of the space to `fun y => ⟪x, y⟫`.
+`x` of the space to `fun y ↦ ⟪x, y⟫`.
 
 Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toDual`, a
 conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
 surjectivity of `toDualMap`.  This is the Fréchet-Riesz representation theorem: every element of
-the dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
+the dual of a Hilbert space `E` has the form `fun u ↦ ⟪x, u⟫` for some `x : E`.
 
 For a bounded sesquilinear form `B : E →L⋆[𝕜] E →L[𝕜] 𝕜`,
 we define a map `InnerProductSpace.continuousLinearMapOfBilin B : E →L[𝕜] E`,
@@ -56,7 +56,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 local postfix:90 "†" => starRingEnd _
 
 /-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
-the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
+the map `fun y ↦ ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
 into `Dual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
@@ -111,7 +111,7 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
 
 theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
-  refine ext_inner_left_basis b fun i => ?_
+  refine ext_inner_left_basis b fun i ↦ ?_
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
@@ -120,7 +120,7 @@ variable (𝕜) (E)
 variable [CompleteSpace E]
 
 /-- Fréchet-Riesz representation: any `ℓ` in the dual of a Hilbert space `E` is of the form
-`fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
+`fun u ↦ ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
 def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)

@@ -275,12 +275,12 @@ variable (C : Type*) [Category C] {ι : Type*} [Preadditive C] [HasBinaryBiprodu
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
-  (ComplexShape.up ℤ).quotient_isLocalization (fun n => ⟨n - 1, by simp⟩) C
+  (ComplexShape.up ℤ).quotient_isLocalization (fun n ↦ ⟨n - 1, by simp⟩) C
 
 variable [CategoryWithHomology C]
 
 instance : (ComplexShape.up ℤ).QFactorsThroughHomotopy C :=
-  (ComplexShape.up ℤ).QFactorsThroughHomotopy_of_exists_prev (fun n => ⟨n - 1, by simp⟩) C
+  (ComplexShape.up ℤ).QFactorsThroughHomotopy_of_exists_prev (fun n ↦ ⟨n - 1, by simp⟩) C
 
 /-- When we define the derived category as `HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)`,
 i.e. as the localization of cochain complexes with respect to quasi-isomorphisms, this

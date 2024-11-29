@@ -66,7 +66,7 @@ theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → 
 theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b := by
   obtain ⟨n, rfl⟩ := h.exists_succ_iterate
-  exact Iterate.rec (fun b => p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
+  exact Iterate.rec (fun b ↦ p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
 
 lemma le_total_of_codirected {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
   obtain ⟨n, rfl⟩ := h₁.exists_succ_iterate
@@ -175,7 +175,7 @@ theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b =
   (le_total a b).imp exists_succ_iterate_of_le exists_succ_iterate_of_le
 
 theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a b : α) : p a ↔ p b :=
-  (le_total a b).elim (Succ.rec_iff hsucc) fun h => (Succ.rec_iff hsucc h).symm
+  (le_total a b).elim (Succ.rec_iff hsucc) fun h ↦ (Succ.rec_iff hsucc h).symm
 
 end SuccOrder
 
@@ -191,7 +191,7 @@ theorem exists_pred_iterate_or : (∃ n, pred^[n] b = a) ∨ ∃ n, pred^[n] a =
   (le_total a b).imp exists_pred_iterate_of_le exists_pred_iterate_of_le
 
 theorem Pred.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) (a b : α) : p a ↔ p b :=
-  (le_total a b).elim (Pred.rec_iff hsucc) fun h => (Pred.rec_iff hsucc h).symm
+  (le_total a b).elim (Pred.rec_iff hsucc) fun h ↦ (Pred.rec_iff hsucc h).symm
 
 end PredOrder
 
@@ -247,7 +247,7 @@ variable [PartialOrder α]
 instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT α]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
-    refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
+    refine WellFounded.fix (C := fun b ↦ a ≤ b → ∃ n, Nat.iterate pred n b = a)
       h.wf ?_ b
     intros b ih hab
     replace hab := eq_or_lt_of_le hab

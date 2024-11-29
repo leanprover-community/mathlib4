@@ -89,7 +89,7 @@ theorem exists_maximal_of_nonempty_chains_bounded [Nonempty α]
   exists_maximal_of_chains_bounded
     (fun c hc =>
       (eq_empty_or_nonempty c).elim
-        (fun h => ⟨Classical.arbitrary α, fun x hx => (h ▸ hx : x ∈ (∅ : Set α)).elim⟩) (h c hc))
+        (fun h ↦ ⟨Classical.arbitrary α, fun x hx => (h ▸ hx : x ∈ (∅ : Set α)).elim⟩) (h c hc))
     trans
 
 section Preorder
@@ -111,7 +111,7 @@ theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃
         ih (Subtype.val '' c) (fun _ ⟨⟨_, hx⟩, _, h⟩ => h ▸ hx)
           (by
             rintro _ ⟨p, hpc, rfl⟩ _ ⟨q, hqc, rfl⟩ hpq
-            exact hc hpc hqc fun t => hpq (Subtype.ext_iff.1 t))
+            exact hc hpc hqc fun t ↦ hpq (Subtype.ext_iff.1 t))
       ⟨⟨ub, hubs⟩, fun ⟨_, _⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
   ⟨m, hms, fun z hzs hmz => @h ⟨z, hzs⟩ hmz⟩
 
@@ -126,7 +126,7 @@ theorem zorn_le_nonempty₀ (s : Set α)
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hxm, hms, fun z hzs hmz => @hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
-    · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩
+    · exact ⟨x, ⟨hxs, le_rfl⟩, fun z ↦ False.elim⟩
     · rcases ih c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
       exact ⟨z, ⟨hzs, (hcs hy).2.trans <| hz _ hy⟩, hz⟩
 

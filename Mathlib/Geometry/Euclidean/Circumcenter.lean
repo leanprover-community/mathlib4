@@ -204,7 +204,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       let ι2 := { x // x ≠ i }
       classical
       have hc : Fintype.card ι2 = m + 1 := by
-        rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
+        rw [Fintype.card_of_subtype (Finset.univ.filter fun x ↦ x ≠ i)]
         · rw [Finset.filter_not]
           -- Porting note: removed `simp_rw [eq_comm]` and used `filter_eq'` instead of `filter_eq`
           rw [Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
@@ -340,7 +340,7 @@ theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumrad
 /-- The circumcenter of a 0-simplex equals its unique point. -/
 theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter = s.points i := by
   have h := s.circumcenter_mem_affineSpan
-  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a => by simp only [Fin.eq_zero]⟩
+  have : Unique (Fin 1) := ⟨⟨0, by decide⟩, fun a ↦ by simp only [Fin.eq_zero]⟩
   simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton] at h
   rw [h]
   congr
@@ -431,7 +431,7 @@ spanned by that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
-  change ∃ r : ℝ, ∀ i, (fun x => dist x p = r) (s.points i) at hr
+  change ∃ r : ℝ, ∀ i, (fun x ↦ dist x p = r) (s.points i) at hr
   have hr : ∃ (r : ℝ), ∀ (a : P),
       a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
     cases' hr with r hr
@@ -441,7 +441,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
   cases' hr with r hr
   exact
-    s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i => hr _ (Set.mem_range_self i)
+    s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i ↦ hr _ (Set.mem_range_self i)
 
 /-- If a point has the same distance from all vertices of a simplex,
 the orthogonal projection of that point onto the subspace spanned by
@@ -490,7 +490,7 @@ instance pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithC
 
 /-- `pointIndex` as an embedding. -/
 def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex n :=
-  ⟨fun i => pointIndex i, fun _ _ h => by injection h⟩
+  ⟨fun i ↦ pointIndex i, fun _ _ h => by injection h⟩
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
 theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
@@ -499,7 +499,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   classical
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
-    refine ⟨fun h => ?_, fun _ => mem_univ _⟩
+    refine ⟨fun h ↦ ?_, fun _ => mem_univ _⟩
     cases' x with i
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
@@ -556,7 +556,7 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
       (by simp [pointWeightsWithCircumcenter]) ?_
   intro i hi hn
   cases i
-  · have h : _ ≠ i := fun h => hn (h ▸ rfl)
+  · have h : _ ≠ i := fun h ↦ hn (h ▸ rfl)
     simp [pointWeightsWithCircumcenter, h]
   · rfl
 

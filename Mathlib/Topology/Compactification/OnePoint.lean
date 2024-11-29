@@ -147,7 +147,7 @@ theorem compl_image_coe (s : Set X) : ((↑) '' s : Set (OnePoint X))ᶜ = (↑)
 theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : OnePoint X) = x := by
   induction x using OnePoint.rec <;> simp
 
-instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
+instance canLift : CanLift (OnePoint X) X (↑) fun x ↦ x ≠ ∞ :=
   WithTop.canLift
 
 theorem not_mem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
@@ -314,7 +314,7 @@ instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (�
 instance (priority := 900) nhdsWithin_compl_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
     (x : OnePoint X) : NeBot (𝓝[≠] x) :=
   OnePoint.rec OnePoint.nhdsWithin_compl_infty_neBot
-    (fun y => OnePoint.nhdsWithin_compl_coe_neBot y) x
+    (fun y ↦ OnePoint.nhdsWithin_compl_coe_neBot y) x
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsWithin_compl_infty_eq, nhdsWithin_compl_singleton_sup_pure]
@@ -406,7 +406,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
     C(OnePoint X, Y) ≃ { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } where
   toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
   invFun f :=
-    { toFun := fun x => match x with
+    { toFun := fun x ↦ match x with
         | ∞ => Classical.choose f.2
         | some x => f.1 x
       continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.2 }

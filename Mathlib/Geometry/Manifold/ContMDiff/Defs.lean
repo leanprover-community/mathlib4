@@ -557,29 +557,29 @@ theorem ContMDiffOn.continuousOn (hf : ContMDiffOn I I' n f s) : ContinuousOn f 
   (hf x hx).continuousWithinAt
 
 theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (hf x).continuousAt
+  continuous_iff_continuousAt.2 fun x ↦ (hf x).continuousAt
 
 /-! ### `C^∞` smoothness -/
 
 theorem contMDiffWithinAt_top :
     ContMDiffWithinAt I I' ⊤ f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
   ⟨fun h n => ⟨h.1, contDiffWithinAt_top.1 h.2 n⟩, fun H =>
-    ⟨(H 0).1, contDiffWithinAt_top.2 fun n => (H n).2⟩⟩
+    ⟨(H 0).1, contDiffWithinAt_top.2 fun n ↦ (H n).2⟩⟩
 
 theorem contMDiffAt_top : ContMDiffAt I I' ⊤ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_top
 
 theorem contMDiffOn_top : ContMDiffOn I I' ⊤ f s ↔ ∀ n : ℕ, ContMDiffOn I I' n f s :=
-  ⟨fun h _ => h.of_le le_top, fun h x hx => contMDiffWithinAt_top.2 fun n => h n x hx⟩
+  ⟨fun h _ => h.of_le le_top, fun h x hx => contMDiffWithinAt_top.2 fun n ↦ h n x hx⟩
 
 theorem contMDiff_top : ContMDiff I I' ⊤ f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
-  ⟨fun h _ => h.of_le le_top, fun h x => contMDiffWithinAt_top.2 fun n => h n x⟩
+  ⟨fun h _ => h.of_le le_top, fun h x => contMDiffWithinAt_top.2 fun n ↦ h n x⟩
 
 theorem contMDiffWithinAt_iff_nat :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
-  refine ⟨fun h m hm => h.of_le hm, fun h => ?_⟩
+  refine ⟨fun h m hm => h.of_le hm, fun h ↦ ?_⟩
   cases' n with n
-  · exact contMDiffWithinAt_top.2 fun n => h n le_top
+  · exact contMDiffWithinAt_top.2 fun n ↦ h n le_top
   · exact h n le_rfl
 
 /-! ### Restriction to a smaller set -/
@@ -744,7 +744,7 @@ theorem contMDiffAt_iff_contMDiffOn_nhds
 theorem contMDiffAt_iff_contMDiffAt_nhds
     [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] {n : ℕ} :
     ContMDiffAt I I' n f x ↔ ∀ᶠ x' in 𝓝 x, ContMDiffAt I I' n f x' := by
-  refine ⟨?_, fun h => h.self_of_nhds⟩
+  refine ⟨?_, fun h ↦ h.self_of_nhds⟩
   rw [contMDiffAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
   refine (eventually_mem_nhds_iff.mpr hu).mono fun x' hx' => ?_

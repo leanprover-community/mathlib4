@@ -53,7 +53,7 @@ lemma piecewise_eq_of_not_mem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i 
 
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
     (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
-  funext fun i => if_ctx_congr Iff.rfl (hf i) (hg i)
+  funext fun i ↦ if_ctx_congr Iff.rfl (hf i) (hg i)
 
 @[simp]
 lemma piecewise_insert_of_ne [DecidableEq ι] {i j : ι} [∀ i, Decidable (i ∈ insert j s)]
@@ -106,13 +106,13 @@ lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i
     update (s.piecewise f g) i v = s.piecewise (update f i v) g := by
   rw [update_piecewise]
   refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_noteq ?_ _ _
-  exact fun h => hj (h.symm ▸ hi)
+  exact fun h ↦ hj (h.symm ▸ hi)
 
 lemma update_piecewise_of_not_mem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
   refine s.piecewise_congr (fun j hj => update_noteq ?_ _ _) fun _ _ => rfl
-  exact fun h => hi (h ▸ hj)
+  exact fun h ↦ hi (h ▸ hj)
 
 lemma piecewise_same : s.piecewise f f = f := by
   ext i
@@ -152,10 +152,10 @@ lemma piecewise_le_of_le_of_le (hf : f ≤ h) (hg : g ≤ h) : s.piecewise f g �
   piecewise_cases s f g (· ≤ h x) (hf x) (hg x)
 
 lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise f g := fun x =>
-  piecewise_cases s f g (fun y => h x ≤ y) (hf x) (hg x)
+  piecewise_cases s f g (fun y ↦ h x ≤ y) (hf x) (hg x)
 
 lemma piecewise_le_piecewise' (hf : ∀ x ∈ s, f x ≤ f' x) (hg : ∀ x ∉ s, g x ≤ g' x) :
-    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [hx, *]
+    s.piecewise f g ≤ s.piecewise f' g' := fun x ↦ by by_cases hx : x ∈ s <;> simp [hx, *]
 
 lemma piecewise_le_piecewise (hf : f ≤ f') (hg : g ≤ g') : s.piecewise f g ≤ s.piecewise f' g' :=
   s.piecewise_le_piecewise' (fun x _ => hf x) fun x _ => hg x

@@ -243,8 +243,8 @@ instance oppositeRack : Rack Rᵐᵒᵖ where
     simp only [op_inj, unop_op, op_unop]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
-  left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
-  right_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
+  left_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦ by simp
+  right_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦ by simp
 
 @[simp]
 theorem op_act_op_eq {x y : R} : op x ◃ op y = op (x ◃⁻¹ y) :=
@@ -333,7 +333,7 @@ theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y 
 
 /-- The identity homomorphism -/
 def id (S : Type*) [Shelf S] : S →◃ S where
-  toFun := fun x => x
+  toFun := fun x ↦ x
   map_act' := by simp
 
 instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
@@ -424,7 +424,7 @@ def Dihedral (n : ℕ) :=
 /-- The operation for the dihedral quandle.  It does not need to be an equivalence
 because it is an involution (see `dihedralAct.inv`).
 -/
-def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
+def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b ↦ 2 * a - b
 
 theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
   intro b
@@ -603,16 +603,16 @@ instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
       Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
   one := ⟦unit⟧
   inv a :=
-    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ =>
+    Quotient.liftOn a (fun a ↦ ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
-  one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
-  mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
+  one_mul a := Quotient.inductionOn a fun a ↦ Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
+  mul_one a := Quotient.inductionOn a fun a ↦ Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
 instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
   { inv_mul_cancel := fun a =>
-      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
+      Quotient.inductionOn a fun a ↦ Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
 
 instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
@@ -678,7 +678,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
   left_inv f := by ext; rfl
   right_inv F :=
     MonoidHom.ext fun x =>
-      Quotient.inductionOn x fun x => by
+      Quotient.inductionOn x fun x ↦ by
         induction x with
         | unit => exact F.map_one.symm
         | incl => rfl

@@ -260,7 +260,7 @@ def IsometryEquiv.pi [Fintype ι]
   map_app' x := by
     simp only [pi_apply, LinearEquiv.piCongrRight, LinearEquiv.toFun_eq_coe,
       IsometryEquiv.coe_toLinearEquiv, IsometryEquiv.map_app]
-  toLinearEquiv := LinearEquiv.piCongrRight fun i => (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
+  toLinearEquiv := LinearEquiv.piCongrRight fun i ↦ (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
 
 /-- `LinearMap.single` as an isometry. -/
 @[simps!]
@@ -296,7 +296,7 @@ theorem Isometry.proj_comp_single_of_ne [Fintype ι] [DecidableEq ι]
 theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticMap R (Mᵢ i) P}
     {Q' : ∀ i, QuadraticMap R (Nᵢ i) P} (e : ∀ i, (Q i).Equivalent (Q' i)) :
     (pi Q).Equivalent (pi Q') :=
-  ⟨IsometryEquiv.pi fun i => Classical.choice (e i)⟩
+  ⟨IsometryEquiv.pi fun i ↦ Classical.choice (e i)⟩
 
 /-- If a family is anisotropic then its components must be. The converse is not true. -/
 theorem anisotropic_of_pi [Fintype ι]
@@ -334,7 +334,7 @@ theorem posDef_pi_iff {P} [Fintype ι] [OrderedAddCommMonoid P] [Module R P]
     intro i
     exact ⟨hle i, anisotropic_of_pi ha i⟩
   · intro h
-    refine ⟨fun i => (h i).1, fun x hx => funext fun i => (h i).2 _ ?_⟩
+    refine ⟨fun i ↦ (h i).1, fun x hx => funext fun i ↦ (h i).2 _ ?_⟩
     rw [pi_apply, Finset.sum_eq_zero_iff_of_nonneg fun j _ => ?_] at hx
     · exact hx _ (Finset.mem_univ _)
     exact (h j).1 _

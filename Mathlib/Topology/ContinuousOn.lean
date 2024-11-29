@@ -38,7 +38,7 @@ variable [TopologicalSpace α]
 -/
 
 @[simp]
-theorem nhds_bind_nhdsWithin {a : α} {s : Set α} : ((𝓝 a).bind fun x => 𝓝[s] x) = 𝓝[s] a :=
+theorem nhds_bind_nhdsWithin {a : α} {s : Set α} : ((𝓝 a).bind fun x ↦ 𝓝[s] x) = 𝓝[s] a :=
   bind_inf_principal.trans <| congr_arg₂ _ nhds_bind_nhds rfl
 
 @[simp]
@@ -61,7 +61,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 @[simp]
 theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
-  refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 
@@ -81,11 +81,11 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
   rw [nhdsWithin, principal_univ, inf_top_eq]
 
 theorem nhdsWithin_hasBasis {p : β → Prop} {s : β → Set α} {a : α} (h : (𝓝 a).HasBasis p s)
-    (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
+    (t : Set α) : (𝓝[t] a).HasBasis p fun i ↦ s i ∩ t :=
   h.inf_principal t
 
 theorem nhdsWithin_basis_open (a : α) (t : Set α) :
-    (𝓝[t] a).HasBasis (fun u => a ∈ u ∧ IsOpen u) fun u => u ∩ t :=
+    (𝓝[t] a).HasBasis (fun u ↦ a ∈ u ∧ IsOpen u) fun u ↦ u ∩ t :=
   nhdsWithin_hasBasis (nhds_basis_opens a) t
 
 theorem mem_nhdsWithin {t : Set α} {a : α} {s : Set α} :
@@ -305,21 +305,21 @@ section Pi
 variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
 
 theorem nhdsWithin_pi_eq' {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
-    𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_ : i ∈ I), 𝓟 (s i)) := by
+    𝓝[pi I s] x = ⨅ i, comap (fun x ↦ x i) (𝓝 (x i) ⊓ ⨅ (_ : i ∈ I), 𝓟 (s i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
     iInf_principal_finite hI, ← iInf_inf_eq]
 
 theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
     𝓝[pi I s] x =
-      (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
-        ⨅ (i) (_ : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
+      (⨅ i ∈ I, comap (fun x ↦ x i) (𝓝[s i] x i)) ⊓
+        ⨅ (i) (_ : i ∉ I), comap (fun x ↦ x i) (𝓝 (x i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
     comap_principal, eval]
-  rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
+  rw [iInf_split _ fun i ↦ i ∈ I, inf_right_comm]
   simp only [iInf_inf_eq]
 
 theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
-    𝓝[pi univ s] x = ⨅ i, comap (fun x => x i) (𝓝[s i] x i) := by
+    𝓝[pi univ s] x = ⨅ i, comap (fun x ↦ x i) (𝓝[s i] x i) := by
   simpa [nhdsWithin] using nhdsWithin_pi_eq finite_univ s x
 
 theorem nhdsWithin_pi_eq_bot {I : Set ι} {s : ∀ i, Set (π i)} {x : ∀ i, π i} :
@@ -353,7 +353,7 @@ theorem Filter.Tendsto.piecewise_nhdsWithin {f g : α → β} {t : Set α} [∀ 
 theorem Filter.Tendsto.if_nhdsWithin {f g : α → β} {p : α → Prop} [DecidablePred p] {a : α}
     {s : Set α} {l : Filter β} (h₀ : Tendsto f (𝓝[s ∩ { x | p x }] a) l)
     (h₁ : Tendsto g (𝓝[s ∩ { x | ¬p x }] a) l) :
-    Tendsto (fun x => if p x then f x else g x) (𝓝[s] a) l :=
+    Tendsto (fun x ↦ if p x then f x else g x) (𝓝[s] a) l :=
   h₀.piecewise_nhdsWithin h₁
 
 theorem map_nhdsWithin (f : α → β) (a : α) (s : Set α) :
@@ -398,7 +398,7 @@ theorem mem_closure_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace
   simp only [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_pi_neBot]
 
 theorem closure_pi_set {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] (I : Set ι)
-    (s : ∀ i, Set (α i)) : closure (pi I s) = pi I fun i => closure (s i) :=
+    (s : ∀ i, Set (α i)) : closure (pi I s) = pi I fun i ↦ closure (s i) :=
   Set.ext fun _ => mem_closure_pi
 
 theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {s : ∀ i, Set (α i)}
@@ -432,13 +432,13 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within {a : α} {l : Fi
 
 theorem tendsto_nhdsWithin_iff {a : α} {l : Filter β} {s : Set α} {f : β → α} :
     Tendsto f l (𝓝[s] a) ↔ Tendsto f l (𝓝 a) ∧ ∀ᶠ n in l, f n ∈ s :=
-  ⟨fun h => ⟨tendsto_nhds_of_tendsto_nhdsWithin h, eventually_mem_of_tendsto_nhdsWithin h⟩, fun h =>
+  ⟨fun h ↦ ⟨tendsto_nhds_of_tendsto_nhdsWithin h, eventually_mem_of_tendsto_nhdsWithin h⟩, fun h =>
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.1 h.2⟩
 
 @[simp]
 theorem tendsto_nhdsWithin_range {a : α} {l : Filter β} {f : β → α} :
     Tendsto f l (𝓝[range f] a) ↔ Tendsto f l (𝓝 a) :=
-  ⟨fun h => h.mono_right inf_le_left, fun h =>
+  ⟨fun h ↦ h.mono_right inf_le_left, fun h =>
     tendsto_inf.2 ⟨h, tendsto_principal.2 <| Eventually.of_forall mem_range_self⟩⟩
 
 theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a : α} (h : f =ᶠ[𝓝[s] a] g)
@@ -679,7 +679,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
-    exact forall_congr' fun t => forall_swap
+    exact forall_congr' fun t ↦ forall_swap
 
 -- Porting note: dropped an unneeded assumption
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
@@ -756,7 +756,7 @@ this is found in another file although it is part of the basic API for `continuo
 
 theorem ContinuousWithinAt.diff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
-  ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
+  ⟨fun h ↦ (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
     h.mono diff_subset⟩
 
 /-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
@@ -836,7 +836,7 @@ theorem ContinuousOn.congr (h : ContinuousOn f s) (h' : EqOn g f s) :
 
 theorem continuousOn_congr (h' : EqOn g f s) :
     ContinuousOn g s ↔ ContinuousOn f s :=
-  ⟨fun h => ContinuousOn.congr h h'.symm, fun h => h.congr h'⟩
+  ⟨fun h ↦ ContinuousOn.congr h h'.symm, fun h ↦ h.congr h'⟩
 
 theorem Filter.EventuallyEq.congr_continuousWithinAt (h : f =ᶠ[𝓝[s] x] g) (hx : f x = g x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt g s x := by
@@ -968,7 +968,7 @@ theorem ContinuousOn.comp {g : β → γ} {t : Set β} (hg : ContinuousOn g t)
 /-- Variant of `ContinuousOn.comp` using the form `fun y ↦ g (f y)` instead of `g ∘ f`. -/
 @[fun_prop]
 theorem ContinuousOn.comp' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
-    (hf : ContinuousOn f s) (h : Set.MapsTo f s t) : ContinuousOn (fun x => g (f x)) s :=
+    (hf : ContinuousOn f s) (h : Set.MapsTo f s t) : ContinuousOn (fun x ↦ g (f x)) s :=
   ContinuousOn.comp hg hf h
 
 @[fun_prop]
@@ -1108,12 +1108,12 @@ theorem ContinuousOn.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : 
 
 theorem ContinuousWithinAt.prod {f : α → β} {g : α → γ} {s : Set α} {x : α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => (f x, g x)) s x :=
+    ContinuousWithinAt (fun x ↦ (f x, g x)) s x :=
   hf.prod_mk_nhds hg
 
 @[fun_prop]
 theorem ContinuousOn.prod {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
-    (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
+    (hg : ContinuousOn g s) : ContinuousOn (fun x ↦ (f x, g x)) s := fun x hx =>
   ContinuousWithinAt.prod (hf x hx) (hg x hx)
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
@@ -1124,11 +1124,11 @@ theorem continuousWithinAt_fst {s : Set (α × β)} {p : α × β} : ContinuousW
 
 @[fun_prop]
 theorem ContinuousOn.fst {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).1) s :=
+    ContinuousOn (fun x ↦ (f x).1) s :=
   continuous_fst.comp_continuousOn hf
 
 theorem ContinuousWithinAt.fst {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => (f x).fst) s a :=
+    ContinuousWithinAt (fun x ↦ (f x).fst) s a :=
   continuousAt_fst.comp_continuousWithinAt h
 
 theorem continuousOn_snd {s : Set (α × β)} : ContinuousOn Prod.snd s :=
@@ -1139,17 +1139,17 @@ theorem continuousWithinAt_snd {s : Set (α × β)} {p : α × β} : ContinuousW
 
 @[fun_prop]
 theorem ContinuousOn.snd {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).2) s :=
+    ContinuousOn (fun x ↦ (f x).2) s :=
   continuous_snd.comp_continuousOn hf
 
 theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => (f x).snd) s a :=
+    ContinuousWithinAt (fun x ↦ (f x).snd) s a :=
   continuousAt_snd.comp_continuousWithinAt h
 
 theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
     ContinuousWithinAt f s x ↔
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 
 /-!
 ### Pi
@@ -1157,16 +1157,16 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
 
 theorem continuousWithinAt_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     {f : α → ∀ i, π i} {s : Set α} {x : α} :
-    ContinuousWithinAt f s x ↔ ∀ i, ContinuousWithinAt (fun y => f y i) s x :=
+    ContinuousWithinAt f s x ↔ ∀ i, ContinuousWithinAt (fun y ↦ f y i) s x :=
   tendsto_pi_nhds
 
 theorem continuousOn_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y => f y i) s :=
-  ⟨fun h i x hx => tendsto_pi_nhds.1 (h x hx) i, fun h x hx => tendsto_pi_nhds.2 fun i => h i x hx⟩
+    {f : α → ∀ i, π i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y ↦ f y i) s :=
+  ⟨fun h i x hx => tendsto_pi_nhds.1 (h x hx) i, fun h x hx => tendsto_pi_nhds.2 fun i ↦ h i x hx⟩
 
 @[fun_prop]
 theorem continuousOn_pi' {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} (hf : ∀ i, ContinuousOn (fun y => f y i) s) :
+    {f : α → ∀ i, π i} {s : Set α} (hf : ∀ i, ContinuousOn (fun y ↦ f y i) s) :
     ContinuousOn f s :=
   continuousOn_pi.2 hf
 
@@ -1205,13 +1205,13 @@ protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : Con
 theorem ContinuousWithinAt.fin_insertNth {n} {π : Fin (n + 1) → Type*}
     [∀ i, TopologicalSpace (π i)] (i : Fin (n + 1)) {f : α → π i} {a : α} {s : Set α}
     (hf : ContinuousWithinAt f s a) {g : α → ∀ j : Fin n, π (i.succAbove j)}
-    (hg : ContinuousWithinAt g s a) : ContinuousWithinAt (fun a => i.insertNth (f a) (g a)) s a :=
+    (hg : ContinuousWithinAt g s a) : ContinuousWithinAt (fun a ↦ i.insertNth (f a) (g a)) s a :=
   hf.tendsto.fin_insertNth i hg
 
 nonrec theorem ContinuousOn.fin_insertNth {n} {π : Fin (n + 1) → Type*}
     [∀ i, TopologicalSpace (π i)] (i : Fin (n + 1)) {f : α → π i} {s : Set α}
     (hf : ContinuousOn f s) {g : α → ∀ j : Fin n, π (i.succAbove j)} (hg : ContinuousOn g s) :
-    ContinuousOn (fun a => i.insertNth (f a) (g a)) s := fun a ha =>
+    ContinuousOn (fun a ↦ i.insertNth (f a) (g a)) s := fun a ha =>
   (hf a ha).fin_insertNth i (hg a ha)
 
 theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β} {s : Set β}
@@ -1314,7 +1314,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
       ∀ a ∈ s ∩ frontier { a | p a },
         Tendsto g (𝓝[s ∩ { a | ¬p a }] a) (𝓝 <| if p a then f a else g a))
     (hf : ContinuousOn f <| s ∩ { a | p a }) (hg : ContinuousOn g <| s ∩ { a | ¬p a }) :
-    ContinuousOn (fun a => if p a then f a else g a) s := by
+    ContinuousOn (fun a ↦ if p a then f a else g a) s := by
   intro x hx
   by_cases hx' : x ∈ frontier { a | p a }
   · exact (hpf x ⟨hx, hx'⟩).piecewise_nhdsWithin (hpg x ⟨hx, hx'⟩)
@@ -1322,7 +1322,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
     cases' hx with hx hx
     · apply ContinuousWithinAt.union
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
-      · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
+      · have : x ∉ closure { a | p a }ᶜ := fun h ↦ hx' ⟨subset_closure hx.2, by
           rwa [closure_compl] at h⟩
         exact continuousWithinAt_of_not_mem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
@@ -1344,7 +1344,7 @@ theorem ContinuousOn.if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ s ∩ frontier { a | p a }, f a = g a)
     (hf : ContinuousOn f <| s ∩ closure { a | p a })
     (hg : ContinuousOn g <| s ∩ closure { a | ¬p a }) :
-    ContinuousOn (fun a => if p a then f a else g a) s := by
+    ContinuousOn (fun a ↦ if p a then f a else g a) s := by
   apply ContinuousOn.if'
   · rintro a ha
     simp only [← hp a ha, ite_self]
@@ -1368,29 +1368,29 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ frontier { x | p x }, Tendsto f (𝓝[{ x | p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
-    Continuous fun a => ite (p a) (f a) (g a) := by
+    Continuous fun a ↦ ite (p a) (f a) (g a) := by
   rw [continuous_iff_continuousOn_univ]
   apply ContinuousOn.if' <;> simp [*] <;> assumption
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
     (hg : ContinuousOn g (closure { x | ¬p x })) :
-    Continuous fun a => if p a then f a else g a := by
+    Continuous fun a ↦ if p a then f a else g a := by
   rw [continuous_iff_continuousOn_univ]
   apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun a => if p a then f a else g a :=
+    Continuous fun a ↦ if p a then f a else g a :=
   continuous_if hp hf.continuousOn hg.continuousOn
 
 theorem continuous_if_const (p : Prop) [Decidable p] (hf : p → Continuous f)
-    (hg : ¬p → Continuous g) : Continuous fun a => if p then f a else g a := by
+    (hg : ¬p → Continuous g) : Continuous fun a ↦ if p then f a else g a := by
   split_ifs with h
   exacts [hf h, hg h]
 
 theorem Continuous.if_const (p : Prop) [Decidable p] (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun a => if p then f a else g a :=
+    (hg : Continuous g) : Continuous fun a ↦ if p then f a else g a :=
   continuous_if_const p (fun _ => hf) fun _ => hg
 
 theorem continuous_piecewise [∀ a, Decidable (a ∈ s)]
@@ -1464,5 +1464,5 @@ lemma ContinuousOn.union_continuousAt
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
-  (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
+  (fun h ↦ ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)

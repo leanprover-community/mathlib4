@@ -52,7 +52,7 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
     | throwError "failed to build liftFromEq equality proof expected: {H}"
   -- `motive : (x : _) → a = x → Prop := fun x h => R a x`
   let motive ←
-    withLocalDeclD `x A fun x => do
+    withLocalDeclD `x A fun x ↦ do
       let hType ← mkEq a x
       withLocalDeclD `h hType fun h =>
         mkRel R a x >>= mkLambdaFVars #[x, h]
@@ -626,7 +626,7 @@ def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
   match ccs.parents.find? e with
   | some poccs =>
     let r := ofExpr e ++ ofFormat (.line ++ ":=" ++ .line)
-    let ps := poccs.toList.map fun o => ofExpr o.expr
+    let ps := poccs.toList.map fun o ↦ ofExpr o.expr
     group (r ++ bracket "{" (group <| joinSep ps (ofFormat ("," ++ .line))) "}")
   | none => ofFormat .nil
 

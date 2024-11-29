@@ -193,10 +193,10 @@ lemma Y_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P y * Q z ^ 3 = Q y * P 
   ring1
 
 lemma not_equiv_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
-  fun h => hQz <| (Z_eq_zero_of_equiv h).mp hPz
+  fun h ↦ hQz <| (Z_eq_zero_of_equiv h).mp hPz
 
 lemma not_equiv_of_Z_eq_zero_right {P Q : Fin 3 → R} (hPz : P z ≠ 0) (hQz : Q z = 0) : ¬P ≈ Q :=
-  fun h => hPz <| (Z_eq_zero_of_equiv h).mpr hQz
+  fun h ↦ hPz <| (Z_eq_zero_of_equiv h).mpr hQz
 
 lemma not_equiv_of_X_ne {P Q : Fin 3 → R} (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : ¬P ≈ Q :=
   hx.comp X_eq_of_equiv
@@ -269,7 +269,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
-  ⟨fun h => by convert this hu.unit.inv h; erw [smul_smul, hu.val_inv_mul, one_smul], this u⟩
+  ⟨fun h ↦ by convert this hu.unit.inv h; erw [smul_smul, hu.val_inv_mul, one_smul], this u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -384,7 +384,7 @@ lemma nonsingular_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) :
     exact ⟨by linear_combination (norm := ring1) u ^ 4 * hP'.left,
       by linear_combination (norm := ring1) u ^ 3 * hP'.right.left,
       by linear_combination (norm := ring1) u ^ 5 * hP'.right.right⟩
-  ⟨this hu, fun h => this hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
+  ⟨this hu, fun h ↦ this hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
 
 lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
   rcases h with ⟨u, rfl⟩
@@ -397,7 +397,7 @@ lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![1, 1, 0] := by
   simp only [nonsingular_of_Z_eq_zero, equation_zero, true_and, fin3_def_ext, ← not_and_or]
-  exact fun h => one_ne_zero <| by linear_combination (norm := ring1) h.1 - h.2.1
+  exact fun h ↦ one_ne_zero <| by linear_combination (norm := ring1) h.1 - h.2.1
 
 lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Nonsingular X Y := by
   simp_rw [nonsingular_iff, equation_some, fin3_def_ext, Affine.nonsingular_iff',

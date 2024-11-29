@@ -77,7 +77,7 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
     · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact fun h ↦ hr.not_le (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -114,7 +114,7 @@ noncomputable def latticeBasis [NumberField K] :
     let B := Pi.basisFun ℂ (K →+* ℂ)
     let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
       equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
-    let M := B.toMatrix (fun i => canonicalEmbedding K (integralBasis K (e i)))
+    let M := B.toMatrix (fun i ↦ canonicalEmbedding K (integralBasis K (e i)))
     suffices M.det ≠ 0 by
       rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← is_basis_iff_det] at this
       refine basisOfLinearIndependentOfCardEqFinrank
@@ -123,7 +123,7 @@ noncomputable def latticeBasis [NumberField K] :
         Embeddings.card]
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
-    let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
+    let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i ↦ integralBasis K (e i))
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
@@ -131,7 +131,7 @@ noncomputable def latticeBasis [NumberField K] :
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+      (fun i ↦ integralBasis K (e i)) RingHom.equivRatAlgHom).symm
 
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
@@ -144,7 +144,7 @@ theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i ↦ latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
@@ -186,8 +186,8 @@ abbrev mixedSpace :=
 
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
-  RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
-    (Pi.ringHom fun w => w.val.embedding)
+  RingHom.prod (Pi.ringHom fun w ↦ embedding_of_isReal w.prop)
+    (Pi.ringHom fun w ↦ w.val.embedding)
 
 @[simp]
 theorem mixedEmbedding_apply_ofIsReal (x : K) (w : {w // IsReal w}) :
@@ -256,7 +256,7 @@ section commMap
 /-- The linear map that makes `canonicalEmbedding` and `mixedEmbedding` commute, see
 `commMap_canonical_eq_mixed`. -/
 noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (mixedSpace K) where
-  toFun := fun x => ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
+  toFun := fun x ↦ ⟨fun w ↦ (x w.val.embedding).re, fun w ↦ x w.val.embedding⟩
   map_add' := by
     simp only [Pi.add_apply, Complex.add_re, Prod.mk_add_mk, Prod.mk.injEq]
     exact fun _ _ => ⟨rfl, rfl⟩
@@ -294,10 +294,10 @@ theorem disjoint_span_commMap_ker [NumberField K] :
   by_cases hφ : ComplexEmbedding.IsReal φ
   · apply Complex.ext
     · rw [← embedding_mk_eq_of_isReal hφ, ← commMap_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
-      exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
+      exact congrFun (congrArg (fun x ↦ x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
     · rw [Complex.zero_im, ← Complex.conj_eq_iff_im, canonicalEmbedding.conj_apply _ h_mem,
         ComplexEmbedding.isReal_iff.mp hφ]
-  · have := congrFun (congrArg (fun x => x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
+  · have := congrFun (congrArg (fun x ↦ x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
     cases embedding_mk_eq φ with
     | inl h => rwa [← h, ← commMap_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
     | inr h =>
@@ -512,7 +512,7 @@ theorem volume_fundamentalDomain_stdBasis :
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
-  refine Equiv.ofBijective (fun c => ?_)
+  refine Equiv.ofBijective (fun c ↦ ?_)
     ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
   · cases c with
     | inl w => exact w.val.embedding
@@ -641,7 +641,7 @@ theorem mem_span_latticeBasis {x : (mixedSpace K)} :
       x ∈ mixedEmbedding.integerLattice K := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i ↦ latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]

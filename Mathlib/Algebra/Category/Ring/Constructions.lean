@@ -64,11 +64,11 @@ theorem pushoutCocone_pt :
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
-  Limits.PushoutCocone.isColimitAux' _ fun s => by
+  Limits.PushoutCocone.isColimitAux' _ fun s ↦ by
     letI := RingHom.toAlgebra (s.inl.comp (algebraMap R A))
     let f' : A →ₐ[R] s.pt :=
       { s.inl with
-        commutes' := fun r => rfl }
+        commutes' := fun r ↦ rfl }
     let g' : B →ₐ[R] s.pt :=
       { s.inr with
         commutes' := DFunLike.congr_fun ((s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
@@ -86,7 +86,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     intro h eq1 eq2
     let h' : A ⊗[R] B →ₐ[R] s.pt :=
       { h with
-        commutes' := fun r => by
+        commutes' := fun r ↦ by
           change h (algebraMap R A r ⊗ₜ[R] 1) = s.inl (algebraMap R A r)
           rw [← eq1]
           simp only [pushoutCocone_pt, coe_of, AlgHom.toRingHom_eq_coe]
@@ -142,7 +142,7 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 
 /-- `ℤ` is the initial object of `CommRingCat`. -/
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
-  IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
+  IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a ↦ a.ext_int _⟩)
 
 /-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
 def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
@@ -235,12 +235,12 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   -- Porting note: Lean can't see through `(parallelPair f g).obj zero`
   haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
     show SubsemiringClass (Subring A) A by infer_instance
-  use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)
+  use s.ι.codRestrict _ fun x ↦ (ConcreteCategory.congr_hom s.condition x : _)
   constructor
   · ext
     rfl
   · intro m hm
-    exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
+    exact RingHom.ext fun x ↦ Subtype.ext <| ConcreteCategory.congr_hom hm x
 
 instance : IsLocalHom (equalizerFork f g).ι := by
   constructor

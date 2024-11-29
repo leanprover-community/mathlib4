@@ -44,7 +44,7 @@ theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   eq_top_of_unit_mem I x y hx hy
 
 theorem eq_top_iff_one : I = ⊤ ↔ (1 : α) ∈ I :=
-  ⟨by rintro rfl; trivial, fun h => eq_top_of_unit_mem _ _ 1 h (by simp)⟩
+  ⟨by rintro rfl; trivial, fun h ↦ eq_top_of_unit_mem _ _ 1 h (by simp)⟩
 
 theorem ne_top_iff_one : I ≠ ⊤ ↔ (1 : α) ∉ I :=
   not_congr I.eq_top_iff_one

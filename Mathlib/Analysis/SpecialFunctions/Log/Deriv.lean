@@ -55,7 +55,7 @@ theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
 
 @[simp]
 theorem differentiableAt_log_iff : DifferentiableAt ℝ log x ↔ x ≠ 0 :=
-  ⟨fun h => continuousAt_log_iff.1 h.continuousAt, differentiableAt_log⟩
+  ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, differentiableAt_log⟩
 
 theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
   if hx : x = 0 then by
@@ -73,7 +73,7 @@ theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   simp [differentiableOn_log, contDiffOn_inv]
 
 theorem contDiffAt_log {n : WithTop ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
-  ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
+  ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx =>
     (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
 
 end Real
@@ -87,28 +87,28 @@ section deriv
 variable {f : ℝ → ℝ} {x f' : ℝ} {s : Set ℝ}
 
 theorem HasDerivWithinAt.log (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) :
-    HasDerivWithinAt (fun y => log (f y)) (f' / f x) s x := by
+    HasDerivWithinAt (fun y ↦ log (f y)) (f' / f x) s x := by
   rw [div_eq_inv_mul]
   exact (hasDerivAt_log hx).comp_hasDerivWithinAt x hf
 
 theorem HasDerivAt.log (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
-    HasDerivAt (fun y => log (f y)) (f' / f x) x := by
+    HasDerivAt (fun y ↦ log (f y)) (f' / f x) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hf.log hx
 
 theorem HasStrictDerivAt.log (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
-    HasStrictDerivAt (fun y => log (f y)) (f' / f x) x := by
+    HasStrictDerivAt (fun y ↦ log (f y)) (f' / f x) x := by
   rw [div_eq_inv_mul]
   exact (hasStrictDerivAt_log hx).comp x hf
 
 theorem derivWithin.log (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)
     (hxs : UniqueDiffWithinAt ℝ s x) :
-    derivWithin (fun x => log (f x)) s x = derivWithin f s x / f x :=
+    derivWithin (fun x ↦ log (f x)) s x = derivWithin f s x / f x :=
   (hf.hasDerivWithinAt.log hx).derivWithin hxs
 
 @[simp]
 theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
-    deriv (fun x => log (f x)) x = deriv f x / f x :=
+    deriv (fun x ↦ log (f x)) x = deriv f x / f x :=
   (hf.hasDerivAt.log hx).deriv
 
 /-- The derivative of `log ∘ f` is the logarithmic derivative provided `f` is differentiable and
@@ -126,57 +126,57 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} 
   {s : Set E}
 
 theorem HasFDerivWithinAt.log (hf : HasFDerivWithinAt f f' s x) (hx : f x ≠ 0) :
-    HasFDerivWithinAt (fun x => log (f x)) ((f x)⁻¹ • f') s x :=
+    HasFDerivWithinAt (fun x ↦ log (f x)) ((f x)⁻¹ • f') s x :=
   (hasDerivAt_log hx).comp_hasFDerivWithinAt x hf
 
 theorem HasFDerivAt.log (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :
-    HasFDerivAt (fun x => log (f x)) ((f x)⁻¹ • f') x :=
+    HasFDerivAt (fun x ↦ log (f x)) ((f x)⁻¹ • f') x :=
   (hasDerivAt_log hx).comp_hasFDerivAt x hf
 
 theorem HasStrictFDerivAt.log (hf : HasStrictFDerivAt f f' x) (hx : f x ≠ 0) :
-    HasStrictFDerivAt (fun x => log (f x)) ((f x)⁻¹ • f') x :=
+    HasStrictFDerivAt (fun x ↦ log (f x)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log hx).comp_hasStrictFDerivAt x hf
 
 theorem DifferentiableWithinAt.log (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0) :
-    DifferentiableWithinAt ℝ (fun x => log (f x)) s x :=
+    DifferentiableWithinAt ℝ (fun x ↦ log (f x)) s x :=
   (hf.hasFDerivWithinAt.log hx).differentiableWithinAt
 
 @[simp, fun_prop]
 theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
-    DifferentiableAt ℝ (fun x => log (f x)) x :=
+    DifferentiableAt ℝ (fun x ↦ log (f x)) x :=
   (hf.hasFDerivAt.log hx).differentiableAt
 
 theorem ContDiffAt.log {n} (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
-    ContDiffAt ℝ n (fun x => log (f x)) x :=
+    ContDiffAt ℝ n (fun x ↦ log (f x)) x :=
   (contDiffAt_log.2 hx).comp x hf
 
 theorem ContDiffWithinAt.log {n} (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
-    ContDiffWithinAt ℝ n (fun x => log (f x)) s x :=
+    ContDiffWithinAt ℝ n (fun x ↦ log (f x)) s x :=
   (contDiffAt_log.2 hx).comp_contDiffWithinAt x hf
 
 theorem ContDiffOn.log {n} (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
-    ContDiffOn ℝ n (fun x => log (f x)) s := fun x hx => (hf x hx).log (hs x hx)
+    ContDiffOn ℝ n (fun x ↦ log (f x)) s := fun x hx => (hf x hx).log (hs x hx)
 
 theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
-    ContDiff ℝ n fun x => log (f x) :=
-  contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
+    ContDiff ℝ n fun x ↦ log (f x) :=
+  contDiff_iff_contDiffAt.2 fun x ↦ hf.contDiffAt.log (h x)
 
 @[fun_prop]
 theorem DifferentiableOn.log (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
-    DifferentiableOn ℝ (fun x => log (f x)) s := fun x h => (hf x h).log (hx x h)
+    DifferentiableOn ℝ (fun x ↦ log (f x)) s := fun x h => (hf x h).log (hx x h)
 
 @[simp, fun_prop]
 theorem Differentiable.log (hf : Differentiable ℝ f) (hx : ∀ x, f x ≠ 0) :
-    Differentiable ℝ fun x => log (f x) := fun x => (hf x).log (hx x)
+    Differentiable ℝ fun x ↦ log (f x) := fun x ↦ (hf x).log (hx x)
 
 theorem fderivWithin.log (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)
     (hxs : UniqueDiffWithinAt ℝ s x) :
-    fderivWithin ℝ (fun x => log (f x)) s x = (f x)⁻¹ • fderivWithin ℝ f s x :=
+    fderivWithin ℝ (fun x ↦ log (f x)) s x = (f x)⁻¹ • fderivWithin ℝ f s x :=
   (hf.hasFDerivWithinAt.log hx).fderivWithin hxs
 
 @[simp]
 theorem fderiv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
-    fderiv ℝ (fun x => log (f x)) x = (f x)⁻¹ • fderiv ℝ f x :=
+    fderiv ℝ (fun x ↦ log (f x)) x = (f x)⁻¹ • fderiv ℝ f x :=
   (hf.hasFDerivAt.log hx).fderiv
 
 end fderiv
@@ -187,8 +187,8 @@ namespace Real
 
 /-- The function `x * log (1 + t / x)` tends to `t` at `+∞`. -/
 theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
-    Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) := by
-  have h₁ : Tendsto (fun h => h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
+    Tendsto (fun x ↦ x * log (1 + t / x)) atTop (𝓝 t) := by
+  have h₁ : Tendsto (fun h ↦ h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
     simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
@@ -206,7 +206,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     |(∑ i ∈ range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by
   /- For the proof, we show that the derivative of the function to be estimated is small,
     and then apply the mean value inequality. -/
-  let F : ℝ → ℝ := fun x => (∑ i ∈ range n, x ^ (i + 1) / (i + 1)) + log (1 - x)
+  let F : ℝ → ℝ := fun x ↦ (∑ i ∈ range n, x ^ (i + 1) / (i + 1)) + log (1 - x)
   let F' : ℝ → ℝ := fun x ↦ -x ^ n / (1 - x)
   -- Porting note: In `mathlib3`, the proof used `deriv`/`DifferentiableAt`. `simp` failed to
   -- compute `deriv`, so I changed the proof to use `HasDerivAt` instead
@@ -249,14 +249,14 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
   · show Tendsto (fun n : ℕ => ∑ i ∈ range n, x ^ (i + 1) / (i + 1)) atTop (𝓝 (-log (1 - x)))
     rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [norm_eq_abs, sub_neg_eq_add]
-    refine squeeze_zero (fun n => abs_nonneg _) (abs_log_sub_add_sum_range_le h) ?_
+    refine squeeze_zero (fun n ↦ abs_nonneg _) (abs_log_sub_add_sum_range_le h) ?_
     suffices Tendsto (fun t : ℕ => |x| ^ (t + 1) / (1 - |x|)) atTop (𝓝 (|x| * 0 / (1 - |x|))) by
       simpa
     simp only [pow_succ']
     refine (tendsto_const_nhds.mul ?_).div_const _
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  refine .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => ?_
+  refine .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i ↦ ?_
   calc
     ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
       have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)

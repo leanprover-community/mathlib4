@@ -204,7 +204,7 @@ theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
-  ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
+  ⟨fun h ↦ by rw [← e.right_inv hy, h], fun h ↦ by rw [← e.left_inv hx, h]⟩
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
@@ -329,7 +329,7 @@ protected theorem symm (h : e.IsImage s t) : e.symm.IsImage t s :=
 
 @[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
   fun _ hx => ⟨e.mapsTo hx.1, (h hx.1).2 hx.2⟩
@@ -435,7 +435,7 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
     e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
-  Set.ext fun x => and_congr_right_iff.2 fun hx =>
+  Set.ext fun x ↦ and_congr_right_iff.2 fun hx =>
     by simp only [mem_preimage, e.left_inv hx]
 
 theorem source_inter_preimage_target_inter (s : Set β) :
@@ -735,7 +735,7 @@ theorem symm_trans_self : e.symm.trans e ≈ ofSet e.target :=
 /-- Two equivalent partial equivs are equal when the source and target are `univ`. -/
 theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' := by
-  refine PartialEquiv.ext (fun x => ?_) (fun x => ?_) h.1
+  refine PartialEquiv.ext (fun x ↦ ?_) (fun x ↦ ?_) h.1
   · apply h.2
     rw [s]
     exact mem_univ _
@@ -768,11 +768,11 @@ theorem prod_target (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
 
 @[simp, mfld_simps]
 theorem prod_coe (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
-    (e.prod e' : α × γ → β × δ) = fun p => (e p.1, e' p.2) :=
+    (e.prod e' : α × γ → β × δ) = fun p ↦ (e p.1, e' p.2) :=
   rfl
 
 theorem prod_coe_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
-    ((e.prod e').symm : β × δ → α × γ) = fun p => (e.symm p.1, e'.symm p.2) :=
+    ((e.prod e').symm : β × δ → α × γ) = fun p ↦ (e.symm p.1, e'.symm p.2) :=
   rfl
 
 @[simp, mfld_simps]
@@ -845,12 +845,12 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun := Pi.map fun i ↦ ei i
   invFun := Pi.map fun i ↦ (ei i).symm
-  source := pi univ fun i => (ei i).source
-  target := pi univ fun i => (ei i).target
+  source := pi univ fun i ↦ (ei i).source
+  target := pi univ fun i ↦ (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)
   map_target' _ hf i hi := (ei i).map_target (hf i hi)
-  left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
-  right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
+  left_inv' _ hf := funext fun i ↦ (ei i).left_inv (hf i trivial)
+  right_inv' _ hf := funext fun i ↦ (ei i).right_inv (hf i trivial)
 
 @[simp, mfld_simps]
 theorem pi_symm (ei : ∀ i, PartialEquiv (αi i) (βi i)) :

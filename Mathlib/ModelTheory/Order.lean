@@ -74,14 +74,14 @@ namespace order
 
 @[simp]
 lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
-    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h => h _, fun h n R =>
+    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h ↦ h _, fun h n R =>
       match n, R with
       | 2, .le => h⟩
 
 instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
-instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
+instance : IsEmpty (Language.order.Relations 0) := ⟨fun x ↦ by cases x⟩
 
 instance : Unique (Σ n, Language.order.Relations n) :=
   ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ =>
@@ -201,7 +201,7 @@ variable (L M)
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
 def orderStructure [LE M] : Language.order.Structure M where
-  RelMap | .le => (fun x => x 0 ≤ x 1)
+  RelMap | .le => (fun x ↦ x 0 ≤ x 1)
 
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is `≤`. -/
 class OrderedStructure [L.IsOrdered] [LE M] [L.Structure M] : Prop where
@@ -232,7 +232,7 @@ instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
 
-instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x => relMap_leSymb (S.subtype ∘ x)⟩
+instance (S : L.Substructure M) : L.OrderedStructure S := ⟨fun x ↦ relMap_leSymb (S.subtype ∘ x)⟩
 
 @[simp]
 theorem Term.realize_le {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
@@ -244,7 +244,7 @@ theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := 
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_le a
 
@@ -252,7 +252,7 @@ theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := 
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_ge a
 
@@ -302,7 +302,7 @@ theorem realize_denselyOrdered_iff :
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
     Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
-  refine ⟨fun h => ⟨fun a b ab => h a b ab⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a b ab => h a b ab⟩, ?_⟩
   intro h a b ab
   exact exists_between ab
 

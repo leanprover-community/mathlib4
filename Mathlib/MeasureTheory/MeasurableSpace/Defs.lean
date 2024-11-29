@@ -135,7 +135,7 @@ theorem Set.Finite.measurableSet_sUnion {s : Set (Set α)} (hs : s.Finite)
 @[measurability]
 theorem MeasurableSet.iInter [Countable ι] {f : ι → Set α} (h : ∀ b, MeasurableSet (f b)) :
     MeasurableSet (⋂ b, f b) :=
-  .of_compl <| by rw [compl_iInter]; exact .iUnion fun b => (h b).compl
+  .of_compl <| by rw [compl_iInter]; exact .iUnion fun b ↦ (h b).compl
 
 theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -225,7 +225,7 @@ theorem MeasurableSpace.measurableSet_injective : Injective (@MeasurableSet α)
 @[ext]
 theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
-  measurableSet_injective <| funext fun s => propext (h s)
+  measurableSet_injective <| funext fun s ↦ propext (h s)
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
@@ -258,7 +258,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
     else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
-    fun h => h.insert a⟩
+    fun h ↦ h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
   hs.induction_on .empty .singleton
@@ -343,7 +343,7 @@ theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
 
 theorem generateFrom_le_iff {s : Set (Set α)} (m : MeasurableSpace α) :
     generateFrom s ≤ m ↔ s ⊆ { t | MeasurableSet[m] t } :=
-  Iff.intro (fun h _ hu => h _ <| measurableSet_generateFrom hu) fun h => generateFrom_le h
+  Iff.intro (fun h _ hu => h _ <| measurableSet_generateFrom hu) fun h ↦ generateFrom_le h
 
 @[simp]
 theorem generateFrom_measurableSet [MeasurableSpace α] :
@@ -372,7 +372,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
 
 /-- We get a Galois insertion between `σ`-algebras on `α` and `Set (Set α)` by using `generate_from`
   on one side and the collection of measurable sets on the other side. -/
-def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
+def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m ↦ { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
   le_l_u _ _ := measurableSet_generateFrom
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
@@ -417,13 +417,13 @@ theorem generateFrom_insert_empty (S : Set (Set α)) :
 
 theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ ∨ s = univ :=
   let b : MeasurableSpace α :=
-    { MeasurableSet' := fun s => s = ∅ ∨ s = univ
+    { MeasurableSet' := fun s ↦ s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp +contextual [or_imp]
       measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun _ hs =>
-      hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
+      hs.elim (fun s ↦ s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
         s.symm ▸ @MeasurableSet.univ _ ⊥
   this ▸ Iff.rfl
 
@@ -506,7 +506,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 @[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
-    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+    Measurable (fun x ↦ g (f x)) := Measurable.comp hg hf
 
 @[simp, fun_prop, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :

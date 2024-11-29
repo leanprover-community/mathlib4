@@ -91,7 +91,7 @@ theorem inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : Is
 
 protected theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
     (φ.relabel f).IsQF :=
-  IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
+  IsQF.recOn h isQF_bot (fun h ↦ (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
 
 protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
   IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
@@ -132,7 +132,7 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
 
 theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
-  IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
+  IsPrenex.recOn h (fun h ↦ (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
     fun _ h => by simp [h.ex]
 
 theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
@@ -258,7 +258,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
       · inhabit M
         exact ⟨default, fun _h'' => h⟩
       · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
+        exact ⟨a, fun h ↦ (ha h).elim⟩
   | ex _ ih =>
     intro ψ hψ
     refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
@@ -278,7 +278,7 @@ theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
   | all _ h =>
     intros
     rw [realize_all, toPrenex, realize_all]
-    exact forall_congr' fun a => h
+    exact forall_congr' fun a ↦ h
 
 theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
     (h : IsQF φ) (hf : P (⊥ : L.BoundedFormula α n))
@@ -369,7 +369,7 @@ lemma IsAtomic.realize_comp_of_injective {φ : L.BoundedFormula α n} (hA : φ.I
     imp_self]
   | rel R ts =>
     simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
-    exact HomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
+    exact HomClass.map_rel f R (fun i ↦ Term.realize (Sum.elim v xs) (ts i))
 
 lemma IsAtomic.realize_comp {φ : L.BoundedFormula α n} (hA : φ.IsAtomic)
     [EmbeddingLike F M N] [L.HomClass F M N] (f : F) {v : α → M} {xs : Fin n → M} :
@@ -388,7 +388,7 @@ lemma IsQF.realize_embedding {φ : L.BoundedFormula α n} (hQF : φ.IsQF)
         (EmbeddingLike.injective f).eq_iff]
     | rel R ts =>
       simp only [realize_rel, ← Sum.comp_elim, HomClass.realize_term]
-      exact StrongHomClass.map_rel f R (fun i => Term.realize (Sum.elim v xs) (ts i))
+      exact StrongHomClass.map_rel f R (fun i ↦ Term.realize (Sum.elim v xs) (ts i))
   | imp _ _ ihφ ihψ => simp only [realize_imp, ihφ, ihψ]
 
 lemma IsUniversal.realize_embedding {φ : L.BoundedFormula α n} (hU : φ.IsUniversal)

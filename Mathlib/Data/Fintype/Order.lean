@@ -87,8 +87,8 @@ open scoped Classical
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
   __ := ‹Lattice α›
   __ := ‹BoundedOrder α›
-  sSup := fun s => s.toFinset.sup id
-  sInf := fun s => s.toFinset.inf id
+  sSup := fun s ↦ s.toFinset.sup id
+  sInf := fun s ↦ s.toFinset.inf id
   le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
   sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
   sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
@@ -218,7 +218,7 @@ theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
 theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
     obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
-    exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
+    exact ⟨z, fun i ↦ hz (g i) ⟨i, rfl⟩⟩
 
 variable [Nonempty α] [Preorder α]
 

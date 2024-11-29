@@ -194,7 +194,7 @@ instance mono_left [Mono sq] : Mono sq.left where
     let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ =>
       { left := φ
         right := φ ≫ f.hom }
-    have : ∀ g, (aux g).right = g ≫ f.hom := fun g => by dsimp
+    have : ∀ g, (aux g).right = g ≫ f.hom := fun g ↦ by dsimp
     show (aux φ).left = (aux ψ).left
     congr 1
     rw [← cancel_mono sq]

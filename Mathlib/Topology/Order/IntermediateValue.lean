@@ -208,7 +208,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
-  refine eq_univ_of_forall fun x => ?_
+  refine eq_univ_of_forall fun x ↦ ?_
   obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := not_bddBelow_iff.1 hb x
   obtain ⟨z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
   exact hs.Icc_subset ys zs ⟨le_of_lt hy, le_of_lt hz⟩
@@ -356,7 +356,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this
   have : Ioc z y ⊆ s ∪ t := fun w hw => hab (xyab ⟨le_trans hz.1 (le_of_lt hw.1), hw.2⟩)
-  exact fun w ⟨wt, wzy⟩ => (this wzy).elim id fun h => (wt h).elim
+  exact fun w ⟨wt, wzy⟩ => (this wzy).elim id fun h ↦ (wt h).elim
 
 /-- A closed interval in a densely ordered conditionally complete linear order is preconnected. -/
 theorem isPreconnected_Icc : IsPreconnected (Icc a b) :=

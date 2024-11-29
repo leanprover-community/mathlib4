@@ -166,10 +166,10 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
           rintro _ _ _ _ ⟨i₁⟩ ⟨i₂⟩
           exact
             propext
-              ⟨Nonempty.map fun f => i₁.inv ≫ f ≫ i₂.hom,
-                Nonempty.map fun f => i₁.hom ≫ f ≫ i₂.inv⟩)
+              ⟨Nonempty.map fun f ↦ i₁.inv ≫ f ≫ i₂.hom,
+                Nonempty.map fun f ↦ i₁.hom ≫ f ≫ i₂.inv⟩)
   le_refl := by
-    refine Quotient.ind fun a => ?_
+    refine Quotient.ind fun a ↦ ?_
     exact ⟨𝟙 _⟩
   le_trans a b c := Quotient.inductionOn₃ a b c fun _ _ _ => Nonempty.map2 (· ≫ ·)
 
@@ -199,14 +199,14 @@ variable {C} {D}
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
   obj := Quotient.map F.obj fun _ _ ⟨hX⟩ => ⟨F.mapIso hX⟩
-  map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun _ _ k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
+  map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun _ _ k => homOfLE (k.le.elim fun t ↦ ⟨F.map t⟩)
 
 theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkeleton C ⋙ map F :=
   rfl
 
 /-- Given a natural transformation `F₁ ⟶ F₂`, induce a natural transformation `map F₁ ⟶ map F₂`. -/
 def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂ where
-  app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
+  app X := Quotient.recOnSubsingleton X fun x ↦ ⟨⟨⟨k.app x⟩⟩⟩
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted
 from the original `map₂` proof. Lean needed an extensive amount explicit type
@@ -229,11 +229,11 @@ def map₂ObjMap (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D → Thi
 /-- For each `x : ThinSkeleton C`, we promote `map₂ObjMap F x` to a functor -/
 def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ ThinSkeleton E :=
   fun x =>
-    { obj := fun y => map₂ObjMap F x y
+    { obj := fun y ↦ map₂ObjMap F x y
       map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
-        (fun x => (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
+        (fun x ↦ (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>
-            homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
+            homOfLE (hY.le.elim fun g ↦ ⟨(F.obj X).map g⟩) }
 
 /-- This provides natural transformations `map₂Functor F x₁ ⟶ map₂Functor F x₂` given
 `x₁ ⟶ x₂` -/
@@ -273,7 +273,7 @@ noncomputable def equivalence : ThinSkeleton C ≌ C where
   functor := fromThinSkeleton C
   inverse := toThinSkeleton C
   counitIso := NatIso.ofComponents fun X => Nonempty.some (Quotient.mk_out X)
-  unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>
+  unitIso := NatIso.ofComponents fun x ↦ Quotient.recOnSubsingleton x fun X =>
     eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)
 
 noncomputable instance fromThinSkeleton_isEquivalence : (fromThinSkeleton C).IsEquivalence :=
@@ -293,7 +293,7 @@ instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) :=
           apply Quotient.sound (equiv_of_both_ways f g)) }
 
 theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
-  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.1.le.antisymm i.2.le
+  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i ↦ i.1.le.antisymm i.2.le
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|
@@ -326,12 +326,12 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
   unit :=
     { app := fun X => by
         letI := isIsomorphicSetoid C
-        exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
+        exact Quotient.recOnSubsingleton X fun x ↦ homOfLE ⟨h.unit.app x⟩ }
       -- TODO: make quotient.rec_on_subsingleton' so the letI isn't needed
   counit :=
     { app := fun X => by
         letI := isIsomorphicSetoid D
-        exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
+        exact Quotient.recOnSubsingleton X fun x ↦ homOfLE ⟨h.counit.app x⟩ }
 
 end ThinSkeleton
 

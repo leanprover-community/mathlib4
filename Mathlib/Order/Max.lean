@@ -73,24 +73,24 @@ instance IsEmpty.toNoMaxOrder [LT α] [IsEmpty α] : NoMaxOrder α := ⟨isEmpty
 instance IsEmpty.toNoMinOrder [LT α] [IsEmpty α] : NoMinOrder α := ⟨isEmptyElim⟩
 
 instance OrderDual.noBotOrder [LE α] [NoTopOrder α] : NoBotOrder αᵒᵈ :=
-  ⟨fun a => exists_not_le (α := α) a⟩
+  ⟨fun a ↦ exists_not_le (α := α) a⟩
 
 instance OrderDual.noTopOrder [LE α] [NoBotOrder α] : NoTopOrder αᵒᵈ :=
-  ⟨fun a => exists_not_ge (α := α) a⟩
+  ⟨fun a ↦ exists_not_ge (α := α) a⟩
 
 instance OrderDual.noMinOrder [LT α] [NoMaxOrder α] : NoMinOrder αᵒᵈ :=
-  ⟨fun a => exists_gt (α := α) a⟩
+  ⟨fun a ↦ exists_gt (α := α) a⟩
 
 instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ :=
-  ⟨fun a => exists_lt (α := α) a⟩
+  ⟨fun a ↦ exists_lt (α := α) a⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
-  ⟨fun a => (exists_lt a).imp fun _ => not_le_of_lt⟩
+  ⟨fun a ↦ (exists_lt a).imp fun _ => not_le_of_lt⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
-  ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
+  ⟨fun a ↦ (exists_gt a).imp fun _ => not_le_of_lt⟩
 
 instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
@@ -114,25 +114,25 @@ instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMin
 
 instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
     NoMaxOrder (∀ i, π i) :=
-  ⟨fun a => by
+  ⟨fun a ↦ by
     classical
     obtain ⟨b, hb⟩ := exists_gt (a <| Classical.arbitrary _)
     exact ⟨_, lt_update_self_iff.2 hb⟩⟩
 
 instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
     NoMinOrder (∀ i, π i) :=
-  ⟨fun a => by
+  ⟨fun a ↦ by
      classical
       obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
       exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
 -- Porting note: mathlib3 proof uses `convert`
 theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
-  { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
+  { exists_lt := fun a ↦ by simpa [not_le] using exists_not_ge a }
 
 -- Porting note: mathlib3 proof uses `convert`
 theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
-  { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
+  { exists_gt := fun a ↦ by simpa [not_le] using exists_not_le a }
 
 theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
   ⟨fun h =>
@@ -374,13 +374,13 @@ theorem IsMin.prod_mk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc =
 
 theorem IsMax.prod_mk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
 
-theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
+theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c ↦ (hx (c, x.2)).1
 
-theorem IsBot.snd (hx : IsBot x) : IsBot x.2 := fun c => (hx (x.1, c)).2
+theorem IsBot.snd (hx : IsBot x) : IsBot x.2 := fun c ↦ (hx (x.1, c)).2
 
-theorem IsTop.fst (hx : IsTop x) : IsTop x.1 := fun c => (hx (c, x.2)).1
+theorem IsTop.fst (hx : IsTop x) : IsTop x.1 := fun c ↦ (hx (c, x.2)).1
 
-theorem IsTop.snd (hx : IsTop x) : IsTop x.2 := fun c => (hx (x.1, c)).2
+theorem IsTop.snd (hx : IsTop x) : IsTop x.2 := fun c ↦ (hx (x.1, c)).2
 
 theorem IsMin.fst (hx : IsMin x) : IsMin x.1 :=
   fun c hc => (hx <| show (c, x.2) ≤ x from (and_iff_left le_rfl).2 hc).1
@@ -395,15 +395,15 @@ theorem IsMax.snd (hx : IsMax x) : IsMax x.2 :=
   fun c hc => (hx <| show x ≤ (x.1, c) from (and_iff_right le_rfl).2 hc).2
 
 theorem Prod.isBot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
-  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 theorem Prod.isTop_iff : IsTop x ↔ IsTop x.1 ∧ IsTop x.2 :=
-  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 theorem Prod.isMin_iff : IsMin x ↔ IsMin x.1 ∧ IsMin x.2 :=
-  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 theorem Prod.isMax_iff : IsMax x ↔ IsMax x.1 ∧ IsMax x.2 :=
-  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 end Prod

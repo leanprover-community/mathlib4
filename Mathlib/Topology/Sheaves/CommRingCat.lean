@@ -115,7 +115,7 @@ noncomputable instance : Inhabited F.SubmonoidPresheaf :=
 
 /-- The localization of a presheaf of `CommRing`s at locally non-zero-divisor sections. -/
 noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
-  (F.submonoidPresheafOfStalk fun x => (F.stalk x)⁰).localizationPresheaf
+  (F.submonoidPresheafOfStalk fun x ↦ (F.stalk x)⁰).localizationPresheaf
 
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=

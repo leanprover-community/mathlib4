@@ -126,29 +126,29 @@ theorem le_radius_of_bound (C : ℝ) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖ *
 /-- If `‖pₙ‖ rⁿ` is bounded in `n`, then the radius of `p` is at least `r`. -/
 theorem le_radius_of_bound_nnreal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
     (r : ℝ≥0∞) ≤ p.radius :=
-  p.le_radius_of_bound C fun n => mod_cast h n
+  p.le_radius_of_bound C fun n ↦ mod_cast h n
 
 /-- If `‖pₙ‖ rⁿ = O(1)`, as `n → ∞`, then the radius of `p` is at least `r`. -/
-theorem le_radius_of_isBigO (h : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) :
+theorem le_radius_of_isBigO (h : (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) :
     ↑r ≤ p.radius :=
   Exists.elim (isBigO_one_nat_atTop_iff.1 h) fun C hC =>
-    p.le_radius_of_bound C fun n => (le_abs_self _).trans (hC n)
+    p.le_radius_of_bound C fun n ↦ (le_abs_self _).trans (hC n)
 
 theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : ℝ) ^ n ≤ C) :
     ↑r ≤ p.radius :=
   p.le_radius_of_isBigO <| IsBigO.of_bound C <| h.mono fun n hn => by simpa
 
-theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
+theorem le_radius_of_summable_nnnorm (h : Summable fun n ↦ ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => le_tsum' h _
 
-theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
+theorem le_radius_of_summable (h : Summable fun n ↦ ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnnorm <| by
     simp only [← coe_nnnorm] at h
     exact mod_cast h
 
 theorem radius_eq_top_of_forall_nnreal_isBigO
-    (h : ∀ r : ℝ≥0, (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) : p.radius = ∞ :=
-  ENNReal.eq_top_of_forall_nnreal_le fun r => p.le_radius_of_isBigO (h r)
+    (h : ∀ r : ℝ≥0, (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) : p.radius = ∞ :=
+  ENNReal.eq_top_of_forall_nnreal_le fun r ↦ p.le_radius_of_isBigO (h r)
 
 theorem radius_eq_top_of_eventually_eq_zero (h : ∀ᶠ n in atTop, p n = 0) : p.radius = ∞ :=
   p.radius_eq_top_of_forall_nnreal_isBigO fun r =>
@@ -173,17 +173,17 @@ theorem constFormalMultilinearSeries_radius {v : F} :
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` tends to zero exponentially:
 for some `0 < a < 1`, `‖p n‖ rⁿ = o(aⁿ)`. -/
 theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
-    ∃ a ∈ Ioo (0 : ℝ) 1, (fun n => ‖p n‖ * (r : ℝ) ^ n) =o[atTop] (a ^ ·) := by
-  have := (TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 1 4
+    ∃ a ∈ Ioo (0 : ℝ) 1, (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) =o[atTop] (a ^ ·) := by
+  have := (TFAE_exists_lt_isLittleO_pow (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) 1).out 1 4
   rw [this]
   -- Porting note: was
-  -- rw [(TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 1 4]
+  -- rw [(TFAE_exists_lt_isLittleO_pow (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) 1).out 1 4]
   simp only [radius, lt_iSup_iff] at h
   rcases h with ⟨t, C, hC, rt⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at rt
   have : 0 < (t : ℝ) := r.coe_nonneg.trans_lt rt
   rw [← div_lt_one this] at rt
-  refine ⟨_, rt, C, Or.inr zero_lt_one, fun n => ?_⟩
+  refine ⟨_, rt, C, Or.inr zero_lt_one, fun n ↦ ?_⟩
   calc
     |‖p n‖ * (r : ℝ) ^ n| = ‖p n‖ * (t : ℝ) ^ n * (r / t : ℝ) ^ n := by
       field_simp [mul_right_comm, abs_mul]
@@ -191,7 +191,7 @@ theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ = o(1)`. -/
 theorem isLittleO_one_of_lt_radius (h : ↑r < p.radius) :
-    (fun n => ‖p n‖ * (r : ℝ) ^ n) =o[atTop] (fun _ => 1 : ℕ → ℝ) :=
+    (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) =o[atTop] (fun _ => 1 : ℕ → ℝ) :=
   let ⟨_, ha, hp⟩ := p.isLittleO_of_lt_radius h
   hp.trans <| (isLittleO_pow_pow_of_lt_left ha.1.le ha.2).congr (fun _ => rfl) one_pow
 
@@ -200,16 +200,16 @@ for some `0 < a < 1` and `C > 0`, `‖p n‖ * r ^ n ≤ C * a ^ n`. -/
 theorem norm_mul_pow_le_mul_pow_of_lt_radius (h : ↑r < p.radius) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C * a ^ n := by
   -- Porting note: moved out of `rcases`
-  have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 1 5).mp
+  have := ((TFAE_exists_lt_isLittleO_pow (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) 1).out 1 5).mp
     (p.isLittleO_of_lt_radius h)
   rcases this with ⟨a, ha, C, hC, H⟩
-  exact ⟨a, ha, C, hC, fun n => (le_abs_self _).trans (H n)⟩
+  exact ⟨a, ha, C, hC, fun n ↦ (le_abs_self _).trans (H n)⟩
 
 /-- If `r ≠ 0` and `‖pₙ‖ rⁿ = O(aⁿ)` for some `-1 < a < 1`, then `r < p.radius`. -/
 theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ) 1)
-    (hp : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] (a ^ ·)) : ↑r < p.radius := by
+    (hp : (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) =O[atTop] (a ^ ·)) : ↑r < p.radius := by
   -- Porting note: moved out of `rcases`
-  have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * (r : ℝ) ^ n) 1).out 2 5)
+  have := ((TFAE_exists_lt_isLittleO_pow (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) 1).out 2 5)
   rcases this.mp ⟨a, ha, hp⟩ with ⟨a, ha, C, hC, hp⟩
   rw [← pos_iff_ne_zero, ← NNReal.coe_pos] at h₀
   lift a to ℝ≥0 using ha.1.le
@@ -217,7 +217,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
     simpa only [div_one] using (div_lt_div_iff_of_pos_left h₀ zero_lt_one ha.1).2 ha.2
   norm_cast at this
   rw [← ENNReal.coe_lt_coe] at this
-  refine this.trans_le (p.le_radius_of_bound C fun n => ?_)
+  refine this.trans_le (p.le_radius_of_bound C fun n ↦ ?_)
   rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff₀ (pow_pos ha.1 n)]
   exact (le_abs_self _).trans (hp n)
 
@@ -225,13 +225,13 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
 theorem norm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C :=
   let ⟨_, ha, C, hC, h⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
-  ⟨C, hC, fun n => (h n).trans <| mul_le_of_le_one_right hC.lt.le (pow_le_one₀ ha.1.le ha.2.le)⟩
+  ⟨C, hC, fun n ↦ (h n).trans <| mul_le_of_le_one_right hC.lt.le (pow_le_one₀ ha.1.le ha.2.le)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h0 : 0 < r) (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ ≤ C / (r : ℝ) ^ n :=
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
-  ⟨C, hC, fun n => Iff.mpr (le_div_iff₀ (pow_pos h0 _)) (hp n)⟩
+  ⟨C, hC, fun n ↦ Iff.mpr (le_div_iff₀ (pow_pos h0 _)) (hp n)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
@@ -240,21 +240,21 @@ theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r
   ⟨⟨C, hC.lt.le⟩, hC, mod_cast hp⟩
 
 theorem le_radius_of_tendsto (p : FormalMultilinearSeries 𝕜 E F) {l : ℝ}
-    (h : Tendsto (fun n => ‖p n‖ * (r : ℝ) ^ n) atTop (𝓝 l)) : ↑r ≤ p.radius :=
+    (h : Tendsto (fun n ↦ ‖p n‖ * (r : ℝ) ^ n) atTop (𝓝 l)) : ↑r ≤ p.radius :=
   p.le_radius_of_isBigO (h.isBigO_one _)
 
 theorem le_radius_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
-    (hs : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
+    (hs : Summable fun n ↦ ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_tendsto hs.tendsto_atTop_zero
 
 theorem not_summable_norm_of_radius_lt_nnnorm (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (h : p.radius < ‖x‖₊) : ¬Summable fun n => ‖p n‖ * ‖x‖ ^ n :=
+    (h : p.radius < ‖x‖₊) : ¬Summable fun n ↦ ‖p n‖ * ‖x‖ ^ n :=
   fun hs => not_le_of_lt h (p.le_radius_of_summable_norm hs)
 
 theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖ * (r : ℝ) ^ n := by
   obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
-  exact .of_nonneg_of_le (fun n => mul_nonneg (norm_nonneg _) (pow_nonneg r.coe_nonneg _))
+  exact .of_nonneg_of_le (fun n ↦ mul_nonneg (norm_nonneg _) (pow_nonneg r.coe_nonneg _))
     hp ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
 
 theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
@@ -275,11 +275,11 @@ protected theorem summable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E
   (p.summable_norm_apply hx).of_norm
 
 theorem radius_eq_top_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
-    (hs : ∀ r : ℝ≥0, Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : p.radius = ∞ :=
-  ENNReal.eq_top_of_forall_nnreal_le fun r => p.le_radius_of_summable_norm (hs r)
+    (hs : ∀ r : ℝ≥0, Summable fun n ↦ ‖p n‖ * (r : ℝ) ^ n) : p.radius = ∞ :=
+  ENNReal.eq_top_of_forall_nnreal_le fun r ↦ p.le_radius_of_summable_norm (hs r)
 
 theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
-    p.radius = ∞ ↔ ∀ r : ℝ≥0, Summable fun n => ‖p n‖ * (r : ℝ) ^ n := by
+    p.radius = ∞ ↔ ∀ r : ℝ≥0, Summable fun n ↦ ‖p n‖ * (r : ℝ) ^ n := by
   constructor
   · intro h r
     obtain ⟨a, ha : a ∈ Ioo (0 : ℝ) 1, C, - : 0 < C, hp⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius
@@ -296,7 +296,7 @@ theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 <
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨r, r0, rlt⟩
   have rpos : 0 < (r : ℝ) := by simp [ENNReal.coe_pos.1 r0]
   rcases norm_le_div_pow_of_pos_of_lt_radius p rpos rlt with ⟨C, Cpos, hCp⟩
-  refine ⟨C, r⁻¹, Cpos, by simp only [inv_pos, rpos], fun n => ?_⟩
+  refine ⟨C, r⁻¹, Cpos, by simp only [inv_pos, rpos], fun n ↦ ?_⟩
   -- Porting note: was `convert`
   rw [inv_pow, ← div_eq_mul_inv]
   exact hCp n
@@ -319,7 +319,7 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
   refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
   rw [lt_min_iff] at hr
   have := ((p.isLittleO_one_of_lt_radius hr.1).add (q.isLittleO_one_of_lt_radius hr.2)).isBigO
-  refine (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n => ?_).trans this)
+  refine (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n ↦ ?_).trans this)
   rw [← add_mul, norm_mul, norm_mul, norm_norm]
   exact mul_le_mul_of_nonneg_right ((norm_add_le _ _).trans (le_abs_self _)) (norm_nonneg _)
 
@@ -337,7 +337,7 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply le_radius_of_isBigO
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
-  refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
+  refine IsBigOWith.of_bound (Eventually.of_forall fun n ↦ ?_)
   simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries
@@ -437,7 +437,7 @@ theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithin
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
 same power series around `x + y`. -/
 theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y : E) :
-    HasFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) r :=
+    HasFPowerSeriesOnBall (fun z ↦ f (z - y)) p (x + y) r :=
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {z} hz => by
@@ -639,7 +639,7 @@ alias HasFPowerSeriesWithinAt.mono_of_mem := HasFPowerSeriesWithinAt.mono_of_mem
 
 theorem HasFPowerSeriesWithinOnBall.coeff_zero (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (v : Fin 0 → E) : pf 0 v = f x := by
-  have v_eq : v = fun i => 0 := Subsingleton.elim _ _
+  have v_eq : v = fun i ↦ 0 := Subsingleton.elim _ _
   have zero_mem : (0 : E) ∈ EMetric.ball (0 : E) r := by simp [hf.r_pos]
   have : ∀ i, i ≠ 0 → (pf i fun _ => 0) = 0 := by
     intro i hi
@@ -820,17 +820,17 @@ theorem ContinuousLinearMap.comp_analyticOnNhd
 theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum
     (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r)
     (h'y : x + y ∈ insert x s) :
-    Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
+    Tendsto (fun n ↦ p.partialSum n y) atTop (𝓝 (f (x + y))) :=
   (hf.hasSum h'y hy).tendsto_sum_nat
 
 theorem HasFPowerSeriesOnBall.tendsto_partialSum
     (hf : HasFPowerSeriesOnBall f p x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r) :
-    Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
+    Tendsto (fun n ↦ p.partialSum n y) atTop (𝓝 (f (x + y))) :=
   (hf.hasSum hy).tendsto_sum_nat
 
 theorem HasFPowerSeriesAt.tendsto_partialSum
     (hf : HasFPowerSeriesAt f p x) :
-    ∀ᶠ y in 𝓝 0, Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) := by
+    ∀ᶠ y in 𝓝 0, Tendsto (fun n ↦ p.partialSum n y) atTop (𝓝 (f (x + y))) := by
   rcases hf with ⟨r, hr⟩
   filter_upwards [EMetric.ball_mem_nhds (0 : E) hr.r_pos] with y hy
   exact hr.tendsto_partialSum hy
@@ -988,7 +988,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
 theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesWithinAt f p s x) (n : ℕ) :
     (fun y : E => f (x + y) - p.partialSum n y)
-      =O[𝓝[(x + ·)⁻¹' insert x s] 0] fun y => ‖y‖ ^ n := by
+      =O[𝓝[(x + ·)⁻¹' insert x s] 0] fun y ↦ ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   obtain ⟨a, -, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
@@ -1003,7 +1003,7 @@ theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
 /-- Taylor formula for an analytic function, `IsBigO` version. -/
 theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesAt f p x) (n : ℕ) :
-    (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
+    (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y ↦ ‖y‖ ^ n := by
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   simpa using hf.isBigO_sub_partialSum_pow n
 
@@ -1015,7 +1015,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
       =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
-      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+      fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   lift r' to ℝ≥0 using ne_top_of_lt hr
   rcases (zero_le r').eq_or_lt with (rfl | hr'0)
   · simp only [ENNReal.coe_zero, EMetric.ball_zero, empty_inter, principal_empty, isBigO_bot]
@@ -1031,8 +1031,8 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
     have hy : y ∈ EMetric.ball x r ×ˢ EMetric.ball x r := by
       rw [EMetric.ball_prod_same]
       exact EMetric.ball_subset_ball hr.le hy'
-    set A : ℕ → F := fun n => (p n fun _ => y.1 - x) - p n fun _ => y.2 - x
-    have hA : HasSum (fun n => A (n + 2)) (f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) := by
+    set A : ℕ → F := fun n ↦ (p n fun _ => y.1 - x) - p n fun _ => y.2 - x
+    have hA : HasSum (fun n ↦ A (n + 2)) (f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) := by
       convert (hasSum_nat_add_iff' 2).2
         ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
@@ -1040,7 +1040,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
         ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_update_sub,
         ← Pi.single, Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
     rw [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, ENNReal.coe_lt_coe] at hy'
-    set B : ℕ → ℝ := fun n => C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * ((n + 2) * a ^ n)
+    set B : ℕ → ℝ := fun n ↦ C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * ((n + 2) * a ^ n)
     have hAB : ∀ n, ‖A (n + 2)‖ ≤ B n := fun n =>
       calc
         ‖A (n + 2)‖ ≤ ‖p (n + 2)‖ * ↑(n + 2) * ‖y - (x, x)‖ ^ (n + 1) * ‖y.1 - y.2‖ := by
@@ -1071,7 +1071,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)
     exact hA.norm_le_of_bounded hBL hAB
   suffices L =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
-      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
+      fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
     refine (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => ?_)).trans this
     rw [one_mul]
     exact (hL y hy).trans (le_abs_self _)
@@ -1085,7 +1085,7 @@ ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded 
 theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
-      =O[𝓟 (EMetric.ball (x, x) r')] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+      =O[𝓟 (EMetric.ball (x, x) r')] fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.isBigO_image_sub_image_sub_deriv_principal hr
 
@@ -1118,7 +1118,7 @@ within `s × s`. -/
 theorem HasFPowerSeriesWithinAt.isBigO_image_sub_norm_mul_norm_sub
     (hf : HasFPowerSeriesWithinAt f p s x) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
-      =O[𝓝[(insert x s) ×ˢ (insert x s)] (x, x)] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+      =O[𝓝[(insert x s) ×ˢ (insert x s)] (x, x)] fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rcases hf with ⟨r, hf⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   refine (hf.isBigO_image_sub_image_sub_deriv_principal h).mono ?_
@@ -1139,12 +1139,12 @@ of the partial sums of this power series on strict subdisks of the disk of conve
 `f (x + y)` is the uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
-    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       ((x + ·)⁻¹' (insert x s) ∩ Metric.ball (0 : E) r') := by
   obtain ⟨a, ha, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
     x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := hf.uniform_geometric_approx h
   refine Metric.tendstoUniformlyOn_iff.2 fun ε εpos => ?_
-  have L : Tendsto (fun n => (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
+  have L : Tendsto (fun n ↦ (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
     tendsto_const_nhds.mul (tendsto_pow_atTop_nhds_zero_of_lt_one ha.1.le ha.2)
   rw [mul_zero] at L
   refine (L.eventually (gt_mem_nhds εpos)).mono fun n hn y hy => ?_
@@ -1156,7 +1156,7 @@ partial sums of this power series on strict subdisks of the disk of convergence,
 is the uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFPowerSeriesOnBall f p x r)
     (h : (r' : ℝ≥0∞) < r) :
-    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       (Metric.ball (0 : E) r') := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.tendstoUniformlyOn h
@@ -1166,7 +1166,7 @@ uniform limit of the partial sums of this power series on the disk of convergenc
 is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
-    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       ((x + ·)⁻¹' (insert x s) ∩ EMetric.ball (0 : E) r) := by
   intro u hu y hy
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hy.2 with ⟨r', yr', hr'⟩
@@ -1182,7 +1182,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
 the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
 is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFPowerSeriesOnBall f p x r) :
-    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       (EMetric.ball (0 : E) r) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.tendstoLocallyUniformlyOn
@@ -1194,7 +1194,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn' {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (insert x s ∩ Metric.ball (x : E) r') := by
-  convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
+  convert (hf.tendstoUniformlyOn h).comp fun y ↦ y - x using 1
   · simp [Function.comp_def]
   · ext z
     simp [dist_eq_norm]
@@ -1343,7 +1343,7 @@ variable {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {z₀ : 𝕜
 `p` in a neighborhood of `z₀`. This makes some proofs easier by hiding the fact that
 `HasFPowerSeriesAt` depends on `p.radius`. -/
 theorem hasFPowerSeriesAt_iff :
-    HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 0, HasSum (fun n => z ^ n • p.coeff n) (f (z₀ + z)) := by
+    HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 0, HasSum (fun n ↦ z ^ n • p.coeff n) (f (z₀ + z)) := by
   refine ⟨fun ⟨r, _, r_pos, h⟩ =>
     eventually_of_mem (EMetric.ball_mem_nhds 0 r_pos) fun _ => by simpa using h, ?_⟩
   simp only [Metric.eventually_nhds_iff]
@@ -1365,7 +1365,7 @@ theorem hasFPowerSeriesAt_iff :
     simpa [nndist_eq_nnnorm, Real.lt_toNNReal_iff_coe_lt] using hyr
 
 theorem hasFPowerSeriesAt_iff' :
-    HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
+    HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n ↦ (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFPowerSeriesAt_iff]
   simp_rw [add_sub_cancel_left]
 

@@ -286,7 +286,7 @@ variable (Z : C)
 /-- Auxiliary definition for `ProjectiveResolution.of`. -/
 def ofComplex : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
-    (Projective.d (Projective.π Z)) (fun f => ⟨_, Projective.d f, by simp⟩)
+    (Projective.d (Projective.π Z)) (fun f ↦ ⟨_, Projective.d f, by simp⟩)
 
 lemma ofComplex_d_1_0 :
     (ofComplex Z).d 1 0 = d (Projective.π Z) := by
@@ -313,7 +313,7 @@ irreducible_def of : ProjectiveResolution Z where
   complex := ofComplex Z
   π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨Projective.π Z, by
           rw [ofComplex_d_1_0, assoc, kernel.condition, comp_zero]⟩
-  quasiIso := ⟨fun n => by
+  quasiIso := ⟨fun n ↦ by
     cases n
     · rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
       · dsimp

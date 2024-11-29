@@ -118,7 +118,7 @@ theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : 
     ⟨fun hf u hu => hf.comp hu, fun h =>
       ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 ?_⟩
   rintro s ⟨hbs, hsc⟩
-  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
+  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x ↦ mt fun hx => subset_closure hx⟩
   rw [← seqClosure_eq_closure]
   rintro ⟨u, hus, hu⟩
   exact hsc.mem_of_tendsto (h u hu) (Eventually.of_forall hus)
@@ -248,7 +248,7 @@ theorem IsSeqCompact.subseq_of_frequently_in {s : Set X} (hs : IsSeqCompact s) {
 
 theorem SeqCompactSpace.tendsto_subseq [SeqCompactSpace X] (x : ℕ → X) :
     ∃ (a : X) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
-  let ⟨a, _, φ, mono, h⟩ := isSeqCompact_univ fun n => mem_univ (x n)
+  let ⟨a, _, φ, mono, h⟩ := isSeqCompact_univ fun n ↦ mem_univ (x n)
   ⟨a, φ, mono, h⟩
 
 section FirstCountableTopology
@@ -342,26 +342,26 @@ is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1
   rcases exists_antitone_basis (𝓤 X) with ⟨V, hV⟩
-  choose W hW hWV using fun n => comp_mem_uniformity_sets (hV.mem n)
+  choose W hW hWV using fun n ↦ comp_mem_uniformity_sets (hV.mem n)
   have hWV' : ∀ n, W n ⊆ V n := fun n ⟨x, y⟩ hx =>
     @hWV n (x, y) ⟨x, refl_mem_uniformity <| hW _, hx⟩
   obtain ⟨t, ht_anti, htl, htW, hts⟩ :
       ∃ t : ℕ → Set X, Antitone t ∧ (∀ n, t n ∈ l) ∧ (∀ n, t n ×ˢ t n ⊆ W n) ∧ ∀ n, t n ⊆ s := by
     have : ∀ n, ∃ t ∈ l, t ×ˢ t ⊆ W n ∧ t ⊆ s := by
       rw [le_principal_iff] at hls
-      have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ˢ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
+      have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ˢ l := fun n ↦ inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
         prod_self_subset_prod_self, and_assoc] using this
     choose t htl htW hts using this
-    have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
-    exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
+    have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n ↦ by apply iInter₂_subset; rfl
+    exact ⟨fun n ↦ ⋂ k ≤ n, t k, fun m n h =>
       biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
       (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
-      (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
-  choose u hu using fun n => Filter.nonempty_of_mem (htl n)
+      (prod_mono (this n) (this n)).trans (htW n), fun n ↦ (this n).trans (hts n)⟩
+  choose u hu using fun n ↦ Filter.nonempty_of_mem (htl n)
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩
-  rcases hs.exists_tendsto (fun n => hts n (hu n)) huc with ⟨x, hxs, hx⟩
+  rcases hs.exists_tendsto (fun n ↦ hts n (hu n)) huc with ⟨x, hxs, hx⟩
   refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
   obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N) :=
     ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists

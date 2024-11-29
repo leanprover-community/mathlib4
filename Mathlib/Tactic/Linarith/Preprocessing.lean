@@ -149,7 +149,7 @@ To avoid adding the same nonnegativity facts many times, it is a global preproce
 def natToInt : GlobalBranchingPreprocessor where
   name := "move nats to ints"
   transform g l := do
-    let l ← l.mapM fun h => do
+    let l ← l.mapM fun h ↦ do
       let t ← whnfR (← instantiateMVars (← inferType h))
       if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
@@ -310,7 +310,7 @@ def nlinarithExtras : GlobalPreprocessor where
     trace[linarith] "nlinarith preprocessing found squares"
     trace[linarith] "{s}"
     linarithTraceProofs "so we added proofs" new_es
-    let with_comps ← (new_es ++ ls).mapM (fun e => do
+    let with_comps ← (new_es ++ ls).mapM (fun e ↦ do
       let tp ← inferType e
       try
         let ⟨ine, _⟩ ← parseCompAndExpr tp
@@ -347,7 +347,7 @@ partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
-  let do_goal : MVarId → MetaM (List Branch) := fun g => do
+  let do_goal : MVarId → MetaM (List Branch) := fun g ↦ do
     let (f, h) ← g.intro1
     h.withContext do
       let ls ← removeNe_aux h <| hs.removeAll [e]

@@ -40,7 +40,7 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
 variable [LawfulApplicative F]
 
 @[simp]
-theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
+theorem pure_id'_seq (x : F α) : (pure fun x ↦ x) <*> x = x :=
   pure_id_seq x
 
 @[functor_norm]

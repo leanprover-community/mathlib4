@@ -119,7 +119,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
   constant, then `f` tends to `∞`. -/
 theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
-    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    (hlim : Tendsto (fun x ↦ f x / g x) l (𝓝 a)) :
     Tendsto f l atTop :=
   Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hg) (Tendsto.mul_atTop ha hlim hg)
 
@@ -127,11 +127,11 @@ theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [
   constant, then `f` tends to `∞`. -/
 theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
-    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    (hlim : Tendsto (fun x ↦ f x / g x) l (𝓝 a)) :
     Tendsto g l atTop := by
-  have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
+  have hlim' : Tendsto (fun x ↦ g x / f x) l (𝓝 a⁻¹) := by
     simp_rw [← inv_div (f _)]
-    exact Filter.Tendsto.inv (f := fun x => f x / g x) hlim
+    exact Filter.Tendsto.inv (f := fun x ↦ f x / g x) hlim
   apply Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hf)
     (Tendsto.mul_atTop (inv_pos_of_pos ha) hlim' hf)
 
@@ -139,7 +139,7 @@ theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [
   and only if `g` tends to `∞`. -/
 theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [LinearOrderedField K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
-    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+    (hlim : Tendsto (fun x ↦ f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
   ⟨fun hf ↦ Tendsto.den hf ha hlim, fun hg ↦ Tendsto.num hg ha hlim⟩
 
@@ -237,7 +237,7 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
 @[simp]
 protected theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 :=
-  ⟨fun h => by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
+  ⟨fun h ↦ by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
     tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
 
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r < 1) :

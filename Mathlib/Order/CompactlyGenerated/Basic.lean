@@ -82,7 +82,7 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
     constructor
     · intro H ι s hs
       obtain ⟨t, ht, ht'⟩ := H (Set.range s) hs
-      have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
+      have : ∀ x : t, ∃ i, s i = x := fun x ↦ ht x.prop
       choose f hf using this
       refine ⟨Finset.univ.image f, ht'.trans ?_⟩
       rw [Finset.sup_le_iff]
@@ -145,7 +145,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
 theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type*}
     (f : ι → α) (h : k ≤ ⨆ i, f i) : ∃ s : Finset ι, k ≤ ⨆ i ∈ s, f i := by
   classical
-    let g : Finset ι → α := fun s => ⨆ i ∈ s, f i
+    let g : Finset ι → α := fun s ↦ ⨆ i ∈ s, f i
     have h1 : DirectedOn (· ≤ ·) (Set.range g) := by
       rintro - ⟨s, rfl⟩ - ⟨t, rfl⟩
       exact
@@ -190,7 +190,7 @@ theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β 
     simpa only [exists_prop]
 
 theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
-    IsSupFiniteCompact α := fun s => by
+    IsSupFiniteCompact α := fun s ↦ by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
   obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := wellFounded_gt.has_min S ⟨⊥, ∅, by simp⟩
   refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩
@@ -215,7 +215,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
 theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
     WellFoundedGT α where
   wf := by
-    refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => ?_⟩
+    refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a ↦ ?_⟩
     suffices sSup (Set.range a) ∈ Set.range a by
       obtain ⟨n, hn⟩ := Set.mem_range.mp this
       have h' : sSup (Set.range a) < a (n + 1) := by
@@ -364,12 +364,12 @@ theorem sSup_compact_le_eq (b) :
 
 @[simp]
 theorem sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a } = ⊤ := by
-  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_compact_le_eq ⊤)
+  refine Eq.trans (congr rfl (Set.ext fun x ↦ ?_)) (sSup_compact_le_eq ⊤)
   exact (and_iff_left le_top).symm
 
 theorem le_iff_compact_le_imp {a b : α} :
     a ≤ b ↔ ∀ c : α, CompleteLattice.IsCompactElement c → c ≤ a → c ≤ b :=
-  ⟨fun ab _ _ ca => le_trans ca ab, fun h => by
+  ⟨fun ab _ _ ca => le_trans ca ab, fun h ↦ by
     rw [← sSup_compact_le_eq a, ← sSup_compact_le_eq b]
     exact sSup_le_sSup fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
 
@@ -430,7 +430,7 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
       refine (le_inf hcinf.1 ht2).trans (le_trans ?_ (le_iSup₂ t ht1))
       rfl)
     (iSup_le fun t =>
-      iSup_le fun h => inf_le_inf_left _ ((Finset.sup_id_eq_sSup t).symm ▸ sSup_le_sSup h))
+      iSup_le fun h ↦ inf_le_inf_left _ ((Finset.sup_id_eq_sSup t).symm ▸ sSup_le_sSup h))
 
 theorem sSupIndep_iff_finite {s : Set α} :
     sSupIndep s ↔
@@ -509,7 +509,7 @@ theorem isCompactlyGenerated_of_wellFoundedGT [h : WellFoundedGT α] :
     IsCompactlyGenerated α := by
   rw [wellFoundedGT_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
   -- x is the join of the set of compact elements {x}
-  exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
+  exact ⟨fun x ↦ ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
 
 @[deprecated (since := "2024-10-07")]
 alias WellFounded.isSupFiniteCompact := WellFoundedGT.isSupFiniteCompact
@@ -566,7 +566,7 @@ section
 variable [IsModularLattice α] [IsCompactlyGenerated α]
 
 instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice α] : IsAtomic α :=
-  ⟨fun b => by
+  ⟨fun b ↦ by
     by_cases h : { c : α | CompleteLattice.IsCompactElement c ∧ c ≤ b } ⊆ {⊥}
     · left
       rw [← sSup_compact_le_eq b, sSup_eq_bot]

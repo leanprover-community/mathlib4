@@ -43,7 +43,7 @@ def elabLetImplDetail : TermElab := fun stx expectedType? =>
     let type ← inferType val
     trace[Elab.let.decl] "{id.getId} : {type} := {val}"
     let result ←
-      withLetDecl id.getId (kind := .default) type val fun x => do
+      withLetDecl id.getId (kind := .default) type val fun x ↦ do
         addLocalVarInfo id x
         let lctx ← getLCtx
         let lctx := lctx.modifyLocalDecl x.fvarId! fun decl => decl.setKind .implDetail

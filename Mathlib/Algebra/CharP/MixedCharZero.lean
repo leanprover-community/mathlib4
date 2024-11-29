@@ -180,7 +180,7 @@ theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (
 
 @[coe]
 noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
-  fun n => (PNat.isUnit_natCast n).unit
+  fun n ↦ (PNat.isUnit_natCast n).unit
 
 /-- Internal: Not intended to be used outside this local construction. -/
 noncomputable instance coePNatUnits
@@ -208,7 +208,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩
   RingHom.toAlgebra
-  { toFun := fun x => x.num /ₚ ↑x.pnatDen
+  { toFun := fun x ↦ x.num /ₚ ↑x.pnatDen
     map_zero' := by simp [divp]
     map_one' := by simp
     map_mul' := by

@@ -188,7 +188,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
   · intro h
     convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congrArg _ (IsIso.inv_hom_id_assoc f g).symm
-  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
+  · exact fun h ↦ h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_iff_isIso_comp := isOpenEmbedding_iff_isIso_comp

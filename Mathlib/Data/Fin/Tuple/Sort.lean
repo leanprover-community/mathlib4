@@ -36,12 +36,12 @@ variable {α : Type*} [LinearOrder α]
 equipped with the lexicographic order.
 -/
 def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
-  Finset.univ.image fun i => (f i, i)
+  Finset.univ.image fun i ↦ (f i, i)
 
 /-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.
 -/
-def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
+def graph.proj {f : Fin n → α} : graph f → α := fun p ↦ p.1.1
 
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
@@ -126,7 +126,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
   intro _ h
   contrapose! h
   rw [← Fin.card_Iio, Fintype.card_subtype]
-  refine Finset.card_mono (fun i => Function.mtr ?_)
+  refine Finset.card_mono (fun i ↦ Function.mtr ?_)
   simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
   intro hij hia
   apply h
@@ -162,7 +162,7 @@ smallest permutation `σ` such that `f ∘ σ` is monotone. -/
 theorem eq_sort_iff :
     σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j := by
   rw [eq_sort_iff']
-  refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
+  refine ⟨fun h ↦ ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
   · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply (Prod.Lex.lt_iff _ _).2
     exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
@@ -175,7 +175,7 @@ theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
 
 /-- A permutation of a tuple `f` is `f` sorted if and only if it is monotone. -/
 theorem comp_sort_eq_comp_iff_monotone : f ∘ σ = f ∘ sort f ↔ Monotone (f ∘ σ) :=
-  ⟨fun h => h.symm ▸ monotone_sort f, fun h => unique_monotone h (monotone_sort f)⟩
+  ⟨fun h ↦ h.symm ▸ monotone_sort f, fun h ↦ unique_monotone h (monotone_sort f)⟩
 
 /-- The sorted versions of a tuple `f` and of any permutation of `f` agree. -/
 theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f := by

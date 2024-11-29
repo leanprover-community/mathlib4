@@ -65,7 +65,7 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
-    HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
+    HasDerivAt (fun x ↦ bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   field_simp [Nat.cast_add_one_ne_zero k]
 
@@ -87,7 +87,7 @@ section BernoulliFourierCoeffs
 
 /-- The `n`-th Fourier coefficient of the `k`-th Bernoulli function on the interval `[0, 1]`. -/
 def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
-  fourierCoeffOn zero_lt_one (fun x => bernoulliFun k x) n
+  fourierCoeffOn zero_lt_one (fun x ↦ bernoulliFun k x) n
 
 /-- Recurrence relation (in `k`) for the `n`-th Fourier coefficient of `Bₖ`. -/
 theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
@@ -160,7 +160,7 @@ theorem fourierCoeff_bernoulli_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
   simpa only [zero_add] using bernoulliFourierCoeff_eq hk n
 
 theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
-    Summable (fun n => -k ! / (2 * π * I * n) ^ k : ℤ → ℂ) := by
+    Summable (fun n ↦ -k ! / (2 * π * I * n) ^ k : ℤ → ℂ) := by
   have :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
@@ -196,7 +196,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     rw [ContinuousMap.coe_mk]; exact fourierCoeff_bernoulli_eq (by omega : k ≠ 0)
   have step2 :=
     has_pointwise_sum_fourier_series_of_summable
-      ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
+      ((summable_bernoulli_fourier hk).congr fun n ↦ (step1 n).symm) y
   simp_rw [step1] at step2
   convert step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
   · rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),

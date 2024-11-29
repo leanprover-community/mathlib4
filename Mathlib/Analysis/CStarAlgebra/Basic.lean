@@ -97,7 +97,7 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
     by_cases htriv : x = 0
     · simp only [htriv, star_zero]
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
-      have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
+      have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z ↦ norm_mul_le z⋆ z
       have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
         rw [← mul_le_mul_right hz]; exact (CStarRing.norm_mul_self_le z).trans (h₁ z)
       have h₃ : ‖x⋆‖ ≤ ‖x‖ := by

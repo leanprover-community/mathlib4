@@ -88,7 +88,7 @@ theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [H
 theorem epi_of_nonzero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X ⟶ Y} [HasImage f]
     (w : f ≠ 0) : Epi f := by
   rw [← image.fac f]
-  haveI : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h => w (eq_zero_of_image_eq_zero h)
+  haveI : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h ↦ w (eq_zero_of_image_eq_zero h)
   apply epi_comp
 
 theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
@@ -186,7 +186,7 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
   ⟨Simple.not_isZero X, fun Y Z i => by
-    refine or_iff_not_imp_left.mpr fun h => ?_
+    refine or_iff_not_imp_left.mpr fun h ↦ ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
     have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed

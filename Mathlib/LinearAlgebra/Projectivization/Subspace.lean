@@ -89,7 +89,7 @@ and subspaces of the projective space. -/
 def gi : GaloisInsertion (span : Set (ℙ K V) → Subspace K V) SetLike.coe where
   choice S _hS := span S
   gc A B :=
-    ⟨fun h => le_trans (subset_span _) h, by
+    ⟨fun h ↦ le_trans (subset_span _) h, by
       intro h x hx
       induction' hx with y hy
       · apply h
@@ -123,7 +123,7 @@ instance instInfSet : InfSet (Subspace K V) :=
 instance : CompleteLattice (Subspace K V) :=
   { __ := completeLatticeOfInf (Subspace K V)
       (by
-        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
+        refine fun s ↦ ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
         rintro ⟨E, hE, rfl⟩
         exact ha hE hx)
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
@@ -202,7 +202,7 @@ theorem span_eq_of_le {S : Set (ℙ K V)} {W : Subspace K V} (hS : S ⊆ W) (hW 
 /-- The spans of two sets of points in a projective space are equal if and only if each set of
 points is contained in the span of the other set. -/
 theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span T ∧ T ⊆ span S :=
-  ⟨fun h => ⟨h ▸ subset_span S, h.symm ▸ subset_span T⟩, fun h =>
+  ⟨fun h ↦ ⟨h ▸ subset_span S, h.symm ▸ subset_span T⟩, fun h =>
     le_antisymm (span_le_subspace_iff.2 h.1) (span_le_subspace_iff.2 h.2)⟩
 
 end Subspace

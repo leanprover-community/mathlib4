@@ -41,7 +41,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   choose! F hF using H
   -- Use the axiom of choice
   -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
-  let u : ℕ → X := fun n => Nat.recOn n x F
+  let u : ℕ → X := fun n ↦ Nat.recOn n x F
   -- The properties of F translate to properties of u
   have hu :
     ∀ n,
@@ -72,7 +72,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   cases' forall_and.mp key with key₁ key₂
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
-    refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => ?_
+    refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n ↦ ?_
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
   obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u
@@ -85,7 +85,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
-    exact fun n => (key₂ (n + 1)).le
+    exact fun n ↦ (key₂ (n + 1)).le
   -- But ϕ ∘ u also needs to go to ϕ(y)
   have lim : Tendsto (ϕ ∘ u) atTop (𝓝 (ϕ y)) := Tendsto.comp cont.continuousAt limy
   -- So we have our contradiction!

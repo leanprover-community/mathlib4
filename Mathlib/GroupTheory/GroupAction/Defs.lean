@@ -113,7 +113,7 @@ variable (M)
 @[to_additive]
 theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
+    ⟨fun hx => Set.mem_iInter.2 fun m ↦ hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
 
 variable {M α}
 
@@ -257,7 +257,7 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
 
 @[to_additive]
 theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
-  ⟨fun h => h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
+  ⟨fun h ↦ h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
 
 @[to_additive]
 theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by

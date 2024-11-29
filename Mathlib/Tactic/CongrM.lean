@@ -42,8 +42,8 @@ example {a b c d : ℕ} :
   sorry
   sorry
 
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
-  congrm fun x => ∀ w, ?_ + a = w
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x ↦ ∀ z, b + a = z) := by
+  congrm fun x ↦ ∀ w, ?_ + a = w
   -- ⊢ a = b
   exact h
 ```
@@ -69,7 +69,7 @@ elab_rules : tactic
         pure none
     trace[Tactic.congrm] "pattern: {pattern}"
     -- Chain together transformations as needed to convert the goal to an Eq if possible.
-    liftMetaTactic fun g => do
+    liftMetaTactic fun g ↦ do
       return [← (← g.iffOfEq).liftReflToEq]
     -- Apply `congr(...)`
     withMainContext do

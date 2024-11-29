@@ -152,7 +152,7 @@ variable {A : Type*} [CommRing R] [CommRing A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
-  refine ⟨fun i => ?_⟩
+  refine ⟨fun i ↦ ?_⟩
   rw [coeff_scaleRoots]
   rw [natDegree_scaleRoots, ← tsub_pos_iff_lt] at i
   exact Ideal.mul_mem_left _ _ (Ideal.pow_mem_of_mem P hP _ i)
@@ -194,7 +194,7 @@ theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem (hf : f.Monic) 
     not_mem := hnot_mem }
 
 theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=
-  ⟨fun h => hf.mem h⟩
+  ⟨fun h ↦ hf.mem h⟩
 
 theorem coeff_mem (hf : f.IsEisensteinAt 𝓟) {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
   cases' ne_iff_lt_or_gt.1 hn with h₁ h₂

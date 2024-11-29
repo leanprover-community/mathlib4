@@ -122,14 +122,14 @@ alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toSheafedSpace, fun x => by erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
+  ⟨𝟙 X.toSheafedSpace, fun x ↦ by erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
 
 /-- Composition of morphisms of locally ringed spaces. -/
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
-  ⟨f.toShHom ≫ g.toShHom, fun x => by
+  ⟨f.toShHom ≫ g.toShHom, fun x ↦ by
     erw [PresheafedSpace.stalkMap.comp]
     infer_instance⟩
 
@@ -272,9 +272,9 @@ instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty
 
 /-- The canonical map from the empty locally ringed space. -/
 def emptyTo (X : LocallyRingedSpace) : ∅ ⟶ X :=
-  ⟨⟨⟨fun x => PEmpty.elim x, by fun_prop⟩,
+  ⟨⟨⟨fun x ↦ PEmpty.elim x, by fun_prop⟩,
     { app := fun U => by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
-    fun x => PEmpty.elim x⟩
+    fun x ↦ PEmpty.elim x⟩
 
 noncomputable
 instance {X : LocallyRingedSpace} : Unique (∅ ⟶ X) where

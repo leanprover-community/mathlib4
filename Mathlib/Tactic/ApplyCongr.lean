@@ -88,5 +88,5 @@ syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace colGt term
 
 elab_rules : conv
   | `(conv| apply_congr$[ $t?]?) => do
-    let e? ← t?.mapM (fun t => elabTerm t.raw none)
+    let e? ← t?.mapM (fun t ↦ elabTerm t.raw none)
     applyCongr e?

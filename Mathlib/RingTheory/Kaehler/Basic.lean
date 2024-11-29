@@ -668,7 +668,7 @@ theorem KaehlerDifferential.kerTotal_map [Algebra R B] [IsScalarTower R A B] [Is
   apply Submodule.span_mono
   simp_rw [IsScalarTower.algebraMap_apply R S B]
   exact Set.range_comp_subset_range (algebraMap R S)
-    fun x => Finsupp.single (algebraMap S B x) (1 : B)
+    fun x ↦ Finsupp.single (algebraMap S B x) (1 : B)
 
 /--
 This is a special case of `kerTotal_map` where `R = S`.

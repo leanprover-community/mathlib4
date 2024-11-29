@@ -294,8 +294,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp)
-    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
+    left_inv := fun x ↦ Submodule.Quotient.induction_on _ x (by simp)
+    right_inv := fun x ↦ Submodule.Quotient.induction_on _ x (by simp) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -333,7 +333,7 @@ variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R �
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : f.range.mkQ.comp f = 0 :=
-  LinearMap.ext fun x => by simp
+  LinearMap.ext fun x ↦ by simp
 
 theorem ker_le_range_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     ker g ≤ range f ↔ f.range.mkQ.comp g.ker.subtype = 0 := by

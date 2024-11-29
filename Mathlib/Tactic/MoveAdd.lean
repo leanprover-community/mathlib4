@@ -246,7 +246,7 @@ variable (R : Expr) in
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   if sum.isAppOf op then
-    let inR ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
+    let inR ← sum.getAppArgs.filterM fun r ↦ do isDefEq R (← inferType r <|> pure R)
     let new ← inR.mapM (getAddends ·)
     return new.foldl Array.append  #[]
   else return #[sum]
@@ -366,7 +366,7 @@ def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
   guard (twoGoals.length == 2) <|>
     throwError m!"There should only be 2 goals, instead of {twoGoals.length}"
   -- `permGoal` is the single goal `mv_permuted`, possibly more operations will be permuted later on
-  let permGoal ← twoGoals.filterM fun v => return !(← v.isAssigned)
+  let permGoal ← twoGoals.filterM fun v ↦ return !(← v.isAssigned)
   match ← (simpGoal (permGoal[1]!) (← move_oper_simpCtx)) with
     | (some x, _) => throwError m!"'move_oper' could not solve {indentD x.2}"
     | (none, _) => return permGoal

@@ -332,14 +332,14 @@ variable {f : α → β}
 /-- Two continuous functions to a t2-space that agree on the dense range of a function are equal. -/
 theorem DenseRange.equalizer (hfd : DenseRange f) {g h : β → γ} (hg : Continuous g)
     (hh : Continuous h) (H : g ∘ f = h ∘ f) : g = h :=
-  funext fun y => hfd.induction_on y (isClosed_eq hg hh) <| congr_fun H
+  funext fun y ↦ hfd.induction_on y (isClosed_eq hg hh) <| congr_fun H
 
 end
 
 -- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a T₃ space)
 theorem Filter.HasBasis.hasBasis_of_isDenseInducing [TopologicalSpace α] [TopologicalSpace β]
     [T3Space β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
-    {f : α → β} (hf : IsDenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
+    {f : α → β} (hf : IsDenseInducing f) : (𝓝 (f x)).HasBasis p fun i ↦ closure <| f '' s i := by
   rw [Filter.hasBasis_iff] at h ⊢
   intro T
   refine ⟨fun hT => ?_, fun hT => ?_⟩

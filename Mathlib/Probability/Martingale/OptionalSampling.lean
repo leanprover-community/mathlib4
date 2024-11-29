@@ -52,7 +52,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
   refine Filter.EventuallyEq.trans ?_ (ae_restrict_of_ae (h.condexp_ae_eq hin))
   refine condexp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le (ℱ.le i)
-    (hτ.measurableSet_eq' i) fun t => ?_
+    (hτ.measurableSet_eq' i) fun t ↦ ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
 theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingale f ℱ μ)
@@ -62,7 +62,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
   by_cases hin : i ≤ n
   · refine Filter.EventuallyEq.trans ?_ (ae_restrict_of_ae (h.condexp_ae_eq hin))
     refine condexp_ae_eq_restrict_of_measurableSpace_eq_on (hτ.measurableSpace_le_of_le hτ_le)
-      (ℱ.le i) (hτ.measurableSet_eq' i) fun t => ?_
+      (ℱ.le i) (hτ.measurableSet_eq' i) fun t ↦ ?_
     rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
   · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
     ext1 x
@@ -108,7 +108,7 @@ martingale `f` at `σ` is the conditional expectation of its value at `τ` with 
 theorem stoppedValue_ae_eq_condexp_of_le_of_countable_range (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) (hσ_le_τ : σ ≤ τ) (hτ_le : ∀ x, τ x ≤ n)
     (hτ_countable_range : (Set.range τ).Countable) (hσ_countable_range : (Set.range σ).Countable)
-    [SigmaFinite (μ.trim (hσ.measurableSpace_le_of_le fun x => (hσ_le_τ x).trans (hτ_le x)))] :
+    [SigmaFinite (μ.trim (hσ.measurableSpace_le_of_le fun x ↦ (hσ_le_τ x).trans (hτ_le x)))] :
     stoppedValue f σ =ᵐ[μ] μ[stoppedValue f τ|hσ.measurableSpace] := by
   have : SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le)) :=
     sigmaFiniteTrim_mono _ (IsStoppingTime.measurableSpace_mono hσ hτ hσ_le_τ)
@@ -118,7 +118,7 @@ theorem stoppedValue_ae_eq_condexp_of_le_of_countable_range (h : Martingale f �
   refine (Filter.EventuallyEq.trans ?_
     (condexp_condexp_of_le ?_ (hτ.measurableSpace_le_of_le hτ_le)).symm).trans this.symm
   · exact h.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range hσ
-      (fun x => (hσ_le_τ x).trans (hτ_le x)) hσ_countable_range
+      (fun x ↦ (hσ_le_τ x).trans (hτ_le x)) hσ_countable_range
   · exact hσ.measurableSpace_mono hτ hσ_le_τ
 
 /-- If `τ` and `σ` are two stopping times with `σ ≤ τ` and `τ` is bounded, then the value of a
@@ -180,9 +180,9 @@ by `σ`. -/
 theorem stoppedValue_min_ae_eq_condexp [SigmaFiniteFiltration μ ℱ] (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) {n : ι} (hτ_le : ∀ x, τ x ≤ n)
     [h_sf_min : SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
-    (stoppedValue f fun x => min (σ x) (τ x)) =ᵐ[μ] μ[stoppedValue f τ|hσ.measurableSpace] := by
+    (stoppedValue f fun x ↦ min (σ x) (τ x)) =ᵐ[μ] μ[stoppedValue f τ|hσ.measurableSpace] := by
   refine
-    (h.stoppedValue_ae_eq_condexp_of_le hτ (hσ.min hτ) (fun x => min_le_right _ _) hτ_le).trans ?_
+    (h.stoppedValue_ae_eq_condexp_of_le hτ (hσ.min hτ) (fun x ↦ min_le_right _ _) hτ_le).trans ?_
   refine ae_of_ae_restrict_of_ae_restrict_compl {x | σ x ≤ τ x} ?_ ?_
   · exact condexp_min_stopping_time_ae_eq_restrict_le hσ hτ
   · suffices μ[stoppedValue f τ|(hσ.min hτ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}]

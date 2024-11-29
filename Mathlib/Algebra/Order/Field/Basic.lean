@@ -358,10 +358,10 @@ lemma strictMono_div_right_of_pos (ha : 0 < a) : StrictMono (· / a) :=
   fun _b _c hbc ↦ div_lt_div_of_pos_right hbc ha
 
 theorem Monotone.div_const {β : Type*} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
-    (hc : 0 ≤ c) : Monotone fun x => f x / c := (monotone_div_right_of_nonneg hc).comp hf
+    (hc : 0 ≤ c) : Monotone fun x ↦ f x / c := (monotone_div_right_of_nonneg hc).comp hf
 
 theorem StrictMono.div_const {β : Type*} [Preorder β] {f : β → α} (hf : StrictMono f) {c : α}
-    (hc : 0 < c) : StrictMono fun x => f x / c := by
+    (hc : 0 < c) : StrictMono fun x ↦ f x / c := by
   simpa only [div_eq_mul_inv] using hf.mul_const (inv_pos.2 hc)
 
 -- see Note [lower instance priority]
@@ -431,7 +431,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedSemifield α]
 
 
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
-    IsGLB ((fun b => a * b) '' s) (a * b) := by
+    IsGLB ((fun b ↦ a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
   · exact (OrderIso.mulLeft₀ _ ha).isGLB_image'.2 hs
   · simp_rw [zero_mul]
@@ -439,7 +439,7 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     exact isGLB_singleton
 
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
-    IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+    IsGLB ((fun b ↦ b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 end LinearOrderedSemifield
 
@@ -478,7 +478,7 @@ theorem div_neg_of_pos_of_neg (ha : 0 < a) (hb : b < 0) : a / b < 0 :=
 
 
 theorem div_le_iff_of_neg (hc : c < 0) : b / c ≤ a ↔ a * c ≤ b :=
-  ⟨fun h => div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h =>
+  ⟨fun h ↦ div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h =>
     calc
       a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc)
       _ ≥ b * (1 / c) := mul_le_mul_of_nonpos_right h (one_div_neg.2 hc).le
@@ -706,7 +706,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
 
 -- TODO: Generalize to `LinearOrderedSemifield`
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => a * b) '' s) (a * b) := by
+    IsLUB ((fun b ↦ a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
   · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
   · simp_rw [zero_mul]
@@ -715,7 +715,7 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
 
 -- TODO: Generalize to `LinearOrderedSemifield`
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+    IsLUB ((fun b ↦ b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Miscellaneous lemmas -/
 
@@ -784,7 +784,7 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
-    or_iff_left_of_imp fun h => by
+    or_iff_left_of_imp fun h ↦ by
       subst a
       have : b = 0 := le_antisymm (neg_nonneg.1 a0) b0
       rw [this, neg_zero]

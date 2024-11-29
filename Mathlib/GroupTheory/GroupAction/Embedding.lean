@@ -41,12 +41,12 @@ theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • 
 
 instance [Group G] [Group G'] [SMul G G'] [MulAction G β] [MulAction G' β]
     [IsScalarTower G G' β] : IsScalarTower G G' (α ↪ β) :=
-  ⟨fun x y z => Function.Embedding.ext fun i => smul_assoc x y (z i)⟩
+  ⟨fun x y z => Function.Embedding.ext fun i ↦ smul_assoc x y (z i)⟩
 
 @[to_additive]
 instance [Group G] [Group G'] [MulAction G β] [MulAction G' β] [SMulCommClass G G' β] :
     SMulCommClass G G' (α ↪ β) :=
-  ⟨fun x y z => Function.Embedding.ext fun i => smul_comm x y (z i)⟩
+  ⟨fun x y z => Function.Embedding.ext fun i ↦ smul_comm x y (z i)⟩
 
 instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G β] :
     IsCentralScalar G (α ↪ β) :=

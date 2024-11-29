@@ -70,7 +70,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
       { cocone := cokernelCocone f
         isColimit :=
           isColimitAux _ (cokernelLift f)
-            (fun s => by
+            (fun s ↦ by
               ext
               apply NormedAddGroupHom.lift_mk f.1.range
               rintro _ ⟨b, rfl⟩
@@ -171,7 +171,7 @@ noncomputable
 def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
     IsColimit (cokernelCocone f) :=
   isColimitAux _ (cokernelLift f)
-    (fun s => by
+    (fun s ↦ by
       ext
       apply NormedAddGroupHom.lift_mk f.range
       rintro _ ⟨b, rfl⟩

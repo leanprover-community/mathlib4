@@ -46,7 +46,7 @@ given by `foldr Q f hf n (ι Q m * x) = f m (foldr Q f hf n x)`.
 For example, `foldr f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`. -/
 def foldr (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x) :
     N →ₗ[R] CliffordAlgebra Q →ₗ[R] N :=
-  (CliffordAlgebra.lift Q ⟨f, fun v => LinearMap.ext <| hf v⟩).toLinearMap.flip
+  (CliffordAlgebra.lift Q ⟨f, fun v ↦ LinearMap.ext <| hf v⟩).toLinearMap.flip
 
 @[simp]
 theorem foldr_ι (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (m : M) : foldr Q f hf n (ι Q m) = f m n :=
@@ -159,7 +159,7 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
   have v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   have l := v_mul.compl₂ (LinearMap.fst _ _ N)
   exact
-    { toFun := fun m => (l m).prod (f m)
+    { toFun := fun m ↦ (l m).prod (f m)
       map_add' := fun v₂ v₂ =>
         LinearMap.ext fun x =>
           Prod.ext (LinearMap.congr_fun (l.map_add _ _) x) (LinearMap.congr_fun (f.map_add _ _) x)

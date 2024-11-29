@@ -147,7 +147,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
+      comm := fun g ↦ by have w := comm g =≫ f.inv; simp at w; simp [w] }
 
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
     IsIso f := (mkIso (asIso f.hom) f.comm).isIso_hom
@@ -169,7 +169,7 @@ namespace FunctorCategoryEquivalence
 def functor : Action V G ⥤ SingleObj G ⥤ V where
   obj M :=
     { obj := fun _ => M.V
-      map := fun g => M.ρ g
+      map := fun g ↦ M.ρ g
       map_id := fun _ => M.ρ.map_one
       map_comp := fun g h => M.ρ.map_mul h g }
   map f :=
@@ -182,12 +182,12 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
   obj F :=
     { V := F.obj PUnit.unit
       ρ :=
-        { toFun := fun g => F.map g
+        { toFun := fun g ↦ F.map g
           map_one' := F.map_id PUnit.unit
           map_mul' := fun g h => F.map_comp h g } }
   map f :=
     { hom := f.app PUnit.unit
-      comm := fun g => f.naturality g }
+      comm := fun g ↦ f.naturality g }
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
@@ -285,7 +285,7 @@ def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
   functor := forget V _
   inverse :=
     { obj := fun X => ⟨X, 1⟩
-      map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
+      map := fun f ↦ ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
       simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
@@ -307,7 +307,7 @@ def res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G where
       ρ := f ≫ M.ρ }
   map p :=
     { hom := p.hom
-      comm := fun g => p.comm (f g) }
+      comm := fun g ↦ p.comm (f g) }
 
 /-- The natural isomorphism from restriction along the identity homomorphism to
 the identity functor on `Action V G`.
@@ -339,14 +339,14 @@ def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
       ρ :=
-        { toFun := fun g => F.map (M.ρ g)
+        { toFun := fun g ↦ F.map (M.ρ g)
           map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id, MonCat.one_of]
           map_mul' := fun g h => by
             dsimp
             rw [map_mul, MonCat.mul_of, End.mul_def, End.mul_def, F.map_comp] } }
   map f :=
     { hom := F.map f.hom
-      comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
+      comm := fun g ↦ by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
 

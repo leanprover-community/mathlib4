@@ -449,27 +449,27 @@ This is the `RingEquiv` version of `Equiv.piCongrRight`, and the dependent versi
 @[simps apply]
 def piCongrRight {ι : Type*} {R S : ι → Type*} [∀ i, NonUnitalNonAssocSemiring (R i)]
     [∀ i, NonUnitalNonAssocSemiring (S i)] (e : ∀ i, R i ≃+* S i) : (∀ i, R i) ≃+* ∀ i, S i :=
-  { @MulEquiv.piCongrRight ι R S _ _ fun i => (e i).toMulEquiv,
-    @AddEquiv.piCongrRight ι R S _ _ fun i => (e i).toAddEquiv with
+  { @MulEquiv.piCongrRight ι R S _ _ fun i ↦ (e i).toMulEquiv,
+    @AddEquiv.piCongrRight ι R S _ _ fun i ↦ (e i).toAddEquiv with
     toFun := fun x j => e j (x j)
     invFun := fun x j => (e j).symm (x j) }
 
 @[simp]
 theorem piCongrRight_refl {ι : Type*} {R : ι → Type*} [∀ i, NonUnitalNonAssocSemiring (R i)] :
-    (piCongrRight fun i => RingEquiv.refl (R i)) = RingEquiv.refl _ :=
+    (piCongrRight fun i ↦ RingEquiv.refl (R i)) = RingEquiv.refl _ :=
   rfl
 
 @[simp]
 theorem piCongrRight_symm {ι : Type*} {R S : ι → Type*} [∀ i, NonUnitalNonAssocSemiring (R i)]
     [∀ i, NonUnitalNonAssocSemiring (S i)] (e : ∀ i, R i ≃+* S i) :
-    (piCongrRight e).symm = piCongrRight fun i => (e i).symm :=
+    (piCongrRight e).symm = piCongrRight fun i ↦ (e i).symm :=
   rfl
 
 @[simp]
 theorem piCongrRight_trans {ι : Type*} {R S T : ι → Type*}
     [∀ i, NonUnitalNonAssocSemiring (R i)] [∀ i, NonUnitalNonAssocSemiring (S i)]
     [∀ i, NonUnitalNonAssocSemiring (T i)] (e : ∀ i, R i ≃+* S i) (f : ∀ i, S i ≃+* T i) :
-    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i => (e i).trans (f i) :=
+    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i ↦ (e i).trans (f i) :=
   rfl
 
 /-- Transport dependent functions through an equivalence of the base space.
@@ -635,7 +635,7 @@ theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
 
 theorem coe_nonUnitalRingHom_inj_iff {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
-  ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
+  ⟨fun h ↦ by rw [h], fun h ↦ ext <| NonUnitalRingHom.ext_iff.mp h⟩
 
 @[simp]
 theorem toNonUnitalRingHom_refl :
@@ -691,7 +691,7 @@ theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
 
 theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
-  ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
+  ⟨fun h ↦ by rw [h], fun h ↦ ext <| RingHom.ext_iff.mp h⟩
 
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]

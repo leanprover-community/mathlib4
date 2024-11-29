@@ -82,7 +82,7 @@ lemma evalEval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (x y
   simp only [evalEval, eval_smul]
 
 lemma evalEval_surjective (x y : R) : Function.Surjective <| evalEval x y :=
-  fun y => ⟨CC y, evalEval_CC ..⟩
+  fun y ↦ ⟨CC y, evalEval_CC ..⟩
 
 end Semiring
 

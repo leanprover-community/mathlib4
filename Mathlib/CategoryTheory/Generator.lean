@@ -227,7 +227,7 @@ theorem isSeparating_iff_epi (𝒢 : Set C)
   · simpa using Sigma.ι (fun f : ΣG : 𝒢, (G : C) ⟶ A => (f.1 : C)) ⟨⟨G, hG⟩, f⟩ ≫= huv
   · haveI := h X
     refine
-      (cancel_epi (Sigma.desc (@Sigma.snd 𝒢 fun G => (G : C) ⟶ X))).1 (colimit.hom_ext fun j => ?_)
+      (cancel_epi (Sigma.desc (@Sigma.snd 𝒢 fun G => (G : C) ⟶ X))).1 (colimit.hom_ext fun j ↦ ?_)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
 
 theorem isCoseparating_iff_mono (𝒢 : Set C)
@@ -236,7 +236,7 @@ theorem isCoseparating_iff_mono (𝒢 : Set C)
   refine ⟨fun h A => ⟨fun u v huv => h _ _ fun G hG f => ?_⟩, fun h X Y f g hh => ?_⟩
   · simpa using huv =≫ Pi.π (fun f : ΣG : 𝒢, A ⟶ (G : C) => (f.1 : C)) ⟨⟨G, hG⟩, f⟩
   · haveI := h Y
-    refine (cancel_mono (Pi.lift (@Sigma.snd 𝒢 fun G => Y ⟶ (G : C)))).1 (limit.hom_ext fun j => ?_)
+    refine (cancel_mono (Pi.lift (@Sigma.snd 𝒢 fun G => Y ⟶ (G : C)))).1 (limit.hom_ext fun j ↦ ?_)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
 
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
@@ -251,7 +251,7 @@ theorem hasInitial_of_isCoseparating [WellPowered C] [HasLimits C] {𝒢 : Set C
   letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : 𝒢 → C)))
   suffices ∀ A : C, Unique (((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C) ⟶ A) by
     exact hasInitial_of_unique ((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C)
-  refine fun A => ⟨⟨?_⟩, fun f => ?_⟩
+  refine fun A => ⟨⟨?_⟩, fun f ↦ ?_⟩
   · let s := Pi.lift fun f : ΣG : 𝒢, A ⟶ (G : C) => id (Pi.π (Subtype.val : 𝒢 → C)) f.1
     let t := Pi.lift (@Sigma.snd 𝒢 fun G => A ⟶ (G : C))
     haveI : Mono t := (isCoseparating_iff_mono 𝒢).1 h𝒢 A
@@ -452,19 +452,19 @@ theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ (yon
 theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => G] :
     IsSeparator G ↔ ∀ A : C, Epi (Sigma.desc fun f : G ⟶ A => f) := by
   rw [isSeparator_def]
-  refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i => ?_⟩, fun h X Y f g hh => ?_⟩
+  refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i ↦ ?_⟩, fun h X Y f g hh => ?_⟩
   · simpa using Sigma.ι _ i ≫= huv
   · haveI := h X
-    refine (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j => ?_)
+    refine (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j ↦ ?_)
     simpa using hh j.as
 
 theorem isCoseparator_iff_mono (G : C) [∀ A : C, HasProduct fun _ : A ⟶ G => G] :
     IsCoseparator G ↔ ∀ A : C, Mono (Pi.lift fun f : A ⟶ G => f) := by
   rw [isCoseparator_def]
-  refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i => ?_⟩, fun h X Y f g hh => ?_⟩
+  refine ⟨fun h A => ⟨fun u v huv => h _ _ fun i ↦ ?_⟩, fun h X Y f g hh => ?_⟩
   · simpa using huv =≫ Pi.π _ i
   · haveI := h Y
-    refine (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j => ?_)
+    refine (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j ↦ ?_)
     simpa using hh j.as
 
 section ZeroMorphisms
@@ -476,7 +476,7 @@ theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => coprod.hom_ext ?_ ?_
+  · refine h.def _ _ fun g ↦ coprod.hom_ext ?_ ?_
     · simpa using huv G (by simp) (coprod.inl ≫ g)
     · simpa using huv H (by simp) (coprod.inr ≫ g)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hZ
@@ -497,7 +497,7 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => colimit.hom_ext fun b => ?_
+  · refine h.def _ _ fun g ↦ colimit.hom_ext fun b ↦ ?_
     simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using Sigma.ι f b ≫= huv (Sigma.desc (Pi.single b g))
@@ -511,7 +511,7 @@ theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => Limits.prod.hom_ext ?_ ?_
+  · refine h.def _ _ fun g ↦ Limits.prod.hom_ext ?_ ?_
     · simpa using huv G (by simp) (g ≫ Limits.prod.fst)
     · simpa using huv H (by simp) (g ≫ Limits.prod.snd)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hZ
@@ -532,7 +532,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => limit.hom_ext fun b => ?_
+  · refine h.def _ _ fun g ↦ limit.hom_ext fun b ↦ ?_
     simpa using huv (f b.as) (by simp) (g ≫ limit.π (Discrete.functor f) _)
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using huv (Pi.lift (Pi.single b g)) =≫ Pi.π f b
@@ -546,7 +546,7 @@ end ZeroMorphisms
 theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
     IsDetector G ↔ (coyoneda.obj (op G)).ReflectsIsomorphisms := by
   refine
-    ⟨fun hG => ⟨fun f hf => hG.def _ fun h => ?_⟩, fun h =>
+    ⟨fun hG => ⟨fun f hf => hG.def _ fun h ↦ ?_⟩, fun h =>
       (isDetector_def _).2 fun X Y f hf => ?_⟩
   · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
     exact hf h
@@ -556,7 +556,7 @@ theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
 
 theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
     IsCodetector G ↔ (yoneda.obj G).ReflectsIsomorphisms := by
-  refine ⟨fun hG => ⟨fun f hf => ?_⟩, fun h => (isCodetector_def _).2 fun X Y f hf => ?_⟩
+  refine ⟨fun hG => ⟨fun f hf => ?_⟩, fun h ↦ (isCodetector_def _).2 fun X Y f hf => ?_⟩
   · refine (isIso_unop_iff _).1 (hG.def _ ?_)
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
   · rw [← isIso_op_iff]

@@ -95,7 +95,7 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
 instance concreteCategory : ConcreteCategory.{v} (HopfAlgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := fun f => f.toBialgHom }
+      map := fun f ↦ f.toBialgHom }
   forget_faithful :=
     { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
@@ -158,8 +158,8 @@ variable {X Y Z : HopfAlgebraCat.{v} R}
 def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.3) x
-    right_inv := fun x => BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.4) x }
+    left_inv := fun x ↦ BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.3) x
+    right_inv := fun x ↦ BialgHom.congr_fun (congr_arg HopfAlgebraCat.Hom.toBialgHom i.4) x }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
     (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl

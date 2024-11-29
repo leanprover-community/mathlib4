@@ -215,7 +215,7 @@ See `inner_map_self_eq_zero` for the complex version without the symmetric assum
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     (∀ x, ⟪T x, x⟫ = 0) ↔ T = 0 := by
   simp_rw [LinearMap.ext_iff, zero_apply]
-  refine ⟨fun h x => ?_, fun h => by simp_rw [h, inner_zero_left, forall_const]⟩
+  refine ⟨fun h x => ?_, fun h ↦ by simp_rw [h, inner_zero_left, forall_const]⟩
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
   ring

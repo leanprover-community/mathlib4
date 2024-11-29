@@ -71,7 +71,7 @@ def limitπAlgHom (j) :
   { SemiRingCat.limitπRingHom
       (F ⋙ forget₂ (AlgebraCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgebraCat.{w} R))).π.app j
-    commutes' := fun x => by
+    commutes' := fun x ↦ by
       simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply _ R,
         Types.Small.limitCone_pt, AlgEquiv.commutes]
       rfl
@@ -100,12 +100,12 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
   refine
     IsLimit.ofFaithful (forget (AlgebraCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
       -- Porting note: in mathlib3 the function term
-      -- `fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v`
-      -- was provided by unification, and the last argument `(fun s => _)` was `(fun s => rfl)`.
-      (fun s => ofHom
+      -- `fun v ↦ ⟨fun j ↦ ((forget (AlgebraCat R)).mapCone s).π.app j v`
+      -- was provided by unification, and the last argument `(fun s ↦ _)` was `(fun s ↦ rfl)`.
+      (fun s ↦ ofHom
         { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
           commutes' := ?_ })
-      (fun s => rfl)
+      (fun s ↦ rfl)
   · congr
     ext j
     simp only [Functor.mapCone_π_app, forget_map, map_one, Pi.one_apply]

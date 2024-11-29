@@ -38,12 +38,12 @@ def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
   | _ + 1, f, v => Matrix.vecCons (f 0 (v 0)) (seq (Matrix.vecTail f) (Matrix.vecTail v))
 
 @[simp]
-theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i => f i (v i)
+theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v = fun i ↦ f i (v i)
   | 0, _, _ => Subsingleton.elim _ _
   | n + 1, f, v =>
-    funext fun i => by
+    funext fun i ↦ by
       simp_rw [seq, seq_eq]
-      refine i.cases ?_ fun i => ?_
+      refine i.cases ?_ fun i ↦ ?_
       · rfl
       · rw [Matrix.cons_val_succ]
         rfl
@@ -87,7 +87,7 @@ example (a : Fin 2 → α) : a = ![a 0, a 1] :=
 /-- `∀` with better defeq for `∀ x : Fin m → α, P x`. -/
 def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
-  | _ + 1, P => ∀ x : α, Forall fun v => P (Matrix.vecCons x v)
+  | _ + 1, P => ∀ x : α, Forall fun v ↦ P (Matrix.vecCons x v)
 
 /-- This can be use to prove
 ```lean
@@ -108,7 +108,7 @@ example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀
 /-- `∃` with better defeq for `∃ x : Fin m → α, P x`. -/
 def Exists : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | 0, P => P ![]
-  | _ + 1, P => ∃ x : α, Exists fun v => P (Matrix.vecCons x v)
+  | _ + 1, P => ∃ x : α, Exists fun v ↦ P (Matrix.vecCons x v)
 
 /-- This can be use to prove
 ```lean
@@ -130,7 +130,7 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | 0, _ => 0
   | 1, v => v 0
   -- Porting note: inline `∘` since it is no longer reducible
-  | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
+  | _ + 2, v => sum (fun i ↦ v (Fin.castSucc i)) + v (Fin.last _)
 
 /-- This can be used to prove
 ```lean

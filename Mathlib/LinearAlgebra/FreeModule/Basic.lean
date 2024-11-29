@@ -47,10 +47,10 @@ theorem Module.free_def [Small.{w,v} M] :
   ⟨fun h =>
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
-    fun h => ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
+    fun h ↦ ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
 
 theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
-  ⟨fun h => ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
+  ⟨fun h ↦ ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
     fun ⟨S, hS⟩ => ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
 
 variable {R M}
@@ -152,7 +152,7 @@ instance prod [Module.Free R N] : Module.Free R (M × N) :=
 instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
     [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
   let ⟨_⟩ := nonempty_fintype ι
-  of_basis <| Pi.basis fun i => chooseBasis R (M i)
+  of_basis <| Pi.basis fun i ↦ chooseBasis R (M i)
 
 /-- The module of finite matrices is free. -/
 instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
@@ -181,7 +181,7 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
 
 instance dfinsupp {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
-  of_basis <| DFinsupp.basis fun i => chooseBasis R (M i)
+  of_basis <| DFinsupp.basis fun i ↦ chooseBasis R (M i)
 
 instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (⨁ i, M i) :=

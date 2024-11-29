@@ -171,7 +171,7 @@ theorem fintype_card_le_finrank [Module.Finite R M]
   simpa using h.cardinalMk_le_finrank
 
 theorem finset_card_le_finrank [Module.Finite R M]
-    {b : Finset M} (h : LinearIndependent R (fun x => x : b → M)) :
+    {b : Finset M} (h : LinearIndependent R (fun x ↦ x : b → M)) :
     b.card ≤ finrank R M := by
   rw [← Fintype.card_coe]
   exact h.fintype_card_le_finrank
@@ -462,7 +462,7 @@ theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R M] {S : Subm
       congr_arg Subtype.val <|
         ((Submodule.eq_bot_iff _).1 <| Eq.symm <| Submodule.bot_eq_top_of_rank_eq_zero h) ⟨x, hx⟩
           Submodule.mem_top,
-    fun h => by rw [h, rank_bot]⟩
+    fun h ↦ by rw [h, rank_bot]⟩
 
 @[simp]
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R M]
@@ -532,7 +532,7 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
   haveI := nontrivial_of_invariantBasisNumber R
   rcases eq_or_ne v 0 with (rfl | hn)
   · haveI :=
-      _root_.subsingleton_of_forall_eq (0 : M) fun w => by
+      _root_.subsingleton_of_forall_eq (0 : M) fun w ↦ by
         obtain ⟨c, rfl⟩ := h w
         simp
     rw [finrank_zero_of_subsingleton]

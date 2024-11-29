@@ -54,7 +54,7 @@ theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → �
   toProd_injective
 
 instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
-  ⟨fun s => isEmptyElim s.fst⟩
+  ⟨fun s ↦ isEmptyElim s.fst⟩
 
 instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
   toDualProd_injective.subsingleton
@@ -97,7 +97,7 @@ instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
 
 instance : Coe (NonemptyInterval α) (Set α) :=
-  ⟨fun s => Icc s.fst s.snd⟩
+  ⟨fun s ↦ Icc s.fst s.snd⟩
 
 instance (priority := 100) : Membership α (NonemptyInterval α) :=
   ⟨fun s a => a ∈ (s : Set α)⟩
@@ -157,7 +157,7 @@ theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
 
 /-- Binary pushforward of nonempty intervals. -/
 @[simps]
-def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a => f a b) (h₁ : ∀ a, Monotone (f a)) :
+def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a ↦ f a b) (h₁ : ∀ a, Monotone (f a)) :
     NonemptyInterval α → NonemptyInterval β → NonemptyInterval γ := fun s t =>
   ⟨(f s.fst t.fst, f s.snd t.snd), (h₀ _ s.fst_le_snd).trans <| h₁ _ t.fst_le_snd⟩
 
@@ -194,7 +194,7 @@ instance : PartialOrder (NonemptyInterval α) :=
 
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : NonemptyInterval α ↪o Set α :=
-  OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
+  OrderEmbedding.ofMapLEIff (fun s ↦ Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
 
 instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
@@ -280,7 +280,7 @@ instance : OrderBot (Interval α) := WithBot.orderBot
 instance : Coe (NonemptyInterval α) (Interval α) :=
   WithBot.coe
 
-instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
+instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r ↦ r ≠ ⊥ :=
   WithBot.canLift
 
 /-- Recursor for `Interval` using the preferred forms `⊥` and `↑a`. -/
@@ -393,7 +393,7 @@ def coeHom : Interval α ↪o Set α :=
     match s, t with
     | ⊥, _ => iff_of_true bot_le bot_le
     | some s, ⊥ =>
-      iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
+      iff_of_false (fun h ↦ s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
     | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
 
 instance setLike : SetLike (Interval α) α where

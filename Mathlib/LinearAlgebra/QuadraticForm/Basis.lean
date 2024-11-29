@@ -66,7 +66,7 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
 @[simp]
 lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
     (Q₁ + Q₂).toBilin bm = Q₁.toBilin bm + Q₂.toBilin bm := by
-  refine bm.ext fun i => bm.ext fun j => ?_
+  refine bm.ext fun i ↦ bm.ext fun j ↦ ?_
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_add]
   · simp [toBilin_apply]
@@ -78,7 +78,7 @@ variable [Module S N] [IsScalarTower S R N]
 @[simp]
 lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
     (s • Q).toBilin bm = s • Q.toBilin bm := by
-  refine bm.ext fun i => bm.ext fun j => ?_
+  refine bm.ext fun i ↦ bm.ext fun j ↦ ?_
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_smul]
   · simp [toBilin_apply]

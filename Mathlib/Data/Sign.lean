@@ -125,7 +125,7 @@ instance : BoundedOrder SignType where
   bot_le := LE.of_neg
 
 instance : HasDistribNeg SignType :=
-  { neg_neg := fun x => by cases x <;> rfl
+  { neg_neg := fun x ↦ by cases x <;> rfl
     neg_mul := fun x y => by cases x <;> cases y <;> rfl
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
 
@@ -301,7 +301,7 @@ variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 -- Porting note: needed to rename this from sign to SignType.sign to avoid ambiguity with Int.sign
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
-  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
+  ⟨fun a ↦ if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
@@ -321,13 +321,13 @@ theorem sign_pos (ha : 0 < a) : sign a = 1 := by rwa [sign_apply, if_pos]
 theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asymm ha, if_pos]
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
-  refine ⟨fun h => ?_, fun h => sign_pos h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ sign_pos h⟩
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs at h
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
-  refine ⟨fun h => ?_, fun h => sign_neg h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
   assumption
@@ -346,7 +346,7 @@ lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel 
 
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases' h
@@ -488,12 +488,12 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
         (#t = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
   refine
-    ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,
-      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, ?_, ?_⟩
-  · simp [sum_attach (f := fun a => (f a).natAbs)]
+    ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a ↦ range (f a).natAbs,
+      fun a ↦ sign (f a.1), fun a ↦ a.1, fun a ↦ a.1.2, ?_, ?_⟩
+  · simp [sum_attach (f := fun a ↦ (f a).natAbs)]
   · intro x hx
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
-      sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
+      sum_attach (s := s) (f := fun y ↦ if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/
 theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
@@ -502,7 +502,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
         (Fintype.card β = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
-  ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
+  ⟨t, inferInstance, fun b ↦ sgn b, fun b ↦ g b, fun b ↦ hg b, by simp [ht], fun a ha =>
     (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
@@ -514,7 +514,7 @@ theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : F
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
   refine
     ⟨β ⊕ (Fin (n - ∑ i ∈ s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
-      Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i => Int.natAbs (f i)) → α)),
+      Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i ↦ Int.natAbs (f i)) → α)),
         ?_, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
   rintro (b | b) hb
   · cases hb (hg _)

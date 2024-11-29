@@ -227,7 +227,7 @@ theorem isIrreducible_iff_sInter :
       ∀ (U : Finset (Set X)), (∀ u ∈ U, IsOpen u) → (∀ u ∈ U, (s ∩ u).Nonempty) →
         (s ∩ ⋂₀ ↑U).Nonempty := by
   classical
-  refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
+  refine ⟨fun h U hu hU => ?_, fun h ↦ ⟨?_, ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
     | @insert u U _ IH =>
@@ -296,7 +296,7 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
 
 theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU : IsOpen U)
     (hU' : U ⊆ t) : IsPreirreducible U :=
-  U.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreirreducible_empty) fun h =>
+  U.eq_empty_or_nonempty.elim (fun h ↦ h.symm ▸ isPreirreducible_empty) fun h =>
     (ht.subset_irreducible h hU (fun _ => id) hU').2
 
 theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=

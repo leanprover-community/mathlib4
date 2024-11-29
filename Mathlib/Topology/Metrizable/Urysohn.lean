@@ -44,7 +44,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
   letI : TopologicalSpace s := ⊥
   haveI : DiscreteTopology s := ⟨rfl⟩
   rsuffices ⟨f, hf⟩ : ∃ f : X → s →ᵇ ℝ, IsInducing f
-  · exact ⟨fun x => (f x).extend (Encodable.encode' s) 0,
+  · exact ⟨fun x ↦ (f x).extend (Encodable.encode' s) 0,
       (BoundedContinuousFunction.isometry_extend (Encodable.encode' s)
         (0 : ℕ →ᵇ ℝ)).isEmbedding.isInducing.comp hf⟩
   have hd : ∀ UV : s, Disjoint (closure UV.1.1) UV.1.2ᶜ :=
@@ -64,7 +64,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
         (hB.isOpen UV.2.1.2).isClosed_compl (hd UV) with
       ⟨f, hf₀, hf₁, hf01⟩
     exact ⟨ε UV • f, fun x hx => by simp [hf₀ (subset_closure hx)], fun x hx => by simp [hf₁ hx],
-      fun x => ⟨mul_nonneg (ε01 _).1.le (hf01 _).1, mul_le_of_le_one_right (ε01 _).1.le (hf01 _).2⟩⟩
+      fun x ↦ ⟨mul_nonneg (ε01 _).1.le (hf01 _).1, mul_le_of_le_one_right (ε01 _).1.le (hf01 _).2⟩⟩
   choose f hf0 hfε hf0ε using this
   have hf01 : ∀ UV x, f UV x ∈ Icc (0 : ℝ) 1 :=
     fun UV x => Icc_subset_Icc_right (ε01 _).2 (hf0ε _ _)
@@ -73,7 +73,7 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
     ⟨⟨fun UV => f UV x, continuous_of_discreteTopology⟩, 1,
       fun UV₁ UV₂ => Real.dist_le_of_mem_Icc_01 (hf01 _ _) (hf01 _ _)⟩
   have hF : ∀ x UV, F x UV = f UV x := fun _ _ => rfl
-  refine ⟨F, isInducing_iff_nhds.2 fun x => le_antisymm ?_ ?_⟩
+  refine ⟨F, isInducing_iff_nhds.2 fun x ↦ le_antisymm ?_ ?_⟩
   · /- First we prove that `F` is continuous. Given `δ > 0`, consider the set `T` of `(U, V) ∈ s`
     such that `ε (U, V) ≥ δ`. Since `ε` tends to zero, `T` is finite. Since each `f` is continuous,
     we can choose a neighborhood such that `dist (F y (U, V)) (F x (U, V)) ≤ δ` for any

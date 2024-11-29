@@ -148,7 +148,7 @@ theorem rcomap'_sets (r : Rel α β) (f : Filter β) :
 @[simp]
 theorem rcomap'_rcomap' (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     rcomap' r (rcomap' s l) = rcomap' (r.comp s) l :=
-  Filter.ext fun t => by
+  Filter.ext fun t ↦ by
     simp only [mem_rcomap', Rel.preimage_comp]
     constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩

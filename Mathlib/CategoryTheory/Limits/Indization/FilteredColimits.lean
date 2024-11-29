@@ -96,7 +96,7 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- simply because `𝟙 (colimit F)` is the terminal object. Here `y` is the functor
   -- `CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` induced by `yoneda`.
   have h₁ : Nonempty (limit (G.op ⋙ (toOver _ _).op ⋙ yoneda.obj (Over.mk (𝟙 (colimit F))))) :=
-    ⟨Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) (by simp)⟩
+    ⟨Types.Limit.mk _ (fun j ↦ Over.mkIdTerminal.from _) (by simp)⟩
 
   -- `𝟙 (colimit F)` is the colimit of the diagram in `Over (colimit F)` given by the arrows of
   -- the form `Fi ⟶ colimit F`. Thus, pulling the colimit out of the hom functor and commuting
@@ -146,7 +146,7 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
   -- we use that all the `CostructuredArrow yoneda (F.obj i)` have small weakly terminal sets.
   have : ∀ i, ∃ (s : Set (CostructuredArrow yoneda (F.obj i))) (_ : Small.{v} s),
       ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) :=
-    fun i => (hF i).finallySmall.exists_small_weakly_terminal_set
+    fun i ↦ (hF i).finallySmall.exists_small_weakly_terminal_set
   choose s hs j hjs hj using this
   refine finallySmall_of_small_weakly_terminal_set
     (⋃ i, (map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)

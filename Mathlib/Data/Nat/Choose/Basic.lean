@@ -112,7 +112,7 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | _ + 1, _ + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
-  ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
+  ⟨fun h ↦ lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
 
 theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
   | 0, 0 => by decide
@@ -316,7 +316,7 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
-theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choose_le_choose b
+theorem choose_mono (b : ℕ) : Monotone fun a ↦ choose a b := fun _ _ => choose_le_choose b
 
 /-! #### Multichoose
 

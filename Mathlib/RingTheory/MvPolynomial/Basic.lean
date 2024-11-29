@@ -129,7 +129,7 @@ def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
 
 @[simp]
 theorem coe_basisMonomials :
-    (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
+    (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s ↦ monomial s 1 :=
   rfl
 
 /-- The `R`-module `MvPolynomial σ R` is free. -/
@@ -194,7 +194,7 @@ noncomputable def basisMonomials : Basis ℕ R R[X] :=
   Basis.ofRepr (toFinsuppIsoAlg R).toLinearEquiv
 
 @[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
+theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s ↦ monomial s 1 :=
   funext fun _ => ofFinsupp_single _ _
 
 end Polynomial

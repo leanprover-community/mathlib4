@@ -125,7 +125,7 @@ theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
 attribute [coe] AlternatingMap.toMultilinearMap
 
 instance coe : Coe (M [⋀^ι]→ₗ[R] N) (MultilinearMap R (fun _ : ι => M) N) :=
-  ⟨fun x => x.toMultilinearMap⟩
+  ⟨fun x ↦ x.toMultilinearMap⟩
 
 @[simp, norm_cast]
 theorem coe_multilinearMap : ⇑(f : MultilinearMap R (fun _ : ι => M) N) = f :=
@@ -252,13 +252,13 @@ alternating map taking values in the space of functions `Π i, N i`. -/
 @[simps!]
 def pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) : M [⋀^ι]→ₗ[R] (∀ i, N i) :=
-  { MultilinearMap.pi fun a => (f a).toMultilinearMap with
-    map_eq_zero_of_eq' := fun _ _ _ h hne => funext fun a => (f a).map_eq_zero_of_eq _ h hne }
+  { MultilinearMap.pi fun a ↦ (f a).toMultilinearMap with
+    map_eq_zero_of_eq' := fun _ _ _ h hne => funext fun a ↦ (f a).map_eq_zero_of_eq _ h hne }
 
 @[simp]
 theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) :
-    (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a => f a :=
+    (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a ↦ f a :=
   rfl
 
 /-- Given an alternating `R`-multilinear map `f` taking values in `R`, `f.smul_right z` is the map
@@ -400,7 +400,7 @@ end
 def codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N) (h : ∀ v, f v ∈ p) :
     M [⋀^ι]→ₗ[R] p :=
   { f.toMultilinearMap.codRestrict p h with
-    toFun := fun v => ⟨f v, h v⟩
+    toFun := fun v ↦ ⟨f v, h v⟩
     map_eq_zero_of_eq' := fun _ _ _ hv hij => Subtype.ext <| map_eq_zero_of_eq _ _ hv hij }
 
 end AlternatingMap
@@ -484,7 +484,7 @@ theorem subtype_compAlternatingMap_codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : 
 theorem compAlternatingMap_codRestrict (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N)
     (p : Submodule R N₂) (h) :
     (g.codRestrict p h).compAlternatingMap f =
-      (g.compAlternatingMap f).codRestrict p fun v => h (f v) :=
+      (g.compAlternatingMap f).codRestrict p fun v ↦ h (f v) :=
   AlternatingMap.ext fun _ => rfl
 
 end LinearMap
@@ -506,7 +506,7 @@ theorem coe_compLinearMap (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) :
 
 @[simp]
 theorem compLinearMap_apply (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) (v : ι → M₂) :
-    f.compLinearMap g v = f fun i => g (v i) :=
+    f.compLinearMap g v = f fun i ↦ g (v i) :=
   rfl
 
 /-- Composing an alternating map twice with the same linear map in each argument is
@@ -540,7 +540,7 @@ theorem compLinearMap_id (f : M [⋀^ι]→ₗ[R] N) : f.compLinearMap LinearMap
 /-- Composing with a surjective linear map is injective. -/
 theorem compLinearMap_injective (f : M₂ →ₗ[R] M) (hf : Function.Surjective f) :
     Function.Injective fun g : M [⋀^ι]→ₗ[R] N => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by
+  ext fun x ↦ by
     simpa [Function.surjInv_eq hf] using AlternatingMap.ext_iff.mp h (Function.surjInv hf ∘ x)
 
 theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
@@ -657,7 +657,7 @@ This is the alternating version of `MultilinearMap.domDomCongr`. -/
 @[simps]
 def domDomCongr (σ : ι ≃ ι') (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι']→ₗ[R] N :=
   { f.toMultilinearMap.domDomCongr σ with
-    toFun := fun v => f (v ∘ σ)
+    toFun := fun v ↦ f (v ∘ σ)
     map_eq_zero_of_eq' := fun v i j hv hij =>
       f.map_eq_zero_of_eq (v ∘ σ) (i := σ.symm i) (j := σ.symm j)
         (by simpa using hv) (σ.symm.injective.ne hij) }
@@ -740,7 +740,7 @@ theorem domDomCongr_eq_zero_iff (σ : ι ≃ ι') (f : M [⋀^ι]→ₗ[R] N) :
 
 theorem domDomCongr_perm [Fintype ι] [DecidableEq ι] (σ : Equiv.Perm ι) :
     g.domDomCongr σ = Equiv.Perm.sign σ • g :=
-  AlternatingMap.ext fun v => g.map_perm v σ
+  AlternatingMap.ext fun v ↦ g.map_perm v σ
 
 @[norm_cast]
 theorem coe_domDomCongr (σ : ι ≃ ι') :
@@ -759,7 +759,7 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
   -- Porting note: Was `conv at h in .. => ..`.
-  rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
+  rw [← (funext fun x ↦ ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
   rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
     add_eq_zero_iff_eq_neg] at h
   rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
@@ -872,13 +872,13 @@ variable [Module R' N₁] [Module R' N₂]
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
-    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
+    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i ↦ e (v i)) = g fun i ↦ e (v i)) :
     f = g := by
   classical
-    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => ?_)
+    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v ↦ ?_)
     by_cases hi : Function.Injective v
     · exact h v hi
-    · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
+    · have : ¬Function.Injective fun i ↦ e (v i) := hi.imp Function.Injective.of_comp
       rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
         g.map_eq_zero_of_not_injective _ this]
 
@@ -906,7 +906,7 @@ def curryLeft {n : ℕ} (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
     M'' →ₗ[R'] M'' [⋀^Fin n]→ₗ[R'] N'' where
   toFun m :=
     { f.toMultilinearMap.curryLeft m with
-      toFun := fun v => f (Matrix.vecCons m v)
+      toFun := fun v ↦ f (Matrix.vecCons m v)
       map_eq_zero_of_eq' := fun v i j hv hij =>
         f.map_eq_zero_of_eq _ (by
           rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
@@ -952,7 +952,7 @@ theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
 theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
     (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') (m : M₂'') :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
-  ext fun v => congr_arg f <| funext <| by
+  ext fun v ↦ congr_arg f <| funext <| by
     refine Fin.cases ?_ ?_
     · rfl
     · simp

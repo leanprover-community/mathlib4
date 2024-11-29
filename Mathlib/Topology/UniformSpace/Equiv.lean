@@ -160,7 +160,7 @@ protected theorem surjective (h : α ≃ᵤ β) : Function.Surjective h :=
 /-- Change the uniform equiv `f` to make the inverse function definitionally equal to `g`. -/
 def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f) : α ≃ᵤ β :=
   have : g = f.symm :=
-    funext fun x => calc
+    funext fun x ↦ calc
       g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
       _ = f.symm x := by rw [hg x]
   { toFun := f
@@ -312,12 +312,12 @@ def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace 
     [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) : (∀ i, β₁ i) ≃ᵤ ∀ i, β₂ i where
   uniformContinuous_toFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).uniformContinuous
   uniformContinuous_invFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).symm.uniformContinuous
-  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+  toEquiv := Equiv.piCongrRight fun i ↦ (F i).toEquiv
 
 @[simp]
 theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
     [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) :
-    (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
+    (piCongrRight F).symm = piCongrRight fun i ↦ (F i).symm :=
   rfl
 
 /-- `Equiv.piCongr` as a uniform isomorphism: this is the natural isomorphism

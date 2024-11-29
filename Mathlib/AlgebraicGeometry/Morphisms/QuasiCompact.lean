@@ -41,7 +41,7 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
   isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f.base ⁻¹' U)
 
 theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.base :=
-  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
+  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h ↦ ⟨h.2⟩⟩
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
@@ -67,7 +67,7 @@ theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
     (fun (U : X.affineOpens) => (U : X.Opens))
   · rw [Subtype.range_coe]; exact isBasis_affine_open X
-  · exact fun i => i.2.isCompact
+  · exact fun i ↦ i.2.isCompact
 
 theorem isCompactOpen_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set X) :
     IsCompact U ∧ IsOpen U ↔
@@ -141,7 +141,7 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
         rw [← hS]
         dsimp [Opens.map]
         simp only [Opens.iSup_mk, Opens.coe_mk, Set.preimage_iUnion]
-        exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
+        exact isCompact_iUnion fun i ↦ isCompact_iff_compactSpace.mpr (hS' i)
       · exact isAffineOpen_top _
 
 theorem quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
@@ -297,7 +297,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     apply this
   intro i
   replace hn :=
-    congr_arg (fun x => X.presheaf.map (homOfLE (h₁ i)).op (f ^ (Finset.univ.sup n - n i)) * x)
+    congr_arg (fun x ↦ X.presheaf.map (homOfLE (h₁ i)).op (f ^ (Finset.univ.sup n - n i)) * x)
       (hn i)
   dsimp at hn
   simp only [← map_mul, ← map_pow] at hn

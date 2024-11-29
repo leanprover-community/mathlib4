@@ -244,8 +244,8 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
     (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  let φ := fun j => f.app (Discrete.mk j)
-  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  let φ := fun j ↦ f.app (Discrete.mk j)
+  have hf' := hW _ _ φ (fun j ↦ hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).2 hf'
   refine Arrow.isoMk
     (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)

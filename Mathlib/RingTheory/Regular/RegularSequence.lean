@@ -234,7 +234,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
   let e i := quotOfListConsSMulTopEquivQuotSMulTopInner M r (rs.take i)
   Iff.trans (isWeaklyRegular_iff_Fin _ _) <| Iff.trans Fin.forall_iff_succ <|
     and_congr ((quotEquivOfEqBot _ this).isSMulRegular_congr r) <|
-      Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
+      Iff.trans (forall_congr' fun i ↦ (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :

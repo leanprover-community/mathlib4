@@ -175,11 +175,11 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
   constructor
   · rintro ⟨y, hy⟩
     cases' h : y with a f
-    refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
+    refine ⟨a, fun i ↦ (f i).val, ?_, fun i ↦ (f i).property⟩
     rw [← hy, h, map_eq_map, PFunctor.map_eq]
     congr
   rintro ⟨a, f, xeq, pf⟩
-  use ⟨a, fun i => ⟨f i, pf i⟩⟩
+  use ⟨a, fun i ↦ ⟨f i, pf i⟩⟩
   rw [xeq]; rfl
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
@@ -195,7 +195,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
   constructor
   · rintro ⟨u, xeq, yeq⟩
     cases' h : u with a f
-    use a, fun i => (f i).val.fst, fun i => (f i).val.snd
+    use a, fun i ↦ (f i).val.fst, fun i ↦ (f i).val.snd
     constructor
     · rw [← xeq, h]
       rfl
@@ -205,7 +205,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     intro i
     exact (f i).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
+  use ⟨a, fun i ↦ ⟨(f₀ i, f₁ i), h i⟩⟩
   constructor
   · rw [xeq]
     rfl
@@ -217,7 +217,7 @@ theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
     @supp.{u} P.Obj _ α (⟨a, f⟩ : P α) = f '' univ := by
   ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
   constructor <;> intro h
-  · apply @h fun x => ∃ y : P.B a, f y = x
+  · apply @h fun x ↦ ∃ y : P.B a, f y = x
     rw [liftp_iff']
     intro
     exact ⟨_, rfl⟩

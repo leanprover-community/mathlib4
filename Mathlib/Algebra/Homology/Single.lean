@@ -33,10 +33,10 @@ variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 -/
 noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
-    { X := fun i => if i = j then A else 0
+    { X := fun i ↦ if i = j then A else 0
       d := fun _ _ => 0 }
   map f :=
-    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
+    { f := fun i ↦ if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
               eqToHom (by dsimp; rw [if_pos h]) else 0 }
   map_id A := by
     ext

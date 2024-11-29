@@ -33,7 +33,7 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
 @[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
 theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
+    Set.InjOn (fun k ↦ insertIdx k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
@@ -66,7 +66,7 @@ theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α
 theorem foldl_range_subset_of_range_subset {f : α → β → α} {g : α → γ → α}
     (hfg : (Set.range fun a c => f c a) ⊆ Set.range fun b c => g c b) (a : α) :
     Set.range (foldl f a) ⊆ Set.range (foldl g a) := by
-  change (Set.range fun l => _) ⊆ Set.range fun l => _
+  change (Set.range fun l ↦ _) ⊆ Set.range fun l ↦ _
   -- Porting note: This was simply `simp_rw [← foldr_reverse]`
   simp_rw [← foldr_reverse _ (fun z w => g w z), ← foldr_reverse _ (fun z w => f w z)]
   -- Porting note: This `change` was not necessary in mathlib3

@@ -44,17 +44,17 @@ theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j 
 @[simp]
 theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
     vandermonde (Fin.cons v0 v : Fin n.succ → R) =
-      Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1
-      fun j => v i * vandermonde v i j := by
+      Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i ↦ Fin.cons 1
+      fun j ↦ v i * vandermonde v i j := by
   ext i j
-  refine Fin.cases (by simp) (fun i => ?_) i
-  refine Fin.cases (by simp) (fun j => ?_) j
+  refine Fin.cases (by simp) (fun i ↦ ?_) i
+  refine Fin.cases (by simp) (fun j ↦ ?_) j
   simp [pow_succ']
 
 theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
     vandermonde v = .of
       Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
-        Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
+        Fin.cons 1 fun j ↦ v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
   rfl
 
@@ -75,7 +75,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
     det (of fun i j : Fin n.succ => v i ^ (j : ℕ)) =
         det
           (of fun i j : Fin n.succ =>
-            Matrix.vecCons (v 0 ^ (j : ℕ)) (fun i => v (Fin.succ i) ^ (j : ℕ) - v 0 ^ (j : ℕ)) i) :=
+            Matrix.vecCons (v 0 ^ (j : ℕ)) (fun i ↦ v (Fin.succ i) ^ (j : ℕ) - v 0 ^ (j : ℕ)) i) :=
       det_eq_of_forall_row_eq_smul_add_const (Matrix.vecCons 0 1) 0 (Fin.cons_zero _ _) ?_
     _ =
         det
@@ -100,7 +100,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
         (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
           det fun i j : Fin n =>
             ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
-      (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
+      (det_mul_column (fun i ↦ v (Fin.succ i) - v 0) _)
     _ = (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
     det (of fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ)) := congr_arg _ ?_
     _ = ∏ i : Fin n.succ, ∏ j ∈ Ioi i, (v j - v i) := by
@@ -113,7 +113,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
   · intro i j
     simp_rw [of_apply]
     rw [Matrix.cons_val_zero]
-    refine Fin.cases ?_ (fun i => ?_) i
+    refine Fin.cases ?_ (fun i ↦ ?_) i
     · simp
     rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
     ring
@@ -138,7 +138,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     rintro i ⟨_, j, h₁, h₂⟩
     exact ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
   · simp only [Ne, forall_exists_index, and_imp]
-    refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => ?_)
+    refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k ↦ ?_)
     rw [vandermonde_apply, vandermonde_apply, h₁]
 
 theorem det_vandermonde_ne_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
@@ -184,7 +184,7 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
   simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
-  rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
+  rw [sum_eq_of_subset _ (fun j ↦ zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]

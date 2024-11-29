@@ -109,9 +109,9 @@ theorem convexBodyLT_volume :
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow]
       congr 2
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞))).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞) ^ 2)).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
 
 variable {f}
@@ -246,9 +246,9 @@ theorem convexBodyLT'_volume :
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow, mul_assoc]
       congr 3
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞))).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞) ^ 2)).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
 
 end convexBodyLT'
@@ -337,7 +337,7 @@ theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
   obtain hB | hB := lt_or_eq_of_le hB
   · suffices convexBodySum K B = ∅ by rw [this, measure_empty]
     ext x
-    refine ⟨fun hx => ?_, fun h => h.elim⟩
+    refine ⟨fun hx => ?_, fun h ↦ h.elim⟩
     rw [Set.mem_setOf] at hx
     linarith [convexBodySumFun_nonneg x]
   · suffices convexBodySum K B = { 0 } by rw [this, measure_singleton]
@@ -422,12 +422,12 @@ theorem convexBodySum_volume :
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
-        rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _
-          (fun x => exp (- 2 * ‖x‖))]
+        rw [integral_fintype_prod_eq_pow _ (fun x ↦ exp (- ‖x‖)), integral_fintype_prod_eq_pow _
+          (fun x ↦ exp (- 2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ =  (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
               (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by
-        rw [integral_comp_abs (f := fun x => exp (- x)), ← integral_exp_neg_rpow zero_lt_one,
+        rw [integral_comp_abs (f := fun x ↦ exp (- x)), ← integral_exp_neg_rpow zero_lt_one,
           ← Complex.integral_exp_neg_mul_rpow le_rfl zero_lt_two]
         simp_rw [Real.rpow_one]
       _ = (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K := by

@@ -125,12 +125,12 @@ theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
 /-- Identity map is a relation homomorphism. -/
 @[refl, simps]
 protected def id (r : α → α → Prop) : r →r r :=
-  ⟨fun x => x, fun x => x⟩
+  ⟨fun x ↦ x, fun x ↦ x⟩
 
 /-- Composition of two relation homomorphisms is a relation homomorphism. -/
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
-  ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
+  ⟨fun x ↦ g (f x), fun h ↦ g.2 (f.2 h)⟩
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 protected def swap (f : r →r s) : swap r →r swap s :=
@@ -167,7 +167,7 @@ theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     WellFounded r ↔ WellFounded s :=
   Iff.intro
     (RelHomClass.wellFounded (⟨surjInv hf,
-      fun h => by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
+      fun h ↦ by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
@@ -187,7 +187,7 @@ def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
 
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
-  ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
+  ⟨fun _ => hs.1 _, fun h ↦ hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
 
 namespace RelEmbedding
 
@@ -284,7 +284,7 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   exact f.map_rel_iff.symm
 
 protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
-  ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
+  ⟨fun a ↦ mt f.map_rel_iff.2 (irrefl (f a))⟩
 
 protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
@@ -398,7 +398,7 @@ theorem wellFounded_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
   constructor
   · exact RelHomClass.wellFounded (Quotient.mkRelHom H)
-  · refine fun wf => ⟨fun q => ?_⟩
+  · refine fun wf => ⟨fun q ↦ ?_⟩
     obtain ⟨a, rfl⟩ := q.exists_rep
     exact acc_lift₂_iff.2 (wf.apply a)
 
@@ -433,11 +433,11 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
-  refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
+  refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h ↦ ?_, H _ _⟩⟩
   · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
-    · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
-    · exact fun h => irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
-  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
+    · exact fun h ↦ irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
+    · exact fun h ↦ irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
+  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e ↦ ?_) fun h' => ?_)
     · subst e
       exact irrefl _ h
     · exact asymm (H _ _ h') h
@@ -449,7 +449,7 @@ theorem ofMonotone_coe [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H) 
 
 /-- A relation embedding from an empty type. -/
 def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r ↪r s :=
-  ⟨Embedding.ofIsEmpty, @fun a => isEmptyElim a⟩
+  ⟨Embedding.ofIsEmpty, @fun a ↦ isEmptyElim a⟩
 
 /-- `Sum.inl` as a relation embedding into `Sum.LiftRel r s`. -/
 @[simps]
@@ -637,7 +637,7 @@ protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = 
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
     {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
-  ext fun x => by subst h₁; rfl
+  ext fun x ↦ by subst h₁; rfl
 
 /-- A relation isomorphism is also a relation isomorphism between dual relations. -/
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=
@@ -721,7 +721,7 @@ def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso �
 
 /-- Two relations on empty types are isomorphic. -/
 def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] [IsEmpty β] : r ≃r s :=
-  ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
+  ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
 def relIsoOfUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]

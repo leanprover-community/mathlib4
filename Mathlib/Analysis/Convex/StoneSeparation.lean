@@ -59,7 +59,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       trans az * av * bu + (bz * au * bv + au * av)
       · simp [w, Fin.sum_univ_succ, Fin.sum_univ_zero]
       linear_combination (au * bv - 1 * au) * habz + (-(1 * az * au) + au) * habv + az * av * habu
-    have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i => by fin_cases i <;> simp [z]
+    have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i ↦ by fin_cases i <;> simp [z]
     convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
         (by rwa [hw]) fun i _ => hz i : Finset.univ.centerMass w z ∈ _)
     rw [Finset.centerMass, hw]
@@ -80,7 +80,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
         ⟨⋃₀ c,
           ⟨hc.directedOn.convex_sUnion fun s hs => (hcS hs).1,
             disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
-          fun s => subset_sUnion_of_mem⟩)
+          fun s ↦ subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩
   obtain hC : _ ∧ _ := hmax.prop
   refine

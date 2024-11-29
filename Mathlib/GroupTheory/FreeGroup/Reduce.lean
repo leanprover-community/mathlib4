@@ -85,7 +85,7 @@ theorem reduce.red : Red L (reduce L) := by
 @[to_additive]
 theorem reduce.not {p : Prop} :
     ∀ {L₁ L₂ L₃ : List (α × Bool)} {x b}, reduce L₁ = L₂ ++ (x, b) :: (x, !b) :: L₃ → p
-  | [], L2, L3, _, _ => fun h => by cases L2 <;> injections
+  | [], L2, L3, _, _ => fun h ↦ by cases L2 <;> injections
   | (x, b) :: L1, L2, L3, x', b' => by
     dsimp
     cases r : reduce L1 with

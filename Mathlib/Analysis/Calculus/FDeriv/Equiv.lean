@@ -339,7 +339,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
   have :
     (fun p : F × F => g p.1 - g p.2 - f'.symm (p.1 - p.2)) =O[𝓝 (a, a)] fun p : F × F =>
       f' (g p.1 - g p.2) - (p.1 - p.2) := by
-    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
+    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x ↦ ?_) fun _ => rfl
     simp
   refine .of_isLittleO <| this.trans_isLittleO ?_
   clear this
@@ -362,7 +362,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasFDerivAt g (f'.symm : F →L[𝕜] E) a := by
   have : (fun x : F => g x - g a - f'.symm (x - a)) =O[𝓝 a]
       fun x : F => f' (g x - g a) - (x - a) := by
-    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
+    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x ↦ ?_) fun _ => rfl
     simp
   refine HasFDerivAtFilter.of_isLittleO <| this.trans_isLittleO ?_
   clear this
@@ -398,9 +398,9 @@ theorem PartialHomeomorph.hasFDerivAt_symm (f : PartialHomeomorph E F) {f' : E �
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by
   rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
-  have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
-    isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
-  have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
+  have A : (fun z ↦ z - x) =O[𝓝[s] x] fun z ↦ f' (z - x) :=
+    isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z ↦ hC _
+  have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
   simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
 
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
@@ -432,7 +432,7 @@ theorem HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
     Tendsto (fun c : ℝ => c • (f (x + c⁻¹ • v) - f x)) atTop (𝓝 (f' v)) := by
   apply hf.lim v
   rw [tendsto_atTop_atTop]
-  exact fun b => ⟨b, fun a ha => le_trans ha (le_abs_self _)⟩
+  exact fun b ↦ ⟨b, fun a ha => le_trans ha (le_abs_self _)⟩
 
 end
 
@@ -448,7 +448,7 @@ theorem HasFDerivWithinAt.mapsTo_tangent_cone {x : E} (h : HasFDerivWithinAt f f
     MapsTo f' (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 (f '' s) (f x)) := by
   rintro v ⟨c, d, dtop, clim, cdlim⟩
   refine
-    ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
+    ⟨c, fun n ↦ f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
   simp +contextual [-mem_image, mem_image_of_mem]
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set
@@ -480,7 +480,7 @@ theorem ContinuousLinearEquiv.uniqueDiffOn_image (e : E ≃L[𝕜] F) (h : Uniqu
 @[simp]
 theorem ContinuousLinearEquiv.uniqueDiffOn_image_iff (e : E ≃L[𝕜] F) :
     UniqueDiffOn 𝕜 (e '' s) ↔ UniqueDiffOn 𝕜 s :=
-  ⟨fun h => e.symm_image_image s ▸ e.symm.uniqueDiffOn_image h, e.uniqueDiffOn_image⟩
+  ⟨fun h ↦ e.symm_image_image s ▸ e.symm.uniqueDiffOn_image h, e.uniqueDiffOn_image⟩
 
 @[simp]
 theorem ContinuousLinearEquiv.uniqueDiffOn_preimage_iff (e : F ≃L[𝕜] E) :

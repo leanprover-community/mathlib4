@@ -146,7 +146,7 @@ theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOr
 theorem IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D]
     [F.Full] [F.Faithful] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofilteredOrEmpty C := by
   suffices IsFilteredOrEmpty Cᵒᵖ from isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
-  refine IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
+  refine IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F.op (fun d ↦ ?_)
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
   exact ⟨op c, ⟨f.op⟩⟩
 
@@ -185,7 +185,7 @@ theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpt
 theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D] [F.Full]
     [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : Initial F := by
   suffices Final F.op from initial_of_final_op _
-  refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
+  refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful F.op (fun d ↦ ?_)
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
   exact ⟨op c, ⟨f.op⟩⟩
 
@@ -234,7 +234,7 @@ variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
 theorem Functor.final_iff_of_isFiltered [IsFilteredOrEmpty C] :
     Final F ↔ (∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) ∧ (∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
       ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) := by
-  refine ⟨fun hF => ⟨?_, ?_⟩, fun h => final_of_exists_of_isFiltered F h.1 h.2⟩
+  refine ⟨fun hF => ⟨?_, ?_⟩, fun h ↦ final_of_exists_of_isFiltered F h.1 h.2⟩
   · intro d
     obtain ⟨f⟩ : Nonempty (StructuredArrow d F) := IsConnected.is_nonempty
     exact ⟨_, ⟨f.hom⟩⟩
@@ -253,7 +253,7 @@ theorem Functor.final_iff_of_isFiltered [IsFilteredOrEmpty C] :
 theorem Functor.initial_iff_of_isCofiltered [IsCofilteredOrEmpty C] :
     Initial F ↔ (∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) ∧ (∀ {d : D} {c : C} (s s' : F.obj c ⟶ d),
       ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') := by
-  refine ⟨fun hF => ?_, fun h => initial_of_exists_of_isCofiltered F h.1 h.2⟩
+  refine ⟨fun hF => ?_, fun h ↦ initial_of_exists_of_isCofiltered F h.1 h.2⟩
   obtain ⟨h₁, h₂⟩ := F.op.final_iff_of_isFiltered.mp inferInstance
   refine ⟨?_, ?_⟩
   · intro d
@@ -275,17 +275,17 @@ theorem Functor.Initial.exists_eq [IsCofilteredOrEmpty C] [Initial F] {d : D} {c
     for all `d : D`. -/
 theorem Functor.final_iff_isFiltered_structuredArrow [IsFilteredOrEmpty C] :
     Final F ↔ ∀ d, IsFiltered (StructuredArrow d F) := by
-  refine ⟨?_, fun h => final_of_isFiltered_structuredArrow F⟩
+  refine ⟨?_, fun h ↦ final_of_isFiltered_structuredArrow F⟩
   rw [final_iff_of_isFiltered]
-  exact fun h => isFiltered_structuredArrow_of_isFiltered_of_exists F h.1 h.2
+  exact fun h ↦ isFiltered_structuredArrow_of_isFiltered_of_exists F h.1 h.2
 
 /-- If `C` is cofiltered, then `F : C ⥤ D` is initial if and only if `CostructuredArrow F d` is
     cofiltered for all `d : D`. -/
 theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty C] :
     Initial F ↔ ∀ d, IsCofiltered (CostructuredArrow F d) := by
-  refine ⟨?_, fun h => initial_of_isCofiltered_costructuredArrow F⟩
+  refine ⟨?_, fun h ↦ initial_of_isCofiltered_costructuredArrow F⟩
   rw [initial_iff_of_isCofiltered]
-  exact fun h => isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h.1 h.2
+  exact fun h ↦ isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h.1 h.2
 
 /-- If `C` is filtered, then the structured arrow category on the diagonal functor `C ⥤ C × C`
 is filtered as well. -/
@@ -357,11 +357,11 @@ open IsFiltered in
 instance final_eval [∀ s, IsFiltered (I s)] (s : α) : (Pi.eval I s).Final := by
   classical
   apply Functor.final_of_exists_of_isFiltered
-  · exact fun i => ⟨Function.update (fun t => nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
+  · exact fun i ↦ ⟨Function.update (fun t ↦ nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
   · intro d c f g
-    let c't : (∀ s, (c' : I s) × (c s ⟶ c')) := Function.update (fun t => ⟨c t, 𝟙 (c t)⟩)
+    let c't : (∀ s, (c' : I s) × (c s ⟶ c')) := Function.update (fun t ↦ ⟨c t, 𝟙 (c t)⟩)
       s ⟨coeq f g, coeqHom f g⟩
-    refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
+    refine ⟨fun t ↦ (c't t).1, fun t ↦ (c't t).2, ?_⟩
     dsimp only [Pi.eval_obj, Pi.eval_map, c't]
     rw [Function.update_same]
     simpa using coeq_condition _ _
@@ -370,11 +370,11 @@ open IsCofiltered in
 instance initial_eval [∀ s, IsCofiltered (I s)] (s : α) : (Pi.eval I s).Initial := by
   classical
   apply Functor.initial_of_exists_of_isCofiltered
-  · exact fun i => ⟨Function.update (fun t => nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
+  · exact fun i ↦ ⟨Function.update (fun t ↦ nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
   · intro d c f g
-    let c't : (∀ s, (c' : I s) × (c' ⟶ c s)) := Function.update (fun t => ⟨c t, 𝟙 (c t)⟩)
+    let c't : (∀ s, (c' : I s) × (c' ⟶ c s)) := Function.update (fun t ↦ ⟨c t, 𝟙 (c t)⟩)
       s ⟨eq f g, eqHom f g⟩
-    refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
+    refine ⟨fun t ↦ (c't t).1, fun t ↦ (c't t).2, ?_⟩
     dsimp only [Pi.eval_obj, Pi.eval_map, c't]
     rw [Function.update_same]
     simpa using eq_condition _ _
@@ -386,7 +386,7 @@ section Prod
 open IsFiltered in
 instance final_fst [IsFilteredOrEmpty C] [IsFiltered D] : (Prod.fst C D).Final := by
   apply Functor.final_of_exists_of_isFiltered
-  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
+  · exact fun c ↦ ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
   · intro c ⟨c', d'⟩ f g
     exact ⟨(coeq f g, d'), (coeqHom f g, 𝟙 d'), coeq_condition _ _⟩
 
@@ -396,7 +396,7 @@ instance final_snd [IsFiltered C] [IsFilteredOrEmpty D] : (Prod.snd C D).Final :
 open IsCofiltered in
 instance initial_fst [IsCofilteredOrEmpty C] [IsCofiltered D] : (Prod.fst C D).Initial := by
   apply Functor.initial_of_exists_of_isCofiltered
-  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
+  · exact fun c ↦ ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
   · intro c ⟨c', d'⟩ f g
     exact ⟨(eq f g, d'), (eqHom f g, 𝟙 d'), eq_condition _ _⟩
 

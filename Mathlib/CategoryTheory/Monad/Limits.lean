@@ -59,13 +59,13 @@ def conePoint : Algebra T where
   A := c.pt
   a := t.lift (newCone D c)
   unit :=
-    t.hom_ext fun j => by
+    t.hom_ext fun j ↦ by
       rw [Category.assoc, t.fac, newCone_π_app, ← T.η.naturality_assoc, Functor.id_map,
         (D.obj j).unit]
       dsimp; simp
   -- See library note [dsimp, simp]
   assoc :=
-    t.hom_ext fun j => by
+    t.hom_ext fun j ↦ by
       rw [Category.assoc, Category.assoc, t.fac (newCone D c), newCone_π_app, ←
         Functor.map_comp_assoc, t.fac (newCone D c), newCone_π_app, ← T.μ.naturality_assoc,
         (D.obj j).assoc, Functor.map_comp, Category.assoc]
@@ -76,7 +76,7 @@ def conePoint : Algebra T where
 def liftedCone : Cone D where
   pt := conePoint D c t
   π :=
-    { app := fun j => { f := c.π.app j }
+    { app := fun j ↦ { f := c.π.app j }
       naturality := fun X Y f => by
         ext1
         dsimp
@@ -89,7 +89,7 @@ def liftedConeIsLimit : IsLimit (liftedCone D c t) where
   lift s :=
     { f := t.lift ((forget T).mapCone s)
       h :=
-        t.hom_ext fun j => by
+        t.hom_ext fun j ↦ by
           dsimp
           rw [Category.assoc, Category.assoc, t.fac, newCone_π_app, ← Functor.map_comp_assoc,
             t.fac, Functor.mapCone_π_app]
@@ -181,7 +181,7 @@ noncomputable def coconePoint : Algebra T where
     dsimp; simp
   -- See library note [dsimp, simp]
   assoc := by
-    refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => ?_
+    refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j ↦ ?_
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
@@ -207,7 +207,7 @@ noncomputable def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
   desc s :=
     { f := t.desc ((forget T).mapCocone s)
       h :=
-        (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
+        (isColimitOfPreserves (T : C ⥤ C) t).hom_ext fun j ↦ by
           dsimp
           rw [← Functor.map_comp_assoc, ← Category.assoc, t.fac, commuting, Category.assoc, t.fac]
           apply Algebra.Hom.h }
@@ -416,7 +416,7 @@ def coconePoint : Coalgebra T where
 def liftedCocone : Cocone D where
   pt := coconePoint D c t
   ι :=
-    { app := fun j => { f := c.ι.app j }
+    { app := fun j ↦ { f := c.ι.app j }
       naturality := fun X Y f => by
         ext1
         dsimp
@@ -429,7 +429,7 @@ def liftedCoconeIsColimit : IsColimit (liftedCocone D c t) where
   desc s :=
     { f := t.desc ((forget T).mapCocone s)
       h :=
-        t.hom_ext fun j => by
+        t.hom_ext fun j ↦ by
           dsimp
           rw [← Category.assoc, ← Category.assoc, t.fac, newCocone_ι_app, t.fac,
             Functor.mapCocone_ι_app, Category.assoc, ← Functor.map_comp, t.fac]
@@ -508,7 +508,7 @@ noncomputable def conePoint : Coalgebra T where
     rw [assoc, ← show _ = _ ≫ c.π.app j from T.ε.naturality _, ← assoc, commuting, assoc]
     simp [Coalgebra.counit (D.obj j)]
   coassoc := by
-    refine (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext fun j => ?_
+    refine (isLimitOfPreserves _ (isLimitOfPreserves _ t)).hom_ext fun j ↦ ?_
     rw [Functor.mapCone_π_app, Functor.mapCone_π_app, assoc,
       ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
       Functor.map_comp, ← assoc, commuting]
@@ -535,7 +535,7 @@ noncomputable def liftedConeIsLimit : IsLimit (liftedCone c t) where
   lift s :=
     { f := t.lift ((forget T).mapCone s)
       h :=
-        (isLimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
+        (isLimitOfPreserves (T : C ⥤ C) t).hom_ext fun j ↦ by
           dsimp
           rw [Category.assoc, ← t.fac, Category.assoc, t.fac, commuting, ← assoc, ← assoc, t.fac,
             assoc, ← Functor.map_comp, t.fac]

@@ -25,7 +25,7 @@ example {a b c d : ℕ} :
     exact test_sorry
 
 example {a b : ℕ} (h : a = b) : (fun _y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
-  congrm fun x => ∀ w, ?_ + a = w
+  congrm fun x ↦ ∀ w, ?_ + a = w
   guard_hyp x : ℕ
   guard_hyp w : ℕ
   exact h
@@ -49,12 +49,12 @@ example (f : α → α → Prop) (h : ∀ a b, f a b ↔ True) :
   congrm ∀ x y, ?_
   exact h x y
 
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
-  congrm fun x => ?_
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x ↦ x + b) := by
+  congrm fun x ↦ ?_
   guard_target = x + a = x + b
   rw [h]
 
-example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x ↦ x + b) := by
   congrm fun (x : ℕ) => x + ?_
   exact h
 
@@ -95,7 +95,7 @@ example {f : ℕ → Prop} :
   · guard_target =ₛ 8 + 1 = 2 + 7; simp
 
 example {a b : ℕ} (h : a = b) : (fun _ : ℕ => ∀ z, a + a = z) = (fun _ => ∀ z, b + a = z) := by
-  congrm fun x => ∀ w, ?_ + a = w
+  congrm fun x ↦ ∀ w, ?_ + a = w
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by

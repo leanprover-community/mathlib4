@@ -135,7 +135,7 @@ theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
 
 @[to_additive]
 instance : Unique (⊥ : Subgroup G) :=
-  ⟨⟨1⟩, fun g => Subtype.ext g.2⟩
+  ⟨⟨1⟩, fun g ↦ Subtype.ext g.2⟩
 
 @[to_additive (attr := simp)]
 theorem top_toSubmonoid : (⊤ : Subgroup G).toSubmonoid = ⊤ :=
@@ -166,11 +166,11 @@ theorem coe_eq_singleton {H : Subgroup G} : (∃ g : G, (H : Set G) = {g}) ↔ H
       rw [hg]
       infer_instance
     H.eq_bot_of_subsingleton,
-    fun h => ⟨1, SetLike.ext'_iff.mp h⟩⟩
+    fun h ↦ ⟨1, SetLike.ext'_iff.mp h⟩⟩
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x ∈ H, x ≠ (1 : G) := by
-  rw [Subtype.nontrivial_iff_exists_ne (fun x => x ∈ H) (1 : H)]
+  rw [Subtype.nontrivial_iff_exists_ne (fun x ↦ x ∈ H) (1 : H)]
   simp
 
 @[to_additive]
@@ -281,7 +281,7 @@ theorem subsingleton_iff : Subsingleton (Subgroup G) ↔ Subsingleton G :=
       have : ∀ i : G, i = 1 := fun i =>
         mem_bot.mp <| Subsingleton.elim (⊤ : Subgroup G) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun _ => ⟨fun x y => Subgroup.ext fun i => Subsingleton.elim 1 i ▸ by simp [Subgroup.one_mem]⟩⟩
+    fun _ => ⟨fun x y => Subgroup.ext fun i ↦ Subsingleton.elim 1 i ▸ by simp [Subgroup.one_mem]⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
@@ -291,7 +291,7 @@ theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
 
 @[to_additive]
 instance [Subsingleton G] : Unique (Subgroup G) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
 instance [Nontrivial G] : Nontrivial (Subgroup G) :=
@@ -327,7 +327,7 @@ open Set
 @[to_additive (attr := simp)
   "An additive subgroup `K` includes `closure k` if and only if it includes `k`"]
 theorem closure_le : closure k ≤ K ↔ k ⊆ K :=
-  ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 @[to_additive]
 theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k = K :=
@@ -505,7 +505,7 @@ variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
 @[to_additive]
 theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [sup_eq_closure] at h
     refine Subgroup.closure_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
@@ -548,7 +548,7 @@ theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
 
 @[to_additive]
 theorem mul_injective_of_disjoint {H₁ H₂ : Subgroup G} (h : Disjoint H₁ H₂) :
-    Function.Injective (fun g => g.1 * g.2 : H₁ × H₂ → G) := by
+    Function.Injective (fun g ↦ g.1 * g.2 : H₁ × H₂ → G) := by
   intro x y hxy
   rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc, ← mul_inv_eq_one, mul_assoc] at hxy
   replace hxy := disjoint_iff_mul_eq_one.mp h (y.1⁻¹ * x.1).prop (x.2 * y.2⁻¹).prop hxy

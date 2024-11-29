@@ -216,7 +216,7 @@ protected def seq {α β : Type v} : Comp F G (α → β) → (Unit → Comp F G
 -- `ₓ` because the type of `Seq.seq` doesn't match `has_seq.seq`
 
 instance : Pure (Comp F G) :=
-  ⟨fun x => Comp.mk <| pure <| pure x⟩
+  ⟨fun x ↦ Comp.mk <| pure <| pure x⟩
 
 instance : Seq (Comp F G) :=
   ⟨fun f x => Comp.seq f x⟩

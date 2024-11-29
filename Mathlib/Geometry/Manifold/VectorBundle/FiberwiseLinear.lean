@@ -30,8 +30,8 @@ variable {φ φ' : B → F ≃L[𝕜] F} {U U' : Set B}
 /-- For `B` a topological space and `F` a `𝕜`-normed space, a map from `U : Set B` to `F ≃L[𝕜] F`
 determines a partial homeomorphism from `B × F` to itself by its action fiberwise. -/
 def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
-    (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
-    (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) :
+    (hφ : ContinuousOn (fun x ↦ φ x : B → F →L[𝕜] F) U)
+    (h2φ : ContinuousOn (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U) :
     PartialHomeomorph (B × F) (B × F) where
   toFun x := (x.1, φ x.1 x.2)
   invFun x := (x.1, (φ x.1).symm x.2)
@@ -55,10 +55,10 @@ def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
 /-- Compute the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
 theorem trans_partialHomeomorph_apply (hU : IsOpen U)
-    (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
-    (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
-    (hφ' : ContinuousOn (fun x => φ' x : B → F →L[𝕜] F) U')
-    (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') (b : B) (v : F) :
+    (hφ : ContinuousOn (fun x ↦ φ x : B → F →L[𝕜] F) U)
+    (h2φ : ContinuousOn (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
+    (hφ' : ContinuousOn (fun x ↦ φ' x : B → F →L[𝕜] F) U')
+    (h2φ' : ContinuousOn (fun x ↦ (φ' x).symm : B → F →L[𝕜] F) U') (b : B) (v : F) :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
       FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ')
         ⟨b, v⟩ =
@@ -68,10 +68,10 @@ theorem trans_partialHomeomorph_apply (hU : IsOpen U)
 /-- Compute the source of the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
 theorem source_trans_partialHomeomorph (hU : IsOpen U)
-    (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
-    (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
-    (hφ' : ContinuousOn (fun x => φ' x : B → F →L[𝕜] F) U')
-    (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') :
+    (hφ : ContinuousOn (fun x ↦ φ x : B → F →L[𝕜] F) U)
+    (h2φ : ContinuousOn (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
+    (hφ' : ContinuousOn (fun x ↦ φ' x : B → F →L[𝕜] F) U')
+    (h2φ' : ContinuousOn (fun x ↦ (φ' x).symm : B → F →L[𝕜] F) U') :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').source =
       (U ∩ U') ×ˢ univ := by
@@ -80,10 +80,10 @@ theorem source_trans_partialHomeomorph (hU : IsOpen U)
 /-- Compute the target of the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/
 theorem target_trans_partialHomeomorph (hU : IsOpen U)
-    (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
-    (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
-    (hφ' : ContinuousOn (fun x => φ' x : B → F →L[𝕜] F) U')
-    (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') :
+    (hφ : ContinuousOn (fun x ↦ φ x : B → F →L[𝕜] F) U)
+    (h2φ : ContinuousOn (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U) (hU' : IsOpen U')
+    (hφ' : ContinuousOn (fun x ↦ φ' x : B → F →L[𝕜] F) U')
+    (h2φ' : ContinuousOn (fun x ↦ (φ' x).symm : B → F →L[𝕜] F) U') :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').target =
       (U ∩ U') ×ˢ univ := by
@@ -103,14 +103,14 @@ fiberwise linear partial homeomorphism. -/
 theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B × F))
     (h : ∀ p ∈ e.source, ∃ s : Set (B × F), IsOpen s ∧ p ∈ s ∧
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u)
-        (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x : F →L[𝕜] F)) u)
-        (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => ((φ x).symm : F →L[𝕜] F)) u),
+        (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x : F →L[𝕜] F)) u)
+        (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ ((φ x).symm : F →L[𝕜] F)) u),
           (e.restr s).EqOnSource
             (FiberwiseLinear.partialHomeomorph φ hu hφ.continuousOn h2φ.continuousOn)) :
     ∃ U : Set B, e.source = U ×ˢ univ ∧ ∀ x ∈ U,
         ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u) (_huU : u ⊆ U) (_hux : x ∈ u),
-          ∃ (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x : F →L[𝕜] F)) u)
-            (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => ((φ x).symm : F →L[𝕜] F)) u),
+          ∃ (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x : F →L[𝕜] F)) u)
+            (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ ((φ x).symm : F →L[𝕜] F)) u),
             (e.restr (u ×ˢ univ)).EqOnSource
               (FiberwiseLinear.partialHomeomorph φ hu hφ.continuousOn h2φ.continuousOn) := by
   rw [SetCoe.forall'] at h
@@ -155,18 +155,18 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
     (hU : e.source = U ×ˢ univ)
     (h : ∀ x ∈ U,
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u) (_hUu : u ⊆ U) (_hux : x ∈ u)
-        (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x : F →L[𝕜] F)) u)
-        (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => ((φ x).symm : F →L[𝕜] F)) u),
+        (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x : F →L[𝕜] F)) u)
+        (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ ((φ x).symm : F →L[𝕜] F)) u),
           (e.restr (u ×ˢ univ)).EqOnSource
             (FiberwiseLinear.partialHomeomorph φ hu hφ.continuousOn h2φ.continuousOn)) :
     ∃ (Φ : B → F ≃L[𝕜] F) (U : Set B) (hU₀ : IsOpen U) (hΦ :
-      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (Φ x : F →L[𝕜] F)) U) (h2Φ :
-      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => ((Φ x).symm : F →L[𝕜] F)) U),
+      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (Φ x : F →L[𝕜] F)) U) (h2Φ :
+      ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ ((Φ x).symm : F →L[𝕜] F)) U),
       e.EqOnSource (FiberwiseLinear.partialHomeomorph Φ hU₀ hΦ.continuousOn h2Φ.continuousOn) := by
   classical
   rw [SetCoe.forall'] at h
   choose! φ u hu hUu hux hφ h2φ heφ using h
-  have heuφ : ∀ x : U, EqOn e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
+  have heuφ : ∀ x : U, EqOn e (fun q ↦ (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
     refine (heφ x).2 ?_
     rw [(heφ x).1]
     exact hp
@@ -178,13 +178,13 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hUu' : U = ⋃ i, u i := by
     ext x
     rw [mem_iUnion]
-    refine ⟨fun h => ⟨⟨x, h⟩, hux _⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨⟨x, h⟩, hux _⟩, ?_⟩
     rintro ⟨x, hx⟩
     exact hUu x hx
   have hU' : IsOpen U := by
     rw [hUu']
     apply isOpen_iUnion hu
-  let Φ₀ : U → F ≃L[𝕜] F := iUnionLift u (fun x => φ x ∘ (↑)) huφ U hUu'.le
+  let Φ₀ : U → F ≃L[𝕜] F := iUnionLift u (fun x ↦ φ x ∘ (↑)) huφ U hUu'.le
   let Φ : B → F ≃L[𝕜] F := fun y =>
     if hy : y ∈ U then Φ₀ ⟨y, hy⟩ else ContinuousLinearEquiv.refl 𝕜 F
   have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dif_pos hy
@@ -192,14 +192,14 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
     intro x y hyu
     refine (hΦ y (hUu x hyu)).trans ?_
     exact iUnionLift_mk ⟨y, hyu⟩ _
-  have hΦ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y => (Φ y : F →L[𝕜] F)) U := by
+  have hΦ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y ↦ (Φ y : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
     refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
     refine (ContMDiffOn.congr (hφ ⟨x, hx⟩) ?_).mono inter_subset_right
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
-  have h2Φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y => ((Φ y).symm : F →L[𝕜] F)) U := by
+  have h2Φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y ↦ ((Φ y).symm : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
     refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
@@ -221,13 +221,13 @@ variable {F B IB} in
 -- in `smoothFiberwiseLinear` are quite slow, even with this change)
 private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
     (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
-      (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => φ x : B → F →L[𝕜] F) U)
-      (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+      (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ φ x : B → F →L[𝕜] F) U)
+      (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U),
         {e | e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn
           h2φ.continuousOn)}) ↔
       ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
-        (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => φ x : B → F →L[𝕜] F) U)
-        (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+        (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ φ x : B → F →L[𝕜] F) U)
+        (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U),
           e.EqOnSource
             (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
   simp only [mem_iUnion, mem_setOf_eq]
@@ -239,13 +239,13 @@ to the vector bundle belong to this groupoid. -/
 def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   members :=
     ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
-      (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => φ x : B → F →L[𝕜] F) U)
-      (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+      (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ φ x : B → F →L[𝕜] F) U)
+      (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U),
         {e | e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn)}
   trans' := by
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
-    refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
+    refine ⟨fun b ↦ (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
       Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
     · show
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤
@@ -262,7 +262,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   symm' := fun e ↦ by
     simp only [mem_aux]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
-    refine ⟨fun b => (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
+    refine ⟨fun b ↦ (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
     simp_rw [ContinuousLinearEquiv.symm_symm]
     exact hφ
   id_mem' := by
@@ -286,7 +286,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
 theorem mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) :
     e ∈ smoothFiberwiseLinear B F IB ↔
       ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U) (hφ :
-        ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => φ x : B → F →L[𝕜] F) U) (h2φ :
-        ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x => (φ x).symm : B → F →L[𝕜] F) U),
+        ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ φ x : B → F →L[𝕜] F) U) (h2φ :
+        ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun x ↦ (φ x).symm : B → F →L[𝕜] F) U),
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux

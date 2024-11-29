@@ -246,7 +246,7 @@ variable [AddGroup R]
 
 instance : Neg (HahnSeries Γ R) where
   neg x :=
-    { coeff := fun a => -x.coeff a
+    { coeff := fun a ↦ -x.coeff a
       isPWO_support' := by
         rw [Function.support_neg]
         exact x.isPWO_support }
@@ -254,7 +254,7 @@ instance : Neg (HahnSeries Γ R) where
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     zsmul := zsmulRec
-    neg_add_cancel := fun x => by
+    neg_add_cancel := fun x ↦ by
       ext
       apply neg_add_cancel }
 

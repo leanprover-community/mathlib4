@@ -147,19 +147,19 @@ instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
         (List.finRange m).map fun i =>
           Std.Format.fill <|  -- wrap line in a single place rather than all at once
             (Std.Format.joinSep · ("," ++ Std.Format.line)) <|
-            (List.finRange n).map fun j => _root_.repr (f i j)
+            (List.finRange n).map fun j ↦ _root_.repr (f i j)
 
 @[simp]
 theorem cons_val' (v : n' → α) (B : Fin m → n' → α) (i j) :
-    vecCons v B i j = vecCons (v j) (fun i => B i j) i := by refine Fin.cases ?_ ?_ i <;> simp
+    vecCons v B i j = vecCons (v j) (fun i ↦ B i j) i := by refine Fin.cases ?_ ?_ i <;> simp
 
 @[simp]
-theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i => B i j) = vecHead B j :=
+theorem head_val' (B : Fin m.succ → n' → α) (j : n') : (vecHead fun i ↦ B i j) = vecHead B j :=
   rfl
 
 @[simp]
 theorem tail_val' (B : Fin m.succ → n' → α) (j : n') :
-    (vecTail fun i => B i j) = fun i => vecTail B i j := rfl
+    (vecTail fun i ↦ B i j) = fun i ↦ vecTail B i j := rfl
 
 section DotProduct
 
@@ -219,7 +219,7 @@ theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![]
 
 @[simp]
 theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
-    (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
+    (of (vecCons v A))ᵀ = of fun i ↦ vecCons (v i) (Aᵀ i) := by
   ext i j
   refine Fin.cases ?_ ?_ j <;> simp
 
@@ -341,7 +341,7 @@ theorem cons_vecMulVec (x : α) (v : Fin m → α) (w : n' → α) :
 
 @[simp]
 theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
-    vecMulVec v (vecCons x w) = of fun i => v i • vecCons x w := rfl
+    vecMulVec v (vecCons x w) = of fun i ↦ v i • vecCons x w := rfl
 
 end VecMulVec
 
@@ -368,7 +368,7 @@ theorem submatrix_empty (A : Matrix m' n' α) (row : Fin 0 → m') (col : o' →
 
 @[simp]
 theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (col : o' → n') :
-    submatrix A (vecCons i row) col = vecCons (fun j => A i (col j)) (submatrix A row col) := by
+    submatrix A (vecCons i row) col = vecCons (fun j ↦ A i (col j)) (submatrix A row col) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp [submatrix]
 

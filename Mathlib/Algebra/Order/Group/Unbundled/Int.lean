@@ -102,7 +102,7 @@ theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b
 
 @[simp]
 theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
-  abs_by_cases (fun i => a % i = a % b) rfl (emod_neg _ _)
+  abs_by_cases (fun i ↦ a % i = a % b) rfl (emod_neg _ _)
 
 theorem emod_lt (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)

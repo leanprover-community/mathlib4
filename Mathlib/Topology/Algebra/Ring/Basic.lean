@@ -242,11 +242,11 @@ theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
 
 theorem TopologicalRing.of_nhds_zero
     (hadd : Tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
-    (hneg : Tendsto (fun x => -x : R → R) (𝓝 0) (𝓝 0))
+    (hneg : Tendsto (fun x ↦ -x : R → R) (𝓝 0) (𝓝 0))
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ˢ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0)
-    (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : TopologicalRing R :=
+    (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x ↦ x₀ + x) (𝓝 0)) : TopologicalRing R :=
   have := TopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
   TopologicalRing.of_addGroup_of_nhds_zero hmul hmul_left hmul_right
 

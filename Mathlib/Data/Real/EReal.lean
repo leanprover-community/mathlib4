@@ -222,13 +222,13 @@ protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
-  mul_one := fun x => by rw [EReal.mul_comm, EReal.one_mul]
+  mul_one := fun x ↦ by rw [EReal.mul_comm, EReal.one_mul]
   zero_mul := EReal.zero_mul
-  mul_zero := fun x => by rw [EReal.mul_comm, EReal.zero_mul]
+  mul_zero := fun x ↦ by rw [EReal.mul_comm, EReal.zero_mul]
 
 /-! ### Real coercion -/
 
-instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
+instance canLift : CanLift EReal ℝ (↑) fun r ↦ r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
     induction x
     · simp at hx
@@ -607,10 +607,10 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
   coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
-    | ⊥ => fun h => absurd h bot_lt_zero.not_le
+  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x ↦ match x with
+    | ⊥ => fun h ↦ absurd h bot_lt_zero.not_le
     | ⊤ => fun _ => ⟨⊤, rfl⟩
-    | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
+    | (x : ℝ) => fun h ↦ ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 
 instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge⟩
 
@@ -919,8 +919,8 @@ theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := by
 /-- Negation as an order reversing isomorphism on `EReal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
-    toFun := fun x => OrderDual.toDual (-x)
-    invFun := fun x => -OrderDual.ofDual x
+    toFun := fun x ↦ OrderDual.toDual (-x)
+    invFun := fun x ↦ -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
 
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
@@ -1225,7 +1225,7 @@ lemma induction₂_symm_neg {P : EReal → EReal → Prop}
     (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
-  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
+  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h ↦ symm <| neg_left <| symm h
   have : ∀ x, (∀ y : ℝ, 0 < y → P x y) → ∀ y : ℝ, y < 0 → P x y := fun _ h y hy =>
     neg_neg (y : EReal) ▸ neg_right (h _ (neg_pos_of_neg hy))
   @induction₂_neg_left P neg_left top_top top_pos top_zero (this _ top_pos) (neg_right top_top)

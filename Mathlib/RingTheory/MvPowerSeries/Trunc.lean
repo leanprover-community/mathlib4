@@ -70,7 +70,7 @@ theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
-  MvPolynomial.ext _ _ fun m => by
+  MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_one]
     split_ifs with H H'
@@ -88,7 +88,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
 
 @[simp]
 theorem trunc_c (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
-  MvPolynomial.ext _ _ fun m => by
+  MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all only [ne_eq, not_true_eq_false]

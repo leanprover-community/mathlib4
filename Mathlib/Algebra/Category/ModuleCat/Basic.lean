@@ -105,8 +105,8 @@ instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
     { obj := fun R => R
-      map := fun f => f.toFun }
-  forget_faithful := ⟨fun h => LinearMap.ext (fun x => by
+      map := fun f ↦ f.toFun }
+  forget_faithful := ⟨fun h ↦ LinearMap.ext (fun x ↦ by
     dsimp at h
     rw [h])⟩
 
@@ -126,7 +126,7 @@ lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrp where
   forget₂ :=
     { obj := fun M => AddCommGrp.of M
-      map := fun f => AddCommGrp.ofHom f.toAddMonoidHom }
+      map := fun f ↦ AddCommGrp.ofHom f.toAddMonoidHom }
 
 /-- The object in the category of R-modules associated to an R-module -/
 def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat R :=
@@ -174,12 +174,12 @@ def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   inv := 𝟙 M
 
 theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
-  unique_to X := ⟨⟨⟨(0 : M →ₗ[R] X)⟩, fun f => by
+  unique_to X := ⟨⟨⟨(0 : M →ₗ[R] X)⟩, fun f ↦ by
     ext x
     rw [Subsingleton.elim x (0 : M)]
     dsimp
     simp⟩⟩
-  unique_from X := ⟨⟨⟨(0 : X →ₗ[R] M)⟩, fun f => by
+  unique_from X := ⟨⟨⟨(0 : X →ₗ[R] M)⟩, fun f ↦ by
     ext x
     subsingleton⟩⟩
 
@@ -332,8 +332,8 @@ def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
     { toFun := fun (m : M) => r • m
       map_zero' := by dsimp; rw [smul_zero]
       map_add' := fun x y => by dsimp; rw [smul_add] }
-  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
-  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul]; rfl)
+  map_one' := AddMonoidHom.ext (fun x ↦ by dsimp; rw [one_smul])
+  map_zero' := AddMonoidHom.ext (fun x ↦ by dsimp; rw [zero_smul]; rfl)
   map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
   map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
 

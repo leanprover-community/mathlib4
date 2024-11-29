@@ -79,7 +79,7 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
 Run `evalTactic`, capturing any new info messages.
 -/
 def evalTacticCapturingInfo (tac : TSyntax `tactic) : TacticM (List Message) :=
-  evalTacticCapturingMessages tac fun m => match m.severity with | .information => true | _ => false
+  evalTacticCapturingMessages tac fun m ↦ match m.severity with | .information => true | _ => false
 
 /--
 Run `evalTactic`, capturing a "Try this:" message and converting it back to syntax.

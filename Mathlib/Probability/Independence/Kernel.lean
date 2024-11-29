@@ -334,7 +334,7 @@ theorem IndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpac
   ⟨fun h =>
     ⟨indepSets_of_indepSets_of_le_left h Set.subset_union_left,
       indepSets_of_indepSets_of_le_left h Set.subset_union_right⟩,
-    fun h => IndepSets.union h.left h.right⟩
+    fun h ↦ IndepSets.union h.left h.right⟩
 
 theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (hyp : ∀ n, IndepSets (s n) s' κ μ) :
@@ -371,7 +371,7 @@ theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
 
 theorem iIndep_comap_mem_iff {f : ι → Set Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} :
-    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) κ μ ↔ iIndepSet f κ μ := by
+    iIndep (fun i ↦ MeasurableSpace.comap (· ∈ f i) ⊤) κ μ ↔ iIndepSet f κ μ := by
   simp_rw [← generateFrom_singleton, iIndepSet]
 
 theorem iIndepSets_singleton_iff {s : ι → Set Ω} {_mΩ : MeasurableSpace Ω}
@@ -593,7 +593,7 @@ theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     all_goals simp only [measure_univ, one_mul, mul_one, Set.inter_univ, Set.univ_inter]
   simp_rw [h_P_inter, h_μg, Finset.prod_mul_distrib,
     Finset.prod_ite_mem (p1 ∪ p2) p1 (fun x ↦ κ a (f1 x)), Finset.union_inter_cancel_left,
-    Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x => κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
+    Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x ↦ κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
       ← ha1, ht2_eq, ← ha2]
 
 theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
@@ -610,11 +610,11 @@ theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
     IndepSets.indep'
       (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht))
       (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht)) ?_ ?_ ?_
-  · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
-  · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
-  · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
-  · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
-  · exact indepSets_piiUnionInter_of_disjoint (iIndep.iIndepSets (fun n => rfl) (hs.congr η_eq)) hST
+  · exact fun k ↦ generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
+  · exact fun k ↦ generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
+  · exact isPiSystem_piiUnionInter _ (fun k ↦ IsPiSystem.singleton _) _
+  · exact isPiSystem_piiUnionInter _ (fun k ↦ IsPiSystem.singleton _) _
+  · exact indepSets_piiUnionInter_of_disjoint (iIndep.iIndepSets (fun n ↦ rfl) (hs.congr η_eq)) hST
 
 theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {S T : Set ι} (hST : Disjoint S T) :
@@ -629,16 +629,16 @@ theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     IndepSets.indep (iSup₂_le fun i _ => h_le i) (iSup₂_le fun i _ => h_le i) ?_ ?_
       (generateFrom_piiUnionInter_measurableSet m S).symm
       (generateFrom_piiUnionInter_measurableSet m T).symm ?_
-  · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
-  · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
+  · exact isPiSystem_piiUnionInter _ (fun n ↦ @isPiSystem_measurableSet Ω (m n)) _
+  · exact isPiSystem_piiUnionInter _ (fun n ↦ @isPiSystem_measurableSet Ω (m n)) _
   · exact indepSets_piiUnionInter_of_disjoint (h_indep.congr η_eq) hST
 
 theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] (h_indep : ∀ i, Indep (m i) m' κ μ)
     (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Directed (· ≤ ·) m) :
     Indep (⨆ i, m i) m' κ μ := by
-  let p : ι → Set (Set Ω) := fun n => { t | MeasurableSet[m n] t }
-  have hp : ∀ n, IsPiSystem (p n) := fun n => @isPiSystem_measurableSet Ω (m n)
+  let p : ι → Set (Set Ω) := fun n ↦ { t | MeasurableSet[m n] t }
+  have hp : ∀ n, IsPiSystem (p n) := fun n ↦ @isPiSystem_measurableSet Ω (m n)
   have h_gen_n : ∀ n, m n = generateFrom (p n) := fun n =>
     (@generateFrom_measurableSet Ω (m n)).symm
   have hp_supr_pi : IsPiSystem (⋃ n, p n) := isPiSystem_iUnion_of_directed_le p hp hm
@@ -651,7 +651,7 @@ theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : 
     conv at h_indep =>
       intro i
       rw [h_gen_n i, h_gen']
-    exact fun n => (h_indep n).indepSets
+    exact fun n ↦ (h_indep n).indepSets
   -- now go from π-systems to σ-algebras
   refine IndepSets.indep (iSup_le h_le) h_le' hp_supr_pi hp'_pi ?_ h_gen' h_pi_system_indep
   exact (generateFrom_iUnion_measurableSet _).symm
@@ -695,7 +695,7 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
   rintro t1 t2 ⟨s, hs_mem, ft1, hft1_mem, ht1_eq⟩ ht2_mem_pia
   rw [Finset.coe_subset] at hs_mem
   classical
-  let f := fun n => ite (n = a) t2 (ite (n ∈ s) (ft1 n) Set.univ)
+  let f := fun n ↦ ite (n = a) t2 (ite (n ∈ s) (ft1 n) Set.univ)
   have h_f_mem : ∀ n ∈ insert a s, f n ∈ π n := by
     intro n hn_mem_insert
     dsimp only [f]
@@ -848,7 +848,7 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ _ : MeasurableSpace Ω} {κ :
 theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (κ : Kernel α Ω) (μ : Measure α) :
     Indep m₁ m₂ κ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t κ μ :=
-  ⟨fun h => fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
+  ⟨fun h ↦ fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
     h s t hs ht s t (measurableSet_generateFrom (Set.mem_singleton s))
       (measurableSet_generateFrom (Set.mem_singleton t))⟩
 
@@ -983,22 +983,22 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
   apply IndepFun.congr (Filter.EventuallyEq.symm η_eq)
   -- We introduce π-systems, built from the π-system of boxes which generates `MeasurableSpace.pi`.
   let πSβ := Set.pi (Set.univ : Set S) ''
-    Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | MeasurableSet[m i] s }
+    Set.pi (Set.univ : Set S) fun i ↦ { s : Set (β i) | MeasurableSet[m i] s }
   let πS := { s : Set Ω | ∃ t ∈ πSβ, (fun a (i : S) => f i a) ⁻¹' t = s }
   have hπS_pi : IsPiSystem πS := by exact IsPiSystem.comap (@isPiSystem_pi _ _ ?_) _
   have hπS_gen : (MeasurableSpace.pi.comap fun a (i : S) => f i a) = generateFrom πS := by
     rw [generateFrom_pi.symm, comap_generateFrom]
     congr
   let πTβ := Set.pi (Set.univ : Set T) ''
-      Set.pi (Set.univ : Set T) fun i => { s : Set (β i) | MeasurableSet[m i] s }
+      Set.pi (Set.univ : Set T) fun i ↦ { s : Set (β i) | MeasurableSet[m i] s }
   let πT := { s : Set Ω | ∃ t ∈ πTβ, (fun a (i : T) => f i a) ⁻¹' t = s }
   have hπT_pi : IsPiSystem πT := by exact IsPiSystem.comap (@isPiSystem_pi _ _ ?_) _
   have hπT_gen : (MeasurableSpace.pi.comap fun a (i : T) => f i a) = generateFrom πT := by
     rw [generateFrom_pi.symm, comap_generateFrom]
     congr
   -- To prove independence, we prove independence of the generating π-systems.
-  refine IndepSets.indep (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i))
-    (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
+  refine IndepSets.indep (Measurable.comap_le (measurable_pi_iff.mpr fun i ↦ hf_meas i))
+    (Measurable.comap_le (measurable_pi_iff.mpr fun i ↦ hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
   rintro _ _ ⟨s, ⟨sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨sets_t, ht1, ht2⟩, rfl⟩
   simp only [Set.mem_univ_pi, Set.mem_setOf_eq] at hs1 ht1
@@ -1071,7 +1071,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
 
 theorem iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
+    IndepFun (fun a ↦ (f i a, f j a)) (f k) κ μ := by
   classical
   have h_right : f k =
     (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
@@ -1197,12 +1197,12 @@ end CommMonoid
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
     (hs : iIndepSet s κ μ) :
-    iIndepFun (fun _n => m) (fun n => (s n).indicator fun _ω => 1) κ μ := by
+    iIndepFun (fun _n => m) (fun n ↦ (s n).indicator fun _ω => 1) κ μ := by
   classical
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
   rintro S π _hπ
   simp_rw [Set.indicator_const_preimage_eq_union]
-  refine @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => ?_
+  refine @hs S (fun i ↦ ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => ?_
   have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
     measurableSet_generateFrom (Set.mem_singleton _)
   refine

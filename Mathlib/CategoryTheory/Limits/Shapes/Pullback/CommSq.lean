@@ -345,8 +345,8 @@ theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) : IsPullb
   of_isLimit' sq
     (by
       refine
-        PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by aesop_cat)
-          (fun s => ?_) (by aesop_cat)
+        PullbackCone.IsLimit.mk _ (fun s ↦ s.fst ≫ inv fst) (by aesop_cat)
+          (fun s ↦ ?_) (by aesop_cat)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 lemma of_iso (h : IsPullback fst snd f g)
@@ -605,7 +605,7 @@ theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X
   { w := by simp
     isLimit' :=
       ⟨{  lift := fun _ => 0
-          fac := fun s => by
+          fac := fun s ↦ by
             simpa [eq_iff_true_of_subsingleton] using
               @PullbackCone.equalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simpa using (PullbackCone.condition s).symm) }⟩ }
@@ -713,13 +713,13 @@ theorem paste_vert_iff {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h�
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) (e : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁) :
     IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ ↔ IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
-  ⟨fun h => h.of_bot e s, fun h => h.paste_vert s⟩
+  ⟨fun h ↦ h.of_bot e s, fun h ↦ h.paste_vert s⟩
 
 theorem paste_horiz_iff {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
     {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) (e : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁) :
     IsPullback (h₁₁ ≫ h₁₂) v₁₁ v₁₃ (h₂₁ ≫ h₂₂) ↔ IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
-  ⟨fun h => h.of_right e s, fun h => h.paste_horiz s⟩
+  ⟨fun h ↦ h.of_right e s, fun h ↦ h.paste_horiz s⟩
 
 /-- Variant of `IsPullback.of_right` where `h₁₁` is induced from a morphism `h₁₃ : X₁₁ ⟶ X₁₃`, and
 the universal property of the right square.
@@ -907,7 +907,7 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
   { w := by simp
     isColimit' :=
       ⟨{  desc := fun _ => 0
-          fac := fun s => by
+          fac := fun s ↦ by
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simp [eq_iff_true_of_subsingleton]) (by simpa using PushoutCocone.condition s)
@@ -1018,13 +1018,13 @@ theorem paste_vert_iff {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h�
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (e : h₂₁ ≫ v₂₂ = v₂₁ ≫ h₃₁) :
     IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ ↔ IsPushout h₂₁ v₂₁ v₂₂ h₃₁ :=
-  ⟨fun h => h.of_top e s, s.paste_vert⟩
+  ⟨fun h ↦ h.of_top e s, s.paste_vert⟩
 
 theorem paste_horiz_iff {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃}
     {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (e : h₁₂ ≫ v₁₃ = v₁₂ ≫ h₂₂) :
     IsPushout (h₁₁ ≫ h₁₂) v₁₁ v₁₃ (h₂₁ ≫ h₂₂) ↔ IsPushout h₁₂ v₁₂ v₁₃ h₂₂ :=
-  ⟨fun h => h.of_left e s, s.paste_horiz⟩
+  ⟨fun h ↦ h.of_left e s, s.paste_horiz⟩
 
 /-- Variant of `IsPushout.of_top` where `v₂₂` is induced from a morphism `v₁₃ : X₁₂ ⟶ X₃₂`, and
 the universal property of the top square.
@@ -1160,7 +1160,7 @@ theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPusho
   of_isColimit' sq
     (by
       refine
-        PushoutCocone.IsColimit.mk _ (fun s => inv inr ≫ s.inr) (fun s => ?_)
+        PushoutCocone.IsColimit.mk _ (fun s ↦ inv inr ≫ s.inr) (fun s ↦ ?_)
           (by aesop_cat) (by aesop_cat)
       simp only [← cancel_epi f, s.condition, sq.w_assoc, IsIso.hom_inv_id_assoc])
 
@@ -1205,8 +1205,8 @@ variable {X Y Z : C} {f f' : X ⟶ Y} {g g' : Y ⟶ Z}
 `g` and `g'`. -/
 noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fork.ofι f H.w) := by
   fapply Fork.IsLimit.mk
-  · exact fun s => H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
-  · exact fun s => H.isLimit.fac _ WalkingCospan.left
+  · exact fun s ↦ H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
+  · exact fun s ↦ H.isLimit.fac _ WalkingCospan.left
   · intro s m e
     apply PullbackCone.IsLimit.hom_ext H.isLimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isLimit.fac _ _
@@ -1216,8 +1216,8 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
 noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
     IsColimit (Cofork.ofπ g H.w) := by
   fapply Cofork.IsColimit.mk
-  · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
-  · exact fun s => H.isColimit.fac _ WalkingSpan.left
+  · exact fun s ↦ H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
+  · exact fun s ↦ H.isColimit.fac _ WalkingSpan.left
   · intro s m e
     apply PushoutCocone.IsColimit.hom_ext H.isColimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isColimit.fac _ _
@@ -1346,7 +1346,7 @@ theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [F.Faithful
 theorem IsPullback.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
     [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPullback f g h i :=
-  ⟨fun h => h.of_map F e, fun h => h.map F⟩
+  ⟨fun h ↦ h.of_map F e, fun h ↦ h.map F⟩
 
 theorem IsPushout.of_map [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i)
     (H : IsPushout (F.map f) (F.map g) (F.map h) (F.map i)) : IsPushout f g h i := by
@@ -1364,7 +1364,7 @@ theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [F.Faithful]
 theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
     [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
-  ⟨fun h => h.of_map F e, fun h => h.map F⟩
+  ⟨fun h ↦ h.of_map F e, fun h ↦ h.map F⟩
 
 end Functor
 

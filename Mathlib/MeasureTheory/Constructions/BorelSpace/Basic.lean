@@ -26,7 +26,7 @@ import Mathlib.Topology.Instances.Rat
 * `IsOpen.measurableSet`, `IsClosed.measurableSet`: open and closed sets are measurable;
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
-  is continuous, then `fun x => op (f x, g y)` is measurable;
+  is continuous, then `fun x ↦ op (f x, g y)` is measurable;
 * `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
@@ -141,7 +141,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $te _ _ _)
   try
-    liftMetaTactic fun m => return [← subst m i]
+    liftMetaTactic fun m ↦ return [← subst m i]
   catch _ =>
     let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
     throwError m!"\
@@ -314,7 +314,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
-  refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
+  refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i ↦ ?_
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
@@ -351,7 +351,7 @@ instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
   constructor
   have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
-    simp only [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
+    simp only [funext fun a ↦ @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
@@ -552,13 +552,13 @@ theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} 
 
 theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
-    (hg : Measurable g) : Measurable fun a => c (f a) (g a) :=
+    (hg : Measurable g) : Measurable fun a ↦ c (f a) (g a) :=
   h.measurable.comp (hf.prod_mk hg)
 
 theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     {f : δ → α} {g : δ → β} {c : α → β → γ} {μ : Measure δ}
     (h : Continuous fun p : α × β => c p.1 p.2) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => c (f a) (g a)) μ :=
+    AEMeasurable (fun a ↦ c (f a) (g a)) μ :=
   h.measurable.comp_aemeasurable (hf.prod_mk hg)
 
 instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
@@ -591,10 +591,10 @@ variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [Topological
 theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, MeasurableSpace (π i)] [∀ i, BorelSpace (π i)] :
       MeasurableSpace.pi ≤ borel (∀ i, π i) := by
-  have : ‹∀ i, MeasurableSpace (π i)› = fun i => borel (π i) :=
-    funext fun i => BorelSpace.measurable_eq
+  have : ‹∀ i, MeasurableSpace (π i)› = fun i ↦ borel (π i) :=
+    funext fun i ↦ BorelSpace.measurable_eq
   rw [this]
-  exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
+  exact iSup_le fun i ↦ comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]

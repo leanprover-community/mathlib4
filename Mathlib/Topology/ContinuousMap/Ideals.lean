@@ -86,12 +86,12 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
   add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
   zero_mem' _ _ := rfl
-  smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
+  smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr_arg (fun y ↦ c x * y) (hf x hx)
 
 theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
-  exact isClosed_iInter fun x => isClosed_iInter fun _ =>
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun _ =>
     isClosed_eq (continuous_eval_const x) continuous_const
 
 variable {R}
@@ -133,7 +133,7 @@ theorem setOfTop_eq_univ [Nontrivial R] : setOfIdeal (⊤ : Ideal C(X, R)) = Set
 
 @[simp]
 theorem idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
-  Ideal.ext fun f => by
+  Ideal.ext fun f ↦ by
     simp only [mem_idealOfSet, Set.compl_empty, Set.mem_univ, forall_true_left, Ideal.mem_bot,
       DFunLike.ext_iff, zero_apply]
 
@@ -207,7 +207,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     obtain ⟨g, hgI, hg, hgt⟩ := this
     refine ⟨f * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g, I.mul_mem_left f hgI, ?_⟩
     rw [nndist_eq_nnnorm]
-    refine (nnnorm_lt_iff _ hε).2 fun x => ?_
+    refine (nnnorm_lt_iff _ hε).2 fun x ↦ ?_
     simp only [coe_sub, coe_mul, Pi.sub_apply, Pi.mul_apply]
     by_cases hx : x ∈ t
     · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_coe, algebraMapCLM_apply,
@@ -261,7 +261,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       refine
         ⟨{y : X | g y ≠ 0} ∩ t,
           mem_nhdsWithin_iff_exists_mem_nhds_inter.mpr ⟨_, this, Set.Subset.rfl⟩,
-          ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.pow 2⟩, ?_, fun x hx =>
+          ⟨⟨fun x ↦ ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.pow 2⟩, ?_, fun x hx =>
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
@@ -307,7 +307,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
     exists_continuous_zero_one_of_isClosed isClosed_closure isClosed_singleton
       (Set.disjoint_singleton_right.mpr hx)
   exact
-    ⟨⟨fun x => g x, continuous_ofReal.comp (map_continuous g)⟩, by
+    ⟨⟨fun x ↦ g x, continuous_ofReal.comp (map_continuous g)⟩, by
       simpa only [coe_mk, ofReal_eq_zero] using fun x hx => hgs (subset_closure hx), by
       simpa only [coe_mk, hgx (Set.mem_singleton x), Pi.one_apply, RCLike.ofReal_one] using
         one_ne_zero⟩
@@ -321,7 +321,7 @@ variable (X)
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
 def idealOpensGI :
-    GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s where
+    GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s ↦ idealOfSet 𝕜 s where
   choice I _ := opensOfIdeal I.closure
   gc I s := ideal_gc X 𝕜 I s
   le_l_u s := (setOfIdeal_ofSet_of_isOpen 𝕜 s.isOpen).ge
@@ -387,7 +387,7 @@ variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation at `x`. -/
 def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
-    ⟨{  toFun := fun f => f x
+    ⟨{  toFun := fun f ↦ f x
         map_add' := fun _ _ => rfl
         map_smul' := fun _ _ => rfl
         cont := continuous_eval_const x }, by
@@ -415,7 +415,7 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
       RCLike.ofReal_inj] using
       ((fx (Set.mem_singleton x)).symm ▸ (fy (Set.mem_singleton y)).symm ▸ zero_ne_one : f x ≠ f y)
   · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance
-    refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f => ?_⟩
+    refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f ↦ ?_⟩
     simpa only [RingHom.mem_ker, continuousMapEval_apply_apply, mem_idealOfSet_compl_singleton,
       RingHom.mem_ker] using SetLike.ext_iff.mp hx f
 

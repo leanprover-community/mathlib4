@@ -176,7 +176,7 @@ theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p �
     (root : aeval pb.gen p = 0) : pb.dim ≤ p.natDegree := by
   refine le_of_not_lt fun hlt => ne_zero ?_
   rw [p.as_sum_range' _ hlt, Finset.sum_range]
-  refine Fintype.sum_eq_zero _ fun i => ?_
+  refine Fintype.sum_eq_zero _ fun i ↦ ?_
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
   have := Fintype.linearIndependent_iff.1 pb.basis.linearIndependent _ root
   rw [this, monomial_zero_right]
@@ -219,7 +219,7 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
       if ↑j + 1 = pb.dim then -pb.minpolyGen.coeff ↑i else if (i : ℕ) = j + 1 then 1 else 0 := by
   cases subsingleton_or_nontrivial A; · subsingleton
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
-  refine pb.basis.ext fun k => ?_
+  refine pb.basis.ext fun k ↦ ?_
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]
   apply (pow_succ' _ _).symm.trans
   split_ifs with h
@@ -240,7 +240,7 @@ section Equiv
 variable [Algebra A S] {S' : Type*} [Ring S'] [Algebra A S']
 
 theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
-    (f : A[X]) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (aeval pb.gen f) = aeval y f := by
+    (f : A[X]) : pb.basis.constr A (fun i ↦ y ^ (i : ℕ)) (aeval pb.gen f) = aeval y f := by
   cases subsingleton_or_nontrivial A
   · rw [(Subsingleton.elim _ _ : f = 0), aeval_zero, map_zero, aeval_zero]
   rw [← aeval_modByMonic_eq_self_of_root (minpoly.monic pb.isIntegral_gen) (minpoly.aeval _ _), ←
@@ -259,16 +259,16 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   rw [← Fin.val_mk hi, ← pb.basis_eq_pow ⟨i, hi⟩, Basis.constr_basis]
 
 theorem constr_pow_gen (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0) :
-    pb.basis.constr A (fun i => y ^ (i : ℕ)) pb.gen = y := by
+    pb.basis.constr A (fun i ↦ y ^ (i : ℕ)) pb.gen = y := by
   convert pb.constr_pow_aeval hy X <;> rw [aeval_X]
 
 theorem constr_pow_algebraMap (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
-    (x : A) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (algebraMap A S x) = algebraMap A S' x := by
+    (x : A) : pb.basis.constr A (fun i ↦ y ^ (i : ℕ)) (algebraMap A S x) = algebraMap A S' x := by
   convert pb.constr_pow_aeval hy (C x) <;> rw [aeval_C]
 
 theorem constr_pow_mul (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
-    (x x' : S) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (x * x') =
-      pb.basis.constr A (fun i => y ^ (i : ℕ)) x * pb.basis.constr A (fun i => y ^ (i : ℕ)) x' := by
+    (x x' : S) : pb.basis.constr A (fun i ↦ y ^ (i : ℕ)) (x * x') =
+      pb.basis.constr A (fun i ↦ y ^ (i : ℕ)) x * pb.basis.constr A (fun i ↦ y ^ (i : ℕ)) x' := by
   obtain ⟨f, rfl⟩ := pb.exists_eq_aeval' x
   obtain ⟨g, rfl⟩ := pb.exists_eq_aeval' x'
   simp only [← aeval_mul, pb.constr_pow_aeval hy]
@@ -280,7 +280,7 @@ See `PowerBasis.liftEquiv` for a bundled equiv sending `⟨y, hy⟩` to the alge
 -/
 noncomputable def lift (pb : PowerBasis A S) (y : S') (hy : aeval y (minpoly A pb.gen) = 0) :
     S →ₐ[A] S' :=
-  { pb.basis.constr A fun i => y ^ (i : ℕ) with
+  { pb.basis.constr A fun i ↦ y ^ (i : ℕ) with
     map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [RingHom.map_one]
     map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [RingHom.map_zero]
     map_mul' := pb.constr_pow_mul hy
@@ -316,7 +316,7 @@ polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! (config := .asFn)]
 noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
     (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
-  pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
+  pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x ↦ by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
     · simp
     · exact map_monic_ne_zero (minpoly.monic pb.isIntegral_gen))

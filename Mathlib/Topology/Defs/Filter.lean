@@ -232,7 +232,7 @@ section Lim
 
 /-- If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. -/
 noncomputable def lim [Nonempty X] (f : Filter X) : X :=
-  Classical.epsilon fun x => f ≤ 𝓝 x
+  Classical.epsilon fun x ↦ f ≤ 𝓝 x
 
 /-- If `f` is a filter in `α` and `g : α → X` is a function, then `limUnder f g` is a limit of `g`
 at `f`, if it exists. -/

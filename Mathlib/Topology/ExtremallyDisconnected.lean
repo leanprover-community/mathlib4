@@ -81,8 +81,8 @@ variable {X}
 
 theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) := by
   intro Y Z _tsY _tsZ _csY _t2Y _csZ _csZ f g hf hg g_sur
-  let s : Z → Y := fun z => Classical.choose <| g_sur z
-  have hs : g ∘ s = id := funext fun z => Classical.choose_spec (g_sur z)
+  let s : Z → Y := fun z ↦ Classical.choose <| g_sur z
+  have hs : g ∘ s = id := funext fun z ↦ Classical.choose_spec (g_sur z)
   let t := s ∘ f ∘ stoneCechUnit
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht
@@ -158,11 +158,11 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
   -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  · refine eq_univ_of_forall fun a ↦ inter_nonempty_iff_exists_left.mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-      ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
+      ?_ (fun c ↦ ?_) (fun c ↦ IsClosed.isCompact ?_) (fun c ↦ ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
       have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
       exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
@@ -194,7 +194,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
-    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_subset ρ (by simp) h
+    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h ↦ hx <| image_subset ρ (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
     have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
@@ -258,12 +258,12 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   -- apply Lemma 2.4 to get closed $E$ satisfying "Zorn subset condition"
   let π₁ : D → A := Prod.fst ∘ Subtype.val
   have π₁_cont : Continuous π₁ := continuous_fst.comp continuous_subtype_val
-  have π₁_surj : π₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
+  have π₁_surj : π₁.Surjective := fun a ↦ ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
   rcases exists_compact_surjective_zorn_subset π₁_cont π₁_surj with ⟨E, _, E_onto, E_min⟩
   -- apply Lemma 2.3 to get homeomorphism $\pi_1|_E : E \to A$
   let ρ : E → A := E.restrict π₁
   have ρ_cont : Continuous ρ := π₁_cont.continuousOn.restrict
-  have ρ_surj : ρ.Surjective := fun a => by
+  have ρ_surj : ρ.Surjective := fun a ↦ by
     rcases (E_onto ▸ mem_univ a : a ∈ π₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
   let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_min
   -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$

@@ -267,7 +267,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 -/
 @[simps] def Comon_ToMon_OpOp : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
   obj A := op (Comon_ToMon_OpOp_obj' C A)
-  map := fun f => op <|
+  map := fun f ↦ op <|
     { hom := f.hom.op
       one_hom := by apply Quiver.Hom.unop_inj; simp
       mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom] }

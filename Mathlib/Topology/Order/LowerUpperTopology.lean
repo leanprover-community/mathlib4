@@ -247,7 +247,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   ext s
   constructor
   · rintro ⟨F, hF, rfl⟩
-    refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
+    refine ⟨(fun a ↦ (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, ?_⟩
     simp only [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
     haveI := hF.to_subtype
@@ -313,7 +313,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
       by_contra hUS'
       apply hU
       rw [hS2]
-      exact sUnion_eq_univ_iff.mpr (fun a => ⟨univ, hUS', trivial⟩)
+      exact sUnion_eq_univ_iff.mpr (fun a ↦ ⟨univ, hUS', trivial⟩)
     use sSup {a | (Ici a)ᶜ ∈ S}
     rw [hS2, sUnion_eq_compl_sInter_compl, compl_inj_iff]
     apply le_antisymm
@@ -462,9 +462,9 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
   [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
-  refine IsLower.continuous_iff_Ici.2 fun b => ?_
+  refine IsLower.continuous_iff_Ici.2 fun b ↦ ?_
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
-  refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans ?_ <|
+  refine Subset.antisymm (fun a ↦ sInf_le) fun a ha => le_trans ?_ <|
     OrderHomClass.mono (f : α →o β) ha
   refine LE.le.trans ?_ (map_sInf f _).ge
   simp

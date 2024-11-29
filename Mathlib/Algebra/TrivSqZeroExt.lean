@@ -482,7 +482,7 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
 
 instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
-    natCast := fun n => inl n
+    natCast := fun n ↦ inl n
     natCast_zero := by simp [Nat.cast]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast] }
 
@@ -509,7 +509,7 @@ alias inl_nat_cast := inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
-    intCast := fun z => inl z
+    intCast := fun z ↦ inl z
     intCast_ofNat := fun _n => ext (Int.cast_natCast _) rfl
     intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 
@@ -572,7 +572,7 @@ In the commutative case this becomes the simpler $(r + m)^n = r^n + nr^{n-1}m$.
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     Pow (tsze R M) ℕ :=
   ⟨fun x n =>
-    ⟨x.fst ^ n, ((List.range n).map fun i => x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum⟩⟩
+    ⟨x.fst ^ n, ((List.range n).map fun i ↦ x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum⟩⟩
 
 @[simp]
 theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -581,7 +581,7 @@ theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
 
 theorem snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (n : ℕ) :
-    snd (x ^ n) = ((List.range n).map fun i => x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum :=
+    snd (x ^ n) = ((List.range n).map fun i ↦ x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum :=
   rfl
 
 theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
@@ -631,7 +631,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
             x.1 •> (y.1 •> z.2 + y.2 <• z.1) + x.2 <• (y.1 * z.1)
           by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
     npow := fun n x => x ^ n
-    npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
+    npow_zero := fun x ↦ ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
     npow_succ := fun n x =>
       ext (pow_succ _ _)
         (by
@@ -710,7 +710,7 @@ variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
 
 Strictly this is only a _two_-sided inverse when the left and right actions associate. -/
 instance instInv : Inv (tsze R M) :=
-  ⟨fun b => (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
+  ⟨fun b ↦ (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
 
 @[simp] theorem fst_inv (x : tsze R M) : fst x⁻¹ = (fst x)⁻¹ :=
   rfl
@@ -1045,11 +1045,11 @@ def liftEquivOfComm :
     { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) := by
   refine Equiv.trans ?_ liftEquiv
   exact {
-    toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
+    toFun := fun f ↦ ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
     invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
-    left_inv := fun f => rfl
+    left_inv := fun f ↦ rfl
     right_inv := fun fg => Subtype.ext <|
       Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
       rfl }

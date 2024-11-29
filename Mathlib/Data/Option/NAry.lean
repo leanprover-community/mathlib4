@@ -37,7 +37,7 @@ variable {α β γ δ : Type*} {f : α → β → γ} {a : Option α} {b : Optio
 /-- The image of a binary function `f : α → β → γ` as a function `Option α → Option β → Option γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
-  a.bind fun a => b.map <| f a
+  a.bind fun a ↦ b.map <| f a
 
 /-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
@@ -57,13 +57,13 @@ theorem map₂_none_left (f : α → β → γ) (b : Option β) : map₂ f none 
 theorem map₂_none_right (f : α → β → γ) (a : Option α) : map₂ f a none = none := by cases a <;> rfl
 
 @[simp]
-theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b => f a b :=
+theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b ↦ f a b :=
   rfl
 
 -- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
-    map₂ f a b = a.map fun a => f a b := by cases a <;> rfl
+    map₂ f a b = a.map fun a ↦ f a b := by cases a <;> rfl
 
 -- Porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c := by

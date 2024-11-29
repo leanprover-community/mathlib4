@@ -38,7 +38,7 @@ abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
 
 theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K).det ≠ 0 := by
   let e : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) := equivReindex K
-  let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
+  let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i ↦ integralBasis K (e i))
     RingHom.equivRatAlgHom
   rw [show (basisMatrix K) = N by
     ext:2; simp only [N, transpose_apply, latticeBasis_apply, integralBasis_apply,
@@ -66,7 +66,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
 theorem inverse_basisMatrix_mulVec_eq_repr [DecidableEq (K →+* ℂ)] (α : 𝓞 K) :
     ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>
       canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
-      ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i => by
+      ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i ↦ by
   rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec ((algebraMap (𝓞 K) K) α))]
 
 end

@@ -97,7 +97,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   suffices T2Space K by infer_instance
   apply TopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
-  refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
+  refine ⟨{ k | v k < v x }, ?_, fun h ↦ lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
   have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
   let γ' := Units.mk0 _ vx_ne
@@ -230,7 +230,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       · rintro x ⟨hx, _⟩ y ⟨hy, _⟩
         apply hU <;> assumption
     rcases this with ⟨V', V'_in, zeroV', hV'⟩
-    have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ := by
+    have nhds_right : (fun x ↦ x * x₀) '' V' ∈ 𝓝 x₀ := by
       have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, mul_inv_cancel₀ h, mul_one]

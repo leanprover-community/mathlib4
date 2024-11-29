@@ -99,9 +99,9 @@ notation "ℓ²(" ι ", " 𝕜 ")" => lp (fun i : ι => 𝕜) 2
 
 namespace lp
 
-theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
+theorem summable_inner (f g : lp G 2) : Summable fun i ↦ ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul ?_ f g) ?_
+  refine .of_norm_bounded (fun i ↦ ‖f i‖ * ‖g i‖) (lp.summable_mul ?_ f g) ?_
   · rw [Real.isConjExponent_iff]; norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -110,7 +110,7 @@ theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
 instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
   { lp.normedAddCommGroup (E := G) (p := 2) with
     inner := fun f g => ∑' i, ⟪f i, g i⟫
-    norm_sq_eq_inner := fun f => by
+    norm_sq_eq_inner := fun f ↦ by
       calc
         ‖f‖ ^ 2 = ‖f‖ ^ (2 : ℝ≥0∞).toReal := by norm_cast
         _ = ∑' i, ‖f i‖ ^ (2 : ℝ≥0∞).toReal := lp.norm_rpow_eq_tsum ?_ f
@@ -151,7 +151,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
 theorem inner_eq_tsum (f g : lp G 2) : ⟪f, g⟫ = ∑' i, ⟪f i, g i⟫ :=
   rfl
 
-theorem hasSum_inner (f g : lp G 2) : HasSum (fun i => ⟪f i, g i⟫) ⟪f, g⟫ :=
+theorem hasSum_inner (f g : lp G 2) : HasSum (fun i ↦ ⟪f i, g i⟫) ⟪f, g⟫ :=
   (summable_inner f g).hasSum
 
 theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
@@ -179,7 +179,7 @@ variable [CompleteSpace E] {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFa
 include hV
 
 protected theorem summable_of_lp (f : lp G 2) :
-    Summable fun i => V i (f i) := by
+    Summable fun i ↦ V i (f i) := by
   rw [hV.summable_iff_norm_sq_summable]
   convert (lp.memℓp f).summable _
   · norm_cast
@@ -210,7 +210,7 @@ protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑'
   rfl
 
 protected theorem hasSum_linearIsometry (f : lp G 2) :
-    HasSum (fun i => V i (f i)) (hV.linearIsometry f) :=
+    HasSum (fun i ↦ V i (f i)) (hV.linearIsometry f) :=
   (hV.summable_of_lp f).hasSum
 
 @[simp]
@@ -225,7 +225,7 @@ protected theorem linearIsometry_apply_single [DecidableEq ι] {i : ι} (x : G i
   · simp [h]
 
 protected theorem linearIsometry_apply_dfinsupp_sum_single [DecidableEq ι] [∀ i, DecidableEq (G i)]
-    (W₀ : Π₀ i : ι, G i) : hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
+    (W₀ : Π₀ i : ι, G i) : hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i ↦ V i := by
   simp
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
@@ -286,9 +286,9 @@ theorem IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamil
 
 /-- This is `Orthonormal.isHilbertSum` in the case of actual inclusions from subspaces. -/
 theorem IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
-    (hFortho : OrthogonalFamily 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ)
+    (hFortho : OrthogonalFamily 𝕜 (fun i ↦ F i) fun i ↦ (F i).subtypeₗᵢ)
     (hFtotal : ⊤ ≤ (⨆ i, F i).topologicalClosure) :
-    IsHilbertSum 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ :=
+    IsHilbertSum 𝕜 (fun i ↦ F i) fun i ↦ (F i).subtypeₗᵢ :=
   IsHilbertSum.mk hFortho (by simpa [subtypeₗᵢ_toLinearMap, range_subtype] using hFtotal)
 
 /-- *A* Hilbert sum `(E, V)` of `G` is canonically isomorphic to *the* Hilbert sum of `G`,
@@ -309,7 +309,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply (hV : IsHilbertSum
 a vector `w : lp G 2` is the image of the infinite sum of the associated elements in `E`, and this
 sum indeed converges. -/
 protected theorem IsHilbertSum.hasSum_linearIsometryEquiv_symm (hV : IsHilbertSum 𝕜 G V)
-    (w : lp G 2) : HasSum (fun i => V i (w i)) (hV.linearIsometryEquiv.symm w) := by
+    (w : lp G 2) : HasSum (fun i ↦ V i (w i)) (hV.linearIsometryEquiv.symm w) := by
   simp [IsHilbertSum.linearIsometryEquiv, OrthogonalFamily.hasSum_linearIsometry]
 
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
@@ -326,7 +326,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_single
 elements of `E`. -/
 protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     [DecidableEq ι] [∀ i, DecidableEq (G i)] (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
-    hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
+    hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i ↦ V i := by
   simp only [map_dfinsupp_sum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
@@ -346,13 +346,13 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 relative to the family of linear isometries `fun i k => k • v i`. -/
 theorem Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
     (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) :
-    IsHilbertSum 𝕜 (fun _ : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
+    IsHilbertSum 𝕜 (fun _ : ι => 𝕜) fun i ↦ LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   IsHilbertSum.mk hv.orthogonalFamily (by
     convert hsp
     simp [← LinearMap.span_singleton_eq_range, ← Submodule.span_iUnion])
 
 theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSpace K] :
-    IsHilbertSum 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ := by
+    IsHilbertSum 𝕜 (fun b ↦ ↥(cond b K Kᗮ)) fun b ↦ (cond b K Kᗮ).subtypeₗᵢ := by
   have : ∀ b, CompleteSpace (↥(cond b K Kᗮ)) := by
     intro b
     cases b <;> first | exact instOrthogonalCompleteSpace K | assumption
@@ -415,7 +415,7 @@ protected theorem orthonormal (b : HilbertBasis ι 𝕜 E) : Orthonormal 𝕜 b 
   simp
 
 protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, 𝕜)) :
-    HasSum (fun i => f i • b i) (b.repr.symm f) := by
+    HasSum (fun i ↦ f i • b i) (b.repr.symm f) := by
   classical
   suffices H : (fun i : ι => f i • b i) = fun b_1 : ι => b.repr.symm.toContinuousLinearEquiv <|
       (fun i : ι => lp.single 2 i (f i) (E := (fun _ : ι => 𝕜))) b_1 by
@@ -433,7 +433,7 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
   exact (b.repr.apply_symm_apply (lp.single 2 i (f i))).symm
 
 protected theorem hasSum_repr (b : HilbertBasis ι 𝕜 E) (x : E) :
-    HasSum (fun i => b.repr x i • b i) x := by simpa using b.hasSum_repr_symm (b.repr x)
+    HasSum (fun i ↦ b.repr x i • b i) x := by simpa using b.hasSum_repr_symm (b.repr x)
 
 @[simp]
 protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
@@ -450,13 +450,13 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
     exact subset_span ⟨i, rfl⟩
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
-    HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
+    HasSum (fun i ↦ ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
   convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
   rw [innerSL_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 
 protected theorem summable_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
-    Summable fun i => ⟪x, b i⟫ * ⟪b i, y⟫ :=
+    Summable fun i ↦ ⟪x, b i⟫ * ⟪b i, y⟫ :=
   (b.hasSum_inner_mul_inner x y).summable
 
 protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
@@ -482,7 +482,7 @@ theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
 
 protected theorem hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
-    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (orthogonalProjection U x) := by
+    HasSum (fun i ↦ ⟪(b i : E), x⟫ • b i) (orthogonalProjection U x) := by
   simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
     b.hasSum_repr (orthogonalProjection U x)
 

@@ -78,7 +78,7 @@ enough to define/prove it for `f n` and being able to extend through diffs. -/
 def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
     ∀ ⦃n⦄, p (f n) → p (disjointed f n)
   | 0 => id
-  | n + 1 => fun h => by
+  | n + 1 => fun h ↦ by
     suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from H n
     rintro k
     induction' k with k ih
@@ -158,6 +158,6 @@ theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
   disjointed_eq_inf_compl f n
 
 theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
-    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
+    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x ↦ Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]

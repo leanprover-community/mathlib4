@@ -105,13 +105,13 @@ instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabi
 without its contents -/
 def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
     β → P.last.M :=
-  PFunctor.M.corec fun b => ⟨g₀ b, g₂ b⟩
+  PFunctor.M.corec fun b ↦ ⟨g₀ b, g₂ b⟩
 
 /-- Proof of type equality as an arrow -/
 def castDropB {a a' : P.A} (h : a = a') : P.drop.B a ⟹ P.drop.B a' := fun _i b => Eq.recOn h b
 
 /-- Proof of type equality as a function -/
-def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b => Eq.recOn h b
+def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b ↦ Eq.recOn h b
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
@@ -147,7 +147,7 @@ def M.corec' {α : TypeVec n} {β : Type u} (g₀ : β → P.A) (g₁ : ∀ b : 
 
 /-- Corecursor for M-type of `P` -/
 def M.corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) : β → P.M α :=
-  M.corec' P (fun b => (g b).fst) (fun b => dropFun (g b).snd) fun b => lastFun (g b).snd
+  M.corec' P (fun b ↦ (g b).fst) (fun b ↦ dropFun (g b).snd) fun b ↦ lastFun (g b).snd
 
 /-- Implementation of destructor for M-type of `P` -/
 def M.pathDestLeft {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last.M}
@@ -162,7 +162,7 @@ def M.pathDestRight {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a �
 /-- Destructor for M-type of `P` -/
 def M.dest' {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last.M}
     (h : PFunctor.M.dest x = ⟨a, f⟩) (f' : M.Path P x ⟹ α) : P (α.append1 (P.M α)) :=
-  ⟨a, splitFun (M.pathDestLeft P h f') fun x => ⟨f x, M.pathDestRight P h f' x⟩⟩
+  ⟨a, splitFun (M.pathDestLeft P h f') fun x ↦ ⟨f x, M.pathDestRight P h f' x⟩⟩
 
 /-- Destructor for M-types -/
 def M.dest {α : TypeVec n} (x : P.M α) : P (α ::: P.M α) :=
@@ -170,7 +170,7 @@ def M.dest {α : TypeVec n} (x : P.M α) : P (α ::: P.M α) :=
 
 /-- Constructor for M-types -/
 def M.mk {α : TypeVec n} : P (α.append1 (P.M α)) → P.M α :=
-  M.corec _ fun i => appendFun id (M.dest P) <$$> i
+  M.corec _ fun i ↦ appendFun id (M.dest P) <$$> i
 
 theorem M.dest'_eq_dest' {α : TypeVec n} {x : P.last.M} {a₁ : P.A}
     {f₁ : P.last.B a₁ → P.last.M} (h₁ : PFunctor.M.dest x = ⟨a₁, f₁⟩) {a₂ : P.A}
@@ -228,7 +228,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
     rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', _, rfl⟩
     rw [e₁', e₂']
-    exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
+    exact ⟨_, _, _, rfl, rfl, fun b ↦ ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
   congr with (i p)
   induction' p with x a f h' i c x a f h' i c p IH <;>
@@ -287,7 +287,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     all_goals aesop
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
-    M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
+    M.dest P (g <$$> x) = (appendFun g fun x ↦ g <$$> x) <$$> M.dest P x := by
   cases' x with a f
   rw [map_eq]
   conv =>

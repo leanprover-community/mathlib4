@@ -84,7 +84,7 @@ theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧
   have h1 := vsub_sub_vsub_cancel_left a p m
   have h2 := vsub_sub_vsub_cancel_left p q m
   have h3 := vsub_sub_vsub_cancel_left a q m
-  have h : ∀ r, b -ᵥ r = m -ᵥ r + (m -ᵥ a) := fun r => by
+  have h : ∀ r, b -ᵥ r = m -ᵥ r + (m -ᵥ a) := fun r ↦ by
     rw [midpoint_vsub_left, ← right_vsub_midpoint, add_comm, vsub_add_vsub_cancel]
   iterate 4 rw [dist_eq_norm_vsub V]
   rw [← h1, ← h2, h, h]

@@ -240,7 +240,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
       (∏ i ∈ s, f i) -
         ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j - g j)) * ∏ j ∈ s with i < j, f j := by
   simp only [sub_eq_add_neg]
-  convert prod_add_ordered s f fun i => -g i
+  convert prod_add_ordered s f fun i ↦ -g i
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of

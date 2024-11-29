@@ -96,10 +96,10 @@ theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitely
 finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
-  ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h => by
+  ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h ↦ by
     classical
       set M : Finset T → Type max u v := fun T0 : Finset T =>
-        (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
+        (h (T0.map (Function.Embedding.subtype fun x ↦ x ∈ T)) T0.map_subtype_subset).some.Carrier
       let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
       have h' : M' ⊨ T := by
         refine ⟨fun φ hφ => ?_⟩
@@ -108,7 +108,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
           Filter.Eventually.filter_mono (Ultrafilter.of_le _)
             (Filter.eventually_atTop.2
               ⟨{⟨φ, hφ⟩}, fun s h' =>
-                Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x => x ∈ T))
+                Theory.realize_sentence_of_mem (s.map (Function.Embedding.subtype fun x ↦ x ∈ T))
                   ?_⟩)
         simp only [Finset.coe_map, Function.Embedding.coe_subtype, Set.mem_image, Finset.mem_coe,
           Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
@@ -176,7 +176,7 @@ theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : �
   classical
     refine
       ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
-        fun h => ?_⟩
+        fun h ↦ ?_⟩
     rw [isSatisfiable_iff_isFinitelySatisfiable]
     intro s hs
     rw [Set.iUnion_eq_iUnion_finset] at hs
@@ -327,15 +327,15 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
 
 theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
     T ⊨ᵇ φ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ Formula.equivSentence φ := by
-  refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
-    fun h => models_formula_iff.2 (fun M v => ?_)⟩
+  refine ⟨fun h ↦ models_sentence_iff.2 (fun M => ?_),
+    fun h ↦ models_formula_iff.2 (fun M v => ?_)⟩
   · letI := (L.lhomWithConstants α).reduct M
     have : (L.lhomWithConstants α).IsExpansionOn M := LHom.isExpansionOn_reduct _ _
       -- why doesn't that instance just work?
     rw [Formula.realize_equivSentence]
     have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
     let M' := Theory.ModelType.of T M
-    exact h M' (fun a => (L.con a : M)) _
+    exact h M' (fun a ↦ (L.con a : M)) _
   · letI : (constantsOn α).Structure M := constantsOn.structure v
     have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
     exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)

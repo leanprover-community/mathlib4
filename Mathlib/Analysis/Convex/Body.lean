@@ -201,7 +201,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     (hu : Tendsto u atTop (𝓝 0)) :
     ⋂ n : ℕ, (1 + (u n : ℝ)) • (K : Set V) = K := by
   ext x
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨C, hC_pos, hC_bdd⟩ := K.isBounded.exists_pos_norm_le
     rw [← K.isClosed.closure_eq, SeminormedAddCommGroup.mem_closure_iff]
     rw [← NNReal.tendsto_coe, NormedAddCommGroup.tendsto_atTop] at hu
@@ -215,7 +215,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     rw [lt_div_iff₀' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
-  · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
+  · refine Set.mem_iInter.mpr (fun n ↦ Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
     exact le_add_of_nonneg_right (by positivity)
 
 end SeminormedAddCommGroup

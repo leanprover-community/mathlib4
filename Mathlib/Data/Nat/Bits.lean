@@ -239,14 +239,14 @@ theorem bitCasesOn_bit1 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)
   bitCasesOn_bit H true n
 
 theorem bit_cases_on_injective {motive : ℕ → Sort u} :
-    Function.Injective fun H : ∀ b n, motive (bit b n) => fun n => bitCasesOn n H := by
+    Function.Injective fun H : ∀ b n, motive (bit b n) => fun n ↦ bitCasesOn n H := by
   intro H₁ H₂ h
   ext b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
 
 @[simp]
 theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive (bit b n)) :
-    ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
+    ((fun n ↦ bitCasesOn n H₁) = fun n ↦ bitCasesOn n H₂) ↔ H₁ = H₂ :=
   bit_cases_on_injective.eq_iff
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n

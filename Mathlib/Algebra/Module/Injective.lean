@@ -91,7 +91,7 @@ theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain
 theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r ↦ r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.ext h1 h2⟩
 
 end Ext
@@ -143,7 +143,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-    is_extension := fun m => by
+    is_extension := fun m ↦ by
       refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ h1
@@ -163,7 +163,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=
-        { toFun := fun x => f x.2.choose
+        { toFun := fun x ↦ f x.2.choose
           map_add' := fun x y => by
             have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
@@ -175,7 +175,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, LinearMap.map_smul] }
       le := le_refl _
-      is_extension := fun m => by
+      is_extension := fun m ↦ by
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
         dsimp
         apply congrArg
@@ -351,7 +351,7 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
 
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
-  refine Submodule.eq_top_iff'.mpr fun y => ?_
+  refine Submodule.eq_top_iff'.mpr fun y ↦ ?_
   dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]

@@ -70,7 +70,7 @@ protected theorem LinearIsometry.isConformalMap (f' : M →ₗᵢ[R] N) :
 
 @[nontriviality]
 theorem isConformalMap_of_subsingleton [Subsingleton M] (f' : M →L[R] N) : IsConformalMap f' :=
-  ⟨1, one_ne_zero, ⟨0, fun x => by simp [Subsingleton.elim x 0]⟩, Subsingleton.elim _ _⟩
+  ⟨1, one_ne_zero, ⟨0, fun x ↦ by simp [Subsingleton.elim x 0]⟩, Subsingleton.elim _ _⟩
 
 namespace IsConformalMap
 

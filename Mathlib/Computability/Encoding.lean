@@ -75,7 +75,7 @@ def sectionΓ'Bool : Γ' → Bool
   | _ => Inhabited.default
 
 theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
-  fun x => Bool.casesOn x rfl rfl
+  fun x ↦ Bool.casesOn x rfl rfl
 
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective (Exists.intro sectionΓ'Bool leftInverse_section_inclusion)
@@ -102,10 +102,10 @@ def decodePosNum : List Bool → PosNum
   | _          => PosNum.one
 
 /-- A decoding function from `List Bool` to the binary numbers. -/
-def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePosNum l
+def decodeNum : List Bool → Num := fun l ↦ ite (l = []) Num.zero <| decodePosNum l
 
 /-- A decoding function from `List Bool` to ℕ. -/
-def decodeNat : List Bool → Nat := fun l => decodeNum l
+def decodeNat : List Bool → Nat := fun l ↦ decodeNum l
 
 theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
@@ -150,7 +150,7 @@ def encodingNatΓ' : Encoding ℕ where
   decode x := some (decodeNat (List.map sectionΓ'Bool x))
   decode_encode x :=
     congr_arg _ <| by
-      -- Porting note: `rw` can't unify `g ∘ f` with `fun x => g (f x)`, used `LeftInverse.id`
+      -- Porting note: `rw` can't unify `g ∘ f` with `fun x ↦ g (f x)`, used `LeftInverse.id`
       -- instead.
       rw [List.map_map, leftInverse_section_inclusion.id, List.map_id, decode_encodeNat]
 

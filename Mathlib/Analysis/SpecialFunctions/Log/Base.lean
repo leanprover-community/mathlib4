@@ -149,7 +149,7 @@ theorem logb_eq_iff_rpow_eq (hy : 0 < y) : logb b y = x ↔ b ^ x = y := by
 theorem surjOn_logb : SurjOn (logb b) (Ioi 0) univ := fun x _ =>
   ⟨b ^ x, rpow_pos_of_pos b_pos x, logb_rpow b_pos b_ne_one⟩
 
-theorem logb_surjective : Surjective (logb b) := fun x => ⟨b ^ x, logb_rpow b_pos b_ne_one⟩
+theorem logb_surjective : Surjective (logb b) := fun x ↦ ⟨b ^ x, logb_rpow b_pos b_ne_one⟩
 
 @[simp]
 theorem range_logb : range (logb b) = univ :=

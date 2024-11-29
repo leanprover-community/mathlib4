@@ -84,7 +84,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
     simp only [q, aeval_C, map_sub, sub_left_inj]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
-  apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
+  apply mt fun h ↦ (hcomm.isUnit_mul_iff.mp h).1
   simpa only [aeval_X, aeval_C, map_sub] using hk
 
 /-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
@@ -113,14 +113,14 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
 /-- In this version of the spectral mapping theorem, we assume the spectrum
 is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
-    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
+    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k ↦ eval k p) '' σ a := by
   nontriviality A
-  refine Or.elim (le_or_gt (degree p) 0) (fun h => ?_) (map_polynomial_aeval_of_degree_pos a p)
+  refine Or.elim (le_or_gt (degree p) 0) (fun h ↦ ?_) (map_polynomial_aeval_of_degree_pos a p)
   rw [eq_C_of_degree_le_zero h]
   simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
-theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
+theorem pow_image_subset (a : A) (n : ℕ) : (fun x ↦ x ^ n) '' σ a ⊆ σ (a ^ n) := by
   simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for

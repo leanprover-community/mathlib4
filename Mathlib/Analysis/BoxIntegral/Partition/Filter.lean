@@ -351,15 +351,15 @@ theorem MemBaseSet.exists_common_compl
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
   · exact ⟨π₁.toPrepartition.compl, π₁.toPrepartition.iUnion_compl,
-      fun h => (hD h).elim, fun h => (hD h).elim⟩
+      fun h ↦ (hD h).elim, fun h ↦ (hD h).elim⟩
 
 protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c r₁ π₁)
     (hle : ∀ x ∈ Box.Icc I, r₂ x ≤ r₁ x) {π₂ : Prepartition I} (hU : π₂.iUnion = ↑I \ π₁.iUnion)
     (hc : l.bDistortion → π₂.distortion ≤ c) :
     l.MemBaseSet I c r₁ (π₁.unionComplToSubordinate π₂ hU r₂) :=
   ⟨hπ₁.1.disjUnion ((π₂.isSubordinate_toSubordinate r₂).mono hle) _,
-    fun h => (hπ₁.2 h).disjUnion (π₂.isHenstock_toSubordinate _) _,
-    fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
+    fun h ↦ (hπ₁.2 h).disjUnion (π₂.isHenstock_toSubordinate _) _,
+    fun h ↦ (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
     fun _ => ⟨⊥, by simp⟩⟩
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
@@ -405,7 +405,7 @@ theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ �
   fun hR => hr (le_iff_imp.1 h.1 hR)
 
 nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ)} (h₁ : l.RCond r₁)
-    (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
+    (h₂ : l.RCond r₂) : l.RCond fun x ↦ min (r₁ x) (r₂ x) :=
   fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
 
 @[mono]
@@ -430,7 +430,7 @@ theorem toFilteriUnion_congr (I : Box ι) (l : IntegrationParams) {π₁ π₂ :
   simp only [toFilteriUnion, toFilterDistortioniUnion, h]
 
 theorem hasBasis_toFilterDistortion (l : IntegrationParams) (I : Box ι) (c : ℝ≥0) :
-    (l.toFilterDistortion I c).HasBasis l.RCond fun r => { π | l.MemBaseSet I c r π } :=
+    (l.toFilterDistortion I c).HasBasis l.RCond fun r ↦ { π | l.MemBaseSet I c r π } :=
   hasBasis_biInf_principal'
     (fun _ hr₁ _ hr₂ =>
       ⟨_, hr₁.min hr₂, fun _ => MemBaseSet.mono _ le_rfl le_rfl fun _ _ => min_le_left _ _,
@@ -445,19 +445,19 @@ theorem hasBasis_toFilterDistortioniUnion (l : IntegrationParams) (I : Box ι) (
 
 theorem hasBasis_toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     (l.toFilteriUnion I π₀).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
-      fun r => { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.iUnion = π₀.iUnion } := by
-  have := fun c => l.hasBasis_toFilterDistortioniUnion I c π₀
+      fun r ↦ { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.iUnion = π₀.iUnion } := by
+  have := fun c ↦ l.hasBasis_toFilterDistortioniUnion I c π₀
   simpa only [setOf_and, setOf_exists] using hasBasis_iSup this
 
 theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
     (l.toFilteriUnion I ⊤).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
-      fun r => { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.IsPartition } := by
+      fun r ↦ { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.IsPartition } := by
   simpa only [TaggedPrepartition.isPartition_iff_iUnion_eq, Prepartition.iUnion_top] using
     l.hasBasis_toFilteriUnion I ⊤
 
 theorem hasBasis_toFilter (l : IntegrationParams) (I : Box ι) :
     (l.toFilter I).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
-      fun r => { π | ∃ c, l.MemBaseSet I c (r c) π } := by
+      fun r ↦ { π | ∃ c, l.MemBaseSet I c (r c) π } := by
   simpa only [setOf_exists] using hasBasis_iSup (l.hasBasis_toFilterDistortion I)
 
 theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J) :
@@ -509,7 +509,7 @@ instance toFilter_neBot (l : IntegrationParams) (I : Box ι) : (l.toFilter I).Ne
 instance toFilteriUnion_neBot (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     (l.toFilteriUnion I π₀).NeBot :=
   (l.toFilterDistortioniUnion_neBot' I π₀).mono <|
-    le_iSup (fun c => l.toFilterDistortioniUnion I c π₀) _
+    le_iSup (fun c ↦ l.toFilterDistortioniUnion I c π₀) _
 
 theorem eventually_isPartition (l : IntegrationParams) (I : Box ι) :
     ∀ᶠ π in l.toFilteriUnion I ⊤, TaggedPrepartition.IsPartition π :=

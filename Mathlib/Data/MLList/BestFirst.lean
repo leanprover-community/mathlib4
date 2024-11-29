@@ -218,7 +218,7 @@ partial def toMLListWithPriority (q : BestFirstQueue prio ε m β maxSize) : MLL
 Convert a `BestFirstQueue` to a `MLList (α × β)`, by popping off all elements.
 -/
 def toMLList (q : BestFirstQueue prio ε m β maxSize) : MLList m (α × β) :=
-  q.toMLListWithPriority.map fun t => (t.1.1, t.2)
+  q.toMLListWithPriority.map fun t ↦ (t.1.1, t.2)
 
 end BestFirstQueue
 
@@ -240,7 +240,7 @@ where
   /-- A single step of the best first search.
   Pop an element, and insert its children back into the queue,
   with a trivial estimator for their priority. -/
-  go : StateT (BestFirstQueue prio ε m α maxSize) m α := fun s => do
+  go : StateT (BestFirstQueue prio ε m α maxSize) m α := fun s ↦ do
   match ← s.pop with
     | none => failure
     | some ((_, b), s') => pure (b, s'.insertAndEject ⟨b, ⊥⟩ (f b))
@@ -293,7 +293,7 @@ def bestFirstSearchCore (f : α → MLList m α) (a : α)
       (f a).liftM >>= fun a' => do
         let b := g a'
         guard !(← get).contains b
-        modify fun s => s.insert b
+        modify fun s ↦ s.insert b
         pure a'
     implMaxDepth prio ε maxQueued maxDepth f' a |>.runState' (RBSet.empty.insert (g a))
   | none =>

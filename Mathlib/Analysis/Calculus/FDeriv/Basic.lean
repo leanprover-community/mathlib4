@@ -229,31 +229,31 @@ this fact, for functions having a derivative within a set. Its specific formulat
 tangent cone related discussions. -/
 theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
     {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
-    (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
-    Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
-  have tendsto_arg : Tendsto (fun n => x + d n) l (𝓝[s] x) := by
+    (clim : Tendsto (fun n ↦ ‖c n‖) l atTop) (cdlim : Tendsto (fun n ↦ c n • d n) l (𝓝 v)) :
+    Tendsto (fun n ↦ c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
+  have tendsto_arg : Tendsto (fun n ↦ x + d n) l (𝓝[s] x) := by
     conv in 𝓝[s] x => rw [← add_zero x]
     rw [nhdsWithin, tendsto_inf]
     constructor
     · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
     · rwa [tendsto_principal]
-  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
-  have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
+  have : (fun y ↦ f y - f x - f' (y - x)) =o[𝓝[s] x] fun y ↦ y - x := h.isLittleO
+  have : (fun n ↦ f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n ↦ x + d n - x :=
     this.comp_tendsto tendsto_arg
-  have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n => c n • d n :=
+  have : (fun n ↦ f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
+  have : (fun n ↦ c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n ↦ c n • d n :=
     (isBigO_refl c l).smul_isLittleO this
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
+  have : (fun n ↦ c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
     this.trans_isBigO (cdlim.isBigO_one ℝ)
-  have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
+  have L1 : Tendsto (fun n ↦ c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
     (isLittleO_one_iff ℝ).1 this
-  have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
+  have L2 : Tendsto (fun n ↦ f' (c n • d n)) l (𝓝 (f' v)) :=
     Tendsto.comp f'.cont.continuousAt cdlim
   have L3 :
-    Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
+    Tendsto (fun n ↦ c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
     L1.add L2
   have :
-    (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
+    (fun n ↦ c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
       c n • (f (x + d n) - f x) := by
     ext n
     simp [smul_add, smul_sub]
@@ -302,7 +302,7 @@ theorem hasFDerivAt_iff_tendsto :
   hasFDerivAtFilter_iff_tendsto
 
 theorem hasFDerivAt_iff_isLittleO_nhds_zero :
-    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h => h := by
+    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h ↦ h := by
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
   simp [Function.comp_def]
 
@@ -389,7 +389,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
     apply Asymptotics.isLittleO_insert
     simp only [sub_self, map_zero]
-  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
+  refine ⟨fun h ↦ h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
 alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
@@ -439,8 +439,8 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
 
 /-- Directional derivative agrees with `HasFDeriv`. -/
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
-    (hc : Tendsto (fun n => ‖c n‖) l atTop) :
-    Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
+    (hc : Tendsto (fun n ↦ ‖c n‖) l atTop) :
+    Tendsto (fun n ↦ c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
   refine (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc ?_
   intro U hU
   refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
@@ -517,7 +517,7 @@ protected theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x 
   rw [h.unique h.differentiableAt.hasFDerivAt]
 
 theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x) : fderiv 𝕜 f = f' :=
-  funext fun x => (h x).fderiv
+  funext fun x ↦ (h x).fderiv
 
 variable (𝕜)
 
@@ -573,7 +573,7 @@ theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x
 
 theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
-  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
+  ⟨fun h ↦ h.congr_nhds hst, fun h ↦ h.congr_nhds hst.symm⟩
 
 theorem differentiableWithinAt_univ :
     DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
@@ -684,13 +684,13 @@ theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)
     simp [fderivWithin_zero_of_not_differentiableWithinAt, *]
 
 theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
-    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
+    (h : f =O[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
   simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
     h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
     h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 
-theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
+theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x ↦ ‖x - x₀‖ ^ n)
     (hn : 1 < n) : HasFDerivAt f (0 : E →L[𝕜] F) x₀ := by
   rw [← nhdsWithin_univ] at h
   exact (h.hasFDerivWithinAt (mem_univ _) hn).hasFDerivAt_of_univ
@@ -752,7 +752,7 @@ theorem DifferentiableOn.continuousOn (h : DifferentiableOn 𝕜 f s) : Continuo
 
 @[fun_prop]
 theorem Differentiable.continuous (h : Differentiable 𝕜 f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (h x).continuousAt
+  continuous_iff_continuousAt.2 fun x ↦ (h x).continuousAt
 
 protected theorem HasStrictFDerivAt.continuousAt (hf : HasStrictFDerivAt f f' x) :
     ContinuousAt f x :=
@@ -923,7 +923,7 @@ theorem DifferentiableOn.congr (h : DifferentiableOn 𝕜 f s) (h' : ∀ x ∈ s
 
 theorem differentiableOn_congr (h' : ∀ x ∈ s, f₁ x = f x) :
     DifferentiableOn 𝕜 f₁ s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => DifferentiableOn.congr h fun y hy => (h' y hy).symm, fun h =>
+  ⟨fun h ↦ DifferentiableOn.congr h fun y hy => (h' y hy).symm, fun h =>
     DifferentiableOn.congr h h'⟩
 
 theorem DifferentiableAt.congr_of_eventuallyEq (h : DifferentiableAt 𝕜 f x) (hL : f₁ =ᶠ[𝓝 x] f) :
@@ -1003,7 +1003,7 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
 @[simp]
-theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
+theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x ↦ x) x :=
   (hasFDerivAt_id x).differentiableAt
 
 @[fun_prop]

@@ -74,11 +74,11 @@ lemma imp_sup_right (φ ψ : L.BoundedFormula α n) : ψ ⟹[T] φ ⊔ ψ := fun
 lemma sup_imp {φ ψ θ : L.BoundedFormula α n} (h₁ : φ ⟹[T] θ) (h₂ : ψ ⟹[T] θ) :
     φ ⊔ ψ ⟹[T] θ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
-  exact fun h => h.elim (h₁ M v xs) (h₂ M v xs)
+  exact fun h ↦ h.elim (h₁ M v xs) (h₂ M v xs)
 
 lemma sup_imp_iff {φ ψ θ : L.BoundedFormula α n} :
     (φ ⊔ ψ ⟹[T] θ) ↔ (φ ⟹[T] θ) ∧ (ψ ⟹[T] θ) :=
-  ⟨fun h => ⟨(imp_sup_left _ _).trans h, (imp_sup_right _ _).trans h⟩,
+  ⟨fun h ↦ ⟨(imp_sup_left _ _).trans h, (imp_sup_right _ _).trans h⟩,
     fun ⟨h₁, h₂⟩ => sup_imp h₁ h₂⟩
 
 lemma inf_imp_left (φ ψ : L.BoundedFormula α n) : φ ⊓ ψ ⟹[T] φ := fun M v xs => by
@@ -92,11 +92,11 @@ lemma inf_imp_right (φ ψ : L.BoundedFormula α n) : φ ⊓ ψ ⟹[T] ψ := fun
 lemma imp_inf {φ ψ θ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (h₂ : φ ⟹[T] θ) :
     φ ⟹[T] ψ ⊓ θ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
-  exact fun h => ⟨h₁ M v xs h, h₂ M v xs h⟩
+  exact fun h ↦ ⟨h₁ M v xs h, h₂ M v xs h⟩
 
 lemma imp_inf_iff {φ ψ θ : L.BoundedFormula α n} :
     (φ ⟹[T] ψ ⊓ θ) ↔ (φ ⟹[T] ψ) ∧ (φ ⟹[T] θ) :=
-  ⟨fun h => ⟨h.trans (inf_imp_left _ _), h.trans (inf_imp_right _ _)⟩,
+  ⟨fun h ↦ ⟨h.trans (inf_imp_left _ _), h.trans (inf_imp_right _ _)⟩,
     fun ⟨h₁, h₂⟩ => imp_inf h₁ h₂⟩
 
 end Imp
@@ -174,13 +174,13 @@ protected theorem all {φ ψ : L.BoundedFormula α (n + 1)}
     (h : φ ⇔[T] ψ) : φ.all ⇔[T] ψ.all := by
   simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_all]
-  exact fun M v xs => forall_congr' fun a => h.realize_bd_iff
+  exact fun M v xs => forall_congr' fun a ↦ h.realize_bd_iff
 
 protected theorem ex {φ ψ : L.BoundedFormula α (n + 1)} (h : φ ⇔[T] ψ) :
     φ.ex ⇔[T] ψ.ex := by
   simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_ex]
-  exact fun M v xs => exists_congr fun a => h.realize_bd_iff
+  exact fun M v xs => exists_congr fun a ↦ h.realize_bd_iff
 
 protected theorem not {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
     φ.not ⇔[T] ψ.not := by

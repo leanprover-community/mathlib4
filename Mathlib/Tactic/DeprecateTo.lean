@@ -124,7 +124,7 @@ elab tk:"deprecate to " id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command 
       warn := warn.push s!"Unused names: {id.toList.drop news.size}"
     let (oldId, newCmd) := renameTheorem id[0]! cmd
     let oldNames := ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
-    let fil := news.filter fun n => n.toString.endsWith oldNames[0]!.1.toString
+    let fil := news.filter fun n ↦ n.toString.endsWith oldNames[0]!.1.toString
     if fil.size != 1 && oldId != default then
       logError m!"Expected to find one declaration called {oldNames[0]!.1}, found {fil.size}"
     if oldId != default then

@@ -191,9 +191,9 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
     rwa [Iic_disjoint_Ici, not_le]
   rcases exists_bounded_mem_Icc_of_closed_of_le hc₁ hc₂ hd hf3.le with ⟨g, hg₁, hg₂, hgf⟩
   refine ⟨g, ?_, ?_⟩
-  · refine (norm_le <| div_nonneg hf.le h3.le).mpr fun y => ?_
+  · refine (norm_le <| div_nonneg hf.le h3.le).mpr fun y ↦ ?_
     simpa [abs_le, neg_div] using hgf y
-  · refine (dist_le <| mul_nonneg h23.le hf.le).mpr fun x => ?_
+  · refine (dist_le <| mul_nonneg h23.le hf.le).mpr fun x ↦ ?_
     have hfx : -‖f‖ ≤ f x ∧ f x ≤ ‖f‖ := by
       simpa only [Real.norm_eq_abs, abs_le] using f.norm_coe_le_norm x
     rcases le_total (f x) (-‖f‖ / 3) with hle₁ | hle₁
@@ -223,7 +223,7 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
   /- For the proof, we iterate `tietze_extension_step`. Each time we apply it to the difference
     between the previous approximation and `f`. -/
   choose F hF_norm hF_dist using fun f : X →ᵇ ℝ => tietze_extension_step f e he
-  set g : ℕ → Y →ᵇ ℝ := fun n => (fun g => g + F (f - g.compContinuous e))^[n] 0
+  set g : ℕ → Y →ᵇ ℝ := fun n ↦ (fun g ↦ g + F (f - g.compContinuous e))^[n] 0
   have g0 : g 0 = 0 := rfl
   have g_succ : ∀ n, g (n + 1) = g n + F (f - (g n).compContinuous e) := fun n =>
     Function.iterate_succ_apply' _ _ _
@@ -246,7 +246,7 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
       _ = 1 / 3 * ‖f‖ * (2 / 3) ^ n := by ac_rfl
   have hg_cau : CauchySeq g := cauchySeq_of_le_geometric _ _ (by norm_num1) hg_dist
   have :
-    Tendsto (fun n => (g n).compContinuous e) atTop
+    Tendsto (fun n ↦ (g n).compContinuous e) atTop
       (𝓝 <| (limUnder atTop g).compContinuous e) :=
     ((continuous_compContinuous e).tendsto _).comp hg_cau.tendsto_limUnder
   have hge : (limUnder atTop g).compContinuous e = f := by
@@ -300,11 +300,11 @@ theorem exists_extension_forall_mem_Icc_of_isClosedEmbedding (f : X →ᵇ ℝ) 
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ Icc a b) ∧ g ∘ e = f := by
   rcases exists_extension_norm_eq_of_isClosedEmbedding (f - const X ((a + b) / 2)) he with
     ⟨g, hgf, hge⟩
-  refine ⟨const Y ((a + b) / 2) + g, fun y => ?_, ?_⟩
+  refine ⟨const Y ((a + b) / 2) + g, fun y ↦ ?_, ?_⟩
   · suffices ‖f - const X ((a + b) / 2)‖ ≤ (b - a) / 2 by
       simpa [Real.Icc_eq_closedBall, add_mem_closedBall_iff_norm] using
         (norm_coe_le_norm g y).trans (hgf.trans_le this)
-    refine (norm_le <| div_nonneg (sub_nonneg.2 hle) zero_le_two).2 fun x => ?_
+    refine (norm_le <| div_nonneg (sub_nonneg.2 hle) zero_le_two).2 fun x ↦ ?_
     simpa only [Real.Icc_eq_closedBall] using hf x
   · ext x
     have : g (e x) = f x - (a + b) / 2 := congr_fun hge x
@@ -327,7 +327,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
   obtain ⟨a, ha⟩ : ∃ a, IsGLB (range f) a := ⟨_, isGLB_ciInf f.isBounded_range.bddBelow⟩
   obtain ⟨b, hb⟩ : ∃ b, IsLUB (range f) b := ⟨_, isLUB_ciSup f.isBounded_range.bddAbove⟩
   -- Then `f x ∈ [a, b]` for all `x`
-  have hmem : ∀ x, f x ∈ Icc a b := fun x => ⟨ha.1 ⟨x, rfl⟩, hb.1 ⟨x, rfl⟩⟩
+  have hmem : ∀ x, f x ∈ Icc a b := fun x ↦ ⟨ha.1 ⟨x, rfl⟩, hb.1 ⟨x, rfl⟩⟩
   -- Rule out the trivial case `a = b`
   have hle : a ≤ b := (hmem default).1.trans (hmem default).2
   rcases hle.eq_or_lt with (rfl | hlt)
@@ -349,7 +349,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     rcases exists_extension_forall_mem_Icc_of_isClosedEmbedding f hmem hle he with ⟨g, hg_mem, hgf⟩
     -- If `a ∈ range f`, then we are done.
     rcases em (∃ x, f x = a) with (⟨x, rfl⟩ | ha')
-    · exact ⟨g, fun y => ⟨x, hg_mem _⟩, hgf⟩
+    · exact ⟨g, fun y ↦ ⟨x, hg_mem _⟩, hgf⟩
     /- Otherwise, `g ⁻¹' {a}` is disjoint with `range e ∪ g ⁻¹' (Ici c)`, hence there exists a
         function `dg : Y → ℝ` such that `dg ∘ e = 0`, `dg y = 0` whenever `c ≤ g y`, `dg y = c - a`
         whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`. -/
@@ -366,7 +366,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     replace hgf : ∀ x, (g + dg) (e x) = f x := by
       intro x
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-    refine ⟨g + dg, fun y => ?_, funext hgf⟩
+    refine ⟨g + dg, fun y ↦ ?_, funext hgf⟩
     have hay : a < (g + dg) y := by
       rcases (hg_mem y).1.eq_or_lt with (rfl | hlt)
       · refine (lt_add_iff_pos_right _).2 ?_
@@ -385,7 +385,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     minor modifications that make it hard to deduplicate code. -/
   choose xl hxl hgb using hg_mem
   rcases em (∃ x, f x = b) with (⟨x, rfl⟩ | hb')
-  · exact ⟨g, fun y => ⟨xl y, x, hxl y, hgb y⟩, hgf⟩
+  · exact ⟨g, fun y ↦ ⟨xl y, x, hxl y, hgb y⟩, hgf⟩
   have hd : Disjoint (range e ∪ g ⁻¹' Iic c) (g ⁻¹' {b}) := by
     refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
     · rw [Set.disjoint_left]
@@ -399,7 +399,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
   replace hgf : ∀ x, (g - dg) (e x) = f x := by
     intro x
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-  refine ⟨g - dg, fun y => ?_, funext hgf⟩
+  refine ⟨g - dg, fun y ↦ ?_, funext hgf⟩
   have hyb : (g - dg) y < b := by
     rcases (hgb y).eq_or_lt with (rfl | hlt)
     · refine (sub_lt_self_iff _).2 ?_
@@ -440,9 +440,9 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : X →ᵇ ℝ) {t :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
-    exact ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
+    exact ⟨const Y c, fun _ => hc, funext fun x ↦ isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_isClosedEmbedding f he with ⟨g, hg, hgf⟩
-  refine ⟨g, fun y => ?_, hgf⟩
+  refine ⟨g, fun y ↦ ?_, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
 
@@ -481,7 +481,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     { toFun := (↑) ∘ h ∘ f
       continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
       map_bounded' := isBounded_range_iff.1
-        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
+        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x ↦ (h (f x)).2) }
   let t' : Set ℝ := (↑) ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
   have : OrdConnected t' := by
@@ -492,14 +492,14 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     rw [← h.image_Icc] at hz
     rcases hz with ⟨z, hz, rfl⟩
     exact ⟨z, hs.out hx hy hz, rfl⟩
-  have hFt : ∀ x, F x ∈ t' := fun x => mem_image_of_mem _ (hf x)
+  have hFt : ∀ x, F x ∈ t' := fun x ↦ mem_image_of_mem _ (hf x)
   rcases F.exists_extension_forall_mem_of_isClosedEmbedding hFt (hne.image _) he with ⟨G, hG, hGF⟩
   let g : C(Y, ℝ) :=
-    ⟨h.symm ∘ codRestrict G _ fun y => ht_sub (hG y),
+    ⟨h.symm ∘ codRestrict G _ fun y ↦ ht_sub (hG y),
       h.symm.continuous.comp <| G.continuous.subtype_mk _⟩
   have hgG : ∀ {y a}, g y = a ↔ G y = h a := @fun y a =>
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
-  refine ⟨g, fun y => ?_, ?_⟩
+  refine ⟨g, fun y ↦ ?_, ?_⟩
   · rcases hG y with ⟨a, ha, hay⟩
     convert ha
     exact hgG.2 hay.symm

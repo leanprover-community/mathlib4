@@ -40,7 +40,7 @@ in terms of the elements of the uniformity. -/
 theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
-  HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
+  HasBasis.eq_biInf ⟨fun s ↦ by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -155,8 +155,8 @@ For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 `uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`. -/
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
-    (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
-  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
+    (𝓤 α).HasBasis p fun x ↦ { p : α × α | edist p.1 p.2 < f x } := by
+  refine ⟨fun s ↦ uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε ε₀ with ⟨i, hi, H⟩
@@ -169,8 +169,8 @@ accumulating to zero, then closed `f i`-neighborhoods of the diagonal form a bas
 For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_le'`. -/
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
-    (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
-  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
+    (𝓤 α).HasBasis p fun x ↦ { p : α × α | edist p.1 p.2 ≤ f x } := by
+  refine ⟨fun s ↦ uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩
@@ -391,7 +391,7 @@ theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' 
 
 theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
   eq_empty_iff_forall_not_mem.trans
-    ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
+    ⟨fun h ↦ le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
       not_lt_of_le (le_of_eq ε0) (pos_of_mem_ball h)⟩
 
 theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
@@ -405,8 +405,8 @@ theorem ordConnected_setOf_ball_subset (x : α) (s : Set α) : OrdConnected { r 
 def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=
-    ⟨fun x => by rw [edist_self]; exact ENNReal.coe_lt_top,
-      fun h => by rwa [edist_comm], fun hxy hyz =>
+    ⟨fun x ↦ by rw [edist_self]; exact ENNReal.coe_lt_top,
+      fun h ↦ by rwa [edist_comm], fun hxy hyz =>
         lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
 
 @[simp]
@@ -443,7 +443,7 @@ theorem tendsto_nhdsWithin_nhdsWithin {t : Set β} {a b} :
       ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, x ∈ s → edist x a < δ → f x ∈ t ∧ edist (f x) b < ε :=
   (nhdsWithin_basis_eball.tendsto_iff nhdsWithin_basis_eball).trans <|
     forall₂_congr fun ε _ => exists_congr fun δ => and_congr_right fun _ =>
-      forall_congr' fun x => by simp; tauto
+      forall_congr' fun x ↦ by simp; tauto
 
 theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
@@ -476,11 +476,11 @@ theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBa
 
 theorem ball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     ball x r ×ˢ ball y r = ball (x, y) r :=
-  ext fun z => by simp [Prod.edist_eq]
+  ext fun z ↦ by simp [Prod.edist_eq]
 
 theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     closedBall x r ×ˢ closedBall y r = closedBall (x, y) r :=
-  ext fun z => by simp [Prod.edist_eq]
+  ext fun z ↦ by simp [Prod.edist_eq]
 
 /-- ε-characterization of the closure in pseudoemetric spaces -/
 theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=
@@ -518,8 +518,8 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
         _ = r * 2 := (mul_two r).symm
   choose f hfs hf using this
   refine
-    ⟨⋃ n : ℕ, f n⁻¹ '' T n, iUnion_subset fun n => image_subset_iff.2 fun z _ => hfs _ _,
-      countable_iUnion fun n => (hTc n).image _, ?_⟩
+    ⟨⋃ n : ℕ, f n⁻¹ '' T n, iUnion_subset fun n ↦ image_subset_iff.2 fun z _ => hfs _ _,
+      countable_iUnion fun n ↦ (hTc n).image _, ?_⟩
   refine fun x hx => mem_closure_iff.2 fun ε ε0 => ?_
   rcases ENNReal.exists_inv_nat_lt (ENNReal.half_pos ε0.lt.ne').ne' with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsT n hx) with ⟨y, hyn, hyx⟩
@@ -577,7 +577,7 @@ export EMetricSpace (eq_of_edist_eq_zero)
 /-- Characterize the equality of points by the vanishing of their extended distance -/
 @[simp]
 theorem edist_eq_zero {x y : γ} : edist x y = 0 ↔ x = y :=
-  ⟨eq_of_edist_eq_zero, fun h => h ▸ edist_self _⟩
+  ⟨eq_of_edist_eq_zero, fun h ↦ h ▸ edist_self _⟩
 
 @[simp]
 theorem zero_eq_edist {x y : γ} : 0 = edist x y ↔ x = y := eq_comm.trans edist_eq_zero
@@ -614,7 +614,7 @@ See Note [reducible non-instances]. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
-    eq_of_edist_eq_zero := fun h => hf (edist_eq_zero.1 h) }
+    eq_of_edist_eq_zero := fun h ↦ hf (edist_eq_zero.1 h) }
 
 /-- EMetric space instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=

@@ -644,7 +644,7 @@ where
   post (mvarId : MVarId) : CongrMetaM Unit := do
     for mvarId in ← mvarId.introsClean do
       if let some mvarId ← mvarId.postCongr! config then
-        modify (fun s => {s with goals := s.goals.push mvarId})
+        modify (fun s ↦ {s with goals := s.goals.push mvarId})
       else
         trace[congr!] "Dispatched goal by post-processing step."
   go (depth : Nat) (n : Nat) (mvarId : MVarId) : CongrMetaM Unit := do

@@ -152,7 +152,7 @@ See `Fintype.equivFinOfCardEq` for the noncomputable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
-  (truncEquivFin α).map fun e => e.trans (finCongr h)
+  (truncEquivFin α).map fun e ↦ e.trans (finCongr h)
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
 
@@ -170,7 +170,7 @@ and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
 the specialization to `Fin`.
 -/
 def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
-  (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
+  (truncEquivFinOfCardEq h).bind fun e ↦ (truncEquivFin β).map fun e' => e.trans e'.symm
 
 /-- Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
 
@@ -456,7 +456,7 @@ theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card
 
 theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
+  Fintype.card_le_of_surjective (fun a ↦ ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
 
 theorem card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
@@ -473,7 +473,7 @@ theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Finty
 theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
   rw [← card_unit, card_eq]
   exact
-    ⟨fun ⟨a⟩ => ⟨a.symm (), fun y => a.injective (Subsingleton.elim _ _)⟩,
+    ⟨fun ⟨a⟩ => ⟨a.symm (), fun y ↦ a.injective (Subsingleton.elim _ _)⟩,
      fun ⟨x, hx⟩ =>
       ⟨⟨fun _ => (), fun _ => x, fun _ => (hx _).trans (hx _).symm, fun _ =>
           Subsingleton.elim _ _⟩⟩⟩
@@ -514,13 +514,13 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   have hn : n = card α := rfl
   match n, hn with
   | 0, ha =>
-    ⟨fun _h => fun a => (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
+    ⟨fun _h => fun a ↦ (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
   | 1, ha =>
     ⟨fun _h => fun a b => by
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
+    ⟨fun h ↦ False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 
 theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
@@ -543,7 +543,7 @@ theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
 theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
-  refine exists_congr fun x => ?_
+  refine exists_congr fun x ↦ ?_
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
 
@@ -611,12 +611,12 @@ variable [Fintype α] [Fintype β]
 
 theorem bijective_iff_injective_and_card (f : α → β) :
     Bijective f ↔ Injective f ∧ card α = card β :=
-  ⟨fun h => ⟨h.1, card_of_bijective h⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, card_of_bijective h⟩, fun h =>
     ⟨h.1, h.1.surjective_of_fintype <| equivOfCardEq h.2⟩⟩
 
 theorem bijective_iff_surjective_and_card (f : α → β) :
     Bijective f ↔ Surjective f ∧ card α = card β :=
-  ⟨fun h => ⟨h.2, card_of_bijective h⟩, fun h =>
+  ⟨fun h ↦ ⟨h.2, card_of_bijective h⟩, fun h =>
     ⟨h.1.injective_of_fintype <| equivOfCardEq h.2, h.1⟩⟩
 
 theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
@@ -892,7 +892,7 @@ theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
 /-- If `s : Set α` is a proper subset of `α` and `f : α → s` is injective, then `α` is infinite. -/
 theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (hf : Injective f) :
     Infinite α :=
-  of_not_fintype fun h => by
+  of_not_fintype fun h ↦ by
     classical
       refine lt_irrefl (Fintype.card α) ?_
       calc
@@ -907,7 +907,7 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
   of_injective_to_set hs (injective_surjInv hf)
 
 theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
-  not_forall.1 fun h => Fintype.false ⟨s, h⟩
+  not_forall.1 fun h ↦ Fintype.false ⟨s, h⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
@@ -945,7 +945,7 @@ instance Int.infinite : Infinite ℤ :=
 
 instance [Nonempty α] : Infinite (Multiset α) :=
   let ⟨x⟩ := ‹Nonempty α›
-  Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
+  Infinite.of_injective (fun n ↦ Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
 instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
@@ -979,7 +979,7 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
     Infinite { p : α × α // Commute p.1 p.2 } :=
-  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
+  Infinite.of_injective (fun a ↦ ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 namespace Infinite
 
@@ -1053,7 +1053,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
   simpa [Injective, and_comm] using not_injective_infinite_finite f
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
-  ⟨fun f => not_injective_infinite_finite f f.2⟩
+  ⟨fun f ↦ not_injective_infinite_finite f f.2⟩
 
 /-- The strong pigeonhole principle for infinitely many pigeons in
 finitely many pigeonholes.  If there are infinitely many pigeons in
@@ -1067,7 +1067,7 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
   classical
     by_contra! hf
     cases nonempty_fintype β
-    haveI := fun y => fintypeOfNotInfinite <| hf y
+    haveI := fun y ↦ fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
       { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }

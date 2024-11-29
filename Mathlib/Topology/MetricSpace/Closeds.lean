@@ -84,7 +84,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     `edist (s n) (s (n+1)) < 2^{-n}`, then it converges. This is enough to guarantee
     completeness, by a standard completeness criterion.
     We use the shorthand `B n = 2^{-n}` in ennreal. -/
-  let B : ℕ → ℝ≥0∞ := fun n => 2⁻¹ ^ n
+  let B : ℕ → ℝ≥0∞ := fun n ↦ 2⁻¹ ^ n
   have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [B, ENNReal.pow_pos]
   have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [B, ENNReal.pow_ne_top]
   /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n+1)) < B n`.
@@ -116,11 +116,11 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           rw [← pow_add]
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
-      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
+      use fun k ↦ Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
       simp only [Nat.add_zero, Nat.rec_zero, Nat.rec_add_one, true_and]
-      exact fun k => (this k _).choose_spec
+      exact fun k ↦ (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
-    have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
+    have : CauchySeq fun k ↦ (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
     -- therefore, it converges
     rcases cauchySeq_tendsto_of_complete this with ⟨y, y_lim⟩
     use y
@@ -165,7 +165,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     hausdorffEdist_le_of_mem_edist (I1 n) (I2 n)
   -- from this, the convergence of `s n` to `t0` follows.
   refine tendsto_atTop.2 fun ε εpos => ?_
-  have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
+  have : Tendsto (fun n ↦ 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul (ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one <|
       by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
   rw [mul_zero] at this
@@ -205,8 +205,8 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     refine ⟨F, ?_, fun u _ => ?_⟩
     -- `F` is finite
     · apply @Finite.of_finite_image _ _ F _
-      · apply fs.finite_subsets.subset fun b => _
-        · exact fun s => (s : Set α)
+      · apply fs.finite_subsets.subset fun b ↦ _
+        · exact fun s ↦ (s : Set α)
         simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'
         rwa [hx'] at hx
@@ -246,7 +246,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     range NonemptyCompacts.toCloseds =
       { s : Closeds α | (s : Set α).Nonempty ∧ IsCompact (s : Set α) } := by
     ext s
-    refine ⟨?_, fun h => ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
+    refine ⟨?_, fun h ↦ ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
     rintro ⟨s, hs, rfl⟩
     exact ⟨s.nonempty, s.isCompact⟩
   rw [this]
@@ -307,7 +307,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
     refine ⟨⟨v, ?_, ?_⟩⟩
     · have : v0.Countable := countable_setOf_finite_subset cs
       exact this.preimage SetLike.coe_injective
-    · refine fun t => mem_closure_iff.2 fun ε εpos => ?_
+    · refine fun t ↦ mem_closure_iff.2 fun ε εpos => ?_
       -- t is a compact nonempty set, that we have to approximate uniformly by a a set in `v`.
       rcases exists_between εpos with ⟨δ, δpos, δlt⟩
       have δpos' : 0 < δ / 2 := ENNReal.half_pos δpos.ne'
@@ -317,7 +317,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
         rcases mem_closure_iff.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
         exact ⟨y, ⟨ys, hy⟩⟩
       let F x := (Exy x).choose
-      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
+      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x ↦ (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
       obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, ball y (δ / 2)⟩ :=
@@ -400,7 +400,7 @@ theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α =>
   -- Porting note: Changed tactic from `exact` to `convert`, because Lean had trouble with 2 = 1 + 1
   convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
     (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
-    (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
+    (fun s ↦ lipschitz_infDist_pt ↑s) lipschitz_infDist_set
   norm_num
 
 theorem uniformContinuous_infDist_Hausdorff_dist :

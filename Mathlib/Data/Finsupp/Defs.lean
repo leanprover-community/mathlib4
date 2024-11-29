@@ -158,8 +158,8 @@ theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
-  ⟨fun h => h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
-    ext fun a => by
+  ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
+    ext fun a ↦ by
       classical
       exact if h : a ∈ f.support then h₂ a h else by
         have hf : f a = 0 := not_mem_support_iff.1 h
@@ -183,7 +183,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
+  simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a ↦ not_imp_comm
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
@@ -207,7 +207,7 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
-  ext fun a => by rwa [Unique.eq_default a]
+  ext fun a ↦ by rwa [Unique.eq_default a]
 
 end Basic
 
@@ -305,7 +305,7 @@ theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔
   simp [single_apply_eq_zero, not_or]
 
 theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
-  refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
+  refine ⟨fun h ↦ h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
@@ -380,7 +380,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
   ⟨fun h =>
     ⟨mem_support_iff.1 <| h.symm ▸ Finset.mem_singleton_self a,
       eq_single_iff.2 ⟨subset_of_eq h, rfl⟩⟩,
-    fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
+    fun h ↦ h.2.symm ▸ support_single_ne_zero _ h.1⟩
 
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
@@ -398,10 +398,10 @@ theorem card_support_eq_one' {f : α →₀ M} :
   simp only [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
-  ⟨fun h => eq_single_iff.mpr ⟨h, rfl⟩, fun h => (eq_single_iff.mp h).left⟩
+  ⟨fun h ↦ eq_single_iff.mpr ⟨h, rfl⟩, fun h ↦ (eq_single_iff.mp h).left⟩
 
 theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ ∃ b, f = single a b :=
-  ⟨fun h => ⟨f a, support_subset_singleton.mp h⟩, fun ⟨b, hb⟩ => by
+  ⟨fun h ↦ ⟨f a, support_subset_singleton.mp h⟩, fun ⟨b, hb⟩ => by
     rw [hb, support_subset_singleton, single_eq_same]⟩
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
@@ -664,7 +664,7 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
-instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f ↦ (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 
 end OfSupportFinite
@@ -690,7 +690,7 @@ bundled (defined in `Data/Finsupp/Basic`):
 * `Finsupp.mapRange.linearEquiv`
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
-  onFinset g.support (f ∘ g) fun a => by
+  onFinset g.support (f ∘ g) fun a ↦ by
     rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
 
 @[simp]
@@ -809,12 +809,12 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by
   classical
-    refine dif_neg (mt (fun h => ?_) h)
+    refine dif_neg (mt (fun h ↦ ?_) h)
     rcases Finset.mem_map.1 h with ⟨a, _h, rfl⟩
     exact Set.mem_range_self a
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
+  fun l₁ l₂ h => ext fun a ↦ by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
 
 @[simp]
 theorem embDomain_inj {f : α ↪ β} {l₁ l₂ : α →₀ M} : embDomain f l₁ = embDomain f l₂ ↔ l₁ = l₂ :=
@@ -878,7 +878,7 @@ variable [Zero M] [Zero N] [Zero P]
 def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ P :=
   onFinset
     (haveI := Classical.decEq α; g₁.support ∪ g₂.support)
-    (fun a => f (g₁ a) (g₂ a))
+    (fun a ↦ f (g₁ a) (g₂ a))
     fun a (H : f _ _ ≠ 0) => by
       classical
       rw [mem_union, mem_support_iff, mem_support_iff, ← not_and_or]
@@ -956,7 +956,7 @@ instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x ↦ add_left_cancel <| DFunLike.congr_fun h x
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
@@ -977,7 +977,7 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
   simp [AddEquiv.finsuppUnique]
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x ↦ add_right_cancel <| DFunLike.congr_fun h x
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
@@ -1087,7 +1087,7 @@ theorem induction_on_max (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
     p f := by
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  refine fun s ↦ s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
       rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
@@ -1111,7 +1111,7 @@ theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
     p f := by
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  refine fun s ↦ s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
       rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
@@ -1154,7 +1154,7 @@ verify `f (single a 1) = g (single a 1)`. -/
 @[ext high]
 theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  addHom_ext fun x => DFunLike.congr_fun (H x)
+  addHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
     (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
@@ -1172,7 +1172,7 @@ theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
     (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
               g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
     f = g :=
-  mulHom_ext fun x => DFunLike.congr_fun (H x)
+  mulHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : α →₀ M) :

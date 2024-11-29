@@ -45,7 +45,7 @@ theorem iteratedDerivWithin_add (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn �
     ContinuousMultilinearMap.add_apply]
 
 theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
-    iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
+    iteratedDerivWithin n (fun z ↦ c + f z) s x = iteratedDerivWithin n f s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ' h hx, iteratedDerivWithin_succ' h hx]
   refine iteratedDerivWithin_congr h ?_ hx
@@ -53,7 +53,7 @@ theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
   exact derivWithin_const_add (h.uniqueDiffWithinAt hy) _
 
 theorem iteratedDerivWithin_const_neg (hn : 0 < n) (c : F) :
-    iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
+    iteratedDerivWithin n (fun z ↦ c - f z) s x = iteratedDerivWithin n (fun z ↦ -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ' h hx, iteratedDerivWithin_succ' h hx]
   refine iteratedDerivWithin_congr h ?_ hx
@@ -69,7 +69,7 @@ theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffOn 𝕜 n f s) :
   simp only [ContinuousMultilinearMap.smul_apply]
 
 theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContDiffOn 𝕜 n f s) :
-    iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
+    iteratedDerivWithin n (fun z ↦ c * f z) s x = c * iteratedDerivWithin n f s x := by
   simpa using iteratedDerivWithin_const_smul (F := 𝕜) hx h c hf
 
 variable (f) in
@@ -80,7 +80,7 @@ theorem iteratedDerivWithin_neg :
 
 variable (f) in
 theorem iteratedDerivWithin_neg' :
-    iteratedDerivWithin n (fun z => -f z) s x = -iteratedDerivWithin n f s x :=
+    iteratedDerivWithin n (fun z ↦ -f z) s x = -iteratedDerivWithin n f s x :=
   iteratedDerivWithin_neg hx h f
 
 theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
@@ -92,14 +92,14 @@ theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn �
 end
 
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
-    iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
+    iteratedDeriv n (fun x ↦ f (c * x)) = fun x ↦ c ^ n • iteratedDeriv n f (c * x) := by
   induction n with
   | zero => simp
   | succ n ih =>
     funext x
     have h₀ : DifferentiableAt 𝕜 (iteratedDeriv n f) (c * x) :=
       h.differentiable_iteratedDeriv n (Nat.cast_lt.mpr n.lt_succ_self) |>.differentiableAt
-    have h₁ : DifferentiableAt 𝕜 (fun x => iteratedDeriv n f (c * x)) x := by
+    have h₁ : DifferentiableAt 𝕜 (fun x ↦ iteratedDeriv n f (c * x)) x := by
       rw [← Function.comp_def]
       apply DifferentiableAt.comp
       · exact h.differentiable_iteratedDeriv n (Nat.cast_lt.mpr n.lt_succ_self) |>.differentiableAt
@@ -109,7 +109,7 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n
       deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ]
 
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
-    iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
+    iteratedDeriv n (fun x ↦ f (c * x)) = fun x ↦ c ^ n * iteratedDeriv n f (c * x) := by
   simpa only [smul_eq_mul] using iteratedDeriv_const_smul h c
 
 lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :

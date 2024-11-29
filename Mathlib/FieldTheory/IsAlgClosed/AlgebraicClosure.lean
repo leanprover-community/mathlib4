@@ -171,7 +171,7 @@ theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
 private def toStepOfLE' (m n : ℕ) (h : m ≤ n) : Step k m → Step k n :=
-Nat.leRecOn h @fun a => toStepSucc k a
+Nat.leRecOn h @fun a ↦ toStepSucc k a
 
 private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
@@ -204,7 +204,7 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
-    (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n => toStepSucc k n :=
+    (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n ↦ toStepSucc k n :=
   rfl
 
 instance Step.algebra (n) : Algebra k (Step k n) :=
@@ -212,7 +212,7 @@ instance Step.algebra (n) : Algebra k (Step k n) :=
 
 instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
   IsScalarTower.of_algebraMap_eq fun z =>
-    @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
+    @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n ↦ toStepSucc k n) z
 
 -- Porting note: Added to make `Step.isIntegral` faster
 private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
@@ -314,7 +314,7 @@ local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
   { ofStep k n with
     commutes' := by
-    -- Porting note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
+    -- Porting note: Originally `(fun x ↦ Ring.DirectLimit.of_f n.zero_le x)`
     -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
       intro x
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -364,7 +364,7 @@ def algEquivAlgebraicClosureAux :
     AlgebraicClosure k ≃ₐ[k] AlgebraicClosureAux k := by
   delta AlgebraicClosure
   exact Ideal.quotientKerAlgEquivOfSurjective
-    (fun x => ⟨MvPolynomial.X x, by simp⟩)
+    (fun x ↦ ⟨MvPolynomial.X x, by simp⟩)
 
 -- Those two instances are copy-pasta from the analogous instances for `SplittingField`
 instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
@@ -428,7 +428,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
-  refine forall_imp fun a => ?_
+  refine forall_imp fun a ↦ ?_
   by_cases haf : f.eval a = 0
   · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
     rw [derivative_rootMultiplicity_of_root haf]

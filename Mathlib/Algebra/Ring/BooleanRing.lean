@@ -213,14 +213,14 @@ def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
+    le_top := fun a ↦ show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
                                                      add_assoc, add_self, add_zero]
     bot := 0
-    bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
-    compl := fun a => 1 + a
+    bot_le := fun a ↦ show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
+    compl := fun a ↦ 1 + a
     inf_compl_le_bot := fun a =>
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
-    top_le_sup_compl := fun a => by
+    top_le_sup_compl := fun a ↦ by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)

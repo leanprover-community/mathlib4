@@ -81,7 +81,7 @@ def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vec
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x)) :
     C v :=
   cast (by simp) <| inductionOn
-    (C := fun v => C v.reverse)
+    (C := fun v ↦ C v.reverse)
     v.reverse
     nil
     (@fun n x xs (r : C xs.reverse) => cast (by simp) <| snoc xs.reverse x r)

@@ -128,7 +128,7 @@ theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : p
 
 theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : ∀ x, ∀ n ∈ B x, x ∈ n)
     (h₁ : ∀ x, ∀ n ∈ B x, ∃ n₁ ∈ B x, ∀ x' ∈ n₁, ∃ n₂ ∈ B x', n₂ ⊆ n) :
-    @nhds α (TopologicalSpace.mkOfNhds fun x => (B x).filter) a = (B a).filter :=
+    @nhds α (TopologicalSpace.mkOfNhds fun x ↦ (B x).filter) a = (B a).filter :=
   nhds_mkOfNhds_of_hasBasis (fun a ↦ (B a).hasBasis) h₀ h₁ a
 
 section Lattice
@@ -138,7 +138,7 @@ variable {α : Type u} {β : Type v}
 /-- The ordering on topologies on the type `α`. `t ≤ s` if every set open in `s` is also open in `t`
 (`t` is finer than `s`). -/
 instance : PartialOrder (TopologicalSpace α) :=
-  { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t]) (fun _ _ => TopologicalSpace.ext) with
+  { PartialOrder.lift (fun t ↦ OrderDual.toDual IsOpen[t]) (fun _ _ => TopologicalSpace.ext) with
     le := fun s t => ∀ U, IsOpen[t] U → IsOpen[s] U }
 
 protected theorem le_def {α} {t s : TopologicalSpace α} : t ≤ s ↔ IsOpen[s] ≤ IsOpen[t] :=
@@ -225,7 +225,7 @@ theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) �
 
 /-- The only open sets in the indiscrete topology are the empty set and the whole space. -/
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     induction h with
     | basic _ h => exact False.elim h
     | univ => exact .inr rfl
@@ -269,7 +269,7 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
 singleton is open. -/
 theorem continuous_discrete_rng {α} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
     {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
-  ⟨fun h _ => (isOpen_discrete _).preimage h, fun h => ⟨fun s _ => by
+  ⟨fun h _ => (isOpen_discrete _).preimage h, fun h ↦ ⟨fun s _ => by
     rw [← biUnion_of_singleton s, preimage_iUnion₂]
     exact isOpen_biUnion fun _ _ => h _⟩⟩
 
@@ -282,7 +282,7 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 
 end DiscreteTopology
 
-theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
+theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s ↦ by
   rw [@isOpen_iff_mem_nhds _ _ t₁, @isOpen_iff_mem_nhds α _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
 
@@ -294,7 +294,7 @@ theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t
 
 theorem forall_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
+  ⟨fun h ↦ ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
 
 theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
@@ -303,7 +303,7 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
 
 theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
+  ⟨fun h ↦ ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
 
 theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
     (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=
@@ -425,7 +425,7 @@ theorem coinduced_sSup {s : Set (TopologicalSpace α)} :
 
 theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=
   TopologicalSpace.ext <|
-    funext fun s => propext <| ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
+    funext fun s ↦ propext <| ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
 
 theorem induced_compose {tγ : TopologicalSpace γ} {f : α → β} {g : β → γ} :
     (tγ.induced g).induced f = tγ.induced (g ∘ f) :=
@@ -548,7 +548,7 @@ def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   isOpen_inter := fun _s _t hs ht ⟨has, hat⟩ => inter_mem (hs has) (ht hat)
   isOpen_sUnion := fun _k hk ⟨u, hu, hau⟩ => mem_of_superset (hk u hu hau) (subset_sUnion_of_mem hu)
 
-theorem gc_nhds (a : α) : GaloisConnection (nhdsAdjoint a) fun t => @nhds α t a := fun f t => by
+theorem gc_nhds (a : α) : GaloisConnection (nhdsAdjoint a) fun t ↦ @nhds α t a := fun f t => by
   rw [le_nhds_iff]
   exact ⟨fun H s hs has => H _ has hs, fun H s has hs => H _ hs has⟩
 

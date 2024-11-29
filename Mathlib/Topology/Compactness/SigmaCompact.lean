@@ -144,7 +144,7 @@ class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- A topological space is σ-compact iff `univ` is σ-compact. -/
 lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set X) ↔ SigmaCompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 /-- In a σ-compact space, `univ` is σ-compact. -/
 lemma isSigmaCompact_univ [h : SigmaCompactSpace X] : IsSigmaCompact (univ : Set X) :=
@@ -230,21 +230,21 @@ theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering X) x
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
-  ⟨⟨fun n => compactCovering X n ×ˢ compactCovering Y n, fun _ =>
+  ⟨⟨fun n ↦ compactCovering X n ×ˢ compactCovering Y n, fun _ =>
       (isCompact_compactCovering _ _).prod (isCompact_compactCovering _ _), by
       simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
         iUnion_compactCovering, univ_prod_univ]⟩⟩
 
 instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
     SigmaCompactSpace (∀ i, X i) := by
-  refine ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
-    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, ?_⟩⟩
+  refine ⟨⟨fun n ↦ Set.pi univ fun i ↦ compactCovering (X i) n,
+    fun n ↦ isCompact_univ_pi fun i ↦ isCompact_compactCovering (X i) _, ?_⟩⟩
   rw [iUnion_univ_pi_of_monotone]
   · simp only [iUnion_compactCovering, pi_univ]
-  · exact fun i => compactCovering_subset (X i)
+  · exact fun i ↦ compactCovering_subset (X i)
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
-  ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
+  ⟨⟨fun n ↦ Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
         ((isCompact_compactCovering Y n).image continuous_inr),
       by simp only [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
@@ -255,7 +255,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
-    refine ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => ?_, ?_⟩⟩
+    refine ⟨⟨fun n ↦ ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n ↦ ?_, ?_⟩⟩
     · refine (finite_le_nat _).isCompact_biUnion fun k _ => ?_
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
     · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion, hf.forall]
@@ -266,7 +266,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
     (he : IsClosedEmbedding e) : SigmaCompactSpace Y :=
-  ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
+  ⟨⟨fun n ↦ e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 
@@ -283,8 +283,8 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
 only countably many elements, `Set.Countable` version. -/
 protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyFinite f)
     (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Countable := by
-  have := fun n => hf.finite_nonempty_inter_compact (isCompact_compactCovering X n)
-  refine (countable_iUnion fun n => (this n).countable).mono fun i _ => ?_
+  have := fun n ↦ hf.finite_nonempty_inter_compact (isCompact_compactCovering X n)
+  refine (countable_iUnion fun n ↦ (this n).countable).mono fun i _ => ?_
   rcases hne i with ⟨x, hx⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering X) x with ⟨n, hn⟩
   exact mem_iUnion.2 ⟨n, x, hx, hn⟩
@@ -305,7 +305,7 @@ theorem countable_cover_nhdsWithin_of_sigmaCompact {f : X → Set X} {s : Set X}
     ((isCompact_compactCovering X n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right
   refine
     ⟨⋃ n, (t n : Set X), iUnion_subset fun n x hx => (ht n x hx).2,
-      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 ?_⟩
+      countable_iUnion fun n ↦ (t n).countable_toSet, fun x hx => mem_iUnion₂.2 ?_⟩
   rcases exists_mem_compactCovering x with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
@@ -406,14 +406,14 @@ theorem mem_find (x : X) : x ∈ K (K.find x) := by
 
 theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n := by
   classical
-  exact ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
+  exact ⟨fun h ↦ Nat.find_min' (K.exists_mem x) h, fun h ↦ K.subset h <| K.mem_find x⟩
 
 /-- Prepend the empty set to a compact exhaustion `K n`. -/
 def shiftr : CompactExhaustion X where
   toFun n := Nat.casesOn n ∅ K
   isCompact' n := Nat.casesOn n isCompact_empty K.isCompact
   subset_interior_succ' n := Nat.casesOn n (empty_subset _) K.subset_interior_succ
-  iUnion_eq' := iUnion_eq_univ_iff.2 fun x => ⟨K.find x + 1, K.mem_find x⟩
+  iUnion_eq' := iUnion_eq_univ_iff.2 fun x ↦ ⟨K.find x + 1, K.mem_find x⟩
 
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
@@ -434,11 +434,11 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
     Nat.recOn n ⟨∅, isCompact_empty⟩ fun n s =>
       ⟨(exists_compact_superset s.2).choose ∪ compactCovering X n,
         (exists_compact_superset s.2).choose_spec.1.union (isCompact_compactCovering _ _)⟩
-  refine ⟨⟨fun n ↦ (K n).1, fun n => (K n).2, fun n ↦ ?_, ?_⟩⟩
+  refine ⟨⟨fun n ↦ (K n).1, fun n ↦ (K n).2, fun n ↦ ?_, ?_⟩⟩
   · exact Subset.trans (exists_compact_superset (K n).2).choose_spec.2
       (interior_mono subset_union_left)
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
-    exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
+    exact iUnion_mono' fun n ↦ ⟨n + 1, subset_union_right⟩
 
 noncomputable instance [SigmaCompactSpace X] [WeaklyLocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=

@@ -134,12 +134,12 @@ theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x
   ⟨fun h =>
     let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
     ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
-    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
+    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h ↦ hp (mem_filter.1 (h hs)).2⟩⟩
 
 variable (p)
 
-theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a :=
-  ext fun a => by
+theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a ↦ p a ∧ q a :=
+  ext fun a ↦ by
     simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
 
 theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filter p := by

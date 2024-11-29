@@ -43,7 +43,7 @@ variable [MonoidWithZeroHomClass F M N] [FunLike G N M] [MulHomClass G N M]
 variable (f : F) (g : G) {p : M}
 
 theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p :=
-  ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
+  ⟨fun h ↦ hp.1 <| by simp [h], fun h ↦ hp.2.1 <| h.map f, fun a b h => by
     refine
         (hp.2.2 (f a) (f b) <| by
               convert map_dvd f h
@@ -53,8 +53,8 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
         convert ← map_dvd g h <;> apply hinv⟩
 
 theorem MulEquiv.prime_iff (e : M ≃* N) : Prime p ↔ Prime (e p) :=
-  ⟨fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h,
-    comap_prime e e.symm fun a => by simp⟩
+  ⟨fun h ↦ (comap_prime e.symm e fun a ↦ by simp) <| (e.symm_apply_apply p).substr h,
+    comap_prime e e.symm fun a ↦ by simp⟩
 
 end Map
 
@@ -166,7 +166,7 @@ theorem irreducible_mul_isUnit {a b : M} (h : IsUnit a) : Irreducible (b * a) �
 theorem irreducible_mul_iff {a b : M} :
     Irreducible (a * b) ↔ Irreducible a ∧ IsUnit b ∨ Irreducible b ∧ IsUnit a := by
   constructor
-  · refine fun h => Or.imp (fun h' => ⟨?_, h'⟩) (fun h' => ⟨?_, h'⟩) (h.isUnit_or_isUnit rfl).symm
+  · refine fun h ↦ Or.imp (fun h' => ⟨?_, h'⟩) (fun h' => ⟨?_, h'⟩) (h.isUnit_or_isUnit rfl).symm
     · rwa [irreducible_mul_isUnit h'] at h
     · rwa [irreducible_isUnit_mul h'] at h
   · rintro (⟨ha, hb⟩ | ⟨hb, ha⟩)
@@ -205,7 +205,7 @@ theorem Irreducible.not_square (ha : Irreducible a) : ¬IsSquare a := by
   rintro ⟨b, rfl⟩
   exact not_irreducible_pow (by decide) ha
 
-theorem IsSquare.not_irreducible (ha : IsSquare a) : ¬Irreducible a := fun h => h.not_square ha
+theorem IsSquare.not_irreducible (ha : IsSquare a) : ¬Irreducible a := fun h ↦ h.not_square ha
 
 end CommMonoid
 
@@ -227,7 +227,7 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
 theorem Prime.not_square (hp : Prime p) : ¬IsSquare p :=
   hp.irreducible.not_square
 
-theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_square ha
+theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h ↦ h.not_square ha
 
 theorem not_prime_pow {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
   not_irreducible_pow hn hp.irreducible

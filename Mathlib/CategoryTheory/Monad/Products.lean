@@ -74,7 +74,7 @@ def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   inverse := overToCoalgebra X
   unitIso := NatIso.ofComponents fun A =>
     Coalgebra.isoMk (Iso.refl _) (Limits.prod.hom_ext (by simp) (by simpa using A.counit))
-  counitIso := NatIso.ofComponents fun f => Over.isoMk (Iso.refl _)
+  counitIso := NatIso.ofComponents fun f ↦ Over.isoMk (Iso.refl _)
 
 end
 
@@ -123,7 +123,7 @@ def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
   unitIso := NatIso.ofComponents fun A =>
     Monad.Algebra.isoMk (Iso.refl _) (coprod.hom_ext (by simp) (by simpa using A.unit.symm))
   counitIso :=
-    NatIso.ofComponents fun f => Under.isoMk (Iso.refl _)
+    NatIso.ofComponents fun f ↦ Under.isoMk (Iso.refl _)
 
 end
 

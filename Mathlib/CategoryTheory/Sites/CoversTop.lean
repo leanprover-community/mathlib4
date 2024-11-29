@@ -137,7 +137,7 @@ lemma exists_unique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsS
       rw [hs i b]
       exact (Presieve.IsSheafFor.valid_glue (H _ (hY X))
         (hx.familyOfElements_isCompatible _) a ⟨i, ⟨b⟩⟩).trans (familyOfElements_apply hx _ _ _)
-    refine ⟨⟨fun X => s X.unop, ?_⟩, fun i => (hs i (𝟙 (Y i))).trans (by simp)⟩
+    refine ⟨⟨fun X => s X.unop, ?_⟩, fun i ↦ (hs i (𝟙 (Y i))).trans (by simp)⟩
     rintro ⟨Y₁⟩ ⟨Y₂⟩ ⟨f : Y₂ ⟶ Y₁⟩
     change F.map f.op (s Y₁) = s Y₂
     apply (Presieve.isSeparated_of_isSheaf J F H _ (hY Y₂)).ext
@@ -145,7 +145,7 @@ lemma exists_unique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsS
     rw [hs' φ i g, ← hs' (φ ≫ f) i g, op_comp, F.map_comp]
     rfl
   · intro y₁ y₂ hy₁ hy₂
-    exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
+    exact hY.sections_ext ⟨F, hF⟩ (fun i ↦ by rw [hy₁, hy₂])
 
 variable (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F)
 

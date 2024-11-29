@@ -218,13 +218,13 @@ def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
 @[to_additive]
 instance : CommGroup (ContinuousMonoidHom A E) where
   mul f g := (mul E).comp (f.prod g)
-  mul_comm f g := ext fun x => mul_comm (f x) (g x)
-  mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
+  mul_comm f g := ext fun x ↦ mul_comm (f x) (g x)
+  mul_assoc f g h := ext fun x ↦ mul_assoc (f x) (g x) (h x)
   one := one A E
-  one_mul f := ext fun x => one_mul (f x)
-  mul_one f := ext fun x => mul_one (f x)
+  one_mul f := ext fun x ↦ one_mul (f x)
+  mul_one f := ext fun x ↦ mul_one (f x)
   inv f := (inv E).comp f
-  inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
+  inv_mul_cancel f := ext fun x ↦ inv_mul_cancel (f x)
 
 @[to_additive]
 instance : TopologicalSpace (ContinuousMonoidHom A B) :=
@@ -336,7 +336,7 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
   map_one' := ext fun _a => map_one f
-  map_mul' g h := ext fun a => map_mul f (g a) (h a)
+  map_mul' g h := ext fun a ↦ map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 
 section LocallyCompact

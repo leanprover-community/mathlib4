@@ -134,7 +134,7 @@ def lift :
     invFun := fun fg => ⟨
       (fg.val.1, fg.val.2 1),
       fg.prop.1 _ _,
-      fun a => show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by
+      fun a ↦ show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by
         rw [← fg.prop.2.1, ← fg.prop.2.2, smul_eq_mul, op_smul_eq_mul, mul_one, one_mul]⟩
     left_inv := fun fe => Subtype.ext <| Prod.ext rfl <|
       show fe.val.1 1 * fe.val.2 = fe.val.2 by

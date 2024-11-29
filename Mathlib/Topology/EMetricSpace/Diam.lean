@@ -71,7 +71,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
     diam (⋃ i ∈ o, s i) = ⨆ i ∈ o, diam (s i) := by cases o <;> simp
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
-  eq_of_forall_ge_iff fun d => by
+  eq_of_forall_ge_iff fun d ↦ by
     simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
       zero_le, true_and, forall_and, and_self_iff, ← and_assoc]
 
@@ -126,7 +126,7 @@ theorem diam_pi_le_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricS
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
   refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
   rw [mem_univ_pi] at hx hy
-  exact fun b => diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
+  exact fun b ↦ diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
 
 end
 

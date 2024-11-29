@@ -215,7 +215,7 @@ open AlgebraicIndependent
 
 theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) :
     AlgebraicIndependent R (f ∘ x) ↔ AlgebraicIndependent R x :=
-  ⟨fun h => h.of_comp f, fun h => h.map hf.injOn⟩
+  ⟨fun h ↦ h.of_comp f, fun h ↦ h.map hf.injOn⟩
 
 @[nontriviality]
 theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
@@ -223,8 +223,8 @@ theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndepen
 
 theorem algebraicIndependent_equiv (e : ι ≃ ι') {f : ι' → A} :
     AlgebraicIndependent R (f ∘ e) ↔ AlgebraicIndependent R f :=
-  ⟨fun h => Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
-    fun h => h.comp _ e.injective⟩
+  ⟨fun h ↦ Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
+    fun h ↦ h.comp _ e.injective⟩
 
 theorem algebraicIndependent_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
     AlgebraicIndependent R g ↔ AlgebraicIndependent R f :=
@@ -674,8 +674,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
   · intro p
     use i
     intro w i' h
-    specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
-    have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
+    specialize p w ((↑) : w → A) i' (fun i ↦ ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
+    have q := congr_arg (fun s ↦ ((↑) : w → A) '' s) p.range_eq
     dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q

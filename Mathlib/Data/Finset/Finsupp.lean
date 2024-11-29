@@ -49,7 +49,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
     refine ⟨support_indicator_subset _ _, fun i hi => ?_⟩
     convert mem_pi.1 hf i hi
     exact indicator_of_mem hi _
-  · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
+  · refine fun h ↦ ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
     exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
 
@@ -61,7 +61,7 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
     mem_finsupp_iff.trans
       (forall_and.symm.trans <|
         forall_congr' fun i =>
-          ⟨fun h => ?_, fun h =>
+          ⟨fun h ↦ ?_, fun h =>
             ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi ?_, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
     · exact h.2 hi

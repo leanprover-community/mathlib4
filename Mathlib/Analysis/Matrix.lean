@@ -108,7 +108,7 @@ theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖
 
 @[simp]
 theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) : ‖A.map f‖ = ‖A‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_map_eq A f fun a => Subtype.ext <| hf a : _)
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_map_eq A f fun a ↦ Subtype.ext <| hf a : _)
 
 @[simp]
 theorem nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
@@ -245,7 +245,7 @@ variable [SeminormedAddCommGroup α]
 theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
   -- Porting note: added
-  change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
+  change ‖fun i ↦ (WithLp.equiv 1 _).symm (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_sum ENNReal.one_ne_top]
 
 @[deprecated (since := "2024-02-02")] alias linfty_op_norm_def := linfty_opNorm_def
@@ -306,17 +306,17 @@ variable [NonUnitalSeminormedRing α]
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
   calc
-    (Finset.univ.sup fun i => ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
-        Finset.univ.sup fun i => ∑ k, ∑ j, ‖A i j‖₊ * ‖B j k‖₊ :=
+    (Finset.univ.sup fun i ↦ ∑ k, ‖∑ j, A i j * B j k‖₊) ≤
+        Finset.univ.sup fun i ↦ ∑ k, ∑ j, ‖A i j‖₊ * ‖B j k‖₊ :=
       Finset.sup_mono_fun fun i _hi =>
         Finset.sum_le_sum fun k _hk => nnnorm_sum_le_of_le _ fun j _hj => nnnorm_mul_le _ _
-    _ = Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
+    _ = Finset.univ.sup fun i ↦ ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
       simp_rw [@Finset.sum_comm m, Finset.mul_sum]
-    _ ≤ Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
+    _ ≤ Finset.univ.sup fun i ↦ ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i ↦ ∑ j, ‖B i j‖₊ := by
       refine Finset.sup_mono_fun fun i _hi => ?_
       gcongr with j hj
       exact Finset.le_sup (f := fun i ↦ ∑ k : n, ‖B i k‖₊) hj
-    _ ≤ (Finset.univ.sup fun i => ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
+    _ ≤ (Finset.univ.sup fun i ↦ ∑ j, ‖A i j‖₊) * Finset.univ.sup fun i ↦ ∑ j, ‖B i j‖₊ := by
       simp_rw [← Finset.sum_mul, ← NNReal.finset_sup_mul]
       rfl
 
@@ -424,7 +424,7 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
   cases isEmpty_or_nonempty n
   · simp
   classical
-  let x : n → α := fun j => unitOf (A i j)
+  let x : n → α := fun j ↦ unitOf (A i j)
   have hxn : ‖x‖₊ = 1 := by
     simp_rw [x, Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
   specialize hN x
@@ -511,7 +511,7 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
   -- Porting note: added, along with `WithLp.equiv_symm_pi_apply` below
-  change ‖(WithLp.equiv 2 _).symm fun i => (WithLp.equiv 2 _).symm fun j => A i j‖₊ = _
+  change ‖(WithLp.equiv 2 _).symm fun i ↦ (WithLp.equiv 2 _).symm fun j ↦ A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
     WithLp.equiv_symm_pi_apply]
 
@@ -526,7 +526,7 @@ theorem frobenius_nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a,
 @[simp]
 theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) :
     ‖A.map f‖ = ‖A‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_map_eq A f fun a => Subtype.ext <| hf a : _)
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_map_eq A f fun a ↦ Subtype.ext <| hf a : _)
 
 @[simp]
 theorem frobenius_nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
@@ -593,7 +593,7 @@ end SeminormedAddCommGroup
 theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
     ‖(1 : Matrix n n α)‖₊ = NNReal.sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   refine (frobenius_nnnorm_diagonal _).trans ?_
-  -- Porting note: change to erw, since `fun x => 1` no longer matches `Function.const`
+  -- Porting note: change to erw, since `fun x ↦ 1` no longer matches `Function.const`
   erw [PiLp.nnnorm_equiv_symm_const ENNReal.two_ne_top]
   simp_rw [NNReal.sqrt_eq_rpow]
   -- Porting note: added `ENNReal.toReal_ofNat`
@@ -610,8 +610,8 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel₀ (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
   have :=
-    @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
-      ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
+    @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j ↦ star (A i j))
+      ((WithLp.equiv 2 <| _ → α).symm fun k ↦ B k j)
   simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply, starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this

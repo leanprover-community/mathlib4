@@ -91,16 +91,16 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 section
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
-  ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
+  ⟨fun h ↦ @small_map _ _ h e.symm, fun h ↦ @small_map _ _ h e⟩
 
 instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
     Small.{w} (Σa, β a) :=
   ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
-      ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
+      ⟨Equiv.sigmaCongr (equivShrink α) fun a ↦ by simpa using equivShrink (β a)⟩⟩⟩
 
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
-    @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
+    @Function.cantor_injective (Σα, e.symm α) (fun a ↦ ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e
       injection e with h₁ h₂
       simpa using h₂

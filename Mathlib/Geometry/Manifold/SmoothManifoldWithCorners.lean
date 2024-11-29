@@ -345,7 +345,7 @@ alias unique_diff_at_image := uniqueDiffWithinAt_image
 theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H → X} {s : Set H}
     {x : H} :
     ContinuousWithinAt (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) ↔ ContinuousWithinAt f s x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
@@ -354,8 +354,8 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
 
 protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
     LocallyCompactSpace H := by
-  have : ∀ x : H, (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (I x) ∧ IsCompact s)
-      fun s => I.symm '' (s ∩ range I) := fun x ↦ by
+  have : ∀ x : H, (𝓝 x).HasBasis (fun s ↦ s ∈ 𝓝 (I x) ∧ IsCompact s)
+      fun s ↦ I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
   refine .of_hasBasis this ?_
@@ -412,8 +412,8 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
     ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
   { I.toPartialEquiv.prod I'.toPartialEquiv with
-    toFun := fun x => (I x.1, I' x.2)
-    invFun := fun x => (I.symm x.1, I'.symm x.2)
+    toFun := fun x ↦ (I x.1, I' x.2)
+    invFun := fun x ↦ (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
     source_eq := by simp only [setOf_true, mfld_simps]
     uniqueDiffOn' := I.uniqueDiffOn'.prod I'.uniqueDiffOn'
@@ -430,14 +430,14 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
-  toPartialEquiv := PartialEquiv.pi fun i => (I i).toPartialEquiv
+  toPartialEquiv := PartialEquiv.pi fun i ↦ (I i).toPartialEquiv
   source_eq := by simp only [pi_univ, mfld_simps]
   uniqueDiffOn' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).uniqueDiffOn'
   target_subset_closure_interior := by
     simp only [PartialEquiv.pi_target, target_eq, finite_univ, interior_pi_set, closure_pi_set]
     exact Set.pi_mono (fun i _ ↦ (I i).range_subset_closure_interior)
-  continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
-  continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
+  continuous_toFun := continuous_pi fun i ↦ (I i).continuous.comp (continuous_apply i)
+  continuous_invFun := continuous_pi fun i ↦ (I i).continuous_symm.comp (continuous_apply i)
 
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/

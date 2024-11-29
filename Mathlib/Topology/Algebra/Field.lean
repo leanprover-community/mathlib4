@@ -80,7 +80,7 @@ happens to be a field is enough.
 variable {𝕜 : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
 
 /--
-The map `fun x => a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
+The map `fun x ↦ a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
 when `a ≠ 0`.
 -/
 @[simps]
@@ -155,7 +155,7 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
   have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx => by
     simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx)), div_pow] using hsq hx
   simpa (config := { contextual := true }) [EqOn, div_eq_iff (hg_ne _)]
-    using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z => hg_ne) hsq
+    using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z ↦ hg_ne) hsq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then as soon as `f = g` holds at

@@ -26,8 +26,8 @@ variable (R M)
 /-- A version of `TensorAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `TensorAlgebra.gradedAlgebra`. -/
 nonrec def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i) :=
-  DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i)) 1 ∘ₗ
-    (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
+  DirectSum.lof R ℕ (fun i ↦ ↥(LinearMap.range (ι R : M →ₗ[_] _) ^ i)) 1 ∘ₗ
+    (ι R).codRestrict _ fun m ↦ by simpa only [pow_one] using LinearMap.mem_range_self _ m
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =

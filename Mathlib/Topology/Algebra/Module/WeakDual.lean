@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 We continue in the setting of `Mathlib.Topology.Algebra.Module.WeakBilin`,
 which defines the weak topology given two vector spaces `E` and `F` over a commutative semiring
 `𝕜` and a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`. The weak topology on `E` is the coarsest topology
-such that for all `y : F` every map `fun x => B x y` is continuous.
+such that for all `y : F` every map `fun x ↦ B x y` is continuous.
 
 In this file, we consider two special cases.
 In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-* topology,
@@ -67,7 +67,7 @@ theorem topDualPairing_apply [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Contin
   rfl
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
-functionals `fun v => v x` are continuous. -/
+functionals `fun v ↦ v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
@@ -139,7 +139,7 @@ theorem eval_continuous (y : E) : Continuous fun x : WeakDual 𝕜 E => x y :=
   continuous_pi_iff.mp coeFn_continuous y
 
 theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual 𝕜 E}
-    (h : ∀ y, Continuous fun a => (g a) y) : Continuous g :=
+    (h : ∀ y, Continuous fun a ↦ (g a) y) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
@@ -163,7 +163,7 @@ end Ring
 end WeakDual
 
 /-- The weak topology is the topology coarsest topology on `E` such that all functionals
-`fun x => v x` are continuous. -/
+`fun x ↦ v x` are continuous. -/
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
@@ -203,7 +203,7 @@ their weak topologies. -/
 def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
   { f with
     cont :=
-      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
+      WeakBilin.continuous_of_continuous_eval _ fun l ↦ WeakBilin.eval_continuous _ (l ∘L f) }
 
 theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
   rfl
@@ -250,7 +250,7 @@ theorem WeakSpace.isOpen_of_isOpen (V : Set E)
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
     Tendsto f l (𝓝 x) ↔
-      ∀ y, Tendsto (fun i => topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
+      ∀ y, Tendsto (fun i ↦ topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
   WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
 
 end Semiring

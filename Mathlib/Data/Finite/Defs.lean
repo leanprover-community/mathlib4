@@ -132,7 +132,7 @@ class Infinite (α : Sort*) : Prop where
 
 @[simp]
 theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
-  ⟨Infinite.mk, fun h => h.1⟩
+  ⟨Infinite.mk, fun h ↦ h.1⟩
 
 @[simp]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=

@@ -42,7 +42,7 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
       exact
         ⟨Module.Free.of_equiv (multilinearCurryLeftEquiv R N M₂).symm,
           Module.Finite.equiv (multilinearCurryLeftEquiv R N M₂).symm⟩
-    cases ih fun i => N i.succ
+    cases ih fun i ↦ N i.succ
     exact ⟨Module.Free.linearMap _ _ _ _, Module.Finite.linearMap _ _ _ _⟩
 
 variable [∀ i, AddCommGroup (M₁ i)] [∀ i, Module R (M₁ i)]
@@ -53,7 +53,7 @@ private theorem free_and_finite :
     Module.Free R (MultilinearMap R M₁ M₂) ∧ Module.Finite R (MultilinearMap R M₁ M₂) := by
   cases nonempty_fintype ι
   have := @free_and_finite_fin R M₂ _ _ _ _ _ (Fintype.card ι)
-    (fun x => M₁ ((Fintype.equivFin ι).symm x))
+    (fun x ↦ M₁ ((Fintype.equivFin ι).symm x))
   cases' this with l r
   have e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)
   exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩

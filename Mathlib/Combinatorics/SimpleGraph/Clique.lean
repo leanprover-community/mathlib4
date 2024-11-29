@@ -501,11 +501,11 @@ theorem cliqueSet_mono' (h : G ≤ H) : G.cliqueSet ≤ H.cliqueSet :=
   fun _ ↦ cliqueSet_mono h
 
 @[simp]
-theorem cliqueSet_zero (G : SimpleGraph α) : G.cliqueSet 0 = {∅} := Set.ext fun s => by simp
+theorem cliqueSet_zero (G : SimpleGraph α) : G.cliqueSet 0 = {∅} := Set.ext fun s ↦ by simp
 
 @[simp]
 theorem cliqueSet_one (G : SimpleGraph α) : G.cliqueSet 1 = Set.range singleton :=
-  Set.ext fun s => by simp [eq_comm]
+  Set.ext fun s ↦ by simp [eq_comm]
 
 @[simp]
 theorem cliqueSet_bot (hn : 1 < n) : (⊥ : SimpleGraph α).cliqueSet n = ∅ :=
@@ -631,7 +631,7 @@ protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
 theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
-  refine card_mono fun s => ?_
+  refine card_mono fun s ↦ ?_
   simpa [mem_powersetCard_univ] using IsNClique.card_eq
 
 variable [DecidableRel H.Adj]

@@ -210,7 +210,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
   -- Porting note: the following goal does not exist in mathlib3.
-  · exact (fun x => x.1)
+  · exact (fun x ↦ x.1)
   · intro x; rfl
   · intro σ
     rw [PowerBasis.liftEquiv'_apply_coe]
@@ -319,7 +319,7 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
   rw [traceMatrix_apply, traceForm_apply, traceForm_toMatrix]
 
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
-    traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
+    traceMatrix A b *ᵥ b.equivFun z = fun i ↦ trace A B (z * b i) := by
   ext i
   rw [← col_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, col_mulVec,
     Matrix.mul_apply, traceMatrix]
@@ -366,7 +366,7 @@ variable {A}
 
 theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
     (e : Fin pb.dim ≃ (B →ₐ[A] C)) :
-    embeddingsMatrixReindex A C pb.basis e = (vandermonde fun i => e i pb.gen)ᵀ := by
+    embeddingsMatrixReindex A C pb.basis e = (vandermonde fun i ↦ e i pb.gen)ᵀ := by
   ext i j
   simp [embeddingsMatrixReindex, embeddingsMatrix]
 

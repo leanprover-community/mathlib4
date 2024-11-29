@@ -73,7 +73,7 @@ theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r 
 
 @[norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
-    Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
+    Tendsto (fun a ↦ (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe.tendsto_nhds_iff.symm
 
 @[fun_prop]
@@ -81,7 +81,7 @@ theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   isEmbedding_coe.continuous
 
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
-    (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
+    (Continuous fun a ↦ (f a : ℝ≥0∞)) ↔ Continuous f :=
   isEmbedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ≥0} : 𝓝 (r : ℝ≥0∞) = (𝓝 r).map (↑) :=
@@ -103,7 +103,7 @@ theorem continuous_ofReal : Continuous ENNReal.ofReal :=
   (continuous_coe_iff.2 continuous_id).comp continuous_real_toNNReal
 
 theorem tendsto_ofReal {f : Filter α} {m : α → ℝ} {a : ℝ} (h : Tendsto m f (𝓝 a)) :
-    Tendsto (fun a => ENNReal.ofReal (m a)) f (𝓝 (ENNReal.ofReal a)) :=
+    Tendsto (fun a ↦ ENNReal.ofReal (m a)) f (𝓝 (ENNReal.ofReal a)) :=
   (continuous_ofReal.tendsto a).comp h
 
 theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
@@ -114,7 +114,7 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
 
 theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥0∞}
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
-    (hfg : (fun x => (f x).toReal) =ᶠ[l] fun x => (g x).toReal) : f =ᶠ[l] g := by
+    (hfg : (fun x ↦ (f x).toReal) =ᶠ[l] fun x ↦ (g x).toReal) : f =ᶠ[l] g := by
   filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
   rwa [← ENNReal.toReal_eq_toReal hfx hgx]
 
@@ -147,7 +147,7 @@ theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_ : a ≠ ∞), 𝓟 (Ioi a) :=
 theorem nhds_top' : 𝓝 ∞ = ⨅ r : ℝ≥0, 𝓟 (Ioi ↑r) :=
   nhds_top.trans <| iInf_ne_top _
 
-theorem nhds_top_basis : (𝓝 ∞).HasBasis (fun a => a < ∞) fun a => Ioi a :=
+theorem nhds_top_basis : (𝓝 ∞).HasBasis (fun a ↦ a < ∞) fun a ↦ Ioi a :=
   _root_.nhds_top_basis
 
 theorem tendsto_nhds_top_iff_nnreal {m : α → ℝ≥0∞} {f : Filter α} :
@@ -171,7 +171,7 @@ theorem tendsto_nat_nhds_top : Tendsto (fun n : ℕ => ↑n) atTop (𝓝 ∞) :=
 
 @[simp, norm_cast]
 theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :
-    Tendsto (fun x => (f x : ℝ≥0∞)) l (𝓝 ∞) ↔ Tendsto f l atTop := by
+    Tendsto (fun x ↦ (f x : ℝ≥0∞)) l (𝓝 ∞) ↔ Tendsto f l atTop := by
   rw [tendsto_nhds_top_iff_nnreal, atTop_basis_Ioi.tendsto_right_iff]; simp
 
 @[simp]
@@ -185,7 +185,7 @@ theorem tendsto_ofReal_atTop : Tendsto ENNReal.ofReal atTop (𝓝 ∞) :=
 theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp [pos_iff_ne_zero, Iio]
 
-theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) fun a => Iio a :=
+theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) fun a ↦ Iio a :=
   nhds_bot_basis
 
 theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) Iic :=
@@ -270,9 +270,9 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 instance : ContinuousAdd ℝ≥0∞ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨_ | a, b⟩
-  · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
+  · exact tendsto_nhds_top_mono' continuousAt_fst fun p ↦ le_add_right le_rfl
   rcases b with (_ | b)
-  · exact tendsto_nhds_top_mono' continuousAt_snd fun p => le_add_left le_rfl
+  · exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
   simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
     Function.comp_def, tendsto_coe, tendsto_add]
 
@@ -285,7 +285,7 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
   | ∞, ∞, h => by simp only [ne_eq, not_true_eq_false, or_self] at h
   | ∞, (b : ℝ≥0), _ => by
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
-    refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
+    refine fun x ↦ ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
       (ge_mem_nhds <| coe_lt_coe.2 <| lt_add_one b)).mono fun y hy => ?_
     rw [lt_tsub_iff_left]
     calc y.2 + x ≤ ↑(b + 1) + x := add_le_add_right hy.2 _
@@ -302,15 +302,15 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
 
 protected theorem Tendsto.sub {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (hmb : Tendsto mb f (𝓝 b)) (h : a ≠ ∞ ∨ b ≠ ∞) :
-    Tendsto (fun a => ma a - mb a) f (𝓝 (a - b)) :=
-  show Tendsto ((fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) ∘ fun a => (ma a, mb a)) f (𝓝 (a - b)) from
+    Tendsto (fun a ↦ ma a - mb a) f (𝓝 (a - b)) :=
+  show Tendsto ((fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) ∘ fun a ↦ (ma a, mb a)) f (𝓝 (a - b)) from
     Tendsto.comp (ENNReal.tendsto_sub h) (hma.prod_mk_nhds hmb)
 
 protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a ≠ ∞) :
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) (𝓝 (a, b)) (𝓝 (a * b)) := by
   have ht : ∀ b : ℝ≥0∞, b ≠ 0 →
       Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) (𝓝 (∞, b)) (𝓝 ∞) := fun b hb => by
-    refine tendsto_nhds_top_iff_nnreal.2 fun n => ?_
+    refine tendsto_nhds_top_iff_nnreal.2 fun n ↦ ?_
     rcases lt_iff_exists_nnreal_btwn.1 (pos_iff_ne_zero.2 hb) with ⟨ε, hε, hεb⟩
     have : ∀ᶠ c : ℝ≥0∞ × ℝ≥0∞ in 𝓝 (∞, b), ↑n / ↑ε < c.1 ∧ ↑ε < c.2 :=
       (lt_mem_nhds <| div_lt_top coe_ne_top hε.ne').prod_nhds (lt_mem_nhds hεb)
@@ -330,33 +330,33 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
 
 protected theorem Tendsto.mul {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) (hmb : Tendsto mb f (𝓝 b))
-    (hb : b ≠ 0 ∨ a ≠ ∞) : Tendsto (fun a => ma a * mb a) f (𝓝 (a * b)) :=
-  show Tendsto ((fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) ∘ fun a => (ma a, mb a)) f (𝓝 (a * b)) from
+    (hb : b ≠ 0 ∨ a ≠ ∞) : Tendsto (fun a ↦ ma a * mb a) f (𝓝 (a * b)) :=
+  show Tendsto ((fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) ∘ fun a ↦ (ma a, mb a)) f (𝓝 (a * b)) from
     Tendsto.comp (ENNReal.tendsto_mul ha hb) (hma.prod_mk_nhds hmb)
 
 theorem _root_.ContinuousOn.ennreal_mul [TopologicalSpace α] {f g : α → ℝ≥0∞} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₁ : ∀ x ∈ s, f x ≠ 0 ∨ g x ≠ ∞)
-    (h₂ : ∀ x ∈ s, g x ≠ 0 ∨ f x ≠ ∞) : ContinuousOn (fun x => f x * g x) s := fun x hx =>
+    (h₂ : ∀ x ∈ s, g x ≠ 0 ∨ f x ≠ ∞) : ContinuousOn (fun x ↦ f x * g x) s := fun x hx =>
   ENNReal.Tendsto.mul (hf x hx) (h₁ x hx) (hg x hx) (h₂ x hx)
 
 theorem _root_.Continuous.ennreal_mul [TopologicalSpace α] {f g : α → ℝ≥0∞} (hf : Continuous f)
     (hg : Continuous g) (h₁ : ∀ x, f x ≠ 0 ∨ g x ≠ ∞) (h₂ : ∀ x, g x ≠ 0 ∨ f x ≠ ∞) :
-    Continuous fun x => f x * g x :=
+    Continuous fun x ↦ f x * g x :=
   continuous_iff_continuousAt.2 fun x =>
     ENNReal.Tendsto.mul hf.continuousAt (h₁ x) hg.continuousAt (h₂ x)
 
 protected theorem Tendsto.const_mul {f : Filter α} {m : α → ℝ≥0∞} {a b : ℝ≥0∞}
-    (hm : Tendsto m f (𝓝 b)) (hb : b ≠ 0 ∨ a ≠ ∞) : Tendsto (fun b => a * m b) f (𝓝 (a * b)) :=
+    (hm : Tendsto m f (𝓝 b)) (hb : b ≠ 0 ∨ a ≠ ∞) : Tendsto (fun b ↦ a * m b) f (𝓝 (a * b)) :=
   by_cases (fun (this : a = 0) => by simp [this, tendsto_const_nhds]) fun ha : a ≠ 0 =>
     ENNReal.Tendsto.mul tendsto_const_nhds (Or.inl ha) hm hb
 
 protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b : ℝ≥0∞}
-    (hm : Tendsto m f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) : Tendsto (fun x => m x * b) f (𝓝 (a * b)) := by
+    (hm : Tendsto m f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) : Tendsto (fun x ↦ m x * b) f (𝓝 (a * b)) := by
   simpa only [mul_comm] using ENNReal.Tendsto.const_mul hm ha
 
 theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
-    Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
+    Tendsto (fun b ↦ ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
   classical
   induction' s using Finset.induction with a s has IH
   · simp [tendsto_const_nhds]
@@ -373,7 +373,7 @@ protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
   Tendsto.const_mul tendsto_id h.symm
 
 protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
-    ContinuousAt (fun x => x * a) b :=
+    ContinuousAt (fun x ↦ x * a) b :=
   Tendsto.mul_const tendsto_id h.symm
 
 @[fun_prop]
@@ -381,7 +381,7 @@ protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Conti
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 
 @[fun_prop]
-protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=
+protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x ↦ x * a :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_mul_const (Or.inl ha)
 
 @[fun_prop]
@@ -397,7 +397,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
   intro x
   refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
   · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-  · exact Or.inl fun h => H (pow_eq_zero h)
+  · exact Or.inl fun h ↦ H (pow_eq_zero h)
   · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
       not_false_iff, false_and]
   · simp only [H, true_or, Ne, not_false_iff]
@@ -411,14 +411,14 @@ theorem continuousOn_sub :
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
-  refine continuousOn_sub.comp_continuous (Continuous.Prod.mk a) fun x => ?_
+  refine continuousOn_sub.comp_continuous (Continuous.Prod.mk a) fun x ↦ ?_
   simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk.inj_iff, false_and, not_false_iff]
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
   continuous_sub_left coe_ne_top
 
 theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
-  rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
+  rw [show (fun x ↦ a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x ↦ ⟨a, x⟩ by rfl]
   apply ContinuousOn.comp continuousOn_sub (Continuous.continuousOn (Continuous.Prod.mk a))
   rintro _ h (_ | _)
   exact h none_eq_top
@@ -426,13 +426,13 @@ theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
   · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
-  · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
+  · rw [show (fun x ↦ x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x ↦ ⟨x, a⟩ by rfl]
     apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
     intro x
     simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false, not_false_iff]
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
-    (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
+    (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x ↦ m x ^ n) f (𝓝 (a ^ n)) :=
   ((ENNReal.continuous_pow n).tendsto a).comp hm
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ y) : x ≤ y := by
@@ -467,11 +467,11 @@ theorem inv_map_iSup {ι : Sort*} {x : ι → ℝ≥0∞} : (iSup x)⁻¹ = ⨅ 
   OrderIso.invENNReal.map_iSup x
 
 theorem inv_limsup {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
-    (limsup x l)⁻¹ = liminf (fun i => (x i)⁻¹) l :=
+    (limsup x l)⁻¹ = liminf (fun i ↦ (x i)⁻¹) l :=
   OrderIso.invENNReal.limsup_apply
 
 theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
-    (liminf x l)⁻¹ = limsup (fun i => (x i)⁻¹) l :=
+    (liminf x l)⁻¹ = limsup (fun i ↦ (x i)⁻¹) l :=
   OrderIso.invENNReal.liminf_apply
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
@@ -483,21 +483,21 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
 
 @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
-    Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
-  ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
+    Tendsto (fun x ↦ (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
+  ⟨fun h ↦ by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
 
 protected theorem Tendsto.div {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ 0) (hmb : Tendsto mb f (𝓝 b))
-    (hb : b ≠ ∞ ∨ a ≠ ∞) : Tendsto (fun a => ma a / mb a) f (𝓝 (a / b)) := by
+    (hb : b ≠ ∞ ∨ a ≠ ∞) : Tendsto (fun a ↦ ma a / mb a) f (𝓝 (a / b)) := by
   apply Tendsto.mul hma _ (ENNReal.tendsto_inv_iff.2 hmb) _ <;> simp [ha, hb]
 
 protected theorem Tendsto.const_div {f : Filter α} {m : α → ℝ≥0∞} {a b : ℝ≥0∞}
-    (hm : Tendsto m f (𝓝 b)) (hb : b ≠ ∞ ∨ a ≠ ∞) : Tendsto (fun b => a / m b) f (𝓝 (a / b)) := by
+    (hm : Tendsto m f (𝓝 b)) (hb : b ≠ ∞ ∨ a ≠ ∞) : Tendsto (fun b ↦ a / m b) f (𝓝 (a / b)) := by
   apply Tendsto.const_mul (ENNReal.tendsto_inv_iff.2 hm)
   simp [hb]
 
 protected theorem Tendsto.div_const {f : Filter α} {m : α → ℝ≥0∞} {a b : ℝ≥0∞}
-    (hm : Tendsto m f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ 0) : Tendsto (fun x => m x / b) f (𝓝 (a / b)) := by
+    (hm : Tendsto m f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ 0) : Tendsto (fun x ↦ m x / b) f (𝓝 (a / b)) := by
   apply Tendsto.mul_const hm
   simp [ha]
 
@@ -513,7 +513,7 @@ theorem exists_countable_dense_no_zero_top :
   obtain ⟨s, s_count, s_dense, hs⟩ :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s :=
     exists_countable_dense_no_bot_top ℝ≥0∞
-  exact ⟨s, s_count, s_dense, fun h => hs.1 0 (by simp) h, fun h => hs.2 ∞ (by simp) h⟩
+  exact ⟨s, s_count, s_dense, fun h ↦ hs.1 0 (by simp) h, fun h ↦ hs.2 ∞ (by simp) h⟩
 
 @[deprecated ofReal_iInf (since := "2024-09-12")]
 theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
@@ -534,24 +534,24 @@ end TopologicalSpace
 section Liminf
 
 theorem exists_frequently_lt_of_liminf_ne_top {ι : Type*} {l : Filter ι} {x : ι → ℝ}
-    (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, x n < R := by
+    (hx : liminf (fun n ↦ (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, x n < R := by
   by_contra h
   simp_rw [not_exists, not_frequently, not_lt] at h
-  refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
+  refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r ↦ le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h r] with i hi using hi.trans (le_abs_self (x i))
 
 theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x : ι → ℝ}
-    (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, R < x n := by
+    (hx : liminf (fun n ↦ (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, R < x n := by
   by_contra h
   simp_rw [not_exists, not_frequently, not_lt] at h
-  refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
+  refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r ↦ le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
-    (hf : liminf (fun i => (Real.nnabs (x i) : ℝ≥0∞)) l ≠ ∞)
-    (hbdd : ¬IsBoundedUnder (· ≤ ·) l fun i => |x i|) :
+    (hf : liminf (fun i ↦ (Real.nnabs (x i) : ℝ≥0∞)) l ≠ ∞)
+    (hbdd : ¬IsBoundedUnder (· ≤ ·) l fun i ↦ |x i|) :
     ∃ a b : ℚ, a < b ∧ (∃ᶠ i in l, x i < a) ∧ ∃ᶠ i in l, ↑b < x i := by
   rw [isBoundedUnder_le_abs, not_and_or] at hbdd
   obtain hbdd | hbdd := hbdd
@@ -582,7 +582,7 @@ variable {f g : α → ℝ≥0∞}
 
 @[norm_cast]
 protected theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
-    HasSum (fun a => (f a : ℝ≥0∞)) ↑r ↔ HasSum f r := by
+    HasSum (fun a ↦ (f a : ℝ≥0∞)) ↑r ↔ HasSum f r := by
   simp only [HasSum, ← coe_finset_sum, tendsto_coe]
 
 protected theorem tsum_coe_eq {f : α → ℝ≥0} (h : HasSum f r) : (∑' a, (f a : ℝ≥0∞)) = r :=
@@ -599,7 +599,7 @@ protected theorem summable : Summable f :=
   ⟨_, ENNReal.hasSum⟩
 
 theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ≥0∞)) ≠ ∞ ↔ Summable f := by
-  refine ⟨fun h => ?_, fun h => ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
   lift ∑' b, (f b : ℝ≥0∞) to ℝ≥0 using h with a ha
   refine ⟨a, ENNReal.hasSum_coe.1 ?_⟩
   rw [ha]
@@ -657,11 +657,11 @@ protected theorem tsum_eq_iSup_nat {f : ℕ → ℝ≥0∞} :
   ENNReal.tsum_eq_iSup_sum' _ Finset.exists_nat_subset_range
 
 protected theorem tsum_eq_liminf_sum_nat {f : ℕ → ℝ≥0∞} :
-    ∑' i, f i = liminf (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
+    ∑' i, f i = liminf (fun n ↦ ∑ i ∈ Finset.range n, f i) atTop :=
   ENNReal.summable.hasSum.tendsto_sum_nat.liminf_eq.symm
 
 protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
-    ∑' i, f i = limsup (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
+    ∑' i, f i = limsup (fun n ↦ ∑ i ∈ Finset.range n, f i) atTop :=
   ENNReal.summable.hasSum.tendsto_sum_nat.limsup_eq.symm
 
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
@@ -689,7 +689,7 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞}
   have A : Tendsto (fun n : ℕ => (n : ℝ≥0∞) * c) atTop (𝓝 (∞ * c)) := by
     apply ENNReal.Tendsto.mul_const tendsto_nat_nhds_top
     simp only [true_or, top_ne_zero, Ne, not_false_iff]
-  have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n => by
+  have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n ↦ by
     rcases Infinite.exists_subset_card_eq α n with ⟨s, hs⟩
     simpa [hs] using @ENNReal.sum_le_tsum α (fun _ => c) s
   simpa [hc] using le_of_tendsto' A B
@@ -719,7 +719,7 @@ theorem tsum_iSup_eq {α : Type*} (a : α) {f : α → ℝ≥0∞} : (∑' b : �
 
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0∞} (r : ℝ≥0∞) :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
-  refine ⟨HasSum.tendsto_sum_nat, fun h => ?_⟩
+  refine ⟨HasSum.tendsto_sum_nat, fun h ↦ ?_⟩
   rw [← iSup_eq_of_tendsto _ h, ← ENNReal.tsum_eq_iSup_nat]
   · exact ENNReal.summable.hasSum
   · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset.2 hst)
@@ -740,8 +740,8 @@ theorem summable_toNNReal_of_tsum_ne_top {α : Type*} {f : α → ℝ≥0∞} (h
 theorem tendsto_cofinite_zero_of_tsum_ne_top {α} {f : α → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto f cofinite (𝓝 0) := by
   have f_ne_top : ∀ n, f n ≠ ∞ := ENNReal.ne_top_of_tsum_ne_top hf
-  have h_f_coe : f = fun n => ((f n).toNNReal : ENNReal) :=
-    funext fun n => (coe_toNNReal (f_ne_top n)).symm
+  have h_f_coe : f = fun n ↦ ((f n).toNNReal : ENNReal) :=
+    funext fun n ↦ (coe_toNNReal (f_ne_top n)).symm
   rw [h_f_coe, ← @coe_zero, tendsto_coe]
   exact NNReal.tendsto_cofinite_zero_of_summable (summable_toNNReal_of_tsum_ne_top hf)
 
@@ -765,7 +765,7 @@ protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x :
 
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
-  have : ∀ i, f i - g i + g i = f i := fun i => tsub_add_cancel_of_le (h₂ i)
+  have : ∀ i, f i - g i + g i = f i := fun i ↦ tsub_add_cancel_of_le (h₂ i)
   ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← ENNReal.tsum_add, this]
 
 theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
@@ -795,7 +795,7 @@ theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (
 
 theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x :=
-  (tsum_biUnion_le_tsum f s.toSet t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
+  (tsum_biUnion_le_tsum f s.toSet t).trans_eq (Finset.tsum_subtype s fun i ↦ ∑' x : t i, f x)
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
@@ -826,7 +826,7 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsu
   refine tsum_ne_top (top_unique ?_)
   calc ∞ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
   _ ≤ ∑' i, a i := tsum_le_tsum_of_inj (↑) Subtype.val_injective (fun _ _ => zero_le _)
-    (fun i => i.2) ENNReal.summable ENNReal.summable
+    (fun i ↦ i.2) ENNReal.summable ENNReal.summable
 
 /-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/
 theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} {c : ℝ≥0∞} (c_ne_top : c ≠ ∞)
@@ -836,7 +836,7 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
     finite_const_le_of_tsum_ne_top (ne_top_of_le_ne_top c_ne_top tsum_le_c) ε_ne_zero
   refine ⟨hf, (ENNReal.le_div_iff_mul_le (.inl ε_ne_zero) (.inr c_ne_top)).2 ?_⟩
   calc #hf.toFinset * ε = ∑ _i ∈ hf.toFinset, ε := by rw [Finset.sum_const, nsmul_eq_mul]
-    _ ≤ ∑ i ∈ hf.toFinset, a i := Finset.sum_le_sum fun i => hf.mem_toFinset.1
+    _ ≤ ∑ i ∈ hf.toFinset, a i := Finset.sum_le_sum fun i ↦ hf.mem_toFinset.1
     _ ≤ ∑' i, a i := ENNReal.sum_le_tsum _
     _ ≤ c := tsum_le_c
 
@@ -850,27 +850,27 @@ theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
 end tsum
 
 theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : ∀ i, f i ≠ ∞) {x : ℝ≥0∞}
-    (hx : x ≠ ∞) : Tendsto (fun n => (f n).toReal) fi (𝓝 x.toReal) ↔ Tendsto f fi (𝓝 x) := by
+    (hx : x ≠ ∞) : Tendsto (fun n ↦ (f n).toReal) fi (𝓝 x.toReal) ↔ Tendsto f fi (𝓝 x) := by
   lift f to ι → ℝ≥0 using hf
   lift x to ℝ≥0 using hx
   simp [tendsto_coe]
 
 theorem tsum_coe_ne_top_iff_summable_coe {f : α → ℝ≥0} :
-    (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a => (f a : ℝ) := by
+    (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a ↦ (f a : ℝ) := by
   rw [NNReal.summable_coe]
   exact tsum_coe_ne_top_iff_summable
 
 theorem tsum_coe_eq_top_iff_not_summable_coe {f : α → ℝ≥0} :
-    (∑' a, (f a : ℝ≥0∞)) = ∞ ↔ ¬Summable fun a => (f a : ℝ) :=
+    (∑' a, (f a : ℝ≥0∞)) = ∞ ↔ ¬Summable fun a ↦ (f a : ℝ) :=
   tsum_coe_ne_top_iff_summable_coe.not_right
 
 theorem hasSum_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) :
-    HasSum (fun x => (f x).toReal) (∑' x, (f x).toReal) := by
+    HasSum (fun x ↦ (f x).toReal) (∑' x, (f x).toReal) := by
   lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hsum
   simp only [coe_toReal, ← NNReal.coe_tsum, NNReal.hasSum_coe]
   exact (tsum_coe_ne_top_iff_summable.1 hsum).hasSum
 
-theorem summable_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) : Summable fun x => (f x).toReal :=
+theorem summable_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) : Summable fun x ↦ (f x).toReal :=
   (hasSum_toReal hsum).summable
 
 end ENNReal
@@ -888,7 +888,7 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :
     ∃ p ≤ r, HasSum g p :=
   have : (∑' b, (g b : ℝ≥0∞)) ≤ r := by
-    refine hasSum_le (fun b => ?_) ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
+    refine hasSum_le (fun b ↦ ?_) ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
     exact ENNReal.coe_le_coe.2 (hgf _)
   let ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
   ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
@@ -942,10 +942,10 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ≥0} (hf : Summabl
     hf
 
 theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
-    Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
+    Summable f ↔ (∀ x, Summable fun y ↦ f ⟨x, y⟩) ∧ Summable fun x ↦ ∑' y, f ⟨x, y⟩ := by
   constructor
   · simp only [← NNReal.summable_coe, NNReal.coe_tsum]
-    exact fun h => ⟨h.sigma_factor, h.sigma⟩
+    exact fun h ↦ ⟨h.sigma_factor, h.sigma⟩
   · rintro ⟨h₁, h₂⟩
     simpa only [← ENNReal.tsum_coe_ne_top_iff_summable, ENNReal.tsum_sigma',
       ENNReal.coe_tsum (h₁ _)] using h₂
@@ -953,7 +953,7 @@ theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
 theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
   classical
-  refine NNReal.summable_of_le (fun a => le_trans (le_of_eq (s.indicator_apply f a)) ?_) hf
+  refine NNReal.summable_of_le (fun a ↦ le_trans (le_of_eq (s.indicator_apply f a)) ?_) hf
   split_ifs
   · exact le_refl (f a)
   · exact zero_le_coe
@@ -968,14 +968,14 @@ open Finset
 
 /-- For `f : ℕ → ℝ≥0`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/
-theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
+theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i ↦ ∑' k, f (k + i)) atTop (𝓝 0) := by
   rw [← tendsto_coe]
-  convert _root_.tendsto_sum_nat_add fun i => (f i : ℝ)
+  convert _root_.tendsto_sum_nat_add fun i ↦ (f i : ℝ)
   norm_cast
 
 nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a)
     (hi : f i < g i) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
-  have A : ∀ a : α, (f a : ℝ) ≤ g a := fun a => NNReal.coe_le_coe.2 (h a)
+  have A : ∀ a : α, (f a : ℝ) ≤ g a := fun a ↦ NNReal.coe_le_coe.2 (h a)
   have : (sf : ℝ) < sg := hasSum_lt A (NNReal.coe_lt_coe.2 hi) (hasSum_coe.2 hf) (hasSum_coe.2 hg)
   exact NNReal.coe_lt_coe.1 this
 
@@ -996,7 +996,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
   rw [← tsum_zero]
-  exact tsum_lt_tsum (fun a => zero_le _) hi hg
+  exact tsum_lt_tsum (fun a ↦ zero_le _) hi hg
 
 open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
@@ -1011,7 +1011,7 @@ namespace ENNReal
 
 theorem tsum_toNNReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     (∑' a, f a).toNNReal = ∑' a, (f a).toNNReal :=
-  (congr_arg ENNReal.toNNReal (tsum_congr fun x => (coe_toNNReal (hf x)).symm)).trans
+  (congr_arg ENNReal.toNNReal (tsum_congr fun x ↦ (coe_toNNReal (hf x)).symm)).trans
     NNReal.tsum_eq_toNNReal_tsum.symm
 
 theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
@@ -1019,7 +1019,7 @@ theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
   simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
 
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
-    Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
+    Tendsto (fun i ↦ ∑' k, f (k + i)) atTop (𝓝 0) := by
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
   simp only [← ENNReal.coe_tsum, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
@@ -1057,14 +1057,14 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ} (hf : Summable f)
 /-- Comparison test of convergence of series of non-negative real numbers. -/
 theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
     (hf : Summable f) : Summable g := by
-  lift f to β → ℝ≥0 using fun b => (hg b).trans (hgf b)
+  lift f to β → ℝ≥0 using fun b ↦ (hg b).trans (hgf b)
   lift g to β → ℝ≥0 using hg
   rw [NNReal.summable_coe] at hf ⊢
-  exact NNReal.summable_of_le (fun b => NNReal.coe_le_coe.1 (hgf b)) hf
+  exact NNReal.summable_of_le (fun b ↦ NNReal.coe_le_coe.1 (hgf b)) hf
 
-theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n => (f n).toNNReal := by
+theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n ↦ (f n).toNNReal := by
   apply NNReal.summable_coe.1
-  refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
+  refine .of_nonneg_of_le (fun n ↦ NNReal.coe_nonneg _) (fun n ↦ ?_) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 
 /-- Finitely summable non-negative functions have countable support -/
@@ -1117,7 +1117,7 @@ variable [PseudoEMetricSpace α]
 open EMetric
 
 theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
-    Tendsto f l (𝓝 y) ↔ Tendsto (fun x => edist (f x) y) l (𝓝 0) := by
+    Tendsto f l (𝓝 y) ↔ Tendsto (fun x ↦ edist (f x) y) l (𝓝 0) := by
   simp only [EMetric.nhds_basis_eball.tendsto_right_iff, EMetric.mem_ball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
 
@@ -1147,7 +1147,7 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
 
 theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC : C ≠ ∞)
     (h : ∀ x y, f x ≤ f y + C * edist x y) : Continuous f := by
-  refine continuous_iff_continuousAt.2 fun x => ENNReal.tendsto_nhds_of_Icc fun ε ε0 => ?_
+  refine continuous_iff_continuousAt.2 fun x ↦ ENNReal.tendsto_nhds_of_Icc fun ε ε0 => ?_
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
   rw [mul_comm] at hδ
   filter_upwards [EMetric.closedBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
@@ -1167,11 +1167,11 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
 
 @[continuity, fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
+    (hg : Continuous g) : Continuous fun b ↦ edist (f b) (g b) :=
   continuous_edist.comp (hf.prod_mk hg : _)
 
 theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
-    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
+    (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x ↦ edist (f x) (g x)) x (𝓝 (edist a b)) :=
   (continuous_edist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
 
 /-- If the extended distance between consecutive points of a sequence is estimated
@@ -1196,7 +1196,7 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
 
 theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by
-  lift d to ℕ → NNReal using fun i => ENNReal.ne_top_of_tsum_ne_top hd i
+  lift d to ℕ → NNReal using fun i ↦ ENNReal.ne_top_of_tsum_ne_top hd i
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
   exact cauchySeq_of_edist_le_of_summable d hf hd
 

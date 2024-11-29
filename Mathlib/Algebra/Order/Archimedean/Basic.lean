@@ -215,7 +215,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
       ⟨n, le_of_lt hn⟩)
   refine this.imp fun fl h z => ?_
   cases' h with h₁ h₂
-  exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
+  exact ⟨fun h ↦ le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
 
 end StrictOrderedRing
 
@@ -420,7 +420,7 @@ instance : Archimedean ℤ :=
           mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
 
 instance : Archimedean ℚ :=
-  archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
+  archimedean_iff_rat_le.2 fun q ↦ ⟨q, by rw [Rat.cast_id]⟩
 
 instance Nonneg.instArchimedean [OrderedAddCommMonoid α] [Archimedean α] :
     Archimedean { x : α // 0 ≤ x } :=
@@ -438,7 +438,7 @@ instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
 noncomputable def Archimedean.floorRing (α) [LinearOrderedRing α] [Archimedean α] : FloorRing α :=
-  FloorRing.ofFloor α (fun a => Classical.choose (exists_floor a)) fun z a =>
+  FloorRing.ofFloor α (fun a ↦ Classical.choose (exists_floor a)) fun z a =>
     (Classical.choose_spec (exists_floor a) z).symm
 
 -- see Note [lower instance priority]
@@ -446,7 +446,7 @@ noncomputable def Archimedean.floorRing (α) [LinearOrderedRing α] [Archimedean
 instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [FloorRing α] :
     Archimedean α := by
   rw [archimedean_iff_int_le]
-  exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩
+  exact fun x ↦ ⟨⌈x⌉, Int.le_ceil x⟩
 
 @[to_additive]
 instance Units.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :

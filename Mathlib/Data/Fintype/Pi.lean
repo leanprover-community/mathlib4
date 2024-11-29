@@ -44,13 +44,13 @@ theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFins
 
 @[simp]
 theorem coe_piFinset (t : ∀ a, Finset (δ a)) :
-    (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a => t a :=
-  Set.ext fun x => by
+    (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a ↦ t a :=
+  Set.ext fun x ↦ by
     rw [Set.mem_univ_pi]
     exact Fintype.mem_piFinset
 
 theorem piFinset_subset (t₁ t₂ : ∀ a, Finset (δ a)) (h : ∀ a, t₁ a ⊆ t₂ a) :
-    piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a => h a <| mem_piFinset.1 hg a
+    piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a ↦ h a <| mem_piFinset.1 hg a
 
 @[simp]
 theorem piFinset_eq_empty : piFinset s = ∅ ↔ ∃ i, s i = ∅ := by simp [piFinset]
@@ -72,7 +72,7 @@ lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s =
   eq_univ_of_forall fun _ ↦ by simp
 
 @[simp]
-theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
+theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i ↦ {f i} : ∀ i, Finset (δ i)) = {f} :=
   ext fun _ => by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
 
 theorem piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (δ i)).Subsingleton) :
@@ -219,6 +219,6 @@ end SetFiniteConstructors
 
 theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*} {s : Set (∀ d, κ d)} :
     (∀ d, (eval d '' s).Finite) ↔ s.Finite :=
-  ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
+  ⟨fun h ↦ (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
 
 end Set

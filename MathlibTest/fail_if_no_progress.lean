@@ -83,7 +83,7 @@ x : Nat := (fun x ↦ x) Nat.zero
 -/
 #guard_msgs in
 open Lean Elab Tactic in
-example : let x := (fun x => x) Nat.zero; x = x := by
+example : let x := (fun x ↦ x) Nat.zero; x = x := by
   intro x
   fail_if_no_progress
     -- Reduce the value of `x` to `Nat.zero`

@@ -37,7 +37,7 @@ theorem take_zero (v : (i : Fin n) → α i) : take 0 n.zero_le v = fun i ↦ el
 
 @[simp]
 theorem take_one {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
-    take 1 (Nat.le_add_left 1 n) v = (fun i => v (castLE (Nat.le_add_left 1 n) i)) := by
+    take 1 (Nat.le_add_left 1 n) v = (fun i ↦ v (castLE (Nat.le_add_left 1 n) i)) := by
   ext i
   simp only [take]
 

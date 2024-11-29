@@ -63,13 +63,13 @@ theorem uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2 
 
 @[to_additive]
 theorem UniformContinuous.div [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun x => f x / g x :=
+    (hg : UniformContinuous g) : UniformContinuous fun x ↦ f x / g x :=
   uniformContinuous_div.comp (hf.prod_mk hg)
 
 @[to_additive]
 theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
-    UniformContinuous fun x => (f x)⁻¹ := by
-  have : UniformContinuous fun x => 1 / f x := uniformContinuous_const.div hf
+    UniformContinuous fun x ↦ (f x)⁻¹ := by
+  have : UniformContinuous fun x ↦ 1 / f x := uniformContinuous_const.div hf
   simp_all
 
 @[to_additive]
@@ -78,8 +78,8 @@ theorem uniformContinuous_inv : UniformContinuous fun x : α => x⁻¹ :=
 
 @[to_additive]
 theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun x => f x * g x := by
-  have : UniformContinuous fun x => f x / (g x)⁻¹ := hf.div hg.inv
+    (hg : UniformContinuous g) : UniformContinuous fun x ↦ f x * g x := by
+  have : UniformContinuous fun x ↦ f x / (g x)⁻¹ := hf.div hg.inv
   simp_all
 
 @[to_additive]
@@ -115,7 +115,7 @@ theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b
 
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
-    ∀ n : ℕ, UniformContinuous fun x => f x ^ n
+    ∀ n : ℕ, UniformContinuous fun x ↦ f x ^ n
   | 0 => by
     simp_rw [pow_zero]
     exact uniformContinuous_const
@@ -129,7 +129,7 @@ theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => 
 
 @[to_additive UniformContinuous.const_zsmul]
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
-    ∀ n : ℤ, UniformContinuous fun x => f x ^ n
+    ∀ n : ℤ, UniformContinuous fun x ↦ f x ^ n
   | (n : ℕ) => by
     simp_rw [zpow_natCast]
     exact hf.pow_const _
@@ -196,7 +196,7 @@ theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
 theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β u₁ _)
     (h₂ : @UniformGroup β u₂ _) : @UniformGroup β (u₁ ⊓ u₂) _ := by
   rw [inf_eq_iInf]
-  refine uniformGroup_iInf fun b => ?_
+  refine uniformGroup_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps
@@ -237,7 +237,7 @@ theorem UniformGroup.ext {G : Type*} [Group G] {u v : UniformSpace G} (hu : @Uni
 theorem UniformGroup.ext_iff {G : Type*} [Group G] {u v : UniformSpace G}
     (hu : @UniformGroup G u _) (hv : @UniformGroup G v _) :
     u = v ↔ @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1 :=
-  ⟨fun h => h ▸ rfl, hu.ext hv⟩
+  ⟨fun h ↦ h ▸ rfl, hu.ext hv⟩
 
 variable {α}
 
@@ -267,28 +267,28 @@ end
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι → Set α}
     (h : (𝓝 (1 : α)).HasBasis p U) :
-    (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } := by
+    (𝓤 α).HasBasis p fun i ↦ { x : α × α | x.2 / x.1 ∈ U i } := by
   rw [uniformity_eq_comap_nhds_one]
   exact h.comap _
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul {ι} {p : ι → Prop} {U : ι → Set α}
     (h : (𝓝 (1 : α)).HasBasis p U) :
-    (𝓤 α).HasBasis p fun i => { x : α × α | x.1⁻¹ * x.2 ∈ U i } := by
+    (𝓤 α).HasBasis p fun i ↦ { x : α × α | x.1⁻¹ * x.2 ∈ U i } := by
   rw [uniformity_eq_comap_inv_mul_nhds_one]
   exact h.comap _
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_swapped {ι} {p : ι → Prop} {U : ι → Set α}
     (h : (𝓝 (1 : α)).HasBasis p U) :
-    (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } := by
+    (𝓤 α).HasBasis p fun i ↦ { x : α × α | x.1 / x.2 ∈ U i } := by
   rw [uniformity_eq_comap_nhds_one_swapped]
   exact h.comap _
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → Prop} {U : ι → Set α}
     (h : (𝓝 (1 : α)).HasBasis p U) :
-    (𝓤 α).HasBasis p fun i => { x : α × α | x.2⁻¹ * x.1 ∈ U i } := by
+    (𝓤 α).HasBasis p fun i ↦ { x : α × α | x.2⁻¹ * x.1 ∈ U i } := by
   rw [uniformity_eq_comap_inv_mul_nhds_one_swapped]
   exact h.comap _
 

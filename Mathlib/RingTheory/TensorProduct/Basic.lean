@@ -599,7 +599,7 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
 attribute [local instance] TensorProduct.rightAlgebra
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
-  IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
+  IsScalarTower.of_algebraMap_eq fun r ↦ (Algebra.TensorProduct.includeRight.commutes r).symm
 
 end RightAlgebra
 
@@ -1223,7 +1223,7 @@ variable [IsScalarTower R A M] [IsScalarTower R B M]
 `TensorProduct.Algebra.module` below. -/
 def moduleAux : A ⊗[R] B →ₗ[R] M →ₗ[R] M :=
   TensorProduct.lift
-    { toFun := fun a => a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
+    { toFun := fun a ↦ a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
       map_add' := fun r t => by
         ext
         simp only [add_smul, LinearMap.add_apply]

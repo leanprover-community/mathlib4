@@ -39,12 +39,12 @@ variable [NonUnitalSeminormedRing α]
 
 theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
 
 theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x => f x * g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 
@@ -56,10 +56,10 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
     norm_mul := fun x y =>
       NNReal.coe_mono <|
         calc
-          (Finset.univ.sup fun i => ‖x i * y i‖₊) ≤
-              Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
+          (Finset.univ.sup fun i ↦ ‖x i * y i‖₊) ≤
+              Finset.univ.sup ((fun i ↦ ‖x i‖₊) * fun i ↦ ‖y i‖₊) :=
             Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
-          _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
+          _ ≤ (Finset.univ.sup fun i ↦ ‖x i‖₊) * Finset.univ.sup fun i ↦ ‖y i‖₊ :=
             Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
            }
 
@@ -161,7 +161,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
               rw [mul_sub, sub_mul, sub_add_sub_cancel]
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine squeeze_zero (fun e => norm_nonneg _) this ?_
+        refine squeeze_zero (fun e ↦ norm_nonneg _) this ?_
         convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add

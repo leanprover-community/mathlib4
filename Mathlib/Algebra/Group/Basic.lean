@@ -294,7 +294,7 @@ theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
 
 @[to_additive]
 theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
-  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+  ⟨fun h ↦ h ▸ (inv_inv a).symm, fun h ↦ h.symm ▸ inv_inv b⟩
 
 variable (G)
 

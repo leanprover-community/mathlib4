@@ -77,7 +77,7 @@ theorem permutationsAux2_append (t : α) (ts : List α) (r : List β) (ys : List
 
 /-- The `ts` argument to `permutationsAux2` can be folded into the `f` argument. -/
 theorem permutationsAux2_comp_append {t : α} {ts ys : List α} {r : List β} (f : List α → β) :
-    ((permutationsAux2 t [] r ys) fun x => f (x ++ ts)).2 = (permutationsAux2 t ts r ys f).2 := by
+    ((permutationsAux2 t [] r ys) fun x ↦ f (x ++ ts)).2 = (permutationsAux2 t ts r ys f).2 := by
   induction' ys with ys_hd _ ys_ih generalizing f
   · simp
   · simp [ys_ih fun xs => f (ys_hd :: xs)]
@@ -113,7 +113,7 @@ produced by inserting `t` into every non-terminal position of `ys` in order. As 
 -/
 theorem permutationsAux2_snd_eq (t : α) (ts : List α) (r : List β) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts r ys f).2 =
-      ((permutationsAux2 t [] [] ys id).2.map fun x => f (x ++ ts)) ++ r := by
+      ((permutationsAux2 t [] [] ys id).2.map fun x ↦ f (x ++ ts)) ++ r := by
   rw [← permutationsAux2_append, map_permutationsAux2, permutationsAux2_comp_append]
 
 theorem map_map_permutationsAux2 {α'} (g : α → α') (t : α) (ts ys : List α) :
@@ -163,7 +163,7 @@ theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List
 
 theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     foldr (fun y r => (permutationsAux2 t ts r y id).2) r L =
-      (L.flatMap fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
+      (L.flatMap fun y ↦ (permutationsAux2 t ts [] y id).2) ++ r := by
   induction' L with l L ih
   · rfl
   · simp_rw [foldr_cons, ih, flatMap_cons, append_assoc, permutationsAux2_append]
@@ -262,7 +262,7 @@ theorem perm_of_mem_permutationsAux :
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)
 
 theorem perm_of_mem_permutations {l₁ l₂ : List α} (h : l₁ ∈ permutations l₂) : l₁ ~ l₂ :=
-  (eq_or_mem_of_mem_cons h).elim (fun e => e ▸ Perm.refl _) fun m =>
+  (eq_or_mem_of_mem_cons h).elim (fun e ↦ e ▸ Perm.refl _) fun m =>
     append_nil l₂ ▸ perm_of_mem_permutationsAux m
 
 theorem length_permutationsAux :
@@ -328,9 +328,9 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
     intros a' b'
     simp only [flatMap_map, permutations'Aux]
-    show List.flatMap (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
+    show List.flatMap (permutations'Aux _ l) (fun a ↦ ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
-    refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
+    refine (flatMap_append_perm _ (fun x ↦ [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_flatMap, ← map_flatMap]
     exact Perm.refl _
   refine (((this _ _).append_left _).trans ?_).trans ((this _ _).append_left _).symm
@@ -377,12 +377,12 @@ theorem Perm.permutations {s t : List α} (h : s ~ t) : permutations s ~ permuta
 
 @[simp]
 theorem perm_permutations_iff {s t : List α} : permutations s ~ permutations t ↔ s ~ t :=
-  ⟨fun h => mem_permutations.1 <| h.mem_iff.1 <| mem_permutations.2 (Perm.refl _),
+  ⟨fun h ↦ mem_permutations.1 <| h.mem_iff.1 <| mem_permutations.2 (Perm.refl _),
     Perm.permutations⟩
 
 @[simp]
 theorem perm_permutations'_iff {s t : List α} : permutations' s ~ permutations' t ↔ s ~ t :=
-  ⟨fun h => mem_permutations'.1 <| h.mem_iff.1 <| mem_permutations'.2 (Perm.refl _),
+  ⟨fun h ↦ mem_permutations'.1 <| h.mem_iff.1 <| mem_permutations'.2 (Perm.refl _),
     Perm.permutations'⟩
 
 theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)

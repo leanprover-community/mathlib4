@@ -99,13 +99,13 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Injective P ↔ Injective Q :=
 /-- The axiom of choice says that every nonempty type is an injective object in `Type`. -/
 instance (X : Type u₁) [Nonempty X] : Injective X where
   factors g f mono :=
-    ⟨fun z => by
+    ⟨fun z ↦ by
       classical
       exact
           if h : z ∈ Set.range f then g (Classical.choose h) else Nonempty.some inferInstance, by
       ext y
       classical
-      change dite (f y ∈ Set.range f) (fun h => g (Classical.choose h)) _ = _
+      change dite (f y ∈ Set.range f) (fun h ↦ g (Classical.choose h)) _ = _
       split_ifs <;> rename_i h
       · rw [mono_iff_injective] at mono
         rw [mono (Classical.choose_spec h)]
@@ -131,7 +131,7 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
 
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
-    refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
+    refine ⟨Pi.lift fun b ↦ factorThru (g ≫ Pi.π c _) f, ?_⟩
     ext b
     simp only [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
 
@@ -146,7 +146,7 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [
 instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
     Injective (⨁ c) where
   factors g f mono := by
-    refine ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, ?_⟩
+    refine ⟨biproduct.lift fun b ↦ factorThru (g ≫ biproduct.π _ _) f, ?_⟩
     ext
     simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
 
@@ -328,7 +328,7 @@ def injectivePresentationOfMapInjectivePresentation (X : C)
   F.toAdjunction.injectivePresentationOfMap _ I
 
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D :=
-  ⟨fun h => h.of_adjunction F.symm.toAdjunction, fun h => h.of_adjunction F.toAdjunction⟩
+  ⟨fun h ↦ h.of_adjunction F.symm.toAdjunction, fun h ↦ h.of_adjunction F.toAdjunction⟩
 
 end Equivalence
 

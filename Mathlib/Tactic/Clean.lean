@@ -23,7 +23,7 @@ def cleanConsts : List Name :=
   [``id]
 
 /-- Clean an expression by eliminating identify functions listed in `cleanConsts`.
-Also eliminates `fun x => x` applications and tautological `let_fun` bindings. -/
+Also eliminates `fun x ↦ x` applications and tautological `let_fun` bindings. -/
 def clean (e : Expr) : Expr :=
   e.replace fun
     | .app (.app (.const n _) _) e' => if n ∈ cleanConsts then some e' else none

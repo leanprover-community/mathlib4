@@ -175,7 +175,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 -- @[simp] -- Porting note: this loops in lean 4
-theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
+theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f ↦ ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
   DFunLike.coe_injective'

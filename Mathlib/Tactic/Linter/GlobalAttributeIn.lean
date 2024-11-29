@@ -100,7 +100,7 @@ Otherwise, it returns `default`.
 -/
 def getGlobalAttributesIn? : Syntax → Option (Ident × Array (TSyntax `attr))
   | `(attribute [$x,*] $id in $_) =>
-    let xs := x.getElems.filterMap fun a => match a.raw with
+    let xs := x.getElems.filterMap fun a ↦ match a.raw with
       | `(Parser.Command.eraseAttr| -$_) => none
       | `(Parser.Term.attrInstance| local $_attr:attr) => none
       | `(Parser.Term.attrInstance| scoped $_attr:attr) => none

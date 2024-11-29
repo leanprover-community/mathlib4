@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Basic
 # π-systems of cylinders and square cylinders
 
 The instance `MeasurableSpace.pi` on `∀ i, α i`, where each `α i` has a `MeasurableSpace` `m i`,
-is defined as `⨆ i, (m i).comap (fun a => a i)`.
+is defined as `⨆ i, (m i).comap (fun a ↦ a i)`.
 That is, a function `g : β → ∀ i, α i` is measurable iff for all `i`, the function `b ↦ g b i`
 is measurable.
 

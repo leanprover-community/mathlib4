@@ -117,7 +117,7 @@ lemma inner_smul_right_real {z : ℝ} {x y : E} : ⟪x, z • y⟫ = z • ⟪x,
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a sesquilinear map. -/
 def innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A where
-  toFun x := { toFun := fun y => ⟪x, y⟫
+  toFun x := { toFun := fun y ↦ ⟪x, y⟫
                map_add' := fun z y => by simp
                map_smul' := fun z y => by simp }
   map_add' z y := by ext; simp
@@ -180,8 +180,8 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
 protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self]
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
-  ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
-    fun h => by simp [norm, h, norm_eq_sqrt_norm_inner_self]⟩
+  ⟨fun h ↦ by simpa [norm_eq_sqrt_norm_inner_self, inner_self] using h,
+    fun h ↦ by simp [norm, h, norm_eq_sqrt_norm_inner_self]⟩
 
 end
 
@@ -194,7 +194,7 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 
   · simp [h, CStarModule.norm_zero (E := E)]
   · have h₁ : ∀ (a : A),
         (0 : A) ≤ ‖x‖ ^ 2 • (star a * a) - ‖x‖ ^ 2 • (⟪y, x⟫ * a)
-                  - ‖x‖ ^ 2 • (star a * ⟪x, y⟫) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := fun a => by
+                  - ‖x‖ ^ 2 • (star a * ⟪x, y⟫) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := fun a ↦ by
       calc (0 : A) ≤ ⟪x <• a - ‖x‖ ^ 2 • y, x <• a - ‖x‖ ^ 2 • y⟫_A := by
                       exact inner_self_nonneg
             _ = star a * ⟪x, x⟫ * a - ‖x‖ ^ 2 • (⟪y, x⟫ * a)

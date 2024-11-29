@@ -179,7 +179,7 @@ theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpa
     [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
     induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
-  refine le_of_nhds_le_nhds fun x => ?_
+  refine le_of_nhds_le_nhds fun x ↦ ?_
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal, Ioi, Iio, ← hf]
   refine inf_le_inf (le_iInf₂ fun a ha => ?_) (le_iInf₂ fun a ha => ?_)
   exacts [iInf₂_le (f a) ha, iInf₂_le (f a) ha]
@@ -191,7 +191,7 @@ theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpa
     induced f ‹TopologicalSpace β› = Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
   refine le_antisymm (induced_topology_le_preorder hf) ?_
-  refine le_of_nhds_le_nhds fun a => ?_
+  refine le_of_nhds_le_nhds fun a ↦ ?_
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal]
   refine inf_le_inf (le_iInf₂ fun b hb => ?_) (le_iInf₂ fun b hb => ?_)
   · rcases em (∃ x, ¬(b < f x)) with (⟨x, hx⟩ | hb)
@@ -266,7 +266,7 @@ theorem nhdsWithin_Iic_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α
   simp only [nhdsWithin_Iic_eq'', biInf_inf ha, inf_principal, Ioi_inter_Iic]
 
 theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
-    (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
+    (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u ↦ a < u) fun u ↦ Ico a u :=
   (nhdsWithin_Ici_eq' ha).symm ▸
     hasBasis_biInf_principal
       (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
@@ -274,16 +274,16 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
       ha
 
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
-    (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
+    (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l ↦ l < a) fun l ↦ Ioc l a := by
   convert nhdsWithin_Ici_basis' (α := αᵒᵈ) ha using 2
   exact dual_Ico.symm
 
 theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
-    (a : α) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
+    (a : α) : (𝓝[≥] a).HasBasis (fun u ↦ a < u) fun u ↦ Ico a u :=
   nhdsWithin_Ici_basis' (exists_gt a)
 
 theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMinOrder α]
-    (a : α) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a :=
+    (a : α) : (𝓝[≤] a).HasBasis (fun l ↦ l < a) fun l ↦ Ioc l a :=
   nhdsWithin_Iic_basis' (exists_lt a)
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
@@ -442,11 +442,11 @@ theorem mem_nhds_iff_exists_Ioo_subset [OrderTopology α] [NoMaxOrder α] [NoMin
   mem_nhds_iff_exists_Ioo_subset' (exists_lt a) (exists_gt a)
 
 theorem nhds_basis_Ioo' [OrderTopology α] {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
-    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
-  ⟨fun s => (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
+    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b ↦ Ioo b.1 b.2 :=
+  ⟨fun s ↦ (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
 
 theorem nhds_basis_Ioo [OrderTopology α] [NoMaxOrder α] [NoMinOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
+    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b ↦ Ioo b.1 b.2 :=
   nhds_basis_Ioo' (exists_lt a) (exists_gt a)
 
 theorem Filter.Eventually.exists_Ioo_subset [OrderTopology α] [NoMaxOrder α] [NoMinOrder α] {a : α}
@@ -495,7 +495,7 @@ theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology 
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
   let s := { x : α | ∃ y, x ⋖ y }
-  have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x => id
+  have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x ↦ id
   choose! y hy using this
   have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x := fun x z hx => (hy x hx).le_of_lt
   suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } by
@@ -515,7 +515,7 @@ theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology 
     apply exists_Ioc_subset_of_mem_nhds (ha.mem_nhds hx.2.1)
     simpa only [IsBot, not_forall, not_le] using hx.right.right.right
   choose! z hz h'z using this
-  have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
+  have : PairwiseDisjoint t fun x ↦ Ioc (z x) x := fun x xt x' x't hxx' => by
     rcases hxx'.lt_or_lt with (h' | h')
     · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
       refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
@@ -549,7 +549,7 @@ Then the family is countable.
 This is not a straightforward consequence of second-countability as some of these intervals might be
 empty (but in fact this can happen only for countably many of them). -/
 theorem Set.PairwiseDisjoint.countable_of_Ioo [OrderTopology α] [SecondCountableTopology α]
-    {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x => Ioo x (y x))
+    {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x ↦ Ioo x (y x))
     (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
     (h.subset diff_subset).countable_of_isOpen (fun _ _ => isOpen_Ioo)
@@ -578,7 +578,7 @@ theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
   -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
   -- (the intervals `(f x, z x)`) is at most countable.
   have fs_count : (f '' s).Countable := by
-    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
+    have A : (f '' s).PairwiseDisjoint fun x ↦ Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
       · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
@@ -684,7 +684,7 @@ theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 
 theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
-  pi_Iio_mem_nhds (π := fun i => (π i)ᵒᵈ) ha
+  pi_Iio_mem_nhds (π := fun i ↦ (π i)ᵒᵈ) ha
 
 theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha

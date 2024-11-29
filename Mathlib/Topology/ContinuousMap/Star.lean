@@ -124,11 +124,11 @@ def compStarAlgHom (φ : A →⋆ₐ[𝕜] B) (hφ : Continuous φ) :
     C(X, A) →⋆ₐ[𝕜] C(X, B) where
   toFun f := (⟨φ, hφ⟩ : C(A, B)).comp f
   map_one' := ext fun _ => map_one φ
-  map_mul' f g := ext fun x => map_mul φ (f x) (g x)
+  map_mul' f g := ext fun x ↦ map_mul φ (f x) (g x)
   map_zero' := ext fun _ => map_zero φ
-  map_add' f g := ext fun x => map_add φ (f x) (g x)
+  map_add' f g := ext fun x ↦ map_add φ (f x) (g x)
   commutes' r := ext fun _x => AlgHomClass.commutes φ r
-  map_star' f := ext fun x => map_star φ (f x)
+  map_star' f := ext fun x ↦ map_star φ (f x)
 
 /-- `ContinuousMap.compStarAlgHom` sends the identity `StarAlgHom` on `A` to the identity
 `StarAlgHom` on `C(X, A)`. -/
@@ -158,10 +158,10 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
   { (f : C(X, Y)).compStarAlgHom' 𝕜 A with
     toFun := (f : C(X, Y)).compStarAlgHom' 𝕜 A
     invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
-    left_inv := fun g => by
+    left_inv := fun g ↦ by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         toContinuousMap_comp_symm, ContinuousMap.comp_id]
-    right_inv := fun g => by
+    right_inv := fun g ↦ by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         symm_comp_toContinuousMap, ContinuousMap.comp_id]
     map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }

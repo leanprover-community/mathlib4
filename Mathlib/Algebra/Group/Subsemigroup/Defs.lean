@@ -200,7 +200,7 @@ theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingle
 
 @[to_additive]
 instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
-  ⟨⟨⊥, ⊤, fun h => by
+  ⟨⟨⊥, ⊤, fun h ↦ by
       obtain ⟨x⟩ := id hn
       refine absurd (?_ : x ∈ ⊥) not_mem_bot
       simp [h]⟩⟩

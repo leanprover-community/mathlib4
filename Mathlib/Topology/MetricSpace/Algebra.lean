@@ -147,7 +147,7 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
 
 instance (priority := 100) BoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=
-  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
+  ⟨fun c ↦ ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
     dist_smul_pair c _ _).uniformContinuous⟩
 
 -- this instance could be deduced from `NormedSpace.boundedSMul`, but we prove it separately

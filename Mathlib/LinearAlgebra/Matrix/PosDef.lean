@@ -47,9 +47,9 @@ def PosSemidef (M : Matrix n n R) :=
 
 protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
     PosSemidef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
-    fun x => by
-      refine Fintype.sum_nonneg fun i => ?_
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i ↦ IsSelfAdjoint.of_nonneg (h i),
+    fun x ↦ by
+      refine Fintype.sum_nonneg fun i ↦ ?_
       simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (h i) _⟩
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
@@ -88,7 +88,7 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 
 theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
-  refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
+  refine ⟨IsHermitian.transpose hM.1, fun x ↦ ?_⟩
   convert hM.2 (star x) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 
@@ -98,12 +98,12 @@ protected lemma zero : PosSemidef (0 : Matrix n n R) :=
   ⟨isHermitian_zero, by simp⟩
 
 protected lemma one [StarOrderedRing R] [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
-  ⟨isHermitian_one, fun x => by
-    rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _⟩
+  ⟨isHermitian_one, fun x ↦ by
+    rw [one_mulVec]; exact Fintype.sum_nonneg fun i ↦ star_mul_self_nonneg _⟩
 
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
     PosSemidef (d : Matrix n n R) :=
-  ⟨isHermitian_natCast _, fun x => by
+  ⟨isHermitian_natCast _, fun x ↦ by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
     refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
@@ -115,7 +115,7 @@ protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeast
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
     PosSemidef (d : Matrix n n R) :=
-  ⟨isHermitian_intCast _, fun x => by
+  ⟨isHermitian_intCast _, fun x ↦ by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
     refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
@@ -152,7 +152,7 @@ protected lemma zpow [StarOrderedRing R] [DecidableEq n]
 
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
-  ⟨hA.isHermitian.add hB.isHermitian, fun x => by
+  ⟨hA.isHermitian.add hB.isHermitian, fun x ↦ by
     rw [add_mulVec, dotProduct_add]
     exact add_nonneg (hA.2 x) (hB.2 x)⟩
 
@@ -261,12 +261,12 @@ end PosSemidef
 @[simp]
 theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
-  ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
+  ⟨fun h ↦ by simpa using h.submatrix e.symm, fun h ↦ h.submatrix _⟩
 
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
-  refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
+  refine ⟨isHermitian_transpose_mul_self _, fun x ↦ ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
@@ -350,12 +350,12 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     {d : n → R} (h : ∀ i, 0 < d i) :
     PosDef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le,
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i ↦ IsSelfAdjoint.of_nonneg (h i).le,
     fun x hx => by
       refine Fintype.sum_pos ?_
       simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]
       obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
-      exact ⟨fun i => conjugate_nonneg (h i).le _,
+      exact ⟨fun i ↦ conjugate_nonneg (h i).le _,
         i, conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
 
 @[simp]
@@ -506,7 +506,7 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
         dsimp only [Inner.inner]
         rw [star_dotProduct, starRingEnd_apply, star_star, star_mulVec, dotProduct_mulVec,
           hM.isHermitian.eq]
-      nonneg_re := fun x => by
+      nonneg_re := fun x ↦ by
         by_cases h : x = 0
         · simp [h]
         · exact le_of_lt (hM.re_dotProduct_pos h)

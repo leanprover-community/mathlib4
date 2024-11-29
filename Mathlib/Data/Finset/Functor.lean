@@ -50,7 +50,7 @@ end Functor
 
 
 protected instance pure : Pure Finset :=
-  ⟨fun x => {x}⟩
+  ⟨fun x ↦ {x}⟩
 
 @[simp]
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
@@ -64,12 +64,12 @@ variable {α β : Type u} [∀ P, Decidable P]
 
 protected instance applicative : Applicative Finset :=
   { Finset.functor, Finset.pure with
-    seq := fun t s => t.sup fun f => (s ()).image f
+    seq := fun t s => t.sup fun f ↦ (s ()).image f
     seqLeft := fun s t => if t () = ∅ then ∅ else s
     seqRight := fun s t => if s = ∅ then ∅ else t () }
 
 @[simp]
-theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
+theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f ↦ s.image f :=
   rfl
 
 @[simp]
@@ -131,8 +131,8 @@ instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
-      change (s.biUnion fun a => t.image fun b => (a, b))
-        = t.biUnion fun b => s.image fun a => (a, b)
+      change (s.biUnion fun a ↦ t.image fun b ↦ (a, b))
+        = t.biUnion fun b ↦ s.image fun a ↦ (a, b)
       trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative

@@ -206,7 +206,7 @@ theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
         π₂.IsPartition → dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε := by
   rw [integrable_iff_cauchy, cauchy_map_iff',
     (l.hasBasis_toFilteriUnion_top _).prod_self.tendsto_iff uniformity_basis_dist_le]
-  refine forall₂_congr fun ε _ => exists_congr fun r => ?_
+  refine forall₂_congr fun ε _ => exists_congr fun r ↦ ?_
   simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prod_mk_mem_set_prod_eq, and_imp,
     mem_inter_iff, mem_setOf_eq]
   exact
@@ -258,7 +258,7 @@ theorem Integrable.of_neg (hf : Integrable I l (-f) vol) : Integrable I l f vol 
 
 @[simp]
 theorem integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
-  ⟨fun h => h.of_neg, fun h => h.neg⟩
+  ⟨fun h ↦ h.of_neg, fun h ↦ h.neg⟩
 
 @[simp]
 theorem integral_neg : integral I l (-f) vol = -integral I l f vol := by
@@ -299,7 +299,7 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
 
 theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
-    HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
+    HasIntegral I l (fun x ↦ ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
   classical
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
   simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
@@ -318,11 +318,11 @@ theorem Integrable.of_smul {c : ℝ} (hf : Integrable I l (c • f) vol) (hc : c
   simpa [inv_smul_smul₀ hc] using hf.smul c⁻¹
 
 @[simp]
-theorem integral_smul (c : ℝ) : integral I l (fun x => c • f x) vol = c • integral I l f vol := by
+theorem integral_smul (c : ℝ) : integral I l (fun x ↦ c • f x) vol = c • integral I l f vol := by
   rcases eq_or_ne c 0 with (rfl | hc); · simp only [zero_smul, integral_zero]
   by_cases hf : Integrable I l f vol
   · exact (hf.hasIntegral.smul c).integral_eq
-  · have : ¬Integrable I l (fun x => c • f x) vol := mt (fun h => h.of_smul hc) hf
+  · have : ¬Integrable I l (fun x ↦ c • f x) vol := mt (fun h ↦ h.of_smul hc) hf
     rw [integral, integral, dif_neg hf, dif_neg this, smul_zero]
 
 open MeasureTheory
@@ -430,7 +430,7 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
     (h₂ : l.MemBaseSet I c₂ (h.convergenceR ε₂ c₂) π₂) (HU : π₁.iUnion = π₂.iUnion) :
     dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε₁ + ε₂ := by
   rcases h₁.exists_common_compl h₂ HU with ⟨π, hπU, hπc₁, hπc₂⟩
-  set r : ℝⁿ → Ioi (0 : ℝ) := fun x => min (h.convergenceR ε₁ c₁ x) (h.convergenceR ε₂ c₂ x)
+  set r : ℝⁿ → Ioi (0 : ℝ) := fun x ↦ min (h.convergenceR ε₁ c₁ x) (h.convergenceR ε₂ c₂ x)
   set πr := π.toSubordinate r
   have H₁ :
     dist (integralSum f vol (π₁.unionComplToSubordinate π hπU r)) (integral I l f vol) ≤ ε₁ :=
@@ -524,7 +524,7 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
     intro J hJ
     have Hle : J ≤ I := π₀.le_of_mem hJ
     have HJi : Integrable J l f vol := h.to_subbox Hle
-    set r := fun x => min (h.convergenceR δ' C x) (HJi.convergenceR δ' C x)
+    set r := fun x ↦ min (h.convergenceR δ' C x) (HJi.convergenceR δ' C x)
     have hJd : J.distortion ≤ C := le_trans (Finset.le_sup hJ) (le_max_left _ _)
     rcases l.exists_memBaseSet_isPartition J hJd r with ⟨πJ, hC, hp⟩
     have hC₁ : l.MemBaseSet J C (HJi.convergenceR δ' C) πJ := by
@@ -783,7 +783,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   rcases exists_pos_mul_lt ε0' (B I) with ⟨ε', ε'0, hεI⟩
   classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
-  refine ⟨δ, fun c => l.rCond_of_bRiemann_eq_false hl, ?_⟩
+  refine ⟨δ, fun c ↦ l.rCond_of_bRiemann_eq_false hl, ?_⟩
   simp only [Set.mem_iUnion, mem_inter_iff, mem_setOf_eq]
   rintro π ⟨c, hπδ, hπp⟩
   -- Now we split the sum into two parts based on whether `π.tag J` belongs to `s` or not.

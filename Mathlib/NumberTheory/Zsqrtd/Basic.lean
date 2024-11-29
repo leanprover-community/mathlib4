@@ -106,7 +106,7 @@ theorem add_im (z w : ℤ√d) : (z + w).im = z.im + w.im :=
 
 /-- Negation in `ℤ√d` -/
 instance : Neg (ℤ√d) :=
-  ⟨fun z => ⟨-z.1, -z.2⟩⟩
+  ⟨fun z ↦ ⟨-z.1, -z.2⟩⟩
 
 @[simp]
 theorem neg_re (z : ℤ√d) : (-z).re = -z.re :=
@@ -155,7 +155,7 @@ theorem sub_im (z w : ℤ√d) : (z - w).im = z.im - w.im :=
 
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
-    natCast := fun n => ofInt n
+    natCast := fun n ↦ ofInt n
     intCast := ofInt
     one := 1 }
 
@@ -502,7 +502,7 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
           ⟨-star x, by
             rwa [← Int.natCast_inj, Int.ofNat_natAbs_of_nonpos hx, ← @Int.cast_inj (ℤ√d) _ _,
               Int.cast_neg, norm_eq_mul_conj, neg_mul_eq_mul_neg, eq_comm] at h⟩,
-    fun h => by
+    fun h ↦ by
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
     have := congr_arg (Int.natAbs ∘ norm) hy
     rw [Function.comp_apply, Function.comp_apply, norm_mul, Int.natAbs_mul, norm_one,
@@ -669,7 +669,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   cases' y with y
   · simp
     trivial
-  have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
+  have h : ∀ y, SqLe y d (d * y) 1 := fun y ↦ by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
@@ -798,7 +798,7 @@ theorem divides_sq_eq_zero_z {x y : ℤ} (h : x * x = d * y * y) : x = 0 ∧ y =
     let ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
     ⟨Int.natAbs_eq_zero.mp h1, Int.natAbs_eq_zero.mp h2⟩
 
-theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fun e => by
+theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fun e ↦ by
   have t := (divides_sq_eq_zero e).left
   contradiction
 
@@ -868,7 +868,7 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
   Or.elim
     (eq_zero_or_eq_zero_of_mul_eq_zero
       (le_antisymm ab (Zsqrtd.mul_nonneg _ _ (le_of_lt a0) (le_of_lt b0))))
-    (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
+    (fun e ↦ ne_of_gt a0 e) fun e ↦ ne_of_gt b0 e
 
 instance : LinearOrderedCommRing (ℤ√d) :=
   { Zsqrtd.commRing, Zsqrtd.linearOrder, Zsqrtd.nontrivial with
@@ -883,7 +883,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
+  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h ↦ by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d
@@ -913,7 +913,7 @@ root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of 
 @[simps]
 def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
   toFun r :=
-    { toFun := fun a => a.1 + a.2 * (r : R)
+    { toFun := fun a ↦ a.1 + a.2 * (r : R)
       map_zero' := by simp
       map_add' := fun a b => by
         simp only [add_re, Int.cast_add, add_im]

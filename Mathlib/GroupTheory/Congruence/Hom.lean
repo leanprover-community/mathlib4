@@ -148,7 +148,7 @@ theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g
 @[to_additive "The uniqueness part of the universal property for quotients of `AddMonoid`s."]
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →* P) (Hg : g.comp c.mk' = f) :
     g = c.lift f H :=
-  (lift_funext g (c.lift f H)) fun x => by
+  (lift_funext g (c.lift f H)) fun x ↦ by
     subst f
     rfl
 

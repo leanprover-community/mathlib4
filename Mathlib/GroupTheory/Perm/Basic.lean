@@ -208,7 +208,7 @@ theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (�
 
 @[simp]
 theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
-    (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
+    (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a ↦ (F a)⁻¹ :=
   sigmaCongrRight_symm F
 
 @[simp]
@@ -281,7 +281,7 @@ def extendDomainHom : Perm α →* Perm β where
 
 theorem extendDomainHom_injective : Function.Injective (extendDomainHom f) :=
   (injective_iff_map_eq_one (extendDomainHom f)).mpr fun e he =>
-    ext fun x => f.injective <|
+    ext fun x ↦ f.injective <|
       Subtype.ext ((extendDomain_apply_image e f x).symm.trans (Perm.ext_iff.mp he (f x)))
 
 @[simp]
@@ -305,8 +305,8 @@ variable {p : α → Prop} {f : Perm α}
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
   on `{x // p x}` induced by `f`. -/
 def subtypePerm (f : Perm α) (h : ∀ x, p x ↔ p (f x)) : Perm { x // p x } where
-  toFun := fun x => ⟨f x, (h _).1 x.2⟩
-  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).2 <| by simpa using x.2⟩
+  toFun := fun x ↦ ⟨f x, (h _).1 x.2⟩
+  invFun := fun x ↦ ⟨f⁻¹ x, (h (f⁻¹ x)).2 <| by simpa using x.2⟩
   left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta, Subtype.coe_mk]
   right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta, Subtype.coe_mk]
 
@@ -374,14 +374,14 @@ def ofSubtype : Perm (Subtype p) →* Perm α where
 
 theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h₂ : ∀ x, f x ≠ x → p x) :
     ofSubtype (subtypePerm f h₁) = f :=
-  Equiv.ext fun x => by
+  Equiv.ext fun x ↦ by
     by_cases hx : p x
     · exact (subtypePerm f h₁).extendDomain_apply_subtype _ hx
     · rw [ofSubtype, MonoidHom.coe_mk]
       -- Porting note: added `dsimp`
       dsimp only [OneHom.coe_mk]
       rw [Equiv.Perm.extendDomain_apply_not_subtype _ _ hx]
-      exact not_not.mp fun h => hx (h₂ x (Ne.symm h))
+      exact not_not.mp fun h ↦ hx (h₂ x (Ne.symm h))
 
 theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a = f ⟨a, ha⟩ :=
   extendDomain_apply_subtype _ _ ha
@@ -402,7 +402,7 @@ theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
 @[simp]
 theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
     subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=
-  Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
+  Equiv.ext fun x ↦ Subtype.coe_injective (ofSubtype_apply_coe f x)
 
 theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
     {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
@@ -426,7 +426,7 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
         Decidable.not_imp_not.1 fun ha hfa => ha <| f.prop a ha ▸ hfa⟩
   left_inv := Equiv.Perm.subtypePerm_ofSubtype
   right_inv f :=
-    Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
+    Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a ↦ Not.decidable_imp_symm <| f.prop a)
 
 theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
     -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
@@ -455,7 +455,7 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
   swap_swap i j
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
-  Equiv.ext fun z => by
+  Equiv.ext fun z ↦ by
     simp only [Perm.mul_apply, swap_apply_def]
     split_ifs <;>
       simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, eq_self_iff_true, not_true]

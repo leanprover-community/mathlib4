@@ -554,7 +554,7 @@ variable {E : Type*} [Category E]
 /-- The image by a functor which inverts `W` of an equivalence class of left fractions. -/
 noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     F.obj X ⟶ F.obj Y :=
-  Quot.lift (fun f => f.map F hF) (by
+  Quot.lift (fun f ↦ f.map F hF) (by
     intro a₁ a₂ ⟨Z, t₁, t₂, hst, hft, h⟩
     dsimp
     have := hF _ h
@@ -909,12 +909,12 @@ lemma LeftFractionRel.unop {W : MorphismProperty Cᵒᵖ} {X Y : Cᵒᵖ}
 lemma leftFractionRel_op_iff
     {X Y : C} (z₁ z₂ : W.RightFraction X Y) :
     LeftFractionRel z₁.op z₂.op ↔ RightFractionRel z₁ z₂ :=
-  ⟨fun h => h.unop, fun h => h.op⟩
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 lemma rightFractionRel_op_iff
     {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
     RightFractionRel z₁.op z₂.op ↔ LeftFractionRel z₁ z₂ :=
-  ⟨fun h => h.unop, fun h => h.op⟩
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 namespace RightFractionRel
 

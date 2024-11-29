@@ -121,7 +121,7 @@ theorem isUnit_iff_dvd_one {x : α} : IsUnit x ↔ x ∣ 1 :=
   ⟨IsUnit.dvd, fun ⟨y, h⟩ => ⟨⟨x, y, h.symm, by rw [h, mul_comm]⟩, rfl⟩⟩
 
 theorem isUnit_iff_forall_dvd {x : α} : IsUnit x ↔ ∀ y, x ∣ y :=
-  isUnit_iff_dvd_one.trans ⟨fun h _ => h.trans (one_dvd _), fun h => h _⟩
+  isUnit_iff_dvd_one.trans ⟨fun h _ => h.trans (one_dvd _), fun h ↦ h _⟩
 
 theorem isUnit_of_dvd_unit {x y : α} (xy : x ∣ y) (hu : IsUnit y) : IsUnit x :=
   isUnit_iff_dvd_one.2 <| xy.trans <| isUnit_iff_dvd_one.1 hu

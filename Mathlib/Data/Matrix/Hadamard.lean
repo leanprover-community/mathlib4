@@ -98,11 +98,11 @@ section One
 variable [DecidableEq n] [MulZeroOneClass α]
 variable (M : Matrix n n α)
 
-theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
+theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i ↦ M i i := by
   ext i j
   by_cases h : i = j <;> simp [h]
 
-theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
+theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i ↦ M i i := by
   ext i j
   by_cases h : i = j <;> simp [h]
 

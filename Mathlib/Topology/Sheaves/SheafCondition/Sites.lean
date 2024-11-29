@@ -36,7 +36,7 @@ variable {X : TopCat.{w}}
 type the type of dependent pairs `(V, f)`, where `f : V ⟶ U` is in `R`.
 -/
 def coveringOfPresieve (U : Opens X) (R : Presieve U) : (ΣV, { f : V ⟶ U // R f }) → Opens X :=
-  fun f => f.1
+  fun f ↦ f.1
 
 @[simp]
 theorem coveringOfPresieve_apply (U : Opens X) (R : Presieve U) (f : ΣV, { f : V ⟶ U // R f }) :
@@ -82,7 +82,7 @@ theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
   funext Z
   ext f
-  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h => ⟨⟨Z, f, h⟩, rfl⟩⟩
+  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h ↦ ⟨⟨Z, f, h⟩, rfl⟩⟩
 
 namespace presieveOfCovering
 

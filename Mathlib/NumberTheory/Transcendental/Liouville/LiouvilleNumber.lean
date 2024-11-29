@@ -106,7 +106,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
   calc
     (∑' i, 1 / m ^ (i + (n + 1))!) < ∑' i, 1 / m ^ (i + (n + 1)!) :=
         -- 1. the second series dominates the first
-        tsum_lt_tsum (fun b => one_div_pow_le_one_div_pow_of_le m1.le
+        tsum_lt_tsum (fun b ↦ one_div_pow_le_one_div_pow_of_le m1.le
           (b.add_factorial_succ_le_factorial_add_succ n))
         -- 2. the term with index `i = 2` of the first series is strictly smaller than
         -- the corresponding term of the second series

@@ -77,7 +77,7 @@ theorem principal_zero : Principal op 0 := fun a _ h =>
 
 @[simp]
 theorem principal_one_iff : Principal op 1 ↔ op 0 0 = 0 := by
-  refine ⟨fun h => ?_, fun h a b ha hb => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h a b ha hb => ?_⟩
   · rw [← lt_one_iff_zero]
     exact h zero_lt_one zero_lt_one
   · rwa [lt_one_iff_zero, ha, hb] at *
@@ -95,7 +95,7 @@ theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
   exact fun b hbo => (ho hao hbo).le
 
 theorem nfp_le_of_principal (hao : a < o) (ho : Principal op o) : nfp (op a) a ≤ o :=
-  nfp_le fun n => (ho.iterate_lt hao n).le
+  nfp_le fun n ↦ (ho.iterate_lt hao n).le
 
 end Arbitrary
 
@@ -249,8 +249,8 @@ theorem principal_add_iff_zero_or_omega0_opow :
   · rw [principal_add_iff_add_left_eq_self]
     simp only [ho, false_or]
     refine
-      ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
-        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega0_opow⟩
+      ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h ↦ ?_)⟩,
+        fun ⟨b, e⟩ => e.symm ▸ fun a ↦ add_omega0_opow⟩
     have := H _ h
     have := lt_opow_succ_log_self one_lt_omega0 o
     rw [opow_succ, lt_mul_of_limit isLimit_omega0] at this

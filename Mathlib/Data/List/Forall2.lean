@@ -146,7 +146,7 @@ theorem forall₂_of_length_eq_of_get :
 
 theorem forall₂_iff_get {l₁ : List α} {l₂ : List β} :
     Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.get ⟨i, h₁⟩) (l₂.get ⟨i, h₂⟩) :=
-  ⟨fun h => ⟨h.length_eq, h.get⟩, fun h => forall₂_of_length_eq_of_get h.1 h.2⟩
+  ⟨fun h ↦ ⟨h.length_eq, h.get⟩, fun h ↦ forall₂_of_length_eq_of_get h.1 h.2⟩
 
 theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b
   | _, _, Forall₂.cons h₁ h₂, x, y, hx => by
@@ -157,7 +157,7 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
-  ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
+  ⟨fun h ↦ ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h ↦ by
     cases' h with h₁ h₂
     induction' l₁ with a l₁ IH generalizing l₂
     · cases length_eq_zero.1 h₁.symm
@@ -166,7 +166,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
-          (IH h₁ fun h => h₂ <| by
+          (IH h₁ fun h ↦ h₂ <| by
             simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 
@@ -215,10 +215,10 @@ theorem rel_reverse : (Forall₂ R ⇒ Forall₂ R) reverse reverse
 @[simp]
 theorem forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse l₂) ↔ Forall₂ R l₁ l₂ :=
   Iff.intro
-    (fun h => by
+    (fun h ↦ by
       rw [← reverse_reverse l₁, ← reverse_reverse l₂]
       exact rel_reverse h)
-    fun h => rel_reverse h
+    fun h ↦ rel_reverse h
 
 theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | [], [], Forall₂.nil => Forall₂.nil
@@ -240,7 +240,7 @@ theorem rel_foldr : ((R ⇒ P ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldr foldr
   | _, _, hfg, _, _, hxy, _, _, Forall₂.cons hab hs => hfg hab (rel_foldr (@hfg) hxy hs)
 
 theorem rel_filter {p : α → Bool} {q : β → Bool}
-    (hpq : (R ⇒ (· ↔ ·)) (fun x => p x) (fun x => q x)) :
+    (hpq : (R ⇒ (· ↔ ·)) (fun x ↦ p x) (fun x ↦ q x)) :
     (Forall₂ R ⇒ Forall₂ R) (filter p) (filter q)
   | _, _, Forall₂.nil => Forall₂.nil
   | a :: as, b :: bs, Forall₂.cons h₁ h₂ => by
@@ -293,7 +293,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
       exact SublistForall₂.cons hr (ih hl)
 
 instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
-  ⟨fun l => sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
+  ⟨fun l ↦ sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
 
 instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (SublistForall₂ Rₐ) :=
   ⟨fun a b c => by

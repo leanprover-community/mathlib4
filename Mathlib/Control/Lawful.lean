@@ -26,7 +26,7 @@ In Lean 4, `StateT` doesn't require a constructor, but it appears confusing to d
 following theorem as a simp theorem.
 ```lean
 @[simp]
-theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
+theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s ↦ f s) st = f st :=
   rfl
 ```
 If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
@@ -132,7 +132,7 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 
 @[simp]
 theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
-    (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
+    (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a ↦ pure (some a) :=
   rfl
 
 end Monad

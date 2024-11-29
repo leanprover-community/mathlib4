@@ -73,12 +73,12 @@ theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < 
 
 theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) :
-    Tendsto (fun x => f x • g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x • g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· • ·) norm_smul_le
 
 theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x => f x • g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x • g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y =>
     (norm_smul_le y x).trans_eq (mul_comm _ _)
 

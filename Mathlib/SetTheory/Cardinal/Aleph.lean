@@ -328,14 +328,14 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
 
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
-  ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
+  ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h ↦ by
     rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le l]
     intro x h'
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
     exact h _ h'⟩
 
 theorem preAleph_limit {o : Ordinal} (ho : o.IsLimit) : preAleph o = ⨆ a : Iio o, preAleph a := by
-  refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
+  refine le_antisymm ?_ (ciSup_le' fun i ↦ preAleph_le_preAleph.2 i.2.le)
   rw [preAleph_le_of_isLimit ho]
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
@@ -428,7 +428,7 @@ theorem aleph_toPartENat (o : Ordinal) : toPartENat (ℵ_ o) = ⊤ :=
 
 instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := by
   rw [toType_nonempty_iff_ne_zero, ← ord_zero]
-  exact fun h => (ord_injective h).not_gt (aleph_pos o)
+  exact fun h ↦ (ord_injective h).not_gt (aleph_pos o)
 
 theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
   rw [← ord_aleph]
@@ -724,7 +724,7 @@ theorem aleph_le_beth (o : Ordinal) : ℵ_ o ≤ ℶ_ o := by
     exact (cantor _).trans_le (power_le_power_left two_ne_zero h)
   | H₃ o ho IH =>
     rw [aleph_limit ho, beth_limit ho]
-    exact ciSup_mono (bddAbove_of_small _) fun x => IH x.1 x.2
+    exact ciSup_mono (bddAbove_of_small _) fun x ↦ IH x.1 x.2
 
 theorem aleph0_le_beth (o : Ordinal) : ℵ₀ ≤ ℶ_ o :=
   (aleph0_le_aleph o).trans <| aleph_le_beth o
@@ -739,10 +739,10 @@ theorem isNormal_beth : IsNormal (ord ∘ beth) := by
   refine (isNormal_iff_strictMono_limit _).2
     ⟨ord_strictMono.comp beth_strictMono, fun o ho a ha ↦ ?_⟩
   rw [comp_apply, beth_limit ho, ord_le]
-  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
+  exact ciSup_le' fun b ↦ ord_le.1 (ha _ b.2)
 
 @[deprecated isNormal_beth (since := "2024-10-11")]
-theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
+theorem beth_normal : IsNormal.{u} fun o ↦ (beth o).ord :=
   isNormal_beth
 
 end Cardinal

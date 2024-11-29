@@ -244,7 +244,7 @@ noncomputable instance Forget₂.createsLimit :
         validLift := by apply IsLimit.uniqueUpToIso (Grp.limitConeIsLimit _) hc
         makesLimit :=
           IsLimit.ofFaithful (forget₂ _ Grp.{u} ⋙ forget₂ _ MonCat.{u})
-            (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl })
+            (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s ↦ _) fun s ↦ rfl })
 
 section
 
@@ -411,7 +411,7 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     kernel f ≅ AddCommGrp.of f.ker where
   hom :=
-    { toFun := fun g => ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
+    { toFun := fun g ↦ ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp [(AddSubgroup.coe_zero _).symm]

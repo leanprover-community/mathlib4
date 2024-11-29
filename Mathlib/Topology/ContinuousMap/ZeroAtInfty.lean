@@ -237,7 +237,7 @@ section AddGroup
 variable [AddGroup β] [TopologicalAddGroup β] (f g : C₀(α, β))
 
 instance instNeg : Neg C₀(α, β) :=
-  ⟨fun f => ⟨-f, by simpa only [neg_zero] using (zero_at_infty f).neg⟩⟩
+  ⟨fun f ↦ ⟨-f, by simpa only [neg_zero] using (zero_at_infty f).neg⟩⟩
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f :=
@@ -371,7 +371,7 @@ theorem isBounded_image (f : C₀(α, β)) (s : Set α) : IsBounded (f '' s) :=
 
 instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapClass F α β :=
   { ‹ZeroAtInftyContinuousMapClass F α β› with
-    map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }
+    map_bounded := fun f ↦ ZeroAtInftyContinuousMap.bounded f }
 
 /-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
 @[simps!]
@@ -409,9 +409,9 @@ open BoundedContinuousFunction
 
 /-- Convergence in the metric on `C₀(α, β)` is uniform convergence. -/
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C₀(α, β)} {f : C₀(α, β)} {l : Filter ι} :
-    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l := by
+    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i ↦ F i) f l := by
   simpa only [Metric.tendsto_nhds] using
-    @BoundedContinuousFunction.tendsto_iff_tendstoUniformly _ _ _ _ _ (fun i => (F i).toBCF)
+    @BoundedContinuousFunction.tendsto_iff_tendstoUniformly _ _ _ _ _ (fun i ↦ (F i).toBCF)
       f.toBCF l
 
 theorem isometry_toBCF : Isometry (toBCF : C₀(α, β) → α →ᵇ β) := by tauto
@@ -512,7 +512,7 @@ variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar
 
 instance instStar : Star C₀(α, β) where
   star f :=
-    { toFun := fun x => star (f x)
+    { toFun := fun x ↦ star (f x)
       continuous_toFun := (map_continuous f).star
       zero_at_infty' := by
         simpa only [star_zero] using (continuous_star.tendsto (0 : β)).comp (zero_at_infty f) }
@@ -525,8 +525,8 @@ theorem star_apply (f : C₀(α, β)) (x : α) : (star f) x = star (f x) :=
   rfl
 
 instance instStarAddMonoid [ContinuousAdd β] : StarAddMonoid C₀(α, β) where
-  star_involutive f := ext fun x => star_star (f x)
-  star_add f g := ext fun x => star_add (f x) (g x)
+  star_involutive f := ext fun x ↦ star_star (f x)
+  star_add f g := ext fun x ↦ star_add (f x) (g x)
 
 end Star
 
@@ -545,7 +545,7 @@ variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β
   [ContinuousStar β] [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
 instance instStarModule : StarModule 𝕜 C₀(α, β) where
-  star_smul k f := ext fun x => star_smul k (f x)
+  star_smul k f := ext fun x ↦ star_smul k (f x)
 
 end StarModule
 
@@ -556,7 +556,7 @@ variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousS
 
 instance instStarRing : StarRing C₀(α, β) :=
   { ZeroAtInftyContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+    star_mul := fun f g => ext fun x ↦ star_mul (f x) (g x) }
 
 end StarRing
 

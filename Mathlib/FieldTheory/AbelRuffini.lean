@@ -262,7 +262,7 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
     refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
-      ⟨fun h => h1 (leadingCoeff_eq_zero.mp ?_), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
+      ⟨fun h ↦ h1 (leadingCoeff_eq_zero.mp ?_), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
     rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
     rwa [natDegree_X_pow]
 

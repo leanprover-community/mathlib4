@@ -129,7 +129,7 @@ theorem coe_iInf {ι : Sort*} (f : ι → RingCon R) : ⇑(iInf f) = ⨅ i, ⇑(
 instance : PartialOrder (RingCon R) where
   le_refl _c _ _ := id
   le_trans _c1 _c2 _c3 h1 h2 _x _y h := h2 <| h1 h
-  le_antisymm _c _d hc hd := ext fun _x _y => ⟨fun h => hc h, fun h => hd h⟩
+  le_antisymm _c _d hc hd := ext fun _x _y => ⟨fun h ↦ hc h, fun h ↦ hd h⟩
 
 /-- The complete lattice of congruence relations on a given type with multiplication and
 addition. -/

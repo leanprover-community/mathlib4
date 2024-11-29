@@ -136,7 +136,7 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr :
   have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
   rw [log, ← cfc_smul_id (R := ℝ) r a, ← cfc_comp Real.log (r • ·) a, log]
   calc
-    _ = cfc (fun z => Real.log r + Real.log z) a :=
+    _ = cfc (fun z ↦ Real.log r + Real.log z) a :=
       cfc_congr (Real.log_mul hr.ne' <| ne_of_gt <| ha₂ · ·)
     _ = _ := by rw [cfc_const_add _ _ _]
 

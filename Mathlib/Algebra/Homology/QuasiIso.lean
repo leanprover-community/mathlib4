@@ -122,7 +122,7 @@ class QuasiIso (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
 
 lemma quasiIso_iff (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
     QuasiIso f ↔ ∀ i, QuasiIsoAt f i :=
-  ⟨fun h => h.quasiIsoAt, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.quasiIsoAt, fun h ↦ ⟨h⟩⟩
 
 attribute [instance] QuasiIso.quasiIsoAt
 

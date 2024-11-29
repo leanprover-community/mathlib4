@@ -33,7 +33,7 @@ noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 
 @[simp, norm_cast]
 theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
-    ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x => ↑(f x)) a :=
+    ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x ↦ ↑(f x)) a :=
   (toRealHom : ℝ≥0 →+ ℝ).map_indicator _ _ _
 
 @[norm_cast]
@@ -82,15 +82,15 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
   exact le_ciInf_add_ciInf h
 
 theorem mul_finset_sup {α} (r : ℝ≥0) (s : Finset α) (f : α → ℝ≥0) :
-    r * s.sup f = s.sup fun a => r * f a :=
+    r * s.sup f = s.sup fun a ↦ r * f a :=
   Finset.comp_sup_eq_sup_comp _ (NNReal.mul_sup r) (mul_zero r)
 
 theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
-    s.sup f * r = s.sup fun a => f a * r :=
+    s.sup f * r = s.sup fun a ↦ f a * r :=
   Finset.comp_sup_eq_sup_comp (· * r) (fun x y => NNReal.sup_mul x y r) (zero_mul r)
 
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
-    s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
+    s.sup f / r = s.sup fun a ↦ f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
 
 open Real
 
@@ -160,7 +160,7 @@ theorem le_iInf_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i,
 
 theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a ≤ g i * h j) :
     a ≤ iInf g * iInf h :=
-  le_iInf_mul fun i => le_mul_iInf <| H i
+  le_iInf_mul fun i ↦ le_mul_iInf <| H i
 
 end Csupr
 

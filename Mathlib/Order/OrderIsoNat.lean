@@ -59,7 +59,7 @@ theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc
 theorem acc_iff_no_decreasing_seq {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } := by
   constructor
-  · refine fun h => h.recOn fun x _ IH => ?_
+  · refine fun h ↦ h.recOn fun x _ IH => ?_
     constructor
     rintro ⟨f, k, hf⟩
     exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (Nat.lt_succ_self _))) ⟨f, _, rfl⟩
@@ -69,7 +69,7 @@ theorem acc_iff_no_decreasing_seq {x} :
       | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
     choose f h using this
     refine fun E =>
-      by_contradiction fun hx => E.elim' ⟨natGT (fun n => (f^[n] ⟨x, hx⟩).1) fun n => ?_, 0, rfl⟩
+      by_contradiction fun hx => E.elim' ⟨natGT (fun n ↦ (f^[n] ⟨x, hx⟩).1) fun n ↦ ?_, 0, rfl⟩
     simp only [Function.iterate_succ']
     apply h
 
@@ -82,9 +82,9 @@ theorem wellFounded_iff_no_descending_seq :
     WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
   constructor
   · rintro ⟨h⟩
-    exact ⟨fun f => not_acc_of_decreasing_seq f 0 (h _)⟩
+    exact ⟨fun f ↦ not_acc_of_decreasing_seq f 0 (h _)⟩
   · intro h
-    exact ⟨fun x => acc_iff_no_decreasing_seq.2 inferInstance⟩
+    exact ⟨fun x ↦ acc_iff_no_decreasing_seq.2 inferInstance⟩
 
 theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬WellFounded r := by
   rw [wellFounded_iff_no_descending_seq, not_isEmpty_iff]
@@ -109,7 +109,7 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   exact
     RelIso.ofSurjective
       (RelEmbedding.orderEmbeddingOfLTEmbedding
-        (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n => Nat.Subtype.lt_succ_self _))
+        (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun n ↦ Nat.Subtype.lt_succ_self _))
       Nat.Subtype.ofNat_surjective
 
 variable {s}
@@ -139,10 +139,10 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
   classical
     have : Infinite (e ⁻¹' s) ∨ Infinite (e ⁻¹' t) := by
       simp only [Set.infinite_coe_iff, ← Set.infinite_union, ← Set.preimage_union,
-        Set.eq_univ_of_forall fun n => Set.mem_preimage.2 (he n), Set.infinite_univ]
+        Set.eq_univ_of_forall fun n ↦ Set.mem_preimage.2 (he n), Set.infinite_univ]
     cases this
-    exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n => (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
-      ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n => (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
+    exacts [⟨Nat.orderEmbeddingOfSet (e ⁻¹' s), Or.inl fun n ↦ (Nat.Subtype.ofNat (e ⁻¹' s) _).2⟩,
+      ⟨Nat.orderEmbeddingOfSet (e ⁻¹' t), Or.inr fun n ↦ (Nat.Subtype.ofNat (e ⁻¹' t) _).2⟩]
 
 end Nat
 
@@ -175,9 +175,9 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         omega
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
-        ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
+        ⟨(RelEmbedding.natLT (fun n ↦ g' n + m) fun n =>
               Nat.add_lt_add_right (Nat.find_spec (h (g' n))).1 m).orderEmbeddingOfLTEmbedding,
-          Or.intro_left _ fun n => (Nat.find_spec (h (g' n))).2⟩
+          Or.intro_left _ fun n ↦ (Nat.find_spec (h (g' n))).2⟩
 
 /-- This is the infinitary Erdős–Szekeres theorem, and an important lemma in the usual proof of
     Bolzano-Weierstrass for `ℝ`. -/
@@ -195,11 +195,11 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
 
 theorem WellFounded.monotone_chain_condition' [Preorder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
-  refine ⟨fun h a => ?_, fun h => ?_⟩
+  refine ⟨fun h a => ?_, fun h ↦ ?_⟩
   · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
     obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ hne
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
-  · refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a => ?_⟩
+  · refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a ↦ ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : ((· < ·) : ℕ → ℕ → Prop) →r ((· < ·) : α → α → Prop)).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 
@@ -226,7 +226,7 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
 theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
     iSup a = monotonicSequenceLimit a := by
-  refine (iSup_le fun m => ?_).antisymm (le_iSup a _)
+  refine (iSup_le fun m ↦ ?_).antisymm (le_iSup a _)
   rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
   · cases' WellFounded.monotone_chain_condition'.1 h a with n hn

@@ -65,7 +65,7 @@ lemma surjOn_exp_neg_pi_pi : SurjOn exp (Ioc (-π) π) univ := argPartialEquiv.s
 
 lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
-  refine exists_congr fun n => ?_
+  refine exists_congr fun n ↦ ?_
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero]
   norm_cast
 
@@ -147,13 +147,13 @@ variable {T : ℝ}
 
 /-! ### Map from `AddCircle` to `Circle` -/
 
-theorem scaled_exp_map_periodic : Function.Periodic (fun x => Circle.exp (2 * π / T * x)) T := by
+theorem scaled_exp_map_periodic : Function.Periodic (fun x ↦ Circle.exp (2 * π / T * x)) T := by
   -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
   rcases eq_or_ne T 0 with (rfl | hT)
   · intro x; simp
   · intro x; simp_rw [mul_add]; rw [div_mul_cancel₀ _ hT, Circle.periodic_exp]
 
-/-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
+/-- The canonical map `fun x ↦ exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
 If `T = 0` we understand this as the constant function 1. -/
 noncomputable def toCircle : AddCircle T → Circle :=
   (@scaled_exp_map_periodic T).lift

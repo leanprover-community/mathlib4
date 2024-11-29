@@ -76,7 +76,7 @@ theorem List.tendsto_cons {a : α} {l : List α} :
 
 theorem Filter.Tendsto.cons {α : Type*} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
     {l : List β} (hf : Tendsto f a (𝓝 b)) (hg : Tendsto g a (𝓝 l)) :
-    Tendsto (fun a => List.cons (f a) (g a)) a (𝓝 (b::l)) :=
+    Tendsto (fun a ↦ List.cons (f a) (g a)) a (𝓝 (b::l)) :=
   List.tendsto_cons.comp (Tendsto.prod_mk hf hg)
 
 namespace List
@@ -112,7 +112,7 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   · exact tendsto_pure_pure _ _
   · intro l a ih
     dsimp only [List.length]
-    refine Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) ?_
+    refine Tendsto.comp (tendsto_pure_pure (fun x ↦ x + 1) _) ?_
     exact Tendsto.comp ih tendsto_snd
 
 /-- Continuity of `insertIdx` in terms of `Tendsto`. -/
@@ -211,7 +211,7 @@ theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth' := continuous_insertIdx'
 
 theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun b ↦ Vector.insertIdx (f b) i (g b) :=
   continuous_insertIdx'.comp (hf.prod_mk hg : _)
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx

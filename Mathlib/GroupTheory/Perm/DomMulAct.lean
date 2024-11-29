@@ -122,7 +122,7 @@ theorem stabilizer_card':
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i in Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   set φ : α → Finset.univ.image f :=
-    Set.codRestrict f (Finset.univ.image f) (fun a => by simp)
+    Set.codRestrict f (Finset.univ.image f) (fun a ↦ by simp)
   suffices ∀ g : Perm α, f ∘ g = f ↔ φ ∘ g = φ by
     simp only [this, stabilizer_card]
     apply Finset.prod_bij (fun g _ => g.val)

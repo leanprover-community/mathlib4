@@ -259,7 +259,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
     match t₁, t₂, e with
     | _, _, ⟨s, s', rfl, rfl, r⟩ =>
       suffices head s = head s' ∧ R (tail s) (tail s') from
-        And.imp id (fun r => ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
+        And.imp id (fun r ↦ ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
       have h := bisim r; revert r h
       apply recOn s _ _ <;> intro r' <;> apply recOn s' _ _ <;> intro a' r h
       · constructor <;> dsimp at h
@@ -304,7 +304,7 @@ class Terminates (s : Computation α) : Prop where
   term : ∃ a, a ∈ s
 
 theorem terminates_iff (s : Computation α) : Terminates s ↔ ∃ a, a ∈ s :=
-  ⟨fun h => h.1, Terminates.mk⟩
+  ⟨fun h ↦ h.1, Terminates.mk⟩
 
 theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminates s :=
   ⟨⟨a, h⟩⟩
@@ -484,7 +484,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 
 @[simp]
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     let ⟨n', r, e⟩ := of_results_think h
     injection e with h'; rwa [h'], results_think⟩
 
@@ -504,7 +504,7 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
   revert s
   induction n with | zero => _ | succ n IH => _ <;>
-  (intro s; apply recOn s (fun a' => _) fun s => _) <;> intro a h
+  (intro s; apply recOn s (fun a' => _) fun s ↦ _) <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
   · cases' of_results_think h with n h
@@ -538,7 +538,7 @@ def terminatesRecOn
 /-- Map a function on the result of a computation. -/
 def map (f : α → β) : Computation α → Computation β
   | ⟨s, al⟩ =>
-    ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
+    ⟨s.map fun o ↦ Option.casesOn o none (some ∘ f), fun n b => by
       dsimp [Stream'.map, Stream'.get]
       induction' e : s n with a <;> intro h
       · contradiction
@@ -695,7 +695,7 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction k generalizing s with | zero => _ | succ n IH => _
-    <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
+    <;> apply recOn s (fun a ↦ _) fun s' => _ <;> intro e h
   · simp only [ret_bind] at h
     exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
@@ -881,7 +881,7 @@ theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ 
   ⟨fun ⟨h1, h2⟩ a =>
     ⟨fun a1 => by let ⟨b, b2, ab⟩ := h1 a1; rwa [ab],
      fun a2 => by let ⟨b, b1, ab⟩ := h2 a2; rwa [← ab]⟩,
-    fun e => ⟨fun {a} a1 => ⟨a, (e _).1 a1, rfl⟩, fun {a} a2 => ⟨a, (e _).2 a2, rfl⟩⟩⟩
+    fun e ↦ ⟨fun {a} a1 => ⟨a, (e _).1 a1, rfl⟩, fun {a} a2 => ⟨a, (e _).2 a2, rfl⟩⟩⟩
 
 theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun _ =>
   ⟨fun {a} as => ⟨a, as, H a⟩, fun {b} bs => ⟨b, bs, H b⟩⟩
@@ -1070,10 +1070,10 @@ variable {R : α → β → Prop} {C : Computation α → Computation β → Pro
 @[simp]
 theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Computation β → Prop) (a cb) :
     LiftRelAux R C (Sum.inl a) (destruct cb) ↔ ∃ b, b ∈ cb ∧ R a b := by
-  apply cb.recOn (fun b => _) fun cb => _
+  apply cb.recOn (fun b ↦ _) fun cb => _
   · intro b
     exact
-      ⟨fun h => ⟨_, ret_mem _, h⟩, fun ⟨b', mb, h⟩ => by rw [mem_unique (ret_mem _) mb]; exact h⟩
+      ⟨fun h ↦ ⟨_, ret_mem _, h⟩, fun ⟨b', mb, h⟩ => by rw [mem_unique (ret_mem _) mb]; exact h⟩
   · intro
     rw [destruct_think]
     exact ⟨fun ⟨b, h, r⟩ => ⟨b, think_mem h, r⟩, fun ⟨b, h, r⟩ => ⟨b, of_think_mem h, r⟩⟩
@@ -1097,7 +1097,7 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     simp [h]
   · simp only [liftRel_think_left]
     revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h
+    apply cb.recOn (fun b ↦ _) fun cb' => _ <;> intros _ h
     · simpa using h
     · simpa [h] using IH _ h
 

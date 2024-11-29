@@ -79,7 +79,7 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * (m + 1) ^ n ≤ 
     exact Nat.mul_le_mul factorial_mul_pow_le_factorial (succ_le_succ (le_add_right _ _))
 
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
-  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => ?_⟩
+  refine ⟨fun h ↦ not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h ↦ ?_⟩
   have : ∀ {n}, 0 < n → n ! < (n + 1)! := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
@@ -102,7 +102,7 @@ theorem factorial_eq_one : n ! = 1 ↔ n ≤ 1 := by
   · rintro (_|_|_) <;> rfl
 
 theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
-  refine ⟨fun h => ?_, congr_arg _⟩
+  refine ⟨fun h ↦ ?_, congr_arg _⟩
   obtain hnm | rfl | hnm := lt_trichotomy n m
   · rw [← factorial_lt <| lt_of_succ_lt hn, h] at hnm
     cases lt_irrefl _ hnm
@@ -347,10 +347,10 @@ theorem add_descFactorial_eq_ascFactorial' (n : ℕ) :
 for the version using ℕ-division. -/
 theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.descFactorial k = n !
   | n, 0 => fun _ => by rw [descFactorial_zero, Nat.mul_one, Nat.sub_zero]
-  | 0, succ k => fun h => by
+  | 0, succ k => fun h ↦ by
     exfalso
     exact not_succ_le_zero k h
-  | succ n, succ k => fun h => by
+  | succ n, succ k => fun h ↦ by
     rw [succ_descFactorial_succ, succ_sub_succ, ← Nat.mul_assoc, Nat.mul_comm (n - k)!,
       Nat.mul_assoc, factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
 

@@ -42,8 +42,8 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpol
 
 theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
-    { isAlgebraic := fun x => (h x).1.isAlgebraic
-      splits' := fun x => (h x).2 }⟩
+    { isAlgebraic := fun x ↦ (h x).1.isAlgebraic
+      splits' := fun x ↦ (h x).2 }⟩
 
 theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   normal_iff.1
@@ -52,7 +52,7 @@ variable (F K)
 
 instance normal_self : Normal F F where
   isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
-  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
+  splits' := fun x ↦ (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
 
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
@@ -78,7 +78,7 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
 @[stacks 09HN]
 theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
-  normal_iff.2 fun x => by
+  normal_iff.2 fun x ↦ by
     cases' h.out x with hx hhx
     rw [algebraMap_eq F K E] at hhx
     exact
@@ -140,8 +140,8 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal. -/
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
-  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
+  refine { toIsAlgebraic := isAlgebraic_iSup fun i ↦ (h i).1, splits' := fun x ↦ ?_ }
+  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i ↦ (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
   have hF : Normal F E := by
     haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
@@ -150,7 +150,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
       · exact Polynomial.splits_comp_of_splits _ (algebraMap (t i.1) K) ((h i.1).splits i.2)
     apply Normal.of_isSplittingField (∏ i ∈ s, minpoly F i.2)
   have hE : E ≤ ⨆ i, t i := by
-    refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
+    refine iSup_le fun i ↦ iSup_le fun _ => le_iSup_of_le i.1 ?_
     rw [adjoin_le_iff, ← image_rootSet ((h i.1).splits i.2) (t i.1).val]
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
   have := hF.splits ⟨x, hx⟩
@@ -183,7 +183,7 @@ instance normal_sup
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
     (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨅ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := ?_, splits' := fun x => ?_ }
+  refine { toIsAlgebraic := ?_, splits' := fun x ↦ ?_ }
   · let f := inclusion (iInf_le t hι.some)
     exact Algebra.IsAlgebraic.of_injective f f.injective
   · have hx : ∀ i, Splits (algebraMap F (t i)) (minpoly F x) := by
@@ -426,12 +426,12 @@ theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃�
   let f : (E ≃ₐ[K₁] E) →* E ≃ₐ[F] E :=
     { toFun := fun ϕ =>
         AlgEquiv.ofAlgHom (ϕ.toAlgHom.restrictScalars F) (ϕ.symm.toAlgHom.restrictScalars F)
-          (AlgHom.ext fun x => ϕ.apply_symm_apply x) (AlgHom.ext fun x => ϕ.symm_apply_apply x)
+          (AlgHom.ext fun x ↦ ϕ.apply_symm_apply x) (AlgHom.ext fun x ↦ ϕ.symm_apply_apply x)
       map_one' := AlgEquiv.ext fun _ => rfl
       map_mul' := fun _ _ => AlgEquiv.ext fun _ => rfl }
   refine
     solvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
-      ⟨{ ϕ with commutes' := fun x => ?_ }, AlgEquiv.ext fun _ => rfl⟩
+      ⟨{ ϕ with commutes' := fun x ↦ ?_ }, AlgEquiv.ext fun _ => rfl⟩
   exact Eq.trans (ϕ.restrictNormal_commutes K₁ x).symm (congr_arg _ (AlgEquiv.ext_iff.mp hϕ x))
 
 end lift

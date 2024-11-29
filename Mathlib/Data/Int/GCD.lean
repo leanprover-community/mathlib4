@@ -281,7 +281,7 @@ theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
   ⟨_, m', n', H, h⟩
 
 theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : k ≠ 0) : m ^ k ∣ n ^ k ↔ m ∣ n := by
-  refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ pow_dvd_pow_of_dvd h _⟩
   rwa [← natAbs_dvd_natAbs, ← Nat.pow_dvd_pow_iff k0, ← Int.natAbs_pow, ← Int.natAbs_pow,
     natAbs_dvd_natAbs]
 

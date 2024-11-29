@@ -84,11 +84,11 @@ attribute [simp] map_spectral
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
     [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
-  { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
+  { ‹SpectralMapClass F α β› with map_continuous := fun f ↦ (map_spectral f).continuous }
 
 instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
     CoeTC F (SpectralMap α β) :=
-  ⟨fun f => ⟨_, map_spectral f⟩⟩
+  ⟨fun f ↦ ⟨_, map_spectral f⟩⟩
 
 /-! ### Spectral maps -/
 
@@ -184,12 +184,12 @@ theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
-   fun a => of_eq (congrFun (congrArg comp a) f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
+   fun a ↦ of_eq (congrFun (congrArg comp a) f)⟩
 
 @[simp]
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end SpectralMap

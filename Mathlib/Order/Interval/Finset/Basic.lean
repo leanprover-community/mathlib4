@@ -128,13 +128,13 @@ theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_
 
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true, le_rfl]
 
-theorem left_not_mem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
+theorem left_not_mem_Ioc : a ∉ Ioc a b := fun h ↦ lt_irrefl _ (mem_Ioc.1 h).1
 
-theorem left_not_mem_Ioo : a ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).1
+theorem left_not_mem_Ioo : a ∉ Ioo a b := fun h ↦ lt_irrefl _ (mem_Ioo.1 h).1
 
-theorem right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
+theorem right_not_mem_Ico : b ∉ Ico a b := fun h ↦ lt_irrefl _ (mem_Ico.1 h).2
 
-theorem right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
+theorem right_not_mem_Ioo : b ∉ Ioo a b := fun h ↦ lt_irrefl _ (mem_Ioo.1 h).2
 
 theorem Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
   simpa [← coe_subset] using Set.Icc_subset_Icc ha hb
@@ -258,7 +258,7 @@ theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
     {x ∈ Ico a b | x < c} = Ico a c := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_right_comm]
-  exact and_iff_left_of_imp fun h => h.2.trans_le hcb
+  exact and_iff_left_of_imp fun h ↦ h.2.trans_le hcb
 
 theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
     {x ∈ Ico a b | c ≤ x} = Ico a b :=
@@ -272,7 +272,7 @@ theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred (c ≤ ·)] (hac : 
     {x ∈ Ico a b | c ≤ x} = Ico c b := by
   ext x
   rw [mem_filter, mem_Ico, mem_Ico, and_comm, and_left_comm]
-  exact and_iff_right_of_imp fun h => hac.trans h.1
+  exact and_iff_right_of_imp fun h ↦ hac.trans h.1
 
 theorem Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     {x ∈ Icc a b | x < c} = Icc a b :=
@@ -288,16 +288,16 @@ theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] 
 
 variable (a b) [Fintype α]
 
-theorem filter_lt_lt_eq_Ioo [DecidablePred fun j => a < j ∧ j < b] :
+theorem filter_lt_lt_eq_Ioo [DecidablePred fun j ↦ a < j ∧ j < b] :
     ({j | a < j ∧ j < b} : Finset _) = Ioo a b := by ext; simp
 
-theorem filter_lt_le_eq_Ioc [DecidablePred fun j => a < j ∧ j ≤ b] :
+theorem filter_lt_le_eq_Ioc [DecidablePred fun j ↦ a < j ∧ j ≤ b] :
     ({j | a < j ∧ j ≤ b} : Finset _) = Ioc a b := by ext; simp
 
-theorem filter_le_lt_eq_Ico [DecidablePred fun j => a ≤ j ∧ j < b] :
+theorem filter_le_lt_eq_Ico [DecidablePred fun j ↦ a ≤ j ∧ j < b] :
     ({j | a ≤ j ∧ j < b} : Finset _) = Ico a b := by ext; simp
 
-theorem filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
+theorem filter_le_le_eq_Icc [DecidablePred fun j ↦ a ≤ j ∧ j ≤ b] :
     ({j | a ≤ j ∧ j ≤ b} : Finset _) = Icc a b := by ext; simp
 
 end Filter
@@ -524,7 +524,7 @@ theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     {x ∈ Ico a b | x ≤ a} = {a} := by
   ext x
   rw [mem_filter, mem_Ico, mem_singleton, and_right_comm, ← le_antisymm_iff, eq_comm]
-  exact and_iff_left_of_imp fun h => h.le.trans_lt hab
+  exact and_iff_left_of_imp fun h ↦ h.le.trans_lt hab
 
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : #(Ico a b) = #(Icc a b) - 1 := by
   classical
@@ -570,7 +570,7 @@ theorem Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   ext
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
 
-theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
+theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h ↦ lt_irrefl _ (mem_Ioi.1 h)
 
 -- Purposefully written the other way around
 /-- `Finset.cons` version of `Finset.Ioi_insert`. -/
@@ -596,7 +596,7 @@ theorem Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   ext
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
 
-theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
+theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h ↦ lt_irrefl _ (mem_Iio.1 h)
 
 -- Purposefully written the other way around
 /-- `Finset.cons` version of `Finset.Iio_insert`. -/
@@ -795,7 +795,7 @@ theorem uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b�
   exact Icc_subset_Icc (_root_.le_inf ha.1 hb.1) (_root_.sup_le ha.2 hb.2)
 
 theorem uIcc_subset_uIcc_iff_mem : [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
-  ⟨fun h => ⟨h left_mem_uIcc, h right_mem_uIcc⟩, fun h => uIcc_subset_uIcc h.1 h.2⟩
+  ⟨fun h ↦ ⟨h left_mem_uIcc, h right_mem_uIcc⟩, fun h ↦ uIcc_subset_uIcc h.1 h.2⟩
 
 theorem uIcc_subset_uIcc_iff_le' :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₂ ⊓ b₂ ≤ a₁ ⊓ b₁ ∧ a₁ ⊔ b₁ ≤ a₂ ⊔ b₂ :=
@@ -821,7 +821,7 @@ theorem eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = 
   simp_rw [mem_uIcc]
   exact Set.eq_of_mem_uIcc_of_mem_uIcc'
 
-theorem uIcc_injective_right (a : α) : Injective fun b => [[b, a]] := fun b c h => by
+theorem uIcc_injective_right (a : α) : Injective fun b ↦ [[b, a]] := fun b c h => by
   rw [Finset.ext_iff] at h
   exact eq_of_mem_uIcc_of_mem_uIcc ((h _).1 left_mem_uIcc) ((h _).2 left_mem_uIcc)
 

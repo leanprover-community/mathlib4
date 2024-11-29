@@ -74,7 +74,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
         (fun hz => (hs hx hz).trans (le_max_left _ _))
         (fun hz => (dist_triangle x y z).trans <|
           (add_le_add le_rfl (ht hy hz)).trans (le_max_right _ _))⟩)
-    fun z => ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
+    fun z ↦ ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
 
 /-- The distance function (given an ambient metric space on `α`), which returns
   a nonnegative real number `dist x y` given `x y : α`. -/
@@ -337,7 +337,7 @@ theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
 
 @[simp]
 theorem nonempty_ball : (ball x ε).Nonempty ↔ 0 < ε :=
-  ⟨fun ⟨_x, hx⟩ => pos_of_mem_ball hx, fun h => ⟨x, mem_ball_self h⟩⟩
+  ⟨fun ⟨_x, hx⟩ => pos_of_mem_ball hx, fun h ↦ ⟨x, mem_ball_self h⟩⟩
 
 @[simp]
 theorem ball_eq_empty : ball x ε = ∅ ↔ ε ≤ 0 := by
@@ -365,11 +365,11 @@ theorem ball_eq_ball' (ε : ℝ) (x : α) :
 
 @[simp]
 theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
-  iUnion_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
+  iUnion_eq_univ_iff.2 fun y ↦ exists_nat_gt (dist y x)
 
 @[simp]
 theorem iUnion_ball_nat_succ (x : α) : ⋃ n : ℕ, ball x (n + 1) = univ :=
-  iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
+  iUnion_eq_univ_iff.2 fun y ↦ (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
 
 /-- `closedBall x ε` is the set of all points `y` with `dist y x ≤ ε` -/
 def closedBall (x : α) (ε : ℝ) :=
@@ -416,7 +416,7 @@ theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
 
 @[simp]
 theorem nonempty_closedBall : (closedBall x ε).Nonempty ↔ 0 ≤ ε :=
-  ⟨fun ⟨_x, hx⟩ => dist_nonneg.trans hx, fun h => ⟨x, mem_closedBall_self h⟩⟩
+  ⟨fun ⟨_x, hx⟩ => dist_nonneg.trans hx, fun h ↦ ⟨x, mem_closedBall_self h⟩⟩
 
 @[simp]
 theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
@@ -536,7 +536,7 @@ theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε
 
 @[simp]
 theorem iUnion_closedBall_nat (x : α) : ⋃ n : ℕ, closedBall x n = univ :=
-  iUnion_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
+  iUnion_eq_univ_iff.2 fun y ↦ exists_nat_ge (dist y x)
 
 theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ closedBall x n = s := by
   rw [← inter_iUnion, iUnion_closedBall_nat, inter_univ]
@@ -580,7 +580,7 @@ theorem isBounded_iff_eventually {s : Set α} :
 
 theorem isBounded_iff_exists_ge {s : Set α} (c : ℝ) :
     IsBounded s ↔ ∃ C, c ≤ C ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C :=
-  ⟨fun h => ((eventually_ge_atTop c).and (isBounded_iff_eventually.1 h)).exists, fun h =>
+  ⟨fun h ↦ ((eventually_ge_atTop c).and (isBounded_iff_eventually.1 h)).exists, fun h =>
     isBounded_iff.2 <| h.imp fun _ => And.right⟩
 
 theorem isBounded_iff_nndist {s : Set α} :
@@ -604,8 +604,8 @@ For specific bases see `uniformity_basis_dist`, `uniformity_basis_dist_inv_nat_s
 and `uniformity_basis_dist_inv_nat_pos`. -/
 protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ i, p i → 0 < f i) (hf : ∀ ⦃ε⦄, 0 < ε → ∃ i, p i ∧ f i ≤ ε) :
-    (𝓤 α).HasBasis p fun i => { p : α × α | dist p.1 p.2 < f i } := by
-  refine ⟨fun s => uniformity_basis_dist.mem_iff.trans ?_⟩
+    (𝓤 α).HasBasis p fun i ↦ { p : α × α | dist p.1 p.2 < f i } := by
+  refine ⟨fun s ↦ uniformity_basis_dist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε₀ with ⟨i, hi, H⟩
@@ -613,7 +613,7 @@ protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β →
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, H⟩
 
 theorem uniformity_basis_dist_rat :
-    (𝓤 α).HasBasis (fun r : ℚ => 0 < r) fun r => { p : α × α | dist p.1 p.2 < r } :=
+    (𝓤 α).HasBasis (fun r : ℚ => 0 < r) fun r ↦ { p : α × α | dist p.1 p.2 < r } :=
   Metric.mk_uniformity_basis (fun _ => Rat.cast_pos.2) fun _ε hε =>
     let ⟨r, hr0, hrε⟩ := exists_rat_btwn hε
     ⟨r, Rat.cast_pos.1 hr0, hrε.le⟩
@@ -636,7 +636,7 @@ theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     ⟨n, trivial, hn.le⟩
 
 theorem uniformity_basis_dist_lt {R : ℝ} (hR : 0 < R) :
-    (𝓤 α).HasBasis (fun r : ℝ => 0 < r ∧ r < R) fun r => { p : α × α | dist p.1 p.2 < r } :=
+    (𝓤 α).HasBasis (fun r : ℝ => 0 < r ∧ r < R) fun r ↦ { p : α × α | dist p.1 p.2 < r } :=
   Metric.mk_uniformity_basis (fun _ => And.left) fun r hr =>
     ⟨min r (R / 2), ⟨lt_min hr (half_pos hR), min_lt_iff.2 <| Or.inr (half_lt_self hR)⟩,
       min_le_left _ _⟩
@@ -649,8 +649,8 @@ Currently we have only one specific basis `uniformity_basis_dist_le` based on th
 More can be easily added if needed in the future. -/
 protected theorem mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
-    (𝓤 α).HasBasis p fun x => { p : α × α | dist p.1 p.2 ≤ f x } := by
-  refine ⟨fun s => uniformity_basis_dist.mem_iff.trans ?_⟩
+    (𝓤 α).HasBasis p fun x ↦ { p : α × α | dist p.1 p.2 ≤ f x } := by
+  refine ⟨fun s ↦ uniformity_basis_dist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩
@@ -733,7 +733,7 @@ theorem nhds_basis_ball_inv_nat_succ :
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_succ
 
 theorem nhds_basis_ball_inv_nat_pos :
-    (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
+    (𝓝 x).HasBasis (fun n ↦ 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_pos
 
 theorem nhds_basis_ball_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
@@ -897,7 +897,7 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
 theorem Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
-  Set.eq_univ_iff_forall.mpr fun y => edist_lt_top y x
+  Set.eq_univ_iff_forall.mpr fun y ↦ edist_lt_top y x
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
@@ -1040,7 +1040,7 @@ theorem Real.sub_le_dist (x y : ℝ) : x - y ≤ dist x y := by
   exact Or.inl (le_refl _)
 
 theorem Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
-  Set.ext fun y => by
+  Set.ext fun y ↦ by
     rw [mem_ball, dist_comm, Real.dist_eq, abs_sub_lt_iff, mem_Ioo, ← sub_lt_iff_lt_add',
       sub_lt_comm]
 
@@ -1064,18 +1064,18 @@ theorem Metric.uniformity_eq_comap_nhds_zero :
   simp [subset_def, Real.dist_0_eq_abs]
 
 theorem tendsto_uniformity_iff_dist_tendsto_zero {f : ι → α × α} {p : Filter ι} :
-    Tendsto f p (𝓤 α) ↔ Tendsto (fun x => dist (f x).1 (f x).2) p (𝓝 0) := by
+    Tendsto f p (𝓤 α) ↔ Tendsto (fun x ↦ dist (f x).1 (f x).2) p (𝓝 0) := by
   rw [Metric.uniformity_eq_comap_nhds_zero, tendsto_comap_iff, Function.comp_def]
 
 theorem Filter.Tendsto.congr_dist {f₁ f₂ : ι → α} {p : Filter ι} {a : α}
-    (h₁ : Tendsto f₁ p (𝓝 a)) (h : Tendsto (fun x => dist (f₁ x) (f₂ x)) p (𝓝 0)) :
+    (h₁ : Tendsto f₁ p (𝓝 a)) (h : Tendsto (fun x ↦ dist (f₁ x) (f₂ x)) p (𝓝 0)) :
     Tendsto f₂ p (𝓝 a) :=
   h₁.congr_uniformity <| tendsto_uniformity_iff_dist_tendsto_zero.2 h
 
 alias tendsto_of_tendsto_of_dist := Filter.Tendsto.congr_dist
 
 theorem tendsto_iff_of_dist {f₁ f₂ : ι → α} {p : Filter ι} {a : α}
-    (h : Tendsto (fun x => dist (f₁ x) (f₂ x)) p (𝓝 0)) : Tendsto f₁ p (𝓝 a) ↔ Tendsto f₂ p (𝓝 a) :=
+    (h : Tendsto (fun x ↦ dist (f₁ x) (f₂ x)) p (𝓝 0)) : Tendsto f₁ p (𝓝 a) ↔ Tendsto f₂ p (𝓝 a) :=
   Uniform.tendsto_congr <| tendsto_uniformity_iff_dist_tendsto_zero.2 h
 
 end Real
@@ -1100,7 +1100,7 @@ theorem nhds_comap_dist (a : α) : ((𝓝 (0 : ℝ)).comap (dist · a)) = 𝓝 a
     Function.comp_def, dist_comm]
 
 theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
-    Tendsto f x (𝓝 a) ↔ Tendsto (fun b => dist (f b) a) x (𝓝 0) := by
+    Tendsto f x (𝓝 a) ↔ Tendsto (fun b ↦ dist (f b) a) x (𝓝 0) := by
   rw [← nhds_comap_dist a, tendsto_comap_iff, Function.comp_def]
 
 namespace Metric
@@ -1128,7 +1128,7 @@ theorem mem_of_closed' {s : Set α} (hs : IsClosed s) {a : α} :
   simpa only [hs.closure_eq] using @mem_closure_iff _ _ s a
 
 theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).Nonempty :=
-  forall_congr' fun x => by
+  forall_congr' fun x ↦ by
     simp only [mem_closure_iff, Set.Nonempty, exists_prop, mem_inter_iff, mem_ball', and_comm]
 
 theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s, ball c r = univ := by
@@ -1136,7 +1136,7 @@ theorem dense_iff_iUnion_ball (s : Set α) : Dense s ↔ ∀ r > 0, ⋃ c ∈ s,
     forall_comm (α := α)]
 
 theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ y, dist x (f y) < r :=
-  forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
+  forall_congr' fun x ↦ by simp only [mem_closure_iff, exists_range_iff]
 
 /-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
 theorem _root_.ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}

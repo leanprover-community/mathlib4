@@ -51,7 +51,7 @@ elab_rules : tactic
     backtracking := false
     transparency := .reducible
     exfalso := false }
-  liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+  liftMetaTactic fun g ↦ do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
 
 end Monotonicity
 

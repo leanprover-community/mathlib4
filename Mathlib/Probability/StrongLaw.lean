@@ -129,8 +129,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFinit
 theorem moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ} (hA : 0 ≤ A)
     {n : ℕ} (hn : n ≠ 0) : ∫ x, truncation f A x ^ n ∂μ = ∫ y in -A..A, y ^ n ∂Measure.map f μ := by
   have M : MeasurableSet (Set.Ioc (-A) A) := measurableSet_Ioc
-  change ∫ x, (fun z => indicator (Set.Ioc (-A) A) id z ^ n) (f x) ∂μ = _
-  rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le,
+  change ∫ x, (fun z ↦ indicator (Set.Ioc (-A) A) id z ^ n) (f x) ∂μ = _
+  rw [← integral_map (f := fun z ↦ _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le,
     ← integral_indicator M]
   · simp only [indicator, zero_pow hn, id, ite_pow]
   · linarith
@@ -142,13 +142,13 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
   have M : MeasurableSet (Set.Ioc 0 A) := measurableSet_Ioc
   have M' : MeasurableSet (Set.Ioc A 0) := measurableSet_Ioc
   rw [truncation_eq_of_nonneg h'f]
-  change ∫ x, (fun z => indicator (Set.Ioc 0 A) id z ^ n) (f x) ∂μ = _
+  change ∫ x, (fun z ↦ indicator (Set.Ioc 0 A) id z ^ n) (f x) ∂μ = _
   rcases le_or_lt 0 A with (hA | hA)
-  · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
+  · rw [← integral_map (f := fun z ↦ _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
       ← integral_indicator M]
     · simp only [indicator, zero_pow hn, id, ite_pow]
     · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
-  · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_ge hA.le,
+  · rw [← integral_map (f := fun z ↦ _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_ge hA.le,
       ← integral_indicator M']
     · simp only [Set.Ioc_eq_empty_of_le hA.le, zero_pow hn, Set.indicator_empty, integral_zero,
         zero_eq_neg]
@@ -173,7 +173,7 @@ theorem integral_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasur
 theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 0 ≤ f) {A : ℝ} :
     ∫ x, truncation f A x ∂μ ≤ ∫ x, f x ∂μ := by
   apply integral_mono_of_nonneg
-    (Eventually.of_forall fun x => ?_) hf (Eventually.of_forall fun x => ?_)
+    (Eventually.of_forall fun x ↦ ?_) hf (Eventually.of_forall fun x ↦ ?_)
   · exact truncation_nonneg _ (h'f x)
   · calc
       truncation f A x ≤ |truncation f A x| := le_abs_self _
@@ -184,7 +184,7 @@ theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 
 integral of the whole function. -/
 theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     Tendsto (fun A => ∫ x, truncation f A x ∂μ) atTop (𝓝 (∫ x, f x ∂μ)) := by
-  refine tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) ?_ ?_ ?_ ?_
+  refine tendsto_integral_filter_of_dominated_convergence (fun x ↦ abs (f x)) ?_ ?_ ?_ ?_
   · exact Eventually.of_forall fun A ↦ hf.aestronglyMeasurable.truncation
   · filter_upwards with A
     filter_upwards with x
@@ -312,7 +312,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
   let ρ : Measure ℝ := Measure.map X ℙ
   have Y2 : ∀ n, 𝔼[Y n ^ 2] = ∫ x in (0)..n, x ^ 2 ∂ρ := by
     intro n
-    change 𝔼[fun x => Y n x ^ 2] = _
+    change 𝔼[fun x ↦ Y n x ^ 2] = _
     rw [moment_truncation_eq_intervalIntegral_of_nonneg hint.1 two_ne_zero hnonneg]
   calc
     ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * 𝔼[Y j ^ 2] =
@@ -331,7 +331,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
     _ ≤ ∑ k ∈ range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       refine mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) ?_
-      refine intervalIntegral.integral_nonneg_of_forall ?_ fun u => sq_nonneg _
+      refine intervalIntegral.integral_nonneg_of_forall ?_ fun u ↦ sq_nonneg _
       simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
     _ ≤ ∑ k ∈ range K, ∫ x in k..(k + 1 : ℕ), 2 * x ∂ρ := by
       apply sum_le_sum fun k _ => ?_
@@ -394,8 +394,8 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   have A : ∀ i, StronglyMeasurable (indicator (Set.Ioc (-i : ℝ) i) id) := fun i =>
     stronglyMeasurable_id.indicator measurableSet_Ioc
   set Y := fun n : ℕ => truncation (X n) n
-  set S := fun n => ∑ i ∈ range n, Y i with hS
-  let u : ℕ → ℕ := fun n => ⌊c ^ n⌋₊
+  set S := fun n ↦ ∑ i ∈ range n, Y i with hS
+  let u : ℕ → ℕ := fun n ↦ ⌊c ^ n⌋₊
   have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_right_mono₀ c_one.le hij)
   have I1 : ∀ K, ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * Var[Y j] ≤ 2 * 𝔼[X 0] := by
     intro K
@@ -487,7 +487,7 @@ theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
   obtain ⟨v, -, v_pos, v_lim⟩ :
       ∃ v : ℕ → ℝ, StrictAnti v ∧ (∀ n : ℕ, 0 < v n) ∧ Tendsto v atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  have := fun i => strong_law_aux1 X hint hindep hident hnonneg c_one (v_pos i)
+  have := fun i ↦ strong_law_aux1 X hint hindep hident hnonneg c_one (v_pos i)
   filter_upwards [ae_all_iff.2 this] with ω hω
   apply Asymptotics.isLittleO_iff.2 fun ε εpos => ?_
   obtain ⟨i, hi⟩ : ∃ i, v i < ε := ((tendsto_order.1 v_lim).2 ε εpos).exists
@@ -499,8 +499,8 @@ include hint hident in
 /-- The expectation of the truncated version of `Xᵢ` behaves asymptotically like the whole
 expectation. This follows from convergence and Cesàro averaging. -/
 theorem strong_law_aux3 :
-    (fun n => 𝔼[∑ i ∈ range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
-  have A : Tendsto (fun i => 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
+    (fun n ↦ 𝔼[∑ i ∈ range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
+  have A : Tendsto (fun i ↦ 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
     convert (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
     ext i
     exact (hident i).truncation.integral_eq
@@ -588,7 +588,7 @@ theorem strong_law_aux7 :
     exists_seq_strictAnti_tendsto (1 : ℝ)
   have : ∀ k, ∀ᵐ ω,
       Tendsto (fun n : ℕ => (∑ i ∈ range ⌊c k ^ n⌋₊, X i ω) / ⌊c k ^ n⌋₊) atTop (𝓝 𝔼[X 0]) :=
-    fun k => strong_law_aux6 X hint hindep hident hnonneg (cone k)
+    fun k ↦ strong_law_aux6 X hint hindep hident hnonneg (cone k)
   filter_upwards [ae_all_iff.2 this] with ω hω
   apply tendsto_div_of_monotone_of_tendsto_div_floor_pow _ _ _ c cone clim _
   · intro m n hmn
@@ -620,16 +620,16 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
     hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
   -- then consider separately the positive and the negative part, and apply the result
   -- for nonnegative functions to them.
-  let pos : ℝ → ℝ := fun x => max x 0
-  let neg : ℝ → ℝ := fun x => max (-x) 0
+  let pos : ℝ → ℝ := fun x ↦ max x 0
+  let neg : ℝ → ℝ := fun x ↦ max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
   have negm : Measurable neg := measurable_id'.neg.max measurable_const
   have A : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (pos ∘ X i) ω) / n) atTop (𝓝 𝔼[pos ∘ X 0]) :=
     strong_law_aux7 _ hint.pos_part (fun i j hij => (hindep hij).comp posm posm)
-      (fun i => (hident i).comp posm) fun i ω => le_max_right _ _
+      (fun i ↦ (hident i).comp posm) fun i ω => le_max_right _ _
   have B : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (neg ∘ X i) ω) / n) atTop (𝓝 𝔼[neg ∘ X 0]) :=
     strong_law_aux7 _ hint.neg_part (fun i j hij => (hindep hij).comp negm negm)
-      (fun i => (hident i).comp negm) fun i ω => le_max_right _ _
+      (fun i ↦ (hident i).comp negm) fun i ω => le_max_right _ _
   filter_upwards [A, B] with ω hωpos hωneg
   convert hωpos.sub hωneg using 2
   · simp only [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
@@ -717,7 +717,7 @@ lemma strong_law_ae_of_measurable
   have : Nonempty s := ⟨0, zero_s⟩
   -- sequence of approximating simple functions.
   let φ : ℕ → SimpleFunc E E :=
-    SimpleFunc.nearestPt (fun k => Nat.casesOn k 0 ((↑) ∘ denseSeq s) : ℕ → E)
+    SimpleFunc.nearestPt (fun k ↦ Nat.casesOn k 0 ((↑) ∘ denseSeq s) : ℕ → E)
   let Y : ℕ → ℕ → Ω → E := fun k i ↦ (φ k) ∘ (X i)
   -- strong law for `φ (X n)`
   have A : ∀ᵐ ω ∂μ, ∀ k,

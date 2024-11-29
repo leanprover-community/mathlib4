@@ -65,7 +65,7 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
 
 /-- The setoid defined by the double_coset relation -/
 def setoid (H K : Set G) : Setoid G :=
-  Setoid.ker fun x => doset x H K
+  Setoid.ker fun x ↦ doset x H K
 
 /-- Quotient of `G` by the double coset relation, i.e. `H \ G / K` -/
 def Quotient (H K : Set G) : Type _ :=

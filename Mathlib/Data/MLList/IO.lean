@@ -34,7 +34,7 @@ def linesFromHandle (h : Handle) : MLList IO String :=
       return some line
     else
       return some line)
-  |>.takeWhile (·.isSome) |>.map (fun o => o.getD "")
+  |>.takeWhile (·.isSome) |>.map (fun o ↦ o.getD "")
 
 /-- Read lines of text from a file, as a lazy list in `IO`. -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]

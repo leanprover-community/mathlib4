@@ -204,8 +204,8 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
     apply image_injective.mpr hf.injective
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
-    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
-      fun h => subset_closure ⟨h, hy⟩⟩
+    exact fun hy => ⟨fun h ↦ hT.closure_eq ▸ closure_mono inter_subset_left h,
+      fun h ↦ subset_closure ⟨h, hy⟩⟩
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.quasiSober := Topology.IsOpenEmbedding.quasiSober

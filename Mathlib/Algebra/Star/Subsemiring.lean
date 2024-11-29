@@ -46,7 +46,7 @@ instance subsemiringClass : SubsemiringClass (StarSubsemiring R) R where
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubsemiring R A) A`
 instance starRing (s : StarSubsemiring R) : StarRing s :=
   { StarMemClass.instStar s with
-    star_involutive := fun r => Subtype.ext (star_star (r : R))
+    star_involutive := fun r ↦ Subtype.ext (star_star (r : R))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : R) (r₂ : R))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : R) (r₂ : R)) }
 
@@ -73,7 +73,7 @@ theorem coe_toSubsemiring (S : StarSubsemiring R) : (S.toSubsemiring : Set R) = 
 
 theorem toSubsemiring_injective :
     Function.Injective (toSubsemiring : StarSubsemiring R → Subsemiring R) := fun S T h =>
-  ext fun x => by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
+  ext fun x ↦ by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
 
 theorem toSubsemiring_inj {S U : StarSubsemiring R} : S.toSubsemiring = U.toSubsemiring ↔ S = U :=
   toSubsemiring_injective.eq_iff

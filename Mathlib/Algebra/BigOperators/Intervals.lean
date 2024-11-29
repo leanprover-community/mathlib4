@@ -162,7 +162,7 @@ theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ}
 @[to_additive]
 theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
     ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) =
-    ∏ k ∈ (range m).filter fun k => n ≤ k, f k := by
+    ∏ k ∈ (range m).filter fun k ↦ n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
   apply Finset.ext
@@ -250,7 +250,7 @@ section GaussSum
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1) :=
   calc
     (∑ i ∈ range n, i) * 2 = (∑ i ∈ range n, i) + ∑ i ∈ range n, (n - 1 - i) := by
-      rw [sum_range_reflect (fun i => i) n, mul_two]
+      rw [sum_range_reflect (fun i ↦ i) n, mul_two]
     _ = ∑ i ∈ range n, (i + (n - 1 - i)) := sum_add_distrib.symm
     _ = ∑ _ ∈ range n, (n - 1) :=
       sum_congr rfl fun _ hi => add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| mem_range.1 hi

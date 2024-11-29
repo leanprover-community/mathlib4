@@ -197,7 +197,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     · rw [filter_union_filter_neg_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
-    · exact (gcd (filter (fun x => (f x ≠ 0)) s) f)
+    · exact (gcd (filter (fun x ↦ (f x ≠ 0)) s) f)
     · refine congr (congr rfl <| s.induction_on ?_ ?_) (by simp)
       · simp
       · intro a s _ h

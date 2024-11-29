@@ -19,7 +19,7 @@ namespace Nat.Primes
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
-  fun p => ⟨(p : ℕ), p.property.pos⟩
+  fun p ↦ ⟨(p : ℕ), p.property.pos⟩
 
 instance coePNat : Coe Nat.Primes ℕ+ :=
   ⟨toPNat⟩

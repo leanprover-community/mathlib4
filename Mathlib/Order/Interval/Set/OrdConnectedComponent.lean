@@ -32,7 +32,7 @@ theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]]
 
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
-  ext <| (Surjective.forall toDual.surjective).2 fun x => by
+  ext <| (Surjective.forall toDual.surjective).2 fun x ↦ by
     rw [mem_ordConnectedComponent, dual_uIcc]
     rfl
 
@@ -48,7 +48,7 @@ theorem self_mem_ordConnectedComponent : x ∈ ordConnectedComponent s x ↔ x �
 
 @[simp]
 theorem nonempty_ordConnectedComponent : (ordConnectedComponent s x).Nonempty ↔ x ∈ s :=
-  ⟨fun ⟨_, hy⟩ => hy <| left_mem_uIcc, fun h => ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
+  ⟨fun ⟨_, hy⟩ => hy <| left_mem_uIcc, fun h ↦ ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
 
 @[simp]
 theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x ∉ s := by

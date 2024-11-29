@@ -81,7 +81,7 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
   calc
     _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
-      (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
+      (congr_arg (fun x ↦ _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
 
 namespace SpecialLinear

@@ -32,17 +32,17 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
   revert J
   apply Finite.induction_empty_option
   · intro J₁ J₂ e hJ₁ C₂ D₂ _ _ L₂ W₂ _ _
-    let L₁ := fun j => (L₂ (e j))
+    let L₁ := fun j ↦ (L₂ (e j))
     let E := Pi.equivalenceOfEquiv C₂ e
     let E' := Pi.equivalenceOfEquiv D₂ e
     haveI : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
       (CatCommSq.hInvEquiv E (Functor.pi L₁) (Functor.pi L₂) E').symm ⟨Iso.refl _⟩
     refine IsLocalization.of_equivalences (Functor.pi L₁)
-      (MorphismProperty.pi (fun j => (W₂ (e j)))) (Functor.pi L₂)
+      (MorphismProperty.pi (fun j ↦ (W₂ (e j)))) (Functor.pi L₂)
       (MorphismProperty.pi W₂) E E' ?_
       (MorphismProperty.IsInvertedBy.pi _ _ (fun _ => Localization.inverts _ _))
     intro _ _ f hf
-    refine ⟨_, _, E.functor.map f, fun i => ?_, ⟨Iso.refl _⟩⟩
+    refine ⟨_, _, E.functor.map f, fun i ↦ ?_, ⟨Iso.refl _⟩⟩
     have H : ∀ {j j' : J₂} (h : j = j') {X Y : C₂ j} (g : X ⟶ Y) (_ : W₂ j g),
         W₂ j' ((Pi.eqToEquivalence C₂ h).functor.map g) := by
       rintro j _ rfl _ _ g hg
@@ -54,12 +54,12 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
     rw [MorphismProperty.isomorphisms.iff, isIso_pi_iff]
     rintro ⟨⟩
   · intro J _ hJ C D _ _ L W _ _
-    let L₁ := (L none).prod (Functor.pi (fun j => L (some j)))
+    let L₁ := (L none).prod (Functor.pi (fun j ↦ L (some j)))
     haveI : CatCommSq (Pi.optionEquivalence C).symm.functor L₁ (Functor.pi L)
       (Pi.optionEquivalence D).symm.functor :=
         ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
     refine IsLocalization.of_equivalences L₁
-      ((W none).prod (MorphismProperty.pi (fun j => W (some j)))) (Functor.pi L) _
+      ((W none).prod (MorphismProperty.pi (fun j ↦ W (some j)))) (Functor.pi L) _
       (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
@@ -92,7 +92,7 @@ instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} 
     exact MorphismProperty.le_isoClosure _ _ (fun ⟨j⟩ => hf j)
   · intro X Y f hf
     have : ∀ (j : Discrete J), IsIso ((L₂.map f).app j) :=
-      fun j => Localization.inverts L W _ (hf j)
+      fun j ↦ Localization.inverts L W _ (hf j)
     apply NatIso.isIso_of_isIso_app
 
 end CategoryTheory.Functor.IsLocalization

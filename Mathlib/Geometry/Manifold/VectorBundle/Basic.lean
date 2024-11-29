@@ -168,7 +168,7 @@ namespace Bundle
 /-- Characterization of C^n functions into a smooth vector bundle. -/
 theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
+      ContMDiffWithinAt IM IB n (fun x ↦ (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
   simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
@@ -177,7 +177,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
-  have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
+  have h1 : (fun x ↦ (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
@@ -189,19 +189,19 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
 /-- Characterization of C^n functions into a smooth vector bundle. -/
 theorem contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
-      ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
-        ContMDiffAt IM 𝓘(𝕜, F) n (fun x => (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
+      ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
+        ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace f
 
 /-- Characterization of C^n sections within a set at a point of a smooth vector bundle. -/
 theorem contMDiffWithinAt_section (s : ∀ x, E x) (a : Set B) (x₀ : B) :
-    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) a x₀ ↔
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
   simp_rw [contMDiffWithinAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
 
 /-- Characterization of C^n sections of a smooth vector bundle. -/
 theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) x₀ ↔
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
@@ -466,28 +466,28 @@ variable {e e' : Trivialization F (π F E)} [MemTrivializationAtlas e] [MemTrivi
 theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
+      ContMDiffWithinAt IM IB n (fun x ↦ (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) s x₀ :=
   (contMDiffWithinAt_totalSpace _).trans <| and_congr_right fun h ↦
     Trivialization.contMDiffWithinAt_snd_comp_iff₂ h FiberBundle.mem_trivializationAt_proj_source he
 
 theorem Trivialization.contMDiffAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
-      ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
+      ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
       ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) x₀ :=
   e.contMDiffWithinAt_iff he
 
 theorem Trivialization.contMDiffOn_iff {f : M → TotalSpace F E} {s : Set M}
     (he : MapsTo f s e.source) :
     ContMDiffOn IM (IB.prod 𝓘(𝕜, F)) n f s ↔
-      ContMDiffOn IM IB n (fun x => (f x).proj) s ∧
+      ContMDiffOn IM IB n (fun x ↦ (f x).proj) s ∧
       ContMDiffOn IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) s := by
   simp only [ContMDiffOn, ← forall_and]
   exact forall₂_congr fun x hx ↦ e.contMDiffWithinAt_iff (he hx)
 
 theorem Trivialization.contMDiff_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F)) n f ↔
-      ContMDiff IM IB n (fun x => (f x).proj) ∧
+      ContMDiff IM IB n (fun x ↦ (f x).proj) ∧
       ContMDiff IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) :=
   (forall_congr' fun x ↦ e.contMDiffAt_iff (he x)).trans forall_and
 

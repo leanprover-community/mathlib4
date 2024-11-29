@@ -920,20 +920,20 @@ variable {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
 
 open IsFiltered in
 instance [∀ i, IsFilteredOrEmpty (I i)] : IsFilteredOrEmpty (∀ i, I i) where
-  cocone_objs k l := ⟨fun s => max (k s) (l s), fun s => leftToMax (k s) (l s),
-    fun s => rightToMax (k s) (l s), trivial⟩
-  cocone_maps k l f g := ⟨fun s => coeq (f s) (g s), fun s => coeqHom (f s) (g s),
-    funext fun s => by simp [coeq_condition (f s) (g s)]⟩
+  cocone_objs k l := ⟨fun s ↦ max (k s) (l s), fun s ↦ leftToMax (k s) (l s),
+    fun s ↦ rightToMax (k s) (l s), trivial⟩
+  cocone_maps k l f g := ⟨fun s ↦ coeq (f s) (g s), fun s ↦ coeqHom (f s) (g s),
+    funext fun s ↦ by simp [coeq_condition (f s) (g s)]⟩
 
 attribute [local instance] IsFiltered.nonempty in
 instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
 
 open IsCofiltered in
 instance [∀ i, IsCofilteredOrEmpty (I i)] : IsCofilteredOrEmpty (∀ i, I i) where
-  cone_objs k l := ⟨fun s => min (k s) (l s), fun s => minToLeft (k s) (l s),
-    fun s => minToRight (k s) (l s), trivial⟩
-  cone_maps k l f g := ⟨fun s => eq (f s) (g s), fun s => eqHom (f s) (g s),
-    funext fun s => by simp [eq_condition (f s) (g s)]⟩
+  cone_objs k l := ⟨fun s ↦ min (k s) (l s), fun s ↦ minToLeft (k s) (l s),
+    fun s ↦ minToRight (k s) (l s), trivial⟩
+  cone_maps k l f g := ⟨fun s ↦ eq (f s) (g s), fun s ↦ eqHom (f s) (g s),
+    funext fun s ↦ by simp [eq_condition (f s) (g s)]⟩
 
 attribute [local instance] IsCofiltered.nonempty in
 instance [∀ i, IsCofiltered (I i)] : IsCofiltered (∀ i, I i) where

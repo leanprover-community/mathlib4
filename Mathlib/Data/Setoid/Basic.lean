@@ -68,7 +68,7 @@ theorem ext'_iff {r s : Setoid α} : r = s ↔ ∀ a b, r.Rel a b ↔ s.Rel a b 
 
 /-- Two equivalence relations are equal iff their underlying binary operations are equal. -/
 theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ ⇑r₁ = ⇑r₂ :=
-  ⟨fun h => h ▸ rfl, fun h => Setoid.ext fun _ _ => h ▸ Iff.rfl⟩
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ Setoid.ext fun _ _ => h ▸ Iff.rfl⟩
 
 /-- Defining `≤` for equivalence relations. -/
 instance : LE (Setoid α) :=
@@ -117,7 +117,7 @@ protected def prod (r : Setoid α) (s : Setoid β) :
     Setoid (α × β) where
   r x y := r x.1 y.1 ∧ s x.2 y.2
   iseqv :=
-    ⟨fun x => ⟨r.refl' x.1, s.refl' x.2⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩,
+    ⟨fun x ↦ ⟨r.refl' x.1, s.refl' x.2⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩,
       fun h₁ h₂ => ⟨r.trans' h₁.1 h₂.1, s.trans' h₁.2 h₂.2⟩⟩
 
 lemma prod_apply {r : Setoid α} {s : Setoid β} {x₁ x₂ : α} {y₁ y₂ : β} :
@@ -167,7 +167,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
 instance : Min (Setoid α) :=
   ⟨fun r s =>
     ⟨fun x y => r x y ∧ s x y,
-      ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
+      ⟨fun x ↦ ⟨r.refl' x, s.refl' x⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
         ⟨r.trans' h1.1 h2.1, s.trans' h1.2 h2.2⟩⟩⟩⟩
 
 /-- The infimum of 2 equivalence relations r and s is the same relation as the infimum
@@ -198,7 +198,7 @@ instance : PartialOrder (Setoid α) where
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
   lt_iff_le_not_le _ _ := Iff.rfl
-  le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
+  le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h ↦ h1 h, fun h ↦ h2 h⟩
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
     and top element the trivial equivalence relation. -/
@@ -209,9 +209,9 @@ instance completeLattice : CompleteLattice (Setoid α) :=
     inf_le_left := fun _ _ _ _ h => h.1
     inf_le_right := fun _ _ _ _ h => h.2
     le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 h, h2 h⟩
-    top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h => h, fun h1 _ => h1⟩⟩
+    top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h ↦ h, fun h1 _ => h1⟩⟩
     le_top := fun _ _ _ _ => trivial
-    bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
+    bot := ⟨(· = ·), ⟨fun _ => rfl, fun h ↦ h.symm, fun h1 h2 => h1.trans h2⟩⟩
     bot_le := fun r x _ h => h ▸ r.2.1 x }
 
 @[simp]
@@ -337,7 +337,7 @@ def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
   left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
-  right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
+  right_inv _ := funext fun x ↦ Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
@@ -366,7 +366,7 @@ variable (r : Setoid α) (f : α → β)
     bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
   Equiv.ofBijective
-    ((@Quotient.lift _ (Set.range f) (ker f) fun x => ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
+    ((@Quotient.lift _ (Set.range f) (ker f) fun x ↦ ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
       Subtype.ext_val h)
     ⟨fun x y h => ker_lift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
       fun ⟨_, z, hz⟩ =>
@@ -379,7 +379,7 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
     Quotient (ker f) ≃ β where
   toFun a := (Quotient.liftOn' a f) fun _ _ => id
   invFun b := Quotient.mk'' (g b)
-  left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
+  left_inv a := Quotient.inductionOn' a fun a ↦ Quotient.sound' <| hf (f a)
   right_inv := hf
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
@@ -445,11 +445,11 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
         (Quotient.liftOn' w (@Quotient.mk'' _ s)) fun _ _ H => Quotient.sound <| h H)
       fun x y => Quotient.inductionOn₂' x y fun _ _ H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
   invFun x :=
-    (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
+    (Quotient.liftOn' x fun w ↦ @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun _ _ H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by show ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by show ⟦_⟧ = _; rfl
+    Quotient.inductionOn' x fun y ↦ Quotient.inductionOn' y fun w ↦ by show ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn' x fun y ↦ by show ⟦_⟧ = _; rfl
 
 variable {r f}
 
@@ -484,14 +484,14 @@ end Setoid
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
-  refine Quotient.mk'_surjective.forall.trans (forall_congr' fun a => ?_)
-  refine Quotient.mk'_surjective.forall.trans (forall_congr' fun b => ?_)
+  refine Quotient.mk'_surjective.forall.trans (forall_congr' fun a ↦ ?_)
+  refine Quotient.mk'_surjective.forall.trans (forall_congr' fun b ↦ ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) :
     Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
-  refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
-  refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
+  refine Quot.mk_surjective.forall.trans (forall_congr' fun a ↦ ?_)
+  refine Quot.mk_surjective.forall.trans (forall_congr' fun b ↦ ?_)
   rw [Quot.eq]
   simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]

@@ -137,7 +137,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   rfl
 
 theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
-    decomposeAux f ↑x = DirectSum.of (fun i => gradeBy R f i) i x := by
+    decomposeAux f ↑x = DirectSum.of (fun i ↦ gradeBy R f i) i x := by
   classical
   obtain ⟨x, hx⟩ := x
   revert hx

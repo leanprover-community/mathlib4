@@ -125,7 +125,7 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ x := ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+  map {F G} φ x := ⟨fun j ↦ φ.app j (x.1 j), fun {j j'} f =>
     (congr_fun (φ.naturality f) (x.1 j)).symm.trans (by simp [x.2 f])⟩
 
 end Functor
@@ -203,7 +203,7 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
   rfl
 
 instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
-  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+  map_surjective f := ⟨fun x ↦ (f (ULift.up x)).down, rfl⟩
 
 instance uliftFunctor_faithful : uliftFunctor.Faithful where
   map_injective {_X} {_Y} f g p :=

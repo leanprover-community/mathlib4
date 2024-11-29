@@ -270,7 +270,7 @@ theorem algebraMap_eq_smul_one (r : R) : algebraMap R A r = r • (1 : A) :=
     algebraMap R A r = algebraMap R A r * 1 := (mul_one _).symm
     _ = r • (1 : A) := (Algebra.smul_def r 1).symm
 
-theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :=
+theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r ↦ r • (1 : A) :=
   funext algebraMap_eq_smul_one
 
 /-- `mul_comm` for `Algebra`s when one element is from the base ring. -/
@@ -298,7 +298,7 @@ instance _root_.IsScalarTower.right : IsScalarTower R A A :=
 
 @[simp]
 theorem _root_.RingHom.smulOneHom_eq_algebraMap : RingHom.smulOneHom = algebraMap R A :=
-  RingHom.ext fun r => (algebraMap_eq_smul_one r).symm
+  RingHom.ext fun r ↦ (algebraMap_eq_smul_one r).symm
 
 -- TODO: set up `IsScalarTower.smulCommClass` earlier so that we can actually prove this using
 -- `mul_smul_comm s x y`.

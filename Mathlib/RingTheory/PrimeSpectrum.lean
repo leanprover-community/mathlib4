@@ -192,7 +192,7 @@ theorem gc :
 
 /-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc_set :
-    @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
+    @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s ↦ zeroLocus s) fun t =>
       vanishingIdeal t := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi R R).gc
   simpa [zeroLocus_span, Function.comp_def] using ideal_gc.compose (gc R)
@@ -212,7 +212,7 @@ theorem le_vanishingIdeal_zeroLocus (I : Ideal R) : I ≤ vanishingIdeal (zeroLo
 @[simp]
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
     vanishingIdeal (zeroLocus (I : Set R)) = I.radical :=
-  Ideal.ext fun f => by
+  Ideal.ext fun f ↦ by
     rw [mem_vanishingIdeal, Ideal.radical_eq_sInf, Submodule.mem_sInf]
     exact ⟨fun h x hx => h ⟨x, hx.2⟩ hx.1, fun h x hx => h x.1 ⟨hx, x.2⟩⟩
 
@@ -336,7 +336,7 @@ theorem vanishingIdeal_iUnion {ι : Sort*} (t : ι → Set (PrimeSpectrum R)) :
 
 theorem zeroLocus_inf (I J : Ideal R) :
     zeroLocus ((I ⊓ J : Ideal R) : Set R) = zeroLocus I ∪ zeroLocus J :=
-  Set.ext fun x => x.2.inf_le
+  Set.ext fun x ↦ x.2.inf_le
 
 theorem union_zeroLocus (s s' : Set R) :
     zeroLocus s ∪ zeroLocus s' = zeroLocus (Ideal.span s ⊓ Ideal.span s' : Ideal R) := by
@@ -345,11 +345,11 @@ theorem union_zeroLocus (s s' : Set R) :
 
 theorem zeroLocus_mul (I J : Ideal R) :
     zeroLocus ((I * J : Ideal R) : Set R) = zeroLocus I ∪ zeroLocus J :=
-  Set.ext fun x => x.2.mul_le
+  Set.ext fun x ↦ x.2.mul_le
 
 theorem zeroLocus_singleton_mul (f g : R) :
     zeroLocus ({f * g} : Set R) = zeroLocus {f} ∪ zeroLocus {g} :=
-  Set.ext fun x => by simpa using x.2.mul_mem_iff_mem_or_mem
+  Set.ext fun x ↦ by simpa using x.2.mul_mem_iff_mem_or_mem
 
 @[simp]
 theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
@@ -359,7 +359,7 @@ theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
 @[simp]
 theorem zeroLocus_singleton_pow (f : R) (n : ℕ) (hn : 0 < n) :
     zeroLocus ({f ^ n} : Set R) = zeroLocus {f} :=
-  Set.ext fun x => by simpa using x.2.pow_mem_iff_mem n hn
+  Set.ext fun x ↦ by simpa using x.2.pow_mem_iff_mem n hn
 
 theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
     vanishingIdeal t ⊔ vanishingIdeal t' ≤ vanishingIdeal (t ∩ t') := by
@@ -496,7 +496,7 @@ open PrimeSpectrum
 The bundled continuous version is `PrimeSpectrum.comap`. -/
 abbrev RingHom.specComap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
     PrimeSpectrum S → PrimeSpectrum R :=
-  fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩
+  fun y ↦ ⟨Ideal.comap f y.asIdeal, inferInstance⟩
 
 namespace PrimeSpectrum
 
@@ -517,7 +517,7 @@ theorem specComap_asIdeal (y : PrimeSpectrum S) :
   rfl
 
 @[simp]
-theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
+theorem specComap_id : (RingHom.id R).specComap = fun x ↦ x :=
   rfl
 
 @[simp]
@@ -576,7 +576,7 @@ variable {R}
 theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     f.specComap '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
-  refine fun p => ⟨?_, fun h_I_p => ?_⟩
+  refine fun p ↦ ⟨?_, fun h_I_p => ?_⟩
   · rintro ⟨p, hp, rfl⟩ a ha
     exact hp ha
   · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p

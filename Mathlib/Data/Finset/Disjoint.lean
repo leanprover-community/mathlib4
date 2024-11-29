@@ -104,7 +104,7 @@ theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
 
 @[simp, norm_cast]
 theorem pairwiseDisjoint_coe {ι : Type*} {s : Set ι} {f : ι → Finset α} :
-    s.PairwiseDisjoint (fun i => f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
+    s.PairwiseDisjoint (fun i ↦ f i : ι → Set α) ↔ s.PairwiseDisjoint f :=
   forall₅_congr fun _ _ _ _ _ => disjoint_coe
 
 variable [DecidableEq α]

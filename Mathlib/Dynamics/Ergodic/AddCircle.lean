@@ -61,17 +61,17 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   right
   obtain ⟨d, -, hd⟩ : ∃ d, d ∈ s ∧ ∀ {ι'} {l : Filter ι'} (w : ι' → AddCircle T) (δ : ι' → ℝ),
     Tendsto δ l (𝓝[>] 0) → (∀ᶠ j in l, d ∈ closedBall (w j) (1 * δ j)) →
-      Tendsto (fun j => μ (s ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) :=
+      Tendsto (fun j ↦ μ (s ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) :=
     exists_mem_of_measure_ne_zero_of_ae h
       (IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div μ s 1)
-  let I : ι → Set (AddCircle T) := fun j => closedBall d (T / (2 * ↑(n j)))
-  replace hd : Tendsto (fun j => μ (s ∩ I j) / μ (I j)) l (𝓝 1) := by
-    let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
+  let I : ι → Set (AddCircle T) := fun j ↦ closedBall d (T / (2 * ↑(n j)))
+  replace hd : Tendsto (fun j ↦ μ (s ∩ I j) / μ (I j)) l (𝓝 1) := by
+    let δ : ι → ℝ := fun j ↦ T / (2 * ↑(n j))
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_atTop 0).mono fun j hj => div_pos hT₀ <| by positivity
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
       refine tendsto_nhdsWithin_iff.mpr ⟨?_, hδ₀⟩
-      replace hu₂ : Tendsto (fun j => T⁻¹ * 2 * n j) l atTop :=
+      replace hu₂ : Tendsto (fun j ↦ T⁻¹ * 2 * n j) l atTop :=
         (tendsto_natCast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
       convert hu₂.inv_tendsto_atTop
       ext j
@@ -101,18 +101,18 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
 theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => n • y :=
   { measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn) with
     aeconst_set := fun s hs hs' => by
-      let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
+      let u : ℕ → AddCircle T := fun j ↦ ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
       replace hn : 1 < n.natAbs := by rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn
-      have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j => by
+      have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j ↦ by
         convert addOrderOf_div_of_gcd_eq_one (p := T) (m := 1)
           (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
         norm_cast
-      have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
+      have hnu : ∀ j, n ^ j • u j = 0 := fun j ↦ by
         rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
-      have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j => by
+      have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j ↦ by
         rw [vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)]
-      have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
+      have hu₂ : Tendsto (fun j ↦ addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact Nat.tendsto_pow_atTop_atTop_of_one_lt hn
       rw [eventuallyConst_set']
       exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂ }
@@ -120,12 +120,12 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
 theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n • y :=
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
 
-theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
-  set f : AddCircle T → AddCircle T := fun y => n • y + x
+theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y ↦ n • y + x := by
+  set f : AddCircle T → AddCircle T := fun y ↦ n • y + x
   let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft (DivisibleBy.div x <| n - 1)
   have he : MeasurePreserving e volume volume :=
     measurePreserving_add_left volume (DivisibleBy.div x <| n - 1)
-  suffices e ∘ f ∘ e.symm = fun y => n • y by
+  suffices e ∘ f ∘ e.symm = fun y ↦ n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
   replace h : n - 1 ≠ 0 := by
     rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
@@ -137,7 +137,7 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
     smul_add, zsmul_neg', neg_smul, neg_add_rev]
   abel
 
-theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y => n • y + x :=
+theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y ↦ n • y + x :=
   ergodic_zsmul_add x (by simp [h] : 1 < |(n : ℤ)|)
 
 end AddCircle

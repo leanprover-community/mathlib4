@@ -43,7 +43,7 @@ This is a computable version of the `Finsupp.onFinset` construction.
 -/
 def toFinsupp : ℕ →₀ M where
   toFun i := getD l i 0
-  support := (Finset.range l.length).filter fun i => getD l i 0 ≠ 0
+  support := (Finset.range l.length).filter fun i ↦ getD l i 0 ≠ 0
   mem_support_toFun n := by
     simp only [Ne, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
     contrapose!
@@ -71,7 +71,7 @@ theorem toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
   getD_eq_default _ _ hn
 
 @[simp]
-theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
+theorem toFinsupp_nil [DecidablePred fun i ↦ getD ([] : List M) i 0 ≠ 0] :
     toFinsupp ([] : List M) = 0 := by
   ext
   simp
@@ -119,7 +119,7 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x :
       exact add_comm n 1
 
 theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
-    [DecidablePred fun i => getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i => getD xs i 0 ≠ 0] :
+    [DecidablePred fun i ↦ getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i ↦ getD xs i 0 ≠ 0] :
     toFinsupp (xs ++ [x]) = toFinsupp xs + Finsupp.single xs.length x := by
   classical rw [toFinsupp_append, toFinsupp_singleton, Finsupp.embDomain_single,
     addLeftEmbedding_apply, add_zero]

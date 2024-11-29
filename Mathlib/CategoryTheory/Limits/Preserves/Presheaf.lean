@@ -134,7 +134,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   dsimp [iso, -Iso.app_hom]
   simp only [Category.assoc]
   rw [Eq.comm, ← Iso.inv_comp_eq, ← Iso.inv_comp_eq]
-  refine limit.hom_ext (fun j => colimit.hom_ext (fun i => ?_))
+  refine limit.hom_ext (fun j ↦ colimit.hom_ext (fun i ↦ ?_))
   simp only [Category.assoc]
 
   -- `simp` is not too helpful here because we will need to apply `NatTrans.comp_app_assoc`

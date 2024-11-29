@@ -55,7 +55,7 @@ instance completion_completeSpace {V : SemiNormedGrp} : CompleteSpace (completio
 def completion.incl {V : SemiNormedGrp} : V ⟶ completion.obj V where
   toFun v := (v : Completion V)
   map_add' := Completion.coe_add
-  bound' := ⟨1, fun v => by simp⟩
+  bound' := ⟨1, fun v ↦ by simp⟩
 
 -- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] SemiNormedGrp.completion.incl_apply
@@ -122,7 +122,7 @@ theorem completion.lift_comp_incl {V W : SemiNormedGrp} [CompleteSpace W] [T0Spa
 
 theorem completion.lift_unique {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) (g : completion.obj V ⟶ W) : completion.incl ≫ g = f → g = completion.lift f :=
-  fun h => (NormedAddGroupHom.extension_unique _ fun v =>
+  fun h ↦ (NormedAddGroupHom.extension_unique _ fun v =>
     ((NormedAddGroupHom.ext_iff.1 h) v).symm).symm
 
 end SemiNormedGrp

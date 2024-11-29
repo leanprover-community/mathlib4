@@ -317,7 +317,7 @@ variable [FunLike F β γ]
 @[to_additive]
 theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
-      s.noncommProd (fun i => g (f i)) fun _ hx _ hy _ => (comm.of_refl hx hy).map g := by
+      s.noncommProd (fun i ↦ g (f i)) fun _ hx _ hy _ => (comm.of_refl hx hy).map g := by
   simp [noncommProd, Multiset.map_noncommProd]
 
 @[deprecated (since := "2024-07-23")] alias noncommProd_map := map_noncommProd
@@ -409,7 +409,7 @@ variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
 @[to_additive]
 theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
-    (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
+    (univ.noncommProd (fun i ↦ Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
   apply (univ.map_noncommProd (fun i ↦ MonoidHom.mulSingle M i (x i)) ?a

@@ -63,7 +63,7 @@ theorem equalizerSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = h ≫ g)
 
 theorem equalizerSubobject_factors_iff {W : C} (h : W ⟶ X) :
     (equalizerSubobject f g).Factors h ↔ h ≫ f = h ≫ g :=
-  ⟨fun w => by
+  ⟨fun w ↦ by
     rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, equalizerSubobject_arrow_comp,
       Category.assoc],
     equalizerSubobject_factors f g h⟩
@@ -104,7 +104,7 @@ theorem kernelSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = 0) :
 
 theorem kernelSubobject_factors_iff {W : C} (h : W ⟶ X) :
     (kernelSubobject f).Factors h ↔ h ≫ f = 0 :=
-  ⟨fun w => by
+  ⟨fun w ↦ by
     rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, kernelSubobject_arrow_comp,
       comp_zero],
     kernelSubobject_factors f h⟩

@@ -49,7 +49,7 @@ which sends each infinite sequence `x` to an element of the intersection along t
 branch corresponding to `x`, if it exists.
 We call this the map induced by the scheme. -/
 noncomputable def inducedMap : Σs : Set (ℕ → β), s → α :=
-  ⟨fun x => Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x => x.property.some⟩
+  ⟨fun x ↦ Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x ↦ x.property.some⟩
 
 section Topology
 
@@ -152,7 +152,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     (hanti : ClosureAntitone A) (hnonempty : ∀ l, (A l).Nonempty) : (inducedMap A).1 = univ := by
   rw [eq_univ_iff_forall]
   intro x
-  choose u hu using fun n => hnonempty (res x n)
+  choose u hu using fun n ↦ hnonempty (res x n)
   have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) := by
     have : Antitone fun n : ℕ => A (res x n) := by
       refine antitone_nat_of_succ_le ?_

@@ -30,8 +30,8 @@ open scoped Polynomial
 def Polynomial.int (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R) : R[X] where
   toFinsupp :=
   { support := P.support
-    toFun := fun n => ⟨P.coeff n, hP n⟩
-    mem_support_toFun := fun n => by
+    toFun := fun n ↦ ⟨P.coeff n, hP n⟩
+    mem_support_toFun := fun n ↦ by
       rw [ne_eq, ← Subring.coe_eq_zero_iff, mem_support_iff] }
 
 namespace Polynomial

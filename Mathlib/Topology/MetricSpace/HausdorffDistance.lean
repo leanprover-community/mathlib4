@@ -130,7 +130,7 @@ theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s 
 
 /-- The edist to a set depends continuously on the point -/
 @[continuity]
-theorem continuous_infEdist : Continuous fun x => infEdist x s :=
+theorem continuous_infEdist : Continuous fun x ↦ infEdist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
     simp only [one_mul, infEdist_le_infEdist_add_edist, forall₂_true_iff]
 
@@ -152,7 +152,7 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
 
 /-- A point belongs to the closure of `s` iff its infimum edistance to this set vanishes -/
 theorem mem_closure_iff_infEdist_zero : x ∈ closure s ↔ infEdist x s = 0 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← infEdist_closure]
     exact infEdist_zero_of_mem h,
    fun h =>
@@ -200,18 +200,18 @@ theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s :
 theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
   obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
-  let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
+  let F := fun n : ℕ => (fun x ↦ infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
   have F_subset : ∀ n, F n ⊆ U := fun n x hx ↦ by
     by_contra h
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
-  refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
+  refine ⟨F, fun n ↦ IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
   · show ⋃ n, F n = U
     refine Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => ?_
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
-    have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
+    have : Filter.Tendsto (fun n ↦ a ^ n) atTop (𝓝 0) :=
       ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one a_lt_one
     rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
     simp only [mem_iUnion, mem_Ici, mem_preimage]
@@ -223,7 +223,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
 
 theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEdist x s = edist x y := by
-  have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
+  have A : Continuous fun y ↦ edist x y := continuous_const.edist continuous_id
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEdist_le_edist_of_mem ys) (by rwa [le_infEdist])⟩
 
@@ -596,15 +596,15 @@ theorem coe_infNndist : (infNndist x s : ℝ) = infDist x s :=
   rfl
 
 /-- The minimal distance to a set (as `ℝ≥0`) is Lipschitz in point with constant 1 -/
-theorem lipschitz_infNndist_pt (s : Set α) : LipschitzWith 1 fun x => infNndist x s :=
+theorem lipschitz_infNndist_pt (s : Set α) : LipschitzWith 1 fun x ↦ infNndist x s :=
   LipschitzWith.of_le_add fun _ _ => infDist_le_infDist_add_dist
 
 /-- The minimal distance to a set (as `ℝ≥0`) is uniformly continuous in point -/
-theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x => infNndist x s :=
+theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x ↦ infNndist x s :=
   (lipschitz_infNndist_pt s).uniformContinuous
 
 /-- The minimal distance to a set (as `ℝ≥0`) is continuous in point -/
-theorem continuous_infNndist_pt (s : Set α) : Continuous fun x => infNndist x s :=
+theorem continuous_infNndist_pt (s : Set α) : Continuous fun x ↦ infNndist x s :=
   (uniformContinuous_infNndist_pt s).continuous
 
 /-! ### The Hausdorff distance as a function into `ℝ`. -/

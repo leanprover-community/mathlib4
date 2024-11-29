@@ -146,7 +146,7 @@ This no longer seems to be an issue, so that such instances can be defined direc
 class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
   poly :
     ∃ φ : ℕ → MvPolynomial ℕ ℤ,
-      ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
+      ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n ↦ aeval x.coeff (φ n)
 
 /-- The identity function on Witt vectors is a polynomial function. -/
 instance idIsPoly : IsPoly p fun _ _ => id :=
@@ -175,7 +175,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   apply MvPolynomial.funext
   intro x
   simp only [hom_bind₁]
-  specialize h (ULift ℤ) (mk p fun i => ⟨x i⟩) k
+  specialize h (ULift ℤ) (mk p fun i ↦ ⟨x i⟩) k
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
@@ -193,7 +193,7 @@ instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
-  use fun n => bind₁ φ (ψ n)
+  use fun n ↦ bind₁ φ (ψ n)
   intros
   simp only [aeval_bind₁, Function.comp, hg, hf]
 
@@ -213,7 +213,7 @@ This no longer seems to be an issue, so that such instances can be defined direc
 class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
   poly :
     ∃ φ : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ,
-      ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n => peval (φ n) ![x.coeff, y.coeff]
+      ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n ↦ peval (φ n) ![x.coeff, y.coeff]
 
 variable {p}
 
@@ -241,7 +241,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
-  use fun n => bind₁ φ (ψ n)
+  use fun n ↦ bind₁ φ (ψ n)
   intros
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
 
@@ -249,7 +249,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
-  refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
+  refine ⟨⟨fun n ↦ bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
   simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
@@ -263,7 +263,7 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x 
 /-- The additive negation is a polynomial function on Witt vectors. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
-  ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
+  ⟨⟨fun n ↦ rename Prod.snd (wittNeg p n), by
       intros; funext n
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
       apply eval₂Hom_congr rfl _ rfl
@@ -365,7 +365,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   apply MvPolynomial.funext
   intro x
   simp only [hom_bind₁]
-  specialize h (ULift ℤ) (mk p fun i => ⟨x (0, i)⟩) (mk p fun i => ⟨x (1, i)⟩) k
+  specialize h (ULift ℤ) (mk p fun i ↦ ⟨x (0, i)⟩) (mk p fun i ↦ ⟨x (1, i)⟩) k
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
@@ -440,7 +440,7 @@ so it is easier (and prettier) to put it in a tactic script.
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
 private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
-  let fvarId ← liftMetaTacticAux fun g => do
+  let fvarId ← liftMetaTacticAux fun g ↦ do
     let (fv, g') ← g.intro n
     return (fv, [g'])
   withMainContext do

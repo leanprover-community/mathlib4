@@ -75,7 +75,7 @@ sending `x` to `f x * g x`. -/
 `f + g` is the additive morphism sending `x` to `f x + g x`."]
 instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
-    { toFun := fun m => f m * g m,
+    { toFun := fun m ↦ f m * g m,
       map_mul' := fun x y => by
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
@@ -123,7 +123,7 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
-    forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
+    forall_congr' fun _ => ⟨fun h ↦ ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
 
 /-- Makes a group homomorphism from a proof that the map preserves right division
 `fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.
@@ -166,7 +166,7 @@ sending `x` to `f x * g x`. -/
 @[to_additive]
 instance mul : Mul (M →* N) :=
   ⟨fun f g =>
-    { toFun := fun m => f m * g m,
+    { toFun := fun m ↦ f m * g m,
       map_one' := show f 1 * g 1 = 1 by simp,
       map_mul' := fun x y => by
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)

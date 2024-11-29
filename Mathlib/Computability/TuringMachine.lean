@@ -1635,8 +1635,8 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
     intro f
     -- Porting note: Here was `change`.
-    exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
-      (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
+    exact this n f (L.flatMap (fun x ↦ (enc x).1.reverse) _)
+      (R.flatMap (fun x ↦ (enc x).1) _) [] _ (enc a).2
   clear f L a R
   intro i f L' R' l₁ l₂ _
   subst i
@@ -2474,8 +2474,8 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
     rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map_map]
-    have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
-      = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
+    have : ((proj k').f ∘ fun a ↦ update (β := fun k ↦ Option (Γ k)) default k (some a))
+      = fun a ↦ (proj k').f (update (β := fun k ↦ Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
     simp only []
     by_cases h : k' = k

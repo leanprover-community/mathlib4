@@ -173,7 +173,7 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   rw [biInter_eq_iInter]
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
-  rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
+  rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x ↦ isClosed_Iic) H
       (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
   exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
 
@@ -295,7 +295,7 @@ theorem Continuous.exists_forall_le' [ClosedIicTopology α] {f : β → α} (hf 
     (x₀ : β) (h : ∀ᶠ x in cocompact β, f x₀ ≤ f x) : ∃ x : β, ∀ y : β, f x ≤ f y :=
   let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
     (by rwa [principal_univ, inf_top_eq])
-  ⟨x, fun y => hx (mem_univ y)⟩
+  ⟨x, fun y ↦ hx (mem_univ y)⟩
 
 /-- The **extreme value theorem**: if a continuous function `f` is smaller than a value in its range
 away from compact sets, then it has a global maximum. -/
@@ -378,7 +378,7 @@ theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → �
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :
     sSup (f '' K) < y ↔ ∀ x ∈ K, f x < y := by
   refine ⟨fun h x hx => (le_csSup (hK.bddAbove_image hf) <| mem_image_of_mem f hx).trans_lt h,
-    fun h => ?_⟩
+    fun h ↦ ?_⟩
   obtain ⟨x, hx, h2x⟩ := hK.exists_isMaxOn h0K hf
   refine (csSup_le (h0K.image f) ?_).trans_lt (h x hx)
   rintro _ ⟨x', hx', rfl⟩; exact h2x hx'
@@ -494,11 +494,11 @@ conditionally complete linear order, and `K : Set β` is a compact set, then
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))
     (hgc : ContinuousOn g K) :
-    Tendsto (fun x => sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
+    Tendsto (fun x ↦ sSup (f x '' K)) l (𝓝 (sSup (g '' K))) := _
 ```
 Moreover, it seems that `hgc` follows from `hf` (Yury Kudryashov). -/
 theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCompact K)
-    (hf : Continuous ↿f) : Continuous fun x => sSup (f x '' K) := by
+    (hf : Continuous ↿f) : Continuous fun x ↦ sSup (f x '' K) := by
   rcases eq_empty_or_nonempty K with (rfl | h0K)
   · simp_rw [image_empty]
     exact continuous_const
@@ -506,9 +506,9 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
   intro x
   obtain ⟨y, hyK, h2y, hy⟩ :=
     hK.exists_sSup_image_eq_and_ge h0K
-      (show Continuous fun y => f x y from hf.comp <| Continuous.Prod.mk x).continuousOn
+      (show Continuous fun y ↦ f x y from hf.comp <| Continuous.Prod.mk x).continuousOn
   rw [ContinuousAt, h2y, tendsto_order]
-  have := tendsto_order.mp ((show Continuous fun x => f x y
+  have := tendsto_order.mp ((show Continuous fun x ↦ f x y
     from hf.comp <| continuous_id.prod_mk continuous_const).tendsto x)
   refine ⟨fun z hz => ?_, fun z hz => ?_⟩
   · refine (this.1 z hz).mono fun x' hx' =>
@@ -525,7 +525,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
     exact fun y' hy' => huv (mk_mem_prod hx' (hKv hy'))
 
 theorem IsCompact.continuous_sInf {f : γ → β → α} {K : Set β} (hK : IsCompact K)
-    (hf : Continuous ↿f) : Continuous fun x => sInf (f x '' K) :=
+    (hf : Continuous ↿f) : Continuous fun x ↦ sInf (f x '' K) :=
   IsCompact.continuous_sSup (α := αᵒᵈ) hK hf
 
 namespace ContinuousOn

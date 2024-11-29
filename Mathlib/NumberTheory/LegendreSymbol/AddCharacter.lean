@@ -68,7 +68,7 @@ is injective when `ψ` is primitive. -/
 theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ) :
     Function.Injective ψ.mulShift := by
   intro a b h
-  apply_fun fun x => x * mulShift ψ (-b) at h
+  apply_fun fun x ↦ x * mulShift ψ (-b) at h
   simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
@@ -153,7 +153,7 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ ≠ 1 ↔ ψ 1 ≠ 1 := by
   rw [ne_one_iff]
-  refine ⟨?_, fun h => ⟨_, h⟩⟩
+  refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   contrapose!
   rintro h₁ a
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
@@ -164,7 +164,7 @@ theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
     {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ) (a : ZMod n) :
     ψ a = 1 ↔ a = 0 := by
-  refine ⟨fun h => not_imp_comm.mp (@hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
+  refine ⟨fun h ↦ not_imp_comm.mp (@hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
   rw [zmod_char_ne_one_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 
 /-- The converse: if the additive character takes the value `1` only at `0`,
@@ -241,7 +241,7 @@ is a domain. -/
 theorem sum_eq_zero_of_ne_one [IsDomain R'] {ψ : AddChar R R'} (hψ : ψ ≠ 1) : ∑ a, ψ a = 0 := by
   rcases ne_one_iff.1 hψ with ⟨b, hb⟩
   have h₁ : ∑ a : R, ψ (b + a) = ∑ a : R, ψ a :=
-    Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x => rfl
+    Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x ↦ rfl
   simp_rw [map_add_eq_mul] at h₁
   have h₂ : ∑ a : R, ψ a = Finset.univ.sum ↑ψ := rfl
   rw [← Finset.mul_sum, h₂] at h₁
