@@ -65,7 +65,7 @@ namespace ProbabilityTheory
 
 namespace Kernel
 
-variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 section CompositionProduct
 
@@ -335,7 +335,7 @@ end Ae
 
 section Restrict
 
-variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
+variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η]
 
 theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     Kernel.restrict κ hs ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (hs.prod ht) := by
@@ -379,8 +379,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     [IsSFiniteKernel η] (a : α) {f : β → γ → ℝ≥0∞} (hf : Measurable (Function.uncurry f)) :
     ∫⁻ bc, f bc.1 bc.2 ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f b c ∂η (a, b) ∂κ a := by
   let F : ℕ → SimpleFunc (β × γ) ℝ≥0∞ := SimpleFunc.eapprox (Function.uncurry f)
-  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a :=
-    SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
+  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a := SimpleFunc.iSup_eapprox_apply hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
   simp_rw [← h]
   have h_mono : Monotone F := fun i j hij b =>
@@ -759,7 +758,7 @@ def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) : Kernel (�
 def prodMkRight (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) : Kernel (α × γ) β :=
   comap κ Prod.fst measurable_fst
 
-variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ}
 
 @[simp]
 theorem prodMkLeft_apply (κ : Kernel α β) (ca : γ × α) : prodMkLeft γ κ ca = κ ca.snd :=
@@ -1125,6 +1124,32 @@ lemma deterministic_comp_deterministic (hf : Measurable f) (hg : Measurable g) :
     (deterministic g hg) ∘ₖ (deterministic f hf) = deterministic (g ∘ f) (hg.comp hf) := by
   ext; simp [comp_deterministic_eq_comap, comap_apply, deterministic_apply]
 
+@[simp]
+lemma comp_id (κ : Kernel α β) : κ ∘ₖ Kernel.id = κ := by
+  rw [Kernel.id, comp_deterministic_eq_comap, comap_id]
+
+@[simp]
+lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
+  rw [Kernel.id, deterministic_comp_eq_map, map_id]
+
+@[simp]
+lemma comp_discard (κ : Kernel α β) [IsMarkovKernel κ] : discard β ∘ₖ κ = discard α := by
+  ext a s hs; simp [comp_apply' _ _ _ hs]
+
+@[simp]
+lemma swap_copy : (swap α α) ∘ₖ (copy α) = copy α := by
+  ext a s hs
+  rw [comp_apply, copy_apply, Measure.dirac_bind (Kernel.measurable _), swap_apply' _ hs,
+    Measure.dirac_apply' _ hs]
+  congr
+
+@[simp]
+lemma swap_swap : (swap α β) ∘ₖ (swap β α) = Kernel.id := by
+  simp_rw [swap, Kernel.deterministic_comp_deterministic, Prod.swap_swap_eq, Kernel.id]
+
+lemma swap_comp_eq_map {κ : Kernel α (β × γ)} : (swap β γ) ∘ₖ κ = κ.map Prod.swap := by
+  rw [swap, deterministic_comp_eq_map]
+
 lemma const_comp (μ : Measure γ) (κ : Kernel α β) :
     const β μ ∘ₖ κ = fun a ↦ (κ a) Set.univ • μ := by
   ext _ _ hs
@@ -1242,11 +1267,28 @@ lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) [IsSFiniteKernel κ]
   refine (lintegral_lintegral_swap ?_).symm
   exact hf.aemeasurable
 
+@[simp]
+lemma swap_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [IsSFiniteKernel η] :
+    (swap β γ) ∘ₖ (κ ×ₖ η) = (η ×ₖ κ) := by
+  rw [swap_comp_eq_map, map_prod_swap]
+
 lemma deterministic_prod_deterministic {f : α → β} {g : α → γ}
     (hf : Measurable f) (hg : Measurable g) :
     deterministic f hf ×ₖ deterministic g hg
       = deterministic (fun a ↦ (f a, g a)) (hf.prod_mk hg) := by
   ext; simp_rw [prod_apply, deterministic_apply, Measure.dirac_prod_dirac]
+
+lemma compProd_prodMkLeft_eq_comp
+    (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel β γ) [IsSFiniteKernel η] :
+    κ ⊗ₖ (prodMkLeft α η) = (Kernel.id ×ₖ η) ∘ₖ κ := by
+  ext a s hs
+  rw [comp_eq_snd_compProd, compProd_apply hs, snd_apply' _ _ hs, compProd_apply]
+  swap; · exact measurable_snd hs
+  simp only [prodMkLeft_apply, Set.mem_setOf_eq, Set.setOf_mem_eq, prod_apply' _ _ _ hs,
+    id_apply, id_eq]
+  congr with b
+  rw [lintegral_dirac']
+  exact measurable_measure_prod_mk_left hs
 
 end Prod
 end Kernel

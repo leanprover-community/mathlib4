@@ -56,7 +56,7 @@ theorem mulSupport_subset_iff' {f : α → M} {s : Set α} :
 @[to_additive]
 theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
     mulSupport f = s ↔ (∀ x, x ∈ s → f x ≠ 1) ∧ ∀ x, x ∉ s → f x = 1 := by
-  simp (config := { contextual := true }) only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
+  simp +contextual only [Set.ext_iff, mem_mulSupport, ne_eq, iff_def,
     not_imp_comm, and_comm, forall_and]
 
 @[to_additive]

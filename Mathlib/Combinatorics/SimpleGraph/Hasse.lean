@@ -30,7 +30,7 @@ variable (α β : Type*)
 
 section Preorder
 
-variable [Preorder α] [Preorder β]
+variable [Preorder α]
 
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where

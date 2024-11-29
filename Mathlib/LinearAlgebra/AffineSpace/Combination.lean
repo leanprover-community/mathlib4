@@ -7,8 +7,8 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.FinCases
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Affine combinations of points
