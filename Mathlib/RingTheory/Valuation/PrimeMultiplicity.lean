@@ -41,28 +41,34 @@ The valuation on a fraction ring to `WithTop ℤ` given by a prime.
 -/
 noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
   ofValuation <|
-    (toValuation <| (multiplicity hp.out).map (AddMonoidHom.withTopMap (Nat.castAddMonoidHom ℤ)) rfl
-    (by simp [Nat.mono_cast])).extendToLocalization (S := nonZeroDivisors R) (B := K) <| by
+    (toValuation <|
+      (multiplicity hp.out).map ((AddMonoidHom.withTopMap (Nat.castAddMonoidHom ℤ)).comp
+          ENat.toWithTop) rfl (by simp [Nat.mono_cast, Monotone.comp, OrderHomClass.mono]))
+      |>.extendToLocalization (S := nonZeroDivisors R) (B := K) <| by
       intro v hv
       apply Set.mem_compl
       intro nh
       simp only [SetLike.mem_coe, Valuation.mem_supp_iff, toValuation_apply, map_apply,
-        AddMonoidHom.withTopMap_apply, Nat.coe_castAddMonoidHom, ofAdd_toDual_eq_zero_iff,
-        WithTop.map_eq_top_iff] at nh
+        multiplicity_apply, AddMonoidHom.coe_comp, AddMonoidHom.withTopMap_apply,
+        Nat.coe_castAddMonoidHom, AddMonoidHom.coe_coe, Function.comp_apply,
+        ofAdd_toDual_eq_zero_iff, WithTop.map_eq_top_iff, map_eq_top_iff] at nh
       exact multiplicity.finite_prime_left Fact.out (nonZeroDivisors.ne_zero hv)
         |>.emultiplicity_ne_top nh
 
 @[simp]
 theorem adicValuation_coe (r : R) :
     adicValuation p (algebraMap R K r) = (emultiplicity p r).map (↑) := by
-  simp [adicValuation]
+  simp only [adicValuation, ofValuation_apply, Valuation.extendToLocalization_apply_map_apply,
+    toValuation_apply, map_apply, multiplicity_apply, AddMonoidHom.coe_comp,
+    AddMonoidHom.withTopMap_apply, Nat.coe_castAddMonoidHom, AddMonoidHom.coe_coe,
+    Function.comp_apply, toAdd_ofAdd, OrderDual.ofDual_toDual]
   rfl
 
 variable {β : Type*} [Zero β]
 
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
-  simp [lt_iff_le_and_ne, ENat.zero_eq_map_iff, emultiplicity_eq_zero]
+  simp [lt_iff_le_and_ne, emultiplicity_eq_zero]
 
 
 open IsFractionRing

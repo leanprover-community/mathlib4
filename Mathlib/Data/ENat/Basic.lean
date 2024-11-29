@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Nat
 
@@ -55,9 +56,9 @@ instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 variable {a b c m n : ℕ∞}
 
 /--
-The identity equivalence `ℕ∞ ≃ WithTop ℕ` as an order isomorphism.
+The identity equivalence `ℕ∞ ≃ WithTop ℕ` as an ordered ring isomorphism.
 -/
-def toWithTop : ℕ∞ ≃o WithTop ℕ := OrderIso.refl _
+def toWithTop : ℕ∞ ≃+*o WithTop ℕ := OrderRingIso.refl _
 
 @[simp]
 lemma toWithTop_top : toWithTop ⊤ = ⊤ := rfl
@@ -78,9 +79,9 @@ lemma toWithTop_eq_ofNat_iff (v : ℕ∞) (a : ℕ) [a.AtLeastTwo] :
     toWithTop v = no_index (OfNat.ofNat a) ↔ v = a := Iff.rfl
 
 /--
-The identity equivalence `WithTop ℕ ≃ ℕ∞` as an order isomorphism.
+The identity equivalence `WithTop ℕ ≃ ℕ∞` as an ordered ring isomorphism.
 -/
-def ofWithTop : WithTop ℕ ≃o ℕ∞ := OrderIso.refl _
+def ofWithTop : WithTop ℕ ≃+*o ℕ∞ := OrderRingIso.refl _
 
 @[simp]
 lemma ofWithTop_top : ofWithTop ⊤ = ⊤ := rfl

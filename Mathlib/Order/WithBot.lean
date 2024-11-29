@@ -234,6 +234,17 @@ theorem unbot'_le_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
   · simpa using h rfl
   · simp
 
+@[simp]
+lemma map_le {f : β → α} {a : WithBot β} {b : WithBot α} :
+    map f a ≤ b ↔ ∀ v, a = some v → f v ≤ b where
+  mp h := by
+    rintro v rfl
+    exact h
+  mpr h := by
+    cases a
+    · simp
+    · simp_all
+
 end LE
 
 section LT
@@ -296,6 +307,17 @@ theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
   induction a
   · simpa [bot_lt_coe] using h rfl
   · simp
+
+@[simp]
+lemma map_lt {f : β → α} {a : WithBot β} {b : α} :
+    map f a < b ↔ ∀ v, a = some v → f v < b where
+  mp h := by
+    rintro v rfl
+    simpa using h
+  mpr h := by
+    cases a
+    · simp
+    · simp_all
 
 end LT
 
@@ -831,6 +853,11 @@ theorem le_untop'_iff {a : WithTop α} {b c : α} (h : a = ⊤ → c ≤ b) :
     c ≤ a.untop' b ↔ c ≤ a :=
   WithBot.unbot'_le_iff (α := αᵒᵈ) h
 
+@[simp]
+lemma le_map {f : β → α} {a : WithTop β} {b : WithTop α} :
+    b ≤ map f a ↔ ∀ v, a = some v → b ≤ f v :=
+  @WithBot.map_le αᵒᵈ _ _ _ _ _
+
 end LE
 
 section LT
@@ -875,6 +902,11 @@ theorem untop_lt_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
 theorem lt_untop'_iff {a : WithTop α} {b c : α} (h : a = ⊤ → c < b) :
     c < a.untop' b ↔ c < a :=
   WithBot.unbot'_lt_iff (α := αᵒᵈ) h
+
+@[simp]
+lemma lt_map {f : β → α} {a : WithTop β} {b : α} :
+    b < map f a ↔ ∀ v, a = some v → b < f v :=
+  @WithBot.map_lt αᵒᵈ _ _ _ _ _
 
 end LT
 
