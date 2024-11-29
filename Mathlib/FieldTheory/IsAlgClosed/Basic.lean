@@ -32,10 +32,12 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
-## TODO
+## Main reults
 
-- Prove that if `K / k` is algebraic, and any monic irreducible polynomial over `k` has a root
-  in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+- `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
+  `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
+  For the stronger fact that only requires every such polynomial has a root in `K`,
+  see `IsAlgClosure.of_exist_roots`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
@@ -410,7 +412,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : IsScalarTower S R L :=
     IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
-  have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.tower_top_of_injective
+  have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.extendScalars
     (show Function.Injective (algebraMap S R) from hSR.injective))
   refine
     ⟨equivOfAlgebraic' R S L M, ?_⟩
