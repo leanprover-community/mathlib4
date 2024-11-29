@@ -1100,7 +1100,9 @@ theorem fract_div_intCast_eq_div_intCast_fmod {m : ℤ} {n : ℤ} :
       nth_rw 1 [← Int.fdiv_add_fmod m n]
       push_cast
       ring_nf
-      rw [add_left_inj, mul_comm, ← mul_assoc, inv_mul_cancel <| cast_ne_zero.mpr hn, one_mul]
+      rw [add_left_inj, mul_comm, ← mul_assoc]
+      convert one_mul  (m.fdiv n : k)
+      simp_all only [ne_eq, cast_eq_zero, not_false_eq_true, inv_mul_cancel₀]
     nth_rw 1 [h_div]
     rw [Int.fmod_def]
     have h : ⌊(m : k) / n⌋ = Int.fdiv m n := by
@@ -1113,12 +1115,12 @@ theorem fract_div_intCast_eq_div_intCast_fmod {m : ℤ} {n : ℤ} :
       by_cases h₂ : 0 < (n : k)
       · have h₃ : 0 < n := cast_pos.mp h₂
         constructor
-        · refine (le_div_iff' h₂).mpr ?_
-          rw [h₁]
+        · refine (le_div_iff₀ h₂).mpr ?_
+          rw [mul_comm, h₁]
           simp only [tsub_le_iff_right, le_add_iff_nonneg_right, cast_nonneg]
           exact fmod_nonneg' m h₃
         · rw [fdiv_eq_ediv m _]
-          · refine (div_lt_iff h₂).mpr ?_
+          · refine (div_lt_iff₀ h₂).mpr ?_
             norm_cast
             exact lt_ediv_add_one_mul_self m h₃
           · omega
@@ -1142,7 +1144,6 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   have := @fract_div_intCast_eq_div_intCast_fmod k _ _ m (n : ℤ)
   simpa only [cast_natCast, fmod_eq_emod  _<| ofNat_zero_le n]
-#align int.fract_div_int_cast_eq_div_int_cast_mod Int.fract_div_intCast_eq_div_intCast_mod
 
 end LinearOrderedField
 
