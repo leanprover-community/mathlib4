@@ -282,7 +282,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
   rw [div_eq_mul_inv, add_comm]; congr 2 <;> ring
 
 /-- The function `fun (x, y) => x ^ y` is infinitely smooth at `(x, y)` unless `x = 0`. -/
-theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : ℕ∞} :
+theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
   cases' hp.lt_or_lt with hneg hpos
   exacts
@@ -358,7 +358,7 @@ theorem deriv_rpow_const' {p : ℝ} (h : 1 ≤ p) :
     (deriv fun x : ℝ => x ^ p) = fun x => p * x ^ (p - 1) :=
   funext fun _ => deriv_rpow_const (Or.inr h)
 
-theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : ℕ∞} (h : x ≠ 0) :
+theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : WithTop ℕ∞} (h : x ≠ 0) :
     ContDiffAt ℝ n (fun x => x ^ p) x :=
   (contDiffAt_rpow_of_ne (x, p) h).comp x (contDiffAt_id.prod contDiffAt_const)
 
@@ -368,7 +368,8 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
-    rw [show ((n + 1 : ℕ) : ℕ∞) = n + 1 from rfl, contDiff_succ_iff_deriv, deriv_rpow_const' h1]
+    rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl, contDiff_succ_iff_deriv,
+      deriv_rpow_const' h1]
     exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :

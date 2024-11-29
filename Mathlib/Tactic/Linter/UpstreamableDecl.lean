@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Anne Baanen
 -/
 import ImportGraph.Imports
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.MinImports
 
 /-! # The `upstreamableDecl` linter
@@ -21,8 +20,12 @@ def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
 
 open Mathlib.Command.MinImports
 
-/-- Does the declaration with this name depend on `def`s in the current file? -/
-def Lean.Environment.localDefDependencies (env : Environment) (stx id : Syntax) :
+/-- Does the declaration with this name depend on definitions in the current file?
+
+Here, "definition" means everything that is not a theorem, and so includes `def`,
+`structure`, `inductive`, etc.
+-/
+def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : Syntax) :
     CommandElabM Bool := do
   let declName : NameSet ← try
     NameSet.ofList <$> resolveGlobalConst id
@@ -37,7 +40,14 @@ def Lean.Environment.localDefDependencies (env : Environment) (stx id : Syntax) 
 
   let deps ← liftCoreM <| immediateDeps.transitivelyUsedConstants
   let constInfos := deps.toList.filterMap env.find?
-  let defs := constInfos.filter (·.isDef)
+  -- We allow depending on theorems and constructors.
+  -- We explicitly allow constructors since `inductive` declarations are reported to depend on their
+  -- own constructors, and we want inductives to behave the same as definitions, so place one
+  -- warning on the inductive itself but nothing on its downstream uses.
+  -- (There does not seem to be an easy way to determine, given `Syntax` and `ConstInfo`,
+  -- whether the `ConstInfo` is a constructor declared in this piece of `Syntax`.)
+  let defs := constInfos.filter (fun constInfo => !(constInfo.isTheorem || constInfo.isCtor))
+
   return defs.any fun constInfo => !(declName.contains constInfo.name) && constInfo.name.isLocal env
 
 namespace Mathlib.Linter
@@ -72,7 +82,7 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let minImports := getIrredundantImports env (← getAllImports stx id)
       match minImports with
       | ⟨(RBNode.node _ .leaf upstream _ .leaf), _⟩ => do
-        if !(← env.localDefDependencies stx id) then
+        if !(← env.localDefinitionDependencies stx id) then
           let p : GoToModuleLinkProps := { modName := upstream }
           let widget : MessageData := .ofWidget
             (← liftCoreM <| Widget.WidgetInstance.ofHash
