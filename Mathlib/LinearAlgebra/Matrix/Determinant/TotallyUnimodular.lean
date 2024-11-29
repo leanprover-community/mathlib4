@@ -188,6 +188,7 @@ lemma fromColumns_col0_isTotallyUnimodular_iff (A : Matrix m n R) :
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_col,
     fromRows_row0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
+-- TODO maybe rename and certainly move
 lemma in_set_range_singType_cast_mul_in_set_range_singType_cast {a b : R}
     (ha : a ∈ Set.range SignType.cast) (hb : b ∈ Set.range SignType.cast) :
     a * b ∈ Set.range SignType.cast := by
@@ -195,6 +196,7 @@ lemma in_set_range_singType_cast_mul_in_set_range_singType_cast {a b : R}
 
 variable {R : Type*} [LinearOrderedCommRing R] -- TODO reorganize
 
+-- TODO maybe rename and certainly move
 lemma in_set_range_singType_cast_iff_abs (a : R) :
     a ∈ Set.range SignType.cast ↔ |a| ∈ Set.range SignType.cast := by
   sorry
