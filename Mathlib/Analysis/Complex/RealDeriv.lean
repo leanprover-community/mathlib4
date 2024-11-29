@@ -77,14 +77,14 @@ theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
   simp
 
-theorem ContDiffAt.real_of_complex {n : ℕ∞} (h : ContDiffAt ℂ n e z) :
+theorem ContDiffAt.real_of_complex {n : WithTop ℕ∞} (h : ContDiffAt ℂ n e z) :
     ContDiffAt ℝ n (fun x : ℝ => (e x).re) z := by
   have A : ContDiffAt ℝ n ((↑) : ℝ → ℂ) z := ofRealCLM.contDiff.contDiffAt
   have B : ContDiffAt ℝ n e z := h.restrict_scalars ℝ
   have C : ContDiffAt ℝ n re (e z) := reCLM.contDiff.contDiffAt
   exact C.comp z (B.comp z A)
 
-theorem ContDiff.real_of_complex {n : ℕ∞} (h : ContDiff ℂ n e) :
+theorem ContDiff.real_of_complex {n : WithTop ℕ∞} (h : ContDiff ℂ n e) :
     ContDiff ℝ n fun x : ℝ => (e x).re :=
   contDiff_iff_contDiffAt.2 fun _ => h.contDiffAt.real_of_complex
 
@@ -167,6 +167,6 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
   rw [differentiableAt_iff_restrictScalars ℝ (h_diff.comp _ conjCLE.differentiableAt)]
   refine exists_congr fun g => rfl.congr ?_
   have : fderiv ℝ conj (conj z) = _ := conjCLE.fderiv
-  simp [fderiv.comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
+  simp [fderiv_comp _ h_diff conjCLE.differentiableAt, this, conj_conj]
 
 end Conformality

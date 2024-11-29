@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
-import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic
 
@@ -516,24 +515,11 @@ instance SetLike.gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
     [SetLike.GradedMul A] : GradedMonoid.GMul fun i => A i where
   mul := fun a b => ⟨(a * b : R), SetLike.mul_mem_graded a.prop b.prop⟩
 
-/-
-Porting note: simpNF linter returns
-
-"Left-hand side does not simplify, when using the simp lemma on itself."
-
-However, simp does indeed solve the following. Possibly related std#71,std#78
-
-example {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
-    [SetLike.GradedMul A] {i j : ι} (x : A i) (y : A j) :
-    ↑(@GradedMonoid.GMul.mul _ (fun i => A i) _ _ _ _ x y) = (x * y : R) := by simp
-
--/
-@[simp,nolint simpNF]
+@[simp]
 theorem SetLike.coe_gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
     [SetLike.GradedMul A] {i j : ι} (x : A i) (y : A j) :
     ↑(@GradedMonoid.GMul.mul _ (fun i => A i) _ _ _ _ x y) = (x * y : R) :=
   rfl
-
 
 /-- A version of `GradedMonoid.GMonoid` for internally graded objects. -/
 class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) extends
@@ -566,17 +552,11 @@ instance instCommMonoid
     CommMonoid (A 0) :=
   inferInstanceAs <| CommMonoid (GradeZero.submonoid A)
 
-/-- The linter message "error: SetLike.GradeZero.coe_one.{u_3, u_2, u_1} Left-hand side does
-  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_one : ↑(1 : A 0) = (1 : R) := rfl
+@[simp, norm_cast] theorem coe_one : ↑(1 : A 0) = (1 : R) := rfl
 
-/-- The linter message "error: SetLike.GradeZero.coe_mul.{u_3, u_2, u_1} Left-hand side does
-  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_mul (a b : A 0) : ↑(a * b) = (↑a * ↑b : R) := rfl
+@[simp, norm_cast] theorem coe_mul (a b : A 0) : ↑(a * b) = (↑a * ↑b : R) := rfl
 
-/-- The linter message "error: SetLike.GradeZero.coe_pow.{u_3, u_2, u_1} Left-hand side does
-  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_pow (a : A 0) (n : ℕ) : ↑(a ^ n) = (↑a : R) ^ n := rfl
+@[simp, norm_cast] theorem coe_pow (a : A 0) (n : ℕ) : ↑(a ^ n) = (↑a : R) ^ n := rfl
 
 end GradeZero
 
@@ -621,19 +601,7 @@ instance SetLike.gMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A 
     gnpow_zero' := fun _ => Sigma.subtype_ext (zero_nsmul _) (pow_zero _)
     gnpow_succ' := fun _ _ => Sigma.subtype_ext (succ_nsmul _ _) (pow_succ _ _) }
 
-/-
-Porting note: simpNF linter returns
-
-"Left-hand side does not simplify, when using the simp lemma on itself."
-
-However, simp does indeed solve the following. Possibly related std#71,std#78
-
-example {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
-    [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
-    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n := by simp
-
--/
-@[simp,nolint simpNF]
+@[simp]
 theorem SetLike.coe_gnpow {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
     [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
     ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n :=
@@ -651,20 +619,7 @@ open SetLike SetLike.GradedMonoid
 
 variable {α S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι]
 
-/-
-Porting note: simpNF linter returns
-
-"Left-hand side does not simplify, when using the simp lemma on itself."
-
-However, simp does indeed solve the following. Possibly related std#71,std#78
-
-example (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
-    (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA)
-    = (List.prod (l.map fun a => fA a) : R) := by simp
--/
-/-- Coercing a dependent product of subtypes is the same as taking the regular product of the
-coercions. -/
-@[simp,nolint simpNF]
+@[simp]
 theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
     (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA)
     = (List.prod (l.map fun a => fA a) : R) := by

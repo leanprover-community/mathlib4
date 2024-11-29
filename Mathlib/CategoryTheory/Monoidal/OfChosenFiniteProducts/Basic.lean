@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Simon Hudon
+Authors: Kim Morrison, Simon Hudon
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -311,7 +311,7 @@ a fixed choice of limit data for the empty functor, and for `pair X Y` for every
 
 This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
--- Porting note(#5171): linter `has_nonempty_instance` not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter `has_nonempty_instance` not ported yet
 -- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))

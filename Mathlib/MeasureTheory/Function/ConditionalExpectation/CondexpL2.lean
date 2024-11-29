@@ -38,7 +38,7 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E E' F G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α E E' F G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
   [NormedAddCommGroup E]
@@ -203,7 +203,7 @@ theorem lintegral_nnnorm_condexpL2_indicator_le_real (hs : MeasurableSet s) (hμ
     classical
     simp_rw [Set.indicator_apply]
     split_ifs <;> simp
-  rw [h_eq, lintegral_indicator _ hs, lintegral_const, Measure.restrict_restrict hs]
+  rw [h_eq, lintegral_indicator hs, lintegral_const, Measure.restrict_restrict hs]
   simp only [one_mul, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
 
 end Real
@@ -457,7 +457,7 @@ theorem setIntegral_condexpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     ∫ a in s, (condexpIndSMul hm ht hμt x) a ∂μ =
         ∫ a in s, (condexpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a • x ∂μ :=
       setIntegral_congr_ae (hm s hs)
-        ((condexpIndSMul_ae_eq_smul hm ht hμt x).mono fun x hx _ => hx)
+        ((condexpIndSMul_ae_eq_smul hm ht hμt x).mono fun _ hx _ => hx)
     _ = (∫ a in s, (condexpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) a ∂μ) • x :=
       (integral_smul_const _ x)
     _ = (μ (t ∩ s)).toReal • x := by rw [setIntegral_condexpL2_indicator hs ht hμs hμt]

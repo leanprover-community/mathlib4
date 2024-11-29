@@ -37,7 +37,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 -/
 
 
-universe u v w
+universe u v
 
 noncomputable section
 
@@ -47,8 +47,7 @@ open DirectSum TensorProduct
 
 open Set LinearMap Submodule
 
-variable {R : Type u} {M : Type v} {N : Type w}
-  [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {N : Type v} [CommSemiring R]
 
 variable {σ : Type*}
 

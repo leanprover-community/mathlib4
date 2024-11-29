@@ -260,9 +260,9 @@ variable {J : Type*} (T : J → Triangle C)
 /-- The product of a family of triangles. -/
 @[simps!]
 def productTriangle : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+  Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
+    (Limits.Pi.map (fun j => (T j).mor₂))
+    (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
 /-- A projection from the product of a family of triangles. -/
 @[simps]

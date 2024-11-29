@@ -94,7 +94,7 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
         simp only [NatTrans.naturality, assoc]
         have h := congr_app P.idem j
         rw [NatTrans.comp_app] at h
-        erw [reassoc_of% h, reassoc_of% h] }
+        rw [reassoc_of% h, reassoc_of% h] }
 
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]

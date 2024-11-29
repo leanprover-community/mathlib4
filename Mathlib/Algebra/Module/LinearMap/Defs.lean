@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.GroupTheory.GroupAction.Hom
 
@@ -57,9 +59,9 @@ assert_not_exists Field
 
 open Function
 
-universe u u' v w x y z
+universe u u' v w
 
-variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*}
+variable {R R₁ R₂ R₃ S S₃ T M M₁ M₂ M₃ N₂ N₃ : Type*}
 
 /-- A map `f` between modules over a semiring is linear if it satisfies the two properties
 `f (x + y) = f x + f y` and `f (c • x) = c • f x`. The predicate `IsLinearMap R f` asserts this
@@ -110,11 +112,7 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
 
 end
 
--- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
--- `σ` becomes a metavariable but that's fine because it's an `outParam`
--- attribute [nolint dangerousInstance] SemilinearMapClass.toAddHomClass
-
--- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
+-- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to https://github.com/leanprover/lean4/pull/3701.
 -- attribute [simp] map_smulₛₗ
 
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
@@ -139,7 +137,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
--- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
@@ -194,7 +191,6 @@ variable [Semiring R] [Semiring S]
 section
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
@@ -215,8 +211,6 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
     ⇑(f : M →ₛₗ[σ] M₃) = f :=
   rfl
-
--- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
@@ -286,7 +280,7 @@ as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the ide
 @[simps]
 def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
   toFun x := x
-  map_add' x y := rfl
+  map_add' _ _ := rfl
   map_smul' r x := by
     have := (RingHomId.eq_id : σ = _)
     subst this
@@ -301,15 +295,14 @@ end
 section
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable (σ : R →+* S)
-variable (fₗ gₗ : M →ₗ[R] M₂) (f g : M →ₛₗ[σ] M₃)
+variable (fₗ : M →ₗ[R] M₂) (f g : M →ₛₗ[σ] M₃)
 
 theorem isLinear : IsLinearMap R fₗ :=
   ⟨fₗ.map_add', fₗ.map_smul'⟩
 
-variable {fₗ gₗ f g σ}
+variable {fₗ f g σ}
 
 theorem coe_injective : Injective (DFunLike.coe : (M →ₛₗ[σ] M₃) → _) :=
   DFunLike.coe_injective
@@ -325,7 +318,7 @@ protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
 theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
   rfl
 
-variable (fₗ gₗ f g)
+variable (fₗ f g)
 
 protected theorem map_add (x y : M) : f (x + y) = f x + f y :=
   map_add f x y
@@ -336,7 +329,7 @@ protected theorem map_zero : f 0 = 0 :=
 -- Porting note: `simp` wasn't picking up `map_smulₛₗ` for `LinearMap`s without specifying
 -- `map_smulₛₗ f`, so we marked this as `@[simp]` in Mathlib3.
 -- For Mathlib4, let's try without the `@[simp]` attribute and hope it won't need to be re-enabled.
--- This has to be re-tagged as `@[simp]` in #8386 (see also leanprover/lean4#3107).
+-- This has to be re-tagged as `@[simp]` in https://github.com/leanprover-community/mathlib4/pull/8386 (see also https://github.com/leanprover/lean4/issues/3107).
 @[simp]
 protected theorem map_smulₛₗ (c : R) (x : M) : f (c • x) = σ c • f x :=
   map_smulₛₗ f c x
@@ -452,17 +445,6 @@ theorem toAddMonoidHom_injective :
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
 
-@[ext high]
-theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f (1 : R) = g (1 : R)) :
-    f = g :=
-  ext fun x ↦ by
-    -- Porting note: replaced the oneliner `rw` proof with a partially term-mode proof
-    -- because `rw` was giving "motive is type incorrect" errors
-    rw [← one_mul x, ← op_smul_eq_mul]
-    refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans ?_
-    rw [h]
-    exact (g.map_smulₛₗ (MulOpposite.op x) 1).symm
-
 end
 
 /-- Interpret a `RingHom` `f` as an `f`-semilinear map. -/
@@ -483,7 +465,7 @@ def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ�
     M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
-  -- Note that #8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
+  -- Note that https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
 
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -539,11 +521,11 @@ theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
 
 end
 
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
 
 /-- If a function `g` is a left and right inverse of a linear map `f`, then `g` is linear itself. -/
-def inverse [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
-    (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) :
+def inverse (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f) (h₂ : RightInverse g f) :
     M₂ →ₛₗ[σ'] M := by
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
   exact
@@ -553,6 +535,16 @@ def inverse [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [Rin
         dsimp only
         rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]
         simp [h₂] }
+
+variable (f : M →ₛₗ[σ] M₂) (g : M₂ →ₛₗ[σ'] M) (h : g.comp f = .id)
+
+include h
+
+theorem injective_of_comp_eq_id : Injective f :=
+  .of_comp (f := g) <| by simp_rw [← coe_comp, h, id_coe, bijective_id.1]
+
+theorem surjective_of_comp_eq_id : Surjective g :=
+  .of_comp (g := f) <| by simp_rw [← coe_comp, h, id_coe, bijective_id.2]
 
 end AddCommMonoid
 
@@ -604,21 +596,16 @@ variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[coe]
+@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
 def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
 
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
-instance instCoeTCSemilinearMap : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
-  ⟨toSemilinearMap⟩
-
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
+@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
 def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
-
-instance instCoeTCLinearMap : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
-  ⟨toLinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where
@@ -723,12 +710,11 @@ namespace LinearMap
 
 section SMul
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Module R M] [Module R₂ M₂]
+variable {σ₁₂ : R →+* R₂}
 variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
-variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
 instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
@@ -764,9 +750,9 @@ section Arithmetic
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommGroup N₁] [AddCommGroup N₂] [AddCommGroup N₃]
+variable [AddCommGroup N₂] [AddCommGroup N₃]
 variable [Module R₁ M] [Module R₂ M₂] [Module R₃ M₃]
-variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
+variable [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- The constant 0 map is linear. -/
@@ -899,7 +885,6 @@ section SMul
 
 variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
-variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
 instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂) where
   one_smul _ := ext fun _ ↦ one_smul _ _
@@ -933,9 +918,8 @@ end Actions
 
 section RestrictScalarsAsLinearMap
 
-variable {R S M N : Type*} [Semiring R] [Semiring S] [AddCommGroup M] [AddCommGroup N] [Module R M]
-   [Module R N] [Module S M] [Module S N]
-  [LinearMap.CompatibleSMul M N R S]
+variable {R S M N P : Type*} [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid N]
+  [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
 
 variable (R S M N) in
 @[simp]
@@ -948,7 +932,9 @@ theorem restrictScalars_add (f g : M →ₗ[S] N) :
   rfl
 
 @[simp]
-theorem restrictScalars_neg (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
+theorem restrictScalars_neg {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
+    (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
   rfl
 
 variable {R₁ : Type*} [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N] [SMulCommClass R R₁ N]
@@ -956,6 +942,18 @@ variable {R₁ : Type*} [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N]
 @[simp]
 theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
     (c • f).restrictScalars R = c • f.restrictScalars R :=
+  rfl
+
+@[simp]
+lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
+    [CompatibleSMul N P R S] [CompatibleSMul M P R S] (f : N →ₗ[S] P) (g : M →ₗ[S] N) :
+    (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R := by
+  rfl
+
+@[simp]
+lemma restrictScalars_trans {T : Type*} [CommSemiring T] [Module T M] [Module T N]
+    [CompatibleSMul M N S T] [CompatibleSMul M N R T] (f : M →ₗ[T] N) :
+    (f.restrictScalars S).restrictScalars R = f.restrictScalars R :=
   rfl
 
 variable (S M N R R₁)

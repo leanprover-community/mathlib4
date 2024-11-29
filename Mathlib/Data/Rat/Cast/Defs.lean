@@ -3,13 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Rat.Lemmas
+import Mathlib.Order.Nat
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Casts for Rational Numbers
@@ -19,14 +19,12 @@ import Mathlib.Data.Rat.Lemmas
 We define the canonical injection from ℚ into an arbitrary division ring and prove various
 casting lemmas showing the well-behavedness of this injection.
 
-## Notations
-
-- `/.` is infix notation for `Rat.divInt`.
-
 ## Tags
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
+
+assert_not_exists OrderedAddCommMonoid
 
 variable {F ι α β : Type*}
 
@@ -146,7 +144,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
     refine mt ?_ b0
-    simp (config := { contextual := true })
+    simp +contextual
   cases' e : a /. b with n d h c
   have d0 : (d : α) ≠ 0 := by
     intro d0
