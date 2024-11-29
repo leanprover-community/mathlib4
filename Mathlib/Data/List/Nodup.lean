@@ -227,7 +227,6 @@ theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := b
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
   pairwise_reverse.trans <| by simp only [Nodup, Ne, eq_comm]
 
-@[simp]
 lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
     Nodup l.reverse.tail ↔ Nodup l.tail := by
   induction l with
