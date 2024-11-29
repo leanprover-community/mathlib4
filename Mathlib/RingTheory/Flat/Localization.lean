@@ -57,8 +57,8 @@ private lemma aux (I : Ideal R) (s : Submonoid R) :
       TensorProduct.lift (lsmul R (LocalizedModule s M) ∘ₗ I.subtype) ∘ₗ e.toLinearMap := by
   refine linearMap_ext s (mkLinearMap s _) (mkLinearMap s _) ?_
   ext m i
-  show LocalizedModule.map s _ _ = _
-  rw [mkLinearMap_apply]
+  rw [AlgebraTensorModule.curry_apply, curry_apply, restrictScalars_apply, LinearMap.comp_apply,
+    restrictScalars_apply, mkLinearMap_apply]
   simpa [-mkLinearMap_apply, IsBaseChange.equiv_symm_apply, IsBaseChange.equiv_tmul] using
     (mkLinearMap_apply _ _ _).symm.trans (map_smul (mkLinearMap s M) _ _)
 
