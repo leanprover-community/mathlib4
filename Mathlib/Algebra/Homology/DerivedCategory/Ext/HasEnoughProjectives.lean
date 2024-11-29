@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
-import Mathlib.Algebra.Category.ModuleCat.Projective
 
 /-!
 # Smallness of Ext-groups from the existence of enough projectives
