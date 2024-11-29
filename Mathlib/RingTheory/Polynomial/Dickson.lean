@@ -151,14 +151,9 @@ theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] (n : ℕ) :
     dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X) :=
   (dickson_one_one_eq_chebyshev_C R n).trans (Chebyshev.C_eq_two_mul_T_comp_half_mul_X R n)
 
-set_option linter.uppercaseLean3 false in
-#align polynomial.dickson_one_one_eq_chebyshev_T Polynomial.dickson_one_one_eq_chebyshev_T
-
 theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
     Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) :=
   dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
-set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev_T_eq_dickson_one_one Polynomial.chebyshev_T_eq_dickson_one_one
 
 theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
   | 0 => by
