@@ -82,7 +82,9 @@ for message in messages:
             print('Removing bors')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": "bors"
+                "emoji_name": "bors",
+                "emoji_code": "22134",
+                "reaction_type": "realm_emoji",
             })
             print(f"result: '{result}'")
         if has_merge:
