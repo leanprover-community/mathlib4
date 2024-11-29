@@ -227,9 +227,6 @@ theorem isRightKanExtension :
 instance isCoskeletal : SimplicialObject.IsCoskeletal X 2 where
   isRightKanExtension := isRightKanExtension X
 
-/-- The canonical isomorphism `X ≅ (cosk 2).obj X` defined when `X` is `StrictSegal`. -/
-noncomputable def isoCosk2 : X ≅ (cosk 2).obj X := SimplicialObject.isoCoskOfIsCoskeletal X 2
-
 end StrictSegal
 
 end
