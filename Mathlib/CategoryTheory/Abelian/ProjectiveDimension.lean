@@ -26,7 +26,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 all `Ext X Y i` vanish when `n ≤ i`.
 (Do not use the `subsingleton'` field directly. Use the constructor
 `HasProjectiveDimensionLT.mk`, and the lemmas `hasProjectiveDimensionLT_iff` and
-`Ext.eq_zero_of_hasProjectiveDimensionLT`.)-/
+`Ext.eq_zero_of_hasProjectiveDimensionLT`.) -/
 class HasProjectiveDimensionLT (X : C) (n : ℕ) : Prop where mk' ::
   subsingleton' (i : ℕ) (hi : n ≤ i) ⦃Y : C⦄ :
     letI := HasExt.standard C
