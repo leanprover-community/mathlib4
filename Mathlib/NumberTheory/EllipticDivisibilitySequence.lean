@@ -15,9 +15,9 @@ This file defines the type of an elliptic divisibility sequence (EDS) and a few 
 ## Mathematical background
 
 Let `R` be a commutative ring. An elliptic sequence is a sequence `W : ℤ → R` satisfying
-`W(m + n)W(m - n)W(r)² = W(m + r)W(m - r)W(n)² - W(n + r)W(n - r)W(m)²`
-for any `m, n, r ∈ ℤ`. A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)`
-for any `m, n ∈ ℤ` such that `m ∣ n`.
+`W(m + n)W(m - n)W(r)² = W(m + r)W(m - r)W(n)² - W(n + r)W(n - r)W(m)²` for any `m, n, r ∈ ℤ`.
+A divisibility sequence is a sequence `W : ℤ → R` satisfying `W(m) ∣ W(n)` for any `m, n ∈ ℤ` such
+that `m ∣ n`. An elliptic divisibility sequence is simply a divisibility sequence that is elliptic.
 
 Some examples of EDSs include
  * the identity sequence,
@@ -250,7 +250,7 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
       preNormEDS b c d (m - 2) * preNormEDS b c d m * preNormEDS b c d (m + 1) ^ 2 := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _ | _ | m;
+    rcases m with _ | _ | _ | m
     · simp
     · simp
     · simp

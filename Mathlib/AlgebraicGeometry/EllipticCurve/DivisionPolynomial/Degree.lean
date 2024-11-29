@@ -25,16 +25,16 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 
 ## Main statements
 
- * `WeierstrassCurve.natDegree_preΨ_le`: the expected degree of `preΨₙ`.
- * `WeierstrassCurve.coeff_preΨ`: the expected leading coefficient of `preΨₙ`.
+ * `WeierstrassCurve.natDegree_preΨ_le`: the degree bound `d` of `preΨₙ`.
+ * `WeierstrassCurve.coeff_preΨ`: the `d`-th coefficient of `preΨₙ`.
  * `WeierstrassCurve.natDegree_preΨ`: the degree of `preΨₙ` when `n ≠ 0`.
  * `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of `preΨₙ` when `n ≠ 0`.
- * `WeierstrassCurve.natDegree_ΨSq_le`: the expected degree of `ΨSqₙ`.
- * `WeierstrassCurve.coeff_ΨSq`: the expected leading coefficient of `ΨSqₙ`.
+ * `WeierstrassCurve.natDegree_ΨSq_le`: the degree bound `d` of `ΨSqₙ`.
+ * `WeierstrassCurve.coeff_ΨSq`: the `d`-th coefficient of `ΨSqₙ`.
  * `WeierstrassCurve.natDegree_ΨSq`: the degree of `ΨSqₙ` when `n ≠ 0`.
  * `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of `ΨSqₙ` when `n ≠ 0`.
- * `WeierstrassCurve.natDegree_Φ_le`: the expected degree of `Φₙ`.
- * `WeierstrassCurve.coeff_Φ`: the expected leading coefficient of `Φₙ`.
+ * `WeierstrassCurve.natDegree_Φ_le`: the degree bound `d` of `Φₙ`.
+ * `WeierstrassCurve.coeff_Φ`: the `d`-th coefficient of `Φₙ`.
  * `WeierstrassCurve.natDegree_Φ`: the degree of `Φₙ` when `n ≠ 0`.
  * `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of `Φₙ` when `n ≠ 0`.
 
