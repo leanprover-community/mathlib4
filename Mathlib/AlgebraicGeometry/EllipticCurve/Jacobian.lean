@@ -1283,7 +1283,7 @@ variable (W') in
 /-- The addition of two point classes. If `P` is a point representative,
 then `W.addMap ⟦P⟧ ⟦Q⟧` is definitionally equivalent to `W.add P Q`. -/
 noncomputable def addMap (P Q : PointClass R) : PointClass R :=
-  Quotient.map₂ W'.add (fun _ _ hP _ _ hQ => add_equiv hP hQ) P Q
+  Quotient.map₂ W'.add (fun _ _ _ _ hP hQ => add_equiv hP hQ) P Q
 
 lemma addMap_eq (P Q : Fin 3 → R) : W'.addMap ⟦P⟧ ⟦Q⟧ = ⟦W'.add P Q⟧ :=
   rfl

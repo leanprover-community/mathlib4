@@ -173,7 +173,7 @@ def prodHomotopy (h₁ : Path.Homotopy p₁ p₁') (h₂ : Path.Homotopy p₂ p�
 /-- The product of path classes q₁ and q₂. This is `Path.prod` descended to the quotient. -/
 def prod (q₁ : Path.Homotopic.Quotient a₁ a₂) (q₂ : Path.Homotopic.Quotient b₁ b₂) :
     Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂) :=
-  Quotient.map₂ Path.prod (fun _ _ h₁ _ _ h₂ => Nonempty.map2 prodHomotopy h₁ h₂) q₁ q₂
+  Quotient.map₂ Path.prod (fun _ _ _ _ h₁ h₂ => Nonempty.map2 prodHomotopy h₁ h₂) q₁ q₂
 
 variable (p₁ p₁' p₂ p₂')
 

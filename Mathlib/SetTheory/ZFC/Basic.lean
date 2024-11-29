@@ -837,7 +837,7 @@ theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
 /-- `Insert x y` is the set `{x} ∪ y` -/
 protected def Insert : ZFSet → ZFSet → ZFSet :=
   Quotient.map₂ PSet.insert
-    fun _ _ uv ⟨_, _⟩ ⟨_, _⟩ ⟨αβ, βα⟩ =>
+    fun _ _ ⟨_, _⟩ ⟨_, _⟩ uv ⟨αβ, βα⟩ =>
       ⟨fun o =>
         match o with
         | some a =>

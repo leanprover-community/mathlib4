@@ -109,7 +109,7 @@ def ColimitType : Type v :=
 instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
 
 instance ColimitType.instAdd : Add (ColimitType F) where
-  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
+  add := Quotient.map₂ add <| fun _x x' y _y' rx ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
 
 instance ColimitType.instNeg : Neg (ColimitType F) where
@@ -411,7 +411,7 @@ def ColimitType : Type v :=
 instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
 
 instance ColimitType.instAdd : Add (ColimitType F) where
-  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
+  add := Quotient.map₂ add <| fun _x x' y _y' rx ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
 
 instance ColimitType.instNeg : Neg (ColimitType F) where

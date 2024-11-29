@@ -66,7 +66,7 @@ theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
   rwa [sub_zero] at this
 
 instance : Add (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
+  ⟨(Quotient.map₂ (· + ·)) fun _ _ _ _ hf hg => add_equiv_add hf hg⟩
 
 @[simp]
 theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
@@ -80,14 +80,14 @@ theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
   rfl
 
 instance : Mul (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
+  ⟨(Quotient.map₂ (· * ·)) fun _ _ _ _ hf hg => mul_equiv_mul hf hg⟩
 
 @[simp]
 theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
   rfl
 
 instance : Sub (Cauchy abv) :=
-  ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
+  ⟨(Quotient.map₂ Sub.sub) fun _ _ _ _ hf hg => sub_equiv_sub hf hg⟩
 
 @[simp]
 theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=

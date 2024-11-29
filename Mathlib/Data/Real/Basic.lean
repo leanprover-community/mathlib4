@@ -392,7 +392,7 @@ instance nontrivial : Nontrivial ℝ :=
   inferInstance
 
 private irreducible_def sup : ℝ → ℝ → ℝ
-  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
+  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ _ _ hx hy => sup_equiv_sup hx hy) x y⟩
 
 instance : Max ℝ :=
   ⟨sup⟩
@@ -407,7 +407,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 
 private irreducible_def inf : ℝ → ℝ → ℝ
-  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
+  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ _ _ hx hy => inf_equiv_inf hx hy) x y⟩
 
 instance : Min ℝ :=
   ⟨inf⟩
