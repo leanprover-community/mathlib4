@@ -57,6 +57,8 @@ pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/
 print(f"Searching for: '{pr_pattern}'")
 
 for message in messages:
+    if message['display_recipient'] == 'rss':
+        continue
     content = message['content']
     # Check for emoji reactions
     reactions = message['reactions']
@@ -80,7 +82,9 @@ for message in messages:
             print('Removing bors')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": "bors"
+                "emoji_name": "bors",
+                "emoji_code": "22134",
+                "reaction_type": "realm_emoji",
             })
             print(f"result: '{result}'")
         if has_merge:

@@ -193,6 +193,30 @@ instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 
+instance (priority := 100) MulLeftMono.toPosMulMono [MulLeftMono α] :
+    PosMulMono α where elim _ _ := ‹MulLeftMono α›.elim _
+
+instance (priority := 100) MulRightMono.toMulPosMono [MulRightMono α] :
+    MulPosMono α where elim _ _ := ‹MulRightMono α›.elim _
+
+instance (priority := 100) MulLeftStrictMono.toPosMulStrictMono [MulLeftStrictMono α] :
+    PosMulStrictMono α where elim _ _ := ‹MulLeftStrictMono α›.elim _
+
+instance (priority := 100) MulRightStrictMono.toMulPosStrictMono [MulRightStrictMono α] :
+    MulPosStrictMono α where elim _ _ := ‹MulRightStrictMono α›.elim _
+
+instance (priority := 100) MulLeftMono.toPosMulReflectLT [MulLeftReflectLT α] :
+   PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
+
+instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α] :
+   MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
+
+instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
+   PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
+
+instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
+   MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
+
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
   @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨a, a0⟩ _ _ h
