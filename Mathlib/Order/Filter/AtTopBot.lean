@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Bases
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.Interval.Set.OrderIso

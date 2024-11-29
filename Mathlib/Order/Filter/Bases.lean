@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Data.Prod.PProd
-import Mathlib.Order.Filter.Basic
+import Mathlib.Data.Set.Countable
+import Mathlib.Order.Filter.Finite
 
 /-!
 # Filter bases

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Finset.Sort
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
@@ -127,6 +128,9 @@ instance mul' : Mul R[X] :=
 @[simp] theorem add_eq_add : add p q = p + q := rfl
 @[simp] theorem mul_eq_mul : mul p q = p * q := rfl
 
+instance instNSMul : SMul ℕ R[X] where
+  smul r p := ⟨r • p.toFinsupp⟩
+
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
@@ -158,6 +162,11 @@ theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a�
 @[simp]
 theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ :=
   show _ = mul _ _ by rw [mul_def]
+
+@[simp]
+theorem ofFinsupp_nsmul (a : ℕ) (b) :
+    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
+  rfl
 
 @[simp]
 theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
@@ -201,6 +210,11 @@ theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsu
   cases a
   cases b
   rw [← ofFinsupp_mul]
+
+@[simp]
+theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) :
+    (a • b).toFinsupp = a • b.toFinsupp :=
+  rfl
 
 @[simp]
 theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
@@ -250,7 +264,7 @@ instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 instance semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
-      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
+      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow fun _ => rfl with
     toAdd := Polynomial.add'
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
@@ -1031,14 +1045,27 @@ section Ring
 
 variable [Ring R]
 
+instance instZSMul : SMul ℤ R[X] where
+  smul r p := ⟨r • p.toFinsupp⟩
+
+@[simp]
+theorem ofFinsupp_zsmul (a : ℤ) (b) :
+    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
+  rfl
+
+@[simp]
+theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
+    (a • b).toFinsupp = a • b.toFinsupp :=
+  rfl
+
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
 
 instance ring : Ring R[X] :=
   --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
-      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
-      (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
+      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_nsmul _ _)
+      (fun _ _ => toFinsupp_zsmul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
     toSemiring := Polynomial.semiring,
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
