@@ -1,0 +1,103 @@
+name: Add "ready-to-merge" and "delegated" label
+
+# triggers the action when
+on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created,edited]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created,edited]
+
+jobs:
+  process-comment:
+    name: 'Process PR comment'
+    runs-on: ubuntu-latest
+    env:
+      COMMENT: ${{ github.event.comment.body }}${{ github.event.review.body }}
+    outputs:
+      is_reviewer: ${{steps.reviewer_check.outputs.permitted}}
+      # either an admin or one of two bots is considered to be a maintainer
+      is_maintainer: ${{steps.user_permission.outputs.require-result ||
+        contains(fromJSON('["leanprover-community-mathlib4-bot","leanprover-community-bot-assistant"]'),
+          format('{}{}',github.event.comment.user.login,github.event.review.user.login))}}
+
+      parse_result: ${{fromJSON(steps.normalise_commands.parse-result)}}
+      #not sure if the rest is relevant; tbd.
+      pr_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+      pr_title_issue: ${{ github.event.issue.title }}
+      pr_title_pr: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
+      event_name: ${{ github.event_name }}
+    steps:
+    - name: Check user is reviewer
+      id: 'reviewer_check'
+      uses: TheModdingInquisition/actions-team-membership@v1.0
+      with:
+        organization: 'leanprover-community'
+        team: 'mathlib-reviewers' # required. The team to check for
+        token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
+        comment: 'You seem to not be authorized' # optional. A comment to post if the user is not part of the team.
+                                                # This feature is only applicable in an issue (or PR) context
+
+    - name: Check whether user is a mathlib admin
+      id: user_permission
+      uses: actions-cool/check-user-permission@v2
+      with:
+        require: 'admin'
+
+    - name: 'find commands'
+      id: 'find_commands'
+      run: |
+        # we strip `\r` since line endings from GitHub contain this character
+        COMMENT="${COMMENT//$'\r'/}"
+
+        # for debugging, we print some information
+        printf '%s' "${COMMENT}" | hexdump -cC
+        printf 'Comment:"%s"\n' "${COMMENT}"
+
+        COMMANDS="$(printf '%s' "${COMMENT}" |
+          # captures `maintainer/bors merge/r/delegate/d` as well as an optional `?`/`+`/`-`, ignoring subsequent spaces
+          sed -n 's=^\(maintainer\|bors\)  *\(merge\|r\|delegate\|d\)\(+\|-\|?\)\?\) *$={"command-name":"\1","action":"\2","option":"\3"}=p')"
+
+        COMMAND="$(printf '%s' "${COMMANDS}" |
+          # replaces `r-` with `clear`, `r` with `merge`, and `d` with `delegate`. Then take the first result
+          sed 's="r","option":"-"="clear","option":""=;s="r"="merge"=;s="d"="delegate"=' | head -1)"
+
+        printf $'"maintainer delegate" or "maintainer merge" found? \'%s\'\n' "${COMMAND}"
+        printf $'parse-result=[%s]\n' "${COMMANDS}" > "${GITHUB_OUTPUT}"
+
+  maintainer-command:
+    needs: process-comment
+    if: ${{ needs.process-comment.outputs.is_reviewer}}
+    strategy:
+      matrix:
+        command: ${{ needs.process-comment.outputs.parse_result}}
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Run maintainer command
+      #check the command is of the appropriate form
+      if: matrix.command.command-name == 'maintainer' &&
+        contains(fromJSON('["","?"]'),matrix.command.option)
+      run: |
+        echo "maintainer command is happens with ${{toJSON(matrix.command)}}"
+
+  bors-command:
+    needs: process-comment
+    if: needs.process-comment.outputs.is_maintainer
+    strategy:
+      matrix:
+        # for each command in the parse result, run the command
+        command: ${{ needs.process-comment.outputs.parse_result }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'run bors command'
+      # check the command is of an acceptable form. it allows "bors merge+" and "bors r" variants.
+      if: matrix.command.command-name == 'bors' && ${{! matrix.command.option == '?'}}
+      run: |
+        echo "bors command is happens with ${{toJSON(matrix.command)}}"
