@@ -3,7 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 
@@ -99,6 +99,51 @@ instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgeb
 end Field
 
 end Ring
+
+section CommRing
+
+variable {K L} [Field K] [Field L] [Ring A]
+variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
+
+/-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
+then A is algebraic over K. -/
+@[stacks 09GJ]
+protected theorem Algebra.IsAlgebraic.trans
+    [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
+    Algebra.IsAlgebraic K A := by
+  rw [Algebra.isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
+  exact Algebra.IsIntegral.trans L
+
+end CommRing
+
+section Field
+
+variable {K L} [Field K] [Ring A] [Algebra K A]
+
+/-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
+transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
+See also `Transcendental.aeval_of_transcendental` and `Transcendental.of_aeval`. -/
+@[simp]
+theorem transcendental_aeval_iff {r : A} {f : K[X]} :
+    Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
+  refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
+  rw [Transcendental] at h ⊢
+  contrapose! h
+  rw [isAlgebraic_iff_isIntegral] at h ⊢
+  exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
+
+variable [Field L] [Algebra K L]
+
+theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
+  (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
+
+variable (K L) in
+/-- Bijection between algebra equivalences and algebra homomorphisms -/
+noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
+    (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
+  Algebra.IsAlgebraic.algEquivEquivAlgHom K L
+
+end Field
 
 end
 
