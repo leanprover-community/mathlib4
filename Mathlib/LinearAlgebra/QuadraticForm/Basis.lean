@@ -259,15 +259,6 @@ lemma tensorDistribFree_apply
   tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂) =
     ((Q₁.toBilin bm₁).tmul (Q₂.toBilin bm₂)).toQuadraticMap := rfl
 
-lemma tensorDistriFree_polar
-    (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂) :
-    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
-    (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂) := by
-  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
-    BilinMap.tensorDistrib_tmul, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
-    above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
-
-
 lemma tensorDistriFree_left_self (a : M₁) (b c : M₂):
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (a ⊗ₜ b) (a ⊗ₜ c) =
     Q₁ a ⊗ₜ polarBilin Q₂ b c := by
@@ -283,6 +274,43 @@ lemma tensorDistriFree_right_self (a b : M₁) (c : M₂):
     BilinMap.tensorDistrib_tmul, ← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin,
     ← TensorProduct.add_tmul, ← toBilin_symm_eq_Polar Q₁ bm₁]
   rfl
+
+lemma tensorDistriFree_polar11
+    (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂) :
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
+      (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂) := by
+  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
+    BilinMap.tensorDistrib_tmul, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
+    above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
+
+lemma tensorDistriFree_polar12
+    (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : j₂ < i₂) :
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) = 0 := by
+  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
+    BilinMap.tensorDistrib_tmul, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
+    above_diag Q₁ bm₁ i₁ j₁ h₁, below_diag _ _ _ _ h₂, tmul_zero]
+
+lemma tensorDistriFree_polar21
+    (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : j₁ < i₁) (h₂ : i₂ < j₂) :
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) = 0 := by
+  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
+    BilinMap.tensorDistrib_tmul]
+  rw [above_diag Q₂ bm₂ i₂ j₂ h₂]
+  rw [below_diag _ _ _ _ h₂]
+  rw [tmul_zero, add_zero]
+  rw [below_diag _ _ _ _ h₁]
+  rw [zero_tmul]
+
+lemma tensorDistriFree_polar22
+    (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : j₁ < i₁) (h₂ : j₂ < i₂) :
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
+      (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂) := by
+    rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
+    BilinMap.tensorDistrib_tmul, above_diag Q₁ bm₁ j₁ i₁ h₁] --, zero_tmul, add_zero,
+    rw [below_diag Q₁ bm₁ i₁ j₁ h₁, below_diag _ _ _ _ h₂, tmul_zero]
+    rw [zero_add]
+    rw [above_diag _ _ _ _ h₂]
+    rw [polar_comm, polar_comm Q₂]
 
 lemma tensorDistriFree_polar1 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ = j₁) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
@@ -313,3 +341,73 @@ theorem qt_expansion (x : M₁ ⊗[R] M₂) :
 end TensorProduct
 
 end QuadraticMap
+
+section Prod
+
+variable {ι₁ : Type*} [LT ι₁]
+variable {ι₂ : Type*} [LT ι₂]
+
+--#check Prod.instLE_mathlib
+
+--#check Prod.lt_iff
+-- x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2
+
+-- (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂)
+
+--def r : (ι₁ × ι₂) → (ι₁ × ι₂) → Prop := fun (i₁, i₂) (j₁, j₂) => i₁ < j₁ ∧ i₂ < j₂
+
+-- f : α → α → β → β → γ
+
+/-
+def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β)
+
+def lift₂ :
+    { f : α → α → β → β → γ //
+        ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
+      (Sym2 α → Sym2 β → γ) where
+
+Eq.{u_1} {α : Sort u_1} : α → α → Prop
+
+def IsDiag : Sym2 α → Prop :=
+  lift ⟨Eq, fun _ _ => propext eq_comm⟩
+
+def Test : Sym2 (ι₁ × ι₂) → Prop
+
+-/
+
+/-
+def r : (ι₁ × ι₂) → (ι₁ × ι₂) → Prop := fun (i₁, i₂) (j₁, j₂) => i₁ < j₁ ∧ i₂ < j₂
+
+lemma test1 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) : i₁ < j₁ ∧ i₂ < j₂ ↔ i₂ < j₂ ∧ i₁ < j₁ := by
+  apply Iff.intro
+  · intro a
+    simp_all only [and_self]
+  · intro a
+    simp_all only [and_self]
+
+lemma test (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) : r (i₁, i₂) (j₁, j₂) = r (j₁, j₂) (i₁, i₂) := by
+  simp_all only [eq_iff_iff]
+  rw [r]
+  rw [and_comm]
+  rw [r]
+  apply Iff.intro
+  · intro a
+    rw [r]
+    simp_all only [r, and_self]
+  · intro a
+    simp_all only [and_self]
+
+#check Sym2.lift ⟨r,by
+  rintro ⟨p1, p2⟩  ⟨q1, q2⟩
+  simp_all only [eq_iff_iff]
+  apply Iff.intro
+  · intro a
+    sorry
+  · intro a
+    sorry
+⟩
+
+def r' : Sym2 (ι₁ × ι₂) → Sym2 (ι₁ × ι₂) → Prop := Sym2.lift₂ ⟨r,sorry⟩
+-/
+
+end Prod
