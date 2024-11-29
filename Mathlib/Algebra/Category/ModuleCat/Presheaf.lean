@@ -347,7 +347,8 @@ variable (M : PresheafOfModules.{v} R)
 noncomputable abbrev forgetToPresheafModuleCatObjObj (Y : Cᵒᵖ) : ModuleCat (R.obj X) :=
   (ModuleCat.restrictScalars (R.map (hX.to Y))).obj (M.obj Y)
 
-@[simp]
+-- This should not be a `simp` lemma because `M.obj Y` is missing the `Module (R.obj X)` instance,
+-- so `simp`ing breaks downstream proofs.
 lemma forgetToPresheafModuleCatObjObj_coe (Y : Cᵒᵖ) :
     (forgetToPresheafModuleCatObjObj X hX M Y : Type _) = M.obj Y := rfl
 
@@ -384,13 +385,6 @@ noncomputable def forgetToPresheafModuleCatObj
     Cᵒᵖ ⥤ ModuleCat (R.obj X) where
   obj Y := forgetToPresheafModuleCatObjObj X hX M Y
   map f := forgetToPresheafModuleCatObjMap X hX M f
-  -- TODO: the lines below were automatic: probably there's some defeq mismatch between `M.obj` and
-  -- `forgetToPresheafModuleCatObjObj` in `forgetToPresheafModuleCatObjMap`...
-  map_id Y := by ext; simp only [forgetToPresheafModuleCatObjMap_apply]; simp
-  map_comp f g := by
-    ext
-    simp only [ModuleCat.hom_comp, LinearMap.comp_apply, forgetToPresheafModuleCatObjMap_apply]
-    simp
 
 end
 

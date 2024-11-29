@@ -314,8 +314,13 @@ def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by aesop) m₀ (by simp)).symm)
 
-@[simp]
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
+    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
+
+/-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
+@[simp]
+lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
+    DFunLike.coe (F := (_ →ₗ[_] ↑((ModuleCat.restrictScalars (α.app X)).obj _)))
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
 @[simp]

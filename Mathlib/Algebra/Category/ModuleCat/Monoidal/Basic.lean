@@ -315,4 +315,7 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     simp [TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
+@[simp] lemma asHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
+    asHom₂ (f.compr₂ g) = asHom₂ f ≫ asHom (Linear.rightComp R _ (asHom g)) := rfl
+
 end ModuleCat
