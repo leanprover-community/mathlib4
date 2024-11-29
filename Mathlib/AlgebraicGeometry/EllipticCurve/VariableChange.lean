@@ -47,8 +47,7 @@ section VariableChange
 /-- An admissible linear change of variables of Weierstrass curves defined over a ring `R` given by
 a tuple $(u, r, s, t)$ for some $u \in R^\times$ and some $r, s, t \in R$. As a matrix, it is
 $\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}$.
-On Weierstrass equation, it is
-$(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$.
+In other words, this is the change of variables $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$.
 When `R` is a field, any two isomorphic Weierstrass equations are related by this. -/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where

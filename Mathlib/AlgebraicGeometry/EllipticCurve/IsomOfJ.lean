@@ -8,9 +8,7 @@ import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
-# Further properties of j-invariants of elliptic curves
-
-This file states some further properties of j-invariants of elliptic curves.
+# Elliptic curves with same j-invariants are isomorphic
 
 ## Main results
 
