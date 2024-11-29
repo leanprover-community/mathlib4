@@ -219,7 +219,7 @@ noncomputable def isPointwiseRightKanExtension :
   fun Δ => isPointwiseRightKanExtensionAt X Δ.unop.len
 
 theorem isRightKanExtension :
-    (rightExtensionInclusion X 2).left.IsRightKanExtension (rightExtensionInclusion X 2).hom :=
+    X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
     (isPointwiseRightKanExtension X)
 
