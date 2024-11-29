@@ -61,8 +61,8 @@ sequentially closed, sequentially compact, sequential space
 -/
 
 
-open Set Function Filter TopologicalSpace Bornology
-open scoped Topology Uniformity
+open Bornology Filter Function Set TopologicalSpace Topology
+open scoped Uniformity
 
 variable {X Y : Type*}
 
@@ -151,7 +151,7 @@ instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysoh
     SequentialSpace X :=
   ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seqClosure_eq]⟩
 
-theorem IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
+theorem Topology.IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
     (hf : IsInducing f) : FrechetUrysohnSpace X := by
   refine ⟨fun s x hx ↦ ?_⟩
   rw [hf.closure_eq_preimage_closure_image, mem_preimage, mem_closure_iff_seq_limit] at hx
@@ -210,9 +210,8 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
   rw [sup_eq_iSup]
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
-theorem IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : IsQuotientMap f) :
-    SequentialSpace Y :=
-  hf.2.symm ▸ .coinduced f
+lemma Topology.IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y}
+    (hf : IsQuotientMap f) : SequentialSpace Y := hf.2.symm ▸ .coinduced f
 
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap.sequentialSpace := IsQuotientMap.sequentialSpace
