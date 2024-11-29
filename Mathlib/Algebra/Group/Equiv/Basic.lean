@@ -45,37 +45,6 @@ theorem map_ne_one_iff {f : F} {x : M} :
 
 end EmbeddingLike
 
-/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
-@[to_additive (attr := simps)
-  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
-def OneHom.inverse [One M] [One N]
-    (f : OneHom M N) (g : N → M)
-    (h₁ : Function.LeftInverse g f) :
-  OneHom N M :=
-  { toFun := g,
-    map_one' := by rw [← f.map_one, h₁] }
-
-/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive (attr := simps)
-  "Makes an additive inverse from a bijection which preserves addition."]
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
-    (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : N →ₙ* M where
-  toFun := g
-  map_mul' x y :=
-    calc
-      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
-      _ = g (f (g x * g y)) := by rw [f.map_mul]
-      _ = g x * g y := h₁ _
-
-/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps)
-  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
-def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
-  { (f : OneHom A B).inverse g h₁,
-    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
-
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
 structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
@@ -125,11 +94,27 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
+@[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
 
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated EmbeddingLike.map_eq_one_iff (since := "2024-11-10")]
+MulEquivClass.map_eq_one_iff
+attribute [deprecated EmbeddingLike.map_eq_zero_iff (since := "2024-11-10")]
+AddEquivClass.map_eq_zero_iff
+
+
+@[to_additive]
 alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated EmbeddingLike.map_ne_one_iff (since := "2024-11-10")]
+MulEquivClass.map_ne_one_iff
+attribute [deprecated EmbeddingLike.map_ne_zero_iff (since := "2024-11-10")]
+AddEquivClass.map_ne_zero_iff
+
 
 namespace MulEquivClass
 

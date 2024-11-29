@@ -444,7 +444,7 @@ theorem second_derivative_symmetric {f' : E → E →L[𝕜] F} {f'' : E →L[�
   second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w
 
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
+theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞} (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
     IsSymmSndFDerivAt 𝕜 f x := by
   intro v w
   apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
@@ -462,7 +462,7 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (
 
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hn : 2 ≤ n) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
   /- We argue that, at interior points, the second derivative is symmetric, and moreover by
