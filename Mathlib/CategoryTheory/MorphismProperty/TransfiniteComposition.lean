@@ -102,7 +102,7 @@ lemma mem_of_transfinite_composition
     {F : J ⥤ C} [F.IsWellOrderContinuous]
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
-      IsStableUnderTransfiniteCompositionOfShape.mem F hF c hc
+  IsStableUnderTransfiniteCompositionOfShape.mem F hF c hc
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite composition
 if it is multiplicative and stable under transfinite composition of any shape
