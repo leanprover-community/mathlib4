@@ -6,6 +6,11 @@ jobs:
     if: github.event.label.name == 'awaiting-author'
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout mathlib repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # donwload the full repository
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
