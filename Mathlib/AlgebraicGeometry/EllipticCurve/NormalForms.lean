@@ -241,8 +241,7 @@ theorem Δ_of_isShortNF_of_char_three : W.Δ = -W.a₄ ^ 3 := by
 
 variable (W : WeierstrassCurve F) [W.IsElliptic] [W.IsShortNF]
 
-theorem j_of_isShortNF :
-    W.j = 6912 * W.a₄ ^ 3 / (4 * W.a₄ ^ 3 + 27 * W.a₆ ^ 2) := by
+theorem j_of_isShortNF : W.j = 6912 * W.a₄ ^ 3 / (4 * W.a₄ ^ 3 + 27 * W.a₆ ^ 2) := by
   have h := W.Δ'.ne_zero
   rw [coe_Δ', Δ_of_isShortNF] at h
   rw [j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, coe_Δ',
