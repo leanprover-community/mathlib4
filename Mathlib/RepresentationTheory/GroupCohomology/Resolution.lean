@@ -70,12 +70,6 @@ universe u v w
 
 variable {k G : Type u} [CommRing k] {n : ℕ}
 
--- TODO! Find a good home for me
-lemma ModuleCat.hom_sum {ι : Type*} {M N : ModuleCat k} (f : ι → (M ⟶ N)) (s : Finset ι) :
-    (∑ i in s, f i).hom = ∑ i in s, (f i).hom :=
-  map_sum ({ toFun := ModuleCat.Hom.hom, map_zero' := ModuleCat.hom_zero, map_add' :=
-    ModuleCat.hom_add } : (M ⟶ N) →+ (M →ₗ[k] N)) _ _
-
 open CategoryTheory Finsupp
 
 local notation "Gⁿ" => Fin n → G

@@ -82,19 +82,18 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  (Rep.homMulEquiv _).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.homMulEquiv _).toMonoidHom.comp (Action.ρ V)
 
 @[simp]
 lemma homMulEquiv_symm_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (Rep.homMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
+    (MonoidHomClass.toMonoidHom (ModuleCat.homMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
 
 @[simp]
 lemma homMulEquiv_comp_ρ (V : FDRep k G) :
-    (MonoidHomClass.toMonoidHom (Rep.homMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+    (MonoidHomClass.toMonoidHom (ModuleCat.homMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
 
 @[simp]
-lemma hom_action_ρ (V : FDRep k G) (g : G) :
-    (Action.ρ V g).hom = ρ V g := rfl
+lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
@@ -112,7 +111,7 @@ theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
-  ⟨FGModuleCat.of k V, ρ ≫ MonCat.ofHom (Rep.homMulEquiv _).symm.toMonoidHom⟩
+  ⟨FGModuleCat.of k V, ρ ≫ MonCat.ofHom (ModuleCat.homMulEquiv _).symm.toMonoidHom⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)

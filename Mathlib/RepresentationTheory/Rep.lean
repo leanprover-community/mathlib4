@@ -57,25 +57,15 @@ instance (V : Rep k G) : Module k V := by
   change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
 
--- TODO: is there some abstract machinery for this?
-/-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
-@[simps]
-def homMulEquiv (V : ModuleCat k) : End V ≃* (V →ₗ[k] V) where
-  toFun := ModuleCat.Hom.hom
-  invFun := ModuleCat.asHom
-  map_mul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
-
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
 -- Porting note: was `V.ρ`
-  (homMulEquiv V.V).toMonoidHom.comp (Action.ρ V)
+  (ModuleCat.homMulEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
 /-- Lift an unbundled representation to `Rep`. -/
 def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
-  ⟨ModuleCat.of k V, MonCat.ofHom ((homMulEquiv _).symm.toMonoidHom.comp ρ) ⟩
+  ⟨ModuleCat.of k V, MonCat.ofHom ((ModuleCat.homMulEquiv _).symm.toMonoidHom.comp ρ) ⟩
 
 @[simp]
 theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
@@ -86,8 +76,15 @@ theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[
 theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : (of ρ).ρ = ρ :=
   rfl
 
-theorem Action_ρ_eq_ρ {A : Rep k G} : Action.ρ A = (homMulEquiv _).symm.toMonoidHom.comp A.ρ :=
+theorem Action_ρ_eq_ρ {A : Rep k G} :
+    Action.ρ A = (ModuleCat.homMulEquiv _).symm.toMonoidHom.comp A.ρ :=
   rfl
+
+@[simp]
+lemma ρ_hom {X : Rep k G} (g : G) : (Action.ρ X g).hom = X.ρ g := rfl
+
+@[simp]
+lemma asHom_ρ {X : Rep k G} (g : G) : ModuleCat.asHom (X.ρ g) = Action.ρ X g := rfl
 
 /-- Allows us to apply lemmas about the underlying `ρ`, which would take an element `g : G` rather
 than `g : MonCat.of G` as an argument. -/
