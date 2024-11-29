@@ -949,6 +949,12 @@ open Set
 lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
 
+@[simp]
+theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
+    update (p.insertNth x f) p y = p.insertNth y f := by
+  ext i
+  cases i using p.succAboveCases <;> simp [succAbove_ne]
+
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the `p`-th element of the tuple.
 
