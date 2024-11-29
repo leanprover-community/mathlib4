@@ -274,10 +274,10 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
     · aesop
-    · simp [hn0, Walk.getVert_cons p h hm0] at hnm
+    · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
       have hvp : v ∉ p.support := by aesop
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
-    · simp [hm0, Walk.getVert_cons p h hn0] at hnm
+    · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
       have hvp : v ∉ p.support := by aesop
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
     · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
