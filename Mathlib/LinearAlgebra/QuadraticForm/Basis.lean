@@ -15,6 +15,24 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
+section Prod
+
+variable {ι₁ : Type*} --[LT ι₁]
+variable {ι₂ : Type*} --[LT ι₂]
+
+
+/-- Off the diagonal in both components -/
+def symOffDiag : Sym2 (ι₁ × ι₂) → Prop := Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => i₁ ≠ j₁ ∧ i₂ ≠ j₂, by
+  aesop⟩
+
+variable [LT ι₁] [LT ι₂]
+
+/-- Triangular -/
+def symOffDiagUpper : Sym2 (ι₁ × ι₂) → Prop :=
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₁ < j₁ ∧ i₂ < j₂) ∨ j₁ < i₁ ∧ j₂ < i₂, by aesop⟩
+
+end Prod
+
 open LinearMap (BilinMap)
 
 namespace QuadraticMap
@@ -347,80 +365,3 @@ theorem qt_expansion (x : M₁ ⊗[R] M₂) :
 end TensorProduct
 
 end QuadraticMap
-
-section Prod
-
-variable {ι₁ : Type*} --[LT ι₁]
-variable {ι₂ : Type*} --[LT ι₂]
-
-def offDiag : (ι₁ × ι₂) → (ι₁ × ι₂) → Prop := fun (i₁, i₂) (j₁, j₂) => i₁ ≠ j₁ ∧ i₂ ≠ j₂
-
-def symOffDiag : Sym2 (ι₁ × ι₂) → Prop := Sym2.lift ⟨offDiag, by
-  intro _ _
-  rw [offDiag, offDiag]
-  aesop⟩
-
---#check Prod.instLE_mathlib
-
---#check Prod.lt_iff
--- x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2
-
--- (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂)
-
---def r : (ι₁ × ι₂) → (ι₁ × ι₂) → Prop := fun (i₁, i₂) (j₁, j₂) => i₁ < j₁ ∧ i₂ < j₂
-
--- f : α → α → β → β → γ
-
-/-
-def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β)
-
-def lift₂ :
-    { f : α → α → β → β → γ //
-        ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
-      (Sym2 α → Sym2 β → γ) where
-
-Eq.{u_1} {α : Sort u_1} : α → α → Prop
-
-def IsDiag : Sym2 α → Prop :=
-  lift ⟨Eq, fun _ _ => propext eq_comm⟩
-
-def Test : Sym2 (ι₁ × ι₂) → Prop
-
--/
-
-/-
-def r : (ι₁ × ι₂) → (ι₁ × ι₂) → Prop := fun (i₁, i₂) (j₁, j₂) => i₁ < j₁ ∧ i₂ < j₂
-
-lemma test1 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) : i₁ < j₁ ∧ i₂ < j₂ ↔ i₂ < j₂ ∧ i₁ < j₁ := by
-  apply Iff.intro
-  · intro a
-    simp_all only [and_self]
-  · intro a
-    simp_all only [and_self]
-
-lemma test (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) : r (i₁, i₂) (j₁, j₂) = r (j₁, j₂) (i₁, i₂) := by
-  simp_all only [eq_iff_iff]
-  rw [r]
-  rw [and_comm]
-  rw [r]
-  apply Iff.intro
-  · intro a
-    rw [r]
-    simp_all only [r, and_self]
-  · intro a
-    simp_all only [and_self]
-
-#check Sym2.lift ⟨r,by
-  rintro ⟨p1, p2⟩  ⟨q1, q2⟩
-  simp_all only [eq_iff_iff]
-  apply Iff.intro
-  · intro a
-    sorry
-  · intro a
-    sorry
-⟩
-
-def r' : Sym2 (ι₁ × ι₂) → Sym2 (ι₁ × ι₂) → Prop := Sym2.lift₂ ⟨r,sorry⟩
--/
-
-end Prod
