@@ -210,10 +210,7 @@ def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} 
   KernelFork.IsLimit.ofι _ _
     (fun s hs ↦ hc.lift (KernelFork.ofι (ι := s ≫ e.inv)
       (by rw [iff, Category.assoc, Iso.inv_hom_id_assoc, hs])))
-    (fun s hs ↦ by
-      rw [← cancel_mono e.inv, Category.assoc, Category.assoc, e.hom_inv_id]
-      dsimp
-      rw [Category.comp_id, Fork.IsLimit.lift_ι, Fork.ι_ofι])
+    (fun s hs ↦ by simp [← cancel_mono e.inv])
     (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
 
 /-- If `c` is a limit kernel fork for `g : X ⟶ Y`, and `g' : X ⟶ Y'` is a another morphism,
@@ -225,7 +222,6 @@ def KernelFork.isLimitOfIsLimitOfIff' {X Y : C} {g : X ⟶ Y} {c : KernelFork g}
     IsLimit (KernelFork.ofι (f := g') c.ι (by simp [← iff])) :=
   IsLimit.ofIsoLimit (isLimitOfIsLimitOfIff hc g' (Iso.refl _) (by simpa using iff))
     (Fork.ext (Iso.refl _))
-
 
 end
 
@@ -669,9 +665,7 @@ def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : Cokern
   CokernelCofork.IsColimit.ofπ _ _
     (fun s hs ↦ hc.desc (CokernelCofork.ofπ (π := e.inv ≫ s)
       (by rw [iff, e.hom_inv_id_assoc, hs])))
-    (fun s hs ↦ by
-      rw [← cancel_epi e.inv, Category.assoc, e.inv_hom_id_assoc,
-        Cofork.IsColimit.π_desc, Cofork.π_ofπ])
+    (fun s hs ↦ by simp [← cancel_epi e.inv])
     (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
 
 /-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, and `f' : X' ⟶ Y is another
