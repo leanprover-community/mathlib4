@@ -951,3 +951,16 @@ theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
     transcendental_supported_polynomial_aeval_X_iff R (i := i) (s := s) (f := Polynomial.X)
 
 end MvPolynomial
+
+section Infinite
+
+theorem Transcendental.infinite {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A :=
+  .of_injective _ (transcendental_iff_injective.mp hx)
+
+theorem Algebra.Transcendental.infinite (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A :=
+  have ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
+  hx.infinite
+
+end Infinite
