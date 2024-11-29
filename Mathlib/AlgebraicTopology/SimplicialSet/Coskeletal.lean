@@ -239,7 +239,7 @@ namespace Nerve
 
 open SSet
 
-instance isCoskeletal (C : Type u) [Category.{v} C] :
+example (C : Type u) [Category.{v} C] :
     SimplicialObject.IsCoskeletal (nerve C) 2 := by infer_instance
 
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
