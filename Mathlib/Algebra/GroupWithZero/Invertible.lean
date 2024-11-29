@@ -80,7 +80,6 @@ theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
 def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) :=
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 
--- Porting note (#10618): removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])

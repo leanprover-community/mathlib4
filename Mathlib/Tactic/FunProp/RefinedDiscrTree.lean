@@ -864,11 +864,9 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
 
 /-! ## Inserting intro a RefinedDiscrTree -/
 
-variable {α : Type}
-
 /-- If `vs` contains an element `v'` such that `v == v'`, then replace `v'` with `v`.
 Otherwise, push `v`.
-See issue #2155
+See issue https://github.com/leanprover-community/mathlib4/pull/2155
 Recall that `BEq α` may not be Lawful.
 -/
 private def insertInArray [BEq α] (vs : Array α) (v : α) : Array α :=

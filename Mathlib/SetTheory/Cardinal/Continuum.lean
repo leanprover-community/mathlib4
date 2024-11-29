@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of continuum
@@ -23,14 +23,14 @@ universe u v
 
 open Cardinal
 
-/-- Cardinality of continuum. -/
+/-- Cardinality of the continuum. -/
 def continuum : Cardinal.{u} :=
   2 ^ ℵ₀
 
 scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
-theorem two_power_aleph0 : 2 ^ aleph0.{u} = continuum.{u} :=
+theorem two_power_aleph0 : 2 ^ ℵ₀ = 𝔠 :=
   rfl
 
 @[simp]
@@ -65,7 +65,7 @@ theorem aleph0_le_continuum : ℵ₀ ≤ 𝔠 :=
   aleph0_lt_continuum.le
 
 @[simp]
-theorem beth_one : beth 1 = 𝔠 := by simpa using beth_succ 0
+theorem beth_one : ℶ_ 1 = 𝔠 := by simpa using beth_succ 0
 
 theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
   (nat_lt_aleph0 n).trans aleph0_lt_continuum
@@ -78,7 +78,7 @@ theorem continuum_pos : 0 < 𝔠 :=
 theorem continuum_ne_zero : 𝔠 ≠ 0 :=
   continuum_pos.ne'
 
-theorem aleph_one_le_continuum : aleph 1 ≤ 𝔠 := by
+theorem aleph_one_le_continuum : ℵ₁ ≤ 𝔠 := by
   rw [← succ_aleph0]
   exact Order.succ_le_of_lt aleph0_lt_continuum
 

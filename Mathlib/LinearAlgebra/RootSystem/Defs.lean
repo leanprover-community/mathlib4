@@ -374,6 +374,12 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
 
+/-- The linear span of roots. -/
+abbrev rootSpan := span R (range P.root)
+
+/-- The linear span of coroots. -/
+abbrev corootSpan := span R (range P.coroot)
+
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the weight space generated
 by reflections in roots. -/
 def weylGroup : Subgroup (M ≃ₗ[R] M) :=
@@ -501,12 +507,12 @@ lemma reflection_perm_eq_reflection_perm_iff_of_span :
     P.reflection_perm i = P.reflection_perm j ↔
     ∀ x ∈ span R (range P.root), P.reflection i x = P.reflection j x := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · induction hx using Submodule.span_induction' with
+  · induction hx using Submodule.span_induction with
     | mem x hx =>
       obtain ⟨k, rfl⟩ := hx
       simp only [← root_reflection_perm, h]
     | zero => simp
-    | add x _ y _ hx hy => simp [hx, hy]
+    | add x y _ _ hx hy => simp [hx, hy]
     | smul t x _ hx => simp [hx]
   · ext k
     apply P.root.injective

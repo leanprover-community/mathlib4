@@ -5,6 +5,7 @@ Authors: Jireh Loreaux, Jon Bannon
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
@@ -363,7 +364,7 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
         simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
           mul_smul_comm, smul_mul_assoc] }
   map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_mul' k₁ k₂ :=
+  map_mul' _ _ :=
     ext (𝕜 := 𝕜) (A := A) _ _ <|
       Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
         ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))
@@ -663,8 +664,10 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CStarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_left hxr zero_le' two_ne_zero
+            using pow_lt_pow_left₀ hxr zero_le' two_ne_zero
 
 end DenselyNormed
+
+noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
 
 end DoubleCentralizer

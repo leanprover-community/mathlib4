@@ -3,11 +3,13 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Index of a Subgroup
@@ -30,7 +32,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `relindex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relindex_mul_relindex` : `relindex` is multiplicative in towers
-
+- `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
 
 
@@ -40,16 +42,16 @@ open Cardinal
 
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
-/-- The index of a subgroup as a natural number, and returns 0 if the index is infinite. -/
-@[to_additive "The index of a subgroup as a natural number,
-and returns 0 if the index is infinite."]
+/-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
+@[to_additive "The index of an additive subgroup as a natural number.
+Returns 0 if the index is infinite."]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 
-/-- The relative index of a subgroup as a natural number,
-  and returns 0 if the relative index is infinite. -/
-@[to_additive "The relative index of a subgroup as a natural number,
-and returns 0 if the relative index is infinite."]
+/-- If `H` and `K` are subgroups of a group `G`, then `relindex H K : ℕ` is the index
+of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/
+@[to_additive "If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
+is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite."]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 
@@ -78,7 +80,7 @@ theorem index_comap (f : G' →* G) :
 @[to_additive]
 theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
-  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.subtype_range]
+  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
 variable {H K L}
 
@@ -206,15 +208,12 @@ theorem relindex_bot_right : H.relindex ⊥ = 1 := by rw [relindex, subgroupOf_b
 theorem relindex_self : H.relindex H = 1 := by rw [relindex, subgroupOf_self, index_top]
 
 @[to_additive]
-theorem index_ker (f : G →* G') : f.ker.index = Nat.card (Set.range f) := by
+theorem index_ker (f : G →* G') : f.ker.index = Nat.card f.range := by
   rw [← MonoidHom.comap_bot, index_comap, relindex_bot_left]
-  rfl
 
 @[to_additive]
-theorem relindex_ker (f : G →* G') (K : Subgroup G) :
-    f.ker.relindex K = Nat.card (f '' K) := by
+theorem relindex_ker (f : G →* G') : f.ker.relindex K = Nat.card (K.map f) := by
   rw [← MonoidHom.comap_bot, relindex_comap, relindex_bot_left]
-  rfl
 
 @[to_additive (attr := simp) card_mul_index]
 theorem card_mul_index : Nat.card H * H.index = Nat.card G := by
@@ -241,7 +240,7 @@ theorem index_map (f : G →* G') :
 @[to_additive]
 theorem index_map_dvd {f : G →* G'} (hf : Function.Surjective f) :
     (H.map f).index ∣ H.index := by
-  rw [index_map, f.range_top_of_surjective hf, index_top, mul_one]
+  rw [index_map, f.range_eq_top_of_surjective hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
 
 @[to_additive]
@@ -254,6 +253,16 @@ theorem dvd_index_map {f : G →* G'} (hf : f.ker ≤ H) :
 theorem index_map_eq {f : G →* G'} (hf1 : Function.Surjective f)
     (hf2 : f.ker ≤ H) : (H.map f).index = H.index :=
   Nat.dvd_antisymm (H.index_map_dvd hf1) (H.dvd_index_map hf2)
+
+@[to_additive]
+theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
+    (H.map f).index = H.index * f.range.index := by
+  rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
+
+@[to_additive]
+theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
+    (K.map H.subtype).index = K.index * H.index := by
+  rw [K.index_map_of_injective H.subtype_injective, H.range_subtype]
 
 @[to_additive]
 theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
@@ -448,6 +457,21 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
 
+@[to_additive (attr := simp)]
+lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index * K.index := by
+  simp_rw [index, ← Nat.card_prod]
+  refine Nat.card_congr
+    ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
+  rw [QuotientGroup.leftRel_prod]
+
+@[to_additive (attr := simp)]
+lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
+    (Subgroup.pi Set.univ H).index = ∏ i, (H i).index := by
+  simp_rw [index, ← Nat.card_pi]
+  refine Nat.card_congr
+    ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.piQuotientEquiv _).symm)
+  rw [QuotientGroup.leftRel_pi]
+
 @[simp]
 lemma index_toAddSubgroup : (Subgroup.toAddSubgroup H).index = H.index :=
   rfl
@@ -530,6 +554,17 @@ variable {H K}
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.finiteIndex (index_dvd_of_le h)⟩
 
+@[to_additive (attr := gcongr)]
+lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
+  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.finiteIndex) (index_dvd_of_le h)
+
+@[to_additive (attr := gcongr)]
+lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
+  have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).finiteIndex
+  apply lt_of_le_of_ne (index_antitone h.le)
+  rw [← relindex_mul_index h.le, Ne, eq_comm, mul_eq_right₀ h0, relindex_eq_one]
+  exact h.not_le
+
 variable (H K)
 
 @[to_additive]
@@ -558,6 +593,21 @@ end FiniteIndex
 
 end Subgroup
 
+namespace MulAction
+
+variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
+
+theorem index_stabilizer :
+    (stabilizer G x).index = (orbit G x).ncard :=
+  (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
+    (Set.Nat.card_coe_set_eq (orbit G x))
+
+theorem index_stabilizer_of_transitive [IsPretransitive G X] :
+    (stabilizer G x).index = Nat.card X := by
+  rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
+
+end MulAction
+
 namespace MonoidHom
 
 open Finset
@@ -567,7 +617,7 @@ variable {G M F : Type*} [Group G] [Fintype G] [Monoid M] [DecidableEq M]
 
 @[to_additive]
 lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    (univ.filter <| fun g => f g = x).card = (univ.filter <| fun g => f g = y).card := by
+    #{g | f g = x} = #{g | f g = y} := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
   rcases mul_left_surjective x y with ⟨y, rfl⟩
