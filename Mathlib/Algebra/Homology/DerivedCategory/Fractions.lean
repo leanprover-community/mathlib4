@@ -22,7 +22,7 @@ on the auxiliary object appearing in the fraction.
 
 universe w v u
 
-open CategoryTheory Category
+open CategoryTheory Category Limits
 
 namespace DerivedCategory
 
@@ -112,8 +112,8 @@ with `X` strictly `≥ a` and `≤ b`, and `Y` striclty `≥ a`
 can be written as `f = inv (Q.map s) ≫ Q.map g` with `s : X' ⟶ X`
 a quasi-isomorphism with `X'` strictly `≥ a` and `≤ b`, and `g : X' ⟶ Y`. -/
 lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
-    {X Y : CochainComplex C ℤ} (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b]
-    [Y.IsStrictlyGE a] (f : Q.obj X ⟶ Q.obj Y) :
+    {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.obj Y)
+    (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b] [Y.IsStrictlyGE a]  :
     ∃ (X' : CochainComplex C ℤ) ( _ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
     (s : X' ⟶ X) (_ : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
   obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE f b
@@ -138,8 +138,8 @@ with `X` strictly `≤ b`, and `Y` striclty `≥ a` and `≤ b`
 can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and
 `s : Y ⟶ Y'` a quasi-isomorphism with `Y'` strictly `≥ a` and `≤ b`. -/
 lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
-    {X Y : CochainComplex C ℤ} (a b : ℤ)
-    [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
+    {X Y : CochainComplex C ℤ}
+    (f : Q.obj X ⟶ Q.obj Y) (a b : ℤ) [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] :
     ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
     (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE f a
@@ -158,5 +158,18 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
       Functor.map_comp, IsIso.inv_hom_id_assoc,
       ← Functor.map_comp, CochainComplex.ιTruncLE_naturality g b,
       Functor.map_comp, IsIso.inv_hom_id_assoc]
+
+lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C ℤ)
+    (a b : ℤ) (h : a < b) [X.IsStrictlyLE a] [Y.IsStrictlyGE b] :
+    Subsingleton (Q.obj X ⟶ Q.obj Y) := by
+  suffices ∀ (f : Q.obj X ⟶ Q.obj Y), f = 0 from ⟨by simp [this]⟩
+  intro f
+  obtain ⟨X', _, s, _, g, rfl⟩ := right_fac_of_isStrictlyLE f a
+  have : g = 0 := by
+    ext i
+    by_cases hi : a < i
+    · apply (X'.isZero_of_isStrictlyLE a i hi).eq_of_src
+    · apply (Y.isZero_of_isStrictlyGE b i (by omega)).eq_of_tgt
+  rw [this, Q.map_zero, comp_zero]
 
 end DerivedCategory

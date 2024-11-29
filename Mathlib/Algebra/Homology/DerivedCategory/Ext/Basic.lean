@@ -55,22 +55,35 @@ abbrev HasExt : Prop :=
   ∀ (X Y : C), HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ
     ((CochainComplex.singleFunctor C 0).obj X) ((CochainComplex.singleFunctor C 0).obj Y)
 
--- TODO: when the canonical t-structure is formalized, replace `n : ℤ` by `n : ℕ`
 lemma hasExt_iff [HasDerivedCategory.{w'} C] :
-    HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ), Small.{w}
+    HasExt.{w} C ↔ ∀ (X Y : C) (n : ℤ) (_ : 0 ≤ n), Small.{w}
       ((singleFunctor C 0).obj X ⟶
         (((singleFunctor C 0).obj Y)⟦n⟧)) := by
   dsimp [HasExt]
   simp only [hasSmallLocalizedShiftedHom_iff _ _ Q]
   constructor
-  · intro h X Y n
+  · intro h X Y n hn
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    refine (small_congr ?_).1 (h X Y (b - a))
-    exact (Functor.FullyFaithful.ofFullyFaithful
-      (shiftFunctor _ a)).homEquiv.trans
-      ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
+    by_cases hab : a ≤ b
+    · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
+      exact (Functor.FullyFaithful.ofFullyFaithful
+        (shiftFunctor _ a)).homEquiv.trans
+        ((shiftFunctorAdd' _ _ _ _ (Int.sub_add_cancel b a)).symm.app _).homToEquiv
+    · simp only [not_le] at hab
+      suffices Subsingleton ((Q.obj ((CochainComplex.singleFunctor C 0).obj X))⟦a⟧ ⟶
+          (Q.obj ((CochainComplex.singleFunctor C 0).obj Y))⟦b⟧) from inferInstance
+      constructor
+      intro x y
+      rw [← cancel_mono ((Q.commShiftIso b).inv.app _),
+        ← cancel_epi ((Q.commShiftIso a).hom.app _)]
+      have : (((CochainComplex.singleFunctor C 0).obj X)⟦a⟧).IsStrictlyLE (-a) :=
+        CochainComplex.isStrictlyLE_shift _ 0 _ _ (by omega)
+      have : (((CochainComplex.singleFunctor C 0).obj Y)⟦b⟧).IsStrictlyGE (-b) :=
+        CochainComplex.isStrictlyGE_shift _ 0 _ _ (by omega)
+      apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE _ _ (-a) (-b) (by
+        omega)).elim
 
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
@@ -391,9 +404,20 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
 
 end Abelian
 
+open Abelian
+
 variable (C) in
 lemma hasExt_iff_small_ext :
-    HasExt.{w'} C ↔ ∀ (X Y : C) (n : ℕ), Small.{w'} (Abelian.Ext.{w} X Y n) := by
-  sorry
+    HasExt.{w'} C ↔ ∀ (X Y : C) (n : ℕ), Small.{w'} (Ext.{w} X Y n) := by
+  letI := HasDerivedCategory.standard C
+  simp only [hasExt_iff, small_congr Ext.homEquiv]
+  constructor
+  · intro h X Y n
+    exact h X Y n (by simp)
+  · intro h X Y n hn
+    obtain ⟨k, hk⟩ := Int.le.dest hn
+    simp only [zero_add] at hk
+    subst hk
+    exact h X Y k
 
 end CategoryTheory
