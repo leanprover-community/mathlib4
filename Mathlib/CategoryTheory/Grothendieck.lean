@@ -151,6 +151,30 @@ lemma eqToHom_eq {X Y : Grothendieck F} (hF : X = Y) :
     eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
   subst hF
   rfl
+
+
+-- TODO: currently unused, where to put?
+section Transport
+
+def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
+    Grothendieck F := by
+  exact ⟨c, (F.map t).obj x.fiber⟩
+
+def transport_hom (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
+    x ⟶ x.transport t := ⟨_, CategoryStruct.id _⟩
+
+@[simps]
+def transportIso (x : Grothendieck F) {c : C} (t : x.base ≅ c) :
+    x.transport t.hom ≅ x := by
+  refine ⟨?_, x.transport_hom t.hom, ?_, ?_⟩
+  · refine ⟨t.inv, eqToHom ?_⟩
+    simp only [transport]
+    rw [← Functor.comp_obj, ← Cat.comp_eq_comp]
+    simp
+  · apply Grothendieck.ext <;> simp [transport_hom]
+  · apply Grothendieck.ext <;> simp [transport_hom]
+
+end Transport
 section
 
 variable (F)
@@ -342,107 +366,13 @@ theorem pre_id : pre F (𝟭 C) = 𝟭 _ := by
     Category.id_comp]
   rfl
 
-variable (F) in
-def preNatTrans {G H : D ⥤ C} (α : G ⟶ H) :
-    pre F G ⟶ (map (whiskerRight α F)) ⋙ (pre F H) := by
-  refine ⟨fun X => ⟨α.app X.base, eqToHom rfl⟩, ?_⟩
-  intros
-  apply Grothendieck.ext <;> simp
-
-/-!
-This is a variant of `preNatTrans` for which the type and the implementation depend on
-transformations `α` and `β` that may not be definitionally equal, even though `α = β`.
-This can be helpful to avoid dependent type theory hell when rewriting α.
--/
-variable (F) in
-def preNatTrans' {G H : D ⥤ C} (α : G ⟶ H) {β : G ⟶ H} (h : α = β) :
-    pre F G ⟶ (map (whiskerRight β F)) ⋙ (pre F H) := by
-  refine ⟨fun X => ⟨α.app X.base, eqToHom (by rw [h]; rfl)⟩, ?_⟩
-  cases h
-  intros
-  apply Grothendieck.ext <;> simp
-
-lemma preNatTrans'_rfl_eq {G H : D ⥤ C} (α : G ⟶ H) :
-    preNatTrans' F α rfl = preNatTrans F α := rfl
-
-lemma preNatTrans_app {G H : D ⥤ C} (α : G ⟶ H) (x : Grothendieck (G ⋙ F)) :
-    (preNatTrans F α).app x = ⟨α.app x.base, eqToHom rfl⟩ := rfl
-
 @[simp]
 lemma base_eqToHom {x y : Grothendieck F} (h : x = y) : (eqToHom h).base = eqToHom (by congr) := by
   cases h ; rfl
 
 @[simp]
 lemma fiber_eqToHom {x y : Grothendieck F} (h : x = y) :
-    (eqToHom h).fiber = (eqToHom (by cases h ; simp)) := by cases h ; rfl
-
-lemma preNatTrans'_id {G : D ⥤ C} {β : G ⟶ G} (h : 𝟙 G = β) :
-    preNatTrans' F (𝟙 G) h = eqToHom (by
-      cases h
-      simp only [whiskerRight_id', map_id_eq]
-      simp only [CategoryStruct.id]
-      simp only [Cat.of_α]
-      rw [Functor.id_comp]) := by
-  cases h
-  simp only [preNatTrans', Functor.comp_obj, NatTrans.id_app, pre_obj_base, map_obj_base,
-    pre_obj_fiber, map_obj_fiber, whiskerRight_app, eqToHom_refl]
-  ext X
-  simp only [Functor.comp_obj, eqToHom_app]
-  fapply Grothendieck.ext
-  · simp only [base_eqToHom] ; rfl
-  · simp only [fiber_eqToHom]
-    simp only [pre_obj_base, map_obj_base, id_eq, Cat.of_α, eq_mpr_eq_cast, cast_eq, pre_obj_fiber,
-      map_obj_fiber, Functor.comp_obj, whiskerRight_app, NatTrans.id_app, Category.comp_id]
-
-variable (F) in
-lemma preNatTrans_comp {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
-    preNatTrans F (α ≫ β) = preNatTrans F α ≫ whiskerLeft (map (whiskerRight α F)) (preNatTrans F β)
-      ≫ eqToHom (by simp [map_comp_eq_assoc]) := by
-  ext x
-  simp only [NatTrans.comp_app, eqToHom_app, whiskerLeft_app, preNatTrans_app]
-  fapply Grothendieck.ext
-  · simp only [pre_obj_base, Functor.comp_obj, map_obj_base, pre_obj_fiber, map_obj_fiber,
-    whiskerRight_app, eqToHom_refl, comp_base, base_eqToHom, Category.comp_id]
-  · simp only [Functor.comp_obj, pre_obj_base, map_obj_base, pre_obj_fiber, map_obj_fiber,
-    whiskerRight_app, eqToHom_refl, comp_base, NatTrans.comp_app, Category.comp_id, comp_fiber,
-    Functor.map_id, fiber_eqToHom, base_eqToHom, Cat.id_obj, Functor.map_comp, Cat.comp_obj,
-    eqToHom_naturality, eqToHom_trans]
-
-variable (F) in
-@[reassoc]
-lemma preNatTrans_comp2 {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
-    preNatTrans F (α ≫ β) ≫ eqToHom (by simp [map_comp_eq_assoc]) = preNatTrans F α ≫
-      whiskerLeft (map (whiskerRight α F)) (preNatTrans F β) := by
-  simp only [preNatTrans_comp, Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
-
-variable (F) in
-def invPreNatTrans {G H : D ⥤ C} (α : G ≅ H) :
-    map (whiskerRight α.hom F) ⋙ pre F H ⟶ pre F G := by
-  refine whiskerLeft (map (whiskerRight α.hom F)) (preNatTrans F α.inv) ≫ eqToHom ?_
-  rw [← map_comp_eq_assoc, ← whiskerRight_comp, α.hom_inv_id, whiskerRight_id', map_id_eq]
-  apply Functor.id_comp
-
-@[simp]
-def preNatTrans_comp_invPreNatTrans_eq {G H : D ⥤ C} (α : G ≅ H) :
-    preNatTrans F α.hom ≫ invPreNatTrans F α = 𝟙 (pre F G) := by
-  rw [invPreNatTrans, ← preNatTrans_comp2_assoc, ← preNatTrans'_rfl_eq, eqToHom_trans]
-  -- Iso.hom_inv_id is a nice example where simp works but rw doesn't
-  simp only [Iso.hom_inv_id, preNatTrans'_id, eqToHom_trans, eqToHom_refl]
-
-@[simp]
-def invPreNatTrans_comp_preNatTrans_eq {G H : D ⥤ C} (α : G ≅ H) :
-    invPreNatTrans F α ≫ preNatTrans F α.hom = 𝟙 _ := by
-  simp only [invPreNatTrans]
-
-  ext X
-  simp only [Functor.comp_obj, NatTrans.comp_app, whiskerLeft_app, preNatTrans_app, eqToHom_app,
-    map_obj_base]
-  fapply Grothendieck.ext
-  · simp only [pre_obj_base, map_obj_base, pre_obj_fiber, map_obj_fiber, Functor.comp_obj,
-    whiskerRight_app, eqToHom_refl, Category.assoc, comp_base, base_eqToHom, Category.id_comp,
-    Iso.inv_hom_id_app, NatTrans.id_app, id_base]
-  · simp only [comp_fiber, fiber_eqToHom, eqToHom_trans, eqToHom_map]
-    simp only [NatTrans.id_app, id_fiber]
+    (eqToHom h).fiber = eqToHom (by cases h; simp) := by cases h ; rfl
 
 -- TODO: implement calcSymm tactic?
 -- TODO: move to Bicategory
@@ -472,7 +402,9 @@ def isoCancelRight {E : Type*} [Category E] {G₁ G₂ : E ⥤ D} (F : D ≌ C)
 variable (F) in
 def preNatIso {G H : D ⥤ C} (α : G ≅ H) :
     pre F G ≅ (map (whiskerRight α.hom F)) ⋙ (pre F H) :=
-  ⟨preNatTrans F α.hom, invPreNatTrans F α, by simp, by simp⟩
+  NatIso.ofComponents
+    (fun X => (transportIso ⟨G.obj X.base, X.fiber⟩ (α.app X.base)).symm)
+    (fun f => by fapply Grothendieck.ext <;> simp [transport_hom])
 
 instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
   simp only [pre_id]
@@ -523,32 +455,6 @@ def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
   apply isoCancelRight (preEquivalence F G)
   exact isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F G).counitIso
 
--- TODO: currently unused, where to put?
-section Transport
-
-def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
-    Grothendieck F := by
-  exact ⟨c, (F.map t).obj x.fiber⟩
-
-def transport_hom (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
-    x ⟶ x.transport t := ⟨_, CategoryStruct.id _⟩
-
--- theorem transport_hom_comp (x : Grothendieck F) {c c' : C} (t : x.base ⟶ c) (t' : c ⟶ c') :
---     x.transport_hom (t ≫ t') = (x.transport_hom t) ≫ (x.transport t).transport_hom t' := sorry
-
-noncomputable def transport.iso (x : Grothendieck F) {c : C} (t : x.base ⟶ c) [IsIso t] :
-    x.transport t ≅ x := by
-  refine ⟨?_, x.transport_hom t, ?_, ?_⟩
-  · refine ⟨inv t, eqToHom ?_⟩
-    simp only [transport]
-    rw [← Functor.comp_obj, Functor.map_inv]
-    show (F.map t ≫ inv (F.map t)).obj x.fiber = x.fiber
-    rw [comp_inv_eq_id _ |>.mpr rfl]
-    simp only [Cat.id_obj]
-  · apply Grothendieck.ext <;> simp [transport_hom]
-  · apply Grothendieck.ext <;> simp [transport_hom]
-
-end Transport
 
 section FunctorFrom
 
