@@ -139,7 +139,7 @@ open FreeMonoidalCategory.HomEquiv
 instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
   id X := ⟦Hom.id X⟧
-  comp := Quotient.map₂ Hom.comp (fun _ _ _ _ hf hg ↦ HomEquiv.comp hf hg)
+  comp := Quotient.map₂ Hom.comp (fun _ _ hf _ _ hg ↦ HomEquiv.comp hf hg)
   id_comp := by
     rintro X Y ⟨f⟩
     exact Quotient.sound (id_comp f)
@@ -152,7 +152,7 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
 
 instance : MonoidalCategory (F C) where
   tensorObj X Y := FreeMonoidalCategory.tensor X Y
-  tensorHom := Quotient.map₂ Hom.tensor (fun _ _ _ _ hf hg ↦ HomEquiv.tensor hf hg)
+  tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
   whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
   whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
   tensorHom_def := by

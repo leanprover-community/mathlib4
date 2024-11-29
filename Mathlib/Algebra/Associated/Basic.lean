@@ -475,7 +475,7 @@ section CommMonoid
 variable [CommMonoid M]
 
 instance instMul : Mul (Associates M) :=
-  ⟨Quotient.map₂ (· * ·) fun _ _ _ _ h₁ h₂ ↦ mul_mul h₁ h₂⟩
+  ⟨Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ h₁.mul_mul h₂⟩
 
 theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl

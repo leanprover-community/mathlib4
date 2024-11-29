@@ -53,7 +53,7 @@ instance : Neg Game where
 
 instance : Zero Game where zero := ⟦0⟧
 instance : Add Game where
-  add := Quotient.map₂ HAdd.hAdd <| fun _ _ _ _ hx hy => PGame.add_congr hx hy
+  add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
 
 instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧

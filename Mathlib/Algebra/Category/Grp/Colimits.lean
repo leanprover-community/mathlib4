@@ -107,7 +107,7 @@ instance : Neg (ColimitType.{w} F) where
   neg := Quotient.map neg Relation.neg_1
 
 instance : Add (ColimitType.{w} F) where
-  add := Quotient.map₂ add <| fun _x x' y _y' rx ry =>
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
 
 instance : AddCommGroup (ColimitType.{w} F) where

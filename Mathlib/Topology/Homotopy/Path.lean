@@ -275,7 +275,7 @@ instance : Inhabited (Homotopic.Quotient () ()) :=
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def Quotient.comp (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
-  Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ (_ : Path x₁ x₂) _ hp hq => hcomp hp hq) P₀ P₁
+  Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
 theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ :=
   rfl
