@@ -19,6 +19,12 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁,u₁} C] [Category.{v�
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D] {F : C ⥤ D} {G : D ⥤ C} [F.CommShift ℤ] [G.CommShift ℤ]
 
+lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
+    [CommShift.adjunction_compat ℤ adj] [F.IsTriangulated] (T : Triangle D)
+    (dT : T ∈ distinguishedTriangles) (X : C) :
+    (homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
+      (G.mapTriangle.obj T)).Exact := sorry
+
 open ComposableArrows in
 def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjunction_compat ℤ adj]
     [F.IsTriangulated] : G.IsTriangulated := by
@@ -49,8 +55,6 @@ def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjun
         ((preadditiveCoyoneda.obj (op X)).map φ) := by aesop
       rw [this]
       apply Functor.map_isIso
-    have := ShiftSequence.tautological (preadditiveCoyoneda.obj (op X)) ℤ (C := C)
-      (A := AddCommGrp)
     set R₁ : ComposableArrows AddCommGrp 4 :=
       Monotone.functor (f := Fin.castLE (n := 4 + 1) (m := 5 + 1) (by simp)) (fun ⦃a b⦄ h ↦ h) ⋙
       homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
@@ -63,7 +67,7 @@ def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjun
       (G.mapTriangle.obj T)
     have hR₂ : R₂.Exact := by
       apply Exact.exact_truncation (i := 4) (h := by linarith)
-      sorry
+      exact isTriangulated_of_left_adjoint_triangulated_aux adj T dT X
     set Φ : R₁ ⟶ R₂ := by
       refine whiskerLeft (Monotone.functor (f := Fin.castLE (n := 4 + 1) (m := 5 + 1) (by simp))
         (fun ⦃a b⦄ h ↦ h))
@@ -116,8 +120,6 @@ def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjun
   exact isomorphic_distinguished _ dT' _ (Triangle.isoMk (Triangle.mk (G.map T.mor₁) g' h')
     (G.mapTriangle.obj T) (Iso.refl _) (Iso.refl _) (asIso φ) (by simp) (by simp [hφ₁])
     (by simp [hφ₂])).symm
-
-#check ComposableArrows.IsComplex
 
 end Adjunction
 
