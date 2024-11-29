@@ -70,8 +70,6 @@ structure HomologyMapData where
 
 namespace HomologyMapData
 
-attribute [nolint simpNF] mk.injEq
-
 variable {φ h₁ h₂}
 
 @[reassoc]
