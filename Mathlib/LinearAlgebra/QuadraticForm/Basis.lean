@@ -269,11 +269,17 @@ lemma tensorDistriFree_left_self (a : M₁) (b c : M₂):
 
 lemma tensorDistriFree_right_self (a b : M₁) (c : M₂):
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (a ⊗ₜ c) (b ⊗ₜ c) =
-    polarBilin Q₁ a b ⊗ₜ  Q₂ c  := by
+    polarBilin Q₁ a b ⊗ₜ  Q₂ c := by
   rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
     BilinMap.tensorDistrib_tmul, ← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin,
     ← TensorProduct.add_tmul, ← toBilin_symm_eq_Polar Q₁ bm₁]
   rfl
+
+/-
+lemma tensorDistriFree_self_self (a : M₁) (b : M₂):
+    (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (a ⊗ₜ b) = Q₁ a ⊗ₜ Q₂ b  := by
+  rw [tensorDistriFree_tmul]
+-/
 
 lemma tensorDistriFree_polar11
     (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂) :
@@ -344,8 +350,15 @@ end QuadraticMap
 
 section Prod
 
-variable {ι₁ : Type*} [LT ι₁]
-variable {ι₂ : Type*} [LT ι₂]
+variable {ι₁ : Type*} --[LT ι₁]
+variable {ι₂ : Type*} --[LT ι₂]
+
+def offDiag : (ι₁ × ι₂) → (ι₁ × ι₂) → Prop := fun (i₁, i₂) (j₁, j₂) => i₁ ≠ j₁ ∧ i₂ ≠ j₂
+
+def symOffDiag : Sym2 (ι₁ × ι₂) → Prop := Sym2.lift ⟨offDiag, by
+  intro _ _
+  rw [offDiag, offDiag]
+  aesop⟩
 
 --#check Prod.instLE_mathlib
 
