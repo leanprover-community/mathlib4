@@ -319,8 +319,10 @@ lemma exists_maximal_isMatchingFree [Finite V] (h : G.IsMatchingFree) :
 
 /-- A graph `G` consists of a set of cycles, if each vertex is either isolated or connected to
 exactly two vertices. This is used to create new matchings by taking the `symmDiff` with cycles.
-The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. This is why this
-definition is for `SimpleGraph`, rather than `SimpleGraph.Subgraph`.
+The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. The `symmDiff`
+for `SimpleGraph.Subgraph` deriving from the lattice structure also affects the vertices included,
+which we do not want in this case. This is why this property is defined for `SimpleGraph`, rather
+than `SimpleGraph.Subgraph`.
 -/
 def IsCycles (G : SimpleGraph V) := ∀ ⦃v⦄, (G.neighborSet v).Nonempty → (G.neighborSet v).ncard = 2
 
@@ -357,9 +359,11 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
 `G` is in `G'`. Note that the degree of each vertex needs to be at most 2 for this to be
-possible. This property is used to create new matchings using `symmDiff`. The definition of
-`symmDiff` for `SimpleGraph` is the one that makes sense, so this property is defined
-for `SimpleGraph` as well.
+possible. This property is used to create new matchings using `symmDiff`.
+The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. The `symmDiff`
+for `SimpleGraph.Subgraph` deriving from the lattice structure also affects the vertices included,
+which we do not want in this case. This is why this property, just like `IsCycles`, is defined
+for `SimpleGraph` rather than `SimpleGraph.Subgraph`.
 -/
 def IsAlternating (G G' : SimpleGraph V) :=
   ∀ ⦃v w w': V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
