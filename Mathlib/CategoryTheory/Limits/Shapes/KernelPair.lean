@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-
-#align_import category_theory.limits.shapes.kernel_pair from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
 
 /-!
 # Kernel pairs
@@ -40,7 +38,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {R X Y Z : C} (f : X ⟶ Y) (a b : R ⟶ X)
 
 /-- `IsKernelPair f a b` expresses that `(a, b)` is a kernel pair for `f`, i.e. `a ≫ f = b ≫ f`
@@ -53,7 +50,6 @@ This is just an abbreviation for `IsPullback a b f f`.
 -/
 abbrev IsKernelPair :=
   IsPullback a b f f
-#align category_theory.is_kernel_pair CategoryTheory.IsKernelPair
 
 namespace IsKernelPair
 
@@ -67,14 +63,13 @@ instance : Subsingleton (IsKernelPair f a b) :=
 /-- If `f` is a monomorphism, then `(𝟙 _, 𝟙 _)` is a kernel pair for `f`. -/
 theorem id_of_mono [Mono f] : IsKernelPair f (𝟙 _) (𝟙 _) :=
   ⟨⟨rfl⟩, ⟨PullbackCone.isLimitMkIdId _⟩⟩
-#align category_theory.is_kernel_pair.id_of_mono CategoryTheory.IsKernelPair.id_of_mono
 
 instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
   ⟨id_of_mono f⟩
 
 variable {f a b}
 
--- porting note: `lift` and the two following simp lemmas were introduced to ease the port
+-- Porting note: `lift` and the two following simp lemmas were introduced to ease the port
 /--
 Given a pair of morphisms `p`, `q` to `X` which factor through `f`, they factor through any kernel
 pair of `f`.
@@ -100,7 +95,6 @@ pair of `f`.
 noncomputable def lift' {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p ≫ f = q ≫ f) :
     { t : S ⟶ R // t ≫ a = p ∧ t ≫ b = q } :=
   ⟨k.lift p q w, by simp⟩
-#align category_theory.is_kernel_pair.lift' CategoryTheory.IsKernelPair.lift'
 
 /--
 If `(a,b)` is a kernel pair for `f₁ ≫ f₂` and `a ≫ f₁ = b ≫ f₁`, then `(a,b)` is a kernel pair for
@@ -115,14 +109,13 @@ theorem cancel_right {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} (comm : a ≫ f₁ = b �
       ⟨PullbackCone.isLimitAux' _ fun s => by
         let s' : PullbackCone (f₁ ≫ f₂) (f₁ ≫ f₂) :=
           PullbackCone.mk s.fst s.snd (s.condition_assoc _)
-        refine' ⟨big_k.isLimit.lift s', big_k.isLimit.fac _ WalkingCospan.left,
-          big_k.isLimit.fac _ WalkingCospan.right, fun m₁ m₂ => _⟩
+        refine ⟨big_k.isLimit.lift s', big_k.isLimit.fac _ WalkingCospan.left,
+          big_k.isLimit.fac _ WalkingCospan.right, fun m₁ m₂ => ?_⟩
         apply big_k.isLimit.hom_ext
-        refine' (PullbackCone.mk a b _ : PullbackCone (f₁ ≫ f₂) _).equalizer_ext _ _
+        refine (PullbackCone.mk a b ?_ : PullbackCone (f₁ ≫ f₂) _).equalizer_ext ?_ ?_
         · apply reassoc_of% comm
         · apply m₁.trans (big_k.isLimit.fac s' WalkingCospan.left).symm
         · apply m₂.trans (big_k.isLimit.fac s' WalkingCospan.right).symm⟩ }
-#align category_theory.is_kernel_pair.cancel_right CategoryTheory.IsKernelPair.cancel_right
 
 /-- If `(a,b)` is a kernel pair for `f₁ ≫ f₂` and `f₂` is mono, then `(a,b)` is a kernel pair for
 just `f₁`.
@@ -131,7 +124,6 @@ The converse of `comp_of_mono`.
 theorem cancel_right_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂]
     (big_k : IsKernelPair (f₁ ≫ f₂) a b) : IsKernelPair f₁ a b :=
   cancel_right (by rw [← cancel_mono f₂, assoc, assoc, big_k.w]) big_k
-#align category_theory.is_kernel_pair.cancel_right_of_mono CategoryTheory.IsKernelPair.cancel_right_of_mono
 
 /--
 If `(a,b)` is a kernel pair for `f₁` and `f₂` is mono, then `(a,b)` is a kernel pair for `f₁ ≫ f₂`.
@@ -141,15 +133,14 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
     IsKernelPair (f₁ ≫ f₂) a b :=
   { w := by rw [small_k.w_assoc]
     isLimit' := ⟨by
-      refine' PullbackCone.isLimitAux _
+      refine PullbackCone.isLimitAux _
         (fun s => small_k.lift s.fst s.snd (by rw [← cancel_mono f₂, assoc, s.condition, assoc]))
-        (by simp) (by simp) _
-      · intro s m hm
-        apply small_k.isLimit.hom_ext
-        apply PullbackCone.equalizer_ext small_k.cone _ _
-        · exact (hm WalkingCospan.left).trans (by simp)
-        · exact (hm WalkingCospan.right).trans (by simp)⟩ }
-#align category_theory.is_kernel_pair.comp_of_mono CategoryTheory.IsKernelPair.comp_of_mono
+        (by simp) (by simp) ?_
+      intro s m hm
+      apply small_k.isLimit.hom_ext
+      apply PullbackCone.equalizer_ext small_k.cone _ _
+      · exact (hm WalkingCospan.left).trans (by simp)
+      · exact (hm WalkingCospan.right).trans (by simp)⟩ }
 
 /--
 If `(a,b)` is the kernel pair of `f`, and `f` is a coequalizer morphism for some parallel pair, then
@@ -159,38 +150,41 @@ def toCoequalizer (k : IsKernelPair f a b) [r : RegularEpi f] : IsColimit (Cofor
   let t := k.isLimit.lift (PullbackCone.mk _ _ r.w)
   have ht : t ≫ a = r.left := k.isLimit.fac _ WalkingCospan.left
   have kt : t ≫ b = r.right := k.isLimit.fac _ WalkingCospan.right
-  refine' Cofork.IsColimit.mk _
+  refine Cofork.IsColimit.mk _
     (fun s => Cofork.IsColimit.desc r.isColimit s.π
       (by rw [← ht, assoc, s.condition, reassoc_of% kt]))
-    (fun s => _) (fun s m w => _)
+    (fun s => ?_) (fun s m w => ?_)
   · apply Cofork.IsColimit.π_desc' r.isColimit
   · apply Cofork.IsColimit.hom_ext r.isColimit
     exact w.trans (Cofork.IsColimit.π_desc' r.isColimit _ _).symm
-#align category_theory.is_kernel_pair.to_coequalizer CategoryTheory.IsKernelPair.toCoequalizer
 
 /-- If `a₁ a₂ : A ⟶ Y` is a kernel pair for `g : Y ⟶ Z`, then `a₁ ×[Z] X` and `a₂ ×[Z] X`
 (`A ×[Z] X ⟶ Y ×[Z] X`) is a kernel pair for `Y ×[Z] X ⟶ X`. -/
 protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h : IsKernelPair g a₁ a₂)
     (f : X ⟶ Z) [HasPullback f g] [HasPullback f (a₁ ≫ g)] :
-    IsKernelPair (pullback.fst : pullback f g ⟶ X)
+    IsKernelPair (pullback.fst f g)
       (pullback.map f _ f _ (𝟙 X) a₁ (𝟙 Z) (by simp) <| Category.comp_id _)
       (pullback.map _ _ _ _ (𝟙 X) a₂ (𝟙 Z) (by simp) <| (Category.comp_id _).trans h.1.1) := by
-  refine' ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
-    (fun s => pullback.lift (s.fst ≫ pullback.fst)
-      (h.lift (s.fst ≫ pullback.snd) (s.snd ≫ pullback.snd) _ ) _) (fun s => _) (fun s => _)
-        (fun s m hm => _)⟩⟩
+  refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
+    (fun s => pullback.lift (s.fst ≫ pullback.fst _ _)
+      (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_)
+        (fun s => ?_) (fun s m hm => ?_)⟩⟩
   · simp_rw [Category.assoc, ← pullback.condition, ← Category.assoc, s.condition]
   · simp only [assoc, lift_fst_assoc, pullback.condition]
   · ext <;> simp
   · ext
     · simp [s.condition]
     · simp
-  · apply pullback.hom_ext
-    · simpa using hm WalkingCospan.left =≫ pullback.fst
-    · apply PullbackCone.IsLimit.hom_ext h.isLimit
-      · simpa using hm WalkingCospan.left =≫ pullback.snd
-      · simpa using hm WalkingCospan.right =≫ pullback.snd
-#align category_theory.is_kernel_pair.pullback CategoryTheory.IsKernelPair.pullback
+  · #adaptation_note /-- nightly-2024-04-01
+    This `symm` (or the following ones that undo it) wasn't previously necessary. -/
+    symm
+    apply pullback.hom_ext
+    · symm
+      simpa using hm WalkingCospan.left =≫ pullback.fst f g
+    · symm
+      apply PullbackCone.IsLimit.hom_ext h.isLimit
+      · simpa using hm WalkingCospan.left =≫ pullback.snd f g
+      · simpa using hm WalkingCospan.right =≫ pullback.snd f g
 
 theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp [h.w])
@@ -200,7 +194,6 @@ theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   intro Z g₁ g₂ e
   obtain ⟨l', rfl, rfl⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit _ _ e
   rw [IsPullback.cone_fst, h₂]
-#align category_theory.is_kernel_pair.mono_of_is_iso_fst CategoryTheory.IsKernelPair.mono_of_isIso_fst
 
 theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
   rw [←
@@ -209,13 +202,11 @@ theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
         ((IsKernelPair.id_of_mono f).isLimit.conePointUniqueUpToIso_inv_comp h.isLimit
           WalkingCospan.left)]
   infer_instance
-#align category_theory.is_kernel_pair.is_iso_of_mono CategoryTheory.IsKernelPair.isIso_of_mono
 
 theorem of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
   change IsPullback _ _ _ _
   convert (IsPullback.of_horiz_isIso ⟨(rfl : a ≫ 𝟙 X = _ )⟩).paste_vert (IsKernelPair.id_of_mono f)
   all_goals { simp }
-#align category_theory.is_kernel_pair.of_is_iso_of_mono CategoryTheory.IsKernelPair.of_isIso_of_mono
 
 end IsKernelPair
 

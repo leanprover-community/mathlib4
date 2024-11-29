@@ -3,8 +3,10 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.TryThis
+import Mathlib.Init
+import Lean.Meta.Tactic.TryThis
+import Lean.Elab.Tactic.ElabTerm
+import Lean.Meta.Tactic.LibrarySearch
 
 /-!
 # The `observe` tactic.
@@ -14,7 +16,7 @@ import Mathlib.Tactic.TryThis
 
 namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta Elab Tactic
+open Lean Meta Elab Tactic Meta.Tactic.TryThis LibrarySearch
 
 /-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `exact?`.
 If no proof is found, the tactic fails.
@@ -35,14 +37,13 @@ elab_rules : tactic |
   withMainContext do
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
-    if let some _ ← librarySearch goal [] then
+    if let some _ ← librarySearch goal then
       reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else
       let v := (← instantiateMVars (mkMVar goal)).headBeta
       if trace.isSome then
-        -- TODO: we should be allowed to pass an identifier to `addHaveSuggestion`.
-        addHaveSuggestion tk type v
+        addHaveSuggestion tk (some name) type v
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 

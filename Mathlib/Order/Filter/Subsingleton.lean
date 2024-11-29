@@ -77,3 +77,5 @@ lemma Subsingleton.isCountablyGenerated (hl : l.Subsingleton) : IsCountablyGener
   rcases subsingleton_iff_bot_or_pure.1 hl with rfl|⟨x, rfl⟩
   · exact isCountablyGenerated_bot
   · exact isCountablyGenerated_pure x
+
+end Filter

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Associativity of products
@@ -37,7 +37,7 @@ def ProdTree.size : ProdTree → Nat
   | type _ _ => 1
   | prod fst snd _ _ => fst.size + snd.size
 
-/-- The components of an interated product, presented as a `ProdTree`. -/
+/-- The components of an iterated product, presented as a `ProdTree`. -/
 def ProdTree.components : ProdTree → List Expr
   | type tp _ => [tp]
   | prod fst snd _ _ => fst.components ++ snd.components

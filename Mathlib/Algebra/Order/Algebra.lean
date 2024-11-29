@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
-
-#align_import algebra.order.algebra from "leanprover-community/mathlib"@"f5a600f8102c8bfdbd22781968a20a539304c1b4"
 
 /-!
 # Ordered algebras
@@ -46,6 +44,5 @@ theorem algebraMap_monotone : Monotone (algebraMap R A) := fun a b h => by
   trans (b - a) • (0 : A)
   · simp
   · exact smul_le_smul_of_nonneg_left zero_le_one (sub_nonneg.mpr h)
-#align algebra_map_monotone algebraMap_monotone
 
 end OrderedAlgebra
