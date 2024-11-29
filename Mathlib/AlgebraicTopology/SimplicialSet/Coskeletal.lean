@@ -11,8 +11,8 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 /-!
 # Coskeletal simplicial sets
 
-In this file, we prove that if `X` is `StrictSegal` then `X` is 2-coskeletal defining
-`X ≅ (cosk 2).obj X` In particular, nerves of categories are 2-coskeletal.
+In this file, we prove that if `X` is `StrictSegal` then `X` is 2-coskeletal,
+i.e. `X ≅ (cosk 2).obj X`. In particular, nerves of categories are 2-coskeletal.
 
 This isomorphism follows from the fact that `rightExtensionInclusion X 2` is a right Kan
 extension. In fact, we show that when `X` is `StrictSegal` then
