@@ -16,47 +16,45 @@ assert_not_exists LinearIndependent
 assert_not_exists LocalRing
 assert_not_exists MvPolynomial
 
-universe u v w
-
 open Polynomial
 
 section Pi
 
-variable (R' : Type u) (S' : Type v) (T' : Type w)
+variable (R S T : Type*)
 
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
-def Polynomial.hasSMulPi [Semiring R'] [SMul R' S'] : SMul R'[X] (R' → S') :=
+def Polynomial.hasSMulPi [Semiring R] [SMul R S] : SMul R[X] (R → S) :=
   ⟨fun p f x => eval x p • f x⟩
 
 /-- This is not an instance as it forms a diamond with `Pi.instSMul`.
 
 See the `instance_diamonds` test for details. -/
-noncomputable def Polynomial.hasSMulPi' [CommSemiring R'] [Semiring S'] [Algebra R' S']
-    [SMul S' T'] : SMul R'[X] (S' → T') :=
+noncomputable def Polynomial.hasSMulPi' [CommSemiring R] [Semiring S] [Algebra R S]
+    [SMul S T] : SMul R[X] (S → T) :=
   ⟨fun p f x => aeval x p • f x⟩
 
 attribute [local instance] Polynomial.hasSMulPi Polynomial.hasSMulPi'
 
 @[simp]
-theorem polynomial_smul_apply [Semiring R'] [SMul R' S'] (p : R'[X]) (f : R' → S') (x : R') :
+theorem polynomial_smul_apply [Semiring R] [SMul R S] (p : R[X]) (f : R → S) (x : R) :
     (p • f) x = eval x p • f x :=
   rfl
 
 @[simp]
-theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [SMul S' T']
-    (p : R'[X]) (f : S' → T') (x : S') : (p • f) x = aeval x p • f x :=
+theorem polynomial_smul_apply' [CommSemiring R] [Semiring S] [Algebra R S] [SMul S T]
+    (p : R[X]) (f : S → T) (x : S) : (p • f) x = aeval x p • f x :=
   rfl
 
-variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra S' T']
+variable [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algebra S T]
 
 -- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
-noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=
-  { Polynomial.hasSMulPi' R' S' T' with
-    toFun := fun p z => algebraMap S' T' (aeval z p)
+noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) :=
+  { Polynomial.hasSMulPi' R S T with
+    toFun := fun p z => algebraMap S T (aeval z p)
     map_one' := by
       funext z
       simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
@@ -81,12 +79,12 @@ attribute [local instance] Polynomial.algebraPi
 
 @[simp]
 theorem Polynomial.algebraMap_pi_eq_aeval :
-    (algebraMap R'[X] (S' → T') : R'[X] → S' → T') = fun p z => algebraMap _ _ (aeval z p) :=
+    (algebraMap R[X] (S → T) : R[X] → S → T) = fun p z => algebraMap _ _ (aeval z p) :=
   rfl
 
 @[simp]
 theorem Polynomial.algebraMap_pi_self_eq_eval :
-    (algebraMap R'[X] (R' → R') : R'[X] → R' → R') = fun p z => eval z p :=
+    (algebraMap R[X] (R → R) : R[X] → R → R) = fun p z => eval z p :=
   rfl
 
 end Pi
