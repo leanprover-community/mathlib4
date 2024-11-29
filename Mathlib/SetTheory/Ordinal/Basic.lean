@@ -87,7 +87,7 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[deprecated (since := "2024-10-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
 theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
 
 end WellOrder
@@ -137,12 +137,13 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
-@[deprecated (since := "2024-10-24")]
+@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
+  (since := "2024-10-24")]
 theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
 
-/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
-@[deprecated (since := "2024-10-24")]
+
+@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
+  (since := "2024-10-24")]
 theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
 
 @[simp]
