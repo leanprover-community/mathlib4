@@ -108,9 +108,9 @@ lemma mem_of_transfinite_composition
 if it is multiplicative and stable under transfinite composition of any shape
 (in a certain universe). -/
 class IsStableUnderTransfiniteComposition extends W.IsMultiplicative : Prop where
-    isStableUnderTransfiniteCompositionOfShape
-      (J : Type u) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
-      W.IsStableUnderTransfiniteCompositionOfShape J
+  isStableUnderTransfiniteCompositionOfShape
+    (J : Type u) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
+    W.IsStableUnderTransfiniteCompositionOfShape J
 
 attribute [instance] IsStableUnderTransfiniteComposition.isStableUnderTransfiniteCompositionOfShape
 
