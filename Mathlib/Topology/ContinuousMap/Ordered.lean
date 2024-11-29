@@ -13,8 +13,7 @@ import Mathlib.Topology.ContinuousMap.Defs
 -/
 
 
-variable {α : Type*} {β : Type*} {γ : Type*}
-variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace ContinuousMap
 
