@@ -440,14 +440,8 @@ namespace Style.nameCheck
 def contains_double_underscore (name : Name) : Bool :=
   if name.isStr then
     let string := name.getString!
-   -- let exceptions := []
-    let exceptions := ["___unexpand", "___macroRules", "___elabRules", "With_weak_namespace__"]
-    -- Check for exceptions
-    if exceptions.any (fun exception => 1 < (string.splitOn exception).length) then
-      false
-    else
-      -- Check for double underscore
-      1 < (string.splitOn "__").length
+    -- Check for double underscore
+    1 < (string.splitOn "__").length
   else
     false
 
