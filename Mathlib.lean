@@ -943,6 +943,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.AlgebraicGeometry.EllipticCurve.J
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
+import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
