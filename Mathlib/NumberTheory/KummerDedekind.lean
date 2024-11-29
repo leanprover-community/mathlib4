@@ -30,6 +30,11 @@ with a formula).
  * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
     `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
     of `S` over `R`.
+  * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
+    factor of the minimal polynomial of a `x` generator of `S` over `R`, taken
+    `mod I`. Then (the reduction of) `Q` corresponds via
+    `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
+    `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.
 
 ## TODO
 
@@ -352,6 +357,10 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   exact normalizedFactors_irreducible hf
 
 open Set Classical in
+/-- Let `Q` be a lift of factor of the minimal polynomial of a `x` generator of `S` over `R`, taken
+`mod I`. Then (the reduction of) `Q` corresponds via
+`normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
+`span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
 theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span {I : Ideal R}
     (hI : I.IsMaximal) {Q : R[X]} {x : S}
     (hQ : Q.map (Ideal.Quotient.mk I) ∈ normalizedFactors ((minpoly R x).map (Ideal.Quotient.mk I)))
