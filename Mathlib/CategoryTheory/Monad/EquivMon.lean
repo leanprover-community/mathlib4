@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
-#align_import category_theory.monad.equiv_mon from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 
 # The equivalence between `Monad C` and `Mon_ (C ⥤ C)`.
@@ -24,7 +22,6 @@ A monad "is just" a monoid in the category of endofunctors.
 
 -/
 
-set_option linter.uppercaseLean3 false
 
 namespace CategoryTheory
 
@@ -45,7 +42,6 @@ def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   one := M.η
   mul := M.μ
   mul_assoc := by ext; simp [M.assoc]
-#align category_theory.Monad.to_Mon CategoryTheory.Monad.toMon
 
 variable (C)
 
@@ -54,7 +50,6 @@ variable (C)
 def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   obj := toMon
   map f := { hom := f.toNatTrans }
-#align category_theory.Monad.Monad_to_Mon CategoryTheory.Monad.monadToMon
 
 variable {C}
 
@@ -62,22 +57,21 @@ variable {C}
 @[simps η μ]
 def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   toFunctor := M.X
-  η' := M.one
-  μ' := M.mul
-  left_unit' := fun X => by
+  η := M.one
+  μ := M.mul
+  left_unit := fun X => by
     -- Porting note: now using `erw`
     erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
     rfl
-  right_unit' := fun X => by
+  right_unit := fun X => by
     -- Porting note: now using `erw`
     erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
     rfl
-  assoc' := fun X => by
+  assoc := fun X => by
     rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
     erw [M.mul_assoc]
     simp
-#align category_theory.Monad.of_Mon CategoryTheory.Monad.ofMon
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
@@ -99,7 +93,6 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
         erw [← NatTrans.comp_app, f.mul_hom]
         dsimp
         simp only [Category.assoc, NatTrans.naturality, ofMon_obj, ofMon] }
-#align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]
@@ -112,7 +105,6 @@ def monadMonEquiv : Monad C ≌ Mon_ (C ⥤ C) where
   counitIso :=
   { hom := { app := fun _ => { hom := 𝟙 _ } }
     inv := { app := fun _ => { hom := 𝟙 _ } } }
-#align category_theory.Monad.Monad_Mon_equiv CategoryTheory.Monad.monadMonEquiv
 
 -- Sanity check
 example (A : Monad C) {X : C} : ((monadMonEquiv C).unitIso.app A).hom.app X = 𝟙 _ :=

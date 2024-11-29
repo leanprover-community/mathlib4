@@ -23,8 +23,8 @@ universe v w w' u
 namespace CategoryTheory.Limits.Types
 
 /--
-The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
-that `uliftFunctor` preserves limits that are potentially too large to exist in the source
+The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
+that `uliftFunctor` preserves limits that are potentially too large to exist in the source
 category.
 -/
 def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
@@ -42,12 +42,11 @@ instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
     preservesLimit := fun {K} => {
       preserves := fun {c} hc => by
-        apply Nonempty.some
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
         exact ⟨⟨x⟩, fun i => ULift.ext _ _ (hx₁ i),
-          fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ (ULift.ext_iff _ _).mp (hy i))⟩ } }
+          fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.
@@ -138,11 +137,11 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves colimits of arb
 noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesColimitsOfShape {J _} :=
   { preservesColimit := fun {F} ↦
-    { preserves := fun {c} hc ↦
-      { desc := fun lc x ↦ descFun hc lc x.down
+    { preserves := fun {c} hc ↦ ⟨{
+        desc := fun lc x ↦ descFun hc lc x.down
         fac := fun lc j ↦ by ext ⟨⟩; apply congr_fun ((descFun_spec hc lc _).mp rfl j)
         uniq := fun lc f hf ↦ by ext ⟨⟩; apply congr_fun ((descFun_spec hc lc (f ∘ ULift.up)).mpr
-          fun j ↦ funext fun y ↦ congr_fun (hf j) ⟨y⟩) } } }
+          fun j ↦ funext fun y ↦ congr_fun (hf j) ⟨y⟩) }⟩ } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimits.
