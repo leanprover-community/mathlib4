@@ -22,7 +22,9 @@ variable {p : ENNReal}
 end var
 
 section tombstoned_var
--- the point of this test is to
+/- Here the `p` in the subscript is shadowed by a later p; so even if we do
+make the delaborator less conservative, it should not fire here since `✝` cannot
+be subscripted. -/
 variable {p : ENNReal} {x} (hx : x = !ₚ[1, 2, 3]) (p : True)
 /-- info: hx : x = (WithLp.equiv p✝ (Fin 3 → ℕ)).symm ![1, 2, 3] -/
 #guard_msgs in #check hx
