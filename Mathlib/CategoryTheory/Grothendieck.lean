@@ -255,14 +255,8 @@ equivalent to the Grothendieck construction on `F` itself. -/
 def compAsSmallEquivalence : Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
   functor := compAsSmallEquivalenceFunctor F
   inverse := compAsSmallEquivalenceInverse F
-  counitIso := NatIso.ofComponents (fun ⟨_, _⟩ => Iso.refl _)
-  unitIso := NatIso.ofComponents
-    fun ⟨_, ⟨_⟩⟩ => eqToIso (by {
-      simp only [Functor.id_obj, compAsSmallEquivalenceFunctor, AsSmall.down_obj, AsSmall.down_map,
-        compAsSmallEquivalenceInverse, Cat.of_α, AsSmall.up_obj_down, Functor.comp_obj, id_eq,
-        mk.injEq, Cat.asSmallFunctor_obj, heq_eq_eq, true_and]
-      apply ULift.ext
-      rfl })
+  counitIso := Iso.refl _
+  unitIso := Iso.refl _
 
 /-- Mapping a Grothendieck construction along the whiskering of any natural transformation
 `α : F ⟶ G` with the functor `asSmall : Cat ⥤ Cat` is naturally isomorphic to conjugating
