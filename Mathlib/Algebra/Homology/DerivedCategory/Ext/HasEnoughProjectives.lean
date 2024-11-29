@@ -70,7 +70,7 @@ lemma from_singleFunctor_obj_projective_eq_zero {P : C} [Projective P]
   obtain ⟨K, _, π, h, g, rfl⟩:= right_fac_of_isStrictlyLE φ i
   have hπ : IsSplitEpi π := by
     rw [isIso_Q_map_iff_quasiIso] at h
-    exact (CochainComplex.isSplitEpi_to_singleFunctor_obj_of_projective π)
+    exact CochainComplex.isSplitEpi_to_singleFunctor_obj_of_projective π
   have h₁ : inv (Q.map π) = Q.map (section_ π) := by
     rw [← cancel_mono (Q.map π), IsIso.inv_hom_id, ← Q.map_comp, IsSplitEpi.id, Q.map_id]
   have h₂ : section_ π ≫ g = 0 := by
