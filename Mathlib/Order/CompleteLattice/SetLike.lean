@@ -6,7 +6,7 @@ Authors: Sven Manthe
 import Mathlib.Order.CompleteSublattice
 
 /-!
-# SetLike for CompleteSublattice (Set X)
+# `SetLike` instance for `CompleteSublattice (Set X)`
 
 This file defines a `SetLike` instance for `CompleteSublattice (Set X)`, but does not register it
 for typeclass inference to avoid conflicts.
