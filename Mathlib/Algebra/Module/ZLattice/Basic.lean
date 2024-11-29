@@ -66,8 +66,7 @@ theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K
     Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
   simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
 
-open scoped Pointwise
-
+open scoped Pointwise in
 theorem smul {c : K} (hc : c ≠ 0) :
     c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ Ne.isUnit hc))) := by
   rw [smul_span, Set.smul_set_range]
