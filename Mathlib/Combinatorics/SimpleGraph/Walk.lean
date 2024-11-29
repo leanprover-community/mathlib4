@@ -558,7 +558,7 @@ theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
   simp +contextual only [mem_support_append_iff, or_true, imp_true_iff]
 
 lemma getVert_eq_support_get? {u v n} (p : G.Walk u v) (h2 : n ≤ p.length) :
-    p.getVert n = (p.support[n]?) := by
+    p.getVert n = p.support[n]? := by
   match p with
   | .nil => simp_all
   | .cons h q =>
@@ -754,7 +754,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
 @[simp]
-theorem reverse_support_tail_nodup {u : V} {p : G.Walk u u} :
+theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]
   refine List.nodup_tail_reverse p.support ?h
