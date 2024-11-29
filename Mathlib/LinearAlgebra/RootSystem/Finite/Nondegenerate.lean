@@ -70,7 +70,7 @@ lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :
   rw [← LinearMap.range_domRestrict]
   apply (Submodule.finrank_mono P.range_polarization_domRestrict_le_span_coroot).antisymm
   have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  refine LinearMap.finrank_le_of_smul_regular P.corootSpan
+  refine LinearMap.finrank_le_of_isSMulRegular P.corootSpan
     (LinearMap.range (P.Polarization.domRestrict P.rootSpan))
     (smul_right_injective N (Ne.symm (ne_of_lt P.prod_rootForm_root_self_pos)))
     fun _ hx => ?_
