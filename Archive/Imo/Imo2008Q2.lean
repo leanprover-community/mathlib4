@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -106,12 +106,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
             exact ⟨rfl, rfl, rfl⟩
         · have hg : -z = g (x, y, z) := rfl
           rw [hg, hz_def]; ring
-      have h₂ : q < t * (t + 1) := by
-        calc
-          q < q + 1 := by linarith
-          _ ≤ t := le_max_left (q + 1) 1
-          _ ≤ t + t ^ 2 := by linarith [sq_nonneg t]
-          _ = t * (t + 1) := by ring
+      have h₂ : q < t * (t + 1) := by linarith [sq_nonneg t, le_max_left (q + 1) 1]
       exact ⟨h₁, h₂⟩
     have hK_inf : Set.Infinite K := by intro h; apply hK_not_bdd; exact Set.Finite.bddAbove h
     exact hK_inf.of_image g

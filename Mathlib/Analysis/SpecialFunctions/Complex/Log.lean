@@ -142,6 +142,11 @@ theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
 
+theorem log_exp_exists (z : ℂ) :
+    ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by
+  rw [← exp_eq_exp_iff_exists_int, exp_log]
+  exact exp_ne_zero z
+
 @[simp]
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine ⟨fun hs => ?_, fun hs => ?_⟩

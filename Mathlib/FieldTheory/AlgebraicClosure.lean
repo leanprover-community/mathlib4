@@ -32,6 +32,7 @@ is defined to be the subalgebra `integralClosure F E`
 upgraded to an intermediate field (since `F` and `E` are both fields).
 This is exactly the intermediate field of `E / F` consisting of all integral/algebraic elements.
 -/
+@[stacks 09GI]
 def algebraicClosure : IntermediateField F E :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
 

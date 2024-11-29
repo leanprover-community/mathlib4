@@ -48,6 +48,13 @@ lemma BddAbove.mul (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
 lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
 
+@[to_additive] alias Set.BddAbove.mul := BddAbove.mul
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated BddAbove.mul (since := "2024-11-13")] Set.BddAbove.mul
+attribute [deprecated BddAbove.add (since := "2024-11-13")] Set.BddAbove.add
+
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
     BddAbove (range fun i ↦ f i * g i) :=

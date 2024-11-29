@@ -64,6 +64,8 @@ instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdere
 instance : OrderBot ℝ≥0 := inferInstance
 instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
 instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
+instance : Min ℝ≥0 := SemilatticeInf.toMin
+instance : Max ℝ≥0 := SemilatticeSup.toMax
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
@@ -186,7 +188,7 @@ example : CommSemiring ℝ≥0 := by infer_instance
 
 /-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
-Porting note (#11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
 def toRealHom : ℝ≥0 →+* ℝ where
   toFun := (↑)
   map_one' := NNReal.coe_one
@@ -222,7 +224,7 @@ instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction �
 instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
--- Porting note (#11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
@@ -368,7 +370,7 @@ instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
--- Porting note (#11215): TODO: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
   map_rel_iff' := Iff.rfl
@@ -789,13 +791,15 @@ theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
+@[deprecated div_le_div_of_nonneg_left (since := "2024-11-12")]
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
   div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
 
+@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
 nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
     a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_left a0 b0 c0
+  div_le_div_iff_of_pos_left a0 b0 c0
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_ge_of_dense fun a ha => by
@@ -892,7 +896,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
   ⟨forall_mem_image.2 fun x hx =>
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 
--- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases le_total y 0 with hy₀ | hy₀
@@ -913,7 +917,7 @@ namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC lean4#1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
