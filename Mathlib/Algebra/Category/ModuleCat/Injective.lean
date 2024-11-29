@@ -21,7 +21,7 @@ theorem injective_object_of_injective_module [inj : Injective R M] :
     CategoryTheory.Injective (ModuleCat.of R M) where
   factors g f m :=
     have ⟨l, h⟩ := inj.out f.hom ((ModuleCat.mono_iff_injective f).mp m) g.hom
-    ⟨ModuleCat.asHomLeft l, by ext x; simpa using h x⟩
+    ⟨ModuleCat.asHom l, by ext x; simpa using h x⟩
 
 theorem injective_module_of_injective_object
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :

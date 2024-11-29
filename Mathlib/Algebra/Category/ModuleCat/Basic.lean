@@ -22,33 +22,15 @@ respectively.
 
 To construct an object in the category of `R`-modules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.
+The roundtrip `↑(of R M)` is definitionally equal to `M` itself (when `M` is a type with `Module`
+instance), and so is `of R ↑M` (when `M : ModuleCat R M`).
 
-Similarly, there is a coercion from morphisms in `Module R` to linear maps.
+The morphisms are given their own type, not identified with `LinearMap`.
+There is a cast from morphisms in `Module R` to linear maps, written `f.hom` (`ModuleCat.Hom.hom`).
+To go from linear maps to morphisms in `Module R`, use `ModuleCat.asHom`.
 
-Porting note: the next two paragraphs should be revised.
-
-Unfortunately, Lean is not smart enough to see that, given an object `M : ModuleCat R`,
-the expression `of R M`, where we coerce `M` to the carrier type,
-is definitionally equal to `M` itself.
-This means that to go the other direction, i.e., from linear maps/equivalences to (iso)morphisms
-in the category of `R`-modules, we have to take care not to inadvertently end up with an
-`of R M` where `M` is already an object. Hence, given `f : M →ₗ[R] N`,
-* if `M N : ModuleCat R`, simply use `f`;
-* if `M : ModuleCat R` and `N` is an unbundled `R`-module, use `↿f` or `asHomLeft f`;
-* if `M` is an unbundled `R`-module and `N : ModuleCat R`, use `↾f` or `asHomRight f`;
-* if `M` and `N` are unbundled `R`-modules, use `↟f` or `asHom f`.
-
-Similarly, given `f : M ≃ₗ[R] N`, use `toModuleIso`, `toModuleIso'Left`, `toModuleIso'Right`
-or `toModuleIso'`, respectively.
-
-The arrow notations are localized, so you may have to `open ModuleCat` (or `open scoped ModuleCat`)
-to use them. Note that the notation for `asHomLeft` clashes with the notation used to promote
-functions between types to morphisms in the category `Type`, so to avoid confusion, it is probably a
-good idea to avoid having the locales `ModuleCat` and `CategoryTheory.Type` open at the same time.
-
-If you get an error when trying to apply a theorem and the `convert` tactic produces goals of the
-form `M = of R M`, then you probably used an incorrect variant of `asHom` or `toModuleIso`.
-
+Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a linear equiv
+`f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
 
 
@@ -90,12 +72,16 @@ instance : CoeSort (ModuleCat.{v} R) (Type v) :=
 attribute [coe] ModuleCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
 lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
   rfl
+
+-- Ensure the roundtrips are reducibly defeq (so tactics like `rw` can see through them).
+example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
+example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
 variable {R} in
 /-- The type of morphisms in `ModuleCat R`. -/
@@ -273,19 +259,13 @@ scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
 
 @[deprecated (since := "2024-10-06")] alias ModuleCat.ofHom_apply := ModuleCat.asHom_apply
 
-/-- Reinterpreting a linear map in the category of `R`-modules. -/
-def ModuleCat.asHomRight [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R}
-    (f : X₁ →ₗ[R] X₂) : ModuleCat.of R X₁ ⟶ X₂ :=
-  ⟨f⟩
+-- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
+-- we need to add `of` when coercing from linear maps to morphisms.
+@[deprecated ModuleCat.asHom (since := "2024-11-29")] alias ModuleCat.asHomRight := ModuleCat.asHom
+@[deprecated ModuleCat.asHom (since := "2024-11-29")] alias ModuleCat.asHomLeft := ModuleCat.asHom
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
 scoped[ModuleCat] notation "↾" f:1024 => ModuleCat.asHomRight f
-
-/-- Reinterpreting a linear map in the category of `R`-modules. -/
-def ModuleCat.asHomLeft {X₁ : ModuleCat.{v} R} [AddCommGroup X₂] [Module R X₂]
-    (f : X₁ →ₗ[R] X₂) : X₁ ⟶ ModuleCat.of R X₂ :=
-  ⟨f⟩
-
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
 scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
 
@@ -301,15 +281,18 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv_hom_id := by ext; apply e.right_inv
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
+@[deprecated LinearEquiv.toModuleIso (since := "2024-11-29")]
 abbrev LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N :=
   i.toModuleIso
 
 /-- Build an isomorphism in the category `ModuleCat R` from a `LinearEquiv` between `Module`s. -/
+@[deprecated LinearEquiv.toModuleIso (since := "2024-11-29")]
 abbrev LinearEquiv.toModuleIso'Left {X₁ : ModuleCat.{v} R} [AddCommGroup X₂] [Module R X₂]
     (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂ :=
   e.toModuleIso
 
 /-- Build an isomorphism in the category `ModuleCat R` from a `LinearEquiv` between `Module`s. -/
+@[deprecated LinearEquiv.toModuleIso (since := "2024-11-29")]
 abbrev LinearEquiv.toModuleIso'Right [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R}
     (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂ :=
   e.toModuleIso

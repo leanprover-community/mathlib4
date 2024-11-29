@@ -50,10 +50,10 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
 def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=
   uniqueOfSurjectiveZero X ((ModuleCat.epi_iff_surjective _).mp h)
 
-instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHomRight U.subtype) :=
+instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHom U.subtype) :=
   (mono_iff_ker_eq_bot _).mpr (Submodule.ker_subtype U)
 
-instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (↿U.mkQ) :=
+instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.asHom U.mkQ) :=
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where

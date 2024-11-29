@@ -36,10 +36,10 @@ variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow.hom
-      toFun := fun N => Subobject.mk (↾N.subtype)
+      toFun := fun N => Subobject.mk (asHom N.subtype)
       right_inv := fun S => Eq.symm (by
         fapply eq_mk_of_comm
-        · apply LinearEquiv.toModuleIso'Left
+        · apply LinearEquiv.toModuleIso
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
             (LinearMap.range S.arrow.hom) S.arrow.hom _)
           constructor
@@ -51,21 +51,19 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · ext x
           rfl)
       left_inv := fun N => by
-        -- Porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
-        -- choice here
         convert congr_arg LinearMap.range (ModuleCat.hom_ext_iff.mp
-            (underlyingIso_arrow (↾N.subtype : of R { x // x ∈ N } ⟶ M))) using 1
+            (underlyingIso_arrow (asHom N.subtype))) using 1
         · have :
             -- Porting note: added the `.toLinearEquiv.toLinearMap`
-            (underlyingIso (↾N.subtype : of R _ ⟶ M)).inv =
-              asHom (underlyingIso (↾N.subtype : of R _ ⟶ M)).symm.toLinearEquiv.toLinearMap := by
+            (underlyingIso (asHom N.subtype)).inv =
+              asHom (underlyingIso (asHom N.subtype)).symm.toLinearEquiv.toLinearMap := by
               ext x
               rfl
           rw [this, hom_comp, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
-        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (asHomRight T.subtype).hom
+        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (asHom T.subtype).hom
         · rw [← hom_comp, ofMkLEMk_comp]
           exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }

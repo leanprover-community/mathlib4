@@ -43,7 +43,7 @@ def normalMono (hf : Mono f) : NormalMono f where
         ```
       -/
         IsKernel.isoKernel _ _ (kernelIsLimit _)
-          (LinearEquiv.toModuleIso'
+          (LinearEquiv.toModuleIso
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
               (LinearMap.quotKerEquivRange f.hom ≪≫ₗ
               LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
@@ -63,7 +63,7 @@ def normalEpi (hf : Epi f) : NormalEpi f where
         ```
       -/
         IsCokernel.cokernelIso _ _ (cokernelIsColimit _)
-          (LinearEquiv.toModuleIso'
+          (LinearEquiv.toModuleIso
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
                 LinearMap.quotKerEquivRange f.hom ≪≫ₗ
               LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl

@@ -145,7 +145,7 @@ variable {R : Type u₁} [Ring R] (f : R →+* R)
 to `M`. -/
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
-  LinearEquiv.toModuleIso' <|
+  LinearEquiv.toModuleIso <|
     @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
       (by rfl) (fun r x ↦ by subst hf; rfl)
 
@@ -194,7 +194,11 @@ variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [R
 identifies to successively restricting scalars. -/
 def restrictScalarsComp'App (hgf : gf = g.comp f) (M : ModuleCat R₃) :
     (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
-  (AddEquiv.toLinearEquiv (by rfl) (fun r x ↦ by subst hgf; rfl)).toModuleIso'
+  (AddEquiv.toLinearEquiv
+    (M := ↑((restrictScalars gf).obj M))
+    (M₂ := ↑((restrictScalars f).obj ((restrictScalars g).obj M)))
+    (by rfl)
+    (fun r x ↦ by subst hgf; rfl)).toModuleIso
 
 variable (hgf : gf = g.comp f)
 
@@ -239,10 +243,14 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
     ModuleCat S ≌ ModuleCat R where
   functor := ModuleCat.restrictScalars e.toRingHom
   inverse := ModuleCat.restrictScalars e.symm
-  unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
+  unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso
+    (X₁ := M)
+    (X₂ := (restrictScalars e.symm.toRingHom).obj ((restrictScalars e.toRingHom).obj M))
     { __ := AddEquiv.refl M
       map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }) (by intros; rfl)
-  counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
+  counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso
+    (X₁ := (restrictScalars e.toRingHom).obj ((restrictScalars e.symm.toRingHom).obj M))
+    (X₂ := M)
     { __ := AddEquiv.refl M
       map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
