@@ -72,9 +72,6 @@ to learn about it as well!
 - `technical-debt-metrics.sh`
   Prints information on certain kind of technical debt in Mathlib.
   This output is automatically posted to zulip once a week.
-- `init_creation.sh`
-  makes sure that every file in Mathlib transitively imports `Mathlib.init`
-  This may be removed soon, and replaced by a different mechanism.
 
 **Mathlib tactics**
 - `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`
@@ -83,8 +80,7 @@ to learn about it as well!
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.
   For permanent and deliberate exceptions, add a `@[nolint lintername]` in the .lean file instead.
-- `no_lints_prime_decls.txt`
-  contains temporary exceptions for the `docPrime` linter
+- `nolints_prime_decls.txt` contains temporary exceptions for the `docPrime` linter
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
@@ -97,3 +93,22 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
+- `zulip_emoji_merge_delegate.py` is called
+  * every time a `bors d`, `bors merge` or `bors r+` comment is added to a PR and
+  * on every push to `master`.
+  It looks through all zulip posts containing a reference to the relevant PR
+  (delegated, or sent to bors, or merged) and it will post an emoji reaction
+  `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
+- `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
+  the `linter.minImports` output, summarizing the data in a table.  See the module docs of
+  `late_importers.sh` for further details.
+- `maintainer_merge_message.sh` contains a shell script that produces the Zulip message for a
+  `maintainer merge`/`maintainer delegate` comment.
+
+**Docker images**
+- `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.
+  These are used by some CI workflows, as well as places such as Gitpod.
+- `docker_push.sh` first runs `docker_build.sh`, and then pushes the images to Docker Hub,
+  appropriately tagged with the date on which the images were built.
+  This should be re-run after breaking changes to `elan`, so that CI and Gitpod have access to
+  updated versions of `elan`.

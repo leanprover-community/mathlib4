@@ -37,7 +37,7 @@ open Limits Functor
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
   choose G' hg hf e using Finite.exists_type_univ_nonempty_mulEquiv G
-  exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
+  exact Limits.preservesColimitsOfShape_of_equiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
 class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)

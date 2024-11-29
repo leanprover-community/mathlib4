@@ -5,7 +5,9 @@ Authors: Richard M. Hill
 -/
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Action of the polynomial ring on module induced by an algebra element.

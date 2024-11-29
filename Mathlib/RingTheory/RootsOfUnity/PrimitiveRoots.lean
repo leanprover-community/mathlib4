@@ -750,3 +750,44 @@ theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : 
 end Automorphisms
 
 end IsPrimitiveRoot
+
+section cyclic
+
+/-- If `G` is cyclic of order `n` and `G'` contains a primitive `n`th root of unity,
+then for each `a : G` with `a ≠ 1` there is a homomorphism `φ : G →* G'` such that `φ a ≠ 1`. -/
+lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [CommGroup G] [IsCyclic G] [Finite G]
+    [CommGroup G'] (hG' : ∃ ζ : G', IsPrimitiveRoot ζ (Nat.card G)) ⦃a : G⦄ (ha : a ≠ 1) :
+    ∃ φ : G →* G', φ a ≠ 1 := by
+  let inst : Fintype G := Fintype.ofFinite _
+  obtain ⟨ζ, hζ⟩ := hG'
+  -- pick a generator `g` of `G`
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  have hζg : orderOf ζ ∣ orderOf g := by
+    rw [← hζ.eq_orderOf, orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card]
+  -- use the homomorphism `φ` given by `g ↦ ζ`
+  let φ := monoidHomOfForallMemZpowers hg hζg
+  have hφg : IsPrimitiveRoot (φ g) (Nat.card G) := by
+    rwa [monoidHomOfForallMemZpowers_apply_gen hg hζg]
+  use φ
+  contrapose! ha
+  specialize hg a
+  rw [← mem_powers_iff_mem_zpowers, Submonoid.mem_powers_iff] at hg
+  obtain ⟨k, hk⟩ := hg
+  rw [← hk, map_pow] at ha
+  obtain ⟨l, rfl⟩ := (hφg.pow_eq_one_iff_dvd k).mp ha
+  rw [← hk, pow_mul, Nat.card_eq_fintype_card, pow_card_eq_one, one_pow]
+
+/-- If `M` is a commutative group that contains a primitive `n`th root of unity
+and `a : ZMod n` is nonzero, then there exists a group homomorphism `φ` from the
+additive group `ZMod n` to the multiplicative group `Mˣ` such that `φ a ≠ 1`. -/
+lemma ZMod.exists_monoidHom_apply_ne_one {M : Type*} [CommMonoid M] {n : ℕ} [NeZero n]
+    (hG : ∃ ζ : M, IsPrimitiveRoot ζ n) {a : ZMod n} (ha : a ≠ 0) :
+    ∃ φ : Multiplicative (ZMod n) →* Mˣ, φ (Multiplicative.ofAdd a) ≠ 1 := by
+  obtain ⟨ζ, hζ⟩ := hG
+  have hc : n = Nat.card (Multiplicative (ZMod n)) := by
+    simp only [Nat.card_eq_fintype_card, Fintype.card_multiplicative, card]
+  exact IsCyclic.exists_apply_ne_one
+    (hc ▸ ⟨hζ.toRootsOfUnity.val, IsPrimitiveRoot.coe_units_iff.mp hζ⟩) <|
+    by simp only [ne_eq, ofAdd_eq_one, ha, not_false_eq_true]
+
+end cyclic

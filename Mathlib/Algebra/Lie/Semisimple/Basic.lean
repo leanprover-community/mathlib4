@@ -147,7 +147,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         -- Finally `⁅b, y⁆ = 0`, by the independence of the atoms.
         · suffices ⁅b, y.val⁆ = 0 by erw [this]; simp only [zero_mem]
           rw [← LieSubmodule.mem_bot (R := R) (L := L),
-              ← (IsSemisimple.setIndependent_isAtom hI).eq_bot]
+              ← (IsSemisimple.sSupIndep_isAtom hI).eq_bot]
           exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
     -- Now that we know that `J` is an ideal of `L`,
     -- we start with the proof that `I` is a simple Lie algebra.
@@ -197,7 +197,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   intro s hs I hI
   let S := {I : LieIdeal R L | IsAtom I}
   obtain rfl | hI := hI.eq_or_lt
-  · exact ⟨s, le_rfl, rfl⟩
+  · exact ⟨s, Finset.Subset.rfl, rfl⟩
   -- We assume that `I` is strictly smaller than the supremum of `s`.
   -- Hence there must exist an atom `J` that is not contained in `I`.
   obtain ⟨J, hJs, hJI⟩ : ∃ J ∈ s, ¬ J ≤ I := by
@@ -212,7 +212,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   set K := s'.sup id
   suffices I ≤ K by
     obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
-    exact ⟨t, le_trans hts' hs'.subset, htI⟩
+    exact ⟨t, hts'.trans hs'.subset, htI⟩
   -- Since `I` is contained in the supremum of `J` with the supremum of `s'`,
   -- any element `x` of `I` can be written as `y + z` for some `y ∈ J` and `z ∈ K`.
   intro x hx
@@ -240,7 +240,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   constructor
   -- `j` brackets to `0` with `z`, since `⁅j, z⁆` is contained in `⁅J, K⁆ ≤ J ⊓ K`,
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
-  · apply (setIndependent_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
+  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
     apply LieSubmodule.lie_mem_lie j.2
     simpa only [K, Finset.sup_id_eq_sSup] using hz
@@ -292,7 +292,7 @@ instance (priority := 100) IsSimple.instIsSemisimple [IsSimple R L] :
     IsSemisimple R L := by
   constructor
   · simp
-  · simpa using CompleteLattice.setIndependent_singleton _
+  · simpa using sSupIndep_singleton _
   · intro I hI₁ hI₂
     apply IsSimple.non_abelian (R := R) (L := L)
     rw [IsSimple.isAtom_iff_eq_top] at hI₁

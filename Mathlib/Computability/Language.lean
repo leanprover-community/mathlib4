@@ -5,7 +5,7 @@ Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.List.Join
+import Mathlib.Data.List.Flatten
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 

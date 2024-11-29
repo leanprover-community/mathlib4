@@ -245,7 +245,7 @@ theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).is
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
     exact ⟨PEquiv.inj _ hb₂ hb₁, b, hb₂⟩
-  · simp (config := { contextual := true })
+  · simp +contextual
 
 theorem symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm b).isSome } :=
   symm_injective <| by simp [symm_trans_rev, self_trans_symm, -symm_symm]
