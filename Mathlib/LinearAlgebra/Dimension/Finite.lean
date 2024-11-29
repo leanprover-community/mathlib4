@@ -249,8 +249,8 @@ theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite �
 section
 variable [NoZeroSMulDivisors R M]
 
-theorem CompleteLattice.Independent.subtype_ne_bot_le_rank [Nontrivial R]
-    {V : ι → Submodule R M} (hV : CompleteLattice.Independent V) :
+theorem iSupIndep.subtype_ne_bot_le_rank [Nontrivial R]
+    {V : ι → Submodule R M} (hV : iSupIndep V) :
     Cardinal.lift.{v} #{ i : ι // V i ≠ ⊥ } ≤ Cardinal.lift.{w} (Module.rank R M) := by
   set I := { i : ι // V i ≠ ⊥ }
   have hI : ∀ i : I, ∃ v ∈ V i, v ≠ (0 : M) := by
@@ -261,10 +261,13 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_rank [Nontrivial R]
   have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
   exact this.cardinal_lift_le_rank
 
+@[deprecated (since := "2024-11-24")]
+alias CompleteLattice.Independent.subtype_ne_bot_le_rank := iSupIndep.subtype_ne_bot_le_rank
+
 variable [Module.Finite R M] [StrongRankCondition R]
 
-theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux
-    {p : ι → Submodule R M} (hp : CompleteLattice.Independent p) :
+theorem iSupIndep.subtype_ne_bot_le_finrank_aux
+    {p : ι → Submodule R M} (hp : iSupIndep p) :
     #{ i // p i ≠ ⊥ } ≤ (finrank R M : Cardinal.{w}) := by
   suffices Cardinal.lift.{v} #{ i // p i ≠ ⊥ } ≤ Cardinal.lift.{v} (finrank R M : Cardinal.{w}) by
     rwa [Cardinal.lift_le] at this
@@ -276,8 +279,8 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux
 
 /-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
-noncomputable def CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
-    {p : ι → Submodule R M} (hp : CompleteLattice.Independent p) :
+noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
+    {p : ι → Submodule R M} (hp : iSupIndep p) :
     Fintype { i : ι // p i ≠ ⊥ } := by
   suffices #{ i // p i ≠ ⊥ } < (ℵ₀ : Cardinal.{w}) by
     rw [Cardinal.lt_aleph0_iff_fintype] at this
@@ -289,9 +292,9 @@ noncomputable def CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
 number of nontrivial subspaces in the family `p` is bounded above by the dimension of `M`.
 
 Note that the `Fintype` hypothesis required here can be provided by
-`CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional`. -/
-theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank
-    {p : ι → Submodule R M} (hp : CompleteLattice.Independent p) [Fintype { i // p i ≠ ⊥ }] :
+`iSupIndep.fintypeNeBotOfFiniteDimensional`. -/
+theorem iSupIndep.subtype_ne_bot_le_finrank
+    {p : ι → Submodule R M} (hp : iSupIndep p) [Fintype { i // p i ≠ ⊥ }] :
     Fintype.card { i // p i ≠ ⊥ } ≤ finrank R M := by simpa using hp.subtype_ne_bot_le_finrank_aux
 
 end
