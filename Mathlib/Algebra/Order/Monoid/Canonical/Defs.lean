@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.NeZero
@@ -58,7 +58,7 @@ instance (priority := 100) CanonicallyOrderedCommMonoid.existsMulOfLE (α : Type
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid α] {a b c d : α}
+variable [CanonicallyOrderedCommMonoid α] {a b c : α}
 
 @[to_additive]
 theorem le_self_mul : a ≤ a * c :=
@@ -156,7 +156,7 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
     _ ≤ b * c := mul_le_mul' h (one_le _)
 
 @[to_additive]
-theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
+theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ← exists_and_right]
   apply exists_congr
   intro c
@@ -226,12 +226,10 @@ theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c)
 theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) c := by
   simpa [min_comm _ c] using min_mul_distrib c a b
 
--- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left (one_le a)
 
--- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right (one_le a)

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.CategoryTheory.FinCategory.Basic
@@ -43,7 +43,7 @@ abbrev AsType : Type :=
 @[simps (config := .lemmasOnly) id comp]
 noncomputable instance categoryAsType : SmallCategory (AsType α) where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
-  id i := Fintype.equivFin _ (𝟙 _)
+  id _ := Fintype.equivFin _ (𝟙 _)
   comp f g := Fintype.equivFin _ ((Fintype.equivFin _).symm f ≫ (Fintype.equivFin _).symm g)
 
 attribute [local simp] categoryAsType_id categoryAsType_comp
@@ -52,13 +52,13 @@ attribute [local simp] categoryAsType_id categoryAsType_comp
 @[simps]
 noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where
   obj := id
-  map {X Y} := (Fintype.equivFin _).symm
+  map {_ _} := (Fintype.equivFin _).symm
 
 /-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
 noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
-  map {X Y} := Fintype.equivFin _
+  map {_ _} := Fintype.equivFin _
 
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where

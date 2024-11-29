@@ -119,7 +119,7 @@ lemma continuousOn_evenKernel (a : UnitAddCircle) : ContinuousOn (evenKernel a) 
   induction' a using QuotientAddGroup.induction_on with a'
   apply continuous_re.comp_continuousOn (f := fun x ↦ (evenKernel a' x : ℂ))
   simp only [evenKernel_def a']
-  refine ContinuousAt.continuousOn (fun x hx ↦ ((Continuous.continuousAt ?_).mul ?_))
+  refine continuousOn_of_forall_continuousAt (fun x hx ↦ ((Continuous.continuousAt ?_).mul ?_))
   · exact Complex.continuous_exp.comp (continuous_const.mul continuous_ofReal)
   · have h := continuousAt_jacobiTheta₂ (a' * I * x) (?_ : 0 < im (I * x))
     · exact h.comp (f := fun u : ℝ ↦ (a' * I * u, I * u)) (by fun_prop)
@@ -129,9 +129,12 @@ lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (I
   induction' a using QuotientAddGroup.induction_on with a'
   apply continuous_re.comp_continuousOn (f := fun x ↦ (cosKernel a' x : ℂ))
   simp only [cosKernel_def]
-  refine ContinuousAt.continuousOn (fun x hx ↦ ?_)
+  refine continuousOn_of_forall_continuousAt (fun x hx ↦ ?_)
   have : 0 < im (I * x) := by rwa [mul_im, I_re, I_im, zero_mul, one_mul, zero_add, ofReal_re]
-  exact (continuousAt_jacobiTheta₂ a' this).comp (f := fun u : ℝ ↦ (_, I * u)) (by fun_prop)
+  exact (continuousAt_jacobiTheta₂ a' this).comp
+    (g := fun p : ℂ × ℂ ↦ jacobiTheta₂ p.1 p.2)
+    (f := fun u : ℝ ↦ ((a' : ℂ), I * u))
+    (by fun_prop)
 
 lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     evenKernel a x = 1 / x ^ (1 / 2 : ℝ) * cosKernel a (1 / x) := by
@@ -269,8 +272,8 @@ section FEPair
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
 def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
-  f := ofReal' ∘ evenKernel a
-  g := ofReal' ∘ cosKernel a
+  f := ofReal ∘ evenKernel a
+  g := ofReal ∘ cosKernel a
   hf_int := (continuous_ofReal.comp_continuousOn (continuousOn_evenKernel a)).locallyIntegrableOn
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
@@ -288,7 +291,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   hg_top r := by
     obtain ⟨p, hp, hp'⟩ := isBigO_atTop_cosKernel_sub a
     rw [← isBigO_norm_left] at hp' ⊢
-    have (x : ℝ) : ‖(ofReal' ∘ cosKernel a) x - 1‖ = ‖cosKernel a x - 1‖ := by
+    have (x : ℝ) : ‖(ofReal ∘ cosKernel a) x - 1‖ = ‖cosKernel a x - 1‖ := by
       rw [← norm_real, ofReal_sub, ofReal_one, Function.comp_apply]
     simp only [this]
     exact hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
@@ -516,7 +519,7 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rw [mellin_div_const, completedCosZeta]
     congr 1
     refine ((hurwitzEvenFEPair a).symm.hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm
-    rwa [div_ofNat_re, div_lt_div_right two_pos]]
+    rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
     intro i
@@ -555,9 +558,9 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     · rw [mul_comm, mul_one_div]
   rw [show completedHurwitzZetaEven a s = mellin (fun t ↦ ((evenKernel (↑a) t : ℂ) -
         ↑(if (a : UnitAddCircle) = 0 then 1 else 0 : ℝ)) / 2) (s / 2) by
-    simp_rw [mellin_div_const, apply_ite ofReal', ofReal_one, ofReal_zero]
+    simp_rw [mellin_div_const, apply_ite ofReal, ofReal_one, ofReal_zero]
     refine congr_arg (· / 2) ((hurwitzEvenFEPair a).hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm
-    rwa [div_ofNat_re, div_lt_div_right two_pos]]
+    rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · simp_rw [← mul_one_div ‖_‖]
     apply Summable.mul_left

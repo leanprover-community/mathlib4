@@ -162,6 +162,12 @@ if `X` has two elements and the coarse topology and `s` and `t` are distinct sin
 theorem nhdsSet_inter_le (s t : Set X) : 𝓝ˢ (s ∩ t) ≤ 𝓝ˢ s ⊓ 𝓝ˢ t :=
   (monotone_nhdsSet (X := X)).map_inf_le s t
 
+theorem nhdsSet_iInter_le {ι : Sort*} (s : ι → Set X) : 𝓝ˢ (⋂ i, s i) ≤ ⨅ i, 𝓝ˢ (s i) :=
+  (monotone_nhdsSet (X := X)).map_iInf_le
+
+theorem nhdsSet_sInter_le (s : Set (Set X)) : 𝓝ˢ (⋂₀ s) ≤ ⨅ x ∈ s, 𝓝ˢ x :=
+  (monotone_nhdsSet (X := X)).map_sInf_le
+
 variable (s) in
 theorem IsClosed.nhdsSet_le_sup (h : IsClosed t) : 𝓝ˢ s ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) :=
   calc
