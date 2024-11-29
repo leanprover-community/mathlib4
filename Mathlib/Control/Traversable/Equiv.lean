@@ -53,7 +53,7 @@ protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := b
 
 protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
-  simpa [Equiv.map] using comp_map ..
+  simp [Equiv.map, Function.comp_def]
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Porting note: why is `_inst` required here?

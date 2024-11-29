@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Limits.Types
@@ -68,9 +68,9 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
   lift S :=
     { toFun := fun x =>
-        ⟨fun j => S.π.app _ x, fun f => by
+        ⟨fun _ => S.π.app _ x, fun f => by
           dsimp
-          erw [← S.w f]
+          rw [← S.w f]
           rfl⟩
       continuous_toFun :=
         Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
@@ -113,14 +113,15 @@ instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
 instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
+instance forget_preservesLimitsOfSize :
+    PreservesLimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ _) where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
+      preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v,u} F)
           (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 
-instance forgetPreservesLimits : PreservesLimits forget :=
-  TopCat.forgetPreservesLimitsOfSize.{u,u}
+instance forget_preservesLimits : PreservesLimits (forget : TopCat.{u} ⥤ _) :=
+  TopCat.forget_preservesLimitsOfSize.{u, u}
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `colimit.cocone F`, unless you need the actual definition
@@ -171,20 +172,20 @@ instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCat.{max v u} whe
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
 
-instance forgetPreservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, v} forget where
+instance forget_preservesColimitsOfSize :
+    PreservesColimitsOfSize.{v, v} (forget : TopCat.{max u v} ⥤ _) where
   preservesColimitsOfShape :=
     { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
           (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget)) }
 
-instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
-  TopCat.forgetPreservesColimitsOfSize.{u, u}
+instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
+  TopCat.forget_preservesColimitsOfSize.{u, u}
 
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/

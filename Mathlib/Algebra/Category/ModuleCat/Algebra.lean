@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Linear.Basic
@@ -56,7 +56,7 @@ example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := LinearMap.module
 
 instance linearOverField : Linear k (ModuleCat.{v} A) where
   -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
-  homModule M N := LinearMap.module
+  homModule _ _ := LinearMap.module
   smul_comp := by
     -- Porting note: this was automatic by `aesop_cat`
     intros

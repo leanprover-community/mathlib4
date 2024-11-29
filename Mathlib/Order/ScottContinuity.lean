@@ -32,8 +32,8 @@ open Set
 variable {α β : Type*}
 
 section ScottContinuous
-variable [Preorder α] [Preorder β] {D D₁ D₂ : Set (Set α)} {E : Set (Set β)}
-  {f : α → β} {a : α}
+variable [Preorder α] [Preorder β] {D D₁ D₂ : Set (Set α)}
+  {f : α → β}
 
 /-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
 preserves `IsLUB` on elements of `D`.
@@ -71,7 +71,7 @@ lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
   rw [IsLUB, IsLeast, upperBounds]
   constructor
   · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
-    Prod.mk_le_mk]
+      Prod.mk_le_mk]
     intro b hb
     exact ⟨hf.monotone D hD (hda.1 hb), hg.monotone D hD (hda.1 hb)⟩
   · intro ⟨p₁, p₂⟩ hp
@@ -101,7 +101,7 @@ lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
     ScottContinuous f → ScottContinuousOn D f := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
-  h.scottContinuousOn.monotone univ (fun _ _ _ ↦ trivial)
+  h.scottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
 
 @[simp] lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
 
@@ -109,7 +109,7 @@ end ScottContinuous
 
 section SemilatticeSup
 
-variable [Preorder α] [SemilatticeSup β]
+variable [SemilatticeSup β]
 
 lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
