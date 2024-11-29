@@ -37,7 +37,7 @@ namespace abelSummationProof
 
 private theorem sumlocc (n : ℕ) :
     ∀ᵐ t, t ∈ Set.Icc (n : ℝ) (n + 1) → ∑ k ∈ Icc 0 ⌊t⌋₊, c k = ∑ k ∈ Icc 0 n, c k := by
-  filter_upwards[Ico_ae_eq_Icc] with t h ht
+  filter_upwards [Ico_ae_eq_Icc] with t h ht
   rw [Nat.floor_eq_on_Ico _ _ (h.mpr ht)]
 
 private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
@@ -58,7 +58,7 @@ private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableA
 private theorem ineqofmemIco {k : ℕ} (hk : k ∈ Set.Ico (⌊a⌋₊ + 1) ⌊b⌋₊) :
     a ≤ k ∧ k + 1 ≤ b := by
   constructor
-  · have := (Nat.succ_eq_add_one _) ▸ (Set.mem_Ico.mp hk).1
+  · have := (Set.mem_Ico.mp hk).1
     exact le_of_lt <| (Nat.floor_lt' (by omega)).mp this
   · rw [← Nat.cast_add_one, ← Nat.le_floor_iff' (Nat.succ_ne_zero k)]
     exact (Set.mem_Ico.mp hk).2
