@@ -16,7 +16,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install zulip
 
-    - name: Do the thing
+    - name: Add or remove emoji
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
