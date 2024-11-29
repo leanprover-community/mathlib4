@@ -105,7 +105,7 @@ theorem T_zero : T R 0 = 1 := rfl
 @[simp]
 theorem T_one : T R 1 = X := rfl
 
-theorem T_neg_one : T R (-1) = X := (by ring : 2 * X * 1 - X = X)
+theorem T_neg_one : T R (-1) = X := show 2 * X * 1 - X = X by ring
 
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   simpa [pow_two, mul_assoc] using T_add_two R 0
