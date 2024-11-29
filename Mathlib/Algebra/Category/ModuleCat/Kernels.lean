@@ -114,7 +114,7 @@ theorem cokernel_π_cokernelIsoRangeQuotient_hom :
 
 @[simp, elementwise]
 theorem range_mkQ_cokernelIsoRangeQuotient_inv :
-    ↿f.hom.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
+    asHom f.hom.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
   colimit.isoColimitCocone_ι_inv ⟨_, cokernelIsColimit f⟩ WalkingParallelPair.one
 
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :

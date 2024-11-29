@@ -571,7 +571,7 @@ def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMo
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
-  LinearEquiv.toModuleIso'
+  LinearEquiv.toModuleIso
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         set_option tactic.skipAssignedInstances false in
@@ -586,16 +586,13 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
       (toModuleMonoidAlgebra.obj V)).ρ g).toFun (unitIsoAddEquiv x) := by
   dsimp [unitIsoAddEquiv, ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-/- Porting note: rest of broken proof was
   simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
-    Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
-  rw [Representation.asModuleEquiv_symm_map_rho]
-  rfl
+    Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act]
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   Action.mkIso
-    (LinearEquiv.toModuleIso'
+    (LinearEquiv.toModuleIso
       { unitIsoAddEquiv with
         map_smul' := fun r x => by
           dsimp [unitIsoAddEquiv]
