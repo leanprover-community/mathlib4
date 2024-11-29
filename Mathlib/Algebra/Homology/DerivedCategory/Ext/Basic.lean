@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
 /-!
@@ -165,6 +166,29 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T
       (mk₀ (f ≫ g)).comp α (zero_add n) := by
   rw [← mk₀_comp_mk₀, comp_assoc]
   omega
+
+
+variable (X Y) in
+lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
+  letI := HasDerivedCategory.standard C
+  have h : (singleFunctor C 0).FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+  let e : (X ⟶ Y) ≃ Ext X Y 0 :=
+    (h.homEquiv.trans (ShiftedHom.homEquiv _ (by simp))).trans homEquiv.symm
+  have he : e.toFun = mk₀ := by
+    ext f : 1
+    dsimp [e]
+    apply homEquiv.injective
+    dsimp
+    erw [Equiv.apply_symm_apply]
+    symm
+    apply SmallShiftedHom.equiv_mk₀
+  rw [← he]
+  exact e.bijective
+
+/-- The bijection `Ext X Y 0 ≃ (X ⟶ Y)`. -/
+@[simps! symm_apply]
+noncomputable def homEquiv₀ : Ext X Y 0 ≃ (X ⟶ Y) :=
+  (Equiv.ofBijective _ (mk₀_bijective X Y)).symm
 
 variable {n : ℕ}
 
@@ -366,5 +390,10 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     all_goals omega
 
 end Abelian
+
+variable (C) in
+lemma hasExt_iff_small_ext :
+    HasExt.{w'} C ↔ ∀ (X Y : C) (n : ℕ), Small.{w'} (Abelian.Ext.{w} X Y n) := by
+  sorry
 
 end CategoryTheory
