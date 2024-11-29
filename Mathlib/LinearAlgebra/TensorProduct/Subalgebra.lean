@@ -144,6 +144,12 @@ def mulMap : A ⊗[R] B →ₐ[R] S := Algebra.TensorProduct.productMap A.val B.
 @[simp]
 theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
 
+theorem mulMap_map_comp_eq {T : Type w} [CommSemiring T] [Algebra R T] (f : S →ₐ[R] T) :
+    (mulMap (A.map f) (B.map f)).comp
+      (Algebra.TensorProduct.map (f.subalgebraMap A) (f.subalgebraMap B))
+        = f.comp (mulMap A B) := by
+  ext <;> simp
+
 theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) :=
   rfl
 

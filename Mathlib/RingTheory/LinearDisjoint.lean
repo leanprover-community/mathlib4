@@ -175,6 +175,12 @@ theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
 theorem linearDisjoint_comm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
+/-- Two subalgebras `A`, `B` in a commutative ring are linear disjoint if and only if
+`Subalgebra.mulMap A B` is injective. -/
+theorem linearDisjoint_iff_injective : A.LinearDisjoint B ↔ Function.Injective (A.mulMap B) := by
+  rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
+  rfl
+
 namespace LinearDisjoint
 
 variable (H : A.LinearDisjoint B)
@@ -411,6 +417,56 @@ theorem of_basis_left {ι : Type*} (a : Basis ι R A)
 variable {A B}
 
 variable (H : A.LinearDisjoint B)
+
+include H in
+/-- If `A` and `B` are subalgebras in a domain `S` over `R`, and if they are
+linearly disjoint, then `A ⊗[R] B` is also a domain. -/
+theorem isDomain [IsDomain S] : IsDomain (A ⊗[R] B) :=
+  have := Subtype.val_injective.isDomain (algebraMap ↥(A ⊔ B) S)
+  H.mulMap.injective.isDomain H.mulMap.toAlgHom.toRingHom
+
+-- TODO: move to suitable place
+theorem _root_.Algebra.TensorProduct.includeLeft_injective
+    {A : Type v} [CommRing A] {B : Type w} [CommRing B] [Algebra R A] [Algebra R B]
+    [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
+    Function.Injective (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) := by
+  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
+    |>.comp (TensorProduct.rid R A).symm.injective
+  ext; simp
+
+-- TODO: move to suitable place
+theorem _root_.Algebra.TensorProduct.includeRight_injective
+    {A : Type v} [CommRing A] {B : Type w} [CommRing B] [Algebra R A] [Algebra R B]
+    [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
+    Function.Injective (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B) := by
+  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
+    |>.comp (TensorProduct.lid R B).symm.injective
+  ext; simp
+
+variable (R) in
+/-- If `A` and `B` are flat algebras over `R`, such that the algebra maps are injective, then
+`A` and `B` inject into `A ⊗[R] B` and their images are linearly disjoint. -/
+theorem include_range_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
+    [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B]
+    (ha : Function.Injective (algebraMap R A))
+    (hb : Function.Injective (algebraMap R B)) :
+    Function.Injective (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∧
+    Function.Injective (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B) ∧
+    (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range.LinearDisjoint
+      (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
+  set fa : A →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeLeft
+  set fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
+  have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
+  have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
+  refine ⟨hfa, hfb, ?_⟩
+  rw [linearDisjoint_iff_injective]
+  let f := (fa.range.mulMap fb.range).comp (Algebra.TensorProduct.congr
+    (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toAlgHom
+  have hf : f = AlgHom.id R _ := by ext <;> simp [f, fa, fb]
+  replace hf : Function.Injective f :=
+    hf ▸ (show Function.Injective (AlgHom.id R _) from Function.injective_id)
+  simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.injective_comp, f] using hf
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
