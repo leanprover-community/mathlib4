@@ -192,7 +192,7 @@ def fixedNumeralTest {α} [One α] :=
 def fixedNumeralTest2 {α} [One α] :=
   @OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
 
-/-! Test the namespace bug (#8733). This code should *not* generate a lemma
+/-! Test the namespace bug (https://github.com/leanprover-community/mathlib4/pull/8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false
 
@@ -206,7 +206,7 @@ instance : One (myFin n) := ⟨(1 : ℕ)⟩
 @[to_additive bar]
 def myFin.foo : myFin (n+1) := 1
 
-/-- We can pattern-match with `1`, which creates a term with a pure nat literal. See #2046 -/
+/-- We can pattern-match with `1`, which creates a term with a pure nat literal. See https://github.com/leanprover-community/mathlib4/pull/2046 -/
 @[to_additive]
 def mul_foo {α} [Monoid α] (a : α) : ℕ → α
   | 0 => 1

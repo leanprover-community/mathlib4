@@ -34,7 +34,7 @@ universe u v w
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
 /-- `≤` implies not `>` for lists. -/
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 
 -- Porting note: Delete this attribute
@@ -195,10 +195,6 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
-
-@[deprecated (since := "2024-01-18")] alias append_left_cancel := append_cancel_left
-
-@[deprecated (since := "2024-01-18")] alias append_right_cancel := append_cancel_right
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
@@ -500,7 +496,7 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
-@[deprecated (since := "2024-08-22")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-22")]
 theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
       l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
@@ -631,7 +627,7 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
-@[deprecated (since := "2024-04-07")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-07")]
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
 @[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
@@ -741,7 +737,6 @@ end IndexOf
 /-! ### nth element -/
 
 section deprecated
-set_option linter.deprecated false
 
 @[simp]
 theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_len_le le_rfl
@@ -758,19 +753,20 @@ theorem getElem_map_rev (f : α → β) {l} {n : Nat} {h : n < l.length} :
 /-- A version of `get_map` that can be used for rewriting. -/
 @[deprecated getElem_map_rev (since := "2024-06-12")]
 theorem get_map_rev (f : α → β) {l n} :
-    f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (get_map _)
+    f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (getElem_map _)
 
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
-  (getLast_eq_get l _).symm
+  (getLast_eq_getElem l _).symm
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
-  rw [drop_eq_get_cons h, take, take]
+  rw [drop_eq_getElem_cons h, take, take]
+  simp
 
 theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
     l₁ = l₂ := by
-  apply ext
+  apply ext_get?
   intro n
   rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
   · exact h' n hn
@@ -834,6 +830,8 @@ theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
   congr
   dsimp
   omega
+
+set_option linter.deprecated false
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
@@ -1856,6 +1854,40 @@ theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
 theorem takeWhile_idem : takeWhile p (takeWhile p l) = takeWhile p l := by
   simp_rw [takeWhile_takeWhile, and_self_iff, Bool.decide_coe]
 
+variable (p) (l)
+
+lemma find?_eq_head?_dropWhile_not :
+    l.find? p = (l.dropWhile (fun x ↦ ! (p x))).head? := by
+  induction l
+  case nil => simp
+  case cons head tail hi =>
+    set ph := p head with phh
+    rcases ph with rfl | rfl
+    · have phh' : ¬(p head = true) := by simp [phh.symm]
+      rw [find?_cons_of_neg _ phh', dropWhile_cons_of_pos]
+      · exact hi
+      · simpa using phh
+    · rw [find?_cons_of_pos _ phh.symm, dropWhile_cons_of_neg]
+      · simp
+      · simpa using phh
+
+lemma find?_not_eq_head?_dropWhile :
+    l.find? (fun x ↦ ! (p x)) = (l.dropWhile p).head? := by
+  convert l.find?_eq_head?_dropWhile_not ?_
+  simp
+
+variable {p} {l}
+
+lemma find?_eq_head_dropWhile_not (h : ∃ x ∈ l, p x) :
+    l.find? p = some ((l.dropWhile (fun x ↦ ! (p x))).head (by simpa using h)) := by
+  rw [l.find?_eq_head?_dropWhile_not p, ← head_eq_iff_head?_eq_some]
+
+lemma find?_not_eq_head_dropWhile (h : ∃ x ∈ l, ¬p x) :
+    l.find? (fun x ↦ ! (p x)) = some ((l.dropWhile p).head (by simpa using h)) := by
+  convert l.find?_eq_head_dropWhile_not ?_
+  · simp
+  · simpa using h
+
 end Filter
 
 /-! ### erasep -/
@@ -2249,7 +2281,7 @@ theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs
   simp; omega
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-25")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-25")]
 theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
   induction xs generalizing i j hj with

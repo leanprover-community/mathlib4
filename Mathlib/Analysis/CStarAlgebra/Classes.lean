@@ -90,10 +90,9 @@ section Prod
 
 variable {A B : Type*}
 
-noncomputable instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] :
-  NonUnitalCStarAlgebra (A × B) where
+instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] : NonUnitalCStarAlgebra (A × B) where
 
-noncomputable instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
+instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
     NonUnitalCommCStarAlgebra (A × B) where
   mul_comm := mul_comm
 
