@@ -462,7 +462,7 @@ def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
     let mut aliases := #[]
     if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
       aliases ← getAliasSyntax exp
-    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
+    for id in aliases.push ((stx.find? (·.isOfKind ``declId)).getD default)[0] do
       let declName := id.getId
       if id.getPos? == some default then continue
       if declName.hasMacroScopes then continue
