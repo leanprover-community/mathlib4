@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Lattice
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # Associated, prime, and irreducible elements.

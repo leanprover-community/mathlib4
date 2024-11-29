@@ -72,6 +72,13 @@ instance instLinearOrder : LinearOrder ℕ where
   decidableLE := inferInstance
   decidableEq := inferInstance
 
+-- Shortcut instances
+instance : Preorder ℕ := inferInstance
+instance : PartialOrder ℕ := inferInstance
+instance : Min ℕ := inferInstance
+instance : Max ℕ := inferInstance
+instance : Ord ℕ := inferInstance
+
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 @[simp] theorem default_eq_zero : default = 0 := rfl
@@ -961,11 +968,14 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 attribute [simp] Nat.dvd_zero
 
-@[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+@[simp] lemma mod_two_not_eq_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases mod_two_eq_zero_or_one n <;> simp [*]
 
-@[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+@[simp] lemma mod_two_not_eq_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases mod_two_eq_zero_or_one n <;> simp [*]
+
+lemma mod_two_ne_one : n % 2 ≠ 1 ↔ n % 2 = 0 := mod_two_not_eq_one
+lemma mod_two_ne_zero : n % 2 ≠ 0 ↔ n % 2 = 1 := mod_two_not_eq_zero
 
 @[deprecated mod_mul_right_div_self (since := "2024-05-29")]
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
@@ -1085,7 +1095,7 @@ lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 lemma one_mod_eq_one : ∀ {n : ℕ}, 1 % n = 1 ↔ n ≠ 1
   | 0 | 1 | n + 2 => by simp
 
-@[deprecated (since := "2024-08-28")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-28")]
 lemma one_mod_of_ne_one  : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1 := one_mod_eq_one.mpr
 
 lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
@@ -1161,7 +1171,6 @@ lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_com
 lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
   rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 
-set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   omega
