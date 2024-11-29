@@ -361,13 +361,13 @@ possible. This property is used to create new matchings using `symmDiff`. The de
 `symmDiff` for `SimpleGraph` is the one that makes sense, so this property is defined
 for `SimpleGraph` as well.
 -/
-def IsAlternating (G  G' : SimpleGraph V) :=
+def IsAlternating (G G' : SimpleGraph V) :=
   ∀ ⦃v w w': V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
 
 lemma IsPerfectMatching.symmDiff_spanningCoe_of_isAlternating {M : Subgraph G}
     (hM : M.IsPerfectMatching) (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles)  :
-    ((M.spanningCoe ∆ G').toSubgraph (M.spanningCoe ∆ G')
-    (by rfl)).IsPerfectMatching := by
+    (SimpleGraph.toSubgraph (M.spanningCoe ∆ G')
+      (by rfl)).IsPerfectMatching := by
   rw [Subgraph.isPerfectMatching_iff]
   intro v
   simp only [toSubgraph_adj, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj]
