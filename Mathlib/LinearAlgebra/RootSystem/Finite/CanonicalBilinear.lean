@@ -3,9 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.Basic
+import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
@@ -90,9 +90,14 @@ lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
     ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
 
-lemma Polarization_apply_apply (x y : M) :
+lemma toPerfectPairing_apply_apply_Polarization (x y : M) :
     P.toPerfectPairing y (P.Polarization x) = P.RootForm x y := by
   simp [RootForm]
+
+lemma toPerfectPairing_apply_CoPolarization (x : N) :
+    P.toPerfectPairing (P.CoPolarization x) = P.CorootForm x := by
+  ext y
+  exact P.flip.toPerfectPairing_apply_apply_Polarization x y
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
@@ -125,6 +130,23 @@ lemma rootForm_self_smul_coroot (i : ι) :
     root_coroot_eq_pairing, map_sum, LinearMapClass.map_smul, Finset.sum_neg_distrib, ← smul_assoc]
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
+
+lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
+    4 • (P.RootForm (P.root i) (P.root j)) ^ 2 = P.coxeterWeight i j •
+      (P.RootForm (P.root i) (P.root i) * P.RootForm (P.root j) (P.root j)) := by
+  have hij : 4 • (P.RootForm (P.root i)) (P.root j) =
+      2 • P.toPerfectPairing (P.root j) (2 • P.Polarization (P.root i)) := by
+    rw [← toPerfectPairing_apply_apply_Polarization, LinearMap.map_smul_of_tower, ← smul_assoc,
+      Nat.nsmul_eq_mul]
+  have hji : 2 • (P.RootForm (P.root i)) (P.root j) =
+      P.toPerfectPairing (P.root i) (2 • P.Polarization (P.root j)) := by
+    rw [show (P.RootForm (P.root i)) (P.root j) = (P.RootForm (P.root j)) (P.root i) by
+      apply rootForm_symmetric, ← toPerfectPairing_apply_apply_Polarization,
+      LinearMap.map_smul_of_tower]
+  rw [sq, nsmul_eq_mul, ← mul_assoc, ← nsmul_eq_mul, hij, ← rootForm_self_smul_coroot,
+    smul_mul_assoc 2, ← mul_smul_comm, hji, ← rootForm_self_smul_coroot, map_smul, ← pairing,
+    map_smul, ← pairing, smul_eq_mul, smul_eq_mul, smul_eq_mul, coxeterWeight]
+  ring
 
 lemma corootForm_self_smul_root (i : ι) :
     (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
@@ -171,6 +193,51 @@ lemma rootForm_root_self_pos (j : ι) :
   refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
   use j
   simp
+
+/-- SGA3 XXI Prop. 2.3.1 -/
+lemma coxeterWeight_le_four (i j : ι) : P.coxeterWeight i j ≤ 4 := by
+  by_contra! h
+  have h1 : (P.RootForm (P.root i)) (P.root i) * (P.RootForm (P.root j)) (P.root j) * 4 <
+      4 • (P.RootForm (P.root i) (P.root j)) ^ 2 := by
+    rw [P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j, smul_eq_mul,
+      mul_comm (P.coxeterWeight i j)]
+    exact (mul_lt_mul_left (Left.mul_pos (rootForm_root_self_pos P i)
+      (rootForm_root_self_pos P j))).mpr h
+  have h2 : (P.RootForm (P.root i)) (P.root i) * (P.RootForm (P.root j)) (P.root j) <
+      (P.RootForm (P.root i)) (P.root j) * (P.RootForm (P.root j)) (P.root i) := by
+    rw [nsmul_eq_mul, mul_comm, sq] at h1
+    rw [show (P.RootForm (P.root j)) (P.root i) = (P.RootForm (P.root i)) (P.root j) by
+        apply rootForm_symmetric]
+    exact (mul_lt_mul_left (by simp)).mp h1
+  have h3 := LinearMap.BilinForm.inner_mul_inner_le P.RootForm P.rootForm_self_non_neg
+    (rootForm_root_self_pos P i) (P.root j)
+  linarith
+
+instance rootForm_rootPositive : IsRootPositive P P.RootForm where
+  zero_lt_apply_root i := P.rootForm_root_self_pos i
+  symm := P.rootForm_symmetric
+  apply_reflection_eq := P.rootForm_reflection_reflection_apply
+
+lemma coxeterWeight_eq_one_or_two_or_three (i j : ι) (hP : P.IsCrystallographic)
+    (hO : ¬ P.IsOrthogonal i j) (h : LinearIndependent R ![P.root i, P.root j]) :
+    P.coxeterWeight i j = 1 ∨ P.coxeterWeight i j = 2 ∨ P.coxeterWeight i j = 3 := by
+  have hn0 : P.coxeterWeight i j ≠ 0 :=
+    fun hc ↦ hO <| (P.coxeterWeight_zero_iff_isOrthogonal P.RootForm i j).mp hc
+  have hn4 : P.coxeterWeight i j ≠ 4 := by
+    have : Module.IsReflexive R M := P.toPerfectPairing.reflexive_left
+    have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+    intro hc
+    exact (P.infinite_of_linearIndependent_coxeterWeight_four i j h hc).not_finite inferInstance
+  have h4 : P.coxeterWeight i j ≤ 4 := P.coxeterWeight_le_four i j
+  have : ∃ n : ℕ, P.coxeterWeight i j = n := by
+    obtain ⟨z, hz⟩ := P.exists_int_eq_coxeterWeight hP i j
+    have hz₀ : 0 ≤ z := by simpa [hz] using P.coxeterWeight_non_neg P.RootForm i j
+    obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hz₀
+    exact ⟨n, by simp [hz]⟩
+  obtain ⟨n, hcn⟩ := this
+  simp only [hcn] at *
+  norm_cast at *
+  omega
 
 lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=

@@ -6,9 +6,7 @@ Authors: Scott Carnahan
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -55,11 +53,6 @@ variable {ι R M N : Type*}
 
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
-
-instance rootForm_rootPositive : IsRootPositive P P.RootForm where
-  zero_lt_apply_root i := P.rootForm_root_self_pos i
-  symm := P.rootForm_symmetric
-  apply_reflection_eq := P.rootForm_reflection_reflection_apply
 
 instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
 
@@ -125,66 +118,5 @@ lemma rootForm_restrict_nondegenerate :
   LinearMap.IsRefl.nondegenerate_of_separatingLeft (LinearMap.IsSymm.isRefl fun x y => by
     simp [rootForm_apply_apply, mul_comm]) fun x h => SetLike.coe_eq_coe.mp
     (P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero (Submodule.coe_mem x) (h x))
-
-lemma four_smul_rootForm_mul_rootForm (i j : ι) :
-    4 • P.RootForm (P.root i) (P.root j) * P.RootForm (P.root j) (P.root i) =
-    P.RootForm (P.root i) (P.root i) * P.RootForm (P.root j) (P.root j) * P.coxeterWeight i j := by
-  have hij : 4 • (P.RootForm (P.root i)) (P.root j) =
-      2 • P.toPerfectPairing (P.root j) (2 • P.Polarization (P.root i)) := by
-    rw [← Polarization_apply_apply, LinearMap.map_smul_of_tower, ← smul_assoc, Nat.nsmul_eq_mul]
-  have hji : 2 • (P.RootForm (P.root j)) (P.root i) =
-      P.toPerfectPairing (P.root i) (2 • P.Polarization (P.root j)) := by
-    rw [← Polarization_apply_apply, LinearMap.map_smul_of_tower]
-  rw [hij, ← rootForm_self_smul_coroot, smul_mul_assoc 2, ← mul_smul_comm, hji,
-    ← rootForm_self_smul_coroot, map_smul, ← pairing, map_smul, ← pairing, smul_eq_mul, smul_eq_mul,
-    coxeterWeight]
-  ring
-
-/-- SGA3 XXI Prop. 2.3.1 -/
-lemma coxeterWeight_le_4 (i j : ι) : P.coxeterWeight i j ≤ 4 := by
-  by_contra h
-  rw [not_le] at h
-  have h1 : (P.RootForm (P.root i)) (P.root i) * (P.RootForm (P.root j)) (P.root j) * 4 <
-      4 • (P.RootForm (P.root i)) (P.root j) * (P.RootForm (P.root j)) (P.root i) := by
-    rw [P.four_smul_rootForm_mul_rootForm i j]
-    exact (mul_lt_mul_left (Left.mul_pos (rootForm_root_self_pos P i)
-      (rootForm_root_self_pos P j))).mpr h
-  have h2 : (P.RootForm (P.root i)) (P.root i) * (P.RootForm (P.root j)) (P.root j) <
-      (P.RootForm (P.root i)) (P.root j) * (P.RootForm (P.root j)) (P.root i) := by
-    rw [nsmul_eq_mul, mul_comm, mul_assoc] at h1
-    exact (mul_lt_mul_left (by simp)).mp h1
-  have h3 := LinearMap.BilinForm.inner_mul_inner_le P.RootForm P.rootForm_self_non_neg
-    (rootForm_root_self_pos P i) (P.root j)
-  linarith
-
-lemma coxeterWeight123 (i j : ι) (hP : P.IsCrystallographic) (hO : ¬ P.IsOrthogonal i j)
-    (h : LinearIndependent R ![P.root i, P.root j]) :
-    P.coxeterWeight i j = 1 ∨ P.coxeterWeight i j = 2 ∨ P.coxeterWeight i j = 3 := by
-  obtain ⟨ij, hij⟩ := P.isCrystallographic_iff.mp hP i j
-  obtain ⟨ji, hji⟩ := P.isCrystallographic_iff.mp hP j i
-  have hn0 : P.coxeterWeight i j ≠ 0 := by
-    by_contra hc
-    apply hO ((P.coxeterWeight_zero_iff_isOrthogonal P.RootForm i j).mp hc)
-  have ht : P.coxeterWeight i j = ij * ji := Eq.symm (Mathlib.Tactic.Ring.mul_congr hij hji rfl)
-  have hn4 : P.coxeterWeight i j ≠ 4 := by
-    by_contra hc
-    have : Module.IsReflexive R M := P.toPerfectPairing.reflexive_left
-    have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-    have := P.infinite_of_linearly_independent_coxeterWeight_four i j h hc --needs NoZeroSMul ℤ M
-    simp_all only [not_or, ← isEmpty_fintype, isEmpty_iff]
-  have : ∃ (n : ℕ), P.coxeterWeight i j = n := by -- this should be easier
-    have : (0 : ℤ) ≤ ij * ji := by
-      have hn := P.coxeterWeight_non_neg P.RootForm i j
-      rwa [ht, ← Int.cast_mul, ← Int.cast_zero, Int.cast_le] at hn
-    rw [ht, ← Int.cast_mul]
-    lift (ij * ji) to ℕ with k
-    · exact this
-    · use k
-      norm_cast
-  obtain ⟨n, hcn⟩ := this
-  have h4 := P.coxeterWeight_le_4 i j
-  simp only [hcn] at *
-  norm_cast at *
-  omega
 
 end RootPairing

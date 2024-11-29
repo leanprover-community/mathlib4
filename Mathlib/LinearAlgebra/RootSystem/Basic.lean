@@ -73,7 +73,7 @@ protected def equiv_of_mapsTo :
 
 end reflection_perm
 
-lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
     (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
     (hc : P.coxeterWeight i j = 4) : Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -91,6 +91,9 @@ lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSM
     simp only [neg_smul, neg_eq_zero, OfNat.ofNat_ne_zero, and_false, imp_false] at hl
     rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
+
+@[deprecated (since := "2024-11-30")] alias infinite_of_linearly_independent_coxeterWeight_four :=
+  infinite_of_linearIndependent_coxeterWeight_four
 
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
 
