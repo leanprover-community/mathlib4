@@ -372,6 +372,11 @@ instance : AddCommGroup (M ⟶ N) :=
   Function.Injective.addCommGroup (Hom.hom) hom_bijective.injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
+@[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
+    (∑ i in s, f i).hom = ∑ i in s, (f i).hom :=
+  map_sum ({ toFun := ModuleCat.Hom.hom, map_zero' := ModuleCat.hom_zero, map_add' := hom_add } :
+    (M ⟶ N) →+ (M →ₗ[R] N)) _ _
+
 instance : Preadditive (ModuleCat.{v} R) where
 
 instance forget₂_addCommGrp_additive :
@@ -429,6 +434,15 @@ theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
 end
 
 variable (M N : ModuleCat.{v} R)
+
+/-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
+@[simps]
+def homMulEquiv : End M ≃* (M →ₗ[R] M) where
+  toFun := ModuleCat.Hom.hom
+  invFun := ModuleCat.asHom
+  map_mul' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/

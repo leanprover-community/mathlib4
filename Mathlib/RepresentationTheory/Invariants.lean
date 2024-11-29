@@ -118,15 +118,12 @@ section Rep
 
 variable {k : Type u} [CommRing k] {G : Grp.{u}}
 
--- TODO: find a good home for me!
-lemma asHom_ρ {X : Rep k G} (g : G) : ModuleCat.asHom (X.ρ g) = Action.ρ X g := rfl
-
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   rw [← LinearMap.comp_assoc, ← ModuleCat.hom_asHom (Y.ρ g), ← ModuleCat.hom_asHom f,
       ← ModuleCat.hom_comp, ← ModuleCat.hom_asHom (X.ρ g⁻¹), ← ModuleCat.hom_comp,
-      asHom_ρ, ← ρAut_apply_inv X g, asHom_ρ, ← ρAut_apply_hom Y g, ← ModuleCat.hom_ext_iff,
+      Rep.asHom_ρ, ← ρAut_apply_inv X g, Rep.asHom_ρ, ← ρAut_apply_hom Y g, ← ModuleCat.hom_ext_iff,
       Iso.inv_comp_eq, ρAut_apply_hom, ← ModuleCat.hom_asHom (X.ρ g),
       ← ModuleCat.hom_comp, ← ModuleCat.hom_ext_iff]
   exact comm
