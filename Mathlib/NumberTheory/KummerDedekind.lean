@@ -361,8 +361,8 @@ open Set Classical in
 `mod I`. Then (the reduction of) `Q` corresponds via
 `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
 `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
-theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span {I : Ideal R}
-    (hI : I.IsMaximal) {Q : R[X]} {x : S}
+theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
+    (hI : I.IsMaximal) {Q : R[X]}
     (hQ : Q.map (Ideal.Quotient.mk I) ∈ normalizedFactors ((minpoly R x).map (Ideal.Quotient.mk I)))
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm ⟨_, hQ⟩).1 =
