@@ -13,6 +13,7 @@ This file defines admissible linear change of variables of Weierstrass curves.
 ## Main definitions
 
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
+ * `WeierstrassCurve.VariableChange.instGroup`: change of variables form a group.
  * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
  * `WeierstrassCurve.instMulActionVariableChange`: change of variables act on Weierstrass curves.
 
@@ -92,9 +93,9 @@ lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
   rw [comp, id, inv]
   ext <;> dsimp only
   · exact C.u.inv_mul
-  · linear_combination (norm := ring1) -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
-  · linear_combination (norm := ring1) -C.s * C.u.inv_mul
-  · linear_combination (norm := ring1) (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
+  · linear_combination -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
+  · linear_combination -C.s * C.u.inv_mul
+  · linear_combination (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
       + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
 
 lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
@@ -133,21 +134,21 @@ lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
     W.variableChange (C.comp C') = (W.variableChange C').variableChange C := by
   simp only [VariableChange.comp, variableChange]
   ext <;> simp only [mul_inv, Units.val_mul]
-  · linear_combination (norm := ring1) ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
-  · linear_combination (norm := ring1)
+  · linear_combination ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
+  · linear_combination
       C.s * (-C'.s * 2 - W.a₁) * C.u⁻¹ ^ 2 * ↑C'.u⁻¹ * C'.u.inv_mul
         + (C.r * 3 - C.s ^ 2) * C.u⁻¹ ^ 2 * pow_mul_pow_eq_one 2 C'.u.inv_mul
-  · linear_combination (norm := ring1)
+  · linear_combination
       C.r * (C'.s * 2 + W.a₁) * C.u⁻¹ ^ 3 * ↑C'.u⁻¹ * pow_mul_pow_eq_one 2 C'.u.inv_mul
         + C.t * 2 * C.u⁻¹ ^ 3 * pow_mul_pow_eq_one 3 C'.u.inv_mul
-  · linear_combination (norm := ring1)
+  · linear_combination
       C.s * (-W.a₃ - C'.r * W.a₁ - C'.t * 2) * C.u⁻¹ ^ 4 * C'.u⁻¹ ^ 3 * C'.u.inv_mul
         + C.u⁻¹ ^ 4 * C'.u⁻¹ ^ 2 * (C.r * C'.r * 6 + C.r * W.a₂ * 2 - C'.s * C.r * W.a₁ * 2
           - C'.s ^ 2 * C.r * 2) * pow_mul_pow_eq_one 2 C'.u.inv_mul
         - C.u⁻¹ ^ 4 * ↑C'.u⁻¹ * (C.s * C'.s * C.r * 2 + C.s * C.r * W.a₁ + C'.s * C.t * 2
           + C.t * W.a₁) * pow_mul_pow_eq_one 3 C'.u.inv_mul
         + C.u⁻¹ ^ 4 * (C.r ^ 2 * 3 - C.s * C.t * 2) * pow_mul_pow_eq_one 4 C'.u.inv_mul
-  · linear_combination (norm := ring1)
+  · linear_combination
       C.r * C.u⁻¹ ^ 6 * C'.u⁻¹ ^ 4 * (C'.r * W.a₂ * 2 - C'.r * C'.s * W.a₁ + C'.r ^ 2 * 3 + W.a₄
           - C'.s * C'.t * 2 - C'.s * W.a₃ - C'.t * W.a₁) * pow_mul_pow_eq_one 2 C'.u.inv_mul
         - C.u⁻¹ ^ 6 * C'.u⁻¹ ^ 3 * C.t * (C'.r * W.a₁ + C'.t * 2 + W.a₃)
@@ -201,6 +202,34 @@ lemma variableChange_Δ : (W.variableChange C).Δ = C.u⁻¹ ^ 12 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, variableChange_a₁, variableChange_a₂, variableChange_a₃,
     variableChange_a₄, variableChange_a₆]
   ring1
+
+variable [W.IsElliptic]
+
+instance : (W.variableChange C).IsElliptic := by
+  rw [isElliptic_iff, variableChange_Δ]
+  exact (C.u⁻¹.isUnit.pow 12).mul W.isUnit_Δ
+
+set_option linter.docPrime false in
+@[simp]
+lemma variableChange_Δ' : (W.variableChange C).Δ' = C.u⁻¹ ^ 12 * W.Δ' := by
+  simp_rw [Units.ext_iff, Units.val_mul, coe_Δ', variableChange_Δ, Units.val_pow_eq_pow_val]
+
+set_option linter.docPrime false in
+lemma coe_variableChange_Δ' : ((W.variableChange C).Δ' : R) = C.u⁻¹ ^ 12 * W.Δ' := by
+  simp_rw [coe_Δ', variableChange_Δ]
+
+set_option linter.docPrime false in
+lemma inv_variableChange_Δ' : (W.variableChange C).Δ'⁻¹ = C.u ^ 12 * W.Δ'⁻¹ := by
+  rw [variableChange_Δ', mul_inv, inv_pow, inv_inv]
+
+set_option linter.docPrime false in
+lemma coe_inv_variableChange_Δ' : (↑(W.variableChange C).Δ'⁻¹ : R) = C.u ^ 12 * W.Δ'⁻¹ := by
+  rw [inv_variableChange_Δ', Units.val_mul, Units.val_pow_eq_pow_val]
+
+@[simp]
+lemma variableChange_j : (W.variableChange C).j = W.j := by
+  rw [j, coe_inv_variableChange_Δ', variableChange_c₄, j, mul_pow, ← pow_mul, ← mul_assoc,
+    mul_right_comm (C.u.val ^ 12), ← mul_pow, C.u.mul_inv, one_pow, one_mul]
 
 end VariableChange
 
@@ -269,39 +298,5 @@ lemma map_variableChange (C : VariableChange R) :
   ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
 
 end BaseChange
-
-/-! ## Variable changes of elliptic curves -/
-
-variable [W.IsElliptic] (C : VariableChange R)
-
-section VariableChange
-
-instance : (W.variableChange C).IsElliptic := by
-  rw [isElliptic_iff, variableChange_Δ]
-  exact (C.u⁻¹.isUnit.pow 12).mul W.isUnit_Δ
-
-set_option linter.docPrime false in
-@[simp]
-lemma variableChange_Δ' : (W.variableChange C).Δ' = C.u⁻¹ ^ 12 * W.Δ' := by
-  simp_rw [Units.ext_iff, Units.val_mul, coe_Δ', variableChange_Δ, Units.val_pow_eq_pow_val]
-
-set_option linter.docPrime false in
-lemma coe_variableChange_Δ' : ((W.variableChange C).Δ' : R) = C.u⁻¹ ^ 12 * W.Δ' := by
-  simp_rw [coe_Δ', variableChange_Δ]
-
-set_option linter.docPrime false in
-lemma inv_variableChange_Δ' : (W.variableChange C).Δ'⁻¹ = C.u ^ 12 * W.Δ'⁻¹ := by
-  rw [variableChange_Δ', mul_inv, inv_pow, inv_inv]
-
-set_option linter.docPrime false in
-lemma coe_inv_variableChange_Δ' : (↑(W.variableChange C).Δ'⁻¹ : R) = C.u ^ 12 * W.Δ'⁻¹ := by
-  rw [inv_variableChange_Δ', Units.val_mul, Units.val_pow_eq_pow_val]
-
-@[simp]
-lemma variableChange_j : (W.variableChange C).j = W.j := by
-  rw [j, coe_inv_variableChange_Δ', variableChange_c₄, j, mul_pow, ← pow_mul, ← mul_assoc,
-    mul_right_comm (C.u.val ^ 12), ← mul_pow, C.u.mul_inv, one_pow, one_mul]
-
-end VariableChange
 
 end WeierstrassCurve
