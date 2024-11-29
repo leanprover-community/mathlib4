@@ -84,11 +84,17 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
   (Rep.homMulEquiv _).toMonoidHom.comp (Action.ρ V)
 
-@[simp] lemma homMulEquiv_symm_comp_ρ (V : FDRep k G) :
-    (Rep.homMulEquiv _).symm.toMonoidHom.comp (ρ V) = Action.ρ V := rfl
+@[simp]
+lemma homMulEquiv_symm_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (Rep.homMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
 
-@[simp] lemma homMulEquiv_comp_ρ (V : FDRep k G) :
-    (Rep.homMulEquiv _).toMonoidHom.comp (Action.ρ V) = ρ V := rfl
+@[simp]
+lemma homMulEquiv_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (Rep.homMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+
+@[simp]
+lemma hom_action_ρ (V : FDRep k G) (g : G) :
+    (Action.ρ V g).hom = ρ V g := rfl
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
@@ -97,7 +103,7 @@ def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
 theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
-  erw [FDRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
+  erw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
   rw [← ModuleCat.hom_asHom (W.ρ g), ← ModuleCat.hom_ext_iff,
       Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
   exact (i.hom.comm g).symm

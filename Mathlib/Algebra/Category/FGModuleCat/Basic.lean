@@ -99,6 +99,7 @@ abbrev of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGMod
   ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
 
 variable {R} in
+/-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
 abbrev ofHom {V W : FGModuleCat R} (f : V →ₗ[R] W) : V ⟶ W :=
   ModuleCat.asHom f
 
@@ -235,9 +236,17 @@ theorem FGModuleCatCoevaluation_apply_one :
 def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) :=
   ModuleCat.asHom <| contractLeft K V
 
-@[simp]
 theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
+  contractLeft_apply f x
+
+/-- `@[simp]`-normal form of `FGModuleCatEvaluation_apply`, where the carriers have been unfolded.
+-/
+@[simp]
+theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
+    DFunLike.coe
+      (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
+      (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 
 private theorem coevaluation_evaluation :

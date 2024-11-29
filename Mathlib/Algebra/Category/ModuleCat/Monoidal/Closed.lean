@@ -21,23 +21,6 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
-@[simps]
-def asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
-    M ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op N)).obj P :=
-  asHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
-
-@[simp] lemma asHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
-    asHom₂ (f.compr₂ g) = asHom₂ f ≫ (((linearCoyoneda _ _).obj _).map (asHom g)) := rfl
-
-@[simps!]
-def Hom.hom₂ {M N P : ModuleCat.{u} R}
-    (f : ModuleCat.Hom M (((linearCoyoneda R (ModuleCat R)).obj (op N)).obj P)) :
-    M →ₗ[R] N →ₗ[R] P :=
-  Hom.hom (by convert (f ≫ asHom homLinearEquiv.toLinearMap))
-
-@[simp] lemma Hom.hom₂_asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
-    (asHom₂ f).hom₂ = f := rfl
-
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
@@ -73,8 +56,6 @@ theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of
 
 open MonoidalCategory
 
--- Porting note: `CoeFun` was replaced by `DFunLike`
--- I can't seem to express the function coercion here without writing `@DFunLike.coe`.
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
     ((MonoidalClosed.curry f).hom y).hom x = f (x ⊗ₜ[R] y) :=
   rfl

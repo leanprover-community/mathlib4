@@ -538,6 +538,32 @@ instance : (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}).ReflectsIsomorphisms whe
 
 end ModuleCat
 
+section Bilinear
+
+variable {R : Type*} [CommRing R]
+
+namespace ModuleCat
+
+/-- Turn a bilinear map into a homomorphism. -/
+@[simps]
+def asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
+    M ⟶ of R (N ⟶ P) :=
+  asHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
+
+/-- Turn a homomorphism into a bilinear map. -/
+@[simps!]
+def Hom.hom₂ {M N P : ModuleCat.{u} R}
+    (f : ModuleCat.Hom M (of R (N ⟶ P))) :
+    M →ₗ[R] N →ₗ[R] P :=
+  Hom.hom (by convert (f ≫ asHom homLinearEquiv.toLinearMap))
+
+@[simp] lemma Hom.hom₂_asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
+    (asHom₂ f).hom₂ = f := rfl
+
+end ModuleCat
+
+end Bilinear
+
 /-!
 `@[simp]` lemmas for `LinearMap.comp` and categorical identities.
 -/
