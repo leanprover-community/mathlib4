@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
@@ -40,8 +40,7 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ SemiRingCat.{u})
 instance semiringObj (j) : Semiring ((F ⋙ forget SemiRingCat).obj j) :=
   inferInstanceAs <| Semiring (F.obj j)
 
-/-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections.
--/
+/-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections. -/
 def sectionsSubsemiring : Subsemiring (∀ j, F.obj j) :=
   -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
@@ -100,14 +99,16 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_mul]
-    erw [← map_mul (MulEquiv.symm Shrink.mulEquiv)]
+    simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
+          forget_map, map_mul]
+    rw [← equivShrink_mul]
     rfl
   · simp only [Functor.mapCone_π_app, forget_map, map_zero]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_add]
-    erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
+    simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map, map_add]
+    rw [← equivShrink_add]
     rfl
 
 end HasLimits
@@ -340,7 +341,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ RingCat SemiRingCat.{u})
-          (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
+          (by apply SemiRingCat.HasLimits.limitConeIsLimit _) (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `RingCat`.
 (Generally, you'll just want to use `limit F`.)

@@ -7,6 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Data.Nat.PartENat
 
 /-! # Formal power series (in one variable) - Order
 
@@ -45,7 +46,7 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine not_iff_not.mp ?_
   push_neg
-  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
+  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after https://github.com/leanprover-community/mathlib4/pull/8386?
   simp [PowerSeries.ext_iff, (coeff R _).map_zero]
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
@@ -147,7 +148,9 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
  is at least the minimum of their orders. -/
 theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine le_order _ _ ?_
-  simp (config := { contextual := true }) [coeff_of_lt_order]
+  simp +contextual [coeff_of_lt_order]
+
+@[deprecated (since := "2024-11-12")] alias le_order_add := min_order_le_order_add
 
 @[deprecated (since := "2024-09-17")] alias le_order_add := min_order_le_order_add
 
@@ -253,27 +256,30 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
     refine coeff_of_lt_order _ ?_
     simpa [PartENat.coe_lt_iff] using fun _ => hn
 
-theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧ (· ∣ ·)] (φ : R⟦X⟧) :
-    order φ = multiplicity X φ := by
+theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
+    order φ = emultiplicity X φ := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
   induction' ho : order φ using PartENat.casesOn with n
   · simp [hφ] at ho
   have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
-  rw [← hn]
-  refine
-    le_antisymm (le_multiplicity_of_pow_dvd <| X_pow_order_dvd (order_finite_iff_ne_zero.mpr hφ))
-      (PartENat.find_le _ _ ?_)
-  rintro ⟨ψ, H⟩
-  have := congr_arg (coeff R n) H
-  rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
-  · exact coeff_order _ this
-  · rw [X_pow_eq, order_monomial]
-    split_ifs
-    · exact PartENat.natCast_lt_top _
-    · rw [← hn, PartENat.coe_lt_coe]
-      exact Nat.lt_succ_self _
+  rw [← hn, ← PartENat.ofENat_coe, eq_comm]
+  congr 1
+  apply le_antisymm _
+  · apply le_emultiplicity_of_pow_dvd
+    apply X_pow_order_dvd
+  · apply Order.le_of_lt_add_one
+    rw [← not_le, ← Nat.cast_one, ← Nat.cast_add, ← pow_dvd_iff_le_emultiplicity]
+    rintro ⟨ψ, H⟩
+    have := congr_arg (coeff R n) H
+    rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
+    · exact coeff_order _ this
+    · rw [X_pow_eq, order_monomial]
+      split_ifs
+      · exact PartENat.natCast_lt_top _
+      · rw [← hn, PartENat.coe_lt_coe]
+        exact Nat.lt_succ_self _
 
 /-- Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
   dividing out the largest power of X that divides `f`, that is its order -/
@@ -325,8 +331,12 @@ variable [CommRing R] [IsDomain R]
  is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   classical
-  simp_rw [order_eq_multiplicity_X]
-  exact multiplicity.mul X_prime
+  simp_rw [order_eq_emultiplicity_X]
+  change PartENat.withTopAddEquiv.symm _ =
+    PartENat.withTopAddEquiv.symm _ + PartENat.withTopAddEquiv.symm _
+  rw [← map_add]
+  congr 1
+  exact emultiplicity_mul X_prime
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]

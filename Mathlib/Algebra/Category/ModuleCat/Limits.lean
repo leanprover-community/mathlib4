@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
@@ -115,11 +115,11 @@ def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
     (fun s => rfl)
   · intro x y
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_add]
-    erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
+    rw [← equivShrink_add]
     rfl
   · intro r x
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_smul]
-    erw [← map_smul (LinearEquiv.symm <| Shrink.linearEquiv _ _)]
+    rw [← equivShrink_smul]
     rfl
 
 end HasLimits

@@ -11,7 +11,7 @@ import Mathlib.Tactic.Ring.RingNF
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note (#11215): TODO add docs and remove `@[nolint docBlame]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
@@ -85,7 +85,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       ring_nf
       rw [mul_comm]
       assumption
-    le_trans C.precMax (Nat.le_mul_of_pos_left _ two_pos),
+    le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
     by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
 @[nolint docBlame]

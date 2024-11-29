@@ -175,7 +175,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
   uniformity_dist := by
-    simp (config := { contextual := true }) [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
+    simp +contextual [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
 
 /-!
 ### `Additive`, `Multiplicative`

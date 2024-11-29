@@ -149,7 +149,7 @@ noncomputable instance {G : Type*} [Group G] [Finite G] :
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
   haveI : IsIso (pullback.fst (F.map f) (F.map f)) :=
-    fst_iso_of_mono_eq (F.map f)
+    isIso_fst_of_mono (F.map f)
   haveI : IsIso (F.map (pullback.fst f f)) := by
     rw [← PreservesPullback.iso_hom_fst]
     exact IsIso.comp_isIso
@@ -172,7 +172,7 @@ section
 then `F ⋙ E` is again a fiber functor. -/
 noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
-  preservesQuotientsByFiniteGroups G := compPreservesColimitsOfShape F E
+  preservesQuotientsByFiniteGroups _ := compPreservesColimitsOfShape F E
 
 end
 
@@ -334,11 +334,12 @@ lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
 
 /-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
 also `∏ᶜ X` has non-empty fiber. -/
-instance nonempty_fiber_pi_of_nonempty_of_finite {ι : Type*} [Fintype ι] (X : ι → C)
-    [∀ i, Nonempty (F.obj (X i))] : Nonempty (F.obj (∏ᶜ X)) :=
+instance nonempty_fiber_pi_of_nonempty_of_finite {ι : Type*} [Finite ι] (X : ι → C)
+    [∀ i, Nonempty (F.obj (X i))] : Nonempty (F.obj (∏ᶜ X)) := by
+  cases nonempty_fintype ι
   let f (i : ι) : FintypeCat.{w} := F.obj (X i)
   let i : F.obj (∏ᶜ X) ≅ ∏ᶜ f := PreservesProduct.iso F _
-  Nonempty.elim inferInstance (fun x : (∏ᶜ f : FintypeCat.{w}) ↦ ⟨i.inv x⟩)
+  exact Nonempty.elim inferInstance fun x : (∏ᶜ f : FintypeCat.{w}) ↦ ⟨i.inv x⟩
 
 section CardFiber
 

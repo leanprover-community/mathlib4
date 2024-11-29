@@ -5,7 +5,6 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
 
 /-!
@@ -70,7 +69,7 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
 /-- The unique uniform structure inducing a given compact topological structure. -/
 def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
-  symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
+  symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
   comp := by
     /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
@@ -151,7 +150,7 @@ theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α �
     (h : Continuous f) : UniformContinuous f :=
 calc map (Prod.map f f) (𝓤 α)
    = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
- _ ≤ 𝓝ˢ (diagonal β)                      := (h.prod_map h).tendsto_nhdsSet mapsTo_prod_map_diagonal
+ _ ≤ 𝓝ˢ (diagonal β)                      := (h.prodMap h).tendsto_nhdsSet mapsTo_prod_map_diagonal
  _ ≤ 𝓤 β                                  := nhdsSet_diagonal_le_uniformity
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly

@@ -6,6 +6,7 @@ Authors: Jeremy Tan
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Abel's limit theorem
@@ -55,9 +56,9 @@ theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
     _ ≤ _ := norm_sub_norm_le _ _
 
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
-    (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
+    (𝓝[<] 1).map ofReal ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
-  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
+  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
@@ -206,9 +207,9 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
     calc
       _ ≤ ‖1 - z‖ * ∑ i ∈ range B₁, ‖l - s (i + 1)‖ := by
         gcongr; nth_rw 3 [← mul_one ‖_‖]
-        gcongr; exact pow_le_one _ (norm_nonneg _) zn.le
+        gcongr; exact pow_le_one₀ (norm_nonneg _) zn.le
       _ ≤ ‖1 - z‖ * (F + 1) := by gcongr; linarith only
-      _ < _ := by rwa [norm_sub_rev, lt_div_iff (by positivity)] at zd
+      _ < _ := by rwa [norm_sub_rev, lt_div_iff₀ (by positivity)] at zd
   have S₂ : ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
       _ ≤ ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ε / 4 / M * ‖z‖ ^ i := by
@@ -241,7 +242,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzCone
 
 theorem tendsto_tsum_powerSeries_nhdsWithin_lt
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) :
-    Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal') (𝓝 l) :=
+    Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal) (𝓝 l) :=
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet (M := 2) h).mono_left
     (nhdsWithin_lt_le_nhdsWithin_stolzSet one_lt_two)
 
@@ -258,7 +259,7 @@ is continuous at 1 when approaching 1 from the left. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_lt
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) :
     Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
-  have m : (𝓝 l).map ofReal' ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
+  have m : (𝓝 l).map ofReal ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
   replace h := (tendsto_map.comp h).mono_right m
   rw [Function.comp_def] at h
   push_cast at h

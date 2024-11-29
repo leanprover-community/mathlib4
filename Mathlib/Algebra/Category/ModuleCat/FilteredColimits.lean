@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
 import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -85,7 +85,7 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   simp
   rfl
 
--- Porting note (#11083): writing directly the `Module` instance makes things very slow.
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
@@ -183,6 +183,9 @@ instance forget₂AddCommGroupPreservesFilteredColimits :
 instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
   Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
     (forget AddCommGrp)
+
+instance forgetReflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
+  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimitOfReflectsIsomorphisms _ _ }
 
 end
 

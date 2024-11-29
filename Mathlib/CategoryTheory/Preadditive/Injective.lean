@@ -108,7 +108,7 @@ instance (X : Type u₁) [Nonempty X] : Injective X where
       change dite (f y ∈ Set.range f) (fun h => g (Classical.choose h)) _ = _
       split_ifs <;> rename_i h
       · rw [mono_iff_injective] at mono
-        erw [mono (Classical.choose_spec h)]
+        rw [mono (Classical.choose_spec h)]
       · exact False.elim (h ⟨y, rfl⟩)⟩
 
 instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
@@ -187,7 +187,8 @@ variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
-      (adj.homEquiv _ _).symm.injective (by simp)⟩⟩
+      (adj.homEquiv _ _).symm.injective
+        (by simp [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit])⟩⟩
 
 end Adjunction
 

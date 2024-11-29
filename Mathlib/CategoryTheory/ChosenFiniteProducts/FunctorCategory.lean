@@ -50,7 +50,7 @@ def fst : chosenProd F₁ F₂ ⟶ F₁ where
 /-- The second projection `chosenProd F₁ F₂ ⟶ F₂`. -/
 @[simps]
 def snd : chosenProd F₁ F₂ ⟶ F₂ where
-  app j := ChosenFiniteProducts.snd _ _
+  app _ := ChosenFiniteProducts.snd _ _
 
 /-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
 noncomputable def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
@@ -150,6 +150,15 @@ lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
 lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
+
+noncomputable instance {K : Type*} [Category K] [HasColimitsOfShape K C]
+    [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
+    PreservesColimitsOfShape K (tensorLeft F) := by
+  apply preservesColimitsOfShapeOfEvaluation
+  intro k
+  haveI : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  exact preservesColimitsOfShapeOfNatIso this.symm
 
 end Monoidal
 

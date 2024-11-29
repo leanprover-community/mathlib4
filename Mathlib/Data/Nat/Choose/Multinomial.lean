@@ -212,7 +212,7 @@ variable [Semiring R]
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (hc : (s : Set α).Pairwise fun i j ↦ Commute (f i) (f j)) (n : ℕ) :
     (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k *
-      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun i j h ↦ h.pow_pow ..) := by
+      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
   induction' s using Finset.cons_induction with a s has ih generalizing n
   · cases n <;> simp

@@ -19,7 +19,7 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Mathlib
 
 namespace Qq
 
@@ -123,12 +123,13 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let (t, _) ← getRelSides (← inferType prf)
+  let (_, _, t, _) ← (← inferType prf).ineq?
   return t
 
 /-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
 def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  inferType (← leftOfIneqProof prf)
+  let (_, ty, _) ← (← inferType prf).ineq?
+  return ty
 
 /--
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,
@@ -191,6 +192,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
+      Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
       let l' ← addNegEqProofs l
@@ -202,7 +204,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Batteries.HashMap Nat Nat ← try
+      let certificate : Std.HashMap Nat Nat ← try
         oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
@@ -210,7 +212,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith] "linarith has found a contradiction: {certificate.toList}"
       let enum_inputs := inputs.enum
       -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
+      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
       let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
       -- `sm` is the sum of input terms, scaled to cancel out all variables.
       let sm ← addExprs mls

@@ -42,7 +42,7 @@ See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
 
-open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
+open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
 open scoped NNReal ENNReal Topology
 
@@ -298,7 +298,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
           + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel
     _ ≤ ‖f (x + ρ • w) - f (x + ρ • y)‖ + ‖ρ • L y - ρ • L w‖
-          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le _ _ _
+          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le
     _ ≤ C * ‖(x + ρ • w) - (x + ρ • y)‖ + ρ * (‖L‖ * ‖y - w‖) + δ * ρ := by
       gcongr
       · exact hf.norm_sub_le _ _
@@ -386,3 +386,18 @@ theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) 
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
   rw [← lipschitzOnWith_univ] at h
   simpa [differentiableWithinAt_univ] using h.ae_differentiableWithinAt_of_mem
+
+/-- In a real finite-dimensional normed vector space,
+  the norm is almost everywhere differentiable. -/
+theorem ae_differentiableAt_norm :
+    ∀ᵐ x ∂μ, DifferentiableAt ℝ (‖·‖) x := lipschitzWith_one_norm.ae_differentiableAt
+
+omit [MeasurableSpace E] in
+/-- In a real finite-dimensional normed vector space,
+  the set of points where the norm is differentiable at is dense. -/
+theorem dense_differentiableAt_norm :
+    Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
+  let _ : MeasurableSpace E := borel E
+  have _ : BorelSpace E := ⟨rfl⟩
+  let w := Basis.ofVectorSpace ℝ E
+  MeasureTheory.Measure.dense_of_ae (ae_differentiableAt_norm (μ := w.addHaar))

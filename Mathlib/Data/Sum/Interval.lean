@@ -191,7 +191,7 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
   -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
   simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop,
     not_forall]
@@ -222,7 +222,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
   finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
 
-variable (a₁ a₂ : α) (b₁ b₂ : β) (a b : α ⊕ β)
+variable (a₁ a₂ : α) (b₁ b₂ : β)
 
 theorem Icc_inl_inl : Icc (inl a₁ : α ⊕ β) (inl a₂) = (Icc a₁ a₂).map Embedding.inl :=
   rfl

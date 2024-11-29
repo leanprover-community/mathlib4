@@ -296,6 +296,8 @@ end ArbitraryUniverse
 variable {C : Type u₁} [Category.{v₀} C] {D : Type u₂} [Category.{v₀} D] {F : C ⥤ D} {G : D ⥤ C}
   (adj : F ⊣ G)
 
+attribute [local simp] homEquiv_unit homEquiv_counit
+
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
 the functor associating to each `Y` the cocones over `K ⋙ F` with cone point `Y`

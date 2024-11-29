@@ -373,7 +373,7 @@ lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
 
 /-- Any endomorphism of a fiber functor is a unit. -/
 theorem FibreFunctor.end_isUnit (f : End F) : IsUnit f :=
-  (MulEquiv.map_isUnit_iff (endMulEquivAutGalois F)).mp
+  (isUnit_map_iff (endMulEquivAutGalois F) _).mp
     (Group.isUnit ((endMulEquivAutGalois F) f))
 
 /-- Any endomorphism of a fiber functor is an isomorphism. -/

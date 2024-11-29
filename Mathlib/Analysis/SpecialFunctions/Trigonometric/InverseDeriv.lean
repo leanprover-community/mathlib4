@@ -57,14 +57,14 @@ theorem hasDerivWithinAt_arcsin_Ici {x : ℝ} (h : x ≠ -1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Ici x) x := by
   rcases eq_or_ne x 1 with (rfl | h')
   · convert (hasDerivWithinAt_const (1 : ℝ) _ (π / 2)).congr _ _ <;>
-      simp (config := { contextual := true }) [arcsin_of_one_le]
+      simp +contextual [arcsin_of_one_le]
   · exact (hasDerivAt_arcsin h h').hasDerivWithinAt
 
 theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Iic x) x := by
   rcases em (x = -1) with (rfl | h')
   · convert (hasDerivWithinAt_const (-1 : ℝ) _ (-(π / 2))).congr _ _ <;>
-      simp (config := { contextual := true }) [arcsin_of_le_neg_one]
+      simp +contextual [arcsin_of_le_neg_one]
   · exact (hasDerivAt_arcsin h' h).hasDerivWithinAt
 
 theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :

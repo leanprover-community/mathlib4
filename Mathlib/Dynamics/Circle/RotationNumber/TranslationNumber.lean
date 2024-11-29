@@ -164,9 +164,9 @@ instance : Monoid CircleDeg1Lift where
     { toOrderHom := f.1.comp g.1
       map_add_one' := fun x => by simp [map_add_one] }
   one := ⟨.id, fun _ => rfl⟩
-  mul_one f := rfl
-  one_mul f := rfl
-  mul_assoc f₁ f₂ f₃ := DFunLike.coe_injective rfl
+  mul_one _ := rfl
+  one_mul _ := rfl
+  mul_assoc _ _ _ := DFunLike.coe_injective rfl
 
 instance : Inhabited CircleDeg1Lift := ⟨1⟩
 
@@ -201,7 +201,7 @@ def toOrderIso : CircleDeg1Liftˣ →* ℝ ≃o ℝ where
       right_inv := units_apply_inv_apply f
       map_rel_iff' := ⟨fun h => by simpa using mono (↑f⁻¹) h, mono f⟩ }
   map_one' := rfl
-  map_mul' f g := rfl
+  map_mul' _ _ := rfl
 
 @[simp]
 theorem coe_toOrderIso (f : CircleDeg1Liftˣ) : ⇑(toOrderIso f) = f :=
@@ -350,23 +350,23 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
 noncomputable instance : Lattice CircleDeg1Lift where
   sup f g :=
     { toFun := fun x => max (f x) (g x)
-      monotone' := fun x y h => max_le_max (f.mono h) (g.mono h)
+      monotone' := fun _ _ h => max_le_max (f.mono h) (g.mono h)
       -- TODO: generalize to `Monotone.max`
       map_add_one' := fun x => by simp [max_add_add_right] }
   le f g := ∀ x, f x ≤ g x
   le_refl f x := le_refl (f x)
-  le_trans f₁ f₂ f₃ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
-  le_antisymm f₁ f₂ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
+  le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
+  le_antisymm _ _ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
   le_sup_left f g x := le_max_left (f x) (g x)
   le_sup_right f g x := le_max_right (f x) (g x)
-  sup_le f₁ f₂ f₃ h₁ h₂ x := max_le (h₁ x) (h₂ x)
+  sup_le _ _ _ h₁ h₂ x := max_le (h₁ x) (h₂ x)
   inf f g :=
     { toFun := fun x => min (f x) (g x)
-      monotone' := fun x y h => min_le_min (f.mono h) (g.mono h)
+      monotone' := fun _ _ h => min_le_min (f.mono h) (g.mono h)
       map_add_one' := fun x => by simp [min_add_add_right] }
   inf_le_left f g x := min_le_left (f x) (g x)
   inf_le_right f g x := min_le_right (f x) (g x)
-  le_inf f₁ f₂ f₃ h₂ h₃ x := le_min (h₂ x) (h₃ x)
+  le_inf _ _ _ h₂ h₃ x := le_min (h₂ x) (h₃ x)
 
 @[simp]
 theorem sup_apply (x : ℝ) : (f ⊔ g) x = max (f x) (g x) :=
@@ -578,11 +578,12 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
     dist (f.transnumAuxSeq n) (f.transnumAuxSeq (n + 1)) < 1 / 2 / 2 ^ n := by
   have : 0 < (2 ^ (n + 1) : ℝ) := pow_pos zero_lt_two _
   rw [div_div, ← pow_succ', ← abs_of_pos this]
-  replace := abs_pos.2 (ne_of_gt this)
-  convert (div_lt_div_right this).2 ((f ^ 2 ^ n).dist_map_map_zero_lt (f ^ 2 ^ n)) using 1
-  simp_rw [transnumAuxSeq, Real.dist_eq]
-  rw [← abs_div, sub_div, pow_succ, pow_succ', ← two_mul, mul_div_mul_left _ _ (two_ne_zero' ℝ),
-    pow_mul, sq, mul_apply]
+  calc
+    _ = dist ((f ^ 2 ^ n) 0 + (f ^ 2 ^ n) 0) ((f ^ 2 ^ n) ((f ^ 2 ^ n) 0)) / |2 ^ (n + 1)| := by
+      simp_rw [transnumAuxSeq, Real.dist_eq]
+      rw [← abs_div, sub_div, pow_succ, pow_succ', ← two_mul, mul_div_mul_left _ _ (two_ne_zero' ℝ),
+        pow_mul, sq, mul_apply]
+    _ < _ := by gcongr; exact (f ^ 2 ^ n).dist_map_map_zero_lt (f ^ 2 ^ n)
 
 theorem tendsto_translationNumber_aux : Tendsto f.transnumAuxSeq atTop (𝓝 <| τ f) :=
   (cauchySeq_of_le_geometric_two fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
@@ -607,7 +608,7 @@ theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ
 theorem translationNumber_eq_of_dist_bounded {f g : CircleDeg1Lift} (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) ((g ^ n) 0) ≤ C) : τ f = τ g :=
   Eq.symm <| g.translationNumber_eq_of_tendsto_aux <|
-    f.tendsto_translationNumber_of_dist_bounded_aux _ C H
+    f.tendsto_translationNumber_of_dist_bounded_aux (fun n ↦ (g ^ n) 0) C H
 
 @[simp]
 theorem translationNumber_one : τ 1 = 0 :=
@@ -852,8 +853,8 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
-  refine ⟨⟨⟨_, fun x y hxy => ?_⟩, fun x => ?_⟩, csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;>
-    simp only [hF₁, hF₂, ← map_inv, coe_mk]
+  refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x => ?_⟩,
+    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)

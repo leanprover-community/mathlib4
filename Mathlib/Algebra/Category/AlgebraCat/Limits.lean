@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -108,11 +108,11 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     ext j
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
       forget_map_eq_coe]
-    erw [map_one]
+    rw [map_one]
     rfl
   · intro x y
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app]
-    erw [← map_mul (MulEquiv.symm Shrink.mulEquiv)]
+    rw [← equivShrink_mul]
     apply congrArg
     ext j
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
@@ -124,7 +124,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     simp only [map_zero, Pi.zero_apply]
   · intro x y
     simp only [Functor.mapCone_π_app]
-    erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
+    rw [← equivShrink_add]
     apply congrArg
     ext j
     simp only [forget_map_eq_coe, map_add]

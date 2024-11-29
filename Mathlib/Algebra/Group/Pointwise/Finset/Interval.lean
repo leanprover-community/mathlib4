@@ -31,7 +31,7 @@ the unprimed names have been reserved for
 section ContravariantLE
 
 variable [Mul α] [Preorder α] [DecidableEq α]
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+variable [MulLeftMono α] [MulRightMono α]
 
 @[to_additive Icc_add_Icc_subset]
 theorem Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
@@ -51,7 +51,7 @@ end ContravariantLE
 section ContravariantLT
 
 variable [Mul α] [PartialOrder α] [DecidableEq α]
-variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+variable [MulLeftStrictMono α] [MulRightStrictMono α]
 
 @[to_additive Icc_add_Ico_subset]
 theorem Icc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :

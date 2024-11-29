@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 /-!
 # Representably flat functors
@@ -56,20 +57,30 @@ section RepresentablyFlat
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
 
-/-- A functor `F : C ⥤ D` is representably-flat functor if the comma category `(X/F)`
-is cofiltered for each `X : C`.
+/-- A functor `F : C ⥤ D` is representably flat if the comma category `(X/F)` is cofiltered for
+each `X : D`.
 -/
 class RepresentablyFlat (F : C ⥤ D) : Prop where
   cofiltered : ∀ X : D, IsCofiltered (StructuredArrow X F)
 
-attribute [instance] RepresentablyFlat.cofiltered
+/-- A functor `F : C ⥤ D` is representably coflat if the comma category `(F/X)` is filtered for
+each `X : D`. -/
+class RepresentablyCoflat (F : C ⥤ D) : Prop where
+  filtered : ∀ X : D, IsFiltered (CostructuredArrow F X)
+
+attribute [instance] RepresentablyFlat.cofiltered RepresentablyCoflat.filtered
 
 variable (F : C ⥤ D)
 
 instance RepresentablyFlat.of_isRightAdjoint [F.IsRightAdjoint] : RepresentablyFlat F where
   cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofIsRightAdjoint F) _)
 
+instance RepresentablyCoflat.of_isLeftAdjoint [F.IsLeftAdjoint] : RepresentablyCoflat F where
+  filtered _ := IsFiltered.of_isTerminal _ (mkTerminalOfRightAdjoint _ (.ofIsLeftAdjoint F) _)
+
 theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
+
+theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
@@ -84,12 +95,48 @@ instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
      fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
 
+section
+
 variable {F}
 
 /-- Being a representably flat functor is closed under natural isomorphisms. -/
 theorem RepresentablyFlat.of_iso [RepresentablyFlat F] {G : C ⥤ D} (α : F ≅ G) :
     RepresentablyFlat G where
   cofiltered _ := IsCofiltered.of_equivalence (StructuredArrow.mapNatIso α)
+
+theorem RepresentablyCoflat.of_iso [RepresentablyCoflat F] {G : C ⥤ D} (α : F ≅ G) :
+    RepresentablyCoflat G where
+  filtered _ := IsFiltered.of_equivalence (CostructuredArrow.mapNatIso α)
+
+end
+
+theorem representablyCoflat_op_iff : RepresentablyCoflat F.op ↔ RepresentablyFlat F := by
+  refine ⟨fun _ => ⟨fun X => ?_⟩, fun _ => ⟨fun ⟨X⟩ => ?_⟩⟩
+  · suffices IsFiltered (StructuredArrow X F)ᵒᵖ from isCofiltered_of_isFiltered_op _
+    apply IsFiltered.of_equivalence (structuredArrowOpEquivalence _ _).symm
+  · suffices IsCofiltered (CostructuredArrow F.op (op X))ᵒᵖ from isFiltered_of_isCofiltered_op _
+    suffices IsCofiltered (StructuredArrow X F)ᵒᵖᵒᵖ from
+      IsCofiltered.of_equivalence (structuredArrowOpEquivalence _ _).op
+    apply IsCofiltered.of_equivalence (opOpEquivalence _)
+
+theorem representablyFlat_op_iff : RepresentablyFlat F.op ↔ RepresentablyCoflat F := by
+  refine ⟨fun _ => ⟨fun X => ?_⟩, fun _ => ⟨fun ⟨X⟩ => ?_⟩⟩
+  · suffices IsCofiltered (CostructuredArrow F X)ᵒᵖ from isFiltered_of_isCofiltered_op _
+    apply IsCofiltered.of_equivalence (costructuredArrowOpEquivalence _ _).symm
+  · suffices IsFiltered (StructuredArrow (op X) F.op)ᵒᵖ from isCofiltered_of_isFiltered_op _
+    suffices IsFiltered (CostructuredArrow F X)ᵒᵖᵒᵖ from
+      IsFiltered.of_equivalence (costructuredArrowOpEquivalence _ _).op
+    apply IsFiltered.of_equivalence (opOpEquivalence _)
+
+instance [RepresentablyFlat F] : RepresentablyCoflat F.op :=
+  (representablyCoflat_op_iff F).2 inferInstance
+
+instance [RepresentablyCoflat F] : RepresentablyFlat F.op :=
+  (representablyFlat_op_iff F).2 inferInstance
+
+instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [RepresentablyCoflat G] :
+    RepresentablyCoflat (F ⋙ G) :=
+  (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
 
 end RepresentablyFlat
 
@@ -108,6 +155,11 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       infer_instance
     IsCofiltered.of_hasFiniteLimits _⟩
 
+theorem coflat_of_preservesFiniteColimits [HasFiniteColimits C] (F : C ⥤ D)
+    [PreservesFiniteColimits F] : RepresentablyCoflat F :=
+  let _ := preservesFiniteLimitsOp F
+  (representablyFlat_op_iff _).1 (flat_of_preservesFiniteLimits _)
+
 namespace PreservesFiniteLimitsOfFlat
 
 open StructuredArrow
@@ -125,7 +177,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
     (F.map <|
       hc.lift <|
         (Cones.postcompose
-              ({ app := fun X => 𝟙 _ } :
+              ({ app := fun _ => 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 
@@ -201,21 +253,26 @@ noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F
         · exact h
         · exact PreservesFiniteLimitsOfFlat.fac F hc s }
 
-/-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably flat iff it preserves
+/-- Representably coflat functors preserve finite colimits. -/
+noncomputable def preservesFiniteColimitsOfCoflat (F : C ⥤ D) [RepresentablyCoflat F] :
+    PreservesFiniteColimits F :=
+  letI _ := preservesFiniteLimitsOfFlat F.op
+  preservesFiniteColimitsOfOp _
+
+/-- If `C` is finitely complete, then `F : C ⥤ D` is representably flat iff it preserves
 finite limits.
 -/
 noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D) :
-    RepresentablyFlat F ≃ PreservesFiniteLimits F where
-  toFun _ := preservesFiniteLimitsOfFlat F
-  invFun _ := flat_of_preservesFiniteLimits F
-  left_inv _ := proof_irrel _ _
-  right_inv x := by
-    cases x
-    unfold preservesFiniteLimitsOfFlat
-    dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
-    congr
-    -- Porting note: this next line wasn't needed in lean 3
-    subsingleton
+    RepresentablyFlat F ≃ PreservesFiniteLimits F :=
+  equivOfSubsingletonOfSubsingleton
+    (fun _ => preservesFiniteLimitsOfFlat F) (fun _ => flat_of_preservesFiniteLimits F)
+
+/-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably coflat iff it preserves
+finite colmits. -/
+noncomputable def preservesFiniteColimitsIffCoflat [HasFiniteColimits C] (F : C ⥤ D) :
+    RepresentablyCoflat F ≃ PreservesFiniteColimits F :=
+  equivOfSubsingletonOfSubsingleton
+    (fun _ => preservesFiniteColimitsOfCoflat F) (fun _ => coflat_of_preservesFiniteColimits F)
 
 end HasLimit
 
@@ -232,15 +289,17 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     F.lan ⋙ (evaluation D E).obj X ≅
       (whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
   NatIso.ofComponents (fun G =>
-    IsColimit.coconePointUniqueUpToIso (Functor.isPointwiseLeftKanExtensionLanUnit F G X)
+    IsColimit.coconePointUniqueUpToIso
+    (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X)
     (colimit.isColimit _)) (fun {G₁ G₂} φ => by
-      apply (Functor.isPointwiseLeftKanExtensionLanUnit F G₁ X).hom_ext
+      apply (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G₁ X).hom_ext
       intro T
       have h₁ := fun (G : C ⥤ E) => IsColimit.comp_coconePointUniqueUpToIso_hom
-        (Functor.isPointwiseLeftKanExtensionLanUnit F G X) (colimit.isColimit _) T
+        (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X) (colimit.isColimit _) T
       have h₂ := congr_app (F.lanUnit.naturality φ) T.left
       dsimp at h₁ h₂ ⊢
       simp only [Category.assoc] at h₁ ⊢
+      simp only [Functor.lan, Functor.lanUnit] at h₂ ⊢
       rw [reassoc_of% h₁, NatTrans.naturality_assoc, ← reassoc_of% h₂, h₁,
         ι_colimMap, whiskerLeft_app]
       rfl)
@@ -275,7 +334,7 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
-  ⟨fun H => inferInstance, fun H => by
+  ⟨fun _ => inferInstance, fun H => by
     haveI := preservesFiniteLimitsOfFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}

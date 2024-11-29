@@ -1,14 +1,14 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Logic.Small.Group
 
 /-!
 # The category of (commutative) (additive) monoids has all limits
@@ -71,10 +71,10 @@ noncomputable def limitπMonoidHom (j : J) :
       ((F ⋙ forget MonCat.{u}).obj j) where
   toFun := (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).π.app j
   map_one' := by
-    simp only [Types.Small.limitCone_π_app, ← Equiv.mulEquiv_apply, map_one]
+    simp only [Types.Small.limitCone_pt, Types.Small.limitCone_π_app, equivShrink_symm_one]
     rfl
   map_mul' _ _ := by
-    simp only [Types.Small.limitCone_π_app, ← Equiv.mulEquiv_apply, map_mul]
+    simp only [Types.Small.limitCone_pt, Types.Small.limitCone_π_app, equivShrink_symm_mul]
     rfl
 
 namespace HasLimits
@@ -103,8 +103,8 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_mul]
-    erw [← map_mul (MulEquiv.symm Shrink.mulEquiv)]
+    simp only [Functor.mapCone_π_app, forget_map, map_mul, Functor.comp_obj, Equiv.toFun_as_coe]
+    rw [← equivShrink_mul]
     rfl
 
 /-- If `(F ⋙ forget MonCat).sections` is `u`-small, `F` has a limit. -/
@@ -207,7 +207,7 @@ noncomputable instance forget₂CreatesLimit : CreatesLimit F (forget₂ CommMon
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ CommMonCat MonCat.{u})
-          (MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
+          (MonCat.HasLimits.limitConeIsLimit _) (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `CommMonCat`.
 (Generally, you'll just want to use `limit F`.)

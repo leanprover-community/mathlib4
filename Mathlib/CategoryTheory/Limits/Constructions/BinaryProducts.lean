@@ -33,7 +33,7 @@ def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : 
   lift s :=
     hc.lift
       (PullbackCone.mk (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩) (hX.hom_ext _ _))
-  fac s j :=
+  fac _ j :=
     Discrete.casesOn j fun j =>
       WalkingPair.casesOn j (hc.fac _ WalkingCospan.left) (hc.fac _ WalkingCospan.right)
   uniq s m J := by
@@ -109,6 +109,26 @@ noncomputable def prodIsoPullback [HasTerminal C] [HasPullbacks C] (X Y : C)
     [HasBinaryProduct X Y] : X ⨯ Y ≅ pullback (terminal.from X) (terminal.from Y) :=
   limit.isoLimitCone (limitConeOfTerminalAndPullbacks _)
 
+@[reassoc (attr := simp)]
+lemma prodIsoPullback_hom_fst [HasTerminal C] [HasPullbacks C] (X Y : C)
+    [HasBinaryProduct X Y] : (prodIsoPullback X Y).hom ≫ pullback.fst _ _ = prod.fst :=
+  limit.isoLimitCone_hom_π (limitConeOfTerminalAndPullbacks _) ⟨.left⟩
+
+@[reassoc (attr := simp)]
+lemma prodIsoPullback_hom_snd [HasTerminal C] [HasPullbacks C] (X Y : C)
+    [HasBinaryProduct X Y] : (prodIsoPullback X Y).hom ≫ pullback.snd _ _ = prod.snd :=
+  limit.isoLimitCone_hom_π (limitConeOfTerminalAndPullbacks _) ⟨.right⟩
+
+@[reassoc (attr := simp)]
+lemma prodIsoPullback_inv_fst [HasTerminal C] [HasPullbacks C] (X Y : C)
+    [HasBinaryProduct X Y] : (prodIsoPullback X Y).inv ≫ prod.fst = pullback.fst _ _ :=
+  limit.isoLimitCone_inv_π (limitConeOfTerminalAndPullbacks _) ⟨.left⟩
+
+@[reassoc (attr := simp)]
+lemma prodIsoPullback_inv_snd [HasTerminal C] [HasPullbacks C] (X Y : C)
+    [HasBinaryProduct X Y] : (prodIsoPullback X Y).inv ≫ prod.snd = pullback.snd _ _ :=
+  limit.isoLimitCone_inv_π (limitConeOfTerminalAndPullbacks _) ⟨.right⟩
+
 /-- If a cospan is the pushout cospan under the initial object, then it is a binary coproduct. -/
 def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : Cocone F) {X : C}
     (hX : IsInitial X) (f : X ⟶ F.obj ⟨WalkingPair.left⟩) (g : X ⟶ F.obj ⟨WalkingPair.right⟩)
@@ -120,7 +140,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
   desc s :=
     hc.desc
       (PushoutCocone.mk (s.ι.app ⟨WalkingPair.left⟩) (s.ι.app ⟨WalkingPair.right⟩) (hX.hom_ext _ _))
-  fac s j :=
+  fac _ j :=
     Discrete.casesOn j fun j =>
       WalkingPair.casesOn j (hc.fac _ WalkingSpan.left) (hc.fac _ WalkingSpan.right)
   uniq s m J := by
@@ -194,3 +214,23 @@ a coproduct of objects `X` and `Y` is isomorphic to a pushout. -/
 noncomputable def coprodIsoPushout [HasInitial C] [HasPushouts C] (X Y : C)
     [HasBinaryCoproduct X Y] : X ⨿ Y ≅ pushout (initial.to X) (initial.to Y) :=
   colimit.isoColimitCocone (colimitCoconeOfInitialAndPushouts _)
+
+@[reassoc (attr := simp)]
+lemma inl_coprodIsoPushout_hom [HasInitial C] [HasPushouts C] (X Y : C)
+    [HasBinaryCoproduct X Y] : coprod.inl ≫ (coprodIsoPushout X Y).hom = pushout.inl _ _ :=
+  colimit.isoColimitCocone_ι_hom (colimitCoconeOfInitialAndPushouts _) _
+
+@[reassoc (attr := simp)]
+lemma inr_coprodIsoPushout_hom [HasInitial C] [HasPushouts C] (X Y : C)
+    [HasBinaryCoproduct X Y] : coprod.inr ≫ (coprodIsoPushout X Y).hom = pushout.inr _ _ :=
+  colimit.isoColimitCocone_ι_hom (colimitCoconeOfInitialAndPushouts _) _
+
+@[reassoc (attr := simp)]
+lemma inl_coprodIsoPushout_inv [HasInitial C] [HasPushouts C] (X Y : C)
+    [HasBinaryCoproduct X Y] : pushout.inl _ _ ≫ (coprodIsoPushout X Y).inv = coprod.inl :=
+  colimit.isoColimitCocone_ι_inv (colimitCoconeOfInitialAndPushouts (pair X Y)) ⟨.left⟩
+
+@[reassoc (attr := simp)]
+lemma inr_coprodIsoPushout_inv [HasInitial C] [HasPushouts C] (X Y : C)
+    [HasBinaryCoproduct X Y] : pushout.inr _ _ ≫ (coprodIsoPushout X Y).inv = coprod.inr :=
+  colimit.isoColimitCocone_ι_inv (colimitCoconeOfInitialAndPushouts (pair X Y)) ⟨.right⟩
