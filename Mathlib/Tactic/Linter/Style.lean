@@ -436,17 +436,6 @@ register_option linter.style.nameCheck : Bool := {
 
 namespace Style.nameCheck
 
-/-- Checks whether the original input of a given syntax contains "__". -/
-def contains_double_underscore (name : Name) : Bool :=
-  if name.isStr then
-    let string := name.getString!
-    -- Check for double underscore
-    1 < (string.splitOn "__").length
-  else
-    false
-
-
-
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
     unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
@@ -461,7 +450,8 @@ def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
       if id.getPos? == some default then continue
       if declName.hasMacroScopes then continue
       if id.getKind == `ident then
-        if contains_double_underscore declName then
+        -- Check whether the declaration name contains "__".
+        if 1 < (declName.toString.splitOn "__").length then
           Linter.logLint linter.style.nameCheck id
             m!"The declaration '{id}' contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
