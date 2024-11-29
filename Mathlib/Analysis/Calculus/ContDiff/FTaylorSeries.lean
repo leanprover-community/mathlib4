@@ -103,12 +103,6 @@ open ENat NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
-/-
-Porting note: These lines are not required in Mathlib4.
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
--/
-
 open Set Fin Filter Function
 
 universe u uE uF
