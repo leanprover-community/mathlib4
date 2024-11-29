@@ -212,7 +212,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     · exact congr_fun (hm (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
     · exact congr_fun (hm (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
 
-/-- Since `rightExtensionInclusion₂IsPointwiseRightKanExtensionAt X n` proves that the appropriate
+/-- Since `StrictSegal.isPointwiseRightKanExtensionAt` proves that the appropriate
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension.-/
 noncomputable def isPointwiseRightKanExtension :
     RightExtension.IsPointwiseRightKanExtension (rightExtensionInclusion X 2) :=
