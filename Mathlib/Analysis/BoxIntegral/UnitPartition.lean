@@ -43,8 +43,8 @@ of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ �
 integral of `F` over `s`.
 
 * `tendsto_card_div_pow_atTop_volume`: let `s` be a bounded, measurable set of `ι → ℝ` whose
-frontier has zero volume. Then the limit as `n → ∞` of
-`card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι` tends to the volume of `s`.
+frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
+tends to the volume of `s`.
 
 * `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
 assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
