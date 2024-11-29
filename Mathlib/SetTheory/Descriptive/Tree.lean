@@ -8,7 +8,8 @@ import Mathlib.Order.CompleteLattice.SetLike
 /-!
 # Trees in the sense of descriptive set theory
 
-This file defines trees of depth ω in the sense of descriptive set theory.
+This file defines trees of depth `ω` in the sense of descriptive set theory as sets of finite
+sequences that are stable under taking prefixes.
 
 ## Main declarations
 
