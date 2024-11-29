@@ -192,31 +192,6 @@ instance wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
   ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
 
-section Examples
-
-/- These examples would not fit as actual `MonomialOrder` examples below
-because they use `ℕ` which doesn't have `WellFoundedGT`.
-This suggests to removing the `MonomialOrder.wf` field from the definition
-of a monomial order and add it in the hypotheses when needed. -/
-
-/-- for the deg-lexicographic ordering, X 1 < X 0 -/
-example : toDegLex (single 1 1) < toDegLex (single 0 1) := by
-  rw [single_lt_iff]
-  exact Nat.one_pos
-
-/-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : toDegLex (single 0 2) > toDegLex (single 0 1 + single 1 1) := by
-  simp only [gt_iff_lt, lt_iff, ofDegLex_toDegLex, degree_add,
-    degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
-  use 0
-  simp
-
-/-- for the deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
-example : toDegLex (single 0 1) < toDegLex (single 1 2) := by
-  simp [lt_iff]
-
-end Examples
-
 end DegLex
 
 end Finsupp
@@ -257,5 +232,33 @@ theorem degLex_single_lt_iff {a b : σ} :
   rw [MonomialOrder.degLex_lt_iff, DegLex.single_lt_iff]
 
 end MonomialOrder
+
+section Examples
+
+open Finsupp MonomialOrder DegLex
+
+/- These examples would not fit as actual `MonomialOrder` examples below
+because they use `ℕ` which doesn't have `WellFoundedGT`.
+This suggests to removing the `MonomialOrder.wf` field from the definition
+of a monomial order and add it in the hypotheses when needed. -/
+
+/-- for the deg-lexicographic ordering, X 1 < X 0 -/
+example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
+  rw [degLex_lt_iff, single_lt_iff]
+  exact Nat.one_pos
+
+/-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
+example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2  := by
+  simp only [degLex_lt_iff, lt_iff, ofDegLex_toDegLex, degree_add,
+    degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
+  use 0
+  simp
+
+/-- for the deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
+example : single (0 : Fin 2) 1 ≺[degLex] single 1 2 := by
+  simp [degLex_lt_iff, lt_iff]
+
+end Examples
+
 
 end degLex
