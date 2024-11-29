@@ -6,8 +6,6 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.ContinuedFractions.Basic
 
-#align_import algebra.continued_fractions.computation.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
-
 /-!
 # Computable Continued Fractions
 
@@ -60,6 +58,7 @@ with a head term (`seq1`) is then transformed to a generalized continued fractio
 numerics, number theory, approximations, fractions
 -/
 
+assert_not_exists Finset
 
 namespace GenContFract
 
@@ -72,7 +71,6 @@ variable (K : Type*)
 structure IntFractPair where
   b : ℤ
   fr : K
-#align generalized_continued_fraction.int_fract_pair GenContFract.IntFractPair
 
 variable {K}
 
@@ -87,14 +85,11 @@ instance [Repr K] : Repr (IntFractPair K) :=
 
 instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
   ⟨⟨0, default⟩⟩
-#align generalized_continued_fraction.int_fract_pair.inhabited GenContFract.IntFractPair.inhabited
 
 /-- Maps a function `f` on the fractional components of a given pair.
 -/
 def mapFr {β : Type*} (f : K → β) (gp : IntFractPair K) : IntFractPair β :=
   ⟨gp.b, f gp.fr⟩
-set_option linter.uppercaseLean3 false in
-#align generalized_continued_fraction.int_fract_pair.mapFr GenContFract.IntFractPair.mapFr
 
 section coe
 
@@ -112,13 +107,11 @@ def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)
 /-- Coerce a pair by coercing the fractional component. -/
 instance coe : Coe (IntFractPair K) (IntFractPair β) where
   coe := coeFn
-#align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GenContFract.IntFractPair.coe
 
 @[simp, norm_cast]
 theorem coe_to_intFractPair {b : ℤ} {fr : K} :
     (↑(IntFractPair.mk b fr) : IntFractPair β) = IntFractPair.mk b (↑fr : β) :=
   rfl
-#align generalized_continued_fraction.int_fract_pair.coe_to_int_fract_pair GenContFract.IntFractPair.coe_to_intFractPair
 
 end coe
 
@@ -129,7 +122,6 @@ variable [LinearOrderedField K] [FloorRing K]
 /-- Creates the integer and fractional part of a value `v`, i.e. `⟨⌊v⌋, v - ⌊v⌋⟩`. -/
 protected def of (v : K) : IntFractPair K :=
   ⟨⌊v⌋, Int.fract v⟩
-#align generalized_continued_fraction.int_fract_pair.of GenContFract.IntFractPair.of
 
 /-- Creates the stream of integer and fractional parts of a value `v` needed to obtain the continued
 fraction representation of `v` in `GenContFract.of`. More precisely, given a value `v : K`, it
@@ -150,7 +142,6 @@ protected def stream (v : K) : Stream' <| Option (IntFractPair K)
   | n + 1 =>
     (IntFractPair.stream v n).bind fun ap_n =>
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
-#align generalized_continued_fraction.int_fract_pair.stream GenContFract.IntFractPair.stream
 
 /-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
 position `n`, we also return `none` at `n + 1`.
@@ -158,7 +149,6 @@ position `n`, we also return `none` at `n + 1`.
 theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
   intro _ hyp
   simp [IntFractPair.stream, hyp]
-#align generalized_continued_fraction.int_fract_pair.stream_is_seq GenContFract.IntFractPair.stream_isSeq
 
 /--
 Uses `IntFractPair.stream` to create a sequence with head (i.e. `seq1`) of integer and fractional
@@ -176,7 +166,6 @@ protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
       -- create a sequence from `IntFractPair.stream`
       ⟨IntFractPair.stream v, -- the underlying stream
         @stream_isSeq _ _ _ v⟩⟩ -- the proof that the stream is a sequence
-#align generalized_continued_fraction.int_fract_pair.seq1 GenContFract.IntFractPair.seq1
 
 end IntFractPair
 
@@ -196,6 +185,5 @@ protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GenContFract K :
   ⟨h.b, -- the head is just the first integer part
     s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
                             -- denominators; all partial numerators are simply 1
-#align generalized_continued_fraction.of GenContFract.of
 
 end GenContFract

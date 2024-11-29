@@ -51,7 +51,6 @@ variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [ExpChar R p]
     [IsReduced R] (h : Surjective <| frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
-#align perfect_ring.of_surjective PerfectRing.ofSurjective
 
 instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [ExpChar R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
@@ -75,11 +74,9 @@ theorem surjective_frobenius : Surjective (frobenius R p) := (bijective_frobeniu
 @[simps! apply]
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
-#align frobenius_equiv frobeniusEquiv
 
 @[simp]
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
-#align coe_frobenius_equiv coe_frobeniusEquiv
 
 theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
 
@@ -157,7 +154,6 @@ theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = 
   frobenius_apply_frobeniusEquiv_symm R p x
 
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
-#align injective_pow_p injective_pow_p
 
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
@@ -215,7 +211,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
     rw [degree_X_pow_sub_C (expChar_pos K p) y, p.cast_ne_zero]; exact (expChar_pos K p).ne'
   let a : L := f.rootOfSplits ι (SplittingField.splits f) hf_deg
   have hfa : aeval a f = 0 := by rw [aeval_def, map_rootOfSplits _ (SplittingField.splits f) hf_deg]
-  have ha_pow : a ^ p = ι y := by rwa [AlgHom.map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
+  have ha_pow : a ^ p = ι y := by rwa [map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
   let g : K[X] := minpoly K a
   suffices (g.map ι).natDegree = 1 by
     rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
@@ -294,6 +290,7 @@ theorem roots_expand_image_frobenius_subset [DecidableEq R] :
   convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
+section PerfectRing
 variable {p n f}
 variable [PerfectRing R p]
 
@@ -346,7 +343,9 @@ theorem roots_expand_image_frobenius [DecidableEq R] :
   rw [Finset.image_toFinset, roots_expand_map_frobenius,
       (roots f).toFinset_nsmul _ (expChar_pos R p).ne']
 
-variable (p n f) [DecidableEq R]
+end PerfectRing
+
+variable [DecidableEq R]
 
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
@@ -371,11 +370,13 @@ noncomputable def rootsExpandPowToRoots :
 @[simp]
 theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = x ^ p ^ n := rfl
 
+variable [PerfectRing R p]
+
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
+  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
       Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
       frobeniusEquiv_apply]
@@ -388,7 +389,8 @@ a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set 
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
-  ((iterateFrobeniusEquiv R p n).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
+  ((iterateFrobeniusEquiv R p n).image _).trans <|
+    .Set.ofEq <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
       Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
       EquivLike.coe_coe, iterateFrobeniusEquiv_apply]

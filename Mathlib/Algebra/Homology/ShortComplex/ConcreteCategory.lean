@@ -32,13 +32,16 @@ lemma ShortComplex.zero_apply
     [Limits.HasZeroMorphisms C] [(forget₂ C Ab).PreservesZeroMorphisms]
     (S : ShortComplex C) (x : (forget₂ C Ab).obj S.X₁) :
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
-  erw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
+  rw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
 section preadditive
 
 variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
-  [HasZeroObject C] (S : ShortComplex C)
+  (S : ShortComplex C)
+
+section
+variable [HasZeroObject C]
 
 lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
@@ -70,6 +73,8 @@ lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
+end
+
 namespace ShortComplex
 
 lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
@@ -84,12 +89,12 @@ lemma exact_iff_of_concreteCategory [S.HasHomology] :
 
 variable {S}
 
-lemma ShortExact.injective_f (hS : S.ShortExact) :
+lemma ShortExact.injective_f [HasZeroObject C] (hS : S.ShortExact) :
     Function.Injective ((forget₂ C Ab).map S.f) := by
   rw [← Preadditive.mono_iff_injective]
   exact hS.mono_f
 
-lemma ShortExact.surjective_g (hS : S.ShortExact) :
+lemma ShortExact.surjective_g [HasZeroObject C] (hS : S.ShortExact) :
     Function.Surjective ((forget₂ C Ab).map S.g) := by
   rw [← Preadditive.epi_iff_surjective]
   exact hS.epi_g
@@ -134,10 +139,10 @@ variable (D : SnakeInput C)
 lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (h₂ : D.L₁.g x₂ = D.v₀₁.τ₃ x₃) (h₁ : D.L₂.f x₁ = D.v₁₂.τ₂ x₂) :
     D.δ x₃ = D.v₂₃.τ₁ x₁ := by
-  have := (forget₂ C Ab).preservesFiniteLimitsOfPreservesHomology
+  have := (forget₂ C Ab).preservesFiniteLimits_of_preservesHomology
   have : PreservesFiniteLimits (forget C) := by
     have : forget₂ C Ab ⋙ forget Ab = forget C := HasForget₂.forget_comp
-    simpa only [← this] using compPreservesFiniteLimits _ _
+    simpa only [← this] using comp_preservesFiniteLimits _ _
   have eq := congr_fun ((forget C).congr_map D.snd_δ)
     (Limits.Concrete.pullbackMk D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂)
   have eq₁ := Concrete.pullbackMk_fst D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂

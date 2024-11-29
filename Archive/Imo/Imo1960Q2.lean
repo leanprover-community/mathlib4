@@ -51,7 +51,7 @@ theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
     -- Now, if `x ≥ -1/2`, `x ≠ 0`, then the expression is well-defined.
     have hx2' : 0 ≤ 2 * x + 1 := by linarith
     have H : 1 - sqrt (2 * x + 1) ≠ 0 := by
-      rw [sub_ne_zero, ne_comm, ne_eq, sqrt_eq_iff_sq_eq hx2' zero_le_one]
+      rw [sub_ne_zero, ne_comm, ne_eq, sqrt_eq_iff_eq_sq hx2' zero_le_one]
       simpa
     calc
       -- Note that the fraction in the LHS is equal to `(1 + sqrt (2 * x + 1)) ^ 2`
@@ -66,3 +66,5 @@ theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
       _ ↔ 2 * x + 1 < (7 / 2) ^ 2 := sqrt_lt' <| by positivity
       _ ↔ x < 45 / 8 := by constructor <;> intro <;> linarith
       _ ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by simp [*]
+
+end Imo1960Q2

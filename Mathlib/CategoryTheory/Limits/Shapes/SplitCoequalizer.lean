@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
-#align_import category_theory.limits.shapes.split_coequalizer from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
-
 /-!
 # Split coequalizers
 
@@ -69,12 +67,6 @@ structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
   leftSection_bottom : leftSection ≫ g = 𝟙 Y := by aesop_cat
   /-- `leftSection` composed with `f` is `pi` composed with `rightSection` -/
   leftSection_top : leftSection ≫ f = π ≫ rightSection := by aesop_cat
-#align category_theory.is_split_coequalizer CategoryTheory.IsSplitCoequalizer
-#align category_theory.is_split_coequalizer.right_section CategoryTheory.IsSplitCoequalizer.rightSection
-#align category_theory.is_split_coequalizer.left_section CategoryTheory.IsSplitCoequalizer.leftSection
-#align category_theory.is_split_coequalizer.right_section_π CategoryTheory.IsSplitCoequalizer.rightSection_π
-#align category_theory.is_split_coequalizer.left_section_bottom CategoryTheory.IsSplitCoequalizer.leftSection_bottom
-#align category_theory.is_split_coequalizer.left_section_top CategoryTheory.IsSplitCoequalizer.leftSection_top
 
 instance {X : C} : Inhabited (IsSplitCoequalizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := { rightSection := 𝟙 X, leftSection := 𝟙 X }
@@ -97,7 +89,6 @@ def IsSplitCoequalizer.map {Z : C} {π : Y ⟶ Z} (q : IsSplitCoequalizer f g π
   rightSection_π := by rw [← F.map_comp, q.rightSection_π, F.map_id]
   leftSection_bottom := by rw [← F.map_comp, q.leftSection_bottom, F.map_id]
   leftSection_top := by rw [← F.map_comp, q.leftSection_top, F.map_comp]
-#align category_theory.is_split_coequalizer.map CategoryTheory.IsSplitCoequalizer.map
 
 section
 
@@ -107,12 +98,10 @@ open Limits
 @[simps! pt]
 def IsSplitCoequalizer.asCofork {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f g h) :
     Cofork f g := Cofork.ofπ h t.condition
-#align category_theory.is_split_coequalizer.as_cofork CategoryTheory.IsSplitCoequalizer.asCofork
 
 @[simp]
 theorem IsSplitCoequalizer.asCofork_π {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequalizer f g h) :
     t.asCofork.π = h := rfl
-#align category_theory.is_split_coequalizer.as_cofork_π CategoryTheory.IsSplitCoequalizer.asCofork_π
 
 /--
 The cofork induced by a split coequalizer is a coequalizer, justifying the name. In some cases it
@@ -125,7 +114,6 @@ def IsSplitCoequalizer.isCoequalizer {Z : C} {h : Y ⟶ Z} (t : IsSplitCoequaliz
       dsimp
       rw [← t.leftSection_top_assoc, s.condition, t.leftSection_bottom_assoc], fun hm => by
       simp [← hm]⟩
-#align category_theory.is_split_coequalizer.is_coequalizer CategoryTheory.IsSplitCoequalizer.isCoequalizer
 
 end
 
@@ -138,7 +126,6 @@ coequalizer in `C`.
 class HasSplitCoequalizer : Prop where
   /-- There is some split coequalizer -/
   splittable : ∃ (Z : C) (h : Y ⟶ Z), Nonempty (IsSplitCoequalizer f g h)
-#align category_theory.has_split_coequalizer CategoryTheory.HasSplitCoequalizer
 
 /--
 The pair `f,g` is a `G`-split pair if there is an `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
@@ -146,30 +133,25 @@ coequalizer in `D`.
 -/
 abbrev Functor.IsSplitPair : Prop :=
   HasSplitCoequalizer (G.map f) (G.map g)
-#align category_theory.functor.is_split_pair CategoryTheory.Functor.IsSplitPair
 
 /-- Get the coequalizer object from the typeclass `IsSplitPair`. -/
 noncomputable def HasSplitCoequalizer.coequalizerOfSplit [HasSplitCoequalizer f g] : C :=
   (splittable (f := f) (g := g)).choose
-#align category_theory.has_split_coequalizer.coequalizer_of_split CategoryTheory.HasSplitCoequalizer.coequalizerOfSplit
 
 /-- Get the coequalizer morphism from the typeclass `IsSplitPair`. -/
 noncomputable def HasSplitCoequalizer.coequalizerπ [HasSplitCoequalizer f g] :
     Y ⟶ HasSplitCoequalizer.coequalizerOfSplit f g :=
   (splittable (f := f) (g := g)).choose_spec.choose
-#align category_theory.has_split_coequalizer.coequalizer_π CategoryTheory.HasSplitCoequalizer.coequalizerπ
 
 /-- The coequalizer morphism `coequalizeπ` gives a split coequalizer on `f,g`. -/
 noncomputable def HasSplitCoequalizer.isSplitCoequalizer [HasSplitCoequalizer f g] :
     IsSplitCoequalizer f g (HasSplitCoequalizer.coequalizerπ f g) :=
   Classical.choice (splittable (f := f) (g := g)).choose_spec.choose_spec
-#align category_theory.has_split_coequalizer.is_split_coequalizer CategoryTheory.HasSplitCoequalizer.isSplitCoequalizer
 
 /-- If `f, g` is split, then `G f, G g` is split. -/
 instance map_is_split_pair [HasSplitCoequalizer f g] : HasSplitCoequalizer (G.map f) (G.map g) where
   splittable :=
     ⟨_, _, ⟨IsSplitCoequalizer.map (HasSplitCoequalizer.isSplitCoequalizer f g) _⟩⟩
-#align category_theory.map_is_split_pair CategoryTheory.map_is_split_pair
 
 namespace Limits
 
@@ -177,7 +159,6 @@ namespace Limits
 instance (priority := 1) hasCoequalizer_of_hasSplitCoequalizer [HasSplitCoequalizer f g] :
     HasCoequalizer f g :=
   HasColimit.mk ⟨_, (HasSplitCoequalizer.isSplitCoequalizer f g).isCoequalizer⟩
-#align category_theory.limits.has_coequalizer_of_has_split_coequalizer CategoryTheory.Limits.hasCoequalizer_of_hasSplitCoequalizer
 
 end Limits
 

@@ -6,8 +6,6 @@ Authors: Markus Himmel
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.Preadditive.Basic
 
-#align_import algebra.category.Group.preadditive from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
-
 /-!
 # The category of additive commutative groups is preadditive.
 -/
@@ -18,11 +16,10 @@ universe u
 
 namespace AddCommGrp
 
--- porting note (#10670): this instance was not necessary in mathlib
 instance (P Q : AddCommGrp) : AddCommGroup (P ⟶ Q) :=
   (inferInstance : AddCommGroup (AddMonoidHom P Q))
 
--- porting note (#10688): this lemma was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10688): this lemma was not necessary in mathlib
 @[simp]
 lemma hom_add_apply {P Q : AddCommGrp} (f g : P ⟶ Q) (x : P) : (f + g) x = f x + g x := rfl
 

@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Hom.Defs
-
-#align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.canonicallyOrderedCommSemiring` and
@@ -32,46 +30,37 @@ instance instMulZeroClass : MulZeroClass (WithTop α) where
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
   mul_zero a := match a with
-    | (a : α) => congr_arg some $ mul_zero _
+    | (a : α) => congr_arg some <| mul_zero _
     | ⊤ => if_pos rfl
   zero_mul b := match b with
-    | (b : α) => congr_arg some $ zero_mul _
+    | (b : α) => congr_arg some <| zero_mul _
     | ⊤ => if_pos rfl
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithTop α) = a * b := rfl
-#align with_top.coe_mul WithTop.coe_mul
 
 lemma mul_top' : ∀ (a : WithTop α), a * ⊤ = if a = 0 then 0 else ⊤
   | (a : α) => if_congr coe_eq_zero.symm rfl rfl
   | ⊤ => (if_neg top_ne_zero).symm
-#align with_top.mul_top' WithTop.mul_top'
 
 @[simp] lemma mul_top (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
-#align with_top.mul_top WithTop.mul_top
 
 lemma top_mul' : ∀ (b : WithTop α), ⊤ * b = if b = 0 then 0 else ⊤
   | (b : α) => if_congr coe_eq_zero.symm rfl rfl
   | ⊤ => (if_neg top_ne_zero).symm
-#align with_top.top_mul' WithTop.top_mul'
 
 @[simp] lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', if_neg hb]
-#align with_top.top_mul WithTop.top_mul
 
 @[simp] lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := rfl
-#align with_top.top_mul_top WithTop.top_mul_top
 
 lemma mul_def (a b : WithTop α) :
     a * b = if a = 0 ∨ b = 0 then 0 else WithTop.map₂ (· * ·) a b := by
   cases a <;> cases b <;> aesop
-#align with_top.mul_def WithTop.mul_def
 
 lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by rw [mul_def]; aesop
-#align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
 
 lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.bind fun a ↦ ↑(a * b)
   | ⊤ => by simp [top_mul, hb]; rfl
   | (a : α) => rfl
-#align with_top.mul_coe WithTop.mul_coe_eq_bind
 
 lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.bind fun b ↦ ↑(a * b)
   | ⊤ => by simp [top_mul, ha]; rfl
@@ -83,19 +72,18 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.
   induction a; · rw [top_mul hb, untop'_top, zero_mul]
   induction b; · rw [mul_top ha, untop'_top, mul_zero]
   rw [← coe_mul, untop'_coe, untop'_coe, untop'_coe]
-#align with_top.untop'_zero_mul WithTop.untop'_zero_mul
 
-theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
+theorem mul_ne_top {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b ≠ ⊤ := by
+  simp [mul_eq_top_iff, *]
+
+theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
   rw [WithTop.lt_top_iff_ne_top] at *
-  simp only [Ne, mul_eq_top_iff, *, and_false, false_and, or_self, not_false_eq_true]
-#align with_top.mul_lt_top' WithTop.mul_lt_top'
+  exact mul_ne_top ha hb
 
-theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
-  mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
-#align with_top.mul_lt_top WithTop.mul_lt_top
+@[deprecated (since := "2024-08-25")] alias mul_lt_top' := mul_lt_top
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
-  refine ⟨fun h₁ => Decidable.by_contradiction fun h₂ => ?_⟩
+  refine ⟨fun h₁ => Decidable.byContradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
@@ -131,9 +119,8 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- Porting note (#11215): TODO: `simp [← coe_mul]` times out
+      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
         simp only [map_coe, ← coe_mul, map_mul] }
-#align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) where
@@ -207,7 +194,39 @@ protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSem
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
-#align ring_hom.with_top_map RingHom.withTopMap
+
+variable [PosMulStrictMono α] {a a₁ a₂ b₁ b₂ : WithTop α}
+
+@[gcongr]
+protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
+  lift a₁ to α using ha.lt_top.ne
+  lift b₁ to α using hb.lt_top.ne
+  obtain rfl | ha₂ := eq_or_ne a₂ ⊤
+  · rw [top_mul (by simpa [bot_eq_zero] using hb.bot_lt.ne')]
+    exact coe_lt_top _
+  obtain rfl | hb₂ := eq_or_ne b₂ ⊤
+  · rw [mul_top (by simpa [bot_eq_zero] using ha.bot_lt.ne')]
+    exact coe_lt_top _
+  lift a₂ to α using ha₂
+  lift b₂ to α using hb₂
+  norm_cast at *
+  obtain rfl | hb₁ := eq_zero_or_pos b₁
+  · rw [mul_zero]
+    exact mul_pos (by simpa [bot_eq_zero] using ha.bot_lt) hb
+  · exact mul_lt_mul ha hb.le hb₁ (zero_le _)
+
+variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
+
+protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | n + 2, _ => fun x y h ↦ by
+    simp_rw [pow_succ _ (n + 1)]
+    exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h
+
+@[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
+  WithTop.pow_right_strictMono hn hab
 
 end WithTop
 
@@ -221,39 +240,30 @@ variable [MulZeroClass α] {a b : WithBot α}
 instance : MulZeroClass (WithBot α) := WithTop.instMulZeroClass
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithBot α) = a * b := rfl
-#align with_bot.coe_mul WithBot.coe_mul
 
 lemma mul_bot' : ∀ (a : WithBot α), a * ⊥ = if a = 0 then 0 else ⊥
   | (a : α) => if_congr coe_eq_zero.symm rfl rfl
   | ⊥ => (if_neg bot_ne_zero).symm
-#align with_bot.mul_bot' WithBot.mul_bot'
 
 @[simp] lemma mul_bot (h : a ≠ 0) : a * ⊥ = ⊥ := by rw [mul_bot', if_neg h]
-#align with_bot.mul_bot WithBot.mul_bot
 
 lemma bot_mul' : ∀ (b : WithBot α), ⊥ * b = if b = 0 then 0 else ⊥
   | (b : α) => if_congr coe_eq_zero.symm rfl rfl
   | ⊥ => (if_neg bot_ne_zero).symm
-#align with_bot.bot_mul' WithBot.bot_mul'
 
 @[simp] lemma bot_mul (hb : b ≠ 0) : ⊥ * b = ⊥ := by rw [bot_mul', if_neg hb]
-#align with_bot.bot_mul WithBot.bot_mul
 
 @[simp] lemma bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ := rfl
-#align with_bot.bot_mul_bot WithBot.bot_mul_bot
 
 lemma mul_def (a b : WithBot α) :
     a * b = if a = 0 ∨ b = 0 then 0 else WithBot.map₂ (· * ·) a b := by
   cases a <;> cases b <;> aesop
-#align with_bot.mul_def WithBot.mul_def
 
 lemma mul_eq_bot_iff : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 := by rw [mul_def]; aesop
-#align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
 
 lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithBot α) = a.bind fun a ↦ ↑(a * b)
   | ⊥ => by simp only [ne_eq, coe_eq_zero, hb, not_false_eq_true, bot_mul]; rfl
   | (a : α) => rfl
-#align with_bot.mul_coe WithBot.mul_coe_eq_bind
 
 lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithBot α) = b.bind fun b ↦ ↑(a * b)
   | ⊥ => by simp only [ne_eq, coe_eq_zero, ha, not_false_eq_true, mul_bot]; rfl
@@ -266,15 +276,14 @@ lemma unbot'_zero_mul (a b : WithBot α) : (a * b).unbot' 0 = a.unbot' 0 * b.unb
   induction a; · rw [bot_mul hb, unbot'_bot, zero_mul]
   induction b; · rw [mul_bot ha, unbot'_bot, mul_zero]
   rw [← coe_mul, unbot'_coe, unbot'_coe, unbot'_coe]
-#align with_bot.unbot'_zero_mul WithBot.unbot'_zero_mul
 
-theorem bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
-  WithTop.mul_lt_top' (α := αᵒᵈ) ha hb
-#align with_bot.bot_lt_mul' WithBot.bot_lt_mul'
+theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
+  WithTop.mul_ne_top (α := αᵒᵈ) ha hb
 
-theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
+theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
   WithTop.mul_lt_top (α := αᵒᵈ) ha hb
-#align with_bot.bot_lt_mul WithBot.bot_lt_mul
+
+@[deprecated (since := "2024-08-25")] alias bot_lt_mul' := bot_lt_mul
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
   WithTop.instNoZeroDivisors
