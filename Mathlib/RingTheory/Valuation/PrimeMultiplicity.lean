@@ -57,18 +57,14 @@ noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
 
 @[simp]
 theorem adicValuation_coe (r : R) :
-    adicValuation p (algebraMap R K r) = (emultiplicity p r).map (↑) := by
-  simp only [adicValuation, ofValuation_apply, Valuation.extendToLocalization_apply_map_apply,
-    toValuation_apply, map_apply, multiplicity_apply, AddMonoidHom.coe_comp,
-    AddMonoidHom.withTopMap_apply, Nat.coe_castAddMonoidHom, AddMonoidHom.coe_coe,
-    Function.comp_apply, toAdd_ofAdd, OrderDual.ofDual_toDual]
-  rfl
+    adicValuation p (algebraMap R K r) = (emultiplicity p r).toWithTop.map (↑) := by
+  simp [adicValuation]
 
 variable {β : Type*} [Zero β]
 
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
-  simp [lt_iff_le_and_ne, emultiplicity_eq_zero]
+  simp [lt_iff_le_and_ne, WithTop.le_map, WithTop.zero_eq_map_iff, emultiplicity_eq_zero]
 
 
 open IsFractionRing
@@ -77,10 +73,10 @@ lemma adicValuation_pos_iff (a : K) :
     0 < adicValuation p a ↔ p ∣ num R a := by
   nth_rw 1 [← mk'_num_den' (A := R) a]
   simp only [map_div, adicValuation_coe, LinearOrderedAddCommGroupWithTop.sub_pos,
-    ENat.map_eq_top_iff, emultiplicity_eq_top, not_not]
+    WithTop.map_eq_top_iff, map_eq_top_iff, emultiplicity_eq_top, not_not]
   have : multiplicity.Finite p (den R a) := multiplicity.finite_prime_left hp.out (by simp)
   simp only [this, not_true_eq_false, or_false]
-  rw [(ENat.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
+  rw [(WithTop.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
   constructor
   · exact fun h ↦ emultiplicity_ne_zero.mp (ENat.not_lt_zero _ <| · ▸ h)
   · intro h
