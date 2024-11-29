@@ -13,7 +13,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 
 open scoped Cardinal Pointwise
 
-variable {G G₀ M M₀ : Type*}
+variable {G₀ M₀ : Type*}
 
 namespace Set
 variable [GroupWithZero G₀] [Zero M₀] [MulActionWithZero G₀ M₀] {a : G₀}
