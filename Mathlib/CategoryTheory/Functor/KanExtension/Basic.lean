@@ -30,13 +30,16 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 -/
 
+universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace Functor
 
-variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
+variable {C : Type u₁} {C' : Type u₂} {H : Type u₃} {D : Type u₄} {D' : Type u₅}
+variable [Category.{v₁} C] [Category.{v₂} C'] [Category.{v₃} H] [Category.{v₄} D] [Category.{v₅} D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -104,6 +107,18 @@ noncomputable def homEquivOfIsRightKanExtension (G : D ⥤ H) :
   invFun β := liftOfIsRightKanExtension _ α _ β
   left_inv β := Functor.hom_ext_of_isRightKanExtension _ α _ _ (by aesop_cat)
   right_inv := by aesop_cat
+
+noncomputable def homIsoOfIsRightKanExtension :
+    yoneda.obj F' ⋙ uliftFunctor.{u₁}
+      ≅
+      ((whiskeringLeft _ _ _).obj L).op ⋙ yoneda.obj F ⋙ uliftFunctor.{u₄} :=
+  NatIso.ofComponents (fun G =>
+    Equiv.toIso (Equiv.ulift.trans (Equiv.trans (homEquivOfIsRightKanExtension F' α G.unop)
+    Equiv.ulift.symm))
+    ) (by
+    intro G G' f
+    ext
+    simp [Equiv.ulift, homEquivOfIsRightKanExtension])
 
 lemma isRightKanExtension_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C ⥤ D} {F : C ⥤ H}
     (α : L ⋙ F' ⟶ F) (α' : L ⋙ F'' ⟶ F) (comm : whiskerLeft L e.hom ≫ α' = α)
@@ -643,6 +658,66 @@ lemma limitIsoOfIsRightKanExtension_hom_π (i : C) :
   rw [← Iso.eq_inv_comp, limitIsoOfIsRightKanExtension_inv_π]
 
 end Limit
+
+section Opposite
+
+#where
+
+-- /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
+-- `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
+-- abbrev RightExtension (L : C ⥤ D) (F : C ⥤ H) :=
+--   CostructuredArrow ((whiskeringLeft C D H).obj L) F
+
+-- /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
+-- `F' : H ⥤ D` equipped with a natural transformation `F ⟶ L ⋙ F'`. -/
+-- abbrev LeftExtension (L : C ⥤ D) (F : C ⥤ H) :=
+--   StructuredArrow F ((whiskeringLeft C D H).obj L)
+
+variable {L : C ⥤ D} {F : C ⥤ H}
+
+@[simps! left hom]
+def LeftExtension.op (E : LeftExtension L F) : RightExtension L.op F.op :=
+  RightExtension.mk E.right.op (NatTrans.op E.hom)
+
+@[simps! right hom]
+def RightExtension.unop (E : RightExtension L.op F.op) : LeftExtension L F :=
+  LeftExtension.mk E.left.unop (NatTrans.unop E.hom)
+
+-- @[simps! obj map_left_app]
+@[simps]
+def leftExtensionOpFunctor : (LeftExtension L F)ᵒᵖ ⥤ RightExtension L.op F.op where
+  obj E := LeftExtension.op E.unop
+  map {E E'} f := CostructuredArrow.homMk (NatTrans.op f.unop.right) (by
+    have := f.unop.w
+    simp only [const_obj_obj, whiskeringLeft_obj_obj, StructuredArrow.left_eq_id, const_obj_map,
+      id_comp, whiskeringLeft_obj_map] at this
+    ext
+    simp [this])
+
+@[simps]
+def leftExtensionOpInverse : RightExtension L.op F.op ⥤ (LeftExtension L F)ᵒᵖ where
+  obj E := Opposite.op (RightExtension.unop E)
+  map {E E'} f := Quiver.Hom.op (StructuredArrow.homMk (NatTrans.unop f.left) (by
+    have := f.w
+    simp only [whiskeringLeft_obj_obj, const_obj_obj, whiskeringLeft_obj_map,
+      CostructuredArrow.right_eq_id, const_obj_map, comp_id] at this
+    ext
+    simp [← this]))
+
+def leftExtensionOpEquivalence : (LeftExtension L F)ᵒᵖ ≌ RightExtension L.op F.op where
+  functor := leftExtensionOpFunctor
+  inverse := leftExtensionOpInverse
+  unitIso := NatIso.ofComponents (fun X => Iso.op (StructuredArrow.isoMk (Functor.opUnopIso _)))
+    (fun f => Quiver.Hom.unop_inj (by aesop_cat))
+  counitIso := NatIso.ofComponents (fun X => CostructuredArrow.isoMk (Functor.unopOpIso _))
+
+noncomputable def LeftExtension.isUniversal_op {E : LeftExtension L F} (hE : E.IsUniversal) :
+    E.op.IsUniversal := by
+  dsimp only [CostructuredArrow.IsUniversal]
+  refine IsTerminal.isTerminalObj ((leftExtensionOpEquivalence (L := L) (F := F)).functor) _ ?_
+  exact terminalOpOfInitial hE
+
+end Opposite
 
 end Functor
 

@@ -14,7 +14,7 @@ We define preservation of Kan extensions and show that pointwise Kan extensions 
 representable functors.
 -/
 
-universe u
+universe v₁ v₂ v₃ v₄ u u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
@@ -68,6 +68,12 @@ noncomputable def RightExtension.isUniversalOfPreserves {L : C ⥤ D} {F : C ⥤
 
 attribute [local instance] preservesColimit_rightOp
 
+instance (L : C ⥤ D) (F : C ⥤ H) (F' : H ⥤ I) [Full F'] [Faithful F'] :
+    PreservesLeftKanExtension L F F' := sorry
+
+instance (L : C ⥤ D) (F : C ⥤ H) (F' : H ⥤ I) [Full F'] [Faithful F'] :
+    PreservesRightKanExtension L F F' := sorry
+
 instance (L : C ⥤ D) (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (h : H) :
     PreservesLeftKanExtension L F (yoneda.obj h).rightOp where
   preserves {E} hE := by
@@ -96,39 +102,31 @@ end
 
 variable {C D H I : Type u} [Category.{u} C] [Category.{u} D] [Category.{u} H] [Category.{u} I]
 
-example (L : C ⥤ D) (F : C ⥤ H) (E : LeftExtension L F) (hE : E.IsPointwiseLeftKanExtension) (h : H) (d : D)
-  [PreservesLeftKanExtension L F (yoneda.obj h).rightOp] : False := by
-  -- have : E.right.IsLeftKanExtension E.hom := ⟨⟨hE.isUniversal⟩⟩
-  have h₀ : ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).IsUniversal :=
+noncomputable def goalEquiv (L : C ⥤ D) (F : C ⥤ H) (E : LeftExtension L F)
+    (hE : E.IsPointwiseLeftKanExtension)
+    (h : H) [PreservesLeftKanExtension L F (yoneda.obj h).rightOp] (d : D) :
+    (E.right.obj d ⟶ h) ≃ (L.op ⋙ (yoneda.obj d) ⟶ F.op ⋙ (yoneda.obj h)) := by
+  let h₀ : ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).IsUniversal :=
     LeftExtension.isUniversalOfPreserves (yoneda.obj h).rightOp hE.isUniversal
-  have := E.hom
-  dsimp at this
-  have := whiskerRight E.hom (yoneda.obj h).rightOp ≫ (Functor.associator _ _ _).hom
-  dsimp at this
-  have : (E.right ⋙ (yoneda.obj h).rightOp).IsLeftKanExtension (whiskerRight E.hom (yoneda.obj h).rightOp) :=
-    ⟨⟨h₀⟩⟩
-  have := Functor.op E.right ⋙ yoneda.obj h
-
-  have := E.hom
-  dsimp at this
-  have := NatTrans.op E.hom
-  dsimp at this
-  have : L.op ⋙ E.right.op ⟶ F.op := NatTrans.op E.hom
-
-  let q : (L.op ⋙ E.right.op) ⋙ yoneda.obj h ⟶ F.op ⋙ yoneda.obj h := whiskerRight (NatTrans.op E.hom) (yoneda.obj h)
-  have hx : (Functor.op E.right ⋙ yoneda.obj h).IsRightKanExtension q := sorry
-  let r := homEquivOfIsLeftKanExtension (E.right ⋙ (yoneda.obj h).rightOp)
-      (whiskerRight E.hom (yoneda.obj h).rightOp) (yoneda.obj d).rightOp
+  let q : (L.op ⋙ E.right.op) ⋙ yoneda.obj h ⟶ F.op ⋙ yoneda.obj h :=
+    whiskerRight (NatTrans.op E.hom) (yoneda.obj h)
+  let h₁ : ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).op.IsUniversal :=
+    LeftExtension.isUniversal_op h₀
+  let h₂ : ((RightExtension.postcomp₂ ((opOpEquivalence (Type u)).functor)).obj
+    ((LeftExtension.postcomp₂ (yoneda.obj h).rightOp).obj E).op).IsUniversal :=
+    RightExtension.isUniversalOfPreserves _ h₁
+  let hx : (Functor.op E.right ⋙ yoneda.obj h).IsRightKanExtension q :=
+    ⟨⟨h₂⟩⟩
   let r' := homEquivOfIsRightKanExtension (Functor.op E.right ⋙ yoneda.obj h) q (yoneda.obj d)
   let r'' := (yonedaEquiv.symm.trans r')
-  dsimp at r''
-  
-  dsimp at r
+  exact r''
 
-
-def goalEquiv (L : C ⥤ D) (F : C ⥤ H) (E : LeftExtension L F) (hE : E.IsPointwiseLeftKanExtension)
-  (d : D) (h : H) :
-    (E.right.obj d ⟶ h) ≃ (L.op ⋙ (yoneda.obj d) ⟶ F.op ⋙ (yoneda.obj h)) := sorry
+noncomputable def goalIso (L : C ⥤ D) (F : C ⥤ H) (E : LeftExtension L F)
+    (hE : E.IsPointwiseLeftKanExtension) (h : H)
+    [PreservesLeftKanExtension L F (yoneda.obj h).rightOp] :
+    E.right.op ⋙ yoneda.obj h ≅ yoneda.op ⋙ ((whiskeringLeft _ _ _).obj L.op).op ⋙
+      yoneda.obj (F.op ⋙ yoneda.obj h) :=
+  NatIso.ofComponents (fun d => Equiv.toIso (goalEquiv L F E hE h d.unop)) sorry
 
 
 end Functor
