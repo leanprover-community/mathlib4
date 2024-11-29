@@ -284,6 +284,41 @@ lemma homologySequenceComposableArrows₅_exact :
   mk₅ (F.map T.mor₁) (F.map T.mor₂) (F.map T.mor₃ ≫ (F.isoShift (1 : ℤ)).hom.app _)
   ((F.shift (1 : ℤ)).map T.mor₁) ((F.shift (1 : ℤ)).map T.mor₂)
 
+variable {T T'}
+
+@[simp] noncomputable def homologySequenceComposableArrows₅_start_zero_map :
+    F.homologySequenceComposableArrows₅_start_zero T ⟶
+    F.homologySequenceComposableArrows₅_start_zero T' := by
+  refine homMk ?_ ?_
+  · intro i
+    match i with
+    | 0 => exact F.map φ.hom₁
+    | 1 => exact F.map φ.hom₂
+    | 2 => exact F.map φ.hom₃
+    | 3 => exact (F.shift (1 : ℤ)).map φ.hom₁
+    | 4 => exact (F.shift (1 : ℤ)).map φ.hom₂
+    | 5 => exact (F.shift (1 : ℤ)).map φ.hom₃
+  · intro i _
+    match i with
+    | 0 => change F.map T.mor₁ ≫ F.map φ.hom₂ = F.map φ.hom₁ ≫ F.map T'.mor₁
+           rw [← map_comp, φ.comm₁, map_comp]
+    | 1 => change F.map T.mor₂ ≫ F.map φ.hom₃ = F.map φ.hom₂ ≫ F.map T'.mor₂
+           rw [← map_comp, φ.comm₂, map_comp]
+    | 2 => simp only [Nat.reduceAdd, homologySequenceComposableArrows₅_start_zero, mk₅.eq_1,
+      mk₄.eq_1, mk₃.eq_1, mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.reduceSub,
+      Int.reduceAdd, Int.Nat.cast_ofNat_Int, Fin.reduceFinMk, precomp_obj, Fin.isValue, map',
+      homOfLE_leOfHom, precomp_map, Precomp.map, Fin.mk_one, Fin.zero_eta, assoc]
+           conv_rhs => rw [← assoc, ← map_comp, ← φ.comm₃, map_comp]
+           simp
+    | 3 => change (F.shift (1 : ℤ)).map T.mor₁ ≫ (F.shift (1 : ℤ)).map φ.hom₂ =
+             (F.shift (1 : ℤ)).map φ.hom₁ ≫ (F.shift (1 : ℤ)).map T'.mor₁
+           rw [← map_comp, φ.comm₁, map_comp]
+    | 4 => change (F.shift (1 : ℤ)).map T.mor₂ ≫ (F.shift (1 : ℤ)).map φ.hom₃ =
+             (F.shift (1 : ℤ)).map φ.hom₂ ≫ (F.shift (1 : ℤ)).map T'.mor₂
+           rw [← map_comp, φ.comm₂, map_comp]
+
+variable (T T')
+
 noncomputable def homologySequenceComposableArrows₅_start_zero_iso :
     F.homologySequenceComposableArrows₅ T 0 1 (by simp) ≅
     F.homologySequenceComposableArrows₅_start_zero T := by

@@ -99,6 +99,15 @@ structure Exact extends S.IsComplex : Prop where
 
 variable {S}
 
+lemma Exact.exact_truncation (hex : S.Exact) (i : ℕ) (h : i ≤ n) :
+    Exact (Monotone.functor (f := Fin.castLE (n := i + 1) (m := n + 1) (by simp [h]))
+    (fun ⦃a b⦄ h ↦ h) ⋙ S) :=
+  Exact.mk (IsComplex.mk (fun i hi => hex.toIsComplex.zero i)) (fun i hi => hex.exact i)
+
+variable (S)
+
+variable {S}
+
 lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
     (S.sc' hS.toIsComplex i j k).Exact := by

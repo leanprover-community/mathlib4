@@ -1,5 +1,6 @@
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Yoneda
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Triangulated.AdjointCommShift
 
 noncomputable section
@@ -18,6 +19,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁,u₁} C] [Category.{v�
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D] {F : C ⥤ D} {G : D ⥤ C} [F.CommShift ℤ] [G.CommShift ℤ]
 
+open ComposableArrows in
 def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjunction_compat ℤ adj]
     [F.IsTriangulated] : G.IsTriangulated := by
   apply Functor.IsTriangulated.mk
@@ -37,26 +39,85 @@ def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjun
       commShiftIso_hom_naturality]
     erw [CommShift.compat_right_triangle, comp_id]
   have hφ : IsIso φ := by
-    suffices h : IsIso (coyoneda.map (Quiver.Hom.op φ)) by
-      refine @isIso_of_op _ _ _ _ φ ?_
-      apply Coyoneda.isIso
-    rw [NatTrans.isIso_iff_isIso_app]
+    rw [isIso_iff_isIso_yoneda_map]
     intro X
-    suffices h' : IsIso ((preadditiveCoyoneda.map φ.op).app X) by
-      have := whiskering_preadditiveCoyoneda (C := C)
-      apply_fun (fun h ↦ (h.map φ.op).app X) at this
-      simp only [Functor.comp_map] at this; simp only [whiskering_preadditiveCoyoneda,
-        coyoneda_obj_obj, preadditiveCoyoneda_obj, whiskeringRight_obj_map, whiskerRight_app,
-        comp_obj, preadditiveCoyonedaObj_obj] at this
-      rw [← this]
+    suffices h' : IsIso ((preadditiveCoyoneda.obj (op X)).map φ) by
+      have : ((yoneda.map φ).app (op X)) = (coyoneda.obj (op X)).map φ := by
+        simp [yoneda, coyoneda]
+      rw [this]
+      have : (coyoneda.obj (op X)).map φ = (forget AddCommGrp).map
+        ((preadditiveCoyoneda.obj (op X)).map φ) := by aesop
+      rw [this]
       apply Functor.map_isIso
-    sorry
+    have := ShiftSequence.tautological (preadditiveCoyoneda.obj (op X)) ℤ (C := C)
+      (A := AddCommGrp)
+    set R₁ : ComposableArrows AddCommGrp 4 :=
+      Monotone.functor (f := Fin.castLE (n := 4 + 1) (m := 5 + 1) (by simp)) (fun ⦃a b⦄ h ↦ h) ⋙
+      homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
+      (Triangle.mk (G.map T.mor₁) g' h')
+    have hR₁ : R₁.Exact := (homologySequenceComposableArrows₅_start_zero_exact
+      (preadditiveCoyoneda.obj (op X)) _ dT').exact_truncation 4 (by linarith)
+    set R₂ : ComposableArrows AddCommGrp 4 :=
+      Monotone.functor (f := Fin.castLE (n := 4 + 1) (m := 5 + 1) (by simp)) (fun ⦃a b⦄ h ↦ h) ⋙
+      homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
+      (G.mapTriangle.obj T)
+    have hR₂ : R₂.Exact := by
+      apply Exact.exact_truncation (i := 4) (h := by linarith)
+      sorry
+    set Φ : R₁ ⟶ R₂ := by
+      refine whiskerLeft (Monotone.functor (f := Fin.castLE (n := 4 + 1) (m := 5 + 1) (by simp))
+        (fun ⦃a b⦄ h ↦ h))
+        ((preadditiveCoyoneda.obj (op X)).homologySequenceComposableArrows₅_start_zero_map ?_)
+      exact Triangle.homMk _ _ (𝟙 _) (𝟙 _) φ (by simp) (by simp; exact hφ₁) (by simp; exact hφ₂)
+    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono hR₁ hR₂ Φ ?_ ?_ ?_ ?_
+    · simp only [id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceAdd,
+      Int.reduceSub, obj', Nat.reduceAdd, Fin.zero_eta, Fin.isValue, app', preadditiveCoyoneda_obj,
+      homologySequenceComposableArrows₅_start_zero.eq_1, Triangle.mk_obj₁, comp_obj,
+      preadditiveCoyonedaObj_obj, Triangle.mk_obj₂, Triangle.mk_obj₃,
+      Triangle.mk_mor₁, Functor.comp_map, preadditiveCoyonedaObj_map,
+      Triangle.mk_mor₂, Triangle.mk_mor₃, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1, mk₂.eq_1, mapTriangle_obj,
+      homologySequenceComposableArrows₅_start_zero_map, precomp_obj, Triangle.homMk_hom₁, comp_id,
+      Triangle.homMk_hom₂, Triangle.homMk_hom₃, map_id, whiskerLeft_app, Monotone.functor_obj,
+      homMk_app, Φ]
+      change Epi (𝟙 _)
+      infer_instance
+    · simp only [id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceAdd,
+      Int.reduceSub, obj', Nat.reduceAdd, Fin.mk_one, Fin.isValue, app', preadditiveCoyoneda_obj,
+      homologySequenceComposableArrows₅_start_zero.eq_1, Triangle.mk_obj₁, comp_obj,
+      preadditiveCoyonedaObj_obj, Triangle.mk_obj₂, Triangle.mk_obj₃,
+      Triangle.mk_mor₁, Functor.comp_map, preadditiveCoyonedaObj_map,
+      Triangle.mk_mor₂, Triangle.mk_mor₃, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1, mk₂.eq_1, mapTriangle_obj,
+      homologySequenceComposableArrows₅_start_zero_map, precomp_obj, Triangle.homMk_hom₁, comp_id,
+      Triangle.homMk_hom₂, Triangle.homMk_hom₃, map_id, whiskerLeft_app, Monotone.functor_obj,
+      homMk_app, Φ]
+      change IsIso (𝟙 _)
+      infer_instance
+    · simp only [id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.reduceAdd, Int.reduceSub, obj',
+      Nat.reduceAdd, Fin.reduceFinMk, app', preadditiveCoyoneda_obj,
+      homologySequenceComposableArrows₅_start_zero.eq_1, Triangle.mk_obj₁, comp_obj,
+      preadditiveCoyonedaObj_obj, Triangle.mk_obj₂, Triangle.mk_obj₃,
+      Triangle.mk_mor₁, Functor.comp_map, preadditiveCoyonedaObj_map,
+      Triangle.mk_mor₂, Triangle.mk_mor₃, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1, mk₂.eq_1, mapTriangle_obj,
+      homologySequenceComposableArrows₅_start_zero_map, precomp_obj, Triangle.homMk_hom₁, comp_id,
+      Triangle.homMk_hom₂, Triangle.homMk_hom₃, map_id, whiskerLeft_app, Fin.isValue,
+      Monotone.functor_obj, homMk_app, Φ]
+      change IsIso (𝟙 _)
+      infer_instance
+    · simp only [obj', Nat.reduceAdd, Fin.reduceFinMk, app', preadditiveCoyoneda_obj,
+      homologySequenceComposableArrows₅_start_zero.eq_1, Triangle.mk_obj₁, comp_obj,
+      preadditiveCoyonedaObj_obj, ModuleCat.forget₂_obj, Triangle.mk_obj₂, Triangle.mk_obj₃,
+      Triangle.mk_mor₁, Functor.comp_map, preadditiveCoyonedaObj_map,
+      Triangle.mk_mor₂, Triangle.mk_mor₃, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1, mk₂.eq_1, mapTriangle_obj,
+      homologySequenceComposableArrows₅_start_zero_map, precomp_obj, Triangle.homMk_hom₁, comp_id,
+      Triangle.homMk_hom₂, Triangle.homMk_hom₃, map_id, whiskerLeft_app, Fin.isValue,
+      Monotone.functor_obj, homMk_app, Φ]
+      change Mono (𝟙 _)
+      infer_instance
   exact isomorphic_distinguished _ dT' _ (Triangle.isoMk (Triangle.mk (G.map T.mor₁) g' h')
     (G.mapTriangle.obj T) (Iso.refl _) (Iso.refl _) (asIso φ) (by simp) (by simp [hφ₁])
     (by simp [hφ₂])).symm
 
-
-
+#check ComposableArrows.IsComplex
 
 end Adjunction
 
