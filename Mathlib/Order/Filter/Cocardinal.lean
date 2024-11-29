@@ -8,7 +8,6 @@ import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.Order.Filter.Bases
 
 /-!
 # The cocardinal filter
