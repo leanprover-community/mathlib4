@@ -38,15 +38,11 @@ theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
     (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
     ((Real.log_neg_iff (Complex.abs.pos hq_ne)).mpr hq)
 
-open Real in
-lemma qParam_im_ge_half (ξ : ℍ) (hξ : 1 / 2 ≤ ξ.im) : ‖𝕢 1 ξ‖ ≤ rexp (-(π * √3 * (1 / 2))) := by
-  rw [Periodic.qParam, ofReal_one, div_one, Complex.norm_eq_abs, Complex.abs_exp]
-  apply Real.exp_le_exp_of_le
-  simp only [mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero, sub_zero, Complex.I_re,
-    mul_im, zero_mul, add_zero, Complex.I_im, mul_one, sub_self, coe_re, coe_im,
-    show 2 * π * ξ.im = π * 2 * ξ.im by ring, zero_sub, neg_le, neg_neg]
-  have : √3 ≤ 2 := sqrt_le_iff.mpr (by norm_cast)
-  gcongr
+lemma Function.Periodic.qParam_abs_le_of_one_half_le_abs {ξ : ℂ} (hξ : 1 / 2 ≤ ξ.im) :
+    ‖𝕢 1 ξ‖ ≤ rexp (-π) := by
+  rwa [Periodic.qParam, ofReal_one, div_one, Complex.norm_eq_abs, Complex.abs_exp, Real.exp_le_exp,
+    mul_right_comm, mul_I_re, neg_le_neg_iff, ← ofReal_ofNat, ← ofReal_mul, im_ofReal_mul,
+    mul_comm _ π, mul_assoc, le_mul_iff_one_le_right Real.pi_pos, ← div_le_iff₀' (by norm_num)]
 
 namespace SlashInvariantFormClass
 

@@ -50,7 +50,7 @@ theorem neg_wt_cuspFunction_EqOn_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [Fun
   have hdiff : DifferentiableOn ℂ (cuspFunction 1 f) (Metric.ball 0 1) := by
     exact fun z hz ↦ DifferentiableAt.differentiableWithinAt (differentiableAt_cuspFunction 1 f
       (mem_ball_zero_iff.mp hz))
-  apply eq_const_of_exists_le (r := exp (-(π * √3 * (1 / 2)))) hdiff (exp_nonneg _)
+  apply eq_const_of_exists_le (r := exp (-π)) hdiff (exp_nonneg _)
   · simp only [one_div, exp_lt_one_iff, Left.neg_neg_iff, pi_pos, mul_pos_iff_of_pos_left,
       sqrt_pos, Nat.ofNat_pos, inv_pos]
   · intro z hz
@@ -61,7 +61,7 @@ theorem neg_wt_cuspFunction_EqOn_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [Fun
       obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f t
       use 𝕢 1 ξ
       rw [Metric.mem_closedBall, dist_zero_right]
-      refine ⟨qParam_im_ge_half ξ hξ, ?_⟩
+      refine ⟨qParam_abs_le_of_one_half_le_abs hξ, ?_⟩
       simp only [one_div, ← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs, ←
         eq_cuspFunction 1 f ξ] at *
       rw [← qParam_right_inv one_ne_zero hz']
