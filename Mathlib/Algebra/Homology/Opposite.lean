@@ -326,8 +326,8 @@ def opcyclesOpNatIso :
 /-- The natural isomorphism `K.op.homology i ≅ op (K.homology i)`. -/
 def homologyOpNatIso :
     opFunctor V c ⋙ homologyFunctor Vᵒᵖ c.symm i ≅ (homologyFunctor V c i).op :=
-  NatIso.ofComponents (fun K ↦ (unop K).homologyOp i) (by
-    sorry)
+  NatIso.ofComponents (fun K ↦ (unop K).homologyOp i)
+    (fun _ ↦ homologyOp_hom_naturality _ _)
 
 end
 
