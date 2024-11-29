@@ -215,7 +215,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
 /-- Since `StrictSegal.isPointwiseRightKanExtensionAt` proves that the appropriate
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension.-/
 noncomputable def isPointwiseRightKanExtension :
-    RightExtension.IsPointwiseRightKanExtension (rightExtensionInclusion X 2) :=
+    (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
   fun Δ => isPointwiseRightKanExtensionAt X Δ.unop.len
 
 theorem isRightKanExtension :
