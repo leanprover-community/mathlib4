@@ -7,6 +7,7 @@ import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Basic
 
 /-!

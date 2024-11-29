@@ -3,7 +3,6 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.Algebraic.Defs
