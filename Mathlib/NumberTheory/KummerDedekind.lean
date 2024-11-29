@@ -37,10 +37,6 @@ with a formula).
 
  * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
- * Prove that `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` can be expressed as
-    `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk g = ⟨I, G(α)⟩` for `g` a prime
-    factor of `f mod I` and `G` a lift of `g` to `R[X]`.
-
 ## References
 
  * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
