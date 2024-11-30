@@ -6,9 +6,9 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -230,7 +230,7 @@ theorem pow_subset_pow {n : ℕ} : (↑M : Set A) ^ n ⊆ ↑(M ^ n : Submodule 
   trans AddSubmonoid.pow_subset_pow (le_pow_toAddSubmonoid M)
 
 theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
-  pow_subset_pow _ <| Set.pow_mem_pow hx _
+  pow_subset_pow _ <| Set.pow_mem_pow hx
 
 end Module
 

@@ -23,8 +23,7 @@ require "leanprover-community" / "plausible" @ git "nightly-testing"
 /-- These options are used
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
 * as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`).
--/
+  (as well as `Archive`, `Counterexamples` and `test`). -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.docPrime, true⟩,
   ⟨`linter.hashCommand, true⟩,

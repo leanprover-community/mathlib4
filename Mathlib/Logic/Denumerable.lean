@@ -121,7 +121,6 @@ instance option : Denumerable (Option α) :=
       · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 
-set_option linter.deprecated false in
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by

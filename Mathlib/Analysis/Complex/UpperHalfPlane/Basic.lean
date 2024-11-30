@@ -243,9 +243,9 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
-    GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
-    Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
+  simp only [denom, Subgroup.coe_mul, Fin.isValue, Units.val_mul, mul_apply, Fin.sum_univ_succ,
+    Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
+    Complex.ofReal_add, Complex.ofReal_mul, num]
   ring
 
 theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux x (smulAux y z) := by
@@ -254,9 +254,9 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   change _ / _ = (_ * (_ / _) + _) / _
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
-    GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
-    Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
+  simp only [num, Subgroup.coe_mul, Fin.isValue, Units.val_mul, mul_apply, Fin.sum_univ_succ,
+    Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
+    Complex.ofReal_add, Complex.ofReal_mul, denom]
   ring
 
 /-- The action of `GLPos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
@@ -364,12 +364,12 @@ end RealAddAction
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 theorem modular_S_smul (z : ℍ) : ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
-  rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg, coeToGL]
+  rw [specialLinearGroup_apply]; simp [ModularGroup.S, neg_div, inv_neg, toGL]
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, specialLinearGroup_apply, coe_mk]
   -- Porting note: added `coeToGL` and merged `rw` and `simp`
-  simp [coeToGL, ModularGroup.coe_T_zpow,
+  simp [toGL, ModularGroup.coe_T_zpow,
     of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
     head_cons, algebraMap.coe_zero, zero_mul, zero_add, div_one]
 
@@ -383,7 +383,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 
   ext1 ⟨z, hz⟩; ext1
   suffices ↑a * z * a + b * a = b * a + a * a * z by
     -- Porting note: added `coeToGL` and merged `rw` and `simpa`
-    simpa [coeToGL, specialLinearGroup_apply, add_mul]
+    simpa [toGL, specialLinearGroup_apply, add_mul]
   ring
 
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :

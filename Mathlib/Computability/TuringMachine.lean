@@ -1443,7 +1443,7 @@ open TM1
 variable {Γ : Type*}
 
 theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
-    ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
+    ∃ (n : ℕ) (enc : Γ → Mathlib.Vector Bool n) (dec : Mathlib.Vector Bool n → Γ),
       enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
   rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
   letI : DecidableEq Γ := e.decidableEq
@@ -1475,13 +1475,13 @@ local notation "Stmt'₁" => Stmt Bool Λ'₁ σ
 local notation "Cfg'₁" => Cfg Bool Λ'₁ σ
 
 /-- Read a vector of length `n` from the tape. -/
-def readAux : ∀ n, (Vector Bool n → Stmt'₁) → Stmt'₁
+def readAux : ∀ n, (Mathlib.Vector Bool n → Stmt'₁) → Stmt'₁
   | 0, f => f Vector.nil
   | i + 1, f =>
     Stmt.branch (fun a _ ↦ a) (Stmt.move Dir.right <| readAux i fun v ↦ f (true ::ᵥ v))
       (Stmt.move Dir.right <| readAux i fun v ↦ f (false ::ᵥ v))
 
-variable {n : ℕ} (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ)
+variable {n : ℕ} (enc : Γ → Mathlib.Vector Bool n) (dec : Mathlib.Vector Bool n → Γ)
 
 /-- A move left or right corresponds to `n` moves across the super-cell. -/
 def move (d : Dir) (q : Stmt'₁) : Stmt'₁ :=
@@ -1530,7 +1530,8 @@ theorem supportsStmt_write {S : Finset Λ'₁} {l : List Bool} {q : Stmt'₁} :
 theorem supportsStmt_read {S : Finset Λ'₁} :
     ∀ {f : Γ → Stmt'₁}, (∀ a, SupportsStmt S (f a)) → SupportsStmt S (read dec f) :=
   suffices
-    ∀ (i) (f : Vector Bool i → Stmt'₁), (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
+    ∀ (i) (f : Mathlib.Vector Bool i → Stmt'₁),
+      (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
     from fun hf ↦ this n _ (by intro; simp only [supportsStmt_move, hf])
   fun i f hf ↦ by
   induction' i with i IH; · exact hf _

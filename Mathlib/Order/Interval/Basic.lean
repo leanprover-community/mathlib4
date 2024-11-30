@@ -109,7 +109,6 @@ theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
 theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 
--- @[simp] -- Porting note: not in simpNF
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 
@@ -153,7 +152,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
 
 @[simp]
 theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
-    dual (a.map f) = a.dual.map (OrderHom.dual f) :=
+    dual (a.map f) = a.dual.map f.dual :=
   rfl
 
 /-- Binary pushforward of nonempty intervals. -/
@@ -360,7 +359,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).
   Option.map_map _ _ _
 
 @[simp]
-theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
+theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map f.dual := by
   cases s
   · rfl
   · exact WithBot.map_comm rfl _

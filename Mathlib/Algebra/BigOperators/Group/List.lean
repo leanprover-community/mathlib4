@@ -634,7 +634,7 @@ end MonoidHom
 end MonoidHom
 
 set_option linter.deprecated false in
-@[simp, deprecated (since := "2024-10-17")]
+@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
 lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 namespace List
@@ -657,7 +657,8 @@ theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
-    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
+  rw [← mem_range, ← ranges_flatten, mem_flatten]
 
 @[simp]
 theorem length_flatMap (l : List α) (f : α → List β) :

@@ -2197,7 +2197,7 @@ variable [Monoid α]
 theorem ofMul_list_prod (s : List α) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
 
 @[simp]
-theorem toMul_list_sum (s : List (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+theorem toMul_list_sum (s : List (Additive α)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
 
 end Monoid
@@ -2210,7 +2210,7 @@ variable [AddMonoid α]
 theorem ofAdd_list_prod (s : List α) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
 
 @[simp]
-theorem toAdd_list_sum (s : List (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum := by
+theorem toAdd_list_sum (s : List (Multiplicative α)) : s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
 
 end AddMonoid
@@ -2224,7 +2224,7 @@ theorem ofMul_multiset_prod (s : Multiset α) : ofMul s.prod = (s.map ofMul).sum
   simp [ofMul]; rfl
 
 @[simp]
-theorem toMul_multiset_sum (s : Multiset (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+theorem toMul_multiset_sum (s : Multiset (Additive α)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
 
 @[simp]
@@ -2233,7 +2233,7 @@ theorem ofMul_prod (s : Finset ι) (f : ι → α) : ofMul (∏ i ∈ s, f i) = 
 
 @[simp]
 theorem toMul_sum (s : Finset ι) (f : ι → Additive α) :
-    toMul (∑ i ∈ s, f i) = ∏ i ∈ s, toMul (f i) :=
+    (∑ i ∈ s, f i).toMul = ∏ i ∈ s, (f i).toMul :=
   rfl
 
 end CommMonoid
@@ -2248,7 +2248,7 @@ theorem ofAdd_multiset_prod (s : Multiset α) : ofAdd s.sum = (s.map ofAdd).prod
 
 @[simp]
 theorem toAdd_multiset_sum (s : Multiset (Multiplicative α)) :
-    toAdd s.prod = (s.map toAdd).sum := by
+    s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
 
 @[simp]
@@ -2257,7 +2257,7 @@ theorem ofAdd_sum (s : Finset ι) (f : ι → α) : ofAdd (∑ i ∈ s, f i) = �
 
 @[simp]
 theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
-    toAdd (∏ i ∈ s, f i) = ∑ i ∈ s, toAdd (f i) :=
+    (∏ i ∈ s, f i).toAdd = ∑ i ∈ s, (f i).toAdd :=
   rfl
 
 end AddCommMonoid
