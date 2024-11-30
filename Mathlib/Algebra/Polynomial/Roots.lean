@@ -751,6 +751,16 @@ theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p
   apply Multiset.eq_of_le_of_card_le (map_roots_le_of_injective p hf)
   simpa only [Multiset.card_map, hroots] using (card_roots' _).trans (natDegree_map_le f p)
 
+theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
+    (f : A →+* B) (h : p.map f ≠ 0) (hroots : p.roots.card = p.natDegree) :
+    p.roots.map f = (p.map f).roots :=
+  eq_of_le_of_card_le (map_roots_le h) <| by
+    simpa only [Multiset.card_map, hroots] using (p.map f).card_roots'.trans (p.natDegree_map_le f)
+
+theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
+    (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f  = (p.map f).roots :=
+  roots_map_of_map_ne_zero_of_card_eq_natDegree f (map_monic_ne_zero hm) hroots
+
 end
 
 end Polynomial
