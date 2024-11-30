@@ -672,8 +672,8 @@ def prodL :
 @[simps! apply symm_apply]
 def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] :
-    (∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) ≃ₗᵢ[𝕜]
-      ContinuousMultilinearMap 𝕜 E (∀ i, E' i) where
+    (Π i', ContinuousMultilinearMap 𝕜 E (E' i'))
+      ≃ₗᵢ[𝕜] (ContinuousMultilinearMap 𝕜 E (Π i, E' i)) where
   toLinearEquiv := piLinearEquiv
   norm_map' := opNorm_pi
 
