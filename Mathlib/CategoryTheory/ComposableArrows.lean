@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Order.Fin.Basic
 import Mathlib.Tactic.FinCases
@@ -916,7 +917,6 @@ def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
 
-<<<<<<< HEAD
 @[simps]
 def composableArrows₀Equivalence : ComposableArrows C 0 ≌ C where
   functor :=
@@ -945,7 +945,7 @@ def composableArrows₁Equivalence : ComposableArrows C 1 ≌ Arrow C where
     (fun f => ComposableArrows.isoMk₁ (Iso.refl _) (Iso.refl _) (by aesop_cat))
       (by aesop_cat)
   counitIso := Iso.refl _
-=======
+
 suppress_compilation in
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`
 commutes with `opEquivalence`. -/
@@ -955,6 +955,5 @@ def Functor.mapComposableArrowsOpIso :
   Iso.refl _
 
 end
->>>>>>> origin/ext-change-of-universes
 
 end CategoryTheory

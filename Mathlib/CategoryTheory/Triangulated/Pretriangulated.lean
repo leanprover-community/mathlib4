@@ -201,19 +201,6 @@ def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : 
       (isomorphic_distinguished _ hT _ e.symm) :=
   ShortComplex.isoMk (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
 
-/-- The short complex `T.obj₁ ⟶ T.obj₂ ⟶ T.obj₃` attached to a distinguished triangle. -/
-@[simps]
-def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
-  ShortComplex.mk T.mor₁ T.mor₂ (comp_distTriang_mor_zero₁₂ _ hT)
-
-/-- The isomorphism between the short complex attached to
-two isomorphic distinguished triangles. -/
-@[simps!]
-def shortComplexOfDistTriangleIsoOfIso {T T' : Triangle C} (e : T ≅ T') (hT : T ∈ distTriang C) :
-    shortComplexOfDistTriangle T hT ≅ shortComplexOfDistTriangle T'
-      (isomorphic_distinguished _ hT _ e.symm) :=
-  ShortComplex.isoMk (Triangle.π₁.mapIso e) (Triangle.π₂.mapIso e) (Triangle.π₃.mapIso e)
-
 /-- Any morphism `Y ⟶ Z` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
     ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
@@ -457,6 +444,7 @@ lemma shift_distinguished (n : ℤ) :
     | zero => exact H_neg_one
     | succ n hn => exact H_add hn H_neg_one rfl
 
+omit hT in
 lemma shift_distinguished_iff (n : ℤ) :
     (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C := by
   constructor
@@ -723,13 +711,13 @@ def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
       erw [← NatTrans.naturality]
       rfl))
   let e := h.choose
-  refine' Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ _ _ comm
-  · refine' e.hom.comm₂.trans _
+  refine Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ ?_ ?_ comm
+  · refine e.hom.comm₂.trans ?_
     congr 1
     exact h.choose_spec.2
-  · rw [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_self 1)).inv.app T₂.obj₃)]
+  · rw [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.app T₂.obj₃)]
     rw [assoc, assoc]
-    refine' Eq.trans _ e.hom.comm₃
+    refine Eq.trans ?_ e.hom.comm₃
     rw [h.choose_spec.1]
     dsimp
     erw [assoc, ← NatTrans.naturality]

@@ -29,11 +29,7 @@ namespace Functor
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
   [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
-<<<<<<< HEAD
-  (F : C ⥤ D) (G : D ⥤ E) [F.CommShift ℤ] [G.CommShift ℤ]
-=======
   (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
->>>>>>> origin/ext-change-of-universes
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
@@ -95,15 +91,12 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
         ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
 
-<<<<<<< HEAD
-=======
 attribute [simps!] mapTriangleCommShiftIso
 
 attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
->>>>>>> origin/ext-change-of-universes
 set_option maxHeartbeats 400000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
@@ -128,8 +121,6 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
-<<<<<<< HEAD
-=======
 
 variable (C) in
 /-- The canonical isomorphism `(𝟭 C).mapTriangle ≅ 𝟭 (Triangle C)`. -/
@@ -138,13 +129,10 @@ def mapTriangleIdIso : (𝟭 C).mapTriangle ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
 /-- The canonical isomorphism `(F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle`. -/
->>>>>>> origin/ext-change-of-universes
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-<<<<<<< HEAD
-=======
 /-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
 with the shifts. -/
@@ -157,7 +145,6 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
       simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
         NatTrans.naturality_assoc])) (by aesop_cat)
 
->>>>>>> origin/ext-change-of-universes
 end Additive
 
 variable [HasZeroObject C] [HasZeroObject D] [HasZeroObject E]
@@ -179,13 +166,7 @@ namespace IsTriangulated
 
 open ZeroObject
 
-<<<<<<< HEAD
-variable [F.IsTriangulated]
-
-instance : PreservesZeroMorphisms F where
-=======
 instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
->>>>>>> origin/ext-change-of-universes
   map_zero X Y := by
     have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
     have h₂ : 𝟙 (F.obj 0) = 0 := by
@@ -196,18 +177,11 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
-<<<<<<< HEAD
-noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
-  suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
-    have := fun (X₁ X₃ : C) => PreservesLimitPair.ofIsoProdComparison F X₁ X₃
-    exact ⟨fun {K} => preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
-=======
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
     have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.of_iso_prod_comparison F X₁ X₃
     exact ⟨fun {K} ↦ preservesLimit_of_iso_diagram F (diagramIsoPair K).symm⟩
->>>>>>> origin/ext-change-of-universes
   intro X₁ X₃
   let φ : F.mapTriangle.obj (binaryProductTriangle X₁ X₃) ⟶
       binaryProductTriangle (F.obj X₁) (F.obj X₃) :=
@@ -227,32 +201,6 @@ noncomputable instance [F.IsTriangulated] :
       comm₃ := by simp }
   exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))
     (binaryProductTriangle_distinguished _ _)
-<<<<<<< HEAD
-    (by dsimp ; infer_instance) (by dsimp ; infer_instance)
-
-instance : F.Additive := F.additive_of_preserves_binary_products
-
-end IsTriangulated
-
-lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
-    (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
-  constructor
-  · intro hT
-    obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle T.mor₁
-    refine' isomorphic_distinguished _ mem _ (F.mapTriangle.preimageIso _)
-    exact isoTriangleOfIso₁₂ _ _ hT (F.map_distinguished _ mem) (Iso.refl _) (Iso.refl _)
-      (by simp)
-  · exact F.map_distinguished T
-
-def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
-    [NatTrans.CommShift e.hom ℤ] : F₁.mapTriangle ≅ F₂.mapTriangle :=
-  NatIso.ofComponents (fun T =>
-    Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
-      dsimp
-      simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
-        NatTrans.naturality_assoc])) (by aesop_cat)
-
-=======
     (by dsimp; infer_instance) (by dsimp; infer_instance)
 
 instance (priority := 100) [F.IsTriangulated] : F.Additive :=
@@ -269,7 +217,16 @@ instance [F.IsTriangulated] [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
 
 end IsTriangulated
 
->>>>>>> origin/ext-change-of-universes
+lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
+    (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
+  constructor
+  · intro hT
+    obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle T.mor₁
+    refine isomorphic_distinguished _ mem _ (F.mapTriangle.preimageIso ?_)
+    exact isoTriangleOfIso₁₂ _ _ hT (F.map_distinguished _ mem) (Iso.refl _) (Iso.refl _)
+      (by simp)
+  · exact F.map_distinguished T
+
 lemma isTriangulated_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
     [NatTrans.CommShift e.hom ℤ] [F₁.IsTriangulated] : F₂.IsTriangulated where
   map_distinguished T hT :=
@@ -281,17 +238,8 @@ lemma isTriangulated_iff_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.
   · intro
     exact isTriangulated_of_iso e
   · intro
-<<<<<<< HEAD
-    have : NatTrans.CommShift e.symm.hom ℤ := by
-      dsimp
-      infer_instance
+    have : NatTrans.CommShift e.symm.hom ℤ := inferInstanceAs (NatTrans.CommShift e.inv ℤ)
     exact isTriangulated_of_iso e.symm
-
-instance (F : C ⥤ D) (G : D ⥤ E) [F.CommShift ℤ] [G.CommShift ℤ] [F.IsTriangulated]
-    [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
-  map_distinguished T hT :=
-    isomorphic_distinguished _ (G.map_distinguished _ (F.map_distinguished T hT)) _
-      ((mapTriangleCompIso F G).app T)
 
 lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.CommShift ℤ] [G.CommShift ℤ] [H.CommShift ℤ] [NatTrans.CommShift e.hom ℤ]
@@ -307,9 +255,6 @@ lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e
     rw [← G.map_distinguished_iff]
     exact isomorphic_distinguished _ ((F ⋙ G).map_distinguished T hT) _
       ((mapTriangleCompIso F G).symm.app T)
-=======
-    have : NatTrans.CommShift e.symm.hom ℤ := inferInstanceAs (NatTrans.CommShift e.inv ℤ)
-    exact isTriangulated_of_iso e.symm
 
 lemma mem_mapTriangle_essImage_of_distinguished
     [F.IsTriangulated] [F.mapArrow.EssSurj] (T : Triangle D) (hT : T ∈ distTriang D) :
@@ -335,7 +280,6 @@ lemma isTriangulated_of_precomp_iso {H : C ⥤ E} (e : F ⋙ G ≅ H) [H.CommShi
     G.IsTriangulated := by
   have := (isTriangulated_iff_of_iso e).2 inferInstance
   exact isTriangulated_of_precomp F G
->>>>>>> origin/ext-change-of-universes
 
 end Functor
 
@@ -390,11 +334,12 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
   obtain ⟨_, _, _, h₁₂'⟩ := distinguished_cocone_triangle f
   obtain ⟨_, _, _, h₂₃'⟩ := distinguished_cocone_triangle g
   obtain ⟨_, _, _, h₁₃'⟩ := distinguished_cocone_triangle (f ≫ g)
-  exact ⟨Octahedron.ofIso (e₁ := (e.app 0).symm) (e₂ := (e.app 1).symm) (e₃ := (e.app 2).symm)
+  constructor
+  exact Octahedron.ofIso
+    (e₁ := (e.app 0).symm) (e₂ := (e.app 1).symm) (e₃ := (e.app 2).symm)
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
-<<<<<<< HEAD
-    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) _ _ _ _ _⟩
+    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..
 
 section
 
@@ -430,8 +375,5 @@ lemma IsTriangulated.of_fully_faithful_triangulated_functor
           simpa using H.mem }⟩
 
 end
-=======
-    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
->>>>>>> origin/ext-change-of-universes
 
 end CategoryTheory

@@ -6,12 +6,9 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Adjunction
-=======
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Tactic.Linarith
 
