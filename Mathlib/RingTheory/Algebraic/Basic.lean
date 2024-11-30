@@ -536,7 +536,7 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic
 
 end
 
-variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 section Field
 
