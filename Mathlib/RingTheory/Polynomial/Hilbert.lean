@@ -54,7 +54,8 @@ theorem preHilbert_eq_choose_sub_add [CharZero F] (d k n : ℕ) (hkn : k ≤ n):
     rw [ascPochhammer_nat_eq_natCast_ascFactorial];
     field_simp [ascFactorial_eq_factorial_mul_choose]
 
-variable {F} in
+variable {F}
+
 /--
 `Polynomial.hilbert p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbert p (d + 1)` is
 defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbert F d i`. If `M` is
@@ -68,12 +69,12 @@ noncomputable def hilbert (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
   | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbert F d i
 
+variable (F) in
 lemma hilbert_zero (d : ℕ) : hilbert (0 : F[X]) d = 0 := by
   delta hilbert; induction d with
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
-variable {F} in
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbert p d).eval (n : F)` is equal to the
