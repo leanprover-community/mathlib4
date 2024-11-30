@@ -29,8 +29,6 @@ universe w v u
 
 open CategoryTheory Limits Opposite
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
