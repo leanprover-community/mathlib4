@@ -48,7 +48,7 @@ lemma ShortComplex.liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
     erw [CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements
       S.homologyIsCokernel] at h
     obtain ⟨A', π, hπ, x₁, fac⟩ := h
-    refine' ⟨A', π, hπ, x₁, _⟩
+    refine ⟨A', π, hπ, x₁, ?_⟩
     simpa only [assoc, liftCycles_i, toCycles_i] using fac =≫ S.iCycles
   · intro ⟨A, π, hπ, x₁, fac⟩
     simp only [← cancel_epi π, S.comp_liftCycles_assoc, comp_zero]
@@ -83,15 +83,6 @@ lemma ShortComplex.comp_homologyπ_eq_iff_up_to_refinements
       by simp only [← cancel_mono S.iCycles, liftCycles_i]⟩
   simp only [liftCycles_comp_homologyπ_eq_iff_up_to_refinements,
     ← cancel_mono S.iCycles, liftCycles_i, assoc, add_comp, toCycles_i]
-
-lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A ⟶ S.homology) :
-    ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ S.X₂) (hz : z ≫ S.g = 0),
-      π ≫ γ = S.liftCycles z hz ≫ S.homologyπ := by
-  obtain ⟨A', π, hπ, z, hz⟩ := surjective_up_to_refinements_of_epi S.homologyπ γ
-  refine' ⟨A', π, hπ, z ≫ S.iCycles, by simp, _⟩
-  rw [hz]
-  congr 1
-  rw [← cancel_mono S.iCycles, liftCycles_i]
 
 lemma ShortComplex.mono_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
     Mono (homologyMap φ) ↔
@@ -145,7 +136,7 @@ lemma ShortComplex.epi_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
     intro A γ
     obtain ⟨A₁, π₁, hπ₁, y₂, hy₂, fac⟩ := S₂.eq_liftCycles_homologyπ_up_to_refinements γ
     obtain ⟨A₂, π₂, hπ₂, x₂, hx₂, y₁, hy₁⟩ := h y₂ hy₂
-    refine' ⟨A₂, π₂ ≫ π₁, inferInstance, S₁.liftCycles x₂ hx₂ ≫ S₁.homologyπ, _⟩
+    refine ⟨A₂, π₂ ≫ π₁, inferInstance, S₁.liftCycles x₂ hx₂ ≫ S₁.homologyπ, ?_⟩
     simp only [assoc, fac, homologyπ_naturality, liftCycles_comp_cyclesMap_assoc,
       comp_liftCycles_assoc, liftCycles_comp_homologyπ_eq_iff_up_to_refinements]
     exact ⟨A₂, 𝟙 _, inferInstance, y₁, by simpa only [id_comp] using hy₁⟩

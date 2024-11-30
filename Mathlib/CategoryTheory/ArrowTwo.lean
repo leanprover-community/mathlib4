@@ -7,7 +7,7 @@ open Category
 
 variable (C : Type _) [Category C]
 
-structure Arrow₂ :=
+structure Arrow₂ where
   {X₀ X₁ X₂ : C}
   f : X₀ ⟶ X₁
   g : X₁ ⟶ X₂
@@ -16,6 +16,7 @@ namespace Arrow₂
 
 variable {C}
 
+/-- Constructor for `Arrow₂`. -/
 @[simps]
 def mk' {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : Arrow₂ C where
   f := f
@@ -53,7 +54,7 @@ instance : Category (Arrow₂ C) where
 
 @[ext] lemma hom_ext {D₁ D₂ : Arrow₂ C} (f₁ f₂ : D₁ ⟶ D₂)
     (h₀ : f₁.τ₀ = f₂.τ₀) (h₁ : f₁.τ₁ = f₂.τ₁) (h₂ : f₁.τ₂ = f₂.τ₂) : f₁ = f₂ :=
-  Hom.ext _ _ h₀ h₁ h₂
+  Hom.ext h₀ h₁ h₂
 
 @[simp] lemma τ₀_id (D : Arrow₂ C) : Hom.τ₀ (𝟙 D) = 𝟙 _ := rfl
 @[simp] lemma τ₁_id (D : Arrow₂ C) : Hom.τ₁ (𝟙 D) = 𝟙 _ := rfl

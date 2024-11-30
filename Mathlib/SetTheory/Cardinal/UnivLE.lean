@@ -10,9 +10,9 @@ import Mathlib.SetTheory.Ordinal.Basic
 # UnivLE and cardinals
 -/
 
-set_option autoImplicit true
-
 noncomputable section
+
+universe u v
 
 open Cardinal
 
@@ -25,6 +25,14 @@ theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+
   · obtain ⟨⟨α⟩, h⟩ := lt_univ'.mp h; use α
     rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift]
     exact h.le
+
+theorem univLE_iff_exists_embedding : UnivLE.{u, v} ↔ Nonempty (Ordinal.{u} ↪ Ordinal.{v}) := by
+  rw [univLE_iff_cardinal_le]
+  exact lift_mk_le'
+
+theorem Ordinal.univLE_of_injective {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective) :
+    UnivLE.{u, v} :=
+  univLE_iff_exists_embedding.2 ⟨f, h⟩
 
 /-- Together with transitivity, this shows UnivLE "IsTotalPreorder". -/
 theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by

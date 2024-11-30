@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Quotient
 
@@ -16,22 +17,26 @@ for all `a : A`), then the quotient category `Quotient r` is equipped with
 a shift.
 
 The condition `r.IsCompatibleWithShift A` on the relation `r` is a class so that
-the shift can be automatically infered on the quotient category.
+the shift can be automatically inferred on the quotient category.
 
 -/
 
-universe v u w
+universe v v' u u' w
 
 open CategoryTheory Category
 
+<<<<<<< HEAD
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+=======
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+>>>>>>> origin/ext-change-of-universes
   (F : C ⥤ D) (r : HomRel C) (A : Type w) [AddMonoid A] [HasShift C A] [HasShift D A]
 
 namespace HomRel
 
 /-- A relation on morphisms is compatible with the shift by a monoid `A` when the
 relation if preserved by the shift. -/
-class IsCompatibleWithShift : Prop :=
+class IsCompatibleWithShift : Prop where
   /-- the condition that the relation is preserved by the shift -/
   condition : ∀ (a : A) ⦃X Y : C⦄ (f g : X ⟶ Y), r f g → r (f⟦a⟧') (g⟦a⟧')
 
@@ -46,12 +51,12 @@ noncomputable instance HasShift.quotient [r.IsCompatibleWithShift A] :
   HasShift.induced (Quotient.functor r) A
     (fun a => Quotient.lift r (shiftFunctor C a ⋙ Quotient.functor r)
       (fun _ _ _ _ hfg => Quotient.sound r (HomRel.IsCompatibleWithShift.condition _ _ _ hfg)))
-    (fun _ => Quotient.lift.isLift _ _ _) ⟨⟨inferInstance⟩, inferInstance⟩
+    (fun _ => Quotient.lift.isLift _ _ _)
 
 /-- The functor `Quotient.functor r : C ⥤ Quotient r` commutes with the shift. -/
 noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
     (Quotient.functor r).CommShift A :=
-  Functor.CommShift.ofInduced _ _ _ _ _
+  Functor.CommShift.ofInduced _ _ _ _
 
 lemma Quotient.functor_obj_shift [r.IsCompatibleWithShift A] (X : C) (n : A) :
     ((Quotient.functor r).obj X)⟦n⟧ = (Quotient.functor r).obj (X⟦n⟧) := rfl
@@ -68,6 +73,10 @@ namespace LiftCommShift
 
 variable {A}
 
+<<<<<<< HEAD
+=======
+/-- Auxiliary definition for `Quotient.liftCommShift`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def iso (a : A) :
     shiftFunctor (Quotient r) a ⋙ lift r F hF ≅ lift r F hF ⋙ shiftFunctor D a :=
   natIsoLift r ((Functor.associator _ _ _).symm ≪≫
@@ -99,8 +108,14 @@ attribute [irreducible] iso
 
 end LiftCommShift
 
+<<<<<<< HEAD
 -- note: there is an annoying simp(s) lemma for `Quotient.lift` which should be completely
 -- replaced by `lift_map_functor_map`
+=======
+/-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
+`F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
+the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable instance liftCommShift :
     (Quotient.lift r F hF).CommShift A where
   iso := LiftCommShift.iso F r hF
@@ -113,8 +128,13 @@ noncomputable instance liftCommShift :
       Functor.CommShift.isoZero_hom_app, Functor.CommShift.isoZero_inv_app,
       Functor.map_comp, assoc, F.commShiftIso_zero, Functor.CommShift.isoZero_hom_app,
       lift_map_functor_map, ← F.map_comp_assoc, Iso.inv_hom_id_app]
+<<<<<<< HEAD
     erw [F.map_id, id_comp]
     rfl
+=======
+    dsimp [lift_obj_functor_obj]
+    rw [F.map_id, id_comp]
+>>>>>>> origin/ext-change-of-universes
   add a b := by
     ext1
     apply natTrans_ext
@@ -125,6 +145,7 @@ noncomputable instance liftCommShift :
       Functor.CommShift.isoAdd_inv_app, Functor.map_comp, Functor.map_comp,
       Functor.map_comp, assoc, assoc, assoc, LiftCommShift.iso_hom_app, lift_map_functor_map]
     congr 1
+<<<<<<< HEAD
     rw [← cancel_epi ((shiftFunctor (Quotient r) b ⋙ lift r F hF).map (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
     erw [(LiftCommShift.iso F r hF b).hom.naturality_assoc (((functor r).commShiftIso a).hom.app X),
       LiftCommShift.iso_hom_app, ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id,
@@ -136,6 +157,19 @@ noncomputable instance liftCommShift :
     rfl
 
 instance liftCommShift_compatibility : NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
+=======
+    rw [← cancel_epi ((shiftFunctor (Quotient r) b ⋙ lift r F hF).map
+      (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
+    erw [(LiftCommShift.iso F r hF b).hom.naturality_assoc
+      (((functor r).commShiftIso a).hom.app X), LiftCommShift.iso_hom_app,
+      ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
+    dsimp
+    simp only [Functor.comp_obj, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
+      Functor.map_id, id_comp, Iso.hom_inv_id_app, lift_obj_functor_obj]
+
+instance liftCommShift_compatibility :
+    NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
+>>>>>>> origin/ext-change-of-universes
   comm' a := by
     ext X
     dsimp

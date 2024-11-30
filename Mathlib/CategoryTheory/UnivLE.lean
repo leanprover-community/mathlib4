@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.EssentialImage
@@ -34,8 +34,7 @@ theorem UnivLE_iff_essSurj :
     UnivLE.{max u v, v} ↔ (uliftFunctor.{u, v} : Type v ⥤ Type max u v).EssSurj :=
   ⟨fun _ => inferInstance, fun w => UnivLE.ofEssSurj w⟩
 
-instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj uliftFunctor
+instance [UnivLE.{max u v, v}] : uliftFunctor.{u, v}.IsEquivalence where
 
 def UnivLE.witness [UnivLE.{max u v, v}] : Type u ⥤ Type v :=
   uliftFunctor.{v, u} ⋙ (uliftFunctor.{u, v}).inv

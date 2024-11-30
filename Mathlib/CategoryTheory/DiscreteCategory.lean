@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Data.ULift
-
-#align_import category_theory.discrete_category from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Discrete categories
@@ -50,13 +48,10 @@ structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/
   as : α
-#align category_theory.discrete CategoryTheory.Discrete
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
-  ext
   rfl
-#align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
 /-- `Discrete α` is equivalent to the original type `α`. -/
 @[simps]
@@ -65,7 +60,6 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   invFun := Discrete.mk
   left_inv := by aesop_cat
   right_inv := by aesop_cat
-#align category_theory.discrete_equiv CategoryTheory.discreteEquiv
 
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
@@ -79,14 +73,13 @@ See <https://stacks.math.columbia.edu/tag/001A>
 -/
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
-  id X := ULift.up (PLift.up rfl)
+  id _ := ULift.up (PLift.up rfl)
   comp {X Y Z} g f := by
     cases X
     cases Y
     cases Z
     rcases f with ⟨⟨⟨⟩⟩⟩
     exact g
-#align category_theory.discrete_category CategoryTheory.discreteCategory
 
 namespace Discrete
 
@@ -132,34 +125,28 @@ instance [Unique α] : Unique (Discrete α) :=
 /-- Extract the equation from a morphism in a discrete category. -/
 theorem eq_of_hom {X Y : Discrete α} (i : X ⟶ Y) : X.as = Y.as :=
   i.down.down
-#align category_theory.discrete.eq_of_hom CategoryTheory.Discrete.eq_of_hom
 
 /-- Promote an equation between the wrapped terms in `X Y : Discrete α` to a morphism `X ⟶ Y`
 in the discrete category. -/
 protected abbrev eqToHom {X Y : Discrete α} (h : X.as = Y.as) : X ⟶ Y :=
   eqToHom (by aesop_cat)
-#align category_theory.discrete.eq_to_hom CategoryTheory.Discrete.eqToHom
 
 /-- Promote an equation between the wrapped terms in `X Y : Discrete α` to an isomorphism `X ≅ Y`
 in the discrete category. -/
 protected abbrev eqToIso {X Y : Discrete α} (h : X.as = Y.as) : X ≅ Y :=
   eqToIso (by aesop_cat)
-#align category_theory.discrete.eq_to_iso CategoryTheory.Discrete.eqToIso
 
 /-- A variant of `eqToHom` that lifts terms to the discrete category. -/
 abbrev eqToHom' {a b : α} (h : a = b) : Discrete.mk a ⟶ Discrete.mk b :=
   Discrete.eqToHom h
-#align category_theory.discrete.eq_to_hom' CategoryTheory.Discrete.eqToHom'
 
 /-- A variant of `eqToIso` that lifts terms to the discrete category. -/
 abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
   Discrete.eqToIso h
-#align category_theory.discrete.eq_to_iso' CategoryTheory.Discrete.eqToIso'
 
 @[simp]
 theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
   rfl
-#align category_theory.discrete.id_def CategoryTheory.Discrete.id_def
 
 variable {C : Type u₂} [Category.{v₂} C]
 
@@ -176,17 +163,24 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
     dsimp
     rcases f with ⟨⟨h⟩⟩
     exact eqToHom (congrArg _ h)
-#align category_theory.discrete.functor CategoryTheory.Discrete.functor
 
 @[simp]
 theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
-#align category_theory.discrete.functor_obj CategoryTheory.Discrete.functor_obj
 
+@[simp]
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
-#align category_theory.discrete.functor_map CategoryTheory.Discrete.functor_map
+@[deprecated (since := "2024-07-16")]
+alias CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id := functor_map
+
+@[simp]
+theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
+    (Discrete.functor F).obj X = F X.as :=
+  rfl
+@[deprecated (since := "2024-07-16")]
+alias CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as := functor_obj_eq_as
 
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
@@ -194,8 +188,7 @@ composition of two discrete functors.
 @[simps!]
 def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
     Discrete.functor (f ∘ g) ≅ Discrete.functor (Discrete.mk ∘ g) ⋙ Discrete.functor f :=
-  NatIso.ofComponents fun X => Iso.refl _
-#align category_theory.discrete.functor_comp CategoryTheory.Discrete.functorComp
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- For functors out of a discrete category,
 a natural transformation is just a collection of maps,
@@ -210,7 +203,6 @@ def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
-#align category_theory.discrete.nat_trans CategoryTheory.Discrete.natTrans
 
 /-- For functors out of a discrete category,
 a natural isomorphism is just a collection of isomorphisms,
@@ -224,26 +216,27 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
-#align category_theory.discrete.nat_iso CategoryTheory.Discrete.natIso
+
+instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
+    IsIso (Discrete.natTrans f) := by
+  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  infer_instance
 
 @[simp]
 theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat
-#align category_theory.discrete.nat_iso_app CategoryTheory.Discrete.natIso_app
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
   `Discrete.functor (F.obj)`. -/
 @[simp]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _
-#align category_theory.discrete.nat_iso_functor CategoryTheory.Discrete.natIsoFunctor
 
 /-- Composing `Discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
 @[simp]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
     Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
   natIso fun _ => Iso.refl _
-#align category_theory.discrete.comp_nat_iso_discrete CategoryTheory.Discrete.compNatIsoDiscrete
 
 /-- We can promote a type-level `Equiv` to
 an equivalence between the corresponding `discrete` categories.
@@ -256,7 +249,6 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
     Discrete.natIso fun i => eqToIso (by aesop_cat)
   counitIso :=
     Discrete.natIso fun j => eqToIso (by aesop_cat)
-#align category_theory.discrete.equivalence CategoryTheory.Discrete.equivalence
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
@@ -265,7 +257,6 @@ def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Di
   invFun := Discrete.as ∘ h.inverse.obj ∘ Discrete.mk
   left_inv a := by simpa using eq_of_hom (h.unitIso.app (Discrete.mk a)).2
   right_inv a := by simpa using eq_of_hom (h.counitIso.app (Discrete.mk a)).1
-#align category_theory.discrete.equiv_of_equivalence CategoryTheory.Discrete.equivOfEquivalence
 
 end Discrete
 
@@ -279,11 +270,10 @@ open Opposite
 @[simps! functor_obj_as inverse_obj]
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
-  Equivalence.mk F.leftOp F
-  (NatIso.ofComponents fun ⟨X⟩ => Iso.refl _)
-  (Discrete.natIso fun ⟨X⟩ => Iso.refl _)
-
-#align category_theory.discrete.opposite CategoryTheory.Discrete.opposite
+  { functor := F.leftOp
+    inverse := F
+    unitIso := NatIso.ofComponents fun ⟨_⟩ => Iso.refl _
+    counitIso := Discrete.natIso fun ⟨_⟩ => Iso.refl _ }
 
 variable {C : Type u₂} [Category.{v₂} C]
 
@@ -293,7 +283,6 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
   have h : f = 𝟙 j := by aesop_cat
   rw [h]
   simp
-#align category_theory.discrete.functor_map_id CategoryTheory.Discrete.functor_map_id
 
 end Discrete
 
@@ -308,11 +297,31 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
     { obj := fun F j => F.obj ⟨j⟩
       map := fun f j => f.app ⟨j⟩ }
   unitIso := Iso.refl _
-  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun j => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun _ => Iso.refl _)
     (by
       rintro ⟨x⟩ ⟨y⟩ f
       obtain rfl : x = y := Discrete.eq_of_hom f
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by aesop_cat)
+
+/-- A category is discrete when there is at most one morphism between two objects,
+in which case they are equal. -/
+class IsDiscrete (C : Type*) [Category C] : Prop where
+  subsingleton (X Y : C) : Subsingleton (X ⟶ Y) := by infer_instance
+  eq_of_hom {X Y : C} (f : X ⟶ Y) : X = Y
+
+attribute [instance] IsDiscrete.subsingleton
+
+lemma obj_ext_of_isDiscrete {C : Type*} [Category C] [IsDiscrete C]
+    {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
+
+instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
+  eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance (C : Type*) [Category C] [IsDiscrete C] : IsDiscrete Cᵒᵖ where
+  eq_of_hom := by
+    rintro ⟨_⟩ ⟨_⟩ ⟨f⟩
+    obtain rfl := obj_ext_of_isDiscrete f
+    rfl
 
 end CategoryTheory

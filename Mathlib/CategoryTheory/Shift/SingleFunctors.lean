@@ -1,5 +1,34 @@
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+=======
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Shift.CommShift
+
+/-!
+# Functors from a category to a category with a shift
+
+Given a category `C`, and a category `D` equipped with a shift by a monoid `A`,
+we define a structure `SingleFunctors C D A` which contains the data of
+functors `functor a : C ⥤ D` for all `a : A` and isomorphisms
+`shiftIso n a a' h : functor a' ⋙ shiftFunctor D n ≅ functor a`
+whenever `n + a = a'`. These isomorphisms should satisfy certain compatibilities
+with respect to the shift on `D`.
+
+This notion is similar to `Functor.ShiftSequence` which can be used in order to
+attach shifted versions of a homological functor `D ⥤ C` with `D` a
+triangulated category and `C` an abelian category. However, the definition
+`SingleFunctors` is for functors in the other direction: it is meant to
+ease the formalization of the compatibilities with shifts of the
+functors `C ⥤ CochainComplex C ℤ` (or `C ⥤ DerivedCategory C` (TODO))
+which sends an object `X : C` to a complex where `X` sits in a single degree.
+
+-/
+>>>>>>> origin/ext-change-of-universes
 
 open CategoryTheory Category ZeroObject Limits
 
@@ -8,11 +37,25 @@ variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
 
 namespace CategoryTheory
 
+<<<<<<< HEAD
 structure SingleFunctors where
   functor : A → C ⥤ D
   shiftIso (n a a' : A) (ha' : n + a = a') : functor a' ⋙ shiftFunctor D n ≅ functor a
   shiftIso_zero (a : A) :
     shiftIso 0 a a (zero_add a) = isoWhiskerLeft _ (shiftFunctorZero D A)
+=======
+/-- The type of families of functors `A → C ⥤ D` which are compatible with
+the shift by `A` on the category `D`. -/
+structure SingleFunctors where
+  /-- a family of functors `C ⥤ D` indexed by the elements of the additive monoid `A` -/
+  functor (a : A) : C ⥤ D
+  /-- the isomorphism `functor a' ⋙ shiftFunctor D n ≅ functor a` when `n + a = a'` -/
+  shiftIso (n a a' : A) (ha' : n + a = a') : functor a' ⋙ shiftFunctor D n ≅ functor a
+  /-- `shiftIso 0` is the obvious isomorphism. -/
+  shiftIso_zero (a : A) :
+    shiftIso 0 a a (zero_add a) = isoWhiskerLeft _ (shiftFunctorZero D A)
+  /-- `shiftIso (m + n)` is determined by `shiftIso m` and `shiftIso n`. -/
+>>>>>>> origin/ext-change-of-universes
   shiftIso_add (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' = a'') :
     shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha'']) =
       isoWhiskerLeft _ (shiftFunctorAdd D m n) ≪≫ (Functor.associator _ _ _).symm ≪≫
@@ -72,8 +115,15 @@ lemma shiftIso_zero_inv_app (a : A) (X : C) :
   rw [shiftIso_zero]
   rfl
 
+<<<<<<< HEAD
 @[ext]
 structure Hom where
+=======
+/-- The morphisms in the category `SingleFunctors C D A` -/
+@[ext]
+structure Hom where
+  /-- a family of natural transformations `F.functor a ⟶ G.functor a` -/
+>>>>>>> origin/ext-change-of-universes
   hom (a : A) : F.functor a ⟶ G.functor a
   comm (n a a' : A) (ha' : n + a = a') : (F.shiftIso n a a' ha').hom ≫ hom a =
     whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by aesop_cat
@@ -83,12 +133,23 @@ namespace Hom
 attribute [reassoc] comm
 attribute [local simp] comm comm_assoc
 
+<<<<<<< HEAD
 @[simps]
 def id : Hom F F where
   hom a := 𝟙 _
 
 variable {F G H}
 
+=======
+/-- The identity morphism in `SingleFunctors C D A`. -/
+@[simps]
+def id : Hom F F where
+  hom _ := 𝟙 _
+
+variable {F G H}
+
+/-- The composition of morphisms in `SingleFunctors C D A`. -/
+>>>>>>> origin/ext-change-of-universes
 @[simps]
 def comp (α : Hom F G) (β : Hom G H) : Hom F H where
   hom a := α.hom a ≫ β.hom a
@@ -109,11 +170,23 @@ variable {F G H}
 lemma comp_hom (f : F ⟶ G) (g : G ⟶ H) (a : A) : (f ≫ g).hom a = f.hom a ≫ g.hom a := rfl
 
 @[ext]
+<<<<<<< HEAD
 lemma hom_ext (f g : F ⟶ G) (h : f.hom = g.hom) : f = g := Hom.ext f g h
 
 def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
     (comm : ∀ (n a a' : A) (ha' : n + a = a'), (F.shiftIso n a a' ha').hom ≫ (iso a).hom =
       whiskerRight (iso a').hom (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom) : F ≅ G where
+=======
+lemma hom_ext (f g : F ⟶ G) (h : f.hom = g.hom) : f = g := Hom.ext h
+
+/-- Construct an isomorphism in `SingleFunctors C D A` by giving
+level-wise isomorphisms and checking compatibility only in the forward direction. -/
+@[simps]
+def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
+    (comm : ∀ (n a a' : A) (ha' : n + a = a'), (F.shiftIso n a a' ha').hom ≫ (iso a).hom =
+      whiskerRight (iso a').hom (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom) :
+    F ≅ G where
+>>>>>>> origin/ext-change-of-universes
   hom :=
     { hom := fun a => (iso a).hom
       comm := comm }
@@ -126,10 +199,18 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
 
 variable (C D)
 
+<<<<<<< HEAD
 @[simps]
 def evaluation (n : A) : SingleFunctors C D A ⥤ C ⥤ D where
   obj F := F.functor n
   map {F G} φ := φ.hom n
+=======
+/-- The evaluation `SingleFunctors C D A ⥤ C ⥤ D` for some `a : A`. -/
+@[simps]
+def evaluation (a : A) : SingleFunctors C D A ⥤ C ⥤ D where
+  obj F := F.functor a
+  map {_ _} φ := φ.hom a
+>>>>>>> origin/ext-change-of-universes
 
 variable {C D}
 
@@ -156,8 +237,15 @@ instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
 
 variable (F)
 
+<<<<<<< HEAD
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
 def postComp (G : D ⥤ E) [G.CommShift A] :
+=======
+/-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
+with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
+@[simps! functor shiftIso_hom_app shiftIso_inv_app]
+def postcomp (G : D ⥤ E) [G.CommShift A] :
+>>>>>>> origin/ext-change-of-universes
     SingleFunctors C E A where
   functor a := F.functor a ⋙ G
   shiftIso n a a' ha' :=
@@ -179,15 +267,24 @@ def postComp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
+<<<<<<< HEAD
 def postCompFunctor (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C D A ⥤ SingleFunctors C E A where
   obj F := F.postComp G
+=======
+/-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
+by a functor `G : D ⥤ E` which commutes with the shift. -/
+def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
+    SingleFunctors C D A ⥤ SingleFunctors C E A where
+  obj F := F.postcomp G
+>>>>>>> origin/ext-change-of-universes
   map {F₁ F₂} φ :=
     { hom := fun a => whiskerRight (φ.hom a) G
       comm := fun n a a' ha' => by
         ext X
         simpa using G.congr_map (congr_app (φ.comm n a a' ha') X) }
 
+<<<<<<< HEAD
 variable {C} {E'} {A}
 
 @[simps!]
@@ -250,6 +347,24 @@ def evaluationIso {F G : SingleFunctors C D A} (e : F ≅ G) (n : A) : F.functor
 def postCompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShift A]
     [NatTrans.CommShift e.hom A]:
     F.postComp G ≅ F.postComp G' :=
+=======
+variable {C E' A}
+
+/-- The canonical isomorphism `(F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G')`. -/
+@[simps!]
+def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :
+    (F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G') :=
+  isoMk (fun _ => Functor.associator _ _ _) (fun n a a' ha' => by
+    ext X
+    simp [Functor.commShiftIso_comp_inv_app])
+
+/-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
+which commutes with the shift. -/
+@[simps!]
+def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShift A]
+    [NatTrans.CommShift e.hom A] :
+    F.postcomp G ≅ F.postcomp G' :=
+>>>>>>> origin/ext-change-of-universes
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
     dsimp

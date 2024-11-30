@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Lean.Meta
 
 /-!
 
@@ -148,8 +148,6 @@ def uniquify : List α → List (α × ℕ)
   | m::ms =>
     let lms := uniquify ms
     (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
-
-variable [Inhabited α]
 
 /-- Return a sorting key so that all `(a, true)`s are in the list's order
 and sorted before all `(a, false)`s, which are also in the list's order.
@@ -459,3 +457,7 @@ elab "move_mul" rws:rwRuleSeq : tactic => do
   evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
+
+end MoveAdd
+
+end Mathlib

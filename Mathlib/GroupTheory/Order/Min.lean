@@ -49,7 +49,7 @@ lemma minOrder_le_orderOf (ha : a ≠ 1) (ha' : IsOfFinOrder a) : minOrder α �
 
 end Monoid
 
-variable [Group α] {s : Subgroup α} {n : ℕ}
+variable [Group α] {s : Subgroup α}
 
 @[to_additive]
 lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
@@ -83,12 +83,11 @@ protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (
         (div_lt_self hn.bot_lt (minFac_prime hn₁).one_lt)
   refine ((minOrder_le_natCard (zmultiples_eq_bot.not.2 this) <| toFinite _).trans ?_).antisymm <|
     le_minOrder_iff_forall_addSubgroup.2 fun s hs _ ↦ ?_
-  · rw [card_eq_fintype_card, Fintype.card_zmultiples, ZMod.addOrderOf_coe _ hn,
+  · rw [Nat.card_zmultiples, ZMod.addOrderOf_coe _ hn,
       gcd_eq_right (div_dvd_of_dvd n.minFac_dvd), Nat.div_div_self n.minFac_dvd hn]
-  · rw [card_eq_fintype_card]
-    haveI : Nontrivial s := s.bot_or_nontrivial.resolve_left hs
-    exact WithTop.coe_le_coe.2 <| minFac_le_of_dvd Fintype.one_lt_card <|
-      (card_addSubgroup_dvd_card _).trans (ZMod.card _).dvd
+  · haveI : Nontrivial s := s.bot_or_nontrivial.resolve_left hs
+    exact WithTop.coe_le_coe.2 <| minFac_le_of_dvd Finite.one_lt_card <|
+      (card_addSubgroup_dvd_card _).trans n.card_zmod.dvd
 
 @[simp]
 lemma minOrder_of_prime {p : ℕ} (hp : p.Prime) : minOrder (ZMod p) = p := by

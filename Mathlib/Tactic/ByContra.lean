@@ -3,7 +3,14 @@ Copyright (c) 2022 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
+import Batteries.Tactic.Init
 import Mathlib.Tactic.PushNeg
+
+/-!
+# The `by_contra` tactic
+
+The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of contradiction.
+-/
 
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -37,8 +44,8 @@ macro_rules
     `(tactic| by_contra! $(mkIdentFrom (under.getD tk) `this (canonical := true)):ident $[: $ty]?)
   | `(tactic| by_contra! $e:ident) => `(tactic| (by_contra $e:ident; try push_neg at $e:ident))
   | `(tactic| by_contra! $e:ident : $y) => `(tactic|
-       (by_contra! h;
+       (by_contra! h
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { (try push_neg); exact h };
+        have $e:ident : $y := by { (try push_neg); exact h }
         clear h))

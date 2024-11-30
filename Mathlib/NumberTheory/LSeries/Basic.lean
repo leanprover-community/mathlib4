@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Michael Stoll
 -/
 import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.NormedSpace.FiniteDimension
-
-#align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Data.Complex.FiniteDimensional
 
 /-!
 # L-series
@@ -47,8 +46,6 @@ to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
 L-series
 -/
 
-open scoped BigOperators
-
 open Complex
 
 /-!
@@ -80,6 +77,16 @@ lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   if_neg hn
 
+/--
+If `s ≠ 0`, then the `if .. then .. else` construction in `LSeries.term` isn't needed, since
+`0 ^ s = 0`.
+-/
+lemma term_of_ne_zero' {s : ℂ} (hs : s ≠ 0) (f : ℕ → ℂ) (n : ℕ) :
+    term f s n = f n / n ^ s := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · rw [term_zero, Nat.cast_zero, zero_cpow hs, div_zero]
+  · rw [term_of_ne_zero hn]
+
 lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
@@ -104,6 +111,20 @@ lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.r
   next => rfl
   next hn => gcongr; exact Nat.one_le_cast.mpr <| Nat.one_le_iff_ne_zero.mpr hn
 
+section positivity
+
+open scoped ComplexOrder
+
+lemma term_nonneg {a : ℕ → ℂ} {n : ℕ} (h : 0 ≤ a n) (x : ℝ) : 0 ≤ term a x n := by
+  rw [term_def]
+  split_ifs with hn
+  exacts [le_rfl, mul_nonneg h (inv_natCast_cpow_ofReal_pos hn x).le]
+
+lemma term_pos {a : ℕ → ℂ} {n : ℕ} (hn : n ≠ 0) (h : 0 < a n) (x : ℝ) : 0 < term a x n := by
+  simpa only [term_of_ne_zero hn] using mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
+
+end positivity
+
 end LSeries
 
 /-!
@@ -122,7 +143,6 @@ if it converges absolutely there, and `0` otherwise. -/
 noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
-#align nat.arithmetic_function.l_series LSeries
 
 lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeries f s = LSeries g s :=
@@ -131,7 +151,6 @@ lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n 
 /-- `LSeriesSummable f s` indicates that the L-series of `f` converges absolutely at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
-#align nat.arithmetic_function.l_series_summable LSeriesSummable
 
 lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesSummable f s ↔ LSeriesSummable g s :=
@@ -162,13 +181,11 @@ lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
   tsum_eq_zero_of_not_summable
-#align nat.arithmetic_function.l_series_eq_zero_of_not_l_series_summable LSeries.eq_zero_of_not_LSeriesSummable
 
 @[simp]
 theorem LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
   simp only [LSeriesSummable, funext (term_def 0 s), Pi.zero_apply, zero_div, ite_self,
     summable_zero]
-#align nat.arithmetic_function.l_series_summable_zero LSeriesSummable_zero
 
 /-- This states that the L-series of the sequence `f` converges absolutely at `s` and that
 the value there is `a`. -/
@@ -203,7 +220,6 @@ lemma LSeriesSummable.of_re_le_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re ≤ s
 theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re = s'.re) :
     LSeriesSummable f s ↔ LSeriesSummable f s' :=
   ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
-#align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re
 
 /-- The indicator function of `{1} ⊆ ℕ` with values in `ℂ`. -/
 def LSeries.delta (n : ℕ) : ℂ :=
@@ -290,7 +306,7 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeries
   obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
   have := le_tsum h n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
-    div_le_iff <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
+    div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
   exact (this.trans_lt hn).false.elim
 
 open Filter in
@@ -328,7 +344,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simp only [term_zero, norm_zero]
     exact norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
-  simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff hn',
+  simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff₀ hn',
     norm_eq_abs (C : ℂ), abs_ofReal, _root_.abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simp only [add_re, sub_re, one_re, ofReal_re, neg_add_rev, neg_sub, neg_add_cancel_right]
@@ -352,7 +368,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
     gcongr
     rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, _root_.abs_of_nonneg hn₀]
   · have hn' : 0 < n := Nat.pos_of_ne_zero hn₀
-    refine (div_le_iff <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
+    refine (div_le_iff₀ <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
     refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
     exact mem_image.mpr ⟨n, mem_range.mpr hn, rfl⟩
 
@@ -362,11 +378,9 @@ theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ℕ → ℂ} {m : ℝ}
     LSeriesSummable f s := by
   refine LSeriesSummable_of_le_const_mul_rpow hs ⟨m, fun n hn ↦ ?_⟩
   simp only [norm_eq_abs, sub_self, Real.rpow_zero, mul_one, h n hn]
-#align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_re LSeriesSummable_of_bounded_of_one_lt_re
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s : ℝ` when `s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
     (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℝ} (hs : 1 < s) :
     LSeriesSummable f s :=
   LSeriesSummable_of_bounded_of_one_lt_re h <| by simp only [ofReal_re, hs]
-#align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real LSeriesSummable_of_bounded_of_one_lt_real

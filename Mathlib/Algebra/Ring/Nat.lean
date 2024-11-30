@@ -3,10 +3,9 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Ring.Defs
-
-#align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # The natural numbers form a semiring
@@ -16,38 +15,44 @@ This file contains the commutative semiring instance on the natural numbers.
 See note [foundational algebra order theory].
 -/
 
-open Multiplicative
-
 namespace Nat
 
-/-! ### Instances -/
-
-instance commSemiring : CommSemiring ℕ where
-  __ := commMonoid
-  left_distrib := Nat.left_distrib
-  right_distrib := Nat.right_distrib
-  zero_mul := Nat.zero_mul
-  mul_zero := Nat.mul_zero
-  npow m n := n ^ m
-  npow_zero := Nat.pow_zero
-  npow_succ _ _ := rfl
+instance instAddMonoidWithOne : AddMonoidWithOne ℕ where
   natCast n := n
   natCast_zero := rfl
   natCast_succ _ := rfl
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ where
-  __ : CommMonoidWithZero ℕ := by infer_instance
-  mul_left_cancel_of_ne_zero h := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
-#align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne ℕ where
+  __ := instAddMonoidWithOne
+  __ := instAddCommMonoid
 
-/-!
-### Extra instances to short-circuit type class resolution
+instance instDistrib : Distrib ℕ where
+  left_distrib := Nat.left_distrib
+  right_distrib := Nat.right_distrib
 
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring ℕ where
+  __ := instAddCommMonoid
+  __ := instDistrib
+  __ := instMulZeroClass
 
-instance addCommMonoidWithOne : AddCommMonoidWithOne ℕ := by infer_instance
-instance distrib              : Distrib ℕ              := by infer_instance
-instance semiring             : Semiring ℕ             := by infer_instance
+instance instNonUnitalSemiring : NonUnitalSemiring ℕ where
+  __ := instNonUnitalNonAssocSemiring
+  __ := instSemigroupWithZero
+
+instance instNonAssocSemiring : NonAssocSemiring ℕ where
+  __ := instNonUnitalNonAssocSemiring
+  __ := instMulZeroOneClass
+  __ := instAddCommMonoidWithOne
+
+instance instSemiring : Semiring ℕ where
+  __ := instNonUnitalSemiring
+  __ := instNonAssocSemiring
+  __ := instMonoidWithZero
+
+instance instCommSemiring : CommSemiring ℕ where
+  __ := instSemiring
+  __ := instCommMonoid
+
+instance instCharZero : CharZero ℕ where cast_injective := Function.injective_id
 
 end Nat

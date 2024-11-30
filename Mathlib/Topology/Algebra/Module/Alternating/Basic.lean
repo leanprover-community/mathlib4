@@ -25,8 +25,6 @@ multilinear map, alternating map, continuous
 
 open Function Matrix
 
-open scoped BigOperators
-
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
 
@@ -45,7 +43,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
 @[inherit_doc]
-notation M "[⋀^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
+notation M " [⋀^" ι "]→L[" R "] " N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
@@ -96,9 +94,6 @@ theorem coe_toAlternatingMap : ⇑f.toAlternatingMap = f := rfl
 theorem ext {f g : M [⋀^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {f g : M [⋀^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [⋀^ι]→L[R] N) → (M [⋀^ι]→ₗ[R] N)) := fun f g h =>
   DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
@@ -110,14 +105,18 @@ theorem range_toAlternatingMap :
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
-theorem map_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
+theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
-  f.map_add' m i x y
+  f.map_update_add' m i x y
+
+@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
 
 @[simp]
-theorem map_smul [DecidableEq ι] (m : ι → M) (i : ι) (c : R) (x : M) :
+theorem map_update_smul [DecidableEq ι] (m : ι → M) (i : ι) (c : R) (x : M) :
     f (update m i (c • x)) = c • f (update m i x) :=
-  f.map_smul' m i c x
+  f.map_update_smul' m i c x
+
+@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 theorem map_coord_zero {m : ι → M} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -232,7 +231,7 @@ def applyAddHom (v : ι → M) : M [⋀^ι]→L[R] N →+ N :=
 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → M [⋀^ι]→L[R] N) (m : ι → M) {s : Finset α} :
-    (∑ a in s, f a) m = ∑ a in s, f a m :=
+    (∑ a ∈ s, f a) m = ∑ a ∈ s, f a m :=
   map_sum (applyAddHom m) f s
 
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
@@ -338,8 +337,8 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M')
     M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N where
   toFun f := f.compContinuousLinearMap ↑e.symm
   invFun f := f.compContinuousLinearMap ↑e
-  left_inv f := by ext; simp [(· ∘ ·)]
-  right_inv f := by ext; simp [(· ∘ ·)]
+  left_inv f := by ext; simp [Function.comp_def]
+  right_inv f := by ext; simp [Function.comp_def]
 
 /-- A continuous linear equivalence of codomains defines an equivalence between continuous
 alternating maps. -/
@@ -399,7 +398,7 @@ theorem vecCons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin
   f.toMultilinearMap.cons_smul m c x
 
 theorem map_piecewise_add [DecidableEq ι] (m m' : ι → M) (t : Finset ι) :
-    f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') :=
+    f (t.piecewise (m + m') m') = ∑ s ∈ t.powerset, f (s.piecewise m m') :=
   f.toMultilinearMap.map_piecewise_add _ _ _
 
 /-- Additivity of a continuous alternating map along all coordinates at the same time,
@@ -419,7 +418,7 @@ sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions wit
 `r n ∈ Aₙ`. This follows from multilinearity by expanding successively with respect to each
 coordinate. -/
 theorem map_sum_finset :
-    (f fun i => ∑ j in A i, g' i j) = ∑ r in piFinset A, f fun i => g' i (r i) :=
+    (f fun i => ∑ j ∈ A i, g' i j) = ∑ r ∈ piFinset A, f fun i => g' i (r i) :=
   f.toMultilinearMap.map_sum_finset _ _
 
 /-- If `f` is continuous alternating, then `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` is the sum of
@@ -452,15 +451,16 @@ end Semiring
 
 section Ring
 
-variable {R M M' N N' ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup M'] [Module R M'] [TopologicalSpace M'] [AddCommGroup N] [Module R N]
-  [TopologicalSpace N] [AddCommGroup N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
+variable {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
+  [AddCommGroup N] [Module R N] [TopologicalSpace N]
   (f g : M [⋀^ι]→L[R] N)
 
 @[simp]
-theorem map_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
+theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
-  f.toMultilinearMap.map_sub _ _ _ _
+  f.toMultilinearMap.map_update_sub _ _ _ _
+
+@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
 section TopologicalAddGroup
 
@@ -494,13 +494,12 @@ end Ring
 
 section CommSemiring
 
-variable {R M M' N N' ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [TopologicalSpace M] [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N]
-  [Module R N] [TopologicalSpace N] [AddCommMonoid N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
-  (f g : M [⋀^ι]→L[R] N)
+variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N]
+  (f : M [⋀^ι]→L[R] N)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ι → M) (s : Finset ι) :
-    f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m :=
+    f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 
 /-- Multiplicativity of a continuous alternating map along all coordinates at the same time,
@@ -544,6 +543,14 @@ def toContinuousMultilinearMapLinear :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+/-- Linear map version of the map `toAlternatingMap`
+associating to a continuous alternating map the corresponding alternating map. -/
+@[simps (config := .asFn) apply]
+def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A] N) where
+  toFun := toAlternatingMap
+  map_add' := by simp
+  map_smul' := by simp
+
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
@@ -558,7 +565,7 @@ end Module
 
 section SMulRight
 
-variable {R A M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
   (f : M [⋀^ι]→L[R] R) (z : N)
 
@@ -589,8 +596,8 @@ variable (R M N N')
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled bilinear map. -/
 def _root_.ContinuousLinearMap.compContinuousAlternatingMapₗ :
     (N →L[R] N') →ₗ[R] (M [⋀^ι]→L[R] N) →ₗ[R] (M [⋀^ι]→L[R] N') :=
-  LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun f₁ f₂ g => rfl)
-    (fun c f g => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
+  LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun _ _ _ => rfl)
+    (fun _ _ _ => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
 
 end Semiring
 
@@ -600,7 +607,7 @@ namespace ContinuousMultilinearMap
 
 variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
   [AddCommGroup N] [Module R N] [TopologicalSpace N] [TopologicalAddGroup N] [Fintype ι]
-  [DecidableEq ι] (f g : ContinuousMultilinearMap R (fun _ : ι => M) N)
+  [DecidableEq ι] (f : ContinuousMultilinearMap R (fun _ : ι => M) N)
 
 /-- Alternatization of a continuous multilinear map. -/
 @[simps (config := .lemmasOnly) apply_toContinuousMultilinearMap]
@@ -615,12 +622,12 @@ def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [⋀
 
 theorem alternatization_apply_apply (v : ι → M) :
     alternatization f v = ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f (v ∘ σ) := by
-  simp [alternatization, (· ∘ ·)]
+  simp [alternatization, Function.comp_def]
 
 @[simp]
 theorem alternatization_apply_toAlternatingMap :
     (alternatization f).toAlternatingMap = MultilinearMap.alternatization f.1 := by
   ext v
-  simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, (· ∘ ·)]
+  simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, Function.comp_def]
 
 end ContinuousMultilinearMap

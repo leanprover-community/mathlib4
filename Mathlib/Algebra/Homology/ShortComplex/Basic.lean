@@ -13,11 +13,6 @@ import Mathlib.CategoryTheory.ArrowTwo
 This file defines the category `ShortComplex C` of diagrams
 `X₁ ⟶ X₂ ⟶ X₃` such that the composition is zero.
 
-TODO: A homology API for these objects shall be developed
-in the folder `Algebra.Homology.ShortComplex` and eventually
-the homology of objects in `HomologicalComplex C c` shall be
-redefined using this.
-
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
 
@@ -93,7 +88,7 @@ instance : Category (ShortComplex C) where
 
 @[ext]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃
+  Hom.ext h₁ h₂ h₃
 
 /-- A constructor for morphisms in `ShortComplex C` when the commutativity conditions
 are not obvious. -/
@@ -220,13 +215,13 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
           ← comm₂₃, e₂.inv_hom_id_assoc])
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
-  IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃))
+  (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
 
 lemma isIso_iff (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
   constructor
   · intro
-    refine' ⟨_, _, _⟩
+    refine ⟨?_, ?_, ?_⟩
     all_goals infer_instance
   · rintro ⟨_, _, _⟩
     apply isIso_of_isIso
@@ -307,7 +302,8 @@ abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
 @[simps]
 def arrow₂ : Arrow₂ C := Arrow₂.mk S.f S.g
 
-lemma _root_.CategoryTheory.Arrow₂.zero_of_arrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
+lemma _root_.CategoryTheory.Arrow₂.zero_of_arrow₂Iso
+    {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
     D.f ≫ D.g = 0 := by
   have : IsIso e.hom.τ₂ := (inferInstance : IsIso (Arrow₂.obj₂.mapIso e).hom)
   rw [← cancel_mono e.hom.τ₂, assoc, zero_comp, ← e.hom.commg, ← e.hom.commf_assoc]

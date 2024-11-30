@@ -3,7 +3,6 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean
 import Mathlib.Tactic.Eqns
 import Mathlib.Data.Subtype
 
@@ -50,7 +49,7 @@ local elab "eta_helper " t:term : term => do
     let lhs := (mkAppN lhs xs).headBeta
     mkForallFVars xs <|← mkEq lhs rhs
 
-/-- `val_proj x` elabs to the *primitive projection* `@x.val`.  -/
+/-- `val_proj x` elabs to the *primitive projection* `@x.val`. -/
 local elab "val_proj " e:term : term => do
   let e ← elabTerm (← `(($e : Subtype _))) none
   return mkProj ``Subtype 0 e
@@ -85,7 +84,7 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
   let us' := us.getD { elemsAndSeps := #[] }
   let n_def ← match n_def.getD ⟨mkNullNode⟩ with
     | `(irredDefLemma| (lemma := $id)) => pure id
-    | _ => pure <| mkIdent <| (·.review) <|
+    | _ => pure <| mkIdentFrom n <| (·.review) <|
       let scopes := extractMacroScopes n.getId
       { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|
@@ -113,3 +112,5 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
     attribute [$attrs:attrInstance,*] $n)
   if prot.isSome then
     modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
+
+end Lean.Elab.Command

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 import Mathlib.Algebra.Homology.ShortComplex.Limits
@@ -186,40 +185,42 @@ instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
-noncomputable def _root_.CategoryTheory.Limits.isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
+noncomputable def
+  _root_.CategoryTheory.Limits.isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
     {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Mono (F.map i)]
     [PreservesColimit (parallelPair i 0) F] :
     IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
   let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
     parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
-  refine' IsLimit.postcomposeInvEquiv e _ _
+  refine IsLimit.postcomposeInvEquiv e _ ?_
   let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
-  refine' IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) _)
+  refine IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) ?_)
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [comp_id, id_comp]
 
 noncomputable instance : NormalMonoCategory (ShortComplex C) := ⟨fun i _ => by
-  refine' NormalMono.mk _ (cokernel.π i) (cokernel.condition _)
-    (isLimitOfIsLimitπ _ _ _ _ )
+  refine NormalMono.mk _ (cokernel.π i) (cokernel.condition _)
+    (isLimitOfIsLimitπ _ ?_ ?_ ?_)
   all_goals apply isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono⟩
 
-noncomputable def _root_.CategoryTheory.Limits.isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
+noncomputable def
+    _root_.CategoryTheory.Limits.isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
     {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Epi (F.map p)]
     [PreservesLimit (parallelPair p 0) F] :
     IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
-  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 := by
-    refine' parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
-  refine' IsColimit.precomposeInvEquiv e _ _
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 :=
+    parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  refine IsColimit.precomposeInvEquiv e _ ?_
   let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
-  refine' IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) _)
+  refine IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) ?_)
   change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
   rw [comp_id, id_comp]
 
 noncomputable instance : NormalEpiCategory (ShortComplex C) := ⟨fun p _ => by
-  refine' NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
-    (isColimitOfIsColimitπ _ _ _ _ )
+  refine NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
+    (isColimitOfIsColimitπ _ ?_ ?_ ?_)
   all_goals apply isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi⟩
 
 noncomputable instance : Abelian (ShortComplex C) where
@@ -268,6 +269,8 @@ lemma π_isoQ_hom : cc.π ≫ (isoQ S hcc).hom = S.pOpcycles :=
 lemma pOpcycles_isoQ_inv : S.pOpcycles ≫ (isoQ S hcc).inv = cc.π := by
   rw [← π_isoQ_hom S hcc, assoc, Iso.hom_inv_id, comp_id]
 
+omit [Epi π] [Mono ι] in
+include fac in
 lemma fac' : ((isoK S hkf).inv ≫ π) ≫ ι ≫ (isoQ S hcc).hom = S.iCycles ≫ S.pOpcycles := by
   simp only [assoc, ← reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
 
@@ -345,7 +348,7 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
         parallelPair S.toCycles 0 := parallelPair.ext (Iso.refl _) (isoK S hkf)
           (by dsimp ; rw [f'_eq, assoc, assoc, id_comp, Iso.inv_hom_id, comp_id, id_comp])
           (by dsimp ; simp only [zero_comp, comp_zero])
-    refine' IsColimit.precomposeInvEquiv e _ _
+    refine IsColimit.precomposeInvEquiv e _ ?_
     exact IsColimit.ofIsoColimit S.homologyIsCokernel
       (Cofork.ext (isoHomology S hkf hcc fac).symm (homologyπ_isoHomology_inv S _ _ _))
 
@@ -366,7 +369,7 @@ noncomputable def rightHomologyData : S.RightHomologyData where
         parallelPair S.fromOpcycles 0 := parallelPair.ext (isoQ S hcc) (Iso.refl _)
           (by dsimp; simp only [id_comp, comp_id, g'_eq])
           (by simp)
-    refine' IsLimit.postcomposeHomEquiv e _ _
+    refine IsLimit.postcomposeHomEquiv e _ ?_
     exact IsLimit.ofIsoLimit S.homologyIsKernel
       (Iso.symm (Fork.ext (isoHomology S hkf hcc fac) (isoHomology_inv_homologyι S hkf hcc fac)))
 

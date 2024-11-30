@@ -3,11 +3,9 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Star.Order
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Analysis.Normed.Field.Basic
-
 
 /-!
 # Sums over residue classes
@@ -20,7 +18,6 @@ mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
 
 
-open BigOperators in
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n
@@ -64,7 +61,7 @@ class is not summable. -/
 lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ}
     (hf : Antitone f) {n : ℕ} (hn : f n < 0) (k : ZMod m) :
     ¬ Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) := by
-  rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable]
+  rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable]
   exact not_summable_of_antitone_of_neg
     (hf.comp_monotone <| (Covariant.monotone_of_const m).add_const k.val) <|
     (hf <| (Nat.le_mul_of_pos_left n Fin.size_pos').trans <| Nat.le_add_right ..).trans_lt hn
@@ -76,9 +73,9 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
     (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
   by_cases hf₀ : ∀ n, 0 ≤ f n -- the interesting case
-  · rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable] at hs
+  · rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable] at hs
     have hl : (l.val + m : ZMod m) = l := by
-      simp only [ZMod.nat_cast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
+      simp only [ZMod.natCast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
     rw [← hl, ← Nat.cast_add, summable_indicator_mod_iff_summable]
     exact hs.of_nonneg_of_le (fun _ ↦ hf₀ _)
       fun _ ↦ hf <| Nat.add_le_add Nat.le.refl (k.val_lt.trans_le <| m.le_add_left l.val).le
@@ -95,3 +92,14 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
   convert summable_sum (s := Finset.univ)
     fun a _ ↦ summable_indicator_mod_iff_summable_indicator_mod hf a H
   simp only [Finset.sum_apply]
+
+open ZMod
+
+/-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
+summing each residue class mod `N` separately. -/
+lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R] [UniformAddGroup R]
+    [CompleteSpace R] [T0Space R] {f : ℕ → R} (hf : Summable f) (N : ℕ) [NeZero N] :
+    ∑' n, f n = ∑ j : ZMod N, ∑' m, f (j.val + N * m) := by
+  rw [← (residueClassesEquiv N).symm.tsum_eq f, tsum_prod, tsum_fintype, residueClassesEquiv,
+    Equiv.coe_fn_symm_mk]
+  exact hf.comp_injective (residueClassesEquiv N).symm.injective

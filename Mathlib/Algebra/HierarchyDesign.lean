@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Eric Wieser
+Authors: Kim Morrison, Eric Wieser
 -/
-import Std.Util.LibraryNote
-import Mathlib.Mathport.Rename
-
-#align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
+import Mathlib.Init
+import Batteries.Util.LibraryNote
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -84,15 +82,13 @@ when applicable:
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
-  We make these definitions `@[reducible]`, see note [reducible non-instances].
+  We make these definitions `abbrev`, see note [reducible non-instances].
   See `Mathlib.Algebra.Group.InjSurj` for more examples.
   ```
-  @[reducible]
-  def Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
+  abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
 
-  @[reducible]
-  def Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
+  abbrev Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
@@ -142,7 +138,7 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGroupCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
+so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
 (which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
 
 These bundled versions have many appealing features:
@@ -150,9 +146,9 @@ These bundled versions have many appealing features:
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGroupCat`, you can treat `G` as a type,
+  (so if `G : AddCommGrp`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGroupCat.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance

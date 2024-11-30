@@ -1,0 +1,17 @@
+-- Manual exceptions for the text-based linters.
+-- The entries in this file could be necessary in the long term.
+
+-- The linter for the string "adaptation note" fires in the implementation of the linter,
+-- and in the implementation of the #adaptation_note tactic: this is as expected.
+Mathlib/Tactic/AdaptationNote.lean : line 9 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 12 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 21 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 27 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 39 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 52 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 20 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 49 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 84 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 274 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 279 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 280 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead

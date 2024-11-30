@@ -1,13 +1,43 @@
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.CategoryTheory.MorphismProperty
+=======
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.Algebra.Homology.Embedding.Restriction
+import Mathlib.Algebra.Homology.Embedding.Extend
+import Mathlib.Algebra.Homology.Embedding.Boundary
+import Mathlib.CategoryTheory.MorphismProperty.Basic
+
+/-!
+# Relations between `extend` and `restriction`
+
+Given an embedding `e : Embedding c c'` of complex shapes satisfying `e.IsRelIff`,
+we obtain a bijection `e.homEquiv` between the type of morphisms
+`K ⟶ L.extend e` (with `K : HomologicalComplex C c'` and `L : HomologicalComplex C c`)
+and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certain
+condition `e.HasLift φ`.
+
+## TODO
+* obtain dual results for morphisms `L.extend e ⟶ K`.
+
+-/
+>>>>>>> origin/ext-change-of-universes
 
 open CategoryTheory Category Limits
 
 namespace ComplexShape
 
+<<<<<<< HEAD
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
   (e : Embedding c c')
+=======
+variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
+>>>>>>> origin/ext-change-of-universes
   {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
 namespace Embedding
@@ -19,10 +49,16 @@ variable {K K' : HomologicalComplex C c'} {L L' : HomologicalComplex C c}
 
 section
 
+<<<<<<< HEAD
+=======
+/-- The condition on a morphism `K.restriction e ⟶ L` which allows to
+extend it as a morphism `K ⟶ L.extend e`, see `Embedding.homEquiv`. -/
+>>>>>>> origin/ext-change-of-universes
 def HasLift (φ : K.restriction e ⟶ L) : Prop :=
   ∀ (j : ι) (_ : e.BoundaryGE j) (i' : ι')
     (_ : c'.Rel i' (e.f j)), K.d i' _ ≫ φ.f j = 0
 
+<<<<<<< HEAD
 def HasDesc (φ : L ⟶ K.restriction e) : Prop :=
   ∀ (i : ι) (_ : e.BoundaryLE i) (j' : ι')
     (_ : c'.Rel (e.f i) j' ), φ.f i ≫ K.d _ j' = 0
@@ -30,13 +66,25 @@ def HasDesc (φ : L ⟶ K.restriction e) : Prop :=
 namespace liftExtend
 
 variable (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ)
+=======
+namespace liftExtend
+
+variable (φ : K.restriction e ⟶ L)
+>>>>>>> origin/ext-change-of-universes
 
 variable {e}
 
 open Classical in
+<<<<<<< HEAD
 noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
   if hi' : ∃ i, e.f i = i'
   then (K.restrictionXIso e hi'.choose_spec).inv ≫ φ.f hi'.choose ≫
+=======
+/-- Auxiliary definition for `liftExtend`. -/
+noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
+  if hi' : ∃ i, e.f i = i' then
+    (K.restrictionXIso e hi'.choose_spec).inv ≫ φ.f hi'.choose ≫
+>>>>>>> origin/ext-change-of-universes
       (L.extendXIso e hi'.choose_spec).inv
   else 0
 
@@ -50,7 +98,12 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   rfl
 
 @[reassoc (attr := simp)]
+<<<<<<< HEAD
 lemma comm (i' j' : ι') : f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ j' := by
+=======
+lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
+    f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ j' := by
+>>>>>>> origin/ext-change-of-universes
   by_cases hij' : c'.Rel i' j'
   · by_cases hi' : ∃ i, e.f i = i'
     · obtain ⟨i, hi⟩ := hi'
@@ -68,7 +121,11 @@ lemma comm (i' j' : ι') : f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ
       · obtain ⟨j, rfl⟩ := hj'
         rw [f_eq φ rfl]
         dsimp [restrictionXIso]
+<<<<<<< HEAD
         rw [id_comp, reassoc_of% (hφ j (e.mem_boundaryGE hij'
+=======
+        rw [id_comp, reassoc_of% (hφ j (e.boundaryGE hij'
+>>>>>>> origin/ext-change-of-universes
           (by simpa using hi')) i' hij'), zero_comp]
       · have : f φ j' = 0 := by
           apply (L.isZero_extend_X e j' (by simpa using hj')).eq_of_tgt
@@ -79,6 +136,11 @@ end liftExtend
 
 variable (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ)
 
+<<<<<<< HEAD
+=======
+/-- The morphism  `K ⟶ L.extend e` given by a morphism `K.restriction e ⟶ L`
+which satisfy `e.HasLift φ`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def liftExtend :
     K ⟶ L.extend e where
   f i' := liftExtend.f φ i'
@@ -91,11 +153,18 @@ lemma liftExtend_f :
       (L.extendXIso e hi).inv := by
   apply liftExtend.f_eq
 
+<<<<<<< HEAD
+=======
+/-- Given `φ : K.restriction e ⟶ L` such that `hφ : e.HasLift φ`, this is
+the isomorphisms in the category of arrows between the maps
+`(e.liftExtend φ hφ).f i'` and `φ.f i` when `e.f i = i'`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def liftExtendfArrowIso :
     Arrow.mk ((e.liftExtend φ hφ).f i') ≅ Arrow.mk (φ.f i) :=
   Arrow.isoMk (K.restrictionXIso e hi).symm (L.extendXIso e hi)
     (by simp [e.liftExtend_f φ hφ hi])
 
+<<<<<<< HEAD
 lemma isIso_liftExtend_f_iff :
     IsIso ((e.liftExtend φ hφ).f i') ↔ IsIso (φ.f i) :=
   (MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
@@ -187,6 +256,19 @@ lemma mono_descExtend_f_iff :
 lemma epi_descExtend_f_iff :
     Epi ((e.descExtend φ hφ).f i') ↔ Epi (φ.f i) :=
   (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff (e.descExtendfArrowIso φ hφ hi)
+=======
+lemma isIso_liftExtend_f_iff (hi : e.f i = i') :
+    IsIso ((e.liftExtend φ hφ).f i') ↔ IsIso (φ.f i) :=
+  (MorphismProperty.isomorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
+
+lemma mono_liftExtend_f_iff (hi : e.f i = i') :
+    Mono ((e.liftExtend φ hφ).f i') ↔ Mono (φ.f i) :=
+  (MorphismProperty.monomorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
+
+lemma epi_liftExtend_f_iff (hi : e.f i = i') :
+    Epi ((e.liftExtend φ hφ).f i') ↔ Epi (φ.f i) :=
+  (MorphismProperty.epimorphisms C).arrow_mk_iso_iff (e.liftExtendfArrowIso φ hφ hi)
+>>>>>>> origin/ext-change-of-universes
 
 end
 
@@ -195,6 +277,10 @@ namespace homRestrict
 variable {e}
 variable (ψ : K ⟶ L.extend e)
 
+<<<<<<< HEAD
+=======
+/-- Auxiliary definition for `Embedding.homRestrict`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def f (i : ι) : (K.restriction e).X i ⟶ L.X i :=
   ψ.f (e.f i) ≫ (L.extendXIso e rfl).hom
 
@@ -211,6 +297,10 @@ lemma comm (i j : ι) :
 
 end homRestrict
 
+<<<<<<< HEAD
+=======
+/-- The morphism `K.restriction e ⟶ L` induced by a morphism `K ⟶ L.extend e`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def homRestrict (ψ : K ⟶ L.extend e) : K.restriction e ⟶ L where
   f i := homRestrict.f ψ i
 
@@ -248,6 +338,7 @@ lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
   ext i
   simp [homRestrict_f _ _ rfl, restrictionXIso]
 
+<<<<<<< HEAD
 @[reassoc]
 lemma homRestrict_comp_extend (ψ : K ⟶ L.extend e) (β : L ⟶ L') :
     e.homRestrict (ψ ≫ extendMap β e) =
@@ -323,6 +414,12 @@ lemma extend_comp_homRestrict' (ψ : L.extend e ⟶ K) (β : L' ⟶ L) :
 
 variable (K L)
 
+=======
+variable (K L)
+
+/-- The bijection between `K ⟶ L.extend e` and the subtype of `K.restriction e ⟶ L`
+consisting of morphisms `φ` such that `e.HasLift φ`. -/
+>>>>>>> origin/ext-change-of-universes
 @[simps]
 noncomputable def homEquiv :
     (K ⟶ L.extend e) ≃ { φ : K.restriction e ⟶ L // e.HasLift φ } where
@@ -331,6 +428,7 @@ noncomputable def homEquiv :
   left_inv ψ := by simp
   right_inv φ := by simp
 
+<<<<<<< HEAD
 @[simps]
 noncomputable def homEquiv' (L : HomologicalComplex C c) (K : HomologicalComplex C c') :
     (L.extend e ⟶ K) ≃ { φ : L ⟶ K.restriction e // e.HasDesc φ } where
@@ -339,6 +437,8 @@ noncomputable def homEquiv' (L : HomologicalComplex C c) (K : HomologicalComplex
   left_inv ψ := by simp
   right_inv φ := by simp
 
+=======
+>>>>>>> origin/ext-change-of-universes
 end Embedding
 
 end ComplexShape

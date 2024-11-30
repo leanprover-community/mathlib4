@@ -1,14 +1,12 @@
 /-
-Copyright (c) 202 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Compactness.Paracompact
-
-#align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
+import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -47,17 +45,15 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
     simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
   -- Consider an open covering `S : Set (Set α)`
-  refine' ⟨fun ι s ho hcov => _⟩
+  refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- Porting note (#11215): TODO: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
-  let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
-  have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
+  obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
-  set ind : α → ι := fun x => wf.min { i : ι | x ∈ s i } (hcov x)
-  have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wf.min_mem _ (hcov x)
+  set ind : α → ι := fun x => wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
+  have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wellFounded_lt.min_mem _ (hcov x)
   have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := @fun x i hlt hxi =>
-    wf.not_lt_min _ (hcov x) hxi hlt
+    wellFounded_lt.not_lt_min _ (hcov x) hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
     is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
 
@@ -89,7 +85,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
       have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.lt.ne', ENNReal.coe_ne_top⟩
       rcases ENNReal.exists_inv_two_pow_lt this.ne' with ⟨n, hn⟩
-      refine' ⟨n, Subset.trans (ball_subset_ball _) hε⟩
+      refine ⟨n, Subset.trans (ball_subset_ball ?_) hε⟩
       simpa only [div_eq_mul_inv, mul_comm] using (ENNReal.mul_lt_of_lt_div hn).le
     by_contra! h
     apply h n (ind x)
@@ -97,7 +93,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- Each `D n i` is a union of open balls, hence it is an open set
   have Dopen : ∀ n i, IsOpen (D n i) := fun n i => by
     rw [Dn]
-    iterate 4 refine' isOpen_iUnion fun _ => _
+    iterate 4 refine isOpen_iUnion fun _ => ?_
     exact isOpen_ball
   -- the covering `D n i` is a refinement of the original covering: `D n i ⊆ s i`
   have HDS : ∀ n i, D n i ⊆ s i := fun n i x => by
@@ -107,9 +103,9 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     norm_num1
   -- Let us show the rest of the properties. Since the definition expects a family indexed
   -- by a single parameter, we use `ℕ × ι` as the domain.
-  refine' ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, _, _, fun ni => ⟨ni.2, HDS _ _⟩⟩
+  refine ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, ?_, ?_, fun ni => ⟨ni.2, HDS _ _⟩⟩
   -- The sets `D n i` cover the whole space as we proved earlier
-  · refine' iUnion_eq_univ_iff.2 fun x => _
+  · refine iUnion_eq_univ_iff.2 fun x ↦ ?_
     rcases Dcov x with ⟨n, i, h⟩
     exact ⟨⟨n, i⟩, h⟩
   /- Let us prove that the covering `D n i` is locally finite. Take a point `x` and choose
@@ -121,7 +117,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     rcases (nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
       ⟨k, -, hsub : ball x (2⁻¹ ^ k) ⊆ D n i⟩
     set B := ball x (2⁻¹ ^ (n + k + 1))
-    refine' ⟨B, ball_mem_nhds _ (pow_pos _), _⟩
+    refine ⟨B, ball_mem_nhds _ (pow_pos _), ?_⟩
     -- The sets `D m i`, `m > n + k`, are disjoint with `B`
     have Hgt : ∀ m ≥ n + k + 1, ∀ (i : ι), Disjoint (D m i) B := fun m hm i => by
       rw [disjoint_iff_inf_le]
@@ -159,14 +155,12 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
       (finite_le_nat _).biUnion' fun i hi =>
         (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
-    refine' this.subset fun I hI => _
+    refine this.subset fun I hI => ?_
     simp only [mem_iUnion]
-    refine' ⟨I.1, _, I.2, hI, rfl⟩
+    refine ⟨I.1, ?_, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
-#align emetric.paracompact_space EMetric.instParacompactSpace
 
 -- Porting note: no longer an instance because `inferInstance` can find it
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
-#align emetric.normal_of_emetric EMetric.t4Space
 
 end EMetric

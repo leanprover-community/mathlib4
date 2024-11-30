@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
 
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Injective
+import Mathlib.Algebra.Category.Grp.Injective
 import Mathlib.Topology.Instances.AddCircle
-import Mathlib.Topology.Instances.Rat
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -110,10 +108,10 @@ Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ 
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
   toFun c :=
   { toFun := (c.comp <| TensorProduct.mk R A B ·)
-    map_add' := fun a a' ↦ DFunLike.ext _ _ fun b ↦
+    map_add' := fun _ _ ↦ DFunLike.ext _ _ fun b ↦
       congr(c <| $(map_add (mk R A B) _ _) b).trans (c.map_add _ _)
     map_smul' := fun r a ↦ by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm }
-  map_add' c c' := rfl
+  map_add' _ _ := rfl
   map_smul' r c := by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm
 
 /--
@@ -142,7 +140,7 @@ protected lemma int.divByNat_self (n : ℕ) :
   obtain rfl | h0 := eq_or_ne n 0
   · apply map_zero
   exact (AddCircle.coe_eq_zero_iff _).mpr
-    ⟨1, by simp [mul_inv_cancel (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
+    ⟨1, by simp [mul_inv_cancel₀ (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
 
 variable {A}
 
@@ -185,7 +183,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn
-  rw [zsmul_one, Rat.coe_int_den, Rat.inv_natCast_den_of_pos] at hn
+  rw [zsmul_one, Rat.den_intCast, Rat.inv_natCast_den_of_pos] at hn
   · split_ifs at hn
     · cases hn
     · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn

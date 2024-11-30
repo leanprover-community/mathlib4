@@ -1,24 +1,24 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
+=======
+>>>>>>> origin/ext-change-of-universes
 
 /-!
 # Quasi-isomorphisms
 
 A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
-## Future work
-
-Define the derived category as the localization at quasi-isomorphisms? (TODO @joelriou)
 -/
 
 
@@ -26,6 +26,7 @@ open CategoryTheory Limits
 
 universe v u
 
+<<<<<<< HEAD
 /- redundant with the new homology API
 
 section
@@ -222,6 +223,8 @@ theorem CategoryTheory.Functor.quasiIso'_of_map_quasiIso' {C D : HomologicalComp
 
 end-/
 
+=======
+>>>>>>> origin/ext-change-of-universes
 open HomologicalComplex
 
 section
@@ -570,23 +573,22 @@ end
 
 variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
   {c : ComplexShape ι} {K L : HomologicalComplex C c}
-
-section
-
-variable (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+  (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
 
 instance : QuasiIso e.hom where
   quasiIsoAt n := by
     classical
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    exact IsIso.of_iso (e.toHomologyIso n)
+    exact (e.toHomologyIso n).isIso_hom
 
 instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
 variable (C c)
 
-lemma homotopyEquivalences_subset_quasiIso [CategoryWithHomology C] :
-    homotopyEquivalences C c ⊆ quasiIso C c := by
+lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
+    homotopyEquivalences C c ≤ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance
+
+end

@@ -1,16 +1,13 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
-Floris van Doorn, E.W.Ayers, Arthur Paulino
+Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
+Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
-import Std.Lean.Expr
-import Std.Lean.Name
-import Std.Data.Rat.Basic
-import Std.Data.List.Basic
-import Std.Lean.Name
-import Std.Logic
+import Batteries.Tactic.Alias
+import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and related types
@@ -19,8 +16,6 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
-
-set_option autoImplicit true
 
 namespace Lean
 
@@ -66,10 +61,12 @@ def updateLast (f : String → String) : Name → Name
 
 /-- Get the last field of a name as a string.
 Doesn't raise an error when the last component is a numeric field. -/
-def getString : Name → String
+def lastComponentAsString : Name → String
   | .str _ s => s
   | .num _ n => toString n
   | .anonymous => ""
+
+@[deprecated (since := "2024-05-14")] alias getString := lastComponentAsString
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
@@ -206,39 +203,6 @@ def eraseProofs (e : Expr) : MetaM Expr :=
       else
         return .continue)
 
-/--
-Check if an expression is a "rational in normal form",
-i.e. either an integer number in normal form,
-or `n / d` where `n` is an integer in normal form, `d` is a natural number in normal form,
-`d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
-If so returns the rational number.
--/
-def rat? (e : Expr) : Option Rat := do
-  if e.isAppOfArity ``Div.div 4 then
-    let d ← e.appArg!.nat?
-    guard (d ≠ 1)
-    let n ← e.appFn!.appArg!.int?
-    let q := mkRat n d
-    guard (q.den = d)
-    pure q
-  else
-    e.int?
-
-/--
-Test if an expression represents an explicit number written in normal form:
-* A "natural number in normal form" is an expression `OfNat.ofNat n`, even if it is not of type `ℕ`,
-  as long as `n` is a literal.
-* An "integer in normal form" is an expression which is either a natural number in number form,
-  or `-n`, where `n` is a natural number in normal form.
-* A "rational in normal form" is an expressions which is either an integer in normal form,
-  or `n / d` where `n` is an integer in normal form, `d` is a natural number in normal form,
-  `d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
--/
-def isExplicitNumber : Expr → Bool
-  | .lit _ => true
-  | .mdata _ e => isExplicitNumber e
-  | e => e.rat?.isSome
-
 /-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
 def fvarId? : Expr → Option FVarId
   | .fvar n => n
@@ -254,10 +218,10 @@ def type? : Expr → Option Level
   it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-  where
-    /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-      `depth - 1`. -/
-    aux (depth : Nat) : Expr → Nat → Bool
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
@@ -296,7 +260,7 @@ section recognizers
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.natLit? then n
+  if let some n := e.rawNatLit? then n
   else
     let f := e.getAppFn
     if !f.isConst then none
@@ -325,6 +289,13 @@ otherwise, it returns `none`. -/
   let (type, _, lhs, rhs) ← p.app4? ``LE.le
   return (type, lhs, rhs)
 
+/-- `Lean.Expr.lt? e` takes `e : Expr` as input.
+If `e` represents `a < b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def lt? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LT.lt
+  return (type, lhs, rhs)
+
 /-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
 where `lhs : tyLhs` and `rhs : tyRhs`,
 and where `lhs` is related to `rhs` by the respective relation.
@@ -340,7 +311,10 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
 
 end recognizers
 
-def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
+universe u
+
+def modifyAppArgM {M : Type → Type u} [Functor M] [Pure M]
+    (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
   | e => pure e
 
@@ -370,8 +344,8 @@ def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
-def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
-    M Expr := do
+def modifyArgM {M : Type → Type u} [Monad M] (modifier : Expr → M Expr)
+    (e : Expr) (i : Nat) (n := e.getAppNumArgs) : M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ ↦ a) e i n

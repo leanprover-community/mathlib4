@@ -3,7 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Shift.CommShift
+=======
+import Mathlib.CategoryTheory.Shift.Basic
+>>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Sequences of functors from a category equigpped with a shift
@@ -27,9 +31,14 @@ in degree `n`.
 
 open CategoryTheory Category ZeroObject Limits
 
+<<<<<<< HEAD
 variable {C D A : Type*} [Category C] [Category D] [Category A] (F : C ⥤ A)
   {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
   (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
+=======
+variable {C A : Type*} [Category C] [Category A] (F : C ⥤ A)
+  (M : Type*) [AddMonoid M] [HasShift C M]
+>>>>>>> origin/ext-change-of-universes
   {G : Type*} [AddGroup G] [HasShift C G]
 
 namespace CategoryTheory
@@ -210,6 +219,15 @@ lemma shiftMap_comp' {X Y Z : C} {n : M} (f : X ⟶ Y) (g : Y ⟶ Z⟦n⟧) (a a
     F.shiftMap (f ≫ g) a a' ha' = (F.shift a).map f ≫ F.shiftMap g a a' ha' := by
   simp [shiftMap]
 
+<<<<<<< HEAD
+=======
+/--
+When `f : X ⟶ Y⟦m⟧`, `m + n = mn`, `n + a = a'` and `ha'' : m + a' = a''`, this lemma
+relates the two morphisms `F.shiftMap f a' a'' ha''` and `(F.shift a).map (f⟦n⟧')`. Indeed,
+via canonical isomorphisms, they both identity to morphisms
+`(F.shift a').obj X ⟶ (F.shift a'').obj Y`.
+-/
+>>>>>>> origin/ext-change-of-universes
 lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n mn : M) (hnm : m + n = mn)
     (a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') :
     (F.shiftIso n a a' ha').hom.app X ≫ F.shiftMap f a' a'' ha'' =
@@ -219,6 +237,15 @@ lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n m
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
     id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
 
+<<<<<<< HEAD
+=======
+/--
+If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two
+morphisms `F.shiftMap f a a' ha'` and `(F.shift a').map (f⟦n⟧')`. Indeed,
+via canonical isomorphisms, they both identify to morphisms
+`(F.shift a).obj X ⟶ (F.shift a').obj Y`.
+-/
+>>>>>>> origin/ext-change-of-universes
 lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
     {X Y : C} {m : G} (f : X ⟶ Y⟦m⟧)
     (n : G) (hnm : n + m = 0) (a a' : G) (ha' : m + a = a') :
@@ -245,6 +272,20 @@ lemma shiftMap_zero (X Y : C) (n a a' : M) (ha' : n + a = a') :
     F.shiftMap (0 : X ⟶ Y⟦n⟧) a a' ha' = 0 := by
   simp [shiftMap]
 
+<<<<<<< HEAD
+=======
+end
+
+section
+
+variable [Preadditive C] [Preadditive A] [F.Additive]
+  [∀ (n : M), (shiftFunctor C n).Additive]
+
+instance (n : M) : (F.shift n).Additive := additive_of_iso (F.isoShift n)
+
+end
+
+>>>>>>> origin/ext-change-of-universes
 end
 
 section

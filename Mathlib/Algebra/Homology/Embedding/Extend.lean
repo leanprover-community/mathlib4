@@ -1,4 +1,25 @@
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Embedding.Basic
+=======
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Additive
+
+/-!
+# The extension of a homological complex by an embedding of complex shapes
+
+Given an embedding `e : Embedding c c'` of complex shapes,
+and `K : HomologicalComplex C c`, we define `K.extend e : HomologicalComplex C c'`, and this
+leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`.
+
+This construction first appeared in the Liquid Tensor Experiment.
+
+-/
+>>>>>>> origin/ext-change-of-universes
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -6,21 +27,37 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/ext-change-of-universes
 variable {C : Type*} [Category C] [HasZeroObject C]
 
 section
 
+<<<<<<< HEAD
 variable [HasZeroMorphisms C]
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
 
 namespace extend
 
+=======
+variable [HasZeroMorphisms C] (K L M : HomologicalComplex C c)
+  (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
+
+namespace extend
+
+/-- Auxiliary definition for the `X` field of `HomologicalComplex.extend`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def X : Option ι → C
   | some x => K.X x
   | none => 0
 
+<<<<<<< HEAD
+=======
+/-- The isomorphism `X K i ≅ K.X j` when `i = some j`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def XIso {i : Option ι} {j : ι} (hj : i = some j) :
     X K i ≅ K.X j := eqToIso (by subst hj; rfl)
 
@@ -29,6 +66,10 @@ lemma isZero_X {i : Option ι} (hi : i = none) :
   subst hi
   exact Limits.isZero_zero _
 
+<<<<<<< HEAD
+=======
+/-- Auxiliary definition for the `d` field of `HomologicalComplex.extend`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def d : ∀ (i j : Option ι), extend.X K i ⟶ extend.X K j
   | none, _ => 0
   | some i, some j => K.d i j
@@ -40,8 +81,12 @@ lemma d_none_eq_zero (i j : Option ι) (hi : i = none) :
 lemma d_none_eq_zero' (i j : Option ι) (hj : j = none) :
     d K i j = 0 := by subst hj; cases i <;> rfl
 
+<<<<<<< HEAD
 lemma d_eq {i j : Option ι} {a b : ι}
     (hi : i = some a) (hj : j = some b) :
+=======
+lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
+>>>>>>> origin/ext-change-of-universes
     d K i j = (XIso K hi).hom ≫ K.d a b ≫ (XIso K hj).inv := by
   subst hi hj
   dsimp [XIso, d]
@@ -49,6 +94,10 @@ lemma d_eq {i j : Option ι} {a b : ι}
 
 variable {K L}
 
+<<<<<<< HEAD
+=======
+/-- Auxiliary definition for `HomologicalComplex.extendMap`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
   | some i => φ.f i
   | none => 0
@@ -65,6 +114,12 @@ lemma mapX_none {i : Option ι} (hi : i = none) :
 
 end extend
 
+<<<<<<< HEAD
+=======
+/-- Given `K : HomologicalComplex C c` and `e : c.Embedding c'`,
+this is the extension of `K` in `HomologicalComplex C c'`: it is
+zero in the degrees that are not in the image of `e.f`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def extend : HomologicalComplex C c' where
   X i' := extend.X K (e.r i')
   d i' j' := extend.d K (e.r i') (e.r j')
@@ -87,10 +142,17 @@ noncomputable def extend : HomologicalComplex C c' where
       · rw [extend.d_none_eq_zero K _ _ hj', comp_zero]
       · obtain hk'|⟨k, hk⟩ := (e.r k').eq_none_or_eq_some
         · rw [extend.d_none_eq_zero' K _ _ hk', comp_zero]
+<<<<<<< HEAD
         · rw [extend.d_eq K hi hj,
             extend.d_eq K hj hk, assoc, assoc,
             Iso.inv_hom_id_assoc, K.d_comp_d_assoc, zero_comp, comp_zero]
 
+=======
+        · rw [extend.d_eq K hi hj, extend.d_eq K hj hk, assoc, assoc,
+            Iso.inv_hom_id_assoc, K.d_comp_d_assoc, zero_comp, comp_zero]
+
+/-- The isomorphism `(K.extend e).X i' ≅ K.X i` when `e.f i = i'`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def extendXIso {i' : ι'} {i : ι} (h : e.f i = i') :
     (K.extend e).X i' ≅ K.X i :=
   extend.XIso K (e.r_eq_some h)
@@ -107,9 +169,12 @@ lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     · exfalso
       exact hi' _ (e.f_eq_of_r_eq_some hi))
 
+<<<<<<< HEAD
 instance : (K.extend e).IsStrictlySupported e where
   isZero i' hi' := K.isZero_extend_X e i' hi'
 
+=======
+>>>>>>> origin/ext-change-of-universes
 lemma extend_d_eq {i' j' : ι'} {i j : ι} (hi : e.f i = i') (hj : e.f j = j') :
     (K.extend e).d i' j' = (K.extendXIso e hi).hom ≫ K.d i j ≫
       (K.extendXIso e hj).inv := by
@@ -135,6 +200,12 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
 
 variable {K L M}
 
+<<<<<<< HEAD
+=======
+/-- Given an ambedding `e : c.Embedding c'` of complexes shapes, this is the
+morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
+`HomologicalComplex C c`. -/
+>>>>>>> origin/ext-change-of-universes
 noncomputable def extendMap : K.extend e ⟶ L.extend e where
   f _ := extend.mapX φ _
   comm' i' j' _ := by
@@ -146,7 +217,11 @@ noncomputable def extendMap : K.extend e ⟶ L.extend e where
         rw [K.extend_d_eq e hi hj, L.extend_d_eq e hi hj,
           extend.mapX_some φ (e.r_eq_some hi),
           extend.mapX_some φ (e.r_eq_some hj)]
+<<<<<<< HEAD
         simp [extendXIso]
+=======
+        simp only [extendXIso, assoc, Iso.inv_hom_id_assoc, Hom.comm_assoc]
+>>>>>>> origin/ext-change-of-universes
       · have hj' := e.r_eq_none j' (fun j'' hj'' => hj ⟨j'', hj''⟩)
         dsimp [extend]
         rw [extend.d_none_eq_zero' _ _ _ hj', extend.d_none_eq_zero' _ _ _ hj',
@@ -168,14 +243,22 @@ lemma extendMap_f_eq_zero (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
   dsimp [extendMap]
   rw [extend.mapX_none φ (e.r_eq_none i' hi')]
 
+<<<<<<< HEAD
 @[reassoc (attr := simp)]
 lemma extendMap_comp_f (i' : ι') :
     (extendMap (φ ≫ φ') e).f i' = (extendMap φ e).f i' ≫ (extendMap φ' e).f i' := by
+=======
+@[reassoc, simp]
+lemma extendMap_comp :
+    extendMap (φ ≫ φ') e = extendMap φ e ≫ extendMap φ' e := by
+  ext i'
+>>>>>>> origin/ext-change-of-universes
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
   · simp [extendMap_f_eq_zero _ e i' (fun i hi => hi' ⟨i, hi⟩)]
 
+<<<<<<< HEAD
 @[reassoc (attr := simp)]
 lemma extendMap_comp :
     extendMap (φ ≫ φ') e = extendMap φ e ≫ extendMap φ' e := by aesop_cat
@@ -183,6 +266,10 @@ lemma extendMap_comp :
 variable (K L M)
 
 @[simp]
+=======
+variable (K L M)
+
+>>>>>>> origin/ext-change-of-universes
 lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
@@ -190,16 +277,22 @@ lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
   · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
 
 @[simp]
+<<<<<<< HEAD
 lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by aesop_cat
 
 @[simp]
 lemma extendMap_zero_f (i' : ι') : (extendMap (0 : K ⟶ L) e).f i' = 0 := by
+=======
+lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by
+  ext i'
+>>>>>>> origin/ext-change-of-universes
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
   · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
 
 @[simp]
+<<<<<<< HEAD
 lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by aesop_cat
 
 end
@@ -211,22 +304,47 @@ variable [Preadditive C] {K L : HomologicalComplex C c} (φ φ' : K ⟶ L) (e : 
 @[simp]
 lemma extendMap_add_f (i' : ι') :
     (extendMap (φ + φ') e).f i' = (extendMap φ e).f i' + (extendMap φ' e).f i' := by
+=======
+lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
+  ext i'
+>>>>>>> origin/ext-change-of-universes
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
   · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
 
+<<<<<<< HEAD
 @[simp]
 lemma extendMap_add : extendMap (0 : K ⟶ L) e = 0 := by aesop_cat
 
 end
 
+=======
+end
+
+@[simp]
+lemma extendMap_add [Preadditive C] {K L : HomologicalComplex C c} (φ φ' : K ⟶ L)
+    (e : c.Embedding c') : extendMap (φ + φ' : K ⟶ L) e = extendMap φ e + extendMap φ' e := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+>>>>>>> origin/ext-change-of-universes
 end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C]
 
+<<<<<<< HEAD
+=======
+/-- Given an embedding `e : c.Embedding c'` of complex shapes, this is
+the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which
+extend complexes along `e`: the extended complexes are zero
+in the degrees that are not in the image of `e.f`. -/
+>>>>>>> origin/ext-change-of-universes
 @[simps]
 noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where

@@ -3,8 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+=======
+import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Int.Defs
+>>>>>>> origin/ext-change-of-universes
 
 /-! # Embeddings of complex shapes
 
@@ -51,7 +57,11 @@ namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
+<<<<<<< HEAD
 to a compatiblity with respect to the relations `c.Rel` and `c'.Rel`. -/
+=======
+a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
+>>>>>>> origin/ext-change-of-universes
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'
@@ -63,6 +73,10 @@ namespace Embedding
 variable {c c'}
 variable (e : Embedding c c')
 
+<<<<<<< HEAD
+=======
+/-- The opposite embedding in `Embedding c.symm c'.symm` of `e : Embedding c c'`. -/
+>>>>>>> origin/ext-change-of-universes
 @[simps]
 def op : Embedding c.symm c'.symm where
   f := e.f
@@ -79,9 +93,12 @@ lemma rel_iff [e.IsRelIff] (i₁ i₂ : ι) : c'.Rel (e.f i₁) (e.f i₂) ↔ c
   · apply IsRelIff.rel'
   · exact e.rel
 
+<<<<<<< HEAD
 instance [e.IsRelIff] : e.op.IsRelIff where
   rel' _ _ h := (e.rel_iff _ _).1 h
 
+=======
+>>>>>>> origin/ext-change-of-universes
 section
 
 variable (c c')
@@ -107,12 +124,19 @@ class IsTruncGE extends e.IsRelIff : Prop where
   mem_next {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') :
     ∃ k, e.f k = k'
 
+<<<<<<< HEAD
+=======
+lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
+  IsTruncGE.mem_next h
+
+>>>>>>> origin/ext-change-of-universes
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.prev`. -/
 class IsTruncLE extends e.IsRelIff : Prop where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
 
+<<<<<<< HEAD
 lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
   IsTruncGE.mem_next h
 
@@ -152,6 +176,11 @@ instance [e.IsTruncLE] : e.op.IsTruncGE where
 instance [e.IsTruncGE] : e.op.IsTruncLE where
   mem_prev h := e.mem_next h
 
+=======
+lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
+  IsTruncLE.mem_prev h
+
+>>>>>>> origin/ext-change-of-universes
 open Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
 noncomputable def r (i' : ι') : Option ι :=
@@ -172,8 +201,12 @@ lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
     rintro ⟨i, hi'⟩
     exact hi i hi')
 
+<<<<<<< HEAD
 @[simp]
 lemma r_f (i : ι) : e.r (e.f i) = some i := r_eq_some _ rfl
+=======
+@[simp] lemma r_f (i : ι) : e.r (e.f i) = some i := r_eq_some _ rfl
+>>>>>>> origin/ext-change-of-universes
 
 lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
     e.f i = i' := by
@@ -184,6 +217,7 @@ lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
     simpa using hi.symm
   · simp [e.r_eq_none i' (by simpa using h)] at hi
 
+<<<<<<< HEAD
 /-- The lower boundary of an embedding `e : Embedding c c'`, as a predicate on `ι`.
 It is satisfied by `j : ι` when there exists `i' : ι'` not in the image of `e.f`
 such that `c'.Rel i' (e.f j)`. -/
@@ -268,6 +302,8 @@ lemma BoundaryLE.false {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE] : False := b
   obtain ⟨i, hi⟩ := e.mem_next hj.1
   exact hj.2 i (by simpa only [hi] using hj.1)
 
+=======
+>>>>>>> origin/ext-change-of-universes
 end Embedding
 
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
@@ -294,6 +330,7 @@ instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_insta
 instance : embeddingDownNat.IsTruncLE where
   mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
 
+<<<<<<< HEAD
 lemma boundaryGE_embeddingUpNat_iff (n : ℕ) :
     embeddingUpNat.BoundaryGE n ↔ n = 0 := by
   constructor
@@ -322,6 +359,8 @@ lemma boundaryLE_embeddingDownNat_iff (n : ℕ) :
       dsimp at hi
       omega
 
+=======
+>>>>>>> origin/ext-change-of-universes
 variable (p : ℤ)
 
 /-- The embedding from `up ℕ` to `up ℤ` which sends `n : ℕ` to `p + n`. -/
@@ -348,6 +387,7 @@ instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_i
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
 
+<<<<<<< HEAD
 lemma boundaryGE_embeddingUpIntGE_iff (n : ℕ) :
     (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
   constructor
@@ -502,3 +542,6 @@ end HomologicalComplex
 lemma Option.eq_none_or_eq_some {ι : Type*} (x : Option ι) :
     x = none ∨ ∃ y, x = some y := by
   cases x <;> aesop
+=======
+end ComplexShape
+>>>>>>> origin/ext-change-of-universes

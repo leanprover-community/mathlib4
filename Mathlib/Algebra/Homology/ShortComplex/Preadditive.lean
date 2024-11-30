@@ -21,6 +21,7 @@ open Category Limits Preadditive
 
 variable {C : Type*} [Category C] [Preadditive C]
 
+/-- More general version of `mono_of_isZero_kernel`. -/
 lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
     (h : IsZero c.pt) : Mono f := ⟨fun g₁ g₂ eq => by
   rw [← sub_eq_zero, ← Preadditive.sub_comp] at eq
@@ -31,6 +32,7 @@ lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (k
     Mono f :=
   mono_of_isZero_kernel' _ (kernelIsKernel _) h
 
+/-- More general version of `epi_of_isZero_cokernel`. -/
 lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
     (h : IsZero c.pt) : Epi f := ⟨fun g₁ g₂ eq => by
   rw [← sub_eq_zero, ← Preadditive.comp_sub] at eq
@@ -69,7 +71,7 @@ instance : AddCommGroup (S₁ ⟶ S₂) where
   add_assoc := fun a b c => by ext <;> apply add_assoc
   add_zero := fun a => by ext <;> apply add_zero
   zero_add := fun a => by ext <;> apply zero_add
-  add_left_neg := fun a => by ext <;> apply add_left_neg
+  neg_add_cancel := fun a => by ext <;> apply neg_add_cancel
   add_comm := fun a b => by ext <;> apply add_comm
   sub_eq_add_neg := fun a b => by ext <;> apply sub_eq_add_neg
   nsmul := nsmulRec
@@ -470,7 +472,7 @@ def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁
   comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
   comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
 
-/-- Homotopy between morphisms of short complexes is compatible with substraction. -/
+/-- Homotopy between morphisms of short complexes is compatible with subtraction. -/
 @[simps]
 def sub (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ - φ₃) (φ₂ - φ₄) where
   h₀ := h.h₀ - h'.h₀
@@ -527,7 +529,7 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]
-def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : Homotopy φ₁ φ₂) :
+def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂} (h : Homotopy φ₁ φ₂) :
     Homotopy (unopMap φ₁) (unopMap φ₂) where
   h₀ := h.h₃.unop
   h₁ := h.h₂.unop
@@ -633,8 +635,8 @@ lemma homologyMap'_nullHomotopic
     (H₁ : S₁.HomologyData) (H₂ : S₂.HomologyData)
     (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-    homologyMap' (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ = 0 :=
-  by apply leftHomologyMap'_nullHomotopic
+    homologyMap' (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ = 0 := by
+  apply leftHomologyMap'_nullHomotopic
 
 variable (S₁ S₂)
 
@@ -642,22 +644,22 @@ variable (S₁ S₂)
 lemma leftHomologyMap_nullHomotopic [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-    leftHomologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 :=
-  by apply leftHomologyMap'_nullHomotopic
+    leftHomologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 := by
+  apply leftHomologyMap'_nullHomotopic
 
 @[simp]
 lemma rightHomologyMap_nullHomotopic [S₁.HasRightHomology] [S₂.HasRightHomology]
     (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-    rightHomologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 :=
-  by apply rightHomologyMap'_nullHomotopic
+    rightHomologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 := by
+  apply rightHomologyMap'_nullHomotopic
 
 @[simp]
 lemma homologyMap_nullHomotopic [S₁.HasHomology] [S₂.HasHomology]
     (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-    homologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 :=
-  by apply homologyMap'_nullHomotopic
+    homologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 := by
+  apply homologyMap'_nullHomotopic
 
 namespace Homotopy
 
@@ -741,6 +743,7 @@ def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
 
 variable (e : HomotopyEquiv S₁ S₂)
 
+/-- Variant of `leftHomologyIso`. -/
 @[simps]
 def leftHomologyIso' (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     h₁.H ≅ h₂.H where
@@ -753,6 +756,7 @@ def leftHomologyIso' (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyDat
     rw [← leftHomologyMap'_comp, e.homotopyInvHomId.leftHomologyMap'_congr,
       leftHomologyMap'_id]
 
+/-- Variant of `righgHomologyIso`. -/
 @[simps]
 def rightHomologyIso' (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     h₁.H ≅ h₂.H where
@@ -765,6 +769,7 @@ def rightHomologyIso' (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomology
     rw [← rightHomologyMap'_comp, e.homotopyInvHomId.rightHomologyMap'_congr,
       rightHomologyMap'_id]
 
+/-- Variant of `homologyIso`. -/
 @[simps]
 def homologyIso' (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
     h₁.left.H ≅ h₂.left.H where

@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Stanislas Polu
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Analysis.NormedSpace.Basic
-
-#align_import imo.imo1972_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # IMO 1972 Q5
@@ -52,15 +50,15 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
       calc
         0 < ‖f x‖ := norm_pos_iff.mpr hx
         _ ≤ k := hk₁ x
-    rw [div_lt_iff]
-    apply lt_mul_of_one_lt_right h₁ hneg
-    exact zero_lt_one.trans hneg
+    rw [div_lt_iff₀]
+    · apply lt_mul_of_one_lt_right h₁ hneg
+    · exact zero_lt_one.trans hneg
   -- Demonstrate that `k ≤ k'` using `hk₂`.
   have H₂ : k ≤ k' := by
     have h₁ : ∃ x : ℝ, x ∈ S := by use ‖f 0‖; exact Set.mem_range_self 0
     have h₂ : ∀ x, ‖f x‖ ≤ k' := by
       intro x
-      rw [le_div_iff]
+      rw [le_div_iff₀]
       · apply (mul_le_mul_left zero_lt_two).mp (hk₂ x)
       · exact zero_lt_one.trans hneg
     apply csSup_le h₁
@@ -89,12 +87,12 @@ theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - 
   have h : ∀ x, ‖f x‖ ≤ k := le_ciSup hf2
   have hgy : 0 < ‖g y‖ := by linarith
   have k_pos : 0 < k := lt_of_lt_of_le (norm_pos_iff.mpr hx) (h x)
-  have : k / ‖g y‖ < k := (div_lt_iff hgy).mpr (lt_mul_of_one_lt_right k_pos H)
+  have : k / ‖g y‖ < k := (div_lt_iff₀ hgy).mpr (lt_mul_of_one_lt_right k_pos H)
   have : k ≤ k / ‖g y‖ := by
     suffices ∀ x, ‖f x‖ ≤ k / ‖g y‖ from ciSup_le this
     intro x
     suffices 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k by
-      rwa [le_div_iff hgy, ← mul_le_mul_left (zero_lt_two : (0 : ℝ) < 2)]
+      rwa [le_div_iff₀ hgy, ← mul_le_mul_left (zero_lt_two : (0 : ℝ) < 2)]
     calc
       2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]

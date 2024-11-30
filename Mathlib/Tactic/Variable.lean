@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 
 /-!
@@ -109,7 +110,7 @@ def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
   for mvarId in pendingMVars.reverse do
     let some decl ← Term.getSyntheticMVarDecl? mvarId | continue
     match decl.kind with
-    | .typeClass =>
+    | .typeClass _ =>
       let ty ← instantiateMVars (← mvarId.getType)
       if !ty.hasExprMVar then
         return mvarId
@@ -127,7 +128,7 @@ partial def getSubproblem
     withTheReader Term.Context (fun ctx => {ctx with ignoreTCFailures := true}) do
     Term.withAutoBoundImplicit do
       _ ← Term.elabType ty
-      Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
+      Term.synthesizeSyntheticMVars (postpone := .yes) (ignoreStuckTC := true)
       let fvarIds := (← getLCtx).getFVarIds
       if let some mvarId ← pendingActionableSynthMVar binder then
         trace[«variable?»] "Actionable mvar:{mvarId}"
@@ -191,7 +192,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
           match binder with
           | `(bracketedBinderF|[$[$ident? :]? $ty]) =>
             -- Check if it's an alias
-            let type ← instantiateMVars (← inferType bindersElab.back)
+            let type ← instantiateMVars (← inferType bindersElab.back!)
             if ← isVariableAlias type then
               if ident?.isSome then
                 throwErrorAt binder "`variable_alias` binders can't have an explicit name"
@@ -249,7 +250,7 @@ def elabVariables : CommandElab := fun stx =>
 where
   extendScope (binders : TSyntaxArray ``bracketedBinder) : CommandElabM Unit := do
     for binder in binders do
-      let varUIds ← getBracketedBinderIds binder |>.mapM
+      let varUIds ← (← getBracketedBinderIds binder) |>.mapM
         (withFreshMacroScope ∘ MonadQuotation.addMacroScope)
       modifyScope fun scope =>
         { scope with varDecls := scope.varDecls.push binder, varUIds := scope.varUIds ++ varUIds }
@@ -269,23 +270,31 @@ where
       Term.withAutoBoundImplicit <| Term.elabBinders binders fun _ => pure ()
       -- Filter out omitted binders
       let binders' : TSyntaxArray ``bracketedBinder :=
-        (binders.zip toOmit).filterMap fun (b, omit) => if omit then none else some b
+        (binders.zip toOmit).filterMap fun (b, toOmit) => if toOmit then none else some b
       if let some expectedBinders := expectedBinders? then
         trace[«variable?»] "checking expected binders"
-        /- We re-elaborate the biders to record expressions that represent the whole resulting
-        local contexts (auto-bound implicits make it so we can't just use the argument to the
-        function for `Term.elabBinders`). -/
-        let ctx1 ← Term.withAutoBoundImplicit <| Term.elabBinders binders' fun _ => do
-          mkForallFVars (← getLCtx).getFVars (.sort .zero)
-        let ctx2 ← Term.withAutoBoundImplicit <| Term.elabBinders expectedBinders fun _ => do
-          mkForallFVars (← getLCtx).getFVars (.sort .zero)
-        trace[«variable?»] "new context: {ctx1}"
-        trace[«variable?»] "expected context: {ctx2}"
-        if ← isDefEq ctx1 ctx2 then
-          return (binders', false)
-        else
-          logWarning "Calculated binders do not match the expected binders given after `=>`."
-          return (binders', true)
+        /- We re-elaborate the binders to create an expression that represents the entire resulting
+        local context (auto-bound implicits mean we can't just the `binders` array). -/
+        let elabAndPackageBinders (binders : TSyntaxArray ``bracketedBinder) :
+            TermElabM AbstractMVarsResult :=
+          withoutModifyingStateWithInfoAndMessages <| Term.withAutoBoundImplicit <|
+            Term.elabBinders binders fun _ => do
+              let e ← mkForallFVars (← getLCtx).getFVars (.sort .zero)
+              let res ← abstractMVars e
+              -- Throw in the level names from the current state since `Type*` produces new
+              -- level names.
+              return {res with paramNames := (← get).levelNames.toArray ++ res.paramNames}
+        let ctx1 ← elabAndPackageBinders binders'
+        let ctx2 ← elabAndPackageBinders expectedBinders
+        trace[«variable?»] "new context: paramNames = {ctx1.paramNames}, {
+          ""}numMVars = {ctx1.numMVars}\n{indentD ctx1.expr}"
+        trace[«variable?»] "expected context: paramNames = {ctx2.paramNames}, {
+          ""}numMVars = {ctx2.numMVars}\n{indentD ctx2.expr}"
+        if ctx1.paramNames == ctx2.paramNames && ctx1.numMVars == ctx2.numMVars then
+          if ← isDefEq ctx1.expr ctx2.expr then
+            return (binders', false)
+        logWarning "Calculated binders do not match the expected binders given after `=>`."
+        return (binders', true)
       else
         return (binders', true)
     extendScope binders'
@@ -297,4 +306,11 @@ where
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
 def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
-  stack.matches [`null, none, `null, `Mathlib.Command.variable?]
+  stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
+  || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
+
+end Variable
+
+end Command
+
+end Mathlib

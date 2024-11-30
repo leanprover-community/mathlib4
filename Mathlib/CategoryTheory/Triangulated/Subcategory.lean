@@ -40,6 +40,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
+<<<<<<< HEAD
 namespace Limits
 
 variable {C J₁ J₂ : Type _} [Category C]
@@ -89,6 +90,8 @@ noncomputable def productOptionIso {C J : Type _} [Category C]
 
 end Limits
 
+=======
+>>>>>>> origin/ext-change-of-universes
 namespace Triangulated
 
 open Pretriangulated
@@ -116,9 +119,12 @@ lemma zero [ClosedUnderIsomorphisms S.P] : S.P 0 := by
   obtain ⟨X, hX, mem⟩ := S.zero'
   exact mem_of_iso _ hX.isoZero mem
 
+<<<<<<< HEAD
 lemma mem_of_isZero [ClosedUnderIsomorphisms S.P] (X : C) (hX : IsZero X) : S.P X :=
   mem_of_iso _ hX.isoZero.symm S.zero
 
+=======
+>>>>>>> origin/ext-change-of-universes
 /-- The closure under isomorphisms of a triangulated subcategory. -/
 def isoClosure : Subcategory C where
   P := CategoryTheory.isoClosure S.P
@@ -130,7 +136,11 @@ def isoClosure : Subcategory C where
     exact ⟨Y⟦n⟧, S.shift Y n hY, ⟨(shiftFunctor C n).mapIso e⟩⟩
   ext₂' := by
     rintro T hT ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
+<<<<<<< HEAD
     exact subset_isoClosure _ _
+=======
+    exact le_isoClosure _ _
+>>>>>>> origin/ext-change-of-universes
       (S.ext₂' (Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧'))
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by aesop_cat) (by aesop_cat) (by
@@ -153,16 +163,26 @@ def mk' : Subcategory C where
   P := P
   zero' := ⟨0, isZero_zero _, zero⟩
   shift := shift
+<<<<<<< HEAD
   ext₂' T hT h₁ h₃ := subset_isoClosure P _ (ext₂ T hT h₁ h₃)
 
 instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
   mem_of_iso {X Y} e hX := by
     refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
     refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
+=======
+  ext₂' T hT h₁ h₃ := le_isoClosure P _ (ext₂ T hT h₁ h₃)
+
+instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
+  of_iso {X Y} e hX := by
+    refine ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) ?_ hX zero
+    refine isomorphic_distinguished _ (contractible_distinguished X) _ ?_
+>>>>>>> origin/ext-change-of-universes
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
 
 end
 
+<<<<<<< HEAD
 @[simp]
 lemma shift_iff [ClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
     S.P (X⟦n⟧) ↔ S.P X := by
@@ -171,6 +191,8 @@ lemma shift_iff [ClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
     exact mem_of_iso _ ((shiftEquiv C n).unitIso.symm.app X) (S.shift _ (-n) h)
   · exact S.shift X n
 
+=======
+>>>>>>> origin/ext-change-of-universes
 lemma ext₂ [ClosedUnderIsomorphisms S.P]
     (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : S.P T.obj₁)
     (h₃ : S.P T.obj₃) : S.P T.obj₂ := by
@@ -206,6 +228,7 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
   ext X Y f
   constructor
   · rintro ⟨Z, g, h, mem, ⟨Z', hZ', ⟨e⟩⟩⟩
+<<<<<<< HEAD
     refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
@@ -222,18 +245,44 @@ lemma respectsIso_W : S.W.RespectsIso where
     rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
+=======
+    refine ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ ?_, hZ'⟩
+    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
+  · rintro ⟨Z, g, h, mem, hZ⟩
+    exact ⟨Z, g, h, mem, le_isoClosure _ _ hZ⟩
+
+instance respectsIso_W : S.W.RespectsIso where
+  precomp {X' X Y} e (he : IsIso e) := by
+    rintro f ⟨Z, g, h, mem, mem'⟩
+    refine ⟨Z, g, h ≫ inv e⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
+    refine Triangle.isoMk _ _ (asIso e) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) ?_
+    dsimp
+    simp only [Functor.map_inv, assoc, IsIso.inv_hom_id, comp_id, id_comp]
+  postcomp {X Y Y'} e (he : IsIso e) := by
+    rintro f ⟨Z, g, h, mem, mem'⟩
+    refine ⟨Z, inv e ≫ g, h, isomorphic_distinguished _ mem _ ?_, mem'⟩
+    exact Triangle.isoMk _ _ (Iso.refl _) (asIso e).symm (Iso.refl _)
+>>>>>>> origin/ext-change-of-universes
 
 instance : S.W.ContainsIdentities := by
   rw [← isoClosure_W]
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, zero _⟩⟩
 
 lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
+<<<<<<< HEAD
   refine (S.respectsIso_W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
+=======
+  refine (S.W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
+>>>>>>> origin/ext-change-of-universes
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
 lemma smul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     S.W (n • f) ↔ S.W f :=
+<<<<<<< HEAD
   S.respectsIso_W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
+=======
+  S.W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
+>>>>>>> origin/ext-change-of-universes
 
 variable {S}
 
@@ -243,7 +292,11 @@ lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (
   exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, S.shift _ _ mem⟩
 
 lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f :=
+<<<<<<< HEAD
   (S.respectsIso_W.arrow_mk_iso_iff
+=======
+  (S.W.arrow_mk_iso_iff
+>>>>>>> origin/ext-change-of-universes
      (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
 
 instance : S.W.IsCompatibleWithShift ℤ where
@@ -252,7 +305,11 @@ instance : S.W.IsCompatibleWithShift ℤ where
     exact ⟨fun hf => hf.unshift, fun hf => hf.shift n⟩
 
 instance [IsTriangulated C] : S.W.IsMultiplicative where
+<<<<<<< HEAD
   stableUnderComposition := by
+=======
+  comp_mem := by
+>>>>>>> origin/ext-change-of-universes
     rw [← isoClosure_W]
     rintro X₁ X₂ X₃ u₁₂ u₂₃ ⟨Z₁₂, v₁₂, w₁₂, H₁₂, mem₁₂⟩ ⟨Z₂₃, v₂₃, w₂₃, H₂₃, mem₂₃⟩
     obtain ⟨Z₁₃, v₁₃, w₁₂, H₁₃⟩ := distinguished_cocone_triangle (u₁₂ ≫ u₂₃)
@@ -270,6 +327,7 @@ lemma mem_W_iff_of_distinguished
   · intro h
     exact ⟨_, _, _, hT, h⟩
 
+<<<<<<< HEAD
 lemma mem_W_iff_of_distinguished'
     [ClosedUnderIsomorphisms S.P] (T : Triangle C) (hT : T ∈ distTriang C) :
     S.W T.mor₂ ↔ S.P T.obj₁ := by
@@ -277,6 +335,8 @@ lemma mem_W_iff_of_distinguished'
   dsimp at this
   rw [this, shift_iff]
 
+=======
+>>>>>>> origin/ext-change-of-universes
 instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -289,7 +349,11 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
     have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
     obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
+<<<<<<< HEAD
     refine' ⟨Y', r, _, _⟩
+=======
+    refine ⟨Y', r, ?_, ?_⟩
+>>>>>>> origin/ext-change-of-universes
     · exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
@@ -308,7 +372,11 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
     obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
+<<<<<<< HEAD
     refine' ⟨Y', r, _, _⟩
+=======
+    refine ⟨Y', r, ?_, ?_⟩
+>>>>>>> origin/ext-change-of-universes
     · exact ⟨_, _, _, mem', mem⟩
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
@@ -327,6 +395,11 @@ section
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 
+<<<<<<< HEAD
+=======
+include hT
+
+>>>>>>> origin/ext-change-of-universes
 lemma ext₁ [ClosedUnderIsomorphisms S.P] (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
     S.P T.obj₁ :=
   S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
@@ -343,6 +416,7 @@ lemma ext₃' (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
     CategoryTheory.isoClosure S.P T.obj₃ :=
   S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
+<<<<<<< HEAD
 lemma binary_product_stable [ClosedUnderIsomorphisms S.P] (X₁ X₂ : C) (hX₁ : S.P X₁) (hX₂ : S.P X₂) :
     S.P (X₁ ⨯ X₂)  :=
   S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
@@ -630,6 +704,8 @@ lemma mem_map_iff (X : C) [ClosedUnderIsomorphisms S.P] :
   · intro hX
     exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
 
+=======
+>>>>>>> origin/ext-change-of-universes
 end
 
 end Subcategory

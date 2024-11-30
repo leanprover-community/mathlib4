@@ -1,14 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Products.Bifunctor
-
-#align_import category_theory.limits.fubini from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
 /-!
 # A Fubini theorem for categorical (co)limits
@@ -58,7 +56,6 @@ structure DiagramOfCones where
   id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
     (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
-#align category_theory.limits.diagram_of_cones CategoryTheory.Limits.DiagramOfCones
 
 /-- A structure carrying a diagram of cocones over the functors `F.obj j`.
 -/
@@ -82,7 +79,6 @@ def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C where
   map f := (D.map f).hom
   map_id j := D.id j
   map_comp f g := D.comp f g
-#align category_theory.limits.diagram_of_cones.cone_points CategoryTheory.Limits.DiagramOfCones.conePoints
 
 /-- Extract the functor `J ⥤ C` consisting of the cocone points and the maps between them,
 from a `DiagramOfCocones`.
@@ -127,7 +123,6 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
             simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
               NatTrans.id_app] at this
             exact this) }
-#align category_theory.limits.cone_of_cone_uncurry CategoryTheory.Limits.coneOfConeUncurry
 
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
@@ -146,7 +141,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                   dsimp; simp only [Category.comp_id]
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
-                      simp;
+                      simp
                   conv_lhs => arg 1; rw [← uncurry_obj_map F ((𝟙 j,f) : (j,k) ⟶ (j,k'))]
                   rw [c.w] } }
       naturality := fun j j' f =>
@@ -194,14 +189,13 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
-        π := _ } m _
+        π := _ } m ?_
     rintro ⟨j, k⟩
     dsimp
     rw [← w j]
     simp
-#align category_theory.limits.cone_of_cone_uncurry_is_limit CategoryTheory.Limits.coneOfConeUncurryIsLimit
 
 /-- `coconeOfCoconeUncurry Q c` is a colimit cocone when `c` is a colimit cocone.
 -/
@@ -233,9 +227,9 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
-        ι := _ } m _
+        ι := _ } m ?_
     rintro ⟨j, k⟩
     dsimp
     rw [← w j]
@@ -254,18 +248,15 @@ and the universal cone morphisms between these.
 noncomputable def DiagramOfCones.mkOfHasLimits : DiagramOfCones F where
   obj j := limit.cone (F.obj j)
   map f := { hom := lim.map (F.map f) }
-#align category_theory.limits.diagram_of_cones.mk_of_has_limits CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits
 
 -- Satisfying the inhabited linter.
 noncomputable instance diagramOfConesInhabited : Inhabited (DiagramOfCones F) :=
   ⟨DiagramOfCones.mkOfHasLimits F⟩
-#align category_theory.limits.diagram_of_cones_inhabited CategoryTheory.Limits.diagramOfConesInhabited
 
 @[simp]
 theorem DiagramOfCones.mkOfHasLimits_conePoints :
     (DiagramOfCones.mkOfHasLimits F).conePoints = F ⋙ lim :=
   rfl
-#align category_theory.limits.diagram_of_cones.mk_of_has_limits_cone_points CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits_conePoints
 
 variable [HasLimit (uncurry.obj F)]
 variable [HasLimit (F ⋙ lim)]
@@ -282,14 +273,12 @@ noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit 
   have Q' := coneOfConeUncurryIsLimit Q P
   have Q'' := limit.isLimit (F ⋙ lim)
   exact IsLimit.conePointUniqueUpToIso Q' Q''
-#align category_theory.limits.limit_uncurry_iso_limit_comp_lim CategoryTheory.Limits.limitUncurryIsoLimitCompLim
 
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
   simp
-#align category_theory.limits.limit_uncurry_iso_limit_comp_lim_hom_π_π CategoryTheory.Limits.limitUncurryIsoLimitCompLim_hom_π_π
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
@@ -298,7 +287,6 @@ theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   rw [← cancel_epi (limitUncurryIsoLimitCompLim F).hom]
   simp
-#align category_theory.limits.limit_uncurry_iso_limit_comp_lim_inv_π CategoryTheory.Limits.limitUncurryIsoLimitCompLim_inv_π
 
 end
 
@@ -373,7 +361,6 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
       HasLimit.isoOfEquivalence (Prod.braiding _ _)
           (NatIso.ofComponents fun _ => by rfl) ≪≫
         limitUncurryIsoLimitCompLim _
-#align category_theory.limits.limit_flip_comp_lim_iso_limit_comp_lim CategoryTheory.Limits.limitFlipCompLimIsoLimitCompLim
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
@@ -381,8 +368,7 @@ theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
-  simp
-#align category_theory.limits.limit_flip_comp_lim_iso_limit_comp_lim_hom_π_π CategoryTheory.Limits.limitFlipCompLimIsoLimitCompLim_hom_π_π
+  simp [Equivalence.counit]
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 -- See note [dsimp, simp]
@@ -392,7 +378,6 @@ theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
   simp
-#align category_theory.limits.limit_flip_comp_lim_iso_limit_comp_lim_inv_π_π CategoryTheory.Limits.limitFlipCompLimIsoLimitCompLim_inv_π_π
 
 end
 
@@ -417,7 +402,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   slice_lhs 1 3 => simp only []
-  simp
+  simp [Equivalence.unit]
 
 @[simp, reassoc]
 theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
@@ -426,7 +411,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
         (colimit.ι _ j ≫ colimit.ι (F.flip ⋙ colim) k : _ ⟶ colimit (F.flip ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   slice_lhs 1 3 => simp only []
-  simp
+  simp [Equivalence.counitInv]
 
 end
 
@@ -448,14 +433,12 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
   trans limit (uncurry.obj ((@curry J _ K _ C _).obj G))
   · apply HasLimit.isoOfNatIso i
   · exact limitUncurryIsoLimitCompLim ((@curry J _ K _ C _).obj G)
-#align category_theory.limits.limit_iso_limit_curry_comp_lim CategoryTheory.Limits.limitIsoLimitCurryCompLim
 
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   set_option tactic.skipAssignedInstances false in
   simp [limitIsoLimitCurryCompLim, Trans.simple, HasLimit.isoOfNatIso, limitUncurryIsoLimitCompLim]
-#align category_theory.limits.limit_iso_limit_curry_comp_lim_hom_π_π CategoryTheory.Limits.limitIsoLimitCurryCompLim_hom_π_π
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
@@ -464,7 +447,6 @@ theorem limitIsoLimitCurryCompLim_inv_π {j} {k} :
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
   rw [← cancel_epi (limitIsoLimitCurryCompLim G).hom]
   simp
-#align category_theory.limits.limit_iso_limit_curry_comp_lim_inv_π CategoryTheory.Limits.limitIsoLimitCurryCompLim_inv_π
 
 end
 
@@ -482,8 +464,8 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
-  apply HasColimit.isoOfNatIso i
-  exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
+  · apply HasColimit.isoOfNatIso i
+  · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
 
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
@@ -519,38 +501,25 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
       (limitIsoLimitCurryCompLim _).symm
     _ ≅ limit G := HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ limit (curry.obj G ⋙ lim) := limitIsoLimitCurryCompLim _
-#align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
-  dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim]
-  simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_hom_π,
-    Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
-  erw [NatTrans.id_app]
-  -- Why can't `simp` do this?
-  dsimp
-  -- Porting note: the original proof only had `simp`.
-  -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`
-  rw [CategoryTheory.Bifunctor.map_id]
+  dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim, Equivalence.counit]
+  rw [Category.assoc, Category.assoc, limitIsoLimitCurryCompLim_hom_π_π,
+    HasLimit.isoOfEquivalence_hom_π]
+  dsimp [Equivalence.counit]
+  rw [← prod_id, G.map_id]
   simp
-
-#align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim_hom_π_π CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
-  dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim]
-  simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_inv_π,
-    Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
-  erw [NatTrans.id_app]
-  -- Porting note (#10618): `simp` can do this in lean 4.
-  simp
-#align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim_inv_π_π CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π
+  simp [limitCurrySwapCompLimIsoLimitCurryCompLim]
 
 end
 
@@ -589,11 +558,9 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
             _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
-  simp only [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π,
-    Functor.id_obj, Functor.comp_obj, Prod.braiding_inverse_obj, Prod.braiding_functor_obj,
-    Prod.braiding_counitIso_inv_app, Prod.swap_obj, Iso.refl_hom, NatTrans.id_app, Category.id_comp,
-    Category.assoc, colimitIsoColimitCurryCompColim_ι_hom, curry_obj_obj_obj]
-  erw [CategoryTheory.Bifunctor.map_id]
+  rw [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π]
+  dsimp [Equivalence.counitInv]
+  rw [CategoryTheory.Bifunctor.map_id]
   simp
 
 end
