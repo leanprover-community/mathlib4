@@ -317,7 +317,8 @@ variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ)
 -- The image of `ι → ℤ` inside `ι → ℝ`
 local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 
-theorem mem_smul_span_iff (v : ι → ℝ) :
+variable {n} in
+theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
   rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
   simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
@@ -325,7 +326,7 @@ theorem mem_smul_span_iff (v : ι → ℝ) :
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :
     tag n ν ∈ (n : ℝ)⁻¹ • L := by
-  refine (mem_smul_span_iff _ _).mpr fun i ↦ ⟨ν i + 1, ?_⟩
+  refine mem_smul_span_iff.mpr fun i ↦ ⟨ν i + 1, ?_⟩
   rw [tag_apply, div_eq_inv_mul, ← mul_assoc, mul_inv_cancel_of_invertible, one_mul, map_add,
     map_one, eq_intCast]
 
