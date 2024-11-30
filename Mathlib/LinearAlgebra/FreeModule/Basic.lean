@@ -5,9 +5,9 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Matrix.Defs
-import Mathlib.Logic.Small.Set
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
