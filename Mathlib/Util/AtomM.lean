@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init
 import Lean.Meta.Tactic.Simp.Types
+import Qq
 
 /-!
 # A monad for tracking and deduplicating atoms
@@ -44,13 +45,33 @@ def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
     MetaM α :=
   (m { red, evalAtom }).run' {}
 
-/-- Get the index corresponding to an atomic expression, if it has already been encountered, or
-put it in the list of atoms and return the new index, otherwise. -/
-def AtomM.addAtom (e : Expr) : AtomM Nat := do
+/-- If an atomic expression has already been encountered, get the index and the stored form of the
+atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
+If the atomic expression has *not* already been encountered, store it in the list of atoms, and
+return the new index (and the stored form of the atom, which will be itself).
+
+In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
+-/
+def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
   let c ← get
   for h : i in [:c.atoms.size] do
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
-      return i
-  modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
+      return (i, c.atoms[i])
+  modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
+
+open Qq in
+/-- If an atomic expression has already been encountered, get the index and the stored form of the
+atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
+If the atomic expression has *not* already been encountered, store it in the list of atoms, and
+return the new index (and the stored form of the atom, which will be itself).
+
+In a normalizing tactic, the expression returned by `addAtomQ` should be considered the normal form.
+
+This is a strongly-typed version of `AtomM.addAtom` for code using `Qq`.
+-/
+def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
+    AtomM (Nat × {e' : Q($α) // $e =Q $e'}) := do
+  let (n, e') ← AtomM.addAtom e
+  return (n, ⟨e', ⟨⟩⟩)
 
 end Mathlib.Tactic

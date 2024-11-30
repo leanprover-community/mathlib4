@@ -401,7 +401,7 @@ instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α]
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
 -- Higher priority for `Prop`s
--- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
@@ -840,6 +840,13 @@ instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 
 end Finite
+
+-- Shortcut instances to make sure those are found even in the presence of other instances
+-- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/WellFoundedLT.20Prop.20is.20not.20found.20when.20importing.20too.20much
+instance Bool.instWellFoundedLT : WellFoundedLT Bool := inferInstance
+instance Bool.instWellFoundedGT : WellFoundedGT Bool := inferInstance
+instance Prop.instWellFoundedLT : WellFoundedLT Prop := inferInstance
+instance Prop.instWellFoundedGT : WellFoundedGT Prop := inferInstance
 
 -- @[nolint fintype_finite] -- Porting note: do we need this?
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=

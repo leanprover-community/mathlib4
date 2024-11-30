@@ -87,10 +87,8 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[simp]
-theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := by
-  cases o
-  rfl
+@[deprecated (since := "2024-10-24")]
+theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
 
 end WellOrder
 
@@ -139,22 +137,21 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-@[simp]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
-  cases w
-  rfl
+/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
+@[deprecated (since := "2024-10-24")]
+theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
 
-@[simp]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := by
-  rfl
+/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
+@[deprecated (since := "2024-10-24")]
+theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
 
 @[simp]
 theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def' _).symm.trans <| Quotient.out_eq o
+  o.out_eq
 
 @[deprecated type_toType (since := "2024-10-22")]
 theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
-  (type_def' _).symm.trans <| Quotient.out_eq o
+  o.out_eq
 
 @[deprecated type_toType (since := "2024-08-26")]
 theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o :=
@@ -287,7 +284,7 @@ instance partialOrder : PartialOrder Ordinal where
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
 
-instance linearOrder : LinearOrder Ordinal :=
+instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
@@ -309,7 +306,7 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
 protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
-instance orderBot : OrderBot Ordinal where
+instance : OrderBot Ordinal where
   bot := 0
   bot_le := Ordinal.zero_le
 
@@ -330,10 +327,10 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
 
-instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
+instance : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
-instance NeZero.one : NeZero (1 : Ordinal) :=
+instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
@@ -387,7 +384,7 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
 alias typein.principalSeg := typein
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-09")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
 theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
     (typein.principalSeg r : α → Ordinal) = typein r :=
   rfl
@@ -513,7 +510,7 @@ noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
-@[deprecated (since := "2024-08-26")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
@@ -779,9 +776,6 @@ theorem card_omega0 : card ω = ℵ₀ :=
 theorem lift_omega0 : lift ω = ω :=
   lift_lift _
 
-@[deprecated (since := "2024-09-30")]
-alias lift_omega := lift_omega0
-
 /-!
 ### Definition and first properties of addition on ordinals
 
@@ -878,13 +872,13 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
   · apply (RelEmbedding.ofMonotone (Sum.recOn · f fun _ ↦ f.top) ?_).ordinal_type_le
     simpa [f.map_rel_iff] using f.lt_top
 
-instance noMaxOrder : NoMaxOrder Ordinal :=
+instance : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
-instance instSuccOrder : SuccOrder Ordinal.{u} :=
+instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
-instance instSuccAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
+instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
 @[simp]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
@@ -928,7 +922,7 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
@@ -1216,7 +1210,7 @@ alias card_typein_out_lt := card_typein_toType_lt
 theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.toType) : #(Iio i) < c :=
   card_typein_toType_lt c i
 
-@[deprecated (since := "2024-08-26")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-26")]
 alias mk_Iio_ord_out_α := mk_Iio_ord_toType
 
 theorem ord_injective : Injective ord := by
@@ -1234,6 +1228,26 @@ theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
 @[simp]
 theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
   ord_injective.eq_iff' ord_one
+
+@[simp]
+theorem omega0_le_ord {a : Cardinal} : ω ≤ a.ord ↔ ℵ₀ ≤ a := by
+  rw [← ord_aleph0, ord_le_ord]
+
+@[simp]
+theorem ord_le_omega0 {a : Cardinal} : a.ord ≤ ω ↔ a ≤ ℵ₀ := by
+  rw [← ord_aleph0, ord_le_ord]
+
+@[simp]
+theorem ord_lt_omega0 {a : Cardinal} : a.ord < ω ↔ a < ℵ₀ :=
+  le_iff_le_iff_lt_iff_lt.1 omega0_le_ord
+
+@[simp]
+theorem omega0_lt_ord {a : Cardinal} : ω < a.ord ↔ ℵ₀ < a :=
+  le_iff_le_iff_lt_iff_lt.1 ord_le_omega0
+
+@[simp]
+theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
+  ord_injective.eq_iff' ord_aleph0
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
@@ -1327,6 +1341,14 @@ theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
 theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : Cardinal)) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
   nat_le_card
+
+@[simp]
+theorem aleph0_le_card {o} : ℵ₀ ≤ card o ↔ ω ≤ o := by
+  rw [← ord_le, ord_aleph0]
+
+@[simp]
+theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
+  le_iff_le_iff_lt_iff_lt.1 aleph0_le_card
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by

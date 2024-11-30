@@ -53,7 +53,7 @@ lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ 
     rw [regularTopology.mem_sieves_iff_hasEffectiveEpi]
     exact ⟨X', π, h, h'⟩
 
-lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes [FinitaryPreExtensive C]
+lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
         Function.Surjective (f.app (op X)) := by
@@ -84,13 +84,17 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes [Finitary
   erw [IsLimit.map_π]
   rfl
 
+@[deprecated (since := "2024-11-26")]
+alias extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes :=
+  extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types
+
 lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C] {F G : Cᵒᵖ ⥤ D}
     (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       [PreservesFiniteProducts (forget D)] : Presheaf.IsLocallySurjective (extensiveTopology C) f ↔
         ∀ (X : C), Function.Surjective (f.app (op X)) := by
   constructor
   · rw [Presheaf.isLocallySurjective_iff_whisker_forget (J := extensiveTopology C)]
-    exact fun h _ ↦ surjective_of_isLocallySurjective_sheafOfTypes (whiskerRight f (forget D)) h
+    exact fun h _ ↦ surjective_of_isLocallySurjective_sheaf_of_types (whiskerRight f (forget D)) h
   · intro h
     refine ⟨fun {X} y ↦ ?_⟩
     obtain ⟨x, hx⟩ := h X y
@@ -104,7 +108,7 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.val.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.val
 
-lemma regularTopology.isLocallySurjective_sheafOfTypes [Preregular C] [FinitaryPreExtensive C]
+lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
         Presheaf.IsLocallySurjective (regularTopology C) f where
@@ -118,7 +122,7 @@ lemma regularTopology.isLocallySurjective_sheafOfTypes [Preregular C] [FinitaryP
     let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩
-    have := preservesLimitsOfShapeOfEquiv (Discrete.opposite α).symm G
+    have := preservesLimitsOfShape_of_equiv (Discrete.opposite α).symm G
     apply Concrete.isLimit_ext _ (isLimitOfPreserves G (coproductIsCoproduct Z).op)
     intro ⟨⟨a⟩⟩
     simp only [Functor.comp_obj, Functor.op_obj, Discrete.functor_obj, Functor.mapCone_pt,
@@ -136,6 +140,9 @@ lemma regularTopology.isLocallySurjective_sheafOfTypes [Preregular C] [FinitaryP
     · change G.map _ (G.map _ _) = _
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Sigma.ι_desc]
 
+@[deprecated (since := "2024-11-26")] alias regularTopology.isLocallySurjective_sheafOfTypes :=
+regularTopology.isLocallySurjective_sheaf_of_types
+
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       [PreservesFiniteProducts (forget D)] :
@@ -144,7 +151,7 @@ lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f 
   constructor
   · rw [Presheaf.isLocallySurjective_iff_whisker_forget,
       Presheaf.isLocallySurjective_iff_whisker_forget (J := regularTopology C)]
-    exact regularTopology.isLocallySurjective_sheafOfTypes _
+    exact regularTopology.isLocallySurjective_sheaf_of_types _
   · refine Presheaf.isLocallySurjective_of_le (J := regularTopology C) ?_ _
     rw [← extensive_regular_generate_coherent]
     exact (Coverage.gi _).gc.monotone_l le_sup_right
