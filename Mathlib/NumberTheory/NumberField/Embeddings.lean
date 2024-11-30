@@ -1080,6 +1080,7 @@ namespace Rat
 
 open NumberField
 
+/-- The infinite place of `ℚ`, coming from the canonical map `ℚ → ℂ`. -/
 noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
 
 instance : Subsingleton (InfinitePlace ℚ) where
