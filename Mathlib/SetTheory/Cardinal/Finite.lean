@@ -277,36 +277,36 @@ theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
--- @[simp]
--- theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
---     ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
---   rw [← toPartENat_natCast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+@[simp]
+theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n ≤ toENat c ↔ ↑n ≤ c := by
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 
--- @[simp]
--- theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
---     toPartENat c ≤ n ↔ c ≤ n := by
---   rw [← toPartENat_natCast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
+@[simp]
+theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
+    toENat c ≤ n ↔ c ≤ n := by
+  rw [← toENat_nat n, toENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
 
--- @[simp]
--- theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
---     ↑n = toPartENat c ↔ ↑n = c := by
---   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff,
---     Cardinal.natCast_le_toPartENat_iff]
+@[simp]
+theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n = toENat c ↔ ↑n = c := by
+  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
+    Cardinal.natCast_le_toENat_iff]
 
--- @[simp]
--- theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
---     Cardinal.toPartENat c = n ↔ c = n := by
--- rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
+@[simp]
+theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
+    Cardinal.toENat c = n ↔ c = n := by
+rw [eq_comm, Cardinal.natCast_eq_toENat_iff, eq_comm]
 
--- @[simp]
--- theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
---     ↑n < toPartENat c ↔ ↑n < c := by
---   simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
+@[simp]
+theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n < toENat c ↔ ↑n < c := by
+  simp only [← not_le, Cardinal.toENat_le_natCast_iff]
 
--- @[simp]
--- theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
---     toPartENat c < ↑n ↔ c < ↑n := by
---   simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+@[simp]
+theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
+    toENat c < ↑n ↔ c < ↑n := by
+  simp only [← not_le, Cardinal.natCast_le_toENat_iff]
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
@@ -316,11 +316,11 @@ theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsinglet
   rw [← le_one_iff_subsingleton]
   simp [card]
 
--- theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
---   rw [← Cardinal.one_lt_iff_nontrivial]
---   conv_rhs => rw [← Nat.cast_one]
---   rw [← natCast_lt_toPartENat_iff]
---   simp only [PartENat.card, Nat.cast_one]
+theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
+  rw [← Cardinal.one_lt_iff_nontrivial]
+  conv_rhs => rw [← Nat.cast_one]
+  rw [← natCast_lt_toENat_iff]
+  simp only [ENat.card, Nat.cast_one]
 
 end ENat
 

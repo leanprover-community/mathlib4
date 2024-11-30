@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 
 We define the cardinality of set `s` as a term `Set.encard s : ℕ∞` and a term `Set.ncard s : ℕ`.
 The latter takes the junk value of zero if `s` is infinite. Both functions are noncomputable, and
-are defined in terms of `PartENat.card` (which takes a type as its argument); this file can be seen
+are defined in terms of `ENat.card` (which takes a type as its argument); this file can be seen
 as an API for the same function in the special case where the type is a coercion of a `Set`,
 allowing for smoother interactions with the `Set` API.
 
