@@ -288,4 +288,7 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_add' := ofENat_add
   monotone' := ofENat_mono
 
+theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
+  rw [← toENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toENat_lift]
+
 end Cardinal

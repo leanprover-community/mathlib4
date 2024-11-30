@@ -242,6 +242,89 @@ protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
 
 end Set
 
+
+namespace ENat
+
+/-- `ENat.card α` is the cardinality of `α` as an extended natural number.
+  If `α` is infinite, `ENat.card α = ⊤`. -/
+def card (α : Type*) : ℕ∞ :=
+  toENat (mk α)
+
+@[simp]
+theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
+  simp [card]
+
+@[simp]
+theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
+  simp [card]
+
+@[simp]
+theorem card_sum (α β : Type*) :
+    card (α ⊕ β) = card α + card β := by
+  simp only [card, mk_sum, map_add, toENat_lift]
+
+theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : card α = card β :=
+  Cardinal.toENat_congr f
+
+@[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
+
+@[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
+
+theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
+    card (f '' s) = card s :=
+  card_congr (Equiv.Set.imageOfInjOn f s h).symm
+
+theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
+    (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
+
+-- @[simp]
+-- theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
+--     ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
+--   rw [← toPartENat_natCast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+
+-- @[simp]
+-- theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
+--     toPartENat c ≤ n ↔ c ≤ n := by
+--   rw [← toPartENat_natCast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
+
+-- @[simp]
+-- theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
+--     ↑n = toPartENat c ↔ ↑n = c := by
+--   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff,
+--     Cardinal.natCast_le_toPartENat_iff]
+
+-- @[simp]
+-- theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
+--     Cardinal.toPartENat c = n ↔ c = n := by
+-- rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
+
+-- @[simp]
+-- theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
+--     ↑n < toPartENat c ↔ ↑n < c := by
+--   simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
+
+-- @[simp]
+-- theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
+--     toPartENat c < ↑n ↔ c < ↑n := by
+--   simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+
+theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
+  rw [← Cardinal.mk_eq_zero_iff]
+  simp [card]
+
+theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
+  rw [← le_one_iff_subsingleton]
+  simp [card]
+
+-- theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
+--   rw [← Cardinal.one_lt_iff_nontrivial]
+--   conv_rhs => rw [← Nat.cast_one]
+--   rw [← natCast_lt_toPartENat_iff]
+--   simp only [PartENat.card, Nat.cast_one]
+
+end ENat
+
+
 namespace PartENat
 
 /-- `PartENat.card α` is the cardinality of `α` as an extended natural number.
