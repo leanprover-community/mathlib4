@@ -254,9 +254,8 @@ theorem cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succE
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
 
-lemma cons_right_injective {n : ℕ} {M : Type*} [Zero M] (y : M) :
-    Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
-  (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
+theorem cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective)
 
 theorem snoc_support :
     (s.snoc y).support ⊆ insert (Fin.last n) (s.support.map Fin.castSuccEmb) := by
@@ -266,6 +265,10 @@ theorem snoc_support :
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
 
+theorem snoc_left_injective : Injective (Finsupp.snoc · y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  equivFunOnFinite.symm.injective.comp
+    ((Fin.snoc_left_injective (α := fun _ => M) y).comp DFunLike.coe_injective)
+
 theorem insertNth_support :
     (insertNth p y s).support ⊆ insert p (s.support.map (Fin.succAboveEmb p)) := by
   intro i hi
@@ -273,6 +276,11 @@ theorem insertNth_support :
   apply (Fin.eq_self_or_eq_succAbove p i).imp id (Exists.imp _)
   rintro j rfl
   simpa [Finsupp.mem_support_iff] using hi
+
+theorem insertNth_right_injective :
+    Injective (Finsupp.insertNth p y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  equivFunOnFinite.symm.injective.comp
+    ((Fin.insertNth_right_injective _).comp DFunLike.coe_injective)
 
 end Add
 
