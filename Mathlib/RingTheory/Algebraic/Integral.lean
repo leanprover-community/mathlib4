@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Polynomial.IntegralNormalization
 
 /-!
 # Algebraic elements and integral elements
@@ -147,15 +146,15 @@ end Field
 
 end
 
-variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
-    ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), z * algebraMap R S y = x := by
+    ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), algebraMap R S y * z = x := by
   rcases hz with ⟨p, p_ne_zero, px⟩
   set a := p.leadingCoeff
   have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
-  have x_integral : IsIntegral R (z * algebraMap R S a) :=
+  have x_integral : IsIntegral R (algebraMap R S a * z) :=
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
       integralNormalization_aeval_eq_zero px inj⟩
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
