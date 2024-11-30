@@ -82,8 +82,8 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
-    · rw [List.getElem_append_left, List.getElem_map, List.getElem_finRange]
-      simp only [length_map, length_finRange, i.2]
+    · simp only [length_map, length_finRange, is_lt, getElem_append_left, getElem_map,
+      getElem_finRange, cast_mk, Fin.eta]
     · simp only [length_map, length_finRange, drop_left']
 
 /-- An encoding of terms as lists. -/
@@ -237,7 +237,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
         get?_eq_some, length_append, length_map, length_finRange]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
       rw [get_eq_getElem, getElem_append_left, getElem_map]
-      · simp only [getElem_finRange, Fin.eta, Function.comp_apply, Sum.getLeft?]
+      · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
       · simp only [length_map, length_finRange, is_lt]
     rw [dif_pos]
     swap

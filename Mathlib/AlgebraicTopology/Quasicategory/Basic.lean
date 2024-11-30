@@ -13,13 +13,14 @@ In this file we define quasicategories,
 a common model of infinity categories.
 We show that every Kan complex is a quasicategory.
 
-In `Mathlib/AlgebraicTopology/Nerve.lean`
-we show (TODO) that the nerve of a category is a quasicategory.
+In `Mathlib/AlgebraicTopology/Quasicategory/Nerve.lean`,
+we show that the nerve of a category is a quasicategory.
 
 ## TODO
 
 - Generalize the definition to higher universes.
-  See the corresponding TODO in `Mathlib/AlgebraicTopology/KanComplex.lean`.
+  See the corresponding TODO in
+  `Mathlib/AlgebraicTopology/SimplicialSet/KanComplex.lean`.
 
 -/
 

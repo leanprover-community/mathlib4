@@ -21,6 +21,7 @@ In this context, we prove some usual properties of these operations, analogous t
 `Data.Fin.Tuple.Basic`.
 -/
 
+open Function
 
 noncomputable section
 
@@ -252,6 +253,10 @@ theorem cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succE
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
+
+lemma cons_right_injective {n : ℕ} {M : Type*} [Zero M] (y : M) :
+    Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
 
 theorem snoc_support :
     (s.snoc y).support ⊆ insert (Fin.last n) (s.support.map Fin.castSuccEmb) := by
