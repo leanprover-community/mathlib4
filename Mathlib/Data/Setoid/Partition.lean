@@ -3,7 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Partition.Finpartition
 
 /-!
@@ -312,7 +312,7 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
-    (dis : Pairwise fun i j => Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
+    (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
   eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
@@ -349,7 +349,7 @@ theorem iUnion : ⋃ i, s i = univ := by
   simp [hs.exists_mem x]
 
 include hs in
-theorem disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
+theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 
 theorem mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
@@ -405,7 +405,7 @@ theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
   funext hs.equivQuotient_index_apply
 
 /-- A map choosing a representative for each element of the quotient associated to an indexed
-partition. This is a computable version of `Quotient.out'` using `IndexedPartition.some`. -/
+partition. This is a computable version of `Quotient.out` using `IndexedPartition.some`. -/
 def out : hs.Quotient ↪ α :=
   hs.equivQuotient.symm.toEmbedding.trans ⟨hs.some, Function.LeftInverse.injective hs.index_some⟩
 
@@ -414,9 +414,11 @@ def out : hs.Quotient ↪ α :=
 theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
   rfl
 
-/-- The indices of `Quotient.out'` and `IndexedPartition.out` are equal. -/
-theorem index_out' (x : hs.Quotient) : hs.index x.out' = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out' x).trans (hs.index_some _).symm
+/-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
+theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
+  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+
+@[deprecated (since := "2024-10-19")] alias index_out' := index_out
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]

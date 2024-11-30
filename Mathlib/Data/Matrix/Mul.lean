@@ -518,7 +518,7 @@ namespace Matrix
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
--- TODO: set as an equation lemma for `vecMulVec`, see mathlib4#3024
+-- TODO: set as an equation lemma for `vecMulVec`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem vecMulVec_apply [Mul α] (w : m → α) (v : n → α) (i j) : vecMulVec w v i j = w i * v j :=
   rfl
 
@@ -879,6 +879,18 @@ theorem submatrix_mulVec_equiv [Fintype n] [Fintype o] [NonUnitalNonAssocSemirin
     (M : Matrix m n α) (v : o → α) (e₁ : l → m) (e₂ : o ≃ n) :
     M.submatrix e₁ e₂ *ᵥ v = (M *ᵥ (v ∘ e₂.symm)) ∘ e₁ :=
   funext fun _ => Eq.symm (dotProduct_comp_equiv_symm _ _ _)
+
+@[simp]
+theorem submatrix_id_mul_left [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p : Type*}
+    (M : Matrix m n α) (N : Matrix o p α) (e₁ : l → m) (e₂ : n ≃ o) :
+    M.submatrix e₁ id * N.submatrix e₂ id = M.submatrix e₁ e₂.symm * N := by
+  ext; simp [mul_apply, ← e₂.bijective.sum_comp]
+
+@[simp]
+theorem submatrix_id_mul_right [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p : Type*}
+    (M : Matrix m n α) (N : Matrix o p α) (e₁ : l → p) (e₂ : o ≃ n) :
+    M.submatrix id e₂ * N.submatrix id e₁ = M * N.submatrix e₂.symm e₁ := by
+  ext; simp [mul_apply, ← e₂.bijective.sum_comp]
 
 theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
     (M : Matrix m n α) (v : l → α) (e₁ : l ≃ m) (e₂ : o → n) :

@@ -73,6 +73,14 @@ class NormedLatticeAddCommGroup (α : Type*) extends
     NormedAddCommGroup α, Lattice α, HasSolidNorm α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 
+instance Int.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℤ where
+  solid x y h := by simpa [← Int.norm_cast_real, ← Int.cast_abs] using h
+  add_le_add_left _ _ := add_le_add_left
+
+instance Rat.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℚ where
+  solid x y h := by simpa [← Rat.norm_cast_real, ← Rat.cast_abs] using h
+  add_le_add_left _ _ := add_le_add_left
+
 instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
   add_le_add_left _ _ h _ := add_le_add le_rfl h
 

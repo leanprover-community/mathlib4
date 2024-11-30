@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.MvPolynomial.Supported
 
 /-!
@@ -267,6 +266,11 @@ theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
   change aeval ((g : A →+* B) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
+theorem Transcendental.of_ringHom_of_comp_eq (H : Transcendental S (g a))
+    (hf : Function.Injective f)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Transcendental R a := fun halg ↦ H (halg.ringHom_of_comp_eq f g hf h)
+
 theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
@@ -275,18 +279,28 @@ theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
   obtain ⟨a, rfl⟩ := hg b
   exact (Algebra.IsAlgebraic.isAlgebraic a).ringHom_of_comp_eq f g hf h
 
+theorem Algebra.Transcendental.of_ringHom_of_comp_eq [H : Algebra.Transcendental S B]
+    (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.Transcendental R A := by
+  rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
+  exact fun halg ↦ H (halg.ringHom_of_comp_eq f g hf hg h)
+
 theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ : ∃ q : R[X], q.map f = p := by
-    rw [← mem_lifts, lifts_iff_coeff_lifts]
-    simp [hf.range_eq]
+  obtain ⟨q, rfl⟩ := map_surjective f hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
   change aeval ((g : A →+* B) a) _ = 0 at h2
   change (g : A →+* B) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
+
+theorem Transcendental.ringHom_of_comp_eq (H : Transcendental R a)
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Transcendental S (g a) := fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
 
 theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
     (hf : Function.Surjective f) (hg : Function.Injective g)
@@ -294,23 +308,53 @@ theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
     Algebra.IsAlgebraic R A :=
   ⟨fun a ↦ (Algebra.IsAlgebraic.isAlgebraic (g a)).of_ringHom_of_comp_eq f g hf hg h⟩
 
+theorem Algebra.Transcendental.ringHom_of_comp_eq [H : Algebra.Transcendental R A]
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.Transcendental S B := by
+  rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
+  exact fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
+
 end
 
+section
+
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB)
+
 theorem isAlgebraic_ringHom_iff_of_comp_eq
-    [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
-    (f : FRS) (g : FAB) (hg : Function.Injective g)
+    (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
     IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) hg h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) h⟩
 
-theorem algebra_isAlgebraic_ringHom_iff_of_comp_eq
-    [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingEquivClass FAB A B]
-    (f : FRS) (g : FAB)
+theorem transcendental_ringHom_iff_of_comp_eq
+    (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
+    Transcendental S (g a) ↔ Transcendental R a :=
+  not_congr (isAlgebraic_ringHom_iff_of_comp_eq f g hg h)
+
+end
+
+section
+
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingEquivClass FAB A B]
+  (f : FRS) (g : FAB)
+
+theorem Algebra.isAlgebraic_ringHom_iff_of_comp_eq
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     Algebra.IsAlgebraic S B ↔ Algebra.IsAlgebraic R A :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) (EquivLike.injective g) h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) (EquivLike.surjective g) h⟩
+
+theorem Algebra.transcendental_ringHom_iff_of_comp_eq
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.Transcendental S B ↔ Algebra.Transcendental R A := by
+  simp_rw [Algebra.transcendental_iff_not_isAlgebraic,
+    Algebra.isAlgebraic_ringHom_iff_of_comp_eq f g h]
+
+end
 
 end RingHom
 
@@ -336,6 +380,38 @@ theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S
 theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
     Transcendental R (algebraMap S A a) ↔ Transcendental R a := by
   simp_rw [Transcendental, isAlgebraic_algebraMap_iff h]
+
+namespace Subalgebra
+
+theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
+    _root_.IsAlgebraic R x ↔ _root_.IsAlgebraic R x.1 :=
+  (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
+
+theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : _root_.IsAlgebraic (⊥ : Subalgebra R S) x) :
+    _root_.IsAlgebraic R x :=
+  halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
+
+theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
+    _root_.IsAlgebraic (⊥ : Subalgebra R S) x ↔ _root_.IsAlgebraic R x :=
+  isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
+    Function.injective_id (by rfl)
+
+variable (R S) in
+theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
+    [Algebra.IsAlgebraic (⊥ : Subalgebra R S) S] : Algebra.IsAlgebraic R S :=
+  Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
+
+theorem algebra_isAlgebraic_bot_left_iff (h : Function.Injective (algebraMap R S)) :
+    Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by
+  simp_rw [Algebra.isAlgebraic_def, isAlgebraic_bot_iff h]
+
+instance algebra_isAlgebraic_bot_right [Nontrivial R] :
+    Algebra.IsAlgebraic R (⊥ : Subalgebra R S) :=
+  ⟨by rintro ⟨_, x, rfl⟩; exact isAlgebraic_algebraMap _⟩
+
+end Subalgebra
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
@@ -423,31 +499,34 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If `x` is algebraic over `R`, then `x` is algebraic over `S` when `S` is an extension of `R`,
   and the map from `R` to `S` is injective. -/
-theorem IsAlgebraic.tower_top_of_injective
-    (hinj : Function.Injective (algebraMap R S)) {x : A}
+theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
-/-- A special case of `IsAlgebraic.tower_top_of_injective`. This is extracted as a theorem
-  because in some cases `IsAlgebraic.tower_top_of_injective` will just runs out of memory. -/
+@[deprecated (since := "2024-11-18")]
+alias IsAlgebraic.tower_top_of_injective := IsAlgebraic.extendScalars
+
+/-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
+  because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : IsAlgebraic A x) : IsAlgebraic B x := by
   letI : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
   haveI : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
-  exact h.tower_top_of_injective (Subalgebra.inclusion_injective hle)
+  exact h.extendScalars (Subalgebra.inclusion_injective hle)
 
 /-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension
   of `R`, and the map from `R` to `S` is injective. -/
-theorem Transcendental.of_tower_top_of_injective
-    (hinj : Function.Injective (algebraMap R S)) {x : A}
-    (h : Transcendental S x) : Transcendental R x :=
-  fun H ↦ h (H.tower_top_of_injective hinj)
+theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
+    (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
-/-- A special case of `Transcendental.of_tower_top_of_injective`. This is extracted as a theorem
-  because in some cases `Transcendental.of_tower_top_of_injective` will just runs out of memory. -/
+@[deprecated (since := "2024-11-18")]
+alias Transcendental.of_tower_top_of_injective := Transcendental.restrictScalars
+
+/-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
+  because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : Transcendental B x) : Transcendental A x :=
@@ -455,9 +534,12 @@ theorem Transcendental.of_tower_top_of_subalgebra_le
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
-theorem Algebra.IsAlgebraic.tower_top_of_injective (hinj : Function.Injective (algebraMap R S))
+theorem Algebra.IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S))
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
-  ⟨fun _ ↦ _root_.IsAlgebraic.tower_top_of_injective hinj (Algebra.IsAlgebraic.isAlgebraic _)⟩
+  ⟨fun _ ↦ _root_.IsAlgebraic.extendScalars hinj (Algebra.IsAlgebraic.isAlgebraic _)⟩
+
+@[deprecated (since := "2024-11-18")]
+alias Algebra.IsAlgebraic.tower_top_of_injective := Algebra.IsAlgebraic.extendScalars
 
 theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
     (hinj : Function.Injective (algebraMap S A)) :
@@ -477,7 +559,7 @@ variable (L)
 @[stacks 09GF "part one"]
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
-  A_alg.tower_top_of_injective (algebraMap K L).injective
+  A_alg.extendScalars (algebraMap K L).injective
 
 variable {L} (K) in
 /-- If `x` is transcendental over `L`, then `x` is transcendental over `K` when
@@ -488,7 +570,7 @@ theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
 @[stacks 09GF "part two"]
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
-  Algebra.IsAlgebraic.tower_top_of_injective (algebraMap K L).injective
+  Algebra.IsAlgebraic.extendScalars (algebraMap K L).injective
 
 variable (K)
 
@@ -852,7 +934,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
     exact Algebra.adjoin_mono (Set.singleton_subset_iff.2 (Set.mem_image_of_mem _ h))
       (Polynomial.aeval_mem_adjoin_singleton _ _)
   · rw [← transcendental_polynomial_aeval_X_iff R i]
-    refine h.of_tower_top_of_injective fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
+    refine h.restrictScalars fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
     simp_rw [← MvPolynomial.algebraMap_eq]
     exact congr($(heq).1)
 
@@ -869,3 +951,16 @@ theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
     transcendental_supported_polynomial_aeval_X_iff R (i := i) (s := s) (f := Polynomial.X)
 
 end MvPolynomial
+
+section Infinite
+
+theorem Transcendental.infinite {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A :=
+  .of_injective _ (transcendental_iff_injective.mp hx)
+
+theorem Algebra.Transcendental.infinite (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A :=
+  have ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
+  hx.infinite
+
+end Infinite
