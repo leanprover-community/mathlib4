@@ -3386,7 +3386,7 @@ Q1134296:
 
 Q939927:
   title: "Stone\u2013Weierstrass theorem"
-  decl: stone_weierstrass
+  decl: ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
   author: Scott Morrison and Heather Macbeth
 
 Q7888360:
