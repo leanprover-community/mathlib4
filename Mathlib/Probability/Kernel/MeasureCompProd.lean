@@ -312,57 +312,25 @@ lemma mutuallySingular_compProd_left_iff [SFinite μ] [SigmaFinite ν]
   simp_rw [MutuallySingular.self_iff, (hκ _).ne] at hh
   exact ae_eq_bot.mp (Filter.eventually_false_iff_eq_bot.mp hh)
 
-
 lemma AbsolutelyContinuous.mutuallySingular_compProd_iff [SigmaFinite μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) :
     μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ μ ⊗ₘ κ ⟂ₘ μ ⊗ₘ η := by
   conv_lhs => rw [ν.haveLebesgueDecomposition_add μ]
   rw [compProd_add_left, MutuallySingular.add_right_iff]
-  simp only [MutuallySingular.compProd_of_left (mutuallySingular_singularPart ν μ).symm κ η,
-    true_and]
+  simp only [(mutuallySingular_singularPart ν μ).symm.compProd_of_left κ η, true_and]
   refine ⟨fun h ↦ h.mono_ac .rfl ?_, fun h ↦ h.mono_ac .rfl ?_⟩
-  · refine AbsolutelyContinuous.compProd_left ?_ _
-    exact absolutelyContinuous_withDensity_rnDeriv hμν
-  · refine AbsolutelyContinuous.compProd_left ?_ _
-    exact withDensity_absolutelyContinuous μ (ν.rnDeriv μ)
-
-section EquivalentInf
-
-lemma absolutelyContinuous_withDensity_rnDeriv_swap [ν.HaveLebesgueDecomposition μ] :
-    ν.withDensity (μ.rnDeriv ν) ≪ μ.withDensity (ν.rnDeriv μ) := by
-  have h1 := withDensity_absolutelyContinuous ν (μ.rnDeriv ν)
-  conv_rhs at h1 => rw [ν.haveLebesgueDecomposition_add μ, add_comm]
-  refine absolutelyContinuous_of_add_of_mutuallySingular h1 ?_
-  refine MutuallySingular.mono_ac (mutuallySingular_singularPart ν μ).symm ?_ .rfl
-  exact absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _)
-
-lemma AbsolutelyContinuous.withDensity_rnDeriv {ξ : Measure α} [μ.HaveLebesgueDecomposition ν]
-    (hξμ : ξ ≪ μ) (hξν : ξ ≪ ν) :
-    ξ ≪ ν.withDensity (μ.rnDeriv ν) := by
-  conv_rhs at hξμ => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
-  refine absolutelyContinuous_of_add_of_mutuallySingular hξμ ?_
-  exact MutuallySingular.mono_ac (mutuallySingular_singularPart μ ν).symm hξν .rfl
-
-lemma mutuallySingular_congr_ac {μ₂ ν₂ : Measure α} (hμμ₂ : μ ≪ μ₂) (hμ₂μ : μ₂ ≪ μ)
-    (hνν₂ : ν ≪ ν₂) (hν₂ν : ν₂ ≪ ν) :
-    μ ⟂ₘ ν ↔ μ₂ ⟂ₘ ν₂ :=
-  ⟨fun h ↦ h.mono_ac hμ₂μ hν₂ν,  fun h ↦ h.mono_ac hμμ₂ hνν₂⟩
-
-end EquivalentInf
+  · exact (absolutelyContinuous_withDensity_rnDeriv hμν).compProd_left _
+  · exact (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)).compProd_left _
 
 lemma mutuallySingular_compProd_iff [SigmaFinite μ] [SigmaFinite ν] :
     μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ ∀ ξ, SFinite ξ → ξ ≪ μ → ξ ≪ ν → ξ ⊗ₘ κ ⟂ₘ ξ ⊗ₘ η := by
   conv_lhs => rw [μ.haveLebesgueDecomposition_add ν]
   rw [compProd_add_left, MutuallySingular.add_left_iff]
-  simp only [MutuallySingular.compProd_of_left (mutuallySingular_singularPart μ ν) κ η,
-    true_and]
+  simp only [(mutuallySingular_singularPart μ ν).compProd_of_left κ η, true_and]
   rw [(withDensity_absolutelyContinuous ν (μ.rnDeriv ν)).mutuallySingular_compProd_iff]
   refine ⟨fun h ξ hξ hξμ hξν ↦ ?_, fun h ↦ ?_⟩
-  · refine h.mono_ac ?_ ?_
-    · refine AbsolutelyContinuous.compProd_left ?_ _
-      exact hξμ.withDensity_rnDeriv hξν
-    · refine AbsolutelyContinuous.compProd_left ?_ _
-      exact hξμ.withDensity_rnDeriv hξν
+  · exact h.mono_ac ((hξμ.withDensity_rnDeriv hξν).compProd_left _)
+      ((hξμ.withDensity_rnDeriv hξν).compProd_left _)
   · refine h _ ?_ ?_ ?_
     · infer_instance
     · exact absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _)
@@ -370,8 +338,7 @@ lemma mutuallySingular_compProd_iff [SigmaFinite μ] [SigmaFinite ν] :
 
 end MutuallySingular
 
-lemma absolutelyContinuous_compProd_of_compProd
-    [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+lemma absolutelyContinuous_compProd_of_compProd [SigmaFinite μ] [SigmaFinite ν]
     (hκη : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
   rw [ν.haveLebesgueDecomposition_add μ, compProd_add_left, add_comm] at hκη

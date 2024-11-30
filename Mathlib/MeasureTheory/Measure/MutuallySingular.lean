@@ -89,6 +89,10 @@ theorem mono_ac (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≪ μ₁) (hν : ν₂ �
   let ⟨s, hs, h₁, h₂⟩ := h
   ⟨s, hs, hμ h₁, hν h₂⟩
 
+lemma congr_ac (hμμ₂ : μ ≪ μ₂) (hμ₂μ : μ₂ ≪ μ) (hνν₂ : ν ≪ ν₂) (hν₂ν : ν₂ ≪ ν) :
+    μ ⟂ₘ ν ↔ μ₂ ⟂ₘ ν₂ :=
+  ⟨fun h ↦ h.mono_ac hμ₂μ hν₂ν,  fun h ↦ h.mono_ac hμμ₂ hνν₂⟩
+
 theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ ν₁) : μ₂ ⟂ₘ ν₂ :=
   h.mono_ac hμ.absolutelyContinuous hν.absolutelyContinuous
 
