@@ -149,6 +149,11 @@ lemma d_toCycles [K.HasHomology k] :
     K.d i j ≫ K.toCycles j k = 0 := by
   simp only [← cancel_mono (K.iCycles k), assoc, toCycles_i, d_comp_d, zero_comp]
 
+variable {i j} in
+lemma toCycles_eq_zero [K.HasHomology j] (hij : ¬ c.Rel i j) :
+    K.toCycles i j = 0 := by
+  rw [← cancel_mono (K.iCycles j), toCycles_i, zero_comp, K.shape _ _ hij]
+
 variable {i}
 
 section
@@ -257,6 +262,11 @@ instance : Mono (K.homologyι i) := by
 lemma fromOpcycles_d :
     K.fromOpcycles i j ≫ K.d j k = 0 := by
   simp only [← cancel_epi (K.pOpcycles i), p_fromOpcycles_assoc, d_comp_d, comp_zero]
+
+variable {i j} in
+lemma fromOpcycles_eq_zero (hij : ¬ c.Rel i j) :
+    K.fromOpcycles i j = 0 := by
+  rw [← cancel_epi (K.pOpcycles i), p_fromOpcycles, comp_zero, K.shape _ _ hij]
 
 variable {i}
 
@@ -603,6 +613,23 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
     K.ExactAt i ↔ IsZero (K.homology i) := by
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
+
+/-- A homological complex `K` is acyclic if it is exact at `i` for any `i`. -/
+def Acyclic := ∀ i, K.ExactAt i
+
+lemma acyclic_iff :
+    K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
+
+lemma acyclic_of_isZero (hK : IsZero K) :
+    K.Acyclic := by
+  rw [acyclic_iff]
+  intro i
+  apply ShortComplex.exact_of_isZero_X₂
+  dsimp
+  rw [IsZero.iff_id_eq_zero]
+  change 𝟙 ((eval _ _ i).obj K) = 0
+  rw [← CategoryTheory.Functor.map_id, hK.eq_of_src (𝟙 K) 0]
+  simp
 
 end HomologicalComplex
 
