@@ -318,6 +318,7 @@ open scoped Pointwise
 
 variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ)
 
+-- The image of `ι → ℤ` inside `ι → ℝ`
 local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :
@@ -386,11 +387,10 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
   have h₁ : ∃ C, ∀ x ∈ Box.Icc B, ‖Set.indicator s F x‖ ≤ C := by
     obtain ⟨C₀, h₀⟩ := (Box.isCompact_Icc B).exists_bound_of_continuousOn hF.continuousOn
     refine ⟨max 0 C₀, fun x hx ↦ ?_⟩
-    by_cases hx' : x ∈ s
-    · rw [Set.indicator_of_mem hx']
-      exact le_max_of_le_right (h₀ x hx)
-    · rw [Set.indicator_of_not_mem hx', norm_zero]
-      exact le_max_left 0 _
+    rw [Set.indicator]
+    split_ifs with hs
+    · exact le_max_of_le_right (h₀ x hx)
+    · exact norm_zero.trans_le <|le_max_left 0 _
   have h₂ : ∀ᵐ x, ContinuousAt (s.indicator F) x := by
     filter_upwards [compl_mem_ae_iff.mpr hs₃] with _ h
       using (hF.continuousOn).continuousAt_indicator h
@@ -399,7 +399,7 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
         IntegrationParams.Riemann) (ε / 2) (half_pos hε)
   refine ⟨⌈(r 0 0 : ℝ)⁻¹⌉₊, fun n hn ↦ lt_of_le_of_lt ?_ (half_lt_self_iff.mpr hε)⟩
   have : NeZero n :=
-    ⟨Nat.ne_zero_iff_zero_lt.mpr <| lt_of_lt_of_le (Nat.ceil_pos.mpr (inv_pos.mpr (r 0 0).prop)) hn⟩
+    ⟨Nat.ne_zero_iff_zero_lt.mpr <| (Nat.ceil_pos.mpr (inv_pos.mpr (r 0 0).prop)).trans_le hn⟩
   rw [← integralSum_eq_tsum_div _ s F hB hs₀, ← Measure.restrict_restrict_of_subset hs₀,
     ← integral_indicator hs₂]
   refine hr₂ 0 _ ⟨?_, fun _ ↦ ?_, fun h ↦ ?_, fun h ↦ ?_⟩ (prepartition_isPartition _ hB)
@@ -431,12 +431,11 @@ private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
 private theorem tendsto_card_div_pow₂ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) {x y : ℝ} (hx : 0 < x) (hy : x ≤ y) :
     Nat.card ↑(s ∩ x⁻¹ • L) ≤ Nat.card ↑(s ∩ y⁻¹ • L) := by
-  rw [Nat.card_congr (tendsto_card_div_pow₁ s (ne_of_gt hx)),
-      Nat.card_congr (tendsto_card_div_pow₁ s (ne_of_gt (lt_of_lt_of_le hx hy)))]
+  rw [Nat.card_congr (tendsto_card_div_pow₁ s hx.ne'),
+      Nat.card_congr (tendsto_card_div_pow₁ s (hx.trans_le hy).ne')]
   refine Nat.card_mono ?_ ?_
   · exact ZSpan.setFinite_inter _ (IsBounded.smul₀ hs₁ y)
-  · gcongr
-    exact hs₄ hx hy
+  · exact Set.inter_subset_inter_left _ <| hs₄ hx hy
 
 private theorem tendsto_card_div_pow₃ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
@@ -445,7 +444,7 @@ private theorem tendsto_card_div_pow₃ (hs₁ : IsBounded s)
   filter_upwards [eventually_ge_atTop 1] with x hx
   gcongr
   exact tendsto_card_div_pow₂ s hs₁ hs₄ (Nat.cast_pos.mpr (Nat.floor_pos.mpr hx))
-    (Nat.floor_le (by positivity))
+    (Nat.floor_le (zero_le_one.trans hx))
 
 private theorem tendsto_card_div_pow₄ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
@@ -460,14 +459,14 @@ private theorem tendsto_card_div_pow₅ :
       =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
   filter_upwards [eventually_ge_atTop 1] with x hx
   have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
-  field_simp [hx]
+  rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
 
 private theorem tendsto_card_div_pow₆ :
     (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / ⌈x⌉₊ ^ card ι * (⌈x⌉₊ / x) ^ card ι)
           =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
   filter_upwards [eventually_ge_atTop 1] with x hx
   have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
-  field_simp [hx]
+  rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
 
 /-- A version of `tendsto_card_div_pow_atTop_volume` for a real variable. -/
 theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
