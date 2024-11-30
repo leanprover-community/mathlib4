@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.Roots.Basic
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!

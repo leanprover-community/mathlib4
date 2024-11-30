@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.Roots.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic

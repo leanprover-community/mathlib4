@@ -532,7 +532,8 @@ import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.LinearMap.Polynomial
+import Mathlib.Algebra.Module.LinearMap.Polynomial.Basic
+import Mathlib.Algebra.Module.LinearMap.Polynomial.IsDomain
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.LinearMap.Star
@@ -829,7 +830,8 @@ import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.Algebra.Polynomial.PartialFractions
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Polynomial.Roots.Basic
+import Mathlib.Algebra.Polynomial.Roots.Card
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.Algebra.Polynomial.Splits
@@ -4409,7 +4411,8 @@ import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.FreeCommRing
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.MvPolynomial.Homogeneous.Basic
+import Mathlib.RingTheory.MvPolynomial.Homogeneous.IsDomain
 import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Localization
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs

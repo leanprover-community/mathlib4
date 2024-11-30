@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.MvPolynomial.Homogeneous.Basic
 
 /-!
 # The universal characteristic polynomial
