@@ -1,4 +1,4 @@
-name: Add "ready-to-merge" and "delegated" label
+name: Parse PR comment for commands
 
 # triggers the action when
 on:
@@ -24,9 +24,9 @@ jobs:
       # either an admin or one of two bots is considered to be a maintainer
       is_maintainer: ${{steps.user_permission.outputs.require-result ||
         contains(fromJSON('["leanprover-community-mathlib4-bot","leanprover-community-bot-assistant"]'),
-          format('{}{}',github.event.comment.user.login,github.event.review.user.login))}}
+          format('{0}{1}',github.event.comment.user.login,github.event.review.user.login))}}
 
-      parse_result: ${{fromJSON(steps.normalise_commands.parse-result)}}
+      parse_result: ${{steps.find_commands.parse-result}}
       #not sure if the rest is relevant; tbd.
       pr_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
       pr_title_issue: ${{ github.event.issue.title }}
@@ -76,7 +76,7 @@ jobs:
     if: ${{ needs.process-comment.outputs.is_reviewer}}
     strategy:
       matrix:
-        command: ${{ needs.process-comment.outputs.parse_result}}
+        command: ${{ fromJSON(needs.process-comment.outputs.parse_result) }}
     runs-on: ubuntu-latest
     steps:
 
@@ -93,11 +93,11 @@ jobs:
     strategy:
       matrix:
         # for each command in the parse result, run the command
-        command: ${{ needs.process-comment.outputs.parse_result }}
+        command: ${{ fromJSON(needs.process-comment.outputs.parse_result) }}
     runs-on: ubuntu-latest
     steps:
     - name: 'run bors command'
       # check the command is of an acceptable form. it allows "bors merge+" and "bors r" variants.
-      if: matrix.command.command-name == 'bors' && ${{! matrix.command.option == '?'}}
+      if: ${{ matrix.command.command-name == 'bors' && ! matrix.command.option == '?'}}
       run: |
         echo "bors command is happens with ${{toJSON(matrix.command)}}"
