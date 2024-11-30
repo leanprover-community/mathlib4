@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.ENat.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Nat

@@ -202,6 +202,7 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.DualNumber
@@ -405,6 +406,7 @@ import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.Extend
+import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
 import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Embedding.Restriction
@@ -943,8 +945,9 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
-import Mathlib.AlgebraicGeometry.EllipticCurve.J
+import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
+import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
@@ -1006,6 +1009,7 @@ import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Sites.Etale
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Mathlib.AlgebraicGeometry.Sites.Small
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.SpreadingOut
 import Mathlib.AlgebraicGeometry.Stalk
@@ -1127,7 +1131,6 @@ import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
 import Mathlib.Analysis.Calculus.Conformal.InnerProduct
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.Calculus.ContDiff.Analytic
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
@@ -2125,6 +2128,8 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Construction
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
+import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 import Mathlib.CategoryTheory.SmallObject.Iteration.UniqueHom
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
@@ -2384,6 +2389,7 @@ import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.BigOperators
+import Mathlib.Data.ENat.Defs
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
@@ -2762,6 +2768,7 @@ import Mathlib.Data.PNat.Equiv
 import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
 import Mathlib.Data.PNat.Interval
+import Mathlib.Data.PNat.Notation
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
@@ -4100,6 +4107,7 @@ import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
+import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
@@ -4208,8 +4216,13 @@ import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.AlgebraTower
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.Algebraic.Cardinality
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.Algebraic.LinearIndependent
+import Mathlib.RingTheory.Algebraic.MvPolynomial
+import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
