@@ -4214,8 +4214,13 @@ import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.AlgebraTower
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.Algebraic.Cardinality
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.Algebraic.LinearIndependent
+import Mathlib.RingTheory.Algebraic.MvPolynomial
+import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
