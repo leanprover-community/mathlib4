@@ -28,11 +28,11 @@ This `h` is unique and is denoted as `Polynomial.hilbert p d`.
 * Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
 
-open BigOperators Nat PowerSeries
-
-namespace Polynomial
+open BigOperators Nat Polynomial PowerSeries
 
 variable (F : Type*) [Field F]
+
+namespace Polynomial
 
 /--
 For any field `F` and natrual numbers `d` and `k`, `Polynomial.preHilbert F d k` is defined as
@@ -54,8 +54,7 @@ theorem preHilbert_eq_choose_sub_add [CharZero F] (d k n : ℕ) (hkn : k ≤ n):
     rw [ascPochhammer_nat_eq_natCast_ascFactorial];
     field_simp [ascFactorial_eq_factorial_mul_choose]
 
-variable {F}
-
+variable {F} in
 /--
 `Polynomial.hilbert p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbert p (d + 1)` is
 defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbert F d i`. If `M` is
@@ -69,12 +68,16 @@ noncomputable def hilbert (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
   | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbert F d i
 
-variable (F) in
 lemma hilbert_zero (d : ℕ) : hilbert (0 : F[X]) d = 0 := by
   delta hilbert; induction d with
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
+end Polynomial
+
+namespace PowerSeries
+
+variable {F} in
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbert p d).eval (n : F)` is equal to the
@@ -82,7 +85,7 @@ coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 -/
 theorem coeff_mul_invOneSubPow_eq_hilbert_eval
     [CharZero F] (p : F[X]) (d n : ℕ) (hn : p.natDegree < n) :
-    PowerSeries.coeff F n (p * (invOneSubPow F d)) = (hilbert p d).eval (n : F) := by
+    coeff F n (p * (invOneSubPow F d)) = (hilbert p d).eval (n : F) := by
   delta hilbert; induction d with
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
@@ -93,7 +96,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbert_eval
         <| mem_support_iff.1 i.2) (le_of_lt hn)]; rw [Nat.sub_add_comm];
         exact le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) (le_of_lt hn)]
       rw [Finset.sum_coe_sort _ (fun x => (p.coeff ↑x) * (_ + d - ↑x).choose _),
-        PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+        coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
         invOneSubPow_val_eq_mk_sub_one_add_choose_of_pos _ _ (zero_lt_succ d)]
       simp only [coeff_coe, coeff_mk]
       exact Eq.symm <| Finset.sum_subset_zero_on_sdiff (fun s hs => Finset.mem_range_succ_iff.mpr
@@ -102,4 +105,4 @@ theorem coeff_mul_invOneSubPow_eq_hilbert_eval
         (fun x hx => by rw [add_comm, Nat.add_sub_assoc <| le_trans (le_natDegree_of_ne_zero <|
         mem_support_iff.1 hx) (le_of_lt hn), succ_eq_add_one, add_tsub_cancel_right])
 
-end Polynomial
+end PowerSeries
