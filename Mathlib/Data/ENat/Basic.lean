@@ -87,6 +87,9 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 
 theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow n_pos
 
+/-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
+def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
+
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 
 instance : WellFoundedRelation ℕ∞ where
