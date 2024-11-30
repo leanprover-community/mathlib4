@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Theory of univariate polynomials
@@ -657,6 +658,28 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
       natDegree_mul_leadingCoeff_inv _ hp0]
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
+
+open UniqueFactorizationMonoid in
+/--
+Every polynomial over a field factors to some constant times the product of some
+irreducible monic polynomials.
+-/
+theorem exists_multiset_irreducible_and_monic_and_mul_prod_eq (a : R[X]) :
+    ∃ (f : Multiset R[X]) (v : R), (∀ b ∈ f, Irreducible b ∧ b.Monic) ∧ C v * f.prod = a := by
+  classical
+  by_cases ha : a = 0
+  · use ∅, 0
+    simp [ha]
+  use normalizedFactors a
+  obtain ⟨v, hv⟩ := normalizedFactors_prod ha
+  obtain ⟨v', -, hv'⟩ := Polynomial.isUnit_iff.mp v.isUnit
+  use v'
+  refine ⟨fun _ hb => ⟨irreducible_of_normalized_factor _ hb, ?_⟩,
+    by simpa [hv', mul_comm] using hv⟩
+  rw [← normalize_normalized_factor _ hb]
+  apply Polynomial.monic_normalize
+  apply Irreducible.ne_zero
+  exact irreducible_of_normalized_factor _ hb
 
 end Field
 
