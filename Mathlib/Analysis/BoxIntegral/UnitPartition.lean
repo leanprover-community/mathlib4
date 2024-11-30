@@ -308,10 +308,6 @@ theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
   rw [TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
   exact ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
 
-theorem exists_admissibleIndex {B : Box ι} (hB : hasIntegralVertices B) {x : ι → ℝ} (hx : x ∈ B) :
-    ∃ ν ∈ admissibleIndex n B, box n ν = box n (index n x) :=
-  ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
-
 open Submodule Pointwise BigOperators
 
 open scoped Pointwise
@@ -321,23 +317,25 @@ variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ)
 -- The image of `ι → ℤ` inside `ι → ℝ`
 local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 
+theorem mem_smul_span_iff (v : ι → ℝ) :
+    v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
+  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
+  simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
+    IsUnit.unit_spec, inv_inv, smul_eq_mul]
+
 theorem tag_mem_smul_span (ν : ι → ℤ) :
     tag n ν ∈ (n : ℝ)⁻¹ • L := by
-  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
-  refine fun i ↦ ⟨ν i + 1, ?_⟩
-  rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, tag_apply, Units.smul_def, smul_eq_mul,
-    div_eq_inv_mul, ← mul_assoc, IsUnit.val_inv_mul, one_mul, map_add, map_one, eq_intCast]
+  refine (mem_smul_span_iff _ _).mpr fun i ↦ ⟨ν i + 1, ?_⟩
+  rw [tag_apply, div_eq_inv_mul, ← mul_assoc, mul_inv_cancel_of_invertible, one_mul, map_add,
+    map_one, eq_intCast]
 
 theorem tag_index_eq_self_of_mem_smul_span {x : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L) :
     tag n (index n x) = x := by
-  rw [ZSpan.smul _ (inv_ne_zero (mod_cast (NeZero.ne n))), Basis.mem_span_iff_repr_mem] at hx
+  rw [mem_smul_span_iff] at hx
   ext i
-  rsuffices ⟨a, ha⟩ : ∃ a : ℤ, a = n * x i := by
-    specialize hx i
-    rwa [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
-      IsUnit.unit_spec, inv_inv] at hx
-  rw [tag_apply, index_apply, Int.cast_sub, Int.cast_one, sub_add_cancel, ← ha, Int.ceil_intCast,
-    ha, mul_div_assoc, mul_div_cancel₀ _ (mod_cast (NeZero.ne n))]
+  obtain ⟨a, ha⟩ : ∃ a : ℤ, a = n * x i := hx i
+  rwa [tag_apply, index_apply, Int.cast_sub, Int.cast_one, sub_add_cancel, ← ha, Int.ceil_intCast,
+    div_eq_iff (NeZero.ne _), mul_comm]
 
 theorem eq_of_index_eq_index_and_mem_smul_span {x y : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L)
     (hy : y ∈ (n : ℝ)⁻¹ • L) (h : index n x = index n y) : x = y := by
@@ -358,7 +356,8 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
   refine Finset.sum_bij (fun x _ ↦ box n (index n x)) (fun _ hx ↦ Finset.mem_filter.mpr ?_)
     (fun _ hx _ hy h ↦ ?_) (fun I hI ↦ ?_) (fun _ hx ↦ ?_)
   · rw [Set.mem_toFinset] at hx
-    refine ⟨mem_prepartition_boxes_iff.mpr (exists_admissibleIndex n hB (hs₀ hx.1)), ?_⟩
+    refine ⟨mem_prepartition_boxes_iff.mpr
+      ⟨index n _, mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1), rfl⟩, ?_⟩
     simp_rw [prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
       tag_index_eq_self_of_mem_smul_span n hx.2, hx.1]
   · rw [Set.mem_toFinset] at hx hy
