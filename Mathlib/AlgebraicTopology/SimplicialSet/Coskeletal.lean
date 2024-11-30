@@ -104,7 +104,9 @@ lemma fac_aux₂ {n : ℕ}
   | zero =>
       rintro i j hij hj hik
       obtain rfl : i = j := by omega
-      rw [mkOfLe_rfl_const]
+      have : mkOfLe ⟨i, Nat.lt_add_one_of_le hj⟩ ⟨i, Nat.lt_add_one_of_le hj⟩ (by omega) =
+        [1].const [0] 0 ≫ [0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩ := Hom.ext_one_left _ _
+      rw [this]
       let α : (strArrowMk₂ ([0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by omega)) ⟶
         (strArrowMk₂ ([1].const [0] 0 ≫ [0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by omega)) :=
             StructuredArrow.homMk (([1].const [0] 0).op) (by simp; rfl)
@@ -254,13 +256,9 @@ noncomputable def cosk2NatTrans : nerveFunctor.{u, v} ⟶ nerveFunctor₂ ⋙ Tr
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor ⋙ Truncated.cosk 2` whose
 components `nerve C ≅  (Truncated.cosk 2).obj (nerve₂ C)` shows that nerves of categories are
 2-coskeletal.-/
-noncomputable def cosk2Iso : nerveFunctor.{u, u} ≅ nerveFunctor₂.{u, u} ⋙ Truncated.cosk 2 := by
-  refine NatIso.ofComponents ?_ ?_
-  · intro C
-    dsimp [nerveFunctor, nerveFunctor₂]
-    exact (StrictSegal.isoCosk2 (nerve C))
-  · simp only [nerveFunctor_obj, comp_obj, id_eq, Functor.comp_map]
-    convert cosk2NatTrans.naturality
+noncomputable def cosk₂Iso : nerveFunctor.{u, u} ≅ nerveFunctor₂.{u, u} ⋙ Truncated.cosk 2 :=
+  NatIso.ofComponents (fun C ↦ (nerve C).isoCoskOfIsCoskeletal 2)
+    (fun _ ↦ (coskAdj 2).unit.naturality _)
 
 end Nerve
 
