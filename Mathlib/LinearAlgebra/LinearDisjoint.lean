@@ -25,7 +25,7 @@ Let `M` and `N` be `R`-submodules in `S` (`Submodule R S`).
   `M.LinearDisjoint N`), if the natural `R`-linear map `M ⊗[R] N →ₗ[R] S`
   (`Submodule.mulMap M N`) induced by the multiplication in `S` is injective.
 
-The following is the first equivalent characterization of linearly disjointness:
+The following is the first equivalent characterization of linear disjointness:
 
 - `Submodule.LinearDisjoint.linearIndependent_left_of_flat`:
   if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
@@ -49,7 +49,7 @@ Dually, we have:
   conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
-The following is the second equivalent characterization of linearly disjointness:
+The following is the second equivalent characterization of linear disjointness:
 
 - `Submodule.LinearDisjoint.linearIndependent_mul_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
@@ -64,15 +64,15 @@ The following is the second equivalent characterization of linearly disjointness
 
 ## Other main results
 
-- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_symm_of_commute`:
-  linearly disjoint is symmetric under some commutative conditions.
+- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
+  linear disjointness is symmetric under some commutative conditions.
 
 - `Submodule.linearDisjoint_op`:
-  linearly disjoint is preserved by taking multiplicative opposite.
+  linear disjointness is preserved by taking multiplicative opposite.
 
 - `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
   `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
-  linearly disjoint is preserved by taking submodules under some flatness conditions.
+  linear disjointness is preserved by taking submodules under some flatness conditions.
 
 - `Submodule.LinearDisjoint.of_linearDisjoint_fg_left`,
   `Submodule.LinearDisjoint.of_linearDisjoint_fg_right`,
@@ -162,7 +162,7 @@ theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := 
   haveI : Subsingleton S := Module.subsingleton R S
   exact ⟨Function.injective_of_subsingleton _⟩
 
-/-- Linearly disjoint is preserved by taking multiplicative opposite. -/
+/-- Linear disjointness is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
@@ -171,14 +171,14 @@ theorem linearDisjoint_op :
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 
-/-- Linearly disjoint is symmetric if elements in the module commute. -/
+/-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : N.LinearDisjoint M := by
   rw [linearDisjoint_iff, mulMap_comm_of_commute M N hc]
   exact ((TensorProduct.comm R N M).toEquiv.injective_comp _).2 H.injective
 
-/-- Linearly disjoint is symmetric if elements in the module commute. -/
-theorem linearDisjoint_symm_of_commute
+/-- Linear disjointness is symmetric if elements in the module commute. -/
+theorem linearDisjoint_comm_of_commute
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
@@ -284,12 +284,12 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 variable {M N : Submodule R S}
 
-/-- Linearly disjoint is symmetric in a commutative ring. -/
+/-- Linear disjointness is symmetric in a commutative ring. -/
 theorem LinearDisjoint.symm (H : M.LinearDisjoint N) : N.LinearDisjoint M :=
   H.symm_of_commute fun _ _ ↦ mul_comm _ _
 
-/-- Linearly disjoint is symmetric in a commutative ring. -/
-theorem linearDisjoint_symm : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
+/-- Linear disjointness is symmetric in a commutative ring. -/
+theorem linearDisjoint_comm : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
 end CommSemiring

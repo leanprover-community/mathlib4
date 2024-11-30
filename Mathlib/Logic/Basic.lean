@@ -6,11 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Batteries.Logic
+import Batteries.Tactic.Trans
 import Batteries.Util.LibraryNote
-import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
-import Mathlib.Order.Defs
 
 /-!
 # Basic logic properties
@@ -132,10 +131,6 @@ open Function
 section Propositional
 
 /-! ### Declarations about `implies` -/
-
-instance : IsRefl Prop Iff := ⟨Iff.refl⟩
-
-instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
 alias Iff.imp := imp_congr
 

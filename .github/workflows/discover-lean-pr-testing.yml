@@ -100,8 +100,13 @@ jobs:
             
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
-                # If it does, add the branch to RELEVANT_BRANCHES
-                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$BRANCH"
+                # Extract the PR number and actual branch name
+                PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+                ACTUAL_BRANCH=${BRANCH#origin/}
+                GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...$ACTUAL_BRANCH"
+                
+                # Append the branch details to RELEVANT_BRANCHES
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$ACTUAL_BRANCH (lean4#$PR_NUMBER) ([diff with \`nightly-testing\`]($GITHUB_DIFF))"
             fi
         done
 
