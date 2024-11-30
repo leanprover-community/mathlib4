@@ -80,7 +80,7 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
 to a map `Quot ra → Quot rb`. -/
 protected def map (f : α → β) (h : ∀ a b : α, ra a b → rb (f a) (f b)) : Quot ra → Quot rb :=
-  Quot.lift (fun x => Quot.mk rb (f x)) <| fun x y hra ↦ Quot.sound <|  h x y hra
+  Quot.lift (fun x => Quot.mk rb (f x)) fun x y hra ↦ Quot.sound <|  h x y hra
 
 /-- If `ra` is a subrelation of `ra'`, then we have a natural map `Quot ra → Quot ra'`. -/
 protected def mapRight {ra' : α → α → Prop} (h : ∀ a₁ a₂, ra a₁ a₂ → ra' a₁ a₂) :
@@ -231,7 +231,7 @@ protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f
   Quot.map f h
 
 @[simp]
-theorem map_mk (f : α → β) (h : ∀ a b, a ≈ b → f a ≈ f b) (x : α) :
+theorem map_mk (f : α → β) (h) (x : α) :
     Quotient.map f h (⟦x⟧ : Quotient sa) = (⟦f x⟧ : Quotient sb) :=
   rfl
 
@@ -241,13 +241,12 @@ variable {γ : Sort*} {sc : Setoid γ}
 to a function `f : Quotient sa → Quotient sb → Quotient sc`.
 Useful to define binary operations on quotients. -/
 protected def map₂ (f : α → β → γ)
- (h : ∀ ⦃a₁ a₂⦄, a₁ ≈ a₂ → ∀ ⦃b₁ b₂⦄, b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
+   (h : ∀ ⦃a₁ a₂⦄, a₁ ≈ a₂ → ∀ ⦃b₁ b₂⦄, b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
     Quotient sa → Quotient sb → Quotient sc :=
   Quotient.lift₂ (fun x y ↦ ⟦f x y⟧) fun _ _ _ _ h₁ h₂ ↦ Quot.sound <| h h₁ h₂
 
 @[simp]
-theorem map₂_mk (f : α → β → γ)
-(h : ∀ a₁ a₂, a₁ ≈ a₂ → ∀ b₁ b₂, b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) (x : α) (y : β) :
+theorem map₂_mk (f : α → β → γ) (h) (x : α) (y : β) :
     Quotient.map₂ f h (⟦x⟧ : Quotient sa) (⟦y⟧ : Quotient sb) = (⟦f x y⟧ : Quotient sc) :=
   rfl
 
