@@ -12,7 +12,7 @@ Given a functor `Φ : C ⥤ C` and a natural transformation `ε : 𝟭 C ⟶ Φ`
 we shall show in this file that for any well ordered set `J`,
 and `j : J`, the category `Functor.Iteration ε j` is nonempty.
 As we already know from the main result in `SmallObject.Iteration.UniqueHom`
-that such objects, if they exists, are unique up to a unique isomorphism,
+that such objects, if they exist, are unique up to a unique isomorphism,
 we shall show the existence of a term in `Functor.Iteration ε j` by
 transfinite induction.
 
