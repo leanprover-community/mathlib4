@@ -79,7 +79,7 @@ def CanonicalQuotientMap (P : ProfiniteGrp.{u}) : P ⟶
     intro s _
     rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
     refine isOpen_iUnion (fun i ↦ isOpen_iUnion (fun _ ↦ ?_))
-    convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out' i)
+    convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
     ext x
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
