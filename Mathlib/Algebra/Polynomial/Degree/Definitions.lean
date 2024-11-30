@@ -5,7 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.EraseUpdate
 import Mathlib.Data.Nat.Cast.WithTop
 
 /-!

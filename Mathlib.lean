@@ -579,13 +579,18 @@ import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Algebra.Module.ZMod
+import Mathlib.Algebra.MonoidAlgebra.Algebra
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.MonoidAlgebra.Grading
 import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Algebra.MonoidAlgebra.Lift
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Opposite
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 import Mathlib.Algebra.MvPolynomial.Basic
@@ -783,13 +788,14 @@ import Mathlib.Algebra.PUnitInstances.Module
 import Mathlib.Algebra.PUnitInstances.Order
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Pointwise.Stabilizer
+import Mathlib.Algebra.Polynomial.Algebra
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.CancelLeads
 import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.Algebra.Polynomial.Defs
 import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Degree.Domain
@@ -805,6 +811,7 @@ import Mathlib.Algebra.Polynomial.Derivation
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.EraseLead
+import Mathlib.Algebra.Polynomial.EraseUpdate
 import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Algebra.Polynomial.Eval.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
@@ -821,6 +828,7 @@ import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Mirror
+import Mathlib.Algebra.Polynomial.Module
 import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Polynomial.Module.FiniteDimensional
@@ -833,6 +841,7 @@ import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Sum
 import Mathlib.Algebra.Polynomial.SumIteratedDerivative
 import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.Algebra.Polynomial.UnitTrinomial
@@ -2474,6 +2483,7 @@ import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Encodable
+import Mathlib.Data.Finsupp.Ext
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Finsupp.Indicator
@@ -2486,6 +2496,8 @@ import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
+import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Data.Finsupp.WellFounded

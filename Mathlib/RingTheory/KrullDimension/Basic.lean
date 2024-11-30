@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.Algebra.Polynomial.Defs
 import Mathlib.Order.KrullDimension
+import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
 # Krull dimensions of (commutative) rings

@@ -3,7 +3,7 @@ Copyright (c) 2021 Chris Hughes, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Module
 import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!

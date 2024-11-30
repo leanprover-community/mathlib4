@@ -4,19 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Polynomial.Algebra
 import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
-# Theory of univariate polynomials
+# `map` and `eval` as algebra maps
 
-We show that `A[X]` is an R-algebra when `A` is an R-algebra.
-We promote `eval₂` to an algebra hom in `aeval`.
+We promote `eval₂` to an algebra hom in `aeval`, and `map` to an algebra hom in `mapAlgHom`.
 -/
-
 
 noncomputable section
 
@@ -34,72 +31,6 @@ section CommSemiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
-
-/-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X] where
-  smul_def' r p :=
-    toFinsupp_injective <| by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
-      rw [toFinsupp_smul, toFinsupp_mul, toFinsupp_C]
-      exact Algebra.smul_def' _ _
-  commutes' r p :=
-    toFinsupp_injective <| by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
-      simp_rw [toFinsupp_mul, toFinsupp_C]
-      convert Algebra.commutes' r p.toFinsupp
-  toRingHom := C.comp (algebraMap R A)
-
-@[simp]
-theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
-  rfl
-
-@[simp]
-theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
-  show toFinsupp (C (algebraMap _ _ r)) = _ by
-    rw [toFinsupp_C]
-    rfl
-
-theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
-  toFinsupp_injective (toFinsupp_algebraMap _).symm
-
-/-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[X]`.
-
-(But note that `C` is defined when `R` is not necessarily commutative, in which case
-`algebraMap` is not available.)
--/
-theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
-  rfl
-
-@[simp]
-theorem algebraMap_eq : algebraMap R R[X] = C :=
-  rfl
-
-/-- `Polynomial.C` as an `AlgHom`. -/
-@[simps! apply]
-def CAlgHom : A →ₐ[R] A[X] where
-  toRingHom := C
-  commutes' _ := rfl
-
-/-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
--/
-@[ext 1100]
-theorem algHom_ext' {f g : A[X] →ₐ[R] B}
-    (hC : f.comp CAlgHom = g.comp CAlgHom)
-    (hX : f X = g X) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
-
-variable (R)
-
-open AddMonoidAlgebra in
-/-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
-implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
-@[simps!]
-def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
-  { toFinsuppIso R with
-    commutes' := fun r => by
-      dsimp }
-
-variable {R}
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
@@ -236,11 +167,6 @@ theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
   set S := Algebra.adjoin R ({X} : Set R[X])
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
-
-@[ext 1200]
-theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
-    f = g :=
-  algHom_ext' (Subsingleton.elim _ _) hX
 
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
