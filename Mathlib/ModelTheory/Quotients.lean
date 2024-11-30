@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Fintype.Quotient
-import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Semantics.Basic
 
 /-!
 # Quotients of First-Order Structures

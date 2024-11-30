@@ -5,8 +5,9 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.ModelTheory.Card
+import Mathlib.ModelTheory.Semantics.Basic
 
 /-!
 # First Order Language of Rings

@@ -37,7 +37,6 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 
 -/
 
-
 noncomputable section
 
 open MvPolynomial Finset

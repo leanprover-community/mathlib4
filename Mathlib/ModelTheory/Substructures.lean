@@ -5,8 +5,9 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Closure
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Encoding
+import Mathlib.ModelTheory.Encoding.Basic
+import Mathlib.ModelTheory.Encoding.Card
+import Mathlib.ModelTheory.Semantics.Basic
 
 /-!
 # First-Order Substructures
@@ -50,7 +51,7 @@ variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
 
-open Structure Cardinal
+open Structure
 
 section ClosedUnder
 

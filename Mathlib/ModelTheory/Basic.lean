@@ -3,8 +3,7 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Data.Fin.Basic
 
 /-!
 # Basics on First-Order Structures
@@ -40,9 +39,6 @@ For the Flypitch project:
 -/
 
 universe u v u' v' w w'
-
-open Cardinal
-
 namespace FirstOrder
 
 /-! ### Languages and Structures -/
@@ -92,17 +88,7 @@ protected abbrev Constants :=
 abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
-/-- The cardinality of a language is the cardinality of its type of symbols. -/
-def card : Cardinal :=
-  #L.Symbols
-
 variable {L} {L' : Language.{u', v'}}
-
-theorem card_eq_card_functions_add_card_relations :
-    L.card =
-      (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
-        Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
-  simp only [card, mk_sum, mk_sigma, lift_sum]
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
   fun _ => instIsEmptySum
@@ -110,34 +96,9 @@ instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.s
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
   fun _ => instIsEmptySum
 
-@[simp]
-theorem empty_card : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
-  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
-
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
-
-instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) :=
-  @Function.Injective.countable _ _ h _ Sum.inl_injective
-
-@[simp]
-theorem card_functions_sum (i : ℕ) :
-    #((L.sum L').Functions i)
-      = (Cardinal.lift.{u'} #(L.Functions i) + Cardinal.lift.{u} #(L'.Functions i) : Cardinal) := by
-  simp [Language.sum]
-
-@[simp]
-theorem card_relations_sum (i : ℕ) :
-    #((L.sum L').Relations i) =
-      Cardinal.lift.{v'} #(L.Relations i) + Cardinal.lift.{v} #(L'.Relations i) := by
-  simp [Language.sum]
-
-theorem card_sum :
-    (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
-  simp only [card, mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum,
-    lift_lift, card_relations_sum, add_assoc,
-    add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
@@ -780,18 +741,6 @@ variable [Language.empty.Structure M] [Language.empty.Structure N]
 instance (priority := 100) strongHomClassEmpty {F} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
-
-@[simp]
-theorem empty.nonempty_embedding_iff :
-    Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map StrongHomClass.toEmbedding⟩
-    Cardinal.lift_mk_le'.symm
-
-@[simp]
-theorem empty.nonempty_equiv_iff :
-    Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
-    Cardinal.lift_mk_eq'.symm
 
 /-- Makes a `Language.empty.Hom` out of any function.
 This is only needed because there is no instance of `FunLike (M → N) M N`, and thus no instance of

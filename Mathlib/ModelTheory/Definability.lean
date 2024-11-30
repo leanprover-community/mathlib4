@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Finset.Preimage
-import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Semantics.Basic
 
 /-!
 # Definable Sets

@@ -6,7 +6,6 @@ Authors: Pim Spelier, Daan van Gent
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Option.Basic
-import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Encodings
@@ -23,10 +22,10 @@ It also contains several examples:
 - `finEncodingBoolBool` : an encoding of bool.
 -/
 
+assert_not_exists Countable
+assert_not_exists Cardinal
 
 universe u v
-
-open Cardinal
 
 namespace Computability
 
@@ -201,17 +200,5 @@ instance inhabitedFinEncoding : Inhabited (FinEncoding Bool) :=
 
 instance inhabitedEncoding : Inhabited (Encoding Bool) :=
   ⟨finEncodingBoolBool.toEncoding⟩
-
-theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
-    Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
-  Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
-
-theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countable e.Γ] :
-    #α ≤ ℵ₀ :=
-  haveI : Countable α := e.encode_injective.countable
-  Cardinal.mk_le_aleph0
-
-theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
-  e.toEncoding.card_le_aleph0
 
 end Computability

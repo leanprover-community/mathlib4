@@ -2274,7 +2274,8 @@ import Mathlib.Computability.AkraBazzi.AkraBazzi
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
-import Mathlib.Computability.Encoding
+import Mathlib.Computability.Encoding.Basic
+import Mathlib.Computability.Encoding.Card
 import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Halting
 import Mathlib.Computability.Language
@@ -3734,12 +3735,16 @@ import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
+import Mathlib.ModelTheory.Card
 import Mathlib.ModelTheory.Complexity
+import Mathlib.ModelTheory.Constants.Basic
+import Mathlib.ModelTheory.Constants.Card
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.ElementaryMaps
 import Mathlib.ModelTheory.ElementarySubstructures
-import Mathlib.ModelTheory.Encoding
+import Mathlib.ModelTheory.Encoding.Basic
+import Mathlib.ModelTheory.Encoding.Card
 import Mathlib.ModelTheory.Equivalence
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.Fraisse
@@ -3749,7 +3754,8 @@ import Mathlib.ModelTheory.Order
 import Mathlib.ModelTheory.PartialEquiv
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.Satisfiability
-import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Semantics.Basic
+import Mathlib.ModelTheory.Semantics.Card
 import Mathlib.ModelTheory.Skolem
 import Mathlib.ModelTheory.Substructures
 import Mathlib.ModelTheory.Syntax
