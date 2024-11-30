@@ -284,10 +284,8 @@ theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
   rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 
-@[simp]
 theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
-    toENat c ≤ n ↔ c ≤ n := by
-  rw [← toENat_nat n, toENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
+    toENat c ≤ n ↔ c ≤ n := by simp
 
 @[simp]
 theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
@@ -295,10 +293,8 @@ theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
     Cardinal.natCast_le_toENat_iff]
 
-@[simp]
 theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
-    Cardinal.toENat c = n ↔ c = n := by
-rw [eq_comm, Cardinal.natCast_eq_toENat_iff, eq_comm]
+    Cardinal.toENat c = n ↔ c = n := by simp
 
 @[simp]
 theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
