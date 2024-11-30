@@ -204,12 +204,11 @@ class SmoothInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
   /-- Inversion is smooth away from `0`. -/
   smoothAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → ContMDiffAt I I ⊤ (fun y ↦ y⁻¹) x
 
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 :=
-  { smoothAt_inv₀ := by
-      intro x hx
-      change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) ⊤ Inv.inv x
-      rw [contMDiffAt_iff_contDiffAt]
-      exact contDiffAt_inv 𝕜 hx }
+instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 where
+  smoothAt_inv₀ x hx := by
+    change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) ⊤ Inv.inv x
+    rw [contMDiffAt_iff_contDiffAt]
+    exact contDiffAt_inv 𝕜 hx
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) {G : Type*}

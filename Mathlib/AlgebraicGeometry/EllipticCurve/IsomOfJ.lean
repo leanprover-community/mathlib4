@@ -8,33 +8,32 @@ import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
-# Further properties of j-invariants of elliptic curves
-
-This file states some further properties of j-invariants of elliptic curves.
+# Elliptic curves with same j-invariants are isomorphic
 
 ## Main results
 
-- `EllipticCurve.exists_variableChange_of_j_eq`: if `E` and `E'` are elliptic curves with the same
-  `j`-invariants defined over a separably closed field, then there exists a change of variables
+- `WeierstrassCurve.exists_variableChange_of_j_eq`: if `E` and `E'` are elliptic curves with the
+  same `j`-invariants defined over a separably closed field, then there exists a change of variables
   over that field which change `E` into `E'`.
 
 -/
 
-open WeierstrassCurve Polynomial
+open Polynomial
 
 variable {F : Type*} [Field F] [IsSepClosed F]
 
-namespace EllipticCurve
+namespace WeierstrassCurve
 
-variable (E E' : EllipticCurve F)
+variable (E E' : WeierstrassCurve F) [E.IsElliptic] [E'.IsElliptic]
 
 section CharTwo
 
 variable [CharP F 2]
 
+omit [E.IsElliptic] [E'.IsElliptic] in
 private lemma exists_variableChange_of_char_two_of_j_ne_zero
     [E.IsCharTwoJNeZeroNF] [E'.IsCharTwoJNeZeroNF] (heq : E.a₆ = E'.a₆) :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
     1 1 (E.a₂ + E'.a₂) (by norm_num) (by norm_num) one_ne_zero
   use ⟨1, 0, s, 0⟩
@@ -53,7 +52,7 @@ private lemma exists_variableChange_of_char_two_of_j_ne_zero
 
 private lemma exists_variableChange_of_char_two_of_j_eq_zero
     [E.IsCharTwoJEqZeroNF] [E'.IsCharTwoJEqZeroNF] :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   have ha₃ := E.Δ'.ne_zero
   rw [E.coe_Δ', Δ_of_isCharTwoJEqZeroNF_of_char_two, pow_ne_zero_iff (Nat.succ_ne_zero _)] at ha₃
   have ha₃' := E'.Δ'.ne_zero
@@ -86,7 +85,7 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
     linear_combination ht - (t ^ 2 + E.a₃ * t) * CharP.cast_eq_zero F 2
 
 private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   obtain ⟨C, _ | _⟩ := E.exists_variableChange_isCharTwoNF
   · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharTwoNF
     · simp_rw [← variableChange_j E C, ← variableChange_j E' C',
@@ -94,7 +93,7 @@ private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
       obtain ⟨C'', hC⟩ := exists_variableChange_of_char_two_of_j_ne_zero _ _ heq
       use (C'.inv.comp C'').comp C
       rw [variableChange_comp, variableChange_comp, hC, ← variableChange_comp,
-        WeierstrassCurve.VariableChange.comp_left_inv, variableChange_id]
+        VariableChange.comp_left_inv, variableChange_id]
     · have h := (E.variableChange C).j_ne_zero_of_isCharTwoJNeZeroNF_of_char_two
       rw [variableChange_j, heq, ← variableChange_j E' C',
         j_of_isCharTwoJEqZeroNF_of_char_two] at h
@@ -108,7 +107,7 @@ private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
         (E.variableChange C) (E'.variableChange C')
       use (C'.inv.comp C'').comp C
       rw [variableChange_comp, variableChange_comp, hC, ← variableChange_comp,
-        WeierstrassCurve.VariableChange.comp_left_inv, variableChange_id]
+        VariableChange.comp_left_inv, variableChange_id]
 
 end CharTwo
 
@@ -118,7 +117,7 @@ variable [CharP F 3]
 
 private lemma exists_variableChange_of_char_three_of_j_ne_zero
     [E.IsCharThreeJNeZeroNF] [E'.IsCharThreeJNeZeroNF] (heq : E.j = E'.j) :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   have h := E.Δ'.ne_zero
   rw [E.coe_Δ', Δ_of_isCharThreeJNeZeroNF_of_char_three, mul_ne_zero_iff, neg_ne_zero,
     pow_ne_zero_iff three_ne_zero] at h
@@ -155,7 +154,7 @@ private lemma exists_variableChange_of_char_three_of_j_ne_zero
 
 private lemma exists_variableChange_of_char_three_of_j_eq_zero
     [E.IsShortNF] [E'.IsShortNF] :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   have ha₄ := E.Δ'.ne_zero
   rw [E.coe_Δ', Δ_of_isShortNF_of_char_three, neg_ne_zero, pow_ne_zero_iff three_ne_zero] at ha₄
   have ha₄' := E'.Δ'.ne_zero
@@ -188,14 +187,14 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
     linear_combination hr
 
 private lemma exists_variableChange_of_char_three (heq : E.j = E'.j) :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   obtain ⟨C, _ | _⟩ := E.exists_variableChange_isCharThreeNF
   · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharThreeNF
     · rw [← variableChange_j E C, ← variableChange_j E' C'] at heq
       obtain ⟨C'', hC⟩ := exists_variableChange_of_char_three_of_j_ne_zero _ _ heq
       use (C'.inv.comp C'').comp C
       rw [variableChange_comp, variableChange_comp, hC, ← variableChange_comp,
-        WeierstrassCurve.VariableChange.comp_left_inv, variableChange_id]
+        VariableChange.comp_left_inv, variableChange_id]
     · have h := (E.variableChange C).j_ne_zero_of_isCharThreeJNeZeroNF_of_char_three
       rw [variableChange_j, heq, ← variableChange_j E' C', j_of_isShortNF_of_char_three] at h
       exact False.elim (h rfl)
@@ -207,7 +206,7 @@ private lemma exists_variableChange_of_char_three (heq : E.j = E'.j) :
         (E.variableChange C) (E'.variableChange C')
       use (C'.inv.comp C'').comp C
       rw [variableChange_comp, variableChange_comp, hC, ← variableChange_comp,
-        WeierstrassCurve.VariableChange.comp_left_inv, variableChange_id]
+        VariableChange.comp_left_inv, variableChange_id]
 
 end CharThree
 
@@ -215,7 +214,7 @@ section CharNeTwoOrThree
 
 private lemma exists_variableChange_of_char_ne_two_or_three
     {p : ℕ} [CharP F p] (hchar2 : p ≠ 2) (hchar3 : p ≠ 3) (heq : E.j = E'.j) :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   replace hchar2 : (2 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_two hchar2
   replace hchar3 : (3 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_three hchar3
   haveI := NeZero.mk hchar2
@@ -239,7 +238,7 @@ private lemma exists_variableChange_of_char_ne_two_or_three
     rw [← variableChange_j E' C] at heq
     obtain ⟨C', hC⟩ := this _ heq hE'
     exact ⟨C.inv.comp C', by rw [variableChange_comp, hC, ← variableChange_comp,
-      WeierstrassCurve.VariableChange.comp_left_inv, variableChange_id]⟩
+      VariableChange.comp_left_inv, variableChange_id]⟩
   simp_rw [j, Units.val_inv_eq_inv_val, inv_mul_eq_div,
     div_eq_div_iff E.Δ'.ne_zero E'.Δ'.ne_zero, coe_Δ', Δ_of_isShortNF, c₄_of_isShortNF] at heq
   replace heq : E.a₄ ^ 3 * E'.a₆ ^ 2 = E'.a₄ ^ 3 * E.a₆ ^ 2 := by
@@ -337,7 +336,7 @@ end CharNeTwoOrThree
 separably closed field, then there exists a change of variables over that field which change
 one curve into another. -/
 theorem exists_variableChange_of_j_eq (heq : E.j = E'.j) :
-    ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
+    ∃ C : VariableChange F, E.variableChange C = E' := by
   obtain ⟨p, _⟩ := CharP.exists F
   by_cases hchar2 : p = 2
   · subst hchar2
@@ -347,4 +346,4 @@ theorem exists_variableChange_of_j_eq (heq : E.j = E'.j) :
     exact exists_variableChange_of_char_three _ _ heq
   exact exists_variableChange_of_char_ne_two_or_three _ _ hchar2 hchar3 heq
 
-end EllipticCurve
+end WeierstrassCurve
