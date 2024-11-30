@@ -214,8 +214,8 @@ theorem StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ 
 
 theorem StrictMono.map_isGreatest (hf : StrictMono f) :
     IsGreatest (f '' s) (f a) ↔ IsGreatest s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    hf.mem_upperBounds_image.mp Ha.right⟩, hf.monotone.map_isGreatest⟩
+  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left, hf.mem_upperBounds_image.mp Ha.right⟩,
+    hf.monotone.map_isGreatest⟩
 
 end StrictMono
 
@@ -238,8 +238,8 @@ theorem StrictAnti.map_isLeast (hf : StrictAnti f) :
 
 theorem StrictAnti.map_isGreatest (hf : StrictAnti f) :
     IsGreatest (f '' s) (f a) ↔ IsLeast s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    hf.mem_upperBounds_image.mp Ha.right⟩, hf.antitone.map_isLeast⟩
+  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left, hf.mem_upperBounds_image.mp Ha.right⟩,
+    hf.antitone.map_isLeast⟩
 
 end StrictAnti
 
