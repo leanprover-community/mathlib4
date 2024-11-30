@@ -9,6 +9,7 @@ import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.RingTheory.Algebraic.MvPolynomial
 
 /-!
 # Algebraic Independence
