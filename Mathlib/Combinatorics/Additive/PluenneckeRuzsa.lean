@@ -10,7 +10,6 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.Ring
 
 /-!
@@ -180,7 +179,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   push_cast
   refine (le_div_iff₀ <| cast_pos.2 hB.card_pos).1 ?_
   rw [mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
+  refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
