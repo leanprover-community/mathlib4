@@ -1,3 +1,14 @@
+# This file tracks the formalisation status of theorems from the experimental
+# 1000+ theorems project (https://1000-plus.github.io/).
+# This file and associated infrastructure are work in progress.
+#
+# Current TODOs/unresolved questions:
+# - should this file include further metadata, such as repository links, author names or dates?
+# - add infrastructure for updating the information upstream when formalisations are added
+# - perhaps add a wikidata version of the stacks tag, and generate this file automatically
+#   (can this handle formalisation of *statements* also?)
+# - complete the information which theorems are already formalised
+
 Q17001601:
   title: 2-factor theorem
 
