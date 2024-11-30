@@ -350,7 +350,7 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
   have : Fintype ↑(s ∩ (n : ℝ)⁻¹ • L) := by
     apply Set.Finite.fintype
     rw [← coe_pointwise_smul, ZSpan.smul _ (inv_ne_zero (NeZero.ne _))]
-    exact ZSpan.setFinite_inter _ (IsBounded.subset B.isBounded hs₀)
+    exact ZSpan.setFinite_inter _ (B.isBounded.subset hs₀)
   rw [tsum_fintype, Finset.sum_set_coe, Finset.sum_div, eq_comm]
   simp_rw [Set.indicator_apply, apply_ite, BoxAdditiveMap.toSMul_apply, Measure.toBoxAdditive_apply,
     smul_eq_mul, mul_zero, Finset.sum_ite, Finset.sum_const_zero, add_zero]
@@ -394,14 +394,14 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
   have h₂ : ∀ᵐ x, ContinuousAt (s.indicator F) x := by
     filter_upwards [compl_mem_ae_iff.mpr hs₃] with _ h
       using (hF.continuousOn).continuousAt_indicator h
-  obtain ⟨r, hr₁, hr₂⟩ := (BoxIntegral.hasIntegral_iff.mp <|
+  obtain ⟨r, hr₁, hr₂⟩ := (hasIntegral_iff.mp <|
       AEContinuous.hasBoxIntegral (volume : Measure (ι → ℝ)) h₁ h₂
-        BoxIntegral.IntegrationParams.Riemann) (ε / 2) (half_pos hε)
+        IntegrationParams.Riemann) (ε / 2) (half_pos hε)
   refine ⟨⌈(r 0 0 : ℝ)⁻¹⌉₊, fun n hn ↦ lt_of_le_of_lt ?_ (half_lt_self_iff.mpr hε)⟩
   have : NeZero n :=
     ⟨Nat.ne_zero_iff_zero_lt.mpr <| lt_of_lt_of_le (Nat.ceil_pos.mpr (inv_pos.mpr (r 0 0).prop)) hn⟩
   rw [← integralSum_eq_tsum_div _ s F hB hs₀, ← Measure.restrict_restrict_of_subset hs₀,
-    ← MeasureTheory.integral_indicator hs₂]
+    ← integral_indicator hs₂]
   refine hr₂ 0 _ ⟨?_, fun _ ↦ ?_, fun h ↦ ?_, fun h ↦ ?_⟩ (prepartition_isPartition _ hB)
   · rw [show r 0 = fun _ ↦ r 0 0 from funext_iff.mpr (hr₁ 0 rfl)]
     apply prepartition_isSubordinate n B
@@ -414,13 +414,13 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
 /-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has zero volume. Then the limit
 as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι` tends to the volume of `s`. This is a
 special case of `tendsto_card_div_pow` with `F = 1`. -/
-theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : Bornology.IsBounded s)
+theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n : ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
       atTop (nhds (volume s).toReal) := by
   convert tendsto_tsum_div_pow_atTop_integral s (fun _ ↦ 1) continuous_const hs₁ hs₂ hs₃
   · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
-  · rw [MeasureTheory.setIntegral_const, smul_eq_mul, mul_one]
+  · rw [setIntegral_const, smul_eq_mul, mul_one]
 
 private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
   ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
@@ -428,7 +428,7 @@ private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
     simp_rw [Set.mem_inter_iff, Equiv.smulRight_apply, Set.smul_mem_smul_set_iff₀ hc,
       ← Set.mem_inv_smul_set_iff₀ hc])
 
-private theorem tendsto_card_div_pow₂ (hs₁ : Bornology.IsBounded s)
+private theorem tendsto_card_div_pow₂ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) {x y : ℝ} (hx : 0 < x) (hy : x ≤ y) :
     Nat.card ↑(s ∩ x⁻¹ • L) ≤ Nat.card ↑(s ∩ y⁻¹ • L) := by
   rw [Nat.card_congr (tendsto_card_div_pow₁ s (ne_of_gt hx)),
@@ -438,7 +438,7 @@ private theorem tendsto_card_div_pow₂ (hs₁ : Bornology.IsBounded s)
   · gcongr
     exact hs₄ hx hy
 
-private theorem tendsto_card_div_pow₃ (hs₁ : Bornology.IsBounded s)
+private theorem tendsto_card_div_pow₃ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     ∀ᶠ x : ℝ in atTop, (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι ≤
       (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι := by
@@ -447,7 +447,7 @@ private theorem tendsto_card_div_pow₃ (hs₁ : Bornology.IsBounded s)
   exact tendsto_card_div_pow₂ s hs₁ hs₄ (Nat.cast_pos.mpr (Nat.floor_pos.mpr hx))
     (Nat.floor_le (by positivity))
 
-private theorem tendsto_card_div_pow₄ (hs₁ : Bornology.IsBounded s)
+private theorem tendsto_card_div_pow₄ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     ∀ᶠ x : ℝ in atTop, (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι ≤
       (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι := by
@@ -470,7 +470,7 @@ private theorem tendsto_card_div_pow₆ :
   field_simp [hx]
 
 /-- A version of `tendsto_card_div_pow_atTop_volume` for a real variable. -/
-theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : Bornology.IsBounded s)
+theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
