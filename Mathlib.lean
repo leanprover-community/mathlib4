@@ -321,6 +321,7 @@ import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 import Mathlib.Algebra.Group.Submonoid.Membership
