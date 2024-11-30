@@ -19,7 +19,7 @@ open Differential IsFractionRing
 
 open AddValuation (adicValuation adicValuation_coe adicValuation_neg_iff adicValuation_pos_iff)
 
-lemma multiplicity_deriv (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
+lemma emultiplicity_deriv (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
     emultiplicity p (D a) + 1 = emultiplicity p a := by
   by_cases ha : a = 0
   · simp [ha]
@@ -70,7 +70,7 @@ lemma adicValuation_deriv_lt_neg_one_of_neg (p : F) [Fact (Prime p)] (hp : ¬p �
   have ha2 : ¬ p ∣ num F a := Prime.not_unit Fact.out ∘ (num_den_reduced _ _).symm ha
   simp only [deriv_algebraMap, ← map_mul, ← map_sub, adicValuation_coe, gt_iff_lt]
   rw [← emultiplicity_eq_zero] at ha2
-  have md := multiplicity_deriv _ p Fact.out hp _ ha
+  have md := emultiplicity_deriv _ p Fact.out hp _ ha
   replace mf : multiplicity.Finite p (den F a)′ := finite_iff_emultiplicity_ne_top.mpr (fun h ↦
     (multiplicity.finite_prime_left Fact.out (by simp)).emultiplicity_ne_top (h ▸ md).symm)
   rw [emultiplicity_sub_of_gt]
