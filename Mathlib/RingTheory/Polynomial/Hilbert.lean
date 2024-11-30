@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.PowerSeries.WellKnown
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Hilbert polynomials
@@ -15,76 +16,91 @@ import Mathlib.RingTheory.PowerSeries.WellKnown
 In this file, we formalise the following statement: if `F` is a field with characteristic `0`, then
 given any `p : F[X]` and `d : ℕ`, there exists some `h : F[X]` such that for any large enough
 `n : ℕ`, `h(n)` is equal to the coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
-This `h` is unique and is called the Hilbert polynomial of `p` and `d` (`Polynomial.hilbert p d`).
+This `h` is unique and is denoted as `Polynomial.hilbert p d`.
 
 ## Main definitions
 
-* `Polynomial.hilbert p d`. If `F` is a field with characteristic `0`, `p : F[X]` and `d : ℕ`, then
-  `Polynomial.hilbert p d : F[X]` is the polynomial whose value at `n` equals the coefficient of
-  `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`
+* `Polynomial.hilbert p d`. Given a field `F`, a polynomial `p : F[X]` and a natural number `d`, if
+  `F` is of characteristic `0`, then `Polynomial.hilbert p d : F[X]` is the polynomial whose value
+  at `n` equals the coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 
 ## TODO
 
-* Prove that `Polynomial.hilbert p d : F[X]` is the polynomial whose value at `n` equals the
-  coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`
-
-* Hilbert polynomials of graded modules.
+* Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
 
 open BigOperators Nat PowerSeries
 
 namespace Polynomial
 
-section greatestFactorOneSubNotDvd
-
-variable {R : Type*} [CommRing R] (p : R[X]) (hp : p ≠ 0) (d : ℕ)
+variable (F : Type*) [Field F]
 
 /--
-Given a polynomial `p`, the factor `f` of `p` such that the product of `f` and
-`(1 - X : R[X]) ^ p.rootMultiplicity 1` equals `p`. We define this here because if `p` is divisible
-by `1 - X`, then the expression `p/(1 - X)ᵈ` can be reduced. We want to construct the Hilbert
-polynomial based on the most reduced form of the fraction `p/(1 - X)ᵈ`. Later we will see that this
-method of construction makes it much easier to calculate the specific degree of the Hilbert
-polynomial.
--/
-noncomputable def greatestFactorOneSubNotDvd : R[X] :=
-  ((- 1 : R[X]) ^ p.rootMultiplicity 1) *
-  (exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1).choose
-
-end greatestFactorOneSubNotDvd
-
-variable (F : Type*) [Field F] [CharZero F]
-
-/--
-A polynomial which makes it easier to define the Hilbert polynomial. See also the theorem
-`Polynomial.preHilbert_eq_choose_sub_add`, which states that for any `d k n : ℕ` with `k ≤ n`,
-`(Polynomial.preHilbert d k).eval (n : F) = (n - k + d).choose d`.
+For any field `F` and natrual numbers `d` and `k`, `Polynomial.preHilbert F d k` is defined as
+`(d.factorial : F)⁻¹ • ((ascPochhammer F d).comp (X - (C (k : F)) + 1))`. This is the most basic
+form of Hilbert polynomials. `Polynomial.preHilbert ℚ d 0` is exactly the Hilbert polynomial of
+the polynomial ring `ℚ[X_0,...,X_d]` viewed as a graded module over itself. See also the theorem
+`Polynomial.preHilbert_eq_choose_sub_add`, which states that if `CharZero F`, then for any
+`d k n : ℕ` with `k ≤ n`, `(Polynomial.preHilbert F d k).eval (n : F) = (n - k + d).choose d`.
 -/
 noncomputable def preHilbert (d k : ℕ) : F[X] :=
   (d.factorial : F)⁻¹ • ((ascPochhammer F d).comp (X - (C (k : F)) + 1))
 
-theorem preHilbert_eq_choose_sub_add (d k n : ℕ) (hkn : k ≤ n):
+theorem preHilbert_eq_choose_sub_add [CharZero F] (d k n : ℕ) (hkn : k ≤ n):
     (preHilbert F d k).eval (n : F) = (n - k + d).choose d := by
-  rw [preHilbert, eval_smul, eval_comp, map_natCast, eval_add, eval_sub, eval_X, eval_natCast,
-    eval_one, smul_eq_mul, ← cast_sub hkn, ← cast_add_one, ← ascPochhammer_eval_cast,
-    ascPochhammer_nat_eq_ascFactorial, ascFactorial_eq_factorial_mul_choose, cast_mul,
-    ← mul_assoc]
-  simp only [isUnit_iff_ne_zero, ne_eq, Ne.symm <| @NeZero.ne' _ _ _ <| @NeZero.charZero _ _
-    ⟨factorial_ne_zero d⟩ .., not_false_eq_true, IsUnit.inv_mul_cancel, one_mul]
+  have : ((d ! : ℕ) : F) ≠ 0 := by norm_cast; positivity
+  calc
+  _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbert]
+  _ = (n - k + d).choose d := by
+    rw [ascPochhammer_nat_eq_natCast_ascFactorial];
+    field_simp [ascFactorial_eq_factorial_mul_choose]
 
 variable {F}
 
 /--
-Given `p : F[X]` and `d : ℕ`, the Hilbert polynomial of `p` and `d`. Later we will
-show that `PowerSeries.coeff F n (p * (PowerSeries.invOneSubPow F d))` is equal to
-`(Polynomial.hilbert p d).eval (n : F)` for any large enough `n : ℕ`, which is the
-key property of the Hilbert polynomial.
+`Polynomial.hilbert p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbert p (d + 1)` is
+defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbert F d i`. If `M` is
+a graded module whose Poincaré series can be written as `p(X)/(1 - X)ᵈ` for some
+`p : ℚ[X]` with integer coefficients, then `Polynomial.hilbert p d` is the Hilbert
+polynomial of `M`. See also `Polynomial.coeff_mul_invOneSubPow_eq_hilbert_eval`,
+which says that `PowerSeries.coeff F n (p * (PowerSeries.invOneSubPow F d))` is
+equal to `(Polynomial.hilbert p d).eval (n : F)` for any large enough `n : ℕ`.
 -/
-noncomputable def hilbert (p : F[X]) (d : ℕ) : F[X] :=
-  let _ := Classical.propDecidable (p = 0)
-  if h : p = 0 then 0
-  else if d ≤ p.rootMultiplicity 1 then 0
-  else ∑ i in Finset.range ((greatestFactorOneSubNotDvd p h).natDegree + 1),
-  ((greatestFactorOneSubNotDvd p h).coeff i) • preHilbert F (d - (p.rootMultiplicity 1) - 1) i
+noncomputable def hilbert (p : F[X]) : (d : ℕ) → F[X]
+  | 0 => 0
+  | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbert F d i
+
+variable (F) in
+lemma hilbert_zero (d : ℕ) : hilbert (0 : F[X]) d = 0 := by
+  delta hilbert; induction d with
+  | zero => simp only
+  | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
+
+/--
+The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
+`d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbert p d).eval (n : F)` is equal to the
+coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
+-/
+theorem coeff_mul_invOneSubPow_eq_hilbert_eval
+    [CharZero F] (p : F[X]) (d n : ℕ) (hn : p.natDegree < n) :
+    PowerSeries.coeff F n (p * (invOneSubPow F d)) = (hilbert p d).eval (n : F) := by
+  delta hilbert; induction d with
+  | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
+            exact coeff_eq_zero_of_natDegree_lt hn
+  | succ d hd =>
+      simp only [eval_finset_sum, eval_smul, smul_eq_mul]; rw [← Finset.sum_coe_sort]
+      simp_rw [show (i : p.support) → eval ↑n (preHilbert F d ↑i) = (n + d - ↑i).choose d by
+        intro i; rw [preHilbert_eq_choose_sub_add _ _ _ _ <| le_trans (le_natDegree_of_ne_zero
+        <| mem_support_iff.1 i.2) (le_of_lt hn)]; rw [Nat.sub_add_comm];
+        exact le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) (le_of_lt hn)]
+      rw [Finset.sum_coe_sort _ (fun x => (p.coeff ↑x) * (_ + d - ↑x).choose _),
+        PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+        invOneSubPow_val_eq_mk_sub_one_add_choose_of_pos _ _ (zero_lt_succ d)]
+      simp only [coeff_coe, coeff_mk]
+      exact Eq.symm <| Finset.sum_subset_zero_on_sdiff (fun s hs => Finset.mem_range_succ_iff.mpr
+        <| le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 hs) (le_of_lt hn)) (fun x hx => by
+        simp only [Finset.mem_sdiff, mem_support_iff, not_not] at hx; rw [hx.2, zero_mul])
+        (fun x hx => by rw [add_comm, Nat.add_sub_assoc <| le_trans (le_natDegree_of_ne_zero <|
+        mem_support_iff.1 hx) (le_of_lt hn), succ_eq_add_one, add_tsub_cancel_right])
 
 end Polynomial
