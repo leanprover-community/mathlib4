@@ -37,7 +37,7 @@ noncomputable abbrev tensorObj (X Y : AlgebraCat.{u} R) : AlgebraCat.{u} R :=
 `AlgebraCat.instMonoidalCategory`. -/
 noncomputable abbrev tensorHom {W X Y Z : AlgebraCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
-  Algebra.TensorProduct.map f g
+  ofHom <| Algebra.TensorProduct.map f.hom g.hom
 
 open MonoidalCategory
 

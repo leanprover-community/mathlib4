@@ -387,7 +387,7 @@ variable [PartialOrder α] [PartialOrder β] {u : β → α} (l : LowerAdjoint u
 theorem mem_closed_iff_closure_le (x : α) : x ∈ l.closed ↔ u (l x) ≤ x :=
   l.closureOperator.isClosed_iff_closure_le
 
-@[simp, nolint simpNF] -- Porting note: lemma does prove itself, seems to be a linter error
+@[simp]
 theorem closure_is_closed (x : α) : u (l x) ∈ l.closed :=
   l.idempotent x
 
