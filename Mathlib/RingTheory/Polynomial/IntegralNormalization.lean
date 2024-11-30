@@ -119,16 +119,7 @@ variable [CommSemiring S]
 
 theorem leadingCoeff_smul_integralNormalization (p : S[X]) :
     p.leadingCoeff • integralNormalization p = scaleRoots p p.leadingCoeff := by
-  ext i
-  rw [coeff_smul, integralNormalization_coeff]
-  split_ifs with h
-  · simp [natDegree_eq_of_degree_eq_some h, leadingCoeff]
-  · simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, coeff_scaleRoots]
-    by_cases h' : i < p.degree
-    · rw [mul_left_comm, ← pow_succ', tsub_right_comm, tsub_add_cancel_of_le]
-      rw [le_tsub_iff_left (coe_lt_degree.mp h').le, Nat.succ_le_iff]
-      exact coe_lt_degree.mp h'
-    · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
+  rw [Algebra.smul_def, algebraMap_eq, mul_comm, integralNormalization_mul_C_leadingCoeff]
 
 theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
     (integralNormalization p).eval₂ f (f p.leadingCoeff * x) =
