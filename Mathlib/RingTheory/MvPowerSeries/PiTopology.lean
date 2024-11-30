@@ -78,7 +78,7 @@ theorem instT2Space [T2Space R] : T2Space (MvPowerSeries σ R) := Pi.t2Space
 variable (R) in
 /-- `MvPowerSeries.coeff` is continuous. -/
 @[fun_prop]
-theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) : 
+theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) :
     Continuous (MvPowerSeries.coeff R d) :=
   continuous_pi_iff.mp continuous_id d
 
