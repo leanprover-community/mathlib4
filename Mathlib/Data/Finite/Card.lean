@@ -174,6 +174,8 @@ end ENat
 
 namespace PartENat
 
+set_option linter.deprecated false in
+@[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
 theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
