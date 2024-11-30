@@ -47,11 +47,11 @@ variable (K : Type*) [Field K]
 
 The infinite adele ring is the finite product of completions of a number field over its
 infinite places. See `NumberField.InfinitePlace` for the definition of an infinite place and
-`NumberField.InfinitePlace.completion` for the associated completion.
+`NumberField.InfinitePlace.Completion` for the associated completion.
 -/
 
 /-- The infinite adele ring of a number field. -/
-def InfiniteAdeleRing := (v : InfinitePlace K) → v.completion
+def InfiniteAdeleRing := (v : InfinitePlace K) → v.Completion
 
 namespace InfiniteAdeleRing
 
@@ -82,7 +82,7 @@ abbrev ringEquiv_mixedSpace :
     InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K :=
   RingEquiv.trans
     (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)
-      (fun (v : InfinitePlace K) => v.completion))
+      (fun (v : InfinitePlace K) => v.Completion))
     (RingEquiv.prodCongr
       (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquiv_real_of_isReal hv))
       (RingEquiv.trans
