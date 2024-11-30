@@ -346,21 +346,44 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
     (polarBilin Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ Q₂ (bm₂ i₂)   := by
   rw [← h₁, tensorDistriFree_right_self]
 
+--variable (x : M₁ ⊗[R] M₂)
+
+--#check ((bm₁.tensorProduct bm₂).repr x).support.sym2 with ¬ p.IsDiag
+
+/-
+variable {α : Type*} (p : α → Prop) [DecidablePred p] (s : Finset α) (f : α → N₁ ⊗[R] N₂)
+
+#check Finset.sum (Finset.filter p s) f
+
+#check Finset.sum s f = Finset.sum (Finset.filter p s) f + Finset.sum (Finset.filter (fun a  p) s) f
+
+lemma myadd: ∑ x ∈ s, f x = ∑ x ∈ s with p x, f x + ∑ x ∈ s with ¬ p x, f x := by
+  exact Eq.symm (Finset.sum_filter_add_sum_filter_not s p f)
+-/
+
+noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
+  (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂)) (x : M₁ ⊗[R] M₂) := fun p => Sym2.lift
+    ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
+      simp only [polar_comm]
+      rw [smul_comm]⟩ p
+
+lemma myadd2 (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂))
+    (P : Sym2 (ι₁ × ι₂) → Prop) [DecidablePred P] (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
+    ∑ p ∈ s, polar_lift Q bm x p =
+      ∑ p ∈ s with P p, polar_lift Q bm x p + ∑ p ∈ s with ¬ P p, polar_lift Q bm x p := by
+  exact Eq.symm (Finset.sum_filter_add_sum_filter_not s P (Q.polar_lift bm x))
+
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     Q x = ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
-    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
-          simp only [polar_comm]
-          rw [smul_comm]⟩ p := by
+    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag, polar_lift Q bm x p := by
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   simp_rw [basis_expansion Q bm x]
   have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
     rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
-  simp_rw [e1]
+  simp_rw [polar_lift, e1]
 
 end TensorProduct
 
