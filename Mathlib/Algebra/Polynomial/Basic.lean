@@ -748,7 +748,7 @@ theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n :
 theorem support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 :=
   support_monomial 0 h
 
-theorem support_C' (a : R) : (C a).support ⊆ singleton 0 :=
+theorem support_C_subset (a : R) : (C a).support ⊆ singleton 0 :=
   support_monomial' 0 a
 
 theorem support_C_mul_X {c : R} (h : c ≠ 0) : Polynomial.support (C c * X) = singleton 1 := by
