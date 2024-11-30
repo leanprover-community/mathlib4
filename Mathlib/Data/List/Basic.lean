@@ -2265,7 +2265,6 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
       apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi
 
-
 section Disjoint
 
 /-- The images of disjoint lists under a partially defined map are disjoint -/
