@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.PowerSeries.WellKnown
