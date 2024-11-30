@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 
-#align_import algebra.homology.functor from "leanprover-community/mathlib"@"8e25bb6c1645bb80670e13848b79a54aa45cb84f"
-
 /-!
 # Complexes in functor categories
 
@@ -28,27 +26,26 @@ open CategoryTheory.Limits
 namespace HomologicalComplex
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
-
-variable {ι : Type _} {c : ComplexShape ι}
+variable {ι : Type*} {c : ComplexShape ι}
 
 /-- A complex of functors gives a functor to complexes. -/
 @[simps obj map]
-def asFunctor {T : Type _} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
+def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
     T ⥤ HomologicalComplex V c where
   obj t :=
     { X := fun i => (C.X i).obj t
       d := fun i j => (C.d i j).app t
       d_comp_d' := fun i j k _ _ => by
         have := C.d_comp_d i j k
-        rw [NatTrans.ext_iff, Function.funext_iff] at this
+        rw [NatTrans.ext_iff, funext_iff] at this
         exact this t
       shape := fun i j h => by
         have := C.shape _ _ h
-        rw [NatTrans.ext_iff, Function.funext_iff] at this
+        rw [NatTrans.ext_iff, funext_iff] at this
         exact this t }
   map h :=
     { f := fun i => (C.X i).map h
-      comm' := fun i j _ => NatTrans.naturality _ _ }
+      comm' := fun _ _ _ => NatTrans.naturality _ _ }
   map_id t := by
     ext i
     dsimp
@@ -57,12 +54,11 @@ def asFunctor {T : Type _} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
     ext i
     dsimp
     rw [Functor.map_comp]
-#align homological_complex.as_functor HomologicalComplex.asFunctor
 
 -- TODO in fact, this is an equivalence of categories.
 /-- The functorial version of `HomologicalComplex.asFunctor`. -/
 @[simps]
-def complexOfFunctorsToFunctorToComplex {T : Type _} [Category T] :
+def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
     HomologicalComplex (T ⥤ V) c ⥤ T ⥤ HomologicalComplex V c where
   obj C := C.asFunctor
   map f :=
@@ -72,6 +68,5 @@ def complexOfFunctorsToFunctorToComplex {T : Type _} [Category T] :
       naturality := fun t t' g => by
         ext i
         exact (f.f i).naturality g }
-#align homological_complex.complex_of_functors_to_functor_to_complex HomologicalComplex.complexOfFunctorsToFunctorToComplex
 
 end HomologicalComplex

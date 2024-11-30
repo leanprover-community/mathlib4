@@ -18,8 +18,8 @@ open Lean
 `scoped[NS]` is similar to the `scoped` modifier on attributes and notations,
 but it scopes the syntax in the specified namespace instead of the current namespace.
 ```
-scoped[Matrix] infixl:75 " ⬝ " => Matrix.mul
--- declares `⬝` as a notation for matrix multiplication
+scoped[Matrix] infixl:72 " ⬝ᵥ " => Matrix.dotProduct
+-- declares `*` as a notation for vector dot productss
 -- which is only accessible if you `open Matrix` or `open scoped Matrix`.
 
 namespace Nat
@@ -53,3 +53,5 @@ macro_rules
   | `(scoped[$ns] attribute [$[$attr:attr],*] $ids*) =>
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       attribute [$[scoped $attr:attr],*] $ids*)
+
+end Mathlib.Tactic
