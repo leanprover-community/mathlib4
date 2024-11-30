@@ -294,13 +294,13 @@ lemma mutuallySingular_of_mutuallySingular_compProd {ξ : Measure α}
   rw [compProd_apply, lintegral_eq_zero_iff'] at hμ_zero hν_zero
   · filter_upwards [hμ hμ_zero, hν hν_zero] with x hxμ hxν
     exact ⟨Prod.mk x ⁻¹' h.nullSet, measurable_prod_mk_left hs, ⟨hxμ, hxν⟩⟩
-  · exact Kernel.measurable_kernel_prod_mk_left hs.compl |>.aemeasurable
-  · exact Kernel.measurable_kernel_prod_mk_left hs |>.aemeasurable
+  · exact (Kernel.measurable_kernel_prod_mk_left hs.compl).aemeasurable
+  · exact (Kernel.measurable_kernel_prod_mk_left hs).aemeasurable
   · exact hs.compl
   · exact hs
 
-lemma mutuallySingular_compProd_iff_of_same_right (μ ν : Measure α) [IsFiniteMeasure μ]
-    [IsFiniteMeasure ν] (κ : Kernel α β) [IsFiniteKernel κ] [hκ : ∀ x, NeZero (κ x)] :
+lemma mutuallySingular_compProd_left_iff [SFinite μ] [SigmaFinite ν]
+    [IsSFiniteKernel κ] [hκ : ∀ x, NeZero (κ x)] :
     μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ κ ↔ μ ⟂ₘ ν := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.compProd_of_left _ _⟩
   rw [← withDensity_rnDeriv_eq_zero]
@@ -312,41 +312,78 @@ lemma mutuallySingular_compProd_iff_of_same_right (μ ν : Measure α) [IsFinite
   simp_rw [MutuallySingular.self_iff, (hκ _).ne] at hh
   exact ae_eq_bot.mp (Filter.eventually_false_iff_eq_bot.mp hh)
 
-lemma absolutelyContinuous_of_add_of_mutuallySingular {ν₁ ν₂ : Measure α}
-    (h_ms : μ ⟂ₘ ν₂) (h : μ ≪ ν₁ + ν₂) : μ ≪ ν₁ := by
-  refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
-  let t := h_ms.nullSet
-  have ht : MeasurableSet t := h_ms.measurableSet_nullSet
-  have htμ : μ t = 0 := h_ms.measure_nullSet
-  have htν₂ : ν₂ tᶜ = 0 := h_ms.measure_compl_nullSet
-  have : μ s = μ (s ∩ tᶜ) := by
-    conv_lhs => rw [← inter_union_compl s t]
-    rw [measure_union, measure_inter_null_of_null_right _ htμ, zero_add]
-    · exact (disjoint_compl_right.inter_right' _ ).inter_left' _
-    · exact hs.inter ht.compl
-  rw [this]
-  refine h ?_
-  simp only [Measure.coe_add, Pi.add_apply, add_eq_zero]
-  exact ⟨measure_inter_null_of_null_left _ hs_zero, measure_inter_null_of_null_right _ htν₂⟩
 
-lemma absolutelyContinuous_compProd_of_compProd'
+lemma AbsolutelyContinuous.mutuallySingular_compProd_iff [SigmaFinite μ] [SigmaFinite ν]
+    (hμν : μ ≪ ν) :
+    μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ μ ⊗ₘ κ ⟂ₘ μ ⊗ₘ η := by
+  conv_lhs => rw [ν.haveLebesgueDecomposition_add μ]
+  rw [compProd_add_left, MutuallySingular.add_right_iff]
+  simp only [MutuallySingular.compProd_of_left (mutuallySingular_singularPart ν μ).symm κ η,
+    true_and]
+  refine ⟨fun h ↦ h.mono_ac .rfl ?_, fun h ↦ h.mono_ac .rfl ?_⟩
+  · refine AbsolutelyContinuous.compProd_left ?_ _
+    exact absolutelyContinuous_withDensity_rnDeriv hμν
+  · refine AbsolutelyContinuous.compProd_left ?_ _
+    exact withDensity_absolutelyContinuous μ (ν.rnDeriv μ)
+
+section EquivalentInf
+
+lemma absolutelyContinuous_withDensity_rnDeriv_swap [ν.HaveLebesgueDecomposition μ] :
+    ν.withDensity (μ.rnDeriv ν) ≪ μ.withDensity (ν.rnDeriv μ) := by
+  have h1 := withDensity_absolutelyContinuous ν (μ.rnDeriv ν)
+  conv_rhs at h1 => rw [ν.haveLebesgueDecomposition_add μ, add_comm]
+  refine absolutelyContinuous_of_add_of_mutuallySingular h1 ?_
+  refine MutuallySingular.mono_ac (mutuallySingular_singularPart ν μ).symm ?_ .rfl
+  exact absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _)
+
+lemma AbsolutelyContinuous.withDensity_rnDeriv {ξ : Measure α} [μ.HaveLebesgueDecomposition ν]
+    (hξμ : ξ ≪ μ) (hξν : ξ ≪ ν) :
+    ξ ≪ ν.withDensity (μ.rnDeriv ν) := by
+  conv_rhs at hξμ => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
+  refine absolutelyContinuous_of_add_of_mutuallySingular hξμ ?_
+  exact MutuallySingular.mono_ac (mutuallySingular_singularPart μ ν).symm hξν .rfl
+
+lemma mutuallySingular_congr_ac {μ₂ ν₂ : Measure α} (hμμ₂ : μ ≪ μ₂) (hμ₂μ : μ₂ ≪ μ)
+    (hνν₂ : ν ≪ ν₂) (hν₂ν : ν₂ ≪ ν) :
+    μ ⟂ₘ ν ↔ μ₂ ⟂ₘ ν₂ :=
+  ⟨fun h ↦ h.mono_ac hμ₂μ hν₂ν,  fun h ↦ h.mono_ac hμμ₂ hνν₂⟩
+
+end EquivalentInf
+
+lemma mutuallySingular_compProd_iff [SigmaFinite μ] [SigmaFinite ν] :
+    μ ⊗ₘ κ ⟂ₘ ν ⊗ₘ η ↔ ∀ ξ, SFinite ξ → ξ ≪ μ → ξ ≪ ν → ξ ⊗ₘ κ ⟂ₘ ξ ⊗ₘ η := by
+  conv_lhs => rw [μ.haveLebesgueDecomposition_add ν]
+  rw [compProd_add_left, MutuallySingular.add_left_iff]
+  simp only [MutuallySingular.compProd_of_left (mutuallySingular_singularPart μ ν) κ η,
+    true_and]
+  rw [(withDensity_absolutelyContinuous ν (μ.rnDeriv ν)).mutuallySingular_compProd_iff]
+  refine ⟨fun h ξ hξ hξμ hξν ↦ ?_, fun h ↦ ?_⟩
+  · refine h.mono_ac ?_ ?_
+    · refine AbsolutelyContinuous.compProd_left ?_ _
+      exact hξμ.withDensity_rnDeriv hξν
+    · refine AbsolutelyContinuous.compProd_left ?_ _
+      exact hξμ.withDensity_rnDeriv hξν
+  · refine h _ ?_ ?_ ?_
+    · infer_instance
+    · exact absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _)
+    · exact withDensity_absolutelyContinuous ν (μ.rnDeriv ν)
+
+end MutuallySingular
+
+lemma absolutelyContinuous_compProd_of_compProd
     [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (hκη : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
   rw [ν.haveLebesgueDecomposition_add μ, compProd_add_left, add_comm] at hκη
-  have h := absolutelyContinuous_of_add_of_mutuallySingular ?_ hκη
-  · refine h.trans ?_
-    refine AbsolutelyContinuous.compProd_left ?_ _
-    exact withDensity_absolutelyContinuous _ _
-  · refine MutuallySingular.compProd_of_left ?_ _ _
-    exact (mutuallySingular_singularPart _ _).symm
+  have h := absolutelyContinuous_of_add_of_mutuallySingular hκη
+    ((mutuallySingular_singularPart _ _).symm.compProd_of_left _ _)
+  refine h.trans (AbsolutelyContinuous.compProd_left ?_ _)
+  exact withDensity_absolutelyContinuous _ _
 
-lemma absolutelyContinuous_compProd_iff'
+lemma absolutelyContinuous_compProd_iff
     [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η] [∀ x, NeZero (κ x)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η :=
-  ⟨fun h ↦ ⟨absolutelyContinuous_of_compProd h, absolutelyContinuous_compProd_of_compProd' h⟩,
+  ⟨fun h ↦ ⟨absolutelyContinuous_of_compProd h, absolutelyContinuous_compProd_of_compProd h⟩,
     fun h ↦ h.1.compProd_of_compProd h.2⟩
-
-end MutuallySingular
 
 end MeasureTheory.Measure

@@ -146,6 +146,23 @@ lemma eq_zero_of_absolutelyContinuous_of_mutuallySingular {μ ν : Measure α}
   rw [← Measure.MutuallySingular.self_iff]
   exact h_ms.mono_ac Measure.AbsolutelyContinuous.rfl h_ac
 
+lemma absolutelyContinuous_of_add_of_mutuallySingular {ν₁ ν₂ : Measure α}
+    (h : μ ≪ ν₁ + ν₂) (h_ms : μ ⟂ₘ ν₂) : μ ≪ ν₁ := by
+  refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
+  let t := h_ms.nullSet
+  have ht : MeasurableSet t := h_ms.measurableSet_nullSet
+  have htμ : μ t = 0 := h_ms.measure_nullSet
+  have htν₂ : ν₂ tᶜ = 0 := h_ms.measure_compl_nullSet
+  have : μ s = μ (s ∩ tᶜ) := by
+    conv_lhs => rw [← inter_union_compl s t]
+    rw [measure_union, measure_inter_null_of_null_right _ htμ, zero_add]
+    · exact (disjoint_compl_right.inter_right' _ ).inter_left' _
+    · exact hs.inter ht.compl
+  rw [this]
+  refine h ?_
+  simp only [Measure.coe_add, Pi.add_apply, add_eq_zero]
+  exact ⟨measure_inter_null_of_null_left _ hs_zero, measure_inter_null_of_null_right _ htν₂⟩
+
 lemma _root_.MeasurableEmbedding.mutuallySingular_map {β : Type*} {_ : MeasurableSpace β}
     {f : α → β} (hf : MeasurableEmbedding f) (hμν : μ ⟂ₘ ν) :
     μ.map f ⟂ₘ ν.map f := by
