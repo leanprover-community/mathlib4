@@ -474,14 +474,13 @@ theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
       atTop (nhds (volume s).toReal) := by
+  rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ ?_
     (tendsto_card_div_pow₃ s hs₁ hs₄) (tendsto_card_div_pow₄ s hs₁ hs₄)
-  · rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
-    refine Tendsto.congr' (tendsto_card_div_pow₅ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
+  · refine Tendsto.congr' (tendsto_card_div_pow₅ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
     · exact Tendsto.comp (tendsto_card_div_pow_atTop_volume s hs₁ hs₂ hs₃) tendsto_nat_floor_atTop
     · exact tendsto_nat_floor_div_atTop
-  · rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
-    refine Tendsto.congr' (tendsto_card_div_pow₆ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
+  · refine Tendsto.congr' (tendsto_card_div_pow₆ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
     · exact Tendsto.comp (tendsto_card_div_pow_atTop_volume s hs₁ hs₂ hs₃) tendsto_nat_ceil_atTop
     · exact tendsto_nat_ceil_div_atTop
 
