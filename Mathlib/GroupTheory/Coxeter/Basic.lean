@@ -411,6 +411,59 @@ theorem length_alternatingWord (i i' : B) (m : ℕ) :
   · dsimp [alternatingWord]
   · simpa [alternatingWord] using ih i' i
 
+private lemma getElem_alternatingWord_aux (i j : B) (p : ℕ)
+    (k : Fin ((alternatingWord i j p).length)) :
+    (alternatingWord i j p)[k] = (if Even (p + k) then i else j) := by
+  induction p with
+  | zero =>
+    rcases k with ⟨k, hk⟩
+    simp[alternatingWord] at hk
+  | succ n h =>
+    revert k
+    rw [alternatingWord_succ' i j n]
+    rintro ⟨k, hk⟩
+
+    induction k with
+    | zero =>
+      by_cases h2 : Even n
+      · have : ¬ Even (n + 1) := by
+          simp
+          exact Even.add_one h2
+        simp [h2, this]
+      · have : Even (n + 1) := by
+          simp at h2
+          exact Odd.add_one h2
+        simp [h2, this]
+    | succ k _ =>
+      have : k < (alternatingWord i j n).length := by
+        simp
+        simp at hk
+        exact hk
+      simp[List.getElem_cons_succ]
+      simp at h
+      rw[h ⟨k, this⟩ ]
+      simp
+      ring_nf
+      have (m : ℕ) : Even (2 + m) ↔ Even m := by
+        have aux : m ≤ 2 + m := by omega
+        apply (Nat.even_sub aux).mp
+        simp
+      by_cases h_even : Even (n + k)
+      · simp [if_pos h_even]
+        rw[← this (n+k)] at h_even
+        rw[← Nat.add_assoc 2 n k] at h_even
+        simp [if_pos h_even]
+      · simp [if_neg h_even]
+        rw[← this (n+k)] at h_even
+        rw[← Nat.add_assoc 2 n k] at h_even
+        simp [if_neg h_even]
+
+lemma getElem_alternatingWord (i j : B) (p k : ℕ) (h : k < p) :
+    (alternatingWord i j p)[k]'(by simp; exact h) =  (if Even (p + k) then i else j) := by
+  have h' : k < (alternatingWord i j p).length := by simp[h]
+  rw[← getElem_alternatingWord_aux i j p ⟨k, h'⟩]
+  simp
+
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction' m with m ih
