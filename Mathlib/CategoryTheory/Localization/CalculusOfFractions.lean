@@ -616,7 +616,7 @@ lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
 
 lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
   let hobj : ∀ (X : C), F₁.obj X = F₂.obj X := fun X => Functor.congr_obj h X
-  refine' Functor.ext hobj _
+  refine Functor.ext hobj ?_
   rintro (X Y : C) f
   obtain ⟨f, rfl⟩ := Hom.mk_surjective f
   rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,

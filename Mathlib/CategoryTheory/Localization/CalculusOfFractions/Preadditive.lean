@@ -36,21 +36,12 @@ namespace CategoryTheory
 open MorphismProperty Preadditive Limits Category
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
-<<<<<<< HEAD
-  {W : MorphismProperty C} [L.IsLocalization W] [W.HasLeftCalculusOfFractions]
-=======
   {W : MorphismProperty C} [L.IsLocalization W]
->>>>>>> origin/ext-change-of-universes
 
 namespace MorphismProperty
 
 /-- The opposite of a left fraction. -/
-<<<<<<< HEAD
-@[reducible]
-def LeftFraction.neg {X Y : C} (φ : W.LeftFraction X Y) :
-=======
 abbrev LeftFraction.neg {X Y : C} (φ : W.LeftFraction X Y) :
->>>>>>> origin/ext-change-of-universes
     W.LeftFraction X Y where
   Y' := φ.Y'
   f := -φ.f
@@ -62,30 +53,19 @@ namespace LeftFraction₂
 variable {X Y : C} (φ : W.LeftFraction₂ X Y)
 
 /-- The sum of two left fractions with the same denominator. -/
-<<<<<<< HEAD
-@[reducible]
-def add : W.LeftFraction X Y where
-=======
 abbrev add : W.LeftFraction X Y where
->>>>>>> origin/ext-change-of-universes
   Y' := φ.Y'
   f := φ.f + φ.f'
   s := φ.s
   hs := φ.hs
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/ext-change-of-universes
 lemma symm_add : φ.symm.add = φ.add := by
   dsimp [add, symm]
   congr 1
   apply add_comm
 
-<<<<<<< HEAD
-=======
 @[simp]
->>>>>>> origin/ext-change-of-universes
 lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :
     φ.add.map F hF = φ.fst.map F hF + φ.snd.map F hF := by
   have := hF φ.s φ.hs
@@ -102,9 +82,6 @@ namespace Localization
 
 namespace Preadditive
 
-<<<<<<< HEAD
-variable {X Y Z : C}
-=======
 section ImplementationDetails
 
 /-! The definitions in this section (like `neg'` and `add'`) should never be used
@@ -115,7 +92,6 @@ completely determines the preadditive structure on the localized category when
 there is a calculus of left fractions. -/
 
 variable [W.HasLeftCalculusOfFractions] {X Y Z : C}
->>>>>>> origin/ext-change-of-universes
 variable {L}
 
 /-- The opposite of a map `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
@@ -182,21 +158,13 @@ lemma zero_add' (f : L.obj X ⟶ L.obj Y) :
     add' W (L.map 0) f = f := by
   rw [add'_comm, add'_zero]
 
-<<<<<<< HEAD
-lemma add'_left_neg' (f : L.obj X ⟶ L.obj Y) :
-=======
 lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
->>>>>>> origin/ext-change-of-universes
     add' W (neg' W f) f = L.map 0 := by
   obtain ⟨α, rfl⟩ := exists_leftFraction L W f
   have := inverts L W _ α.hs
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
   simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
-<<<<<<< HEAD
-    Limits.zero_comp, add_left_neg]
-=======
     Limits.zero_comp, neg_add_cancel]
->>>>>>> origin/ext-change-of-universes
 
 lemma add'_assoc (f₁ f₂ f₃ : L.obj X ⟶ L.obj Y) :
     add' W (add' W f₁ f₂) f₃ = add' W f₁ (add' W f₂ f₃) := by
@@ -261,11 +229,7 @@ noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
       add_zero := add'_zero _
       add_comm := add'_comm _
       zero_add := zero_add' _
-<<<<<<< HEAD
-      add_left_neg := add'_left_neg' _
-=======
       neg_add_cancel := neg'_add'_self _
->>>>>>> origin/ext-change-of-universes
       nsmul := nsmulRec
       zsmul := zsmulRec }
 
@@ -334,17 +298,12 @@ lemma map_add (f₁ f₂ : X ⟶ Y) :
   rw [add_eq W (Iso.refl _) (Iso.refl _) (L.map f₁) (L.map f₂)]
   simp [add]
 
-<<<<<<< HEAD
-end Preadditive
-
-=======
 end ImplementationDetails
 
 end Preadditive
 
 variable [W.HasLeftCalculusOfFractions]
 
->>>>>>> origin/ext-change-of-universes
 /-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 noncomputable def preadditive : Preadditive D where
@@ -359,11 +318,7 @@ lemma functor_additive :
   ⟨by apply Preadditive.map_add⟩
 
 attribute [irreducible] preadditive
-<<<<<<< HEAD
-
-=======
 include W in
->>>>>>> origin/ext-change-of-universes
 lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
     G.Additive ↔ (L ⋙ G).Additive := by
@@ -372,11 +327,7 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
     infer_instance
   · intro h
     suffices ∀ ⦃X Y : C⦄ (f g : L.obj X ⟶ L.obj Y), G.map (f + g) = G.map f + G.map g by
-<<<<<<< HEAD
-      refine' ⟨fun {X Y f g} => _⟩
-=======
       refine ⟨fun {X Y f g} => ?_⟩
->>>>>>> origin/ext-change-of-universes
       have hL := essSurj L W
       have eq := this ((L.objObjPreimageIso X).hom ≫ f ≫ (L.objObjPreimageIso Y).inv)
         ((L.objObjPreimageIso X).hom ≫ g ≫ (L.objObjPreimageIso Y).inv)
@@ -392,14 +343,13 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
       LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
       Functor.map_add, Functor.comp_map, Functor.comp_map]
 
-<<<<<<< HEAD
+/-- Variant of `functor_additive_iff`. -/
 lemma functor_additive_iff' {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
     (H : C ⥤ E) (G : D ⥤ E) [Localization.Lifting L W H G]:
     G.Additive ↔ H.Additive := by
   rw [functor_additive_iff L W G, Functor.additive_iff_of_iso (Lifting.iso L W H G)]
 
-=======
->>>>>>> origin/ext-change-of-universes
+
 noncomputable instance : Preadditive W.Localization := preadditive W.Q W
 instance : W.Q.Additive := functor_additive W.Q W
 instance [HasZeroObject C] : HasZeroObject W.Localization := W.Q.hasZeroObject_of_additive
@@ -410,10 +360,6 @@ noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
 instance : W.Q'.Additive := functor_additive W.Q' W
 instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/ext-change-of-universes
 end Localization
 
 end CategoryTheory

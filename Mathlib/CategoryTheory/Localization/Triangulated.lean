@@ -3,11 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrowsTwo
-=======
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Localization
@@ -15,11 +11,7 @@ import Mathlib.CategoryTheory.Shift.Localization
 /-! # Localization of triangulated categories
 
 If `L : C ⥤ D` is a localization functor for a class of morphisms `W` that is compatible
-<<<<<<< HEAD
-with the triangulation on the category `C` and admits left and right calculus of fractions,
-=======
 with the triangulation on the category `C` and admits a left calculus of fractions,
->>>>>>> origin/ext-change-of-universes
 it is shown in this file that `D` can be equipped with a pretriangulated category structure,
 and that it is triangulated.
 
@@ -32,11 +24,6 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated Localization
 
-<<<<<<< HEAD
-section
-
-=======
->>>>>>> origin/ext-change-of-universes
 variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D)
   [HasShift C ℤ] [Preadditive C] [HasZeroObject C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -74,11 +61,7 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by
-<<<<<<< HEAD
-  refine' ⟨contractibleTriangle (L.objPreimage X), _, contractible_distinguished _⟩
-=======
   refine ⟨contractibleTriangle (L.objPreimage X), ?_, contractible_distinguished _⟩
->>>>>>> origin/ext-change-of-universes
   exact ((contractibleTriangleFunctor D).mapIso (L.objObjPreimageIso X)).symm ≪≫
     Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) L.mapZeroObject.symm (by simp) (by simp) (by simp)
 
@@ -119,11 +102,7 @@ lemma complete_distinguished_essImageDistTriang_morphism
   have h₃ := φ.comm₃
   dsimp at h₂ h₃
   simp only [assoc] at h₃
-<<<<<<< HEAD
-  refine' ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, _, _⟩
-=======
   refine ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, ?_, ?_⟩
->>>>>>> origin/ext-change-of-universes
   · rw [reassoc_of% comm₂, reassoc_of% h₂, hφ₂, assoc, assoc,
       Iso.hom_inv_id_triangle_hom₂_assoc, ← reassoc_of% comm₂',
       Iso.hom_inv_id_triangle_hom₃, comp_id]
@@ -139,23 +118,6 @@ namespace Triangulated
 namespace Localization
 
 variable (W : MorphismProperty C) [L.IsLocalization W]
-<<<<<<< HEAD
-  [W.IsCompatibleWithTriangulation] [W.HasLeftCalculusOfFractions]
-  [Preadditive D] [HasZeroObject D]
-  [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
-
-lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
-    ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
-      Triangle.mk f g h ∈ L.essImageDistTriang := by
-  have := essSurj_mapArrow_of_hasLeftCalculusofFractions L W
-  obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
-    ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
-  obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
-  refine' ⟨L.obj Z, e.inv.right ≫ L.map g,
-    L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, _, H⟩
-  refine' Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
-    (Iso.refl _) e.inv.w.symm (by simp) _
-=======
   [W.HasLeftCalculusOfFractions]
 
 include W in
@@ -170,18 +132,14 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, ?_, H⟩
   refine Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
     (Iso.refl _) e.inv.w.symm (by simp) ?_
->>>>>>> origin/ext-change-of-universes
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj_left, Functor.map_id, comp_id]
 
-<<<<<<< HEAD
-=======
 section
 variable [W.IsCompatibleWithTriangulation]
 
 include W in
->>>>>>> origin/ext-change-of-universes
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (fac : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
@@ -213,13 +171,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (by dsimp [T₃]; rw [reassoc_of% hβ]) hψ₁ hψ₂
   have : IsIso (L.mapTriangle.map ψ) := Triangle.isIso_of_isIsos _
     (inverts L W α.s α.hs) (inverts L W _ hβγσ) (inverts L W ψ₃ hψ₃)
-<<<<<<< HEAD
-  refine' ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f
-      (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), _, _⟩
-=======
   refine ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f
       (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), ?_, ?_⟩
->>>>>>> origin/ext-change-of-universes
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₁, ← comp_hom₁, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
@@ -228,11 +181,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     simp only [Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
-<<<<<<< HEAD
-=======
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
->>>>>>> origin/ext-change-of-universes
 /-- The pretriangulated structure on the localized category. -/
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
@@ -243,21 +193,6 @@ def pretriangulated : Pretriangulated D where
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 
-<<<<<<< HEAD
-lemma isTriangulated_functor :
-    letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
-    letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
-
-lemma essSurj_mapArrow : L.mapArrow.EssSurj :=
-  essSurj_mapArrow_of_hasLeftCalculusofFractions L W
-
-lemma isTriangulated [W.HasRightCalculusOfFractions] [Pretriangulated D]
-    [L.IsTriangulated] [IsTriangulated C] :
-    IsTriangulated D := by
-  have := essSurj_mapComposableArrows_two L W
-  exact isTriangulated_of_essSurj_mapComposableArrows_two L
-
-=======
 instance isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
   letI : Pretriangulated D := pretriangulated L W
@@ -275,20 +210,13 @@ lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
 
 variable [W.IsCompatibleWithTriangulation]
 
->>>>>>> origin/ext-change-of-universes
 instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
   rw [Localization.functor_additive_iff W.Q W]
   exact Functor.additive_of_iso (W.Q.commShiftIso n)
 
 instance : Pretriangulated W.Localization := pretriangulated W.Q W
-<<<<<<< HEAD
-instance : W.Q.IsTriangulated := isTriangulated_functor W.Q W
-instance [W.HasRightCalculusOfFractions] [IsTriangulated C] :
-  IsTriangulated W.Localization := isTriangulated W.Q W
-=======
 
 instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
->>>>>>> origin/ext-change-of-universes
 
 section
 
@@ -299,14 +227,11 @@ instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
   exact Functor.additive_of_iso (W.Q'.commShiftIso n)
 
 instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
-<<<<<<< HEAD
 instance : W.Q'.IsTriangulated := isTriangulated_functor W.Q' W
 instance [W.HasRightCalculusOfFractions] [IsTriangulated C] :
   IsTriangulated W.Localization' := isTriangulated W.Q' W
-=======
 
 instance [IsTriangulated C] : IsTriangulated W.Localization' := isTriangulated W.Q' W
->>>>>>> origin/ext-change-of-universes
 
 end
 
@@ -314,23 +239,10 @@ end Localization
 
 end Triangulated
 
-<<<<<<< HEAD
-end
-
-namespace Triangulated.Localization
-
-variable {C D : Type _} [Category C] [Category D] [HasZeroObject C] [HasZeroObject D]
-  [Preadditive C] [Preadditive D] [HasShift C ℤ] [HasShift D ℤ]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
-  [Pretriangulated C] [Pretriangulated D]
-  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.mapArrow.EssSurj]
-  [L.CommShift ℤ] [L.IsTriangulated]
-=======
 namespace Functor
 
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated D] [L.mapArrow.EssSurj] [L.IsTriangulated]
->>>>>>> origin/ext-change-of-universes
 
 lemma distTriang_iff (T : Triangle D) :
     (T ∈ distTriang D) ↔ T ∈ L.essImageDistTriang := by
@@ -344,10 +256,6 @@ lemma distTriang_iff (T : Triangle D) :
   · rintro ⟨T₀, e, hT₀⟩
     exact isomorphic_distinguished _ (L.map_distinguished _ hT₀) _ e
 
-<<<<<<< HEAD
-end Triangulated.Localization
-=======
 end Functor
->>>>>>> origin/ext-change-of-universes
 
 end CategoryTheory

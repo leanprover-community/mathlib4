@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Triangulated.Opposite
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-
-namespace CategoryTheory
-
-open Limits Pretriangulated Pretriangulated.Opposite
-
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-=======
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -45,7 +32,6 @@ section
 
 variable [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
->>>>>>> origin/ext-change-of-universes
 
 instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
   exact T hT := by
@@ -54,19 +40,6 @@ instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
     obtain ⟨x₁, hx₁⟩ := T.coyoneda_exact₂ hT x₂ hx₂
     exact ⟨x₁, hx₁.symm⟩
 
-<<<<<<< HEAD
-instance (A : C) : (preadditiveYoneda.obj A).IsHomological where
-  exact T hT := by
-    rw [ShortComplex.ab_exact_iff]
-    intro (x₂ : T.obj₂.unop ⟶ A) (hx₂ : T.mor₂.unop ≫ x₂ = 0)
-    obtain ⟨x₃, hx₃⟩ := Triangle.yoneda_exact₂ _ (unop_distinguished T hT) x₂ hx₂
-    exact ⟨x₃, hx₃.symm⟩
-
-lemma preadditive_yoneda_map_distinguished
-    (T : Triangle C) (hT : T ∈ distTriang C) (A : C) :
-    ((shortComplexOfDistTriangle T hT).op.map (preadditiveYoneda.obj A)).Exact :=
-  (preadditiveYoneda.obj A).map_distinguished_op_exact T hT
-=======
 instance (B : C) : (preadditiveYoneda.obj B).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]
@@ -128,6 +101,5 @@ lemma preadditiveYoneda_homologySequenceδ_apply
 end
 
 end Pretriangulated
->>>>>>> origin/ext-change-of-universes
 
 end CategoryTheory

@@ -106,6 +106,7 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
   subst hij hjk
   exact hS.exact i hk
 
+/-- exactness of `S.sc'` when `S` is exact. -/
 abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     ShortComplex C :=
@@ -271,13 +272,6 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
         exact h.toIsComplex.zero n
       exact h.exact n (by linarith)
   · rintro ⟨h, h'⟩
-<<<<<<< HEAD
-    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by linarith)
-      · exact h.toIsComplex.zero i
-      · exact h'.toIsComplex.zero 0
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by linarith)
-=======
     refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [Nat.add_le_add_iff_right] at hi
       obtain hi | rfl := hi.lt_or_eq
@@ -285,7 +279,6 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
       · exact h'.toIsComplex.zero 0
     · simp only [Nat.add_le_add_iff_right] at hi
       obtain hi | rfl := hi.lt_or_eq
->>>>>>> origin/ext-change-of-universes
       · exact h.exact i
       · exact h'.exact 0
 

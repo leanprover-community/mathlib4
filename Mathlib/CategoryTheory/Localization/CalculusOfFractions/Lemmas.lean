@@ -10,13 +10,13 @@ variable {C D E : Type*} [Category C] [Category D] [Category E]
 lemma Functor.full_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     (h : ∀ ⦃X₁ X₂ : C⦄ (φ : (F.obj (L.obj X₁)) ⟶ F.obj (L.obj X₂)),
       ∃ (f : L.obj X₁ ⟶ L.obj X₂), φ = F.map f) :
-    Full F := Functor.fullOfSurjective _ (by
+    Full F := ⟨by
   intro X₁ X₂ ψ
   obtain ⟨f, hf⟩ := h (F.map (L.objObjPreimageIso X₁).hom ≫ ψ ≫
     F.map (L.objObjPreimageIso X₂).inv)
   refine ⟨(L.objObjPreimageIso X₁).inv ≫ f ≫ (L.objObjPreimageIso X₂).hom, ?_⟩
   rw [F.map_comp, F.map_comp, ← hf, assoc, assoc, ← F.map_comp_assoc, ← F.map_comp,
-    Iso.inv_hom_id, Iso.inv_hom_id, F.map_id, F.map_id, comp_id, id_comp])
+    Iso.inv_hom_id, Iso.inv_hom_id, F.map_id, F.map_id, comp_id, id_comp]⟩
 
 -- should be moved
 lemma Functor.faithful_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
@@ -40,6 +40,8 @@ section
 
 variable (F : D ⥤ E) (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   [W.HasLeftCalculusOfFractions]
+
+include W
 
 lemma Functor.faithful_of_precomp_of_hasLeftCalculusOfFractions
     (h : ∀ ⦃X₁ X₂ : C⦄ (f g : X₁ ⟶ X₂), F.map (L.map f) = F.map (L.map g) → L.map f = L.map g) :

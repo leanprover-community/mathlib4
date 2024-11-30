@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Shift.Localization
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Triangulated subcategories
 
@@ -40,13 +41,12 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
-<<<<<<< HEAD
 namespace Limits
 
 variable {C J₁ J₂ : Type _} [Category C]
   (X : J₂ → C) (e : J₁ ≃ J₂) [HasProduct X]
 
-noncomputable def fanOfEquiv : Fan (X ∘ e) := Fan.mk (∏ X) (fun _ => Pi.π _ _)
+noncomputable def fanOfEquiv : Fan (X ∘ e) := Fan.mk (∏ᶜ X) (fun _ => Pi.π _ _)
 
 @[simp]
 lemma fanOfEquiv_proj (j : J₁) : (fanOfEquiv X e).proj j = Pi.π _ (e j) := rfl
@@ -66,23 +66,18 @@ lemma Pi.congr_π {J : Type _} (F : J → C) [HasProduct F] {j₁ j₂ : J} (h :
 noncomputable def isLimitFanOfEquiv : IsLimit (fanOfEquiv X e) :=
   mkFanLimit _ (fun s => Pi.lift (fun j₂ => s.proj (e.symm j₂) ≫ eqToHom (by simp) ))
     (fun s j => by simp [Fan.congr_proj _ (e.symm_apply_apply j)])
-    (fun s m hm => Pi.hom_ext _ _ (fun j => by
-      dsimp
-      simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app, ← hm,
-        Function.comp_apply, fanOfEquiv_proj, assoc]
-      rw [Pi.congr_π]
-      simp))
+    (fun s m hm => Limits.Pi.hom_ext (f := X) _ _ (fun j ↦ by simp [← hm]))
 
 lemma hasProductOfEquiv : HasProduct (X ∘ e) :=
   ⟨⟨_, isLimitFanOfEquiv X e⟩⟩
 
-noncomputable def productIsoOfEquiv [HasProduct (X ∘ e)] :  ∏ (X ∘ e) ≅ ∏ X :=
+noncomputable def productIsoOfEquiv [HasProduct (X ∘ e)] : ∏ᶜ (X ∘ e) ≅ ∏ᶜ X :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFanOfEquiv X e)
 
 noncomputable def productOptionIso {C J : Type _} [Category C]
     (X : Option J → C) [HasProduct X] [HasProduct (fun j => X (some j))]
-    [HasBinaryProduct (∏ (fun j => X (some j))) (X none)] :
-    (∏ X) ≅ (∏ (fun j => X (some j))) ⨯ (X none) where
+    [HasBinaryProduct (∏ᶜ (fun j => X (some j))) (X none)] :
+    (∏ᶜ X) ≅ (∏ᶜ (fun j => X (some j))) ⨯ (X none) where
   hom := prod.lift (Pi.lift (fun j => Pi.π _ (some j))) (Pi.π _ none)
   inv := Pi.lift (fun b => match b with
     | some j => prod.fst ≫ Pi.π _ j
@@ -90,8 +85,6 @@ noncomputable def productOptionIso {C J : Type _} [Category C]
 
 end Limits
 
-=======
->>>>>>> origin/ext-change-of-universes
 namespace Triangulated
 
 open Pretriangulated
@@ -119,12 +112,9 @@ lemma zero [ClosedUnderIsomorphisms S.P] : S.P 0 := by
   obtain ⟨X, hX, mem⟩ := S.zero'
   exact mem_of_iso _ hX.isoZero mem
 
-<<<<<<< HEAD
 lemma mem_of_isZero [ClosedUnderIsomorphisms S.P] (X : C) (hX : IsZero X) : S.P X :=
   mem_of_iso _ hX.isoZero.symm S.zero
 
-=======
->>>>>>> origin/ext-change-of-universes
 /-- The closure under isomorphisms of a triangulated subcategory. -/
 def isoClosure : Subcategory C where
   P := CategoryTheory.isoClosure S.P
@@ -136,11 +126,7 @@ def isoClosure : Subcategory C where
     exact ⟨Y⟦n⟧, S.shift Y n hY, ⟨(shiftFunctor C n).mapIso e⟩⟩
   ext₂' := by
     rintro T hT ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
-<<<<<<< HEAD
-    exact subset_isoClosure _ _
-=======
     exact le_isoClosure _ _
->>>>>>> origin/ext-change-of-universes
       (S.ext₂' (Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧'))
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by aesop_cat) (by aesop_cat) (by
@@ -163,26 +149,16 @@ def mk' : Subcategory C where
   P := P
   zero' := ⟨0, isZero_zero _, zero⟩
   shift := shift
-<<<<<<< HEAD
-  ext₂' T hT h₁ h₃ := subset_isoClosure P _ (ext₂ T hT h₁ h₃)
-
-instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
-  mem_of_iso {X Y} e hX := by
-    refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
-    refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
-=======
   ext₂' T hT h₁ h₃ := le_isoClosure P _ (ext₂ T hT h₁ h₃)
 
 instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
   of_iso {X Y} e hX := by
     refine ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) ?_ hX zero
     refine isomorphic_distinguished _ (contractible_distinguished X) _ ?_
->>>>>>> origin/ext-change-of-universes
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
 
 end
 
-<<<<<<< HEAD
 @[simp]
 lemma shift_iff [ClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
     S.P (X⟦n⟧) ↔ S.P X := by
@@ -191,8 +167,6 @@ lemma shift_iff [ClosedUnderIsomorphisms S.P] (X : C) (n : ℤ) :
     exact mem_of_iso _ ((shiftEquiv C n).unitIso.symm.app X) (S.shift _ (-n) h)
   · exact S.shift X n
 
-=======
->>>>>>> origin/ext-change-of-universes
 lemma ext₂ [ClosedUnderIsomorphisms S.P]
     (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : S.P T.obj₁)
     (h₃ : S.P T.obj₃) : S.P T.obj₂ := by
@@ -228,24 +202,6 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
   ext X Y f
   constructor
   · rintro ⟨Z, g, h, mem, ⟨Z', hZ', ⟨e⟩⟩⟩
-<<<<<<< HEAD
-    refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
-    exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
-  · rintro ⟨Z, g, h, mem, hZ⟩
-    exact ⟨Z, g, h, mem, subset_isoClosure _ _ hZ⟩
-
-lemma respectsIso_W : S.W.RespectsIso where
-  left := by
-    rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
-    refine' ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ _, mem'⟩
-    refine' Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) _
-    dsimp
-    simp only [assoc, ← Functor.map_comp, e.inv_hom_id, Functor.map_id, comp_id, id_comp]
-  right := by
-    rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
-    refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
-    exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
-=======
     refine ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ ?_, hZ'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
@@ -262,27 +218,18 @@ instance respectsIso_W : S.W.RespectsIso where
     rintro f ⟨Z, g, h, mem, mem'⟩
     refine ⟨Z, inv e ≫ g, h, isomorphic_distinguished _ mem _ ?_, mem'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (asIso e).symm (Iso.refl _)
->>>>>>> origin/ext-change-of-universes
 
 instance : S.W.ContainsIdentities := by
   rw [← isoClosure_W]
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, zero _⟩⟩
 
 lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
-<<<<<<< HEAD
-  refine (S.respectsIso_W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
-=======
   refine (S.W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
->>>>>>> origin/ext-change-of-universes
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
 lemma smul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     S.W (n • f) ↔ S.W f :=
-<<<<<<< HEAD
-  S.respectsIso_W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
-=======
   S.W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
->>>>>>> origin/ext-change-of-universes
 
 variable {S}
 
@@ -292,11 +239,7 @@ lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (
   exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, S.shift _ _ mem⟩
 
 lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f :=
-<<<<<<< HEAD
-  (S.respectsIso_W.arrow_mk_iso_iff
-=======
   (S.W.arrow_mk_iso_iff
->>>>>>> origin/ext-change-of-universes
      (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
 
 instance : S.W.IsCompatibleWithShift ℤ where
@@ -305,11 +248,7 @@ instance : S.W.IsCompatibleWithShift ℤ where
     exact ⟨fun hf => hf.unshift, fun hf => hf.shift n⟩
 
 instance [IsTriangulated C] : S.W.IsMultiplicative where
-<<<<<<< HEAD
-  stableUnderComposition := by
-=======
   comp_mem := by
->>>>>>> origin/ext-change-of-universes
     rw [← isoClosure_W]
     rintro X₁ X₂ X₃ u₁₂ u₂₃ ⟨Z₁₂, v₁₂, w₁₂, H₁₂, mem₁₂⟩ ⟨Z₂₃, v₂₃, w₂₃, H₂₃, mem₂₃⟩
     obtain ⟨Z₁₃, v₁₃, w₁₂, H₁₃⟩ := distinguished_cocone_triangle (u₁₂ ≫ u₂₃)
@@ -327,7 +266,7 @@ lemma mem_W_iff_of_distinguished
   · intro h
     exact ⟨_, _, _, hT, h⟩
 
-<<<<<<< HEAD
+/-- Variant of `mem_W_iff_of_distinguished`. -/
 lemma mem_W_iff_of_distinguished'
     [ClosedUnderIsomorphisms S.P] (T : Triangle C) (hT : T ∈ distTriang C) :
     S.W T.mor₂ ↔ S.P T.obj₁ := by
@@ -335,8 +274,6 @@ lemma mem_W_iff_of_distinguished'
   dsimp at this
   rw [this, shift_iff]
 
-=======
->>>>>>> origin/ext-change-of-universes
 instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -349,11 +286,7 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
     have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
     obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
-<<<<<<< HEAD
-    refine' ⟨Y', r, _, _⟩
-=======
     refine ⟨Y', r, ?_, ?_⟩
->>>>>>> origin/ext-change-of-universes
     · exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
@@ -372,11 +305,7 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]
     obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
-<<<<<<< HEAD
-    refine' ⟨Y', r, _, _⟩
-=======
     refine ⟨Y', r, ?_, ?_⟩
->>>>>>> origin/ext-change-of-universes
     · exact ⟨_, _, _, mem', mem⟩
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
@@ -395,11 +324,8 @@ section
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 
-<<<<<<< HEAD
-=======
 include hT
 
->>>>>>> origin/ext-change-of-universes
 lemma ext₁ [ClosedUnderIsomorphisms S.P] (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
     S.P T.obj₁ :=
   S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
@@ -416,23 +342,26 @@ lemma ext₃' (h₁ : S.P T.obj₁) (h₂ : S.P T.obj₂) :
     CategoryTheory.isoClosure S.P T.obj₃ :=
   S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
-<<<<<<< HEAD
-lemma binary_product_stable [ClosedUnderIsomorphisms S.P] (X₁ X₂ : C) (hX₁ : S.P X₁) (hX₂ : S.P X₂) :
+omit hT in
+lemma binary_product_stable [ClosedUnderIsomorphisms S.P]
+    (X₁ X₂ : C) (hX₁ : S.P X₁) (hX₂ : S.P X₂) :
     S.P (X₁ ⨯ X₂)  :=
   S.ext₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
-lemma pi_finite_stable [ClosedUnderIsomorphisms S.P] {J : Type} [Finite J] (X : J → C) (hX : ∀ j, S.P (X j)) :
-    S.P (∏ X) := by
+omit hT in
+lemma pi_finite_stable [ClosedUnderIsomorphisms S.P]
+    {J : Type} [Finite J] (X : J → C) (hX : ∀ j, S.P (X j)) :
+    S.P (∏ᶜ X) := by
   revert hX X
   let P : Type → Prop := fun J =>
-    ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, S.P (X j)), S.P (∏ X)
+    ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, S.P (X j)), S.P (∏ᶜ X)
   change P J
   apply @Finite.induction_empty_option
   · intro J₁ J₂ e hJ₁ _ X hX
     have : Finite J₁ := Finite.of_equiv _ e.symm
     exact mem_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
   · intro _ X _
-    refine' mem_of_iso _ (IsZero.isoZero _).symm S.zero
+    refine mem_of_iso _ (IsZero.isoZero ?_).symm S.zero
     rw [IsZero.iff_id_eq_zero]
     ext ⟨⟩
   · intro J _ hJ _ X hX
@@ -442,7 +371,7 @@ lemma pi_finite_stable [ClosedUnderIsomorphisms S.P] {J : Type} [Finite J] (X : 
 instance : S.W.IsStableUnderFiniteProducts := by
   rw [← isoClosure_W]
   exact ⟨fun J _ => by
-    refine' MorphismProperty.IsStableUnderProductsOfShape.mk _ _ (S.isoClosure.respectsIso_W) _
+    refine MorphismProperty.IsStableUnderProductsOfShape.mk _ _ ?_
     intro X₁ X₂ f hf
     exact W.mk _ (productTriangle_distinguished _
       (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose))
@@ -480,8 +409,11 @@ instance : Category S.category := FullSubcategory.category _
 
 def ι : S.category ⥤ C := fullSubcategoryInclusion _
 
+def fullyFaithfulι : S.ι.FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
+
 instance : S.ι.Full := FullSubcategory.full _
 instance : S.ι.Faithful := FullSubcategory.faithful _
+
 
 instance : Preadditive S.category := by
   dsimp [category]
@@ -494,8 +426,9 @@ instance : S.ι.Additive := by
 lemma ι_obj_mem (X : S.category) : S.P (S.ι.obj X) := X.2
 
 noncomputable instance hasShift : HasShift S.category ℤ :=
-  hasShiftOfFullyFaithful S.ι (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
-    (fun X => S.shift _ _ X.2)) (fun _ => FullSubcategory.lift_comp_inclusion _ _ _)
+  S.fullyFaithfulι.hasShift (fun n => FullSubcategory.lift _ (S.ι ⋙ shiftFunctor C n)
+    (fun X => S.shift _ _ X.2))
+    (fun _ => FullSubcategory.lift_comp_inclusion _ _ _)
 
 instance commShiftι : S.ι.CommShift ℤ :=
   Functor.CommShift.of_hasShiftOfFullyFaithful _ _ _
@@ -510,7 +443,7 @@ instance (n : ℤ) : (shiftFunctor S.category n).Additive := by
 instance : HasZeroObject S.category where
   zero := by
     obtain ⟨Z, hZ, mem⟩ := S.zero'
-    refine' ⟨⟨Z, mem⟩, _⟩
+    refine ⟨⟨Z, mem⟩, ?_⟩
     rw [IsZero.iff_id_eq_zero]
     apply hZ.eq_of_src
 
@@ -519,16 +452,16 @@ instance : Pretriangulated S.category where
   isomorphic_distinguished := fun T₁ hT₁ T₂ e =>
     isomorphic_distinguished _ hT₁ _ (S.ι.mapTriangle.mapIso e)
   contractible_distinguished X := by
-    refine' isomorphic_distinguished _ (contractible_distinguished (S.ι.obj X)) _ _
+    refine isomorphic_distinguished _ (contractible_distinguished (S.ι.obj X)) _ ?_
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) S.ι.mapZeroObject
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   distinguished_cocone_triangle {X Y} f := by
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (S.ι.map f)
     obtain ⟨Z'', hZ'', ⟨e⟩⟩ := S.ext₃' _ mem X.2 Y.2
     let Z : S.category := ⟨Z'', hZ''⟩
-    refine' ⟨Z, S.ι.preimage (g' ≫ e.hom),
+    refine ⟨Z, S.ι.preimage (g' ≫ e.hom),
       S.ι.preimage (e.inv ≫ h' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X),
-      isomorphic_distinguished _ mem _ _⟩
+      isomorphic_distinguished _ mem _ ?_⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   rotate_distinguished_triangle T :=
@@ -542,7 +475,7 @@ instance : Pretriangulated S.category where
     dsimp at hc₁ hc₂
     rw [hc'] at hc₁
     rw [hc', assoc, ← Functor.commShiftIso_hom_naturality] at hc₂
-    refine' ⟨c', ⟨S.ι.map_injective _, S.ι.map_injective _⟩⟩
+    refine ⟨c', ⟨S.ι.map_injective ?_, S.ι.map_injective ?_⟩⟩
     · simpa using hc₁
     · rw [← cancel_mono ((Functor.commShiftIso (ι S) (1 : ℤ)).hom.app T₂.obj₁),
         S.ι.map_comp, S.ι.map_comp, assoc, assoc, hc₂]
@@ -597,7 +530,7 @@ instance [F.Faithful] : (S.lift F hF).Faithful :=
   Functor.Faithful.of_comp_iso (S.liftCompInclusion F hF)
 
 instance [F.Full] : (S.lift F hF).Full :=
-  Functor.Full.ofCompFaithfulIso (S.liftCompInclusion F hF)
+  Functor.Full.of_comp_faithful_iso (S.liftCompInclusion F hF)
 
 -- should be generalized
 instance [Preadditive D] [F.Additive] : (S.lift F hF).Additive where
@@ -637,7 +570,7 @@ lemma mem_inverseImage_iff (X : D) :
     (S.inverseImage F).P X ↔ S.P (F.obj X) := by rfl
 
 instance : ClosedUnderIsomorphisms (S.inverseImage F).P where
-  mem_of_iso {X Y} e hX := by
+  of_iso {X Y} e hX := by
     rw [mem_inverseImage_iff] at hX ⊢
     exact mem_of_iso _ (F.mapIso e) hX
 
@@ -673,9 +606,9 @@ def ofNatTrans : Subcategory C :=
       rw [NatTrans.CommShift.app_shift τ n]
       infer_instance)
     (fun T hT h₁ h₃ => by
-      exact Pretriangulated.isIso₂_of_isIso₁₃ (by
-        refine' (Pretriangulated.Triangle.homMk _ _ (τ.app _) (τ.app _) (τ.app _) (by simp) (by simp)
-          (by simp [NatTrans.CommShift.comm_app τ])))
+      exact Pretriangulated.isIso₂_of_isIso₁₃
+        ((Pretriangulated.Triangle.homMk _ _ (τ.app _) (τ.app _) (τ.app _)
+          (by simp) (by simp) (by simp [NatTrans.CommShift.comm_app τ])))
         (F.map_distinguished _ hT) (G.map_distinguished _ hT) (by exact h₁) (by exact h₃))
 
 instance : ClosedUnderIsomorphisms (ofNatTrans τ).P := by
@@ -704,8 +637,6 @@ lemma mem_map_iff (X : C) [ClosedUnderIsomorphisms S.P] :
   · intro hX
     exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
 
-=======
->>>>>>> origin/ext-change-of-universes
 end
 
 end Subcategory

@@ -10,11 +10,12 @@ namespace Adjunction
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F)
 
+include adj
 lemma right_adjoint_additive [G.Additive] : F.Additive where
-  map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp)
+  map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp [homEquiv_counit])
 
 lemma left_adjoint_additive [F.Additive] : G.Additive where
-  map_add {X Y} f g := (adj.homEquiv _ _).injective (by simp)
+  map_add {X Y} f g := (adj.homEquiv _ _).injective (by simp [homEquiv_unit])
 
 end Adjunction
 
@@ -31,21 +32,22 @@ variable {G : C ⥤ D} {F : D ⥤ C} (adj : G ⊣ F) [F.CommShift ℤ] [G.CommSh
   [adj.CommShift ℤ]
   [G.IsTriangulated]
 
+include adj in
 lemma isTriangulated_rightAdjoint : F.IsTriangulated where
   map_distinguished T hT := by
     have : F.Additive := adj.right_adjoint_additive
     dsimp
     obtain ⟨Z, f, g, mem⟩ := distinguished_cocone_triangle (F.map T.mor₁)
-    obtain ⟨h, ⟨h₁, h₂⟩⟩ := complete_distinguished_triangle_morphism _ _ (G.map_distinguished _ mem) hT
-      (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
+    obtain ⟨h, ⟨h₁, h₂⟩⟩ := complete_distinguished_triangle_morphism _ _
+      (G.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
     dsimp at h h₁ h₂
     have h₁' : f ≫ adj.unit.app Z ≫ F.map h = F.map T.mor₂ := by
-      simpa using congr_arg (adj.homEquiv _ _).toFun h₁
+      simpa [homEquiv_unit] using congr_arg (adj.homEquiv _ _).toFun h₁
     have h₂' : g ≫ (F.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
         (adj.homEquiv _ _ h) ≫ F.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
-      simp only [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc, homEquiv_unit,
-        counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
+      simp only [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc,
+        homEquiv_unit, counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
         ← h₂, adj.shift_counit_app, Iso.hom_inv_id_app_assoc]
     rw [assoc] at h₂
     have : Mono (adj.homEquiv _ _ h) := by
@@ -53,12 +55,12 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
       intro Y φ hφ
       obtain ⟨ψ, rfl⟩ := Triangle.coyoneda_exact₃ _ mem φ (by
         dsimp
-        simp at hφ
+        simp [homEquiv_unit] at hφ
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).inv.app T.obj₁), assoc, h₂', zero_comp,
           homEquiv_unit, assoc, reassoc_of% hφ, zero_comp])
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
-        ((adj.homEquiv _ _).injective (by simpa [← h₁'] using hφ))
+        ((adj.homEquiv _ _).injective (by simpa [homEquiv_counit, homEquiv_unit, ← h₁'] using hφ))
       have eq := congr_arg (adj.homEquiv _ _ ).toFun hα
       simp only [homEquiv_counit, Functor.id_obj, Equiv.toFun_as_coe, homEquiv_unit,
         Functor.comp_obj, Functor.map_comp, unit_naturality_assoc, right_triangle_components,
@@ -86,15 +88,15 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
             assoc, assoc, assoc, h₂', Iso.hom_inv_id_app, comp_id]
         suffices ∃ (β : Y ⟶ Z), β ≫ (adj.homEquiv _ _) h = α by
           obtain ⟨β, hβ⟩ := this
-          refine' ⟨ψ + β, _⟩
+          refine ⟨ψ + β, ?_⟩
           dsimp
           rw [add_comp, hβ, hα, add_sub_cancel]
         obtain ⟨β, hβ⟩ := T.coyoneda_exact₃ hT ((adj.homEquiv _ _).symm α)
-          ((adj.homEquiv _ _).injective (by simpa using hα₀))
-        refine' ⟨adj.homEquiv _ _ β ≫ f, _⟩
-        simpa [h₁'] using congr_arg (adj.homEquiv _ _).toFun hβ.symm)
-    refine' isomorphic_distinguished _ mem _ (Iso.symm _)
-    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv Z T.obj₃ h)) _ _ _
+          ((adj.homEquiv _ _).injective (by simpa [homEquiv_unit, homEquiv_counit] using hα₀))
+        refine ⟨adj.homEquiv _ _ β ≫ f, ?_⟩
+        simpa [homEquiv_unit, h₁'] using congr_arg (adj.homEquiv _ _).toFun hβ.symm)
+    refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
+    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv Z T.obj₃ h)) ?_ ?_ ?_
     · dsimp
       simp
     · apply (adj.homEquiv _ _).symm.injective
@@ -121,9 +123,11 @@ namespace IsTriangulated
 
 attribute [instance] functor_isTriangulated inverse_isTriangulated
 
+/-- Constructor for `Equivalence.IsTriangulated`. -/
 lemma mk' (h : E.functor.IsTriangulated) : E.IsTriangulated where
   inverse_isTriangulated := E.toAdjunction.isTriangulated_rightAdjoint
 
+/-- Constructor for `Equivalence.IsTriangulated`. -/
 lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
   functor_isTriangulated := (mk' E.symm h).inverse_isTriangulated
 

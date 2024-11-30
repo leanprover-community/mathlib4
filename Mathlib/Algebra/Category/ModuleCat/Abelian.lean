@@ -98,21 +98,4 @@ instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) 
 
 end ReflectsLimits
 
-<<<<<<< HEAD
-variable {O : ModuleCat.{v} R} (g : N ⟶ O)
-
-/-open LinearMap
-
-attribute [local instance] Preadditive.hasEqualizers_of_hasKernels
-
-theorem exact_iff : Exact' f g ↔ LinearMap.range f = LinearMap.ker g := by
-  rw [abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
-  exact
-    ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
-      ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
-set_option linter.uppercaseLean3 false in
-#align Module.exact_iff ModuleCat.exact_iff-/
-
-=======
->>>>>>> origin/ext-change-of-universes
 end ModuleCat
