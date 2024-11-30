@@ -219,12 +219,12 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
     simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]
     rfl
 
-local notation "φ" => IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+local notation "φ" => IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
 theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
     (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
-    IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+    IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
           (algebraMap (𝕎 k) (FractionRing (𝕎 k)) b) *
         Localization.mk ((p : 𝕎 k) ^ m * r') ⟨(p : 𝕎 k) ^ n * q', hq⟩ =
       (p : Localization (nonZeroDivisors (𝕎 k))) ^ (m - n : ℤ) *

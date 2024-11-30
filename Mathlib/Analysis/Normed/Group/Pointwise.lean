@@ -39,7 +39,7 @@ theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ I
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
-  simp_rw [isBounded_iff_forall_norm_le', ← image_inv, forall_mem_image, norm_inv']
+  simp_rw [isBounded_iff_forall_norm_le', ← image_inv_eq_inv, forall_mem_image, norm_inv']
   exact id
 
 @[to_additive]
@@ -58,7 +58,7 @@ open EMetric
 
 @[to_additive (attr := simp)]
 theorem infEdist_inv_inv (x : E) (s : Set E) : infEdist x⁻¹ s⁻¹ = infEdist x s := by
-  rw [← image_inv, infEdist_image isometry_inv]
+  rw [← image_inv_eq_inv, infEdist_image isometry_inv]
 
 @[to_additive]
 theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹ := by

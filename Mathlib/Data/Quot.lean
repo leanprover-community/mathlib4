@@ -727,16 +727,12 @@ protected theorem eq' {s₁ : Setoid α} {a b : α} :
 protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ s₁ a b :=
   Quotient.eq
 
-/-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
-instance argument. -/
-noncomputable def out' (a : Quotient s₁) : α :=
-  Quotient.out a
+@[deprecated (since := "2024-10-19")] alias out' := out
 
-@[simp]
-theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
+theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out = q :=
   q.out_eq
 
-theorem mk_out' (a : α) : s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
+theorem mk_out' (a : α) : s₁ (Quotient.mk'' a : Quotient s₁).out a :=
   Quotient.exact (Quotient.out_eq _)
 
 section

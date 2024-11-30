@@ -447,7 +447,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      --porting note (#10754): added instance
+      --Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
