@@ -1087,14 +1087,13 @@ open NumberField
 /-- The infinite place of `ℚ`, coming from the canonical map `ℚ → ℂ`. -/
 noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
 
+@[simp]
 lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
   rw [NumberField.InfinitePlace.coe_apply]
   obtain ⟨_, _, rfl⟩ := v
   simp
 
 instance : Subsingleton (InfinitePlace ℚ) where
-  allEq a b := by
-    ext
-    simp [infinitePlace_apply]
+  allEq a b := by ext; simp
 
 end Rat
