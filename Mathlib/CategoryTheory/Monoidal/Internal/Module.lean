@@ -49,7 +49,7 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
       convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.mul_one) (x ⊗ₜ (1 : R))
-      erw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
+      rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
       convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.mul_assoc) (x ⊗ₜ y ⊗ₜ z)
     left_distrib := fun x y z => by
@@ -114,8 +114,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --    ModuleCat.MonoidalCategory.tensorHom_tmul, AlgebraCat.hom_comp,
     --    ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
+    dsimp
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
-    erw [id_apply]
+    dsimp
   mul_one := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
@@ -129,7 +130,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     rw [ModuleCat.hom_comp, LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
-    erw [id_apply]
+    dsimp
   mul_assoc := by
     ext : 1
     set_option tactic.skipAssignedInstances false in
@@ -141,7 +142,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     rw [hom_comp, LinearMap.comp_apply, hom_comp, LinearMap.comp_apply, hom_comp,
         LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
-    erw [id_apply]
+    dsimp only [id_coe, id_eq]
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
     simp only [LinearMap.mul'_apply, mul_assoc]
 
