@@ -55,7 +55,11 @@ namespace RootPairing
 section CommRing
 
 variable [Fintype ι] [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-(P : RootPairing ι R M N)
+  (P : RootPairing ι R M N)
+
+instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
+
+instance : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range P.coroot
 
 /-- An invariant linear map from weight space to coweight space. -/
 def Polarization : M →ₗ[R] N :=
@@ -143,6 +147,28 @@ theorem range_polarization_domRestrict_le_span_coroot :
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 
+lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
+    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
+      LinearMap.range (P.Polarization.domRestrict (P.rootSpan)) := by
+  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a))
+    (Finset.mem_univ i)
+  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
+  refine LinearMap.mem_range.mpr ?_
+  use ⟨(c • 2 • P.root i), by aesop⟩
+  simp
+
+lemma rootForm_apply_root_self_ne_zero [CharZero R] (h : P.IsCrystallographic) (i : ι) :
+    P.RootForm (P.root i) (P.root i) ≠ 0 := by
+  choose z hz using P.isCrystallographic_iff.mp h i
+  simp only [rootForm_apply_apply, PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, ← hz]
+  suffices 0 < ∑ i, z i * z i by norm_cast; exact this.ne'
+  refine Finset.sum_pos' (fun i _ ↦ mul_self_nonneg (z i)) ⟨i, Finset.mem_univ i, ?_⟩
+  have hzi : z i = 2 := by
+    specialize hz i
+    rw [pairing_same] at hz
+    norm_cast at hz
+  simp [hzi]
+
 end CommRing
 
 section LinearOrderedCommRing
@@ -171,16 +197,6 @@ lemma rootForm_root_self_pos (j : ι) :
 lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
   Finset.prod_pos fun i _ => rootForm_root_self_pos P i
-
-lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
-    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
-      LinearMap.range (P.Polarization.domRestrict (P.rootSpan)) := by
-  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a))
-    (Finset.mem_univ i)
-  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
-  refine LinearMap.mem_range.mpr ?_
-  use ⟨(c • 2 • P.root i), by aesop⟩
-  simp
 
 end LinearOrderedCommRing
 
