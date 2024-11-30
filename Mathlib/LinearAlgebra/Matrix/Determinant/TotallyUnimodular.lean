@@ -201,6 +201,23 @@ lemma in_set_range_singType_cast_iff_abs (a : R) :
     a ∈ Set.range SignType.cast ↔ |a| ∈ Set.range SignType.cast := by
   sorry
 
+-- TODO maybe rename and certainly move; do not require `R` to be algebraic structure
+lemma fromBlocks_submatrix (A₁ : Matrix m n R) (A₂ : Matrix m' n' R)
+    {α : Type*} (f : α → m ⊕ m') (g : α → n ⊕ n') :
+    (fromBlocks A₁ 0 0 A₂).submatrix f g =
+    (Matrix.fromBlocks
+      (A₁.submatrix
+        ((·.val.snd) : { x₁ : α × m // f x₁.fst = Sum.inl x₁.snd } → m)
+        ((·.val.snd) : { y₁ : α × n // g y₁.fst = Sum.inl y₁.snd } → n)
+      ) 0 0
+      (A₂.submatrix
+        ((·.val.snd) : { x₂ : α × m' // f x₂.fst = Sum.inr x₂.snd } → m')
+        ((·.val.snd) : { y₂ : α × n' // g y₂.fst = Sum.inr y₂.snd } → n')
+      )
+     ).submatrix f.decomposeSum g.decomposeSum := by
+  rw [f.eq_comp_decomposeSum, g.eq_comp_decomposeSum, ←Matrix.submatrix_submatrix]
+  aesop
+
 attribute [-simp] Fintype.card_ofIsEmpty Fintype.card_ofSubsingleton -- major performance issue
 
 lemma fromBlocks_isTotallyUnimodular_zero_zero_isTotallyUnimodular
@@ -211,26 +228,7 @@ lemma fromBlocks_isTotallyUnimodular_zero_zero_isTotallyUnimodular
     (fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular := by
   intro k f g hf hg
   rw [isTotallyUnimodular_iff] at hA₁ hA₂
-  rw [f.eq_comp_decomposeSum, g.eq_comp_decomposeSum, ←Matrix.submatrix_submatrix]
-  -- submatrix of a block matrix is a block matrix of submatrices
-  have hAfg :
-    (Matrix.fromBlocks A₁ 0 0 A₂).submatrix
-      (Sum.elim (Sum.inl ∘ (·.val.snd)) (Sum.inr ∘ (·.val.snd)))
-      (Sum.elim (Sum.inl ∘ (·.val.snd)) (Sum.inr ∘ (·.val.snd)))
-    =
-    Matrix.fromBlocks
-      (A₁.submatrix
-        ((·.val.snd) : { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd } → m)
-        ((·.val.snd) : { y₁ : Fin k × n // g y₁.fst = Sum.inl y₁.snd } → n)
-      ) 0 0
-      (A₂.submatrix
-        ((·.val.snd) : { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd } → m')
-        ((·.val.snd) : { y₂ : Fin k × n' // g y₂.fst = Sum.inr y₂.snd } → n')
-      ) := by
-    ext i j
-    cases i <;> cases j <;> simp
-  rw [hAfg]
-  clear hAfg
+  rw [fromBlocks_submatrix]
   -- look at sizes of submatrices in blocks
   if hxy : Fintype.card { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd }
          = Fintype.card { y₁ : Fin k × n // g y₁.fst = Sum.inl y₁.snd }
