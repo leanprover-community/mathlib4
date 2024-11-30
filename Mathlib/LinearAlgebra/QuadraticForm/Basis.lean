@@ -20,6 +20,9 @@ section Prod
 variable {ι₁ : Type*}
 variable {ι₂ : Type*}
 
+lemma ne_cases [LinearOrder ι₁] (i₁ j₁ : ι₁) : i₁ ≠ j₁ ↔ i₁ < j₁ ∨ j₁ < i₁ := ne_iff_lt_or_gt
+
+
 /-- Off the diagonal in both components -/
 def symOffDiag : Sym2 (ι₁ × ι₂) → Prop := Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => i₁ ≠ j₁ ∧ i₂ ≠ j₂, by
   aesop⟩
@@ -29,20 +32,34 @@ theorem mk_symOffDiag_iff {x y : (ι₁ × ι₂)} : symOffDiag s(x, y) ↔ x.1 
 
 
 @[simp]
-theorem isDiag_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+theorem symOffDiag_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
     symOffDiag (Sym2.mk z) ↔ z.1.1 ≠ z.2.1 ∧ z.1.2 ≠ z.2.2 :=
   Prod.recOn z fun _ _ => mk_symOffDiag_iff
 
 
 instance symOffDiag.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
     DecidablePred (@symOffDiag ι₁ ι₂) :=
-  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
-
---variable [LT ι₁] [LT ι₂]
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiag_iff_proj_eq a)
 
 /-- Triangular -/
 def symOffDiagUpper [LT ι₁] [LT ι₂] : Sym2 (ι₁ × ι₂) → Prop :=
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₁ < j₁ ∧ i₂ < j₂) ∨ j₁ < i₁ ∧ j₂ < i₂, by aesop⟩
+
+--variable [LT ι₁] [LT ι₂]
+
+theorem mk_symOffDiagUpper_iff [LT ι₁] [LT ι₂] {i j : (ι₁ × ι₂)} :
+    symOffDiagUpper s(i, j) ↔ (i.1 < j.1 ∧ i.2 < j.2) ∨ j.1 < i.1 ∧ j.2 < i.2 :=
+  Iff.rfl
+
+@[simp]
+theorem symOffDiagUpper_iff_proj_eq [LT ι₁] [LT ι₂] (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+    symOffDiagUpper (Sym2.mk z) ↔ (z.1.1 < z.2.1 ∧ z.1.2 < z.2.2) ∨ z.2.1 < z.1.1 ∧ z.2.2 < z.1.2 :=
+  Prod.recOn z fun _ _ => mk_symOffDiagUpper_iff
+
+/- Can probably weaken the hypothesis here -/
+instance symOffDiagUpper.decidablePred [LinearOrder ι₁] [LinearOrder ι₂] :
+    DecidablePred (@symOffDiagUpper ι₁ ι₂ _ _) :=
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagUpper_iff_proj_eq a)
 
 end Prod
 
@@ -395,11 +412,23 @@ noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R]
 
 lemma polar_lift_eq_polarnn_lift_on_symOffDiag
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
-    (h: p ∈ Finset.filter symOffDiag s) :
+    (h: p ∈ Finset.filter symOffDiagUpper s) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     polar_lift Q bm x p =  polarnn_lift bm₁ Q₁ bm₂ Q₂ x p := by
-  sorry
+  induction' p with i j
+  simp_rw [polar_lift, polarnn_lift]
+  simp
+  simp only [Finset.mem_filter, symOffDiagUpper_iff_proj_eq] at h
+  obtain ⟨h1, h2⟩ := h
+  obtain  := h2
+  rcases h2 with ⟨c1,c2⟩ | ⟨c3, c4⟩
+  · rw [Basis.tensorProduct_apply]
+    rw [Basis.tensorProduct_apply]
+    rw [tensorDistriFree_polar11 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2]
+  · rw [Basis.tensorProduct_apply]
+    rw [Basis.tensorProduct_apply]
+    rw [tensorDistriFree_polar22 _ _ _ _ _ _ _ _ c3 c4]
 
 lemma myadd2 (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂))
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂)
