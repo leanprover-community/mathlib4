@@ -248,9 +248,9 @@ def compAsSmallFunctorEquivalenceFunctor :
   map_id _ := by apply Grothendieck.ext <;> simp
   map_comp _ _ := by apply Grothendieck.ext <;> simp [down_comp]
 
-/-- Taking the Grothendieck construction on `F ⋙ asSmall`, where `asSmall : Cat ⥤ Cat` is the
-functor which turns each category into a small category of a (potentiall) larger universe, is
-equivalent to the Grothendieck construction on `F` itself. -/
+/-- Taking the Grothendieck construction on `F ⋙ asSmallFunctor`, where
+`asSmallFunctor : Cat ⥤ Cat` is the functor which turns each category into a small category of a
+(potentiall) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
 def compAsSmallFunctorEquivalence :
     Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
@@ -260,9 +260,9 @@ def compAsSmallFunctorEquivalence :
   unitIso := Iso.refl _
 
 /-- Mapping a Grothendieck construction along the whiskering of any natural transformation
-`α : F ⟶ G` with the functor `asSmall : Cat ⥤ Cat` is naturally isomorphic to conjugating
-`map α` with the equivalence between `Grothendieck (F ⋙ asSmall)` and `Grothendieck F`. -/
-def mapWhiskerRightAsSmall (α : F ⟶ G) :
+`α : F ⟶ G` with the functor `asSmallFunctor : Cat ⥤ Cat` is naturally isomorphic to conjugating
+`map α` with the equivalence between `Grothendieck (F ⋙ asSmallFunctor)` and `Grothendieck F`. -/
+def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
     map (whiskerRight α Cat.asSmallFunctor.{w}) ≅
     (compAsSmallFunctorEquivalence F).functor ⋙ map α ⋙
       (compAsSmallFunctorEquivalence G).inverse :=
