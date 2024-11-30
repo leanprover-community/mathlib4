@@ -262,6 +262,10 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
 lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) :
   v x = v.1 x := rfl
 
+@[ext]
+lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+  Subtype.ext <| AbsoluteValue.ext h
+
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one
@@ -1083,16 +1087,14 @@ open NumberField
 /-- The infinite place of `ℚ`, coming from the canonical map `ℚ → ℂ`. -/
 noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
 
-instance : Subsingleton (InfinitePlace ℚ) where
-  allEq a b := Subtype.ext <| by
-    obtain ⟨_, _, rfl⟩ := a
-    obtain ⟨_, _, rfl⟩ := b
-    ext
-    simp
-
 lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
   rw [NumberField.InfinitePlace.coe_apply]
   obtain ⟨_, _, rfl⟩ := v
   simp
+
+instance : Subsingleton (InfinitePlace ℚ) where
+  allEq a b := by
+    ext
+    simp [infinitePlace_apply]
 
 end Rat
