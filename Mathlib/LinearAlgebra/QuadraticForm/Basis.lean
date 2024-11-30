@@ -349,6 +349,19 @@ lemma tensorDistriFree_polar22
     rw [above_diag _ _ _ _ h₂]
     rw [polar_comm, polar_comm Q₂]
 
+
+
+noncomputable def polarnn_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) =>
+    ((bm.repr x) (i₁, i₂)) • ((bm.repr x) (j₁, j₂)) •
+      (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂),
+    by
+      intro _ _
+      simp only [polar_comm]
+      rw [smul_comm]
+      ⟩
+
 lemma tensorDistriFree_polar1 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ = j₁) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
     Q₁ (bm₁ i₁) ⊗ₜ (polarBilin Q₂) (bm₂ i₂) (bm₂ j₂) := by
@@ -379,6 +392,14 @@ noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R]
     ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
       simp only [polar_comm]
       rw [smul_comm]⟩ p
+
+lemma polar_lift_eq_polarnn_lift_on_symOffDiag
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
+    (h: p ∈ Finset.filter symOffDiag s) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    polar_lift Q bm x p =  polarnn_lift bm₁ Q₁ bm₂ Q₂ x p := by
+  sorry
 
 lemma myadd2 (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂))
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂)
