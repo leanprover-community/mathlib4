@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
