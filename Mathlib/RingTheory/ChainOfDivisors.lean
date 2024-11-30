@@ -311,8 +311,8 @@ theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Ass
   · simp [hn]
   by_cases hm : m = 0
   · simp [hm] at hp
-  rw [(finite_prime_left (prime_of_normalized_factor p hp) hm).emultiplicity_eq_multiplicity,
-    ← pow_dvd_iff_le_emultiplicity]
+  rw [FiniteMultiplicity.of_prime_left (prime_of_normalized_factor p hp) hm
+    |>.emultiplicity_eq_multiplicity, ← pow_dvd_iff_le_emultiplicity]
   apply pow_image_of_prime_by_factor_orderIso_dvd hn hp d (pow_multiplicity_dvd ..)
 
 theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Associates M}

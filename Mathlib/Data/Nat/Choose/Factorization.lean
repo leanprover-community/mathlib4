@@ -39,10 +39,10 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
     refine le_of_not_lt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
-  rw [← Nat.cast_le (α := ℕ∞), ← multiplicity.Finite.emultiplicity_eq_multiplicity]
+  rw [← Nat.cast_le (α := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity]
   · simp only [hp.emultiplicity_choose hkn (lt_add_one _), Nat.cast_le]
     exact (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
-  apply Nat.multiplicity_finite_iff.2 ⟨hp.ne_one, choose_pos hkn⟩
+  apply Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, choose_pos hkn⟩
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
 theorem pow_factorization_choose_le (hn : 0 < n) : p ^ (choose n k).factorization p ≤ n :=
