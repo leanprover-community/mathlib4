@@ -51,7 +51,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -62,7 +62,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Lattice
 
-variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
+variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
 instance : Union (Finset α) :=
@@ -123,9 +123,8 @@ theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ 
 theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
   sup_le <| le_iff_subset.2 hs
 
-theorem subset_union_left {s₁ s₂ : Finset α} : s₁ ⊆ s₁ ∪ s₂ := fun _x => mem_union_left _
-
-theorem subset_union_right {s₁ s₂ : Finset α} : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
+@[simp] lemma subset_union_left : s₁ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_left _
+@[simp] lemma subset_union_right : s₂ ⊆ s₁ ∪ s₂ := fun _ ↦  mem_union_right _
 
 @[gcongr]
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
@@ -212,9 +211,8 @@ theorem mem_of_mem_inter_right {a : α} {s₁ s₂ : Finset α} (h : a ∈ s₁ 
 theorem mem_inter_of_mem {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ → a ∈ s₂ → a ∈ s₁ ∩ s₂ :=
   and_imp.1 mem_inter.2
 
-theorem inter_subset_left {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₁ := fun _a => mem_of_mem_inter_left
-
-theorem inter_subset_right {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
+@[simp] lemma inter_subset_left : s₁ ∩ s₂ ⊆ s₁ := fun _ ↦ mem_of_mem_inter_left
+@[simp] lemma inter_subset_right : s₁ ∩ s₂ ⊆ s₂ := fun _ ↦ mem_of_mem_inter_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
   simp +contextual [subset_iff, mem_inter]
