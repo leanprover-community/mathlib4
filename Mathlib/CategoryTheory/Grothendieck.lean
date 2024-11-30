@@ -236,17 +236,17 @@ variable (F)
 @[simps]
 def compAsSmallEquivalenceInverse :
     Grothendieck F ⥤ Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) where
-  obj := fun X => ⟨X.base, AsSmall.up.obj X.fiber⟩
-  map := fun f => ⟨f.base, AsSmall.up.map f.fiber⟩
+  obj X := ⟨X.base, AsSmall.up.obj X.fiber⟩
+  map f := ⟨f.base, AsSmall.up.map f.fiber⟩
 
 /-- The functor to build the equivalence `compAsSmallEquivalence`. -/
 @[simps]
 def compAsSmallEquivalenceFunctor :
     Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ⥤ Grothendieck F where
-  obj := fun X => ⟨X.base, AsSmall.down.obj X.fiber⟩
-  map := fun f => ⟨f.base, AsSmall.down.map f.fiber⟩
-  map_id := fun _ => by apply Grothendieck.ext <;> simp
-  map_comp := fun _ _ => by apply Grothendieck.ext <;> simp [down_comp]
+  obj X := ⟨X.base, AsSmall.down.obj X.fiber⟩
+  map f := ⟨f.base, AsSmall.down.map f.fiber⟩
+  map_id _ := by apply Grothendieck.ext <;> simp
+  map_comp _ _ := by apply Grothendieck.ext <;> simp [down_comp]
 
 /-- Taking the Grothendieck construction on `F ⋙ asSmall`, where `asSmall : Cat ⥤ Cat` is the
 functor which turns each category into a small category of a (potentiall) larger universe, is
