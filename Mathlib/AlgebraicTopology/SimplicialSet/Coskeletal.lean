@@ -248,15 +248,10 @@ example (C : Type u) [Category.{v} C] :
 recorded by the composite functor `nerveFunctor₂`.-/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
 
-/-- The counit of `coskAdj 2` defines a natural transformation from the nerve to the right
-Kan extension of the 2-truncated nerve.-/
-noncomputable def cosk2NatTrans : nerveFunctor.{u, v} ⟶ nerveFunctor₂ ⋙ Truncated.cosk 2 :=
-  whiskerLeft nerveFunctor (coskAdj 2).unit
-
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor ⋙ Truncated.cosk 2` whose
 components `nerve C ≅  (Truncated.cosk 2).obj (nerve₂ C)` shows that nerves of categories are
 2-coskeletal.-/
-noncomputable def cosk₂Iso : nerveFunctor.{u, u} ≅ nerveFunctor₂.{u, u} ⋙ Truncated.cosk 2 :=
+noncomputable def cosk₂Iso : nerveFunctor.{v, u} ≅ nerveFunctor₂.{v, u} ⋙ Truncated.cosk 2 :=
   NatIso.ofComponents (fun C ↦ (nerve C).isoCoskOfIsCoskeletal 2)
     (fun _ ↦ (coskAdj 2).unit.naturality _)
 
