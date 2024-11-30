@@ -5,7 +5,6 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Ring.Action.Group
-import Mathlib.Algebra.BigOperators.Finsupp
 
 /-!
 # Isomorphisms of `R`-algebras
