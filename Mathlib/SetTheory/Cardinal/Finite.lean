@@ -14,8 +14,10 @@ import Mathlib.SetTheory.Cardinal.PartENat
 
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
+* `ENat.card α` is the cardinality of `α` as an  extended natural number.
+  If `α` is infinite, `ENat.card α = 0`.
 * `PartENat.card α` is the cardinality of `α` as an extended natural number
-  (using `Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
+  (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 open Cardinal Function
