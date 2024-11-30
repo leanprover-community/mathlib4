@@ -82,7 +82,7 @@ theorem extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
 ```
 and also
 ```lean
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Monomial
 
 --  The `extract_goal` below produces this statement:
 theorem extracted_1 : X = X := sorry

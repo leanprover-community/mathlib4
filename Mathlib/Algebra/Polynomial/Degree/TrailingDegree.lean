@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.ENat.Lattice
 
 /-!
 # Trailing degree of univariate polynomials

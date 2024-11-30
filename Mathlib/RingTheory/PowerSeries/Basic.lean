@@ -5,7 +5,6 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Tactic.MoveAdd
