@@ -433,14 +433,14 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCa
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine ⟨q a'', ?_⟩
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← H,
+    dsimp at ha' ⊢
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← H,
       ModuleCat.hom_comp, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
     refine ⟨p a'', ?_⟩
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, H, ModuleCat.hom_comp, LinearMap.comp_apply,
+    dsimp at ha' ⊢
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, H, ModuleCat.hom_comp, LinearMap.comp_apply,
       ha'', ha']
 
 end Module

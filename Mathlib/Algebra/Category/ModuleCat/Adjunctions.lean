@@ -113,8 +113,7 @@ def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
   inv := asHom <| Finsupp.lapply PUnit.unit
   hom_inv_id := by
     ext
-    dsimp
-    erw [Finsupp.lapply_apply, Finsupp.lsingle_apply, Finsupp.single_eq_same, LinearMap.id_apply]
+    simp [free]
   inv_hom_id := by
     ext ⟨⟩
     dsimp [freeMk]
