@@ -26,7 +26,7 @@ jobs:
         contains(fromJSON('["leanprover-community-mathlib4-bot","leanprover-community-bot-assistant"]'),
           format('{0}{1}',github.event.comment.user.login,github.event.review.user.login))}}
 
-      parse_result: ${{steps.find_commands.parse-result}}
+      parse_result: ${{format('{0}',steps.find_commands.outputs.parse-result)}}
       #not sure if the rest is relevant; tbd.
       pr_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
       pr_title_issue: ${{ github.event.issue.title }}
@@ -69,7 +69,7 @@ jobs:
           sed 's="r","option":"-"="clear","option":""=;s="r"="merge"=;s="d"="delegate"=' | head -1)"
 
         printf $'"maintainer delegate" or "maintainer merge" found? \'%s\'\n' "${COMMAND}"
-        printf $'parse-result=[%s]\n' "${COMMANDS}" > "${GITHUB_OUTPUT}"
+        printf $'parse-result=%s\n' "${COMMANDS}" > "${GITHUB_OUTPUT}"
 
   maintainer-command:
     needs: process-comment
