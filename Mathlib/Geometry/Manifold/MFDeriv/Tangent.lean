@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
@@ -87,3 +88,13 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
+
+open Bundle
+variable (I) in
+/-- The canonical identification between the tangent bundle to the model space and the product,
+as a diffeomorphism -/
+def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
+    TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
+  __ := TotalSpace.toProd H E
+  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph
+  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm
