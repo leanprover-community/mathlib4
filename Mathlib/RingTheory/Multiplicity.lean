@@ -862,8 +862,6 @@ end CancelCommMonoidWithZero
 
 section Nat
 
-open multiplicity
-
 theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
     (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
   apply Nat.eq_zero_of_not_pos

@@ -46,7 +46,7 @@ Legendre, p-adic
 -/
 
 
-open Finset Nat multiplicity
+open Finset Nat
 
 open Nat
 

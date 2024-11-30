@@ -22,8 +22,6 @@ universe u
 
 open Nat
 
-open multiplicity
-
 variable {p : ℕ}
 
 /-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
@@ -50,8 +48,6 @@ theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) 
   exact_mod_cast padicValNat_def hn
 
 namespace padicValNat
-
-open multiplicity
 
 open List
 

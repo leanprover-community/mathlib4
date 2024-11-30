@@ -363,7 +363,7 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
 
 theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
-  have hfin := Nat.multiplicity_finite_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
+  have hfin := Nat.finiteMultiplicity_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
   obtain ⟨m, hm⟩ := hfin.exists_eq_pow_mul_and_not_dvd
   by_cases hp : p ∣ n
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity_pos_of_dvd hp).ne'

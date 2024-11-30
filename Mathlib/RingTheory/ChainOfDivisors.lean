@@ -58,7 +58,7 @@ theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔
             ⟨(ha.unit⁻¹ : Units _), by rw [hab, mul_assoc, IsUnit.mul_val_inv ha, mul_one]⟩)
           hb⟩⟩
 
-open UniqueFactorizationMonoid multiplicity Irreducible Associates
+open UniqueFactorizationMonoid Irreducible Associates
 
 namespace DivisorChain
 

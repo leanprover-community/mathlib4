@@ -66,11 +66,7 @@ open Nat
 
 open Rat
 
-open multiplicity
-
 namespace padicValNat
-
-open multiplicity
 
 variable {p : ℕ}
 
@@ -121,8 +117,6 @@ def padicValInt (p : ℕ) (z : ℤ) : ℕ :=
 
 namespace padicValInt
 
-open multiplicity
-
 variable {p : ℕ}
 
 theorem of_ne_one_ne_zero {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
@@ -162,8 +156,6 @@ lemma padicValRat_def (p : ℕ) (q : ℚ) :
   rfl
 
 namespace padicValRat
-
-open multiplicity
 
 variable {p : ℕ}
 
@@ -231,8 +223,6 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
 end padicValNat
 
 namespace padicValRat
-
-open multiplicity
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
