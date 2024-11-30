@@ -17,18 +17,31 @@ a basis.
 
 section Prod
 
-variable {ι₁ : Type*} --[LT ι₁]
-variable {ι₂ : Type*} --[LT ι₂]
-
+variable {ι₁ : Type*}
+variable {ι₂ : Type*}
 
 /-- Off the diagonal in both components -/
 def symOffDiag : Sym2 (ι₁ × ι₂) → Prop := Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => i₁ ≠ j₁ ∧ i₂ ≠ j₂, by
   aesop⟩
 
-variable [LT ι₁] [LT ι₂]
+theorem mk_symOffDiag_iff {x y : (ι₁ × ι₂)} : symOffDiag s(x, y) ↔ x.1 ≠ y.1 ∧ x.2 ≠ y.2 :=
+  Iff.rfl
+
+
+@[simp]
+theorem isDiag_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+    symOffDiag (Sym2.mk z) ↔ z.1.1 ≠ z.2.1 ∧ z.1.2 ≠ z.2.2 :=
+  Prod.recOn z fun _ _ => mk_symOffDiag_iff
+
+
+instance symOffDiag.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
+    DecidablePred (@symOffDiag ι₁ ι₂) :=
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
+
+--variable [LT ι₁] [LT ι₂]
 
 /-- Triangular -/
-def symOffDiagUpper : Sym2 (ι₁ × ι₂) → Prop :=
+def symOffDiagUpper [LT ι₁] [LT ι₂] : Sym2 (ι₁ × ι₂) → Prop :=
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₁ < j₁ ∧ i₂ < j₂) ∨ j₁ < i₁ ∧ j₂ < i₂, by aesop⟩
 
 end Prod
@@ -368,10 +381,13 @@ noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R]
       rw [smul_comm]⟩ p
 
 lemma myadd2 (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂))
-    (P : Sym2 (ι₁ × ι₂) → Prop) [DecidablePred P] (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
-    ∑ p ∈ s, polar_lift Q bm x p =
-      ∑ p ∈ s with P p, polar_lift Q bm x p + ∑ p ∈ s with ¬ P p, polar_lift Q bm x p := by
-  exact Eq.symm (Finset.sum_filter_add_sum_filter_not s P (Q.polar_lift bm x))
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂)
+    [DecidableEq ι₁] [DecidableEq ι₂] :
+    ∑ p ∈ s with symOffDiag p, polar_lift Q bm x p + ∑ p ∈ s with ¬ symOffDiag p,
+      polar_lift Q bm x p =
+      ∑ p ∈ s, polar_lift Q bm x p :=
+  Finset.sum_filter_add_sum_filter_not s symOffDiag (Q.polar_lift bm x)
+
 
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
