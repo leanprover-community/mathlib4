@@ -2443,16 +2443,6 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
     exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
   · exact (mul_isNormal ho).apply_omega0
 
-theorem coe_succ_Iio {o : Ordinal} (h : o.IsLimit) {α : Iio o} : (succ α).1 = α.1 + 1 := by
-  rw [Ordinal.add_one_eq_succ]
-  apply coe_succ_of_mem
-  have := Subtype.mem α
-  rw [mem_Iio] at this ⊢
-  exact h.succ_lt this
-
-theorem succ_Iio {o : Ordinal} (h : o.IsLimit) {α : Iio o} : succ α = ⟨α.1 + 1, h.succ_lt α.2⟩ :=
-  Subtype.val_inj.mp <| coe_succ_Iio h
-
 /-- The order isomorphism between ℕ and the first ω ordinals. -/
 @[simps! apply]
 def relIso_nat_omega0 : ℕ ≃o Iio ω where
@@ -2473,7 +2463,8 @@ theorem relIso_nat_omega0_coe_symm_apply (o : Iio ω) : relIso_nat_omega0.symm o
 
 theorem strictMono_of_succ_lt_omega0 {α : Type*} [Preorder α] (f : Iio ω → α)
     (hf : ∀ i, f i < f (succ i)) : StrictMono f := by
-  have mono := strictMono_nat_of_lt_succ fun n ↦ (succ_Iio isLimit_omega0) ▸ hf ⟨n, nat_lt_omega0 n⟩
+  have mono := strictMono_nat_of_lt_succ fun n ↦
+    (succ_Iio isLimit_omega0.isSuccPrelimit) ▸ hf ⟨n, nat_lt_omega0 n⟩
   convert mono.comp relIso_nat_omega0.symm.strictMono
   ext
   simp
