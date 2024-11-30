@@ -483,10 +483,10 @@ lemma mem_image_support_coeff_finSuccEquivNth {f : MvPolynomial (Fin (n + 1)) R}
   simpa using congr(x ∈ $image_support_finSuccEquivNth)
 
 lemma mem_support_coeff_finSuccEquivNth {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
-    x ∈ ((finSuccEquivNth R p f).coeff i).support ↔ x.insertNth p i ∈ f.support := by sorry
-  -- rw [← (Finsupp.insertNth_right_injective p i).mem_finset_image (a := x),
-  --   image_support_finSuccEquivNth]
-  -- simp only [Finset.mem_filter, mem_support_iff, ne_eq, insertNth_apply_same, and_true]
+    x ∈ ((finSuccEquivNth R p f).coeff i).support ↔ x.insertNth p i ∈ f.support := by
+  rw [← (Finsupp.insertNth_right_injective p).mem_finset_image (a := x),
+    image_support_finSuccEquivNth]
+  simp only [Finset.mem_filter, mem_support_iff, ne_eq, insertNth_apply_same, and_true]
 
 theorem support_finSuccEquivNth_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquivNth R p f).support.Nonempty := by
