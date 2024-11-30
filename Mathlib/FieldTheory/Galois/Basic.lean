@@ -306,7 +306,7 @@ open IntermediateField
 
 open scoped Pointwise
 
-lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E]:
+lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
   simp [fixingSubgroup, Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
     restrictNormalHom_apply, mem_fixingSubgroup_iff]
