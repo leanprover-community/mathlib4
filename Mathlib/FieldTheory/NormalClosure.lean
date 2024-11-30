@@ -246,7 +246,6 @@ lemma normalClosure_def'' : normalClosure F K L = ⨆ f : L ≃ₐ[F] L, K.map f
       (fun b ⟨a, h⟩ ↦ ⟨a, h.1, h.2 ▸ f.restrictNormal_commutes L a⟩)
   · exact le_iSup_of_le f le_rfl
 
-@[gcongr]
 lemma normalClosure_mono (h : K ≤ K') : normalClosure F K L ≤ normalClosure F K' L := by
   rw [normalClosure_def', normalClosure_def']
   exact iSup_mono (fun f ↦ map_mono f h)
