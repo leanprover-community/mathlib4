@@ -232,16 +232,16 @@ def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ ma
 
 variable (F)
 
-/-- The inverse functor to build the equivalence `compAsSmallEquivalence`. -/
+/-- The inverse functor to build the equivalence `compAsSmallFunctorEquivalence`. -/
 @[simps]
-def compAsSmallEquivalenceInverse :
+def compAsSmallFunctorEquivalenceInverse :
     Grothendieck F ⥤ Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) where
   obj X := ⟨X.base, AsSmall.up.obj X.fiber⟩
   map f := ⟨f.base, AsSmall.up.map f.fiber⟩
 
-/-- The functor to build the equivalence `compAsSmallEquivalence`. -/
+/-- The functor to build the equivalence `compAsSmallFunctorEquivalence`. -/
 @[simps]
-def compAsSmallEquivalenceFunctor :
+def compAsSmallFunctorEquivalenceFunctor :
     Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ⥤ Grothendieck F where
   obj X := ⟨X.base, AsSmall.down.obj X.fiber⟩
   map f := ⟨f.base, AsSmall.down.map f.fiber⟩
@@ -252,9 +252,10 @@ def compAsSmallEquivalenceFunctor :
 functor which turns each category into a small category of a (potentiall) larger universe, is
 equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
-def compAsSmallEquivalence : Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
-  functor := compAsSmallEquivalenceFunctor F
-  inverse := compAsSmallEquivalenceInverse F
+def compAsSmallFunctorEquivalence :
+    Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
+  functor := compAsSmallFunctorEquivalenceFunctor F
+  inverse := compAsSmallFunctorEquivalenceInverse F
   counitIso := Iso.refl _
   unitIso := Iso.refl _
 
@@ -263,23 +264,26 @@ def compAsSmallEquivalence : Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Gro
 `map α` with the equivalence between `Grothendieck (F ⋙ asSmall)` and `Grothendieck F`. -/
 def mapWhiskerRightAsSmall (α : F ⟶ G) :
     map (whiskerRight α Cat.asSmallFunctor.{w}) ≅
-    (compAsSmallEquivalence F).functor ⋙ map α ⋙ (compAsSmallEquivalence G).inverse :=
+    (compAsSmallFunctorEquivalence F).functor ⋙ map α ⋙
+      (compAsSmallFunctorEquivalence G).inverse :=
   NatIso.ofComponents
     (fun X => Iso.refl _)
-    (fun {X Y} f => by
+    (fun f => by
       fapply Grothendieck.ext
-      · simp [compAsSmallEquivalenceInverse]
-      · simp only [compAsSmallEquivalence_functor, compAsSmallEquivalence_inverse,
-          Functor.comp_obj, compAsSmallEquivalenceInverse_obj_base, map_obj_base,
-          compAsSmallEquivalenceFunctor_obj_base, Cat.asSmallFunctor_obj, Cat.of_α, Iso.refl_hom,
-          Functor.comp_map, comp_base, id_base, compAsSmallEquivalenceInverse_map_base,
-          map_map_base, compAsSmallEquivalenceFunctor_map_base, Cat.asSmallFunctor_map,
-          map_obj_fiber, whiskerRight_app, AsSmall.down_obj, AsSmall.up_obj_down,
-          compAsSmallEquivalenceInverse_obj_fiber, compAsSmallEquivalenceFunctor_obj_fiber,
-          comp_fiber, map_map_fiber, AsSmall.down_map, down_comp, eqToHom_down, AsSmall.up_map_down,
-          Functor.map_comp, eqToHom_map, id_fiber, Category.assoc, eqToHom_trans_assoc,
-          compAsSmallEquivalenceInverse_map_fiber, compAsSmallEquivalenceFunctor_map_fiber,
-          eqToHom_comp_iff, comp_eqToHom_iff]
+      · simp [compAsSmallFunctorEquivalenceInverse]
+      · simp only [compAsSmallFunctorEquivalence_functor, compAsSmallFunctorEquivalence_inverse,
+          Functor.comp_obj, compAsSmallFunctorEquivalenceInverse_obj_base, map_obj_base,
+          compAsSmallFunctorEquivalenceFunctor_obj_base, Cat.asSmallFunctor_obj, Cat.of_α,
+          Iso.refl_hom, Functor.comp_map, comp_base, id_base,
+          compAsSmallFunctorEquivalenceInverse_map_base, map_map_base,
+          compAsSmallFunctorEquivalenceFunctor_map_base, Cat.asSmallFunctor_map, map_obj_fiber,
+          whiskerRight_app, AsSmall.down_obj, AsSmall.up_obj_down,
+          compAsSmallFunctorEquivalenceInverse_obj_fiber,
+          compAsSmallFunctorEquivalenceFunctor_obj_fiber, comp_fiber, map_map_fiber,
+          AsSmall.down_map, down_comp, eqToHom_down, AsSmall.up_map_down, Functor.map_comp,
+          eqToHom_map, id_fiber, Category.assoc, eqToHom_trans_assoc,
+          compAsSmallFunctorEquivalenceInverse_map_fiber,
+          compAsSmallFunctorEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
         simp only [eqToHom_trans_assoc, Category.assoc, conj_eqToHom_iff_heq']
         rw [G.map_id]
         simp )
