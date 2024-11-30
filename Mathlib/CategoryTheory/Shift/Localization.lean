@@ -5,10 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Localization.HasLocalization
-<<<<<<< HEAD
-=======
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
->>>>>>> origin/ext-change-of-universes
 
 /-!
 # The shift induced on a localized category
@@ -25,13 +22,8 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ w
 
 namespace CategoryTheory
 
-<<<<<<< HEAD
-variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] (F : D ⥤ E)
-=======
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
->>>>>>> origin/ext-change-of-universes
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
   (A : Type w) [AddMonoid A] [HasShift C A] [HasShift E A]
 
@@ -112,11 +104,7 @@ attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
 
-<<<<<<< HEAD
-/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
-=======
 /-- The localized category `W.Localization'` is endowed with the induced shift. -/
->>>>>>> origin/ext-change-of-universes
 noncomputable instance HasShift.localization' :
     HasShift W.Localization' A :=
   HasShift.localized W.Q' W A
@@ -128,20 +116,6 @@ noncomputable instance MorphismProperty.commShift_Q' :
 
 attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
 
-<<<<<<< HEAD
-noncomputable def Functor.CommShift.localized' (F' : C ⥤ E) [HasShift D A] [F'.CommShift A]
-    [Localization.Lifting L W F' F] [L.CommShift A] :
-    F.CommShift A :=
-  Functor.CommShift.induced (Localization.Lifting.iso L W F' F) A
-    ⟨⟨(inferInstance : Full (Localization.whiskeringLeftFunctor' L W E))⟩,
-      (inferInstance : Faithful (Localization.whiskeringLeftFunctor' L W E))⟩
-
-lemma Functor.CommShift.localized'_compatibility (F' : C ⥤ E) [HasShift D A] [F'.CommShift A]
-    [Localization.Lifting L W F' F] [L.CommShift A] :
-    letI := Functor.CommShift.localized' F L W A F'
-    NatTrans.CommShift (Localization.Lifting.iso L W F' F).hom A := by
-  apply Functor.CommShift.induced_compatibility
-=======
 end
 
 section
@@ -149,7 +123,7 @@ section
 open Localization
 
 variable (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
-  [HasShift D A] [HasShift E A] [L.CommShift A] [F.CommShift A]
+  [HasShift D A] [L.CommShift A] [F.CommShift A]
 
 namespace Functor
 
@@ -267,6 +241,5 @@ instance NatTrans.commShift_iso_hom_of_localization :
     Category.comp_id, Category.id_comp, Functor.comp_obj]
 
 end
->>>>>>> origin/ext-change-of-universes
 
 end CategoryTheory

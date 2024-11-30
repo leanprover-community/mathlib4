@@ -141,25 +141,17 @@ def TriangleMorphism.comp (f : TriangleMorphism T₁ T₂) (g : TriangleMorphism
 
 /-- Triangles with triangle morphisms form a category.
 -/
-<<<<<<< HEAD
-instance triangleCategory : Category (Triangle C)
-    where
-=======
 @[simps]
 instance triangleCategory : Category (Triangle C) where
->>>>>>> origin/ext-change-of-universes
   Hom A B := TriangleMorphism A B
   id A := triangleMorphismId A
   comp f g := f.comp g
 
-<<<<<<< HEAD
-=======
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
   TriangleMorphism.ext h₁ h₂ h₃
 
->>>>>>> origin/ext-change-of-universes
 @[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
 @[simp]
@@ -176,11 +168,6 @@ lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp, reassoc]
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
-
-@[ext]
-lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
-    (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
-  TriangleMorphism.ext _ _ h₁ h₂ h₃
 
 @[simps]
 def Triangle.homMk (A B : Triangle C)
@@ -250,7 +237,8 @@ lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
 @[simps!]
-def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] : Triangle C :=
+def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
+    Triangle C :=
   Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
 
 @[simps!]
@@ -352,7 +340,7 @@ instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
   add_comm f g := by ext <;> apply add_comm
-  add_left_neg f := by ext <;> apply add_left_neg
+  neg_add_cancel f := by ext <;> apply neg_add_cancel
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
   nsmul n f := n • f
   nsmul_zero f := by aesop_cat
@@ -539,6 +527,7 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     · exact hom₂.naturality φ
     · exact hom₃.naturality φ
 
+/-- Constructor for morphisms between functors constructed by `functorHomMk`. -/
 @[simps!]
 def functorHomMk'
     {obj₁ obj₂ obj₃ : J ⥤ C}
@@ -571,6 +560,7 @@ def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
         ← whiskerRight_comp, Iso.hom_inv_id, whiskerRight_id']
       apply comp_id)
 
+/-- Constructor for isomorphisms between functors constructed by `functorHomMk`. -/
 @[simps!]
 def functorIsoMk'
     {obj₁ obj₂ obj₃ : J ⥤ C}

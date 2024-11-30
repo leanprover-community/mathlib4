@@ -38,7 +38,7 @@ lemma Functor.linear_iff {C D : Type*} [Category C] [Category D] [Preadditive C]
   constructor
   · intro h X r
     rw [h.map_smul, F.map_id]
-  · refine' fun h => ⟨fun {X Y} f r => _⟩
+  · refine fun h => ⟨fun {X Y} f r => ?_⟩
     have : r • f = (r • 𝟙 X) ≫ f := by simp
     rw [this, F.map_comp, h, Linear.smul_comp, Category.id_comp]
 
@@ -50,7 +50,11 @@ section
 
 variable {R}
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D) [Additive F] [Linear R F]
+  [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D)
+
+section
+
+variable [Additive F] [Linear R F]
 
 @[simp]
 theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map f :=
@@ -65,7 +69,15 @@ instance : Linear R (𝟭 C) where
 instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
     [Additive G] [Linear R G] : Linear R (F ⋙ G) where
 
-variable (R) {F}
+variable (R)
+/-- `F.mapLinearMap` is an `R`-linear map whose underlying function is `F.map`. -/
+@[simps]
+def mapLinearMap {X Y : C} : (X ⟶ Y) →ₗ[R] F.obj X ⟶ F.obj Y :=
+  { F.mapAddHom with map_smul' := fun r f => F.map_smul r f }
+
+theorem coe_mapLinearMap {X Y : C} : ⇑(F.mapLinearMap R : (X ⟶ Y) →ₗ[R] _) = F.map := rfl
+
+end
 
 lemma linear_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] [F.Linear R] :
     have : G.Additive := additive_of_iso e
@@ -75,15 +87,6 @@ lemma linear_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] [F.Linear R] :
     { map_smul := fun {X Y} f r => by
         simp only [← NatIso.naturality_1 e (r • f), F.map_smul, Linear.smul_comp,
           NatTrans.naturality, Linear.comp_smul, Iso.inv_hom_id_app_assoc] }
-
-variable (F)
-
-/-- `F.mapLinearMap` is an `R`-linear map whose underlying function is `F.map`. -/
-@[simps]
-def mapLinearMap {X Y : C} : (X ⟶ Y) →ₗ[R] F.obj X ⟶ F.obj Y :=
-  { F.mapAddHom with map_smul' := fun r f => F.map_smul r f }
-
-theorem coe_mapLinearMap {X Y : C} : ⇑(F.mapLinearMap R : (X ⟶ Y) →ₗ[R] _) = F.map := rfl
 
 end
 

@@ -6,11 +6,6 @@ Authors: Luke Kershaw, Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
-<<<<<<< HEAD
-
-#align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
-=======
->>>>>>> origin/ext-change-of-universes
 
 /-!
 # Pretriangulated Categories

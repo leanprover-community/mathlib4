@@ -38,7 +38,8 @@ namespace CategoryTheory
 open Category
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type u₃)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+  (L : C ⥤ D) (W : MorphismProperty C) (E : Type u₃)
   [Category.{v₃} E]
 
 namespace Functor
@@ -167,22 +168,6 @@ lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
 lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
   congr_arg Iso.inv (wIso_eq_isoOfHom f hf)
-
-@[reassoc (attr := simp)]
-lemma isoOfHom_hom_inv_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
-    L.map f ≫ (isoOfHom L W f hf).inv = 𝟙 _ :=
-  (isoOfHom L W f hf).hom_inv_id
-
-@[reassoc (attr := simp)]
-lemma isoOfHom_inv_hom_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
-    (isoOfHom L W f hf).inv ≫ L.map f = 𝟙 _ :=
-  (isoOfHom L W f hf).inv_hom_id
-
-@[simp]
-lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
-    (isoOfHom L W (𝟙 X) hX).inv = 𝟙 _ := by
-  rw [← cancel_mono (isoOfHom L W (𝟙 X) hX).hom, Iso.inv_hom_id, id_comp,
-    isoOfHom_hom, Functor.map_id]
 
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).isEquivalence
@@ -502,7 +487,7 @@ def of_localization_comparison
     {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
     (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
     (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) : IsEquivalence F :=
-  IsEquivalence.ofIso (isoUniqFunctor L₁ L₂ W F e).symm inferInstance
+  isEquivalence_of_iso (isoUniqFunctor L₁ L₂ W F e).symm
 
 end IsEquivalence
 

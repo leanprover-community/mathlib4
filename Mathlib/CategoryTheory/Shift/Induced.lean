@@ -31,7 +31,10 @@ variable {C D E : Type _} [Category C] [Category D] [Category E]
   (F : C ⥤ D) {G : D ⥤ E} {G' : C ⥤ E} (e : F ⋙ G ≅ G')
   {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
-  [((whiskeringLeft C D D).obj F).Full] [((whiskeringLeft C D D).obj F).Faithful]
+
+section
+
+variable [((whiskeringLeft C D D).obj F).Full] [((whiskeringLeft C D D).obj F).Faithful]
 
 namespace HasShift
 
@@ -235,20 +238,18 @@ lemma Functor.commShiftIso_eq_ofInduced (a : A) :
     letI := Functor.CommShift.ofInduced F A s i
     F.commShiftIso a = (i a).symm := rfl
 
+end
+
 namespace Functor
 
 namespace CommShift
 
-variable {F} {A}
-variable
-  (hF' : Nonempty (Full ((whiskeringLeft C D E).obj F)) ∧ Faithful ((whiskeringLeft C D E).obj F))
-  [HasShift D A] [HasShift E A] [F.CommShift A] [G'.CommShift A]
+variable {F} [HasShift D A] [HasShift E A] [F.CommShift A] [G'.CommShift A]
+  [((whiskeringLeft C D E).obj F).Full] [((whiskeringLeft C D E).obj F).Faithful]
 
 namespace Induced
 
 noncomputable def iso (a : A) : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor E a :=
-  letI := hF'.1.some
-  letI := hF'.2
   ((whiskeringLeft C D E).obj F).preimageIso
     ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a).symm G ≪≫
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ G'.commShiftIso a ≪≫
@@ -256,12 +257,11 @@ noncomputable def iso (a : A) : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor E 
 
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
-    (iso e hF' a).hom.app (F.obj X) =
+    (iso e a).hom.app (F.obj X) =
       G.map ((F.commShiftIso a).inv.app X) ≫ e.hom.app (X⟦a⟧) ≫ (G'.commShiftIso a).hom.app X ≫
         (e.inv.app X)⟦a⟧' := by
-  letI := hF'.1.some
-  have h : whiskerLeft F (iso e hF' a).hom = _ :=
-    ((whiskeringLeft C D E).obj F).image_preimage _
+  have h : whiskerLeft F (iso e a).hom = _ :=
+    ((whiskeringLeft C D E).obj F).map_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)
 
 end Induced
@@ -269,10 +269,9 @@ end Induced
 variable (A)
 
 noncomputable def induced : G.CommShift A where
-  iso := Induced.iso e hF'
+  iso := Induced.iso e
   zero := by
     ext1
-    letI := hF'.2
     apply ((whiskeringLeft C D E).obj F).map_injective
     ext X
     dsimp
@@ -286,7 +285,6 @@ noncomputable def induced : G.CommShift A where
     rw [Iso.hom_inv_id_app_assoc]
   add a b := by
     ext1
-    letI := hF'.2
     apply ((whiskeringLeft C D E).obj F).map_injective
     ext X
     dsimp
@@ -305,14 +303,14 @@ noncomputable def induced : G.CommShift A where
     rfl
 
 lemma induced_compatibility :
-    letI := induced e A hF'
+    letI := induced e A
     NatTrans.CommShift e.hom A := by
-  letI := induced e A hF'
+  letI := induced e A
   constructor
   intro a
   ext X
   dsimp
-  simp only [commShiftIso_comp_hom_app, show G.commShiftIso a = Induced.iso e hF' a by rfl,
+  simp only [commShiftIso_comp_hom_app, show G.commShiftIso a = Induced.iso e a by rfl,
     comp_obj, Induced.iso_hom_app, assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app, ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
     Functor.map_id, id_comp, comp_id]

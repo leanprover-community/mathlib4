@@ -61,11 +61,8 @@ def comp (Φ : LocalizerMorphism W₁ W₂) (Ψ : LocalizerMorphism W₂ W₃) :
 
 variable (Φ : LocalizerMorphism W₁ W₂)
 
-<<<<<<< HEAD
-=======
 /-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
 from `Φ : LocalizerMorphism W₁ W₂`. -/
->>>>>>> origin/ext-change-of-universes
 @[simps]
 def op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
@@ -171,33 +168,15 @@ lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
       (Functor.asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
         Functor.leftUnitor _)
-<<<<<<< HEAD
-    erw [MorphismProperty.inverseImage_functorInv W₁ Φ.functor]
-    exact h
-  exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
-
--- should be moved to MorphismProperty.lean
-def _root_.CategoryTheory.MorphismProperty.arrow (W : MorphismProperty C₁) :
-    MorphismProperty (Arrow C₁) := fun _ _ f => W f.left ∧ W f.right
-
-@[simps]
-def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
-  functor := Φ.functor.mapArrow
-  map := fun _ _ _ ⟨hf₁, hf₂⟩ => ⟨Φ.map _ hf₁, Φ.map _ hf₂⟩
-
-=======
     erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_map_inverse]
     rw [MorphismProperty.map_isoClosure]
     exact h
   exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
 
->>>>>>> origin/ext-change-of-universes
 instance IsLocalizedEquivalence.isLocalization [Φ.IsLocalizedEquivalence] :
     (Φ.functor ⋙ L₂).IsLocalization W₁ :=
   Functor.IsLocalization.of_iso _ ((Φ.catCommSq W₁.Q L₂).iso).symm
 
-<<<<<<< HEAD
-=======
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
 @[simps]
@@ -205,7 +184,6 @@ def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
   functor := Φ.functor.mapArrow
   map _ _ _ hf := ⟨Φ.map _ hf.1, Φ.map _ hf.2⟩
 
->>>>>>> origin/ext-change-of-universes
 end LocalizerMorphism
 
 end CategoryTheory

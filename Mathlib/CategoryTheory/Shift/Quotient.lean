@@ -25,11 +25,7 @@ universe v v' u u' w
 
 open CategoryTheory Category
 
-<<<<<<< HEAD
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
-=======
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
->>>>>>> origin/ext-change-of-universes
   (F : C ⥤ D) (r : HomRel C) (A : Type w) [AddMonoid A] [HasShift C A] [HasShift D A]
 
 namespace HomRel
@@ -73,10 +69,7 @@ namespace LiftCommShift
 
 variable {A}
 
-<<<<<<< HEAD
-=======
 /-- Auxiliary definition for `Quotient.liftCommShift`. -/
->>>>>>> origin/ext-change-of-universes
 noncomputable def iso (a : A) :
     shiftFunctor (Quotient r) a ⋙ lift r F hF ≅ lift r F hF ⋙ shiftFunctor D a :=
   natIsoLift r ((Functor.associator _ _ _).symm ≪≫
@@ -108,14 +101,9 @@ attribute [irreducible] iso
 
 end LiftCommShift
 
-<<<<<<< HEAD
--- note: there is an annoying simp(s) lemma for `Quotient.lift` which should be completely
--- replaced by `lift_map_functor_map`
-=======
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
 the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
->>>>>>> origin/ext-change-of-universes
 noncomputable instance liftCommShift :
     (Quotient.lift r F hF).CommShift A where
   iso := LiftCommShift.iso F r hF
@@ -128,13 +116,8 @@ noncomputable instance liftCommShift :
       Functor.CommShift.isoZero_hom_app, Functor.CommShift.isoZero_inv_app,
       Functor.map_comp, assoc, F.commShiftIso_zero, Functor.CommShift.isoZero_hom_app,
       lift_map_functor_map, ← F.map_comp_assoc, Iso.inv_hom_id_app]
-<<<<<<< HEAD
-    erw [F.map_id, id_comp]
-    rfl
-=======
     dsimp [lift_obj_functor_obj]
     rw [F.map_id, id_comp]
->>>>>>> origin/ext-change-of-universes
   add a b := by
     ext1
     apply natTrans_ext
@@ -145,19 +128,6 @@ noncomputable instance liftCommShift :
       Functor.CommShift.isoAdd_inv_app, Functor.map_comp, Functor.map_comp,
       Functor.map_comp, assoc, assoc, assoc, LiftCommShift.iso_hom_app, lift_map_functor_map]
     congr 1
-<<<<<<< HEAD
-    rw [← cancel_epi ((shiftFunctor (Quotient r) b ⋙ lift r F hF).map (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
-    erw [(LiftCommShift.iso F r hF b).hom.naturality_assoc (((functor r).commShiftIso a).hom.app X),
-      LiftCommShift.iso_hom_app, ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id,
-      id_comp, assoc]
-    congr 1
-    erw [← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, id_comp]
-    rw [Functor.comp_map, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
-      Iso.hom_inv_id_app, Functor.map_id, id_comp]
-    rfl
-
-instance liftCommShift_compatibility : NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
-=======
     rw [← cancel_epi ((shiftFunctor (Quotient r) b ⋙ lift r F hF).map
       (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
     erw [(LiftCommShift.iso F r hF b).hom.naturality_assoc
@@ -169,7 +139,6 @@ instance liftCommShift_compatibility : NatTrans.CommShift (Quotient.lift.isLift 
 
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
->>>>>>> origin/ext-change-of-universes
   comm' a := by
     ext X
     dsimp
