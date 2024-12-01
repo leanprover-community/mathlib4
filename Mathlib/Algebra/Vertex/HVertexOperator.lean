@@ -169,32 +169,37 @@ section CoeffOps
 
 variable [CommRing R] {V W : Type*} [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
-/-- Switch factors in a product.  -/
-def switch (A : (Γ₁ × Γ) → V →ₗ[R] W) : (Γ × Γ₁) → V →ₗ[R] W :=
-  fun g ↦ A (g.2, g.1)
+/-- The commutor on functions on a product. -/
+@[simps!]
+def commutor_equiv : ((Γ₁ × Γ) → V →ₗ[R] W) ≃ₗ[R] ((Γ × Γ₁) → V →ₗ[R] W) where
+  toFun A g := A (g.2, g.1)
+  map_add' A B := by ext; simp only [Pi.add_apply, LinearMap.add_apply]
+  map_smul' r A := by ext; simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply]
+  invFun A g := A (g.2, g.1)
+  left_inv A := by simp only [Prod.mk.eta]
+  right_inv A := by simp only [Prod.mk.eta]
 
-lemma switch_apply (A : (Γ₁ × Γ) → V →ₗ[R] W) (a : Γ × Γ₁) (v : V) :
-    (switch A a) v = (A (a.2, a.1)) v := by
-  rfl
+/-- The commutator of two formal series of endomorphisms. -/
+def commutator (A : Γ → V →ₗ[R] V) (B : Γ₁ → V →ₗ[R] V) : (Γ × Γ₁) → V →ₗ[R] V :=
+  fun g ↦ (A g.1) * (B g.2) - (B g.2) * (A g.1)
 
--- commutator
+theorem Jacobi (A : Γ → V →ₗ[R] V) (B : Γ₁ → V →ₗ[R] V) (C : Γ₂ → V →ₗ[R] V) (g : Γ) (g₁ : Γ₁)
+    (g₂ : Γ₂) :
+    (commutator (commutator A B) C ((g, g₁), g₂)) +
+    (commutator (commutator B C) A ((g₁, g₂), g)) +
+    (commutator (commutator C A) B ((g₂, g), g₁)) = 0 := by
+  simp [commutator, sub_mul, mul_sub, mul_assoc]
+  abel
 
-/-- Apply a right associator. -/
-def assoc_right (A : ((Γ × Γ₁) × Γ₂) → V →ₗ[R] W) : (Γ × (Γ₁ × Γ₂)) → V →ₗ[R] W :=
-  fun g ↦ A ((g.1, g.2.1), g.2.2)
-
-lemma assoc_right_apply (A : ((Γ × Γ₁) × Γ₂)  → V →ₗ[R] W) (a : Γ × (Γ₁ × Γ₂)) (v : V) :
-    (assoc_right A a) v = A ((a.1, a.2.1), a.2.2) v :=
-  rfl
-
-/-- Apply a left associator. -/
-def assoc_left (A : (Γ × (Γ₁ × Γ₂)) → V →ₗ[R] W) :
-    ((Γ × Γ₁) × Γ₂) → V →ₗ[R] W :=
-  fun g ↦ A (g.1.1, (g.1.2, g.2))
-
-lemma assoc_left_apply (A : (Γ × (Γ₁ × Γ₂)) → V →ₗ[R] W) (a : (Γ × Γ₁) × Γ₂) (v : V) :
-    (assoc_left A a) v = A (a.1.1, (a.1.2, a.2)) v :=
-  rfl
+/-- The associator on functions on a triple product. -/
+@[simps!]
+def assoc_equiv : ((Γ × Γ₁) × Γ₂ → V →ₗ[R] W) ≃ₗ[R] (Γ × (Γ₁ × Γ₂) → V →ₗ[R] W) where
+  toFun A g := A ((g.1, g.2.1), g.2.2)
+  map_add' A B := by ext; simp
+  map_smul' r A := by ext; simp
+  invFun A g := A (g.1.1, (g.1.2, g.2))
+  left_inv A := by simp
+  right_inv A := by simp
 
 -- scalar action by finsupps.
 

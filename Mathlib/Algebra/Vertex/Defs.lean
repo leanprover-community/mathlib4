@@ -162,8 +162,8 @@ def commutator_formula (a b c : V) (r s : ℤ) : Prop :=
 /-- The locality property, asserting that `(x-y)^N Y(a,x)Y(b,y) = (x-y)^N Y(b,y)Y(a,x)` for
 sufficiently large `N`.  That is, the vertex operators commute up to finite order poles on the
 diagonal. -/
-def locality (a b : V) : Prop :=
-  ∃ n, IsLocalToOrderLeq R V (Y a) (Y b) n
+def IsLocal (a b : V) : Prop :=
+  ∃ n, IsLocalToOrderLeq (Y a) (Y b) n
 -- was Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t = 0
 -- weak associativity needs to be changed to the vertex operator definition.
 

@@ -241,10 +241,10 @@ open HVertexOperator
 
 /-- Two vertex operators commute if composition in the opposite order yields switched
 coefficients. This should be replaced with locality at order zero. -/
-def Commute : Prop := switch (comp A B).coeff = (comp B A).coeff
+def Commute : Prop := commutor_equiv (comp A B).coeff = (comp B A).coeff
 
 lemma commute_symm : Commute A B ↔ Commute B A := by
-  dsimp only [Commute, comp]
+  simp only [Commute, commutor_equiv, comp, LinearEquiv.coe_mk]
   constructor
   · intro h
     ext g u
@@ -252,16 +252,16 @@ lemma commute_symm : Commute A B ↔ Commute B A := by
     specialize h (g.2, g.1)
     rw [LinearMap.ext_iff] at h
     specialize h u
-    simp_all only [switch_apply, LinearMap.coe_mk, AddHom.coe_mk, Equiv.symm_apply_apply,
-      Prod.mk.eta, coeff_apply]
+    simp_all only [Prod.mk.eta, coeff_apply, LinearMap.coe_mk, AddHom.coe_mk,
+      Equiv.symm_apply_apply]
   · intro h
     ext g u
     rw [funext_iff] at h
     specialize h (g.2, g.1)
     rw [LinearMap.ext_iff] at h
     specialize h u
-    simp_all only [switch_apply, LinearMap.coe_mk, AddHom.coe_mk, Equiv.symm_apply_apply,
-      Prod.mk.eta, coeff_apply]
+    simp_all only [Prod.mk.eta, coeff_apply, LinearMap.coe_mk, AddHom.coe_mk,
+      Equiv.symm_apply_apply]
 
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to switch coordinates,
