@@ -338,7 +338,7 @@ theorem tag_index_eq_self_of_mem_smul_span {x : ι → ℝ} (hx : x ∈ (n : ℝ
   rwa [tag_apply, index_apply, Int.cast_sub, Int.cast_one, sub_add_cancel, ← ha, Int.ceil_intCast,
     div_eq_iff (NeZero.ne _), mul_comm]
 
-theorem eq_of_index_eq_index_and_mem_smul_span {x y : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L)
+theorem eq_of_mem_smul_span_of_index_eq_index {x y : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L)
     (hy : y ∈ (n : ℝ)⁻¹ • L) (h : index n x = index n y) : x = y := by
   rw [← tag_index_eq_self_of_mem_smul_span n hx, ← tag_index_eq_self_of_mem_smul_span n hy, h]
 
@@ -346,7 +346,7 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
     integralSum (Set.indicator s F) (BoxAdditiveMap.toSMul (Measure.toBoxAdditive volume))
       (prepartition n B) = (∑' x : ↑(s ∩ (n : ℝ)⁻¹ • L), F x) / n ^ card ι := by
   classical
-  unfold BoxIntegral.integralSum
+  unfold integralSum
   have : Fintype ↑(s ∩ (n : ℝ)⁻¹ • L) := by
     apply Set.Finite.fintype
     rw [← coe_pointwise_smul, ZSpan.smul _ (inv_ne_zero (NeZero.ne _))]
@@ -362,7 +362,7 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
     simp_rw [prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
       tag_index_eq_self_of_mem_smul_span n hx.2, hx.1]
   · rw [Set.mem_toFinset] at hx hy
-    exact eq_of_index_eq_index_and_mem_smul_span n hx.2 hy.2 (box_injective n h)
+    exact eq_of_mem_smul_span_of_index_eq_index n hx.2 hy.2 (box_injective n h)
   · rw [Finset.mem_filter] at hI
     refine ⟨(prepartition n B).tag I, Set.mem_toFinset.mpr ⟨hI.2, ?_⟩, box_index_tag_eq_self n hI.1⟩
     rw [← box_index_tag_eq_self n hI.1, prepartition_tag n
