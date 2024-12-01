@@ -34,6 +34,9 @@ noncomputable def llr (μ ν : Measure α) (x : α) : ℝ := log (μ.rnDeriv ν 
 
 lemma llr_def (μ ν : Measure α) : llr μ ν = fun x ↦ log (μ.rnDeriv ν x).toReal := rfl
 
+lemma llr_self (μ : Measure α) [SigmaFinite μ] : llr μ μ =ᵐ[μ] 0 := by
+  filter_upwards [μ.rnDeriv_self] with a ha using by simp [llr, ha]
+
 lemma exp_llr (μ ν : Measure α) [SigmaFinite μ] :
     (fun x ↦ exp (llr μ ν x))
       =ᵐ[ν] fun x ↦ if μ.rnDeriv ν x = 0 then 1 else (μ.rnDeriv ν x).toReal := by
