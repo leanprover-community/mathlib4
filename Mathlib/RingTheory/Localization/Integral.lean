@@ -300,7 +300,7 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
           mem_nonZeroDivisors_iff_ne_zero.mp hy
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
     surj' := fun z =>
-      let ⟨x, y, hy, hxy⟩ := exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic z) inj
+      let ⟨x, y, hy, hxy⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple inj
       ⟨⟨mk' C (x : L) x.2, algebraMap _ _ y,
           mem_nonZeroDivisors_iff_ne_zero.mpr fun h =>
             hy (inj _ (by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero]))⟩,
