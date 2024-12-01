@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.InformationTheory.KullbackLeibler.MulLogAddOneSub
+import Mathlib.InformationTheory.KullbackLeibler.KLFun
 
 /-!
 # Kullback-Leibler divergence
@@ -92,7 +92,7 @@ lemma kl_ne_top_iff : kl μ ν ≠ ∞ ↔ μ ≪ ν ∧ Integrable (llr μ ν) 
 open Classical in
 lemma kl_eq_integral [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     kl μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
-      then ENNReal.ofReal (∫ x, (fun y ↦ y * log y + 1 - y) (μ.rnDeriv ν x).toReal ∂ν)
+      then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
       else ∞ :=
   if_ctx_congr Iff.rfl (fun h ↦ by rw [todo_integral h.1 h.2]) fun _ ↦ rfl
 
@@ -120,17 +120,15 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   swap; · rw [kl_of_not_integrable h_int] at h; exact (ENNReal.top_ne_zero h).elim
   simp only [kl_of_ac_of_integrable hμν h_int, ENNReal.ofReal_eq_zero] at h
   rw [← todo_integral hμν h_int] at h
-  have h' : ∫ x, (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal
-      + 1 - (μ.rnDeriv ν x).toReal ∂ν = 0 :=
-    le_antisymm h (integral_nonneg fun x ↦ mul_log_add_one_sub_nonneg ENNReal.toReal_nonneg)
+  have h' : ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = 0 :=
+    le_antisymm h (integral_nonneg fun x ↦ klFun_nonneg ENNReal.toReal_nonneg)
   rw [integral_eq_zero_iff_of_nonneg] at h'
   rotate_left
-  · exact fun _ ↦ mul_log_add_one_sub_nonneg ENNReal.toReal_nonneg
-  · rwa [integrable_mul_log_add_one_sub_iff hμν]
+  · exact fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
+  · rwa [integrable_klFun_iff hμν]
   refine (Measure.rnDeriv_eq_one_iff_eq hμν).mp ?_
   filter_upwards [h'] with x hx
-  rw [Pi.zero_apply,
-    mul_log_add_one_sub_eq_zero_iff (x := (μ.rnDeriv ν x).toReal) ENNReal.toReal_nonneg,
+  rw [Pi.zero_apply, klFun_eq_zero_iff (x := (μ.rnDeriv ν x).toReal) ENNReal.toReal_nonneg,
     ENNReal.toReal_eq_one_iff] at hx
   exact hx
 
