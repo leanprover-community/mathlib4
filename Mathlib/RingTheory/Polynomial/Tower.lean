@@ -32,13 +32,13 @@ variable [IsScalarTower R A B]
 variable {R B}
 
 @[simp]
+theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
+  rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
+
+@[simp]
 lemma eval_map_algebraMap (P : R[X]) (b : B) :
     (map (algebraMap R B) P).eval b = aeval b P := by
   rw [aeval_def, eval_map]
-
-@[simp]
-theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
-  rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
 
 end Semiring
 
