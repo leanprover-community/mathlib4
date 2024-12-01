@@ -209,7 +209,7 @@ lemma StrictMono.mem_lowerBounds_image (hf : StrictMono f) :
 lemma StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a := by
   simp [IsLeast, hf.injective.eq_iff, hf.mem_lowerBounds_image]
 
-lemma StrictMono.map_isGreatest (hf : StrictMono f) : 
+lemma StrictMono.map_isGreatest (hf : StrictMono f) :
     IsGreatest (f '' s) (f a) ↔ IsGreatest s a := by
   simp [IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
