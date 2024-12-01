@@ -485,7 +485,7 @@ lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i
 
 lemma mem_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
     x ∈ ((finSuccEquiv R n f).coeff i).support ↔ x.cons i ∈ f.support := by
-  rw [← (Finsupp.cons_right_injective i).mem_finset_image (a := x),
+  rw [← Finsupp.cons_right_injective.mem_finset_image (a := x),
     image_support_finSuccEquiv]
   simp only [Finset.mem_filter, mem_support_iff, ne_eq, cons_zero, and_true]
 
