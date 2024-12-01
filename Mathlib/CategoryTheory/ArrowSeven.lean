@@ -8,7 +8,7 @@ open Limits
 
 variable (C : Type _) [Category C]
 
-structure Arrow₇ :=
+structure Arrow₇ where
   {X₀ X₁ X₂ X₃ X₄ X₅ X₆ X₇ : C}
   f : X₀ ⟶ X₁
   g : X₁ ⟶ X₂
@@ -22,6 +22,7 @@ namespace Arrow₇
 
 variable {C}
 
+/-- Constructor for `Arrow₇`. -/
 @[simps]
 def mk' {X₀ X₁ X₂ X₃ X₄ X₅ X₆ X₇ : C}
     (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅) (k : X₅ ⟶ X₆)
@@ -91,7 +92,7 @@ instance : Category (Arrow₇ C) where
     (h₀ : f₁.τ₀ = f₂.τ₀) (h₁ : f₁.τ₁ = f₂.τ₁) (h₂ : f₁.τ₂ = f₂.τ₂) (h₃ : f₁.τ₃ = f₂.τ₃)
     (h₄ : f₁.τ₄ = f₂.τ₄) (h₅ : f₁.τ₅ = f₂.τ₅) (h₆ : f₁.τ₆ = f₂.τ₆) (h₇ : f₁.τ₇ = f₂.τ₇) :
     f₁ = f₂ :=
-  Hom.ext _ _ h₀ h₁ h₂ h₃ h₄ h₅ h₆ h₇
+  Hom.ext h₀ h₁ h₂ h₃ h₄ h₅ h₆ h₇
 
 @[simp] lemma id_τ₀ (D : Arrow₇ C) : Arrow₇.Hom.τ₀ (𝟙 D) = 𝟙 _ := rfl
 @[simp] lemma id_τ₁ (D : Arrow₇ C) : Arrow₇.Hom.τ₁ (𝟙 D) = 𝟙 _ := rfl
@@ -225,7 +226,8 @@ def mkOfLE {ι : Type _} [Preorder ι] (a b c d e f g h : ι)
       (homOfLE hfg) (homOfLE hgh)
 
 @[simps]
-def _root_.CategoryTheory.Functor.mapArrow₇ {ι ι' : Type _} [Category ι] [Category ι'] (F : ι ⥤ ι') :
+def _root_.CategoryTheory.Functor.mapArrow₇
+    {ι ι' : Type _} [Category ι] [Category ι'] (F : ι ⥤ ι') :
     Arrow₇ ι ⥤ Arrow₇ ι' where
   obj D := Arrow₇.mk (F.map D.f) (F.map D.g) (F.map D.h) (F.map D.i)
     (F.map D.j) (F.map D.k) (F.map D.l)

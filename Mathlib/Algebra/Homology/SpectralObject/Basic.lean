@@ -42,11 +42,11 @@ noncomputable def iso₂ :
       ((X.H n₀).map ((mapFunctorArrows ι 0 2 1 2 2).app (mk₂ f g)))) :=
   isoMk₂ (Iso.refl _) ((X.H n₀).mapIso
     (isoMk₁ (Iso.refl _) (Iso.refl _) (by simpa using h.symm))) (Iso.refl _) (by
-      dsimp
+      dsimp [Precomp.map]
       simp only [← Functor.map_comp, id_comp]
       congr 1
       ext <;> simp) (by
-      dsimp
+      dsimp [Precomp.map]
       simp only [← Functor.map_comp, comp_id]
       congr 1
       ext <;> simp)
@@ -99,7 +99,7 @@ noncomputable def iso₁ :
   isoMk₂ (Iso.refl _) (Iso.refl _) ((X.H n₁).mapIso
     (isoMk₁ (Iso.refl _) (Iso.refl _) (by simpa using h.symm)))
     (by aesop_cat) (by
-      dsimp [twoδ₂Toδ₁]
+      dsimp [Precomp.map, twoδ₂Toδ₁]
       simp only [← Functor.map_comp, id_comp]
       congr 1
       ext <;> simp)
@@ -443,7 +443,7 @@ instance : Mono (X.kernelSequenceOpcycles n₀ n₁ hn₁ f g fg h).f := by
 lemma cokernelSequenceCycles_exact :
     (X.cokernelSequenceCycles n₀ n₁ hn₁ f g fg h).Exact := by
   apply ShortComplex.exact_of_g_is_cokernel
-  refine' IsColimit.ofIsoColimit (cokernelIsCokernel _)
+  exact IsColimit.ofIsoColimit (cokernelIsCokernel _)
     (Cofork.ext (X.cokernelIsoCycles n₀ n₁ hn₁ f g fg h) (by
       dsimp
       simp only [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g), assoc,
@@ -452,7 +452,7 @@ lemma cokernelSequenceCycles_exact :
 lemma kernelSequenceOpcycles_exact :
     (X.kernelSequenceOpcycles n₀ n₁ hn₁ f g fg h).Exact := by
   apply ShortComplex.exact_of_f_is_kernel
-  refine' IsLimit.ofIsoLimit (kernelIsKernel _)
+  exact IsLimit.ofIsoLimit (kernelIsKernel _)
     (Iso.symm (Fork.ext (X.opcyclesIsoKernel n₀ n₁ hn₁ f g fg h) (by
       dsimp
       simp only [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
@@ -540,6 +540,7 @@ def shortComplexEMap :
     apply δ_naturality
     rfl
 
+/-- Variant of `shortComplexEMap_id`. -/
 lemma shortComplexEMap_id' (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃) (hα : α = 𝟙 _) :
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃ α = 𝟙 _ := by
   subst hα
@@ -555,6 +556,7 @@ lemma shortComplexEMap_id :
   apply shortComplexEMap_id'
   rfl
 
+/-- Variant of `shortComplexEMap_comp`. -/
 lemma shortComplexEMap_comp' (h : α ≫ β  = γ) :
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
       X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β =
@@ -587,6 +589,7 @@ lemma EMap_id :
   rw [shortComplexEMap_id, ShortComplex.homologyMap_id]
   rfl
 
+/-- Variant of `EMap_id`. -/
 lemma EMap_id' (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃) (hα : α = 𝟙 _) :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃ α = 𝟙 _ := by
   subst hα
@@ -600,6 +603,7 @@ lemma EMap_comp :
   dsimp only [EMap]
   rw [shortComplexEMap_comp, ShortComplex.homologyMap_comp]
 
+/-- Variant of `EMap_comp`. -/
 lemma EMap_comp' (h : α ≫ β  = γ) :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
       X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β =
@@ -646,7 +650,7 @@ lemma EMap_eqToHom (h : mk₃ f₁ f₂ f₃ = mk₃ f₁' f₂' f₃') :
   have h₁ := naturality' (eqToHom h) 0 1
   have h₂ := naturality' (eqToHom h) 1 2
   have h₃ := naturality' (eqToHom h) 2 3
-  dsimp at h₁ h₂ h₃
+  dsimp [Precomp.map] at h₁ h₂ h₃
   erw [eqToHom_app, eqToHom_app, eqToHom_refl, eqToHom_refl, id_comp, comp_id] at h₁ h₂ h₃
   subst h₁ h₂ h₃
   simp only [eqToHom_refl, EMap_id]
@@ -679,7 +683,7 @@ end
 lemma isZero_H_obj_of_isIso (n : ℤ) {i j : ι} (f : i ⟶ j) (hf : IsIso f) :
     IsZero ((X.H n).obj (mk₁ f)) := by
   have e : mk₁ (𝟙 i) ≅ mk₁ f := isoMk₁ (Iso.refl _) (asIso f) (by simp)
-  refine' IsZero.of_iso _ ((X.H n).mapIso e.symm)
+  refine IsZero.of_iso ?_ ((X.H n).mapIso e.symm)
   have h := X.zero₂ n (𝟙 i) (𝟙 i) (𝟙 i) (by simp)
   rw [← Functor.map_comp] at h
   rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← h]
@@ -718,7 +722,9 @@ lemma homologyπ_EIsoH_hom :
 
 lemma EIsoH_hom_naturality (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
     (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
-      (by simp) (naturality' α 0 1) (by simp)) :
+      (by simp) (naturality' α 0 1) (by
+        dsimp [Precomp.map]
+        erw [id_comp, comp_id])) :
   X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
     (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
     (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by

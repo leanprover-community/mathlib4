@@ -1,5 +1,44 @@
-<<<<<<< HEAD
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Shift.Predicate
 import Mathlib.CategoryTheory.Triangulated.Subcategory
+
+/-!
+# t-structures on triangulated categories
+
+This files introduces the notion of t-structure on (pre)triangulated categories.
+
+The first example of t-structure shall be the canonical t-structure on the
+derived category of an abelian category (TODO).
+
+Given a t-structure `t : TStructure C`, we define type classes `t.IsLE X n`
+and `t.IsGE X n` in order to say that an object `X : C` is `≤ n` or `≥ n` for `t`.
+
+## Implementation notes
+
+We introduce the type of t-structures rather than a type class saying that we
+have fixed a t-structure on a certain category. The reason is that certain
+triangulated categories have several t-structures which one may want to
+use depending on the context.
+
+## TODO
+
+* define functors `t.truncLE n : C ⥤ C`,`t.truncGE n : C ⥤ C` and the
+  associated distinguished triangles
+* promote these truncations to a (functorial) spectral object
+* define the heart of `t` and show it is an abelian category
+* define triangulated subcategories `t.plus`, `t.minus`, `t.bounded` and show
+  that there are induced t-structures on these full subcategories
+
+## References
+* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
+
+-/
+
+/-import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.Tactic.Linarith
 
@@ -51,71 +90,19 @@ lemma essImageFullSubcategoryInclusion [ClosedUnderIsomorphisms S] :
   · intro hX
     exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
 
-end
-=======
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-import Mathlib.CategoryTheory.Shift.Predicate
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
-
-/-!
-# t-structures on triangulated categories
-
-This files introduces the notion of t-structure on (pre)triangulated categories.
-
-The first example of t-structure shall be the canonical t-structure on the
-derived category of an abelian category (TODO).
-
-Given a t-structure `t : TStructure C`, we define type classes `t.IsLE X n`
-and `t.IsGE X n` in order to say that an object `X : C` is `≤ n` or `≥ n` for `t`.
-
-## Implementation notes
-
-We introduce the type of t-structures rather than a type class saying that we
-have fixed a t-structure on a certain category. The reason is that certain
-triangulated categories have several t-structures which one may want to
-use depending on the context.
-
-## TODO
-
-* define functors `t.truncLE n : C ⥤ C`,`t.truncGE n : C ⥤ C` and the
-  associated distinguished triangles
-* promote these truncations to a (functorial) spectral object
-* define the heart of `t` and show it is an abelian category
-* define triangulated subcategories `t.plus`, `t.minus`, `t.bounded` and show
-  that there are induced t-structures on these full subcategories
-
-## References
-* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
-
--/
+end-/
 
 namespace CategoryTheory
 
 open Limits
 
 namespace Triangulated
->>>>>>> origin/ext-change-of-universes
 
 variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 open Pretriangulated
 
-<<<<<<< HEAD
-namespace Triangulated
-
-structure TStructure where
-  LE (n : ℤ) : C → Prop
-  GE (n : ℤ) : C → Prop
-  LE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (LE n) := by infer_instance
-  GE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (GE n) := by infer_instance
-  shift_LE (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : LE n X) : LE n' (X⟦a⟧)
-  shift_GE (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : GE n X) : GE n' (X⟦a⟧)
-=======
 /-- `TStructure C` is the type of t-structures on the (pre)triangulated category `C`. -/
 structure TStructure where
   /-- the predicate of objects that are `≤ n` for `n : ℤ`. -/
@@ -126,7 +113,6 @@ structure TStructure where
   GE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (GE n) := by infer_instance
   LE_shift (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : LE n X) : LE n' (X⟦a⟧)
   GE_shift (n a n' : ℤ) (h : a + n' = n) (X : C) (hX : GE n X) : GE n' (X⟦a⟧)
->>>>>>> origin/ext-change-of-universes
   zero' ⦃X Y : C⦄ (f : X ⟶ Y) (hX : LE 0 X) (hY : GE 1 Y) : f = 0
   LE_zero_le : LE 0 ≤ LE 1
   GE_one_le : GE 1 ≤ GE 0
@@ -138,32 +124,6 @@ namespace TStructure
 attribute [instance] LE_closedUnderIsomorphisms GE_closedUnderIsomorphisms
 
 variable {C}
-<<<<<<< HEAD
-
-noncomputable def mk' (LEZero : C → Prop) (GEZero : C → Prop)
-    [ClosedUnderIsomorphisms LEZero] [ClosedUnderIsomorphisms GEZero]
-    (zero : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), LEZero X → GEZero (Y⟦(1 : ℤ)⟧) → f = 0)
-    (LE_zero_le' : LEZero ≤ PredicateShift LEZero (1 : ℤ))
-    (GE_zero_le' : PredicateShift GEZero (1 : ℤ) ≤ GEZero)
-    (exists_triangle_zero_one' : ∀ (A : C), ∃ (X Y : C) (_ : LEZero X)
-      (_ : GEZero (Y⟦(1 : ℤ)⟧)) (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧),
-        Triangle.mk f g h ∈ distTriang C) :
-    TStructure C where
-  LE n := PredicateShift LEZero n
-  GE n := PredicateShift GEZero n
-  shift_LE := by
-    rintro n a n' h X hX
-    simpa only [← predicateShift_predicateShift LEZero _ _ _ h] using hX
-  shift_GE := by
-    rintro n a n' h X hX
-    simpa only [← predicateShift_predicateShift GEZero _ _ _ h] using hX
-  zero' := fun X Y f hX hY => zero f (by simpa only [predicateShift_zero] using hX) hY
-  LE_zero_le := by simpa only [predicateShift_zero] using LE_zero_le'
-  GE_one_le := by simpa only [predicateShift_zero] using GE_zero_le'
-  exists_triangle_zero_one := by simpa only [predicateShift_zero] using exists_triangle_zero_one'
-
-=======
->>>>>>> origin/ext-change-of-universes
 variable (t : TStructure C)
 
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -171,43 +131,6 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
       (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
   obtain ⟨X, Y, hX, hY, f, g, h, mem⟩ := t.exists_triangle_zero_one (A⟦n₀⟧)
   let T := (Triangle.shiftFunctor C (-n₀)).obj (Triangle.mk f g h)
-<<<<<<< HEAD
-  have e := (shiftEquiv C n₀).unitIso.symm.app A
-  have hT' : Triangle.mk (T.mor₁ ≫ e.hom) (e.inv ≫ T.mor₂) T.mor₃ ∈ distTriang C := by
-    refine' isomorphic_distinguished _ (Triangle.shift_distinguished _ mem (-n₀)) _ _
-    refine' Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _) _ _ _
-    all_goals dsimp ; simp [T]
-  exact ⟨_, _, t.shift_LE _ _ _ (neg_add_self n₀) _ hX,
-    t.shift_GE _ _ _ (by linarith) _ hY, _, _, _, hT'⟩
-
-lemma predicateShift_LE (a n n' : ℤ) (hn' : a + n = n'): (PredicateShift (t.LE n) a) = t.LE n' := by
-  ext X
-  constructor
-  · intro hX
-    rw [predicateShift_iff] at hX
-    apply (mem_iff_of_iso (LE t n') ((shiftEquiv C a).unitIso.symm.app X)).1
-      (t.shift_LE n (-a) n' (by linarith) _ hX)
-  · intro hX
-    exact t.shift_LE _ _ _ hn' X hX
-
-lemma predicateShift_GE (a n n' : ℤ) (hn' : a + n = n'): (PredicateShift (t.GE n) a) = t.GE n' := by
-  ext X
-  constructor
-  · intro hX
-    rw [predicateShift_iff] at hX
-    apply (mem_iff_of_iso (GE t n') ((shiftEquiv C a).unitIso.symm.app X)).1
-      (t.shift_GE n (-a) n' (by linarith) _ hX)
-  · intro hX
-    exact t.shift_GE _ _ _ hn' X hX
-
-lemma LE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.LE n₀ ≤ t.LE n₁ := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), t.LE n ≤ t.LE (n + a)
-  suffices ∀ (a : ℕ), H a by
-    obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
-    obtain rfl : n₁ = n₀ + a := by linarith
-    apply this
-  clear n₀ n₁ h
-=======
   let e := (shiftEquiv C n₀).unitIso.symm.app A
   have hT' : Triangle.mk (T.mor₁ ≫ e.hom) (e.inv ≫ T.mor₂) T.mor₃ ∈ distTriang C := by
     refine isomorphic_distinguished _ (Triangle.shift_distinguished _ mem (-n₀)) _ ?_
@@ -243,16 +166,11 @@ lemma LE_monotone : Monotone t.LE := by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by omega
     apply this
->>>>>>> origin/ext-change-of-universes
   have H_zero : H 0 := fun n => by
     simp only [Nat.cast_zero, add_zero]
     rfl
   have H_one : H 1 := fun n X hX => by
-<<<<<<< HEAD
-    rw [← t.predicateShift_LE n 1 (n+(1 : ℕ)) rfl, predicateShift_iff]
-=======
     rw [← t.predicateShift_LE n 1 (n + (1 : ℕ)) rfl, predicateShift_iff]
->>>>>>> origin/ext-change-of-universes
     rw [← t.predicateShift_LE n 0 n (add_zero n), predicateShift_iff] at hX
     exact t.LE_zero_le _ hX
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
@@ -264,15 +182,6 @@ lemma LE_monotone : Monotone t.LE := by
   · exact H_zero
   · exact H_add a 1 _ rfl ha H_one
 
-<<<<<<< HEAD
-lemma GE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.GE n₁ ≤ t.GE n₀ := by
-  let H := fun (a : ℕ) => ∀ (n : ℤ), t.GE (n + a) ≤ t.GE n
-  suffices ∀ (a : ℕ), H a by
-    obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
-    obtain rfl : n₁ = n₀ + a := by linarith
-    apply this
-  clear n₀ n₁ h
-=======
 lemma GE_antitone : Antitone t.GE := by
   let H := fun (a : ℕ) => ∀ (n : ℤ), t.GE (n + a) ≤ t.GE n
   suffices ∀ (a : ℕ), H a by
@@ -280,7 +189,6 @@ lemma GE_antitone : Antitone t.GE := by
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
     obtain rfl : n₁ = n₀ + a := by omega
     apply this
->>>>>>> origin/ext-change-of-universes
   have H_zero : H 0 := fun n => by
     simp only [Nat.cast_zero, add_zero]
     rfl
@@ -297,36 +205,39 @@ lemma GE_antitone : Antitone t.GE := by
   · exact H_zero
   · exact H_add a 1 _ rfl ha H_one
 
-<<<<<<< HEAD
+/-- Given a t-structure `t` on a pretriangulated category `C`, the property `t.IsLE X n`
+holds if `X : C` is `≤ n` for the t-structure. -/
 class IsLE (X : C) (n : ℤ) : Prop where
-  mem : t.LE n X
+  le : t.LE n X
 
-lemma mem_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : t.LE n X := IsLE.mem
-
+/-- Given a t-structure `t` on a pretriangulated category `C`, the property `t.IsGE X n`
+holds if `X : C` is `≥ n` for the t-structure. -/
 class IsGE (X : C) (n : ℤ) : Prop where
-  mem : t.GE n X
+  ge : t.GE n X
 
-lemma mem_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.GE n X := IsGE.mem
+lemma mem_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : t.LE n X := IsLE.le
+
+lemma mem_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.GE n X := IsGE.ge
 
 lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n where
-  mem := mem_of_iso (t.LE n) e (t.mem_of_isLE X n)
+  le := mem_of_iso (t.LE n) e (t.mem_of_isLE X n)
 
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
-  mem := mem_of_iso (t.GE n) e (t.mem_of_isGE X n)
+  ge := mem_of_iso (t.GE n) e (t.mem_of_isGE X n)
 
 lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsLE X p] : t.IsLE X q where
-  mem := LE_monotone t p q hpq _ (t.mem_of_isLE X p)
+  le := LE_monotone t hpq _ (t.mem_of_isLE X p)
 
 lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q) [t.IsGE X q] : t.IsGE X p where
-  mem := GE_antitone t p q hpq _ (t.mem_of_isGE X q)
+  ge := GE_antitone t hpq _ (t.mem_of_isGE X q)
 
 lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsLE X n] :
     t.IsLE (X⟦a⟧) n' :=
-  ⟨t.shift_LE n a n' hn' X (t.mem_of_isLE X n)⟩
+  ⟨t.LE_shift n a n' hn' X (t.mem_of_isLE X n)⟩
 
 lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsGE X n] :
     t.IsGE (X⟦a⟧) n' :=
-  ⟨t.shift_GE n a n' hn' X (t.mem_of_isGE X n)⟩
+  ⟨t.GE_shift n a n' hn' X (t.mem_of_isGE X n)⟩
 
 lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsLE (X⟦a⟧) n'] :
     t.IsLE X n := by
@@ -385,36 +296,13 @@ lemma mem_heart_iff (X : C) :
     exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
 
 instance : ClosedUnderIsomorphisms t.heart where
-  mem_of_iso {X Y} e hX := by
+  of_iso {X Y} e hX := by
     rw [mem_heart_iff] at hX ⊢
     have := hX.1
     have := hX.2
     constructor
     · exact t.isLE_of_iso e 0
     · exact t.isGE_of_iso e 0
-
--- this should be refactored by requiring a type class [t.HasHeart]
--- which would involve a fully faithful functor `H ⥤ C` whose essential image is `t.heart`
-
-abbrev Heart' := FullSubcategory t.heart
-
-abbrev ιHeart' : t.Heart' ⥤ C := fullSubcategoryInclusion _
-
-
-instance (X : t.Heart') : t.IsLE (t.ιHeart'.obj X) 0 := ⟨X.2.1⟩
-instance (X : t.Heart') : t.IsGE (t.ιHeart'.obj X) 0 := ⟨X.2.2⟩
-instance (X : t.Heart') : t.IsLE X.1 0 := ⟨X.2.1⟩
-instance (X : t.Heart') : t.IsGE X.1 0 := ⟨X.2.2⟩
-
-lemma ιHeart_obj_mem_heart (X : t.Heart') : t.heart (t.ιHeart'.obj X) := X.2
-
-def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
-  t.ιHeart' ⋙ shiftFunctor C (-n)
-
-noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ shiftFunctor C n ≅ t.ιHeart' :=
-  Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (add_left_neg n)) ≪≫
-    Functor.rightUnitor _
 
 class HasHeart where
   H : Type*
@@ -429,6 +317,13 @@ class HasHeart where
 def hasHeartFullSubcategory : t.HasHeart where
   H := FullSubcategory t.heart
   ι := fullSubcategoryInclusion t.heart
+  hι := by
+    ext X
+    constructor
+    · rintro ⟨⟨Y, hY⟩, ⟨e : Y ≅ X⟩⟩
+      exact mem_of_iso t.heart e hY
+    · intro hX
+      exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
 
 variable [ht : t.HasHeart]
 
@@ -496,7 +391,7 @@ namespace Subcategory
 variable {C}
 variable (S : Subcategory C) (t : TStructure C)
 
-class HasInducedTStructure : Prop :=
+class HasInducedTStructure : Prop where
   exists_triangle_zero_one (A : C) (hA : S.P A) :
     ∃ (X Y : C) (_ : t.LE 0 X) (_ : t.GE 1 Y)
       (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
@@ -509,10 +404,10 @@ def tStructure : TStructure S.category where
   GE n X := t.GE n (S.ι.obj X)
   LE_closedUnderIsomorphisms n := ⟨fun {X Y} e hX => mem_of_iso (t.LE n) (S.ι.mapIso e) hX⟩
   GE_closedUnderIsomorphisms n := ⟨fun {X Y} e hX => mem_of_iso (t.GE n) (S.ι.mapIso e) hX⟩
-  shift_LE n a n' h X hX := mem_of_iso (t.LE n') ((S.ι.commShiftIso a).symm.app X)
-    (t.shift_LE n a n' h (S.ι.obj X) hX)
-  shift_GE n a n' h X hX := mem_of_iso (t.GE n') ((S.ι.commShiftIso a).symm.app X)
-    (t.shift_GE n a n' h (S.ι.obj X) hX)
+  LE_shift n a n' h X hX := mem_of_iso (t.LE n') ((S.ι.commShiftIso a).symm.app X)
+    (t.LE_shift n a n' h (S.ι.obj X) hX)
+  GE_shift n a n' h X hX := mem_of_iso (t.GE n') ((S.ι.commShiftIso a).symm.app X)
+    (t.GE_shift n a n' h (S.ι.obj X) hX)
   zero' {X Y} f hX hY := S.ι.map_injective (by
     rw [Functor.map_zero]
     exact t.zero' (S.ι.map f) hX hY)
@@ -521,19 +416,17 @@ def tStructure : TStructure S.category where
   exists_triangle_zero_one A := by
     obtain ⟨X, Y, hX, hY, f, g, h, hT, ⟨X', ⟨e⟩⟩, ⟨Y', ⟨e'⟩⟩⟩ :=
       h.exists_triangle_zero_one A.1 A.2
-    refine' ⟨X', Y', mem_of_iso (t.LE 0) e.symm hX, mem_of_iso (t.GE 1) e'.symm hY,
+    refine ⟨X', Y', mem_of_iso (t.LE 0) e.symm hX, mem_of_iso (t.GE 1) e'.symm hY,
       S.ι.preimage (e.hom ≫ f), S.ι.preimage (g ≫ e'.inv),
       S.ι.preimage (e'.hom ≫ h ≫ e.inv⟦(1 : ℤ)⟧' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X'),
-      isomorphic_distinguished _ hT _ _⟩
-    refine' Triangle.isoMk _ _ e (Iso.refl _) e' _ _ _
+      isomorphic_distinguished _ hT _ ?_⟩
+    refine Triangle.isoMk _ _ e (Iso.refl _) e' ?_ ?_ ?_
     · dsimp
       simp
     · dsimp
       simp
     · dsimp
-      simp only [Functor.image_preimage, assoc, Iso.inv_hom_id_app, Functor.comp_obj,
-        comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp, Iso.inv_hom_id,
-        Functor.map_id]
+      simp
 
 @[simp]
 lemma mem_tStructure_heart_iff (X : S.category) :
@@ -550,24 +443,6 @@ lemma tStructure_isGE_iff (X : S.category) (n : ℤ) :
 
 end Subcategory
 
-=======
-/-- Given a t-structure `t` on a pretriangulated category `C`, the property `t.IsLE X n`
-holds if `X : C` is `≤ n` for the t-structure. -/
-class IsLE (X : C) (n : ℤ) : Prop where
-  le : t.LE n X
-
-/-- Given a t-structure `t` on a pretriangulated category `C`, the property `t.IsGE X n`
-holds if `X : C` is `≥ n` for the t-structure. -/
-class IsGE (X : C) (n : ℤ) : Prop where
-  ge : t.GE n X
-
-lemma mem_of_isLE (X : C) (n : ℤ) [t.IsLE X n] : t.LE n X := IsLE.le
-
-lemma mem_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.GE n X := IsGE.ge
-
-end TStructure
-
->>>>>>> origin/ext-change-of-universes
 end Triangulated
 
 end CategoryTheory

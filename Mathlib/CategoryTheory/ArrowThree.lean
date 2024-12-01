@@ -8,7 +8,7 @@ open Limits
 
 variable (C : Type _) [Category C]
 
-structure Arrow₃ :=
+structure Arrow₃ where
   {X₀ X₁ X₂ X₃ : C}
   f : X₀ ⟶ X₁
   g : X₁ ⟶ X₂
@@ -18,6 +18,7 @@ namespace Arrow₃
 
 variable {C}
 
+/-- Constructor for `Arrow₃`. -/
 @[simps]
 def mk' {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : Arrow₃ C where
   f := f
@@ -62,7 +63,7 @@ instance : Category (Arrow₃ C) where
 @[ext] lemma hom_ext {D₁ D₂ : Arrow₃ C} (f₁ f₂ : D₁ ⟶ D₂)
     (h₀ : f₁.τ₀ = f₂.τ₀) (h₁ : f₁.τ₁ = f₂.τ₁) (h₂ : f₁.τ₂ = f₂.τ₂) (h₃ : f₁.τ₃ = f₂.τ₃) :
     f₁ = f₂ :=
-  Hom.ext _ _ h₀ h₁ h₂ h₃
+  Hom.ext h₀ h₁ h₂ h₃
 
 @[simp] lemma id_τ₀ (D : Arrow₃ C) : Arrow₃.Hom.τ₀ (𝟙 D) = 𝟙 _ := rfl
 @[simp] lemma id_τ₁ (D : Arrow₃ C) : Arrow₃.Hom.τ₁ (𝟙 D) = 𝟙 _ := rfl
@@ -220,7 +221,8 @@ noncomputable def ιArrow (ι : Type _) [Preorder ι] [OrderBot ι] [OrderTop ι
       τ₃ := 𝟙 _ }
 
 @[simps]
-def _root_.CategoryTheory.Functor.mapArrow₃ {ι ι' : Type _} [Category ι] [Category ι'] (F : ι ⥤ ι') :
+def _root_.CategoryTheory.Functor.mapArrow₃
+    {ι ι' : Type _} [Category ι] [Category ι'] (F : ι ⥤ ι') :
     Arrow₃ ι ⥤ Arrow₃ ι' where
   obj D := Arrow₃.mk (F.map D.f) (F.map D.g) (F.map D.h)
   map φ :=

@@ -8,7 +8,7 @@ open Limits
 
 variable (C : Type _) [Category C]
 
-structure Arrow₄ :=
+structure Arrow₄ where
   {X₀ X₁ X₂ X₃ X₄ : C}
   f : X₀ ⟶ X₁
   g : X₁ ⟶ X₂
@@ -19,6 +19,7 @@ namespace Arrow₄
 
 variable {C}
 
+/-- Constructor for `Arrow₄`. -/
 @[simps]
 def mk' {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
     Arrow₄ C where
@@ -70,7 +71,7 @@ instance : Category (Arrow₄ C) where
     (h₀ : f₁.τ₀ = f₂.τ₀) (h₁ : f₁.τ₁ = f₂.τ₁) (h₂ : f₁.τ₂ = f₂.τ₂) (h₃ : f₁.τ₃ = f₂.τ₃)
     (h₄ : f₁.τ₄ = f₂.τ₄) :
     f₁ = f₂ :=
-  Hom.ext _ _ h₀ h₁ h₂ h₃ h₄
+  Hom.ext h₀ h₁ h₂ h₃ h₄
 
 @[simp] lemma id_τ₀ (D : Arrow₄ C) : Arrow₄.Hom.τ₀ (𝟙 D) = 𝟙 _ := rfl
 @[simp] lemma id_τ₁ (D : Arrow₄ C) : Arrow₄.Hom.τ₁ (𝟙 D) = 𝟙 _ := rfl

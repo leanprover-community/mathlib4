@@ -18,6 +18,7 @@ section
 variable (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
   (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+/-- Generalization of `cokerToKer`. -/
 def cokerToKer' : cc.pt ⟶ kf.pt :=
   IsColimit.desc hcc (CokernelCofork.ofπ _
     (show S.map' k (k + 1) ≫ IsLimit.lift hkf (KernelFork.ofι _ (hS.zero (k + 1))) = 0 from
@@ -87,6 +88,7 @@ variable (hS : S.IsComplex) (k : ℕ) (hk : k ≤ n)
   (cc : CokernelCofork (S.map' k (k + 1))) (kf : KernelFork (S.map' (k + 2) (k + 3)))
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+/-- `cokerToKer'` is an epi. -/
 lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
     Epi (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
@@ -99,6 +101,7 @@ lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
       assoc, IsComplex.cokerToKer'_fac]
   exact epi_of_epi_fac fac
 
+/-- `cokerToKer'` is a mono. -/
 lemma mono_cokerToKer' (hS' : (S.sc hS k).Exact) :
     Mono (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
@@ -128,14 +131,17 @@ variable (k : ℕ) (hk : k ≤ n)
   (cc : CokernelCofork (S.map' k (k + 1))) (kf : KernelFork (S.map' (k + 2) (k + 3)))
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+/-- Auxiliary definition for `cokerIsoKer'`. -/
 def cokerToKer' : cc.pt ⟶ kf.pt :=
   hS.toIsComplex.cokerToKer' k hk cc kf hcc hkf
 
+omit [Balanced C] in
 @[reassoc (attr := simp)]
 lemma cokerToKer'_fac : cc.π ≫ hS.cokerToKer' k hk cc kf hcc hkf ≫ kf.ι =
     S.map' (k + 1) (k + 2) := by
   simp [cokerToKer']
 
+/-- `cokerToKer'` is an isomorphism. -/
 instance isIso_cokerToKer' : IsIso (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have : Mono (hS.cokerToKer' k hk cc kf hcc hkf) :=
       hS.toIsComplex.mono_cokerToKer' k hk cc kf hcc hkf
@@ -144,6 +150,7 @@ instance isIso_cokerToKer' : IsIso (hS.cokerToKer' k hk cc kf hcc hkf) := by
     hS.epi_cokerToKer' k hk cc kf hcc hkf (hS.exact (k + 1))
   apply isIso_of_mono_of_epi
 
+/-- Auxiliary definition for `cokerIsoKer`. -/
 @[simps! hom]
 noncomputable def cokerIsoKer' : cc.pt ≅ kf.pt :=
   asIso (hS.cokerToKer' k hk cc kf hcc hkf)

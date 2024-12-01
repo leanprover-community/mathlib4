@@ -3,7 +3,7 @@ import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.ArrowSeven
 import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 open CategoryTheory Category Limits Preadditive
 
@@ -91,13 +91,13 @@ instance [HasZeroMorphisms C] :
 
 noncomputable instance [HasLimitsOfShape J C] :
     PreservesLimitsOfShape J ((whiskeringLeft ι' ι C).obj F) :=
-    ⟨fun {_} => ⟨fun hc => evaluationJointlyReflectsLimits _
-      (fun i => isLimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩
+    ⟨fun {_} => ⟨fun hc => ⟨evaluationJointlyReflectsLimits _
+      (fun i => isLimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩⟩
 
 noncomputable instance [HasColimitsOfShape J C] :
     PreservesColimitsOfShape J ((whiskeringLeft ι' ι C).obj F) :=
-    ⟨fun {_} => ⟨fun hc => evaluationJointlyReflectsColimits _
-      (fun i => isColimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩
+    ⟨fun {_} => ⟨fun hc => ⟨evaluationJointlyReflectsColimits _
+      (fun i => isColimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩⟩
 
 noncomputable instance [HasFiniteLimits C] :
     PreservesFiniteLimits ((whiskeringLeft ι' ι C).obj F) :=
@@ -141,23 +141,23 @@ lemma homology_map {a b : ι} (φ : a ⟶ b) :
 noncomputable def homologyMapMapNatTransEvaluationMapArrowIso {a b : ι} (φ : a ⟶ b) :
   Arrow.mk (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) ≅
     Arrow.mk (S.homology.map φ) := by
-  refine' Arrow.isoMk (S.evaluationHomologyIso a) (S.evaluationHomologyIso b) _
+  refine Arrow.isoMk (S.evaluationHomologyIso a) (S.evaluationHomologyIso b) ?_
   dsimp
   rw [homology_map, Iso.hom_inv_id_assoc]
 
 lemma mono_homology_map_iff {a b : ι} (φ : a ⟶ b) :
     Mono (S.homology.map φ) ↔ Mono (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
-  (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff
+  (MorphismProperty.monomorphisms C).arrow_mk_iso_iff
     (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
 
 lemma epi_homology_map_iff {a b : ι} (φ : a ⟶ b) :
     Epi (S.homology.map φ) ↔ Epi (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
-  (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
+  (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
     (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
 
 lemma isIso_homology_map_iff {a b : ι} (φ : a ⟶ b) :
     IsIso (S.homology.map φ) ↔ IsIso (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
-  (MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
+  (MorphismProperty.isomorphisms C).arrow_mk_iso_iff
     (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
 
 end ShortComplex
@@ -244,8 +244,6 @@ noncomputable def mapFunctorArrows (i j i' j' n : ℕ)
     functorArrows C i j n ⟶ functorArrows C i' j' n where
   app S := homMk₁ (S.map' i i') (S.map' j j')
     (by dsimp; simp only [← Functor.map_comp, homOfLE_comp])
-
-example : ℕ := 42
 
 variable {C}
 variable {D : Type*} [Category D] {n : ℕ} (S : ComposableArrows C n) (F : C ⥤ D)
@@ -349,6 +347,7 @@ lemma threeδ₃Toδ₂_app_one :
 lemma threeδ₃Toδ₂_app_two :
     (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 2 = f₃ := rfl
 
+/-- Variant of `threeδ₃Toδ₂_app_two`. -/
 @[simp]
 lemma threeδ₃Toδ₂_app_two' :
     (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app ⟨2, by linarith⟩ = f₃ := rfl
@@ -369,13 +368,14 @@ lemma threeδ₂Toδ₁_app_one :
 lemma threeδ₂Toδ₁_app_two :
     (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 2 = 𝟙 _ := rfl
 
+/-- Variant of `threeδ₂Toδ₁_app_two`. -/
 @[simp]
 lemma threeδ₂Toδ₁_app_two' :
     (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
 
 def threeδ₁Toδ₀ :
     mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃ :=
-  homMk₂ f₁ (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp)
+  homMk₂ f₁ (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp; rfl)
 
 @[simp]
 lemma threeδ₁Toδ₀_app_zero :
@@ -389,6 +389,7 @@ lemma threeδ₁Toδ₀_app_one :
 lemma threeδ₁Toδ₀_app_two :
     (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 2 = (𝟙 _) := rfl
 
+/-- Variant of `threeδ₁Toδ₀_app_two`. -/
 @[simp]
 lemma threeδ₁Toδ₀_app_two' :
     (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app ⟨2, by linarith⟩ = (𝟙 _) := rfl
@@ -405,7 +406,7 @@ variable {i₀ i₁ i₂ i₃ i₄ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶
 
 def fourδ₄Toδ₃ :
     mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄ :=
-  homMk₃ (𝟙 _) (𝟙 _) (𝟙 _) f₄ (by simp) (by simp) (by simpa using h₃₄)
+  homMk₃ (𝟙 _) (𝟙 _) (𝟙 _) f₄ (by simp) (by simp; rfl) (by simpa using h₃₄)
 
 @[simp]
 lemma fourδ₄Toδ₃_app_zero :
@@ -419,6 +420,7 @@ lemma fourδ₄Toδ₃_app_one :
 lemma fourδ₄Toδ₃_app_two :
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 2 = 𝟙 _ := rfl
 
+/-- Variant of `fourδ₄Toδ₃_app_two`. -/
 @[simp]
 lemma fourδ₄Toδ₃_app_two' :
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
@@ -427,13 +429,14 @@ lemma fourδ₄Toδ₃_app_two' :
 lemma fourδ₄Toδ₃_app_three :
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 3 = f₄ := rfl
 
+/-- Variant of `fourδ₄Toδ₃_app_three`. -/
 @[simp]
 lemma fourδ₄Toδ₃_app_three' :
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app ⟨3, by linarith⟩ = f₄ := rfl
 
 def fourδ₂Toδ₁ :
     mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄ :=
-  homMk₃ (𝟙 _) f₂ (𝟙 _) (𝟙 _) (by simpa using h₁₂) (by simpa using h₂₃.symm) (by simp)
+  homMk₃ (𝟙 _) f₂ (𝟙 _) (𝟙 _) (by simpa using h₁₂) (by simpa using h₂₃.symm) (by simp; rfl)
 
 @[simp]
 lemma fourδ₂Toδ₁_app_zero :
@@ -447,6 +450,7 @@ lemma fourδ₂Toδ₁_app_one :
 lemma fourδ₂Toδ₁_app_two :
     (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 2 = 𝟙 _ := rfl
 
+/-- Variant of `fourδ₂Toδ₁_app_two`. -/
 @[simp]
 lemma fourδ₂Toδ₁_app_two' :
     (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
@@ -455,13 +459,14 @@ lemma fourδ₂Toδ₁_app_two' :
 lemma fourδ₂Toδ₁_app_three :
     (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 3 = 𝟙 _ := rfl
 
+/-- Variant of `fourδ₂Toδ₁_app_three`. -/
 @[simp]
 lemma fourδ₂Toδ₁_app_three' :
     (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨3, by linarith⟩ = 𝟙 _ := rfl
 
 def fourδ₁Toδ₀ :
     mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄ :=
-  homMk₃ f₁ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp) (by simp)
+  homMk₃ f₁ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp; rfl) (by simp; rfl)
 
 @[simp]
 lemma fourδ₁Toδ₀_app_zero :
@@ -475,6 +480,7 @@ lemma fourδ₁Toδ₀_app_one :
 lemma fourδ₁Toδ₀_app_two :
     (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 2 = 𝟙 _ := rfl
 
+/-- Variant of `fourδ₁Toδ₀_app_two`. -/
 @[simp]
 lemma fourδ₁Toδ₀_app_two' :
     (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
@@ -483,6 +489,7 @@ lemma fourδ₁Toδ₀_app_two' :
 lemma fourδ₁Toδ₀_app_three :
     (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 3 = 𝟙 _ := rfl
 
+/-- Variant of `fourδ₁Toδ₀_app_three`. -/
 @[simp]
 lemma fourδ₁Toδ₀_app_three' :
     (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app ⟨3, by linarith⟩ = 𝟙 _ := rfl
@@ -490,6 +497,8 @@ lemma fourδ₁Toδ₀_app_three' :
 end
 
 section
+
+omit [Abelian C]
 
 lemma isIso_iff {n : ℕ} {S₁ S₂ : ComposableArrows C n} (f : S₁ ⟶ S₂) :
     IsIso f ↔ ∀ (i : Fin (n + 1)), IsIso (f.app i) := by

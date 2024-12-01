@@ -93,7 +93,7 @@ end
 
 section
 
-variable (F : C ⥤ A) [F.PreservesZeroMorphisms] [F.IsHomological] [F.ShiftSequence ℤ]
+variable (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ]
 
 @[simps]
 noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
@@ -103,16 +103,19 @@ noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
       naturality := fun D₁ D₂ φ => by
         obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D₁
         obtain ⟨_, _, _, f', g', rfl⟩ := mk₂_surjective D₂
-        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h }
+        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h
+        }
   exact₁' n₀ n₁ h D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
-    exact (F.homologySequence_exact₁ _ (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
+    exact (F.homologySequence_exact₁ _
+      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
   exact₂' n D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
     exact (F.homologySequence_exact₂ _ (X.triangle_distinguished f g) n).exact_toComposableArrows
   exact₃' n₀ n₁ h D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
-    exact (F.homologySequence_exact₃ _ (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
+    exact (F.homologySequence_exact₃ _
+      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
 
 @[simp]
 lemma mapHomologicalFunctor_δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
@@ -132,3 +135,5 @@ noncomputable def mapTriangulatedFunctor (F : C ⥤ D) [F.CommShift ℤ] [F.IsTr
 end SpectralObject
 
 end Triangulated
+
+end CategoryTheory

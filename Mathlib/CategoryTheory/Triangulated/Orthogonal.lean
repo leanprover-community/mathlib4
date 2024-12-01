@@ -63,7 +63,7 @@ lemma map_bijective_of_rightOrthogonal (X Y : C) (hY : S.rightOrthogonal.P Y) :
     obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L S.W g
     obtain ⟨h, H⟩ := (S.rightOrthogonal_precomp_W_bijective _ hY φ.s φ.hs).2 φ.f
     dsimp at H
-    refine' ⟨h, _⟩
+    refine ⟨h, ?_⟩
     have := Localization.inverts L S.W φ.s φ.hs
     rw [hφ, ← cancel_epi (L.map φ.s), MorphismProperty.RightFraction.map_s_comp_map, ← H,
       Functor.map_comp]
