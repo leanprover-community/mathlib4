@@ -61,6 +61,27 @@ instance symOffDiagUpper.decidablePred [LinearOrder ι₁] [LinearOrder ι₂] :
     DecidablePred (@symOffDiagUpper ι₁ ι₂ _ _) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagUpper_iff_proj_eq a)
 
+/-- Triangular -/
+def symOffDiagLower [LT ι₁] [LT ι₂] : Sym2 (ι₁ × ι₂) → Prop :=
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₁ < j₁ ∧ j₂ < i₂) ∨ j₁ < i₁ ∧ i₂ < j₂, by aesop⟩
+
+--variable [LT ι₁] [LT ι₂]
+
+theorem mk_symOffDiagLower_iff [LT ι₁] [LT ι₂] {i j : (ι₁ × ι₂)} :
+    symOffDiagLower s(i, j) ↔ (i.1 < j.1 ∧ j.2 < i.2) ∨ j.1 < i.1 ∧ i.2 < j.2 :=
+  Iff.rfl
+
+@[simp]
+theorem symOffDiagLower_iff_proj_eq [LT ι₁] [LT ι₂] (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+    symOffDiagLower (Sym2.mk z) ↔ (z.1.1 < z.2.1 ∧ z.2.2 < z.1.2) ∨ z.2.1 < z.1.1 ∧ z.1.2 < z.2.2 :=
+  Prod.recOn z fun _ _ => mk_symOffDiagLower_iff
+
+/- Can probably weaken the hypothesis here -/
+instance symOffDiagLower.decidablePred [LinearOrder ι₁] [LinearOrder ι₂] :
+    DecidablePred (@symOffDiagLower ι₁ ι₂ _ _) :=
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagLower_iff_proj_eq a)
+
+
 end Prod
 
 open LinearMap (BilinMap)
@@ -422,19 +443,28 @@ lemma polar_lift_eq_polarnn_lift_on_symOffDiagUpper
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     polar_lift Q bm x p =  polarnn_lift bm₁ Q₁ bm₂ Q₂ x p := by
   induction' p with i j
-  simp_rw [polar_lift, polarnn_lift]
-  simp
-  simp only [Finset.mem_filter, symOffDiagUpper_iff_proj_eq] at h
+  simp_rw [polar_lift, polarnn_lift, Sym2.lift_mk, Prod.mk.eta]
+  rw [Finset.mem_filter, symOffDiagUpper_iff_proj_eq] at h
   obtain ⟨h1, h2⟩ := h
-  obtain  := h2
+  rw [Basis.tensorProduct_apply, Basis.tensorProduct_apply]
   rcases h2 with ⟨c1,c2⟩ | ⟨c3, c4⟩
-  · rw [Basis.tensorProduct_apply]
-    rw [Basis.tensorProduct_apply]
-    rw [tensorDistriFree_polar11 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2]
-  · rw [Basis.tensorProduct_apply]
-    rw [Basis.tensorProduct_apply]
-    rw [tensorDistriFree_polar22 _ _ _ _ _ _ _ _ c3 c4]
+  · rw [tensorDistriFree_polar11 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2]
+  · rw [tensorDistriFree_polar22 _ _ _ _ _ _ _ _ c3 c4]
 
+lemma polar_lift_eq_zero_on_symOffDiagLower
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
+    (h: p ∈ Finset.filter symOffDiagLower s) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    polar_lift Q bm x p = 0 := by
+  induction' p with i j
+  simp_rw [polar_lift, Sym2.lift_mk]
+  rw [Finset.mem_filter, symOffDiagLower_iff_proj_eq] at h
+  obtain ⟨h1, h2⟩ := h
+  rw [Basis.tensorProduct_apply, Basis.tensorProduct_apply]
+  rcases h2 with ⟨c1,c2⟩ | ⟨c3, c4⟩
+  · rw [tensorDistriFree_polar12 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2, smul_zero, smul_zero]
+  · rw [tensorDistriFree_polar21 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c3 c4, smul_zero, smul_zero]
 
 lemma myadd2
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
