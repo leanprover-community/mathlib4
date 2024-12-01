@@ -41,9 +41,7 @@ lemma one_lt_norm : 1 < (absNorm v.asIdeal : NNReal) := by
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    set k := 𝓞 K ⧸ v.asIdeal
-    have : Field k := Ideal.Quotient.field v.asIdeal
-    have : Fintype k := Ideal.fintypeQuotientOfFreeOfNeBot v.asIdeal v.ne_bot
+    have : Fintype (𝓞 K ⧸ v.asIdeal) := Ideal.fintypeQuotientOfFreeOfNeBot v.asIdeal v.ne_bot
     exact Fintype.finite this
   omega
 
