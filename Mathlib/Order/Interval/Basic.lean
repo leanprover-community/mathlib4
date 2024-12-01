@@ -292,7 +292,7 @@ variable [LE α]
 -- https://github.com/leanprover-community/mathlib4/issues/380
 -- Note(kmill): `Interval` is an `abbrev`, so none of these `instance`s are needed.
 instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
+instance : LE (Interval α) := WithBot.instLE
 instance : OrderBot (Interval α) := WithBot.orderBot
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
