@@ -255,6 +255,13 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     · simp only [getD_eq_getElem?_getD, get?_eq_getElem?] at ih
       simp [getD_cons_succ, ih j']
 
+lemma getElem_rightInvSeq (l : List B) (j : ℕ) (h : j < l.length) :
+    (cs.rightInvSeq l)[j]'(by simp[h]) =
+    (π (l.drop (j + 1)))⁻¹
+      * (Option.map (cs.simple) (l.get? j)).getD 1
+      * π (l.drop (j + 1)) := by
+  rw [← List.getD_eq_getElem (cs.rightInvSeq l) 1, getD_rightInvSeq]
+
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
       π (ω.take j)
@@ -270,6 +277,12 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       rw [getD_map]
       rw [ih j']
       simp [← mul_assoc, wordProd_cons]
+
+lemma getElem_leftInvSeq (l : List B) (j : ℕ) (h : j < l.length) :
+    (cs.leftInvSeq l)[j]'(by simp[h]) =
+    cs.wordProd (List.take j l) * s l[j] * (cs.wordProd (List.take j l))⁻¹ := by
+  rw [← List.getD_eq_getElem (cs.leftInvSeq l) 1, getD_leftInvSeq]
+  simp[h]
 
 theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((ris ω).getD j 1) * ((ris ω).getD j 1) = 1 := by
