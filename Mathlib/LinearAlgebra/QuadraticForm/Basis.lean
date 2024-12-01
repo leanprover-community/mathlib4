@@ -81,6 +81,41 @@ instance symOffDiagLower.decidablePred [LinearOrder ι₁] [LinearOrder ι₂] :
     DecidablePred (@symOffDiagLower ι₁ ι₂ _ _) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagLower_iff_proj_eq a)
 
+def symOffDiagXor : Sym2 (ι₁ × ι₂) → Prop :=
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => Xor' (i₁ ≠ j₁) (i₂ ≠ j₂), by
+    intro i j
+    simp_all only [ne_eq, xor_not_right, eq_iff_iff]
+    obtain ⟨fst, snd⟩ := i
+    obtain ⟨fst_1, snd_1⟩ := j
+    simp_all only
+    apply Iff.intro
+    · intro a
+      apply Iff.intro
+      · intro a_1
+        have e1: ¬fst = fst_1 := by
+          exact fun a ↦ a_1 (id (Eq.symm a))
+        rw [← (a.mp e1)]
+      · intro a_1
+        subst a_1
+        simp_all only [iff_true]
+        apply Aesop.BuiltinRules.not_intro
+        intro a_1
+        subst a_1
+        simp_all only [not_true_eq_false]
+    · intro a
+      apply Iff.intro
+      · intro a_1
+        have e1: ¬fst_1 = fst := by
+          exact fun a ↦ a_1 (id (Eq.symm a))
+        rw [a.mp e1]
+      · intro a_1
+        subst a_1
+        simp_all only [iff_true]
+        apply Aesop.BuiltinRules.not_intro
+        intro a_1
+        subst a_1
+        simp_all only [not_true_eq_false]
+  ⟩
 
 end Prod
 
