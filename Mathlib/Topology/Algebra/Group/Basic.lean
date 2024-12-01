@@ -765,6 +765,39 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
     (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
   simp only [map_one, mul_one, MonoidHom.one_apply]
 
+/-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
+homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
+is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
+@[to_additive "Let `A` and `B` be topological additive groups, and let `φ : A → B` be a continuous
+surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
+is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
+lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
+    [TopologicalSpace A] [TopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
+    {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
+    (hφ : IsQuotientMap φ) : IsOpenQuotientMap φ where
+    surjective := hφ.surjective
+    continuous := hφ.continuous
+    isOpenMap := by
+      -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
+      intro U hU
+      rw [← hφ.isOpen_preimage]
+      -- It suffices to show that `φ⁻¹ (φ U) = ⋃ (k + U)` as `k` runs through the kernel of `φ`,
+      -- as `k + U` is open because `k + ⬝` is a homeomorphism.
+      -- Remark: here is where we use that we have additive groups not monoids,
+      -- as the inverse of the homeomorphism is `(-k) + ⬝`.
+      suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
+        exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
+      ext x
+      -- But this is an elementary calculation.
+      constructor
+      · rintro ⟨y, hyU, hyx⟩
+        apply Set.mem_iUnion_of_mem (x⁻¹ * y)
+        suffices y / x ∈ ker (φ : A →* B) by simp_all
+        rwa [div_mem_ker_iff]
+      · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
+        use x * k, hx
+        rw [map_mul, hk, mul_one]
+
 @[to_additive]
 theorem TopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
     (tg : @TopologicalGroup G t _) (tg' : @TopologicalGroup G t' _)
