@@ -62,12 +62,12 @@ theorem smulAddHom_apply : smulAddHom R M r x = r • x :=
 
 variable {x}
 
-lemma IsAddUnit.const_smul (hx : IsAddUnit x) : IsAddUnit (r • x) :=
+lemma IsAddUnit.smul_left (hx : IsAddUnit x) : IsAddUnit (r • x) :=
   hx.map (smulAddHom R M r)
 
 variable {r} (x)
 
-lemma IsAddUnit.smul_const (hr : IsAddUnit r) : IsAddUnit (r • x) :=
+lemma IsAddUnit.smul_right (hr : IsAddUnit r) : IsAddUnit (r • x) :=
   hr.map (AddMonoidHom.flip (smulAddHom R M) x)
 
 end AddCommMonoid
