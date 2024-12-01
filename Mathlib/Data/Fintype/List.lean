@@ -54,7 +54,7 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 end Multiset
 
 @[simp]
-theorem perm_to_list {f₁ f₂ : Finset α} : f₁.toList ~ f₂.toList ↔ f₁ = f₂ :=
+theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList ~ f₂.toList ↔ f₁ = f₂ :=
   ⟨fun h => Finset.ext_iff.mpr (fun x => by simpa [← Finset.mem_toList] using Perm.mem_iff h),
    fun h ↦ Perm.of_eq <| congrArg Finset.toList h⟩
 
@@ -73,15 +73,14 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
       unfold Nodup
       refine Pairwise.iff ?_
       intro m n
-      rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe ]
+      rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
       simp only [Multiset.coe_disjoint, ne_eq]
       rw [List.disjoint_iff_ne]
       constructor
       · intro h
         by_contra hc
         rw [hc] at h
-        absurd h
-        push_neg
+        contrapose! h
         use n.toList
         simp
       · intro h
@@ -90,16 +89,15 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         by_contra hab
         absurd h
         rw [hab] at ha
-        exact perm_to_list.mp <| Perm.trans (id (Perm.symm ha)) hb
+        exact perm_toList.mp <| Perm.trans (id (Perm.symm ha)) hb
   · intro l
     simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
       Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      have : (l : Multiset α).Nodup := by
-        rw [← hf]
-        exact f.nodup
-      exact this
+      convert  Set.mem_def.mpr f.nodup
+      rw [hf]
+      rfl
     · intro h
       exact CanLift.prf _ h
