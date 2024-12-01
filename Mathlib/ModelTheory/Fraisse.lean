@@ -537,7 +537,7 @@ theorem sequence_FGEquiv_spec {A : K} (f : FGEquiv L A A) :
     ∃ n, sequence_FGEquiv K_fraisse A n = f :=
   (countable_iff_exists_surjective.1 (countable_self_fgequiv_of_countable (L := L))).choose_spec f
 
-/-- Inductive construction containing all informations to define `system` and `maps_system`.
+/-- Recursive construction containing all informations to define `system` and `maps_system`.
 The left handside of the image gives a sequence of structures whose limit will be the Fraïssé limit.
 The right handside stores all the previous structures in the sequence, and maps from them to the new
 structure.-/
@@ -545,18 +545,18 @@ private noncomputable def init_system : (n : ℕ) → (A : K) × (ℕ → (B : K
   | 0 => ⟨ess_surj_sequence K_fraisse 0,
     fun _ => ⟨_, Embedding.refl L _⟩⟩
   | n + 1 => by
-    let m1 := (Nat.unpair n).1
-    let m2 := (Nat.unpair n).2
-    let An := (init_system n).1
-    let Sn := (init_system n).2
-    let Am1 := (Sn m1).1
-    let Am1_to_An : Am1 ↪[L] An := (Sn m1).2
-    let ⟨f, f_fg⟩ := sequence_FGEquiv K_fraisse Am1 m2
-    let ⟨A, An_to_A⟩ := extend_and_join K_fraisse
-      (A := An) (B := ess_surj_sequence K_fraisse (n+1))
-      (f := f.map Am1_to_An) (PartialEquiv.map_dom Am1_to_An f ▸ FG.map _ f_fg)
-    exact ⟨A, fun m ↦ if m ≤ n then ⟨(Sn m).1, An_to_A.comp ((Sn m).2)⟩
-                        else ⟨_, Embedding.eq_embed rfl⟩⟩
+    let p := (Nat.unpair n).1
+    let q := (Nat.unpair n).2
+    let Nₙ := (init_system n).1
+    let Sₙ := (init_system n).2
+    let Nₚ := (Sₙ p).1
+    let Nₚ_to_Nₙ : Nₚ ↪[L] Nₙ := (Sₙ p).2
+    let ⟨f, f_fg⟩ := sequence_FGEquiv K_fraisse Nₚ q
+    let ⟨N, Nₙ_to_N⟩ := extend_and_join K_fraisse
+      (A := Nₙ) (B := ess_surj_sequence K_fraisse (n+1))
+      (f := f.map Nₚ_to_Nₙ) (PartialEquiv.map_dom Nₚ_to_Nₙ f ▸ FG.map _ f_fg)
+    exact ⟨N, fun m ↦ if m ≤ n then ⟨(Sₙ m).1, Nₙ_to_N.comp ((Sₙ m).2)⟩
+                        else ⟨_, Embedding.refl L _⟩⟩
 
 /-- Sequence of structures whose direct limit is the Fraïsse limit.-/
 private noncomputable def system (n : ℕ) : K := (init_system K_fraisse n).1
@@ -586,15 +586,15 @@ private theorem maps_system_self (m : ℕ) : maps_system K_fraisse (le_refl m)
     = Embedding.refl L _ := by
   cases m
   · rfl
-  · simp only [maps_system, init_system, if_then_else_right, Embedding.eq_embed_trans,
-      add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero]
-    rfl
+  · simp only [maps_system, init_system, add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
+    if_then_else_right, Embedding.refl_comp, Embedding.eq_embed_trans, Embedding.refl_eq_embed]
+
 
 private theorem maps_init_system_self (m : ℕ) : ((init_system K_fraisse m).2 m).2 =
     Embedding.eq_embed (system_eq_as_structures K_fraisse (le_refl m)).symm := by
   cases m
   · rfl
-  · simp only [init_system, Embedding.refl_eq_embed, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
+  · simp only [init_system, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
       one_ne_zero, if_then_else_right, Embedding.refl_comp]
 
 /-- The `FGEquiv` which is extended at step `n+1` in `system`.-/
@@ -695,7 +695,7 @@ private theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fra
   apply (Embedding.comp · g.toEmbedding)
   cases n
   · exact Embedding.refl ..
-  · simp only [system, init_system, Embedding.refl_eq_embed]
+  · simp only [system, init_system]
     exact Classical.choice (extend_and_join_spec_2 ..)
 
 include K_fraisse in
