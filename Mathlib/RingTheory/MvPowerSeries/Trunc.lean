@@ -109,6 +109,7 @@ variable [CommSemiring R] (n : σ →₀ ℕ)
 def truncFun' (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
   ∑ m in Finset.Iic n, MvPolynomial.monomial m (coeff R m φ)
 
+/-- Coefficients of the truncated function. -/
 theorem coeff_truncFun' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun' n φ).coeff m = if m ≤ n then coeff R m φ else 0 := by
   classical
@@ -129,10 +130,12 @@ def trunc' : MvPowerSeries σ R →+ MvPolynomial σ R where
 
 variable {R}
 
+/-- Coefficients of the truncation of a multivariate power series. -/
 theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc' R n φ).coeff m = if m ≤ n then coeff R m φ else 0 :=
   coeff_truncFun' n m φ
 
+/-- Truncation of the multivariate power series `1` -/
 @[simp]
 theorem trunc_one' (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
   MvPolynomial.ext _ _ fun m => by
@@ -154,6 +157,7 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
     split_ifs with H <;> first |rfl|try simp_all
     exfalso; apply H; subst m; exact orderBot.proof_1 n
 
+/-- Coefficients of the truncation of a product of two multivariate power series -/
 theorem coeff_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R)
     {m : σ →₀ ℕ} (h : m ≤ n) :
     ((trunc' R n f) * (trunc' R n g)).coeff m = coeff R m (f * g) := by
@@ -165,8 +169,8 @@ theorem coeff_mul_trunc' (n : σ →₀ ℕ) (f g : MvPowerSeries σ R)
   rw [← hij] at h
   simp only
   apply congr_arg₂
-  rw [coeff_trunc', if_pos (le_trans le_self_add h)]
-  rw [coeff_trunc', if_pos (le_trans le_add_self h)]
+  · rw [coeff_trunc', if_pos (le_trans le_self_add h)]
+  · rw [coeff_trunc', if_pos (le_trans le_add_self h)]
 
 end TruncLE
 
