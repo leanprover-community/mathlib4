@@ -6,9 +6,9 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
@@ -70,7 +70,7 @@ variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
 TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
 once a version of `Algebra` without the `commutes'` field is introduced.
-See issue #18110.
+See issue https://github.com/leanprover-community/mathlib4/issues/18110.
 -/
 instance one : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
@@ -159,6 +159,9 @@ theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
 theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
   AddSubmonoid.mul_le_mul_right h
 
+theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
+  toAddSubmonoid_injective <| AddSubmonoid.mul_comm_of_commute h
+
 variable (M N P)
 
 theorem mul_sup : M * (N ⊔ P) = M * N ⊔ M * P :=
@@ -227,7 +230,7 @@ theorem pow_subset_pow {n : ℕ} : (↑M : Set A) ^ n ⊆ ↑(M ^ n : Submodule 
   trans AddSubmonoid.pow_subset_pow (le_pow_toAddSubmonoid M)
 
 theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
-  pow_subset_pow _ <| Set.pow_mem_pow hx _
+  pow_subset_pow _ <| Set.pow_mem_pow hx
 
 end Module
 
@@ -282,12 +285,14 @@ theorem mul_eq_map₂ : M * N = map₂ (LinearMap.mul R A) M N :=
   le_antisymm (mul_le.mpr fun _m hm _n ↦ apply_mem_map₂ _ hm)
     (map₂_le.mpr fun _m hm _n ↦ mul_mem_mul hm)
 
-variable (R)
+variable (R M N)
 
 theorem span_mul_span : span R S * span R T = span R (S * T) := by
   rw [mul_eq_map₂]; apply map₂_span_span
 
-variable {R} (M N P Q)
+lemma mul_def : M * N = span R (M * N : Set A) := by simp [← span_mul_span]
+
+variable {R} (P Q)
 
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
@@ -349,6 +354,24 @@ theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
         comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
   simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
+
+section
+variable {α : Type*} [Monoid α] [DistribMulAction α A] [SMulCommClass α R A]
+
+instance [IsScalarTower α A A] : IsScalarTower α (Submodule R A) (Submodule R A) where
+  smul_assoc a S T := by
+    rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
+      smul_span, smul_mul_assoc]
+
+instance [SMulCommClass α A A] : SMulCommClass α (Submodule R A) (Submodule R A) where
+  smul_comm a S T := by
+    rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
+      smul_span, mul_smul_comm]
+
+instance [SMulCommClass A α A] : SMulCommClass (Submodule R A) α (Submodule R A) :=
+  have := SMulCommClass.symm A α A; .symm ..
+
+end
 
 section
 
@@ -505,14 +528,17 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
     (fun x y _i _hx _hy => hadd x y)
     (fun _i _x _hx => hmul _) hx
 
-/-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
+/-- `Submonoid.map` as a `RingHom`, when applied to an `AlgHom`. -/
 @[simps]
 def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
-    Submodule R A →*₀ Submodule R A' where
+    Submodule R A →+* Submodule R A' where
   toFun := map f.toLinearMap
   map_zero' := Submodule.map_bot _
+  map_add' := (Submodule.map_sup · · _)
   map_one' := Submodule.map_one _
-  map_mul' _ _ := Submodule.map_mul _ _ _
+  map_mul' := (Submodule.map_mul · · _)
+
+theorem mapHom_id : mapHom (.id R A) = .id _ := RingHom.ext map_id
 
 /-- The ring of submodules of the opposite algebra is isomorphic to the opposite ring of
 submodules. -/
@@ -553,14 +579,11 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 on either side). -/
 @[simps]
 def span.ringHom : SetSemiring A →+* Submodule R A where
-  -- Note: the hint `(α := A)` is new in #8386
-  toFun s := Submodule.span R (SetSemiring.down (α := A) s)
+  toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
-  map_mul' s t := by
-    dsimp only -- Porting note: new, needed due to new-style structures
-    rw [SetSemiring.down_mul, span_mul_span]
+  map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
 
 section
 
@@ -617,7 +640,7 @@ variable (R A)
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   -- Porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  -- Note: the hint `(α := A)` is new in #8386
+  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/pull/8386
   smul s P := span R (SetSemiring.down (α := A) s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
@@ -632,7 +655,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 
 variable {R A}
 
-theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
+theorem setSemiring_smul_def (s : SetSemiring A) (P : Submodule R A) :
     s • P = span R (SetSemiring.down (α := A) s) * P :=
   rfl
 
@@ -644,7 +667,7 @@ theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
 theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
-  rw [smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
+  rw [setSemiring_smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
   exact (map (LinearMap.mulLeft R a) M).span_eq
 
 section Quotient
