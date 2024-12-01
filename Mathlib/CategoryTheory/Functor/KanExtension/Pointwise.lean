@@ -46,7 +46,6 @@ abbrev HasPointwiseLeftKanExtensionAt (Y : D) :=
 that it has a pointwise left Kan extension at any object. -/
 abbrev HasPointwiseLeftKanExtension := ∀ (Y : D), HasPointwiseLeftKanExtensionAt L F Y
 
-<<<<<<< HEAD
 lemma hasPointwiseLeftKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y₂) :
     HasPointwiseLeftKanExtensionAt L F Y₁ ↔
       HasPointwiseLeftKanExtensionAt L F Y₂ := by
@@ -60,6 +59,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y�
 
 variable {L}
 
+/-- `HasPointwiseLeftKanExtensionAt` is invariant when we replace `L` by an equivalence functor. -/
 lemma hasPointwiseLeftKanExtensionAt_iff_of_iso' {L' : C ⥤ D} (e : L ≅ L') (Y : D) :
     HasPointwiseLeftKanExtensionAt L F Y ↔
       HasPointwiseLeftKanExtensionAt L' F Y := by
@@ -83,7 +83,7 @@ lemma hasPointwiseLeftKanExtensionAt_of_equivalence
   rw [← hasPointwiseLeftKanExtensionAt_iff_of_iso' F eL,
     hasPointwiseLeftKanExtensionAt_iff_of_iso _ F e.symm]
   let Φ := CostructuredArrow.post L E.functor Y
-  have : IsEquivalence Φ := CostructuredArrow.isEquivalencePost _ _ _
+  have : IsEquivalence Φ := CostructuredArrow.isEquivalence_post _ _ _
   have : HasColimit ((asEquivalence Φ).functor ⋙
     CostructuredArrow.proj (L ⋙ E.functor) (E.functor.obj Y) ⋙ F) :=
     (inferInstance : HasPointwiseLeftKanExtensionAt L F Y)
@@ -101,7 +101,7 @@ lemma hasPointwiseLeftKanExtensionAt_iff_of_equivalence
       (isoWhiskerRight eL.symm _ ≪≫ Functor.associator _ _ _ ≪≫
         isoWhiskerLeft L E.unitIso.symm ≪≫ L.rightUnitor) Y' Y
       (E.inverse.mapIso e.symm ≪≫ E.unitIso.symm.app Y)
-=======
+
 /-- The condition that a functor `F` has a pointwise right Kan extension along `L` at `Y`.
 It means that the functor `StructuredArrow.proj Y L ⋙ F : StructuredArrow Y L ⥤ H`
 has a limit. -/
@@ -111,7 +111,6 @@ abbrev HasPointwiseRightKanExtensionAt (Y : D) :=
 /-- The condition that a functor `F` has a pointwise right Kan extension along `L`: it means
 that it has a pointwise right Kan extension at any object. -/
 abbrev HasPointwiseRightKanExtension := ∀ (Y : D), HasPointwiseRightKanExtensionAt L F Y
->>>>>>> origin/ext-change-of-universes
 
 namespace LeftExtension
 
@@ -243,7 +242,11 @@ lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
   have := h.isLeftKanExtension
   HasLeftKanExtension.mk E.right E.hom
 
-<<<<<<< HEAD
+lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
+    IsIso (E.hom) :=
+  have := fun X => (h (L.obj X)).isIso_hom_app
+  NatIso.isIso_of_isIso_app ..
+
 @[simps!]
 def coconeAtIso {Y Y' : D} (e : Y ≅ Y') :
     (E.coconeAt Y').whisker (CostructuredArrow.mapIso e).functor ≅ E.coconeAt Y :=
@@ -251,42 +254,15 @@ def coconeAtIso {Y Y' : D} (e : Y ≅ Y') :
     dsimp
     simp only [assoc, ← map_comp, e.hom_inv_id, comp_id])
 
-variable (L F)
-
-@[simps]
-def coconeAtFunctor (Y : D) : LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
-  obj E := E.coconeAt Y
-  map {E E'} φ := CoconeMorphism.mk (φ.right.app Y) (fun G => by
-    dsimp
-    rw [← StructuredArrow.w φ]
-    simp only [assoc, NatTrans.naturality, const_obj_obj, whiskeringLeft_obj_obj, whiskeringLeft_obj_map,
-      NatTrans.comp_app, comp_obj, whiskerLeft_app])
-
-variable {L F E'}
-
-def isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
-    E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y where
-  toFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor L F Y).mapIso e)
-  invFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor L F Y).mapIso e.symm)
-  left_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
-  right_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
-
-def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
-    E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
-  toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
-  invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by aesop_cat
-  right_inv h := by aesop
-
+/-- The condition of beinig of pointwise left Kan extension at an object `Y` is
+unchanged by replacing `Y` by an isomorphic object `Y'`. -/
 def isPointwiseLeftKanExtensionAtOfIso'
     {Y : D} (hY : E.IsPointwiseLeftKanExtensionAt Y) {Y' : D} (e : Y ≅ Y') :
     E.IsPointwiseLeftKanExtensionAt Y' :=
   IsColimit.ofIsoColimit (hY.whiskerEquivalence _) (E.coconeAtIso e.symm)
 
+/-- The condition of beinig of pointwise left Kan extension at an object `Y` is
+unchanged by replacing `Y` by an isomorphic object `Y'`. -/
 def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
     E.IsPointwiseLeftKanExtensionAt Y ≃ E.IsPointwiseLeftKanExtensionAt Y' where
   toFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e
@@ -323,12 +299,6 @@ def isUniversalOfPointwise (h : E.IsPointwiseLeftKanExtension) :
       dsimp at eq₁ eq₂ ⊢
       simp only [assoc, NatTrans.naturality]
       rw [reassoc_of% eq₁, reassoc_of% eq₂])
-=======
-lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
-    IsIso (E.hom) :=
-  have := fun X => (h (L.obj X)).isIso_hom_app
-  NatIso.isIso_of_isIso_app ..
->>>>>>> origin/ext-change-of-universes
 
 end LeftExtension
 
@@ -531,10 +501,6 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
-<<<<<<< HEAD
-variable {F L}
-
-=======
 /-- An auxiliary cocone used in the lemma `pointwiseLeftKanExtension_desc_app` -/
 @[simps]
 def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
@@ -560,7 +526,6 @@ variable {F L}
 
 /-- If `F` admits a pointwise left Kan extension along `L`, then any left Kan extension of `F`
 along `L` is a pointwise left Kan extension. -/
->>>>>>> origin/ext-change-of-universes
 noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H) (α : F ⟶ L ⋙ F')
     [F'.IsLeftKanExtension α] :
     (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
@@ -569,8 +534,6 @@ noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H)
       (F'.isUniversalOfIsLeftKanExtension α))
     (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F)
 
-<<<<<<< HEAD
-=======
 end
 
 section
@@ -671,7 +634,6 @@ noncomputable def isPointwiseRightKanExtensionOfIsRightKanExtension (F' : D ⥤ 
       (F'.isUniversalOfIsRightKanExtension α))
     (pointwiseRightKanExtensionIsPointwiseRightKanExtension L F)
 
->>>>>>> origin/ext-change-of-universes
 end
 
 end Functor

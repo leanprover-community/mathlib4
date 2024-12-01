@@ -3,11 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Comma.Extra
-=======
+--import Mathlib.CategoryTheory.Comma.Extra
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
@@ -38,28 +35,10 @@ namespace CategoryTheory
 
 open Category Limits
 
-def Limits.IsInitial.equivOfIso {C : Type*} [Category C] {X Y : C} (e : X ≅ Y) :
-    IsInitial X ≃ IsInitial Y where
-  toFun h := IsInitial.ofIso h e
-  invFun h := IsInitial.ofIso h e.symm
-  left_inv _ := Subsingleton.elim _ _
-  right_inv _ := Subsingleton.elim _ _
-
-def Limits.IsTerminal.equivOfIso {C : Type*} [Category C] {X Y : C} (e : X ≅ Y) :
-    IsTerminal X ≃ IsTerminal Y where
-  toFun h := IsTerminal.ofIso h e
-  invFun h := IsTerminal.ofIso h e.symm
-  left_inv _ := Subsingleton.elim _ _
-  right_inv _ := Subsingleton.elim _ _
-
 namespace Functor
 
-<<<<<<< HEAD
 variable {C C' D D' H H' : Type*} [Category C] [Category D] [Category H] [Category H']
   [Category D'] [Category C']
-=======
-variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
->>>>>>> origin/ext-change-of-universes
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -329,11 +308,7 @@ end
 
 section
 
-<<<<<<< HEAD
-variable (L : C ⥤ H) (F : C ⥤ D) (e : H ≌ H')
-=======
 variable {L : C ⥤ D} {L' : C ⥤ D'} (G : D ⥤ D')
->>>>>>> origin/ext-change-of-universes
 
 /-- The functor `LeftExtension L' F ⥤ LeftExtension L F`
 induced by a natural transformation `L' ⟶ L ⋙ G'`. -/
@@ -351,27 +326,6 @@ def RightExtension.postcomp₁ (f : L ⋙ G ⟶ L') (F : C ⥤ H) :
   CostructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _)
     ((whiskeringLeft C D' H).map f) (𝟙 _)
 
-<<<<<<< HEAD
---/-- The equivalence of categories `LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F`
---when `e` is an equivalence. -/
---noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
---    LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
---  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor)
---    ((whiskeringLeft C H D).obj L)
---  exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft H H' D).obj e.functor)
---    ((whiskeringLeft C H D).obj L))
---
---lemma hasLeftExtension_iff_postcomp₁ :
---    HasLeftKanExtension L F ↔ HasLeftKanExtension (L ⋙ e.functor) F :=
---  (leftExtensionEquivalenceOfPostcomp₁ L F e).symm.hasInitial_iff
-
-end
-
-section
-
-variable (L L' : C ⥤ H) (iso₁ : L ≅ L') (F F' : C ⥤ D) (iso₂ : F ≅ F')
-variable {L L'}
-=======
 variable [IsEquivalence G]
 
 noncomputable instance (f : L' ⟶ L ⋙ G) [IsIso f] (F : C ⥤ H) :
@@ -499,7 +453,6 @@ end
 section
 
 variable {L L' : C ⥤ D} (iso₁ : L ≅ L') (F : C ⥤ H)
->>>>>>> origin/ext-change-of-universes
 
 /-- The equivalence `RightExtension L F ≌ RightExtension L' F` induced by
 a natural isomorphism `L ≅ L'`. -/
@@ -547,49 +500,6 @@ end
 
 section
 
-<<<<<<< HEAD
-variable {L : C ⥤ H} {L' : C ⥤ H'}
-  (G : H ⥤ H') [IsEquivalence G] (e : L ⋙ G ≅ L')
-  (F : C ⥤ D) (F' : H' ⥤ D) (α : F ⟶ L' ⋙ F')
-
-@[simps!]
-def LeftExtension.postcomp₁ : LeftExtension L' F ⥤ LeftExtension L F :=
-  StructuredArrow.map₂ (F := (whiskeringLeft H H' D).obj G) (G := 𝟭 _) (𝟙 _)
-    ((whiskeringLeft C H' D).map e.inv)
-
-noncomputable instance : IsEquivalence (LeftExtension.postcomp₁ G e F) := by
-  have : EssSurj ((whiskeringLeft H H' D).obj G) := Equivalence.essSurj_of_equivalence _
-  apply StructuredArrow.isEquivalenceMap₂
-
-variable {G} in
-lemma hasLeftExtension_iff_postcomp₁ :
-    HasLeftKanExtension L' F ↔ HasLeftKanExtension L F :=
-  (LeftExtension.postcomp₁ G e F).asEquivalence.hasInitial_iff
-
-lemma LeftExtension.isUniversalPostcomp₁Equiv (ex : LeftExtension L' F) :
-    ex.IsUniversal ≃ ((LeftExtension.postcomp₁ G e F).obj ex).IsUniversal := by
-  apply Limits.IsInitial.isInitialIffObj (LeftExtension.postcomp₁ G e F)
-
-variable {F F'}
-
-lemma isLeftKanExtension_iff_postcomp₁ :
-    F'.IsLeftKanExtension α ↔
-      (G ⋙ F').IsLeftKanExtension (α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom) := by
-  let ex := LeftExtension.mk _ α
-  let ex' := LeftExtension.mk _ (α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom)
-  have : ex.IsUniversal ≃ ex'.IsUniversal :=
-    (LeftExtension.isUniversalPostcomp₁Equiv G e F ex).trans
-    (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
-  constructor
-  · intro
-    exact ⟨⟨this (isUniversalOfIsLeftKanExtension _ _)⟩⟩
-  · intro
-    exact ⟨⟨this.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
-
-end
-
-section
-
 variable (L : C ⥤ H) (F : C ⥤ D)
   (F' : H ⥤ D) (α : F ⟶ L ⋙ F')
   (G : D ⥤ D') [IsEquivalence G]
@@ -600,10 +510,9 @@ def LeftExtension.postcomp₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ G) 
     (G := (whiskeringRight C D D').obj G) (𝟙 _) (𝟙 _)
 
 noncomputable instance : IsEquivalence (LeftExtension.postcomp₂ L F G) := by
-  have : EssSurj ((whiskeringRight H D D').obj G) := Equivalence.essSurj_of_equivalence _
   apply StructuredArrow.isEquivalenceMap₂
 
-lemma LeftExtension.isUniversalPostcompEquiv (e : LeftExtension L F) :
+noncomputable def LeftExtension.isUniversalPostcompEquiv (e : LeftExtension L F) :
     e.IsUniversal ≃ ((LeftExtension.postcomp₂ L F G).obj e).IsUniversal := by
   apply Limits.IsInitial.isInitialIffObj (LeftExtension.postcomp₂ L F G)
 
@@ -626,47 +535,7 @@ lemma isLeftKanExtension_iff_postcomp₂ :
 end
 
 section
-
-variable (L : C ⥤ H) (F : C ⥤ D)
-  (F' : H ⥤ D) (α : F ⟶ L ⋙ F')
-  (G : C' ⥤ C) [IsEquivalence G]
-
-
-@[simps!]
-def LeftExtension.precomp : LeftExtension L F ⥤ LeftExtension (G ⋙ L) (G ⋙ F) :=
-  StructuredArrow.map₂ (F := 𝟭 _) (G := (whiskeringLeft C' C D).obj G) (𝟙 _) (𝟙 _)
-
-noncomputable instance : IsEquivalence (LeftExtension.precomp L F G) := by
-  apply StructuredArrow.isEquivalenceMap₂
-
-lemma LeftExtension.isUniversalPrecompEquiv (e : LeftExtension L F) :
-    e.IsUniversal ≃ ((LeftExtension.precomp L F G).obj e).IsUniversal := by
-  apply Limits.IsInitial.isInitialIffObj (LeftExtension.precomp L F G)
-
-variable {F L}
-
-lemma isLeftKanExtension_iff_precomp :
-    F'.IsLeftKanExtension α ↔ F'.IsLeftKanExtension
-          (whiskerLeft G α ≫ (Functor.associator _ _ _).inv) := by
-  let e := LeftExtension.mk _ α
-  let e' := LeftExtension.mk _ (whiskerLeft G α ≫ (Functor.associator _ _ _).inv)
-  have : e.IsUniversal ≃ e'.IsUniversal :=
-    (LeftExtension.isUniversalPrecompEquiv L F G e).trans
-    (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
-  constructor
-  · intro
-    exact ⟨⟨this (isUniversalOfIsLeftKanExtension _ _)⟩⟩
-  · intro
-    exact ⟨⟨this.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
-
-end
-
-section
-
-variable {L : C ⥤ H} {F₁ F₂ : C ⥤ D}
-=======
 variable {L : C ⥤ D} {F₁ F₂ : C ⥤ H}
->>>>>>> origin/ext-change-of-universes
 
 /-- When two left extensions `α₁ : LeftExtension L F₁` and `α₂ : LeftExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
@@ -680,11 +549,7 @@ noncomputable def LeftExtension.isUniversalEquivOfIso₂
     (IsInitial.equivOfIso (StructuredArrow.isoMk e'
       (by simp [leftExtensionEquivalenceOfIso₂, h])))
 
-<<<<<<< HEAD
-lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : H ⥤ D} (α₁ : F₁ ⟶ L ⋙ F₁') (α₂ : F₂ ⟶ L ⋙ F₂')
-=======
 lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶ L ⋙ F₁') (α₂ : F₂ ⟶ L ⋙ F₂')
->>>>>>> origin/ext-change-of-universes
     (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (h : α₁ ≫ whiskerLeft L e'.hom = e.hom ≫ α₂) :
     F₁'.IsLeftKanExtension α₁ ↔ F₂'.IsLeftKanExtension α₂ := by
   let eq := LeftExtension.isUniversalEquivOfIso₂ (LeftExtension.mk _ α₁)
@@ -705,11 +570,7 @@ noncomputable def RightExtension.isUniversalEquivOfIso₂
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk e'
       (by simp [rightExtensionEquivalenceOfIso₂, h])))
 
-<<<<<<< HEAD
-lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : H ⥤ D} (α₁ : L ⋙ F₁' ⟶ F₁) (α₂ : L ⋙ F₂' ⟶ F₂)
-=======
 lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F₁' ⟶ F₁) (α₂ : L ⋙ F₂' ⟶ F₂)
->>>>>>> origin/ext-change-of-universes
     (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (h : whiskerLeft L e'.hom ≫ α₂ = α₁ ≫ e.hom) :
     F₁'.IsRightKanExtension α₁ ↔ F₂'.IsRightKanExtension α₂ := by
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
@@ -720,7 +581,6 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
 
 end
 
-<<<<<<< HEAD
 section
 
 variable {L₁ L₂ : C ⥤ H} {F₁ F₂ : C ⥤ D}
@@ -736,7 +596,7 @@ noncomputable def LeftExtension.isUniversalEquivOfIso₃
   apply (LeftExtension.isUniversalEquivOfIso₂ α₁
     (LeftExtension.mk _ (e.inv ≫ α₁.hom ≫ whiskerLeft L₁ e'.hom)) e e' (by aesop_cat)).trans
   apply (IsInitial.isInitialIffObj (leftExtensionEquivalenceOfIso₁ e'' F₂).functor _).trans
-  refine' IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _) ?_)
+  refine IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _) ?_)
   dsimp [leftExtensionEquivalenceOfIso₁]
   simp only [h, Iso.inv_hom_id_assoc, assoc, comp_id]
   ext X
@@ -765,7 +625,7 @@ noncomputable def RightExtension.isUniversalEquivOfIso₃
   apply (RightExtension.isUniversalEquivOfIso₂ α₁
     (RightExtension.mk _ (whiskerLeft L₁ e'.inv ≫ α₁.hom ≫ e.hom)) e e' (by aesop_cat)).trans
   apply (IsTerminal.isTerminalIffObj (rightExtensionEquivalenceOfIso₁ e'' F₂).functor _).trans
-  refine' IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _) ?_)
+  refine IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _) ?_)
   dsimp [rightExtensionEquivalenceOfIso₁]
   rw [id_comp, ← cancel_epi (whiskerLeft L₂ e'.hom), h]
   ext X
@@ -784,7 +644,7 @@ lemma isRightKanExtension_iff_of_iso₃
   · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
 
 end
-=======
+
 section Colimit
 
 variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') [F'.IsLeftKanExtension α]
@@ -884,7 +744,6 @@ lemma limitIsoOfIsRightKanExtension_hom_π (i : C) :
   rw [← Iso.eq_inv_comp, limitIsoOfIsRightKanExtension_inv_π]
 
 end Limit
->>>>>>> origin/ext-change-of-universes
 
 end Functor
 
