@@ -29,11 +29,11 @@ set_option linter.docPrime false in
 lemma cast_finsetInf' (f : ι → ℕ) (hs) : (↑(s.inf' hs f) : R) = s.inf' hs fun i ↦ (f i : R) :=
   comp_inf'_eq_inf'_comp _ _ cast_min
 
-end LinearOrderedSemiring
-
 @[simp, norm_cast]
-lemma cast_finsetSup [CanonicallyLinearOrderedSemifield R] (s : Finset ι) (f : ι → ℕ) :
-    (↑(s.sup f) : R) = s.sup fun i ↦ (f i : R) :=
+lemma cast_finsetSup [CanonicallyOrderedAdd R]
+    (s : Finset ι) (f : ι → ℕ) : (↑(s.sup f) : R) = s.sup fun i ↦ (f i : R) :=
   comp_sup_eq_sup_comp _ cast_max (by simp)
+
+end LinearOrderedSemiring
 
 end Nat
