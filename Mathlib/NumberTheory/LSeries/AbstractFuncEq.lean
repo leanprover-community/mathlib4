@@ -109,6 +109,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
+@[simps]
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
   g := P.f
