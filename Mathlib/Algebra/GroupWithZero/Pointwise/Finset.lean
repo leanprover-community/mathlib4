@@ -22,7 +22,7 @@ variable {α β : Type*} [DecidableEq β]
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Finset β)`. -/
 protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (Finset β) :=
-  coe_injective.smulZeroClass ⟨(↑), coe_zero⟩ coe_smul_finset
+  coe_injective.smulZeroClass ⟨toSet, coe_zero⟩ coe_smul_finset
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
@@ -44,7 +44,7 @@ scoped[Pointwise] attribute [instance] Finset.smulZeroClass Finset.distribSMul
   Finset.distribMulAction Finset.mulDistribMulAction
 
 instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
-  Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
+  Function.Injective.noZeroDivisors toSet coe_injective coe_zero coe_mul
 
 instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Finset α) (Finset β) where
@@ -53,7 +53,7 @@ instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors
 
 instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Finset β) :=
-  Function.Injective.noZeroSMulDivisors (↑) coe_injective coe_zero coe_smul_finset
+  Function.Injective.noZeroSMulDivisors toSet coe_injective coe_zero coe_smul_finset
 
 section SMulZeroClass
 variable [Zero β] [SMulZeroClass α β] {s : Finset α} {t : Finset β} {a : α}
@@ -199,11 +199,11 @@ variable [Monoid α] [AddGroup β] [DistribMulAction α β]
 
 @[simp]
 lemma smul_finset_neg (a : α) (t : Finset β) : a • -t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, Function.comp_def, image_image, smul_neg]
+  simp only [← image_smul, ← image_neg_eq_neg, Function.comp_def, image_image, smul_neg]
 
 @[simp]
 protected lemma smul_neg (s : Finset α) (t : Finset β) : s • -t = -(s • t) := by
-  simp_rw [← image_neg]; exact image_image₂_right_comm smul_neg
+  simp_rw [← image_neg_eq_neg]; exact image_image₂_right_comm smul_neg
 
 end Monoid
 end Finset

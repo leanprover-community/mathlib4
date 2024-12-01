@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.Ring
 
 /-!
@@ -31,6 +29,11 @@ inequality.
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
 * [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+
+## See also
+
+In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
+does. See `Mathlib.Combinatorics.Additive.SmallTripling`.
 -/
 
 open MulOpposite Nat
@@ -159,7 +162,7 @@ private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
   have hA₀ : (0 : ℚ≥0) < #A := cast_pos.2 hA.card_pos
   have hA₀' : (0 : ℚ≥0) < #A' := cast_pos.2 hA'.card_pos
   exact mod_cast
-    (div_le_div_iff hA₀ hA₀').1
+    (div_le_div_iff₀ hA₀ hA₀').1
       (h _ <| mem_erase_of_ne_of_mem hA'.ne_empty <| mem_powerset.2 <| hAA'.trans hAB)
 
 /-- **Ruzsa's triangle inequality**. Multiplication version. -/
@@ -176,7 +179,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   push_cast
   refine (le_div_iff₀ <| cast_pos.2 hB.card_pos).1 ?_
   rw [mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
+  refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))

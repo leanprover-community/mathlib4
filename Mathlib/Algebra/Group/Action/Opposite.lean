@@ -27,6 +27,7 @@ With `open scoped RightActions`, this provides:
 -/
 
 assert_not_exists MonoidWithZero
+assert_not_exists Units
 
 variable {M N α β : Type*}
 

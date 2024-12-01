@@ -103,7 +103,7 @@ theorem unop_iInf (S : ι → Subgroup Gᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i
 
 @[to_additive]
 theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.unop_coe]
+  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
