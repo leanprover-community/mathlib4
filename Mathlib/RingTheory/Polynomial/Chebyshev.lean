@@ -522,12 +522,12 @@ theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
   | zero => simp
   | one => simp
   | add_two m ih1 ih2 =>
-    have h₁ := mul_T R ((m + 1) * n) n
+    have h₁ := T_mul_T R ((m + 1) * n) n
     have h₂ := congr_arg (comp · (T R n)) <| T_add_two R m
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
   | neg_add_one m ih1 ih2 =>
-    have h₁ := mul_T R ((-m) * n) n
+    have h₁ := T_mul_T R ((-m) * n) n
     have h₂ := congr_arg (comp · (T R n)) <| T_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
@@ -538,12 +538,12 @@ theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
   | zero => simp
   | one => simp
   | add_two m ih1 ih2 =>
-    have h₁ := mul_C R ((m + 1) * n) n
+    have h₁ := C_mul_C R ((m + 1) * n) n
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R m
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
   | neg_add_one m ih1 ih2 =>
-    have h₁ := mul_C R ((-m) * n) n
+    have h₁ := C_mul_C R ((-m) * n) n
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
