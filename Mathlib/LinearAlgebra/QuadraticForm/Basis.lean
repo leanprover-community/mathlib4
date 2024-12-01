@@ -15,6 +15,47 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
+namespace Finset
+section Filter
+
+variable {α β : Type* }
+variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
+
+variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β} [AddCommMonoid β]
+
+theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
+    Disjoint (filter p s) (filter q s) := by
+  rw [Disjoint]
+  intro t htp htq
+  simp only [bot_eq_empty, le_eq_subset, subset_empty]
+  by_contra hn
+  rw [← not_nonempty_iff_eq_empty] at hn
+  rw [not_not] at hn
+  obtain ⟨x, hx⟩ := hn
+  simp at htp
+  have e1 : p x := (mem_filter.mp (htp hx)).2
+  have e2 : q x := (mem_filter.mp (htq hx)).2
+  have e3 : filter p s ⊆ s := filter_subset p s
+  have e4 : t ⊆ s := by exact fun ⦃a⦄ a_1 ↦ e3 (htp a_1)
+  aesop
+
+theorem test1 (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
+  s.filter (fun x => p x ∨ q x) = (s.filter p).disjUnion (s.filter q) (by
+    apply disjoint_of_not_and_on_set
+    exact fun x a ↦ h x a) := by
+  aesop
+
+theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
+    (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
+  rw [← sum_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
+  apply sum_congr
+  · aesop
+  · exact fun x a ↦ rfl
+
+end Filter
+
+end Finset
+
 section Prod
 
 theorem xor_iff_or_and_not_and (P Q : Prop) : Xor' P Q ↔ (P ∨ Q) ∧ (¬ (P ∧ Q)) := by
