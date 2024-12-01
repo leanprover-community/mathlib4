@@ -308,25 +308,14 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
   have ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
   apply @epi_of_epi_fac _ _ _ _ _ (x ≫ p.hom) f y ey
   dsimp at comm
-  rw [Category.assoc, comm]
-  apply Category.comp_id
-
-section
+  rw [Category.assoc, comm, Category.comp_id]
 
 /- should be refactored using `ShortComplex.Exact`
 
 /-- Two morphisms in an exact sequence are exact on pseudoelements. -/
-<<<<<<< HEAD
-theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact' f g) :
-    (∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b :=
-  ⟨fun a => by
-    rw [← comp_apply, h.w]
-    exact zero_apply _ _, fun b' =>
-=======
 theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
     ∀ b, S.g b = 0 → ∃ a, S.f a = b :=
   fun b' =>
->>>>>>> origin/ext-change-of-universes
     Quotient.inductionOn b' fun b hb => by
       have hb' : b.hom ≫ S.g = 0 := (pseudoZero_iff _).1 hb
       -- By exactness, `b` factors through `im f = ker g` via some `c`.
@@ -350,12 +339,6 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
         _ = pullback.snd _ _ ≫ b.hom := by
           rw [Category.assoc]
           congr
-<<<<<<< HEAD
-        ⟩
-#align category_theory.abelian.pseudoelement.pseudo_exact_of_exact CategoryTheory.Abelian.Pseudoelement.pseudo_exact_of_exact
--/
-=======
->>>>>>> origin/ext-change-of-universes
 
 end
 
@@ -367,16 +350,9 @@ section
 /- should be refactored using `ShortComplex.Exact`
 
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
-<<<<<<< HEAD
-theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
-    ((∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b) → Exact' f g :=
-  fun ⟨h₁, h₂⟩ => (Abelian.exact_iff _ _).2
-    ⟨zero_morphism_ext _ fun a => by rw [comp_apply, h₁ a], by
-=======
 theorem exact_of_pseudo_exact (S : ShortComplex C)
     (hS : ∀ b, S.g b = 0 → ∃ a, S.f a = b) : S.Exact :=
   (S.exact_iff_kernel_ι_comp_cokernel_π_zero).2 (by
->>>>>>> origin/ext-change-of-universes
       -- If we apply `g` to the pseudoelement induced by its kernel, we get 0 (of course!).
       have : S.g (kernel.ι S.g) = 0 := apply_eq_zero_of_comp_eq_zero _ _ (kernel.condition _)
       -- By pseudo-exactness, we get a preimage.
@@ -472,6 +448,7 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCa
 
 end Module
 
+-/
 end Pseudoelement
 
 end CategoryTheory.Abelian

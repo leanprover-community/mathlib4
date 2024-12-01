@@ -94,9 +94,10 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (quotient V c)).
 
 variable {V c}
 
-instance : (quotient V c).Full := Functor.fullOfSurjective _ (fun X Y f => by
-  obtain ⟨f⟩ := f
-  exact ⟨f, rfl⟩)
+instance : (quotient V c).Full where
+  map_surjective f := by
+    obtain ⟨f⟩ := f
+    exact ⟨f, rfl⟩
 
 instance : (quotient V c).EssSurj := by
   change (Quotient.functor _).EssSurj
@@ -187,48 +188,6 @@ variable (V c)
 
 section
 
-<<<<<<< HEAD
-variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
-
-/- redundant with the new homology API
-
-/-- The `i`-th homology, as a functor from the homotopy category. -/
-def homology'Functor (i : ι) : HomotopyCategory V c ⥤ V :=
-  CategoryTheory.Quotient.lift _ (_root_.homology'Functor V c i) fun _ _ _ _ ⟨h⟩ =>
-    homology'_map_eq_of_homotopy h i
-#align homotopy_category.homology_functor HomotopyCategory.homology'Functor
-
-/-- The homology functor on the homotopy category is just the usual homology functor. -/
-def homology'Factors (i : ι) :
-    quotient V c ⋙ homology'Functor V c i ≅ _root_.homology'Functor V c i :=
-  CategoryTheory.Quotient.lift.isLift _ _ _
-#align homotopy_category.homology_factors HomotopyCategory.homology'Factors
-
-@[simp]
-theorem homology'Factors_hom_app (i : ι) (C : HomologicalComplex V c) :
-    (homology'Factors V c i).hom.app C = 𝟙 _ :=
-  rfl
-#align homotopy_category.homology_factors_hom_app HomotopyCategory.homology'Factors_hom_app
-
-@[simp]
-theorem homology'Factors_inv_app (i : ι) (C : HomologicalComplex V c) :
-    (homology'Factors V c i).inv.app C = 𝟙 _ :=
-  rfl
-#align homotopy_category.homology_factors_inv_app HomotopyCategory.homology'Factors_inv_app
-
-theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f : C ⟶ D) :
-    (_root_.homology'Functor V c i).map f =
-      ((homology'Functor V c i).map ((quotient V c).map f) : _) :=
-  (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
-#align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
--/
-
-end
-
-section
-
-=======
->>>>>>> origin/ext-change-of-universes
 variable [CategoryWithHomology V]
 
 open Classical in
@@ -308,12 +267,11 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
     NatTrans.mapHomotopyCategory (α ≫ β) c =
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
 
-instance (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful] : (F.mapHomotopyCategory c).Full :=
-  Functor.fullOfSurjective _ (by
-    rintro ⟨K⟩ ⟨L⟩ --⟨f⟩
-    rintro ⟨f⟩
+instance (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful] : (F.mapHomotopyCategory c).Full where
+  map_surjective := by
+    rintro ⟨K⟩ ⟨L⟩ ⟨f⟩
     obtain ⟨g : K ⟶ L, rfl⟩ := (F.mapHomologicalComplex c).map_surjective f
-    exact ⟨(HomotopyCategory.quotient V c).map g, rfl⟩)
+    exact ⟨(HomotopyCategory.quotient V c).map g, rfl⟩
 
 def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W']
     {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
@@ -333,10 +291,10 @@ def Functor.preimageHomotopy {K L : HomologicalComplex V c} (f₁ f₂ : K ⟶ L
       { hom := fun i j => F.preimage (H.hom i j)
         zero := fun i j hij => F.map_injective (by
           dsimp
-          simp only [image_preimage, Functor.map_zero]
+          simp only [map_preimage, Functor.map_zero]
           rw [H.zero i j hij])
         comm := fun i => F.map_injective (by
-          refine' (H.comm i).trans _
+          refine (H.comm i).trans ?_
           rw [F.map_add, F.map_add]
           congr 2
           · dsimp [fromNext]
@@ -349,7 +307,8 @@ instance : (F.mapHomotopyCategory c).Faithful where
     rintro ⟨K⟩ ⟨L⟩ f₁ f₂ h
     obtain ⟨f₁, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₁
     obtain ⟨f₂, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₂
-    exact HomotopyCategory.eq_of_homotopy _ _ (F.preimageHomotopy _ _ (HomotopyCategory.homotopyOfEq _ _ h))
+    exact HomotopyCategory.eq_of_homotopy _ _
+      (F.preimageHomotopy _ _ (HomotopyCategory.homotopyOfEq _ _ h))
 
 end
 

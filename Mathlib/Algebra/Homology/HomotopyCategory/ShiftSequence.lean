@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
-<<<<<<< HEAD
-=======
 import Mathlib.CategoryTheory.Shift.Localization
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.QuasiIso
@@ -22,11 +19,7 @@ and `HomotopyCategory` namespaces.
 
 -/
 
-<<<<<<< HEAD
-open CategoryTheory Category
-=======
 open CategoryTheory Category ComplexShape Limits
->>>>>>> origin/ext-change-of-universes
 
 variable (C : Type*) [Category C] [Preadditive C]
 
@@ -43,19 +36,11 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
     (hi : n + i = i') (hj : n + j = j') (hk : n + k = k') :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙ shortComplexFunctor' C _ i j k ≅
       shortComplexFunctor' C _ i' j' k' :=
-<<<<<<< HEAD
-  NatIso.ofComponents (fun K => by
-    dsimp [shortComplexFunctor']
-    exact ShortComplex.isoMk
-      (n.negOnePow • ((shiftEval C n i i' hi).app K))
-      ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K)))
-=======
   NatIso.ofComponents (fun K => ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
       ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K))
       (by dsimp; simp) (by dsimp; simp))
       (fun f ↦ by ext <;> dsimp <;> simp)
->>>>>>> origin/ext-change-of-universes
 
 /-- The natural isomorphism `(K⟦n⟧).sc i ≅ K.sc i'` when `n + i = i'`. -/
 @[simps!]
@@ -99,21 +84,13 @@ noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
       (ShortComplex.homologyFunctor C) ≪≫
     (homologyFunctorIso C (ComplexShape.up ℤ) a').symm
 
-<<<<<<< HEAD
-lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ):
-=======
 lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
->>>>>>> origin/ext-change-of-universes
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   dsimp [shiftIso]
   erw [id_comp, id_comp, comp_id]
 
-<<<<<<< HEAD
-lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ):
-=======
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
->>>>>>> origin/ext-change-of-universes
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
   dsimp [shiftIso]
@@ -138,16 +115,6 @@ noncomputable instance :
       ← ShortComplex.homologyMap_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
       shiftShortComplexFunctorIso_add'_hom_app n m _ rfl a a' a'' ha' ha'' K]
 
-<<<<<<< HEAD
-instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] :
-    QuasiIso (φ⟦n⟧') where
-  quasiIsoAt a := by
-    rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine' (NatIso.isIso_map_iff
-      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n + a) rfl) φ).2 _
-    change IsIso (homologyMap φ _)
-    infer_instance
-=======
 lemma quasiIsoAt_shift_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n i j : ℤ) (h : n + i = j) :
     QuasiIsoAt (φ⟦n⟧') i ↔ QuasiIsoAt φ j := by
   simp only [quasiIsoAt_iff_isIso_homologyMap]
@@ -199,7 +166,6 @@ lemma liftCycles_shift_homologyπ
     ShortComplex.liftCycles_comp_cyclesMap_assoc, shiftShortComplexFunctorIso_inv_app_τ₂,
     assoc, Iso.hom_inv_id, comp_id]
   rfl
->>>>>>> origin/ext-change-of-universes
 
 end CochainComplex
 
@@ -212,11 +178,6 @@ noncomputable instance :
   Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
-<<<<<<< HEAD
-    ⟨⟨Quotient.full_whiskeringLeft_functor _ _⟩,
-      Quotient.faithful_whiskeringLeft_functor _ _⟩
-=======
->>>>>>> origin/ext-change-of-universes
 
 variable {C}
 
@@ -229,8 +190,6 @@ lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainCom
       (homologyFunctorFactors _ _ a').inv.app K := by
   apply Functor.ShiftSequence.induced_shiftIso_hom_app_obj
 
-<<<<<<< HEAD
-=======
 @[reassoc]
 lemma homologyFunctor_shiftMap
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧) (a a' : ℤ) (h : n + a = a') :
@@ -241,5 +200,4 @@ lemma homologyFunctor_shiftMap
             (homologyFunctorFactors _ _ a').inv.app L := by
   apply Functor.ShiftSequence.induced_shiftMap
 
->>>>>>> origin/ext-change-of-universes
 end HomotopyCategory

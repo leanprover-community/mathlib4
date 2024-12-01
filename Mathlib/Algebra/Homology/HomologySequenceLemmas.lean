@@ -1,52 +1,12 @@
-<<<<<<< HEAD
-=======
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
-<<<<<<< HEAD
-open CategoryTheory Category ComposableArrows Limits Abelian
-
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
-  {S₁ S₂ : ShortComplex (HomologicalComplex C c)} (φ : S₁ ⟶ S₂)
-  (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact)
-
-namespace HomologicalComplex
-
-section
-
-variable {K L : HomologicalComplex C c} (φ : K ⟶ L)
-
-attribute [local instance] epi_comp
-
-instance [Epi φ] (i : ι) : Epi (opcyclesMap φ i) :=
-  epi_of_epi_fac (p_opcyclesMap φ i)
-
-lemma epi_homologyMap_of_epi_of_not_rel [Epi φ] (i : ι) (hi : ∀ j, ¬ c.Rel i j) :
-    Epi (homologyMap φ i) := by
-  let e : ∀ (M : HomologicalComplex C c), M.homology i ≅ M.opcycles i := fun M =>
-    (M.isoHomologyι i _ rfl (shape _ _ _ (by tauto)))
-  exact ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
-    (Arrow.isoMk (e _) (e _))).2 (inferInstance : Epi (opcyclesMap φ i))
-
-lemma mono_homologyMap_of_mono_of_not_rel [Mono φ] (j : ι) (hj : ∀ i, ¬ c.Rel i j) :
-    Mono (homologyMap φ j) := by
-  let e : ∀ (M : HomologicalComplex C c), M.cycles j ≅ M.homology j := fun M =>
-    (M.isoHomologyπ _ j rfl (shape _ _ _ (by tauto)))
-  exact ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff
-    (Arrow.isoMk (e _) (e _))).1 (inferInstance : Mono (cyclesMap φ j))
-
-end
-
-namespace HomologySequence
-
-=======
 /-!
 # Consequences of the homology sequence
 
@@ -79,7 +39,6 @@ namespace HomologySequence
 /-- The morphism `snakeInput hS₁ i j hij ⟶ snakeInput hS₂ i j hij` induced by
 a morphism `φ : S₁ ⟶ S₂` of short complexes of homological complexes, that
 are short exact (`hS₁ : S₁.ShortExact` and `hS₂ : S₁.ShortExact`). -/
->>>>>>> origin/ext-change-of-universes
 @[simps]
 noncomputable def mapSnakeInput (i j : ι) (hij : c.Rel i j) :
     snakeInput hS₁ i j hij ⟶ snakeInput hS₂ i j hij where
@@ -88,26 +47,12 @@ noncomputable def mapSnakeInput (i j : ι) (hij : c.Rel i j) :
   f₂ := (cyclesFunctor C c j).mapShortComplex.map φ
   f₃ := (homologyFunctor C c j).mapShortComplex.map φ
 
-<<<<<<< HEAD
-=======
 @[reassoc]
->>>>>>> origin/ext-change-of-universes
 lemma δ_naturality (i j : ι) (hij : c.Rel i j) :
     hS₁.δ i j hij ≫ HomologicalComplex.homologyMap φ.τ₁ _ =
       HomologicalComplex.homologyMap φ.τ₃ _ ≫ hS₂.δ i j hij :=
   ShortComplex.SnakeInput.naturality_δ (mapSnakeInput φ hS₁ hS₂ i j hij)
 
-<<<<<<< HEAD
-variable (S₁) in
-@[simp]
-noncomputable def composableArrows₂ (i : ι) : ComposableArrows C 2 :=
-  mk₂ (homologyMap S₁.f i) (homologyMap S₁.g i)
-
-lemma composableArrows₂_exact (i : ι) :
-    (composableArrows₂ S₁ i).Exact :=
-  (hS₁.homology_exact₂ i).exact_toComposableArrows
-
-=======
 variable (S)
 
 /-- The (exact) sequence `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i` -/
@@ -122,41 +67,25 @@ lemma composableArrows₂_exact (hS₁ : S₁.ShortExact) (i : ι) :
 /-- The (exact) sequence
 `H_i(S.X₁) ⟶ H_i(S.X₂) ⟶ H_i(S.X₃) ⟶ H_j(S.X₁) ⟶ H_j(S.X₂) ⟶ H_j(S.X₃)` when `c.Rel i j`
 and `S` is a short exact short complex of homological complexes in an abelian category. -/
->>>>>>> origin/ext-change-of-universes
 @[simp]
 noncomputable def composableArrows₅ (i j : ι) (hij : c.Rel i j) : ComposableArrows C 5 :=
   mk₅ (homologyMap S₁.f i) (homologyMap S₁.g i) (hS₁.δ i j hij)
     (homologyMap S₁.f j) (homologyMap S₁.g j)
 
-<<<<<<< HEAD
-lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j):
-=======
 lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
->>>>>>> origin/ext-change-of-universes
     (composableArrows₅ hS₁ i j hij).Exact :=
   exact_of_δ₀ (hS₁.homology_exact₂ i).exact_toComposableArrows
     (exact_of_δ₀ (hS₁.homology_exact₃ i j hij).exact_toComposableArrows
       (exact_of_δ₀ (hS₁.homology_exact₁ i j hij).exact_toComposableArrows
         (hS₁.homology_exact₂ j).exact_toComposableArrows))
 
-<<<<<<< HEAD
-=======
 /-- The map between the exact sequences `S₁.X₁.homology i ⟶ S₁.X₂.homology i ⟶ S₁.X₃.homology i`
 and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` that is induced by `φ : S₁ ⟶ S₂`. -/
->>>>>>> origin/ext-change-of-universes
 @[simp]
 noncomputable def mapComposableArrows₂ (i : ι) : composableArrows₂ S₁ i ⟶ composableArrows₂ S₂ i :=
   homMk₂ (homologyMap φ.τ₁ i) (homologyMap φ.τ₂ i) (homologyMap φ.τ₃ i) (by
     dsimp
     simp only [← homologyMap_comp, φ.comm₁₂]) (by
-<<<<<<< HEAD
-    dsimp
-    simp only [← homologyMap_comp, φ.comm₂₃])
-
-@[simp]
-noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
-    composableArrows₅ hS₁ i j hij ⟶ composableArrows₅ hS₂ i j hij:=
-=======
     dsimp [Precomp.map]
     simp only [← homologyMap_comp, φ.comm₂₃])
 
@@ -166,7 +95,6 @@ homological complexes. -/
 @[simp]
 noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
     composableArrows₅ hS₁ i j hij ⟶ composableArrows₅ hS₂ i j hij :=
->>>>>>> origin/ext-change-of-universes
   homMk₅ (homologyMap φ.τ₁ i) (homologyMap φ.τ₂ i) (homologyMap φ.τ₃ i)
     (homologyMap φ.τ₁ j) (homologyMap φ.τ₂ j) (homologyMap φ.τ₃ j)
     (naturality' (mapComposableArrows₂ φ i) 0 1)
@@ -175,11 +103,7 @@ noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
     (naturality' (mapComposableArrows₂ φ j) 0 1)
     (naturality' (mapComposableArrows₂ φ j) 1 2)
 
-<<<<<<< HEAD
-attribute [local instance] epi_comp
-=======
 include hS₁ hS₂
->>>>>>> origin/ext-change-of-universes
 
 lemma mono_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))
@@ -188,12 +112,8 @@ lemma mono_homologyMap_τ₃ (i : ι)
     Mono (homologyMap φ.τ₃ i) := by
   by_cases hi : ∃ j, c.Rel i j
   · obtain ⟨j, hij⟩ := hi
-<<<<<<< HEAD
-    apply mono_of_epi_of_mono_of_mono ((δlastFunctor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
-=======
     apply mono_of_epi_of_mono_of_mono
       ((δlastFunctor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
->>>>>>> origin/ext-change-of-universes
     · exact (composableArrows₅_exact hS₁ i j hij).δlast.δlast
     · exact (composableArrows₅_exact hS₂ i j hij).δlast.δlast
     · exact h₁
@@ -212,12 +132,8 @@ lemma epi_homologyMap_τ₃ (i : ι)
     Epi (homologyMap φ.τ₃ i) := by
   by_cases hi : ∃ j, c.Rel i j
   · obtain ⟨j, hij⟩ := hi
-<<<<<<< HEAD
-    apply epi_of_epi_of_epi_of_mono ((δ₀Functor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
-=======
     apply epi_of_epi_of_epi_of_mono
       ((δ₀Functor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
->>>>>>> origin/ext-change-of-universes
     · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δlast
     · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δlast
     · exact h₁
@@ -236,11 +152,7 @@ lemma isIso_homologyMap_τ₃ (i : ι)
     (h₃ : ∀ j, c.Rel i j → IsIso (homologyMap φ.τ₁ j))
     (h₄ : ∀ j, c.Rel i j → Mono (homologyMap φ.τ₂ j)) :
     IsIso (homologyMap φ.τ₃ i) := by
-<<<<<<< HEAD
-  have := mono_homologyMap_τ₃ φ hS₁ hS₂ i h₁ inferInstance (fun j hij => by
-=======
   have := mono_homologyMap_τ₃ φ hS₁ hS₂ i h₁ (IsIso.mono_of_iso _) (fun j hij => by
->>>>>>> origin/ext-change-of-universes
     have := h₃ j hij
     infer_instance)
   have := epi_homologyMap_τ₃ φ hS₁ hS₂ i inferInstance (fun j hij => by
@@ -256,7 +168,6 @@ lemma quasiIso_τ₃ (h₁ : QuasiIso φ.τ₁) (h₂ : QuasiIso φ.τ₂) :
   apply isIso_homologyMap_τ₃ φ hS₁ hS₂
   all_goals infer_instance
 
-<<<<<<< HEAD
 lemma epi_homologyMap_τ₁ (j : ι)
     (h₁ : Epi (homologyMap φ.τ₂ j))
     (h₂ : Mono (homologyMap φ.τ₃ j))
@@ -264,7 +175,8 @@ lemma epi_homologyMap_τ₁ (j : ι)
     Epi (homologyMap φ.τ₁ j) := by
   by_cases hj : ∃ i, c.Rel i j
   · obtain ⟨i, hij⟩ := hj
-    apply epi_of_epi_of_epi_of_mono ((δ₀Functor ⋙ δ₀Functor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    apply epi_of_epi_of_epi_of_mono
+      ((δ₀Functor ⋙ δ₀Functor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
     · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δ₀
     · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δ₀
     · exact h₃ i hij
@@ -283,7 +195,8 @@ lemma mono_homologyMap_τ₁ (j : ι)
     Mono (homologyMap φ.τ₁ j) := by
   by_cases hj : ∃ i, c.Rel i j
   · obtain ⟨i, hij⟩ := hj
-    apply mono_of_epi_of_mono_of_mono ((δ₀Functor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    apply mono_of_epi_of_mono_of_mono
+        ((δ₀Functor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
     · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δlast
     · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δlast
     · exact h₃ i hij
@@ -331,7 +244,8 @@ lemma mono_homologyMap_τ₂ (j : ι)
     Mono (homologyMap φ.τ₂ j) := by
   by_cases hj : ∃ i, c.Rel i j
   · obtain ⟨i, hij⟩ := hj
-    apply mono_of_epi_of_mono_of_mono ((δ₀Functor ⋙ δ₀Functor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    apply mono_of_epi_of_mono_of_mono
+        ((δ₀Functor ⋙ δ₀Functor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
     · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δ₀
     · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δ₀
     · exact h₃ i hij
@@ -349,14 +263,15 @@ lemma epi_homologyMap_τ₂ (i : ι)
     Epi (homologyMap φ.τ₂ i) := by
   by_cases hi : ∃ j, c.Rel i j
   · obtain ⟨j, hij⟩ := hi
-    apply epi_of_epi_of_epi_of_mono ((δlastFunctor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    apply epi_of_epi_of_epi_of_mono
+        ((δlastFunctor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
     · exact (composableArrows₅_exact hS₁ i j hij).δlast.δlast
     · exact (composableArrows₅_exact hS₂ i j hij).δlast.δlast
     · exact h₁
     · exact h₂
     · exact h₃ j hij
   · have := hS₁.epi_g
-    refine' epi_of_epi_of_epi_of_epi (mapComposableArrows₂ φ i)
+    exact epi_of_epi_of_epi_of_epi (mapComposableArrows₂ φ i)
       (composableArrows₂_exact hS₂ i)
       (epi_homologyMap_of_epi_of_not_rel S₁.g i (by simpa using hi)) h₁ h₂
 
@@ -378,8 +293,6 @@ lemma quasiIso_τ₂ (h₁ : QuasiIso φ.τ₁) (h₃ : QuasiIso φ.τ₃) :
   apply isIso_homologyMap_τ₂ φ hS₁ hS₂
   all_goals infer_instance
 
-=======
->>>>>>> origin/ext-change-of-universes
 end HomologySequence
 
 end HomologicalComplex

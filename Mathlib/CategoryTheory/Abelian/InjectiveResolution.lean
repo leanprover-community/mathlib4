@@ -5,14 +5,8 @@ Authors: Jujian Zhang, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-
-#align_import category_theory.abelian.injective_resolution from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-=======
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.AdaptationNote
->>>>>>> origin/ext-change-of-universes
 
 /-!
 # Abelian categories with enough injectives have injective resolutions
@@ -207,9 +201,6 @@ section
 
 variable [Abelian C]
 
-abbrev injectiveResolution' (Z : C) [HasInjectiveResolution Z] : InjectiveResolution Z :=
-  (HasInjectiveResolution.out (Z := Z)).some
-
 /-- An arbitrarily chosen injective resolution of an object. -/
 abbrev injectiveResolution (Z : C) [HasInjectiveResolution Z] : InjectiveResolution Z :=
   (HasInjectiveResolution.out (Z := Z)).some
@@ -232,11 +223,7 @@ def injectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.up ℕ) where
     rw [← (HomotopyCategory.quotient _ _).map_comp]
     apply HomotopyCategory.eq_of_homotopy
     apply InjectiveResolution.descCompHomotopy
-<<<<<<< HEAD
-#align category_theory.injective_resolutions CategoryTheory.injectiveResolutions
 
-=======
->>>>>>> origin/ext-change-of-universes
 variable {C}
 
 /-- If `I : InjectiveResolution X`, then the chosen `(injectiveResolutions C).obj X`

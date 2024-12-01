@@ -110,14 +110,10 @@ instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
-<<<<<<< HEAD
 instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Linear R where
 
 variable {C}
-=======
-end
->>>>>>> origin/ext-change-of-universes
 
 end
 
@@ -129,6 +125,7 @@ lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
 lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p + n) := rfl
 
+/-- Variant of `shiftFunctor_map_f'`. -/
 lemma shiftFunctor_map_f'' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p q : ℤ) (hpq : q = p + n) :
   ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p =
     (shiftFunctorObjXIso K n p q hpq).hom ≫ φ.f q ≫ (shiftFunctorObjXIso L n p q hpq).inv := by
@@ -140,7 +137,9 @@ lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
       n.negOnePow • K.d _ _ := rfl
 
-lemma shiftFunctor_obj_d'' (K : CochainComplex C ℤ) (n i j i' j' : ℤ) (hi' : i' = i + n) (hj' : j' = j + n) :
+/-- Variant of `shiftFunctor_obj_d'`. -/
+lemma shiftFunctor_obj_d'' (K : CochainComplex C ℤ)
+    (n i j i' j' : ℤ) (hi' : i' = i + n) (hj' : j' = j + n) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
       n.negOnePow • (shiftFunctorObjXIso K n i i' hi').hom ≫ K.d i' j' ≫
           (shiftFunctorObjXIso K n j j' hj').inv := by
@@ -281,7 +280,8 @@ variable {C}
 lemma singleShiftIso_hom_app_f [HasZeroObject C] (n a a' : ℤ) (ha' : n + a = a') (X : C) :
   ((singleShiftIso C n a a' ha').hom.app X).f a =
     (shiftFunctorObjXIso ((single C (ComplexShape.up ℤ) a').obj X) n a a' (by linarith)).hom ≫
-      (singleObjXSelf C (ComplexShape.up ℤ) a' X).hom ≫ (singleObjXSelf C (ComplexShape.up ℤ) a X).inv := by
+      (singleObjXSelf C (ComplexShape.up ℤ) a' X).hom ≫
+        (singleObjXSelf C (ComplexShape.up ℤ) a X).inv := by
   dsimp [singleShiftIso]
   rw [singleShiftIso_hom_app_self]
   rfl
@@ -349,19 +349,7 @@ def shiftEval (n i i' : ℤ) (hi : n + i = i') :
       HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
   NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
 
-variable (C)
-
 attribute [local simp] XIsoOfEq_hom_naturality
-
-/-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
-to the evaluation in degree `i'` when `n + i = i'`. -/
-@[simps!]
-def shiftEval (n i i' : ℤ) (hi : n + i = i') :
-    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙
-      HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
-      HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
-  NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
-    (by intros; dsimp; simp)
 
 end CochainComplex
 
@@ -465,7 +453,6 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
     exact Functor.additive_of_iso e
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
 
-<<<<<<< HEAD
 instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where
   map_smul := by
@@ -481,12 +468,6 @@ section
 
 variable {C}
 variable {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
-=======
-section
-
-variable {C}
-variable (F : C ⥤ D) [F.Additive]
->>>>>>> origin/ext-change-of-universes
 
 noncomputable instance : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ :=
   Quotient.liftCommShift _ _ _ _

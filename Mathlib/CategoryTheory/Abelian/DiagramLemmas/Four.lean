@@ -147,37 +147,23 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : 
 
 end Five
 
-<<<<<<< HEAD
-=======
 /-! The following "three lemmas" for morphisms in `ComposableArrows C 2` are
 special cases of "four lemmas" applied to diagrams where some of the
 leftmost or rightmost maps (or objects) are zero. -/
 
->>>>>>> origin/ext-change-of-universes
 section Three
 
 variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
 
-<<<<<<< HEAD
-theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0)
-    (hR₁' : Epi (R₁.map' 1 2))
-    (hR₂ : R₂.Exact)
-    (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
-=======
 attribute [local simp] Precomp.map
 
 theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
     (hR₂ : R₂.Exact) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
->>>>>>> origin/ext-change-of-universes
     Mono (app' φ 2) := by
   let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
     mk₃ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ R₁.obj' 0) := homMk₃ (app' φ 0) (app' φ 1)
       (app' φ 2) (𝟙 _) (naturality' φ 0 1) (naturality' φ 1 2) (by simp)
-<<<<<<< HEAD
-  refine' mono_of_epi_of_mono_of_mono' ψ _ (exact₂_mk _ (by simp) _)
-=======
   refine mono_of_epi_of_mono_of_mono' ψ ?_ (exact₂_mk _ (by simp) ?_)
->>>>>>> origin/ext-change-of-universes
     (hR₂.exact 0).exact_toComposableArrows h₀ h₁ (by dsimp [ψ]; infer_instance)
   · dsimp
     rw [← Functor.map_comp]
@@ -197,13 +183,8 @@ theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 
   let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
     mk₃ (0 : R₁.obj' 0 ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) := homMk₃ (𝟙 _) (app' φ 0) (app' φ 1)
       (app' φ 2) (by simp) (naturality' φ 0 1) (naturality' φ 1 2)
-<<<<<<< HEAD
-  refine' epi_of_epi_of_epi_of_mono' ψ (hR₁.exact 0).exact_toComposableArrows
-    (exact₂_mk _ (by simp) _) _ (by dsimp [ψ]; infer_instance) h₀ h₁
-=======
   refine epi_of_epi_of_epi_of_mono' ψ (hR₁.exact 0).exact_toComposableArrows
     (exact₂_mk _ (by simp) ?_) ?_ (by dsimp [ψ]; infer_instance) h₀ h₁
->>>>>>> origin/ext-change-of-universes
   · rw [ShortComplex.exact_iff_mono _ (by simp)]
     exact hR₂'
   · dsimp
@@ -224,17 +205,6 @@ theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
   let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
     mk₃ (0 : R₁.obj' 0 ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) := homMk₃ (𝟙 _) (app' φ 0) (app' φ 1)
       (app' φ 2) (by simp) (naturality' φ 0 1) (naturality' φ 1 2)
-<<<<<<< HEAD
-  refine' mono_of_epi_of_mono_of_mono' ψ (by simp) (hR₁.exact 0).exact_toComposableArrows
-    (exact₂_mk _ (by simp) _) (by dsimp [ψ]; infer_instance) h₀ h₁
-  rw [ShortComplex.exact_iff_mono _ (by simp)]
-  exact hR₂'
-
-theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact)
-    (hR₁' : Epi (R₁.map' 1 2))
-    (h₀ : Epi (app' φ 0))
-    (h₁ : Epi (app' φ 2)) :
-=======
   refine mono_of_epi_of_mono_of_mono' ψ (by simp)
     (hR₁.exact 0).exact_toComposableArrows
     (exact₂_mk _ (by simp) ?_) (by dsimp [ψ]; infer_instance) h₀ h₁
@@ -243,16 +213,11 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact)
 
 theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
     (h₀ : Epi (app' φ 0)) (h₁ : Epi (app' φ 2)) :
->>>>>>> origin/ext-change-of-universes
     Epi (app' φ 1) := by
   let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
     mk₃ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ R₁.obj' 0) := homMk₃ (app' φ 0) (app' φ 1)
       (app' φ 2) (𝟙 _) (naturality' φ 0 1) (naturality' φ 1 2) (by simp)
-<<<<<<< HEAD
-  refine' epi_of_epi_of_epi_of_mono' ψ (exact₂_mk _ (by simp) _)
-=======
   refine epi_of_epi_of_epi_of_mono' ψ (exact₂_mk _ (by simp) ?_)
->>>>>>> origin/ext-change-of-universes
     (hR₂.exact 0).exact_toComposableArrows (by simp)
     h₀ h₁ (by dsimp [ψ]; infer_instance)
   rw [ShortComplex.exact_iff_epi _ (by simp)]

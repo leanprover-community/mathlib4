@@ -29,11 +29,11 @@ opposite, chain complex, cochain complex, homology, cohomology, homological comp
 
 noncomputable section
 
-open Opposite CategoryTheory Limits
+open Opposite CategoryTheory CategoryTheory.Limits
 
 section
 
-/-variable {V : Type*} [Category V] [Abelian V]
+variable {V : Type*} [Category V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
@@ -58,33 +58,6 @@ theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f 
   simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, kernelUnopUnop_inv, Category.assoc,
     imageToKernel_arrow, kernelSubobject_arrow', kernel.lift_ι, cokernel.π_desc, Iso.unop_inv,
     ← unop_comp, factorThruImage_comp_imageUnopOp_inv, Quiver.Hom.unop_op, imageSubobject_arrow]
-<<<<<<< HEAD
-#align image_to_kernel_unop imageToKernel_unop-/
-
-/- redundant with the new homology API
-
-/-- Given `f, g` with `f ≫ g = 0`, the homology of `g.op, f.op` is the opposite of the homology of
-`f, g`. -/
-def homology'Op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
-    homology' g.op f.op (by rw [← op_comp, w, op_zero]) ≅ Opposite.op (homology' f g w) :=
-  cokernelIsoOfEq (imageToKernel_op _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
-    cokernelOpOp _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
-    kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
-    kernelCompMono _ (image.ι g)).op
-#align homology_op homology'Op
-
-/-- Given morphisms `f, g` in `Vᵒᵖ` with `f ≫ g = 0`, the homology of `g.unop, f.unop` is the
-opposite of the homology of `f, g`. -/
-def homology'Unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
-    homology' g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅
-      Opposite.unop (homology' f g w) :=
-  cokernelIsoOfEq (imageToKernel_unop _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
-    cokernelUnopUnop _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
-    kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
-    kernelCompMono _ (image.ι g)).unop
-#align homology_unop homology'Unop-/
-=======
->>>>>>> origin/ext-change-of-universes
 
 end
 
@@ -231,12 +204,6 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
     simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
       opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
-<<<<<<< HEAD
-#align homological_complex.unop_equivalence HomologicalComplex.unopEquivalence
-
-variable {V c}
-=======
->>>>>>> origin/ext-change-of-universes
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
@@ -246,19 +213,17 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
 
-<<<<<<< HEAD
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
-    ((opFunctor V c).obj (op K)).HasHomology i := by
-  dsimp [opFunctor]
+    ((opFunctor _ _).obj (op K)).HasHomology i := by
+  dsimp
   infer_instance
 
 instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
-    ((unopFunctor V c).obj (op K)).HasHomology i := by
-  dsimp [unopFunctor]
+    ((unopFunctor _ _).obj (op K)).HasHomology i := by
+  dsimp
   infer_instance
-=======
+
 variable {V c}
->>>>>>> origin/ext-change-of-universes
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
@@ -272,26 +237,103 @@ def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
 
+section
+
+variable (K : HomologicalComplex V c) (i : ι) [K.HasHomology i]
+
+/-- The canonical isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
+def cyclesOpIso : K.op.cycles i ≅ op (K.opcycles i) :=
+  (K.sc i).cyclesOpIso
+
+/-- The canonical isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
+def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
+  (K.sc i).opcyclesOpIso
+
+variable (j : ι)
+
+@[reassoc (attr := simp)]
+lemma opcyclesOpIso_hom_toCycles_op :
+    (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
+  by_cases hij : c.Rel j i
+  · obtain rfl := c.prev_eq' hij
+    exact (K.sc i).opcyclesOpIso_hom_toCycles_op
+  · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_op_cyclesOpIso_inv :
+    (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
+  by_cases hij : c.Rel i j
+  · obtain rfl := c.next_eq' hij
+    exact (K.sc i).fromOpcycles_op_cyclesOpIso_inv
+  · rw [K.op.toCycles_eq_zero hij, K.fromOpcycles_eq_zero hij, op_zero, zero_comp]
+
 end
 
 section
-<<<<<<< HEAD
 
-variable [Preadditive V]
+variable {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+  [K.HasHomology i] [L.HasHomology i]
 
-instance opFunctor_additive : (opFunctor V c).Additive where
-#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
+@[reassoc]
+lemma homologyOp_hom_naturality :
+    homologyMap ((opFunctor _ _).map φ.op) _ ≫ (K.homologyOp i).hom =
+      (L.homologyOp i).hom ≫ (homologyMap φ i).op :=
+  ShortComplex.homologyOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
-instance unopFunctor_additive : (unopFunctor V c).Additive where
-#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
+@[reassoc]
+lemma opcyclesOpIso_hom_naturality :
+    opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom =
+      (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
+  ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma opcyclesOpIso_inv_naturality :
+    (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
+      (L.opcyclesOpIso i).inv ≫ opcyclesMap ((opFunctor _ _).map φ.op) _ :=
+  ShortComplex.opcyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma cyclesOpIso_hom_naturality :
+    cyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.cyclesOpIso i).hom =
+      (L.cyclesOpIso i).hom ≫ (opcyclesMap φ i).op :=
+  ShortComplex.cyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma cyclesOpIso_inv_naturality :
+    (opcyclesMap φ i).op ≫ (K.cyclesOpIso i).inv =
+      (L.cyclesOpIso i).inv ≫ cyclesMap ((opFunctor _ _).map φ.op) _ :=
+  ShortComplex.cyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
 
 end
 
-/- redundant with the new homology API
+section
 
-variable [Abelian V] (C : HomologicalComplex V c) (i : ι)
-=======
->>>>>>> origin/ext-change-of-universes
+variable (V c) [CategoryWithHomology V] (i : ι)
+
+/-- The natural isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
+@[simps!]
+def cyclesOpNatIso :
+    opFunctor V c ⋙ cyclesFunctor Vᵒᵖ c.symm i ≅ (opcyclesFunctor V c i).op :=
+  NatIso.ofComponents (fun K ↦ (unop K).cyclesOpIso i)
+    (fun _ ↦ cyclesOpIso_hom_naturality _ _)
+
+/-- The natural isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
+def opcyclesOpNatIso :
+    opFunctor V c ⋙ opcyclesFunctor Vᵒᵖ c.symm i ≅ (cyclesFunctor V c i).op :=
+  NatIso.ofComponents (fun K ↦ (unop K).opcyclesOpIso i)
+    (fun _ ↦ opcyclesOpIso_hom_naturality _ _)
+
+/-- The natural isomorphism `K.op.homology i ≅ op (K.homology i)`. -/
+def homologyOpNatIso :
+    opFunctor V c ⋙ homologyFunctor Vᵒᵖ c.symm i ≅ (homologyFunctor V c i).op :=
+  NatIso.ofComponents (fun K ↦ (unop K).homologyOp i)
+    (fun _ ↦ homologyOp_hom_naturality _ _)
+
+end
+
+end
+
+section
 
 variable [Preadditive V]
 
@@ -299,15 +341,6 @@ instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 
-<<<<<<< HEAD
-/-- Given a complex `C` of objects in `Vᵒᵖ`, the `i`th homology of its 'opposite' complex (with
-objects in `V`) is the opposite of the `i`th homology of `C`. -/
-nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
-    C.unop.homology' i ≅ Opposite.unop (C.homology' i) :=
-  homology'UnopDef _ _ ≪≫ homology'Unop _ _ _
-#align homological_complex.homology_unop HomologicalComplex.homology'Unop-/
-=======
 end
->>>>>>> origin/ext-change-of-universes
 
 end HomologicalComplex

@@ -4,14 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.GroupPower.NegOnePow
-import Mathlib.Algebra.Category.GroupCat.Preadditive
-=======
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Category.Grp.Preadditive
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 import Mathlib.CategoryTheory.Linear.LinearFunctor
@@ -320,7 +315,7 @@ lemma comp_assoc_of_third_degree_eq_neg_second_degree {n₁ n₂ n₁₂ : ℤ}
     (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (z₃ : Cochain K L (-n₂)) (h₁₂ : n₁ + n₂ = n₁₂) :
     (z₁.comp z₂ h₁₂).comp z₃
       (show n₁₂ + (-n₂) = n₁ by rw [← h₁₂, add_neg_cancel_right]) =
-      z₁.comp (z₂.comp z₃ (add_neg_self n₂)) (add_zero n₁) :=
+      z₁.comp (z₂.comp z₃ (add_neg_cancel n₂)) (add_zero n₁) :=
   comp_assoc _ _ _ _ _ (by linarith)
 
 @[simp]
@@ -925,6 +920,7 @@ lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ)
   intro h
   exact hp' (by linarith)
 
+/-- Vanishing for `single`. -/
 lemma single_v_eq_zero' {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
     (hq' : q' ≠ q) :
     (single f n).v p' q' hpq' = 0 := by

@@ -306,11 +306,6 @@ def ofComplexSc'Iso (n : ℕ) : (ofComplex Z).sc' (n + 2) (n + 1) n ≅
 
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
-<<<<<<< HEAD
-  rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n (by simp only [ChainComplex.prev]; rfl)
-    (by simp), ShortComplex.exact_iff_of_iso (ofComplexSc'Iso Z n)]
-  apply exact_d_f
-=======
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
   dsimp [ofComplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
       ChainComplex.mk', ChainComplex.mk]
@@ -319,7 +314,6 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
   match n with
   | 0 => apply exact_d_f
   | n + 1 => apply exact_d_f
->>>>>>> origin/ext-change-of-universes
 
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over

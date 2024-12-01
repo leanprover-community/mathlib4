@@ -20,9 +20,9 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 
 open CategoryTheory Limits
 
-<<<<<<< HEAD
 variable {C D : Type*} [Category C] [Preadditive C] [Category D] [Preadditive D]
 
+omit [Preadditive C] in
 @[simp]
 lemma CategoryTheory.Limits.biprod.is_zero_iff
     [HasZeroMorphisms C] (A B : C)
@@ -40,9 +40,6 @@ lemma CategoryTheory.Limits.biprod.is_zero_iff
     apply biprod.hom_ext
     · apply hA.eq_of_tgt
     · apply hB.eq_of_tgt
-=======
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
->>>>>>> origin/ext-change-of-universes
 
 namespace CochainComplex
 
@@ -576,7 +573,6 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_cancel 1) 0
     (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
 
-<<<<<<< HEAD
 lemma to_break {X : C} {n : ℤ} (x : X ⟶ (mappingCone φ).X n) (p : ℤ) (hp : n + 1 = p) :
     ∃ (x₁ : X ⟶ F.X p) (x₂ : X ⟶ G.X n), x = x₁ ≫ (mappingCone.inl φ).v p n (by omega) +
       x₂ ≫ (mappingCone.inr φ).f n :=
@@ -587,8 +583,6 @@ lemma to_break {X : C} {n : ℤ} (x : X ⟶ (mappingCone φ).X n) (p : ℤ) (hp 
 noncomputable def inrCompHomotopy :
     Homotopy (φ ≫ inr φ) 0 :=
   homotopyCofiber.inrCompHomotopy φ (fun n => ⟨n - 1, by simp⟩)
-=======
->>>>>>> origin/ext-change-of-universes
 
 section
 
@@ -597,33 +591,6 @@ open Preadditive Category
 variable (H : C ⥤ D) [H.Additive]
   [HasHomotopyCofiber ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)]
 
-<<<<<<< HEAD
-@[simps]
-noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
-  ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
-    (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n where
-  hom := H.map ((fst φ).1.v n m (by linarith)) ≫
-      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by linarith) +
-      H.map ((snd φ).v n n (add_zero n)) ≫
-        (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
-  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by linarith) ≫ H.map ((inl φ).v m n (by linarith)) +
-      (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫ H.map ((inr φ).f n)
-  hom_inv_id := by
-    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
-      zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
-    rw [← H.map_id]
-    congr 1
-    rw [ext_from_iff  _ _ _ hnm]
-    simp
-  inv_hom_id := by
-    simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc, ← H.map_comp_assoc, inl_v_fst_v,
-      CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v, inl_v_snd_v, inr_f_snd_v]
-    rw [H.map_zero, H.map_zero, zero_comp, zero_comp, comp_zero, comp_zero, add_zero, zero_add,
-      ext_from_iff _ _ _ hnm]
-    simp
-
-noncomputable def mapHomologicalComplexXIso (n : ℤ) := mapHomologicalComplexXIso' φ H n (n+1) rfl
-=======
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism (in each degree `n`) between the image
 by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`.
@@ -654,7 +621,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
       ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,
       inl_v_snd_v, inr_f_snd_v]
-    simp [ext_from_iff _ _ _ hnm]
+    simp [ext_from_iff _ _ _ hnm, H.map_zero]
 
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism (in each degree) between the image
@@ -663,24 +630,12 @@ noncomputable def mapHomologicalComplexXIso (n : ℤ) :
     ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
       (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n :=
   mapHomologicalComplexXIso' φ H n (n + 1) rfl
->>>>>>> origin/ext-change-of-universes
 
 lemma mapHomologicalComplexXIso_eq (n m : ℤ) (hnm : n + 1 = m) :
     mapHomologicalComplexXIso φ H n = mapHomologicalComplexXIso' φ H n m hnm := by
   subst hnm
   rfl
 
-<<<<<<< HEAD
-noncomputable def mapHomologicalComplexIso :
-  (H.mapHomologicalComplex _).obj (mappingCone φ) ≅
-    mappingCone ((H.mapHomologicalComplex _).map φ) :=
-  HomologicalComplex.Hom.isoOfComponents (mapHomologicalComplexXIso φ H) (by
-    rintro n _ rfl
-    rw [ext_to_iff _ _ (n+2) (by linarith), assoc, assoc, d_fst_v _ _ _ _ rfl,
-      assoc, assoc, d_snd_v _ _ _ rfl]
-    simp only [mapHomologicalComplexXIso_eq φ H n (n+1) rfl,
-      mapHomologicalComplexXIso_eq φ H (n+1) (n+2) (by linarith),
-=======
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism between the image by `H`
 of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
@@ -693,20 +648,10 @@ noncomputable def mapHomologicalComplexIso :
       assoc, assoc, d_snd_v _ _ _ rfl]
     simp only [mapHomologicalComplexXIso_eq φ H n (n + 1) rfl,
       mapHomologicalComplexXIso_eq φ H (n + 1) (n + 2) (by omega),
->>>>>>> origin/ext-change-of-universes
       mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
     constructor
     · dsimp
       simp only [Functor.mapHomologicalComplex_obj_X, Functor.mapHomologicalComplex_obj_d,
-<<<<<<< HEAD
-        comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero,
-        comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
-        d_fst_v φ n (n+1) (n+2) rfl (by linarith), Functor.map_neg]
-    · dsimp
-      simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
-        Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc, inr_f_snd_v_assoc,
-        zero_add, inl_v_snd_v, inr_f_snd_v, comp_id, ← H.map_comp, d_snd_v φ n (n+1) rfl, Functor.map_add])
-=======
         comp_neg, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc, zero_comp,
         comp_zero, add_zero, comp_add, inl_v_fst_v, comp_id, inr_f_fst_v, ← H.map_comp,
         d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
@@ -726,7 +671,6 @@ lemma map_inr :
     Functor.mapHomologicalComplex_obj_X, mapHomologicalComplexXIso'_hom, comp_add,
     add_comp, assoc, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero, add_zero, inl_v_snd_v,
     inr_f_snd_v, zero_add, ← H.map_comp, H.map_zero, H.map_id, and_self]
->>>>>>> origin/ext-change-of-universes
 
 end
 

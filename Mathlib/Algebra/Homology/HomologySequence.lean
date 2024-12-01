@@ -219,8 +219,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
 
-variable  {S : ShortComplex (HomologicalComplex C c)}
-  (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
+variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
@@ -230,12 +229,8 @@ obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c 
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
 @[simps]
-<<<<<<< HEAD
-noncomputable def snakeInput : ShortComplex.SnakeInput C where
-=======
 noncomputable def snakeInput (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
     ShortComplex.SnakeInput C where
->>>>>>> origin/ext-change-of-universes
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
   L₂ := (cyclesFunctor C c j).mapShortComplex.obj S

@@ -84,16 +84,6 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     subst hpq
     have s_g := (σ (p + 1)).s_g
     have f_r := (σ (p + 1)).f_r
-<<<<<<< HEAD
-    dsimp [ShortComplex.map] at s_g f_r ⊢
-    simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g] says
-      simp only [Cochain.ofHom_v, id_comp, comp_sub, sub_comp, assoc, reassoc_of% s_g,
-        ShortComplex.Splitting.s_r_assoc, zero_comp, comp_zero, reassoc_of% f_r, zero_sub,
-        sub_neg_eq_add, mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add,
-        mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X',
-        sub_zero, add_zero, comp_id, mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc,
-        add_left_eq_self, neg_eq_zero, true_and]
-=======
     dsimp at s_g f_r ⊢
     -- the following list of lemmas was obtained by doing
     -- simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g]
@@ -105,7 +95,6 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
         mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
         mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self, neg_eq_zero,
         true_and]
->>>>>>> origin/ext-change-of-universes
     rw [← comp_f_assoc, S.zero, zero_f, zero_comp]
   inv_hom_id := by
     subst hpq

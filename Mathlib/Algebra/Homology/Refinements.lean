@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.Refinements
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-
-open CategoryTheory Category
-
-namespace HomologicalComplex
-
-variable {C : Type _} [Category C] [Abelian C] {ι : Type _} {c : ComplexShape ι}
-  (K L : HomologicalComplex C c) (φ : K ⟶ L)
-
-lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.homology i)
-  (j : ι) (hj : c.next i = j) :
-=======
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -34,19 +20,17 @@ in the file `CategoryTheory.Abelian.Refinements`.
 open CategoryTheory
 
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
-  (K : HomologicalComplex C c)
+  (K L : HomologicalComplex C c) (φ : K ⟶ L)
 
 namespace HomologicalComplex
 
 lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.homology i)
     (j : ι) (hj : c.next i = j) :
->>>>>>> origin/ext-change-of-universes
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ K.X i) (hz : z ≫ K.d i j = 0),
       π ≫ γ = K.liftCycles z j hj hz ≫ K.homologyπ i := by
   subst hj
   exact (K.sc i).eq_liftCycles_homologyπ_up_to_refinements γ
 
-<<<<<<< HEAD
 lemma liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
     {A : C} {i : ι} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j) (hk : k ≫ K.d i j = 0)
       (i' : ι) (hi' : c.prev i = i'):
@@ -83,6 +67,4 @@ lemma epi_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk
   subst hi hk
   apply ShortComplex.epi_homologyMap_iff_up_to_refinements
 
-=======
->>>>>>> origin/ext-change-of-universes
 end HomologicalComplex
