@@ -3,8 +3,8 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-
 import Mathlib.Topology.Algebra.LinearTopology
+import Mathlib.RingTheory.Ideal.Basic
 
 /-! # Topologicall nilpotent elements -/
 
@@ -52,8 +52,9 @@ theorem add {α : Type*} [CommRing α] [TopologicalSpace α] [LinearTopology α]
   simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, SetLike.mem_coe] at ha hb ⊢
   rcases ha with ⟨na, ha⟩
   rcases hb with ⟨nb, hb⟩
-  use na + nb, fun m hm ↦ I_subset (I.add_pow_mem_of_pow_mem_of_le (ha na le_rfl) (hb nb le_rfl)
-    (le_trans hm (Nat.le_add_right _ _)))
+  exact ⟨na + nb, fun m hm ↦ 
+    I_subset (I.add_pow_mem_of_pow_mem_of_le (ha na le_rfl) (hb nb le_rfl)
+      (le_trans hm (Nat.le_add_right _ _)))⟩
 
 theorem zero {α : Type*} [CommRing α] [TopologicalSpace α] :
     IsTopologicallyNilpotent (0 : α) := tendsto_atTop_of_eventually_const (i₀ := 1)
