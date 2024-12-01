@@ -367,7 +367,9 @@ lemma tensorDistriFree_polar22
     rw [polar_comm, polar_comm Q₂]
 
 
-
+/--
+Lift the tensor of two polars
+-/
 noncomputable def polarnn_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) =>
@@ -404,6 +406,9 @@ lemma myadd: ∑ x ∈ s, f x = ∑ x ∈ s with p x, f x + ∑ x ∈ s with ¬ 
   exact Eq.symm (Finset.sum_filter_add_sum_filter_not s p f)
 -/
 
+/--
+Lift the polar
+-/
 noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
   (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂)) (x : M₁ ⊗[R] M₂) := fun p => Sym2.lift
     ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
