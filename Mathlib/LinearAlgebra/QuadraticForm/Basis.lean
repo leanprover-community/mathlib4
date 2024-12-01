@@ -23,7 +23,7 @@ variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset �
 
 variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β} [AddCommMonoid β]
 
-theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
+theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     Disjoint (filter p s) (filter q s) := by
   rw [Disjoint]
   intro t htp htq
@@ -39,13 +39,16 @@ theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
   have e4 : t ⊆ s := by exact fun ⦃a⦄ a_1 ↦ e3 (htp a_1)
   aesop
 
+
+/-
 theorem test1 (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
   s.filter (fun x => p x ∨ q x) = (s.filter p).disjUnion (s.filter q) (by
     apply disjoint_of_not_and_on_set
     exact fun x a ↦ h x a) := by
   aesop
+-/
 
-theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
+theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
   rw [← sum_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
   apply sum_congr
@@ -208,6 +211,20 @@ lemma f4 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
   rw [← f3]
   exact f2b p
 
+lemma foo [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagUpper p) :
+    symOffDiag p := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  aesop
+
+lemma foo2 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagLower p) :
+    symOffDiag p := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  aesop
+
 lemma symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
     (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔ Xor' (symOffDiagUpper p) (symOffDiagLower p) := by
   induction' p with i  j
@@ -241,6 +258,23 @@ lemma symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower [LinearOrder ι₁] [Li
       · aesop
   · intro h
     aesop
+
+lemma symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower2 [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔
+    ((symOffDiagUpper p) ∨ (symOffDiagLower p)) ∧
+      ¬ ((symOffDiagUpper p) ∧ (symOffDiagLower p)) := by
+  rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower, xor_iff_or_and_not_and]
+
+lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔ (symOffDiagUpper p) ∨ (symOffDiagLower p) := by
+  constructor
+  · intro h
+    exact ((symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower2 p).mp h).1
+  · intro h
+    cases' h with h1 h2
+    · apply foo _ h1
+    · apply foo2 _ h2
+
 
 lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
     p.IsDiag ∨ symOffDiagXor p ∨ (Xor' (symOffDiagUpper p) (symOffDiagLower p)) := by
@@ -720,6 +754,29 @@ theorem qt_expansion3 (x : M₁ ⊗[R] M₂) :
         + ∑ p ∈ s₂ with ¬ symOffDiagLower p, Q.polar_lift bm x p = Q x := by
   simp_rw [myadd3a]
   rw [qt_expansion2]
+
+theorem sum1 (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p)
+      + (∑ p ∈ s with symOffDiagLower p, Q.polar_lift bm x p) =
+    ∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  have h1 : ∀ y ∈ s.filter (fun y => symOffDiagUpper y ∨ symOffDiagLower y),
+      ¬ (symOffDiagUpper y ∧ symOffDiagLower y) := by
+    intro y hy
+    apply ((xor_iff_or_and_not_and (symOffDiagUpper y) (symOffDiagLower y)).mp _).2
+    rw [← symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
+    simp at hy
+    rw [symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
+    exact hy.2
+  simp_rw [← Finset.sum_disjoint_filters_on_set  _ _ h1]
+  simp_rw [symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
+
+
 
 
 -- #check Finset.sum_disjUnion
