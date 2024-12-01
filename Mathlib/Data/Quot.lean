@@ -79,7 +79,7 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
 
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
 to a map `Quot ra → Quot rb`. -/
-protected def map (f : α → β) (h : ∀ a b : α, ra a b → rb (f a) (f b)) : Quot ra → Quot rb :=
+protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, ra a b → rb (f a) (f b)) : Quot ra → Quot rb :=
   Quot.lift (fun x => Quot.mk rb (f x)) fun x y hra ↦ Quot.sound <|  h x y hra
 
 /-- If `ra` is a subrelation of `ra'`, then we have a natural map `Quot ra → Quot ra'`. -/
