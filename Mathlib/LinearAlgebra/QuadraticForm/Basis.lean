@@ -393,13 +393,13 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
 
 --#check ((bm₁.tensorProduct bm₂).repr x).support.sym2 with ¬ p.IsDiag
 
-/-
+
 variable {α : Type*} (p : α → Prop) [DecidablePred p] (s : Finset α) (f : α → N₁ ⊗[R] N₂)
 
-#check Finset.sum (Finset.filter p s) f
+lemma sum (f g : α → N₁ ⊗[R] N₂) (h : f = g) : ∑ p ∈ s, f p = ∑ p ∈ s, g p := by
+  exact congrArg s.sum h
 
-#check Finset.sum s f = Finset.sum (Finset.filter p s) f + Finset.sum (Finset.filter (fun a  p) s) f
-
+/-
 lemma myadd: ∑ x ∈ s, f x = ∑ x ∈ s with p x, f x + ∑ x ∈ s with ¬ p x, f x := by
   exact Eq.symm (Finset.sum_filter_add_sum_filter_not s p f)
 -/
@@ -410,7 +410,7 @@ noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R]
       simp only [polar_comm]
       rw [smul_comm]⟩ p
 
-lemma polar_lift_eq_polarnn_lift_on_symOffDiag
+lemma polar_lift_eq_polarnn_lift_on_symOffDiagUpper
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
     (h: p ∈ Finset.filter symOffDiagUpper s) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -430,14 +430,21 @@ lemma polar_lift_eq_polarnn_lift_on_symOffDiag
     rw [Basis.tensorProduct_apply]
     rw [tensorDistriFree_polar22 _ _ _ _ _ _ _ _ c3 c4]
 
-lemma myadd2 (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂))
-    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂)
-    [DecidableEq ι₁] [DecidableEq ι₂] :
-    ∑ p ∈ s with symOffDiag p, polar_lift Q bm x p + ∑ p ∈ s with ¬ symOffDiag p,
-      polar_lift Q bm x p =
-      ∑ p ∈ s, polar_lift Q bm x p :=
-  Finset.sum_filter_add_sum_filter_not s symOffDiag (Q.polar_lift bm x)
 
+lemma myadd2
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
+      + ∑ p ∈ s with ¬ symOffDiagUpper p, Q.polar_lift bm x p =
+      ∑ p ∈ s, polar_lift Q bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  simp_rw [← Finset.sum_filter_add_sum_filter_not s symOffDiagUpper (Q.polar_lift bm x)]
+  simp_all only [add_left_inj]
+  apply Finset.sum_congr rfl
+  intro p hp
+  rw [polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp]
 
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
