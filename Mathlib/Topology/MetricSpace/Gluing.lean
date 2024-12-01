@@ -167,7 +167,7 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
     · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_lt
     · exact hY h.1.2
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> exact ⟨ε, ε0, fun h => H _ _ h⟩
+    constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
 
 /-- Given two maps `Φ` and `Ψ` intro metric spaces `X` and `Y` such that the distances between
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
@@ -243,7 +243,7 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
-    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun h => H _ _ h⟩
+    constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
 
 /-- The distance on the disjoint union indeed defines a metric space. All the distance properties
 follow from our choice of the distance. The harder work is to show that the uniform structure

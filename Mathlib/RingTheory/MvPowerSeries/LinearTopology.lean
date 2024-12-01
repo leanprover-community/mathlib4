@@ -128,7 +128,7 @@ lemma mem_nhds_zero_iff {U : Set (MvPowerSeries σ α)} :
     use Finset.sup hD.toFinset id
     apply subset_trans _ ht'
     intros f hf e he
-    rw [apply_eq_coeff f e, hf e (id_eq e ▸ Finset.le_sup ((Set.Finite.mem_toFinset _).mpr he))]
+    rw [← coeff_apply α f e, hf e (id_eq e ▸ Finset.le_sup (hD.mem_toFinset.mpr he))]
     exact mem_of_mem_nhds (ht e)
 
 /-- If the coefficient ring `α` is endowed with the discrete topology, then the pointwise
