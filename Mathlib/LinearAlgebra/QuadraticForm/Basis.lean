@@ -81,6 +81,9 @@ instance symOffDiagLower.decidablePred [LinearOrder ι₁] [LinearOrder ι₂] :
     DecidablePred (@symOffDiagLower ι₁ ι₂ _ _) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagLower_iff_proj_eq a)
 
+/--
+Exactly one pair of coordinates are equal
+-/
 def symOffDiagXor : Sym2 (ι₁ × ι₂) → Prop :=
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => Xor' (i₁ = j₁) (i₂ = j₂), by
     intro ⟨i₁, j₁⟩  ⟨i₂, j₂⟩
