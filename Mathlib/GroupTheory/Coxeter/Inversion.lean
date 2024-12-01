@@ -255,12 +255,12 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     · simp only [getD_eq_getElem?_getD, get?_eq_getElem?] at ih
       simp [getD_cons_succ, ih j']
 
-lemma getElem_rightInvSeq (l : List B) (j : ℕ) (h : j < l.length) :
-    (cs.rightInvSeq l)[j]'(by simp[h]) =
-    (π (l.drop (j + 1)))⁻¹
-      * (Option.map (cs.simple) (l.get? j)).getD 1
-      * π (l.drop (j + 1)) := by
-  rw [← List.getD_eq_getElem (cs.rightInvSeq l) 1, getD_rightInvSeq]
+lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
+    (ris ω)[j]'(by simp[h]) =
+    (π (ω.drop (j + 1)))⁻¹
+      * (Option.map (cs.simple) (ω.get? j)).getD 1
+      * π (ω.drop (j + 1)) := by
+  rw [← List.getD_eq_getElem (ris ω) 1, getD_rightInvSeq]
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
@@ -278,10 +278,10 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       rw [ih j']
       simp [← mul_assoc, wordProd_cons]
 
-lemma getElem_leftInvSeq (l : List B) (j : ℕ) (h : j < l.length) :
-    (cs.leftInvSeq l)[j]'(by simp[h]) =
-    cs.wordProd (List.take j l) * s l[j] * (cs.wordProd (List.take j l))⁻¹ := by
-  rw [← List.getD_eq_getElem (cs.leftInvSeq l) 1, getD_leftInvSeq]
+lemma getElem_leftInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
+    (lis ω)[j]'(by simp[h]) =
+    cs.wordProd (List.take j ω) * s ω[j] * (cs.wordProd (List.take j ω))⁻¹ := by
+  rw [← List.getD_eq_getElem (lis ω) 1, getD_leftInvSeq]
   simp[h]
 
 theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
@@ -453,7 +453,7 @@ theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.
   rwa [isReduced_reverse]
 
 lemma getElem_succ_leftInvSeq_alternatingWord
-    (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
+    (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; linarith)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
@@ -465,7 +465,7 @@ lemma getElem_succ_leftInvSeq_alternatingWord
   omega
 
 theorem getElem_leftInvSeq_alternatingWord
-    (i j : B) (p : ℕ) (k : ℕ) (h : k < 2 * p) :
+    (i j : B) (p k : ℕ) (h : k < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k]'(by simp; linarith) =
     π alternatingWord j i (2 * k + 1) := by
   revert i j
