@@ -78,7 +78,6 @@ private theorem integrablemulsum (ha : 0 ≤ a) (hb : ⌊a⌋₊ < ⌊b⌋₊)
       <| ae_restrict_of_ae_restrict_of_subset (Set.Icc_subset_Icc h₁ h₂)
         <| (ae_restrict_iff' measurableSet_Icc).mpr
           (by filter_upwards [sumlocc c n] with t h ht using by rw [h ht])
-  -- We prove some inequalities to be used later on
   have aux1 : 0 ≤ b := (Nat.pos_of_floor_pos <| (Nat.zero_le _).trans_lt hb).le
   have aux2 : ⌊a⌋₊ + 1 ≤ b := by rwa [← Nat.cast_add_one, ← Nat.le_floor_iff aux1]
   have aux3 : a ≤ ⌊a⌋₊ + 1 := (Nat.lt_floor_add_one _).le
@@ -102,14 +101,12 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - f a * (∑ k ∈ Icc 0 ⌊a⌋₊, c k) -
         ∫ t in Set.Ioc a b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
   rw [← integral_of_le hab]
-    -- We prove some inequalities to be used later on by linarith
   have aux1 : ⌊a⌋₊ ≤ a := Nat.floor_le ha
   have aux2 : b ≤ ⌊b⌋₊ + 1 := (Nat.lt_floor_add_one _).le
   -- We consider two cases depending on whether the sum is empty or not
   obtain hb | hb := eq_or_lt_of_le (Nat.floor_le_floor hab)
   · rw [hb, Ioc_eq_empty_of_le le_rfl, sum_empty, ← sub_mul,
       integralmulsum c hf_diff hf_int _ _ ⌊b⌋₊ hab (hb ▸ aux1) aux2 le_rfl le_rfl, sub_self]
-  -- Some more inequalities for linarith
   have aux3 : a ≤ ⌊a⌋₊ + 1 := (Nat.lt_floor_add_one _).le
   have aux4 : ⌊a⌋₊ + 1 ≤ b := by rwa [← Nat.cast_add_one,  ← Nat.le_floor_iff (ha.trans hab)]
   have aux5 : ⌊b⌋₊ ≤ b := Nat.floor_le (ha.trans hab)
