@@ -74,13 +74,13 @@ lemma goursat_surjective : ∃ e : (G ⧸ I.goursatFst) ≃ₗ[R] H ⧸ I.goursa
     rw [← he, ← Prod.smul_mk]
     have : (x, e x) ∈ e.toAddMonoidHom.graph := rfl
     rw [← he, AddMonoidHom.mem_range] at this
-    rcases this with ⟨⟨i, (hi : i ∈ I)⟩, hi'⟩
+    rcases this with ⟨⟨i, hi⟩, hi'⟩
     use ⟨r • i, I.smul_mem r hi⟩
     rw [← hi']
     rfl
   -- define the map as an R-linear equiv
   use { e with map_smul' := this }
-  rw [← Submodule.toAddSubgroup_injective.eq_iff]
+  rw [← toAddSubgroup_injective.eq_iff]
   convert he using 1
   ext v
   rw [mem_toAddSubgroup, LinearMap.mem_graph_iff, Eq.comm]

@@ -82,7 +82,7 @@ lemma goursatFst_prod_goursatSnd_le : I.goursatFst.prod I.goursatSnd ≤ I := by
   rintro ⟨g, h⟩ ⟨hg, hh⟩
   simpa using mul_mem (mem_goursatFst.1 hg) (mem_goursatSnd.1 hh)
 
-/-- **Goursat's lemma** for a subgroup a product of with surjective projections.
+/-- **Goursat's lemma** for a subgroup of a product with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
@@ -90,7 +90,7 @@ graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/
 @[to_additive
-"**Goursat's lemma** for a subgroup a product of with surjective projections.
+"**Goursat's lemma** for a subgroup of a product with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
 subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
