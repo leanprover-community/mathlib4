@@ -153,7 +153,7 @@ theorem destutter_eq_nil : ∀ {l : List α}, destutter R l = [] ↔ l = []
 
 variable {R}
 
-/-- For a relation-preserving map, `destutter'` commutes with `map`. -/
+/-- For a relation-preserving map, `destutter` commutes with `map`. -/
 theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b ∈ l, R a b ↔ R₂ (f a) (f b)) →
     (l.destutter R).map f = (l.map f).destutter R₂
   | [], hl => by simp
@@ -171,8 +171,8 @@ theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [Dec
     (l.destutter (·≠·)).map f = (l.map f).destutter (·≠·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
-/-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotonic
-    under a ¬R changing of the first element. -/
+/-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone
+under a `¬R` changing of the first element. -/
 theorem length_destutter'_cotrans_ge [i : IsTrans α Rᶜ] :
     ∀ {a} {l : List α}, ¬R b a → (l.destutter' R b).length ≤ (l.destutter' R a).length
   | a, [], hba => by simp
