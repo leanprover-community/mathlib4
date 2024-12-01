@@ -168,8 +168,7 @@ lemma withDensity_one_sub_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] 
       simp
     simp only [coe_add, Pi.add_apply, Measure.coe_add] at h
     rwa [withDensity_rnDerivAux, add_comm, ENNReal.add_right_inj (measure_ne_top _ _)] at h
-  have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
-  simp_rw [this, ENNReal.ofReal_sub _ (rnDerivAux_nonneg h_le), ENNReal.ofReal_one]
+  simp_rw [ofNNReal_toNNReal, ENNReal.ofReal_sub _ (rnDerivAux_nonneg h_le), ENNReal.ofReal_one]
   rw [withDensity_sub_add_cancel]
   · rw [withDensity_one']
   · exact measurable_const
@@ -193,7 +192,7 @@ def mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) : Set γ :=
 
 lemma mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∈ mutuallySingularSetSlice κ η a ↔ 1 ≤ rnDerivAux κ (κ + η) a x := by
-  rw [mutuallySingularSetSlice]; rfl
+  rw [mutuallySingularSetSlice, mem_setOf]
 
 lemma not_mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
