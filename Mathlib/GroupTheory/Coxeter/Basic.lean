@@ -447,6 +447,17 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (h : k < p) :
     (alternatingWord i j p)[k]'(by simp; exact h) =  (if Even (p + k) then i else j) := by
   simp[← getElem_alternatingWord_aux i j p ⟨k, (by simp[h])⟩]
 
+lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
+   (alternatingWord i j p)[k+1]'(by simp; exact h) =
+   (alternatingWord j i p)[k]'(by simp [h]; omega) := by
+  rw[ getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
+
+  by_cases h_even : Even (p + k)
+  · rw[if_pos h_even, ← add_assoc]
+    simp [Even.add_one h_even]
+  · rw [if_neg h_even, ← add_assoc]
+    simp [Odd.add_one (Nat.not_even_iff_odd.mp h_even)]
+
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction' m with m ih
