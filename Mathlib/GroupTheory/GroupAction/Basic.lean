@@ -9,7 +9,6 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Data.Set.Finite.basic
 
 /-!
 # Basic properties of group actions
@@ -276,7 +275,6 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
-
 namespace MulAction
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
@@ -300,34 +298,5 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     · apply hyp g⁻¹ (inv_mem hg)
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
-
-/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
-@[to_additive
-  "To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion."]
-theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
-    g ∈ stabilizer G s ↔ g • s ⊆ s := by
-  haveI : Fintype s := Set.Finite.fintype hs
-  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
-  haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
-  rw [mem_stabilizer_iff]
-  constructor
-  · exact Eq.subset
-  · rw [← Set.toFinset_inj, ← Set.toFinset_subset_toFinset]
-    intro h
-    apply Finset.eq_of_subset_of_card_le h
-    apply le_of_eq
-    suffices (g • s).toFinset = Finset.map ⟨_, MulAction.injective g⟩ hs.toFinset by
-      rw [this, Finset.card_map, Set.toFinite_toFinset]
-    rw [← Finset.coe_inj]
-    simp only [Set.coe_toFinset, Set.toFinite_toFinset, Finset.coe_map,
-      Function.Embedding.coeFn_mk, Set.image_smul]
-
-/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
-@[to_additive
-  "To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion."]
-theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G) :
-    g ∈ stabilizer G s ↔ s ⊆ g • s := by
-  rw [← @inv_mem_iff, mem_stabilizer_of_finite_iff_smul_le s hs]
-  exact Set.subset_set_smul_iff.symm
 
 end MulAction
