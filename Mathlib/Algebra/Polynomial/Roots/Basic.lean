@@ -8,7 +8,6 @@ import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -28,6 +27,8 @@ We define the multiset of roots of a polynomial, and prove basic results about i
   ranges through its roots.
 
 -/
+
+assert_not_exists Cardinal
 
 open Multiset Finset
 
@@ -577,21 +578,6 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R
     p = 0 :=
   eq_zero_of_natDegree_lt_card_of_eval_eq_zero p Subtype.val_injective
     (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
-
-open Cardinal in
-lemma eq_zero_of_forall_eval_zero_of_natDegree_lt_card
-    (f : R[X]) (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) : f = 0 := by
-  obtain hR|hR := finite_or_infinite R
-  · have := Fintype.ofFinite R
-    apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
-    simpa only [mk_fintype, Nat.cast_lt] using hfR
-  · exact zero_of_eval_zero _ hf
-
-open Cardinal in
-lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
-    ∃ r, f.eval r ≠ 0 := by
-  contrapose! hf
-  exact eq_zero_of_forall_eval_zero_of_natDegree_lt_card f hf hfR
 
 theorem monic_prod_multiset_X_sub_C : Monic (p.roots.map fun a => X - C a).prod :=
   monic_multiset_prod_of_monic _ _ fun a _ => monic_X_sub_C a
