@@ -171,16 +171,18 @@ def DifferentiableAt (f : E → F) (x : E) :=
   ∃ f' : E →L[𝕜] F, HasFDerivAt f f' x
 
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
-Otherwise, it is set to `0`. If `x` is isolated in `s`, we take the derivative within `s` to
-be zero for convenience. -/
+Otherwise, it is set to `0`. We also set it to be zero, if zero is one of possible derivatives. -/
 irreducible_def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
-  if 𝓝[s \ {x}] x = ⊥ then 0 else
-  if h : ∃ f', HasFDerivWithinAt f f' s x then Classical.choose h else 0
+  if HasFDerivWithinAt f 0 s x
+    then 0
+  else if h : ∃ f', HasFDerivWithinAt f f' s x
+    then Classical.choose h
+  else 0
 
 /-- If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is
 set to `0`. -/
 irreducible_def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
-  if h : ∃ f', HasFDerivAt f f' x then Classical.choose h else 0
+  fderivWithin f univ x
 
 /-- `DifferentiableOn 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. -/
 @[fun_prop]
