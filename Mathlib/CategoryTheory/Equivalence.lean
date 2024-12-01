@@ -393,14 +393,16 @@ If a functor `F` is an equivalence, then right-cancellation is possible in the s
 `G₁ ⋙ F ≅ G₂ ⋙ F` induces `G₁ ≅ G₂`.
 -/
 def isoCancelRight {E : Type*} [Category E] {G₁ G₂ : E ⥤ D} (F : D ≌ C)
-    (α : G₁ ⋙ F.functor ≅ G₂ ⋙ F.functor) : (G₁ ≅ G₂) := isoCancelRight' F.unitIso α
+    (α : G₁ ⋙ F.functor ≅ G₂ ⋙ F.functor) : (G₁ ≅ G₂) :=
+  isoCancelRightOfWeaklyLeftInvertible F.unitIso α
 
 /--
 If a functor `F` is an equivalence, then left-cancellation is possible in the sense that
 `F ⋙ G₁ ≅ F ⋙ G₂` induces `G₁ ≅ G₂`.
 -/
 def isoCancelLeft {E : Type*} [Category E] {G₁ G₂ : D ⥤ E} (F : C ≌ D)
-    (α : F.functor ⋙ G₁ ≅ F.functor ⋙ G₂) : (G₁ ≅ G₂) := isoCancelLeft' F.counitIso.symm α
+    (α : F.functor ⋙ G₁ ≅ F.functor ⋙ G₂) : (G₁ ≅ G₂) :=
+  isoCancelLeftOfWeaklyRightInvertible F.counitIso.symm α
 
 end CancellationLemmas
 
