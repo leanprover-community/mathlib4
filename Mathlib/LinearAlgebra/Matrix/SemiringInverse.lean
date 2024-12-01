@@ -3,11 +3,8 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Matrix.Mul
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.Perm.Sign
 
 /-!
@@ -66,7 +63,8 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
   intro σ hσ
   have hσ1 : σ ≠ 1 := by
     contrapose! hσ
-    simp [ofSign, hσ]
+    rw [hσ, mem_ofSign, sign_one]
+    decide
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
   exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
 
@@ -118,14 +116,14 @@ theorem detp_mul :
   rw [← Equiv.prod_comp (swap i j)]
   simp only [hσ]
 
-theorem mul_adjp_add_detp_apply_eq : (A * adjp s A) i i = detp s A := by
+theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
   simp_rw [mem_univ, filter_True] at key
   simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
 
-theorem mul_adjp_add_detp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
+theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   simp_rw [mul_apply, adjp_apply, mul_sum, sum_sigma']
   let f : (Σ x : n, Perm n) → (Σ x : n, Perm n) := fun ⟨x, σ⟩ ↦ ⟨σ i, σ * swap i j⟩
   let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (ofSign s).filter fun σ ↦ σ j = x
@@ -156,8 +154,8 @@ theorem mul_adjp_add_detp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adj
 theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A + detp 1 A • 1 := by
   ext i j
   rcases eq_or_ne i j with rfl | h <;> simp_rw [add_apply, smul_apply, smul_eq_mul]
-  · simp_rw [mul_adjp_add_detp_apply_eq, one_apply_eq, mul_one, add_comm]
-  · simp_rw [mul_adjp_add_detp_apply_ne A i j h, one_apply_ne h, mul_zero]
+  · simp_rw [mul_adjp_apply_eq, one_apply_eq, mul_one, add_comm]
+  · simp_rw [mul_adjp_apply_ne A i j h, one_apply_ne h, mul_zero]
 
 variable {A B}
 
