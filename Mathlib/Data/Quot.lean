@@ -694,7 +694,8 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map' (f : α → β) (h : ∀ a b, a ≈ b → f a ≈ f b) : Quotient s₁ → Quotient s₂ :=
+protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
+    Quotient s₁ → Quotient s₂ :=
   Quot.map f h
 
 @[simp]
