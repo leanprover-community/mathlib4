@@ -2951,6 +2951,7 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.FieldTheory.RatFunc.Degree
+import Mathlib.FieldTheory.RatFunc.Hilbert
 import Mathlib.FieldTheory.Relrank
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
@@ -4387,7 +4388,6 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
-import Mathlib.RingTheory.Polynomial.Hilbert
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
 import Mathlib.RingTheory.Polynomial.Nilpotent
