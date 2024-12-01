@@ -546,6 +546,11 @@ lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Op
 
 end
 
+@[simp]
+theorem rename_polynomial_aeval_X {σ τ : Type*} (f : σ → τ) (i : σ) (p : R[X]) :
+    rename f (Polynomial.aeval (X i) p) = Polynomial.aeval (X (f i) : MvPolynomial τ R) p := by
+  rw [← aeval_algHom_apply, rename_X]
+
 end Equiv
 
 end MvPolynomial
