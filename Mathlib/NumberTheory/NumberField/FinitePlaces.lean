@@ -1,13 +1,13 @@
 /-
 Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Fabrizio Barroero
+Authors: Fabrizio Barroero
 -/
 import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.Ideal.Norm.absNorm
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
