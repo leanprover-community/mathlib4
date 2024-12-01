@@ -1,11 +1,54 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Util.Superscript
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 
+/-!
+# Moreira's version of Sard's Theorem
+-/
+
 open Set Function Asymptotics MeasureTheory Metric Filter
 open scoped Topology NNReal ENNReal unitInterval
 open Module (finrank)
+
+section NormedField
+
+variable {𝕜 E F G : Type*}
+  [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+@[simp]
+theorem dist_iteratedFDerivWithin_zero (f : E → F) (s : Set E) (x : E)
+    (g : E → F) (t : Set E) (y : E) :
+    dist (iteratedFDerivWithin 𝕜 0 f s x) (iteratedFDerivWithin 𝕜 0 g t y) = dist (f x) (g y) := by
+  simp only [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
+
+@[simp]
+theorem dist_iteratedFDerivWithin_one (f g : E → F) {s t : Set E} {x y : E}
+    (hsx : UniqueDiffWithinAt 𝕜 s x) (hyt : UniqueDiffWithinAt 𝕜 t y) :
+    dist (iteratedFDerivWithin 𝕜 1 f s x) (iteratedFDerivWithin 𝕜 1 g t y)
+      = dist (fderivWithin 𝕜 f s x) (fderivWithin 𝕜 g t y) := by
+  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply,
+    LinearIsometryEquiv.dist_map, iteratedFDerivWithin_zero_eq_comp,
+    LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
+
+@[simp]
+theorem norm_iteratedFDerivWithin_one (f : E → F) {s : Set E} {x : E}
+    (h : UniqueDiffWithinAt 𝕜 s x) :
+    ‖iteratedFDerivWithin 𝕜 1 f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
+  simp only [← norm_fderivWithin_iteratedFDerivWithin,
+    iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin _ h]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.norm_toContinuousLinearMap_comp
+
+end NormedField
 
 local macro:max "ℝ"n:superscript(term) : term => `(Fin $(⟨n.raw[0]⟩) → ℝ)
 
