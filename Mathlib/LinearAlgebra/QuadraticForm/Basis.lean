@@ -112,7 +112,7 @@ instance symOffDiagXor.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
     DecidablePred (@symOffDiagXor ι₁ ι₂) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagXor_iff_proj_eq a)
 
-lemma f1 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) : Xor' p.IsDiag ¬ p.IsDiag :=
+lemma f1 (p : Sym2 (ι₁ × ι₂)) : Xor' p.IsDiag ¬ p.IsDiag :=
   xor_not_right.mpr (Eq.to_iff rfl)
 
   --Decidable.em p.IsDiag
@@ -149,7 +149,7 @@ lemma f2b [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
   convert f2 p
   rw [g2]
 
-lemma f3 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
+lemma f3 (p : Sym2 (ι₁ × ι₂)) :
     (¬ p.IsDiag ∧ ¬ symOffDiagXor p) ↔ symOffDiag p := by
   induction' p with i j
   aesop
