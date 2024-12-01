@@ -504,6 +504,16 @@ lemma myadd3
   rw [polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s _ _ (by simp_all only [forall_const,
     Finset.mem_filter, and_self])]
 
+lemma myadd3a
+    (x : M₁ ⊗[R] M₂) :
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s₁ := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
+    let s := Finset.filter (fun p => ¬ symOffDiagUpper p) s₁
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+      ∑ p ∈ s with ¬ symOffDiagLower p, Q.polar_lift bm x p =
+      ∑ p ∈ s, polar_lift Q bm x p := myadd3 _ _ _ _ _ _
+
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
@@ -528,6 +538,17 @@ theorem qt_expansion2 (x : M₁ ⊗[R] M₂) :
   let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
   simp_rw [add_assoc, myadd2a]
   rw [qt_expansion]
+
+theorem qt_expansion3 (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
+    let s₂ := Finset.filter (fun p => ¬ symOffDiagUpper p) s
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
+      ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
+        + ∑ p ∈ s₂ with ¬ symOffDiagLower p, Q.polar_lift bm x p = Q x := by
+  simp_rw [myadd3a]
+  rw [qt_expansion2]
 
 end TensorProduct
 
