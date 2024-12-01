@@ -37,21 +37,25 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
     (fun X => Hom.isoOfComponents
       (fun i => eqToIso (by
         obtain rfl : a' = a + n := by omega
-        dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor, single]
         by_cases h : i = a
         · subst h
-          simp only [ite_true]
-        · rw [if_neg h, if_neg (fun h' => h (by omega))])) (by simp))
+          simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
+        · dsimp [single]
+          rw [if_neg h, if_neg (fun h' => h (by omega))])))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by omega
       ext
       simp [single])
   shiftIso_zero a := by
     ext
-    simp [single, shiftFunctorZero_eq, XIsoOfEq]
+    dsimp
+    simp only [single, shiftFunctorZero_eq, shiftFunctorZero'_hom_app_f,
+      XIsoOfEq, eqToIso.hom]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext
-    simp [shiftFunctorAdd_eq, XIsoOfEq]
+    dsimp
+    simp only [shiftFunctorAdd_eq, shiftFunctorAdd'_hom_app_f, XIsoOfEq,
+      eqToIso.hom, eqToHom_trans, id_comp]
 
 instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]

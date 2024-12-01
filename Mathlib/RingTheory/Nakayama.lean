@@ -3,9 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.RingTheory.Finiteness.Nakayama
 import Mathlib.RingTheory.JacobsonIdeal
-
-#align_import ring_theory.nakayama from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Nakayama's lemma
@@ -48,7 +47,7 @@ namespace Submodule
 
 /-- **Nakayama's Lemma** - A slightly more general version of (2) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
-See also `eq_bot_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`.  -/
+See also `eq_bot_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`. -/
 theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson J) : N = J • N := by
   refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
@@ -59,7 +58,6 @@ theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (h
     rw [neg_sub, sub_smul, mul_smul, hr.2 n hn, one_smul, smul_zero, sub_zero]
   rw [this]
   exact Submodule.smul_mem_smul (Submodule.neg_mem _ hs) hn
-#align submodule.eq_smul_of_le_smul_of_le_jacobson Submodule.eq_smul_of_le_smul_of_le_jacobson
 
 lemma eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator {I : Ideal R}
     {N : Submodule R M} (hN : FG N) (hIN : N = I • N)
@@ -109,14 +107,14 @@ to the `jacobson` of any ideal -/
 theorem eq_bot_of_le_smul_of_le_jacobson_bot (I : Ideal R) (N : Submodule R M) (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson ⊥) : N = ⊥ := by
   rw [eq_smul_of_le_smul_of_le_jacobson hN hIN hIjac, Submodule.bot_smul]
-#align submodule.eq_bot_of_le_smul_of_le_jacobson_bot Submodule.eq_bot_of_le_smul_of_le_jacobson_bot
 
 theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submodule R M}
     (hN' : N'.FG) (hIJ : I ≤ jacobson J) (hNN : N' ≤ N ⊔ I • N') : N ⊔ N' = N ⊔ J • N' := by
   have hNN' : N ⊔ N' = N ⊔ I • N' :=
     le_antisymm (sup_le le_sup_left hNN)
     (sup_le_sup_left (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _)
-  have h_comap := Submodule.comap_injective_of_surjective (LinearMap.range_eq_top.1 N.range_mkQ)
+  have h_comap :=
+    comap_injective_of_surjective (LinearMap.range_eq_top.1 N.range_mkQ)
   have : (I • N').map N.mkQ = N'.map N.mkQ := by
     simpa only [← h_comap.eq_iff, comap_map_mkQ, sup_comm, eq_comm] using hNN'
   have :=
@@ -127,12 +125,11 @@ theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submod
 
 /-- **Nakayama's Lemma** - A slightly more general version of (4) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
-See also `smul_le_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`.  -/
+See also `smul_le_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`. -/
 theorem sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submodule R M}
     (hN' : N'.FG) (hIJ : I ≤ jacobson J) (hNN : N' ≤ N ⊔ I • N') : N ⊔ I • N' = N ⊔ J • N' :=
   ((sup_le_sup_left smul_le_right _).antisymm (sup_le le_sup_left hNN)).trans
     (sup_eq_sup_smul_of_le_smul_of_le_jacobson hN' hIJ hNN)
-#align submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson
 
 theorem le_of_le_smul_of_le_jacobson_bot {R M} [CommRing R] [AddCommGroup M] [Module R M]
     {I : Ideal R} {N N' : Submodule R M} (hN' : N'.FG)
@@ -146,6 +143,5 @@ to the `jacobson` of any ideal -/
 theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R M} (hN' : N'.FG)
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : I • N' ≤ N :=
   smul_le_right.trans (le_of_le_smul_of_le_jacobson_bot hN' hIJ hNN)
-#align submodule.smul_le_of_le_smul_of_le_jacobson_bot Submodule.smul_le_of_le_smul_of_le_jacobson_bot
 
 end Submodule

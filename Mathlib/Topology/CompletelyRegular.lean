@@ -5,6 +5,7 @@ Authors: Matias Heikkilä
 -/
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.StoneCech
 
 /-!
 # Completely regular topological spaces.
@@ -86,15 +87,9 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegu
 @[mk_iff]
 class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
 
-instance T35Space.instT3space [T35Space X] : T3Space X := by
-  have : T0Space X := T1Space.t0Space
-  have : RegularSpace X := CompletelyRegularSpace.instRegularSpace
-  exact {}
+instance T35Space.instT3space [T35Space X] : T3Space X := {}
 
-instance T4Space.instT35Space [T4Space X] : T35Space X := by
-  have : T1Space X := T2Space.t1Space
-  have : CompletelyRegularSpace X := NormalSpace.instCompletelyRegularSpace
-  exact {}
+instance T4Space.instT35Space [T4Space X] : T35Space X := {}
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints (Continuous : Set (X → ℝ)) := by
@@ -102,3 +97,17 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
+
+lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
+    SeparatesPoints (Continuous : Set (X → I)) := by
+  intro x y x_ne_y
+  obtain ⟨f, f_cont, f_zero, f_one⟩ :=
+    CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
+  exact ⟨f, f_cont, by aesop⟩
+
+lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
+    Function.Injective (stoneCechUnit : X → StoneCech X) := by
+  intros a b hab
+  contrapose hab
+  obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
+  exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
