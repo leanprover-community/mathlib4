@@ -362,10 +362,9 @@ theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
     let dom' := g.dom.comap f.toHom
     let cod' := g.cod.comap f.toHom
     have dom'_map : dom'.map f.toHom = g.dom := by
-      unfold_let dom'
+      unfold dom'
       rwa [Substructure.map_comap, inf_eq_left]
     have cod'_map : cod'.map f.toHom = g.cod := by
-      unfold_let dom'
       rwa [Substructure.map_comap, inf_eq_left]
     clear_value dom' cod'
     rcases g with ⟨dom, cod, g⟩

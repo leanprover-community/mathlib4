@@ -681,7 +681,7 @@ private theorem all_fgequiv_extend {m : ℕ} (f : L.FGEquiv (system _ m) (system
   have H : f'.map ((init_system _ r).2 (Nat.unpair r).1).2 =
       (sequence_FGEquiv K_fraisse (system K_fraisse (Nat.unpair r).1) (Nat.unpair r).2).1.map
         (maps_system _ (Nat.unpair_left_le r)) := by
-      unfold_let f'
+      unfold f'
       rw [PartialEquiv.map_map]
       rfl
   rw [← H, h_f'_f'', ← map_step, map_step_is_extend_and_join]
@@ -708,7 +708,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
   have _ : DirectedSystem (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
       fun _ _ h ↦ ⇑(maps_system K_fraisse h) := by
     constructor
-    intro _ _ _
+    intro _ _
     simp only [Function.comp_apply, maps_system_self, Embedding.refl_apply]
     intro _ _ _ _ _ _
     simp only [Function.comp_apply, ← Embedding.comp_apply, transitive_maps_system]
@@ -729,7 +729,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
     let A_fg : A.FG := FG.sup (FG.sup f_fg (f.dom_fg_iff_cod_fg.1 f_fg)) (fg_closure_singleton m)
     let ⟨n, A', hA'⟩ := DirectLimit.exists_fg_substructure_in_Sigma A A_fg
     have in_range : f.dom ⊔ f.cod ⊔ (closure L {m}) ≤ (of n).toHom.range := by
-      unfold_let A at hA'
+      unfold A at hA'
       rw [← hA']
       exact Hom.map_le_range
     let ⟨f',f'_map⟩ := (PartialEquiv.exists_preimage_map_iff (of n) f).2
@@ -739,8 +739,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
       rwa [← PartialEquiv.map_dom, f'_map]
     have H : f'.is_extended_by (of n) := by
       let ⟨m, hnm, f'_extended⟩ := all_fgequiv_extend K_fraisse ⟨f', f'_fg⟩
-      unfold_let of
-      simp only
+      unfold of
       rw [← DirectLimit.of_comp_f (hij := hnm)]
       exact PartialEquiv.is_extended_by_comp _ _ _ f'_extended
     let ⟨g', map_f'_le, range_le_g'⟩ := H
@@ -752,7 +751,7 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
       rw [f'_map] at map_f'_le
       exact map_f'_le
     have m_in_dom : m ∈ g.dom := by
-      unfold_let g
+      unfold g
       unfold PartialEquiv.domRestrict
       simp only
       rw [← closure_eq f.dom, ← closure_eq f.cod, ← closure_union, ← closure_union]
