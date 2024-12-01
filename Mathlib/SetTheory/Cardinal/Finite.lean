@@ -15,7 +15,7 @@ import Mathlib.SetTheory.Cardinal.PartENat
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
 * `ENat.card α` is the cardinality of `α` as an  extended natural number.
-  If `α` is infinite, `ENat.card α = 0`.
+  If `α` is infinite, `ENat.card α = ⊤`.
 * `PartENat.card α` is the cardinality of `α` as an extended natural number
   (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
@@ -265,18 +265,18 @@ theorem card_sum (α β : Type*) :
     card (α ⊕ β) = card α + card β := by
   simp only [card, mk_sum, map_add, toENat_lift]
 
-theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : card α = card β :=
+theorem card_congr {α β : Type*} (f : α ≃ β) : card α = card β :=
   Cardinal.toENat_congr f
 
 @[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
 
 @[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
 
-theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
+theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     card (f '' s) = card s :=
   card_congr (Equiv.Set.imageOfInjOn f s h).symm
 
-theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
+theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
 @[simp]
@@ -331,7 +331,7 @@ namespace PartENat
 def card (α : Type*) : PartENat :=
   toPartENat (mk α)
 
--- The remainder of this section is about the depreacted `PartENat.card`.
+-- The remainder of this section is about the deprecated `PartENat.card`.
 set_option linter.deprecated false
 
 @[simp, deprecated ENat.card_eq_coe_fintype_card (since := "2024-11-30")]
