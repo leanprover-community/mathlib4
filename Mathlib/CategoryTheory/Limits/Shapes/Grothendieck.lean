@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
@@ -190,6 +191,18 @@ end
 theorem hasColimitsOfShape_grothendieck [∀ X, HasColimitsOfShape (F.obj X) H]
     [HasColimitsOfShape C H] : HasColimitsOfShape (Grothendieck F) H where
   has_colimit _ := hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit _
+
+namespace Functor
+
+variable {J : Type u₂} [Category.{v₂} J]
+
+theorem preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
+    [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
+    [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
+    PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) :=
+  ⟨fun {K} => ⟨fun {c} hc => ⟨sorry⟩⟩⟩
+
+end Functor
 
 end Limits
 
