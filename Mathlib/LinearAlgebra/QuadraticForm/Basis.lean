@@ -446,11 +446,21 @@ lemma myadd2
   intro p hp
   rw [polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp]
 
+lemma myadd2a
+    (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
+    ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
+      + ∑ p ∈ s with ¬ symOffDiagUpper p, Q.polar_lift bm x p =
+      ∑ p ∈ s, polar_lift Q bm x p := myadd2 _ _ _ _ _ _
+
+
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    Q x = ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
-    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag, polar_lift Q bm x p := by
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
+    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag, polar_lift Q bm x p = Q x := by
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   simp_rw [basis_expansion Q bm x]
