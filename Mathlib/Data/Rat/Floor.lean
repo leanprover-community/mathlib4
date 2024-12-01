@@ -50,6 +50,11 @@ instance : FloorRing ℚ :=
 
 protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
 
+protected theorem ceil_def (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
+  change -⌊-q⌋ = _
+  rw [Rat.floor_def, num_neg_eq_neg_num, den_neg_eq_den]
+
+
 @[norm_cast]
 theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / (↑d : ℤ) := by
   rw [Rat.floor_def]
@@ -130,6 +135,42 @@ def evalIntFloor : NormNumExt where eval {u αZ} e := do
       have z : Q(ℤ) := mkRawIntLit ⌊q⌋
       letI : $z =Q ⌊$n / $d⌋ := ⟨⟩
       return .isInt q(inferInstance) z ⌊q⌋ q(isInt_intFloor_ofIsRat _ $n $d $h)
+  | _, _, _ => failure
+
+theorem isNat_intCeil {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℕ) :
+    IsNat r m → IsNat ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+
+theorem isInt_intCeil {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℤ) :
+    IsInt r m → IsInt ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+
+theorem isInt_intCeil_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
+    IsRat r n d → IsInt ⌈r⌉ (-(-n / d)) := by
+  rintro ⟨inv, rfl⟩
+  constructor
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
+  rw [← floor_intCast_div_natCast n d, ← floor_cast (α := α), Rat.cast_div,
+    cast_intCast, cast_natCast]
+
+/-- `norm_num` extension for `Int.ceil` -/
+@[norm_num ⌈_⌉]
+def evalIntCeil : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℤ), ~q(@Int.ceil $α $instR $instF $x) =>
+    match ← derive x with
+    | .isBool .. => failure
+    | .isNat _ _ pb => do
+      assertInstancesCommute
+      return .isNat q(inferInstance) _ q(isNat_intCeil $x _ $pb)
+    | .isNegNat _ _ pb => do
+      assertInstancesCommute
+      -- floor always keeps naturals negative, so we can shortcut `.isInt`
+      return .isNegNat q(inferInstance) _ q(isInt_intCeil _ _ $pb)
+    | .isRat _ q n d h => do
+      let _i ← synthInstanceQ q(LinearOrderedField $α)
+      assertInstancesCommute
+      have z : Q(ℤ) := mkRawIntLit ⌊q⌋
+      letI : $z =Q ⌊$n / $d⌋ := ⟨⟩
+      return .isInt q(inferInstance) z ⌊q⌋ q(isInt_intCeil_ofIsRat _ $n $d $h)
   | _, _, _ => failure
 
 end NormNum
