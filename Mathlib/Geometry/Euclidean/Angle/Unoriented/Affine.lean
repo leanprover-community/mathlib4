@@ -33,7 +33,7 @@ namespace EuclideanGeometry
 open InnerProductGeometry
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] {p p₀ p₁ p₂ : P}
+  [NormedAddTorsor V P] {p p₀ : P}
 
 /-- The undirected angle at `p2` between the line segments to `p1` and
 `p3`. If either of those points equals `p2`, this is π/2. Use

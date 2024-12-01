@@ -70,8 +70,6 @@ structure HomologyMapData where
 
 namespace HomologyMapData
 
-attribute [nolint simpNF] mk.injEq
-
 variable {φ h₁ h₂}
 
 @[reassoc]
@@ -1038,6 +1036,18 @@ lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
   simp only [assoc, rightHomologyMap'_op, op_comp, ← leftHomologyMap'_comp_assoc, id_comp,
     opMap_id, comp_id, HomologyData.op_left]
 
+@[reassoc]
+lemma homologyOpIso_hom_naturality [S₁.HasHomology] [S₂.HasHomology] :
+    homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom =
+      S₂.homologyOpIso.hom ≫ (homologyMap φ).op := by
+  simp [homologyMap_op]
+
+@[reassoc]
+lemma homologyOpIso_inv_naturality [S₁.HasHomology] [S₂.HasHomology] :
+    (homologyMap φ).op ≫ (S₁.homologyOpIso).inv =
+      S₂.homologyOpIso.inv ≫ homologyMap (opMap φ) := by
+  simp [homologyMap_op]
+
 variable (C)
 
 /-- The natural isomorphism `(homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ`
@@ -1045,7 +1055,7 @@ which relates the homology in `C` and in `Cᵒᵖ`. -/
 noncomputable def homologyFunctorOpNatIso [CategoryWithHomology C] :
     (homologyFunctor C).op ≅ opFunctor C ⋙ homologyFunctor Cᵒᵖ :=
   NatIso.ofComponents (fun S => S.unop.homologyOpIso.symm)
-    (by simp [homologyMap_op])
+    (fun _ ↦ homologyOpIso_inv_naturality _)
 
 variable {C} {A : C}
 

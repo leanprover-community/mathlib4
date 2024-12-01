@@ -255,7 +255,7 @@ theorem IsCompactOperator.codRestrict {f : M₁ → M₂} (hf : IsCompactOperato
     (hV : ∀ x, f x ∈ V) (h_closed : IsClosed (V : Set M₂)) :
     IsCompactOperator (Set.codRestrict f V hV) :=
   let ⟨_, hK, hKf⟩ := hf
-  ⟨_, (closedEmbedding_subtype_val h_closed).isCompact_preimage hK, hKf⟩
+  ⟨_, h_closed.isClosedEmbedding_subtypeVal.isCompact_preimage hK, hKf⟩
 
 end CodRestrict
 

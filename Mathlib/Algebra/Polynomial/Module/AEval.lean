@@ -3,8 +3,11 @@ Copyright (c) 2022 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
+import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Action of the polynomial ring on module induced by an algebra element.
@@ -94,6 +97,15 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
         LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
       simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
 
+/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from a `R`-linear map out of `M`. -/
+def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
+    [IsScalarTower R R[X] N] (f : M ≃ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
+    AEval R M a ≃ₗ[R[X]] N where
+  __ := LinearMap.ofAEval a f hf
+  invFun := (of R M a) ∘ f.symm
+  left_inv x := by simp [LinearMap.ofAEval]
+  right_inv x := by simp [LinearMap.ofAEval]
+
 lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
     annihilator R[X] (AEval R M a) = RingHom.ker (aeval a) := by
   ext p
@@ -111,60 +123,51 @@ lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
 
 section Submodule
 
-variable {p : Submodule R M} {q : Submodule R[X] <| AEval R M a}
-
-variable (R M) in
-/-- We can turn an `R[X]`-submodule into an `R`-submodule by forgetting the action of `X`. -/
-def comapSubmodule :
-    CompleteLatticeHom (Submodule R[X] <| AEval R M a) (Submodule R M) :=
-  (Submodule.orderIsoMapComap (of R M a)).symm.toCompleteLatticeHom.comp <|
-    Submodule.restrictScalarsLatticeHom R R[X] (AEval R M a)
-
-@[simp] lemma mem_comapSubmodule {x : M} :
-    x ∈ comapSubmodule R M a q ↔ of R M a x ∈ q :=
-  Iff.rfl
-
-@[simp] lemma comapSubmodule_le_comap :
-    comapSubmodule R M a q ≤ (comapSubmodule R M a q).comap (Algebra.lsmul R R M a) := by
-  intro m hm
-  simpa only [Submodule.mem_comap, Algebra.lsmul_coe, mem_comapSubmodule, ← X_smul_of] using
-    q.smul_mem (X : R[X]) hm
-
-/-- An `R`-submodule which is stable under the action of `a` can be promoted to an
-`R[X]`-submodule. -/
-def mapSubmodule (hp : p ≤ p.comap (Algebra.lsmul R R M a)) : Submodule R[X] <| AEval R M a :=
-  { toAddSubmonoid := p.toAddSubmonoid.map (of R M a)
-    smul_mem' := by
-      rintro f - ⟨m : M, h : m ∈ p, rfl⟩
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubmonoid.mem_map,
-        Submodule.mem_toAddSubmonoid]
-      exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a hp, of_aeval_smul a f m⟩ }
-
-variable (hp : p ≤ p.comap (Algebra.lsmul R R M a))
-
-@[simp] lemma mem_mapSubmodule {m : AEval R M a} :
-    m ∈ mapSubmodule a hp ↔ (of R M a).symm m ∈ p :=
-  ⟨fun ⟨_, hm, hm'⟩ ↦ hm'.symm ▸ hm, fun hm ↦ ⟨(of R M a).symm m, hm, rfl⟩⟩
-
-@[simp] lemma mapSubmodule_comapSubmodule (h := comapSubmodule_le_comap a) :
-    mapSubmodule a (p := comapSubmodule R M a q) h = q := by
-  ext; simp
-
-@[simp] lemma comapSubmodule_mapSubmodule :
-    comapSubmodule R M a (mapSubmodule a hp) = p := by
-  ext; simp
-
 variable (R M)
 
-lemma injective_comapSubmodule : Injective (comapSubmodule R M a) := by
-  intro q₁ q₂ hq
-  rw [← mapSubmodule_comapSubmodule (q := q₁), ← mapSubmodule_comapSubmodule (q := q₂)]
-  simp_rw [hq]
+/-- The natural order isomorphism between the two ways to represent invariant submodules. -/
+def mapSubmodule :
+    (Algebra.lsmul R R M a).invtSubmodule ≃o Submodule R[X] (AEval R M a) where
+  toFun p :=
+    { toAddSubmonoid := (p : Submodule R M).toAddSubmonoid.map (of R M a)
+      smul_mem' := by
+        rintro f - ⟨m : M, h : m ∈ (p : Submodule R M), rfl⟩
+        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+          AddSubmonoid.mem_map, Submodule.mem_toAddSubmonoid]
+        exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a p.2, of_aeval_smul a f m⟩ }
+  invFun q := ⟨(Submodule.orderIsoMapComap (of R M a)).symm (q.restrictScalars R), fun m hm ↦ by
+    simpa [← X_smul_of] using q.smul_mem (X : R[X]) hm⟩
+  left_inv p := by ext; simp
+  right_inv q := by ext; aesop
+  map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop, fun h x hx ↦ by aesop⟩
 
-lemma range_comapSubmodule :
-    range (comapSubmodule R M a) = {p | p ≤ p.comap (Algebra.lsmul R R M a)} :=
-  le_antisymm (fun _ ⟨_, hq⟩ ↦ hq ▸ comapSubmodule_le_comap a)
-    (fun _ hp ↦ ⟨mapSubmodule a hp, comapSubmodule_mapSubmodule a hp⟩)
+@[simp] lemma mem_mapSubmodule_apply {p : (Algebra.lsmul R R M a).invtSubmodule} {m : AEval R M a} :
+    m ∈ mapSubmodule R M a p ↔ (of R M a).symm m ∈ (p : Submodule R M) :=
+  ⟨fun ⟨_, hm, hm'⟩ ↦ hm'.symm ▸ hm, fun hm ↦ ⟨(of R M a).symm m, hm, rfl⟩⟩
+
+@[simp] lemma mem_mapSubmodule_symm_apply {q : Submodule R[X] (AEval R M a)} {m : M} :
+    m ∈ ((mapSubmodule R M a).symm q : Submodule R M) ↔ of R M a m ∈ q :=
+  Iff.rfl
+
+variable {R M}
+variable (p : Submodule R M) (hp : p ∈ (Algebra.lsmul R R M a).invtSubmodule)
+
+/-- The natural `R`-linear equivalence between the two ways to represent an invariant submodule. -/
+def equiv_mapSubmodule :
+    p ≃ₗ[R] mapSubmodule R M a ⟨p, hp⟩ where
+  toFun x := ⟨of R M a x, by simp⟩
+  invFun x := ⟨((of R M _).symm (x : AEval R M a)), by obtain ⟨x, hx⟩ := x; simpa using hx⟩
+  left_inv x := rfl
+  right_inv x := rfl
+  map_add' x y := rfl
+  map_smul' t x := rfl
+
+/-- The natural `R[X]`-linear equivalence between the two ways to represent an invariant submodule.
+-/
+noncomputable def restrict_equiv_mapSubmodule :
+    (AEval R p <| (Algebra.lsmul R R M a).restrict hp) ≃ₗ[R[X]] mapSubmodule R M a ⟨p, hp⟩ :=
+  LinearEquiv.ofAEval ((Algebra.lsmul R R M a).restrict hp) (equiv_mapSubmodule a p hp)
+    (fun x ↦ by simp [equiv_mapSubmodule, X_smul_of])
 
 end Submodule
 

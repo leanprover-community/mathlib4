@@ -6,7 +6,6 @@ Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
 import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
-import Batteries.Lean.Expr
 import Batteries.Tactic.Alias
 import Lean.Elab.Binders
 

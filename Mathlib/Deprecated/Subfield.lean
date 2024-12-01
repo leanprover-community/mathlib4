@@ -5,6 +5,7 @@ Authors: Andreas Swerdlow
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Deprecated.Subring
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Unbundled subfields (deprecated)
@@ -124,6 +125,7 @@ theorem closure_subset {T : Set F} (hT : IsSubfield T) (H : S ⊆ T) : closure S
 theorem closure_subset_iff {s t : Set F} (ht : IsSubfield t) : closure s ⊆ t ↔ s ⊆ t :=
   ⟨Set.Subset.trans subset_closure, closure_subset ht⟩
 
+@[gcongr]
 theorem closure_mono {s t : Set F} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubfield <| Set.Subset.trans H subset_closure
 

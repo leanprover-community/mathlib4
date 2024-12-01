@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # The topological support of a function
@@ -201,12 +201,15 @@ theorem _root_.hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) 
   simp_rw [hasCompactMulSupport_def, mulSupport_comp_eq g (@hg) f]
 
 @[to_additive]
-theorem comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
-    (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
+theorem comp_isClosedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
+    (hg : IsClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
   refine IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure ?_
-  rw [hg.toEmbedding.closure_eq_preimage_closure_image]
+  rw [hg.isEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
+
+@[deprecated (since := "2024-10-20")]
+alias comp_closedEmbedding := comp_isClosedEmbedding
 
 @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
@@ -359,8 +362,7 @@ end MulZeroClass
 
 section OrderedAddGroup
 
-variable [TopologicalSpace α] [AddGroup β] [Lattice β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+variable [TopologicalSpace α] [AddGroup β] [Lattice β] [AddLeftMono β]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
     HasCompactSupport |f| :=
@@ -374,7 +376,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- Porting note (#11215): TODO: reformulate for any locally finite family of sets
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/

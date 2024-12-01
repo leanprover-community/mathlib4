@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finsupp.Basic
 
 /-!

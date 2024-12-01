@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Choose
 
 /-!
@@ -301,6 +303,24 @@ alias ⟨_, StrictMonoOn.dual⟩ := strictMonoOn_dual_iff
 alias ⟨_, StrictAntiOn.dual⟩ := strictAntiOn_dual_iff
 
 end OrderDual
+
+section WellFounded
+
+variable [Preorder α] [Preorder β] {f : α → β}
+
+theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α :=
+  Subrelation.isWellFounded (InvImage (· < ·) f) @hf
+
+theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
+
+theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
+
+theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
+
+end WellFounded
 
 /-! ### Monotonicity in function spaces -/
 
@@ -1085,3 +1105,26 @@ alias ⟨Monotone.apply₂, Monotone.of_apply₂⟩ := monotone_iff_apply₂
 alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂
 
 end apply
+
+/-- A monotone function `f : ℕ → ℕ` bounded by `b`, which is constant after stabilising for the
+first time, stabilises in at most `b` steps. -/
+lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monotone f) (hfb : ∀ m, f m ≤ b)
+    (hfstab : ∀ m, f m = f (m + 1) → f (m + 1) = f (m + 2)) (hbn : b ≤ n) : f n = f b := by
+  obtain ⟨m, hmb, hm⟩ : ∃ m ≤ b, f m = f (m + 1) := by
+    contrapose! hfb
+    let rec strictMono : ∀ m ≤ b + 1, m ≤ f m
+    | 0, _ => Nat.zero_le _
+    | m + 1, hmb => (strictMono _ <| m.le_succ.trans hmb).trans_lt <| (hfmono m.le_succ).lt_of_ne <|
+        hfb _ <| Nat.le_of_succ_le_succ hmb
+    exact ⟨b + 1, strictMono _ le_rfl⟩
+  replace key : ∀ k : ℕ, f (m + k) = f (m + k + 1) ∧ f (m + k) = f m := fun k =>
+    Nat.rec ⟨hm, rfl⟩ (fun k ih => ⟨hfstab _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k ≥ m, f k = f m := fun k hk =>
+    (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
+  exact (key n (hmb.trans hbn)).trans (key b hmb).symm
+
+@[deprecated (since := "2024-11-27")]
+alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
+
+@[deprecated (since := "2024-11-27")]
+alias Group.card_nsmul_eq_card_nsmulpow_card_univ_aux := Nat.stabilises_of_monotone

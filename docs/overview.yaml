@@ -54,7 +54,7 @@ General algebra:
     the category of rings: 'RingCat'
     subring: 'Subring'
     localization: 'Localization'
-    local ring: 'LocalRing'
+    local ring: 'IsLocalRing'
     noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 

@@ -15,7 +15,7 @@ the largest of the modulus of its conjugates.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [Keng, H. L, *Introduction to number theory*][keng1982house]
+* [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tagshouse
 number field, algebraic number, house
