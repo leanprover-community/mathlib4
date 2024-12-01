@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.Topology.Algebra.Algebra
@@ -154,13 +155,12 @@ private instance [UniformAddGroup R] : UniformAddGroup (MvPolynomial σ R) :=
   UniformAddGroup.comap coeToMvPowerSeries.ringHom
 
 theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformInducing :
-    UniformInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
-  ((uniformInducing_iff coeToMvPowerSeries.ringHom).mpr rfl)
+    IsUniformInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
+  (isUniformInducing_iff ⇑coeToMvPowerSeries.ringHom).mpr rfl
 
 theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
-    DenseInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
-  coeToMvPowerSeries_uniformInducing.denseInducing
-    coeToMvPowerSeries_denseRange
+    IsDenseInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
+  coeToMvPowerSeries_uniformInducing.isDenseInducing coeToMvPowerSeries_denseRange
 
 variable {a : σ → S}
 
@@ -240,7 +240,7 @@ noncomputable def eval₂ (f : MvPowerSeries σ R) : S := by
   let hp := fun (p : MvPolynomial σ R) ↦ p = f
   classical
   exact if (Classical.epsilon hp = f) then (MvPolynomial.eval₂ φ a (Classical.epsilon hp))
-    else DenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f
+    else IsDenseInducing.extend coeToMvPowerSeries_denseInducing (MvPolynomial.eval₂ φ a) f
 
 theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
@@ -266,7 +266,7 @@ variable {φ a}
 /-- Evaluation of power series at adequate elements, as a `RingHom` -/
 noncomputable def eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
     MvPowerSeries σ R →+* S :=
-  DenseInducing.extendRingHom
+  IsDenseInducing.extendRingHom
     coeToMvPowerSeries_uniformInducing
     coeToMvPowerSeries_denseRange
     (coeToMvPowerSeries_uniformContinuous hφ ha)
@@ -284,7 +284,7 @@ theorem coe_eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
   split_ifs with h
   · conv_lhs => rw [← h]
     simpa only [MvPolynomial.coe_eval₂Hom, coeToMvPowerSeries.ringHom_apply]
-      using DenseInducing.extend_eq coeToMvPowerSeries_denseInducing
+      using IsDenseInducing.extend_eq coeToMvPowerSeries_denseInducing
         (coeToMvPowerSeries_uniformContinuous hφ ha).continuous (Classical.epsilon hf)
   · rfl
 
@@ -397,8 +397,8 @@ theorem comp_aeval (ha : EvalDomain a)
   simp only [AlgHom.coe_comp, coe_aeval ha]
   erw [comp_eval₂ (continuous_algebraMap R S) ha hε, coe_aeval]
   apply congr_arg₂
-  simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe]
-  rfl
+  · simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe]
+  · rfl
 
 end Evaluation
 
