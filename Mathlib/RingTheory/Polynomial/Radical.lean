@@ -6,6 +6,7 @@ Authors: Jineon Baek, Seewoo Lee
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.Radical
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Radical of a polynomial
@@ -14,13 +15,9 @@ This file proves some theorems on `radical` and `divRadical` of polynomials.
 See `RingTheory.Radical` for the definition of `radical` and `divRadical`.
 -/
 
-noncomputable section
-
-open scoped Classical
-
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 
-variable {k : Type*} [Field k]
+variable {k : Type*} [Field k] [DecidableEq k]
 
 theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
   induction a using induction_on_coprime

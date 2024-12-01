@@ -68,7 +68,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note (#5171): removed @[nolint has_nonempty_instance]
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -128,7 +128,7 @@ theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 
-@[simp] -- Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+@[simp]
 theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
     (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
@@ -244,6 +244,10 @@ def map (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) : V
         _ = max (f (v r)) (f (v s)) := hf.map_max
          }
 
+@[simp]
+lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) (r : R) :
+    v.map f hf r = f (v r) := rfl
+
 /-- Two valuations on `R` are defined to be equivalent if they induce the same preorder on `R`. -/
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
   ∀ r s, v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s
@@ -300,6 +304,12 @@ theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
 theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
   rwa [map_neg]
+
+theorem map_sum_eq_of_lt {ι : Type*} {s : Finset ι} {f : ι → R} {j : ι}
+    (hj : j ∈ s) (h0 : v (f j) ≠ 0) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
+    v (∑ i ∈ s, f i) = v (f j) := by
+  rw [Finset.sum_eq_add_sum_diff_singleton hj]
+  exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_left]
@@ -582,7 +592,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 
@@ -723,6 +733,10 @@ def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddVal
       map_mul' := f.map_add
       map_one' := f.map_zero
       map_zero' := ht } (fun _ _ h => hf h) v
+
+@[simp]
+lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) (r : R) :
+    v.map f ht hf r = f (v r) := rfl
 
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
   preorder on `R`. -/

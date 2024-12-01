@@ -67,6 +67,17 @@ theorem one_sub {p : R} (h : IsIdempotentElem p) : IsIdempotentElem (1 - p) := b
 theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
   ⟨fun h => sub_sub_cancel 1 p ▸ h.one_sub, IsIdempotentElem.one_sub⟩
 
+theorem add_sub_mul_of_commute {R} [Ring R] {p q : R} (h : Commute p q)
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    IsIdempotentElem (p + q - p * q) := by
+  convert (hp.one_sub.mul_of_commute ?_ hq.one_sub).one_sub using 1
+  · simp_rw [sub_mul, mul_sub, one_mul, mul_one, sub_sub, sub_sub_cancel, add_sub, add_comm]
+  · simp_rw [commute_iff_eq, sub_mul, mul_sub, one_mul, mul_one, sub_sub, add_sub, add_comm, h.eq]
+
+theorem add_sub_mul {R} [CommRing R] {p q : R} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    IsIdempotentElem (p + q - p * q) :=
+  add_sub_mul_of_commute (mul_comm p q) hp hq
+
 theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n) :=
   Nat.recOn n ((pow_zero p).symm ▸ one) fun n _ =>
     show p ^ n.succ * p ^ n.succ = p ^ n.succ by

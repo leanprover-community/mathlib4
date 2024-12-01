@@ -202,7 +202,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {A B C D : Type*}
+variable {A B C : Type*}
 variable [NonUnitalNonAssocSemiring A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [StarAddMonoid B]
 
@@ -425,7 +425,7 @@ variable {F G A B : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [FunLike F A B] [NonUnitalRingHomClass F A B] [NonUnitalStarRingHomClass F A B]
-variable [FunLike G B A] [NonUnitalRingHomClass G B A] [NonUnitalStarRingHomClass G B A]
+variable [FunLike G B A]
 
 /-- If a (unital or non-unital) star ring morphism has an inverse, it is an isomorphism of
 star rings. -/

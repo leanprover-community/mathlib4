@@ -327,7 +327,7 @@ theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarCon
   rw [Convex.combo_affine_apply hab, hy'f]
 
 theorem StarConvex.neg (hs : StarConvex 𝕜 x s) : StarConvex 𝕜 (-x) (-s) := by
-  rw [← image_neg]
+  rw [← image_neg_eq_neg]
   exact hs.is_linear_image IsLinearMap.isLinearMap_neg
 
 theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :

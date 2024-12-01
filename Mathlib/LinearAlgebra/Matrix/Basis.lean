@@ -129,8 +129,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   toFun := e.toMatrix
   map_add' v w := by
     ext i j
-    change _ = _ + _
-    rw [e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
+    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
     rfl
   map_smul' := by
     intro c v
@@ -230,6 +229,12 @@ theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι
   simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.reindexAlgEquiv_apply,
     Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,
     Finsupp.mapDomain_equiv_apply]
+
+@[simp]
+lemma Basis.toMatrix_mulVec_repr (m : M) :
+    b'.toMatrix b *ᵥ b.repr m = b'.repr m := by
+  classical
+  simp [← LinearMap.toMatrix_id_eq_basis_toMatrix, LinearMap.toMatrix_mulVec_repr]
 
 end Fintype
 
