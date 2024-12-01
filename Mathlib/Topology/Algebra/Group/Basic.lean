@@ -792,8 +792,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
       constructor
       · rintro ⟨y, hyU, hyx⟩
         apply Set.mem_iUnion_of_mem (x⁻¹ * y)
-        suffices y / x ∈ ker (φ : A →* B) by simp_all
-        rwa [div_mem_ker_iff]
+        simp_all
       · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
         use x * k, hx
         rw [map_mul, hk, mul_one]
