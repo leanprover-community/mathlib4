@@ -271,6 +271,7 @@ section FEPair
 -/
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
+@[simps]
 def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   f := ofReal ∘ evenKernel a
   g := ofReal ∘ cosKernel a
@@ -330,12 +331,9 @@ lemma completedHurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaEven₀ a s - (if a = 0 then 1 else 0) / s - 1 / (1 - s) := by
   rw [completedHurwitzZetaEven, WeakFEPair.Λ, sub_div, sub_div]
   congr 1
-  · change completedHurwitzZetaEven₀ a s - (1 / (s / 2)) • (if a = 0 then 1 else 0) / 2 =
-      completedHurwitzZetaEven₀ a s - (if a = 0 then 1 else 0) / s
-    rw [smul_eq_mul, mul_comm, mul_div_assoc, div_div, div_mul_cancel₀ _ two_ne_zero, mul_one_div]
-  · change (1 / (↑(1 / 2 : ℝ) - s / 2)) • 1 / 2 = 1 / (1 - s)
-    push_cast
-    rw [smul_eq_mul, mul_one, ← sub_div, div_div, div_mul_cancel₀ _ two_ne_zero]
+  · rw [← completedHurwitzZetaEven₀]
+    simp [ite_div, div_div_cancel_left']
+  · simp [div_eq_mul_inv, ← mul_inv, sub_mul]
 
 /--
 The meromorphic function of `s` which agrees with
@@ -395,10 +393,8 @@ lemma completedHurwitzZetaEven₀_one_sub (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaEven₀ a (1 - s) = completedCosZeta₀ a s := by
   rw [completedHurwitzZetaEven₀, completedCosZeta₀, sub_div,
     (by norm_num : (1 / 2 : ℂ) = ↑(1 / 2 : ℝ)),
-    (by rfl : (1 / 2 : ℝ) = (hurwitzEvenFEPair a).k),
-    (hurwitzEvenFEPair a).functional_equation₀ (s / 2),
-    (by rfl : (hurwitzEvenFEPair a).ε = 1),
-    one_smul]
+    ← hurwitzEvenFEPair_k a, (hurwitzEvenFEPair a).functional_equation₀ (s / 2),
+    hurwitzEvenFEPair_ε, one_smul]
 
 /-- Functional equation for the even Hurwitz zeta function (alternative form). -/
 lemma completedCosZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
@@ -431,9 +427,7 @@ lemma differentiableAt_completedHurwitzZetaEven
     rcases hs with h | h
     · exact Or.inl h
     · simp only [hurwitzEvenFEPair, one_div, h, ↓reduceIte, or_true]
-  · change s / 2 ≠ ↑(1 / 2 : ℝ)
-    rw [ofReal_div, ofReal_one, ofReal_ofNat]
-    exact hs' ∘ (div_left_inj' two_ne_zero).mp
+  · simp [← one_div, div_left_inj' (two_ne_zero' ℂ), hs']
 
 lemma differentiable_completedHurwitzZetaEven₀ (a : UnitAddCircle) :
     Differentiable ℂ (completedHurwitzZetaEven₀ a) :=
@@ -458,10 +452,7 @@ lemma differentiableAt_completedCosZeta
   refine (((hurwitzEvenFEPair a).symm.differentiableAt_Λ (Or.inl ?_) ?_).comp s
       (differentiableAt_id.div_const _)).div_const _
   · exact div_ne_zero_iff.mpr ⟨hs, two_ne_zero⟩
-  · change s / 2 ≠ ↑(1 / 2 : ℝ) ∨ (if a = 0 then 1 else 0) = 0
-    refine Or.imp (fun h ↦ ?_) (fun ha ↦ ?_) hs'
-    · simpa only [push_cast] using h ∘ (div_left_inj' two_ne_zero).mp
-    · simp_rw [eq_false_intro ha, if_false]
+  · refine hs'.imp ?_ ?_ <;> simp [div_eq_mul_inv]
 
 lemma differentiable_completedCosZeta₀ (a : UnitAddCircle) :
     Differentiable ℂ (completedCosZeta₀ a) :=
