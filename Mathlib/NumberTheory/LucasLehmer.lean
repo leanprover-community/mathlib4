@@ -55,7 +55,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
   | 0 => by simp
   | p + 1 => by
-    simpa using Nat.Even.sub_odd (one_le_pow_of_one_le one_le_two _)
+    simpa using Nat.Even.sub_odd (one_le_pow₀ one_le_two)
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
@@ -87,7 +87,7 @@ theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
   rw [mersenne, tsub_add_cancel_of_le]
-  exact one_le_pow_of_one_le (by norm_num) k
+  exact one_le_pow₀ (by norm_num)
 
 namespace LucasLehmer
 
@@ -506,21 +506,21 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 /-- Version of `sMod` that is `ℕ`-valued. One should have `q = 2 ^ p - 1`.
 This can be reduced by the kernel. -/
-def sMod' (q : ℕ) : ℕ → ℕ
+def sModNat (q : ℕ) : ℕ → ℕ
   | 0 => 4 % q
-  | i + 1 => (sMod' q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sModNat q i ^ 2 + (q - 2)) % q
 
-theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) = sMod p k := by
+theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
     _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
-    rw [sMod', sMod, Int.ofNat_emod]
+    rw [sModNat, sMod, Int.ofNat_emod]
     simp [h2]
   | succ k ih =>
-    rw [sMod', sMod, ← ih]
+    rw [sModNat, sMod, ← ih]
     have h3 : 2 ≤ 2 ^ p - 1 := by
       zify [h2]
       calc
@@ -530,17 +530,55 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
       Int.add_emod_self, ← sub_eq_add_neg]
 
-lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod' (2 ^ p - 1) (p - 2) = 0) :
+/-- Tail-recursive version of `sModNat`. -/
+def sModNatTR (q : ℕ) (k : Nat) : ℕ :=
+  go k (4 % q)
+where
+  /-- Helper function for `sMod''`. -/
+  go : ℕ → ℕ → ℕ
+  | 0, acc => acc
+  | n + 1, acc => go n ((acc ^ 2 + (q - 2)) % q)
+
+/--
+Generalization of `sModNat` with arbitrary base case,
+useful for proving `sModNatTR` and `sModNat` agree.
+-/
+def sModNat_aux (b : ℕ) (q : ℕ) : ℕ → ℕ
+  | 0 => b
+  | i + 1 => (sModNat_aux b q i ^ 2 + (q - 2)) % q
+
+theorem sModNat_aux_eq (q k : ℕ) : sModNat_aux (4 % q) q k = sModNat q k := by
+  induction k with
+  | zero => rfl
+  | succ k ih => rw [sModNat_aux, ih, sModNat, ← ih]
+
+theorem sModNatTR_eq_sModNat (q : ℕ) (i : ℕ) : sModNatTR q i = sModNat q i := by
+  rw [sModNatTR, helper, sModNat_aux_eq]
+where
+  helper b q k : sModNatTR.go q k b = sModNat_aux b q k := by
+    induction k generalizing b with
+    | zero => rfl
+    | succ k ih =>
+      rw [sModNatTR.go, ih, sModNat_aux]
+      clear ih
+      induction k with
+      | zero => rfl
+      | succ k ih =>
+        rw [sModNat_aux, ih, sModNat_aux]
+
+lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
-  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp, h]
+  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
+    ← sModNatTR_eq_sModNat, h]
   rfl
 
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
-    (h : Nat.ble 1 (sMod' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+    (h : Nat.ble 1 (sModNatTR (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
   rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
-  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp]
+  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
+    ← sModNatTR_eq_sModNat]
   simpa using h
 
 theorem isNat_lucasLehmerTest : {p np : ℕ} →
@@ -554,20 +592,20 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 /-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
 `sMod'` function. -/
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
-def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
+def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!
   unless 1 < np do
     failure
   haveI' h1ltp : Nat.blt 1 $ep =Q true := ⟨⟩
-  if sMod' (2 ^ np - 1) (np - 2) = 0 then
-    haveI' hs : sMod' (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
+  if sModNatTR (2 ^ np - 1) (np - 2) = 0 then
+    haveI' hs : sModNatTR (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
     have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
     have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
     return .isTrue pf'
   else
-    haveI' hs : Nat.ble 1 (sMod' (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
+    haveI' hs : Nat.ble 1 (sModNatTR (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
     have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
     have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
     return .isFalse pf'

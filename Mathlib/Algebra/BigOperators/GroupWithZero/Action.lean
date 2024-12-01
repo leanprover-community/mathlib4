@@ -73,6 +73,18 @@ theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
   simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
     finprod_eq_prod_of_fintype, Finset.smul_prod']
 
+variable {G : Type*} [Group G] [MulDistribMulAction G β]
+
+theorem Finset.smul_prod_perm [Fintype G] (b : β) (g : G) :
+    (g • ∏ h : G, h • b) = ∏ h : G, h • b := by
+  simp only [smul_prod', smul_smul]
+  exact Finset.prod_bijective (g * ·) (Group.mulLeft_bijective g) (by simp) (fun _ _ ↦ rfl)
+
+theorem smul_finprod_perm [Finite G] (b : β) (g : G) :
+    (g • ∏ᶠ h : G, h • b) = ∏ᶠ h : G, h • b := by
+  cases nonempty_fintype G
+  simp only [finprod_eq_prod_of_fintype, Finset.smul_prod_perm]
+
 end
 
 namespace List
@@ -104,7 +116,7 @@ theorem smul_prod
     (s : Finset β) (b : α) (f : β → β) :
     b ^ s.card • ∏ x in s, f x = ∏ x in s, b • f x := by
   have : Multiset.map (fun (x : β) ↦ b • f x) s.val =
-      Multiset.map (fun x ↦ b • x) (Multiset.map (fun x ↦ f x) s.val) := by
+      Multiset.map (fun x ↦ b • x) (Multiset.map f s.val) := by
     simp only [Multiset.map_map, Function.comp_apply]
   simp_rw [prod_eq_multiset_prod, card_def, this, ← Multiset.smul_prod _ b, Multiset.card_map]
 

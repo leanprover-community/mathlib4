@@ -16,8 +16,7 @@ topological space.
 
 open Filter Set Function OrderDual Topology Interval
 
-variable {X : Type*} [LinearOrder X] [TopologicalSpace X] [OrderTopology X] {a b c : X}
-  {s t : Set X}
+variable {X : Type*} [LinearOrder X] [TopologicalSpace X] [OrderTopology X] {a : X} {s t : Set X}
 
 namespace Set
 

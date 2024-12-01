@@ -27,7 +27,7 @@ section Limits
 is corepresentable, then `(G ⋙ forget C).sections` is small. -/
 lemma small_sections_of_hasLimit
     {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
-    [(forget C).Corepresentable] {J : Type w} [Category.{t} J] (G : J ⥤ C) [HasLimit G] :
+    [(forget C).IsCorepresentable] {J : Type w} [Category.{t} J] (G : J ⥤ C) [HasLimit G] :
     Small.{v} (G ⋙ forget C).sections := by
   rw [← Types.hasLimit_iff_small_sections]
   infer_instance

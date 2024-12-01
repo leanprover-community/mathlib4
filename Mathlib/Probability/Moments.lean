@@ -244,7 +244,7 @@ theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X
   exact (h_indep.exp_mul t t).integrable_mul h_int_X h_int_Y
 
 theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     Integrable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
@@ -259,7 +259,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     exact (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm
 
 theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
@@ -273,7 +273,7 @@ theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
       h_rec, prod_insert hi_notin_s]
 
 theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
-    (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
@@ -289,8 +289,8 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
   rcases ht.eq_or_lt with ht_zero_eq | ht_pos
   · rw [ht_zero_eq.symm]
     simp only [neg_zero, zero_mul, exp_zero, mgf_zero', one_mul]
-    rw [ENNReal.toReal_le_toReal (measure_ne_top μ _) (measure_ne_top μ _)]
-    exact measure_mono (Set.subset_univ _)
+    gcongr
+    exacts [measure_ne_top _ _, Set.subset_univ _]
   calc
     (μ {ω | ε ≤ X ω}).toReal = (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal := by
       congr with ω

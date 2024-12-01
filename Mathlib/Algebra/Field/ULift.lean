@@ -15,8 +15,8 @@ This file defines instances for field, semifield and related structures on `ULif
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
 
-universe u v
-variable {α : Type u} {x y : ULift.{v} α}
+universe u
+variable {α : Type u}
 
 namespace ULift
 
