@@ -16,8 +16,6 @@ import Mathlib.Data.PNat.Defs
 
 namespace Rat
 
-open Rat
-
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c
   rw [Rat.mk'_eq_divInt, divInt_eq_iff b0 (mod_cast h)] at e

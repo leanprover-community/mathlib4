@@ -39,8 +39,6 @@ intermediate field, field extension
 
 open Polynomial
 
-open Polynomial
-
 variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field
@@ -614,6 +612,19 @@ theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
+
+/--The algEquiv between an intermediate field and its lift-/
+def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
+  toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
+  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
+    (liftAlgEquiv F x).1 = x := rfl
 
 section RestrictScalars
 

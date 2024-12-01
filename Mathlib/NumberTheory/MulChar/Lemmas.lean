@@ -82,7 +82,7 @@ noncomputable def ofRootOfUnity {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.c
   have : orderOf ζ ∣ Fintype.card Mˣ :=
     orderOf_dvd_iff_pow_eq_one.mpr <| (mem_rootsOfUnity _ ζ).mp hζ
   refine ofUnitHom <| monoidHomOfForallMemZpowers hg <| this.trans <| dvd_of_eq ?_
-  rw [orderOf_generator_eq_natCard hg, Nat.card_eq_fintype_card]
+  rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card]
 
 lemma ofRootOfUnity_spec {ζ : Rˣ} (hζ : ζ ∈ rootsOfUnity (Fintype.card Mˣ) R)
     {g : Mˣ} (hg : ∀ x, x ∈ Subgroup.zpowers g) :
