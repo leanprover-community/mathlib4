@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Newell Jensen, Mitchell Lee
+Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Ring.Int.Parity
