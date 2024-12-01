@@ -16,7 +16,7 @@ Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a pr
 ## Main statements
 * `Algebra.IsInvariant.isIntegral`: If `G` is finite, then `B/A` is an integral extension.
 
-TODO: Prove the existence of Frobenius elements in this general setting.
+TODO: Prove the existence of Frobenius elements in this general setting (PR #17717).
 
 -/
 
@@ -51,22 +51,22 @@ theorem charpoly_eq (b : B) : charpoly G b = ∏ g : G, (X - C (g • b)) := rfl
 theorem charpoly_eq_prod_smul (b : B) : charpoly G b = ∏ g : G, g • (X - C b) := by
   simp only [smul_sub, smul_C, smul_X, charpoly_eq]
 
-theorem charpoly_monic (b : B) : (charpoly G b).Monic :=
+theorem monic_charpoly (b : B) : (charpoly G b).Monic :=
   monic_prod_of_monic _ _ (fun _ _ ↦ monic_X_sub_C _)
 
-theorem charpoly_eval (b : B) : (charpoly G b).eval b = 0 := by
+theorem eval_charpoly (b : B) : (charpoly G b).eval b = 0 := by
   rw [charpoly_eq, eval_prod]
   apply Finset.prod_eq_zero (Finset.mem_univ (1 : G))
   rw [one_smul, eval_sub, eval_C, eval_X, sub_self]
 
 variable {G}
 
-theorem charpoly_smul (b : B) (g : G) : g • (charpoly G b) = charpoly G b := by
+theorem smul_charpoly (b : B) (g : G) : g • (charpoly G b) = charpoly G b := by
   rw [charpoly_eq_prod_smul, Finset.smul_prod_perm]
 
-theorem charpoly_coeff_smul (b : B) (n : ℕ) (g : G) :
+theorem smul_coeff_charpoly (b : B) (n : ℕ) (g : G) :
     g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
-  rw [← coeff_smul, charpoly_smul]
+  rw [← coeff_smul, smul_charpoly]
 
 end MulSemiringAction
 
@@ -78,14 +78,14 @@ variable [IsInvariant A B G]
 
 theorem charpoly_mem_lifts [Fintype G] (b : B) :
     charpoly G b ∈ Polynomial.lifts (algebraMap A B) :=
-  (charpoly G b).lifts_iff_coeff_lifts.mpr fun n ↦ isInvariant _ (charpoly_coeff_smul b n)
+  (charpoly G b).lifts_iff_coeff_lifts.mpr fun n ↦ isInvariant _ (smul_coeff_charpoly b n)
 
 theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
   cases nonempty_fintype G
   refine ⟨fun b ↦ ?_⟩
   obtain ⟨p, hp1, -, hp2⟩ := Polynomial.lifts_and_natDegree_eq_and_monic
-    (charpoly_mem_lifts A B G b) (charpoly_monic G b)
-  exact ⟨p, hp2, by rw [← eval_map, hp1, charpoly_eval]⟩
+    (charpoly_mem_lifts A B G b) (monic_charpoly G b)
+  exact ⟨p, hp2, by rw [← eval_map, hp1, eval_charpoly]⟩
 
 end Algebra.IsInvariant
 
