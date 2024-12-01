@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Finite.Card
 
 /-!
 # Deprecated material on `PartENat.card`.
@@ -24,6 +25,9 @@ namespace PartENat
 @[deprecated ENat.card (since := "2024-12-01")]
 def card (α : Type*) : PartENat :=
   toPartENat (mk α)
+
+-- This rest of this file is about the deprecated `PartENat.card`.
+set_option linter.deprecated false
 
 @[simp]
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α :=
@@ -102,5 +106,16 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toPartENat_iff]
   simp only [PartENat.card, Nat.cast_one]
+
+set_option linter.deprecated false in
+@[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
+theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
+  unfold PartENat.card
+  apply symm
+  rw [Cardinal.natCast_eq_toPartENat_iff]
+  exact Finite.cast_card_eq_mk
+
+
+@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
 
 end PartENat

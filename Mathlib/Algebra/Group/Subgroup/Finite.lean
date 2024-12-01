@@ -6,6 +6,7 @@ Authors: Kexing Ying
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
