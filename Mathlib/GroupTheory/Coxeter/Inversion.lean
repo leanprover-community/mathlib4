@@ -452,4 +452,36 @@ theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.
   apply nodup_rightInvSeq
   rwa [isReduced_reverse]
 
+lemma getElem_succ_leftInvSeq_alternatingWord
+    (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
+    (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
+    MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; linarith)) := by
+  rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
+      cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
+  simp only [MulAut.conj]
+
+  simp [listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc]
+  rw[getElem_alternatingWord_swapIndices i j (2 * p) k]
+  omega
+
+theorem getElem_leftInvSeq_alternatingWord
+    (i j : B) (p : ℕ) (k : ℕ) (h : k < 2 * p) :
+    (lis (alternatingWord i j (2 * p)))[k]'(by simp; linarith) =
+    π alternatingWord j i (2 * k + 1) := by
+  revert i j
+  induction k with
+  | zero =>
+    intro i j
+    simp[alternatingWord,
+      CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp[h])]
+    apply congr_arg
+    simp[getElem_alternatingWord i j (2 * p) 0 (by simp[h])]
+  | succ k hk =>
+    intro i j
+    simp[getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk (by omega),
+    alternatingWord_succ' j i, wordProd_cons]
+    rw[(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
+    simp[mul_assoc]
+
+
 end CoxeterSystem
