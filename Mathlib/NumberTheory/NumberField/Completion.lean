@@ -134,14 +134,17 @@ theorem bijective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : Is
 
 /-- The ring isomorphism `v.completion ≃+* ℂ`, when `v` is complex, given by the bijection
 `v.completion →+* ℂ`. -/
-def ringEquiv_complex_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
+def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.completion ≃+* ℂ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
+
+@[deprecated (since := "2024-12-01")]
+noncomputable alias ringEquiv_complex_of_isComplex := ringEquivComplexOfIsComplex
 
 /-- If the infinite place `v` is complex, then `v.completion` is isometric to `ℂ`. -/
 def isometryEquiv_complex_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.completion ≃ᵢ ℂ where
-  toEquiv := ringEquiv_complex_of_isComplex hv
+  toEquiv := ringEquivComplexOfIsComplex hv
   isometry_toFun := isometry_extensionEmbedding v
 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is surjective. -/

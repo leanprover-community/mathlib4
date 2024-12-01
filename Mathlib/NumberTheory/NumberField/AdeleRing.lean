@@ -86,7 +86,7 @@ abbrev ringEquiv_mixedSpace :
     (RingEquiv.prodCongr
       (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquiv_real_of_isReal hv))
       (RingEquiv.trans
-        (RingEquiv.piCongrRight (fun v => Completion.ringEquiv_complex_of_isComplex
+        (RingEquiv.piCongrRight (fun v => Completion.ringEquivComplexOfIsComplex
           ((not_isReal_iff_isComplex.1 v.2))))
         (RingEquiv.piCongrLeft (fun _ => ℂ) <|
           Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))
@@ -103,7 +103,7 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    ringEquiv_real_of_isReal, ringEquiv_complex_of_isComplex, extensionEmbedding,
+    ringEquiv_real_of_isReal, ringEquivComplexOfIsComplex, extensionEmbedding,
     extensionEmbedding_of_isReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
