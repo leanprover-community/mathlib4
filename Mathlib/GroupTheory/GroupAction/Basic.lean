@@ -9,7 +9,6 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Basic properties of group actions
