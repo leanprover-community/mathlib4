@@ -50,7 +50,7 @@ variable (C)
 
 /-- We say an object in the free monoidal category is in normal form if it is of the form
     `(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 inductive NormalMonoidalObject : Type u
   | unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject

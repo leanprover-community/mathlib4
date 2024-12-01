@@ -3,11 +3,9 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Data.Nat.Defs
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Data.List.Defs
+import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
@@ -76,7 +74,7 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
 
 @[simp]
 lemma bodd_bit (b n) : bodd (bit b n) = b := by
-  simp [bodd]
+  cases b <;> simp [bodd]
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   cases n using bitCasesOn with
@@ -91,7 +89,7 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   cases n using bitCasesOn with
-  | h b n => cases b <;> simp [bit_val, div2_val, succ_div]
+  | h b n => cases b <;> simp [bit_val, div2_val, succ_div, Nat.dvd_mul_right]
 
 @[simp]
 lemma div2_bit (b n) : div2 (bit b n) = n := by

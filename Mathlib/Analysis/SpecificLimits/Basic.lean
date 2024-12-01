@@ -179,7 +179,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
       simp only [hr.symm, one_pow] at h
       exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
     · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
-      · refine (pow_right_strictMono <| lt_of_le_of_ne (le_of_not_lt hr_le)
+      · refine (pow_right_strictMono₀ <| lt_of_le_of_ne (le_of_not_lt hr_le)
           hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
         obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
         exact ⟨n, le_of_lt hn⟩
@@ -273,8 +273,14 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
     simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
-/-! ### Geometric series -/
+lemma ENNReal.eq_zero_of_le_mul_pow {x r : ℝ≥0∞} {ε : ℝ≥0} (hr : r < 1)
+    (h : ∀ n : ℕ, x ≤ ε * r ^ n) : x = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  refine ge_of_tendsto' (f := fun (n : ℕ) ↦ ε * r ^ n) (x := atTop) ?_ h
+  rw [← mul_zero (M₀ := ℝ≥0∞) (a := ε)]
+  exact Tendsto.const_mul (tendsto_pow_atTop_nhds_zero_of_lt_one hr) (Or.inr coe_ne_top)
 
+/-! ### Geometric series -/
 
 section Geometric
 
@@ -623,7 +629,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       refine (eventually_gt_atTop 0).mono fun n hn ↦ ?_
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
       rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
-        prod_natCast, Nat.cast_succ, ← prod_inv_distrib, ← prod_mul_distrib,
+        prod_natCast, Nat.cast_succ, ← Finset.prod_inv_distrib, ← prod_mul_distrib,
         Finset.prod_range_succ']
       simp only [prod_range_succ', one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine

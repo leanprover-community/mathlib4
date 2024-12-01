@@ -3,6 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Data.Set.Functor
 import Mathlib.Order.Sublattice
 import Mathlib.Order.Hom.CompleteLattice
 

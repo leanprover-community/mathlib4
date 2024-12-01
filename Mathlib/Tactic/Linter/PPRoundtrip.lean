@@ -40,7 +40,7 @@ After that, it applies some pre-emptive changes:
 * doc-module beginnings tend to have some whitespace following them, so we add a space back in;
 * name quotations such as ``` ``Nat``` get pretty-printed as ``` `` Nat```, so we remove a space
   after double back-ticks, but take care of adding one more for triple (or more) back-ticks;
-* `notation3` is not followed by a pretty-printer space, so we add it here (#15515).
+* `notation3` is not followed by a pretty-printer space, so we add it here (https://github.com/leanprover-community/mathlib4/pull/15515).
 -/
 def polishPP (s : String) : String :=
   let s := s.split (·.isWhitespace)
