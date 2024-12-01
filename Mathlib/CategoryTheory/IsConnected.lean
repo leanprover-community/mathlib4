@@ -7,7 +7,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Connected category
@@ -475,11 +475,11 @@ lemma Functor.isConnected_of_isConnected_costructuredArrow
     · intro x t
       have z : CostructuredArrow F Z₂ := Nonempty.some inferInstance
       change Zigzag _ _ at hxz
-      refine' (HXZ x z).trans (_ : Zigzag _ _)
+      refine (HXZ x z).trans (?_ : Zigzag _ _)
       obtain ⟨⟨f⟩⟩ | ⟨⟨f⟩⟩ := hzt
       · exact H f z t
       · exact zigzag_symmetric (H f t z)
-  refine' zigzag_isConnected (fun X₁ Y₁ => _)
+  refine zigzag_isConnected (fun X₁ Y₁ => ?_)
   exact this (isPreconnected_zigzag (F.obj X₁) (F.obj Y₁)) (CostructuredArrow.mk (𝟙 _))
     (CostructuredArrow.mk (𝟙 _))
 

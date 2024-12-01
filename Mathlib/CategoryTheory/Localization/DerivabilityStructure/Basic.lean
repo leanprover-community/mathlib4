@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Localization.Resolution
-import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
-
-=======
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -59,31 +54,22 @@ functors in several variables
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
->>>>>>> origin/ext-change-of-universes
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
 open Category Localization
 
-<<<<<<< HEAD
-variable {C₁ : Type u₁} {C₂ : Type u₂}
-  [Category.{v₁} C₁] [Category.{v₂} C₂]
-=======
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
->>>>>>> origin/ext-change-of-universes
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
 
 variable (Φ : LocalizerMorphism W₁ W₂)
 
-<<<<<<< HEAD
-=======
 /-- A localizer morphism `Φ : LocalizerMorphism W₁ W₂` is a right derivability
 structure if it has right resolutions and the 2-square where the left and right functors
 are localizations functors for `W₁` and `W₂` are Guitart exact. -/
->>>>>>> origin/ext-change-of-universes
 class IsRightDerivabilityStructure : Prop where
   hasRightResolutions : Φ.HasRightResolutions := by infer_instance
   guitartExact' : TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom
@@ -94,39 +80,22 @@ attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
 variable {D₁ D₂ : Type*} [Category D₁] [Category D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
-<<<<<<< HEAD
-lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e' : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
-    Φ.IsRightDerivabilityStructure ↔
-      TwoSquare.GuitartExact e'.hom := by
-=======
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
->>>>>>> origin/ext-change-of-universes
   have : Φ.IsRightDerivabilityStructure ↔
       TwoSquare.GuitartExact ((Φ.catCommSq W₁.Q W₂.Q).iso).hom :=
     ⟨fun h => h.guitartExact', fun h => ⟨inferInstance, h⟩⟩
   rw [this]
-<<<<<<< HEAD
-  let e := (Φ.catCommSq W₁.Q W₂.Q).iso
-=======
   let e' := (Φ.catCommSq W₁.Q W₂.Q).iso
->>>>>>> origin/ext-change-of-universes
   let E₁ := Localization.uniq W₁.Q L₁ W₁
   let E₂ := Localization.uniq W₂.Q L₂ W₂
   let e₁ : W₁.Q ⋙ E₁.functor ≅ L₁ := compUniqFunctor W₁.Q L₁ W₁
   let e₂ : W₂.Q ⋙ E₂.functor ≅ L₂ := compUniqFunctor W₂.Q L₂ W₂
   let e'' : (Φ.functor ⋙ W₂.Q) ⋙ E₂.functor ≅ (W₁.Q ⋙ E₁.functor) ⋙ F :=
-<<<<<<< HEAD
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e₂ ≪≫ e' ≪≫ isoWhiskerRight e₁.symm F
-  let e''' : Φ.localizedFunctor W₁.Q W₂.Q ⋙ E₂.functor ≅ E₁.functor ⋙ F :=
-    liftNatIso W₁.Q W₁ _ _ _ _ e''
-  have : TwoSquare.vComp' e.hom e'''.hom e₁ e₂ = e'.hom := by
-=======
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e₂ ≪≫ e ≪≫ isoWhiskerRight e₁.symm F
   let e''' : Φ.localizedFunctor W₁.Q W₂.Q ⋙ E₂.functor ≅ E₁.functor ⋙ F :=
     liftNatIso W₁.Q W₁ _ _ _ _ e''
   have : TwoSquare.vComp' e'.hom e'''.hom e₁ e₂ = e.hom := by
->>>>>>> origin/ext-change-of-universes
     ext X₁
     rw [TwoSquare.vComp'_app, liftNatIso_hom, liftNatTrans_app]
     simp only [Functor.comp_obj, Iso.trans_hom, isoWhiskerLeft_hom, isoWhiskerRight_hom,
@@ -135,17 +104,10 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor 
     dsimp [Lifting.iso]
     rw [F.map_id, id_comp, ← F.map_comp, Iso.inv_hom_id_app, F.map_id, comp_id,
       ← Functor.map_comp_assoc]
-<<<<<<< HEAD
-    simp only [← assoc]
-    erw [show (CatCommSq.iso Φ.functor W₁.Q W₂.Q (localizedFunctor Φ W₁.Q W₂.Q)).hom = (Lifting.iso W₁.Q W₁ _ _).inv by rfl, Iso.inv_hom_id_app]
-    simp only [NatTrans.id_app, Functor.comp_obj, Functor.map_id, comp_id, Iso.inv_hom_id_app, id_comp]
-  rw [← TwoSquare.GuitartExact.vComp'_iff_of_equivalences e.hom E₁ E₂ e''' e₁ e₂, this]
-=======
     erw [show (CatCommSq.iso Φ.functor W₁.Q W₂.Q (localizedFunctor Φ W₁.Q W₂.Q)).hom =
       (Lifting.iso W₁.Q W₁ _ _).inv by rfl, Iso.inv_hom_id_app]
     simp
   rw [← TwoSquare.GuitartExact.vComp'_iff_of_equivalences e'.hom E₁ E₂ e''' e₁ e₂, this]
->>>>>>> origin/ext-change-of-universes
 
 lemma guitartExact_of_isRightDerivabilityStructure' [h : Φ.IsRightDerivabilityStructure]
     (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) : TwoSquare.GuitartExact e.hom := by
@@ -161,12 +123,8 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasRightResolut
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabilityStructure := by
   rw [(LocalizerMorphism.id W₁).isRightDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
     (Iso.refl _)]
-<<<<<<< HEAD
-  exact TwoSquare.GuitartExact.id W₁.Q
-=======
   dsimp
-  exact TwoSquare.guitartExact_id W₁.Q
->>>>>>> origin/ext-change-of-universes
+  exact TwoSquare.GuitartExact.id W₁.Q
 
 end LocalizerMorphism
 
