@@ -113,6 +113,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
+@[simps]
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
   g := P.f
