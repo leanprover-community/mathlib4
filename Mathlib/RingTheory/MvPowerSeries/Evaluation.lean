@@ -107,10 +107,8 @@ theorem EvalDomain.evalDomain_X :
     classical
     exact variables_tendsto_zero
 
-theorem Continuous.on_scalars [TopologicalRing R]
-    {ε : MvPowerSeries σ R →+* S} (hε : Continuous ε) :
+theorem Continuous.on_scalars {ε : MvPowerSeries σ R →+* S} (hε : Continuous ε) :
     Continuous (ε.comp (C σ R)) := by
-  classical
   rw [coe_comp]
   exact Continuous.comp hε MvPowerSeries.WithPiTopology.continuous_C
 
