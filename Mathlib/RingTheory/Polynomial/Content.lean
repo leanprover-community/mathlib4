@@ -30,8 +30,6 @@ Let `p : R[X]`.
 
 namespace Polynomial
 
-open Polynomial
-
 section Primitive
 
 variable {R : Type*} [CommSemiring R]

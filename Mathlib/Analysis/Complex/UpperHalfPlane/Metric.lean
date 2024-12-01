@@ -25,9 +25,8 @@ ball/sphere with another center and radius.
 
 noncomputable section
 
+open Filter Metric Real Set Topology
 open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
-
-open Set Metric Filter Real
 
 variable {z w : ℍ} {r : ℝ}
 
@@ -45,7 +44,7 @@ theorem sinh_half_dist (z w : ℍ) :
 
 theorem cosh_half_dist (z w : ℍ) :
     cosh (dist z w / 2) = dist (z : ℂ) (conj (w : ℂ)) / (2 * √(z.im * w.im)) := by
-  rw [← sq_eq_sq, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
+  rw [← sq_eq_sq₀, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
   · congr 1
     simp only [Complex.dist_eq, Complex.sq_abs, Complex.normSq_sub, Complex.normSq_conj,
       Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im, coe_im]
@@ -80,7 +79,7 @@ protected theorem dist_comm (z w : ℍ) : dist z w = dist w z := by
 
 theorem dist_le_iff_le_sinh :
     dist z w ≤ r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) ≤ sinh (r / 2) := by
-  rw [← div_le_div_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
+  rw [← div_le_div_iff_of_pos_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
 
 theorem dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) = sinh (r / 2) := by
@@ -88,7 +87,7 @@ theorem dist_eq_iff_eq_sinh :
 
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
-  rw [dist_eq_iff_eq_sinh, ← sq_eq_sq, div_pow, mul_pow, sq_sqrt, mul_assoc]
+  rw [dist_eq_iff_eq_sinh, ← sq_eq_sq₀, div_pow, mul_pow, sq_sqrt, mul_assoc]
   · norm_num
   all_goals positivity
 
@@ -159,7 +158,7 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀, ←
-    (pow_left_strictMonoOn two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
+    (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
 theorem dist_eq_iff_dist_coe_center_eq :

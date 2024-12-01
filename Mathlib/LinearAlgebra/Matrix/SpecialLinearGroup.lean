@@ -3,7 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.RingTheory.RootsOfUnity.Basic
@@ -174,7 +173,7 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i �
 end CoeLemmas
 
 instance monoid : Monoid (SpecialLinearGroup n R) :=
-  Function.Injective.monoid (↑) Subtype.coe_injective coe_one coe_mul coe_pow
+  Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul coe_pow
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
@@ -210,14 +209,6 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
 theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
-
-/-- `toGL` is the map from the special linear group to the general linear group -/
-def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
-  (GeneralLinearGroup.generalLinearEquiv _ _).symm.toMonoidHom.comp toLin'
-
--- Porting note (#11036): broken dot notation
-theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
-  rfl
 
 variable {S : Type*} [CommRing S]
 

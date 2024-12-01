@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Subtype
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Inhabit
@@ -96,8 +97,6 @@ theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
   flip lt_of_le_of_ne'
 
 end PartialOrder
-
-attribute [simp] le_refl
 
 attribute [ext] LE
 
@@ -690,6 +689,12 @@ instance (α : Type*) [LE α] : LE αᵒᵈ :=
 instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
+instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
+  ⟨((· ⊓ ·) : α → α → α)⟩
+
+instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
+  ⟨((· ⊔ ·) : α → α → α)⟩
+
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
@@ -1066,9 +1071,13 @@ theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
+@[gcongr] alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
+
 @[simp, norm_cast]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
@@ -1106,7 +1115,7 @@ namespace Prod
 instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
--- Porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
     [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
   inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
