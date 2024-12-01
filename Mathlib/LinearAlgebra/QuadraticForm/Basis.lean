@@ -17,6 +17,14 @@ a basis.
 
 section Prod
 
+theorem xor_iff_or_and_not_and (P Q : Prop) : Xor' P Q ↔ (P ∨ Q) ∧ (¬ (P ∧ Q)) := by
+  constructor
+  · intro h
+    rw [Xor'] at h
+    aesop
+  · intro h
+    aesop
+
 variable {ι₁ : Type*}
 variable {ι₂ : Type*}
 
@@ -159,8 +167,8 @@ lemma f4 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
   rw [← f3]
   exact f2b p
 
-lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
-    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔ symOffDiagUpper p ∨ symOffDiagLower p := by
+lemma symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔ Xor' (symOffDiagUpper p) (symOffDiagLower p) := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
@@ -169,23 +177,33 @@ lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [Lin
     simp_all only [symOffDiag_iff_proj_eq, ne_eq, symOffDiagUpper_iff_proj_eq,
       symOffDiagLower_iff_proj_eq]
     obtain ⟨left, right⟩ := h
-    have ee1 : i₁ < j₁ ∨ j₁ < i₁ := by
-      aesop
-    have ee2 : i₂ < j₂ ∨ j₂ < i₂ := by
-      aesop
+    have ee1 : Xor' (i₁ < j₁) (j₁ < i₁) := by
+      rw [xor_iff_or_and_not_and]
+      constructor
+      · aesop
+      · simp
+        exact fun a ↦ le_of_lt a
+    have ee2 : Xor' (i₂ < j₂) (j₂ < i₂) := by
+      rw [xor_iff_or_and_not_and]
+      constructor
+      · aesop
+      · simp
+        exact fun a ↦ le_of_lt a
     rcases ee1 with (h | h')
     · rcases ee2 with (g | g')
       · aesop
-      · aesop
+      · rw [xor_iff_or_and_not_and]
+        aesop
     · rcases ee2 with (g | g')
-      · aesop
+      · rw [xor_iff_or_and_not_and]
+        aesop
       · aesop
   · intro h
     aesop
 
-lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂]
-    (p : Sym2 (ι₁ × ι₂)) : p.IsDiag ∨ symOffDiagXor p ∨ symOffDiagUpper p ∨ symOffDiagLower p := by
-  rw [← symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
+lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    p.IsDiag ∨ symOffDiagXor p ∨ (Xor' (symOffDiagUpper p) (symOffDiagLower p)) := by
+  rw [← symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
   exact f4 p
 
 /-
@@ -661,6 +679,11 @@ theorem qt_expansion3 (x : M₁ ⊗[R] M₂) :
         + ∑ p ∈ s₂ with ¬ symOffDiagLower p, Q.polar_lift bm x p = Q x := by
   simp_rw [myadd3a]
   rw [qt_expansion2]
+
+
+-- #check Finset.sum_disjUnion
+
+-- #check Finset.sum_filter_add_sum_filter_not
 
 /-
 lemma filter_change (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
