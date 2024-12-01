@@ -156,40 +156,36 @@ end Field
 
 end
 
-variable {R S A : Type*} [CommRing R] [CommRing S] [CommRing A]
+variable {R S A : Type*} [CommRing R] [CommRing S] [Ring A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable {z : S}
+variable {z : A} {z' : S}
 
 namespace IsAlgebraic
 
-theorem exists_integral_multiple (hz : IsAlgebraic R z) (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
-    ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), algebraMap R S y * z = x := by
-  rcases hz with ⟨p, p_ne_zero, px⟩
+theorem exists_integral_multiple (hz : IsAlgebraic R z)
+    (inj : Function.Injective (algebraMap R A)) :
+    ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
+  have ⟨p, p_ne_zero, px⟩ := hz
   set a := p.leadingCoeff
   have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
-  have x_integral : IsIntegral R (algebraMap R S a * z) :=
+  have x_integral : IsIntegral R (algebraMap R A a * z) :=
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
-      integralNormalization_aeval_eq_zero px inj⟩
-  exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
+      integralNormalization_aeval_eq_zero px fun _ ↦ (map_eq_zero_iff _ inj).mp⟩
+  exact ⟨_, a_ne_zero, Algebra.smul_def a z ▸ x_integral⟩
 
 @[deprecated (since := "2024-11-30")]
 alias _root_.exists_integral_multiple := exists_integral_multiple
 
-theorem exists_smul_integral (hz : IsAlgebraic R z) (inj : Function.Injective (algebraMap R S)) :
-    ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
-  obtain ⟨⟨_, int⟩, y, hy, rfl⟩ := exists_integral_multiple hz fun _ ↦ (map_eq_zero_iff _ inj).mp
-  exact ⟨y, hy, Algebra.smul_def y z ▸ int⟩
-
 theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
-    [alg : Algebra.IsAlgebraic R S] (inj : Function.Injective (algebraMap R S)) (s : Finset S) :
+    [alg : Algebra.IsAlgebraic R A] (inj : Function.Injective (algebraMap R A)) (s : Finset A) :
     ∃ y ≠ (0 : R), ∀ z ∈ s, IsIntegral R (y • z) := by
-  have := Algebra.IsAlgebraic.nontrivial R S
-  choose r hr int using fun x ↦ (alg.1 x).exists_smul_integral inj
+  have := Algebra.IsAlgebraic.nontrivial R A
+  choose r hr int using fun x ↦ (alg.1 x).exists_integral_multiple inj
   refine ⟨∏ x ∈ s, r x, Finset.prod_ne_zero_iff.mpr fun _ _ ↦ hr _, fun _ h ↦ ?_⟩
   classical rw [← Finset.prod_erase_mul _ _ h, mul_smul]
   exact (int _).smul _
 
-theorem of_smul_integral {y : R} (hy : ¬ IsNilpotent y)
+theorem of_smul_isIntegral {y : R} (hy : ¬ IsNilpotent y)
     (h : IsIntegral R (y • z)) : IsAlgebraic R z := by
   have ⟨p, monic, eval0⟩ := h
   refine ⟨p.comp (C y * X), fun h ↦ ?_, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
@@ -205,10 +201,10 @@ theorem of_smul {y : R} (hy : y ∈ nonZeroDivisors R)
   have ⟨p, hp, eval0⟩ := h
   ⟨_, mt (comp_C_mul_X_eq_zero_iff hy).mp hp, by simpa [aeval_comp, Algebra.smul_def] using eval0⟩
 
-theorem iff_exists_smul_integral [IsReduced R] (inj : Function.Injective (algebraMap R S)) :
+theorem iff_exists_smul_integral [IsReduced R] (inj : Function.Injective (algebraMap R A)) :
     IsAlgebraic R z ↔ ∃ y ≠ (0 : R), IsIntegral R (y • z) :=
-  ⟨(exists_smul_integral · inj), fun ⟨_, hy, int⟩ ↦
-    of_smul_integral (by rwa [isNilpotent_iff_eq_zero]) int⟩
+  ⟨(exists_integral_multiple · inj), fun ⟨_, hy, int⟩ ↦
+    of_smul_isIntegral (by rwa [isNilpotent_iff_eq_zero]) int⟩
 
 section trans
 
@@ -221,12 +217,12 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
-  have ⟨s, hs, int_s⟩ := h.exists_smul_integral inj
+  have ⟨s, hs, int_s⟩ := h.exists_integral_multiple inj
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R S
     exact (is_transcendental_of_subsingleton _ _ h).elim
   have ⟨r, hr, _, e⟩ := (int.1 s).isAlgebraic.exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
-  refine .of_smul_integral (y := r) (by rwa [isNilpotent_iff_eq_zero]) ?_
+  refine .of_smul_isIntegral (y := r) (by rwa [isNilpotent_iff_eq_zero]) ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R S,
     e, ← Algebra.smul_def, mul_comm, mul_smul]
   exact isIntegral_trans _ (int_s.smul _)
@@ -285,16 +281,16 @@ include hb nzd
 
 protected lemma mul : IsAlgebraic R (a * b) := by
   refine (em _).elim (fun h ↦ ?_) fun h ↦ (Algebra.isAlgebraic_of_not_injective h).1 _
-  have ⟨ra, a0, int_a⟩ := ha.exists_smul_integral h
-  have ⟨rb, b0, int_b⟩ := hb.exists_smul_integral h
+  have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple h
+  have ⟨rb, b0, int_b⟩ := hb.exists_integral_multiple h
   refine (IsAlgebraic.iff_exists_smul_integral h).mpr ⟨_, mul_ne_zero a0 b0, ?_⟩
   simp_rw [Algebra.smul_def, map_mul, mul_mul_mul_comm, ← Algebra.smul_def]
   exact int_a.mul int_b
 
 protected lemma add : IsAlgebraic R (a + b) := by
   refine (em _).elim (fun h ↦ ?_) fun h ↦ (Algebra.isAlgebraic_of_not_injective h).1 _
-  have ⟨ra, a0, int_a⟩ := ha.exists_smul_integral h
-  have ⟨rb, b0, int_b⟩ := hb.exists_smul_integral h
+  have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple h
+  have ⟨rb, b0, int_b⟩ := hb.exists_integral_multiple h
   refine (IsAlgebraic.iff_exists_smul_integral h).mpr ⟨_, mul_ne_zero b0 a0, ?_⟩
   rw [smul_add, mul_smul, mul_comm, mul_smul]
   exact (int_a.smul _).add (int_b.smul _)
@@ -342,6 +338,10 @@ theorem integralClosure_le_algebraicClosure [IsDomain R] :
     integralClosure R S ≤ Subalgebra.algebraicClosure R S :=
   fun _ ↦ IsIntegral.isAlgebraic
 
+theorem Subalgebra.algebraicClosure_eq_integralClosure {K} [Field K] [Algebra K S] :
+    algebraicClosure K S = integralClosure K S :=
+  SetLike.ext fun _ ↦ isAlgebraic_iff_isIntegral
+
 instance [IsDomain R] : Algebra.IsAlgebraic R (Subalgebra.algebraicClosure R S) :=
   (Subalgebra.isAlgebraic_iff _).mp fun _ ↦ id
 
@@ -362,7 +362,7 @@ theorem Algebra.isAlgebraic_adjoin_singleton_iff [NoZeroDivisors R] {s : S} :
     (adjoin R {s}).IsAlgebraic ↔ IsAlgebraic R s :=
   (isAlgebraic_adjoin_of_nonempty <| Set.singleton_nonempty s).trans forall_eq
 
-theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y : S} (hy : y ∈ nonZeroDivisors S)
+theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivisors S)
     (alg_y : IsAlgebraic R y) (alg_yz : IsAlgebraic R (y * z)) : IsAlgebraic R z := by
   have ⟨t, ht, r, hr, eq⟩ := alg_y.exists_nonzero_eq_adjoin_mul hy
   have := alg_yz.mul (Algebra.isAlgebraic_adjoin_singleton_iff.mpr alg_y _ ht)
@@ -370,6 +370,8 @@ theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y : S} (hy : y ∈ nonZeroDivisor
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
 
 namespace Transcendental
+
+section
 
 variable {a : A} (ha : Transcendental R a)
 include ha
@@ -386,12 +388,17 @@ lemma extendScalars [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
   rw [Transcendental, not_not] at ha ⊢
   exact ha.restrictScalars _ inj
 
-protected lemma integralClosure [NoZeroDivisors A] :
-    Transcendental (integralClosure R A) a :=
+end
+
+variable {a : S} (ha : Transcendental R a)
+include ha
+
+protected lemma integralClosure [NoZeroDivisors S] :
+    Transcendental (integralClosure R S) a :=
   ha.extendScalars_of_isIntegral Subtype.val_injective
 
-protected lemma algebraicClosure [IsDomain R] [NoZeroDivisors A] :
-    Transcendental (Subalgebra.algebraicClosure R A) a :=
+protected lemma algebraicClosure [IsDomain R] [NoZeroDivisors S] :
+    Transcendental (Subalgebra.algebraicClosure R S) a :=
   ha.extendScalars Subtype.val_injective
 
 end Transcendental
