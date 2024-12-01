@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
 import Lean
-import Mathlib.Order.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.GCongr.ForwardAttr
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Mathlib.Tactic.Core
+import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -367,7 +367,7 @@ partial def _root_.Lean.MVarId.gcongr
   for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
+      Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
     catch e => pure (Except.error e)
     match gs with
     | .error e =>
