@@ -166,6 +166,10 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
 
 theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
 
+theorem cast_three [AddMonoidWithOne R] : ((3 : ℕ) : R) = (3 : R) := rfl
+
+theorem cast_four [AddMonoidWithOne R] : ((4 : ℕ) : R) = (4 : R) := rfl
+
 attribute [simp, norm_cast] Int.natAbs_ofNat
 
 end Nat
