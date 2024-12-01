@@ -259,8 +259,7 @@ theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order.lift (order_finite_iff_ne_zero.mpr hf) = 0 := by
-      sorry
-      -- simp only [order_zero_of_unit h, PartENat.get_zero]
+      simp [order_zero_of_unit h]
     convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
     simp only [this, pow_zero, one_mul]⟩
 
