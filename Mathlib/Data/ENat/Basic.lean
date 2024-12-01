@@ -286,13 +286,9 @@ lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
 
-@[simp]
-lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m :=
-  WithTop.coe_lt_coe
+lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 
-@[simp]
-lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m :=
-  WithTop.coe_le_coe
+lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
