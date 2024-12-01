@@ -3,10 +3,8 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Order.SymmDiff
-
-#align_import measure_theory.decomposition.signed_hahn from "leanprover-community/mathlib"@"bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e"
 
 /-!
 # Hahn decomposition
@@ -83,7 +81,7 @@ To implement this in Lean, we define several auxiliary definitions.
   where
   `restrictNonposSeq s i 0 = someExistsOneDivLT s (i \ ∅)` and
   `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
-  This definition represents the sequence $(A_n)$ in the proof as described above.
+  This definition represents the sequence $(A_n)$ in the proof as described above.
 
 With these definitions, we are able consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.
@@ -191,7 +189,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
   | succ n =>
     rw [restrictNonposSeq_succ]
     have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
-      refine mt (restrict_le_zero_subset _ ?_ (by simp [Nat.lt_succ_iff]; rfl)) hn
+      refine mt (restrict_le_zero_subset _ ?_ (by simp [Nat.lt_succ_iff])) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
     rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
@@ -231,7 +229,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
     MeasurableSet.iUnion fun _ => MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   refine ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset, hk₂, ?_⟩
-  rw [of_diff hmeas hi₁, s.of_disjoint_iUnion_nat]
+  rw [of_diff hmeas hi₁, s.of_disjoint_iUnion]
   · have h₁ : ∀ l < k, 0 ≤ s (restrictNonposSeq s i l) := by
       intro l hl
       refine le_of_lt (measure_of_restrictNonposSeq h _ ?_)
@@ -249,7 +247,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       rw [Set.mem_iUnion, exists_prop, and_iff_right_iff_imp]
       exact fun _ => h
     · convert le_of_eq s.empty.symm
-      ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false_iff]
+      ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false]
       exact fun h' => False.elim (h h')
   · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   · intro a b hab
@@ -278,7 +276,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
         simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
         exact fun _ => Nat.lt_succ_iff.symm
   have h₁ : s i = s A + ∑' l, s (restrictNonposSeq s i l) := by
-    rw [hA, ← s.of_disjoint_iUnion_nat, add_comm, of_add_of_diff]
+    rw [hA, ← s.of_disjoint_iUnion, add_comm, of_add_of_diff]
     · exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
     exacts [hi₁, Set.iUnion_subset fun _ => restrictNonposSeq_subset _, fun _ =>
       restrictNonposSeq_measurableSet _, restrictNonposSeq_disjoint]
@@ -314,7 +312,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     · have : 1 / s E < bdd k := by
         linarith only [le_of_max_le_left (hk k le_rfl)]
       rw [one_div] at this ⊢
-      rwa [inv_lt (lt_trans (inv_pos.2 hE₃) this) hE₃]
+      exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
   have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
     apply Set.diff_subset_diff_right
@@ -326,18 +324,15 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩
   convert hk₂; norm_cast
   exact tsub_add_cancel_of_le hk₁
-#align measure_theory.signed_measure.exists_subset_restrict_nonpos MeasureTheory.SignedMeasure.exists_subset_restrict_nonpos
 
 end ExistsSubsetRestrictNonpos
 
 /-- The set of measures of the set of measurable negative sets. -/
 def measureOfNegatives (s : SignedMeasure α) : Set ℝ :=
   s '' { B | MeasurableSet B ∧ s ≤[B] 0 }
-#align measure_theory.signed_measure.measure_of_negatives MeasureTheory.SignedMeasure.measureOfNegatives
 
 theorem zero_mem_measureOfNegatives : (0 : ℝ) ∈ s.measureOfNegatives :=
   ⟨∅, ⟨MeasurableSet.empty, le_restrict_empty _ _⟩, s.empty⟩
-#align measure_theory.signed_measure.zero_mem_measure_of_negatives MeasureTheory.SignedMeasure.zero_mem_measureOfNegatives
 
 theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
   simp_rw [BddBelow, Set.Nonempty, mem_lowerBounds]
@@ -362,7 +357,6 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
     · exact (MeasurableSet.iUnion hmeas).diff (hmeas n)
   rcases exists_nat_gt (-s A) with ⟨n, hn⟩
   exact lt_irrefl _ ((neg_lt.1 hn).trans_le (hfalse n))
-#align measure_theory.signed_measure.bdd_below_measure_of_negatives MeasureTheory.SignedMeasure.bddBelow_measureOfNegatives
 
 /-- Alternative formulation of `MeasureTheory.SignedMeasure.exists_isCompl_positive_negative`
 (the Hahn decomposition theorem) using set complements. -/
@@ -378,7 +372,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   have hA₂ : s ≤[A] 0 := restrict_le_restrict_iUnion _ _ hB₁ hB₂
   have hA₃ : s A = sInf s.measureOfNegatives := by
     apply le_antisymm
-    · refine le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (eventually_of_forall fun n => ?_)
+    · refine le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (Eventually.of_forall fun n => ?_)
       rw [← (hB n).2, hA, ← Set.diff_union_of_subset (Set.subset_iUnion _ n),
         of_union Set.disjoint_sdiff_left _ (hB₁ n)]
       · refine add_le_of_nonpos_left ?_
@@ -405,7 +399,6 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   refine csInf_le bddBelow_measureOfNegatives ⟨A ∪ D, ⟨?_, ?_⟩, rfl⟩
   · exact hA₁.union hD₁
   · exact restrict_le_restrict_union _ _ hA₁ hA₂ hD₁ hD₂
-#align measure_theory.signed_measure.exists_compl_positive_negative MeasureTheory.SignedMeasure.exists_compl_positive_negative
 
 /-- **The Hahn decomposition theorem**: Given a signed measure `s`, there exist
 complement measurable sets `i` and `j` such that `i` is positive, `j` is negative. -/
@@ -413,7 +406,6 @@ theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
     ∃ i j : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ MeasurableSet j ∧ s ≤[j] 0 ∧ IsCompl i j :=
   let ⟨i, hi₁, hi₂, hi₃⟩ := exists_compl_positive_negative s
   ⟨i, iᶜ, hi₁, hi₂, hi₁.compl, hi₃, isCompl_compl⟩
-#align measure_theory.signed_measure.exists_is_compl_positive_negative MeasureTheory.SignedMeasure.exists_isCompl_positive_negative
 
 open scoped symmDiff in
 /-- The symmetric difference of two Hahn decompositions has measure zero. -/
@@ -448,7 +440,6 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
     · exact hj.inter hi.compl
     · exact hi.inter hj.compl
   all_goals measurability
-#align measure_theory.signed_measure.of_symm_diff_compl_positive_negative MeasureTheory.SignedMeasure.of_symmDiff_compl_positive_negative
 
 end SignedMeasure
 

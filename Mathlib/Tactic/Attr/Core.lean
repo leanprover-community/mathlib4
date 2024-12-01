@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Tactic.Attr.Register
-import Batteries.Logic
 
 /-!
 # Simp tags for core lemmas
@@ -21,8 +20,5 @@ attribute [monad_norm] seq_eq_bind_map
 -- Porting note: changed some `iff` lemmas to `eq` lemmas
 attribute [mfld_simps] id and_true true_and Function.comp_apply and_self eq_self not_false
   true_or or_true heq_eq_eq forall_const and_imp
-
--- Porting note: until we change the default induction principle on `Nat`:
-attribute [ghost_simps] Nat.zero_eq
 
 attribute [nontriviality] eq_iff_true_of_subsingleton

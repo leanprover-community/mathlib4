@@ -6,8 +6,6 @@ Authors: Yourong Zang
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.InnerProductSpace.Basic
 
-#align_import analysis.inner_product_space.conformal_linear_map from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
-
 /-!
 # Conformal maps between inner product spaces
 
@@ -41,4 +39,3 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
         inv_mul_cancel_left₀ hc.ne', LinearMap.smul_apply, ContinuousLinearMap.coe_coe]
     · ext1 x
       exact (smul_inv_smul₀ hc.ne' (f x)).symm
-#align is_conformal_map_iff isConformalMap_iff

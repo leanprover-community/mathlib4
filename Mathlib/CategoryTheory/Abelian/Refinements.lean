@@ -80,7 +80,7 @@ lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ X), π ≫ y = x ≫ f := by
   constructor
   · intro _ A a
-    exact ⟨pullback a f, pullback.fst, inferInstance, pullback.snd, pullback.condition⟩
+    exact ⟨pullback a f, pullback.fst a f, inferInstance, pullback.snd a f, pullback.condition⟩
   · intro hf
     obtain ⟨A, π, hπ, a', fac⟩ := hf (𝟙 Y)
     rw [comp_id] at fac
@@ -109,5 +109,14 @@ lemma ShortComplex.Exact.exact_up_to_refinements
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements] at hS
   exact hS x₂ hx₂
+
+lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A ⟶ S.homology) :
+    ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ S.X₂) (hz : z ≫ S.g = 0),
+      π ≫ γ = S.liftCycles z hz ≫ S.homologyπ := by
+  obtain ⟨A', π, hπ, z, hz⟩ := surjective_up_to_refinements_of_epi S.homologyπ γ
+  refine ⟨A', π, hπ, z ≫ S.iCycles, by simp, ?_⟩
+  rw [hz]
+  congr 1
+  rw [← cancel_mono S.iCycles, liftCycles_i]
 
 end CategoryTheory

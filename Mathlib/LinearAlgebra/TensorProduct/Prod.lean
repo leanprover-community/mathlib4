@@ -15,6 +15,11 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 
 * `TensorProduct.prodLeft`
 * `TensorProduct.prodRight`
+
+## Notes
+
+See `Mathlib.LinearAlgebra.TensorProduct.Pi` for arbitrary products.
+
 -/
 
 universe uR uM₁ uM₂ uM₃

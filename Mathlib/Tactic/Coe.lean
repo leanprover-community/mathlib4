@@ -3,12 +3,13 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+import Mathlib.Init
 import Lean.Elab.ElabRules
 
-open Lean Elab Term Meta
-
 /-!
-Defines notations for coercions.
+# Additional coercion notation
+
+Defines notation for coercions.
 1. `↑ t` is defined in core.
 2. `(↑)` is equivalent to the eta-reduction of `(↑ ·)`
 3. `⇑ t` is a coercion to a function type.
@@ -16,6 +17,8 @@ Defines notations for coercions.
 3. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
+
+open Lean Meta
 
 namespace Lean.Elab.Term.CoeImpl
 
@@ -58,3 +61,5 @@ elab "(" "↥" ")" : term <= expectedType =>
       ensureHasType b ty
     else
       throwError "cannot coerce to sort{indentExpr x}"
+
+end Lean.Elab.Term.CoeImpl
