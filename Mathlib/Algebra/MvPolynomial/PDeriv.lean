@@ -73,13 +73,6 @@ theorem pderiv_monomial {i : σ} :
   · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
   · simp
 
-lemma _root_.Finsupp.sub_add_single_one_cancel {m : σ →₀ ℕ} {i : σ} (hi : m i ≠ 0) :
-    (m - single i 1) + single i 1 = m := by
-  ext j; apply Nat.sub_add_cancel
-  obtain rfl|hj := eq_or_ne i j
-  · rw [Finsupp.single_eq_same]; omega
-  · rw [Finsupp.single_eq_of_ne hj]; exact Nat.zero_le _
-
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
     X i * pderiv i (monomial m r) = m i • monomial m r := by
   rw [pderiv_monomial, X, monomial_mul, smul_monomial]
@@ -151,20 +144,7 @@ lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
 
-theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
-    pderiv i (map φ f) = map φ (pderiv i f) := by
-  apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
-  obtain rfl | h := eq_or_ne j i
-  · simp [eq]
-  · simp [eq, h]
-
 end PDeriv
-
-lemma weightedDegree_sub_single_add {M} [AddCommMonoid M] {w : σ → M} {m : σ →₀ ℕ} {i : σ}
-    (hi : m i ≠ 0) : (weightedDegree w) (m - .single i 1) + w i = weightedDegree w m := by
-  conv_rhs => rw [← sub_add_single_one_cancel hi, weightedDegree_apply]
-  rw [sum_add_index', sum_single_index, one_smul, weightedDegree_apply]
-  exacts [zero_smul .., fun _ ↦ zero_smul .., fun _ _ _ ↦ add_smul ..]
 
 variable {M} [CommSemiring R] {φ : MvPolynomial σ R}
 
@@ -173,13 +153,13 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
     (pderiv i φ).IsWeightedHomogeneous w n' := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
     Finsupp.supported_eq_span_single] at h
-  refine Submodule.span_induction h ?_ ?_ (fun p q hp hq ↦ ?_) fun r p h ↦ ?_
+  refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, pderiv_monomial, one_mul]
     by_cases hi : m i = 0
     · rw [hi, Nat.cast_zero, monomial_zero]; apply isWeightedHomogeneous_zero
     convert isWeightedHomogeneous_monomial ..
-    rw [← add_right_cancel_iff (a := w i), h', ← hm, weightedDegree_sub_single_add hi]
+    rw [← add_right_cancel_iff (a := w i), h', ← hm, weight_sub_single_add hi]
   · rw [map_zero]; apply isWeightedHomogeneous_zero
   · rw [map_add]; exact hp.add hq
   · rw [(pderiv i).map_smul]; exact (weightedHomogeneousSubmodule ..).smul_mem _ h
@@ -187,7 +167,7 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
 protected lemma IsHomogeneous.pderiv {n : ℕ} {i : σ} (h : φ.IsHomogeneous n) :
     (pderiv i φ).IsHomogeneous (n - 1) := by
   obtain _ | n := n
-  · rw [← totalDegree_zero_iff_isHomogeneous, totalDegree_eq_zero_iff] at h
+  · rw [← totalDegree_zero_iff_isHomogeneous, totalDegree_eq_zero_iff_eq_C] at h
     rw [h, pderiv_C]; apply isHomogeneous_zero
   · exact IsWeightedHomogeneous.pderiv h rfl
 
@@ -198,12 +178,12 @@ open Finset in
 theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
     (h : φ.IsWeightedHomogeneous w n) : ∑ i : σ, w i • (X i * pderiv i φ) = n • φ := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
-    Finsupp.supported_eq_span_single] at h
-  refine Submodule.span_induction h ?_ ?_ (fun p q hp hq ↦ ?_) fun r p h ↦ ?_
+    supported_eq_span_single] at h
+  refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, X_mul_pderiv_monomial, smul_smul, ← sum_smul, mul_comm (w _)]
     congr
-    rwa [Set.mem_setOf, weightedDegree_apply, Finsupp.sum_fintype] at hm
+    rwa [Set.mem_setOf, weight_apply, sum_fintype] at hm
     intro; apply zero_smul
   · simp
   · simp_rw [map_add, left_distrib, smul_add, sum_add_distrib, hp, hq]

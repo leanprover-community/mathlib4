@@ -496,7 +496,7 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
 
-theorem totalDegree_eq_zero_iff {p : MvPolynomial σ R} :
+theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
     p.totalDegree = 0 ↔ p = C (p.coeff 0) := by
   constructor <;> intro h
   · ext m; classical rw [coeff_C]; split_ifs with hm; · rw [← hm]
