@@ -218,7 +218,7 @@ theorem geom_mean_eq_arith_mean_weighted_iff' (w z : ι → ℝ) (hw : ∀ i ∈
     · apply Eq.congr <;>
       [apply prod_congr rfl; apply sum_congr rfl] <;>
       intro i hi <;>
-      simp [exp_mul, exp_log (hz' i hi)]
+      simp only [exp_mul, exp_log (hz' i hi)]
     · constructor <;> intro h j hj
       · rw [← arith_mean_weighted_of_constant s w _ (log (z j)) hw' fun i _ => congrFun rfl]
         apply sum_congr rfl
