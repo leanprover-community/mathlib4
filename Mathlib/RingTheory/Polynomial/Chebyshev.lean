@@ -25,9 +25,9 @@ with integral coefficients.
 
 * The formal derivative of the Chebyshev polynomials of the first kind is a scalar multiple of the
   Chebyshev polynomials of the second kind.
-* `Polynomial.Chebyshev.mul_T`, twice the product of the `m`-th and `k`-th Chebyshev polynomials of
-  the first kind is the sum of the `m + k`-th and `m - k`-th Chebyshev polynomials of the first
-  kind. There is a similar statement `Polynomial.Chebyshev.mul_C` for the `C` polynomials.
+* `Polynomial.Chebyshev.T_mul_T`, twice the product of the `m`-th and `k`-th Chebyshev polynomials
+  of the first kind is the sum of the `m + k`-th and `m - k`-th Chebyshev polynomials of the first
+  kind. There is a similar statement `Polynomial.Chebyshev.C_mul_C` for the `C` polynomials.
 * `Polynomial.Chebyshev.T_mul`, the `(m * n)`-th Chebyshev polynomial of the first kind is the
   composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind. There is a similar
   statement `Polynomial.Chebyshev.C_mul` for the `C` polynomials.
@@ -254,7 +254,7 @@ theorem C_zero : C R 0 = 2 := rfl
 @[simp]
 theorem C_one : C R 1 = X := rfl
 
-theorem C_neg_one : C R (-1) = X := (by ring : X * 2 - X = X)
+theorem C_neg_one : C R (-1) = X := show X * 2 - X = X by ring
 
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
@@ -439,9 +439,9 @@ theorem map_C (f : R →+* R') (n : ℤ) : map f (C R n) = C R' n := by
   | zero => simp
   | one => simp
   | add_two n ih1 ih2 =>
-    simp_rw [C_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+    simp_rw [C_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
   | neg_add_one n ih1 ih2 =>
-    simp_rw [C_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+    simp_rw [C_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
 
 @[simp]
 theorem map_S (f : R →+* R') (n : ℤ) : map f (S R n) = S R' n := by
@@ -494,7 +494,7 @@ variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
-theorem mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
+theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
   induction k using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
   | one => rw [T_add_one, T_one]; ring
@@ -511,7 +511,7 @@ theorem mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
 
 /-- The product of two Chebyshev `C` polynomials is the sum of two other Chebyshev `C` polynomials.
 -/
-theorem mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
+theorem C_mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
   induction k using Polynomial.Chebyshev.induct with
   | zero => simp [mul_two]
   | one => rw [C_add_one, C_one]; ring
@@ -532,12 +532,12 @@ theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
   | zero => simp
   | one => simp
   | add_two m ih1 ih2 =>
-    have h₁ := mul_T R ((m + 1) * n) n
+    have h₁ := T_mul_T R ((m + 1) * n) n
     have h₂ := congr_arg (comp · (T R n)) <| T_add_two R m
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
   | neg_add_one m ih1 ih2 =>
-    have h₁ := mul_T R ((-m) * n) n
+    have h₁ := T_mul_T R ((-m) * n) n
     have h₂ := congr_arg (comp · (T R n)) <| T_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
@@ -548,12 +548,12 @@ theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
   | zero => simp
   | one => simp
   | add_two m ih1 ih2 =>
-    have h₁ := mul_C R ((m + 1) * n) n
+    have h₁ := C_mul_C R ((m + 1) * n) n
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R m
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
   | neg_add_one m ih1 ih2 =>
-    have h₁ := mul_C R ((-m) * n) n
+    have h₁ := C_mul_C R ((-m) * n) n
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
