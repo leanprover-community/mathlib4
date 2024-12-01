@@ -200,22 +200,18 @@ section StrictMono
 
 variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
-theorem StrictMono.mem_upperBounds_image (hf : StrictMono f) :
-    f a ∈ upperBounds (f '' s) ↔ a ∈ upperBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.monotone.mem_upperBounds_image⟩
+lemma StrictMono.mem_upperBounds_image (hf : StrictMono f) :
+    f a ∈ upperBounds (f '' s) ↔ a ∈ upperBounds s := by simp [upperBounds, hf.le_iff_le]
 
-theorem StrictMono.mem_lowerBounds_image (hf : StrictMono f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.monotone.mem_lowerBounds_image⟩
+lemma StrictMono.mem_lowerBounds_image (hf : StrictMono f) :
+    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s :=  by simp [lowerBounds, hf.le_iff_le]
 
-theorem StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    hf.mem_lowerBounds_image.mp Ha.right⟩, hf.monotone.map_isLeast⟩
+lemma StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a := by
+  simp [IsLeast, hf.injective.eq_iff, hf.mem_lowerBounds_image]
 
-theorem StrictMono.map_isGreatest (hf : StrictMono f) :
-    IsGreatest (f '' s) (f a) ↔ IsGreatest s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left, hf.mem_upperBounds_image.mp Ha.right⟩,
-    hf.monotone.map_isGreatest⟩
+lemma StrictMono.map_isGreatest (hf : StrictMono f) : 
+    IsGreatest (f '' s) (f a) ↔ IsGreatest s a := by
+  simp [IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
 end StrictMono
 
@@ -223,23 +219,19 @@ section StrictAnti
 
 variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
-theorem StrictAnti.mem_upperBounds_image (hf : StrictAnti f) :
-    f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.antitone.mem_upperBounds_image⟩
+lemma StrictAnti.mem_upperBounds_image (hf : StrictAnti f) :
+    f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s := by
+  simp [upperBounds, lowerBounds, hf.le_iff_le]
 
-theorem StrictAnti.mem_lowerBounds_image (hf : StrictAnti f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.antitone.mem_lowerBounds_image⟩
+lemma StrictAnti.mem_lowerBounds_image (hf : StrictAnti f) :
+    f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s := by
+  simp [upperBounds, lowerBounds, hf.le_iff_le]
 
-theorem StrictAnti.map_isLeast (hf : StrictAnti f) :
-    IsLeast (f '' s) (f a) ↔ IsGreatest s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    hf.mem_lowerBounds_image.mp Ha.right⟩, hf.antitone.map_isGreatest⟩
+lemma StrictAnti.map_isLeast (hf : StrictAnti f) : IsLeast (f '' s) (f a) ↔ IsGreatest s a := by
+  simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_lowerBounds_image]
 
-theorem StrictAnti.map_isGreatest (hf : StrictAnti f) :
-    IsGreatest (f '' s) (f a) ↔ IsLeast s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left, hf.mem_upperBounds_image.mp Ha.right⟩,
-    hf.antitone.map_isLeast⟩
+lemma StrictAnti.map_isGreatest (hf : StrictAnti f) : IsGreatest (f '' s) (f a) ↔ IsLeast s a := by
+  simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_upperBounds_image]
 
 end StrictAnti
 
