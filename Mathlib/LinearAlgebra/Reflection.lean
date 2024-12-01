@@ -216,7 +216,7 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M) :
           ((f y * g z - f z) • x - g z • y) := by
   induction m using Int.negInduction with
   | nat m => exact_mod_cast reflection_mul_reflection_pow_apply hf hg m z
-  | neg m _ =>
+  | neg _ m =>
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast]
     simp only [reflection_mul_reflection_pow_apply]
     rw [add_right_comm z]
