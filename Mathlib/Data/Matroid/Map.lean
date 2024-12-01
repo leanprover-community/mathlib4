@@ -174,7 +174,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
   simpa using hI.1.subset_ground
 
 @[simp] lemma comap_id (N : Matroid β) : N.comap id = N :=
-  eq_of_indep_iff_indep_forall rfl <| by simp [injective_id.injOn]
+  ext_indep rfl <| by simp [injective_id.injOn]
 
 lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
     (N.comap f).Indep I ↔ N.Indep (f '' I) := by
@@ -276,7 +276,7 @@ lemma comapOn_base_iff_of_bijOn (h : BijOn f E N.E) :
 
 lemma comapOn_dual_eq_of_bijOn (h : BijOn f E N.E) :
     (N.comapOn E f)✶ = N✶.comapOn E f := by
-  refine eq_of_base_iff_base_forall (by simp) (fun B hB ↦ ?_)
+  refine ext_base (by simp) (fun B hB ↦ ?_)
   rw [comapOn_base_iff_of_bijOn (by simpa), dual_base_iff, comapOn_base_iff_of_bijOn h,
     dual_base_iff _, comapOn_ground_eq, and_iff_left diff_subset, and_iff_left (by simpa),
     h.injOn.image_diff_subset (by simpa), h.image_eq]
@@ -438,7 +438,7 @@ lemma map_basis_iff' {I X : Set β} {hf} :
   exact hIX.map hf
 
 @[simp] lemma map_dual {hf} : (M.map f hf)✶ = M✶.map f hf := by
-  apply eq_of_base_iff_base_forall (by simp)
+  apply ext_base (by simp)
   simp only [dual_ground, map_ground, subset_image_iff, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, dual_base_iff']
   intro B hB
@@ -456,18 +456,18 @@ lemma map_basis_iff' {I X : Set β} {hf} :
   rw [← dual_inj]; simp
 
 @[simp] lemma map_id : M.map id (injOn_id M.E) = M := by
-  simp [eq_iff_indep_iff_indep_forall]
+  simp [ext_iff_indep]
 
 lemma map_comap {f : α → β} (h_range : N.E ⊆ range f) (hf : InjOn f (f ⁻¹' N.E)) :
     (N.comap f).map f hf = N := by
-  refine eq_of_indep_iff_indep_forall (by simpa [image_preimage_eq_iff]) ?_
+  refine ext_indep (by simpa [image_preimage_eq_iff]) ?_
   simp only [map_ground, comap_ground_eq, map_indep_iff, comap_indep_iff, forall_subset_image_iff]
   refine fun I hI ↦ ⟨fun ⟨I₀, ⟨hI₀, _⟩, hII₀⟩ ↦ ?_, fun h ↦ ⟨_, ⟨h, hf.mono hI⟩, rfl⟩⟩
   suffices h : I₀ ⊆ f ⁻¹' N.E by rw [InjOn.image_eq_image_iff hf hI h] at hII₀; rwa [hII₀]
   exact (subset_preimage_image f I₀).trans <| preimage_mono (f := f) hI₀.subset_ground
 
 lemma comap_map {f : α → β} (hf : f.Injective) : (M.map f hf.injOn).comap f = M := by
-  simp [eq_iff_indep_iff_indep_forall, preimage_image_eq _ hf, and_iff_left hf.injOn,
+  simp [ext_iff_indep, preimage_image_eq _ hf, and_iff_left hf.injOn,
     image_eq_image hf]
 
 instance [M.Nonempty] {f : α → β} (hf) : (M.map f hf).Nonempty :=
@@ -672,7 +672,7 @@ lemma restrictSubtype_base_iff {B : Set X} : (M.restrictSubtype X).Base B ↔ M.
 lemma eq_of_restrictSubtype_eq {N : Matroid α} (hM : M.E = E) (hN : N.E = E)
     (h : M.restrictSubtype E = N.restrictSubtype E) : M = N := by
   subst hM
-  refine eq_of_indep_iff_indep_forall (by rw [hN]) (fun I hI ↦ ?_)
+  refine ext_indep (by rw [hN]) (fun I hI ↦ ?_)
   rwa [← restrictSubtype_indep_iff_of_subset hI, h, restrictSubtype_indep_iff_of_subset]
 
 @[simp] lemma restrictSubtype_dual : (M.restrictSubtype M.E)✶ = M✶.restrictSubtype M.E := by

@@ -188,7 +188,7 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   use `Matroid.ofBase` or a variant. If just the independent sets are known,
   define an `IndepMatroid`, and then use `IndepMatroid.matroid`.
   -/
-@[ext] structure Matroid (α : Type _) where
+structure Matroid (α : Type _) where
   /-- `M` has a ground set `E`. -/
   (E : Set α)
   /-- `M` has a predicate `Base` defining its bases. -/
@@ -207,6 +207,8 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty Indep X)
   /-- Every base is contained in the ground set. -/
   (subset_ground : ∀ B, Base B → B ⊆ E)
+
+attribute [local ext] Matroid
 
 namespace Matroid
 
@@ -459,7 +461,7 @@ theorem Base.diff_infinite_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).Infinite ↔ (B₂ \ B₁).Infinite :=
   infinite_iff_infinite_of_encard_eq_encard (hB₁.encard_diff_comm hB₂)
 
-theorem eq_of_base_iff_base_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
+theorem ext_base {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ ⦃B⦄, B ⊆ M₁.E → (M₁.Base B ↔ M₂.Base B)) : M₁ = M₂ := by
   have h' : ∀ B, M₁.Base B ↔ M₂.Base B :=
     fun B ↦ ⟨fun hB ↦ (h hB.subset_ground).1 hB,
@@ -665,7 +667,7 @@ theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.B
 (hB.indep.subset hIB.subset).exists_insert_of_not_base
     (fun hI ↦ hIB.ne (hI.eq_of_subset_base hB hIB.subset)) hB'
 
-theorem eq_of_indep_iff_indep_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
+@[ext] theorem ext_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I)) : M₁ = M₂ :=
   have h' : M₁.Indep = M₂.Indep := by
     ext I
@@ -673,11 +675,11 @@ theorem eq_of_indep_iff_indep_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M�
     · rwa [h]
     exact iff_of_false (fun hi ↦ hI hi.subset_ground)
       (fun hi ↦ hI (hi.subset_ground.trans_eq hE.symm))
-  eq_of_base_iff_base_forall hE (fun B _ ↦ by simp_rw [base_iff_maximal_indep, h'])
+  ext_base hE (fun B _ ↦ by simp_rw [base_iff_maximal_indep, h'])
 
-theorem eq_iff_indep_iff_indep_forall {M₁ M₂ : Matroid α} :
+theorem ext_iff_indep {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
-⟨fun h ↦ by (subst h; simp), fun h ↦ eq_of_indep_iff_indep_forall h.1 h.2⟩
+⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
 
 /-- A `Finitary` matroid is one where a set is independent if and only if it all
   its finite subsets are independent, or equivalently a matroid whose circuits are finite. -/
@@ -1002,7 +1004,7 @@ theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.
   have hf : f.Injective := by
     refine fun M M' hMM' ↦ ?_
     rw [Prod.mk.injEq, and_comm, Set.ext_iff, and_comm] at hMM'
-    exact eq_of_base_iff_base_forall hMM'.1 (fun B _ ↦ hMM'.2 B)
+    exact ext_base hMM'.1 (fun B _ ↦ hMM'.2 B)
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
   rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
