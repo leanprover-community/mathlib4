@@ -476,7 +476,7 @@ lemma myadd2
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   simp_rw [← Finset.sum_filter_add_sum_filter_not s symOffDiagUpper (Q.polar_lift bm x)]
-  simp_all only [add_left_inj]
+  simp only [add_left_inj]
   apply Finset.sum_congr rfl
   intro p hp
   rw [polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp]
@@ -490,6 +490,19 @@ lemma myadd2a
       + ∑ p ∈ s with ¬ symOffDiagUpper p, Q.polar_lift bm x p =
       ∑ p ∈ s, polar_lift Q bm x p := myadd2 _ _ _ _ _ _
 
+lemma myadd3
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+      ∑ p ∈ s with ¬ symOffDiagLower p, Q.polar_lift bm x p =
+      ∑ p ∈ s, polar_lift Q bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  apply Finset.sum_subset (Finset.filter_subset _ _)
+  intro p hps hpn
+  simp at hpn
+  rw [polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s _ _ (by simp_all only [forall_const,
+    Finset.mem_filter, and_self])]
 
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
