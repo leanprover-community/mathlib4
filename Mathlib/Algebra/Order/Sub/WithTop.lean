@@ -76,9 +76,7 @@ instance : OrderedSub (WithTop α) := by
   · simp
   cases z
   · simp
-  -- FIXME: norm_cast is not working on #6123
-  -- norm_cast
-  -- exact tsub_le_iff_right
-  sorry
+  norm_cast
+  exact tsub_le_iff_right
 
 end WithTop

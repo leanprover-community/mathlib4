@@ -942,9 +942,7 @@ lemma le_of_forall_lt_iff_le [LinearOrder α] [DenselyOrdered α] [NoMinOrder α
   | coe x =>
     rw [le_coe_iff]
     rintro y rfl
-    -- FIXME: norm_cast is not working on #6123
-    -- exact le_of_forall_le_of_dense (by exact_mod_cast h)
-    sorry
+    exact le_of_forall_le_of_dense (by exact_mod_cast h)
 
 lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
     {x y : WithBot α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y := by
@@ -954,9 +952,7 @@ lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α
   | coe y =>
     rw [le_coe_iff]
     rintro h x rfl
-    -- FIXME: norm_cast is not working on #6123
-    -- exact le_of_forall_ge_of_dense (by exact_mod_cast h)
-    sorry
+    exact le_of_forall_ge_of_dense (by exact_mod_cast h)
 
 section LE
 
