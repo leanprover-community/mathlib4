@@ -458,7 +458,7 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
   · rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp,
       iteratedFDerivWithin_zero_apply, Function.comp_apply,
       LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
-    rfl
+    simp
   · let I := (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm
     have A : ∀ y ∈ s, iteratedFDerivWithin 𝕜 n.succ f s y =
         (I ∘ iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) y := fun y hy ↦ by
@@ -501,9 +501,8 @@ theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜
 @[simp]
 theorem iteratedFDerivWithin_one_apply (h : UniqueDiffWithinAt 𝕜 s x) (m : Fin 1 → E) :
     iteratedFDerivWithin 𝕜 1 f s x m = fderivWithin 𝕜 f s x (m 0) := by
-  simp only [iteratedFDerivWithin_succ_apply_left, iteratedFDerivWithin_zero_eq_comp,
+  simp [iteratedFDerivWithin_succ_apply_left, iteratedFDerivWithin_zero_eq_comp,
     (continuousMultilinearCurryFin0 𝕜 E F).symm.comp_fderivWithin h]
-  rfl
 
 /-- On a set of unique differentiability, the second derivative is obtained by taking the
 derivative of the derivative. -/
@@ -616,7 +615,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
-  · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
+  · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp, comp_apply]
   · have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
@@ -893,7 +892,8 @@ theorem iteratedFDeriv_succ_eq_comp_right {n : ℕ} :
     iteratedFDeriv 𝕜 (n + 1) f x =
       ((continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm ∘
           iteratedFDeriv 𝕜 n fun y => fderiv 𝕜 f y) x := by
-  ext m; rw [iteratedFDeriv_succ_apply_right]; rfl
+  ext m
+  rw [iteratedFDeriv_succ_apply_right, comp_apply, continuousMultilinearCurryRightEquiv_symm_apply']
 
 theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
     ‖iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x‖ = ‖iteratedFDeriv 𝕜 (n + 1) f x‖ := by
@@ -902,7 +902,7 @@ theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
 @[simp]
 theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
     iteratedFDeriv 𝕜 1 f x m = fderiv 𝕜 f x (m 0) := by
-  rw [iteratedFDeriv_succ_apply_right, iteratedFDeriv_zero_apply]; rfl
+  rw [iteratedFDeriv_succ_apply_right, iteratedFDeriv_zero_apply, last_zero]
 
 lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by
