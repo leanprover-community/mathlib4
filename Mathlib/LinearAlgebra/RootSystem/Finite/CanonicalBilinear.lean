@@ -91,8 +91,32 @@ def CorootForm : LinearMap.BilinForm R N :=
   ∑ i, (P.root' i).smulRight (P.root' i)
 
 lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
-    ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
+    ∑ i, P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
+
+lemma corootForm_apply_apply (x y : N) : P.CorootForm x y =
+    ∑ i, P.root' i x * P.root' i y := by
+  simp [CorootForm]
+
+lemma flip_comp_polarization_eq_rootForm :
+    P.flip.toLin ∘ₗ P.Polarization = P.RootForm := by
+  ext; simp [rootForm_apply_apply, RootPairing.flip]
+
+lemma self_comp_coPolarization_eq_corootForm :
+    P.toLin ∘ₗ P.CoPolarization = P.CorootForm := by
+  ext; simp [corootForm_apply_apply]
+
+lemma polarization_apply_eq_zero_iff (m : M) :
+    P.Polarization m = 0 ↔ P.RootForm m = 0 := by
+  rw [← flip_comp_polarization_eq_rootForm]
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  change P.toDualRight (P.Polarization m) = 0 at h
+  simp only [EmbeddingLike.map_eq_zero_iff] at h
+  exact h
+
+lemma coPolarization_apply_eq_zero_iff (n : N) :
+    P.CoPolarization n = 0 ↔ P.CorootForm n = 0 :=
+  P.flip.polarization_apply_eq_zero_iff n
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
@@ -157,7 +181,12 @@ lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
   use ⟨(c • 2 • P.root i), by aesop⟩
   simp
 
-lemma rootForm_apply_root_self_ne_zero [CharZero R] (h : P.IsCrystallographic) (i : ι) :
+section IsCrystallographic
+
+variable [CharZero R] (h : P.IsCrystallographic) (i : ι)
+include h
+
+lemma rootForm_apply_root_self_ne_zero :
     P.RootForm (P.root i) (P.root i) ≠ 0 := by
   choose z hz using P.isCrystallographic_iff.mp h i
   simp only [rootForm_apply_apply, PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, ← hz]
@@ -168,6 +197,12 @@ lemma rootForm_apply_root_self_ne_zero [CharZero R] (h : P.IsCrystallographic) (
     rw [pairing_same] at hz
     norm_cast at hz
   simp [hzi]
+
+lemma corootForm_apply_coroot_self_ne_zero :
+    P.CorootForm (P.coroot i) (P.coroot i) ≠ 0 :=
+  P.flip.rootForm_apply_root_self_ne_zero h.flip i
+
+end IsCrystallographic
 
 end CommRing
 
