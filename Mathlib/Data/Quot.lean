@@ -703,13 +703,7 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
   rfl
 
 /-- A version of `Quotient.map₂` using curly braces and unification. -/
-@[deprecated (since := "2024-11-29")] protected alias map₂' := Quotient.map₂
-
-@[simp]
-theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
-    (Quotient.mk'' x : Quotient s₁).map₂' f h =
-      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
-  rfl
+@[deprecated (since := "2024-12-01")] protected alias map₂' := Quotient.map₂
 
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=
