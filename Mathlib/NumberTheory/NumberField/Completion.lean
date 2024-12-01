@@ -64,6 +64,8 @@ variable {K : Type*} [Field K] (v : InfinitePlace K)
 /-- The completion of a number field at an infinite place. -/
 abbrev Completion := v.1.Completion
 
+@[deprecated (since := "2024-12-01")] alias completion := Completion
+
 namespace Completion
 
 instance : NormedField v.Completion :=
