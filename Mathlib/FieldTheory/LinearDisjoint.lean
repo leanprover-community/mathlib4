@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.Adjoin
+import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.LinearDisjoint
 
 /-!
@@ -75,12 +76,13 @@ Other main results:
 - `IntermediateField.LinearDisjoint.symm`, `IntermediateField.linearDisjoint_comm`:
   linear disjointness is symmetric.
 
-- `IntermediateField.LinearDisjoint.rank_sup_of_isAlgebraic`,
+- `IntermediateField.LinearDisjoint.map`:
+  linear disjointness is preserved by field homomorphism.
+
+- `IntermediateField.LinearDisjoint.rank_sup`,
   `IntermediateField.LinearDisjoint.finrank_sup`:
   if `A` and `B` are linearly disjoint,
   then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`.
-
-  **TODO:** remove the algebraic assumptions (the proof becomes complicated).
 
 - `IntermediateField.LinearDisjoint.of_finrank_sup`:
   conversely, if `A` and `B` are finite extensions,
@@ -145,6 +147,11 @@ theorem linearDisjoint_comm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
 namespace LinearDisjoint
+
+/-- Linear disjointness is preserved by field homomorphism. -/
+theorem map (H : A.LinearDisjoint B) {L : Type w} [Field L] [Algebra F L]
+    (f : E →ₐ[F] L) : (A.map f).LinearDisjoint (B.map f) :=
+  linearDisjoint_iff'.2 ((linearDisjoint_iff'.1 H).map f f.injective)
 
 variable (A) in
 theorem self_right : A.LinearDisjoint F := Subalgebra.LinearDisjoint.bot_right _
@@ -267,28 +274,19 @@ theorem inf_eq_bot (H : A.LinearDisjoint B) :
 theorem eq_bot_of_self (H : A.LinearDisjoint A) : A = ⊥ :=
   inf_idem A ▸ H.inf_eq_bot
 
-/-- If `A` and `B` are linearly disjoint over `F`, and at least one them are algebraic, then the
-rank of `A ⊔ B` is equal to the product of that of `A` and `B`. Note that this result is
-also true without algebraic assumption, but the proof becomes very complicated. -/
-theorem rank_sup_of_isAlgebraic (H : A.LinearDisjoint B)
-    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F B) :
+/-- If `A` and `B` are linearly disjoint over `F`, then the
+rank of `A ⊔ B` is equal to the product of that of `A` and `B`. -/
+theorem rank_sup (H : A.LinearDisjoint B) :
     Module.rank F ↥(A ⊔ B) = Module.rank F A * Module.rank F B :=
   have h := le_sup_toSubalgebra A B
-  (rank_sup_le_of_isAlgebraic A B halg).antisymm <|
+  (rank_sup_le A B).antisymm <|
     (linearDisjoint_iff'.1 H).rank_sup_of_free.ge.trans <|
       (Subalgebra.inclusion h).toLinearMap.rank_le_of_injective (Subalgebra.inclusion_injective h)
 
 /-- If `A` and `B` are linearly disjoint over `F`, then the `Module.finrank` of
 `A ⊔ B` is equal to the product of that of `A` and `B`. -/
 theorem finrank_sup (H : A.LinearDisjoint B) : finrank F ↥(A ⊔ B) = finrank F A * finrank F B := by
-  by_cases h : FiniteDimensional F A
-  · simpa only [map_mul] using
-      congr(Cardinal.toNat $(H.rank_sup_of_isAlgebraic (.inl inferInstance)))
-  rw [FiniteDimensional, ← rank_lt_aleph0_iff, not_lt] at h
-  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
-    show Subalgebra.toSubmodule A.toSubalgebra ≤ Subalgebra.toSubmodule (A ⊔ B).toSubalgebra by simp
-  rw [show finrank F A = 0 from Cardinal.toNat_apply_of_aleph0_le h,
-    show finrank F ↥(A ⊔ B) = 0 from Cardinal.toNat_apply_of_aleph0_le (h.trans this), zero_mul]
+  simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup))
 
 /-- If `A` and `B` are finite extensions of `F`,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
