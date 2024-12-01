@@ -12,6 +12,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -61,10 +62,19 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
   then `A` and `B` are linearly disjoint.
 
+- `Subalgebra.LinearDisjoint.isDomain_of_injective`,
+  `Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective`:
+  under some flatness and injectivity conditions, if `A` and `B` are `R`-algebras, then `A ⊗[R] B`
+  is a domain if and only if there exists a field such that `A` and `B` inject into it and their
+  images are linearly disjoint. See also <https://mathoverflow.net/questions/8324>.
+
 ### Other main results
 
 - `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
+
+- `Subalgebra.LinearDisjoint.map`:
+  linear disjointness is preserved by injective ring homomorphism.
 
 - `Subalgebra.LinearDisjoint.bot_left`, `Subalgebra.LinearDisjoint.bot_right`:
   the image of `R` in `S` is linearly disjoint with any other subalgebras.
@@ -144,6 +154,11 @@ theorem linearDisjoint_comm_of_commute
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
+
+/-- Linear disjointness is preserved by injective ring homomorphism. -/
+theorem map (H : A.LinearDisjoint B) {T : Type w} [Semiring T] [Algebra R T]
+    (f : S →ₐ[R] T) (hf : Function.Injective f) : (A.map f).LinearDisjoint (B.map f) :=
+  Submodule.LinearDisjoint.map H f hf
 
 variable (A B)
 
@@ -423,7 +438,18 @@ include H in
 linearly disjoint, then `A ⊗[R] B` is also a domain. -/
 theorem isDomain [IsDomain S] : IsDomain (A ⊗[R] B) :=
   have := Subtype.val_injective.isDomain (algebraMap ↥(A ⊔ B) S)
-  H.mulMap.injective.isDomain H.mulMap.toAlgHom.toRingHom
+  H.mulMap.toMulEquiv.isDomain
+
+/-- If `A` and `B` are `R`-algebras, such that there exists a domain `S` such that
+`A` and `B` inject into it and their images are linearly disjoint,
+then `A ⊗[R] B` is also a domain. -/
+theorem isDomain_of_injective [IsDomain S] {A B : Type*} [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] {fa : A →ₐ[R] S} {fb : B →ₐ[R] S}
+    (hfa : Function.Injective fa) (hfb : Function.Injective fb)
+    (H : fa.range.LinearDisjoint fb.range) : IsDomain (A ⊗[R] B) :=
+  have := H.isDomain
+  (Algebra.TensorProduct.congr
+    (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toMulEquiv.isDomain
 
 -- TODO: move to suitable place
 theorem _root_.Algebra.TensorProduct.includeLeft_injective
@@ -445,20 +471,18 @@ theorem _root_.Algebra.TensorProduct.includeRight_injective
 
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that the algebra maps are injective, then
-`A` and `B` inject into `A ⊗[R] B` and their images are linearly disjoint. -/
+their images in `A ⊗[R] B` are linearly disjoint. Note: they inject into `A ⊗[R] B`,
+see `Algebra.TensorProduct.includeLeft_injective` and
+`Algebra.TensorProduct.includeRight_injective`. -/
 theorem include_range_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
     [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B]
-    (ha : Function.Injective (algebraMap R A))
-    (hb : Function.Injective (algebraMap R B)) :
-    Function.Injective (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∧
-    Function.Injective (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B) ∧
+    (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B)) :
     (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range.LinearDisjoint
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
   set fa : A →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeLeft
   set fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
   have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
   have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
-  refine ⟨hfa, hfb, ?_⟩
   rw [linearDisjoint_iff_injective]
   let f := (fa.range.mulMap fb.range).comp (Algebra.TensorProduct.congr
     (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toAlgHom
@@ -467,6 +491,26 @@ theorem include_range_of_injective (A : Type v) [CommRing A] (B : Type w) [CommR
     hf ▸ (show Function.Injective (AlgHom.id R _) from Function.injective_id)
   simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EquivLike.injective_comp, f] using hf
+
+variable (R) in
+/-- If `A` and `B` are flat algebras over `R`, such that `A ⊗[R] B` is a domain, and such that
+the algebra maps are injective, then there exists a field `K` such that `A` and `B`
+inject into `K`, and their images are linearly disjoint. Note: `K` can chosen to be the
+fraction field of `A ⊗[R] B`, but here we hide this fact. -/
+theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
+    [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B] [IsDomain (A ⊗[R] B)]
+    (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B)) :
+    ∃ (K : Type (max v w)) (_ : Field K) (_ : Algebra R K) (fa : A →ₐ[R] K) (fb : B →ₐ[R] K),
+    Function.Injective fa ∧ Function.Injective fb ∧ fa.range.LinearDisjoint fb.range :=
+  let K := FractionRing (A ⊗[R] B)
+  let i := IsScalarTower.toAlgHom R (A ⊗[R] B) K
+  have hi : Function.Injective i := IsFractionRing.injective (A ⊗[R] B) K
+  ⟨K, inferInstance, inferInstance,
+    i.comp Algebra.TensorProduct.includeLeft,
+    i.comp Algebra.TensorProduct.includeRight,
+    hi.comp (Algebra.TensorProduct.includeLeft_injective hb),
+    hi.comp (Algebra.TensorProduct.includeRight_injective ha), by
+      convert (include_range_of_injective R A B ha hb).map i hi <;> rw [AlgHom.range_comp]⟩
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)

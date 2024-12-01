@@ -67,6 +67,9 @@ The following is the second equivalent characterization of linear disjointness:
 - `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
 
+- `Submodule.LinearDisjoint.map`:
+  linear disjointness is preserved by injective ring homomorphism.
+
 - `Submodule.linearDisjoint_op`:
   linear disjointness is preserved by taking multiplicative opposite.
 
@@ -183,6 +186,17 @@ theorem linearDisjoint_comm_of_commute
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
+
+/-- Linear disjointness is preserved by injective ring homomorphism. -/
+theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
+    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) (hf : Function.Injective f) :
+    (M.map f).LinearDisjoint (N.map f) := by
+  rw [linearDisjoint_iff] at H ⊢
+  have : _ ∘ₗ
+    (TensorProduct.congr (M.equivMapOfInjective f hf) (N.equivMapOfInjective f hf)).toLinearMap
+      = _ := M.mulMap_map_comp_eq N f
+  replace H : Function.Injective ((f : S →ₗ[R] T) ∘ₗ mulMap M N) := hf.comp H
+  simpa only [← this, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] using H
 
 variable (M N)
 
