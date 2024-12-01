@@ -249,7 +249,8 @@ private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ‚äî I = ‚ä
     convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
     apply (quotAdjoinEquivQuotMap hx
       (NoZeroSMulDivisors.algebraMap_injective ((adjoin R {x})) S)).injective
-    simp
+    simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
+      coe_aeval_mk_apply]
 
 open Classical in
 /-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
