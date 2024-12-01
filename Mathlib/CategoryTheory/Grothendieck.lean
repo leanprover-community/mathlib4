@@ -424,14 +424,9 @@ Let `G` be an equivalence of categories. The functor induced via `pre` by `G.fun
 is naturally isomorphic to the functor induced via `map` by a whiskered version of `G`'s inverse
 unit.
 -/
-protected def preUnitIso (F : D ⥤ Cat) (G : D ≌ C) :
-    map (whiskerRight G.unitInv _) ≅ pre F (G.functor ⋙ G.inverse) :=
-  preNatIso _ G.unitIso.symm |>.symm
-
--- TODO: Why can't I inline this?
-protected def preUnitIso' (F : C ⥤ Cat) (G : D ≌ C) :
+protected def preUnitIso (F : C ⥤ Cat) (G : D ≌ C) :
     map (whiskerRight G.unitInv _) ≅ pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) :=
-  Grothendieck.preUnitIso _ G
+  preNatIso _ G.unitIso.symm |>.symm
 
 variable (F) in
 /--
@@ -447,7 +442,7 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
       _ = map (𝟙 _) := map_id_eq.symm
       _ = map _ := ?_
       _ = map _ ⋙ map _ := map_comp_eq _ _
-      _ ≅ _ := Grothendieck.preUnitIso' F G |> isoWhiskerLeft _
+      _ ≅ _ := Grothendieck.preUnitIso F G |> isoWhiskerLeft _
     congr
     ext X
     simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, Functor.id_obj,
