@@ -89,8 +89,10 @@ lemma hilbert_zero_nat (d : ℕ) : hilbert (0 : F[X]) d = 0 := by
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
-lemma hilbert_poly_zero (p : F[X]) : hilbert p 0 = 0 := by
-  delta hilbert; simp
+lemma hilbert_poly_zero (p : F[X]) : hilbert p 0 = 0 := rfl
+
+lemma hilbert_poly_succ (p : F[X]) (d : ℕ) :
+    hilbert p (d + 1) = ∑ i in p.support, (p.coeff i) • preHilbert F d i := rfl
 
 variable (F) in
 lemma hilbert_X_pow_succ (d k : ℕ) :
