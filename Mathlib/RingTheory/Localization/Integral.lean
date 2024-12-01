@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
@@ -279,7 +279,7 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
 
 end IsIntegral
 
-variable {A K : Type*} [CommRing A] [IsDomain A]
+variable {A K : Type*} [CommRing A]
 
 namespace IsIntegralClosure
 
@@ -306,14 +306,14 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
             hy (inj _ (by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero]))⟩,
         by
           simp only
-          rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, hxy]⟩
+          rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, mul_comm, hxy]⟩
     exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 
 variable (K L)
 
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_finite_extension [Algebra K L] [IsScalarTower A K L]
+theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
     (inferInstanceAs (Algebra.IsAlgebraic K L))
@@ -341,8 +341,8 @@ variable (K L)
 
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_finite_extension [Algebra A L] [Algebra K L] [IsScalarTower A K L]
-    [FiniteDimensional K L] : IsFractionRing (integralClosure A L) L :=
+theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra A L] [Algebra K L]
+    [IsScalarTower A K L] [FiniteDimensional K L] : IsFractionRing (integralClosure A L) L :=
   IsIntegralClosure.isFractionRing_of_finite_extension A K L (integralClosure A L)
 
 end integralClosure
