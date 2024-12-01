@@ -377,14 +377,14 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     ⟨a.map' id fun _ _ h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
       a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
         fun b c h => by
-        simp only [HasEquiv.Equiv]; rw [leftRel_apply]
+        rw [leftRel_apply]
         change ((f b)⁻¹ * b)⁻¹ * ((f c)⁻¹ * c) ∈ s
         have key : f b = f c :=
           congr_arg f (Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
   invFun a := by
     refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
-      simp only [HasEquiv.Equiv] at *; rw [leftRel_apply] at *
+      rw [leftRel_apply] at *
       change (f a.1 * b)⁻¹ * (f a.1 * c) ∈ s
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
@@ -412,7 +412,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
     Quotient.map' (inclusion h) fun a b => by
-      simp_rw [HasEquiv.Equiv, leftRel_eq]
+      simp_rw [leftRel_eq]
       exact id
   inj' :=
     Quotient.ind₂' <| by
@@ -431,7 +431,7 @@ theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t)
 def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
   Quotient.map' id fun a b => by
-    simp_rw [HasEquiv.Equiv, leftRel_eq]
+    simp_rw [leftRel_eq]
     apply h
 
 -- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
@@ -445,7 +445,7 @@ theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
 @[to_additive "If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`."]
 def quotientMapOfLE (h : s ≤ t) : α ⧸ s → α ⧸ t :=
   Quotient.map' id fun a b => by
-    simp_rw [HasEquiv.Equiv, leftRel_eq]
+    simp_rw [leftRel_eq]
     apply h
 
 @[to_additive (attr := simp)]
