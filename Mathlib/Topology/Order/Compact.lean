@@ -3,10 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Support
 import Mathlib.Topology.Order.IsLUB
+import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Compactness of a closed interval

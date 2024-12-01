@@ -115,9 +115,9 @@ theorem nhds_ofMul (x : X) : 𝓝 (ofMul x) = map ofMul (𝓝 x) := rfl
 
 theorem nhds_ofAdd (x : X) : 𝓝 (ofAdd x) = map ofAdd (𝓝 x) := rfl
 
-theorem nhds_toMul (x : Additive X) : 𝓝 (toMul x) = map toMul (𝓝 x) := rfl
+theorem nhds_toMul (x : Additive X) : 𝓝 x.toMul = map toMul (𝓝 x) := rfl
 
-theorem nhds_toAdd (x : Multiplicative X) : 𝓝 (toAdd x) = map toAdd (𝓝 x) := rfl
+theorem nhds_toAdd (x : Multiplicative X) : 𝓝 x.toAdd = map toAdd (𝓝 x) := rfl
 
 end
 
@@ -477,11 +477,9 @@ theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : Is
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
+  rw [prod_eq_inf, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 
--- Porting note: moved from `Topology.ContinuousOn`
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
@@ -504,7 +502,6 @@ theorem mem_nhdsWithin_prod_iff {x : X} {y : Y} {s : Set (X × Y)} {tx : Set X} 
     s ∈ 𝓝[tx ×ˢ ty] (x, y) ↔ ∃ u ∈ 𝓝[tx] x, ∃ v ∈ 𝓝[ty] y, u ×ˢ v ⊆ s := by
   rw [nhdsWithin_prod_eq, mem_prod_iff]
 
--- Porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιX ιY : Type*} {px : ιX → Prop} {py : ιY → Prop}
     {sx : ιX → Set X} {sy : ιY → Set Y} {x : X} {y : Y} (hx : (𝓝 x).HasBasis px sx)
     (hy : (𝓝 y).HasBasis py sy) :
@@ -512,7 +509,6 @@ theorem Filter.HasBasis.prod_nhds {ιX ιY : Type*} {px : ιX → Prop} {py : ι
   rw [nhds_prod_eq]
   exact hx.prod hy
 
--- Porting note: moved up
 theorem Filter.HasBasis.prod_nhds' {ιX ιY : Type*} {pX : ιX → Prop} {pY : ιY → Prop}
     {sx : ιX → Set X} {sy : ιY → Set Y} {p : X × Y} (hx : (𝓝 p.1).HasBasis pX sx)
     (hy : (𝓝 p.2).HasBasis pY sy) :

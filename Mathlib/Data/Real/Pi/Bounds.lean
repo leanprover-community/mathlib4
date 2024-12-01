@@ -68,7 +68,7 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
-    add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
+    add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff₀ hb' (pow_pos hd' _)]
   exact mod_cast h
 
 /-- From a lower bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
@@ -91,7 +91,7 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
   apply le_sqrt_of_sq_le
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
-  rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff (pow_pos hb' _) hd']
+  rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff₀ (pow_pos hb' _) hd']
   exact mod_cast h
 
 section Tactic
