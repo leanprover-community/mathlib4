@@ -188,6 +188,9 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
   simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
 
+theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
+    (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
+
 theorem polarCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
 
@@ -198,13 +201,13 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
   rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp
     measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
-  rfl
+  simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
 
 protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
     (∫⁻ p in polarCoord.target, ENNReal.ofReal p.1 • f (Complex.polarCoord.symm p)) =
       ∫⁻ p, f p := by
   rw [← (volume_preserving_equiv_real_prod.symm).lintegral_comp_emb
     measurableEquivRealProd.symm.measurableEmbedding, ← lintegral_comp_polarCoord_symm]
-  rfl
+  simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
 
 end Complex
