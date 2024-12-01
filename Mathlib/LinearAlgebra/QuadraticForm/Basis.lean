@@ -98,6 +98,102 @@ def symOffDiagXor : Sym2 (ι₁ × ι₂) → Prop :=
       · aesop
       · aesop⟩
 
+theorem mk_symOffDiagXor_iff {i j : (ι₁ × ι₂)} :
+    symOffDiagXor s(i, j) ↔ Xor' (i.1 = j.1) (i.2 = j.2) := Iff.rfl
+
+
+@[simp]
+theorem symOffDiagXor_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+    symOffDiagXor (Sym2.mk z) ↔ Xor' (z.1.1 = z.2.1) (z.1.2 = z.2.2) :=
+  Prod.recOn z fun _ _ => mk_symOffDiagXor_iff
+
+
+instance symOffDiagXor.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
+    DecidablePred (@symOffDiagXor ι₁ ι₂) :=
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagXor_iff_proj_eq a)
+
+lemma f1 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) : Xor' p.IsDiag ¬ p.IsDiag :=
+  xor_not_right.mpr (Eq.to_iff rfl)
+
+  --Decidable.em p.IsDiag
+
+
+lemma g1 (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagXor p) : ¬ p.IsDiag := by
+  induction' p with i j
+  aesop
+
+lemma g2 (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ∧ symOffDiagXor p ↔ symOffDiagXor p := by
+  constructor
+  · intro h
+    exact h.2
+  · intro h
+    exact ⟨g1 _ h, h⟩
+
+/-
+lemma e1 (P Q R : Prop) : ((P ∧ Q) ∨ (P ∧ R)) ↔
+    (P ∧ (Q ∨ R)) := by
+  exact Iff.symm and_or_left
+-/
+
+lemma f2 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    p.IsDiag ∨ ((¬ p.IsDiag ∧ symOffDiagXor p) ∨ (¬ p.IsDiag ∧ ¬ symOffDiagXor p)) := by
+  rw [← and_or_left]
+  have e2 : symOffDiagXor p ∨ ¬ symOffDiagXor p := Decidable.em (symOffDiagXor p)
+  have e3 : ¬p.IsDiag ∧ (symOffDiagXor p ∨ ¬ symOffDiagXor p) ↔ ¬p.IsDiag :=
+    and_iff_left_of_imp fun a ↦ e2
+  rw [e3]
+  exact Decidable.em _
+
+lemma f2b [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    p.IsDiag ∨ ( symOffDiagXor p ∨ (¬ p.IsDiag ∧ ¬ symOffDiagXor p)) := by
+  convert f2 p
+  rw [g2]
+
+lemma f3 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    (¬ p.IsDiag ∧ ¬ symOffDiagXor p) ↔ symOffDiag p := by
+  induction' p with i j
+  aesop
+
+lemma f4 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    p.IsDiag ∨ ( symOffDiagXor p ∨ symOffDiag p) := by
+  rw [← f3]
+  exact f2b p
+
+lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔ symOffDiagUpper p ∨ symOffDiagLower p := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  constructor
+  · intro h
+    simp_all only [symOffDiag_iff_proj_eq, ne_eq, symOffDiagUpper_iff_proj_eq,
+      symOffDiagLower_iff_proj_eq]
+    obtain ⟨left, right⟩ := h
+    have ee1 : i₁ < j₁ ∨ j₁ < i₁ := by
+      aesop
+    have ee2 : i₂ < j₂ ∨ j₂ < i₂ := by
+      aesop
+    rcases ee1 with (h | h')
+    · rcases ee2 with (g | g')
+      · aesop
+      · aesop
+    · rcases ee2 with (g | g')
+      · aesop
+      · aesop
+  · intro h
+    aesop
+
+lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : p.IsDiag ∨ symOffDiagXor p ∨ symOffDiagUpper p ∨ symOffDiagLower p := by
+  rw [← symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
+  exact f4 p
+
+/-
+lemma filterseq [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    ¬ p.IsDiag ∧ ¬symOffDiagUpper p ∧ ¬symOffDiagLower p ↔ symOffDiagXor p := by
+  aesop
+-/
+
 end Prod
 
 open LinearMap (BilinMap)
@@ -565,6 +661,18 @@ theorem qt_expansion3 (x : M₁ ⊗[R] M₂) :
         + ∑ p ∈ s₂ with ¬ symOffDiagLower p, Q.polar_lift bm x p = Q x := by
   simp_rw [myadd3a]
   rw [qt_expansion2]
+
+/-
+lemma filter_change (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
+    let s₁ := Finset.filter (fun p => ¬ p.IsDiag) s
+    let s₂ := Finset.filter (fun p => ¬ symOffDiagUpper p) s₁
+    let s₃ := Finset.filter (fun p => ¬ symOffDiagLower p) s₂
+    s₃ = Finset.filter (fun p => ¬ symOffDiagXor p) s := by
+  simp only
+  rw [Finset.filter_filter]
+  rw [Finset.filter_filter]
+-/
+
 
 end TensorProduct
 
