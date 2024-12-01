@@ -397,7 +397,7 @@ protected lemma integralClosure [NoZeroDivisors S] :
     Transcendental (integralClosure R S) a :=
   ha.extendScalars_of_isIntegral Subtype.val_injective
 
-protected lemma algebraicClosure [IsDomain R] [NoZeroDivisors S] :
+lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
     Transcendental (Subalgebra.algebraicClosure R S) a :=
   ha.extendScalars Subtype.val_injective
 
