@@ -124,7 +124,7 @@ theorem exists_integral_multiples (s : Finset L) :
     · rcases this with ⟨x', y', hy', hx'⟩
       refine ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => ?_⟩
       rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
-      · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, mul_comm _ x'', hx']
+      · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, hx']
         exact isIntegral_algebraMap.mul x'.2
       · rw [mul_comm, mul_smul, Algebra.smul_def]
         exact isIntegral_algebraMap.mul (hs _ hx'')
@@ -184,6 +184,14 @@ Noetherian. -/
 theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianRing A] :
     IsNoetherianRing C :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower A (IsIntegralClosure.isNoetherian A K L C)
+
+/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
+integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
+finite over `A`. -/
+theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
+    Module.Finite A C := by
+  haveI := IsIntegralClosure.isNoetherian A K L C
+  exact Module.IsNoetherian.finite A C
 
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is

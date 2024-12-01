@@ -1393,8 +1393,7 @@ instance [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
       comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
-  dsimp [SProd.sprod]
-  rw [uniformity_prod, Filter.prod, Filter.comap_inf, Filter.comap_comap, Filter.comap_comap]; rfl
+  simp_rw [uniformity_prod, prod_eq_inf, Filter.comap_inf, Filter.comap_comap, Function.comp_def]
 
 theorem uniformity_prod_eq_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
