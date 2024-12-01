@@ -1168,7 +1168,7 @@ lemma exists_a_apply_add_eq : ∃ b c, 0 < c ∧ ∀ n, b < n →
   · have hc' := hbc' (b + 2) (by omega)
     have hp := hc.p_pos (N' a N + 2 * (b + 2))
     have he := hc.even_p (by omega) (hs (b + 2))
-    rcases he with ⟨t, ht⟩    
+    rcases he with ⟨t, ht⟩
     omega
   · rw [← hbc' n (by omega)]
     convert hc.apply_add_p_eq (by omega) (hs n) using 3
