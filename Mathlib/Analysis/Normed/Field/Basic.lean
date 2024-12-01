@@ -762,6 +762,9 @@ lemma discreteTopology_unitClosedBall_eq_univ : (Metric.closedBall 0 1 : Set ùï
   ext
   simp
 
+@[deprecated (since := "2024-12-01")]
+alias discreteTopology_unit_closedBall_eq_univ := discreteTopology_unitClosedBall_eq_univ
+
 end Discrete
 
 end NormedDivisionRing
