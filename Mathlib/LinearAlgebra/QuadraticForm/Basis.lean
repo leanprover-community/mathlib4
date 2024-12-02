@@ -814,7 +814,32 @@ theorem qt_expansion3 (x : M₁ ⊗[R] M₂) :
   simp_rw [myadd3a]
   rw [qt_expansion2]
 
+-- not_IsDiag_iff_symOffDiagXor_xor_symOffDiag
+
+
 theorem sum1 (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
+      + (∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p) =
+    ∑ p ∈ s with ¬ p.IsDiag, Q.polar_lift bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  have h1 : ∀ y ∈ s.filter (fun y => symOffDiagXor y ∨ symOffDiag y),
+      ¬ (symOffDiagXor y ∧ symOffDiag y) := by
+    intro y hy
+    apply ((xor_iff_or_and_not_and (symOffDiagXor y) (symOffDiag y)).mp _).2
+    rw [← not_IsDiag_iff_symOffDiagXor_xor_symOffDiag]
+    simp at hy
+    rw [not_IsDiag_iff_symOffDiagXor_or_symOffDiag]
+    exact hy.2
+  simp_rw [← Finset.sum_disjoint_filters_on_set  _ _ h1]
+  simp_rw [not_IsDiag_iff_symOffDiagXor_or_symOffDiag]
+
+
+theorem sum2 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     let s := (bm.repr x).support.sym2
