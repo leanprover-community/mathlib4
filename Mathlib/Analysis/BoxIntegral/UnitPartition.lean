@@ -423,7 +423,7 @@ theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
   · rw [setIntegral_const, smul_eq_mul, mul_one]
 
 private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
-  ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
+    ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
   Equiv.subtypeEquiv (Equiv.smulRight hc) (fun x ↦ by
     simp_rw [Set.mem_inter_iff, Equiv.smulRight_apply, Set.smul_mem_smul_set_iff₀ hc,
       ← Set.mem_inv_smul_set_iff₀ hc])
