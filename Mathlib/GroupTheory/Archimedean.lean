@@ -31,6 +31,8 @@ The result is also used in `Topology.Instances.Real` as an ingredient in the cla
 subgroups of `ℝ`.
 -/
 
+assert_not_exists Finset
+
 open Set
 variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
 
