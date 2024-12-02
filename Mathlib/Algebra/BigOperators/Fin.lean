@@ -206,6 +206,13 @@ theorem prod_Iio_succ (i : Fin n) :
       prod_insert (by simp only [mem_Ico, zero_le, lt_self_iff_false, and_false, not_false_eq_true])
     _ = (∏ j ∈ Iio i.castSucc, v j) * v i.castSucc := mul_comm _ _
 
+@[to_additive]
+theorem prod_Iio_eq_univ (i : Fin (n + 1)) :
+    ∏ j ∈ Iio i, v j = ∏ j : Fin i, v (Fin.castLE i.isLt.le j) := by
+  induction i using Fin.induction with
+  | zero => simp only [prod_Iio_zero, val_zero, univ_eq_empty, prod_empty]
+  | succ i hi => simp only [prod_Iio_succ, hi, prod_univ_castSucc, val_succ]; congr
+
 @[to_additive (attr := simp)]
 theorem prod_Iic_zero : ∏ j ∈ Iic 0, v j = v 0 := by
   rw [Iic_eq_Icc, bot_eq_zero, Icc_self, prod_singleton]
@@ -222,13 +229,12 @@ theorem prod_Iic_succ (i : Fin n) :
     _ = (∏ j ∈ Iic i.castSucc, v j) * v i.succ := mul_comm _ _
 
 @[to_additive]
-theorem prod_Iic_eq_prod_subtype (i : Fin (n + 1)) :
-    ∏ j ∈ Iio i, v j = ∏ j : Fin i, v (Fin.castLE i.isLt.le j) := by
+theorem prod_Iic_eq_univ (i : Fin (n + 1)) :
+    ∏ j ∈ Iic i, v j = ∏ j : Fin (i + 1), v (Fin.castLE i.isLt j) := by
   induction i using Fin.induction with
-  | zero => simp only [prod_Iio_zero, val_zero, univ_eq_empty, prod_empty]
-  | succ i hi => sorry
-    -- simp only [Iio_su, Finset.prod_insert, not_mem_singleton]
-    -- simp
+  | zero => simp only [prod_Iic_zero, val_zero, Nat.reduceAdd, univ_unique, default_eq_zero,
+    prod_singleton, castLE_zero]
+  | succ i hi => simp only [prod_Iic_succ, hi, prod_univ_castSucc, val_succ]; congr
 
 end Interval
 
