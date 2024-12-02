@@ -152,13 +152,10 @@ theorem cof_eq_one [Preorder α] [OrderTop α] : cof α = 1 := by
 theorem cof_eq_one_iff [Preorder α] : cof α = 1 ↔ Nonempty (OrderTop α) := by
   refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ cof_eq_one⟩
   obtain ⟨s, hs, hα⟩ := cof_eq α
-  rw [h, eq_comm] at hα
-  have := mk_le_one_iff_set_subsingleton.1 hα.le
-
-
-#exit
-
-  #exit
+  rw [h, eq_comm, mk_set_eq_one_iff] at hα
+  obtain ⟨x, rfl⟩ := hα
+  refine ⟨@OrderTop.mk _ _ ⟨x⟩ ?_⟩
+  simpa [IsCofinal] using hs
 
 end Order
 
@@ -216,6 +213,22 @@ protected theorem _root_.Order.cof_cof (α : Type*) [LinearOrder α] [WellFounde
 @[simp]
 theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   rw [← cof_toType o, Order.cof_cof]
+
+@[simp]
+theorem cof_zero : cof 0 = 0 := by
+  rw [← cof_toType, cof_eq_zero]
+
+@[simp]
+theorem cof_eq_zero {o : Ordinal} : cof o = 0 ↔ o = 0 := by
+  rw [← cof_toType, cof_eq_zero_iff, toType_empty_iff_eq_zero]
+
+@[simp]
+theorem cof_succ (o : Ordinal) : cof (succ o) = 1 := by
+  rw [← cof_toType, cof_eq_one]
+
+@[simp]
+theorem cof_eq_one {o : Ordinal} : cof o = 1 ↔ ¬ IsSuccPrelimit o := by
+  rw [← cof_toType, cof_eq_one_iff]
 
 #exit
 /-! ### Cofinality of suprema and least strict upper bounds -/
