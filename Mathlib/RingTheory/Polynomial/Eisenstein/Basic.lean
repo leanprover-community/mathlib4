@@ -62,7 +62,7 @@ theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommRing A] (φ : R
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]
-  exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn (natDegree_map_le _ _)))
+  exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn natDegree_map_le))
 
 end CommSemiring
 
@@ -91,7 +91,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     congr
     · skip
     ext i
-    rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 (natDegree_map_le _ _)),
+    rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 natDegree_map_le),
       RingHom.map_mul, mul_assoc]
   rw [hx, ← mul_sum, neg_eq_neg_one_mul, ← mul_assoc (-1 : S), mul_comm (-1 : S), mul_assoc]
   refine

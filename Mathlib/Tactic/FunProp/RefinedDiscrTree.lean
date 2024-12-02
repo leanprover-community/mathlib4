@@ -438,23 +438,23 @@ where
     | _ => failure
 
 /-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
-partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
-  let e ← whnfCore e config
+partial def reduce (e : Expr) : MetaM Expr := do
+  let e ← whnfCore e
   match (← unfoldDefinition? e) with
-  | some e => reduce e config
+  | some e => reduce e
   | none => match e.etaExpandedStrict? with
-    | some e => reduce e config
+    | some e => reduce e
     | none   => return e
 
 /-- Repeatedly apply reduce while stripping lambda binders and introducing their variables -/
 @[specialize]
 partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
-    [Nonempty α] (e : Expr) (fvars : List FVarId) (config : WhnfCoreConfig)
+    [Nonempty α] (e : Expr) (fvars : List FVarId)
     (k : Expr → List FVarId → m α) : m α := do
-  match ← reduce e config with
+  match ← reduce e with
   | .lam n d b bi =>
     withLocalDecl n bi d fun fvar =>
-      lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: fvars) config k
+      lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: fvars) k
   | e => k e fvars
 
 
@@ -492,7 +492,6 @@ private structure Context where
   bvars : List FVarId := []
   /-- Variables that come from a lambda that has been removed via η-reduction. -/
   forbiddenVars : List FVarId := []
-  config : WhnfCoreConfig
   fvarInContext : FVarId → Bool
 
 /-- Return for each argument whether it should be ignored. -/
@@ -633,7 +632,7 @@ private def withLams {m} [Monad m] [MonadWithReader Context m]
 /-- Return the encoding of `e` as a `DTExpr`.
 If `root = false`, then `e` is a strict sub expression of the original expression. -/
 partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr := do
-  lambdaTelescopeReduce e [] (← read).config fun e lambdas =>
+  lambdaTelescopeReduce e [] fun e lambdas =>
   e.withApp fun fn args => do
 
   let argDTExpr (arg : Expr) (ignore : Bool) : ReaderT Context MetaM DTExpr :=
@@ -755,7 +754,7 @@ def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
 /-- Return all encodings of `e` as a `DTExpr`, taking possible η-reductions into account.
 If `root = false`, then `e` is a strict sub expression of the original expression. -/
 partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
-  lambdaTelescopeReduce original [] (← read).config fun e lambdas => do
+  lambdaTelescopeReduce original [] fun e lambdas => do
 
   if !root then
     if let .const n _ := e.getAppFn then
@@ -849,16 +848,16 @@ Warning: to account for potential η-reductions of `e`, use `mkDTExprs` instead.
 The argument `fvarInContext` allows you to specify which free variables in `e` will still be
 in the context when the `RefinedDiscrTree` is being used for lookup.
 It should return true only if the `RefinedDiscrTree` is built and used locally. -/
-def mkDTExpr (e : Expr) (config : WhnfCoreConfig)
+def mkDTExpr (e : Expr)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM DTExpr :=
-  withReducible do (MkDTExpr.mkDTExprAux e true |>.run {config, fvarInContext})
+  withReducible do (MkDTExpr.mkDTExprAux e true |>.run {fvarInContext})
 
 /-- Similar to `mkDTExpr`.
 Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account. -/
-def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
+def mkDTExprs (e : Expr) (onlySpecific : Bool)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List DTExpr) :=
   withReducible do
-    let es ← (MkDTExpr.mkDTExprsAux e true).run' {} |>.run {config, fvarInContext}
+    let es ← (MkDTExpr.mkDTExprsAux e true).run' {} |>.run {fvarInContext}
     return if onlySpecific then es.filter (·.isSpecific) else es
 
 
@@ -875,7 +874,7 @@ where
   loop (i : Nat) : Array α :=
     if h : i < vs.size then
       if v == vs[i] then
-        vs.set ⟨i,h⟩ v
+        vs.set i v
       else
         loop (i+1)
     else
@@ -932,18 +931,18 @@ It should return true only if the `RefinedDiscrTree` is built and used locally.
 
 if `onlySpecific := true`, then we filter out the patterns `*` and `Eq * * *`. -/
 def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α)
-    (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
-    (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
-  let keys ← mkDTExprs e config onlySpecific fvarInContext
+    (onlySpecific : Bool := true) (fvarInContext : FVarId → Bool := fun _ => false) :
+    MetaM (RefinedDiscrTree α) := do
+  let keys ← mkDTExprs e onlySpecific fvarInContext
   return keys.foldl (insertDTExpr · · v) d
 
 /-- Insert the value `vLhs` at index `lhs`, and if `rhs` is indexed differently, then also
 insert the value `vRhs` at index `rhs`. -/
 def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : α)
-    (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
-    (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
-  let keysLhs ← mkDTExprs lhs config onlySpecific fvarInContext
-  let keysRhs ← mkDTExprs rhs config onlySpecific fvarInContext
+    (onlySpecific : Bool := true) (fvarInContext : FVarId → Bool := fun _ => false) :
+    MetaM (RefinedDiscrTree α) := do
+  let keysLhs ← mkDTExprs lhs onlySpecific fvarInContext
+  let keysRhs ← mkDTExprs rhs onlySpecific fvarInContext
   let d := keysLhs.foldl (insertDTExpr · · vLhs) d
   if @List.beq _ ⟨DTExpr.eqv⟩ keysLhs keysRhs then
     return d
@@ -967,7 +966,6 @@ def findKey (children : Array (Key × Trie α)) (k : Key) : Option (Trie α) :=
 
 private structure Context where
   unify : Bool
-  config : WhnfCoreConfig
 
 private structure State where
   /-- Score representing how good the match is. -/
@@ -981,9 +979,9 @@ private structure State where
 private abbrev M := ReaderT Context <| StateListM State
 
 /-- Return all values from `x` in an array, together with their scores. -/
-private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) :
+private def M.run (unify : Bool) (x : M (Trie α)) :
     Array (Array α × Nat) :=
-  ((x.run { unify, config }).run {}).toArray.map (fun (t, s) => (t.values!, s.score))
+  ((x.run { unify }).run {}).toArray.map (fun (t, s) => (t.values!, s.score))
 
 /-- Increment the score by `n`. -/
 private def incrementScore (n : Nat) : M Unit :=
@@ -1076,7 +1074,7 @@ mutual
 end
 
 private partial def getMatchWithScoreAux (d : RefinedDiscrTree α) (e : DTExpr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false) : Array (Array α × Nat) := (do
+    (allowRootStar : Bool := false) : Array (Array α × Nat) := (do
   if e matches .star _ then
     guard allowRootStar
     d.root.foldl (init := failure) fun x k c => (do
@@ -1090,7 +1088,7 @@ private partial def getMatchWithScoreAux (d : RefinedDiscrTree α) (e : DTExpr) 
     guard allowRootStar
     let some c := d.root.find? (.star 0) | failure
     return c
-  ).run unify config
+  ).run unify
 
 end GetUnify
 
@@ -1106,22 +1104,22 @@ This is for when you don't want to instantiate metavariables in `e`.
 If `allowRootStar := false`, then we don't allow `e` or the matched key in `d`
 to be a star pattern. -/
 def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false) : MetaM (Array (Array α × Nat)) := do
-  let e ← mkDTExpr e config
-  let result := GetUnify.getMatchWithScoreAux d e unify config allowRootStar
+    (allowRootStar : Bool := false) : MetaM (Array (Array α × Nat)) := do
+  let e ← mkDTExpr e
+  let result := GetUnify.getMatchWithScoreAux d e unify allowRootStar
   return result.qsort (·.2 > ·.2)
 
 /-- Similar to `getMatchWithScore`, but also returns matches with prefixes of `e`.
 We store the score, followed by the number of ignored arguments. -/
 partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false) :
+    (allowRootStar : Bool := false) :
     MetaM (Array (Array α × Nat × Nat)) := do
   let result ← go e 0
   return result.qsort (·.2.1 > ·.2.1)
 where
   /-- go -/
   go (e : Expr) (numIgnored : Nat) : MetaM (Array (Array α × Nat × Nat)) := do
-  let result ← getMatchWithScore d e unify config allowRootStar
+  let result ← getMatchWithScore d e unify allowRootStar
   let result := result.map fun (a, b) => (a, b, numIgnored)
   match e with
   | .app e _ => return (← go e (numIgnored + 1)) ++ result
