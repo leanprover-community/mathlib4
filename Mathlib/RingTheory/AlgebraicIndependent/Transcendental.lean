@@ -29,12 +29,8 @@ open scoped Classical
 
 universe u v w
 
-variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-variable {A : Type*} {A' : Type*}
-variable (x : ι → A)
+variable {ι ι' R K A A' : Type*} {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
-
-variable {R} {x}
 
 /-- A one-element family `x` is algebraically independent if and only if
 its element is transcendental. -/
@@ -74,10 +70,6 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
 end AlgebraicIndependent
 
 open AlgebraicIndependent
-
-namespace AlgebraicIndependent
-
-end AlgebraicIndependent
 
 theorem AlgebraicIndependent.option_iff (hx : AlgebraicIndependent R x) (a : A) :
     (AlgebraicIndependent R fun o : Option ι => o.elim a x) ↔

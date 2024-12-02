@@ -36,12 +36,9 @@ open scoped Classical
 
 universe u v w
 
-variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-variable {A : Type*} {A' : Type*}
-variable (x : ι → A)
+variable {ι ι' : Type*} (R : Type*) {K A A' : Type*}
+variable {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
-
-variable {x}
 
 open AlgebraicIndependent
 
