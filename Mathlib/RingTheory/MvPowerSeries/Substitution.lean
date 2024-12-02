@@ -48,7 +48,7 @@ theorem IsNilpotent.finsum {α : Type*} [CommSemiring α] {β : Type*} {f : β �
   classical
   by_cases h : Set.Finite f.support
   · rw [finsum_def, dif_pos h]
-    exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun i j hi hj ↦ Commute.all _ _) 
+    exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun i j hi hj ↦ Commute.all _ _)
   · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
 /-- Change of coefficients in mv power series, as an `AlgHom` -/
