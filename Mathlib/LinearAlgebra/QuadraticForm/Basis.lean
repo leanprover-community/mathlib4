@@ -863,7 +863,7 @@ theorem sum2a (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     let s := (bm.repr x).support.sym2
-    (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p) =
+    ∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p =
     ∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p := by
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
@@ -873,6 +873,22 @@ theorem sum2a (x : M₁ ⊗[R] M₂) :
   rw [← Finset.sum_empty]
   rw [Finset.sum_subset (Finset.empty_subset _) (fun p hp₁ _ =>
     polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s x p hp₁)]
+
+theorem sum2b (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) =
+    ∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  simp_rw [← (sum2a bm₁ Q₁ bm₂ Q₂ x)]
+  apply Finset.sum_congr rfl _
+  intro p hp
+  rw [polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp]
+    --(fun p hp => polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp)
+
 
 theorem qt_expansion20 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -901,8 +917,8 @@ theorem qt_expansion22 (x : M₁ ⊗[R] M₂) :
     let s := (bm.repr x).support.sym2
     ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
         (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
-      + (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p) = Q x := by
-  simp_rw [add_assoc, sum2a, sum1, qt_expansion20]
+      + (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) = Q x := by
+  simp_rw [add_assoc, sum2b, sum1, qt_expansion20]
 
 -- #check Finset.sum_disjUnion
 
