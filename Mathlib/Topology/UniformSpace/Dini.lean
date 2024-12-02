@@ -22,12 +22,12 @@ included in initial drafts of the original
 necessary.
 
 The key idea of the proof is to use a particular basis of `𝓝 0` which consists of open sets that
-are somehow monotone in the sense that if `s` is in the basis, and `0 ≤ f ≤ g`, then
-`g ⁻¹' s ⊆ f ⁻¹' s`, and so the proof would work on any topological ordered group possessing
+are somehow monotone in the sense that if `s` is in the basis, and `0 ≤ x ≤ y`, then
+`y ∈ s → x ∈ s`, and so the proof would work on any topological ordered group possessing
 such a basis. In the case of a linearly ordered topological group with the order topology, this
 basis is `nhds_basis_Ioo`. In the case of a normed lattice additive commutative group, this basis
 is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity criterion
-corrresponds to `HasSolidNorm`.
+corresponds to `HasSolidNorm`.
 -/
 
 open Filter Topology
