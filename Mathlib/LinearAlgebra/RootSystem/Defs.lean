@@ -359,6 +359,12 @@ lemma isCrystallographic_iff :
   · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
   · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
 
+variable {P} in
+lemma IsCrystallographic.flip (h : P.IsCrystallographic) :
+    P.flip.IsCrystallographic := by
+  rw [isCrystallographic_iff, forall_comm]
+  exact P.isCrystallographic_iff.mp h
+
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
 def IsReduced : Prop :=
