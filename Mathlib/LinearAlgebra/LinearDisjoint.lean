@@ -68,7 +68,7 @@ The following is the second equivalent characterization of linear disjointness:
   linear disjointness is symmetric under some commutative conditions.
 
 - `Submodule.LinearDisjoint.map`:
-  linear disjointness is preserved by injective algebra homomorphism.
+  linear disjointness is preserved by injective algebra homomorphisms.
 
 - `Submodule.linearDisjoint_op`:
   linear disjointness is preserved by taking multiplicative opposite.

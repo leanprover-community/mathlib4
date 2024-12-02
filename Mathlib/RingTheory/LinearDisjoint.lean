@@ -510,7 +510,7 @@ theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Typ
     i.comp Algebra.TensorProduct.includeRight,
     hi.comp (Algebra.TensorProduct.includeLeft_injective hb),
     hi.comp (Algebra.TensorProduct.includeRight_injective ha), by
-      convert (include_range_of_injective R A B ha hb).map i hi <;> rw [AlgHom.range_comp]⟩
+      simpa only [AlgHom.range_comp] using (include_range_of_injective R A B ha hb).map i hi⟩
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
