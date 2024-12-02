@@ -13,6 +13,7 @@ variable {H : Type u₂} [Category.{v₂} H]
 variable {J : Type u₁} [Category.{v₁} J]
 variable {F : C ⥤ Cat}
 
+@[simps!]
 def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
     [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H] [HasColimitsOfShape C H]
     [hC : PreservesLimitsOfShape J (colim (J := C) (C := H))]
@@ -27,23 +28,22 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
         isoWhiskerLeft _ (fiberwiseColimcompEvaluationIso _).symm ≪≫
         (Functor.associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
-    sorry
+    fun {c₁ c₂} f => by
+      simp
+      apply colimit.hom_ext
+      intro d
+      simp
+      sorry
 
 variable (C) (F) in
 instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
     [∀ c, HasColimitsOfShape (↑(F.obj c)) H]
+    [∀ c, HasLimitsOfShape J ((F.obj c) ⥤ H)] [HasLimitsOfShape J H]
     [hC : PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) := by
-  haveI : HasLimitsOfShape J (Grothendieck F ⥤ H) := sorry
-  haveI : HasLimitsOfShape J (C ⥤ H) := sorry
-  haveI : HasLimitsOfShape C H := sorry
-  haveI : HasColimitsOfShape J (C ⥤ H) := sorry
-  haveI : HasLimitsOfShape J H := sorry
   constructor
   intro K
-  haveI : ∀ c, HasLimit (K ⋙
-    (whiskeringLeft (↑(F.obj c)) (Grothendieck F) H).obj (Grothendieck.ι F c)) := sorry
   let i₂ := calc colimit (limit K)
     _ ≅ colimit (fiberwiseColimit (limit K)) := (colimitFiberwiseColimitIso _).symm
     _ ≅ colimit (limit (K ⋙ fiberwiseColim _ _)) :=
@@ -55,9 +55,12 @@ instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
        (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
     convert Iso.isIso_hom i₂
-    apply colimit.hom_ext
+    apply limit.hom_ext
     intro d
-    ext d'
+    simp [i₂]
+    apply colimit.hom_ext
+    intro d'
+    simp
     sorry
   apply preservesLimit_of_isIso_post
 

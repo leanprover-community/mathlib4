@@ -207,10 +207,12 @@ noncomputable section FiberwiseColim
 
 variable [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasColimitsOfShape C H]
 
+@[simps!]
 def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
   NatIso.ofComponents (fun G => colimitFiberwiseColimitIso G)
     fun _ => by (iterate 2 apply colimit.hom_ext; intro); simp
 
+@[simps!]
 def fiberwiseColimcompEvaluationIso (c : C) : fiberwiseColim F H ⋙ (evaluation C H).obj c ≅
     (whiskeringLeft _ _ _).obj (Grothendieck.ι F c) ⋙ colim :=
   Iso.refl _
