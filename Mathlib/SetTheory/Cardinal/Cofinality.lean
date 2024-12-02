@@ -119,6 +119,49 @@ theorem cof_eq {α β : Type u} [Preorder α] [Preorder β] (f : α ≃o β) : O
 
 end OrderIso
 
+namespace Order
+
+@[simp]
+theorem cof_eq_zero [Preorder α] [IsEmpty α] : cof α = 0 := by
+  rw [← le_zero_iff, ← mk_emptyCollection α]
+  exact (IsCofinal.of_isEmpty (∅ : Set α)).cof_le
+
+@[simp]
+theorem cof_eq_zero_iff [Preorder α] : cof α = 0 ↔ IsEmpty α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ cof_eq_zero⟩
+  obtain ⟨s, hs, hα⟩ := cof_eq α
+  rw [hα, mk_eq_zero_iff, isEmpty_subtype, ← eq_empty_iff_forall_not_mem] at h
+  rwa [h, isCofinal_empty_iff] at hs
+
+@[simp]
+theorem cof_ne_zero_iff [Preorder α] : cof α ≠ 0 ↔ Nonempty α := by
+  simp [cof_eq_zero_iff.not]
+
+@[simp]
+theorem cof_ne_zero [Preorder α] [h : Nonempty α] : cof α ≠ 0 :=
+  cof_ne_zero_iff.2 h
+
+@[simp]
+theorem cof_eq_one [Preorder α] [OrderTop α] : cof α = 1 := by
+  apply le_antisymm
+  · rw [← mk_singleton (⊤ : α)]
+    exact IsCofinal.singleton_top.cof_le
+  · rw [one_le_iff_ne_zero, cof_ne_zero_iff]
+    exact top_nonempty α
+
+theorem cof_eq_one_iff [Preorder α] : cof α = 1 ↔ Nonempty (OrderTop α) := by
+  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ cof_eq_one⟩
+  obtain ⟨s, hs, hα⟩ := cof_eq α
+  rw [h, eq_comm] at hα
+  have := mk_le_one_iff_set_subsingleton.1 hα.le
+
+
+#exit
+
+  #exit
+
+end Order
+
 /-! ### Cofinality of ordinals -/
 
 namespace Ordinal
@@ -560,12 +603,6 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
       · by_contra! H
         exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
-
-@[simp]
-theorem cof_cof (a : Ordinal.{u}) : cof (cof a).ord = cof a := by
-  cases' exists_fundamental_sequence a with f hf
-  cases' exists_fundamental_sequence a.cof.ord with g hg
-  exact ord_injective (hf.trans hg).cof_eq.symm
 
 protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsLimit a) {g} (hg : IsFundamentalSequence a o g) :
