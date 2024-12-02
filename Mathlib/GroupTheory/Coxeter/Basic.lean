@@ -411,23 +411,16 @@ theorem length_alternatingWord (i i' : B) (m : ℕ) :
   · dsimp [alternatingWord]
   · simpa [alternatingWord] using ih i' i
 
-lemma getElem_alternatingWord (i j : B) (p k : ℕ) (h : k < p) :
-    (alternatingWord i j p)[k]'(by simp; exact h) =  (if Even (p + k) then i else j) := by
-  /- State the proof in terms of a finite index to simplify induction -/
-  revert i j p k h
-  suffices ∀ (i j : B) (p : ℕ) (k : Fin ((alternatingWord i j p).length)),
-   (alternatingWord i j p)[k] = if Even (p + k) then i else j from by
-    intro i j p k h
-    simp [← this i j p ⟨k, (by simp[h])⟩]
-  intro i j p k
+lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
+    (alternatingWord i j p)[k]'(by simp; exact hk) =  (if Even (p + k) then i else j) := by
+  revert k
   induction p with
   | zero =>
-    rcases k with ⟨k, hk⟩
+    intro k hk
     simp[alternatingWord] at hk
   | succ n h =>
-    revert k
-    rw [alternatingWord_succ' i j n]
-    rintro ⟨k, hk⟩
+    intro k hk
+    simp_rw [alternatingWord_succ' i j n]
     match k with
     | 0 =>
       by_cases h2 : Even n
@@ -435,8 +428,7 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (h : k < p) :
       · simp [h2, Odd.add_one (Nat.not_even_iff_odd.mp h2)]
     | k + 1 =>
       simp at hk h
-      simp[List.getElem_cons_succ]
-      simp[h ⟨k, (by simp[hk])⟩ ]
+      simp[List.getElem_cons_succ, h k hk]
       ring_nf
       have even_add_two (m : ℕ) : Even (2 + m) ↔ Even m := by
         simp[(Nat.even_sub (by omega: m ≤ 2 + m)).mp]
