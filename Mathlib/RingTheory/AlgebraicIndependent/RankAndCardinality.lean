@@ -35,10 +35,7 @@ open scoped Classical
 
 universe u v w
 
-
 open AlgebraicIndependent
-
-section RankAndCardinality
 
 open Cardinal
 
@@ -94,5 +91,3 @@ theorem IntermediateField.rank_sup_le
       exact (mk_union_le _ _).trans_eq (by simp)
     _ = _ := by
       simp [lift_mk_le_lift_mk_of_injective (algebraMap F A).injective]
-
-end RankAndCardinality

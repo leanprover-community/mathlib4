@@ -29,8 +29,6 @@ open scoped Classical
 
 namespace AlgebraicIndependent
 
-section reprField
-
 variable {ι : Type*}
 variable {F E : Type*} {x : ι → E} [Field F] [Field E] [Algebra F E] (hx : AlgebraicIndependent F x)
 include hx
@@ -69,7 +67,5 @@ theorem liftAlgHom_comp_reprField :
     (IsFractionRing.liftAlgHom (algebraicIndependent_iff_injective_aeval.2 hx)).comp hx.reprField =
       IntermediateField.val _ :=
   AlgHom.ext <| hx.lift_reprField
-
-end reprField
 
 end AlgebraicIndependent
