@@ -3,9 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
-import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Cofinal sets
@@ -21,7 +19,7 @@ For the cofinality of a set as a cardinal, see `Mathlib.SetTheory.Cardinal.Cofin
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section LE
 variable [LE α]
@@ -59,6 +57,16 @@ theorem IsCofinal.trans {s : Set α} {t : Set s} (hs : IsCofinal s) (ht : IsCofi
   obtain ⟨b, hb, hb'⟩ := hs a
   obtain ⟨c, hc, hc'⟩ := ht ⟨b, hb⟩
   exact ⟨c, Set.mem_image_of_mem _ hc, hb'.trans hc'⟩
+
+theorem GaloisConnection.map_cofinal [Preorder β] {f : β → α} {g : α → β}
+    (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) := by
+  intro a
+  obtain ⟨b, hb, hb'⟩ := hs (f a)
+  exact ⟨g b, Set.mem_image_of_mem _ hb, h.le_iff_le.1 hb'⟩
+
+theorem OrderIso.map_cofinal [Preorder β] (e : α ≃o β) {s : Set α} (hs : IsCofinal s) :
+    IsCofinal (e '' s) :=
+  e.symm.to_galoisConnection.map_cofinal hs
 
 end Preorder
 
@@ -104,5 +112,15 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
+
+/-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
+well-ordering of `α` is a cofinal set. -/
+theorem isCofinal_setOf_imp_lt (r : α → α → Prop) [h : IsWellFounded α r] :
+    IsCofinal { a | ∀ b, r b a → b < a } := by
+  intro a
+  obtain ⟨b, hb, hb'⟩ := h.wf.has_min (Set.Ici a) Set.nonempty_Ici
+  refine ⟨b, fun c hc ↦ ?_, hb⟩
+  by_contra! hc'
+  exact hb' c (hb.trans hc') hc
 
 end LinearOrder
