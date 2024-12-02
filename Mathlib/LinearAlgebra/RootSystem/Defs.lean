@@ -92,7 +92,11 @@ structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of dual vectors, called coroots. -/
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLin (root i) (coroot i) = 2
-  /-- A parametrized family of permutations, induced by reflection. -/
+  /-- A parametrized family of permutations, induced by reflections. This corresponds to the
+      classical requirement that the symmetry attached to each root (later defined in
+      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+      formalize this stability by fixing the image of the roots through each reflection (whence the
+      permutation); and similarly for coroots. -/
   reflection_perm : ι → (ι ≃ ι)
   reflection_perm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
