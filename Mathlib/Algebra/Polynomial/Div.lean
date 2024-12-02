@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
@@ -306,7 +307,8 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : R[X]) (hq : q.Mo
         gcongr
         simp only [sup_le_iff]
         refine ⟨one_le_mul le_sup_left le_sup_left, ?_, mul_le_mul' le_sup_right le_sup_right⟩
-        simpa [Submodule.sup_mul] using le_sup_of_le_left le_sup_right
+        rw [Submodule.sup_mul, one_mul]
+        exact le_sup_of_le_left le_sup_right
       _ = spanCoeffs(q) ^ (deg(r) + 1) * spanCoeffs(p) := by rw [pow_succ, mul_assoc]
       _ ≤ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by gcongr; exacts [le_sup_left, deg_r_lt_deg_p]
     refine ⟨add_mem ?_ ?_, ?_⟩
