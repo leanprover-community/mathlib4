@@ -37,9 +37,8 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
 
 variable (C) (F) in
 instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
-    [∀ c, HasColimitsOfShape (↑(F.obj c)) H]
-    [∀ c, HasLimitsOfShape J ((F.obj c) ⥤ H)] [HasLimitsOfShape J H]
-    [hC : PreservesLimitsOfShape J (colim (J := C) (C := H))]
+    [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [∀ c, HasLimitsOfShape J ((F.obj c) ⥤ H)]
+    [HasLimitsOfShape J H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) := by
   constructor
