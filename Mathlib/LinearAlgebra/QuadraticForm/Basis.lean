@@ -860,7 +860,36 @@ theorem sum2 (x : M₁ ⊗[R] M₂) :
   simp_rw [← Finset.sum_disjoint_filters_on_set  _ _ h1]
   simp_rw [symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
 
+theorem qt_expansion20 (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
+    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag, polar_lift Q bm x p = Q x := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  simp_rw [basis_expansion Q bm x]
+  have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
+    rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
+  simp_rw [polar_lift, e1]
 
+theorem qt_expansion21 (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
+        (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
+      + (∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p) = Q x := by
+  simp_rw [add_assoc, sum1, qt_expansion20]
+
+theorem qt_expansion22 (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
+        (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
+      + (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p)
+      + (∑ p ∈ s with symOffDiagLower p, Q.polar_lift bm x p) = Q x := by
+  simp_rw [add_assoc, sum2, sum1, qt_expansion20]
 
 
 -- #check Finset.sum_disjUnion
