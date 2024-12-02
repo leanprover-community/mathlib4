@@ -61,7 +61,7 @@ variable [CommGroupWithZero G₀]
 /-- Left division by a nonzero element in a `CommGroupWithZero` is a permutation of the underlying
 type. -/
 @[simps! (config := { simpRhs := true })]
-def divLeft₀ (a : G₀) (ha : a ≠ 0) : G₀ ≃ G₀ where
+def divLeft₀ (a : G₀) (ha : a ≠ 0) : Perm G₀ where
   toFun := (a / ·)
   invFun := (a / ·)
   left_inv _ := by simp [ha]
