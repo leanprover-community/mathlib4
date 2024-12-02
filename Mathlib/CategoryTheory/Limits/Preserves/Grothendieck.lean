@@ -62,13 +62,23 @@ instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
        (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
     convert Iso.isIso_hom i₂
-    apply limit.hom_ext
-    intro d
-    simp [i₂]
-    apply colimit.hom_ext
-    intro d'
-    simp
-    sorry
+    ext
+    simp only [colim_obj, Functor.comp_obj, limit.post_π, colim_map, Iso.instTransIso_trans,
+      Iso.trans_assoc, Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
+      fiberwiseColim_obj, isoWhiskerLeft_hom, NatTrans.comp_app, Functor.associator_hom_app,
+      whiskerLeft_app, fiberwiseColimCompColimIso_hom_app, Category.id_comp,
+      preservesLimitIso_hom_π_assoc, i₂]
+    ext
+    simp only [ι_colimMap, Trans.trans, Iso.symm_hom, ι_colimitFiberwiseColimitIso_inv_assoc,
+      HasColimit.isoOfNatIso_ι_hom_assoc, fiberwiseColimit_obj, fiberwiseColimitLimitIso_hom_app,
+      ι_colimMap_assoc, Category.assoc, limitObjIsoLimitCompEvaluation_inv_π_app_assoc,
+      Functor.comp_obj, fiberwiseColim_obj, HasLimit.isoOfNatIso_hom_π_assoc,
+      whiskeringLeft_obj_obj, colim_obj, evaluation_obj_obj, Iso.trans_hom, isoWhiskerLeft_hom,
+      NatTrans.comp_app, Functor.associator_hom_app, whiskerLeft_app,
+      fiberwiseColimcompEvaluationIso_inv_app, Functor.associator_inv_app, Category.comp_id,
+      Category.id_comp, preservesLimitIso_hom_π_assoc, colim_map, Grothendieck.ι_obj,
+      ι_colimitFiberwiseColimitIso_hom]
+    simp [← Category.assoc, ← NatTrans.comp_app]
   apply preservesLimit_of_isIso_post
 
 end
