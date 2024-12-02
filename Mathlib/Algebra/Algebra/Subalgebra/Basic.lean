@@ -941,16 +941,14 @@ theorem range_comp_val : (f.comp S.val).range = S.map f := by
 /-- An `AlgHom` between two rings restricts to an `AlgHom` from any subalgebra of the
 domain onto the image of that subalgebra. -/
 def _root_.AlgHom.subalgebraMap : S →ₐ[R] S.map f :=
-  (equivOfEq _ _ (range_comp_val S f)).toAlgHom.comp (f.comp S.val).rangeRestrict
+  (f.comp S.val).codRestrict _ fun x ↦ ⟨_, x.2, rfl⟩
 
 variable {S} in
 @[simp]
 theorem _root_.AlgHom.subalgebraMap_coe_apply (x : S) : f.subalgebraMap S x = f x := rfl
 
-theorem _root_.AlgHom.subalgebraMap_surjective : Function.Surjective (f.subalgebraMap S) := by
-  simp only [AlgHom.subalgebraMap, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.comp_surjective]
-  exact AlgHom.rangeRestrict_surjective _
+theorem _root_.AlgHom.subalgebraMap_surjective : Function.Surjective (f.subalgebraMap S) :=
+  f.toAddMonoidHom.addSubmonoidMap_surjective S.toAddSubmonoid
 
 variable (hf : Function.Injective f)
 
