@@ -427,7 +427,8 @@ theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by
 theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : M → M) :=
   fun _ _ ↦ rfl
 
--- could add a `1 : M →ₗ[R] M` version of the previous lemma if we wanted.
+theorem isAdjointPair_one : IsAdjointPair B B (1 : Module.End R M) (1 : Module.End R M) :=
+  isAdjointPair_id
 
 theorem IsAdjointPair.add {f f' : M → M₁} {g g' : M₁ → M} (h : IsAdjointPair B B' f g)
     (h' : IsAdjointPair B B' f' g') :
@@ -438,8 +439,6 @@ theorem IsAdjointPair.comp {f : M → M₁} {g : M₁ → M} {f' : M₁ → M₂
     (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B' B'' f' g') :
     IsAdjointPair B B'' (f' ∘ f) (g ∘ g') := fun _ _ ↦ by
   rw [Function.comp_def, Function.comp_def, h', h]
-
--- could still have  a `LinearMap.comp` version of the previous lemma if we wanted.
 
 theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
     (h' : IsAdjointPair B B f' g') : IsAdjointPair B B (f * f') (g' * g) :=
