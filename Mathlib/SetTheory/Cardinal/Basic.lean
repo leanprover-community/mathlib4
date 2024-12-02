@@ -406,7 +406,7 @@ instance : Inhabited Cardinal.{u} :=
 
 @[simp]
 theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
-  (Equiv.equivOfIsEmpty α (ULift (Fin 0))).cardinal_eq
+  (Equiv.equivOfIsEmpty α _).cardinal_eq
 
 @[simp]
 theorem lift_zero : lift 0 = 0 := mk_eq_zero _
@@ -415,41 +415,76 @@ theorem lift_zero : lift 0 = 0 := mk_eq_zero _
 theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
   lift_injective.eq_iff' lift_zero
 
+-- `mk_set_eq_zero_iff` should take precedence over this lemma
+@[simp 900]
 theorem mk_eq_zero_iff {α : Type u} : #α = 0 ↔ IsEmpty α :=
   ⟨fun e =>
     let ⟨h⟩ := Quotient.exact e
     h.isEmpty,
     @mk_eq_zero α⟩
 
-theorem mk_ne_zero_iff {α : Type u} : #α ≠ 0 ↔ Nonempty α :=
-  (not_iff_not.2 mk_eq_zero_iff).trans not_isEmpty_iff
+theorem mk_ne_zero_iff {α : Type u} : #α ≠ 0 ↔ Nonempty α := by
+  simp
+
+theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 := by
+  simp
 
 @[simp]
-theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
-  mk_ne_zero_iff.2 ‹_›
+theorem mk_set_eq_zero_iff {s : Set α} : #s = 0 ↔ s = ∅ := by
+  simp [eq_empty_iff_forall_not_mem]
 
 instance : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 1)⟩
 
+instance : NeZero (1 : Cardinal) :=
+  ⟨mk_ne_zero _⟩
+
 instance : Nontrivial Cardinal.{u} :=
-  ⟨⟨1, 0, mk_ne_zero _⟩⟩
+  ⟨⟨1, 0, one_ne_zero⟩⟩
 
+@[simp]
 theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
-  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+  let ⟨_⟩ := nonempty_unique α
+  (Equiv.equivOfUnique α _).cardinal_eq
 
-theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
+theorem mk_le_one_iff {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
     ⟨fun _ => ULift.up 0, fun _ _ _ => h _ _⟩⟩
 
-@[simp]
-theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleton :=
-  le_one_iff_subsingleton.trans s.subsingleton_coe
+@[deprecated (since := "2024-12-02")]
+alias le_one_iff_subsingleton := mk_le_one_iff
 
-alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
+@[simp]
+theorem mk_set_le_one_iff {s : Set α} : #s ≤ 1 ↔ s.Subsingleton :=
+  mk_le_one_iff.trans s.subsingleton_coe
+
+alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_set_le_one_iff
+
+@[deprecated (since := "2024-12-02")]
+alias mk_le_one_iff_set_subsingleton := mk_set_le_one_iff
 
 @[deprecated (since := "2024-11-10")]
 alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
+
+theorem mk_eq_one_iff : #α = 1 ↔ Nonempty (Unique α) := by
+  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ mk_eq_one _⟩
+  have := mk_le_one_iff.1 h.le
+  refine ⟨uniqueOfSubsingleton (Classical.choice ?_)⟩
+  rw [← mk_ne_zero_iff, h]
+  exact one_ne_zero
+
+theorem mk_set_eq_one_iff {s : Set α} : #s = 1 ↔ ∃ x, s = {x} := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rw [mk_eq_one_iff, unique_subtype_iff_exists_unique] at h
+    obtain ⟨x, h⟩ := h
+    use x
+    rwa [eq_singleton_iff_unique_mem]
+  · rintro ⟨x, rfl⟩
+    exact mk_eq_one _
+
+theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
+  rw [← not_le, mk_le_one_iff, ← not_nontrivial_iff_subsingleton, Classical.not_not]
 
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
@@ -692,9 +727,6 @@ instance : NoMaxOrder Cardinal.{u} where exists_gt a := ⟨_, cantor a⟩
 
 -- short-circuit type class inference
 instance : DistribLattice Cardinal.{u} := inferInstance
-
-theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
-  rw [← not_le, le_one_iff_subsingleton, ← not_nontrivial_iff_subsingleton, Classical.not_not]
 
 theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : a ^ b ≤ max (a ^ c) 1 := by
   by_cases ha : a = 0
@@ -1662,7 +1694,7 @@ theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempt
   calc
     #α = 1 ↔ #α ≤ 1 ∧ 1 ≤ #α := le_antisymm_iff
     _ ↔ Subsingleton α ∧ Nonempty α :=
-      le_one_iff_subsingleton.and (one_le_iff_ne_zero.trans mk_ne_zero_iff)
+      mk_le_one_iff.and (one_le_iff_ne_zero.trans mk_ne_zero_iff)
 
 theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
@@ -2164,4 +2196,4 @@ end Cardinal
 
 -- end Tactic
 
-set_option linter.style.longFile 2200
+set_option linter.style.longFile 2400
