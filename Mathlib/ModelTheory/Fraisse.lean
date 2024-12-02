@@ -661,6 +661,9 @@ private theorem all_fgequiv_extend {m : ℕ} (f : L.FGEquiv (system _ m) (system
   cases h_unpair_n
   let f' := f.1.map (Embedding.eq_embed (system_eq_as_structures K_fraisse (Nat.unpair_left_le r)))
   have f'_fg : f'.dom.FG := f.1.map_fg _ f.2
+  have h_f'_map : f'.map ((init_system _ r).2 (Nat.unpair r).1).2 =
+      f.1.map (maps_system _ (Nat.unpair_left_le r)) := by
+    apply PartialEquiv.map_map
   cases hn
   have h_f' : f' = FGEquiv_extended K_fraisse r := by
     have H {A B : K} (h : A = B) :
@@ -674,13 +677,7 @@ private theorem all_fgequiv_extend {m : ℕ} (f : L.FGEquiv (system _ m) (system
   use (Nat.unpair_left_le r).trans (Nat.le_add_right r 1)
   rw [← transitive_maps_system K_fraisse (Nat.unpair_left_le r) (Nat.le_add_right r 1)]
   apply PartialEquiv.comp_is_extended_by
-  have H : f'.map ((init_system _ r).2 (Nat.unpair r).1).2 =
-      (sequence_FGEquiv K_fraisse (system K_fraisse (Nat.unpair r).1) (Nat.unpair r).2).1.map
-        (maps_system _ (Nat.unpair_left_le r)) := by
-      unfold f'
-      rw [PartialEquiv.map_map]
-      rfl
-  rw [← H, h_f', ← map_step, map_step_is_extend_and_join]
+  rw [← h_f'_map, h_f', ← map_step, map_step_is_extend_and_join]
   apply extend_and_join_spec_1
 
 private theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) := by
