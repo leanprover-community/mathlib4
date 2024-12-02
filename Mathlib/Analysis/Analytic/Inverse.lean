@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -513,7 +513,7 @@ theorem radius_rightInv_pos_of_radius_pos
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
-      have In : 2 ≤ n + 1 := by linarith only [one_le_n]
+      have In : 2 ≤ n + 1 := by omega
       have rSn : r * S n ≤ 1 / 2 :=
         calc
           r * S n ≤ r * ((I + 1) * a) := by gcongr
@@ -536,7 +536,7 @@ theorem radius_rightInv_pos_of_radius_pos
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i x).radius by
     apply lt_of_lt_of_le _ H
-    -- Prior to leanprover/lean4#2734, this was `exact_mod_cast apos`.
+    -- Prior to https://github.com/leanprover/lean4/pull/2734, this was `exact_mod_cast apos`.
     simpa only [ENNReal.coe_pos]
   apply le_radius_of_eventually_le _ ((I + 1) * a)
   filter_upwards [Ici_mem_atTop 1] with n (hn : 1 ≤ n)
@@ -591,7 +591,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
         _ ≤ ‖compAlongComposition q p c‖ * (r1 : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
-          apply pow_le_pow_left (norm_nonneg _)
+          gcongr
           rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this

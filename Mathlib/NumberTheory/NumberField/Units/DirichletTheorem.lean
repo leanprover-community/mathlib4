@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Units.Basic
-import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
@@ -76,7 +75,7 @@ variable (K)
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
     Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-{ toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
+{ toFun := fun x w => mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
   map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
 
@@ -224,10 +223,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
       calc
         _ = ∏ w : InfinitePlace K, w (algebraMap _ K y) ^ mult w :=
           (prod_eq_abs_norm (algebraMap _ K y)).symm
-        _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
-          refine prod_le_prod ?_ ?_
-          · exact fun _ _ => pow_nonneg (by positivity) _
-          · exact fun w _ => pow_le_pow_left (by positivity) (le_of_lt (h_yle w)) (mult w)
+        _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by gcongr with w; exact (h_yle w).le
         _ ≤ (B : ℝ) := by
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
@@ -469,7 +465,7 @@ def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i):)
+  fun i => Quotient.out ((basisModTorsion K i).toMul:)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by

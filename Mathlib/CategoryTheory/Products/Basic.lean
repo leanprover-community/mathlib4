@@ -13,8 +13,8 @@ import Mathlib.Data.Prod.Basic
 We define the category instance on `C × D` when `C` and `D` are categories.
 
 We define:
-* `sectl C Z` : the functor `C ⥤ C × D` given by `X ↦ ⟨X, Z⟩`
-* `sectr Z D` : the functor `D ⥤ C × D` given by `Y ↦ ⟨Z, Y⟩`
+* `sectL C Z` : the functor `C ⥤ C × D` given by `X ↦ ⟨X, Z⟩`
+* `sectR Z D` : the functor `D ⥤ C × D` given by `Y ↦ ⟨Z, Y⟩`
 * `fst`       : the functor `⟨X, Y⟩ ↦ X`
 * `snd`       : the functor `⟨X, Y⟩ ↦ Y`
 * `swap`      : the functor `C × D ⥤ D × C` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
@@ -109,17 +109,24 @@ end
 -- address the universal properties.
 namespace Prod
 
-/-- `sectl C Z` is the functor `C ⥤ C × D` given by `X ↦ (X, Z)`. -/
+/-- `sectL C Z` is the functor `C ⥤ C × D` given by `X ↦ (X, Z)`. -/
 @[simps]
-def sectl (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (Z : D) : C ⥤ C × D where
+def sectL (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (Z : D) : C ⥤ C × D where
   obj X := (X, Z)
   map f := (f, 𝟙 Z)
 
-/-- `sectr Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
+/-- `sectR Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
 @[simps]
-def sectr {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D where
+def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D where
   obj X := (Z, X)
   map f := (𝟙 Z, f)
+
+@[deprecated (since := "2024-11-12")] alias sectl := sectL
+@[deprecated (since := "2024-11-12")] alias sectr := sectR
+@[deprecated (since := "2024-11-12")] alias sectl_obj := sectL_obj
+@[deprecated (since := "2024-11-12")] alias sectr_obj := sectR_obj
+@[deprecated (since := "2024-11-12")] alias sectl_map := sectL_map
+@[deprecated (since := "2024-11-12")] alias sectr_map := sectR_map
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
@@ -266,6 +273,20 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
    use instead `α.prod β` or `NatTrans.prod α β`. -/
+
+section
+
+variable {F G : A ⥤ C} {H K : A ⥤ D} (α : F ⟶ G) (β : H ⟶ K)
+
+/-- The cartesian product of two natural transformations. -/
+def prod' : F.prod' H ⟶ G.prod' K where
+  app X := (α.app X, β.app X)
+
+@[simp] lemma prod'_app_fst (X : A) : ((prod' α β).app X).1 = α.app X := rfl
+@[simp] lemma prod'_app_snd (X : A) : ((prod' α β).app X).2 = β.app X := rfl
+
+end
+
 end NatTrans
 
 /-- The cartesian product functor between functor categories -/
@@ -311,6 +332,32 @@ def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.
   NatIso.ofComponents fun a => Iso.refl _
 
 theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
+  rfl
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
+@[simps!]
+def whiskeringLeftCompEvaluation (F : A ⥤ B) (a : A) :
+    (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a ≅ (evaluation B C).obj (F.obj a) :=
+  Iso.refl _
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F.obj a`. -/
+@[simp]
+theorem whiskeringLeft_comp_evaluation (F : A ⥤ B) (a : A) :
+    (whiskeringLeft A B C).obj F ⋙ (evaluation A C).obj a = (evaluation B C).obj (F.obj a) :=
+  rfl
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
+applying `F`. -/
+@[simps!]
+def whiskeringRightCompEvaluation (F : B ⥤ C) (a : A) :
+    (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a ≅ (evaluation _ _).obj a ⋙ F :=
+  Iso.refl _
+
+/-- Whiskering by `F` and then evaluating at `a` is the same as evaluating at `F` and then
+applying `F`. -/
+@[simp]
+theorem whiskeringRight_comp_evaluation (F : B ⥤ C) (a : A) :
+    (whiskeringRight A B C).obj F ⋙ (evaluation _ _).obj a = (evaluation _ _).obj a ⋙ F :=
   rfl
 
 variable (A B C)

@@ -122,7 +122,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
       SetLike.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
           hinv.symm)
-    exact hxM (Submodule.map₂_le.2 h hx)
+    exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
   choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
@@ -149,7 +149,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [Algebra.smul_def, ← _root_.map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
     rw [IsLocalization.injective _ hS he] at hdM
-    -- Note: #8386 had to specify the value of `f`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
   · refine Submodule.sum_mem _ fun M' hM' => ?_
@@ -158,7 +158,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [← hc, Algebra.smul_def, ← _root_.map_mul]
     specialize hu M' hM'.2
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
-    -- Note: #8386 had to specify the value of `f`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
       (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
 
@@ -212,7 +212,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
   obtain ⟨pid, p', ⟨hp'0, hp'p⟩, hpu⟩ :=
     (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
       (IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain R hp0 _)
-  have : LocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
+  have : IsLocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
     rw [Submodule.ne_bot_iff] at hp0 ⊢
     obtain ⟨x, x_mem, x_ne⟩ := hp0
     exact
@@ -224,11 +224,11 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     dvd_iff_normalizedFactors_le_normalizedFactors hP0, dvd_iff_le,
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
-    hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
+    hpu (IsLocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
   · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
     exact mt (Ideal.eq_bot_of_comap_eq_bot ) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
-  · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
+  · exact (IsLocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]

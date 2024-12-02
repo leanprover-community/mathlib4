@@ -3,8 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Order.Archimedean
@@ -12,12 +10,14 @@ import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.Bornology
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Topological properties of ℝ
 -/
+
+assert_not_exists UniformOnFun
 
 noncomputable section
 
@@ -33,13 +33,13 @@ instance : NoncompactSpace ℝ := Int.isClosedEmbedding_coe_real.noncompactSpace
 theorem Real.uniformContinuous_add : UniformContinuous fun p : ℝ × ℝ => p.1 + p.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
     let ⟨δ, δ0, Hδ⟩ := rat_add_continuous_lemma abs ε0
-    ⟨δ, δ0, fun h =>
+    ⟨δ, δ0, fun _ _ h =>
       let ⟨h₁, h₂⟩ := max_lt_iff.1 h
       Hδ h₁ h₂⟩
 
 theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [Real.dist_eq, neg_sub_neg] using h⟩
+    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, Real.dist_eq, neg_sub_neg] using h⟩
 
 instance : ContinuousStar ℝ := ⟨continuous_id⟩
 
@@ -60,7 +60,7 @@ instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
-  isTopologicalBasis_of_isOpen_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
+  isTopologicalBasis_of_isOpen_of_nhds (by simp +contextual [isOpen_Ioo])
     fun a _ hav hv =>
     let ⟨_, _, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
@@ -97,7 +97,7 @@ theorem Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀
 
 theorem Real.uniformContinuous_abs : UniformContinuous (abs : ℝ → ℝ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨ε, ε0, lt_of_le_of_lt (abs_abs_sub_abs_le_abs_sub _ _)⟩
+    ⟨ε, ε0, fun _ _ ↦ lt_of_le_of_lt (abs_abs_sub_abs_le_abs_sub _ _)⟩
 
 theorem Real.continuous_inv : Continuous fun a : { r : ℝ // r ≠ 0 } => a.val⁻¹ :=
   continuousOn_inv₀.restrict
@@ -184,49 +184,3 @@ theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α}
 end Function
 
 end Periodic
-
-section Subgroups
-
-namespace Int
-
-open Metric
-
-/-- This is a special case of `NormedSpace.discreteTopology_zmultiples`. It exists only to simplify
-dependencies. -/
-instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
-  rcases eq_or_ne a 0 with (rfl | ha)
-  · rw [AddSubgroup.zmultiples_zero_eq_bot]
-    exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
-  rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
-  refine ⟨ball 0 |a|, isOpen_ball, ?_⟩
-  ext ⟨x, hx⟩
-  obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
-  simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]
-
-/-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
-theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact ℝ) := by
-  apply (castAddHom ℝ).tendsto_coe_cofinite_of_discrete cast_injective
-  rw [range_castAddHom]
-  infer_instance
-
-/-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
-inverse images of compact sets are finite. -/
-theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
-    Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
-  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete <| smul_left_injective ℤ ha
-  rw [AddSubgroup.range_zmultiplesHom]
-  infer_instance
-
-end Int
-
-namespace AddSubgroup
-
-/-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
-intersection with compact sets is finite. -/
-theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
-    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) :=
-  (zmultiples a).tendsto_coe_cofinite_of_discrete
-
-end AddSubgroup
-
-end Subgroups

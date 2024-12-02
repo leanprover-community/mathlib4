@@ -113,12 +113,8 @@ theorem add_eq_coe :
   | some a, ⊤, c => by simp
   | some a, some b, c => by norm_cast; simp
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by simp
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by simp
 
 theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
@@ -230,6 +226,17 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
     [AddRightStrictMono α] (hc : c ≠ ⊤) (hab : a < b) (hcd : c ≤ d) :
     a + c < b + d :=
   (WithTop.add_lt_add_right hc hab).trans_le <| add_le_add_left hcd _
+
+lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (ha : a ≠ ⊤) : AddLECancellable a := fun _b _c ↦ WithTop.le_of_add_le_add_left ha
+
+lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
+
+lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable a ↔ a ≠ ⊤ where
+  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
+  mpr := addLECancellable_of_ne_top
 
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
 @[simp]
@@ -542,13 +549,9 @@ theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ 
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
   WithTop.add_eq_coe
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem add_coe_eq_bot_iff : a + y = ⊥ ↔ a = ⊥ :=
   WithTop.add_coe_eq_top_iff
 
--- Porting note (#10618): simp can already prove this.
--- @[simp]
 theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
   WithTop.coe_add_eq_top_iff
 
