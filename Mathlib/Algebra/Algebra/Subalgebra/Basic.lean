@@ -948,9 +948,7 @@ variable {S} in
 theorem _root_.AlgHom.subalgebraMap_coe_apply (x : S) : f.subalgebraMap S x = f x := rfl
 
 theorem _root_.AlgHom.subalgebraMap_surjective : Function.Surjective (f.subalgebraMap S) := by
-  simp only [AlgHom.subalgebraMap, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.comp_surjective]
-  exact AlgHom.rangeRestrict_surjective _
+  simpa [AlgHom.subalgebraMap] using (f.comp S.val).rangeRestrict_surjective
 
 variable (hf : Function.Injective f)
 
