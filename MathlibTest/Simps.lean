@@ -1203,7 +1203,7 @@ structure Foo where
 @[simps field field_2 field_9_fst]
 def myFoo : Foo := ⟨1, ⟨1, 1⟩, 1⟩
 
-structure Prod (X Y : Type _) extends Prod X Y
+structure Prod (X Y : Type _) extends _root_.Prod X Y
 
 structure Prod2 (X Y : Type _) extends Prod X Y
 

@@ -62,7 +62,8 @@ variable (𝕜) in
 theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalars E (𝕜 := 𝕜)) := by
   intro _ _
   refine Function.mtr fun h ↦ ?_
-  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff, smul_apply]
+  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
+    ContinuousMultilinearMap.smul_apply]
   push_neg
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩
