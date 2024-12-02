@@ -30,14 +30,14 @@ It is *not* the adic topology in general.
 ## Main results
 
 - `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
-`MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
-of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
+  `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
+  of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 
 - `MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f`
-converge to zero iff the constant coefficient of `f` is nilpotent.
+  converge to zero iff the constant coefficient of `f` is nilpotent.
 
 - `MvPowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
-series coverges to itself.
+  series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 
@@ -109,7 +109,7 @@ theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing (R : Type*) [TopologicalSpace R] [Ring R] [TopologicalRing R] :
+theorem instTopologicalRing [Ring R] [TopologicalRing R] :
     TopologicalRing (MvPowerSeries σ R) :=
   { instTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
