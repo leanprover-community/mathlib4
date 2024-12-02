@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 universe v₁ v₂ u₁ u₂
@@ -16,7 +21,6 @@ variable {F : C ⥤ Cat}
 @[simps!]
 def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
     [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H] [HasColimitsOfShape C H]
-    [hC : PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim _ _) :=
   NatIso.ofComponents
@@ -29,11 +33,15 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
         (Functor.associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
     fun {c₁ c₂} f => by
-      simp
+      simp only [fiberwiseColimit_obj, fiberwiseColimit_map, Iso.trans_hom, Iso.symm_hom,
+        Category.assoc, limitObjIsoLimitCompEvaluation_inv_limit_map]
       apply colimit.hom_ext
       intro d
-      simp
-      sorry
+      simp only [← Category.assoc]
+      congr 1
+      apply limit.hom_ext
+      intro e
+      simp [← NatTrans.comp_app_assoc]
 
 variable (C) (F) in
 instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
