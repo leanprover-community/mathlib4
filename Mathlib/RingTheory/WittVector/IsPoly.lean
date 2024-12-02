@@ -337,20 +337,6 @@ namespace IsPoly₂
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
--- Porting note: maybe just drop this now that it works by `inferInstance`
-/-- The composition of a binary polynomial function
- with a unary polynomial function in the first argument is polynomial. -/
-theorem compLeft {g f} [IsPoly₂ p g] [IsPoly p f] :
-    IsPoly₂ p fun _R _Rcr x y => g (f x) y :=
-  inferInstance
-
--- Porting note: maybe just drop this now that it works by `inferInstance`
-/-- The composition of a binary polynomial function
- with a unary polynomial function in the second argument is polynomial. -/
-theorem compRight {g f} [IsPoly₂ p g] [IsPoly p f] :
-    IsPoly₂ p fun _R _Rcr x y => g x (f y) :=
-  inferInstance
-
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
         ghostComponent n (f x y) = ghostComponent n (g x y)) :
@@ -360,7 +346,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   intros
   ext n
   rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
-  -- porting note: `clear x y` does not work, since `x, y` are now hygienic
   intro k
   apply MvPolynomial.funext
   intro x

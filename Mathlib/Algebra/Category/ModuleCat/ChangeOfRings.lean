@@ -90,11 +90,6 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
 
 -- Porting note: this should be automatic
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
-    {M : ModuleCat.{v} S} : Module R <| (restrictScalars f).obj M :=
-  inferInstanceAs <| Module R <| RestrictScalars.obj' f M
-
--- Porting note: this should be automatic
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
     {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
   inferInstanceAs <| Module S M
 
@@ -402,8 +397,7 @@ instance : CoeFun (obj' f M) fun _ => S → M where coe g := g.toFun
 def map' {M M' : ModuleCat R} (g : M ⟶ M') : obj' f M ⟶ obj' f M' where
   toFun h := g.comp h
   map_add' _ _ := LinearMap.comp_add _ _ _
-  map_smul' s h := LinearMap.ext fun t : S => by dsimp; rw [smul_apply',smul_apply']; simp
-  -- Porting note: smul_apply' not working in simp
+  map_smul' s h := LinearMap.ext fun t : S => by simp [smul_apply' _]
 
 end CoextendScalars
 

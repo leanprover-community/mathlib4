@@ -209,8 +209,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
 def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
-  -- Porting note: in `mathlib3`, nothing needs to be done after `induction`
-  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp; rw [← quot_add F]; rfl
+  map_add' x y := Quot.induction_on₂ x y fun _ _ ↦ rfl
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where

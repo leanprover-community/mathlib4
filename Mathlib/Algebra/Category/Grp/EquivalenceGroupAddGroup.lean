@@ -20,12 +20,6 @@ open CategoryTheory
 
 namespace Grp
 
--- Porting note: Lean cannot find these now
-private instance (X : Grp) : MulOneClass X.α := X.str.toMulOneClass
-private instance (X : CommGrp) : MulOneClass X.α := X.str.toMulOneClass
-private instance (X : AddGrp) : AddZeroClass X.α := X.str.toAddZeroClass
-private instance (X : AddCommGrp) : AddZeroClass X.α := X.str.toAddZeroClass
-
 /-- The functor `Grp ⥤ AddGrp` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
