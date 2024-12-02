@@ -411,9 +411,15 @@ theorem length_alternatingWord (i i' : B) (m : ℕ) :
   · dsimp [alternatingWord]
   · simpa [alternatingWord] using ih i' i
 
-private lemma getElem_alternatingWord_aux (i j : B) (p : ℕ)
-    (k : Fin ((alternatingWord i j p).length)) :
-    (alternatingWord i j p)[k] = (if Even (p + k) then i else j) := by
+lemma getElem_alternatingWord (i j : B) (p k : ℕ) (h : k < p) :
+    (alternatingWord i j p)[k]'(by simp; exact h) =  (if Even (p + k) then i else j) := by
+  /- State the proof in terms of a finite index to simplify induction -/
+  revert i j p k h
+  suffices ∀ (i j : B) (p : ℕ) (k : Fin ((alternatingWord i j p).length)),
+   (alternatingWord i j p)[k] = if Even (p + k) then i else j from by
+    intro i j p k h
+    simp [← this i j p ⟨k, (by simp[h])⟩]
+  intro i j p k
   induction p with
   | zero =>
     rcases k with ⟨k, hk⟩
@@ -441,10 +447,6 @@ private lemma getElem_alternatingWord_aux (i j : B) (p : ℕ)
       · rw [if_neg h_even]
         rw[← even_add_two (n+k), ← Nat.add_assoc 2 n k] at h_even
         rw [if_neg h_even]
-
-lemma getElem_alternatingWord (i j : B) (p k : ℕ) (h : k < p) :
-    (alternatingWord i j p)[k]'(by simp; exact h) =  (if Even (p + k) then i else j) := by
-  simp[← getElem_alternatingWord_aux i j p ⟨k, (by simp[h])⟩]
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
    (alternatingWord i j p)[k+1]'(by simp; exact h) =
