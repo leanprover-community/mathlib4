@@ -22,7 +22,7 @@ the unused variable linter can not see usages of variables in
 set_option linter.unusedVariables false
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
