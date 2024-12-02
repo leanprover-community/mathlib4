@@ -135,7 +135,8 @@ instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] wh
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 
-instance {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] : NoZeroSMulDivisors S R[X] where
+instance {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] :
+    NoZeroSMulDivisors S R[X] where
   eq_zero_or_eq_zero_of_smul_eq_zero eq :=
     (eq_zero_or_eq_zero_of_smul_eq_zero <| congr_arg toFinsupp eq).imp id (congr_arg ofFinsupp)
 
