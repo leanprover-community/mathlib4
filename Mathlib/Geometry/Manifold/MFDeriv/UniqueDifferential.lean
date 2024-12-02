@@ -158,6 +158,9 @@ theorem UniqueMDiffWithinAt.bundle_preimage {p : TotalSpace F Z}
   exact IsOpen.mem_nhds (trivializationAt F Z p.proj).open_baseSet
     (FiberBundle.mem_baseSet_trivializationAt' p.proj)
 
+@[deprecated (since := "2024-12-02")]
+alias UniqueMDiffWithinAt.smooth_bundle_preimage := UniqueMDiffWithinAt.bundle_preimage
+
 variable (Z)
 
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
@@ -166,18 +169,24 @@ theorem UniqueMDiffWithinAt.bundle_preimage' {b : M} (hs : UniqueMDiffWithinAt I
     (x : Z b) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) ⟨b, x⟩ :=
   hs.bundle_preimage (p := ⟨b, x⟩)
 
+@[deprecated (since := "2024-12-02")]
+alias UniqueMDiffWithinAt.smooth_bundle_preimage' := UniqueMDiffWithinAt.bundle_preimage'
+
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
 in the base has unique differentials in the bundle. -/
 theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).bundle_preimage
 
-/- TODO: move me -/
+@[deprecated (since := "2024-12-02")]
+alias UniqueMDiffOn.smooth_bundle_preimage := UniqueMDiffOn.bundle_preimage
+
+/- TODO: move me to `Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable` once #19636 is in. -/
 variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
 
 theorem Trivialization.mdifferentiable [SmoothVectorBundle F Z I]
     (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
-    e.toPartialHomeomorph.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
+    e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨e.contMDiffOn.mdifferentiableOn le_top, e.contMDiffOn_symm.mdifferentiableOn le_top⟩
 
 end UniqueMDiff
