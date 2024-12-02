@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Andrew Yang, Yuyang Zhao
 -/
+import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
