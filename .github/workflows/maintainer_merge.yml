@@ -33,13 +33,17 @@ jobs:
         id: merge_or_delegate
         run: |
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+
           # we strip `\r` since line endings from GitHub contain this character
           COMMENT="${COMMENT//$'\r'/}"
+
           # for debugging, we print some information
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
+
           m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^maintainer  *\(merge\|delegate\)$=\1=p' | head -1)"
+            # captures `maintainer merge/delegate` as well as an optional `?`, ignoring subsequent spaces
+            sed -n 's=^maintainer  *\(merge\|delegate\)\(?\?\) *$=\1\2=p' | head -1)"
 
           printf $'"maintainer delegate" or "maintainer merge" found? \'%s\'\n' "${m_or_d}"
 
@@ -77,9 +81,9 @@ jobs:
 
           echo ""
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}"
+            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}"
           )"
-          printf 'title<<EOF\n%s\n[CI run](%s)\nEOF' "${message}" "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" | tee "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 
       - name: Send message on Zulip
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}

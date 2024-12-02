@@ -3,13 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
@@ -28,7 +29,7 @@ example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComp
 example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
   with_reducible_and_instances rfl
 
--- fails `with_reducible_and_instances` #10906
+-- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
@@ -201,18 +202,18 @@ example [CommSemiring R] [Nontrivial R] :
   simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
--- fails `with_reducible_and_instances` #10906
+-- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /-- `Polynomial.hasSMulPi'` is consistent with `Polynomial.hasSMulPi`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ = (Polynomial.hasSMulPi _ _ : SMul R[X] (R → R[X])) :=
   rfl
 
--- fails `with_reducible_and_instances` #10906
+-- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /-- `Polynomial.algebraOfAlgebra` is consistent with `Semiring.toNatAlgebra`. -/
 example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = Semiring.toNatAlgebra :=
   rfl
 
--- fails `with_reducible_and_instances` #10906
+-- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /-- `Polynomial.algebraOfAlgebra` is consistent with `Ring.toIntAlgebra`. -/
 example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = Ring.toIntAlgebra _ :=
   rfl
@@ -264,11 +265,11 @@ that at least some potential diamonds are avoided. -/
 
 section complexToReal
 
--- fails `with_reducible_and_instances` #10906
+-- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 -- the two ways to get `Algebra ℝ ℂ` are definitionally equal
 example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraOfReal := rfl
 
--- fails `with_reducible_and_instances` #10906
+-- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /- The complexification of an `ℝ`-algebra `A` (i.e., `ℂ ⊗[ℝ] A`) is a `ℂ`-algebra. Viewing this
 as an `ℝ`-algebra by restricting scalars agrees with the existing `ℝ`-algebra structure on the
 tensor product. -/

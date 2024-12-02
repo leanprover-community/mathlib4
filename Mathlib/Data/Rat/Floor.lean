@@ -21,6 +21,7 @@ division and modulo arithmetic are derived as well as some simple inequalities.
 rat, rationals, ℚ, floor
 -/
 
+assert_not_exists Finset
 
 open Int
 

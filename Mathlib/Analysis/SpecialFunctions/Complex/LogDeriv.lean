@@ -13,6 +13,8 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 -/
 
+assert_not_exists IsConformalMap
+assert_not_exists Conformal
 
 open Set Filter
 
@@ -55,14 +57,16 @@ theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt 
 lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
   HasStrictDerivAt.hasDerivAt <| hasStrictDerivAt_log hz
 
+@[fun_prop]
 lemma differentiableAt_log {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ log z :=
   (hasDerivAt_log hz).differentiableAt
 
+@[fun_prop]
 theorem hasStrictFDerivAt_log_real {x : ℂ} (h : x ∈ slitPlane) :
     HasStrictFDerivAt log (x⁻¹ • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_log h).complexToReal_fderiv
 
-theorem contDiffAt_log {x : ℂ} (h : x ∈ slitPlane) {n : ℕ∞} : ContDiffAt ℂ n log x :=
+theorem contDiffAt_log {x : ℂ} (h : x ∈ slitPlane) {n : WithTop ℕ∞} : ContDiffAt ℂ n log x :=
   expPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
     contDiff_exp.contDiffAt
 

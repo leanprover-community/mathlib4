@@ -142,8 +142,7 @@ instance inf (P Q : MorphismProperty Scheme) [IsLocalAtTarget P] [IsLocalAtTarge
      fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
 
-variable {P} [hP : IsLocalAtTarget P]
-variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : Y.OpenCover)
+variable {P} [hP : IsLocalAtTarget P] {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
 
 lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
     {iX : UX ⟶ X} {f' : UX ⟶ UY} (h : IsPullback iX f' f iY) (H : P f) : P f' := by
@@ -228,7 +227,7 @@ instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSourc
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
 
 variable {P} [IsLocalAtSource P]
-variable {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y} [IsOpenImmersion g] (𝒰 : X.OpenCover)
+variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover)
 
 lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
