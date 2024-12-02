@@ -582,20 +582,17 @@ private noncomputable def maps_system {m n : ℕ} (h : m ≤ n):
     system K_fraisse m ↪[L] system K_fraisse n :=
   ((init_system K_fraisse n).2 m).2.comp (Embedding.eq_embed (system_eq_as_structures K_fraisse h))
 
-private theorem maps_system_self (m : ℕ) : maps_system K_fraisse (le_refl m)
-    = Embedding.refl L _ := by
-  cases m
-  · rfl
-  · simp only [maps_system, init_system, add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
-    if_then_else_right, Embedding.refl_comp, Embedding.eq_embed_trans, Embedding.refl_eq_embed]
-
-
 private theorem maps_init_system_self (m : ℕ) : ((init_system K_fraisse m).2 m).2 =
     Embedding.eq_embed (system_eq_as_structures K_fraisse (le_refl m)).symm := by
   cases m
   · rfl
   · simp only [init_system, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
       one_ne_zero, if_then_else_right, Embedding.refl_comp]
+
+private theorem maps_system_self (m : ℕ) : maps_system K_fraisse (le_refl m)
+    = Embedding.refl L _ := by
+  simp only [maps_system, maps_init_system_self, Embedding.eq_embed_trans,
+      Embedding.refl_eq_embed]
 
 /-- The `FGEquiv` which is extended at step `n+1` in `system`.-/
 private noncomputable def FGEquiv_extended (n : ℕ) :
@@ -659,14 +656,13 @@ private theorem all_fgequiv_extend {m : ℕ} (f : L.FGEquiv (system _ m) (system
   let r := Nat.pair m n
   have h_unpair_m : m = (Nat.unpair r).1 := by simp only [Nat.unpair_pair, r]
   have h_unpair_n : n = (Nat.unpair r).2 := by simp only [Nat.unpair_pair, r]
-  let f'' := FGEquiv_extended K_fraisse r
   clear_value r
   cases h_unpair_m
+  cases h_unpair_n
   let f' := f.1.map (Embedding.eq_embed (system_eq_as_structures K_fraisse (Nat.unpair_left_le r)))
   have f'_fg : f'.dom.FG := f.1.map_fg _ f.2
-  cases h_unpair_n
   cases hn
-  have h_f'_f'' : f' = f'' := by
+  have h_f' : f' = FGEquiv_extended K_fraisse r := by
     have H {A B : K} (h : A = B) :
         (sequence_FGEquiv K_fraisse A (Nat.unpair r).2).val.map
           (Embedding.eq_embed (congr_arg Subtype.val h)) =
@@ -684,25 +680,22 @@ private theorem all_fgequiv_extend {m : ℕ} (f : L.FGEquiv (system _ m) (system
       unfold f'
       rw [PartialEquiv.map_map]
       rfl
-  rw [← H, h_f'_f'', ← map_step, map_step_is_extend_and_join]
+  rw [← H, h_f', ← map_step, map_step_is_extend_and_join]
   apply extend_and_join_spec_1
 
 private theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) := by
   intro A h
   let ⟨n, ⟨g⟩⟩ := ess_surj_sequence_spec K_fraisse ⟨A, h⟩
   use n
-  constructor
-  apply (Embedding.comp · g.toEmbedding)
+  apply Nonempty.map (Embedding.comp · g.toEmbedding)
   cases n
-  · exact Embedding.refl ..
+  · exact ⟨Embedding.refl ..⟩
   · simp only [system, init_system]
-    exact Classical.choice (extend_and_join_spec_2 ..)
-
-include K_fraisse in
+    exact extend_and_join_spec_2 ..
 
 /-- A Fraïsse class in a language with countably many functions has a Fraïsse limit.-/
-theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countable M,
-    IsFraisseLimit K M := by
+theorem exists_fraisse_limit (K_fraisse : IsFraisse K) : ∃ M : Bundled.{w} L.Structure,
+    ∃ _ : Countable M, IsFraisseLimit K M := by
   let _ (i : ℕ) : L.Structure ((Bundled.α ∘ Subtype.val ∘ system K_fraisse) i) :=
     Bundled.str _
   have _ : DirectedSystem (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
