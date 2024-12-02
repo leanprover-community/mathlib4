@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Util.Superscript
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 
 /-!
@@ -13,7 +14,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 -/
 
 open Set Function Asymptotics MeasureTheory Metric Filter
-open scoped Topology NNReal ENNReal unitInterval
+open scoped Topology NNReal unitInterval ContDiff
 open Module (finrank)
 
 section NormedField
@@ -40,6 +41,7 @@ theorem dist_iteratedFDerivWithin_one (f g : E → F) {s t : Set E} {x y : E}
     LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
   apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
 
+-- TODO: deduce from the `dist` version once we redefine `fderiv`, see `YK-fderiv-def`
 @[simp]
 theorem norm_iteratedFDerivWithin_one (f : E → F) {s : Set E} {x : E}
     (h : UniqueDiffWithinAt 𝕜 s x) :
@@ -47,6 +49,121 @@ theorem norm_iteratedFDerivWithin_one (f : E → F) {s : Set E} {x : E}
   simp only [← norm_fderivWithin_iteratedFDerivWithin,
     iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin _ h]
   apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.norm_toContinuousLinearMap_comp
+
+theorem ContDiffWithinAt.contDiffOn_inter_isOpen_subset
+    {f : E → F} {s t : Set E} {m n : WithTop ℕ∞} {x : E} (h : ContDiffWithinAt 𝕜 n f s x)
+    (hle : m ≤ n) (htop : m = ∞ → n = ω) (ht : t ∈ 𝓝[s] x) :
+    ∃ u, IsOpen u ∧ x ∈ u ∧ s ∩ u ⊆ t ∧ ContDiffOn 𝕜 m f (insert x s ∩ u) := by
+  have : ∀ᶠ u in (𝓝[insert x s] x).smallSets, u ⊆ insert x t :=
+    eventually_smallSets_subset.mpr <| insert_mem_nhdsWithin_insert ht
+  rcases (nhdsWithin_basis_open _ _).smallSets.eventually_iff.mp
+    (this.and <| h.eventually_contDiffOn hle htop) with ⟨u, ⟨hxu, huo⟩, hu⟩
+  rcases hu Subset.rfl with ⟨hu_sub, hu⟩
+  rw [inter_comm] at hu
+  refine ⟨u, huo, hxu, fun z hz ↦ ?_, hu⟩
+  rcases eq_or_ne z x with rfl | hne
+  · exact mem_of_mem_nhdsWithin hz.1 ht
+  · exact (hu_sub ⟨hz.2, subset_insert _ _ hz.1⟩).resolve_left hne
+
+/-- If two sets coincide in a punctured neighborhood of `x`,
+then the corresponding iterated derivatives are equal.
+
+Note that we also allow to puncture the neighborhood of `x` at `y`.
+If `y ≠ x`, then this is a no-op. -/
+theorem iteratedFDerivWithin_congr_set' {x y : E} {s t : Set E} {f : E → F}
+    (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
+  (iteratedFDerivWithin_eventually_congr_set' y h n).self_of_nhds
+
+@[simp]
+theorem iteratedFDerivWithin_insert {x y : E} {s : Set E} {f : E → F} {n : ℕ} :
+    iteratedFDerivWithin 𝕜 n f (insert x s) y = iteratedFDerivWithin 𝕜 n f s y :=
+  iteratedFDerivWithin_congr_set' (y := x)
+    (eventually_mem_nhdsWithin.mono <| by intros; simp_all).set_eq _
+
+-- TODO: add `ftaylorSeriesWithin_congr_set'`
+-- TODO: add `fderivWithin_insert`
+@[simp]
+theorem ftaylorSeriesWithin_insert {x : E} {s : Set E} {f : E → F} :
+    ftaylorSeriesWithin 𝕜 f (insert x s) = ftaylorSeriesWithin 𝕜 f s := by
+  ext y n : 2
+  apply iteratedFDerivWithin_insert
+
+theorem ContDiffWithinAt.hasFTaylorSeriesUpToOn_subset_of_eventually
+    {f : E → F} {s t : Set E} {m n : WithTop ℕ∞} {x : E} (h : ContDiffWithinAt 𝕜 n f s x)
+    (hle : m ≤ n) (htop : m = ∞ → n = ω) (hs : ∀ᶠ x' in 𝓝[insert x s] x, UniqueDiffWithinAt 𝕜 s x')
+    (ht : t ∈ 𝓝[s] x) :
+    ∃ u, IsOpen u ∧ x ∈ u ∧ s ∩ u ⊆ t ∧
+      HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f s) (s ∩ u) := by
+  -- wlog hmem : x ∈ s generalizing s t
+  -- · obtain ⟨u, huo, hxu, hu_sub, hfs⟩ : ∃ u, IsOpen u ∧ x ∈ u ∧ insert x s ∩ u ⊆ insert x t ∧
+  --       HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f (insert x s)) (insert x s) := by
+  --     refine this h.insert ?_ (insert_mem_nhdsWithin_insert ht) (mem_insert _ _)
+  --     rw [insert_idem]
+  --     exact hs.mono fun z hz ↦ hz.mono (subset_insert _ _)
+  --   refine ⟨u, huo, hxu, fun z hz ↦ ?_, ?_⟩
+  --   · rcases eq_or_ne z x with rfl | hne
+  --     · exact mem_of_mem_nhdsWithin hz.1 ht
+  --     · exact (hu_sub ⟨subset_insert _ _ hz.1, hz.2⟩).resolve_left hne
+  --   · simpa only [ftaylorSeriesWithin_insert] using hfs.mono (subset_insert _ _)
+  rw [nhdsWithin_insert, eventually_sup, eventually_pure] at hs
+  rcases h.contDiffOn_inter_isOpen_subset hle htop (inter_mem hs.2 ht)
+    with ⟨u, huo, hxu, hu_sub, hu⟩
+  rw [subset_inter_iff] at hu_sub
+  refine ⟨u, huo, hxu, hu_sub.2, ?_⟩
+  have : HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f (insert x s ∩ u)) (insert x s ∩ u) := by
+    refine hu.ftaylorSeriesWithin fun z hz ↦ ?_
+    
+
+theorem iteratedFDerivWithin_comp_of_eventually
+    {g : F → G} {f : E → F} {s : Set E} {t : Set F} {n : ℕ} {x₀ : E}
+    (hg : ContDiffWithinAt 𝕜 n g t (f x₀))
+    (ht : ∀ᶠ y in 𝓝[insert (f x₀) t] f x₀, UniqueDiffWithinAt 𝕜 t y)
+    (hf : ContDiffWithinAt 𝕜 n f s x₀)
+    (hs : ∀ᶠ x in 𝓝[insert x₀ s] x₀, UniqueDiffWithinAt 𝕜 s x)
+    (hmaps : ∀ᶠ x in 𝓝[s] x₀, f x ∈ t) :
+    iteratedFDerivWithin 𝕜 n (g ∘ f) s x₀ = ∑ c : OrderedFinpartition n,
+      c.compAlongOrderedFinpartition (iteratedFDerivWithin 𝕜 c.length g t (f x₀))
+        (fun m ↦ iteratedFDerivWithin 𝕜 (c.partSize m) f s x₀) := by
+  wlog Ht : f x₀ ∈ t ∧ ContDiffOn 𝕜 n g t ∧ UniqueDiffOn 𝕜 t generalizing t
+  · rcases hg.insert.contDiffOn_inter_isOpen_subset le_rfl (by simp) ht
+    
+    rw [← eventually_smallSets_forall] at ht
+    have H := hg.eventually_contDiffOn le_rfl (by simp)
+    
+    rcases hg.contDiffOn' le_rfl (by simp) with ⟨u, huo, hyu, hgu⟩
+    convert @this (insert (f x₀) t ∩ u) _ _ _ _ using 1
+    · done
+    · done
+    · done
+    · done
+    · done
+  sorry
+
+theorem iteratedFDerivWithin_comp {g : F → G} {f : E → F} {s : Set E} {t : Set F} {n : ℕ} {x : E}
+    (hg : ContDiffWithinAt 𝕜 n g t (f x)) (ht : UniqueDiffOn 𝕜 t)
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s)
+    (hmaps : MapsTo f s t) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n (g ∘ f) s x = ∑ c : OrderedFinpartition n,
+      c.compAlongOrderedFinpartition (iteratedFDerivWithin 𝕜 c.length g t (f x))
+        (fun m ↦ iteratedFDerivWithin 𝕜 (c.partSize m) f s x) := by
+  -- rw [insert_eq_of_mem (hmaps hx)] at hgu
+  -- rcases hf.contDiffOn' le_rfl (by simp) with ⟨v, hvo, hxv, hfv⟩
+  -- rw [insert_eq_of_mem hx] at hfv
+
+  -- have : ∀ᶠ x' in 𝓝[s] x, f x ∈ 
+  -- rw [← ((hg.ftaylorSeriesWithin ht).comp (hf.ftaylorSeriesWithin hs) hmaps)
+  --   |>.eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hs hx]
+  -- simp only [FormalMultilinearSeries.taylorComp, ftaylorSeriesWithin,
+  --   FormalMultilinearSeries.compAlongOrderedFinpartition]
+
+theorem iteratedFDeriv_comp {g : F → G} {f : E → F} {n : ℕ} {x : E} (hg : ContDiffAt 𝕜 n g (f x))
+    (hf : ContDiffAt 𝕜 n f x) :
+    iteratedFDeriv 𝕜 n (g ∘ f) x = ∑ c : OrderedFinpartition n,
+      c.compAlongOrderedFinpartition (iteratedFDeriv 𝕜 c.length g (f x))
+        (fun m ↦ iteratedFDeriv 𝕜 (c.partSize m) f x) := by
+  simp only [← iteratedFDerivWithin_univ]
+  apply iteratedFDerivWithin_comp <;> simp [contDiffWithinAt_univ, hf, hg, uniqueDiffOn_univ]
 
 end NormedField
 
