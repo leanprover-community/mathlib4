@@ -84,7 +84,7 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct MvPolynomial Classical
+open TensorProduct MvPolynomial
 
 variable (n m : ℕ)
 
@@ -136,6 +136,16 @@ noncomputable def differential : (P.rels → P.Ring) →ₗ[P.Ring] (P.rels → 
   Basis.constr P.basis P.Ring
     (fun j i : P.rels ↦ MvPolynomial.pderiv (P.map i) (P.relation j))
 
+noncomputable def aevalDifferential : (P.rels → S) →ₗ[S] (P.rels → S) :=
+  (Pi.basisFun S P.rels).constr S
+    (fun j i : P.rels ↦ aeval P.val <| pderiv (P.map i) (P.relation j))
+
+@[simp]
+lemma aevalDifferential_single [DecidableEq P.rels] (i j : P.rels) :
+    P.aevalDifferential (Pi.single i 1) j = aeval P.val (pderiv (P.map j) (P.relation i)) := by
+  dsimp only [aevalDifferential]
+  rw [← Pi.basisFun_apply, Basis.constr_basis]
+
 /-- The jacobian of a `P : PreSubmersivePresentation` is the determinant
 of `P.differential` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
@@ -159,6 +169,13 @@ lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
 
+lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
+    P.aevalDifferential.toMatrix' = (aeval P.val).mapMatrix P.jacobiMatrix := by
+  ext i j : 1
+  rw [← LinearMap.toMatrix_eq_toMatrix']
+  rw [LinearMap.toMatrix_apply]
+  simp [jacobiMatrix_apply]
+
 end Matrix
 
 section Constructions
@@ -181,6 +198,7 @@ instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebra
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
+  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)
@@ -262,10 +280,11 @@ the lower-right block has determinant jacobian of `P`.
 
 -/
 
-variable [Fintype (Q.comp P).rels]
+variable [DecidableEq (Q.comp P).rels] [Fintype (Q.comp P).rels]
 
 private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
+  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
@@ -277,7 +296,7 @@ private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ 
 
 section Q
 
-variable [Fintype Q.rels]
+variable [DecidableEq Q.rels] [Fintype Q.rels]
 
 private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
@@ -298,9 +317,9 @@ end Q
 
 section P
 
-variable [Fintype P.rels]
+variable [Fintype P.rels] [DecidableEq P.rels]
 
-private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
+private lemma jacobiMatrix_comp_inr_inr  (i j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
       MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply]
@@ -333,6 +352,7 @@ end
 /-- The jacobian of the composition of presentations is the product of the jacobians. -/
 @[simp]
 lemma comp_jacobian_eq_jacobian_smul_jacobian : (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
+  classical
   cases nonempty_fintype Q.rels
   cases nonempty_fintype P.rels
   letI : Fintype (Q.comp P).rels := inferInstanceAs <| Fintype (Q.rels ⊕ P.rels)
@@ -461,6 +481,27 @@ noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
 end BaseChange
 
 end Constructions
+
+variable {R S}
+
+open Classical in
+noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S) :
+    (P.rels → S) ≃ₗ[S] (P.rels → S) :=
+  haveI : Fintype P.rels := Fintype.ofFinite P.rels
+  have : IsUnit
+      (LinearMap.toMatrix (Pi.basisFun S P.rels) (Pi.basisFun S P.rels)
+        P.aevalDifferential).det := by
+    convert P.jacobian_isUnit
+    rw [LinearMap.toMatrix_eq_toMatrix']
+    rw [jacobian_eq_jacobiMatrix_det, aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix]
+    rw [RingHom.map_det]
+    rfl
+  LinearEquiv.ofIsUnitDet this
+
+@[simp]
+lemma aevalDifferentialEquiv_apply (P : SubmersivePresentation R S) (x : P.rels → S) :
+    P.aevalDifferentialEquiv x = P.aevalDifferential x :=
+  rfl
 
 end SubmersivePresentation
 
@@ -615,38 +656,42 @@ lemma Extension.Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
   simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
 lemma _root_.Matrix.mulVec_injective_of_isUnit {R m : Type*} [Semiring R] [Fintype m]
-    {A : Matrix m m R} (ha : IsUnit A) : Function.Injective A.mulVec := by
+    [DecidableEq m] {A : Matrix m m R} (ha : IsUnit A) : Function.Injective A.mulVec := by
   obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
   intro x y hxy
   simpa [hBr] using congrArg B.mulVec hxy
 
 lemma _root_.Matrix.vecMul_injective_of_isUnit {R m : Type*} [Semiring R] [Fintype m]
-    {A : Matrix m m R}
+    [DecidableEq m] {A : Matrix m m R}
     (ha : IsUnit A) : Function.Injective A.vecMul := by
   obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
   intro x y hxy
   simpa [hBl] using congrArg B.vecMul hxy
 
 lemma _root_.Matrix.linearIndependent_rows_of_isUnit {m : Type*} [Fintype m] {A : Matrix m m R}
+    [DecidableEq m]
     (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
   rw [← Matrix.vecMul_injective_iff]
   exact Matrix.vecMul_injective_of_isUnit ha
 
 lemma _root_.Matrix.linearIndependent_cols_of_isUnit {m : Type*} [Fintype m] {A : Matrix m m R}
+    [DecidableEq m]
     (ha : IsUnit A) : LinearIndependent R (fun i ↦ A.transpose i) := by
   rw [← Matrix.mulVec_injective_iff]
   exact Matrix.mulVec_injective_of_isUnit ha
 
+noncomputable def SubmersivePresentation.basisDeriv : Basis P.rels S (P.rels → S) :=
+  Basis.map (Pi.basisFun S P.rels) P.aevalDifferentialEquiv
+
+lemma SubmersivePresentation.basisDeriv_apply (i j : P.rels) :
+    P.basisDeriv i j = (aeval P.val) (pderiv (P.map j) (P.relation i)) := by
+  classical
+  simp [basisDeriv]
+
 lemma SubmersivePresentation.linearIndependent_aeval_val_pderiv_relation :
     LinearIndependent S (fun i j ↦ (aeval P.val) (pderiv (P.map j) (P.relation i))) := by
-  have : Fintype P.rels := Fintype.ofFinite P.rels
-  have := P.jacobian_isUnit
-  rw [P.jacobian_eq_jacobiMatrix_det, RingHom.map_det, ← Matrix.isUnit_iff_isUnit_det] at this
-  have heq (i j : P.rels) : (aeval P.val) ((pderiv (P.map i)) (P.relation j)) =
-      (P.jacobiMatrix.map (algebraMap P.Ring S)) i j := by
-    simp [P.jacobiMatrix_apply]
-  simp_rw [heq]
-  apply Matrix.linearIndependent_cols_of_isUnit this
+  simp_rw [← SubmersivePresentation.basisDeriv_apply]
+  exact P.basisDeriv.linearIndependent
 
 lemma Presentation.relation_mem_ker {P : Presentation R S} (i : P.rels) :
     P.relation i ∈ P.ker := by
@@ -695,6 +740,16 @@ lemma aux_injective : Function.Injective (aux P.toPreSubmersivePresentation) := 
     simpa using this i
   · exact P.relation_mem_ker i
 
+lemma aux_surjective : Function.Surjective (aux P.toPreSubmersivePresentation) := sorry
+
+noncomputable def auxEquiv : P.toExtension.Cotangent ≃ₗ[S] P.rels →₀ S :=
+  LinearEquiv.ofBijective (aux P.toPreSubmersivePresentation) ⟨aux_injective P, aux_surjective P⟩
+
+@[simp]
+lemma auxEquiv_apply (a : P.toExtension.Cotangent) :
+    auxEquiv P a = aux P.toPreSubmersivePresentation a :=
+  rfl
+
 lemma cotangentComplex_injective : Function.Injective P.toExtension.cotangentComplex := by
   have := aux_injective P
   simp only [aux, LinearMap.coe_comp, LinearEquiv.coe_coe] at this
@@ -731,6 +786,196 @@ noncomputable def SubmersivePresentation.basisCotangent : Basis P.rels S P.toExt
 instance : Module.Free S P.toExtension.Cotangent :=
   Module.Free.of_basis P.basisCotangent
 
+noncomputable def sectionCotangent : P.toExtension.CotangentSpace →ₗ[S] P.toExtension.Cotangent :=
+  (auxEquiv P).symm ∘ₗ P.restrict ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap
+
+lemma sectionCotangent_eq_iff (x : P.toExtension.CotangentSpace) (y : P.toExtension.Cotangent) :
+    sectionCotangent P x = y ↔
+      ∀ i : P.rels, P.cotangentSpaceBasis.repr x (P.map i) =
+        (aux P.toPreSubmersivePresentation y) i := by
+  simp only [sectionCotangent, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  rw [← (auxEquiv P).injective.eq_iff, Finsupp.ext_iff]
+  simp
+
+lemma sectionCotangent_comp :
+    sectionCotangent P ∘ₗ P.toExtension.cotangentComplex = LinearMap.id := by
+  ext : 1
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
+  rw [sectionCotangent_eq_iff]
+  intro i
+  rfl
+
+lemma sectionCotangent_zero_of_not_mem_range (i : P.vars) (hi : i ∉ Set.range P.map) :
+    (sectionCotangent P) (P.cotangentSpaceBasis i) = 0 := by
+  contrapose hi
+  rw [sectionCotangent_eq_iff] at hi
+  simp only [Basis.repr_self, Finsupp.single_apply, map_zero,
+    Finsupp.coe_zero, Pi.zero_apply, ite_eq_right_iff, not_forall, Classical.not_imp,
+    exists_and_right] at hi
+  obtain ⟨j, hij, _⟩ := hi
+  simp only [Set.mem_range, not_exists, not_forall, Decidable.not_not]
+  use j
+  exact hij.symm
+
 end
+
+section
+
+lemma Finset.disjSum_toLeft_toRight {α β : Type*} (s : Finset (α ⊕ β)) :
+    Finset.disjSum s.toLeft s.toRight = s := by
+  simp [Finset.disjSum_eq_iff]
+
+lemma Finset.sum_sum_eq_sum_toLeft_add_sum_toRight {α β M : Type*} [AddCommMonoid M]
+    (f : α ⊕ β → M) (s : Finset (α ⊕ β)) :
+    ∑ x ∈ s, f x = ∑ x ∈ s.toLeft, f (.inl x) + ∑ x ∈ s.toRight, f (.inr x) := by
+  rw [← Finset.disjSum_toLeft_toRight s, Finset.sum_disj_sum, Finset.toLeft_disjSum,
+    Finset.toRight_disjSum]
+
+end
+
+section
+
+variable {R M N K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N]
+  [AddCommGroup K] [AddCommGroup P]
+variable [Module R M] [Module R N] [Module R K] [Module R P]
+variable {f : K →ₗ[R] M} {g : M →ₗ[R] P} {s : M →ₗ[R] K}
+
+lemma _root_.LinearIndependent.linearIndependent_of_split_exact
+    (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
+    {ι κ : Type*} {v : ι → M} {a : κ → ι}
+    (hainj : Function.Injective a) (hadisj : ∀ i, s (v (a i)) = 0)
+    (hli : LinearIndependent R v) :
+    LinearIndependent R (g ∘ v ∘ a) := by
+  apply (LinearIndependent.comp hli a hainj).map
+  rw [Submodule.disjoint_def, hfg.linearMap_ker_eq]
+  rintro - hy ⟨y, rfl⟩
+  have hz : s (f y) = 0 := by
+    revert hy
+    generalize f y = x
+    intro hy
+    induction' hy using Submodule.span_induction with m hm
+    · obtain ⟨i, rfl⟩ := hm
+      apply hadisj
+    · simp
+    · simp_all
+    · simp_all
+  replace hs := DFunLike.congr_fun hs y
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
+  rw [← hs, hz, map_zero]
+
+section
+
+variable {ι κ σ : Type*} {v : ι → M} {a : κ → ι} {b : σ → ι}
+variable (v : κ ⊕ σ → M)
+
+lemma top_le_span_of_aux (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
+    (hg : Function.Surjective g) (hadisj : ∀ i, s (v (.inl i)) = 0)
+    (hli : LinearIndependent R (s ∘ v ∘ .inr))
+    (hsp : ⊤ ≤ Submodule.span R (Set.range v)) :
+    ⊤ ≤ Submodule.span R (Set.range <| g ∘ v ∘ .inl) := by
+  rintro p -
+  obtain ⟨m, rfl⟩ := hg p
+  wlog h : m ∈ LinearMap.ker s
+  · let x : M := f (s m)
+    have heq : g m = g (m - f (s m)) := by simp [hfg.apply_apply_eq_zero]
+    rw [heq]
+    apply this v hs hfg hg hadisj hli hsp
+    replace hs := DFunLike.congr_fun hs (s m)
+    simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
+    simp [hs]
+  have : m ∈ Submodule.span R (Set.range v) := hsp trivial
+  rw [Finsupp.mem_span_range_iff_exists_finsupp] at this
+  obtain ⟨c, rfl⟩ := this
+  simp at h
+  simp [Finsupp.sum] at h
+  rw [Finset.sum_sum_eq_sum_toLeft_add_sum_toRight] at h
+  simp [hadisj] at h
+  rw [linearIndependent_iff'] at hli
+  replace hli := hli c.support.toRight (c ∘ .inr) h
+  simp at hli
+  have : ∑ x ∈ c.support.toLeft, c (Sum.inl x) • s (v (Sum.inl x)) = 0 := by
+    simp [hadisj]
+  simp only [Finsupp.sum]
+  rw [Finset.sum_sum_eq_sum_toLeft_add_sum_toRight]
+  simp [hli]
+  apply Submodule.sum_mem
+  intro i hi
+  apply Submodule.smul_mem
+  apply Submodule.subset_span
+  use i
+  simp
+
+end
+
+lemma top_le_span_of (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
+    (hg : Function.Surjective g)
+    {ι κ σ : Type*} {v : ι → M} {a : κ → ι} {b : σ → ι}
+    (hadisj : ∀ i, s (v (a i)) = 0) (hli : LinearIndependent R (s ∘ v ∘ b))
+    (habuniv : Set.range (v ∘ a) ∪ Set.range (v ∘ b) = Set.range v)
+    (hsp : ⊤ ≤ Submodule.span R (Set.range v)) :
+    ⊤ ≤ Submodule.span R (Set.range <| g ∘ v ∘ a) := by
+  let v' : κ ⊕ σ → M := Sum.elim (v ∘ a) (v ∘ b)
+  have : g ∘ v ∘ a = g ∘ v' ∘ .inl := rfl
+  apply top_le_span_of_aux v' hs hfg hg hadisj hli
+  have : Set.range v = Set.range v' := by simp [← habuniv, v']
+  rwa [← this]
+
+noncomputable def basisOfSplitExact (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
+    (hg : Function.Surjective g)
+    {ι κ σ : Type*} {a : κ → ι} {b : σ → ι}
+    (v : Basis ι R M)
+    (hainj : Function.Injective a)
+    (hadisj : ∀ i, s (v (a i)) = 0) (hlib : LinearIndependent R (s ∘ v ∘ b))
+    (habuniv : Set.range (v ∘ a) ∪ Set.range (v ∘ b) = Set.range v) :
+    Basis κ R P :=
+  have hli : LinearIndependent R (g ∘ v ∘ a) :=
+    v.linearIndependent.linearIndependent_of_split_exact hs hfg hainj hadisj
+  --let σ := (Set.range a)ᶜ
+  /-
+  let b : σ → ι := Subtype.val
+  have hlib : LinearIndependent R (s ∘ v ∘ b) := by
+    apply (v.linearIndependent.comp b Subtype.val_injective).map
+    rw [Submodule.disjoint_def]
+    intro m h₁ h₂
+  -/
+  have hsp : ⊤ ≤ Submodule.span R (Set.range <| g ∘ v ∘ a) := by
+    apply top_le_span_of hs hfg hg hadisj hlib habuniv
+    rw [v.span_eq]
+  Basis.mk hli hsp
+
+end
+
+variable (P : SubmersivePresentation R S)
+
+noncomputable def basisKaehler : Basis ((Set.range P.map)ᶜ : Set _) S (Ω[S⁄R]) := by
+  apply basisOfSplitExact (sectionCotangent_comp P) Extension.exact_cotangentComplex_toKaehler
+    Extension.toKaehler_surjective P.cotangentSpaceBasis Subtype.val_injective
+    (b := P.map)
+  · intro i
+    exact sectionCotangent_zero_of_not_mem_range _ _ i.property
+  · simp only [sectionCotangent]
+    simp only [LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_coe]
+    apply LinearIndependent.map' _ _ (auxEquiv P).symm.ker
+    let b : Basis P.rels S (P.rels →₀ S) := default
+    have : ⇑P.restrict ∘ ⇑P.cotangentSpaceBasis.repr ∘ ⇑P.cotangentSpaceBasis ∘ P.map = b := by
+      ext i j
+      simp only [Function.comp_apply, Basis.repr_self,
+        PreSubmersivePresentation.restrict_apply_toFun, Finsupp.single_apply_left P.map_inj]
+      rfl
+    rw [this]
+    exact b.linearIndependent
+  · rw [Set.range_comp, Set.range_comp, ← Set.image_union]
+    rw [Subtype.range_coe, Set.compl_union_self (Set.range P.map), Set.image_univ]
+
+lemma kaehler_free (P : SubmersivePresentation R S) : Module.Free S (Ω[S⁄R]) :=
+  Module.Free.of_basis (basisKaehler P)
+
+lemma rank_kaehler (P : SubmersivePresentation R S) :
+    Module.rank S (Ω[S⁄R]) = P.dimension :=
+  sorry
+
+instance [IsStandardSmooth R S] : Module.Free S (Ω[S⁄R]) := by
+  obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact kaehler_free P
 
 end Algebra
