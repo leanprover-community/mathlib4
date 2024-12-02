@@ -220,7 +220,7 @@ lemma fromBlocks_submatrix (A₁ : Matrix m n R) (A₂ : Matrix m' n' R)
 
 attribute [-simp] Fintype.card_ofIsEmpty Fintype.card_ofSubsingleton -- major performance issue
 
-lemma fromBlocks_isTotallyUnimodular_zero_zero_isTotallyUnimodular
+lemma fromBlocks_isTotallyUnimodular
     [Fintype m] [DecidableEq m] [Fintype m'] [DecidableEq m']
     [Fintype n] [DecidableEq n] [Fintype n'] [DecidableEq n']
     {A₁ : Matrix m n R} {A₂ : Matrix m' n' R}
