@@ -27,11 +27,40 @@ lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
     (homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
     (G.mapTriangle.obj T)).Exact := by
   apply Exact.exact_of_comp_exact (AddCommGrp.uliftFunctor.{v₁, max v₁ v₂})
-  set e : homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
-    (G.mapTriangle.obj T) ⋙ AddCommGrp.uliftFunctor.{v₁, max v₁ v₂} ≅
-    homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op (F.obj X))) T
-    ⋙ AddCommGrp.uliftFunctor.{v₂, max v₁ v₂} := sorry
-  rw [exact_iff_of_iso e]
+  set e : homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op (F.obj X))) T
+      ⋙ AddCommGrp.uliftFunctor.{v₂, max v₁ v₂} ≅ homologySequenceComposableArrows₅_start_zero
+      (preadditiveCoyoneda.obj (op X)) (G.mapTriangle.obj T) ⋙
+      AddCommGrp.uliftFunctor.{v₁, max v₁ v₂} := by
+    refine isoMk₅ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
+    · exact adj.homAddEquiv_of_left_adjoint_additive_ulift X T.obj₁
+    · exact adj.homAddEquiv_of_left_adjoint_additive_ulift X T.obj₂
+    · exact adj.homAddEquiv_of_left_adjoint_additive_ulift X T.obj₃
+    · change AddCommGrp.uliftFunctor.obj (AddCommGrp.of (F.obj X ⟶ _)) ≅
+        AddCommGrp.uliftFunctor.obj (AddCommGrp.of (X ⟶ (G.obj T.obj₁)⟦1⟧))
+      have : (shiftEquiv' D (-1 : ℤ) 1 (neg_add_cancel _)).functor.Additive := by
+        change (shiftFunctor D (-1 : ℤ)).Additive
+        infer_instance
+      have : ((shiftEquiv' C (-1) (1 : ℤ) (by simp)).functor ⋙ F).Additive := by
+        change ((shiftFunctor C (-1 : ℤ)) ⋙ F).Additive
+        infer_instance
+      refine ?_ ≪≫ ((shiftEquiv' C (-1 : ℤ) (1 : ℤ) (neg_add_cancel _)).toAdjunction.comp
+        adj).homAddEquiv_of_left_adjoint_additive_ulift X T.obj₁
+      apply AddCommGrp.uliftFunctor.mapIso
+      refine ?_ ≪≫ (preadditiveCoyoneda.mapIso ((F.commShiftIso (-1 : ℤ)).app X).op).app T.obj₁
+      apply AddEquiv.toAddCommGrpIso
+      exact ((shiftEquiv' D (-1 : ℤ) (1 : ℤ)
+        (neg_add_cancel _)).toAdjunction.homAddEquiv_of_left_adjoint_additive (F.obj X)
+        T.obj₁).symm
+    · sorry
+    · sorry
+    · ext f
+      simp [homAddEquiv_of_left_adjoint_additive_apply]
+
+    · sorry
+    · sorry
+    · sorry
+    · sorry
+  rw [exact_iff_of_iso e.symm]
   exact (homologySequenceComposableArrows₅_start_zero_exact (preadditiveCoyoneda.obj
     (op (F.obj X))) _ dT).comp_exact _
 
