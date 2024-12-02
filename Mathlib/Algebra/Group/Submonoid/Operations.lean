@@ -629,6 +629,10 @@ theorem mem_mrange {f : F} {y : N} : y ∈ mrange f ↔ ∃ x, f x = y :=
   Iff.rfl
 
 @[to_additive]
+lemma mrange_comp {O : Type*} [Monoid O] (f : N →* O) (g : M →* N) :
+    mrange (f.comp g) = (mrange g).map f := SetLike.coe_injective <| Set.range_comp f _
+
+@[to_additive]
 theorem mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
   Submonoid.copy_eq _
 
@@ -641,18 +645,18 @@ theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
 
 @[to_additive]
-theorem mrange_eq_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
+theorem mrange_eq_top {f : F} : mrange f = (⊤ : Submonoid N) ↔ Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_mrange, coe_top]) Set.range_eq_univ
 
 @[deprecated (since := "2024-11-11")]
-alias mrange_top_iff_surjective := mrange_eq_top_iff_surjective
+alias mrange_top_iff_surjective := mrange_eq_top
 
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
 @[to_additive (attr := simp)
   "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
 theorem mrange_eq_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
-  mrange_eq_top_iff_surjective.2 hf
+  mrange_eq_top.2 hf
 
 @[deprecated (since := "2024-11-11")] alias mrange_top_of_surjective := mrange_eq_top_of_surjective
 
@@ -863,8 +867,16 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
   S.subtype.codRestrict _ fun x => h x.2
 
 @[to_additive (attr := simp)]
-theorem range_subtype (s : Submonoid M) : mrange s.subtype = s :=
+theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive] alias range_subtype := mrange_subtype
+attribute [deprecated mrange_subtype (since := "2024-11-25")] range_subtype
+attribute [deprecated AddSubmonoid.mrange_subtype (since := "2024-11-25")]
+AddSubmonoid.range_subtype
+
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=

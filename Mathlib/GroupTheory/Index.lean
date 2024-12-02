@@ -80,7 +80,7 @@ theorem index_comap (f : G' →* G) :
 @[to_additive]
 theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
-  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.subtype_range]
+  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
 variable {H K L}
 
@@ -262,7 +262,7 @@ theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
     (K.map H.subtype).index = K.index * H.index := by
-  rw [K.index_map_of_injective H.subtype_injective, H.subtype_range]
+  rw [K.index_map_of_injective H.subtype_injective, H.range_subtype]
 
 @[to_additive]
 theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=

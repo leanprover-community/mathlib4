@@ -1106,6 +1106,11 @@ section LinearOrder
 
 variable [LinearOrder α] {s : Finset ι} (H : s.Nonempty) {f : ι → α} {a : α}
 
+theorem comp_sup_eq_sup_comp_of_nonempty [OrderBot α] [SemilatticeSup β] [OrderBot β]
+    {g : α → β} (mono_g : Monotone g) (H : s.Nonempty) : g (s.sup f) = s.sup (g ∘ f) := by
+  rw [← Finset.sup'_eq_sup H, ← Finset.sup'_eq_sup H]
+  exact Finset.comp_sup'_eq_sup'_comp H g (fun x y ↦ Monotone.map_sup mono_g x y)
+
 @[simp]
 theorem le_sup'_iff : a ≤ s.sup' H f ↔ ∃ b ∈ s, a ≤ f b := by
   rw [← WithBot.coe_le_coe, coe_sup', Finset.le_sup_iff (WithBot.bot_lt_coe a)]
