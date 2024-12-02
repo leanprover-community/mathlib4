@@ -92,7 +92,11 @@ structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of dual vectors, called coroots. -/
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLin (root i) (coroot i) = 2
-  /-- A parametrized family of permutations, induced by reflection. -/
+  /-- A parametrized family of permutations, induced by reflections. This corresponds to the
+      classical requirement that the symmetry attached to each root (later defined in
+      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+      formalize this stability by fixing the image of the roots through each reflection (whence the
+      permutation); and similarly for coroots. -/
   reflection_perm : ι → (ι ≃ ι)
   reflection_perm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
@@ -373,6 +377,31 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
   · by_cases h' : i = j
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
+
+lemma isReduced_iff' [Nontrivial R] : P.IsReduced ↔ ∀ i j, P.root i ∈ Submodule.span R {P.root j}
+    → (P.root i = P.root j ∨ P.root i = - P.root j) := by
+  constructor
+  · intro H i j hij
+    obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp hij
+    rw [← sub_eq_zero, sub_eq_neg_add] at ha
+    have : ¬ LinearIndependent R ![P.root i, P.root j] := by
+      rw [not_linearIndependent_iff]
+      use Finset.univ
+      use fun x ↦ match x with
+      | 0 => -1
+      | 1 => a
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.sum_univ_two, Fin.isValue,
+        Matrix.cons_val_zero, neg_smul, one_smul, Matrix.cons_val_one, Matrix.head_cons,
+        Finset.mem_univ, ne_eq, true_and]
+      exact ⟨ha, ⟨0, by simp only [neg_eq_zero, one_ne_zero, not_false_eq_true]⟩⟩
+    exact H i j this
+  sorry
+
+
+
+
+
+
 
 /-- The linear span of roots. -/
 abbrev rootSpan := span R (range P.root)
