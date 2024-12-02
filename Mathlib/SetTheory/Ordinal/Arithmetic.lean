@@ -2464,7 +2464,7 @@ theorem relIso_nat_omega0_coe_symm_apply (o : Iio ω) : relIso_nat_omega0.symm o
 theorem strictMono_of_succ_lt_omega0 {α : Type*} [Preorder α] (f : Iio ω → α)
     (hf : ∀ i, f i < f (succ i)) : StrictMono f := by
   have mono := strictMono_nat_of_lt_succ fun n ↦
-    (succ_Iio isLimit_omega0.isSuccPrelimit) ▸ hf ⟨n, nat_lt_omega0 n⟩
+    (succ_Iio isLimit_omega0.isSuccPrelimit _) ▸ hf ⟨n, nat_lt_omega0 n⟩
   convert mono.comp relIso_nat_omega0.symm.strictMono
   ext
   simp
