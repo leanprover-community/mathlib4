@@ -237,7 +237,7 @@ theorem pow_subset_pow {n : ℕ} : (↑M : Set A) ^ n ⊆ ↑(M ^ n : Submodule 
   trans AddSubmonoid.pow_subset_pow (le_pow_toAddSubmonoid M)
 
 theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
-  pow_subset_pow _ <| Set.pow_mem_pow hx _
+  pow_subset_pow _ <| Set.pow_mem_pow hx
 
 end Module
 

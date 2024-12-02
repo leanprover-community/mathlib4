@@ -259,6 +259,13 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
 
+lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) :
+  v x = v.1 x := rfl
+
+@[ext]
+lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+  Subtype.ext <| AbsoluteValue.ext h
+
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one
@@ -1066,3 +1073,27 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     linarith
 
 end IsPrimitiveRoot
+
+/-!
+
+## The infinite place of the rationals.
+
+-/
+
+namespace Rat
+
+open NumberField
+
+/-- The infinite place of `ℚ`, coming from the canonical map `ℚ → ℂ`. -/
+noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
+
+@[simp]
+lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
+  rw [NumberField.InfinitePlace.coe_apply]
+  obtain ⟨_, _, rfl⟩ := v
+  simp
+
+instance : Subsingleton (InfinitePlace ℚ) where
+  allEq a b := by ext; simp
+
+end Rat
