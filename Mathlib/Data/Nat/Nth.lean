@@ -280,45 +280,35 @@ lemma nth_add_one {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
   have hs {p' : ℕ → Prop} (h0p' : ¬p' 0) : (· + 1) '' {i | p' (i + 1)} = setOf p' := by
     ext i
     simp only [Set.mem_image, Set.mem_setOf_eq]
-    refine ⟨fun he ↦ ?_, fun he ↦ ?_⟩
-    · rcases he with ⟨_, hi, rfl⟩
-      exact hi
-    · refine ⟨i - 1, ?_⟩
-      have hi : 1 ≤ i := by
-        by_contra hi
-        exact h0p' (lt_one_iff.mp (not_le.mp hi) ▸ he)
-      simpa [hi]
+    refine ⟨fun ⟨_, hi, h⟩ ↦ h ▸ hi, fun he ↦
+      ⟨i - 1, Nat.sub_add_cancel ?_ ▸ he, Nat.sub_add_cancel ?_⟩⟩ <;>
+    by_contra hi <;> exact h0p' (lt_one_iff.mp (not_le.mp hi) ▸ he)
   induction n using Nat.case_strong_induction_on
   case _ =>
-    have h0 : ¬p 0 := fun h0 ↦ h (nth_zero_of_zero h0)
     simp_rw [nth_zero] at h ⊢
-    have h1 : {i | p (i + 1)}.Nonempty := by
-      simp only [ne_eq, sInf_eq_zero, Set.mem_setOf_eq, h0, ← Set.not_nonempty_iff_eq_empty,
-        false_or, not_not] at h
-      rcases h with ⟨⟨⟩ | ⟨i⟩, hi⟩
-      · exact False.elim (h0 hi)
-      · exact ⟨i, hi⟩
-    rw [← hs h0, ← add_right_mono.map_csInf h1]
+    rw [← hs h0, ← add_right_mono.map_csInf]
+    simp only [ne_eq, sInf_eq_zero, Set.mem_setOf_eq, h0, ← Set.not_nonempty_iff_eq_empty,
+      false_or, not_not] at h
+    rcases h with ⟨⟨⟩ | ⟨i⟩, hi⟩
+    · exact False.elim (h0 hi)
+    · exact ⟨i, hi⟩
   case _ n ih =>
     repeat nth_rw 1 [nth_eq_sInf]
     nth_rw 2 [← hs (by simp [h0])]
-    have h1 : {i | p (i + 1) ∧ ∀ k < n + 1, nth p k < i + 1}.Nonempty := by
-      have hp1 : 1 ≤ nth p (n + 1) := by omega
-      have hf : ∀ hf : (setOf p).Finite, n + 1 < #hf.toFinset := by
-        simpa [nth_eq_zero] using h
-      refine ⟨nth p (n + 1) - 1, ?_, ?_⟩ <;> simp only [hp1, Nat.sub_add_cancel]
+    rw [← add_right_mono.map_csInf]
+    · convert rfl using 8 with k m hm
+      nth_rw 2 [← add_lt_add_iff_right 1]
+      convert Iff.rfl using 2
+      exact ih m (Nat.lt_add_one_iff.mp hm) fun hm0 ↦ h (nth_eq_zero_mono h0 (by omega) hm0)
+    · have hf : ∀ hf : (setOf p).Finite, n + 1 < #hf.toFinset := by simpa [nth_eq_zero] using h
+      refine ⟨nth p (n + 1) - 1, ?_, ?_⟩ <;>
+      simp only [(by omega : 1 ≤ nth p (n + 1)), Nat.sub_add_cancel]
       · exact nth_mem _ hf
-      · exact fun k hk ↦ nth_lt_nth' hk hf
-    rw [← add_right_mono.map_csInf h1]
-    convert rfl using 8 with k m hm
-    nth_rw 2 [← add_lt_add_iff_right 1]
-    convert Iff.rfl using 2
-    exact ih m (Nat.lt_add_one_iff.mp hm) fun hm0 ↦ h (nth_eq_zero_mono h0 (by omega) hm0)
+      · exact fun _ hk ↦ nth_lt_nth' hk hf
 
 lemma nth_add_one_eq_sub {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
     nth (fun i ↦ p (i + 1)) n = nth p n - 1 := by
-  rw [← nth_add_one h0 h]
-  omega
+  rw [← nth_add_one h0 h, Nat.add_sub_cancel]
 
 section Count
 
