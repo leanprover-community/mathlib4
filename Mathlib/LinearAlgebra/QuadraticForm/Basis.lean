@@ -39,15 +39,6 @@ theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x
   have e4 : t ⊆ s := by exact fun ⦃a⦄ a_1 ↦ e3 (htp a_1)
   aesop
 
-
-/-
-theorem test1 (h : ∀ x ∈ s, ¬ (p x ∧ q x)) :
-  s.filter (fun x => p x ∨ q x) = (s.filter p).disjUnion (s.filter q) (by
-    apply disjoint_of_not_and_on_set
-    exact fun x a ↦ h x a) := by
-  aesop
--/
-
 theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
   rw [← sum_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
@@ -166,50 +157,6 @@ instance symOffDiagXor.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
 
 lemma f1 (p : Sym2 (ι₁ × ι₂)) : Xor' p.IsDiag ¬ p.IsDiag :=
   xor_not_right.mpr (Eq.to_iff rfl)
-
-  --Decidable.em p.IsDiag
-
-
-lemma g1 (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagXor p) : ¬ p.IsDiag := by
-  induction' p with i j
-  aesop
-
-lemma g2 (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ∧ symOffDiagXor p ↔ symOffDiagXor p := by
-  constructor
-  · intro h
-    exact h.2
-  · intro h
-    exact ⟨g1 _ h, h⟩
-
-/-
-lemma e1 (P Q R : Prop) : ((P ∧ Q) ∨ (P ∧ R)) ↔
-    (P ∧ (Q ∨ R)) := by
-  exact Iff.symm and_or_left
--/
-
-lemma f2 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    p.IsDiag ∨ ((¬ p.IsDiag ∧ symOffDiagXor p) ∨ (¬ p.IsDiag ∧ ¬ symOffDiagXor p)) := by
-  rw [← and_or_left]
-  have e2 : symOffDiagXor p ∨ ¬ symOffDiagXor p := Decidable.em (symOffDiagXor p)
-  have e3 : ¬p.IsDiag ∧ (symOffDiagXor p ∨ ¬ symOffDiagXor p) ↔ ¬p.IsDiag :=
-    and_iff_left_of_imp fun a ↦ e2
-  rw [e3]
-  exact Decidable.em _
-
-lemma f2b [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    p.IsDiag ∨ ( symOffDiagXor p ∨ (¬ p.IsDiag ∧ ¬ symOffDiagXor p)) := by
-  convert f2 p
-  rw [g2]
-
-lemma f3 (p : Sym2 (ι₁ × ι₂)) :
-    (¬ p.IsDiag ∧ ¬ symOffDiagXor p) ↔ symOffDiag p := by
-  induction' p with i j
-  aesop
-
-lemma f4 [DecidableEq ι₁] [DecidableEq ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    p.IsDiag ∨ ( symOffDiagXor p ∨ symOffDiag p) := by
-  rw [← f3]
-  exact f2b p
 
 lemma foo [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagUpper p) :
     symOffDiag p := by
@@ -333,17 +280,6 @@ lemma not_IsDiag_iff_symOffDiagXor_or_symOffDiag
     cases' h with h1 h2
     · apply foo3 _ h1
     · apply foo4 _ h2
-
-lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    p.IsDiag ∨ symOffDiagXor p ∨ (Xor' (symOffDiagUpper p) (symOffDiagLower p)) := by
-  rw [← symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
-  exact f4 p
-
-/-
-lemma filterseq [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    ¬ p.IsDiag ∧ ¬symOffDiagUpper p ∧ ¬symOffDiagLower p ↔ symOffDiagXor p := by
-  aesop
--/
 
 end Prod
 
@@ -607,12 +543,6 @@ lemma tensorDistriFree_right_self (a b : M₁) (c : M₂):
     ← TensorProduct.add_tmul, ← toBilin_symm_eq_Polar Q₁ bm₁]
   rfl
 
-/-
-lemma tensorDistriFree_self_self (a : M₁) (b : M₂):
-    (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (a ⊗ₜ b) = Q₁ a ⊗ₜ Q₂ b  := by
-  rw [tensorDistriFree_tmul]
--/
-
 lemma tensorDistriFree_polar11
     (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
@@ -675,21 +605,6 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
     (polarBilin Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ Q₂ (bm₂ i₂)   := by
   rw [← h₁, tensorDistriFree_right_self]
 
---variable (x : M₁ ⊗[R] M₂)
-
---#check ((bm₁.tensorProduct bm₂).repr x).support.sym2 with ¬ p.IsDiag
-
-
-variable {α : Type*} (p : α → Prop) [DecidablePred p] (s : Finset α) (f : α → N₁ ⊗[R] N₂)
-
-lemma sum (f g : α → N₁ ⊗[R] N₂) (h : f = g) : ∑ p ∈ s, f p = ∑ p ∈ s, g p := by
-  exact congrArg s.sum h
-
-/-
-lemma myadd: ∑ x ∈ s, f x = ∑ x ∈ s with p x, f x + ∑ x ∈ s with ¬ p x, f x := by
-  exact Eq.symm (Finset.sum_filter_add_sum_filter_not s p f)
--/
-
 /--
 Lift the polar
 -/
@@ -728,93 +643,6 @@ lemma polar_lift_eq_zero_on_symOffDiagLower
   rcases h2 with ⟨c1,c2⟩ | ⟨c3, c4⟩
   · rw [tensorDistriFree_polar12 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2, smul_zero, smul_zero]
   · rw [tensorDistriFree_polar21 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c3 c4, smul_zero, smul_zero]
-
-lemma myadd2
-    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
-      + ∑ p ∈ s with ¬ symOffDiagUpper p, Q.polar_lift bm x p =
-      ∑ p ∈ s, polar_lift Q bm x p := by
-  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  simp_rw [← Finset.sum_filter_add_sum_filter_not s symOffDiagUpper (Q.polar_lift bm x)]
-  simp only [add_left_inj]
-  apply Finset.sum_congr rfl
-  intro p hp
-  rw [polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp]
-
-lemma myadd2a
-    (x : M₁ ⊗[R] M₂) :
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
-    ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
-      + ∑ p ∈ s with ¬ symOffDiagUpper p, Q.polar_lift bm x p =
-      ∑ p ∈ s, polar_lift Q bm x p := myadd2 _ _ _ _ _ _
-
-lemma myadd3
-    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-      ∑ p ∈ s with ¬ symOffDiagLower p, Q.polar_lift bm x p =
-      ∑ p ∈ s, polar_lift Q bm x p := by
-  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  apply Finset.sum_subset (Finset.filter_subset _ _)
-  intro p hps hpn
-  simp at hpn
-  rw [polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s _ _ (by simp_all only [forall_const,
-    Finset.mem_filter, and_self])]
-
-lemma myadd3a
-    (x : M₁ ⊗[R] M₂) :
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    let s₁ := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
-    let s := Finset.filter (fun p => ¬ symOffDiagUpper p) s₁
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-      ∑ p ∈ s with ¬ symOffDiagLower p, Q.polar_lift bm x p =
-      ∑ p ∈ s, polar_lift Q bm x p := myadd3 _ _ _ _ _ _
-
-theorem qt_expansion (x : M₁ ⊗[R] M₂) :
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
-    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag, polar_lift Q bm x p = Q x := by
-  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  simp_rw [basis_expansion Q bm x]
-  have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
-    rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
-  simp_rw [polar_lift, e1]
-
-theorem qt_expansion2 (x : M₁ ⊗[R] M₂) :
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
-    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
-      ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
-        + ∑ p ∈ s with ¬ symOffDiagUpper p, Q.polar_lift bm x p = Q x := by
-  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
-  simp_rw [add_assoc, myadd2a]
-  rw [qt_expansion]
-
-theorem qt_expansion3 (x : M₁ ⊗[R] M₂) :
-    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    let s := Finset.filter (fun p => ¬ p.IsDiag) (bm.repr x).support.sym2
-    let s₂ := Finset.filter (fun p => ¬ symOffDiagUpper p) s
-    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
-      ∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p
-        + ∑ p ∈ s₂ with ¬ symOffDiagLower p, Q.polar_lift bm x p = Q x := by
-  simp_rw [myadd3a]
-  rw [qt_expansion2]
-
--- not_IsDiag_iff_symOffDiagXor_xor_symOffDiag
-
 
 theorem sum1 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -919,22 +747,6 @@ theorem qt_expansion22 (x : M₁ ⊗[R] M₂) :
         (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
       + (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) = Q x := by
   simp_rw [add_assoc, sum2b, sum1, qt_expansion20]
-
--- #check Finset.sum_disjUnion
-
--- #check Finset.sum_filter_add_sum_filter_not
-
-/-
-lemma filter_change (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) :
-    let s₁ := Finset.filter (fun p => ¬ p.IsDiag) s
-    let s₂ := Finset.filter (fun p => ¬ symOffDiagUpper p) s₁
-    let s₃ := Finset.filter (fun p => ¬ symOffDiagLower p) s₂
-    s₃ = Finset.filter (fun p => ¬ symOffDiagXor p) s := by
-  simp only
-  rw [Finset.filter_filter]
-  rw [Finset.filter_filter]
--/
-
 
 end TensorProduct
 
