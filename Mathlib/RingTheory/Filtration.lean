@@ -43,7 +43,7 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
 
 universe u v
 
-variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
