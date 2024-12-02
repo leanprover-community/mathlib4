@@ -468,6 +468,10 @@ theorem ext_base {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
       fun hB ↦ (h <| hB.subset_ground.trans_eq hE.symm).2 hB⟩
   ext <;> simp [hE, M₁.indep_iff', M₂.indep_iff', h']
 
+theorem ext_iff_base {M₁ M₂ : Matroid α} :
+    M₁ = M₂ ↔ M₁.E = M₂.E ∧ ∀ ⦃B⦄, B ⊆ M₁.E → (M₁.Base B ↔ M₂.Base B) :=
+  ⟨fun h ↦ by simp [h], fun ⟨hE, h⟩ ↦ ext_base hE h⟩
+
 theorem base_compl_iff_maximal_disjoint_base (hB : B ⊆ M.E := by aesop_mat) :
     M.Base (M.E \ B) ↔ Maximal (fun I ↦ I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B) B := by
   simp_rw [maximal_iff, and_iff_right hB, and_imp, forall_exists_index]
@@ -668,7 +672,7 @@ theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.B
     (fun hI ↦ hIB.ne (hI.eq_of_subset_base hB hIB.subset)) hB'
 
 @[ext] theorem ext_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
-    (h : ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I)) : M₁ = M₂ :=
+    (h : ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I)) : M₁ = M₂ :=
   have h' : M₁.Indep = M₂.Indep := by
     ext I
     by_cases hI : I ⊆ M₁.E
@@ -678,7 +682,7 @@ theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.B
   ext_base hE (fun B _ ↦ by simp_rw [base_iff_maximal_indep, h'])
 
 theorem ext_iff_indep {M₁ M₂ : Matroid α} :
-    M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
+    M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
 ⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
 
 /-- A `Finitary` matroid is one where a set is independent if and only if it all

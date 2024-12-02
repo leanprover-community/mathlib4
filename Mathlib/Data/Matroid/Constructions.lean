@@ -94,7 +94,7 @@ def loopyOn (E : Set α) : Matroid α := emptyOn α ↾ E
 theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X → X = ∅ := by
   simp only [ext_iff_indep, loopyOn_ground, loopyOn_indep_iff, and_congr_right_iff]
   rintro rfl
-  refine ⟨fun h I hI ↦ (h I hI).1, fun h I hIE ↦ ⟨h I hIE, by rintro rfl; simp⟩⟩
+  refine ⟨fun h I hI ↦ (h hI).1, fun h I hIE ↦ ⟨h I hIE, by rintro rfl; simp⟩⟩
 
 @[simp] theorem loopyOn_base_iff : (loopyOn E).Base B ↔ B = ∅ := by
   simp [Maximal, base_iff_maximal_indep]
@@ -118,7 +118,7 @@ theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
   simp only [base_iff_maximal_indep, Maximal, empty_indep, le_eq_subset, empty_subset,
     subset_empty_iff, true_implies, true_and, ext_iff_indep, loopyOn_ground,
     loopyOn_indep_iff]
-  exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h I hI.subset_ground).1 hI⟩
+  exact ⟨fun h I _ ↦ ⟨@h _, fun hI ↦ by simp [hI]⟩, fun h I hI ↦ (h hI.subset_ground).1 hI⟩
 
 theorem eq_loopyOn_or_rkPos (M : Matroid α) : M = loopyOn M.E ∨ RkPos M := by
   rw [← empty_base_iff, rkPos_iff_empty_not_base]; apply em
