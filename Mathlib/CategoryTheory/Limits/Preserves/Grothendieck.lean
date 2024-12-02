@@ -17,14 +17,14 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
     [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H] [HasColimitsOfShape C H]
     [hC : PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
-    fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim) :=
+    fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim _ _) :=
   NatIso.ofComponents
     (fun c => HasColimit.isoOfNatIso
        (limitCompWhiskeringLeftIsoCompLimit K (Grothendieck.ι F c)).symm ≪≫
       preservesLimitIso colim _ ≪≫
       HasLimit.isoOfNatIso
         (Functor.associator _ _ _ ≪≫
-        isoWhiskerLeft _ sorry ≪≫
+        isoWhiskerLeft _ (fiberwiseColimcompEvaluationIso _).symm ≪≫
         (Functor.associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
     sorry
@@ -46,11 +46,13 @@ instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
     (whiskeringLeft (↑(F.obj c)) (Grothendieck F) H).obj (Grothendieck.ι F c)) := sorry
   let i₂ := calc colimit (limit K)
     _ ≅ colimit (fiberwiseColimit (limit K)) := (colimitFiberwiseColimitIso _).symm
-    _ ≅ colimit (limit (K ⋙ fiberwiseColim)) :=
+    _ ≅ colimit (limit (K ⋙ fiberwiseColim _ _)) :=
           HasColimit.isoOfNatIso (fiberwiseColimitLimitIso _)
-    _ ≅ limit ((K ⋙ fiberwiseColim) ⋙ colim) :=
-          preservesLimitIso colim (K ⋙ fiberwiseColim)
-    _ ≅ limit (K ⋙ colim) := by sorry  -- TODO functorialisation of `colimitFiberwiseColimitIso`
+    _ ≅ limit ((K ⋙ fiberwiseColim _ _) ⋙ colim) :=
+          preservesLimitIso colim (K ⋙ fiberwiseColim _ _)
+    _ ≅ limit (K ⋙ colim) :=
+      HasLimit.isoOfNatIso
+       (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
     convert Iso.isIso_hom i₂
     apply colimit.hom_ext
