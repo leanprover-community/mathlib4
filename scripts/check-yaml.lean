@@ -11,7 +11,7 @@ import Mathlib.Tactic.ToExpr
 
 This assumes `yaml_check.py` has first translated these to `json` files.
 
-It verifies that the referenced declarations exist.
+It verifies that the referenced declarations exist, and prints an error otherwise.
 -/
 
 open IO.FS Lean Lean.Elab
@@ -30,7 +30,7 @@ def processDb (decls : ConstMap) : String → IO Bool
   let lines ← readJsonFile DBFile s!"{file}.json"
   let missing := lines.filter (fun l ↦ !(decls.contains l.2))
   if 0 < missing.size then
-    IO.println s!"Entries in `docs/{file}.yaml` refer to declarations that don't exist. \
+    IO.println s!"Entries in `docs/{file}.yaml` refer to {missing.size} declaration(s) that don't exist. \
       Please correct the following:"
     for p in missing do
       IO.println s!"  {p.1}: {p.2}"
