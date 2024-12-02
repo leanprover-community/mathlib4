@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Finite
 
 /-!
 # Cardinality of a set with a countable cover

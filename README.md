@@ -88,17 +88,20 @@ Call `lake exe cache` to see its help menu.
 
 ### Building HTML documentation
 
-Building HTML documentation locally is straightforward, but it may take a while (>20 minutes):
+The [mathlib4_docs repository](https://github.com/leanprover-community/mathlib4_docs)
+is responsible for generating and publishing the
+[mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html).
 
+That repo can be used to build the docs locally:
 ```shell
-lake -R -Kdoc=on update doc-gen4
+git clone https://github.com/leanprover-community/mathlib4_docs.git
+cd mathlib4_docs
+cp ../mathlib4/lean-toolchain .
+lake exe cache get
 lake build Mathlib:docs
 ```
-
-The HTML files can then be found in `build/doc`.
-
-Warning: these commands will make a change to `lake-manifest.json`
-which should *not* be committed to Mathlib.
+The last step may take a while (>20 minutes).
+The HTML files can then be found in `.lake/build/doc`.
 
 ## Transitioning from Lean 3
 

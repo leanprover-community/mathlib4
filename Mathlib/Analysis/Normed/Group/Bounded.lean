@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Pointwise
-import Mathlib.Order.LiminfLimsup
 
 /-!
 # Boundedness in normed groups
@@ -21,11 +20,10 @@ normed group
 open Filter Metric Bornology
 open scoped Pointwise Topology
 
-variable {α ι E F G : Type*}
+variable {α E F G : Type*}
 
 section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
 
 @[to_additive (attr := simp) comap_norm_atTop]
 lemma comap_norm_atTop' : comap norm atTop = cobounded E := by

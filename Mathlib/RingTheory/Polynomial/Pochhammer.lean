@@ -38,8 +38,6 @@ universe u v
 
 open Polynomial
 
-open Polynomial
-
 section Semiring
 
 variable (S : Type u) [Semiring S]

@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -656,11 +657,11 @@ theorem edist_ofAdd (a b : X) : edist (ofAdd a) (ofAdd b) = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toMul (a b : Additive X) : edist (toMul a) (toMul b) = edist a b :=
+theorem edist_toMul (a b : Additive X) : edist a.toMul b.toMul = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist a b :=
+theorem edist_toAdd (a b : Multiplicative X) : edist a.toAdd b.toAdd = edist a b :=
   rfl
 
 end
