@@ -76,6 +76,7 @@ def fiberwiseColimit : C ⥤ H where
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
+variable (H) (F) in
 @[simps]
 def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤ H) ⥤ (C ⥤ H) where
   obj G := fiberwiseColimit G
@@ -201,6 +202,11 @@ end
 theorem hasColimitsOfShape_grothendieck [∀ X, HasColimitsOfShape (F.obj X) H]
     [HasColimitsOfShape C H] : HasColimitsOfShape (Grothendieck F) H where
   has_colimit _ := hasColimit_of_hasColimit_fiberwiseColimit_of_hasColimit _
+
+noncomputable def fiberwiseColimCompColimIso [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H]
+    [HasColimitsOfShape C H] : fiberwiseColim F H ⋙ colim ≅ colim :=
+  NatIso.ofComponents (fun G => colimitFiberwiseColimitIso G)
+    fun _ => by (iterate 2 apply colimit.hom_ext; intro); simp
 
 end Limits
 
