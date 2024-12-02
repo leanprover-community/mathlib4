@@ -5,7 +5,15 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
-universe v₁ v₂ u₁ u₂
+/-!
+# Colimits on Grothendieck constructions preserving limits
+
+We characterize the condition in which colimits on Grothendieck constructions preserve limits: By
+preserving limits on the Grothendieck construction's base category as well as on each of its fibers.
+-/
+
+
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
@@ -15,14 +23,17 @@ noncomputable section
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {H : Type u₂} [Category.{v₂} H]
-variable {J : Type u₁} [Category.{v₁} J]
-variable {F : C ⥤ Cat}
+variable {J : Type u₃} [Category.{v₃} J]
+variable {F : C ⥤ Cat.{v₄, u₄}}
 
+/-- If `colim` on each fiber `F.obj c` of a functor `F : C ⥤ Cat` preserves limits of shape `J`,
+then the fiberwise colimit of the limit of a functor `K : J ⥤ Grothendieck F ⥤ H` is naturally
+isomorphic to taking the limit of the composition `K ⋙ fiberwiseColim F H`. -/
 @[simps!]
 def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
     [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H] [HasColimitsOfShape C H]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
-    fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim _ _) :=
+    fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim F H) :=
   NatIso.ofComponents
     (fun c => HasColimit.isoOfNatIso
        (limitCompWhiskeringLeftIsoCompLimit K (Grothendieck.ι F c)).symm ≪≫
@@ -44,6 +55,9 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
       simp [← NatTrans.comp_app_assoc]
 
 variable (C) (F) in
+/-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on
+every `F.obj c` for a functor `F : C ⥤ Cat`, then `colim` on `Grothendieck F` also preserves limits
+of shape `J`. -/
 instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
     [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [∀ c, HasLimitsOfShape J ((F.obj c) ⥤ H)]
     [HasLimitsOfShape J H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
