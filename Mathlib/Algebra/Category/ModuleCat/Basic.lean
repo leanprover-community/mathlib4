@@ -420,7 +420,7 @@ variable (M N : ModuleCat.{v} R)
 
 /-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/
 @[simps]
-def homMulEquiv : End M ≃* (M →ₗ[R] M) where
+def endMulEquiv : End M ≃* (M →ₗ[R] M) where
   toFun := ModuleCat.Hom.hom
   invFun := ModuleCat.asHom
   map_mul' _ _ := rfl
