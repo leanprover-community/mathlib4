@@ -62,9 +62,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set (K ≃ₐ[k] K)) where
     isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
       apply mem_nhds_iff.mpr
-      have := (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).not.mp h
-      push_neg at this
-      rcases this with ⟨y,yL,ne⟩
+      rcases Set.not_subset.mp ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).not.mp h) with ⟨y,yL,ne⟩
       use σ • ((adjoin k {y}).1.fixingSubgroup : Set (K ≃ₐ[k] K))
       constructor
       · intro f hf
@@ -74,16 +72,12 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
         push_neg
         use y
         simp only [yL, smul_eq_mul, AlgEquiv.smul_def, AlgEquiv.mul_apply, ne_eq, true_and]
-        have := (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp hg y <|
+        have : g y = y := (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp hg y <|
           adjoin_simple_le_iff.mp fun ⦃x⦄ a ↦ a
-        simp only [AlgEquiv.smul_def] at this
-        rw [this]
-        exact ne
+        simpa only [this, ne_eq, AlgEquiv.smul_def] using ne
       · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1).smul σ, true_and]
-        apply Set.mem_smul_set.mpr
         use 1
-        simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true]
-        exact congrFun rfl
+        simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
 
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
@@ -91,7 +85,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
   apply le_antisymm
   · intro x hx
     rw [IntermediateField.mem_fixedField_iff] at hx
-    have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])
+    have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ rfl
     have : IntermediateField.fixedField (⊤ : Subgroup ((adjoin L {x}) ≃ₐ[L] (adjoin L {x}))) = ⊥ :=
       (IsGalois.tfae.out 0 1).mp (by infer_instance)
     have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L (adjoin L {x})) := by
@@ -194,7 +188,6 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
   invFun := fun H => IntermediateField.fixedField H.1
   left_inv := fun L => fixedField_fixingSubgroup L
   right_inv := by
-    simp only [Function.RightInverse, Function.LeftInverse]
     intro H
     simp_rw [fixingSubgroup_fixedField H]
     rfl
@@ -244,27 +237,24 @@ private lemma IntermediateField.finiteDimensional_of_le {M N : IntermediateField
 theorem open_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen (IntermediateFieldEquivClosedSubgroup L).carrier ↔
     (FiniteDimensional k L) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : (IntermediateFieldEquivClosedSubgroup.toFun L).carrier ∈ nhds 1 :=
-      IsOpen.mem_nhds h (congrFun rfl)
-    rw [GroupFilterBasis.nhds_one_eq] at this
-    rcases this with ⟨S, ⟨gp, ⟨M, hM, eq'⟩, eq⟩, sub⟩
-    simp only [← eq'] at eq
-    rw [← eq] at sub
-    have := hM.out
-    let L' : FiniteGaloisIntermediateField k K := {
-      normalClosure k M K with
-      finiteDimensional := normalClosure.is_finiteDimensional k M K
-      isGalois := IsGalois.normalClosure k M K }
-    have : L'.1.fixingSubgroup.carrier ⊆ (IntermediateFieldEquivClosedSubgroup.1.1 L).carrier := by
-      have : M ≤ L'.1 := IntermediateField.le_normalClosure M
-      rw [←  fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le] at this
-      exact fun _ a ↦ sub (this a)
-    simp only [IntermediateFieldEquivClosedSubgroup, Equiv.toFun_as_coe, Equiv.coe_fn_mk] at this
-    apply IntermediateField.finiteDimensional_of_le (N := L'.1)
-    rw [← fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le]
-    exact this
-  · exact IntermediateField.fixingSubgroup_isOpen L
+  refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.fixingSubgroup_isOpen L⟩
+  have : (IntermediateFieldEquivClosedSubgroup.toFun L).carrier ∈ nhds 1 :=
+    IsOpen.mem_nhds h (congrFun rfl)
+  rw [GroupFilterBasis.nhds_one_eq] at this
+  rcases this with ⟨S, ⟨gp, ⟨M, hM, eq'⟩, eq⟩, sub⟩
+  rw [← eq, ← eq'] at sub
+  have := hM.out
+  let L' : FiniteGaloisIntermediateField k K := {
+    normalClosure k M K with
+    finiteDimensional := normalClosure.is_finiteDimensional k M K
+    isGalois := IsGalois.normalClosure k M K }
+  have : L'.1.fixingSubgroup.carrier ⊆ (IntermediateFieldEquivClosedSubgroup.1.1 L).carrier := by
+    have : M ≤ L'.1 := IntermediateField.le_normalClosure M
+    rw [←  fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le] at this
+    exact fun _ a ↦ sub (this a)
+  apply IntermediateField.finiteDimensional_of_le (N := L'.1)
+  rw [← fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le]
+  exact this
 
 theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     Subgroup.Normal (IntermediateFieldEquivClosedSubgroup L).1 ↔
@@ -276,7 +266,6 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     have h' (x : K) : (Subgroup.map (restrictNormalHom
       (adjoin k {x})) L.fixingSubgroup).Normal := by
       set f := restrictNormalHom (F := k) (K₁ := K) (adjoin k {x})
-      simp only [IntermediateFieldEquivClosedSubgroup, Equiv.toFun_as_coe, Equiv.coe_fn_mk] at h
       exact Subgroup.Normal.map h f (restrictNormalHom_surjective K)
     have n' (l : L) : IsGalois k (IntermediateField.fixedField <| Subgroup.map
       (restrictNormalHom (adjoin k {l.1})) L.fixingSubgroup) := by
@@ -294,9 +283,8 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
         exact inf_le_left
       · intro l hl
         apply le_iSup f ⟨l,hl⟩
-        dsimp only [f]
-        rw [← restrict_fixedField L.fixingSubgroup (adjoin k {l}), fixedField_fixingSubgroup L]
-        simp only [IntermediateField.mem_inf, hl, true_and]
+        simp only [f, ← restrict_fixedField L.fixingSubgroup (adjoin k {l}),
+          fixedField_fixingSubgroup L, IntermediateField.mem_inf, hl, true_and]
         exact adjoin_simple_le_iff.mp fun _ a ↦ a
     rw [this] at n
     letI : Algebra.IsSeparable k L := Algebra.isSeparable_tower_bot_of_isSeparable k L K
