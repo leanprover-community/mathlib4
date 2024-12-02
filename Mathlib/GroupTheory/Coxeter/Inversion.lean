@@ -277,7 +277,7 @@ theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none.mpr (by omega)]
+  · rw [get?_eq_none_iff.mpr (by omega)]
     simp
 
 theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
@@ -286,7 +286,7 @@ theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none.mpr (by omega)]
+  · rw [get?_eq_none_iff.mpr (by omega)]
     simp
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
@@ -401,8 +401,8 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
       drop_append_eq_append_drop, drop_of_length_le (by simp [j_lt_j'.le]), length_take,
-      drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
-      Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
+      drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
+      ← add_assoc, Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
     show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
     rw [get?_eq_getElem?, get?_eq_getElem?,

@@ -3,7 +3,8 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
@@ -64,7 +65,7 @@ alias uniformInducing_equivBoundedOfCompact := isUniformInducing_equivBoundedOfC
 
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { isUniformInducing_equivBoundedOfCompact α β with
-    inj := (equivBoundedOfCompact α β).injective }
+    injective := (equivBoundedOfCompact α β).injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
@@ -222,6 +223,9 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
   le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 
+theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
+  (mkOfCompact f).nnnorm_eq_iSup_nnnorm
+
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
@@ -324,7 +328,7 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
     (linearIsometryBoundedOfCompact α E 𝕜).toIsometryEquiv = isometryEquivBoundedOfCompact α E :=
   rfl
 
-@[simp] -- Porting note: adjusted LHS because `simpNF` complained it simplified.
+@[simp]
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
     ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=
@@ -336,6 +340,16 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
   rfl
 
 end
+
+@[simp] lemma nnnorm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
+    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
+  simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
+
+@[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
+    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
+  simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
 section
 
@@ -439,7 +453,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     intro s
     ext1 x
     simp
-    -- This used to be the end of the proof before leanprover/lean4#2644
+    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
     simp? says simp only [coe_sum, Finset.sum_apply]
     congr!

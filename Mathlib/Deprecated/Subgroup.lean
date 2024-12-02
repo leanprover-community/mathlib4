@@ -345,9 +345,9 @@ theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup 
 theorem preimage_normal {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsNormalSubgroup s) :
     IsNormalSubgroup (f ⁻¹' s) :=
   { one_mem := by simp [hf.map_one, hs.toIsSubgroup.one_mem]
-    mul_mem := by simp (config := { contextual := true }) [hf.map_mul, hs.toIsSubgroup.mul_mem]
-    inv_mem := by simp (config := { contextual := true }) [hf.map_inv, hs.toIsSubgroup.inv_mem]
-    normal := by simp (config := { contextual := true }) [hs.normal, hf.map_mul, hf.map_inv] }
+    mul_mem := by simp +contextual [hf.map_mul, hs.toIsSubgroup.mul_mem]
+    inv_mem := by simp +contextual [hf.map_inv, hs.toIsSubgroup.inv_mem]
+    normal := by simp +contextual [hs.normal, hf.map_mul, hf.map_inv] }
 
 @[to_additive]
 theorem isNormalSubgroup_ker {f : G → H} (hf : IsGroupHom f) : IsNormalSubgroup (ker f) :=
@@ -369,7 +369,7 @@ theorem trivial_ker_of_injective {f : G → H} (hf : IsGroupHom f) (h : Function
       (fun hx => by
         suffices f x = f 1 by simpa using h this
         simp [hf.map_one]; rwa [mem_ker] at hx)
-      (by simp (config := { contextual := true }) [mem_ker, hf.map_one])
+      (by simp +contextual [mem_ker, hf.map_one])
 
 @[to_additive]
 theorem injective_iff_trivial_ker {f : G → H} (hf : IsGroupHom f) :
@@ -442,7 +442,7 @@ theorem closure_subset {s t : Set G} (ht : IsSubgroup t) (h : s ⊆ t) : closure
 theorem closure_subset_iff {s t : Set G} (ht : IsSubgroup t) : closure s ⊆ t ↔ s ⊆ t :=
   ⟨fun h _ ha => h (mem_closure ha), fun h _ ha => closure_subset ht h ha⟩
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem closure_mono {s t : Set G} (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset (closure.isSubgroup _) <| Set.Subset.trans h subset_closure
 

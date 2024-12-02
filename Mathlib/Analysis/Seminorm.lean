@@ -208,8 +208,8 @@ instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower 
     Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
-instance instSup : Sup (Seminorm 𝕜 E) where
-  sup p q :=
+instance instSup : Max (Seminorm 𝕜 E) where
+  max p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
@@ -275,7 +275,7 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     toFun := fun x => p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
-    -- Note: #8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
     smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
@@ -344,8 +344,7 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
   induction' s using Finset.cons_induction_on with a s ha ih
   · rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
     norm_cast
-  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, sup_eq_max, Pi.sup_apply, sup_eq_max,
-      NNReal.coe_max, NNReal.coe_mk, ih]
+  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, Pi.sup_apply, NNReal.coe_max, NNReal.coe_mk, ih]
 
 theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} (hs : s.Nonempty) (x : E) :
     ∃ i ∈ s, s.sup p x = p i x := by
@@ -425,8 +424,8 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
     rintro _ ⟨x, rfl⟩
     dsimp; positivity⟩
 
-noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
-  inf p q :=
+noncomputable instance instInf : Min (Seminorm 𝕜 E) where
+  min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
       toFun := fun x => ⨅ u : E, p u + q (x - u)
       smul' := by

@@ -3,7 +3,7 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison
 -/
-import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Logic.Lemmas
 import Batteries.Data.List.Basic
 
@@ -25,7 +25,7 @@ inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
   | nil : Path a a
   | cons : ∀ {b c : V}, Path a b → (b ⟶ c) → Path a c
 
--- See issue lean4#2049
+-- See issue https://github.com/leanprover/lean4/issues/2049
 compile_inductive% Path
 
 /-- An arrow viewed as a path of length one. -/

@@ -8,6 +8,8 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
+import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -516,7 +518,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_same]
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ x ≠ a, p x (f x) := by
@@ -713,14 +715,6 @@ theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : Fa
 end FactorsThrough
 
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
-  rfl
-
-@[simp]
-theorem uncurry_apply_pair {α β γ} (f : α → β → γ) (x : α) (y : β) : uncurry f (x, y) = f x y :=
-  rfl
-
-@[simp]
-theorem curry_apply {α β γ} (f : α × β → γ) (x : α) (y : β) : curry f x y = f (x, y) :=
   rfl
 
 section Bicomp

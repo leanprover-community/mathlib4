@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Ring.Aut
+import Mathlib.Algebra.Ring.Action.Group
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -223,16 +223,6 @@ protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
 protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
   map_pow _
 
-@[deprecated map_sum (since := "2023-12-26")]
-protected theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
-  map_sum e f s
-
-@[deprecated map_finsupp_sum (since := "2024-06-20")]
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
-    e (f.sum g) = f.sum fun i b => e (g i b) :=
-  map_finsupp_sum _ _ _
-
 end map
 
 section bijective
@@ -253,7 +243,7 @@ section refl
 /-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
+  { (.refl _ : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
@@ -618,6 +608,7 @@ end OfRingEquiv
 
 -- Porting note: projections mul & one not found, removed [simps] and added theorems manually
 -- @[simps (config := .lemmasOnly) one]
+@[stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
@@ -740,24 +731,11 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
   right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
 
+/-- See also `Finite.algHom` -/
+instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
+  Finite.of_injective _ AlgEquiv.coe_algHom_injective
+
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
-variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
-
-@[deprecated map_prod (since := "2024-06-20")]
-protected theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
-  map_prod _ f s
-
-@[deprecated map_finsupp_prod (since := "2024-06-20")]
-protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
-    e (f.prod g) = f.prod fun i a => e (g i a) :=
-  map_finsupp_prod _ f g
-
-end CommSemiring
 
 section Ring
 

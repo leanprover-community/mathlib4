@@ -3,7 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.LocalRing.Basic
 
@@ -35,8 +36,6 @@ A `Subalgebra` is closed under all operations except `⁻¹`,
 intermediate field, field extension
 -/
 
-
-open Polynomial
 
 open Polynomial
 
@@ -77,7 +76,7 @@ instance : SubfieldClass (IntermediateField K L) L where
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
---@[simp] Porting note (#10618): simp can prove it
+--@[simp] Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -323,9 +322,11 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
     (F : IntermediateField K L) : SMulCommClass X F Y :=
   inferInstanceAs (SMulCommClass X F.toSubfield Y)
 
---note: setting this istance the default priority may trigger trouble to synthize instance
---for field extension with more than one intermedaite field, example : in a field extension `F/E`,
---`K₁ ≤ K₂` are of type `intermediatefield F E`, the instance `IsScalarTower K₁ K₂ E`
+-- note: giving this instance the default priority may trigger trouble with synthesizing instances
+-- for field extensions with more than one intermediate field. For example, in a field extension
+-- `F/E`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
+-- for `IsScalarTower K₁ K₂ E` to trigger a search for `IsScalarTower E K₂ E` which may
+-- take a long time to fail.
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
 instance (priority := 900) [SMul X Y] [SMul L X] [SMul L Y] [IsScalarTower L X Y]
     (F : IntermediateField K L) : IsScalarTower F X Y :=
@@ -462,13 +463,13 @@ def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E �
 
 /- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
   led to a timeout. -/
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
     (a : E.map e.toAlgHom) : ↑((intermediateFieldMap e E).symm a) = e.symm a :=
@@ -611,6 +612,19 @@ theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
+
+/--The algEquiv between an intermediate field and its lift-/
+def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
+  toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
+  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
+    (liftAlgEquiv F x).1 = x := rfl
 
 section RestrictScalars
 

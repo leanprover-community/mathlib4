@@ -17,10 +17,7 @@ We show that the following properties of continuous maps are local at the target
 
 -/
 
-
-open TopologicalSpace Set Filter
-
-open Topology Filter
+open Filter Set TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 variable {ι : Type*} {U : ι → Opens β}
@@ -35,7 +32,7 @@ theorem Set.restrictPreimage_isInducing (s : Set β) (h : IsInducing f) :
 @[deprecated (since := "2024-10-28")]
 alias Set.restrictPreimage_inducing := Set.restrictPreimage_isInducing
 
-alias IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
+alias Topology.IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
 
 @[deprecated (since := "2024-10-28")] alias Inducing.restrictPreimage := IsInducing.restrictPreimage
 
@@ -46,7 +43,7 @@ theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
 @[deprecated (since := "2024-10-26")]
 alias Set.restrictPreimage_embedding := Set.restrictPreimage_isEmbedding
 
-alias IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
+alias Topology.IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.restrictPreimage := IsEmbedding.restrictPreimage
@@ -59,7 +56,7 @@ theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f
 @[deprecated (since := "2024-10-18")]
 alias Set.restrictPreimage_openEmbedding := Set.restrictPreimage_isOpenEmbedding
 
-alias IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
+alias Topology.IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.restrictPreimage := IsOpenEmbedding.restrictPreimage
@@ -72,7 +69,7 @@ theorem Set.restrictPreimage_isClosedEmbedding (s : Set β) (h : IsClosedEmbeddi
 @[deprecated (since := "2024-10-20")]
 alias Set.restrictPreimage_closedEmbedding := Set.restrictPreimage_isClosedEmbedding
 
-alias IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
+alias Topology.IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.restrictPreimage := IsClosedEmbedding.restrictPreimage
@@ -85,7 +82,7 @@ theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
       simpa [isClosed_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
-@[deprecated (since := "2024-04-02")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-02")]
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
     IsClosedMap (s.restrictPreimage f) := H.restrictPreimage s
 
@@ -97,7 +94,7 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
       simpa [isOpen_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
-@[deprecated (since := "2024-04-02")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-02")]
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
     IsOpenMap (s.restrictPreimage f) := H.restrictPreimage s
 
@@ -119,7 +116,7 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
   -- Porting note: rewrote to avoid ´simp´ issues
   rw [isOpen_iff_inter_of_iSup_eq_top hU s]
   refine forall_congr' fun i => ?_
-  rw [(U _).2.isOpenEmbedding_subtypeVal.open_iff_image_open]
+  rw [(U _).2.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen]
   erw [Set.image_preimage_eq_inter_range]
   rw [Subtype.range_coe, Opens.carrier_eq_coe]
 
@@ -187,6 +184,47 @@ theorem isEmbedding_iff_of_iSup_eq_top (h : Continuous f) :
   · apply Set.injective_iff_injective_of_iUnion_eq_univ
     convert congr_arg SetLike.coe hU
     simp
+
+omit hU in
+/--
+Given a continuous map `f : X → Y` between topological spaces.
+Suppose we have an open cover `V i` of the range of `f`, and an open cover `U i` of `X` that is
+coarser than the pullback of `V` under `f`.
+To check that `f` is an embedding it suffices to check that `U i → Y` is an embedding for all `i`.
+-/
+theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
+    {X Y} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) (h : Continuous f) {ι : Type*}
+    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U : _))
+    (V : ι → Type*) [∀ i, TopologicalSpace (V i)]
+    (iV : ∀ i, V i → X) (hiV : ∀ i, Continuous (iV i)) (hV : ∀ i, f ⁻¹' U i ⊆ Set.range (iV i))
+    (hV' : ∀ i, IsEmbedding (f ∘ iV i)) : IsEmbedding f := by
+  wlog hU' : iSup U = ⊤
+  · let f₀ : X → Set.range f := fun x ↦ ⟨f x, ⟨x, rfl⟩⟩
+    suffices IsEmbedding f₀ from IsEmbedding.subtypeVal.comp this
+    have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
+        Opens (Set.range f)) = ⊤ := by
+      rw [← top_le_iff]
+      simpa [Set.range_subset_iff, SetLike.le_def] using hU
+    refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
+    · fun_prop
+    · rw [hU'']; simp
+    · exact hV
+    · exact fun i ↦ IsEmbedding.of_comp (by fun_prop) continuous_subtype_val (hV' i)
+  rw [isEmbedding_iff_of_iSup_eq_top hU' h]
+  intro i
+  let f' := (Subtype.val ∘ (f ⁻¹' U i).restrictPreimage (iV i))
+  have : IsEmbedding f' :=
+    IsEmbedding.subtypeVal.comp ((IsEmbedding.of_comp (hiV i) h (hV' _)).restrictPreimage _)
+  have hf' : Set.range f' = f ⁻¹' U i := by
+    simpa [f', Set.range_comp, Set.range_restrictPreimage] using hV i
+  let e := (Homeomorph.ofIsEmbedding _ this).trans (Homeomorph.setCongr hf')
+  refine IsEmbedding.of_comp (by fun_prop) continuous_subtype_val ?_
+  convert ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
+  ext x
+  obtain ⟨x, rfl⟩ := e.surjective x
+  simp
+  rfl
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_iff_embedding_of_iSup_eq_top := isEmbedding_iff_of_iSup_eq_top

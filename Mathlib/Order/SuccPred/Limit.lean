@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Successor and predecessor limits
@@ -53,10 +53,10 @@ theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬IsSuccPrelimit a ↔ �
 alias not_isSuccLimit_iff_exists_covBy := not_isSuccPrelimit_iff_exists_covBy
 
 @[simp]
-theorem isSuccPrelimit_of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
+theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
 
-@[deprecated isSuccPrelimit_of_dense (since := "2024-09-05")]
-alias isSuccLimit_of_dense := isSuccPrelimit_of_dense
+@[deprecated (since := "2024-09-30")] alias isSuccPrelimit_of_dense := IsSuccPrelimit.of_dense
+@[deprecated (since := "2024-09-05")] alias isSuccLimit_of_dense := IsSuccPrelimit.of_dense
 
 end LT
 
@@ -129,6 +129,12 @@ theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelim
 
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha
+
+/-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
+between `j` and `i`. -/
+noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) :
+    Ioo j i :=
+  Classical.indefiniteDescription _ ((not_covBy_iff hj).mp <| hi j)
 
 section NoMaxOrder
 
@@ -327,10 +333,11 @@ theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬IsPredPrelimit a ↔ �
 @[deprecated not_isPredPrelimit_iff_exists_covBy (since := "2024-09-05")]
 alias not_isPredLimit_iff_exists_covBy := not_isPredPrelimit_iff_exists_covBy
 
-theorem isPredPrelimit_of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
+@[simp]
+theorem IsPredPrelimit.of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
 
-@[deprecated isPredPrelimit_of_dense (since := "2024-09-05")]
-alias isPredLimit_of_dense := isPredPrelimit_of_dense
+@[deprecated (since := "2024-09-30")] alias isPredPrelimit_of_dense := IsPredPrelimit.of_dense
+@[deprecated (since := "2024-09-05")] alias isPredLimit_of_dense := IsPredPrelimit.of_dense
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by

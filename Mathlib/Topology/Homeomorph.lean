@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Support
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Homeomorphisms
@@ -27,9 +27,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
-open Set Filter Function
-
-open Topology
+open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 
@@ -229,7 +227,7 @@ alias embedding := isEmbedding
 noncomputable def ofIsEmbedding (f : X → Y) (hf : IsEmbedding f) : X ≃ₜ Set.range f where
   continuous_toFun := hf.continuous.subtype_mk _
   continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
-  toEquiv := Equiv.ofInjective f hf.inj
+  toEquiv := Equiv.ofInjective f hf.injective
 
 @[deprecated (since := "2024-10-26")]
 alias ofEmbedding := ofIsEmbedding
@@ -393,6 +391,15 @@ theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :
 @[simp]
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
+
+@[simp]
+theorem comap_coclosedCompact (h : X ≃ₜ Y) : comap h (coclosedCompact Y) = coclosedCompact X :=
+  (hasBasis_coclosedCompact.comap h).eq_of_same_basis <| by
+    simpa [comp_def] using hasBasis_coclosedCompact.comp_surjective h.injective.preimage_surjective
+
+@[simp]
+theorem map_coclosedCompact (h : X ≃ₜ Y) : map h (coclosedCompact X) = coclosedCompact Y := by
+  rw [← h.comap_coclosedCompact, map_comap_of_surjective h.surjective]
 
 /-- If the codomain of a homeomorphism is a locally connected space, then the domain is also
 a locally connected space. -/
@@ -696,7 +703,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
--- Porting note (#11215): TODO: align the order of universes with `Equiv.ulift`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X where
   continuous_toFun := continuous_uLift_down
@@ -796,7 +803,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 -/
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
-  -- Porting note (#11215): TODO: by continuity!
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
@@ -887,7 +894,7 @@ lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
-@[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
+@[simps toEquiv] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: was `@[simps]`
 def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf.continuous
@@ -998,7 +1005,7 @@ lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ 
 lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f ∧ Surjective f where
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
-    h.1.inj, h.2⟩
+    h.1.injective, h.2⟩
 
 @[deprecated (since := "2024-10-26")]
 alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective

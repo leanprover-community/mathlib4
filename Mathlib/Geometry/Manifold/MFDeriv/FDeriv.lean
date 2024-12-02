@@ -35,6 +35,10 @@ theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ Uniqu
 
 alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDiffOn_iff_uniqueDiffOn
 
+theorem ModelWithCorners.uniqueMDiffOn {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) : UniqueMDiffOn 𝓘(𝕜, E) (Set.range I) :=
+  I.uniqueDiffOn.uniqueMDiffOn
+
 @[simp, mfld_simps]
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl

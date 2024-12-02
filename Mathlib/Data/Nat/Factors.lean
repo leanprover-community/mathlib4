@@ -30,8 +30,6 @@ open Nat
 
 namespace Nat
 
-attribute [instance 0] instBEqNat
-
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
