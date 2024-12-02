@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Group.Submonoid.Membership
 
 /-!
 # Products of associated, prime, and irreducible elements.
