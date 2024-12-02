@@ -318,13 +318,13 @@ lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag (p : Sym2 (ι₁ × ι₂)) :
   · intro h
     aesop
 
-lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag2 [LinearOrder ι₁] [LinearOrder ι₂]
+lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag2
     (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔
     ((symOffDiagXor p) ∨ (symOffDiag p)) ∧
       ¬ ((symOffDiagXor p) ∧ (symOffDiag p)) := by
   rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, xor_iff_or_and_not_and]
 
-lemma not_IsDiag_iff_symOffDiagXor_or_symOffDiag [LinearOrder ι₁] [LinearOrder ι₂]
+lemma not_IsDiag_iff_symOffDiagXor_or_symOffDiag
     (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔ (symOffDiagXor p) ∨ (symOffDiag p) := by
   constructor
   · intro h
