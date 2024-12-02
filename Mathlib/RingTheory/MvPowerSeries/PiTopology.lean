@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
+Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
+
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
@@ -29,14 +30,14 @@ It is *not* the adic topology in general.
 ## Main results
 
 - `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
-`MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
-of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
+  `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
+  of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 
 - `MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f`
-converge to zero iff the constant coefficient of `f` is nilpotent.
+  converge to zero iff the constant coefficient of `f` is nilpotent.
 
 - `MvPowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
-series coverges to itself.
+  series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 
@@ -108,7 +109,7 @@ theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing (R : Type*) [TopologicalSpace R] [Ring R] [TopologicalRing R] :
+theorem instTopologicalRing [Ring R] [TopologicalRing R] :
     TopologicalRing (MvPowerSeries σ R) :=
   { instTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
@@ -182,7 +183,7 @@ variable [Semiring R]
 
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
-    HasSum (fun d ↦ monomial R d (coeff R d f)) f := by
+    HasSum (fun d : σ →₀ ℕ => monomial R d (coeff R d f)) f := by
   rw [Pi.hasSum]
   intro d
   convert hasSum_single d ?_ using 1
@@ -191,7 +192,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
-    f = tsum fun d ↦ monomial R d (coeff R d f) :=
+    f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
 
 end Topology
