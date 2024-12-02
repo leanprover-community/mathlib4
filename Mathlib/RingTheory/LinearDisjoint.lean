@@ -74,7 +74,7 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   linear disjointness is symmetric under some commutative conditions.
 
 - `Subalgebra.LinearDisjoint.map`:
-  linear disjointness is preserved by injective ring homomorphism.
+  linear disjointness is preserved by injective algebra homomorphisms.
 
 - `Subalgebra.LinearDisjoint.bot_left`, `Subalgebra.LinearDisjoint.bot_right`:
   the image of `R` in `S` is linearly disjoint with any other subalgebras.
@@ -155,7 +155,7 @@ theorem linearDisjoint_comm_of_commute
 
 namespace LinearDisjoint
 
-/-- Linear disjointness is preserved by injective ring homomorphism. -/
+/-- Linear disjointness is preserved by injective algebra homomorphisms. -/
 theorem map (H : A.LinearDisjoint B) {T : Type w} [Semiring T] [Algebra R T]
     (f : S →ₐ[R] T) (hf : Function.Injective f) : (A.map f).LinearDisjoint (B.map f) :=
   Submodule.LinearDisjoint.map H f hf

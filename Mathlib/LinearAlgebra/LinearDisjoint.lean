@@ -187,7 +187,7 @@ theorem linearDisjoint_comm_of_commute
 
 namespace LinearDisjoint
 
-/-- Linear disjointness is preserved by injective ring homomorphism. -/
+/-- Linear disjointness is preserved by injective algebra homomorphisms. -/
 theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
     {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) (hf : Function.Injective f) :
     (M.map f).LinearDisjoint (N.map f) := by
