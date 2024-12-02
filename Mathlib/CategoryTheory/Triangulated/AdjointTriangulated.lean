@@ -2,6 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Triangulated.AdjointCommShift
+import Mathlib.CategoryTheory.Triangulated.UliftLemmas
 
 noncomputable section
 
@@ -19,11 +20,20 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁,u₁} C] [Category.{v�
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D] {F : C ⥤ D} {G : D ⥤ C} [F.CommShift ℤ] [G.CommShift ℤ]
 
+open ComposableArrows in
 lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
     [CommShift.adjunction_compat ℤ adj] [F.IsTriangulated] (T : Triangle D)
     (dT : T ∈ distinguishedTriangles) (X : C) :
     (homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
-      (G.mapTriangle.obj T)).Exact := sorry
+    (G.mapTriangle.obj T)).Exact := by
+  apply Exact.exact_of_comp_exact (AddCommGrp.uliftFunctor.{v₁, max v₁ v₂})
+  set e : homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op X))
+    (G.mapTriangle.obj T) ⋙ AddCommGrp.uliftFunctor.{v₁, max v₁ v₂} ≅
+    homologySequenceComposableArrows₅_start_zero (preadditiveCoyoneda.obj (op (F.obj X))) T
+    ⋙ AddCommGrp.uliftFunctor.{v₂, max v₁ v₂} := sorry
+  rw [exact_iff_of_iso e]
+  exact (homologySequenceComposableArrows₅_start_zero_exact (preadditiveCoyoneda.obj
+    (op (F.obj X))) _ dT).comp_exact _
 
 open ComposableArrows in
 def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjunction_compat ℤ adj]
