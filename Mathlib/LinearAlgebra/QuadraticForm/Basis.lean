@@ -319,16 +319,21 @@ lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag [LinearOrder ι₁] [LinearOrd
   · intro h
     aesop
 
+lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag2 [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔
+    ((symOffDiagXor p) ∨ (symOffDiag p)) ∧
+      ¬ ((symOffDiagXor p) ∧ (symOffDiag p)) := by
+  rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, xor_iff_or_and_not_and]
+
 lemma not_IsDiag_iff_symOffDiagXor_or_symOffDiag [LinearOrder ι₁] [LinearOrder ι₂]
     (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔ (symOffDiagXor p) ∨ (symOffDiag p) := by
   constructor
   · intro h
-    exact ((symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower2 p).mp h).1
+    apply ((not_IsDiag_iff_symOffDiagXor_xor_symOffDiag2 p).mp h).1
   · intro h
     cases' h with h1 h2
     · apply foo3 _ h1
     · apply foo4 _ h2
-
 
 lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
     p.IsDiag ∨ symOffDiagXor p ∨ (Xor' (symOffDiagUpper p) (symOffDiagLower p)) := by
