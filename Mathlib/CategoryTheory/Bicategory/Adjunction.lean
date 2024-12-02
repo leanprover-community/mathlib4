@@ -273,6 +273,26 @@ def mkOfAdjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a
 
 end Equivalence
 
+section CancelingLemmas
+
+/--
+In a bicategory, if a morphism `f` is an equivalence, then right-cancellation is possible in the
+sense that `g₁ ≫ f ≅ g₂ ≫ f` induces `g₁ ≅ g₂`.
+-/
+def isoCancelRight {C : Type*} [Bicategory C] {c d e : C} {f : Equivalence d e} {g₁ g₂ : c ⟶ d}
+    (α : g₁ ≫ f.hom ≅ g₂ ≫ f.hom) : g₁ ≅ g₂ :=
+  isoCancelRightOfWeaklyLeftInvertible f.unit α
+
+/--
+In a bicategory, if a morphism `f` is an equivalence, then left-cancellation is possible in the
+sense that `f ≫ g₁ ≅ f ≫ g₂` induces `g₁ ≅ g₂`.
+-/
+def isoCancelLeft {C : Type*} [Bicategory C] {c d e : C} {f : Equivalence e d} {g₁ g₂ : d ⟶ c}
+    (α : f.hom ≫ g₁ ≅ f.hom ≫ g₂) : g₁ ≅ g₂ :=
+  isoCancelLeftOfWeaklyRightInvertible f.counit α
+
+end CancelingLemmas
+
 end
 
 noncomputable
