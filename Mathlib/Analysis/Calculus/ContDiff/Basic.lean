@@ -55,20 +55,17 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-! ### Constants -/
 
 @[simp]
-theorem iteratedFDerivWithin_zero_fun (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} :
-    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s x = 0 := by
-  induction i generalizing x with
+theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s = 0 := by
+  induction i with
   | zero => ext; simp
   | succ i IH =>
-    ext m
-    rw [iteratedFDerivWithin_succ_apply_left, fderivWithin_congr (fun _ ↦ IH) (IH hx)]
-    rw [fderivWithin_const_apply _ (hs x hx)]
-    rfl
+    ext x m
+    simp [iteratedFDerivWithin_succ_apply_left, fderivWithin_const, IH, Pi.zero_def]
 
 @[simp]
 theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦ (0 : F)) = 0 :=
-  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_zero_fun uniqueDiffOn_univ (mem_univ x)
+  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
