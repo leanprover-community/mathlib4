@@ -176,35 +176,22 @@ lemma topologicalGroup_of_hasBasis [TopologicalSpace G] [ContinuousConstSMul G G
 ### Constructing a group topology from `Filter.IsGroupBasis`
 -/
 
-/-- The neighborhood function of a group filter basis. -/
-@[to_additive "The neighborhood function of an additive group filter basis."]
-def N : G → Filter G := fun x ↦ x • hB.filter
-
-@[to_additive (attr := simp)]
-theorem N_one : hB.N 1 = hB.filter := by
-  simp only [N, one_smul]
-
-@[to_additive]
-theorem hasBasis_N (x : G) :
-    HasBasis (hB.N x) p (fun i ↦ x • (s i)) :=
-  hB.hasBasis.map (fun y ↦ x * y)
-
 /-- The topological space structure coming from a group filter basis. -/
 @[to_additive "The topological space structure coming from an additive group filter basis."]
 def topology : TopologicalSpace G :=
-  TopologicalSpace.mkOfNhds hB.N
+  TopologicalSpace.mkOfNhds (· • hB.filter)
 
 @[to_additive]
-theorem nhds_eq {x₀ : G} : @nhds G hB.topology x₀ = hB.N x₀ := by
-  apply TopologicalSpace.nhds_mkOfNhds_of_hasBasis hB.hasBasis_N
+theorem nhds_eq {x₀ : G} : @nhds G hB.topology x₀ = x₀ • hB.filter := by
+  apply TopologicalSpace.nhds_mkOfNhds_of_hasBasis (fun x ↦ hB.hasBasis.map (x * ·))
   · intro a i hi
     exact ⟨1, hB.one hi, mul_one a⟩
   · intro a i hi
     rcases hB.mul hi with ⟨j, hj, hji⟩
-    filter_upwards [hB.hasBasis_N a |>.mem_of_mem hj]
+    filter_upwards [hB.hasBasis.map _ |>.mem_of_mem hj]
     rintro _ ⟨x, hx, rfl⟩
     calc
-      (a * x) • (s j) ∈ hB.N (a * x) := hB.hasBasis_N _ |>.mem_of_mem hj
+      (a * x) • (s j) ∈ (a * x) • hB.filter := smul_set_mem_smul_filter (hB.hasBasis.mem_of_mem hj)
       _ = a • x • (s j) := smul_smul .. |>.symm
       _ ⊆ a • (s j * s j) := smul_set_mono <| smul_set_subset_smul hx
       _ ⊆ a • (s i) := smul_set_mono hji
@@ -212,13 +199,13 @@ theorem nhds_eq {x₀ : G} : @nhds G hB.topology x₀ = hB.N x₀ := by
 @[to_additive]
 theorem nhds_one_eq :
     @nhds G hB.topology (1 : G) = hB.filter := by
-  rw [hB.nhds_eq, hB.N_one]
+  rw [hB.nhds_eq, one_smul]
 
 @[to_additive]
 theorem nhds_hasBasis (x₀ : G) :
     HasBasis (@nhds G hB.topology x₀) p (fun i ↦ x₀ • (s i)) := by
   rw [hB.nhds_eq]
-  apply hB.hasBasis_N
+  apply hB.hasBasis.map _
 
 @[to_additive]
 theorem nhds_one_hasBasis :
@@ -240,7 +227,7 @@ instance (priority := 100) continuousConstSMul :
     @ContinuousConstSMul G G hB.topology _ := by
   letI := hB.topology
   refine ⟨?_⟩
-  simp_rw [continuous_iff_continuousAt, ContinuousAt, Tendsto, nhds_eq, N, ← Filter.map_smul,
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, Tendsto, nhds_eq, ← Filter.map_smul,
     smul_eq_mul, map_map, comp_mul_left, le_refl, implies_true]
 
 -- See note [lower instance priority]
