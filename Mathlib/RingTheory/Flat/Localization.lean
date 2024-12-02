@@ -58,7 +58,8 @@ private lemma aux (I : Ideal R) (s : Submonoid R) :
   refine linearMap_ext s (mkLinearMap s _) (mkLinearMap s _) ?_
   ext m i
   rw [AlgebraTensorModule.curry_apply, curry_apply, restrictScalars_apply, LinearMap.comp_apply,
-    restrictScalars_apply, mkLinearMap_apply]
+    restrictScalars_apply, mkLinearMap_apply, AlgebraTensorModule.curry_apply, curry_apply,
+    restrictScalars_apply]
   simpa [-mkLinearMap_apply, IsBaseChange.equiv_symm_apply, IsBaseChange.equiv_tmul] using
     (mkLinearMap_apply _ _ _).symm.trans (map_smul (mkLinearMap s M) _ _)
 
