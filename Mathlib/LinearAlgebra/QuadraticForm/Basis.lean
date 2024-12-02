@@ -719,7 +719,7 @@ lemma polar_lift_eq_zero_on_symOffDiagLower
     (h: p ∈ Finset.filter symOffDiagLower s) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    polar_lift Q bm x p = 0 := by
+    Q.polar_lift bm x p = 0 := by
   induction' p with i j
   simp_rw [polar_lift, Sym2.lift_mk]
   rw [Finset.mem_filter, symOffDiagLower_iff_proj_eq] at h
@@ -859,6 +859,21 @@ theorem sum2 (x : M₁ ⊗[R] M₂) :
   simp_rw [← Finset.sum_disjoint_filters_on_set  _ _ h1]
   simp_rw [symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
 
+theorem sum2a (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p) =
+    ∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  simp_rw [← sum2]
+  simp only [self_eq_add_right]
+  rw [← Finset.sum_empty]
+  rw [Finset.sum_subset (Finset.empty_subset _) (fun p hp₁ _ =>
+    polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s x p hp₁)]
+
 theorem qt_expansion20 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
@@ -886,10 +901,8 @@ theorem qt_expansion22 (x : M₁ ⊗[R] M₂) :
     let s := (bm.repr x).support.sym2
     ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
         (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
-      + (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p)
-      + (∑ p ∈ s with symOffDiagLower p, Q.polar_lift bm x p) = Q x := by
-  simp_rw [add_assoc, sum2, sum1, qt_expansion20]
-
+      + (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p) = Q x := by
+  simp_rw [add_assoc, sum2a, sum1, qt_expansion20]
 
 -- #check Finset.sum_disjUnion
 
