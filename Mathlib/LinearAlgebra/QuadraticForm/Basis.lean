@@ -275,6 +275,51 @@ lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [Lin
     · apply foo _ h1
     · apply foo2 _ h2
 
+lemma foo3 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagXor p) :
+    ¬ p.IsDiag := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  aesop
+
+lemma foo4 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiag p) :
+    ¬ p.IsDiag := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  aesop
+
+
+lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔ Xor' (symOffDiagXor p) (symOffDiag p) := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  rw [xor_iff_or_and_not_and]
+  constructor
+  · intro h
+    simp_all only [Sym2.isDiag_iff_proj_eq, Prod.mk.injEq, not_and,
+      symOffDiagXor_iff_proj_eq, symOffDiag_iff_proj_eq, ne_eq, Decidable.not_not]
+    apply And.intro
+    · rw [xor_iff_or_and_not_and]
+      simp_all only [not_and, not_false_eq_true, implies_true, and_true]
+      have e1 : i₁ = j₁ ∨ ¬ i₁ = j₁ := eq_or_ne i₁ j₁
+      cases' e1 with h1 h2
+      · apply Or.inl
+        apply Or.inl h1
+      · cases' (eq_or_ne i₂ j₂) with h3 h4
+        · apply Or.inl
+          apply Or.inr h3
+        · apply Or.inr
+          constructor
+          · exact h2
+          · apply h4
+    · intro h1 h2
+      aesop
+  · intro h
+    aesop
+
+
 
 lemma filter_partition [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
     p.IsDiag ∨ symOffDiagXor p ∨ (Xor' (symOffDiagUpper p) (symOffDiagLower p)) := by
