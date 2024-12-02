@@ -141,7 +141,7 @@ theorem aeval_repr (p) : aeval x (hx.repr p) = p :=
   Subtype.ext_iff.1 (AlgEquiv.apply_symm_apply hx.aevalEquiv p)
 
 theorem aeval_comp_repr : (aeval x).comp hx.repr = Subalgebra.val _ :=
-  AlgHom.ext <| hx.aeval_repr
+  AlgHom.ext hx.aeval_repr
 
 end repr
 
