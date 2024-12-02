@@ -108,15 +108,11 @@ theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.In
     (AlgebraicIndependent R fun x : s => f x) ↔ AlgebraicIndependent R fun x : f '' s => (x : A) :=
   algebraicIndependent_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
 
-section Subtype
+namespace AlgebraicIndependent
 
-theorem AlgebraicIndependent.mono {t s : Set A} (h : t ⊆ s)
+theorem mono {t s : Set A} (h : t ⊆ s)
     (hx : AlgebraicIndependent R ((↑) : s → A)) : AlgebraicIndependent R ((↑) : t → A) := by
   simpa [Function.comp] using hx.comp (inclusion h) (inclusion_injective h)
-
-end Subtype
-
-namespace AlgebraicIndependent
 
 section repr
 

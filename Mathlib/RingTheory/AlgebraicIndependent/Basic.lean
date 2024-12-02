@@ -301,19 +301,9 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
   · exact algebraicIndependent_sUnion_of_directed hcn chainc.directedOn (fun x hxc ↦ (hc hxc).1)
   exact fun x ⟨w, hyc, hwy⟩ ↦ (hc hyc).2 hwy
 
-namespace AlgebraicIndependent
-
-section repr
-
-variable (hx : AlgebraicIndependent R x)
-include hx
-
-theorem repr_ker : RingHom.ker (hx.repr : adjoin R (range x) →+* MvPolynomial ι R) = ⊥ :=
+theorem AlgebraicIndependent.repr_ker (hx : AlgebraicIndependent R x) :
+    RingHom.ker (hx.repr : adjoin R (range x) →+* MvPolynomial ι R) = ⊥ :=
   (RingHom.injective_iff_ker_eq_bot _).1 (AlgEquiv.injective _)
-
-end repr
-
-end AlgebraicIndependent
 
 -- TODO - make this an `AlgEquiv`
 /-- The isomorphism between `MvPolynomial (Option ι) R` and the polynomial ring over
