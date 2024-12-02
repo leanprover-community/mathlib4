@@ -31,6 +31,7 @@ namespace AlgebraicIndependent
 
 section reprField
 
+variable {ι : Type*}
 variable {F E : Type*} {x : ι → E} [Field F] [Field E] [Algebra F E] (hx : AlgebraicIndependent F x)
 include hx
 
