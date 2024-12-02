@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Division of univariate polynomials
@@ -15,7 +16,6 @@ The main defs are `divByMonic` and `modByMonic`.
 The compatibility between these is given by `modByMonic_add_div`.
 We also define `rootMultiplicity`.
 -/
-
 
 noncomputable section
 
@@ -592,16 +592,6 @@ theorem dvd_iff_isRoot : X - C a ∣ p ↔ IsRoot p a :=
 theorem X_sub_C_dvd_sub_C_eval : X - C a ∣ p - C (p.eval a) := by
   rw [dvd_iff_isRoot, IsRoot, eval_sub, eval_C, sub_self]
 
-theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]} :
-    P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
-  rw [Ideal.mem_span_pair]
-  constructor <;> intro h
-  · rcases h with ⟨_, _, rfl⟩
-    simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, add_zero, mul_zero, sub_self]
-  · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
-    rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩
-    exact ⟨C p, q, by rw [mul_comm, mul_comm q, eq_add_of_sub_eq' hq, hp, C_mul]⟩
-
 -- TODO: generalize this to Ring. In general, 0 can be replaced by any element in the center of R.
 theorem modByMonic_X (p : R[X]) : p %ₘ X = C (p.eval 0) := by
   rw [← modByMonic_X_sub_C_eq_C_eval, C_0, sub_zero]
@@ -614,10 +604,6 @@ theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b :=
   suffices X - C b ∣ p - C (p.eval b) by
     simpa only [coe_evalRingHom, eval_sub, eval_X, eval_C] using (evalRingHom a).map_dvd this
   simp [dvd_iff_isRoot]
-
-theorem ker_evalRingHom (x : R) : RingHom.ker (evalRingHom x) = Ideal.span {X - C x} := by
-  ext y
-  simp [Ideal.mem_span_singleton, dvd_iff_isRoot, RingHom.mem_ker]
 
 @[simp]
 theorem rootMultiplicity_eq_zero_iff {p : R[X]} {x : R} :

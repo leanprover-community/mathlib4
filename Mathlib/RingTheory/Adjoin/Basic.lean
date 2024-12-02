@@ -22,6 +22,7 @@ adjoin, algebra
 
 -/
 
+assert_not_exists Polynomial
 
 universe uR uS uA uB
 
