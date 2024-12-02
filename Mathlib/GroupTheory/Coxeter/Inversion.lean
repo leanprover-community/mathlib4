@@ -459,7 +459,6 @@ lemma getElem_succ_leftInvSeq_alternatingWord
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
       cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
   simp only [MulAut.conj]
-
   simp [listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc]
   rw[getElem_alternatingWord_swapIndices i j (2 * p) k]
   omega
@@ -482,6 +481,5 @@ theorem getElem_leftInvSeq_alternatingWord
     alternatingWord_succ' j i, wordProd_cons]
     rw[(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
     simp[mul_assoc]
-
 
 end CoxeterSystem

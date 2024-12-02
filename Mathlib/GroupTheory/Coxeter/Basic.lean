@@ -422,7 +422,6 @@ private lemma getElem_alternatingWord_aux (i j : B) (p : ℕ)
     revert k
     rw [alternatingWord_succ' i j n]
     rintro ⟨k, hk⟩
-
     match k with
     | 0 =>
       by_cases h2 : Even n
@@ -451,7 +450,6 @@ lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) 
    (alternatingWord i j p)[k+1]'(by simp; exact h) =
    (alternatingWord j i p)[k]'(by simp [h]; omega) := by
   rw[ getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
-
   by_cases h_even : Even (p + k)
   · rw[if_pos h_even, ← add_assoc]
     simp [Even.add_one h_even]
@@ -467,7 +465,6 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     | succ k h' =>
       have hk : k < 2 * p := by omega
       apply h' at hk
-
       by_cases h_even : Even k
       · simp [h_even] at hk
         simp [h_even, Nat.not_even_iff_odd.mpr (Even.add_one h_even)]
