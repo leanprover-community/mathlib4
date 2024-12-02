@@ -585,7 +585,11 @@ import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.MonoidAlgebra.Grading
 import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Algebra.MonoidAlgebra.Lift
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Opposite
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 import Mathlib.Algebra.MvPolynomial.Basic
@@ -2475,6 +2479,7 @@ import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Encodable
+import Mathlib.Data.Finsupp.Ext
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Finsupp.Indicator
@@ -2487,6 +2492,8 @@ import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.PWO
 import Mathlib.Data.Finsupp.Pointwise
+import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Data.Finsupp.WellFounded
