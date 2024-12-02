@@ -77,6 +77,8 @@ def fiberwiseColimit : C ⥤ H where
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
 variable (H) (F) in
+/-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor
+`(Grothendieck F ⥤ H) ⥤ (C ⥤ H)` between functor categories. -/
 @[simps]
 def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤ H) ⥤ (C ⥤ H) where
   obj G := fiberwiseColimit G
@@ -207,13 +209,18 @@ noncomputable section FiberwiseColim
 
 variable [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasColimitsOfShape C H]
 
+/-- The isomorphism `colimitFiberwiseColimitIso` induces an isomorphism of functors `(J ⥤ C) ⥤ C`
+between `fiberwiseColim F H ⋙ colim` and `colim`. -/
 @[simps!]
 def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
   NatIso.ofComponents (fun G => colimitFiberwiseColimitIso G)
     fun _ => by (iterate 2 apply colimit.hom_ext; intro); simp
 
+/-- Composing `fiberwiseColim F H` with the evaluation functor `(evaluation C H).obj c` is
+naturally isomorphic to precomposing the Grothendieck inclusion `Grothendieck.ι` to `colim`. -/
 @[simps!]
-def fiberwiseColimcompEvaluationIso (c : C) : fiberwiseColim F H ⋙ (evaluation C H).obj c ≅
+def fiberwiseColimcompEvaluationIso (c : C) :
+    fiberwiseColim F H ⋙ (evaluation C H).obj c ≅
     (whiskeringLeft _ _ _).obj (Grothendieck.ι F c) ⋙ colim :=
   Iso.refl _
 
