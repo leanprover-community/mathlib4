@@ -245,6 +245,30 @@ theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D �
     whiskerRight (whiskerLeft F α) K = whiskerLeft F (whiskerRight α K) :=
   rfl
 
+/--
+If a functor `F` has a left inverse (up to natural isomorphism), then right-cancellation
+is possible in the sense that `G₁ ⋙ F ≅ G₂ ⋙ F` induces `G₁ ≅ G₂`.
+-/
+def isoCancelRightOfWeaklyLeftInvertible
+    {F : D ⥤ E} {Finv : E ⥤ D} {G₁ G₂ : C ⥤ D} (η : 𝟭 _ ≅ F ⋙ Finv)
+    (α : G₁ ⋙ F ≅ G₂ ⋙ F) : (G₁ ≅ G₂) := by
+  calc
+    G₁ ⋙ 𝟭 _ ≅ G₁ ⋙ F ⋙ Finv := isoWhiskerLeft _ η
+    _ ≅ G₂ ⋙ F ⋙ Finv := isoWhiskerRight α _
+    _ ≅ G₂ ⋙ 𝟭 _ := isoWhiskerLeft _ η.symm
+
+/--
+If a functor `F` has a right inverse (up to natural isomorphism), then left-cancellation
+is possible in the sense that `F ⋙ G₁ ≅ F ⋙ G₂` induces `G₁ ≅ G₂`.
+-/
+def isoCancelLeftOfWeaklyRightInvertible
+    {F : E ⥤ D} {Finv : D ⥤ E} {G₁ G₂ : D ⥤ C} (η : 𝟭 _ ≅ Finv ⋙ F)
+    (α : F ⋙ G₁ ≅ F ⋙ G₂) : (G₁ ≅ G₂) := by
+  calc
+    𝟭 _ ⋙ G₁ ≅ Finv ⋙ F ⋙ G₁ := isoWhiskerRight η _
+    _ ≅ Finv ⋙ F ⋙ G₂ := isoWhiskerLeft _ α
+    _ ≅ 𝟭 _ ⋙ G₂ := isoWhiskerRight η.symm _
+
 end
 
 namespace Functor
