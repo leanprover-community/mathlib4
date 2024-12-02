@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.PUnitInstances.Module
