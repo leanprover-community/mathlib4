@@ -42,11 +42,13 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     intros
     apply NatTrans.ext
     ext
-    simp [add_smul]
+    simp only [AdditiveFunctor.of_fst, ModuleCat.forget₂_obj, AddCommGrp.coe_of,
+      AddCommGrp.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, add_smul]
     rfl
   map_mul' := by
     intros
     apply NatTrans.ext
     ext
-    simp [mul_smul]
+    simp only [AdditiveFunctor.of_fst, ModuleCat.forget₂_obj, AddCommGrp.coe_of,
+      AddCommGrp.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
     rfl

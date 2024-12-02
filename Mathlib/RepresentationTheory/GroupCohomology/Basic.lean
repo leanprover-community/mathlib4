@@ -193,8 +193,9 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     /- Porting note: I can see I need to rewrite `LinearEquiv.coe_coe` twice to at
       least reduce the need for `symm_apply_apply` to be an `erw`. However, even `erw` refuses to
       rewrite the second `coe_coe`... -/
-    erw [LinearEquiv.symm_apply_apply, this, LinearMap.zero_apply]
-    simp
+    erw [LinearEquiv.symm_apply_apply, this]
+    simp only [LinearMap.zero_apply, ChainComplex.linearYonedaObj_X, linearYoneda_obj_obj_carrier,
+      map_zero, Pi.zero_apply, LinearMap.zero_apply]
     rfl
 
 @[simp]
