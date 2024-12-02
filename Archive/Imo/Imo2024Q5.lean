@@ -229,7 +229,7 @@ lemma find?_eq_eq_find?_le {l : List (Cell N)} {r : Fin (N + 2)} (hne : l ≠ []
     by_cases h : head.1 = r
     · simp [h]
     · have h' : ¬(r ≤ head.1) := fun hr' ↦ h (le_antisymm hf hr')
-      simp only [h, decide_False, Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, h']
+      simp only [h, decide_false, Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, h']
       rcases tail with ⟨⟩ | ⟨htail, ttail⟩
       · simp
       · simp only [List.chain'_cons] at ha
@@ -315,7 +315,7 @@ lemma Path.tail_findFstEq (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 0) :
     rcases cells with ⟨⟩ | ⟨head, tail⟩
     · simp at nonempty
     · simp only [List.head_cons] at head_first_row
-      simp only [List.find?_cons, head_first_row, hr.symm, decide_False]
+      simp only [List.find?_cons, head_first_row, hr.symm, decide_false]
       rfl
   · simp_rw [Path.tail, if_neg h]
 
@@ -329,7 +329,7 @@ lemma Path.tail_firstMonster (p : Path N) (m : MonsterData N) :
     · simp at nonempty
     · simp only [List.head_cons] at head_first_row
       simp only [List.find?_cons, head_first_row,
-        m.not_mem_monsterCells_of_fst_eq_zero head_first_row, decide_False]
+        m.not_mem_monsterCells_of_fst_eq_zero head_first_row, decide_false]
       rfl
   · simp_rw [Path.tail, if_neg h]
 
@@ -352,17 +352,17 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
     · simp only [List.head_cons] at head_first_row
       simp only [List.getElem_cons_succ] at h1
       simp only [List.length_cons, lt_add_iff_pos_left, List.length_pos_iff_ne_nil] at hl
-      simp only [m.not_mem_monsterCells_of_fst_eq_zero head_first_row, decide_False,
+      simp only [m.not_mem_monsterCells_of_fst_eq_zero head_first_row, decide_false,
         Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, head_first_row,
         Fin.zero_eq_one_iff, Nat.reduceEqDiff, Option.some_get]
-      simp only [findFstEq, head_first_row, Fin.zero_eq_one_iff, Nat.reduceEqDiff, decide_False,
+      simp only [findFstEq, head_first_row, Fin.zero_eq_one_iff, Nat.reduceEqDiff, decide_false,
         Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg] at h
       rcases tail with ⟨⟩ | ⟨htail, ttail⟩
       · simp at hl
       · simp only [List.getElem_cons_zero] at h1
         have h1' : htail.1 = 1 := by simp [Fin.ext_iff, h1]
-        simp only [h1', decide_True, List.find?_cons_of_pos, Option.get_some] at h
-        simp only [h1', h, decide_True, List.find?_cons_of_pos]
+        simp only [h1', decide_true, List.find?_cons_of_pos, Option.get_some] at h
+        simp only [h1', h, decide_true, List.find?_cons_of_pos]
   case ind p ht =>
     have h1 : (1 : Fin (N + 2)) ≠ 0 := by simp
     rw [p.tail_findFstEq h1, p.tail_firstMonster m] at ht

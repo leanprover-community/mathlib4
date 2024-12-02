@@ -106,8 +106,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
 lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] :
     IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
-      (ofHom <| Algebra.TensorProduct.includeLeftRingHom (R := R))
-      (ofHom <| Algebra.TensorProduct.includeRight.toRingHom (R := R)) where
+      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeLeftRingHom)
+      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeRight.toRingHom) where
   w := by
     ext
     simp

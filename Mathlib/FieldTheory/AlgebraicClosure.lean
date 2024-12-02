@@ -94,7 +94,7 @@ def algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     algebraicClosure F E ≃ₐ[F] algebraicClosure F K :=
   (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
-alias AlgEquiv.algebraicClosure := algebraicClosure.algEquivOfAlgEquiv
+alias _root_.AlgEquiv.algebraicClosure := algEquivOfAlgEquiv
 
 variable (F E K)
 
