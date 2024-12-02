@@ -402,7 +402,7 @@ variable {G}
 
 /-- Subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
 then `closure h ≤ closure k`. -/
-@[to_additive
+@[to_additive (attr := gcongr)
       "Additive subgroup closure of a set is monotone in its argument: if `h ⊆ k`,
       then `closure h ≤ closure k`"]
 theorem closure_mono ⦃h k : Set G⦄ (h' : h ⊆ k) : closure h ≤ closure k :=

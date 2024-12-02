@@ -207,7 +207,7 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
 lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
-  ⟨(c.length_pos size_pos').ne'⟩
+  ⟨(c.length_pos pos').ne'⟩
 
 lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c.partSize i) :=
   .of_pos (c.partSize_pos i)
@@ -792,7 +792,7 @@ noncomputable def compAlongOrderedFinpartitionL :
   refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 (fun f p ↦ ?_)
   simp only [one_mul]
   change ‖c.compAlongOrderedFinpartition f p‖ ≤ _
-  apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun v ↦ ?_)
+  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity) (fun v ↦ ?_)
   simp only [compAlongOrderFinpartition_apply]
   apply (f.le_opNorm _).trans
   rw [mul_assoc, ← c.prod_sigma_eq_prod, ← Finset.prod_mul_distrib]
