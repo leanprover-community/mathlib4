@@ -378,31 +378,6 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
 
-lemma isReduced_iff' [Nontrivial R] : P.IsReduced ↔ ∀ i j, P.root i ∈ Submodule.span R {P.root j}
-    → (P.root i = P.root j ∨ P.root i = - P.root j) := by
-  constructor
-  · intro H i j hij
-    obtain ⟨a, ha⟩ := Submodule.mem_span_singleton.mp hij
-    rw [← sub_eq_zero, sub_eq_neg_add] at ha
-    have : ¬ LinearIndependent R ![P.root i, P.root j] := by
-      rw [not_linearIndependent_iff]
-      use Finset.univ
-      use fun x ↦ match x with
-      | 0 => -1
-      | 1 => a
-      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.sum_univ_two, Fin.isValue,
-        Matrix.cons_val_zero, neg_smul, one_smul, Matrix.cons_val_one, Matrix.head_cons,
-        Finset.mem_univ, ne_eq, true_and]
-      exact ⟨ha, ⟨0, by simp only [neg_eq_zero, one_ne_zero, not_false_eq_true]⟩⟩
-    exact H i j this
-  sorry
-
-
-
-
-
-
-
 /-- The linear span of roots. -/
 abbrev rootSpan := span R (range P.root)
 
