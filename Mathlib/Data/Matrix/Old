@@ -1,0 +1,84 @@
+-- /-- Multiplying row `i` of matrix `M` by a non-zero scalar `x` and then by `x`'s multiplicative
+-- inverse will return the original matrix `M`. -/
+-- @[simp]
+-- theorem mulRow_mulRow_inv_cancel_left [GroupWithZero R] [MulAction R α] (M : Matrix m n α) (i : m)
+--     (x : R) (hx : x ≠ 0) :
+--     mulRow (mulRow M i x) i (x⁻¹) = M := by
+--   unfold mulRow
+--   ext k l
+--   by_cases h : k = i
+--   · rw [h]
+--     repeat rw [updateRow_self]
+--     simp
+--     rw [inv_smul_smul₀]
+--     --rw [smul_smul (x⁻¹) x (M i l)]
+--     --rw [inv_mul_cancel₀]
+--     simp
+--     exact hx
+--   · repeat rw [updateRow_ne h]
+
+-- /-- Multiplying row `i` of matrix `M` by a non-zero scalar `x`'s multiplicative inverse and then by
+-- `x`' will return the original matrix `M`. -/
+-- @[simp]
+-- theorem mulRow_mulRow_inv_cancel_right [GroupWithZero R] [MulAction R α] (M : Matrix m n α) (i : m)
+--     (x : R) (hx : x ≠ 0) :
+--     mulRow (mulRow M i x⁻¹) i (x) = M := by
+--   unfold mulRow
+--   ext k l
+--   by_cases h : k = i
+--   · rw [h]
+--     repeat rw [updateRow_self]
+--     simp
+--     rw [smul_inv_smul₀]
+--     --rw [smul_smul x (x⁻¹) (M i l)]
+--     --rw [mul_inv_cancel₀]
+--     simp
+--     exact hx
+--   · repeat rw [updateRow_ne h]
+
+
+
+-- All of this is withing NonAssocRing:
+-- mul_apply: [Fintype m] [Mul α] [AddCommMonoid α]
+-- one_apply: [DecidableEq n] [Zero α] [One α]
+-- one_mul : [MulOneClass M]
+-- sum_ite_eq: [AddCommMonoid β]
+
+
+-- [SMul R α] [Zero α] [One α] are for sure needed
+-- smul_zero: [Zero A] [SMulZeroClass M A]
+-- mul_apply: [Fintype m] [Mul α] [AddCommMonoid α]
+-- smul_one_mul: [MulOneClass N] [SMul M N] [IsScalarTower M N N]
+-- zero_mul:  [self : MulZeroClass M₀]
+-- sum_ite_eq: [AddCommMonoid β]
+
+-- /-- Multiplying matrix `M` by the elementary matrix derived from multiplying row `i` of the
+-- identity matrix by scalar `x` is equivalent to multiplying row `i` of matrix `M` by scalar `x` -/
+-- @[simp]
+-- theorem mulRow_elem_mat_eq_mulRow [Fintype m] [NonAssocSemiring α] [SMulZeroClass R α]
+--     [IsScalarTower R α α] (M : Matrix m m α) (i : m) (x : R) :
+--     (mulRow_elem_mat i x) * M = mulRow M i x := by
+--   rw [mulRow_elem_mat]
+--   ext k l
+--   by_cases h : k = i
+--   · rw [h, mulRow_eq_mul_row]
+--     rw [mul_apply, mulRow_eq_mul_row]
+--     simp only [Pi.smul_apply]
+--     simp_rw [one_apply]
+--     simp only [smul_ite, smul_zero, ite_mul, smul_one_mul, zero_mul, Finset.sum_ite_eq,
+--       Finset.mem_univ, ↓reduceIte]
+--   · rw [mulRow_other_rows_same]
+--     rw [mul_apply, mulRow_other_rows_same]
+--     simp_rw [one_apply]
+--     simp
+--     repeat exact h
+
+-- /-! ### mulRow elementary matrix has a left inverse -/
+
+-- /-- Multiplying the elementary matrix derived from  multiplying row `i` of the identity matrix by
+-- scalar `x` of the identity matrix by itself reverts it to the identity matrix. `mulRow_elem_mat`
+-- is it's own inverse. -/
+-- theorem mulRow_elem_inv [Fintype m] [NonAssocSemiring α] [SMulZeroClass R α] [IsScalarTower R α α]
+--     [Group R] [MulAction R α] (i : m) (x : R) :
+--     mulRow_elem_mat i x⁻¹ * mulRow_elem_mat i x = (1 : Matrix m m α) := by
+--   rw [mulRow_elem_mat_eq_mulRow, mulRow_elem_mat, mulRow_mulRow_inv_cancel_left]
