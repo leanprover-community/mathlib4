@@ -20,9 +20,9 @@ application, we show that cusp forms decay exponentially to 0 as `im τ → ∞`
 * define the `q`-expansion as a formal power series
 -/
 
-open ModularForm Complex Filter Asymptotics UpperHalfPlane Function
+open ModularForm Complex Filter UpperHalfPlane Function
 
-open scoped Real Topology Manifold MatrixGroups CongruenceSubgroup
+open scoped Real MatrixGroups CongruenceSubgroup
 
 noncomputable section
 
@@ -36,7 +36,13 @@ theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
     0 < im (Periodic.invQParam h q) :=
   im_invQParam .. ▸ mul_pos_of_neg_of_neg
     (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
-    ((Real.log_neg_iff (Complex.abs.pos hq_ne)).mpr hq)
+    ((Real.log_neg_iff (abs.pos hq_ne)).mpr hq)
+
+lemma Function.Periodic.abs_qParam_le_of_one_half_le_im {ξ : ℂ} (hξ : 1 / 2 ≤ ξ.im) :
+    ‖𝕢 1 ξ‖ ≤ rexp (-π) := by
+  rwa [Periodic.qParam, ofReal_one, div_one, norm_eq_abs, abs_exp, Real.exp_le_exp,
+    mul_right_comm, mul_I_re, neg_le_neg_iff, ← ofReal_ofNat, ← ofReal_mul, im_ofReal_mul,
+    mul_comm _ π, mul_assoc, le_mul_iff_one_le_right Real.pi_pos, ← div_le_iff₀' two_pos]
 
 namespace SlashInvariantFormClass
 
