@@ -99,8 +99,8 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `EuclideanSpace 𝕜 (Fin n)`.
 
-For the case when `n = Fin _`, there is `!ₚ[x, y, ...]` notation for building elements of this type,
-for arbitrary subscripts like `₂`, analogous to `![x, y, ...]` notation. -/
+For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
+analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
