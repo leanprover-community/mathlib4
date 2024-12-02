@@ -28,7 +28,7 @@ variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
 /-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive "`(M →+ N)` is an `AddCommMonoid` if `N` is commutative."]
-instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
+instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] :
     CommMonoid (M →* N) where
   mul := (· * ·)
   mul_assoc := by intros; ext; apply mul_assoc
@@ -48,8 +48,8 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
-instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
-  { MonoidHom.commMonoid with
+instance MonoidHom.instCommGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
+  { MonoidHom.instCommMonoid with
     inv := Inv.inv,
     div := Div.div,
     div_eq_mul_inv := by
@@ -72,7 +72,7 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp [zpow_natCast, -Int.natCast_add] }
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
-  AddMonoidHom.addCommMonoid
+  AddMonoidHom.instAddCommMonoid
 
 @[simp]
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
@@ -83,7 +83,7 @@ theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M
   rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
-  AddMonoidHom.addCommGroup
+  AddMonoidHom.instAddCommGroup
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
   { intCast := fun z => z • (1 : AddMonoid.End M) }
