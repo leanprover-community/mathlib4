@@ -871,6 +871,11 @@ theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     (eX.prod eY).symm = eX.symm.prod eY.symm :=
   rfl
 
+@[simp, mfld_simps]
+theorem prod_coe (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+    (eX.prod eY : X × Y → X' × Y') = fun p => (eX p.1, eY p.2) :=
+  rfl
+
 @[simp]
 theorem refl_prod_refl :
     (PartialHomeomorph.refl X).prod (PartialHomeomorph.refl Y) = PartialHomeomorph.refl (X × Y) :=
