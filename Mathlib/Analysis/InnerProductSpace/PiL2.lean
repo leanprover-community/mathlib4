@@ -31,8 +31,8 @@ the last section, various properties of matrices are explored.
 
 - `EuclideanSpace 𝕜 n`: defined to be `PiLp 2 (n → 𝕜)` for any `Fintype n`, i.e., the space
   from functions to `n` to `𝕜` with the `L²` norm. We register several instances on it (notably
-  that it is a finite-dimensional inner product space), and provide a `!₂[]` notation for the case
-  when the indexing type is `Fin n`.
+  that it is a finite-dimensional inner product space), and provide a `!ₚ[]` notation (for numeric
+  subscripts like `₂`) for the case when the indexing type is `Fin n`.
 
 - `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
   finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
@@ -99,8 +99,8 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `EuclideanSpace 𝕜 (Fin n)`.
 
-For the case when `n = Fin _`, there is `!ₑ[x, y, ...]` notation for building elements of this type,
-analogous to `![x, y, ...]` notation. -/
+For the case when `n = Fin _`, there is `!ₚ[x, y, ...]` notation for building elements of this type,
+for arbitrary subscripts like `₂`, analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
