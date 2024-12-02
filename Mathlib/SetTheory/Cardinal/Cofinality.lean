@@ -145,6 +145,16 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
   rw [← typeLT_uLift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof (ULift _)),
     ← Cardinal.lift_umax, OrderIso.uLift.cof_eq_lift]
 
+@[simp]
+protected theorem _root_.Order.cof_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+    (Order.cof α).ord.cof = Order.cof α := by
+  sorry
+
+@[simp]
+theorem cof_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
+  sorry
+
+#exit
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
 
