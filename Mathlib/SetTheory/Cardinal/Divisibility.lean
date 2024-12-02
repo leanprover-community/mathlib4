@@ -31,8 +31,6 @@ Note furthermore that no infinite cardinal is irreducible
 
 namespace Cardinal
 
-open Cardinal
-
 universe u
 
 variable {a b : Cardinal.{u}} {n m : ℕ}

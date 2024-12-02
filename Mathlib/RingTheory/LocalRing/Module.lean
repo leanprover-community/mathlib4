@@ -76,7 +76,7 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
       intro x; obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       rw [← this, LinearMap.comp_apply]; exact ⟨_, rfl⟩
     apply_fun Submodule.map f at hN
-    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.mpr hf,
+    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.2 hf,
       map_mkQ_eq_top] at hN
   · rintro rfl; rw [Submodule.map_top, LinearMap.range_eq_top]
     exact TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective

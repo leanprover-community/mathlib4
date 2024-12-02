@@ -179,8 +179,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
-  -- TODO: `by measurability` fails
-  have key := tendsto_measure_iInter (μ := μ) (fun n ↦ .iUnion fun _ ↦ .iUnion fun _ ↦ Es_mble _)
+  have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
   convert key
@@ -541,7 +540,7 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   about the sets, such as that they are monotone.
   `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
   finite spanning sets in the collection of all measurable sets. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
   protected set : ℕ → Set α
@@ -568,7 +567,7 @@ instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
   h.1.choose_spec.1 n
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
 instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
   isFiniteMeasure_sfiniteSeq n
 
@@ -801,7 +800,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
       simp only [fairmeas]
       rfl
     simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
-      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
+      iUnion_Ici_eq_Ioi_of_lt_of_tendsto (fun n => (as_mem n).1) as_lim]
   rw [countable_union]
   refine countable_iUnion fun n => Finite.countable ?_
   exact finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite

@@ -287,9 +287,7 @@ variable {R : Type u} [Semiring R]
 theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 
@@ -424,11 +422,23 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
 theorem mul_le_right : I * J ≤ I :=
   Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
 
-@[simp]
+#adaptation_note
+/--
+On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
+as otherwise we get a deterministic timeout in typeclass inference.
+This should be investigated.
+-/
+@[simp, nolint simpNF]
 theorem sup_mul_right_self : I ⊔ I * J = I :=
   sup_eq_left.2 Ideal.mul_le_right
 
-@[simp]
+#adaptation_note
+/--
+On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
+as otherwise we get a deterministic timeout in typeclass inference.
+This should be investigated.
+-/
+@[simp, nolint simpNF]
 theorem mul_right_self_sup : I * J ⊔ I = I :=
   sup_eq_right.2 Ideal.mul_le_right
 
@@ -441,9 +451,7 @@ lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
   · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
       ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
-    simp only [Finset.mem_range, Nat.lt_succ] at hi
-    rw [Nat.le_sub_iff_add_le hi]
-    nlinarith
+    omega
 
 variable (I J K)
 
@@ -657,12 +665,6 @@ theorem mul_top : I * ⊤ = I :=
 lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ⊥ ∈ s :=
   Multiset.prod_eq_zero_iff
-
-/-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
-@[deprecated multiset_prod_eq_bot (since := "2023-12-26")]
-theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
-    s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
-  simp
 
 theorem span_pair_mul_span_pair (w x y z : R) :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
@@ -1247,7 +1249,6 @@ namespace Submodule
 variable {R : Type u} {M : Type v}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
--- TODO: show `[Algebra R A] : Algebra (Ideal R) A` too
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
@@ -1265,6 +1266,39 @@ lemma span_smul_eq
 theorem set_smul_top_eq_span (s : Set R) :
     s • ⊤ = Ideal.span s :=
   (span_smul_eq s ⊤).symm.trans (Ideal.span s).mul_top
+
+variable {A B} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+open Submodule
+
+instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
+  __ := moduleSubmodule
+  toFun := map (Algebra.linearMap R A)
+  map_one' := by
+    rw [one_eq_span, map_span, Set.image_singleton, Algebra.linearMap_apply, map_one, one_eq_span]
+  map_mul' := (Submodule.map_mul · · <| Algebra.ofId R A)
+  map_zero' := map_bot _
+  map_add' := (map_sup · · _)
+  commutes' I M := mul_comm_of_commute <| by rintro _ ⟨r, _, rfl⟩ a _; apply Algebra.commutes
+  smul_def' I M := le_antisymm (smul_le.mpr fun r hr a ha ↦ by
+    rw [Algebra.smul_def]; exact Submodule.mul_mem_mul ⟨r, hr, rfl⟩ ha) (Submodule.mul_le.mpr <| by
+    rintro _ ⟨r, hr, rfl⟩ a ha; rw [Algebra.linearMap_apply, ← Algebra.smul_def]
+    exact Submodule.smul_mem_smul hr ha)
+
+/-- `Submonoid.map` as an `AlgHom`, when applied to an `AlgHom`. -/
+@[simps!] def mapAlgHom (f : A →ₐ[R] B) : Submodule R A →ₐ[Ideal R] Submodule R B where
+  __ := mapHom f
+  commutes' I := (map_comp _ _ I).symm.trans (congr_arg (map · I) <| LinearMap.ext f.commutes)
+
+/-- `Submonoid.map` as an `AlgEquiv`, when applied to an `AlgEquiv`. -/
+-- TODO: when A, B noncommutative, still has `MulEquiv`.
+@[simps!] def mapAlgEquiv (f : A ≃ₐ[R] B) : Submodule R A ≃ₐ[Ideal R] Submodule R B where
+  __ := mapAlgHom f
+  invFun := mapAlgHom f.symm
+  left_inv I := (map_comp _ _ I).symm.trans <|
+    (congr_arg (map · I) <| LinearMap.ext (f.left_inv ·)).trans (map_id I)
+  right_inv I := (map_comp _ _ I).symm.trans <|
+    (congr_arg (map · I) <| LinearMap.ext (f.right_inv ·)).trans (map_id I)
 
 end Submodule
 
