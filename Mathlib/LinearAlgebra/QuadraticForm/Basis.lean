@@ -58,9 +58,6 @@ theorem xor_iff_or_and_not_and (P Q : Prop) : Xor' P Q ↔ (P ∨ Q) ∧ (¬ (P 
 variable {ι₁ : Type*}
 variable {ι₂ : Type*}
 
-lemma ne_cases [LinearOrder ι₁] (i₁ j₁ : ι₁) : i₁ ≠ j₁ ↔ i₁ < j₁ ∨ j₁ < i₁ := ne_iff_lt_or_gt
-
-
 /-- Off the diagonal in both components -/
 def symOffDiag : Sym2 (ι₁ × ι₂) → Prop := Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => i₁ ≠ j₁ ∧ i₂ ≠ j₂, by
   aesop⟩
