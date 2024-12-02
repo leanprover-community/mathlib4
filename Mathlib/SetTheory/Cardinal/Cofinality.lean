@@ -16,25 +16,21 @@ This file contains the definition of cofinality of an ordinal number and regular
 * `Ordinal.cof o` is the cofinality of the ordinal `o`.
   If `o` is the order type of the relation `<` on `α`, then `o.cof` is the smallest cardinality of a
   subset `s` of α that is *cofinal* in `α`, i.e. `∀ x : α, ∃ y ∈ s, ¬ y < x`.
+* `Cardinal.cof c` is the cardinality of the initial ordinal for `c`.
 * `Cardinal.IsStrongLimit c` means that `c` is a strong limit cardinal:
   `c ≠ 0 ∧ ∀ x < c, 2 ^ x < c`.
-* `Cardinal.IsRegular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.ord.cof = c`.
+* `Cardinal.IsRegular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.cof = c`.
 * `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
 
 ## Main Statements
 
 * `Ordinal.infinite_pigeonhole_card`: the infinite pigeonhole principle
-* `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
+* `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.cof` for
   `c ≥ ℵ₀`
 * `Cardinal.univ_inaccessible`: The type of ordinals in `Type u` form an inaccessible cardinal
   (in `Type v` with `v > u`). This shows (externally) that in `Type u` there are at least `u`
   inaccessible cardinals.
-
-## Implementation Notes
-
-* The cofinality is defined for ordinals.
-  If `c` is a cardinal number, its cofinality is `c.ord.cof`.
 
 ## Tags
 
@@ -119,7 +115,7 @@ theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
-/-! ### Cofinality of ordinals -/
+/-! ### Cofinality of ordinals and cardinals -/
 
 namespace Ordinal
 
@@ -190,8 +186,23 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b; cases b; rfl]
   exact IsWellFounded.wf.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
 
+end Ordinal
+
+namespace Cardinal
+
+/-- The cofinality of a cardinal is the cofinality of its initial ordinal. -/
+def cof (c : Cardinal) : Cardinal :=
+  c.ord.cof
+
+@[simp]
+theorem cof_ord (c : Cardinal) : c.ord.cof = c.cof :=
+  rfl
+
+end Cardinal
+
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
+namespace Ordinal
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
   ⟨_, _, lsub_typein o, mk_toType o⟩
@@ -245,7 +256,10 @@ theorem cof_le_card (o) : cof o ≤ card o := by
   rw [cof_eq_sInf_lsub]
   exact csInf_le' card_mem_cof
 
-theorem cof_ord_le (c : Cardinal) : c.ord.cof ≤ c := by simpa using cof_le_card c.ord
+theorem _root_.Cardinal.cof_le (c : Cardinal) : c.cof ≤ c := by simpa using cof_le_card c.ord
+
+@[deprecated Cardinal.cof_le (since := "2024-12-02")]
+alias cof_ord_le := Cardinal.cof_le
 
 theorem ord_cof_le (o : Ordinal.{u}) : o.cof.ord ≤ o :=
   (ord_le_ord.2 (cof_le_card o)).trans (ord_card_le o)
@@ -335,14 +349,14 @@ theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
   sup_lt_ord_lift (by rwa [(#ι).lift_id])
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
-    (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
+    (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c := by
   rw [← ord_lt_ord, iSup_ord (Cardinal.bddAbove_range _)]
   refine iSup_lt_ord_lift hι fun i => ?_
   rw [ord_lt_ord]
   apply hf
 
-theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.ord.cof) :
+theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_lift (by rwa [(#ι).lift_id])
 
@@ -750,7 +764,7 @@ theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) 
   exact ⟨x, u⟩
 
 /-- The infinite pigeonhole principle -/
-theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).ord.cof) :
+theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).cof) :
     ∃ a : α, #(f ⁻¹' {a}) = #β := by
   have : ∃ a, #β ≤ #(f ⁻¹' {a}) := by
     by_contra! h
@@ -766,14 +780,14 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
 
 /-- Pigeonhole principle for a cardinality below the cardinality of the domain -/
 theorem infinite_pigeonhole_card {β α : Type u} (f : β → α) (θ : Cardinal) (hθ : θ ≤ #β)
-    (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) : ∃ a : α, θ ≤ #(f ⁻¹' {a}) := by
+    (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.cof) : ∃ a : α, θ ≤ #(f ⁻¹' {a}) := by
   rcases le_mk_iff_exists_set.1 hθ with ⟨s, rfl⟩
   cases' infinite_pigeonhole (f ∘ Subtype.val : s → α) h₁ h₂ with a ha
   use a; rw [← ha, @preimage_comp _ _ _ Subtype.val f]
   exact mk_preimage_of_injective _ _ Subtype.val_injective
 
 theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ : Cardinal)
-    (hθ : θ ≤ #s) (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) :
+    (hθ : θ ≤ #s) (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.cof) :
     ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ #t ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
   cases' infinite_pigeonhole_card f θ hθ h₁ h₂ with a ha
   refine ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, ?_, ?_, ?_⟩
@@ -890,13 +904,13 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
 
 /-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
 def IsRegular (c : Cardinal) : Prop :=
-  ℵ₀ ≤ c ∧ c ≤ c.ord.cof
+  ℵ₀ ≤ c ∧ c ≤ c.cof
 
 theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
   H.1
 
-theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
-  (cof_ord_le c).antisymm H.2
+theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.cof = c :=
+  c.cof_le.antisymm H.2
 
 theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
   rw [← ord_aleph, H.cof_eq]
@@ -1127,7 +1141,7 @@ theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c)
 theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord) {a} :
     a < c.ord → derivFamily f a < c.ord := by
-  have hω : ℵ₀ < c.ord.cof := by
+  have hω : ℵ₀ < c.cof := by
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
   induction a using limitRecOn with
@@ -1179,7 +1193,7 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 def IsInaccessible (c : Cardinal) :=
   ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c
 
-theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2^x) < c) :
+theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.cof) (h₃ : ∀ x < c, (2^x) < c) :
     IsInaccessible c :=
   ⟨h₁, ⟨h₁.le, h₂⟩, (aleph0_pos.trans h₁).ne', h₃⟩
 
