@@ -275,40 +275,64 @@ lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) :
     rw [ha0]
     rwa [hb0] at h
 
-lemma nth_add_one {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
-    nth (fun i ↦ p (i + 1)) n + 1 = nth p n := by
-  have hs {p' : ℕ → Prop} (h0p' : ¬p' 0) : (· + 1) '' {i | p' (i + 1)} = setOf p' := by
+lemma nth_add {m n : ℕ} (h0 : ∀ k < m, ¬p k) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + m)) n + m = nth p n := by
+  have hs {p' : ℕ → Prop} (h0p' : ∀ k < m, ¬p' k) : (· + m) '' {i | p' (i + m)} = setOf p' := by
     ext i
     simp only [Set.mem_image, Set.mem_setOf_eq]
     refine ⟨fun ⟨_, hi, h⟩ ↦ h ▸ hi, fun he ↦
-      ⟨i - 1, Nat.sub_add_cancel ?_ ▸ he, Nat.sub_add_cancel ?_⟩⟩ <;>
-    by_contra hi <;> exact h0p' (lt_one_iff.mp (not_le.mp hi) ▸ he)
+      ⟨i - m, Nat.sub_add_cancel ?_ ▸ he, Nat.sub_add_cancel ?_⟩⟩ <;>
+    by_contra hi <;> exact h0p' _ (not_le.mp hi) he
   induction n using Nat.case_strong_induction_on
   case _ =>
     simp_rw [nth_zero] at h ⊢
     rw [← hs h0, ← add_right_mono.map_csInf]
-    simp only [ne_eq, sInf_eq_zero, Set.mem_setOf_eq, h0, ← Set.not_nonempty_iff_eq_empty,
-      false_or, not_not] at h
-    rcases h with ⟨⟨⟩ | ⟨i⟩, hi⟩
-    · exact False.elim (h0 hi)
-    · exact ⟨i, hi⟩
+    simp only [ne_eq, sInf_eq_zero, Set.mem_setOf_eq, ← Set.not_nonempty_iff_eq_empty, not_or,
+      not_not] at h
+    rcases h with ⟨-, ⟨t, ht⟩⟩
+    refine ⟨t - m, ?_⟩
+    by_contra ht'
+    have h : m ≤ t := by
+      by_contra! h
+      exact h0 _ h ht
+    simp only [Set.mem_setOf_eq, h, Nat.sub_add_cancel] at ht'
+    exact ht' ht
   case _ n ih =>
+    by_cases hm0 : m = 0
+    · simp [hm0]
     repeat nth_rw 1 [nth_eq_sInf]
-    nth_rw 2 [← hs (by simp [h0])]
+    have h0' : ∀ k' < m, ¬(p k' ∧ ∀ k < n + 1, nth p k < k') := by
+      intro k' hk'
+      simp [h0 _ hk']
+    rw [← hs h0']
     rw [← add_right_mono.map_csInf]
-    · convert rfl using 8 with k m hm
-      nth_rw 2 [← add_lt_add_iff_right 1]
+    · convert rfl using 8 with k m' hm
+      nth_rw 2 [← add_lt_add_iff_right m]
       convert Iff.rfl using 2
-      exact ih m (Nat.lt_add_one_iff.mp hm) fun hm0 ↦ h (nth_eq_zero_mono h0 (by omega) hm0)
+      exact ih m' (Nat.lt_add_one_iff.mp hm) fun hm0 ↦
+        h (nth_eq_zero_mono (h0 _ (by omega)) (by omega) hm0)
     · have hf : ∀ hf : (setOf p).Finite, n + 1 < #hf.toFinset := by simpa [nth_eq_zero] using h
-      refine ⟨nth p (n + 1) - 1, ?_, ?_⟩ <;>
-      simp only [(by omega : 1 ≤ nth p (n + 1)), Nat.sub_add_cancel]
-      · exact nth_mem _ hf
-      · exact fun _ hk ↦ nth_lt_nth' hk hf
+      refine ⟨nth p (n + 1) - m, ?_, ?_⟩ <;>
+      have hmn : m ≤ nth p (n + 1) := by
+        by_contra! hmn
+        exact h0 _ hmn (nth_mem_of_ne_zero h)
+      · simp only [hmn, Nat.sub_add_cancel]
+        exact nth_mem _ hf
+      · refine fun _ hk ↦ ?_
+        convert nth_lt_nth' hk hf using 1
+        omega
+
+lemma nth_add_eq_sub {m n : ℕ} (h0 : ∀ k < m, ¬p k) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + m)) n = nth p n - m := by
+  rw [← nth_add h0 h, Nat.add_sub_cancel]
+
+lemma nth_add_one {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + 1)) n + 1 = nth p n :=
+  nth_add (fun _ hk ↦ (lt_one_iff.1 hk ▸ h0)) h
 
 lemma nth_add_one_eq_sub {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
-    nth (fun i ↦ p (i + 1)) n = nth p n - 1 := by
-  rw [← nth_add_one h0 h, Nat.add_sub_cancel]
+    nth (fun i ↦ p (i + 1)) n = nth p n - 1 :=
+  nth_add_eq_sub (fun _ hk ↦ (lt_one_iff.1 hk ▸ h0)) h
 
 section Count
 
