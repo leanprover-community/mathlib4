@@ -817,7 +817,7 @@ Q931404:
 
 Q939927:
   title: Stone–Weierstrass theorem
-  decl: stone_weierstrass
+  decl: ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
   author: Scott Morrison and Heather Macbeth
   date: 2021-05-01
 
