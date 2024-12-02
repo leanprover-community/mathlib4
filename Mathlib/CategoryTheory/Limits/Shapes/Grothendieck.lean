@@ -5,7 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
@@ -75,6 +75,12 @@ def fiberwiseColimit : C ⥤ H where
         Grothendieck.comp_base, Category.comp_id, Grothendieck.comp_fiber, Functor.map_id]
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
+
+def fiberwiseColimit'
+    [∀ (G : Grothendieck F ⥤ H), ∀ {X Y : C} (f : X ⟶ Y),
+      HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]: (Grothendieck F ⥤ H) ⥤ (C ⥤ H) where
+  obj G := fiberwiseColimit G
+  map {F G} α := sorry
 
 /-- Every functor `G : Grothendieck F ⥤ H` induces a natural transformation from `G` to the
 composition of the forgetful functor on `Grothendieck F` with the fiberwise colimit on `G`. -/
@@ -196,12 +202,51 @@ namespace Functor
 
 variable (J : Type u₃) [Category.{v₃} J]
 
+example (K : J ⥤ Grothendieck F ⥤ H) {c : Cone K} (hc : IsLimit c)
+    [HasColimitsOfShape (Grothendieck F) H]
+    [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+    [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ c.pt)]
+    [HasColimit (fiberwiseColimit c.pt)] :
+  colim.mapCone c ≅ _ := sorry
+
 variable (C) (F) in
 instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
-    [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
+    [∀ c, HasColimitsOfShape (↑(F.obj c)) H]
+    [hC : PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
-    PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) :=
-  ⟨fun {K} => ⟨fun {c} hc => ⟨sorry⟩⟩⟩
+    PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) := by
+  haveI : HasLimitsOfShape J (Grothendieck F ⥤ H) := sorry
+  haveI : HasLimitsOfShape J (C ⥤ H) := sorry
+  haveI : HasLimitsOfShape J H := sorry
+  haveI : HasLimitsOfShape C H := sorry
+  haveI : HasColimitsOfShape J (C ⥤ H) := sorry
+  constructor
+  intro K
+  haveI : ∀ c, HasLimit (K ⋙ (whiskeringLeft (↑(F.obj c)) (Grothendieck F) H).obj (Grothendieck.ι F c)) := sorry
+  let i₀ : ∀ c, Grothendieck.ι F c ⋙ limit K ≅
+    limit (K ⋙ (whiskeringLeft _ _ _).obj (Grothendieck.ι F c)) := sorry
+  let i₁ : fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColimit') :=
+    NatIso.ofComponents
+      (fun c => HasColimit.isoOfNatIso (i₀ c) ≪≫
+        preservesLimitIso colim _ ≪≫
+        _)
+      _
+  let i₂ := calc colimit (limit K)
+    _ ≅ colimit (fiberwiseColimit (limit K)) := (colimitFiberwiseColimitIso _).symm
+    _ ≅ colimit (limit (K ⋙ fiberwiseColimit')) := HasColimit.isoOfNatIso i₁
+    _ ≅ limit ((K ⋙ fiberwiseColimit') ⋙ colim) :=
+          preservesLimitIso colim (K ⋙ fiberwiseColimit')
+    _ ≅ limit (K ⋙ colim) := by sorry  -- TODO functorialisation of `colimitFiberwiseColimitIso`
+  haveI : IsIso (limit.post K colim) := by
+    convert Iso.isIso_hom i₂
+    apply colimit.hom_ext
+    intro d
+    ext d'
+    sorry
+  apply preservesLimit_of_isIso_post
+
+#check whiskeringRight
+#check preservesLimitIso
 
 end Functor
 
