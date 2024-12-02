@@ -275,23 +275,22 @@ lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [Lin
     · apply foo _ h1
     · apply foo2 _ h2
 
-lemma foo3 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagXor p) :
+lemma foo3 (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagXor p) :
     ¬ p.IsDiag := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
   aesop
 
-lemma foo4 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) (h : symOffDiag p) :
+lemma foo4 (p : Sym2 (ι₁ × ι₂)) (h : symOffDiag p) :
     ¬ p.IsDiag := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
   aesop
 
-
-lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag [LinearOrder ι₁] [LinearOrder ι₂]
-    (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔ Xor' (symOffDiagXor p) (symOffDiag p) := by
+lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag (p : Sym2 (ι₁ × ι₂)) :
+    ¬ p.IsDiag ↔ Xor' (symOffDiagXor p) (symOffDiag p) := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
