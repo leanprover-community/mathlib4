@@ -100,7 +100,9 @@ abbrev of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGMod
 
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
-abbrev ofHom {V W : FGModuleCat R} (f : V →ₗ[R] W) : V ⟶ W :=
+abbrev ofHom {V W : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
+    [AddCommGroup W] [Module R W] [Module.Finite R W]
+    (f : V →ₗ[R] W) : of R V ⟶ of R W :=
   ModuleCat.asHom f
 
 variable {R} in
