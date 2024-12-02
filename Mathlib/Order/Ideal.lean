@@ -6,6 +6,7 @@ Authors: David Wärn
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.Chain
+import Mathlib.Order.Cofinal
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Set.Subsingleton
 
@@ -463,15 +464,17 @@ structure Cofinal (P) [Preorder P] where
   /-- The carrier of a `Cofinal` is the underlying set. -/
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
-  mem_gt : ∀ x : P, ∃ y ∈ carrier, x ≤ y
+  isCofinal : IsCofinal carrier
+
+@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
+alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 
 variable [Preorder P]
 
 instance : Inhabited (Cofinal P) :=
-  ⟨{  carrier := univ
-      mem_gt := fun x ↦ ⟨x, trivial, le_rfl⟩ }⟩
+  ⟨_, .univ⟩
 
 instance : Membership P (Cofinal P) :=
   ⟨fun D x ↦ x ∈ D.carrier⟩
@@ -480,13 +483,13 @@ variable (D : Cofinal P) (x : P)
 
 /-- A (noncomputable) element of a cofinal set lying above a given element. -/
 noncomputable def above : P :=
-  Classical.choose <| D.mem_gt x
+  Classical.choose <| D.isCofinal x
 
 theorem above_mem : D.above x ∈ D :=
-  (Classical.choose_spec <| D.mem_gt x).1
+  (Classical.choose_spec <| D.isCofinal x).1
 
 theorem le_above : x ≤ D.above x :=
-  (Classical.choose_spec <| D.mem_gt x).2
+  (Classical.choose_spec <| D.isCofinal x).2
 
 end Cofinal
 
