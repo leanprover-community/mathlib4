@@ -52,8 +52,9 @@ end Finset
 
 section Prod
 
-theorem xor_iff_or_and_not_and (P Q : Prop) : Xor' P Q ↔ (P ∨ Q) ∧ (¬ (P ∧ Q)) :=
-  ⟨fun _ => by aesop (add simp Xor'), fun _ => by aesop⟩
+theorem xor_iff_or_and_not_and (P Q : Prop) : Xor' P Q ↔ (P ∨ Q) ∧ (¬ (P ∧ Q)) := by
+  rw [← symmDiff_eq_Xor', symmDiff_eq2]
+  rfl
 
 variable {ι₁ : Type*}
 variable {ι₂ : Type*}
