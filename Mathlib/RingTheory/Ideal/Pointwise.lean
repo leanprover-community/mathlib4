@@ -66,7 +66,7 @@ theorem pointwise_smul_def {a : M} (S : Ideal R) :
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Ideal R) : r ∈ S → m • r ∈ m • S :=
   fun h => subset_span <| Set.smul_mem_smul_set h
 
-instance : CovariantClass M (Ideal R) HSMul.hSMul LE.le :=
+instance : SMulLeftMono M (Ideal R) :=
   ⟨fun _ _ => map_mono⟩
 
 -- note: unlike with `Subring`, `mem_smul_pointwise_iff_exists` wouldn't be true

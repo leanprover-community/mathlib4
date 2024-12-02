@@ -99,7 +99,7 @@ noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 
 instance instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    CovariantClass (Kernel α β) (Kernel α β) (· + ·) (· ≤ ·) :=
+    AddLeftMono (Kernel α β) :=
   ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
 
 noncomputable

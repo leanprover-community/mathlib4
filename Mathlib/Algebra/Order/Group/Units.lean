@@ -20,7 +20,7 @@ variable {α : Type*}
       additive group."]
 instance Units.orderedCommGroup [OrderedCommMonoid α] : OrderedCommGroup αˣ :=
   { Units.instPartialOrderUnits, Units.instCommGroupUnits with
-    mul_le_mul_left := fun _ _ h _ => (mul_le_mul_left' (α := α) h _) }
+    mul_le_mul_left := fun _ _ h _ => (mul_le_mul_left' (M := α) h _) }
 
 /-- The units of a linearly ordered commutative monoid form a linearly ordered commutative group. -/
 @[to_additive "The units of a linearly ordered commutative additive monoid form a

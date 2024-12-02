@@ -79,8 +79,8 @@ theorem smul_mono (hij : I ≤ J) (hnp : N ≤ P) : I • N ≤ J • P :=
 theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   smul_mono h le_rfl
 
-instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => smul_mono le_rfl⟩
+instance : SMulLeftMono (Ideal R) (Submodule R M) :=
+  ⟨fun _ _ _ => smul_mono le_rfl⟩
 
 @[deprecated smul_mono_right (since := "2024-03-31")]
 protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
