@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset
 
 /-!
 # Localizations of commutative rings
@@ -139,6 +140,11 @@ theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (al
     rw [IsLocalization.eq_iff_exists M]
     rintro ⟨c, hc⟩
     exact ⟨⟨c, h₁ c.2⟩, hc⟩
+
+theorem of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈ N, ∃ m ∈ M, n ∣ m) :
+    IsLocalization N S :=
+  of_le M N h₁ fun n hn ↦ have ⟨m, hm, dvd⟩ := h₂ n hn
+    isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)
 
 variable (S)
 

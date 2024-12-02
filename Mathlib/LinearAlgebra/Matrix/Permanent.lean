@@ -3,9 +3,8 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.Diagonal
+import Mathlib.Data.Matrix.RowCol
 /-!
 # Permanent of a matrix
 
@@ -82,5 +81,30 @@ theorem permanent_permute_cols (σ : Perm n) (M : Matrix n n R) :
 theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix id σ).permanent = M.permanent := by
   rw [← permanent_transpose, transpose_submatrix, permanent_permute_cols, permanent_transpose]
+
+@[simp]
+theorem permanent_smul (M : Matrix n n R) (c : R) :
+    permanent (c • M) = c ^ Fintype.card n * permanent M := by
+  simp only [permanent, smul_apply, smul_eq_mul, Finset.mul_sum]
+  congr
+  ext
+  rw [mul_comm]
+  conv in ∏ _ , c * _ => simp [mul_comm c];
+  exact prod_mul_pow_card.symm
+
+@[simp]
+theorem permanent_updateColumn_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
+    permanent (updateColumn M j <| c • u) = c * permanent (updateColumn M j u) := by
+  simp only [permanent, ← mul_prod_erase _ _ (mem_univ j), updateColumn_self, Pi.smul_apply,
+    smul_eq_mul, mul_sum, ← mul_assoc]
+  congr 1 with p
+  rw [Finset.prod_congr rfl (fun i hi ↦ ?_)]
+  simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateColumn_ne]
+
+@[simp]
+theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
+    permanent (updateRow M j <| c • u) = c * permanent (updateRow M j u) := by
+  rw [← permanent_transpose, ← updateColumn_transpose, permanent_updateColumn_smul,
+    updateColumn_transpose, permanent_transpose]
 
 end Matrix

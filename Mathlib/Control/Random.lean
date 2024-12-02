@@ -93,7 +93,7 @@ def randBound (α : Type u)
   (BoundedRandom.randomR lo hi h : RandGT g _ _)
 
 def randFin {n : Nat} [RandomGen g] : RandGT g m (Fin n.succ) :=
-  fun ⟨g⟩ ↦ pure <| randNat g 0 n |>.map Fin.ofNat ULift.up
+  fun ⟨g⟩ ↦ pure <| randNat g 0 n |>.map (Fin.ofNat' _) ULift.up
 
 instance {n : Nat} : Random m (Fin n.succ) where
   random := randFin
