@@ -5,6 +5,8 @@ Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Tactic.FieldSimp
@@ -17,9 +19,9 @@ given any `p : F[X]` and `d : ℕ`, there exists some `h : F[X]` such that for a
 `n : ℕ`, `h(n)` is equal to the coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 This `h` is unique and is denoted as `Polynomial.hilbertPoly p d`.
 
-For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]` is
-`Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
-`Polynomial.hilbertPoly (1 : F[X]) d` is the polynomial `(n + 1)···(n + d)/d!`. Note that
+For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]`
+is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
+`Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(n + 1)···(n + d)/d!`. Note that
 if `d! = 0` in `F`, then the polynomial `(n + 1)···(n + d)/d!` no longer works, so we do not
 want the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take
 any `p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
@@ -126,5 +128,28 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
       · simp only [Finset.mem_sdiff, mem_support_iff, not_not] at hx
         rw [hx.2, zero_mul]
       · rw [add_comm, Nat.add_sub_assoc (h_le ⟨x, hx⟩), succ_eq_add_one, add_tsub_cancel_right]
+
+/--
+The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is unique. In other
+words, if `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than
+`N` we have `PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F)`, then `h` is exactly
+`Polynomial.hilbertPoly p d`.
+-/
+theorem exists_unique_hilbertPoly [CharZero F] (p : F[X]) (d : ℕ) :
+    ∃! (h : F[X]), (∃ (N : ℕ), (∀ (n : ℕ) (_ : N < n),
+    PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F))) := by
+  use hilbertPoly p d; constructor
+  · use p.natDegree
+    exact fun n hn => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn
+  · rintro h ⟨N, hhN⟩
+    refine eq_of_infinite_eval_eq h (hilbertPoly p d) ?_
+    intro hfin
+    have : Nat.cast '' Set.Ioi (N ⊔ p.natDegree) ⊆ {x | h.eval x = (p.hilbertPoly d).eval x} := by
+      intro x hx
+      simp only [Set.mem_image, Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hx ⊢
+      rcases hx with ⟨n, ⟨h1, h2⟩, h3⟩
+      rw [← h3, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d h2, hhN n h1]
+    exact Set.Infinite.image (Set.injOn_of_injective Nat.cast_injective)
+      (Set.Ioi_infinite (N ⊔ p.natDegree)) (Set.Finite.subset hfin this)
 
 end Polynomial
