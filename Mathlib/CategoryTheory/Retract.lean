@@ -104,4 +104,3 @@ instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
 end RetractArrow
 
 end CategoryTheory
-#lint
