@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
 
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -35,7 +35,7 @@ decomposition of the nerve functor, made by possible by the fact that nerves of 
 
 namespace CategoryTheory
 namespace SSet
-open Category Limits Functor Opposite Simplicial
+open Category Limits Functor Opposite Simplicial Nerve
 universe v u
 
 section
@@ -114,6 +114,77 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
     f.1 = g.1 → f = g := Subtype.ext
 
 section
+variable {C : Type u} [Category.{v} C]
+
+/-- An arrow `f : X ⟶ Y` in the refl quiver of a nerve induces an arrow in the category `C`.-/
+def OneTruncation₂.ofNerve₂.map {X Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
+    (f : X ⟶ Y) : X.left ⟶ Y.left :=
+  eqToHom (congrArg (·.left) f.2.1.symm) ≫ f.1.hom ≫ eqToHom (congrArg (·.left) f.2.2)
+
+/-- The refl prefunctor from the refl quiver underlying a nerve to the refl quiver underlying a
+category.-/
+def OneTruncation₂.ofNerve₂.hom : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C)) ⥤rq C where
+  obj := (·.left)
+  map := OneTruncation₂.ofNerve₂.map
+  map_id := fun X : ComposableArrows _ 0 => by
+    obtain ⟨x, rfl⟩ := X.mk₀_surjective
+    simp [map]; rfl
+
+/-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
+a nerve.-/
+def OneTruncation₂.ofNerve₂.inv : C ⥤rq OneTruncation₂ (nerveFunctor₂.obj (Cat.of C)) where
+  obj := (.mk₀ ·)
+  map := fun f => by
+    refine ⟨.mk₁ f, ?_, ?_⟩ <;> apply ComposableArrows.ext₀ <;> simp <;> rfl
+  map_id _ := by ext; apply ComposableArrows.ext₁ <;> simp <;> rfl
+
+/-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category.-/
+def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
+    ReflQuiv.of (OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))) ≅ ReflQuiv.of C := by
+  refine {
+    hom := ofNerve₂.hom
+    inv := ofNerve₂.inv (C := C)
+    hom_inv_id := ?_
+    inv_hom_id := ?_
+  }
+  · have H1 {X X' Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
+        (f : X ⟶ Y) (h : X = X') : (Eq.rec f h : X' ⟶ Y).1 = f.1 := by cases h; rfl
+    have H2 {X Y Y' : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
+        (f : X ⟶ Y) (h : Y = Y') : (Eq.rec f h : X ⟶ Y').1 = f.1 := by cases h; rfl
+    fapply ReflPrefunctor.ext <;> simp
+    · exact fun _ ↦ ComposableArrows.ext₀ rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      apply Subtype.ext
+      simp [ReflQuiv.comp_eq_comp]
+      refine ((H2 _ _).trans ((H1 _ _).trans (ComposableArrows.ext₁ ?_ ?_ ?_))).symm
+      · rfl
+      · rfl
+      · simp [ofNerve₂.inv, ofNerve₂.hom, ofNerve₂.map]; rfl
+  · fapply ReflPrefunctor.ext <;> simp
+    · exact fun _ ↦ rfl
+    · intro X Y f
+      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve₂.inv, ofNerve₂.hom, ofNerve₂.map,
+        SimplexCategory.Truncated.inclusion]
+
+/-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
+category.-/
+@[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
+def OneTruncation₂.ofNerve₂.natIso :
+    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
+  refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) ?nat
+  · intro C D F
+    fapply ReflPrefunctor.ext <;> simp
+    · exact fun _ ↦ rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
+        nerveFunctor mapComposableArrows toReflPrefunctor
+      simp [ReflQuiv.comp_eq_comp, ofNerve₂, ofNerve₂.hom, ofNerve₂.map]
+
+end
+
+section
 
 private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
@@ -126,28 +197,33 @@ variable {V : SSet}
 
 open SSet
 
+namespace Truncated
+
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
-private def ι0₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
-private def ι1₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
-private def ι2₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
+def ι0₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
+def ι1₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
+def ι2₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
 
-private def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι0₂.op φ
-private def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι1₂.op φ
-private def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
+def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι0₂.op φ
+def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι1₂.op φ
+def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
 
-private def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
-private def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
-private def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
+def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
+def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
+def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
 
-private def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
+def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
-private def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
+def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
-private def ev12₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev1₂ φ ⟶ ev2₂ φ :=
+def ev12₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
     map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
     map_map_of_eq V rfl⟩
+
+end Truncated
+open Truncated
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`.-/
@@ -234,217 +310,6 @@ theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
 def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ hoFunctor₂
 
 end
-
-section
-
-/-- A simplicial set `S` has an underlying refl quiver with `S _[0]` as its underlying type.-/
-def OneTruncation (S : SSet) := S _[0]
-
-/-- The source vertex of `f : S _[1]` for use in defining the underlying refl quiver.-/
-def OneTruncation.src {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 1 f
-
-/-- The target vertex of `f : S _[1]` for use in defining the underlying refl quiver.-/
-def OneTruncation.tgt {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 0 f
-
-/-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]`.-/
-def OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
-  {p : S _[1] // src p = X ∧ tgt p = Y}
-
-/-- A simplicial set `S` has an underlying refl quiver `SSet.OneTruncation S`.-/
-instance (S : SSet) : ReflQuiver (OneTruncation S) where
-  Hom X Y := SSet.OneTruncation.Hom X Y
-  id X := by
-    refine ⟨S.σ 0 X, ?_, ?_⟩ <;> change (S.δ _ (S.σ _ _)) = X
-    · apply SSet.δ_comp_σ_succ_apply 0
-    · apply SSet.δ_comp_σ_self_apply 0
-
-/-- The functor that carries a simplicial set to its underlying refl quiver.-/
-def oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
-  obj S := ReflQuiv.of (OneTruncation S)
-  map {S T} F := {
-    obj := F.app (op [0])
-    map := fun f => by
-      refine ⟨F.app (op [1]) f.1, ?_, ?_⟩
-      · change (F.app _ ≫ _) _ = _
-        rw [← F.naturality]
-        exact congrArg (F.app _) f.2.1
-      · change (F.app _ ≫ _) _ = _
-        rw [← F.naturality]
-        exact congrArg (F.app _) f.2.2
-    map_id := fun X => by
-      change ({..} : Subtype _) = {..}
-      congr
-      change _ = (F.app _ ≫ _) _
-      rw [← F.naturality]
-      rfl
-  }
-
-@[ext] lemma hom_ext {S : SSet} {x y : OneTruncation S} {f g : x ⟶ y} :
-    f.1 = g.1 → f = g := Subtype.ext
-
-section
-variable {C : Type u} [Category.{v} C]
-
-/-- A natural isomorphism between the underlying refl quivers of a simplicial set `V` and its
-2-truncation.-/
-def OneTruncation₂.ofTwoTruncationIso (V : SSet) :
-    ReflQuiv.of (OneTruncation₂ ((SSet.truncation 2).obj V)) ≅ ReflQuiv.of (OneTruncation V) :=
-  .refl _
-
-
-/-- An arrow `f : X ⟶ Y` in the refl quiver of a nerve induces an arrow in the category `C`.-/
-def OneTruncation.ofNerve.map {X Y : OneTruncation (nerve C)}
-    (f : X ⟶ Y) : X.left ⟶ Y.left :=
-  eqToHom (congrArg (·.left) f.2.1.symm) ≫ f.1.hom ≫ eqToHom (congrArg (·.left) f.2.2)
-
-/-- The refl prefunctor from the refl quiver underlying a nerve to the refl quiver underlying a
-category.-/
-def OneTruncation.ofNerve.hom : OneTruncation (nerve C) ⥤rq C where
-  obj := (·.left)
-  map := OneTruncation.ofNerve.map
-  map_id := fun X : ComposableArrows _ 0 => by
-    obtain ⟨x, rfl⟩ := X.mk₀_surjective
-    simp [map]; rfl
-
-/-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
-a nerve.-/
-def OneTruncation.ofNerve.inv : C ⥤rq OneTruncation (nerve C) where
-  obj := (.mk₀ ·)
-  map := fun f => by
-    refine ⟨.mk₁ f, ?_, ?_⟩ <;> apply ComposableArrows.ext₀ <;> simp <;> rfl
-  map_id _ := by ext; apply ComposableArrows.ext₁ <;> simp <;> rfl
-
-/-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category.-/
-def OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
-    ReflQuiv.of (OneTruncation (nerve C)) ≅ ReflQuiv.of C := by
-  refine {
-    hom := ofNerve.hom
-    inv := ofNerve.inv (C := C)
-    hom_inv_id := ?_
-    inv_hom_id := ?_
-  }
-  · have H1 {X X' Y : OneTruncation (nerve C)} (f : X ⟶ Y) (h : X = X') :
-        (Eq.rec f h : X' ⟶ Y).1 = f.1 := by cases h; rfl
-    have H2 {X Y Y' : OneTruncation (nerve C)} (f : X ⟶ Y) (h : Y = Y') :
-        (Eq.rec f h : X ⟶ Y').1 = f.1 := by cases h; rfl
-    fapply ReflPrefunctor.ext <;> simp
-    · exact fun _ ↦ ComposableArrows.ext₀ rfl
-    · intro X Y f
-      obtain ⟨f, rfl, rfl⟩ := f
-      apply Subtype.ext
-      simp [ReflQuiv.comp_eq_comp]
-      refine ((H2 _ _).trans ((H1 _ _).trans (ComposableArrows.ext₁ ?_ ?_ ?_))).symm
-      · rfl
-      · rfl
-      · simp [ofNerve.inv, ofNerve.hom, ofNerve.map]; rfl
-  · fapply ReflPrefunctor.ext <;> simp
-    · exact fun _ ↦ rfl
-    · intro X Y f
-      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve.inv, ofNerve.hom, ofNerve.map]
-
-/-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
-category.-/
-@[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
-def OneTruncation.ofNerve.natIso :
-    nerveFunctor.{u,u} ⋙ SSet.oneTruncation ≅ ReflQuiv.forget := by
-  refine NatIso.ofComponents (fun C => OneTruncation.ofNerve C) ?nat
-  · intro C D F
-    fapply ReflPrefunctor.ext <;> simp
-    · exact fun _ ↦ rfl
-    · intro X Y f
-      obtain ⟨f, rfl, rfl⟩ := f
-      unfold SSet.oneTruncation nerveFunctor mapComposableArrows toReflPrefunctor
-      simp [ReflQuiv.comp_eq_comp, ofNerve, ofNerve.hom, ofNerve.map]
-
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
-
-private def ι0 : [0] ⟶ [2] := SimplexCategory.δ (n := 0) 1 ≫ SimplexCategory.δ (n := 1) 1
-private def ι1 : [0] ⟶ [2] := SimplexCategory.δ (n := 0) 0 ≫ SimplexCategory.δ (n := 1) 2
-private def ι2 : [0] ⟶ [2] := SimplexCategory.δ (n := 0) 0 ≫ SimplexCategory.δ (n := 1) 1
-
-private def ev0 {V : SSet} (φ : V _[2]) : SSet.OneTruncation V := V.map ι0.op φ
-private def ev1 {V : SSet} (φ : V _[2]) : SSet.OneTruncation V := V.map ι1.op φ
-private def ev2 {V : SSet} (φ : V _[2]) : SSet.OneTruncation V := V.map ι2.op φ
-
-private def δ0 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 0
-private def δ1 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 1
-private def δ2 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 2
-
-private def ev02 {V : SSet} (φ : V _[2]) : ev0 φ ⟶ ev2 φ :=
-  ⟨V.map δ1.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
-private def ev01 {V : SSet} (φ : V _[2]) : ev0 φ ⟶ ev1 φ :=
-  ⟨V.map δ2.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
-private def ev12 {V : SSet} (φ : V _[2]) : ev1 φ ⟶ ev2 φ :=
-  ⟨V.map δ0.op φ,
-    map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
-    map_map_of_eq V rfl⟩
-
-/-- The 2-simplices in a simplicial set `V` generate a hom relation on the free category on
-the underlying refl quiver of `V`.-/
-inductive HoRel {V : SSet} :
-    (X Y : Cat.freeRefl.obj (ReflQuiv.of (OneTruncation V))) → (f g : X ⟶ Y) → Prop
-  | mk (φ : V _[2]) :
-    HoRel _ _
-      (Quot.mk _ (.cons .nil (ev02 φ)))
-      (Quot.mk _ (.cons (.cons .nil (ev01 φ)) (ev12 φ)))
-
-theorem HoRel.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation V)
-    (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
-    (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.1 = f'.1)
-    (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.1 = g'.1)
-    (h : Y ⟶ Z) (h' : Y' ⟶ Z') (hh : h.1 = h'.1) :
-    HoRel _ _
-      ((Quotient.functor _).map (.cons .nil f))
-      ((Quotient.functor _).map (.cons (.cons .nil g) h)) ↔
-    HoRel _ _
-      ((Quotient.functor _).map (.cons .nil f'))
-      ((Quotient.functor _).map (.cons (.cons .nil g') h')) := by
-  cases hX
-  cases hY
-  cases hZ
-  congr! <;> apply Subtype.ext <;> assumption
-
-/-- The homotopy category of a simplicial set is a quotient of the free category generated by its
-underlying refl quiver by the hom relation `HoRel`.-/
-def hoCat (V : SSet.{u}) : Type u :=
-  Quotient (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation V))) (HoRel (V := V))
-
-instance (V : SSet.{u}) : Category.{u} (hoCat V) := inferInstanceAs (Category (Quotient ..))
-
-/-- A map of simplicial sets induces a functor between homotopy categories.-/
-def hoFunctorMap {V W : SSet.{u}} (F : V ⟶ W) : hoCat V ⥤ hoCat W :=
-  Quotient.lift _ (((SSet.oneTruncation ⋙ Cat.freeRefl).map F) ⋙ Quotient.functor _)
-    (fun X Y f g hfg => by
-      let .mk φ := hfg
-      clear f g hfg
-      simp [Quot.liftOn]
-      apply Quotient.sound
-      convert HoRel.mk (F.app (op [2]) φ) using 0
-      apply HoRel.ext_triangle
-      · exact congrFun (F.naturality ι0.op) φ
-      · exact congrFun (F.naturality ι1.op) φ
-      · exact congrFun (F.naturality ι2.op) φ
-      · exact congrFun (F.naturality δ1.op) φ
-      · exact congrFun (F.naturality δ2.op) φ
-      · exact congrFun (F.naturality δ0.op) φ)
-
-/-- The functor that takes a simplicial set to its homotopy category. This should be isomorphic to
-the similiarly defined `hoFunctor` below, though this has not yet been proven.-/
-def hoFunctor' : SSet.{u} ⥤ Cat.{u,u} where
-  obj V := Cat.of (SSet.hoCat V)
-  map {S T} F := SSet.hoFunctorMap F
-  map_id S := by
-    apply Quotient.lift_unique'
-    simp [hoFunctorMap, Quotient.lift_spec]
-    exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
-  map_comp {S T U} F G := by
-    apply Quotient.lift_unique'
-    simp [hoFunctorMap]
-    rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
-      Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
-end
-end
-
 
 end
 
