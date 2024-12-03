@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Algebraic.Defs
 import Mathlib.RingTheory.Polynomial.Tower
 
