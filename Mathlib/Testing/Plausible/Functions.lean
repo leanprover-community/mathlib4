@@ -40,9 +40,9 @@ their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
 
-universe u v w
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Sort w}
+variable {α : Type u} {β : Type v}
 
 namespace Plausible
 
@@ -202,7 +202,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
         simp only [getElem?_cons_succ, zip_cons_cons, applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
-        · apply h₀; apply List.getElem?_mem h₂
+        · apply h₀; apply List.mem_of_getElem? h₂
 
 theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys)
     (x : α) : List.applyId.{u} (xs.zip ys) x ∈ ys ↔ x ∈ xs := by

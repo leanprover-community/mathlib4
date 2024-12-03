@@ -65,7 +65,7 @@ Here are some additions to this file that could be made in the future:
 ## References
 
 * [Aigner, *Combinatorial Theory, Chapter IV*][aigner1997]
-* [Jacobson, *Basic Algebra I, 8.6*][jacobson1989]
+* [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
 * [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory VI*][doubilet_rota_stanley_vi]
 * [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
@@ -554,8 +554,8 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
       rw [zeta_apply, if_pos (mem_Ici.mp ‹_›), one_mul]
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, mu 𝕜 x y * zeta 𝕜 y z * f z := by simp [mul_sum]
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
-      erw [sum_sigma' (Ici x) fun y ↦ Ici y]
-      erw [sum_sigma' (Ici x) fun z ↦ Icc x z]
+      rw [sum_sigma' (Ici x) fun y ↦ Ici y]
+      rw [sum_sigma' (Ici x) fun z ↦ Icc x z]
       simp only [mul_boole, MulZeroClass.zero_mul, ite_mul, zeta_apply]
       apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
         aesop (add simp mul_assoc) (add unsafe le_trans)
