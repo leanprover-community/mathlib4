@@ -253,13 +253,8 @@ instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
 
-@[simp] theorem and_not_self_and_iff_and_not (a b : Prop) :  a ∧ (a → ¬b) ↔ a ∧ ¬b := by
-  rw [and_congr_right_iff]
-  exact imp_iff_right
-
 theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
-  rw [Xor', or_and_right, not_and, and_not_self_and_iff_and_not, imp_not_comm,
-    and_not_self_and_iff_and_not (b := a) (a := b)]
+  simp_rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or, or_false]
 
 protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
 
