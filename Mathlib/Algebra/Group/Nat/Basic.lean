@@ -20,6 +20,10 @@ namespace Nat
 
 /-! ### Instances -/
 
+instance instMulOneClass : MulOneClass ℕ where
+  one_mul := Nat.one_mul
+  mul_one := Nat.mul_one
+
 instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
