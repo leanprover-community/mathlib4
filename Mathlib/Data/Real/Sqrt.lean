@@ -404,6 +404,12 @@ theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tend
     Tendsto (fun x => √(f x)) l (𝓝 (√x)) :=
   (continuous_sqrt.tendsto _).comp h
 
+-- TODO: generalize to other powers
+lemma tendsto_zero_iff_sq {ι : Type*} {f : ι → ℝ} {𝓕 : Filter ι} (h : ∀ᶠ i in 𝓕, 0 ≤ f i) :
+    Tendsto f 𝓕 (𝓝 0) ↔ Tendsto (f^2) 𝓕 (𝓝 0) :=
+  ⟨fun H ↦ by simpa using H.pow 2,
+    fun H ↦ by simpa using (H.sqrt).congr' (h.mono fun _ ↦ Real.sqrt_sq)⟩
+
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
 nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
