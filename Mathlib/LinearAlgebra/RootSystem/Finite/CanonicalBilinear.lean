@@ -98,6 +98,15 @@ lemma corootForm_apply_apply (x y : N) : P.CorootForm x y =
     ∑ i, P.root' i x * P.root' i y := by
   simp [CorootForm]
 
+lemma toPerfectPairing_apply_apply_Polarization (x y : M) :
+    P.toPerfectPairing y (P.Polarization x) = P.RootForm x y := by
+  simp [RootForm]
+
+lemma toPerfectPairing_apply_CoPolarization (x : N) :
+    P.toPerfectPairing (P.CoPolarization x) = P.CorootForm x := by
+  ext y
+  exact P.flip.toPerfectPairing_apply_apply_Polarization x y
+
 lemma flip_comp_polarization_eq_rootForm :
     P.flip.toLin ∘ₗ P.Polarization = P.RootForm := by
   ext; simp [rootForm_apply_apply, RootPairing.flip]
