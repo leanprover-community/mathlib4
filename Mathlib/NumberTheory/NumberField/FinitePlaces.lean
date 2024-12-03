@@ -60,9 +60,9 @@ noncomputable def vadic_abv : AbsoluteValue K ℝ where
     -- the triangle inequality is implied by the ultrametric one
     apply le_trans _ <| max_le_add_of_nonneg (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation x)))
       (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation y)))
-    have h_mono := StrictMono.monotone (toNNReal_strictMono (one_lt_norm v))
-    rw [← Monotone.map_max h_mono] --max goes inside withZeroMultIntToNNReal
-    exact h_mono (Valuation.map_add v.valuation x y)
+    have h_mono := (toNNReal_strictMono (one_lt_norm v)).monotone
+    rw [← h_mono.map_max] --max goes inside withZeroMultIntToNNReal
+    exact h_mono (v.valuation.map_add x y)
 
 theorem vadic_abv_def {x : K} : vadic_abv v x = toNNReal (norm_ne_zero v) (v.valuation x) := rfl
 
