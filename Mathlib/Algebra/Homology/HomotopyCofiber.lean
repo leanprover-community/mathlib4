@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -190,7 +191,7 @@ lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]
-lemma inlX_d' (i j : ι) (hij : c.Rel i j) (hj : ¬ c.Rel j (c.next j)):
+lemma inlX_d' (i j : ι) (hij : c.Rel i j) (hj : ¬ c.Rel j (c.next j)) :
     inlX φ j i hij ≫ d φ i j = φ.f j ≫ inrX φ j := by
   apply ext_to_X' _ _ hj
   simp [d_sndX φ i j hij]
@@ -239,14 +240,12 @@ noncomputable def inr : G ⟶ homotopyCofiber φ where
 
 section
 
-variable (hc : ∀ j, ∃ i, c.Rel i j)
-
 /-- The composition `φ ≫ mappingCone.inr φ` is homotopic to `0`. -/
-noncomputable def inrCompHomotopy :
+noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     Homotopy (φ ≫ inr φ) 0 where
   hom i j :=
     if hij : c.Rel j i then inlX φ i j hij else 0
-  zero i j hij := dif_neg hij
+  zero _ _ hij := dif_neg hij
   comm j := by
     obtain ⟨i, hij⟩ := hc j
     rw [prevD_eq _ hij, dif_pos hij]
@@ -256,6 +255,8 @@ noncomputable def inrCompHomotopy :
         add_neg_cancel_left, inr_f]
     · rw [dNext_eq_zero _ _  hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
         inlX_d' _ _ _ _ hj, comp_f, inr_f]
+
+variable (hc : ∀ j, ∃ i, c.Rel i j)
 
 lemma inrCompHomotopy_hom (i j : ι) (hij : c.Rel j i) :
     (inrCompHomotopy φ hc).hom i j = inlX φ i j hij := dif_pos hij
@@ -338,7 +339,7 @@ lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
 
 end
 
-lemma descSigma_ext_iff {K : HomologicalComplex C c}
+lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
   constructor
@@ -473,11 +474,12 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
       ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp,
       id_comp, inlX_π_assoc, zero_sub]
 
-lemma biprod_lift_id_sub_id : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=
-  biprod.hom_ext _ _ (by simp) (by simp)
+include hc
 
 lemma inrX_nullHomotopy_f (j : ι) :
     inrX K j ≫ (nullHomotopicMap K).f j = inrX K j ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
+  have : biprod.lift (𝟙 K) (-𝟙 K) = biprod.inl - biprod.inr :=
+    biprod.hom_ext _ _ (by simp) (by simp)
   obtain ⟨i, hij⟩ := hc j
   dsimp [nullHomotopicMap]
   by_cases hj : ∃ (k : ι), c.Rel j k
@@ -492,7 +494,7 @@ lemma inrX_nullHomotopy_f (j : ι) :
     · simp [ι₀]
     · dsimp
       simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
-        biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, biprod_lift_id_sub_id,
+        biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, this,
         sub_f_apply, sub_comp, homotopyCofiber_X, homotopyCofiber.inr_f]
   · simp only [not_exists] at hj
     simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj, homotopyCofiber_X,
@@ -501,7 +503,7 @@ lemma inrX_nullHomotopy_f (j : ι) :
     rw [← cancel_epi (biprodXIso K K j).inv]
     ext
     · simp
-    · simp [biprod_lift_id_sub_id]
+    · simp [this]
 
 lemma nullHomotopicMap_eq : nullHomotopicMap K = π K ≫ ι₀ K - 𝟙 _ := by
   ext i
@@ -530,6 +532,7 @@ noncomputable def homotopy₀₁ : Homotopy (ι₀ K) (ι₁ K) :=
   (Homotopy.ofEq (by simp)).trans (((πCompι₀Homotopy K hc).compLeft (ι₁ K)).trans
     (Homotopy.ofEq (by simp)))
 
+include hc in
 lemma map_ι₀_eq_map_ι₁ {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map (ι₀ K) = H.map (ι₁ K) := by
@@ -542,7 +545,7 @@ end cylinder
 
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
-    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
+    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁)(hc : ∀ j, ∃ i, c.Rel i j)
     [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]
     [HasHomotopyCofiber (biprod.lift (𝟙 F) (-𝟙 F))]
     {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)

@@ -1,19 +1,24 @@
 /-
 Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Abby J. Goldberg, Mario Carneiro
+Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
+import Mathlib.Tactic.LinearCombination.Lemmas
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.Compare
 
 /-!
 # linear_combination Tactic
 
 In this file, the `linear_combination` tactic is created.  This tactic, which
-works over `Ring`s, attempts to simplify the target by creating a linear combination
-of a list of equalities and subtracting it from the target.  This file also includes a
-definition for `linear_combination_config`.  A `linear_combination_config`
-object can be passed into the tactic, allowing the user to specify a
+works over `CommRing`s, attempts to simplify the target by creating a linear combination
+of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
+object can also be passed into the tactic, allowing the user to specify a
 normalization tactic.
+
+Over ordered algebraic objects (such as `LinearOrderedCommRing`), taking linear combinations of
+inequalities is also supported.
 
 ## Implementation Notes
 
@@ -30,114 +35,173 @@ Lastly, calls a normalization tactic on this target.
 
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.LinearCombination
-open Lean hiding Rat
-open Elab Meta Term
+open Lean
+open Elab Meta Term Mathlib Ineq
 
-theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
-theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
-theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
-theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
-theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
-theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
-theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
-theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
-theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
+/-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/
+inductive Expanded
+  /-- A proof of `a = b`, `a ≤ b`, or `a < b` (according to the value of `Ineq`). -/
+  | proof (rel : Ineq) (pf : Syntax.Term)
+  /-- A value, equivalently a proof of `c = c`. -/
+  | const (c : Syntax.Term)
+
+/-- The handling in `linear_combination` of left- and right-multiplication and scalar-multiplication
+and of division all five proceed according to the same logic, specified here: given a proof `p` of
+an (in)equality and a constant `c`,
+* if `p` is a proof of an equation, multiply/divide through by `c`;
+* if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
+  nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
+* if `p` is a proof of a strict inequality, run `positivity` to find a proof that `c` is positive
+  (if possible) or nonnegative (if not), then multiply/divide through by `c`, invoking the
+  positivity or nonnegativity of `c` where needed.
+
+This generic logic takes as a parameter the object `lems`: the four lemmas corresponding to the four
+cases. -/
+def rescale (lems : Ineq.WithStrictness → Name) (ty : Option Expr) (p c : Term) :
+    Ineq → TermElabM Expanded
+  | eq => do
+    let i := mkIdent <| lems .eq
+    .proof eq <$> ``($i $p $c)
+  | le => do
+    let i := mkIdent <| lems .le
+    let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
+    let hc₂ ← Meta.Positivity.proveNonneg e₂
+    .proof le <$> ``($i $p $(← hc₂.toSyntax))
+  | lt => do
+    let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
+    let (strict, hc₂) ← Meta.Positivity.bestResult e₂
+    let i := mkIdent <| lems (.lt strict)
+    let p' : Term ← ``($i $p $(← hc₂.toSyntax))
+    if strict then pure (.proof lt p') else pure (.proof le p')
 
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
-* `some p` means that `p` is a syntax corresponding to a proof of an equation.
-  For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `some (c_add_pf 2 h)`
+* `.proof eq p` means that `p` is a syntax corresponding to a proof of an equation.
+  For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
-* `none` means that the input expression is not an equation but a value;
-  the input syntax itself is used in this case.
+  Similarly, `.proof le p` means that `p` is a syntax corresponding to a proof of a non-strict
+  inequality, and `.proof lt p` means that `p` is a syntax corresponding to a proof of a strict
+  inequality.
+* `.const c` means that the input expression is not an equation but a value.
 -/
-partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Term) := do
-  let mut result ← match stx with
-  | `(($e)) => expandLinearCombo e
+partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
+    TermElabM Expanded := withRef stx do
+  match stx with
+  | `(($e)) => expandLinearCombo ty e
   | `($e₁ + $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_add_c $p₁ $e₂)
-    | none, some p₂ => ``(c_add_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(add_pf $p₁ $p₂)
+    match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
+    | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
+    | .proof rel₁ p₁, .proof rel₂ p₂ =>
+      let i := mkIdent <| Ineq.addRelRelData rel₁ rel₂
+      .proof (max rel₁ rel₂) <$> ``($i $p₁ $p₂)
+    | .proof rel p, .const c | .const c, .proof rel p =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      pure (.proof rel p)
   | `($e₁ - $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_sub_c $p₁ $e₂)
-    | none, some p₂ => ``(c_sub_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(sub_pf $p₁ $p₂)
+    match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
+    | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
+    | .proof rel p, .const c =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      pure (.proof rel p)
+    | .const c, .proof eq p =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      .proof eq <$> ``(Eq.symm $p)
+    | .proof rel₁ p₁, .proof eq p₂ =>
+      let i := mkIdent <| Ineq.addRelRelData rel₁ eq
+      .proof rel₁ <$> ``($i $p₁ (Eq.symm $p₂))
+    | _, .proof _ _ =>
+      throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `(-$e) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(neg_pf $p)
-  | `(← $e) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(Eq.symm $p)
-  | `($e₁ * $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_mul_c $p₁ $e₂)
-    | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
-  | `($e⁻¹) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(inv_pf $p)
-  | `($e₁ / $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_div_c $p₁ $e₂)
-    | none, some p₂ => ``(c_div_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(div_pf $p₁ $p₂)
-  | e => do
-    let e ← elabTerm e none
-    let eType ← inferType e
-    let .true := (← withReducible do whnf eType).isEq | pure none
-    some <$> e.toSyntax
-  return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
+      match ← expandLinearCombo ty e with
+      | .const c => .const <$> `(-$c)
+      | .proof eq p => .proof eq <$> ``(Eq.symm $p)
+      | .proof _ _ =>
+        throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
+  | `($e₁ *%$tk $e₂) => do
+    match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
+    | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
+    | .proof rel₁ p₁, .const c₂ => rescale mulRelConstData ty p₁ c₂ rel₁
+    | .const c₁, .proof rel₂ p₂ => rescale mulConstRelData ty p₂ c₁ rel₂
+    | .proof _ _, .proof _ _ =>
+      throwErrorAt tk "'linear_combination' supports only linear operations"
+  | `($e₁ •%$tk $e₂) => do
+    match ← expandLinearCombo none e₁, ← expandLinearCombo ty e₂ with
+    | .const c₁, .const c₂ => .const <$> ``($c₁ • $c₂)
+    | .proof rel₁ p₁, .const c₂ => rescale smulRelConstData ty p₁ c₂ rel₁
+    | .const c₁, .proof rel₂ p₂ => rescale smulConstRelData none p₂ c₁ rel₂
+    | .proof _ _, .proof _ _ =>
+      throwErrorAt tk "'linear_combination' supports only linear operations"
+  | `($e₁ /%$tk $e₂) => do
+    match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
+    | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
+    | .proof rel₁ p₁, .const c₂ => rescale divRelConstData ty p₁ c₂ rel₁
+    | _, .proof _ _ => throwErrorAt tk "'linear_combination' supports only linear operations"
+  | e =>
+    -- We have the expected type from the goal, so we can fully synthesize this leaf node.
+    withSynthesize do
+      -- It is OK to use `ty` as the expected type even if `e` is a proof.
+      -- The expected type is just a hint.
+      let c ← withSynthesizeLight <| Term.elabTerm e ty
+      match ← try? (← inferType c).ineq? with
+      | some (rel, _) => .proof rel <$> c.toSyntax
+      | none => .const <$> c.toSyntax
 
-theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
-
-theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
-
-theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
-    (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
-
-/-- Implementation of `linear_combination` and `linear_combination2`. -/
-def elabLinearCombination
-    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
-    (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let p ← match input with
-  | none => `(Eq.refl 0)
-  | some e => withSynthesize do
-    match ← expandLinearCombo e with
-    | none => `(Eq.refl $e)
-    | some p => pure p
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
-  Tactic.evalTactic <| ← withFreshMacroScope <|
-  if twoGoals then
-    `(tactic| (
-      refine eq_trans₃ $p ?a ?b
-      case' a => $norm:tactic
-      case' b => $norm:tactic))
-  else
+/-- Implementation of `linear_combination`. -/
+def elabLinearCombination (tk : Syntax)
+    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
+    Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
+  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let (goalRel, ty, _) ← eType.ineq?
+  -- build the specified linear combination of the hypotheses
+  let (hypRel, p) ← match input with
+  | none => Prod.mk eq <$>  `(Eq.refl 0)
+  | some e =>
+    match ← expandLinearCombo ty e with
+    | .const c =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      Prod.mk eq <$> `(Eq.refl 0)
+    | .proof hypRel p => pure (hypRel, p)
+  -- look up the lemma for the central `refine` in `linear_combination`
+  let (reduceLem, newGoalRel) : Name × Ineq := ← do
+    match Ineq.relImpRelData hypRel goalRel with
+    | none => throwError "cannot prove an equality from inequality hypotheses"
+    | some n => pure n
+  -- build the term for the central `refine` in `linear_combination`
+  let p' ← do
     match exp? with
     | some n =>
-      if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-      else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-    | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+      if n.getNat = 1 then
+        `($(mkIdent reduceLem) $p ?a)
+      else
+        match hypRel with
+        | eq => `(eq_of_add_pow $n $p ?a)
+        | _ => throwError
+          "linear_combination tactic not implemented for exponentiation of inequality goals"
+    | _ => `($(mkIdent reduceLem) $p ?a)
+  -- run the central `refine` in `linear_combination`
+  Term.withoutErrToSorry <| Tactic.refineCore p' `refine false
+  -- if we are in a "true" ring, with well-behaved negation, we rearrange from the form
+  -- `[stuff] = [stuff]` (or `≤` or `<`) to the form `[stuff] = 0` (or `≤` or `<`), because this
+  -- gives more useful error messages on failure
+  let _ ← Tactic.tryTactic <| Tactic.liftMetaTactic fun g ↦ g.applyConst newGoalRel.rearrangeData
+  match norm? with
+  -- now run the normalization tactic provided
+  | some norm => Tactic.evalTactic norm
+  -- or the default normalization tactic if none is provided
+  | none => withRef tk <| Tactic.liftMetaFinishingTactic <|
+    match newGoalRel with
+    -- for an equality task the default normalization tactic is (the internals of) `ring1` (but we
+    -- use `.instances` transparency, which is arguably more robust in algebraic settings than the
+    -- choice `.reducible` made in `ring1`)
+    | eq => fun g ↦ AtomM.run .instances <| Ring.proveEq g
+    | le => Ring.proveLE
+    | lt => Ring.proveLT
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -153,83 +217,81 @@ subtracting the given combination of hypotheses.
 syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 
 /--
-`linear_combination` attempts to simplify the target by creating a linear combination
-  of a list of equalities and subtracting it from the target.
-  The tactic will create a linear
-  combination by adding the equalities together from left to right, so the order
-  of the input hypotheses does matter.  If the `normalize` field of the
-  configuration is set to false, then the tactic will simply set the user up to
-  prove their target using the linear combination instead of normalizing the subtraction.
+The `linear_combination` tactic attempts to prove an (in)equality goal by exhibiting it as a
+specified linear combination of (in)equality hypotheses, or other (in)equality proof terms, modulo
+(A) moving terms between the LHS and RHS of the (in)equalities, and (B) a normalization tactic
+which by default is ring-normalization.
 
-Note: The left and right sides of all the equalities should have the same
-  type, and the coefficients should also have this type.  There must be
-  instances of `Mul` and `AddGroup` for this type.
-
-* The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
-  given as a sum/difference of coefficients multiplied by expressions.
-  The coefficients may be arbitrary expressions.
-  The expressions can be arbitrary proof terms proving equalities.
-  Most commonly they are hypothesis names `h1, h2, ...`.
-* `linear_combination (norm := tac) e` runs the "normalization tactic" `tac`
-  on the subgoal(s) after constructing the linear combination.
-  * The default normalization tactic is `ring1`, which closes the goal or fails.
-  * To get a subgoal in the case that it is not immediately provable, use
-    `ring_nf` as the normalization tactic.
-  * To avoid normalization entirely, use `skip` as the normalization tactic.
-* `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
-  combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
-  will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
-  This feature is not supported for `linear_combination2`.
-* `linear_combination2 e` is the same as `linear_combination e` but it produces two
-  subgoals instead of one: rather than proving that `(a - b) - (a' - b') = 0` where
-  `a' = b'` is the linear combination from `e` and `a = b` is the goal,
-  it instead attempts to prove `a = a'` and `b = b'`.
-  Because it does not use subtraction, this form is applicable also to semirings.
-  * Note that a goal which is provable by `linear_combination e` may not be provable
-    by `linear_combination2 e`; in general you may need to add a coefficient to `e`
-    to make both sides match, as in `linear_combination2 e + c`.
-  * You can also reverse equalities using `← h`, so for example if `h₁ : a = b`
-    then `2 * (← h)` is a proof of `2 * b = 2 * a`.
-
-Example Usage:
+Example usage:
 ```
-example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination 1*h1 - 2*h2
+example {a b : ℚ} (h1 : a = 1) (h2 : b = 3) : (a + b) / 2 = 2 := by
+  linear_combination (h1 + h2) / 2
 
-example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination h1 - 2*h2
+example {a b : ℚ} (h1 : a ≤ 1) (h2 : b ≤ 3) : (a + b) / 2 ≤ 2 := by
+  linear_combination (h1 + h2) / 2
 
-example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination (norm := ring_nf) -2*h2
-  /- Goal: x * y + x * 2 - 1 = 0 -/
+example {a b : ℚ} : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
+  linear_combination sq_nonneg (a - b)
 
-example (x y z : ℝ) (ha : x + 2*y - z = 4) (hb : 2*x + y + z = -2)
-    (hc : x + 2*y + z = 2) :
-    -3*x - 3*y - 4*z = 2 := by
-  linear_combination ha - hb - 2*hc
+example {x y z w : ℤ} (h₁ : x * z = y ^ 2) (h₂ : y * w = z ^ 2) :
+    z * (x * w - y * z) = 0 := by
+  linear_combination w * h₁ + y * h₂
 
-example (x y : ℚ) (h1 : x + y = 3) (h2 : 3*x = 7) :
-    x*x*y + y*x*y + 6*x = 3*x*y + 14 := by
-  linear_combination x*y*h1 + 2*h2
+example {x : ℚ} (h : x ≥ 5) : x ^ 2 > 2 * x + 11 := by
+  linear_combination (x + 3) * h
 
-example (x y : ℤ) (h1 : x = -3) (h2 : y = 10) : 2*x = -6 := by
-  linear_combination (norm := skip) 2*h1
-  simp
+example {R : Type*} [CommRing R] {a b : R} (h : a = b) : a ^ 2 = b ^ 2 := by
+  linear_combination (a + b) * h
 
-axiom qc : ℚ
-axiom hqc : qc = 2*qc
+example {A : Type*} [AddCommGroup A]
+    {x y z : A} (h1 : x + y = 10 • z) (h2 : x - y = 6 • z) :
+    2 • x = 2 • (8 • z) := by
+  linear_combination (norm := abel) h1 + h2
 
-example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
-  linear_combination 3 * h a b + hqc
+example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) :
+    x * y = -2 * y + 1 := by
+  linear_combination (norm := ring_nf) -2 * h2
+  -- leaves goal `⊢ x * y + x * 2 - 1 = 0`
 ```
+
+The input `e` in `linear_combination e` is a linear combination of proofs of (in)equalities,
+given as a sum/difference of coefficients multiplied by expressions.
+The coefficients may be arbitrary expressions (with nonnegativity constraints in the case of
+inequalities).
+The expressions can be arbitrary proof terms proving (in)equalities;
+most commonly they are hypothesis names `h1`, `h2`, ....
+
+The left and right sides of all the (in)equalities should have the same type `α`, and the
+coefficients should also have type `α`.  For full functionality `α` should be a commutative ring --
+strictly speaking, a commutative semiring with "cancellative" addition (in the semiring case,
+negation and subtraction will be handled "formally" as if operating in the enveloping ring). If a
+nonstandard normalization is used (for example `abel` or `skip`), the tactic will work over types
+`α` with less algebraic structure: for equalities, the minimum is instances of
+`[Add α] [IsRightCancelAdd α]` together with instances of whatever operations are used in the tactic
+call.
+
+The variant `linear_combination (norm := tac) e` specifies explicitly the "normalization tactic"
+`tac` to be run on the subgoal(s) after constructing the linear combination.
+* The default normalization tactic is `ring1` (for equalities) or `Mathlib.Tactic.Ring.prove{LE,LT}`
+  (for inequalities). These are finishing tactics: they close the goal or fail.
+* When working in algebraic categories other than commutative rings -- for example fields, abelian
+  groups, modules -- it is sometimes useful to use normalization tactics adapted to those categories
+  (`field_simp`, `abel`, `module`).
+* To skip normalization entirely, use `skip` as the normalization tactic.
+* The `linear_combination` tactic creates a linear combination by adding the provided (in)equalities
+  together from left to right, so if `tac` is not invariant under commutation of additive
+  expressions, then the order of the input hypotheses can matter.
+
+The variant `linear_combination (exp := n) e` will take the goal to the `n`th power before
+subtracting the combination `e`. In other words, if the goal is `t1 = t2`,
+`linear_combination (exp := n) e` will change the goal to `(t1 - t2)^n = 0` before proceeding as
+above.  This variant is implemented only for linear combinations of equalities (i.e., not for
+inequalities).
 -/
 syntax (name := linearCombination) "linear_combination"
   (normStx)? (expStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
-  | `(tactic| linear_combination $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
-    elabLinearCombination tac n e
+  | `(tactic| linear_combination%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
+    elabLinearCombination tk tac n e
 
-@[inherit_doc linearCombination]
-syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
-elab_rules : tactic
-  | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
+end Mathlib.Tactic.LinearCombination

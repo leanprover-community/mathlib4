@@ -14,14 +14,14 @@ open System IO
 
 structure HashMemo where
   rootHash : UInt64
-  depsMap  : Lean.HashMap FilePath (Array FilePath) := {}
-  cache    : Lean.HashMap FilePath (Option UInt64) := {}
+  depsMap  : Std.HashMap FilePath (Array FilePath) := {}
+  cache    : Std.HashMap FilePath (Option UInt64) := {}
   hashMap  : HashMap := {}
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
   if hashMap.contains path then hashMap else
-  match (hashMemo.depsMap.find? path, hashMemo.hashMap.find? path) with
+  match (hashMemo.depsMap[path]?, hashMemo.hashMap[path]?) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
@@ -39,7 +39,7 @@ def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath)
   return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
-abbrev HashM := StateT HashMemo IO
+abbrev HashM := StateT HashMemo CacheM
 
 /-- Gets the file paths to Mathlib files imported on a Lean source -/
 def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
@@ -53,8 +53,7 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
   -- revert potential file transformation by git's `autocrlf`
-  let contents := Lake.crlf2lf contents
-  hash contents
+  hash contents.crlfToLf
 
 /--
 Computes the root hash, which mixes the hashes of the content of:
@@ -66,7 +65,7 @@ and the hash of `Lean.versionString`.
 (We hash `Lean.versionString` in case the toolchain changes even though `lean-toolchain` hasn't.
 This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
-def getRootHash : IO UInt64 := do
+def getRootHash : CacheM UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
   let qualifyPath ←
@@ -74,9 +73,9 @@ def getRootHash : IO UInt64 := do
       pure id
     else
       pure ((← mathlibDepPath) / ·)
-  let hashs ← rootFiles.mapM fun path =>
+  let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
-  return hash (hash Lean.githash :: hashs)
+  return hash (hash Lean.githash :: hashes)
 
 /--
 Computes the hash of a file, which mixes:
@@ -86,7 +85,7 @@ Computes the hash of a file, which mixes:
 * The hashes of the imported files that are part of `Mathlib`
 -/
 partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
-  match (← get).cache.find? filePath with
+  match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
@@ -95,7 +94,7 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
-    let fileImports := getFileImports content pkgDirs
+    let fileImports := getFileImports content (← getPackageDirs)
     let mut importHashes := #[]
     for importHash? in ← fileImports.mapM getFileHash do
       match importHash? with
@@ -113,11 +112,10 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
         depsMap := stt.depsMap.insert filePath fileImports })
 
 /-- Files to start hashing from. -/
-def roots : Array FilePath :=
-  #["Mathlib.lean", "MathlibExtras.lean"]
+def roots : Array FilePath := #["Mathlib.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
-def getHashMemo (extraRoots : Array FilePath) : IO HashMemo :=
+def getHashMemo (extraRoots : Array FilePath) : CacheM HashMemo :=
   return (← StateT.run ((roots ++ extraRoots).mapM getFileHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing
