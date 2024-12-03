@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.Util.Superscript
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -30,7 +31,8 @@ the last section, various properties of matrices are explored.
 
 - `EuclideanSpace 𝕜 n`: defined to be `PiLp 2 (n → 𝕜)` for any `Fintype n`, i.e., the space
   from functions to `n` to `𝕜` with the `L²` norm. We register several instances on it (notably
-  that it is a finite-dimensional inner product space).
+  that it is a finite-dimensional inner product space), and provide a `!ₚ[]` notation (for numeric
+  subscripts like `₂`) for the case when the indexing type is `Fin n`.
 
 - `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
   finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
@@ -95,9 +97,42 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
   rfl
 
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
-space use `EuclideanSpace 𝕜 (Fin n)`. -/
+space use `EuclideanSpace 𝕜 (Fin n)`.
+
+For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
+analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
+
+section Notation
+open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
+
+/-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
+`(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
+
+This also works for other subscripts. -/
+syntax (name := PiLp.vecNotation) "!" noWs subscript(term) noWs "[" term,* "]" : term
+macro_rules | `(!$p:subscript[$e:term,*]) => do
+  -- override the `Fin n.succ` to a literal
+  let n := e.getElems.size
+  `((WithLp.equiv $p <| ∀ _ : Fin $(quote n), _).symm ![$e,*])
+
+set_option trace.debug true in
+/-- Unexpander for the `!₂[x, y, ...]` notation. -/
+@[delab app.DFunLike.coe]
+def EuclideanSpace.delabVecNotation : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
+    -- check that the `(WithLp.equiv _ _).symm` is present
+    let p : Term ← withAppFn <| withAppArg do
+      let_expr Equiv.symm _ _ e := ← getExpr | failure
+      let_expr WithLp.equiv _ _ := e | failure
+      withNaryArg 2 <| withNaryArg 0 <| delab
+    -- to be conservative, only allow subscripts which are numerals
+    guard <| p matches `($_:num)
+    let `(![$elems,*]) := ← withAppArg delab | failure
+    `(!$p[$elems,*])
+
+end Notation
 
 theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
