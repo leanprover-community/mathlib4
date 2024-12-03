@@ -127,6 +127,16 @@ lemma hom_bijective {M N : ModuleCat.{v} R} :
   left f g h := by cases f; cases g; simpa using h
   right f := ⟨⟨f⟩, rfl⟩
 
+/-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
+lemma hom_injective {M N : ModuleCat.{v} R} :
+    Function.Injective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
+  hom_bijective.injective
+
+/-- Convenience shortcut for `ModuleCat.hom_bijective.surjective`. -/
+lemma hom_surjective {M N : ModuleCat.{v} R} :
+    Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
+  hom_bijective.surjective
+
 /-- Typecheck a `LinearMap` as a morphism in `ModuleCat R`. -/
 abbrev asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
@@ -136,11 +146,8 @@ abbrev asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
 
 /- Doesn't need to be `@[simp]` since the `simp` tactic applies this rewrite automatically:
 `asHom` and `hom` are reducibly equal to the constructor and projection respectively. -/
-@[simp]
 lemma hom_asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (asHom f).hom = f := rfl
-
-#lint
 
 @[simp]
 lemma asHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
@@ -155,6 +162,7 @@ lemma asHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGrou
     asHom (g.comp f) = asHom f ≫ asHom g :=
   rfl
 
+/- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
 lemma asHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : asHom f x = f x := rfl
 
@@ -186,8 +194,11 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
+/- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
+definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
 
+/- Not a `@[simp]` lemma since the LHS is a categorical arrow and the RHS is a plain function. -/
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = f :=
   rfl
@@ -269,9 +280,13 @@ scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
 @[deprecated ModuleCat.asHom (since := "2024-11-29")] alias ModuleCat.asHomRight := ModuleCat.asHom
 @[deprecated ModuleCat.asHom (since := "2024-11-29")] alias ModuleCat.asHomLeft := ModuleCat.asHom
 
-/-- Reinterpreting a linear map in the category of `R`-modules. -/
+/-- Reinterpreting a linear map in the category of `R`-modules.
+This notation is deprecated: use `↟` instead.
+-/
 scoped[ModuleCat] notation "↾" f:1024 => ModuleCat.asHomRight f
-/-- Reinterpreting a linear map in the category of `R`-modules. -/
+/-- Reinterpreting a linear map in the category of `R`-modules.
+This notation is deprecated: use `↟` instead.
+-/
 scoped[ModuleCat] notation "↿" f:1024 => ModuleCat.asHomLeft f
 
 section
@@ -357,7 +372,7 @@ instance : SMul ℤ (M ⟶ N) where
 @[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommGroup (M ⟶ N) :=
-  Function.Injective.addCommGroup (Hom.hom) hom_bijective.injective
+  Function.Injective.addCommGroup (Hom.hom) hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
@@ -370,6 +385,12 @@ instance : Preadditive (ModuleCat.{v} R) where
 instance forget₂_addCommGrp_additive :
     (forget₂ (ModuleCat.{v} R) AddCommGrp).Additive where
 
+/-- `ModuleCat.Hom.hom` bundled as an additive equivalence. -/
+@[simps!]
+def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
+  { homEquiv with
+    map_add' := fun _ _ => rfl }
+
 end AddCommGroup
 
 section SMul
@@ -379,7 +400,7 @@ variable {M N : ModuleCat.{v} R} {S : Type*} [Monoid S] [DistribMulAction S N] [
 instance : SMul S (M ⟶ N) where
   smul c f := ⟨c • f.hom⟩
 
-@[simp] lemma hom_smul (n : S) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_smul (s : S) (f : M ⟶ N) : (s • f).hom = s • f.hom := rfl
 
 end SMul
 
@@ -390,13 +411,13 @@ variable {M N : ModuleCat.{v} R} {S : Type*} [Semiring S] [Module S N] [SMulComm
 instance Hom.instModule : Module S (M ⟶ N) :=
   Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
-    hom_bijective.injective
+    hom_injective
     (fun _ _ => rfl)
 
 /-- `ModuleCat.Hom.hom` bundled as a linear equivalence. -/
+@[simps]
 def homLinearEquiv : (M ⟶ N) ≃ₗ[S] (M →ₗ[R] N) :=
-  { homEquiv with
-    map_add' := fun _ _ => rfl
+  { homAddEquiv with
     map_smul' := fun _ _ => rfl }
 
 end Module
@@ -555,12 +576,17 @@ def asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
 def Hom.hom₂ {M N P : ModuleCat.{u} R}
-    (f : ModuleCat.Hom M (of R (N ⟶ P))) :
+    -- We write `Hom` instead of `M ⟶ (of R (N ⟶ P))`, otherwise dot notation breaks
+    -- since it is expecting the type of `f` to be `ModuleCat.Hom`, not `Quiver.Hom`.
+    (f : Hom M (of R (N ⟶ P))) :
     M →ₗ[R] N →ₗ[R] P :=
   Hom.hom (by convert (f ≫ asHom homLinearEquiv.toLinearMap))
 
 @[simp] lemma Hom.hom₂_asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     (asHom₂ f).hom₂ = f := rfl
+
+@[simp] lemma asHom₂_hom₂ {M N P : ModuleCat.{u} R} (f : M ⟶ of R (N ⟶ P)) :
+    asHom₂ f.hom₂ = f := rfl
 
 end ModuleCat
 
