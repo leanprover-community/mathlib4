@@ -198,7 +198,7 @@ theorem max_ideal_mk (v : HeightOneSpectrum (𝓞 K)) : maximal_ideal (mk v) = v
   rw [← mk_eq_iff, mk_max_ideal]
 
 theorem mulSupport_Finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
-    (Function.mulSupport fun w : FinitePlace K => w x).Finite := by
+    (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 := by
     have := norm_le_one w.maximal_ideal x
     rw [norm_embedding_eq] at this
