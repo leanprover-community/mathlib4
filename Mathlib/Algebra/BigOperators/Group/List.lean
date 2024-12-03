@@ -205,7 +205,8 @@ theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
 @[to_additive (attr := simp)]
 theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
     (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
-  simp [← take_concat_get', p]
+  rw [← take_concat_get' _ _ p, prod_append]
+  simp
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -633,10 +634,6 @@ end MonoidHom
 
 end MonoidHom
 
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
-lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
-
 namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
@@ -660,22 +657,8 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
 
-@[simp]
-theorem length_flatMap (l : List α) (f : α → List β) :
-    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
-  rw [List.flatMap, length_flatten, map_map]
-
 @[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
-
-lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
-  rw [List.flatMap, countP_flatten, map_map]
-
 @[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
-lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
-
 @[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
 
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the

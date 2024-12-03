@@ -739,10 +739,10 @@ end IndexOf
 section deprecated
 
 @[simp]
-theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_len_le le_rfl
+theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
 
 @[deprecated getElem?_length (since := "2024-06-12")]
-theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
+theorem get?_length (l : List α) : l.get? l.length = none := get?_eq_none le_rfl
 
 @[deprecated (since := "2024-05-03")] alias get?_injective := get?_inj
 
@@ -1021,8 +1021,8 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
     (x.drop m).take n ++ x.drop (n + m) = x.drop m := by rw [Nat.add_comm, drop_take_append_drop]
 
 /-- `take_concat_get` in simp normal form -/
-@[simp] lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
-  l.take i ++ [l[i]] = l.take (i + 1) := by simpa using take_concat_get l i h
+lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
+  l.take i ++ [l[i]] = l.take (i + 1) := by simp
 
 /-- `eq_nil_or_concat` in simp normal form -/
 lemma eq_nil_or_concat' (l : List α) : l = [] ∨ ∃ L b, l = L ++ [b] := by
