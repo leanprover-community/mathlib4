@@ -217,7 +217,6 @@ lemma card_lt_M_of_M_le {n : ℕ} (h : M a N ≤ n) :
   -- M times before that index; since (a i) is the Mth appearance of that value, there are at
   -- least M positive integers appearing M times before (a i), a contradiction because one of
   -- those must be at least M.
-  -- let t : Set ℕ :=
   let t : Set ℕ := {j | a (j + 1) = a i} ∩ ↑(Finset.range i)
   have ht'inj : Set.InjOn a t :=
     (hc.injOn_setOf_apply_add_one_eq_of_M_le hi1).mono Set.inter_subset_left
