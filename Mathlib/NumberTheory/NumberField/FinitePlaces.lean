@@ -170,7 +170,8 @@ theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
   rfl
 
 theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : FinitePlace K, w x = r) ↔
-    ∀ v : HeightOneSpectrum (𝓞 K), ‖embedding v x‖ = r := Set.forall_subtype_range_iff
+    ∀ v : HeightOneSpectrum (𝓞 K), ‖embedding v x‖ = r :=
+  Set.forall_subtype_range_iff
 
 theorem le_iff_le (x : K) (r : ℝ) : (∀ w : FinitePlace K, w x ≤ r) ↔
     ∀ v : HeightOneSpectrum (𝓞 K), ‖embedding v x‖ ≤ r := Set.forall_subtype_range_iff
