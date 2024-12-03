@@ -282,7 +282,7 @@ lemma getElem_leftInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
     (lis ω)[j]'(by simp[h]) =
     cs.wordProd (List.take j ω) * s ω[j] * (cs.wordProd (List.take j ω))⁻¹ := by
   rw [← List.getD_eq_getElem (lis ω) 1, getD_leftInvSeq]
-  simp[h]
+  simp
 
 theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((ris ω).getD j 1) * ((ris ω).getD j 1) = 1 := by
@@ -457,10 +457,11 @@ lemma getElem_succ_leftInvSeq_alternatingWord
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; linarith)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
-      cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
-  simp only [MulAut.conj]
-  simp [listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc]
-  rw[getElem_alternatingWord_swapIndices i j (2 * p) k]
+    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
+  simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
+    mul_inv_rev, inv_simple, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk,
+    mul_right_inj, mul_left_inj]
+  rw [getElem_alternatingWord_swapIndices i j (2 * p) k]
   omega
 
 theorem getElem_leftInvSeq_alternatingWord
@@ -471,15 +472,18 @@ theorem getElem_leftInvSeq_alternatingWord
   induction k with
   | zero =>
     intro i j
-    simp[alternatingWord,
-      CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp[h])]
+    simp only [CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp [h]),
+      take_zero, wordProd_nil, one_mul, inv_one, mul_one, alternatingWord, concat_eq_append,
+      nil_append, wordProd_singleton]
     apply congr_arg
-    simp[getElem_alternatingWord i j (2 * p) 0 (by simp[h])]
+    simp only [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
+      Even.mul_right, ↓reduceIte]
   | succ k hk =>
     intro i j
-    simp[getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk (by omega),
-    alternatingWord_succ' j i, wordProd_cons]
-    rw[(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
-    simp[mul_assoc]
+    simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk (by omega),
+      MulAut.conj_apply, inv_simple, alternatingWord_succ' j i, even_two, Even.mul_right,
+      ↓reduceIte, wordProd_cons]
+    rw [(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
+    simp [mul_assoc]
 
 end CoxeterSystem
