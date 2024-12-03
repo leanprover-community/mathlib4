@@ -41,7 +41,6 @@ section
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
-set_option quotPrecheck false
 local macro:max (priority := high) "[" n:term "]₂" : term =>
   `((⟨SimplexCategory.mk $n, by dsimp; omega⟩ : SimplexCategory.Truncated 2))
 
@@ -244,8 +243,8 @@ recorded by the composite functor `nerveFunctor₂`.-/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
 
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor₂ ⋙ Truncated.cosk 2` whose
-components `nerve C ≅ (Truncated.cosk 2).obj (nerve₂ C)` shows that nerves of categories are
-2-coskeletal.-/
+components `nerve C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C)` shows that nerves of categories
+are 2-coskeletal.-/
 noncomputable def cosk₂Iso : nerveFunctor.{v, u} ≅ nerveFunctor₂.{v, u} ⋙ Truncated.cosk 2 :=
   NatIso.ofComponents (fun C ↦ (nerve C).isoCoskOfIsCoskeletal 2)
     (fun _ ↦ (coskAdj 2).unit.naturality _)
