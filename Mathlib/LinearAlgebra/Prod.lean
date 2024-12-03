@@ -76,9 +76,9 @@ theorem fst_apply (x : M × M₂) : fst R M M₂ x = x.1 :=
 theorem snd_apply (x : M × M₂) : snd R M M₂ x = x.2 :=
   rfl
 
-lemma coe_fst : ⇑(fst R M M₂) = Prod.fst := rfl
+@[simp, norm_cast] lemma coe_fst : ⇑(fst R M M₂) = Prod.fst := rfl
 
-lemma coe_snd : ⇑(snd R M M₂) = Prod.snd := rfl
+@[simp, norm_cast] lemma coe_snd : ⇑(snd R M M₂) = Prod.snd := rfl
 
 theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x => ⟨(x, 0), rfl⟩
 
