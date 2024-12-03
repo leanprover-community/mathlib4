@@ -25,7 +25,7 @@ variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β} [AddCommMonoid β]
 
 theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     Disjoint (s.filter p) (s.filter q) := by
-  intro t htp htq
+  intro _ htp htq
   simp only [bot_eq_empty, le_eq_subset, subset_empty]
   by_contra hn
   rw [← not_nonempty_iff_eq_empty, not_not] at hn
@@ -39,11 +39,10 @@ theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q 
     (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
   rw [← sum_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
   exact sum_congr (by
-    ext x
+    ext _
     simp only [mem_filter, mem_disjUnion]
     exact and_or_left
-  ) (fun x a ↦ rfl)
-
+  ) (fun _ _ ↦ rfl)
 
 end Filter
 
