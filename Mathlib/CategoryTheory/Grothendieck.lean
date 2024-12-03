@@ -404,7 +404,10 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     simp
     rfl
 
-variable (F) in
+section Pre
+
+variable (F)
+
 /-- Applying a functor `G : D ⥤ C` to the base of the Grothendieck construction induces a functor
 `Grothendieck (G ⋙ F) ⥤ Grothendieck F`. -/
 @[simps]
@@ -414,11 +417,9 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
   map_id X := Grothendieck.ext _ _ (G.map_id _) (by simp)
   map_comp f g := Grothendieck.ext _ _ (G.map_comp _ _) (by simp)
 
-variable (F) in
 @[simp]
 theorem pre_id : pre F (𝟭 C) = 𝟭 _ := rfl
 
-variable (F) in
 /--
 An natural isomorphism between functors `G ≅ H` induces a natural isomorphism between the canonical
 morphism `pre F G` and `pre F H`, up to composition with
@@ -430,7 +431,6 @@ def preNatIso {G H : D ⥤ C} (α : G ≅ H) :
     (fun X => (transportIso ⟨G.obj X.base, X.fiber⟩ (α.app X.base)).symm)
     (fun f => by fapply Grothendieck.ext <;> simp [transport_hom])
 
-variable (F) in
 /--
 Given an equivalence of categories `G`, `preInv _ G` is the (weak) inverse of the `pre _ G.functor`.
 -/
@@ -439,10 +439,11 @@ def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) := 
   rw [← Functor.assoc]
   exact eqToHom (Functor.id_comp F) ≫ (whiskerRight G.counitInv F)
 
+variable {F} in
 lemma pre_comp_map (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
     pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
 
-variable (F) {E : Type*} [Category E] in
+variable {E : Type*} [Category E] in
 @[simp]
 lemma pre_comp (G : D ⥤ C) (H : E ⥤ D) : pre F (H ⋙ G) = pre (G ⋙ F) H ⋙ pre F G := rfl
 
@@ -451,11 +452,10 @@ Let `G` be an equivalence of categories. The functor induced via `pre` by `G.fun
 is naturally isomorphic to the functor induced via `map` by a whiskered version of `G`'s inverse
 unit.
 -/
-protected def preUnitIso (F : C ⥤ Cat) (G : D ≌ C) :
+protected def preUnitIso (G : D ≌ C) :
     map (whiskerRight G.unitInv _) ≅ pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) :=
   preNatIso _ G.unitIso.symm |>.symm
 
-variable (F) in
 /--
 Given a functor `F : C ⥤ Cat` and an equivalence of categories `G : D ≌ C`, the functor
 `pre F G.functor` is an equivalence between `Grothendieck (G.functor ⋙ F)` and `Grothendieck F`.
@@ -479,18 +479,21 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
     ← pre_comp]
     exact preNatIso F G.counitIso.symm |>.symm
 
+variable {F} in
 /--
 Let `F : C ⥤ Cat` be a functor, `G : D ≌ C` an equivalence and `α : F ⟶ F` a natural transformation.
 
 Left-whiskering `α` by `G` and then taking the Grothendieck construction is, up to isomorphism,
 the same as taking the Grothendieck construction of `α` and then conjugating with `pre F G`.
 -/
-def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
+def mapWhiskerLeftIsoConjPreMap (G : D ≌ C) (α : F ⟶ F) :
     map (whiskerLeft G.functor α) ≅
       (preEquivalence F G).functor ⋙ map α ⋙ (preEquivalence F G).inverse := by
   apply Iso.symm
   apply preEquivalence F G |>.congrRight.fullyFaithfulFunctor.preimageIso
   exact isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F G).counitIso
+
+end Pre
 
 section FunctorFrom
 
