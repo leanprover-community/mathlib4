@@ -151,7 +151,7 @@ instance : MonoidWithZeroHomClass (FinitePlace K) K ℝ where
   map_zero w := w.1.map_zero
 
 instance : NonnegHomClass (FinitePlace K) K ℝ where
-  apply_nonneg w _ := w.1.nonneg _
+  apply_nonneg w := w.1.nonneg
 
 @[simp]
 theorem apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x =  ‖embedding v x‖ := rfl
