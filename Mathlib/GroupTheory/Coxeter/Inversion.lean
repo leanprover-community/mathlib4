@@ -282,7 +282,7 @@ lemma getElem_leftInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
     (lis ω)[j]'(by simp[h]) =
     cs.wordProd (List.take j ω) * s ω[j] * (cs.wordProd (List.take j ω))⁻¹ := by
   rw [← List.getD_eq_getElem (lis ω) 1, getD_leftInvSeq]
-  simp
+  simp [h]
 
 theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((ris ω).getD j 1) * ((ris ω).getD j 1) = 1 := by
