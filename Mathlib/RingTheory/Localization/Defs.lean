@@ -10,6 +10,7 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # Localizations of commutative rings
