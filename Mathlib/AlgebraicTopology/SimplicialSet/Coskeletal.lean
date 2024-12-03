@@ -181,9 +181,8 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
   lift s x := lift (X := X) s x
   fac s j := by
     ext x
-    obtain ⟨⟨i, hi⟩, ⟨f⟩, rfl⟩ := j.mk_surjective
+    obtain ⟨⟨i, hi⟩, ⟨f :  _ ⟶ _⟩, rfl⟩ := j.mk_surjective
     obtain ⟨i, rfl⟩ : ∃ j, SimplexCategory.mk j = i := ⟨_, i.mk_len⟩
-    change [i] ⟶ [n] at f
     dsimp at hi ⊢
     apply StrictSegal.spineInjective
     dsimp
