@@ -22,12 +22,11 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 /-- An object `X` is a retract of `Y` if there are morphisms `i : X ⟶ Y` and `r : Y ⟶ X` such
 that `i ≫ r = 𝟙 X`. -/
 structure Retract (X Y : C) where
-  /-- `i : X ⟶ Y` -/
+  /-- the split monomorphism -/
   i : X ⟶ Y
-  /-- `r : Y ⟶ X` -/
+  /-- the split epimorphism -/
   r : Y ⟶ X
-  /-- `i ≫ r = 𝟙 X` -/
-  retract : i ≫ r = 𝟙 X
+  retract : i ≫ r = 𝟙 X := by aesop_cat
 
 namespace Retract
 
@@ -90,11 +89,11 @@ lemma retract_right : h.i.right ≫ h.r.right = 𝟙 Y := Arrow.hom.congr_right 
 lemma fac : h.i.left ≫ g ≫ h.r.right = f := by simp
 
 /-- The top of a retract diagram of morphisms determines a retract of objects. -/
-@[simps]
-def left : Retract X Z where
-  i := h.i.left
-  r := h.r.left
-  retract := h.retract_left
+@[simps!]
+def left : Retract X Z := h.map Arrow.leftFunc
+
+@[reassoc (attr := simp)]
+lemma retract_left : h.i.left ≫ h.r.left = 𝟙 X := h.left.retract
 
 /-- The bottom of a retract diagram of morphisms determines a retract of objects. -/
 @[simps]
