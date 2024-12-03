@@ -84,8 +84,7 @@ noncomputable def lift {X : SSet.{u}} [StrictSegal X] {n}
 
 lemma fac_aux₁ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
-    (x : s.pt)
-    (i : ℕ) (hi : i < n) :
+    (x : s.pt) (i : ℕ) (hi : i < n) :
     X.map (mkOfSucc ⟨i, hi⟩).op (lift s x) =
       s.π.app (strArrowMk₂ (mkOfSucc ⟨i, hi⟩) (by omega)) x := by
   dsimp [lift]
