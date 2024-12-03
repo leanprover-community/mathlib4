@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Ideals in localizations of commutative rings
@@ -234,7 +235,7 @@ theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S
 variable (R) in
 lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
     [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
-    [IsScalarTower R Rₚ Sₚ] (M : Submonoid R) (hM : M ≤ R⁰) [IsLocalization M Rₚ]
+    [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰) [IsLocalization M Rₚ]
     [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S] [IsDomain S] :
     NoZeroSMulDivisors Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=

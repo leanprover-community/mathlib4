@@ -212,7 +212,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   have : IsPrincipalIdealRing Sₚ :=
     IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP0
   have := isIntegrallyClosed_of_isLocalization Rₚ P.primeCompl P.primeCompl_le_nonZeroDivisors
-  have := NoZeroSMulDivisors_of_isLocalization R S Rₚ Sₚ _ P.primeCompl_le_nonZeroDivisors
+  have := NoZeroSMulDivisors_of_isLocalization R S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   have := Module.Finite_of_isLocalization R S Rₚ Sₚ P.primeCompl
   let L := FractionRing S
   let g : Sₚ →+* L := IsLocalization.map _ (M := P') (T := S⁰) (RingHom.id S) h
