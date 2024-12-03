@@ -106,6 +106,12 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
   subst w
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): The proof from here used to just be `simp`.
   simp only [map_add, add_right_eq_self]
+  -- TODO: add a `@[simp]` lemma along the lines of:
+  -- ```
+  -- lemma ModuleCat.Hom.cokernel_condition : (cokernel.π g).hom (g.hom x) = 0
+  -- ```
+  -- ideally generated for all concrete categories (using a metaprogram like `@[elementwise]`?).
+  -- See also: https://github.com/leanprover-community/mathlib4/pull/19511#discussion_r1867083077
   change ((factorThruImageSubobject f) ≫ g ≫ (cokernel.π g)).hom l = 0
   simp
 
