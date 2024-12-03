@@ -126,7 +126,7 @@ theorem norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem norm_eq_one_iff_not_mem (x : 𝓞 K) : ‖(embedding v) x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def, vadic_abv_def, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.valuation (x : K))
-    (norm_ne_zero v) (Ne.symm (ne_of_lt (one_lt_norm v))), valuation_eq_intValuationDef,
+    (norm_ne_zero v) (one_lt_norm v).ne', valuation_eq_intValuationDef,
     ← dvd_span_singleton, ← intValuation_lt_one_iff_dvd, not_lt]
   exact Iff.symm (LE.le.ge_iff_eq (intValuation_le_one v x))
 
