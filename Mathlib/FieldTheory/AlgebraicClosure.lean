@@ -111,7 +111,7 @@ instance isIntegralClosure : IsIntegralClosure (algebraicClosure F E) F E :=
 
 end algebraicClosure
 
-theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
+protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
     Transcendental (algebraicClosure F E) a :=
   ha.extendScalars Subtype.val_injective
 
