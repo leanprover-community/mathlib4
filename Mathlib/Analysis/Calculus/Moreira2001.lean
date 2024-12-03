@@ -89,32 +89,39 @@ theorem ftaylorSeriesWithin_insert {x : E} {s : Set E} {f : E → F} :
   ext y n : 2
   apply iteratedFDerivWithin_insert
 
+theorem HasFTaylorSeriesUpToOn.congr_series {f : E → F} {n : WithTop ℕ∞} {s : Set E}
+    {p q : E → FormalMultilinearSeries 𝕜 E F} (hp : HasFTaylorSeriesUpToOn n f p s)
+    (hpq : ∀ m : ℕ, m ≤ n → EqOn (p · m) (q · m) s) :
+    HasFTaylorSeriesUpToOn n f q s where
+  zero_eq x hx := by simp only [← (hpq 0 (zero_le n) hx), hp.zero_eq x hx]
+  fderivWithin m hm x hx := by
+    refine ((hp.fderivWithin m hm x hx).congr' ?_ hx).congr_fderiv ?_
+    · exact (hpq m hm.le).symm
+    · refine congrArg _ (hpq (m + 1) ?_ hx)
+      exact ENat.add_one_natCast_le_withTop_of_lt hm
+  cont m hm := (hp.cont m hm).congr (hpq m hm).symm
+
 theorem ContDiffWithinAt.hasFTaylorSeriesUpToOn_subset_of_eventually
     {f : E → F} {s t : Set E} {m n : WithTop ℕ∞} {x : E} (h : ContDiffWithinAt 𝕜 n f s x)
     (hle : m ≤ n) (htop : m = ∞ → n = ω) (hs : ∀ᶠ x' in 𝓝[insert x s] x, UniqueDiffWithinAt 𝕜 s x')
     (ht : t ∈ 𝓝[s] x) :
-    ∃ u, IsOpen u ∧ x ∈ u ∧ s ∩ u ⊆ t ∧
-      HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f s) (s ∩ u) := by
-  -- wlog hmem : x ∈ s generalizing s t
-  -- · obtain ⟨u, huo, hxu, hu_sub, hfs⟩ : ∃ u, IsOpen u ∧ x ∈ u ∧ insert x s ∩ u ⊆ insert x t ∧
-  --       HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f (insert x s)) (insert x s) := by
-  --     refine this h.insert ?_ (insert_mem_nhdsWithin_insert ht) (mem_insert _ _)
-  --     rw [insert_idem]
-  --     exact hs.mono fun z hz ↦ hz.mono (subset_insert _ _)
-  --   refine ⟨u, huo, hxu, fun z hz ↦ ?_, ?_⟩
-  --   · rcases eq_or_ne z x with rfl | hne
-  --     · exact mem_of_mem_nhdsWithin hz.1 ht
-  --     · exact (hu_sub ⟨subset_insert _ _ hz.1, hz.2⟩).resolve_left hne
-  --   · simpa only [ftaylorSeriesWithin_insert] using hfs.mono (subset_insert _ _)
+    ∃ u, IsOpen u ∧ x ∈ u ∧ s ∩ u ⊆ t ∧ UniqueDiffOn 𝕜 (insert x s ∩ u) ∧
+      HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f s) (insert x s ∩ u) := by
   rw [nhdsWithin_insert, eventually_sup, eventually_pure] at hs
   rcases h.contDiffOn_inter_isOpen_subset hle htop (inter_mem hs.2 ht)
     with ⟨u, huo, hxu, hu_sub, hu⟩
   rw [subset_inter_iff] at hu_sub
-  refine ⟨u, huo, hxu, hu_sub.2, ?_⟩
-  have : HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f (insert x s ∩ u)) (insert x s ∩ u) := by
-    refine hu.ftaylorSeriesWithin fun z hz ↦ ?_
-    
-
+  have Hunique : UniqueDiffOn 𝕜 (insert x s ∩ u) := by
+    rintro z ⟨rfl | hzs, hzu⟩
+    · exact (hs.1.mono <| subset_insert _ _).inter <| huo.mem_nhds hxu
+    · refine ((hu_sub.1 ⟨hzs, hzu⟩).inter <| huo.mem_nhds hzu).mono ?_
+      gcongr
+      apply subset_insert
+  use u, huo, hxu, hu_sub.2, Hunique
+  refine (hu.ftaylorSeriesWithin Hunique).congr_series fun k hk z hz ↦ ?_
+  simp only [ftaylorSeriesWithin, iteratedFDerivWithin_inter_open huo hz.2,
+    iteratedFDerivWithin_insert]
+  
 theorem iteratedFDerivWithin_comp_of_eventually
     {g : F → G} {f : E → F} {s : Set E} {t : Set F} {n : ℕ} {x₀ : E}
     (hg : ContDiffWithinAt 𝕜 n g t (f x₀))
@@ -125,20 +132,17 @@ theorem iteratedFDerivWithin_comp_of_eventually
     iteratedFDerivWithin 𝕜 n (g ∘ f) s x₀ = ∑ c : OrderedFinpartition n,
       c.compAlongOrderedFinpartition (iteratedFDerivWithin 𝕜 c.length g t (f x₀))
         (fun m ↦ iteratedFDerivWithin 𝕜 (c.partSize m) f s x₀) := by
-  wlog Ht : f x₀ ∈ t ∧ ContDiffOn 𝕜 n g t ∧ UniqueDiffOn 𝕜 t generalizing t
-  · rcases hg.insert.contDiffOn_inter_isOpen_subset le_rfl (by simp) ht
-    
-    rw [← eventually_smallSets_forall] at ht
-    have H := hg.eventually_contDiffOn le_rfl (by simp)
-    
-    rcases hg.contDiffOn' le_rfl (by simp) with ⟨u, huo, hyu, hgu⟩
-    convert @this (insert (f x₀) t ∩ u) _ _ _ _ using 1
-    · done
-    · done
-    · done
-    · done
-    · done
-  sorry
+  rcases hg.hasFTaylorSeriesUpToOn_subset_of_eventually le_rfl (by simp) ht univ_mem
+    with ⟨u, huo, hx₀u, -, -, hu⟩
+  have hmem : f ⁻¹' (t ∩ u) ∈ 𝓝[s] x₀ :=
+    hmaps.and <| hf.continuousWithinAt <| huo.mem_nhds hx₀u
+  rcases hf.hasFTaylorSeriesUpToOn_subset_of_eventually le_rfl (by simp) hs hmem
+    with ⟨v, hvo, hx₀v, hv_sub, hv_unique, hv⟩
+  refine .trans ?_ ((hu.comp hv ?_).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hv_unique
+    ⟨mem_insert .., hx₀v⟩).symm
+  · rw [iteratedFDerivWithin_inter_open hvo hx₀v, iteratedFDerivWithin_insert]
+  · rw [insert_inter_of_mem hx₀v, insert_inter_of_mem hx₀u]
+    exact .insert (mapsTo_iff_subset_preimage.mpr hv_sub) _
 
 theorem iteratedFDerivWithin_comp {g : F → G} {f : E → F} {s : Set E} {t : Set F} {n : ℕ} {x : E}
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (ht : UniqueDiffOn 𝕜 t)
@@ -147,15 +151,12 @@ theorem iteratedFDerivWithin_comp {g : F → G} {f : E → F} {s : Set E} {t : S
     iteratedFDerivWithin 𝕜 n (g ∘ f) s x = ∑ c : OrderedFinpartition n,
       c.compAlongOrderedFinpartition (iteratedFDerivWithin 𝕜 c.length g t (f x))
         (fun m ↦ iteratedFDerivWithin 𝕜 (c.partSize m) f s x) := by
-  -- rw [insert_eq_of_mem (hmaps hx)] at hgu
-  -- rcases hf.contDiffOn' le_rfl (by simp) with ⟨v, hvo, hxv, hfv⟩
-  -- rw [insert_eq_of_mem hx] at hfv
-
-  -- have : ∀ᶠ x' in 𝓝[s] x, f x ∈ 
-  -- rw [← ((hg.ftaylorSeriesWithin ht).comp (hf.ftaylorSeriesWithin hs) hmaps)
-  --   |>.eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hs hx]
-  -- simp only [FormalMultilinearSeries.taylorComp, ftaylorSeriesWithin,
-  --   FormalMultilinearSeries.compAlongOrderedFinpartition]
+  apply iteratedFDerivWithin_comp_of_eventually hg _ hf
+  · rw [insert_eq_of_mem hx]
+    exact eventually_mem_nhdsWithin.mono hs
+  · exact eventually_mem_nhdsWithin.mono hmaps
+  · rw [insert_eq_of_mem (hmaps hx)]
+    exact eventually_mem_nhdsWithin.mono ht
 
 theorem iteratedFDeriv_comp {g : F → G} {f : E → F} {n : ℕ} {x : E} (hg : ContDiffAt 𝕜 n g (f x))
     (hf : ContDiffAt 𝕜 n f x) :
