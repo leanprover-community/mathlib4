@@ -8,7 +8,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Functor CategoryTheory Opposite Pretriangulated
+open Category Functor CategoryTheory Opposite Pretriangulated ComposableArrows
 
 namespace Adjunction
 
@@ -20,7 +20,6 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁,u₁} C] [Category.{v�
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D] {F : C ⥤ D} {G : D ⥤ C} [F.CommShift ℤ] [G.CommShift ℤ]
 
-open ComposableArrows in
 lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
     [CommShift.adjunction_compat ℤ adj] [F.IsTriangulated] (T : Triangle D)
     (dT : T ∈ distinguishedTriangles) (X : C) :
@@ -89,7 +88,6 @@ lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
   exact (homologySequenceComposableArrows₅_exact (preadditiveCoyoneda.obj (op (F.obj X))) _ dT 0 1
     (by simp)).comp_exact _
 
-open ComposableArrows in
 def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjunction_compat ℤ adj]
     [F.IsTriangulated] : G.IsTriangulated := by
   apply Functor.IsTriangulated.mk
