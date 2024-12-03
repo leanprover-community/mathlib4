@@ -363,7 +363,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 
 instance : Add (HomogeneousLocalization 𝒜 x) where
   add :=
-    Quotient.map₂' (· + ·)
+    Quotient.map₂ (· + ·)
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
@@ -376,7 +376,7 @@ instance : Sub (HomogeneousLocalization 𝒜 x) where sub z1 z2 := z1 + -z2
 
 instance : Mul (HomogeneousLocalization 𝒜 x) where
   mul :=
-    Quotient.map₂' (· * ·)
+    Quotient.map₂ (· * ·)
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
@@ -636,8 +636,7 @@ end
 section mapAway
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
-variable {d e : ι} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
-variable {x : A} (hx : x = f * g)
+variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
 variable (𝒜)
 

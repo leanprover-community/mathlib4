@@ -220,17 +220,21 @@ universe u
 
 open Mathlib
 
-axiom app : {α : Type u} → {n m : Nat} → Vector α m → Vector α n → Vector α (m + n)
+axiom app : {α : Type u} → {n m : Nat} →
+  Mathlib.Vector α m → Mathlib.Vector α n → Mathlib.Vector α (m + n)
 
-example (n1 n2 n3 : Nat) (v1 w1 : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 : Vector Nat n2) :
+example (n1 n2 n3 : Nat)
+    (v1 w1 : Mathlib.Vector Nat n1) (w1' : Mathlib.Vector Nat n3) (v2 w2 : Mathlib.Vector Nat n2) :
     n1 = n3 → v1 = w1 → HEq w1 w1' → v2 = w2 → HEq (app v1 v2) (app w1' w2) := by
   cc
 
-example (n1 n2 n3 : Nat) (v1 w1 : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 : Vector Nat n2) :
+example (n1 n2 n3 : Nat)
+    (v1 w1 : Mathlib.Vector Nat n1) (w1' : Mathlib.Vector Nat n3) (v2 w2 : Mathlib.Vector Nat n2) :
     HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app v1 v2) (app w1' w2) := by
   cc
 
-example (n1 n2 n3 : Nat) (v1 w1 v : Vector Nat n1) (w1' : Vector Nat n3) (v2 w2 w : Vector Nat n2) :
+example (n1 n2 n3 : Nat)
+    (v1 w1 v : Mathlib.Vector Nat n1) (w1' : Mathlib.Vector Nat n3) (v2 w2 w : Mathlib.Vector Nat n2) :
     HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app w1' w2) (app v w) →
       app v1 v2 = app v w := by
   cc
