@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-
+import Mathlib.CategoryTheory.Shift.CommShift
 /-!
 # The pullback of a shift by a monoid morphism
 
@@ -102,5 +102,45 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app_assoc,
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
+
+section CommShift
+
+variable (D : Type*) [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+
+def Functor.pullbackShift : PullbackShift C φ ⥤ PullbackShift D φ where
+  obj := F.obj
+  map := F.map
+  map_id := F.map_id
+  map_comp := F.map_comp
+
+noncomputable def Functor.pullbackCommShift : Functor.CommShift (F.pullbackShift φ) A where
+  iso a := by
+    refine NatIso.ofComponents (CommShift.iso (F := F) (φ a)).app ?_
+    intro _ _ _
+    simp only [comp_obj, comp_map, Iso.app_hom]
+    erw [← (CommShift.iso (F := F) (φ a)).hom.naturality]
+    rfl
+  zero := by
+    ext _
+    simp only [comp_obj, NatIso.ofComponents_hom_app, Iso.app_hom, CommShift.isoZero_hom_app]
+    change (F.commShiftIso (φ 0)).hom.app _ = _
+    rw [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero])]
+    simp only [comp_obj, CommShift.isoZero'_hom_app, shiftFunctorZero', Iso.trans_hom, eqToIso.hom,
+      NatTrans.comp_app, id_obj, eqToHom_app, map_comp, Iso.trans_inv, eqToIso.inv, assoc,
+      pullbackShiftFunctorZero_hom_app, pullbackShiftIso, pullbackShiftFunctorZero_inv_app]
+    rfl
+  add a b := by
+    ext X
+    simp only [comp_obj, NatIso.ofComponents_hom_app, Iso.app_hom, CommShift.isoAdd_hom_app]
+    change (F.commShiftIso (φ (a + b))).hom.app _ = _
+    rw [F.commShiftIso_add' (a := φ a) (b := φ b) (by rw [φ.map_add])]
+    conv_rhs => rw [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
+                  pullbackShiftFunctorAdd'_inv_app, pullbackShiftFunctorAdd'_hom_app]
+    simp only [comp_obj, CommShift.isoAdd'_hom_app, pullbackShiftIso, eqToIso_refl, Iso.refl_hom,
+      NatTrans.id_app, Iso.refl_inv, id_comp, map_comp, map_id, assoc]
+    erw [map_id, map_id, map_id, comp_id]; rw [id_comp, id_comp]
+    rfl
+
+end CommShift
 
 end CategoryTheory
