@@ -543,7 +543,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   refine ⟨n, lt_trans ?_ hn⟩
   rw [← ENNReal.inv_pow, ENNReal.inv_lt_inv]
   norm_cast
-  exact n.lt_two_pow
+  exact n.lt_two_pow_self
 
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by

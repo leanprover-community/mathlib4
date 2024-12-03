@@ -51,14 +51,41 @@ lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
 
 @[to_additive (attr := simp, norm_cast)]
-lemma coe_mul_coe [SetLike S G] [DivInvMonoid G] [SubgroupClass S G] (H : S) :
-    H * H = (H : Set G) := by aesop (add simp mem_mul)
-
-@[to_additive (attr := simp, norm_cast)]
 lemma coe_div_coe [SetLike S G] [DivisionMonoid G] [SubgroupClass S G] (H : S) :
     H / H = (H : Set G) := by simp [div_eq_mul_inv]
 
 variable [Group G] [AddGroup A] {s : Set G}
+
+namespace Set
+
+open Subgroup
+
+@[to_additive (attr := simp)]
+lemma mul_subgroupClosure (hs : s.Nonempty) : s * closure s = closure s := by
+  rw [← smul_eq_mul, ← Set.iUnion_smul_set]
+  have h a (ha : a ∈ s) : a • (closure s : Set G) = closure s :=
+    smul_coe_set <| subset_closure ha
+  simp +contextual [h, hs]
+
+open scoped RightActions in
+@[to_additive (attr := simp)]
+lemma subgroupClosure_mul (hs : s.Nonempty) : closure s * s = closure s := by
+  rw [← Set.iUnion_op_smul_set]
+  have h a (ha : a ∈ s) :  (closure s : Set G) <• a = closure s :=
+    op_smul_coe_set <| subset_closure ha
+  simp +contextual [h, hs]
+
+@[to_additive (attr := simp)]
+lemma pow_mul_subgroupClosure (hs : s.Nonempty) : ∀ n, s ^ n * closure s = closure s
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ, mul_assoc, mul_subgroupClosure hs, pow_mul_subgroupClosure hs]
+
+@[to_additive (attr := simp)]
+lemma subgroupClosure_mul_pow (hs : s.Nonempty) : ∀ n, closure s * s ^ n = closure s
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ', ← mul_assoc, subgroupClosure_mul hs, subgroupClosure_mul_pow hs]
+
+end Set
 
 namespace Subgroup
 
@@ -384,8 +411,7 @@ theorem subgroup_mul_singleton {H : Subgroup G} {h : G} (hh : h ∈ H) : (H : Se
 theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (H : Set G) = H := by
   simp [preimage, mul_mem_cancel_left (inv_mem hh)]
 
-theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
-    g • H = H :=
+theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
     fun _ => map_le_iff_le_comap.2 fun _ h => hH.conj_mem _ h _
   (this g).antisymm <| (smul_inv_smul g H).symm.trans_le (map_mono <| this _)
@@ -393,6 +419,15 @@ theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g
 @[simp]
 theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
+
+theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) :
+    H.Normal := by
+  constructor
+  intro n hn g
+  rw [← h g, Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv, MulAut.smul_def,
+    MulAut.conj_apply, inv_inv, mul_assoc, mul_assoc, inv_mul_cancel, mul_one,
+    ← mul_assoc, inv_mul_cancel, one_mul]
+  exact hn
 
 theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
     H.normalCore = ⨅ (g : ConjAct G), g • H := by
