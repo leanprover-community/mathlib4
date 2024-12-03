@@ -12,6 +12,7 @@ import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Properties of group actions involving quotient groups
@@ -530,4 +531,6 @@ instance mulAction [H.Normal] : MulAction (β ⧸ H) α :=
   Function.Surjective.mulActionLeft (QuotientGroup.mk' <| H)
     (QuotientGroup.mk'_surjective <| H) fun _ _ => rfl
 
+end QuotientGroupAction
+end MulAction
 end QuotientGroupAction
