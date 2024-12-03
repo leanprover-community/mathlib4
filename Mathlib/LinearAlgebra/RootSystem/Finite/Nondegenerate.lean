@@ -52,7 +52,7 @@ namespace RootPairing
 variable {ι R M N : Type*}
 
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-[Module R N] (P : RootPairing ι R M N)
+  [Module R N] (P : RootPairing ι R M N)
 
 instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
 

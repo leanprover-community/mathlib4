@@ -161,7 +161,8 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   rw [← hl]
   have hkl : (p.flip (coroot l)) (root k) = 2 := by
     simp only [hl, preReflection_apply, hk, PerfectPairing.flip_apply_apply, map_sub, hp j,
-      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add]
+      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add, LinearMap.sub_apply,
+      LinearMap.smul_apply]
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.bijectiveRight.injective this
