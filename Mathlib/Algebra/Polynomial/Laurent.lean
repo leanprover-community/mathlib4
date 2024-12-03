@@ -585,7 +585,7 @@ end SMulWithZero
 section MulActionWithZero
 
 variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
-(x y : Sˣ)
+  (x y : Sˣ)
 
 @[simp]
 theorem eval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).eval x = (x ^ n).val := by
@@ -614,12 +614,13 @@ theorem eval_C_mul (r : R) : (C r * f).eval x = r • (f.eval x) := by
   | h_C_mul_T n s =>
     rw [← mul_assoc, ← map_mul, eval_C_mul_T_n, eval_C_mul_T_n, mul_smul]
 
+variable (R) in
 /-- Evaluation as an `R`-linear map. -/
 @[simps]
-def leval (R) [Semiring R] [Module R S] (x : Sˣ) : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
-    toFun f := f.eval x
-    map_add' f g := eval_add f g x
-    map_smul' r f := by simp [smul_eq_C_mul]
+def leval : R[T;T⁻¹] →ₗ[R] S where
+  toFun f := f.eval x
+  map_add' f g := eval_add f g x
+  map_smul' r f := by simp [smul_eq_C_mul]
 
 end Module
 
