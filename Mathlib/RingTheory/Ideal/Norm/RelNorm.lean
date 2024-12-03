@@ -172,11 +172,11 @@ instance to a `Field R` instance. -/
 theorem spanNorm_mul_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :
     spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
   refine le_antisymm ?_ (spanNorm_mul_spanNorm_le R _ _)
-  cases' eq_bot_or_top (spanNorm R I) with hI hI
+  rcases eq_bot_or_top (spanNorm R I) with hI | hI
   · rw [hI, spanNorm_eq_bot_iff.mp hI, bot_mul, spanNorm_bot]
     exact bot_le
   rw [hI, Ideal.top_mul]
-  cases' eq_bot_or_top (spanNorm R J) with hJ hJ
+  rcases eq_bot_or_top (spanNorm R J) with hJ | hJ
   · rw [hJ, spanNorm_eq_bot_iff.mp hJ, mul_bot, spanNorm_bot]
   rw [hJ]
   exact le_top
@@ -189,14 +189,12 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I ↦ Subsingleton.elim I ⊤
     simp [this I, this J, this (I * J)]
-  refine eq_of_localization_maximal ?_
-  intro P hP
+  refine eq_of_localization_maximal (fun P hP ↦ ?_)
   by_cases hP0 : P = ⊥
   · subst hP0
     rw [spanNorm_mul_of_bot_or_top]
     intro I
-    refine or_iff_not_imp_right.mpr fun hI ↦ ?_
-    exact (hP.eq_of_le hI bot_le).symm
+    exact or_iff_not_imp_right.mpr fun hI ↦ (hP.eq_of_le hI bot_le).symm
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
   let Rₚ := Localization.AtPrime P
   let Sₚ := Localization P'
@@ -211,21 +209,15 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
   have : IsPrincipalIdealRing Sₚ :=
     IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P hP0
-  have := isIntegrallyClosed_of_isLocalization Rₚ P.primeCompl P.primeCompl_le_nonZeroDivisors
   have := NoZeroSMulDivisors_of_isLocalization R S Rₚ Sₚ P.primeCompl_le_nonZeroDivisors
   have := Module.Finite_of_isLocalization R S Rₚ Sₚ P.primeCompl
   let L := FractionRing S
   let g : Sₚ →+* L := IsLocalization.map _ (M := P') (T := S⁰) (RingHom.id S) h
-  let _ := g.toAlgebra
+  algebraize [g]
   have : IsScalarTower S Sₚ (FractionRing S) := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHom.comp_id])
-  let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
-    P' Sₚ (FractionRing S)
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization P' Sₚ (FractionRing S)
   have : Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) := by
-    have : IsScalarTower R Rₚ (FractionRing R) := IsScalarTower.of_algebraMap_eq'
-      (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.lift_comp])
-    let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
-      P.primeCompl Rₚ (FractionRing R)
     apply Algebra.IsSeparable.of_equiv_equiv
       (FractionRing.algEquiv Rₚ (FractionRing R)).symm.toRingEquiv
       (FractionRing.algEquiv Sₚ (FractionRing S)).symm.toRingEquiv
