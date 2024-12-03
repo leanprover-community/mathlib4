@@ -43,7 +43,7 @@ local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
 set_option quotPrecheck false
 local macro:max (priority := high) "[" n:term "]₂" : term =>
-  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
+  `((⟨SimplexCategory.mk $n, by dsimp; omega⟩ : SimplexCategory.Truncated 2))
 
 open StructuredArrow
 
