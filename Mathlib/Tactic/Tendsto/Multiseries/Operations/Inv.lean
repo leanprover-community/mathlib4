@@ -59,7 +59,7 @@ theorem invSeries'_analytic : analytic invSeries' := by
   simp [analytic, invSeries'_eq_geom, formalMultilinearSeries_geometric_radius]
 
 -- TODO: rewrite
-theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = (1 - x)⁻¹ := by
+theorem invSeries'_toFun_eq {x : ℝ} (hx : |x| < 1) : invSeries'.toFun x = (1 - x)⁻¹ := by
   simp [toFun, invSeries'_eq_geom]
   have := hasFPowerSeriesOnBall_inv_one_sub ℝ ℝ
   have := HasFPowerSeriesOnBall.sum this (y := x)
@@ -117,8 +117,8 @@ theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
         exact h_coef
 
 theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
-    (h_basis : WellOrderedBasis basis) (h_wo : ms.WellOrdered)
-    (h_trimmed : ms.Trimmed) (h_approx : ms.Approximates F) : ms.inv'.Approximates (F⁻¹) := by
+    (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed) : ms.inv'.Approximates (F⁻¹) := by
   cases basis with
   | nil =>
     unfold inv'
@@ -141,7 +141,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
       have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 :=
         eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
-          (WellOrderedBasis_tail h_basis)
+          (h_basis.tail)
       have h_basis_hd_pos : ∀ᶠ x in atTop, 0 < basis_hd x :=
         basis_head_eventually_pos h_basis
       simp [inv']
@@ -156,13 +156,13 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         simp [← Real.rpow_add h_basis_hd_pos]
       apply mulMonomial_Approximates h_basis
       swap
-      · exact inv'_Approximates (WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
+      · exact inv'_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       have : ((neg tl).mulMonomial coef.inv' (-exp)).Approximates (fun x ↦ C⁻¹ x *
           (basis_hd x)^(-exp) * -(F x - basis_hd x ^ exp * C x))
           (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
-        · exact inv'_Approximates (WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
+        · exact inv'_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       apply Approximates_of_EventuallyEq
         (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x)) at this
       swap
@@ -176,8 +176,8 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       apply Approximates_of_EventuallyEq
         (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
       · simp only [EventuallyEq]
-        apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-        intro x ⟨_, h_basis_hd_pos⟩
+        apply Eventually.mono h_basis_hd_pos
+        intro x h_basis_hd_pos
         simp [Real.rpow_neg h_basis_hd_pos.le]
         ring
       apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘
@@ -187,8 +187,8 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
           apply Tendsto.const_sub
           apply Tendsto.congr' (f₁ := F / (fun k ↦ C k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
-            apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-            intro x ⟨_, h_basis_hd_pos⟩
+            apply Eventually.mono h_basis_hd_pos
+            intro x h_basis_hd_pos
             simp [Real.rpow_neg h_basis_hd_pos.le]
             ring
           rw [← isEquivalent_iff_tendsto_one]
@@ -232,18 +232,18 @@ theorem div_WellOrdered {basis : Basis} {x y : PreMS basis}
   exact inv'_WellOrdered hy_wo
 
 theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-    (h_basis : WellOrderedBasis basis)
+    (h_basis : WellFormedBasis basis)
     (hY_wo : Y.WellOrdered)
     (hY_trimmed : Y.Trimmed)
     (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY)
     : (X.div Y).Approximates (fX / fY) := by
   unfold div
   apply mul_Approximates h_basis hX_approx
-  exact inv'_Approximates h_basis hY_wo hY_trimmed hY_approx
+  exact inv'_Approximates h_basis hY_wo hY_approx hY_trimmed
 
 end PreMS
 
--- noncomputable def inv (x : MS) (h_basis : WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) :
+-- noncomputable def inv (x : MS) (h_basis : WellFormedBasis x.basis) (h_trimmed : x.Trimmed) :
 --     MS where
 --   basis := x.basis
 --   val := x.val.inv'

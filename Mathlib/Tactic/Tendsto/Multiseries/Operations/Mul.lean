@@ -2082,7 +2082,7 @@ mutual
   theorem mulMonomial_Approximates {basis_hd : _} {basis_tl : _} {B M : ℝ → ℝ}
         {b : PreMS (basis_hd :: basis_tl)}
         {m_coef : PreMS basis_tl} {m_exp : ℝ}
-        (h_basis : WellOrderedBasis (basis_hd :: basis_tl))
+        (h_basis : WellFormedBasis (basis_hd :: basis_tl))
         (hb_approx : b.Approximates B)
         (hm_approx : m_coef.Approximates M) :
       (mulMonomial b m_coef m_exp).Approximates (fun x ↦ (M x) * (basis_hd x)^m_exp * (B x)) := by
@@ -2113,13 +2113,13 @@ mutual
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
         constructor
-        · apply mul_Approximates (WellOrderedBasis_tail h_basis) hm_approx h_coef_approx
+        · apply mul_Approximates (h_basis.tail) hm_approx h_coef_approx
         constructor
         · apply majorated_of_EventuallyEq hf_eq
           rw [show m_exp + b_exp = 0 + m_exp + b_exp by simp]
           apply mul_majorated
           · apply mul_majorated
-            · exact Approximates_coef_isLittleO_head hm_approx h_basis
+            · exact Approximates_coef_majorated_head hm_approx h_basis
             · apply majorated_self
               apply basis_tendsto_top h_basis
               simp
@@ -2146,7 +2146,7 @@ mutual
       {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {exp : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
       {fB fM : Fin k → (ℝ → ℝ)}
-      (h_basis : WellOrderedBasis (basis_hd :: basis_tl))
+      (h_basis : WellFormedBasis (basis_hd :: basis_tl))
       (hB_approx : ∀ j, (BM j).1.Approximates (fB j))
       (hM_approx : ∀ j, (BM j).2.1.Approximates (fM j))
       (h_cons : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = Seq.cons (exp, coef) tl) :
@@ -2196,14 +2196,14 @@ mutual
           rw [h2] at h1
           simp [Seq.cons_eq_cons] at h1
           rw [← h1.left]
-          apply mul_Approximates (WellOrderedBasis_tail h_basis)
+          apply mul_Approximates (h_basis.tail)
           · apply hM_approx
           · exact h3.left
         · simp
           exact zero_Approximates_zero
 
   theorem mul_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-      (h_basis : WellOrderedBasis basis)
+      (h_basis : WellFormedBasis basis)
       (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
       (X.mul Y).Approximates (fX * fY) := by
     cases basis with
@@ -2293,7 +2293,7 @@ mutual
             subst h_exp h_coef h_tl
             use XC * YC
             constructor
-            · apply mul_Approximates (WellOrderedBasis_tail h_basis) hX_coef_approx
+            · apply mul_Approximates (h_basis.tail) hX_coef_approx
                 hY_coef_approx
             constructor
             · apply majorated_of_EventuallyEq hf_eq
@@ -2488,7 +2488,7 @@ mutual
                   · congr 2 <;> exact Eq.refl _
                   constructor
                   · rw [← h_right_eq.1.2]
-                    exact mul_Approximates (WellOrderedBasis_tail h_basis)
+                    exact mul_Approximates (h_basis.tail)
                       hX_coef_approx hY_coef_approx
                   constructor
                   · apply majorated_of_EventuallyEq hf_eq
@@ -2570,7 +2570,7 @@ mutual
                   · apply add_Approximates
                     · exact h_left_coef_approx
                     · rw [← h_right_eq.1.2]
-                      apply mul_Approximates (WellOrderedBasis_tail h_basis) hX_coef_approx
+                      apply mul_Approximates (h_basis.tail) hX_coef_approx
                         hY_coef_approx
                   constructor
                   · apply majorated_of_EventuallyEq hf_eq
@@ -2704,7 +2704,7 @@ end
 end PreMS
 
 -- noncomputable def mul (x y : MS) (h_basis_eq : y.basis = x.basis)
---     (h_basis_wo : WellOrderedBasis x.basis) : MS where
+--     (h_basis_wo : WellFormedBasis x.basis) : MS where
 --   basis := x.basis
 --   val := x.val.mul (h_basis_eq ▸ y.val)
 --   F := x.F * y.F

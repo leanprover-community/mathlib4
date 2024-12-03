@@ -19,6 +19,20 @@ namespace PreMS
 
 open Stream' Seq
 
+/-- Addition for multiseries. It merges multiseries `x` and `y` maintaining the correct order of
+exponents. It is defined corecursively as following:
+* `add x [] = x`
+* `add [] y = y`
+* `
+  add ((x_exp, x_coef) :: x_tl) ((y_exp, y_coef) :: y_tl) =
+    if x_exp > y_exp then
+      (x_exp, x_coef) :: (x_tl.add y)
+    else if y_exp > x_exp then
+      (y_exp, y_coef) :: (x.add y_tl)
+    else
+      (x_exp, x_coef.add y_coef) :: (x_tl.add y_tl)
+  `
+-/
 noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   match basis with
   | [] => a + b
@@ -38,35 +52,23 @@ noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
           some ((x_exp, x_coef.add y_coef), (x_tl, y_tl))
     Seq.corec g (a, b)
 
+/-- Subtraction for multiseries, defined as `a - b = a + (-b)`. -/
 noncomputable def sub {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   a.add b.neg
 
-noncomputable instance instAdd {basis : List (ℝ → ℝ)} : Add (PreMS basis) where
+/-- This instance is needed to create instance for `AddCommMonoid (PreMS basis)`, which is
+necessary for using `abel` tactic in our proofs. -/
+noncomputable instance instAdd {basis : Basis} : Add (PreMS basis) where
   add := add
 
--- TODO: can I get rid of it?
-noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} :
+/-- This instance is copy of the previous. But without it `Add (PreMS (basis_hd :: basis_tl))` can
+not be inferred. -/
+noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     Add (PreMS (basis_hd :: basis_tl)) :=
   instAdd
 
 -- theorems
 open Filter Asymptotics
-
-scoped instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Zero (PreMS (basis_hd :: basis_tl)) :=
-  instZero
-
-@[simp]
-theorem noConfusion_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl}
-    {tl : PreMS (basis_hd :: basis_tl)} :
-    (Seq.cons hd tl) ≠ (0 : PreMS (basis_hd :: basis_tl)) := by
-  rw [show (0 : PreMS (basis_hd :: basis_tl)) = Seq.nil by rfl]
-  simp
-
-@[simp]
-theorem noConfusion_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : ℝ × PreMS basis_tl}
-    {tl : PreMS (basis_hd :: basis_tl)} :
-    (0 : PreMS (basis_hd :: basis_tl)) ≠ (Seq.cons hd tl) := by
-  exact noConfusion_zero.symm
 
 @[simp]
 theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
@@ -137,6 +139,8 @@ private theorem add_zero' {basis : Basis} {ms : PreMS basis} :
   | nil => simp [zero]
   | cons => simp [zero]
 
+/-- Auxillary definition. It is "unfolded" version of `add` without `corec` in body. In the
+`add_unfold` we show that `add x y = add' x y`. -/
 noncomputable def add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (x y : PreMS (basis_hd :: basis_tl)) :
     (PreMS (basis_hd :: basis_tl)) :=
@@ -166,6 +170,7 @@ theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (bas
     rfl
   )
 
+/-- `((X_exp, X_coef) :: X_tl) + Y = (X_exp, X_coef) :: (X_tl + Y)` when `X_exp > Y.leadingExp`. -/
 theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_coef : PreMS basis_tl}
     {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_exp) :
     HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl) Y =
@@ -180,6 +185,7 @@ theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} 
     · exfalso
       linarith
 
+/-- `X + ((Y_exp, Y_coef) :: Y_tl) = (Y_exp, Y_coef) :: (X + Y_tl)` when `Y_exp > X.leadingExp`. -/
 theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ} {Y_coef : PreMS basis_tl}
     {Y_tl X : PreMS (basis_hd :: basis_tl)} (h_lt : X.leadingExp < Y_exp) :
     X + (Seq.cons (Y_exp, Y_coef) Y_tl) = Seq.cons (Y_exp, Y_coef) (X + Y_tl) := by
@@ -209,6 +215,7 @@ theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   rw [add_unfold, add']
   simp
 
+/-- `add` commutes with `mulConst`. -/
 theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
     (X + Y).mulConst c = (X.mulConst c) + Y.mulConst c := by
   cases basis with
@@ -274,6 +281,7 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
         · exact Eq.refl _
         · simp
 
+/-- Addition is commutative. -/
 private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     X + Y = Y + X := by
   cases basis with
@@ -329,6 +337,7 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
       · exact Eq.refl _
       · rfl
 
+/-- Addition is associative. -/
 private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     X + (Y + Z) = (X + Y) + Z := by
   cases basis with
@@ -383,8 +392,8 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
       )
     )
 
--- to be able to use `abel` tactic
-noncomputable instance instAddCommMonoid (basis : List (ℝ → ℝ)) : AddCommMonoid (PreMS basis) where
+/-- This instance is necessary for using `abel` tactic later. -/
+noncomputable instance instAddCommMonoid (basis : Basis) : AddCommMonoid (PreMS basis) where
   zero_add := by
     intro a
     apply zero_add'
@@ -399,7 +408,8 @@ noncomputable instance instAddCommMonoid (basis : List (ℝ → ℝ)) : AddCommM
     apply add_comm'
   nsmul := nsmulRec
 
--- TODO: can I get rid of specifiyng in explicitly?
+/-- This instance is copy of the previous. But without it
+`AddCommMonoid (PreMS (basis_hd :: basis_tl))` can not be inferred. -/
 noncomputable instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     AddCommMonoid (PreMS (basis_hd :: basis_tl)) := by apply instAddCommMonoid
 
@@ -416,6 +426,7 @@ theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS 
     linarith
   }
 
+/-- `X + Y` is well-ordered when `X` and `Y` are well-ordered. -/
 theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
     (h_x_wo : x.WellOrdered) (h_y_wo : y.WellOrdered) : (x + y).WellOrdered := by
   cases basis with
@@ -510,23 +521,24 @@ theorem add_WellOrdered {basis : Basis} {x y : PreMS basis}
             simp only [motive]
             use X_tl, Y_tl
 
-theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
-    (X + Y).Approximates (fX + fY) := by
+/-- If `X` approximates `FX` and `Y` approximates `FY`, then `X + Y` approximates `FX + FY`. -/
+theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {FX FY : ℝ → ℝ}
+    (hX_approx : X.Approximates FX) (hY_approx : Y.Approximates FY) :
+    (X + Y).Approximates (FX + FY) := by
   cases basis with
   | nil =>
     simp [Approximates] at *
     exact EventuallyEq.add hX_approx hY_approx
   | cons basis_hd basis_tl =>
-    let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun f ms =>
-      ∃ (X Y : PreMS (basis_hd :: basis_tl)) (fX fY : ℝ → ℝ),
-        ms = X + Y ∧ f =ᶠ[atTop] fX + fY ∧ X.Approximates fX ∧ Y.Approximates fY
+    let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun F ms =>
+      ∃ (X Y : PreMS (basis_hd :: basis_tl)) (FX FY : ℝ → ℝ),
+        ms = X + Y ∧ F =ᶠ[atTop] FX + FY ∧ X.Approximates FX ∧ Y.Approximates FY
     apply Approximates.coind motive
     · simp only [motive]
-      use X, Y, fX, fY
-    · intro f ms ih
+      use X, Y, FX, FY
+    · intro F ms ih
       simp only [motive] at ih
-      obtain ⟨X, Y, fX, fY, h_ms_eq, hf_eq, hX_approx, hY_approx⟩ := ih
+      obtain ⟨X, Y, FX, FY, h_ms_eq, hf_eq, hX_approx, hY_approx⟩ := ih
       cases' X with X_exp X_coef X_tl
       · apply Approximates_nil at hX_approx
         cases' Y with Y_exp Y_coef Y_tl
@@ -540,16 +552,16 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           conv => rhs; ext x; simp; rw [← add_zero 0]
           apply EventuallyEq.add
           exacts [hX_approx, hY_approx]
-        · obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+        · obtain ⟨CY, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           right
           simp at h_ms_eq
-          replace hf_eq : f =ᶠ[atTop] fY := by
+          replace hf_eq : F =ᶠ[atTop] FY := by
             trans
             · exact hf_eq
-            conv => rhs; ext x; rw [← zero_add (fY x)]
+            conv => rhs; ext x; rw [← zero_add (FY x)]
             apply EventuallyEq.add hX_approx
             rfl
-          use ?_, ?_, ?_, YC
+          use ?_, ?_, ?_, CY
           constructor
           · exact h_ms_eq
           constructor
@@ -558,7 +570,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           · apply majorated_of_EventuallyEq hf_eq
             exact hY_maj
           simp only [motive]
-          use .nil, Y_tl, 0, fun x ↦ fY x - basis_hd x ^ Y_exp * YC x
+          use .nil, Y_tl, 0, fun x ↦ FY x - basis_hd x ^ Y_exp * CY x
           constructor
           · simp
           constructor
@@ -571,18 +583,18 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           · apply Approximates.nil
             rfl
           · exact hY_tl
-      · obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+      · obtain ⟨CX, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
         cases' Y with Y_exp Y_coef Y_tl
         · apply Approximates_nil at hY_approx
           simp at h_ms_eq
-          replace hf_eq : f =ᶠ[atTop] fX := by
+          replace hf_eq : F =ᶠ[atTop] FX := by
             trans
             · exact hf_eq
-            conv => rhs; ext x; rw [← add_zero (fX x)]
+            conv => rhs; ext x; rw [← add_zero (FX x)]
             apply EventuallyEq.add _ hY_approx
             rfl
-          use ?_, ?_, ?_, XC
+          use ?_, ?_, ?_, CX
           constructor
           · exact h_ms_eq
           constructor
@@ -591,7 +603,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           · apply majorated_of_EventuallyEq hf_eq
             exact hX_maj
           simp only [motive]
-          use .nil, X_tl, 0, fun x ↦ fX x - basis_hd x ^ X_exp * XC x
+          use .nil, X_tl, 0, fun x ↦ FX x - basis_hd x ^ X_exp * CX x
           constructor
           · simp
           constructor
@@ -604,10 +616,10 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           · apply Approximates.nil
             rfl
           · exact hX_tl
-        · obtain ⟨YC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+        · obtain ⟨CY, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           rw [add_cons_cons] at h_ms_eq
           split_ifs at h_ms_eq
-          · use X_exp, X_coef, ?_, XC
+          · use X_exp, X_coef, ?_, CX
             constructor
             · exact h_ms_eq
             constructor
@@ -618,7 +630,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               simp
               linarith
             simp only [motive]
-            use X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fun x ↦ fX x - basis_hd x ^ X_exp * XC x, fY
+            use X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fun x ↦ FX x - basis_hd x ^ X_exp * CX x, FY
             constructor
             · rfl
             constructor
@@ -629,12 +641,12 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               conv =>
                 lhs
                 ext x
-                rw [show f x + (-fX x - fY x) = f x - (fX x + fY x) by ring]
+                rw [show F x + (-FX x - FY x) = F x - (FX x + FY x) by ring]
               apply eventuallyEq_iff_sub.mp hf_eq
             constructor
             · exact hX_tl
             · exact hY_approx
-          · use Y_exp, Y_coef, ?_, YC
+          · use Y_exp, Y_coef, ?_, CY
             constructor
             · exact h_ms_eq
             constructor
@@ -645,7 +657,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               simp
               linarith
             simp only [motive]
-            use Seq.cons (X_exp, X_coef) X_tl, Y_tl, fX, fun x ↦ fY x - basis_hd x ^ Y_exp * YC x
+            use Seq.cons (X_exp, X_coef) X_tl, Y_tl, FX, fun x ↦ FY x - basis_hd x ^ Y_exp * CY x
             constructor
             · rfl
             constructor
@@ -656,14 +668,14 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               conv =>
                 lhs
                 ext x
-                rw [show f x + (-fX x - fY x) = f x - (fX x + fY x) by ring]
+                rw [show F x + (-FX x - FY x) = F x - (FX x + FY x) by ring]
               apply eventuallyEq_iff_sub.mp hf_eq
             constructor
             · exact hX_approx
             · exact hY_tl
           · have : X_exp = Y_exp := by linarith
             subst this
-            use X_exp, X_coef + Y_coef, ?_, XC + YC
+            use X_exp, X_coef + Y_coef, ?_, CX + CY
             constructor
             · exact h_ms_eq
             constructor
@@ -674,8 +686,8 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               simp
             simp only [motive]
             use X_tl, Y_tl,
-              fun x ↦ fX x - basis_hd x ^ X_exp * XC x,
-              fun x ↦ fY x - basis_hd x ^ X_exp * YC x
+              fun x ↦ FX x - basis_hd x ^ X_exp * CX x,
+              fun x ↦ FY x - basis_hd x ^ X_exp * CY x
             constructor
             · rfl
             constructor
@@ -686,45 +698,28 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               conv =>
                 lhs
                 ext x
-                rw [show f x + (-fX x - fY x) = f x - (fX x + fY x) by ring]
+                rw [show F x + (-FX x - FY x) = F x - (FX x + FY x) by ring]
               apply eventuallyEq_iff_sub.mp hf_eq
             constructor
             · exact hX_tl
             · exact hY_tl
 
+/-- `X - Y` is well-ordered when `X` and `Y` are well-ordered. -/
 theorem sub_WellOrdered {basis : Basis} {x y : PreMS basis}
     (h_x_wo : x.WellOrdered) (h_y_wo : y.WellOrdered) : (x.sub y).WellOrdered := by
   unfold sub
   apply add_WellOrdered h_x_wo
   apply neg_WellOrdered h_y_wo
 
-theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
-    (X.sub Y).Approximates (fX - fY) := by
+/-- If `X` approximates `FX` and `Y` approximates `FY`, then `X - Y` approximates `FX - FY`. -/
+theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {FX FY : ℝ → ℝ}
+    (hX_approx : X.Approximates FX) (hY_approx : Y.Approximates FY) :
+    (X.sub Y).Approximates (FX - FY) := by
   rw [sub_eq_add_neg]
   unfold sub
   apply add_Approximates hX_approx
   apply neg_Approximates hY_approx
 
 end PreMS
-
--- noncomputable def add (x y : MS) (h_basis : y.basis = x.basis) : MS where
---   basis := x.basis
---   val := x.val.add (h_basis ▸ y.val)
---   F := x.F + y.F
---   h_wo := by
---     have := y.h_wo
---     apply PreMS.add_WellOrdered x.h_wo
---     generalize y.val = z at *
---     generalize y.basis = b at *
---     subst h_basis
---     simpa
---   h_approx := by
---     have := y.h_approx
---     apply PreMS.add_Approximates x.h_approx
---     generalize y.val = z at *
---     generalize y.basis = b at *
---     subst h_basis
---     simpa
 
 end TendstoTactic

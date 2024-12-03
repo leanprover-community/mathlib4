@@ -368,7 +368,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
 
 theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd : ℝ → ℝ}
     {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_basis : WellOrderedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
     (h_neg : ms.leadingExp < 0) {F : ℝ → ℝ}
     (h_approx : ms.Approximates F) : (apply s ms).Approximates (s.toFun ∘ F) := by
   have hF_tendsto_zero : Tendsto F atTop (nhds 0) := by
@@ -389,14 +389,13 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
     · apply WellOrdered.nil
     constructor
     · apply Approximates.nil
-      apply Filter.EventuallyEq.refl
+      rfl
     constructor
     · apply const_WellOrdered
     · apply one_Approximates_one h_basis
   · intro f ms' ih
     simp [motive] at ih
-    obtain ⟨s, h_analytic, ⟨X, Y, fX, fY, hf_eq, h_ms_eq, hX_wo, hX_approx, hY_wo, hY_approx⟩⟩ :=
-      ih
+    obtain ⟨s, h_analytic, ⟨X, Y, fX, fY, hf_eq, h_ms_eq, hX_wo, hX_approx, hY_wo, hY_approx⟩⟩ := ih
     have hF_in_ball : ∀ᶠ x in atTop,
         F x ∈ EMetric.ball 0 (toFormalMultilinearSeries s).radius := by
       cases h_rad : s.toFormalMultilinearSeries.radius with
@@ -446,8 +445,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
           constructor
           · exact h_ms_eq
           · constructor
-            · apply mul_Approximates (WellOrderedBasis_tail h_basis)
-              · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
+            · apply mul_Approximates (h_basis.tail)
+              · apply const_Approximates (h_basis.tail)
               · exact hY_coef
             · constructor
               · apply majorated_of_EventuallyEq (f := fY * toFun (Seq.cons s_hd s_tl) ∘ F)
@@ -477,7 +476,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                 constructor
                 · have := mulMonomial_Approximates h_basis (m_coef := const basis_tl s_hd)
                     (m_exp := 0) hY_tl
-                    (const_Approximates_const (WellOrderedBasis_tail h_basis))
+                    (const_Approximates (h_basis.tail))
                   simpa using this
                 constructor
                 · apply mul_WellOrdered h_wo hY_wo
@@ -622,8 +621,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
             constructor
             · exact h_ms_eq
             constructor
-            · apply mul_Approximates (WellOrderedBasis_tail h_basis)
-              · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
+            · apply mul_Approximates (h_basis.tail)
+              · apply const_Approximates (h_basis.tail)
               · exact hY_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
@@ -663,7 +662,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                   rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                 apply mulMonomial_Approximates h_basis
                 · exact hY_tl
-                · exact const_Approximates_const (WellOrderedBasis_tail h_basis)
+                · exact const_Approximates (h_basis.tail)
             constructor
             · apply mul_WellOrdered
               · exact h_wo
@@ -680,8 +679,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
             constructor
             · apply add_Approximates
               · exact hX_coef
-              · apply mul_Approximates (WellOrderedBasis_tail h_basis)
-                · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
+              · apply mul_Approximates (h_basis.tail)
+                · apply const_Approximates (h_basis.tail)
                 · exact hY_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
@@ -723,7 +722,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                   rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                 apply mulMonomial_Approximates h_basis
                 · exact hY_tl
-                · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
+                · apply const_Approximates (h_basis.tail)
             constructor
             · apply mul_WellOrdered
               · exact h_wo

@@ -11,13 +11,13 @@ open Lean Elab Meta Tactic Qq
 
 namespace TendstoTactic
 
-def basis_wo : WellOrderedBasis [fun (x : ℝ) ↦ x] := by
-  simp [WellOrderedBasis]
+def basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] := by
+  simp [WellFormedBasis]
   exact fun ⦃U⦄ a ↦ a
 
 partial def createMS (body : Expr) : TacticM MS := do
-  let basis : Q(List (ℝ → ℝ)) := q([fun (x : ℝ) ↦ x])
-  let basis_wo : Q(WellOrderedBasis $basis) := q(basis_wo)
+  let basis : Q(Basis) := q([fun (x : ℝ) ↦ x])
+  let basis_wo : Q(WellFormedBasis $basis) := q(basis_wo)
   let zero_aux : Q(0 < List.length $basis) := q(by decide)
   match body.nat? with -- TODO: other numerals
   | .some n =>
@@ -53,7 +53,16 @@ partial def createMS (body : Expr) : TacticM MS := do
     let ⟨ms2, h_trimmed⟩ ← trimMS (← createMS arg2)
     -- if h_basis_eq : ms1.basis =Q ms2.basis then
     return MS.div ms1 ms2 h_trimmed ⟨⟩
-  | _ => throwError f!"Unsupported body in createMS: {body}"
+  | (``HPow.hPow, #[ℝ, ℝ, ℝ, _, arg, exp]) =>
+    let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
+    let .some h_pos ← getLeadingTermCoefPos ms.val
+      | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
+    return MS.rpow ms exp h_trimmed h_pos
+  | _ =>
+    if body.hasLooseBVars then
+      throwError f!"Unsupported body in createMS: {body}"
+    else
+      return MS.const basis body basis_wo
 
 def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(Tendsto $f atTop $limit)) := do
   match f with
@@ -114,7 +123,6 @@ elab "compute_asymptotics" : tactic =>
     let ~q(@Filter.Tendsto ℝ ℝ $f $filter $targetLimit) := target | throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
     let (convertLemma?, convertedFs) ← convertFilter f filter
     let proofs : List (Expr) ← convertedFs.mapM fun f => do
-      dbg_trace f!"f : {← ppExpr f}"
       let ⟨1, fType, f⟩ ← inferTypeQ f | throwError "Unexpected universe level of function in compute_asymptotics"
       let ~q(ℝ → ℝ) := fType | throwError "Only real functions are supported"
       let ⟨limit, h_tendsto⟩ ← computeTendsto f
@@ -122,8 +130,10 @@ elab "compute_asymptotics" : tactic =>
         match targetLimit, limit with
         | ~q(nhds $a), ~q(nhds $b) =>
           let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
-          let extraGoals ← evalTacticAt (← `(tactic| try norm_num1)) h_eq.mvarId!
+          let extraGoals ← evalTacticAt (← `(tactic| try norm_num)) h_eq.mvarId!
           appendGoals extraGoals
+          -- if !extraGoals.isEmpty && (← extraGoals[0]!.getType).isFalse then
+          --   logInfo m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
           pure q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
         | _ =>
           throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"

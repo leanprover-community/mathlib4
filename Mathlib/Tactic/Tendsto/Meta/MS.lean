@@ -10,20 +10,20 @@ structure MS where
   F : Q(ℝ → ℝ)
   h_wo : Q(PreMS.WellOrdered $val)
   h_approx : Q(PreMS.Approximates $val $F)
-  h_basis : Q(WellOrderedBasis $basis)
+  h_basis : Q(WellFormedBasis $basis)
 
 namespace MS
 
-def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(WellOrderedBasis $basis))  : MS where
+def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(WellFormedBasis $basis))  : MS where
   basis := basis
   val := q(PreMS.const $basis $c)
   F := q(fun _ ↦ $c)
   h_wo := q(PreMS.const_WellOrdered)
-  h_approx := q(PreMS.const_Approximates_const $h_basis)
+  h_approx := q(PreMS.const_Approximates $h_basis)
   h_basis := h_basis
 
 def monomial (basis : Q(Basis)) (n : ℕ) (h : Q($n < List.length $basis))
-    (h_basis : Q(WellOrderedBasis $basis)) : MS where
+    (h_basis : Q(WellFormedBasis $basis)) : MS where
   basis := basis
   val := q(PreMS.monomial $basis $n)
   F := q(List.get $basis ⟨$n, $h⟩)
@@ -68,7 +68,7 @@ def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   val := q(PreMS.inv' $x.val)
   F := q($x.F⁻¹)
   h_wo := q(PreMS.inv'_WellOrdered $x.h_wo)
-  h_approx := q(PreMS.inv'_Approximates $x.h_basis $x.h_wo $h_trimmed $x.h_approx)
+  h_approx := q(PreMS.inv'_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
 
 def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) : MS where
@@ -77,6 +77,14 @@ def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis 
   F := q($x.F / $y.F)
   h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
+  h_basis := x.h_basis
+
+def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where
+  basis := x.basis
+  val := q(PreMS.pow $x.val $a)
+  F := q($x.F ^ $a)
+  h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.pow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed $h_pos)
   h_basis := x.h_basis
 
 end MS

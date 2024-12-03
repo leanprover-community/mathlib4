@@ -1,12 +1,15 @@
 import Mathlib.Tactic.Tendsto.Main
 
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Data.Real.Pi.Bounds
+
 section ElimDestruct
 
 open Stream'.Seq TendstoTactic ElimDestruct
 
 def basis : List (ℝ → ℝ) := [fun (x : ℝ) ↦ x]
-theorem basis_wo : WellOrderedBasis basis := by
-  simp [WellOrderedBasis, basis]
+theorem basis_wo : WellFormedBasis basis := by
+  simp [WellFormedBasis, basis]
   exact fun ⦃U⦄ a => a
 
 theorem zero_aux : 0 < basis.length := by simp [basis]
@@ -268,6 +271,66 @@ example :
   compute_asymptotics
 
 example :
+  let f := fun (x : ℝ) ↦ x^(1/2 : ℝ);
+  Tendsto f atTop atTop := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ x^(-Real.pi);
+  Tendsto f atTop (nhds 0) := by
+  simp only
+  have : 0 < Real.pi := Real.pi_pos
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ (1 + x)^(Real.pi) / (3 + 2*x^(314/100 : ℝ))
+  Tendsto f atTop atTop := by
+  simp only
+  have : 0 < Real.pi := Real.pi_pos
+  have : 3141592 / 1000000 < Real.pi := by convert Real.pi_gt_d6; norm_num
+  compute_asymptotics
+
+section Variables
+
+example (a : ℝ) (h : 0 < a) :
+  let f := fun (x : ℝ) ↦ a * x;
+  Tendsto f atTop atTop := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ Real.pi * x;
+  Tendsto f atTop atTop := by
+  simp only
+  have : 0 < Real.pi := Real.pi_pos
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ 1 / (1 + Real.pi * x) - 1 / (1 + 3 * x);
+  Tendsto f atTop (nhds 0) := by
+  simp only
+  have : 0 < Real.pi := Real.pi_pos -- TODO: should not be necessary
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ x / (1 + Real.pi * x) - x / (1 + 3 * x);
+  Tendsto f atTop (nhds (1 / Real.pi - 1/3)) := by
+  simp only
+  have : 3141592 / 1000000 < Real.pi := by convert Real.pi_gt_d6; norm_num
+  have : Real.pi⁻¹ < 1/3 := by
+    rw [inv_lt_comm₀] <;> try linarith
+    simp; linarith
+  -- have : 1 * ((Real.pi * 1)⁻¹ * 1) + -(1 / 3) < 0 := by
+  --   norm_num1
+  compute_asymptotics
+  rfl
+
+end Variables
+
+section DifferentFilters
+
+example :
   let f := fun (x : ℝ) ↦ x/(1 + x);
   Tendsto f atTop (nhds 1) := by
   simp only
@@ -285,8 +348,12 @@ example :
   simp only
   compute_asymptotics
 
-example :
+lemma lol :
   let f := fun (x : ℝ) ↦ 1/(x * x);
   Tendsto f (𝓝[≠] 0) atTop := by
   simp only
   compute_asymptotics
+
+#print axioms lol
+
+end DifferentFilters

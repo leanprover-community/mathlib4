@@ -33,6 +33,21 @@ def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
   e.mvarId!.applyRfl
   return ⟨rhs, e⟩
 
+def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
+    TacticM (Option Q(0 < (PreMS.leadingTerm $ms).coef)) := do
+  match basis with
+  | ~q(List.nil) =>
+    let .pos pf ← compareReal ms | return .none
+    return .some pf
+  | ~q(List.cons $basis_hd $basis_tl) =>
+    match ms with
+    | ~q(PreMS.nil) => return .none
+    | _ =>
+      let ⟨rhs, h_eq⟩ ← getLeadingTermWithProof ms
+      let ~q(⟨$coef, $exps⟩) := rhs | return .none
+      let .pos pf ← compareReal coef | return .none
+      return .some q(Eq.subst (motive := fun (x : Term) ↦ 0 < x.coef) (Eq.symm $h_eq) $pf)
+
 inductive FirstIsResult (x : Q(List ℝ))
 | zero (pf : Q(Term.AllZero $x))
 | pos (pf : Q(Term.FirstIsPos $x))

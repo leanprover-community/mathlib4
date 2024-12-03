@@ -19,6 +19,7 @@ namespace PreMS
 
 open Stream' Seq
 
+/-- `ms.leadingTerm` is its leading monomial. -/
 def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
   match basis with
   | [] => ⟨ms, []⟩
@@ -28,6 +29,12 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
     | some (exp, coef) =>
       let pre := coef.leadingTerm
       ⟨pre.coef, exp :: pre.exps⟩
+
+/-- `Term.coef ms.coef.leadingTerm` is equal to `Term.coef ms.leadingTerm`. -/
+theorem leadingTerm_cons_coef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    (@leadingTerm (basis_hd :: basis_tl) (cons (exp, coef) tl)).coef = coef.leadingTerm.coef := by
+  conv => lhs; simp [leadingTerm]
 
 theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
     ms.leadingTerm.exps.length = basis.length :=
@@ -43,14 +50,15 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
     (basis_hd x)^exp * (leadingTerm coef).toFun basis_tl x := by
   simp [leadingTerm, Term.toFun]
   conv =>
-    congr <;> rw [Term.fun_mul]
+    congr <;> rw [Term.fold_eq_mul]
     lhs
     rw [mul_comm] -- why do I need these rws? Why ring_nf can't solve the goal?
   rw [← mul_assoc]
 
+/-- If `ms` is not flat zero, then eventually `ms.leadingTerm.toFun` is non-zero. -/
 theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
-    (h_basis : WellOrderedBasis basis) :
+    (h_basis : WellFormedBasis basis) :
     ∀ᶠ x in atTop, ms.leadingTerm.toFun basis x ≠ 0 := by
   cases basis with
   | nil =>
@@ -68,24 +76,25 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
       constructor
     · obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_trimmed h_coef_ne_zero
-        (WellOrderedBasis_tail h_basis)
+        (h_basis.tail)
       apply Eventually.mono <| coef_ih.and (basis_head_eventually_pos h_basis)
       rintro x ⟨coef_ih, h_basis_hd_pos⟩
       simp [leadingTerm, Term.toFun, -ne_eq]
       simp only [Term.toFun] at coef_ih
       conv =>
-        rw [Term.fun_mul]
+        rw [Term.fold_eq_mul]
         lhs
         lhs
         rw [mul_comm]
       rw [mul_assoc]
-      rw [Term.fun_mul] at coef_ih
+      rw [Term.fold_eq_mul] at coef_ih
       apply mul_ne_zero
       · exact (Real.rpow_pos_of_pos h_basis_hd_pos _).ne.symm
       · exact coef_ih
 
--- TODO: rewrite without mutual
 mutual
+  /-- If function `F` is approximated by `cons (exp, coef) tl` and `coef` approximates `C`, then
+  `F` is asymptotically equivalent to `C * basis_hd ^ exp`. -/
   theorem IsEquivalent_coef {basis_hd C F : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
       (h_coef : coef.Approximates C)
@@ -94,10 +103,10 @@ mutual
       (h_coef_ne_zero : ¬coef.FlatZero)
       (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^exp * C x))
       (h_comp : leadingExp tl < ↑exp)
-      (h_basis : WellOrderedBasis (basis_hd :: basis_tl)) :
+      (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
       F ~[atTop] fun x ↦ (basis_hd x)^exp * (C x) := by
     have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
-      (WellOrderedBasis_tail h_basis)
+      (h_basis.tail)
     simp [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
@@ -124,9 +133,9 @@ mutual
           apply IsLittleO.trans_eventuallyEq _ this.symm
           have := IsEquivalent.inv coef_ih
           apply IsEquivalent.trans_isLittleO this
-          apply EventuallyEq.trans_isLittleO (Term.fun_inv ((WellOrderedBasis_tail h_basis)))
+          apply EventuallyEq.trans_isLittleO (Term.inv_toFun ((h_basis.tail)))
           apply Term.tail_fun_IsLittleO_head
-          · rw [Term.inv_length, PreMS.leadingTerm_length]
+          · rw [Term.inv_length, leadingTerm_length]
           · exact h_basis
           · simp only [exp']
             linarith
@@ -140,7 +149,7 @@ mutual
             apply eventually_gt_of_tendsto_gt (by simp) h_φ
           apply EventuallyEq.rw (p := fun _ b => b ≠ 0) h_C.symm
           apply Eventually.mono <| h_φ_pos.and (leadingTerm_eventually_ne_zero
-            h_coef_trimmed h_coef_ne_zero ((WellOrderedBasis_tail h_basis)))
+            h_coef_trimmed h_coef_ne_zero ((h_basis.tail)))
           rintro x ⟨h_φ_pos, h⟩
           exact mul_ne_zero h_φ_pos.ne.symm h
         apply Eventually.mono <| h_C_ne_zero.and
@@ -151,10 +160,12 @@ mutual
         apply mul_ne_zero _ h_C_ne_zero
         exact (Real.rpow_pos_of_pos h_basis_pos _).ne.symm
 
+  /-- If `F` is approximated by trimmed multiseries `ms`, then it is asymptotically equivalent to
+  `ms.leadingTerm.toFun`. -/
   theorem IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
       (h_wo : ms.WellOrdered)
       (h_approx : ms.Approximates F) (h_trimmed : ms.Trimmed)
-      (h_basis : WellOrderedBasis basis)
+      (h_basis : WellFormedBasis basis)
       : F ~[atTop] ms.leadingTerm.toFun basis := by
     cases basis with
     | nil =>
@@ -165,28 +176,53 @@ mutual
       cases' ms with exp coef tl
       · have hF := Approximates_nil h_approx
         unfold leadingTerm
-        simp [Term.zero_coef_fun]
+        simp [Term.zero_coef_toFun]
         apply EventuallyEq.isEquivalent (by assumption)
       · obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
         obtain ⟨h_coef_wo, h_comp, _⟩ := WellOrdered_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
-          (WellOrderedBasis_tail h_basis)
+          (h_basis.tail)
         have : F ~[atTop] fun x ↦ (basis_hd x)^exp * (C x) :=
-          PreMS.IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
+          IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
         apply IsEquivalent.trans this
         eta_expand
-        simp_rw [PreMS.leadingTerm_cons_toFun]
+        simp_rw [leadingTerm_cons_toFun]
         apply IsEquivalent.mul IsEquivalent.refl
         exact coef_ih
 end
 
+-- TODO: to another file
+-- TODO: generalize
+lemma eventually_pos_of_IsEquivallent {l : Filter ℝ} {f g : ℝ → ℝ} (h : f ~[l] g)
+    (hg : ∀ᶠ x in l, 0 < g x) : ∀ᶠ x in l, 0 < f x := by
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := Asymptotics.IsEquivalent.exists_eq_mul h
+  have hφ : ∀ᶠ x in l, 1/2 < φ x := by
+    apply eventually_gt_of_tendsto_gt _ hφ_tendsto
+    linarith
+  apply Eventually.mono <| (h_eq.and hφ).and hg
+  intro x ⟨⟨h_eq, hφ⟩, hg⟩
+  rw [h_eq]
+  simp
+  nlinarith
+
+/-- If `f` is approximated by `ms`, and `ms.leadingTerm.coef > 0`, then
+`f` is eventually positive. -/
+theorem eventually_pos_of_coef_pos {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_pos : 0 < ms.leadingTerm.coef) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis):
+    ∀ᶠ x in atTop, 0 < F x := by
+  apply eventually_pos_of_IsEquivallent (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)
+  exact Term.toFun_pos h_basis h_pos
+
+/-- If `f` is approximated by `ms`, and `ms` is not flat zero, then
+`f` is eventually non-zero. -/
 theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
     (h_ne_zero : ¬ ms.FlatZero) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F)
-    (h_trimmed : ms.Trimmed) (h_basis : WellOrderedBasis basis):
+    (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis):
     ∀ᶠ x in atTop, F x ≠ 0 := by
   have := IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis
-  obtain ⟨φ, ⟨hφ_tendsto, h_eq⟩⟩ := Asymptotics.IsEquivalent.exists_eq_mul this
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := Asymptotics.IsEquivalent.exists_eq_mul this
   have hφ : ∀ᶠ x in atTop, 1/2 < φ x := by
     apply eventually_gt_of_tendsto_gt _ hφ_tendsto
     linarith
@@ -200,11 +236,13 @@ theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F
   · linarith
   · exact h_leadingTerm
 
+--------------------------------
+
 theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
     (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates F)
     (h_trimmed : ms.Trimmed)
-    (h_basis : WellOrderedBasis basis)
+    (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_coef : t_coef = 0) :
@@ -217,7 +255,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {F : ℝ →
     (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates F)
     (h_trimmed : ms.Trimmed)
-    (h_basis : WellOrderedBasis basis)
+    (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_exps : Term.AllZero t_exps) :
@@ -225,7 +263,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {F : ℝ →
   apply (IsEquivalent.tendsto_nhds_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
   rw [h_eq]
   apply Term.tendsto_const_of_AllZero _ h_exps
-  · convert PreMS.leadingTerm_length (ms := ms)
+  · convert leadingTerm_length (ms := ms)
     simp [h_eq]
 
 theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
@@ -265,28 +303,28 @@ theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {F : ℝ �
     (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates F)
     (h_trimmed : ms.Trimmed)
-    (h_basis : WellOrderedBasis basis)
+    (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_exps : Term.FirstIsPos t_exps)
     (h_coef : 0 < t_coef) :
     Tendsto F atTop atTop := by
   apply (IsEquivalent.tendsto_atTop_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
-  apply Term.tendsto_top_of_FirstIsPos h_basis PreMS.leadingTerm_length
+  apply Term.tendsto_top_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [h_eq]
 
 theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
     (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates F)
     (h_trimmed : ms.Trimmed)
-    (h_basis : WellOrderedBasis basis)
+    (h_basis : WellFormedBasis basis)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
     (h_exps : Term.FirstIsPos t_exps)
     (h_coef : t_coef < 0) :
     Tendsto F atTop atBot := by
   apply (IsEquivalent.tendsto_atBot_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
-  apply Term.tendsto_bot_of_FirstIsPos h_basis PreMS.leadingTerm_length
+  apply Term.tendsto_bot_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [h_eq]
 
 end PreMS
