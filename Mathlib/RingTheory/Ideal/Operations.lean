@@ -78,6 +78,14 @@ variable (I N)
 theorem top_smul : (⊤ : Ideal R) • N = N :=
   le_antisymm smul_le_right fun r hri => one_smul R r ▸ smul_mem_smul mem_top hri
 
+theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
+    (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
+  suffices LinearMap.range (LinearMap.toSpanSingleton R M x) ≤ M' by
+    rw [← LinearMap.toSpanSingleton_one R M x]
+    exact this (LinearMap.mem_range_self _ 1)
+  rw [LinearMap.range_eq_map, ← hs, map_le_iff_le_comap, Ideal.span, span_le]
+  exact fun r hr ↦ H ⟨r, hr⟩
+
 variable {M' : Type w} [AddCommMonoid M'] [Module R M']
 
 @[simp]

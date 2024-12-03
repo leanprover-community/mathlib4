@@ -200,14 +200,6 @@ protected theorem smul_iInf_le {ι : Sort*} {I : Submodule R A} {t : ι → Subm
     I • iInf t ≤ ⨅ i, I • t i :=
   smul_iInf_le
 
-theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
-    (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
-  suffices LinearMap.range (LinearMap.toSpanSingleton R M x) ≤ M' by
-    rw [← LinearMap.toSpanSingleton_one R M x]
-    exact this (LinearMap.mem_range_self _ 1)
-  rw [LinearMap.range_eq_map, ← hs, map_le_iff_le_comap, Ideal.span, span_le]
-  exact fun r hr ↦ H ⟨r, hr⟩
-
 protected theorem one_smul : (1 : Submodule R A) • N = N := by
   refine le_antisymm (smul_le.mpr fun r hr m hm ↦ ?_) fun m hm ↦ ?_
   · obtain ⟨r, rfl⟩ := hr
