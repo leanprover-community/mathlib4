@@ -73,7 +73,7 @@ variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 /-- The embedding of a number field inside its completion with respect to `v`. -/
 def embedding : K →+* adicCompletion K v :=
-    @UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _
+  @UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _
 
 noncomputable instance instRankOneValuedAdicCompletion :
     Valuation.RankOne (valuedAdicCompletion K v).v where
