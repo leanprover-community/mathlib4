@@ -167,8 +167,7 @@ lemma fac_aux₂ {n : ℕ}
 
 lemma fac_aux₃ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
-    (x : s.pt)
-    (φ : [1] ⟶ [n]) :
+    (x : s.pt) (φ : [1] ⟶ [n]) :
     X.map φ.op (lift s x) = s.π.app (strArrowMk₂ φ (by omega)) x := by
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
     ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by simp),
