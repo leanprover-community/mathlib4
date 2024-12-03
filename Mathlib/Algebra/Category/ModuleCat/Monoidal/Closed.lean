@@ -27,13 +27,13 @@ variable {R : Type u} [CommRing R]
 def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃
       (N ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op M)).obj P) where
-  toFun f := asHom₂ <| LinearMap.compr₂ (TensorProduct.mk R N M) ((β_ N M).hom ≫ f).hom
-  invFun f := (β_ M N).hom ≫ asHom (TensorProduct.lift f.hom₂)
+  toFun f := ofHom₂ <| LinearMap.compr₂ (TensorProduct.mk R N M) ((β_ N M).hom ≫ f).hom
+  invFun f := (β_ M N).hom ≫ ofHom (TensorProduct.lift f.hom₂)
   left_inv f := by
     ext : 1
     apply TensorProduct.ext'
     intro m n
-    simp only [Hom.hom₂_asHom₂, LinearMap.comp_apply, hom_comp, MonoidalCategory.tensorLeft_obj]
+    simp only [Hom.hom₂_ofHom₂, LinearMap.comp_apply, hom_comp, MonoidalCategory.tensorLeft_obj]
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
   right_inv _ := rfl
 
@@ -70,7 +70,7 @@ theorem monoidalClosed_uncurry
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
-    (ihom.ev M).app N = ModuleCat.asHom (TensorProduct.uncurry R M ((ihom M).obj N) N
+    (ihom.ev M).app N = ModuleCat.ofHom (TensorProduct.uncurry R M ((ihom M).obj N) N
       (LinearMap.lcomp _ _ homLinearEquiv.toLinearMap ∘ₗ LinearMap.id.flip)) := by
   rw [← MonoidalClosed.uncurry_id_eq_ev]
   ext : 1
@@ -81,11 +81,11 @@ theorem ihom_ev_app (M N : ModuleCat.{u} R) :
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
 `R`-bilinear map `M ⟶ N ⟶ M ⊗ N`. -/
 theorem ihom_coev_app (M N : ModuleCat.{u} R) :
-    (ihom.coev M).app N = ModuleCat.asHom₂ (TensorProduct.mk _ _ _).flip :=
+    (ihom.coev M).app N = ModuleCat.ofHom₂ (TensorProduct.mk _ _ _).flip :=
   rfl
 
 theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
-    (MonoidalClosed.pre f).app P = asHom (homLinearEquiv.symm.toLinearMap ∘ₗ
+    (MonoidalClosed.pre f).app P = ofHom (homLinearEquiv.symm.toLinearMap ∘ₗ
       LinearMap.lcomp _ _ f.hom ∘ₗ homLinearEquiv.toLinearMap) :=
   rfl
 

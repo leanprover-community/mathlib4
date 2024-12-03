@@ -103,7 +103,7 @@ variable {R} in
 abbrev ofHom {V W : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     [AddCommGroup W] [Module R W] [Module.Finite R W]
     (f : V →ₗ[R] W) : of R V ⟶ of R W :=
-  ModuleCat.asHom f
+  ModuleCat.ofHom f
 
 variable {R} in
 @[ext] lemma hom_ext {V W : FGModuleCat R} {f g : V ⟶ W} (h : f.hom = g.hom) : f = g :=
@@ -132,8 +132,8 @@ def _root_.LinearEquiv.toFGModuleCatIso
     {V W : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     [AddCommGroup W] [Module R W] [Module.Finite R W] (e : V ≃ₗ[R] W) :
     FGModuleCat.of R V ≅ FGModuleCat.of R W where
-  hom := ModuleCat.asHom e.toLinearMap
-  inv := ModuleCat.asHom e.symm.toLinearMap
+  hom := ModuleCat.ofHom e.toLinearMap
+  inv := ModuleCat.ofHom e.symm.toLinearMap
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
 
@@ -226,7 +226,7 @@ open CategoryTheory.MonoidalCategory
 
 /-- The coevaluation map is defined in `LinearAlgebra.coevaluation`. -/
 def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K V :=
-  ModuleCat.asHom <| coevaluation K V
+  ModuleCat.ofHom <| coevaluation K V
 
 theorem FGModuleCatCoevaluation_apply_one :
     (FGModuleCatCoevaluation K V).hom (1 : K) =
@@ -236,7 +236,7 @@ theorem FGModuleCatCoevaluation_apply_one :
 
 /-- The evaluation morphism is given by the contraction map. -/
 def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) :=
-  ModuleCat.asHom <| contractLeft K V
+  ModuleCat.ofHom <| contractLeft K V
 
 theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
@@ -287,9 +287,9 @@ end FGModuleCat
 @[simp] theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (𝟙 G)) = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.asHom f)
+  ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
 @[simp] theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : FGModuleCat.{u} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (𝟙 H)) f = f :=
-  ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.asHom f)
+  ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)

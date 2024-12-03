@@ -36,7 +36,7 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {_ _} f := asHom <| Finsupp.lmapDomain _ _ f
+  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ f
   map_id := by intros; ext : 1; exact Finsupp.lmapDomain_id _ _
   map_comp := by intros; ext : 1; exact Finsupp.lmapDomain_comp _ _ _ _
 
@@ -55,7 +55,7 @@ lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ 
 to a map `f : X ⟶ M`. -/
 noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
-  asHom <| Finsupp.lift M R X f
+  ofHom <| Finsupp.lift M R X f
 
 @[simp]
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
@@ -109,8 +109,8 @@ namespace FreeMonoidal
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
 def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
-  hom := asHom <| Finsupp.lsingle PUnit.unit
-  inv := asHom <| Finsupp.lapply PUnit.unit
+  hom := ofHom <| Finsupp.lsingle PUnit.unit
+  inv := ofHom <| Finsupp.lapply PUnit.unit
   hom_inv_id := by
     ext
     simp [free]

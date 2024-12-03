@@ -121,10 +121,10 @@ variable {k : Type u} [CommRing k] {G : Grp.{u}}
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
-  rw [← LinearMap.comp_assoc, ← ModuleCat.hom_asHom (Y.ρ g), ← ModuleCat.hom_asHom f,
-      ← ModuleCat.hom_comp, ← ModuleCat.hom_asHom (X.ρ g⁻¹), ← ModuleCat.hom_comp,
-      Rep.asHom_ρ, ← ρAut_apply_inv X g, Rep.asHom_ρ, ← ρAut_apply_hom Y g, ← ModuleCat.hom_ext_iff,
-      Iso.inv_comp_eq, ρAut_apply_hom, ← ModuleCat.hom_asHom (X.ρ g),
+  rw [← LinearMap.comp_assoc, ← ModuleCat.hom_ofHom (Y.ρ g), ← ModuleCat.hom_ofHom f,
+      ← ModuleCat.hom_comp, ← ModuleCat.hom_ofHom (X.ρ g⁻¹), ← ModuleCat.hom_comp,
+      Rep.ofHom_ρ, ← ρAut_apply_inv X g, Rep.ofHom_ρ, ← ρAut_apply_hom Y g, ← ModuleCat.hom_ext_iff,
+      Iso.inv_comp_eq, ρAut_apply_hom, ← ModuleCat.hom_ofHom (X.ρ g),
       ← ModuleCat.hom_comp, ← ModuleCat.hom_ext_iff]
   exact comm
 
@@ -132,7 +132,7 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := ⟨ModuleCat.asHom f.val, fun g =>
+  toFun f := ⟨ModuleCat.ofHom f.val, fun g =>
     ModuleCat.hom_ext ((mem_invariants_iff_comm _ g).1 (f.property g))⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

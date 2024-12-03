@@ -29,11 +29,11 @@ section product
 /-- The product cone induced by the concrete product. -/
 def productCone : Fan Z :=
   Fan.mk (ModuleCat.of R (∀ i : ι, Z i)) fun i =>
-    asHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i)
+    ofHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i)
 
 /-- The concrete product cone is limiting. -/
 def productConeIsLimit : IsLimit (productCone Z) where
-  lift s := asHom (LinearMap.pi fun j => (s.π.app ⟨j⟩).hom : s.pt →ₗ[R] ∀ i : ι, Z i)
+  lift s := ofHom (LinearMap.pi fun j => (s.π.app ⟨j⟩).hom : s.pt →ₗ[R] ∀ i : ι, Z i)
   uniq s m w := by
     ext x
     funext i
@@ -52,12 +52,12 @@ noncomputable def piIsoPi : ∏ᶜ Z ≅ ModuleCat.of R (∀ i, Z i) :=
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
 @[simp, elementwise]
 theorem piIsoPi_inv_kernel_ι (i : ι) :
-    (piIsoPi Z).inv ≫ Pi.π Z i = asHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i) :=
+    (piIsoPi Z).inv ≫ Pi.π Z i = ofHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i) :=
   limit.isoLimitCone_inv_π _ _
 
 @[simp, elementwise]
 theorem piIsoPi_hom_ker_subtype (i : ι) :
-    (piIsoPi Z).hom ≫ asHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i) = Pi.π Z i :=
+    (piIsoPi Z).hom ≫ ofHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i) = Pi.π Z i :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) (Discrete.mk i)
 
 end product
@@ -70,11 +70,11 @@ variable [DecidableEq ι]
 
 /-- The coproduct cone induced by the concrete product. -/
 def coproductCocone : Cofan Z :=
-  Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => asHom (DirectSum.lof R ι (fun i ↦ Z i) i)
+  Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
 /-- The concrete coproduct cone is limiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
-  desc s := asHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom
+  desc s := ofHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom
   fac := by
     rintro s ⟨i⟩
     ext (x : Z i)
@@ -99,12 +99,12 @@ noncomputable def coprodIsoDirectSum : ∐ Z ≅ ModuleCat.of R (⨁ i, Z i) :=
 
 @[simp, elementwise]
 theorem ι_coprodIsoDirectSum_hom (i : ι) :
-    Sigma.ι Z i ≫ (coprodIsoDirectSum Z).hom = asHom (DirectSum.lof R ι (fun i ↦ Z i) i) :=
+    Sigma.ι Z i ≫ (coprodIsoDirectSum Z).hom = ofHom (DirectSum.lof R ι (fun i ↦ Z i) i) :=
   colimit.isoColimitCocone_ι_hom _ _
 
 @[simp, elementwise]
 theorem lof_coprodIsoDirectSum_inv (i : ι) :
-    asHom (DirectSum.lof R ι (fun i ↦ Z i) i) ≫ (coprodIsoDirectSum Z).inv = Sigma.ι Z i :=
+    ofHom (DirectSum.lof R ι (fun i ↦ Z i) i) ≫ (coprodIsoDirectSum Z).inv = Sigma.ι Z i :=
   (coproductCoconeIsColimit Z).comp_coconePointUniqueUpToIso_hom (colimit.isColimit _) _
 
 end coproduct

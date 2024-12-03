@@ -99,7 +99,7 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
-    { app := fun j => asHom (limitπLinearMap F j)
+    { app := fun j => ofHom (limitπLinearMap F j)
       naturality := fun _ _ f => hom_ext <| LinearMap.coe_injective <|
         ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
@@ -108,7 +108,7 @@ def limitCone : Cone F where
 -/
 def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
   refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
-    (fun s => asHom ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
+    (fun s => ofHom ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
     (fun s => rfl)
   · intro x y
@@ -214,7 +214,7 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j 
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)
-  map hij := asHom (f _ _ hij.le)
+  map hij := ofHom (f _ _ hij.le)
   map_id i := by
     ext
     apply Module.DirectedSystem.map_self
@@ -233,7 +233,7 @@ In `directLimitIsColimit` we show that it is a colimit cocone. -/
 def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f
   ι :=
-    { app := fun x => asHom (Module.DirectLimit.of R ι G f x)
+    { app := fun x => ofHom (Module.DirectLimit.of R ι G f x)
       naturality := fun _ _ hij => by
         ext
         exact DirectLimit.of_f }
@@ -242,7 +242,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 in the sense of `CategoryTheory`. -/
 @[simps]
 def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
-  desc s := asHom <|
+  desc s := ofHom <|
     DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
       simp only [Functor.const_obj_obj]
       rw [← s.w (homOfLE h)]
@@ -255,7 +255,7 @@ def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCoc
   uniq s m h := by
     have :
       s.ι.app = fun i =>
-        (asHom (DirectLimit.of R ι (fun i => G i) (fun i j H => f i j H) i)) ≫ m := by
+        (ofHom (DirectLimit.of R ι (fun i => G i) (fun i j H => f i j H) i)) ≫ m := by
       funext i
       rw [← h]
       rfl

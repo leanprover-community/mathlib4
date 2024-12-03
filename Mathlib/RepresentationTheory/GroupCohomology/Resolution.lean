@@ -480,7 +480,7 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
-    ModuleCat.asHom (d k G (n + 1)) := by
+    ModuleCat.ofHom (d k G (n + 1)) := by
   ext : 1
   refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
   dsimp [groupCohomology.resolution]
@@ -533,7 +533,7 @@ def forget₂ToModuleCatHomotopyEquiv :
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := ModuleCat.asHom <| Finsupp.linearCombination _ fun _ => (1 : k)
+  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
   comm g := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by
     show
       Finsupp.linearCombination k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =

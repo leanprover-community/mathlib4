@@ -36,14 +36,14 @@ def image : ModuleCat R :=
 
 /-- The inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
-  asHom f.hom.range.subtype
+  ofHom f.hom.range.subtype
 
 instance : Mono (image.ι f) :=
   ConcreteCategory.mono_of_injective (image.ι f) Subtype.val_injective
 
 /-- The corestriction map to the image -/
 def factorThruImage : G ⟶ image f :=
-  asHom f.hom.rangeRestrict
+  ofHom f.hom.rangeRestrict
 
 theorem image.fac : factorThruImage f ≫ image.ι f = f :=
   rfl
@@ -54,7 +54,7 @@ variable {f}
 
 /-- The universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
-  asHom
+  ofHom
   { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
     map_add' := fun x y => by
       apply (mono_iff_injective F'.m).1
@@ -98,12 +98,12 @@ noncomputable def imageIsoRange {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 
 @[simp, reassoc, elementwise]
 theorem imageIsoRange_inv_image_ι {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    (imageIsoRange f).inv ≫ Limits.image.ι f = ModuleCat.asHom f.hom.range.subtype :=
+    (imageIsoRange f).inv ≫ Limits.image.ι f = ModuleCat.ofHom f.hom.range.subtype :=
   IsImage.isoExt_inv_m _ _
 
 @[simp, reassoc, elementwise]
 theorem imageIsoRange_hom_subtype {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    (imageIsoRange f).hom ≫ ModuleCat.asHom f.hom.range.subtype = Limits.image.ι f := by
+    (imageIsoRange f).hom ≫ ModuleCat.ofHom f.hom.range.subtype = Limits.image.ι f := by
   rw [← imageIsoRange_inv_image_ι f, Iso.hom_inv_id_assoc]
 
 end ModuleCat

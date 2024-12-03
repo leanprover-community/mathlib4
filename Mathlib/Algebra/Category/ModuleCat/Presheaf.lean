@@ -163,7 +163,7 @@ def ofPresheaf : PresheafOfModules.{v} R where
   obj X := ModuleCat.of _ (M.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  map {X Y} f := ModuleCat.asHom
+  map {X Y} f := ModuleCat.ofHom
       (Y := (ModuleCat.restrictScalars (R.map f)).obj (ModuleCat.of _ (M.obj Y)))
     { toFun := fun x ↦ M.map f x
       map_add' := by simp
@@ -181,7 +181,7 @@ which satisfy a suitable linearity condition. -/
 def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
     (hφ : ∀ (X : Cᵒᵖ) (r : R.obj X) (m : M₁.obj X), φ.app X (r • m) = r • φ.app X m) :
     M₁ ⟶ M₂ where
-  app X := ModuleCat.asHom
+  app X := ModuleCat.ofHom
     { toFun := φ.app X
       map_add' := by simp
       map_smul' := hφ X }
@@ -263,7 +263,7 @@ def unit : PresheafOfModules R where
   obj X := ModuleCat.of _ (R.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  map {X Y} f := ModuleCat.asHom
+  map {X Y} f := ModuleCat.ofHom
       (Y := (ModuleCat.restrictScalars (R.map f)).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
     { toFun := fun x ↦ R.map f x
       map_add' := by simp
@@ -318,7 +318,7 @@ def unitHomEquiv (M : PresheafOfModules R) :
   toFun f := sectionsMk (fun X ↦ Hom.app f X (1 : R.obj X))
     (by intros; rw [← naturality_apply, unit_map_one])
   invFun s :=
-    { app := fun X ↦ ModuleCat.asHom
+    { app := fun X ↦ ModuleCat.ofHom
         ((LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm (s.val X))
       naturality := fun {X Y} f ↦ by
         ext
@@ -360,7 +360,7 @@ lemma forgetToPresheafModuleCatObjObj_coe (Y : Cᵒᵖ) :
 def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
     forgetToPresheafModuleCatObjObj X hX M Y ⟶
       forgetToPresheafModuleCatObjObj X hX M Z :=
-  ModuleCat.asHom
+  ModuleCat.ofHom
     (X := forgetToPresheafModuleCatObjObj X hX M Y) (Y := forgetToPresheafModuleCatObjObj X hX M Z)
   { toFun := fun x => M.map f x
     map_add' := by simp
@@ -403,7 +403,7 @@ morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
 noncomputable def forgetToPresheafModuleCatMap
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) {M N : PresheafOfModules.{v} R} (f : M ⟶ N) :
     forgetToPresheafModuleCatObj X hX M ⟶ forgetToPresheafModuleCatObj X hX N where
-  app Y := ModuleCat.asHom
+  app Y := ModuleCat.ofHom
       (X := (forgetToPresheafModuleCatObj X hX M).obj Y)
       (Y := (forgetToPresheafModuleCatObj X hX N).obj Y)
     { toFun := f.app Y

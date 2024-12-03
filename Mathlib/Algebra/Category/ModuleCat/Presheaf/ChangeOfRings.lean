@@ -30,7 +30,7 @@ noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶
   obj := fun X ↦ (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  map := fun {X Y} f ↦ ModuleCat.asHom
+  map := fun {X Y} f ↦ ModuleCat.ofHom
       (X := (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X))
       (Y := (ModuleCat.restrictScalars (R.map f)).obj
         ((ModuleCat.restrictScalars (α.app Y)).obj (M'.obj Y)))

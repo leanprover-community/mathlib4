@@ -132,7 +132,7 @@ def colimit : ModuleCatMax.{v, u, u} R :=
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
-  asHom
+  ofHom
     { (AddCommGrp.FilteredColimits.colimitCocone
       (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j with
     map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
@@ -151,7 +151,7 @@ We already know that this is a morphism between additive groups. The only thing 
 it is a linear map, i.e. preserves scalar multiplication.
 -/
 def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
-  asHom
+  ofHom
     { (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGrp.{max v u})).desc
       ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t) with

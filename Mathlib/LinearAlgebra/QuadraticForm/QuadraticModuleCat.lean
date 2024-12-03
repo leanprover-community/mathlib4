@@ -90,7 +90,7 @@ instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) wher
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.asHom f.toIsometry.toLinearMap }
+      map := fun f => ModuleCat.ofHom f.toIsometry.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : QuadraticModuleCat R) :
@@ -100,7 +100,7 @@ theorem forget₂_obj (X : QuadraticModuleCat R) :
 @[simp]
 theorem forget₂_map (X Y : QuadraticModuleCat R) (f : X ⟶ Y) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map f =
-      ModuleCat.asHom f.toIsometry.toLinearMap :=
+      ModuleCat.ofHom f.toIsometry.toLinearMap :=
   rfl
 
 variable {X Y Z : Type v}

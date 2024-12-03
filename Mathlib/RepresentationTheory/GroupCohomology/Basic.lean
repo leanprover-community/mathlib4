@@ -175,7 +175,7 @@ $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => ModuleCat.asHom (inhomogeneousCochains.d n A)) fun n => by
+    (fun n => ModuleCat.ofHom (inhomogeneousCochains.d n A)) fun n => by
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
@@ -200,7 +200,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
 
 @[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
-    (inhomogeneousCochains A).d n (n + 1) = ModuleCat.asHom (inhomogeneousCochains.d n A) :=
+    (inhomogeneousCochains A).d n (n + 1) = ModuleCat.ofHom (inhomogeneousCochains.d n A) :=
   CochainComplex.of_d _ _ _ _
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
@@ -216,7 +216,7 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
     ChainComplex.linearYonedaObj_d, ModuleCat.hom_comp, linearYoneda_obj_map_hom,
     Quiver.Hom.unop_op, LinearEquiv.toModuleIso_inv_hom, LinearMap.coe_comp, Function.comp_apply,
     Linear.leftComp_apply, inhomogeneousCochains.d_def, d_eq, LinearEquiv.toModuleIso_hom_hom,
-    ModuleCat.asHom_comp, Category.assoc, LinearEquiv.comp_coe, LinearEquiv.self_trans_symm,
+    ModuleCat.ofHom_comp, Category.assoc, LinearEquiv.comp_coe, LinearEquiv.self_trans_symm,
     LinearEquiv.refl_toLinearMap, LinearMap.id_comp, LinearEquiv.coe_coe]
   rfl
 

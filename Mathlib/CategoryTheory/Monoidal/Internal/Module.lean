@@ -101,8 +101,8 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
 @[simps]
 def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   X := ModuleCat.of R A
-  one := asHom <| Algebra.linearMap R A
-  mul := asHom <| LinearMap.mul' R A
+  one := ofHom <| Algebra.linearMap R A
+  mul := ofHom <| LinearMap.mul' R A
   one_mul := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
@@ -152,7 +152,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
-    { hom := asHom <| f.hom.toLinearMap
+    { hom := ofHom <| f.hom.toLinearMap
       one_hom := hom_ext <| LinearMap.ext f.hom.commutes
       mul_hom := hom_ext <| TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
 
@@ -171,7 +171,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
     NatIso.ofComponents
       (fun A =>
         { hom :=
-            { hom := asHom
+            { hom := ofHom
                 { toFun := _root_.id
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
@@ -182,7 +182,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                 dsimp at *
                 rfl }
           inv :=
-            { hom := asHom
+            { hom := ofHom
                 { toFun := _root_.id
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
@@ -218,11 +218,11 @@ def monModuleEquivalenceAlgebraForget :
       Mon_.forget (ModuleCat.{u} R) :=
   NatIso.ofComponents
     (fun A =>
-      { hom := asHom
+      { hom := ofHom
           { toFun := _root_.id
             map_add' := fun _ _ => rfl
             map_smul' := fun _ _ => rfl }
-        inv := asHom
+        inv := ofHom
           { toFun := _root_.id
             map_add' := fun _ _ => rfl
             map_smul' := fun _ _ => rfl } })

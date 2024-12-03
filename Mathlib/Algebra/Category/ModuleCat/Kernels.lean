@@ -26,12 +26,12 @@ variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
   -- Porting note: previously proven by tidy
-  KernelFork.ofι (asHom f.hom.ker.subtype) <| by ext x; cases x; assumption
+  KernelFork.ofι (ofHom f.hom.ker.subtype) <| by ext x; cases x; assumption
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit (kernelCone f) :=
   Fork.IsLimit.mk _
-    (fun s => asHom <|
+    (fun s => ofHom <|
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation on LinearMap.ker
       LinearMap.codRestrict (LinearMap.ker f.hom) (Fork.ι s).hom fun c =>
         LinearMap.mem_ker.2 <| by
@@ -44,19 +44,19 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (asHom f.hom.range.mkQ) <| hom_ext <| LinearMap.range_mkQ_comp _
+  CokernelCofork.ofπ (ofHom f.hom.range.mkQ) <| hom_ext <| LinearMap.range_mkQ_comp _
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit (cokernelCocone f) :=
   Cofork.IsColimit.mk _
-    (fun s => asHom <| f.hom.range.liftQ (Cofork.π s).hom <|
+    (fun s => ofHom <| f.hom.range.liftQ (Cofork.π s).hom <|
       LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.mp <| CokernelCofork.condition s)
     (fun s => hom_ext <| f.hom.range.liftQ_mkQ (Cofork.π s).hom _) fun s m h => by
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
-    haveI : Epi (asHom (LinearMap.range f.hom).mkQ) :=
+    haveI : Epi (ofHom (LinearMap.range f.hom).mkQ) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
-    apply (cancel_epi (asHom (LinearMap.range f.hom).mkQ)).1
+    apply (cancel_epi (ofHom (LinearMap.range f.hom).mkQ)).1
     exact h
 
 end
@@ -89,13 +89,13 @@ noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
 @[simp, elementwise]
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
 theorem kernelIsoKer_inv_kernel_ι : (kernelIsoKer f).inv ≫ kernel.ι f =
-    asHom (LinearMap.ker f.hom).subtype :=
+    ofHom (LinearMap.ker f.hom).subtype :=
   limit.isoLimitCone_inv_π _ _
 
 @[simp, elementwise]
 theorem kernelIsoKer_hom_ker_subtype :
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
-    (kernelIsoKer f).hom ≫ asHom (LinearMap.ker f.hom).subtype = kernel.ι f :=
+    (kernelIsoKer f).hom ≫ ofHom (LinearMap.ker f.hom).subtype = kernel.ι f :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) WalkingParallelPair.zero
 
 /-- The categorical cokernel of a morphism in `ModuleCat`
@@ -109,12 +109,12 @@ noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H)
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
 @[simp, elementwise]
 theorem cokernel_π_cokernelIsoRangeQuotient_hom :
-    cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = asHom f.hom.range.mkQ :=
+    cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = ofHom f.hom.range.mkQ :=
   colimit.isoColimitCocone_ι_hom _ _
 
 @[simp, elementwise]
 theorem range_mkQ_cokernelIsoRangeQuotient_inv :
-    asHom f.hom.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
+    ofHom f.hom.range.mkQ ≫ (cokernelIsoRangeQuotient f).inv = cokernel.π f :=
   colimit.isoColimitCocone_ι_inv ⟨_, cokernelIsColimit f⟩ WalkingParallelPair.one
 
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :

@@ -103,7 +103,7 @@ theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
   erw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
-  rw [← ModuleCat.hom_asHom (W.ρ g), ← ModuleCat.hom_ext_iff,
+  rw [← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
       Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
   exact (i.hom.comm g).symm
 
@@ -197,7 +197,7 @@ noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (li
 
 @[simp]
 theorem dualTensorIsoLinHom_hom_hom :
-    (dualTensorIsoLinHom ρV W).hom.hom = ModuleCat.asHom (dualTensorHom k V W) :=
+    (dualTensorIsoLinHom ρV W).hom.hom = ModuleCat.ofHom (dualTensorHom k V W) :=
   rfl
 
 end FDRep

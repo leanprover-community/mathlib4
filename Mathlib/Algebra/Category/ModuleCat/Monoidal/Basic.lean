@@ -54,17 +54,17 @@ def tensorObj (M N : ModuleCat R) : ModuleCat R :=
 /-- (implementation) tensor product of morphisms R-modules -/
 def tensorHom {M N M' N' : ModuleCat R} (f : M ⟶ N) (g : M' ⟶ N') :
     tensorObj M M' ⟶ tensorObj N N' :=
-  asHom <| TensorProduct.map f.hom g.hom
+  ofHom <| TensorProduct.map f.hom g.hom
 
 /-- (implementation) left whiskering for R-modules -/
 def whiskerLeft (M : ModuleCat R) {N₁ N₂ : ModuleCat R} (f : N₁ ⟶ N₂) :
     tensorObj M N₁ ⟶ tensorObj M N₂ :=
-  asHom <| f.hom.lTensor M
+  ofHom <| f.hom.lTensor M
 
 /-- (implementation) right whiskering for R-modules -/
 def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R) :
     tensorObj M₁ N ⟶ tensorObj M₂ N :=
-  asHom <| f.hom.rTensor N
+  ofHom <| f.hom.rTensor N
 
 theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext : 1
@@ -97,7 +97,7 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) w
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
   whiskerRight := whiskerRight
-  tensorHom f g := asHom <| TensorProduct.map f.hom g.hom
+  tensorHom f g := ofHom <| TensorProduct.map f.hom g.hom
   tensorUnit := ModuleCat.of R R
   associator := associator
   leftUnitor := leftUnitor
@@ -236,7 +236,7 @@ variable (f : M₁ → M₂ → M₃) (h₁ : ∀ m₁ m₂ n, f (m₁ + m₂) n
 
 /-- Construct for morphisms from the tensor product of two objects in `ModuleCat`. -/
 noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
-  asHom <| TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
+  ofHom <| TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
 
 @[simp]
 lemma tensorLift_tmul (m : M₁) (n : M₂) :
@@ -315,7 +315,7 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     simp [TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
-@[simp] lemma asHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
-    asHom₂ (f.compr₂ g) = asHom₂ f ≫ asHom (Linear.rightComp R _ (asHom g)) := rfl
+@[simp] lemma ofHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
+    ofHom₂ (f.compr₂ g) = ofHom₂ f ≫ ofHom (Linear.rightComp R _ (ofHom g)) := rfl
 
 end ModuleCat

@@ -27,7 +27,7 @@ instance), and so is `of R ↑M` (when `M : ModuleCat R M`).
 
 The morphisms are given their own type, not identified with `LinearMap`.
 There is a cast from morphisms in `Module R` to linear maps, written `f.hom` (`ModuleCat.Hom.hom`).
-To go from linear maps to morphisms in `Module R`, use `ModuleCat.asHom`.
+To go from linear maps to morphisms in `Module R`, use `ModuleCat.ofHom`.
 
 Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a linear equiv
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
@@ -138,33 +138,33 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
   hom_bijective.surjective
 
 /-- Typecheck a `LinearMap` as a morphism in `ModuleCat R`. -/
-abbrev asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ⟨f⟩
 
-@[deprecated (since := "2024-10-06")] alias ofHom := ModuleCat.asHom
+@[deprecated (since := "2024-10-06")] alias asHom := ModuleCat.ofHom
 
 /- Doesn't need to be `@[simp]` since the `simp` tactic applies this rewrite automatically:
-`asHom` and `hom` are reducibly equal to the constructor and projection respectively. -/
-lemma hom_asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
-    [Module R Y] (f : X →ₗ[R] Y) : (asHom f).hom = f := rfl
+`ofHom` and `hom` are reducibly equal to the constructor and projection respectively. -/
+lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
+    [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
-lemma asHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
-    asHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
+    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma asHom_id {M : Type v} [AddCommGroup M] [Module R M] : asHom LinearMap.id = 𝟙 (of R M) := rfl
+lemma ofHom_id {M : Type v} [AddCommGroup M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
 
 @[simp]
-lemma asHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module R M]
+lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module R M]
     [Module R N] [Module R O] (f : M →ₗ[R] N) (g : N →ₗ[R] O) :
-    asHom (g.comp f) = asHom f ≫ asHom g :=
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 /- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
-lemma asHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    (f : M →ₗ[R] N) (x : M) : asHom f x = f x := rfl
+lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
 @[simp]
 lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
@@ -179,7 +179,7 @@ lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv
 /-- `ModuleCat.Hom.hom` bundled as an `Equiv`. -/
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
-  invFun := asHom
+  invFun := ofHom
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -251,12 +251,12 @@ def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   inv := 𝟙 M
 
 theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
-  unique_to X := ⟨⟨⟨asHom (0 : M →ₗ[R] X)⟩, fun f => by
+  unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
     ext x
     rw [Subsingleton.elim x (0 : M)]
     dsimp
     simp⟩⟩
-  unique_from X := ⟨⟨⟨asHom (0 : X →ₗ[R] M)⟩, fun f => by
+  unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f => by
     ext x
     subsingleton⟩⟩
 
@@ -271,14 +271,14 @@ variable {X₁ X₂ : Type v}
 open ModuleCat
 
 /-- Reinterpreting a linear map in the category of `R`-modules -/
-scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
+scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
 
-@[deprecated (since := "2024-10-06")] alias ModuleCat.ofHom_apply := ModuleCat.asHom_apply
+@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 -- Since `of` and the coercion now roundtrip reducibly, we don't need to distinguish in which place
 -- we need to add `of` when coercing from linear maps to morphisms.
-@[deprecated ModuleCat.asHom (since := "2024-11-29")] alias ModuleCat.asHomRight := ModuleCat.asHom
-@[deprecated ModuleCat.asHom (since := "2024-11-29")] alias ModuleCat.asHomLeft := ModuleCat.asHom
+@[deprecated ModuleCat.ofHom (since := "2024-11-29")] alias ModuleCat.asHomRight := ModuleCat.ofHom
+@[deprecated ModuleCat.ofHom (since := "2024-11-29")] alias ModuleCat.asHomLeft := ModuleCat.ofHom
 
 /-- Reinterpreting a linear map in the category of `R`-modules.
 This notation is deprecated: use `↟` instead.
@@ -295,8 +295,8 @@ section
 @[simps]
 def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
     {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂ where
-  hom := asHom (e : X₁ →ₗ[R] X₂)
-  inv := asHom (e.symm : X₂ →ₗ[R] X₁)
+  hom := ofHom (e : X₁ →ₗ[R] X₂)
+  inv := ofHom (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id := by ext; apply e.left_inv
   inv_hom_id := by ext; apply e.right_inv
 
@@ -448,7 +448,7 @@ variable (M N : ModuleCat.{v} R)
 @[simps]
 def endMulEquiv : End M ≃* (M →ₗ[R] M) where
   toFun := ModuleCat.Hom.hom
-  invFun := ModuleCat.asHom
+  invFun := ModuleCat.ofHom
   map_mul' _ _ := rfl
   left_inv _ := rfl
   right_inv _ := rfl
@@ -569,9 +569,9 @@ namespace ModuleCat
 
 /-- Turn a bilinear map into a homomorphism. -/
 @[simps]
-def asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
+def ofHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     M ⟶ of R (N ⟶ P) :=
-  asHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
+  ofHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
 
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
@@ -580,13 +580,13 @@ def Hom.hom₂ {M N P : ModuleCat.{u} R}
     -- since it is expecting the type of `f` to be `ModuleCat.Hom`, not `Quiver.Hom`.
     (f : Hom M (of R (N ⟶ P))) :
     M →ₗ[R] N →ₗ[R] P :=
-  Hom.hom (by convert (f ≫ asHom homLinearEquiv.toLinearMap))
+  Hom.hom (by convert (f ≫ ofHom homLinearEquiv.toLinearMap))
 
-@[simp] lemma Hom.hom₂_asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
-    (asHom₂ f).hom₂ = f := rfl
+@[simp] lemma Hom.hom₂_ofHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
+    (ofHom₂ f).hom₂ = f := rfl
 
-@[simp] lemma asHom₂_hom₂ {M N P : ModuleCat.{u} R} (f : M ⟶ of R (N ⟶ P)) :
-    asHom₂ f.hom₂ = f := rfl
+@[simp] lemma ofHom₂_hom₂ {M N P : ModuleCat.{u} R} (f : M ⟶ of R (N ⟶ P)) :
+    ofHom₂ f.hom₂ = f := rfl
 
 end ModuleCat
 

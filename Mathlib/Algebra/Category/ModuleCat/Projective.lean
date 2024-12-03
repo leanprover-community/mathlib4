@@ -33,7 +33,7 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
     refine ⟨fun E X epi => ?_⟩
     obtain ⟨f, h⟩ := Module.projective_lifting_property X.hom E.hom
       ((ModuleCat.epi_iff_surjective _).mp epi)
-    exact ⟨asHom f, hom_ext h⟩
+    exact ⟨ofHom f, hom_ext h⟩
   · refine Module.Projective.of_lifting_property.{u,v} ?_
     intro E X mE mX sE sX f g s
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
@@ -59,7 +59,7 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
         projective :=
           projective_of_free.{v,u} (ι := M) (M := ModuleCat.of R (M →₀ R)) <|
             Finsupp.basisSingleOne
-        f := asHom <| Finsupp.basisSingleOne.constr ℕ _root_.id
+        f := ofHom <| Finsupp.basisSingleOne.constr ℕ _root_.id
         epi := (epi_iff_range_eq_top _).mpr
             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
               simp [Finsupp.linearCombination_single, Basis.constr] ⟩)}⟩

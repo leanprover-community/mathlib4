@@ -136,7 +136,7 @@ noncomputable def map :
   have := IsScalarTower.of_algebraMap_eq' fac
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  ModuleCat.asHom (Y := (ModuleCat.restrictScalars g').obj (KaehlerDifferential f'))
+  ModuleCat.ofHom (Y := (ModuleCat.restrictScalars g').obj (KaehlerDifferential f'))
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
     map_add' := by simp
     map_smul' := by simp }
@@ -167,7 +167,7 @@ morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
 noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
   letI := f.toAlgebra
   letI := Module.compHom M f
-  asHom D.liftKaehlerDifferential
+  ofHom D.liftKaehlerDifferential
 
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by

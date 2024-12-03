@@ -38,8 +38,8 @@ variable {R : Type u} [CommRing R]
 /-- An `R`-coalgebra is a comonoid object in the category of `R`-modules. -/
 @[simps X counit comul] def toComonObj (X : CoalgebraCat R) : Comon_ (ModuleCat R) where
   X := ModuleCat.of R X
-  counit := ModuleCat.asHom Coalgebra.counit
-  comul := ModuleCat.asHom Coalgebra.comul
+  counit := ModuleCat.ofHom Coalgebra.counit
+  comul := ModuleCat.ofHom Coalgebra.comul
   counit_comul := ModuleCat.hom_ext <| by simpa using Coalgebra.rTensor_counit_comp_comul
   comul_counit := ModuleCat.hom_ext <| by simpa using Coalgebra.lTensor_counit_comp_comul
   comul_assoc := ModuleCat.hom_ext <| by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
@@ -50,7 +50,7 @@ variable (R) in
 def toComon : CoalgebraCat R ⥤ Comon_ (ModuleCat R) where
   obj X := toComonObj X
   map f :=
-    { hom := ModuleCat.asHom f.1
+    { hom := ModuleCat.ofHom f.1
       hom_counit := ModuleCat.hom_ext f.1.counit_comp
       hom_comul := ModuleCat.hom_ext f.1.map_comp_comul.symm }
 
