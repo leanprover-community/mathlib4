@@ -232,6 +232,9 @@ theorem comp {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : F → G
 
 end ContDiffHolder
 
+-- The next section tries to formalize a wrong (too weak) version of Theorem 2.1.
+-- In fact, covering is chosen before `f`.
+
 structure Chart {m p : ℕ} (f : ℝᵐ × ℝᵖ → ℝ) (r : ℝ) where
   d : ℕ
   toFun : ℝᵈ × ℝᵖ → ℝᵐ × ℝᵖ
