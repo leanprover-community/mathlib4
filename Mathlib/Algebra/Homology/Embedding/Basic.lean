@@ -81,6 +81,9 @@ lemma rel_iff [e.IsRelIff] (i₁ i₂ : ι) : c'.Rel (e.f i₁) (e.f i₂) ↔ c
   · apply IsRelIff.rel'
   · exact e.rel
 
+instance [e.IsRelIff] : e.op.IsRelIff where
+  rel' i₁ i₂ h := (e.rel_iff i₂ i₁).1 h
+
 section
 
 variable (c c')
@@ -117,6 +120,26 @@ class IsTruncLE extends e.IsRelIff : Prop where
 
 lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
   IsTruncLE.mem_prev h
+
+instance [e.IsTruncGE] : e.op.IsTruncLE where
+  mem_prev h := e.mem_next h
+
+instance [e.IsTruncLE] : e.op.IsTruncGE where
+  mem_next h := e.mem_prev h
+
+lemma next_f [e.IsTruncGE] {j k : ι} (hjk : c.next j = k) : c'.next (e.f j) = e.f k := by
+  by_cases hj : c'.Rel (e.f j) (c'.next (e.f j))
+  · obtain ⟨k', hk'⟩ := e.mem_next hj
+    rw [← hk', e.rel_iff] at hj
+    rw [← hk', ← c.next_eq' hj, hjk]
+  · rw [c'.next_eq_self _ hj, ← hjk, c.next_eq_self j]
+    intro hj'
+    apply hj
+    rw [← e.rel_iff] at hj'
+    simpa only [c'.next_eq' hj'] using hj'
+
+lemma prev_f [e.IsTruncLE] {i j : ι} (hij : c.prev j = i) : c'.prev (e.f j) = e.f i :=
+  e.op.next_f hij
 
 open Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
@@ -200,5 +223,27 @@ instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_i
 
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
+
+lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
+  constructor
+  · intro h
+    by_contra!
+    obtain ⟨k, rfl⟩ := Int.le.dest this
+    exact (h k) (by simp)
+  · intros
+    dsimp
+    omega
+
+lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
+  constructor
+  · intro h
+    by_contra!
+    obtain ⟨k, rfl⟩ := Int.le.dest this
+    exact (h k) (by simp)
+  · intros
+    dsimp
+    omega
 
 end ComplexShape

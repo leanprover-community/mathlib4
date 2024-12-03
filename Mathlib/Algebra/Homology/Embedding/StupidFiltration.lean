@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
 import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+
+/-!
+# The stupid filtration
+
+-/
 
 open CategoryTheory Category Limits
 
@@ -28,7 +38,7 @@ lemma trans (h₁₂ : e₁.Subset e₂) (h₂₃ : e₂.Subset e₃) : e₁.Sub
 section
 
 variable  (h : e₁.Subset e₂)
-
+include h
 lemma exists_index (i₁ : ι₁) : ∃ (i₂ : ι₂), e₂.f i₂ = e₁.f i₁ := h.subset ⟨i₁, rfl⟩
 
 noncomputable def index (i₁ : ι₁) : ι₂ := (h.exists_index i₁).choose
@@ -51,7 +61,6 @@ variable {ι ι₁ ι₂ ι₃ : Type*} {c₁ : ComplexShape ι₁} {c₂ : Comp
   (K L : HomologicalComplex C c) (φ : K ⟶ L)
   {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c} {e₃ : c₃.Embedding c} (h : e₁.Subset e₂)
 
-@[pp_dot]
 noncomputable def restrictionStupidTruncIso [e₁.IsRelIff] [e₂.IsRelIff] :
     (K.stupidTrunc e₂).restriction e₁ ≅ K.restriction e₁ :=
   Hom.isoOfComponents (fun i₁ => K.stupidTruncXIso e₂ (h.f_index i₁)) (fun i₁ j₁ _ => by
@@ -83,12 +92,12 @@ lemma restrictionStupidTruncIso_inv_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
 noncomputable def mapStupidTruncLE [e₁.IsTruncLE] [e₂.IsRelIff] :
     K.stupidTrunc e₂ ⟶ K.stupidTrunc e₁ :=
   e₁.liftExtend ((K.restrictionStupidTruncIso h).hom)
-    (fun _ hi₁ _ _ => hi₁.false.elim)
+    (fun _ hi₁ _ _ => hi₁.false_of_isTruncLE.elim)
 
 noncomputable def mapStupidTruncGE [e₁.IsTruncGE] [e₂.IsRelIff] :
     K.stupidTrunc e₁ ⟶ K.stupidTrunc e₂ :=
   e₁.descExtend ((K.restrictionStupidTruncIso h).inv)
-    (fun _ hi₁ _ _ => hi₁.false.elim)
+    (fun _ hi₁ _ _ => hi₁.false_of_isTruncGE.elim)
 
 open ComplexShape.Embedding
 
@@ -100,7 +109,7 @@ lemma mapStupidTruncLE_naturality [e₁.IsTruncLE] [e₂.IsRelIff] :
   apply (e₁.homEquiv _ _).injective
   ext1
   dsimp [homEquiv, mapStupidTruncLE, stupidTruncMap]
-  rw [homRestrict_precomp, homRestrict_comp_extend, homRestrict_liftExtend,
+  rw [homRestrict_precomp, homRestrict_comp_extendMap, homRestrict_liftExtend,
     homRestrict_liftExtend]
   apply restrictionStupidTruncIso_hom_naturality
 
@@ -167,7 +176,7 @@ lemma isIso_mapStupidTruncGE_f [e₁.IsTruncGE] [e₂.IsTruncGE] (i : ι)
     have := K.isIso_ιStupidTrunc_f e₁ hi₁
     have := K.isIso_ιStupidTrunc_f e₂ hi₂
     exact IsIso.of_isIso_fac_right fac
-  · refine' ⟨0, _, _⟩
+  · refine ⟨0, ?_, ?_⟩
     · apply IsZero.eq_of_src
       apply isZero_stupidTrunc_X
       intro i₁ hi₁

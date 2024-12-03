@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.CategoryTheory.Idempotents.Basic
+
+/-!
+# The stupid filtration on complexes
+
+-/
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -155,7 +165,7 @@ lemma isIso_ιStupidTrunc_iff :
       by_cases hi' : ∃ i, e.f i = i'
       · obtain ⟨i, rfl⟩ := hi'
         infer_instance
-      · refine' ⟨0, _, _⟩
+      · refine ⟨0, ?_, ?_⟩
         all_goals
           apply IsZero.eq_of_src
           apply isZero_X_of_isStrictlySupported _ e
@@ -201,6 +211,7 @@ lemma πStupidTruncf_eq [e.IsRelIff] (i : ι) :
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+/-- Variant of `πStupidTruncf_eq`. -/
 lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
     K.πStupidTruncf e i' = (K.restrictionXIso e h).inv ≫
       ((K.restriction e).extendXIso e h).inv := by
@@ -250,7 +261,7 @@ lemma isIso_πStupidTrunc_iff :
       by_cases hi' : ∃ i, e.f i = i'
       · obtain ⟨i, rfl⟩ := hi'
         infer_instance
-      · refine' ⟨0, _, _⟩
+      · refine ⟨0, ?_, ?_⟩
         all_goals
           apply IsZero.eq_of_src
           apply isZero_X_of_isStrictlySupported _ e

@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Embedding.Extend
+
+/-!
+# Extension of complexes and application of a functor
+
+-/
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -23,7 +33,6 @@ lemma mapExtendX_hom_eq {i : Option ι} {j : ι} (hj : i = some j) :
   subst hj
   rfl
 
-@[pp_dot]
 noncomputable def mapExtendIso :
     (F.mapHomologicalComplex c').obj (K.extend e) ≅
       ((F.mapHomologicalComplex c).obj K).extend e :=

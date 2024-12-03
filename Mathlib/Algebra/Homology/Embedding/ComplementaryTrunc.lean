@@ -1,5 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+
+/-!
+# Complementary truncations
+
+
+-/
 
 lemma Int.exists_eq_add_nat_of_le (a b : ℤ) (hab : a ≤ b) :
     ∃ (k : ℕ), b = a + k := by
@@ -28,6 +39,7 @@ namespace AreComplementary
 
 variable (ac : AreComplementary e₁ e₂)
 
+include ac
 lemma symm : AreComplementary e₂ e₁ where
   disjoint i₂ i₁ := (ac.disjoint i₁ i₂).symm
   union i := (ac.union i).symm
@@ -49,7 +61,7 @@ def fromSum : ι₁ ⊕ ι₂ → ι
   | Sum.inl i₁ => e₁.f i₁
   | Sum.inr i₂ => e₂.f i₂
 
-def fromSum_bijective : Function.Bijective (fromSum e₁ e₂) := by
+lemma fromSum_bijective : Function.Bijective (fromSum e₁ e₂) := by
   constructor
   · rintro (i₁ | i₂) (j₁ | j₂) h
     · obtain rfl := e₁.injective_f h
@@ -79,12 +91,14 @@ def aux (i j : ι) (hij : i = j) : X i ≃ X j := by
   subst hij
   rfl
 
+omit ac in
 @[simp]
 lemma aux_trans {i j k : ι} (hij : i = j) (hjk : j = k) (x : X i):
     aux X j k hjk (aux X i j hij x) = aux X i k (hij.trans hjk) x := by
   subst hij hjk
   rfl
 
+/-- Auxiliary definition for `desc`. -/
 def desc' : ∀ (i : ι₁ ⊕ ι₂), X (ac.equiv i)
   | Sum.inl i₁ => x₁ i₁
   | Sum.inr i₂ => x₂ i₂
@@ -144,6 +158,7 @@ lemma isSupportedOutside₂_iff :
 
 variable {K L}
 
+/-- Variant of `hom_ext`. -/
 lemma hom_ext' (φ : K ⟶ L) (hK : K.IsStrictlySupportedOutside e₂)
     (hL : L.IsStrictlySupportedOutside e₁) :
     φ = 0 := by
@@ -172,11 +187,13 @@ section
 
 variable {i₁ : ι₁} {i₂ : ι₂} (h : ac.Boundary i₁ i₂)
 
+include h
+
 lemma fst : e₁.BoundaryLE i₁ :=
-  e₁.mem_boundaryLE h (fun _ => ac.disjoint _ _)
+  e₁.boundaryLE h (fun _ => ac.disjoint _ _)
 
 lemma snd : e₂.BoundaryGE i₂ :=
-  e₂.mem_boundaryGE h (fun _ => ac.symm.disjoint _ _)
+  e₂.boundaryGE h (fun _ => ac.symm.disjoint _ _)
 
 end
 
@@ -207,13 +224,13 @@ lemma exists₂ {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
 noncomputable def indexOfBoundaryLE {i₁ : ι₁} (h : e₁.BoundaryLE i₁) : ι₂ :=
     (exists₁ ac h).choose
 
-def of_boundaryLE {i₁ : ι₁} (h : e₁.BoundaryLE i₁) :
+lemma of_boundaryLE {i₁ : ι₁} (h : e₁.BoundaryLE i₁) :
     ac.Boundary i₁ (indexOfBoundaryLE ac h) := (exists₁ ac h).choose_spec
 
 noncomputable def indexOfBoundaryGE {i₂ : ι₂} (h : e₂.BoundaryGE i₂) : ι₁ :=
     (exists₂ ac h).choose
 
-def of_boundaryGE {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
+lemma of_boundaryGE {i₂ : ι₂} (h : e₂.BoundaryGE i₂) :
     ac.Boundary (indexOfBoundaryGE ac h) i₂ := (exists₂ ac h).choose_spec
 
 noncomputable def equiv : Subtype e₁.BoundaryLE ≃ Subtype e₂.BoundaryGE where
@@ -287,6 +304,8 @@ variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
 variable (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
   [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
 
+include ac
+
 lemma ιStupidTrunc_πStupidTrunc :
     K.ιStupidTrunc e₂ ≫ K.πStupidTrunc e₁ = 0 := by
   ext n
@@ -343,7 +362,9 @@ namespace ComplexShape.Embedding.AreComplementary
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
 
 variable {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c} (ac : e₁.AreComplementary e₂)
-variable (K : HomologicalComplex C c)
+  (K : HomologicalComplex C c)
+
+include ac
 
 lemma isZero_stupidTrunc_iff [e₁.IsRelIff] :
     IsZero (K.stupidTrunc e₁) ↔ K.IsStrictlySupported e₂ := by

@@ -70,27 +70,7 @@ import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgebraCat.Monoidal
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
-<<<<<<< HEAD
-import Mathlib.Algebra.Category.GroupCat.AB5
 import Mathlib.Algebra.Category.GroupCat.Abelian
-import Mathlib.Algebra.Category.GroupCat.Adjunctions
-import Mathlib.Algebra.Category.GroupCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Biproducts
-import Mathlib.Algebra.Category.GroupCat.Colimits
-import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
-import Mathlib.Algebra.Category.GroupCat.EpiMono
-import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
-import Mathlib.Algebra.Category.GroupCat.FilteredColimits
-import Mathlib.Algebra.Category.GroupCat.Images
-import Mathlib.Algebra.Category.GroupCat.Injective
-import Mathlib.Algebra.Category.GroupCat.Kernels
-import Mathlib.Algebra.Category.GroupCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Preadditive
-import Mathlib.Algebra.Category.GroupCat.Subobject
-import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
-import Mathlib.Algebra.Category.GroupCat.Zero
-import Mathlib.Algebra.Category.GroupWithZeroCat
-=======
 import Mathlib.Algebra.Category.Grp.AB5
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
@@ -113,7 +93,6 @@ import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.GrpWithZero
 import Mathlib.Algebra.Category.HopfAlgebraCat.Basic
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Algebra
@@ -414,9 +393,9 @@ import Mathlib.Algebra.Homology.BifunctorAssociator
 import Mathlib.Algebra.Homology.BifunctorFlip
 import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.BifunctorShift
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.CategoryWithHomology
 import Mathlib.Algebra.Homology.CochainComplexMinus
+import Mathlib.Algebra.Homology.CommSq
 import Mathlib.Algebra.Homology.ComplexExtend
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
@@ -424,22 +403,31 @@ import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.ConnectShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.LargeExt
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.Minus
 import Mathlib.Algebra.Homology.DerivedCategory.Plus
 import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
+import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 import Mathlib.Algebra.Homology.DerivedCategory.SmallExt
 import Mathlib.Algebra.Homology.DerivedCategory.SpectralObject
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 import Mathlib.Algebra.Homology.Embedding.ExtendMap
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
+import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Embedding.Limits
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
@@ -449,47 +437,19 @@ import Mathlib.Algebra.Homology.Embedding.TruncGE
 import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
 import Mathlib.Algebra.Homology.Embedding.TruncLE
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
-import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.ExactSequenceFour
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Factorizations.CM5a
 import Mathlib.Algebra.Homology.Factorizations.CM5b
-=======
-import Mathlib.Algebra.Homology.CommSq
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Homology.ComplexShapeSigns
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
-import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
-import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
-import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
-import Mathlib.Algebra.Homology.DifferentialObject
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Embedding.Boundary
-import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Embedding.TruncGE
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.Algebra.Homology.Factorizations.Basic
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 import Mathlib.Algebra.Homology.Homology
-=======
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.HomologySequenceLemmas
 import Mathlib.Algebra.Homology.Homotopy
@@ -499,13 +459,9 @@ import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexTriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
-=======
-import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Minus
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
@@ -514,10 +470,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
-=======
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.HomotopyFiber
@@ -527,6 +480,7 @@ import Mathlib.Algebra.Homology.LeftResolution.DerivabilityStructure
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
+import Mathlib.Algebra.Homology.ModuleCat
 import Mathlib.Algebra.Homology.Monoidal
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
@@ -559,7 +513,6 @@ import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.ShortComplex.ULift
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.SpectralObject.Basic
 import Mathlib.Algebra.Homology.SpectralObject.Convergence
 import Mathlib.Algebra.Homology.SpectralObject.Differentials
@@ -576,9 +529,7 @@ import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
-=======
 import Mathlib.Algebra.Homology.Square
->>>>>>> origin/ext-change-of-universes
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexMap
 import Mathlib.Algebra.Homology.TotalComplexShift
@@ -1162,24 +1113,18 @@ import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 import Mathlib.AlgebraicTopology.SimplexCategory
-<<<<<<< HEAD
-import Mathlib.AlgebraicTopology.SimplicialObject
-import Mathlib.AlgebraicTopology.SimplicialSet
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.AlgebraicTopology.SimplicialSet.Subobject
-=======
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
->>>>>>> origin/ext-change-of-universes
+import Mathlib.AlgebraicTopology.SimplicialSet.Subobject
 import Mathlib.AlgebraicTopology.SingularSet
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -1688,6 +1633,7 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Generator
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
+import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
@@ -1788,19 +1734,13 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Closed.Types
 import Mathlib.CategoryTheory.Closed.Zero
 import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
-<<<<<<< HEAD
-=======
 import Mathlib.CategoryTheory.CodiscreteCategory
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Comma.Basic
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Comma.Extra
-=======
 import Mathlib.CategoryTheory.Comma.Final
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Comma.OverClass
 import Mathlib.CategoryTheory.Comma.Presheaf.Basic
@@ -1813,11 +1753,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.ConcreteCategory.Operation
-=======
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
->>>>>>> origin/ext-change-of-universes
+import Mathlib.CategoryTheory.ConcreteCategory.Operation
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Conj
@@ -1874,16 +1811,12 @@ import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Functor.Currying
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 import Mathlib.CategoryTheory.Functor.Derived.Pointwise
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
-=======
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Functor.FullyFaithful
@@ -1893,11 +1826,8 @@ import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Functor.ReflectsExactSequences
-=======
 import Mathlib.CategoryTheory.Functor.OfSequence
->>>>>>> origin/ext-change-of-universes
+import Mathlib.CategoryTheory.Functor.ReflectsExactSequences
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Galois.Action
@@ -1915,11 +1845,8 @@ import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.GradedObject.Associator
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.GradedObject.Map
-=======
 import Mathlib.CategoryTheory.GradedObject.Braiding
->>>>>>> origin/ext-change-of-universes
+import Mathlib.CategoryTheory.GradedObject.Map
 import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.CategoryTheory.GradedObject.Single
 import Mathlib.CategoryTheory.GradedObject.Trifunctor
@@ -1931,14 +1858,9 @@ import Mathlib.CategoryTheory.Groupoid.Discrete
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 import Mathlib.CategoryTheory.Groupoid.Subgroupoid
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.GuitartExact
-import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
-=======
 import Mathlib.CategoryTheory.GuitartExact.Basic
 import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 import Mathlib.CategoryTheory.HomCongr
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Idempotents.Basic
 import Mathlib.CategoryTheory.Idempotents.Biproducts
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
@@ -1999,11 +1921,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Limits.HasLimitsConstAdj
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
-import Mathlib.CategoryTheory.Limits.IsColimitType
-=======
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Indization.Category
 import Mathlib.CategoryTheory.Limits.Indization.Equalizers
@@ -2011,8 +1929,8 @@ import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.Products
+import Mathlib.CategoryTheory.Limits.IsColimitType
 import Mathlib.CategoryTheory.Limits.IsConnected
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
@@ -2101,19 +2019,14 @@ import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
-<<<<<<< HEAD
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrowsTwo
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
-=======
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Bifunctor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
@@ -2123,14 +2036,8 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.Linear
-=======
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.CategoryTheory.Localization.FiniteProducts
-import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.HomEquiv
->>>>>>> origin/ext-change-of-universes
+import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
@@ -2138,12 +2045,9 @@ import Mathlib.CategoryTheory.Localization.Preadditive
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Localization.Prod
 import Mathlib.CategoryTheory.Localization.Resolution
-<<<<<<< HEAD
-=======
 import Mathlib.CategoryTheory.Localization.SmallHom
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 import Mathlib.CategoryTheory.Localization.StructuredArrow
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
@@ -2255,10 +2159,7 @@ import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Shift.Linear
-=======
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Predicate
@@ -2266,13 +2167,9 @@ import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Shift.ShiftedHom
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.SingleFunctors
-import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
-=======
 import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 import Mathlib.CategoryTheory.Shift.SingleFunctors
->>>>>>> origin/ext-change-of-universes
+import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
@@ -2318,10 +2215,6 @@ import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Sites.LocallyInjective
-import Mathlib.CategoryTheory.Sites.LocallySurjective
-=======
 import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
@@ -2331,7 +2224,6 @@ import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 import Mathlib.CategoryTheory.Sites.MorphismProperty
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 import Mathlib.CategoryTheory.Sites.OneHypercover
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Preserves
@@ -2371,15 +2263,11 @@ import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
-=======
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Triangulated.SpectralObject
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
@@ -2390,10 +2278,6 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.RightTExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
-=======
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Yoneda
