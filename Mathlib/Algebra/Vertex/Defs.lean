@@ -224,6 +224,7 @@ element `1`, together with a multiplication operation that takes values in Laure
 coefficients in `V`, such that `a(z) 1 ∈ a + zV[[z]]` for all `a ∈ V` -/
 class VertexAlgebra (R : Type*) (V : Type*) [CommRing R] [AddCommGroupWithOne V] extends Module R V
     where
+  /-- The multiplication operation. -/
   Y : VertexAlg.stateField R V
   /-- The Borcherds identity holds. -/
   Borcherds_id : ∀ (a b c : V) (r s t : ℤ), VertexAlg.Borcherds_id Y a b c r s t
