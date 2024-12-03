@@ -38,9 +38,12 @@ theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x
 theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
   rw [← sum_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
-  apply sum_congr
-  · aesop
-  · exact fun x a ↦ rfl
+  exact sum_congr (by
+    ext x
+    simp only [mem_filter, mem_disjUnion]
+    exact and_or_left
+  ) (fun x a ↦ rfl)
+
 
 end Filter
 
