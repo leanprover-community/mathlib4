@@ -221,18 +221,9 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
   choice_eq _ _ := rfl
 
 private lemma IntermediateField.finiteDimensional_of_le {M N : IntermediateField k K}
-    (le : M ≤ N) [FiniteDimensional k N] : FiniteDimensional k M := by
-  let i : M →ₐ[k] N := {
-    toFun := fun x => ⟨x.1, le x.2⟩
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl
-    map_zero' := rfl
-    map_add' := fun _ _ => rfl
-    commutes' := fun _ => rfl }
-  apply FiniteDimensional.of_injective (AlgHom.toLinearMap i)
-  intro _ _ h
-  apply_fun Subtype.val at h
-  exact Subtype.val_injective h
+    (le : M ≤ N) [FiniteDimensional k N] : FiniteDimensional k M :=
+  FiniteDimensional.of_injective (AlgHom.toLinearMap (IntermediateField.inclusion le))
+    (IntermediateField.inclusion_injective le)
 
 theorem open_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen (IntermediateFieldEquivClosedSubgroup L).carrier ↔
