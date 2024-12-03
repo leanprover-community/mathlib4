@@ -19,23 +19,22 @@ finitely presented as an `B`-module, then `M` is finitely presented as an `A`-mo
 
 -/
 
-universe v u₁ u₂
-
 namespace Module
 
-variable {B : Type u₂} [Ring B] {M : Type v} [AddCommGroup M] [Module B M]
+variable {B : Type*} [Ring B] {M : Type*} [AddCommGroup M] [Module B M]
   [DecidableEq B]
   (presM : Presentation B M) [DecidableEq presM.G]
-  {A : Type u₁} [CommRing A] [Algebra A B] [Module A M] [IsScalarTower A B M]
+  {A : Type*} [CommRing A] [Algebra A B] [Module A M] [IsScalarTower A B M]
   (presB : Presentation A B)
 
 namespace Presentation
 
 /-- The additional data that is necessary in order to obtain a presentation
 of the restriction of scalars of a module. -/
-abbrev RestrictScalarsData : Type _ := (presB.finsupp presM.G).CokernelData
-  (LinearMap.restrictScalars A presM.map)
-  (fun (⟨g, g'⟩ : presB.G × presM.R) ↦ presB.var g • Finsupp.single g' (1 : B))
+abbrev RestrictScalarsData : Type _ :=
+  (presB.finsupp presM.G).CokernelData
+    (LinearMap.restrictScalars A presM.map)
+    (fun (⟨g, g'⟩ : presB.G × presM.R) ↦ presB.var g • Finsupp.single g' (1 : B))
 
 variable (data : presM.RestrictScalarsData presB)
 
