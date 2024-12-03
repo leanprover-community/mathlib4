@@ -23,8 +23,6 @@ variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset �
 
 variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β} [AddCommMonoid β]
 
-lemma temp (P Q : Prop) : P → Q → P ∧ Q := by exact?
-
 theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     Disjoint (s.filter p) (s.filter q) := by
   intro t htp htq
