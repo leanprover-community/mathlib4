@@ -174,7 +174,8 @@ theorem eq_iff_eq (x : K) (r : ℝ) : (∀ w : FinitePlace K, w x = r) ↔
   Set.forall_subtype_range_iff
 
 theorem le_iff_le (x : K) (r : ℝ) : (∀ w : FinitePlace K, w x ≤ r) ↔
-    ∀ v : HeightOneSpectrum (𝓞 K), ‖embedding v x‖ ≤ r := Set.forall_subtype_range_iff
+    ∀ v : HeightOneSpectrum (𝓞 K), ‖embedding v x‖ ≤ r :=
+  Set.forall_subtype_range_iff
 
 theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
