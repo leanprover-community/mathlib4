@@ -196,24 +196,20 @@ lemma rootForm_root_self_pos (j : ι) :
 
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeight_le_four (i j : ι) : P.coxeterWeight i j ≤ 4 := by
-  by_contra! h
-  have h1 : (P.RootForm (P.root i)) (P.root i) * (P.RootForm (P.root j)) (P.root j) * 4 <
-      4 • (P.RootForm (P.root i) (P.root j)) ^ 2 := by
-    rw [P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j, smul_eq_mul,
-      mul_comm (P.coxeterWeight i j)]
-    exact (mul_lt_mul_left (Left.mul_pos (rootForm_root_self_pos P i)
-      (rootForm_root_self_pos P j))).mpr h
-  have h2 : (P.RootForm (P.root i)) (P.root i) * (P.RootForm (P.root j)) (P.root j) <
-      (P.RootForm (P.root i)) (P.root j) * (P.RootForm (P.root j)) (P.root i) := by
-    rw [nsmul_eq_mul, mul_comm, sq] at h1
-    rw [show (P.RootForm (P.root j)) (P.root i) = (P.RootForm (P.root i)) (P.root j) by
-        apply rootForm_symmetric]
-    exact (mul_lt_mul_left (by simp)).mp h1
-  have h3 := LinearMap.BilinForm.inner_mul_inner_le P.RootForm P.rootForm_self_non_neg
-    (rootForm_root_self_pos P i) (P.root j)
-  linarith
+  set li := P.RootForm (P.root i) (P.root i)
+  set lj := P.RootForm (P.root j) (P.root j)
+  set lij := P.RootForm (P.root i) (P.root j)
+  have hi := P.rootForm_root_self_pos i
+  have hj := P.rootForm_root_self_pos j
+  have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
+    rw [mul_le_mul_left four_pos]
+    exact LinearMap.BilinForm.apply_mul_apply_le_of_symm P.RootForm P.rootForm_self_non_neg
+      P.rootForm_symmetric (P.root i) (P.root j)
+  have key : 4 • lij ^ 2 = _ • (li * lj) := P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
+  simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
+  rwa [key, mul_le_mul_right (by positivity)] at cs
 
-instance rootForm_rootPositive : IsRootPositive P P.RootForm where
+instance instIsRootPositiveRootForm : IsRootPositive P P.RootForm where
   zero_lt_apply_root i := P.rootForm_root_self_pos i
   symm := P.rootForm_symmetric
   apply_reflection_eq := P.rootForm_reflection_reflection_apply

@@ -92,9 +92,6 @@ lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulD
     rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
-@[deprecated (since := "2024-11-30")] alias infinite_of_linearly_independent_coxeterWeight_four :=
-  infinite_of_linearIndependent_coxeterWeight_four
-
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
