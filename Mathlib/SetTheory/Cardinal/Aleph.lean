@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Order.Bounded
-import Mathlib.SetTheory.Cardinal.PartENat
+import Mathlib.SetTheory.Cardinal.ToNat
+import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
@@ -275,7 +276,7 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
-theorem type_cardinal : @type Cardinal (· < ·) _ = Ordinal.univ.{u, u + 1} := by
+theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
   rw [Ordinal.univ_id]
   exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
 
@@ -423,8 +424,8 @@ theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
   toNat_apply_of_aleph0_le <| aleph0_le_aleph o
 
 @[simp]
-theorem aleph_toPartENat (o : Ordinal) : toPartENat (ℵ_ o) = ⊤ :=
-  toPartENat_apply_of_aleph0_le <| aleph0_le_aleph o
+theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
+  (toENat_eq_top.2 (aleph0_le_aleph o))
 
 instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := by
   rw [toType_nonempty_iff_ne_zero, ← ord_zero]
