@@ -30,12 +30,10 @@ theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x
   by_contra hn
   rw [← not_nonempty_iff_eq_empty, not_not] at hn
   obtain ⟨x, hx⟩ := hn
-  have e1 : p x := (mem_filter.mp (htp hx)).2
-  have e2 : q x := (mem_filter.mp (htq hx)).2
-  have e3 : filter p s ⊆ s := filter_subset p s
-  have e4 : t ⊆ s := fun _ a_1 ↦ e3 (htp a_1)
+  have px : p x := (mem_filter.mp (htp hx)).2
+  have qx : q x := (mem_filter.mp (htq hx)).2
   simp_all only [mem_filter, not_and, and_imp, le_eq_subset, filter_subset]
-  exact h x (e4 hx) (Or.inr e2) e1 e2
+  exact h x (filter_subset p s (htp hx)) (Or.inr qx) px qx
 
 theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
