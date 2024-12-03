@@ -284,15 +284,14 @@ variable (L' : Language) [inst' : L'.Structure M]
   * a set S is Definable in some M-structure on L,
   * the realizations of all L.Functions have tupleGraph that's Definable on S,
   * the realizations of all L.Relations are Definable on S,
-then S is Definable on T, as well.
--/
+then S is Definable on T, as well. -/
 theorem Definable.trans {S : Set (α → M)} (h₁ : A.Definable L S)
     (h₂ : ∀ {n} (g : L[[A]].Functions n), A.Definable L' (g.term.realize).tupleGraph)
-    (h₃ : ∀ {n} (g : L[[A]].Relations n), A.Definable L' (RelMap g))
-    : A.Definable L' S :=
+    (h₃ : ∀ {n} (g : L[[A]].Relations n), A.Definable L' (RelMap g)) :
+    A.Definable L' S :=
   h₁.elim fun φ₁ hφ₁ ↦
     ⟨_, hφ₁.trans <| funext fun v ↦ (φ₁.subst_definitions_eq
-      (fun g ↦ (h₂ g).choose_spec) (fun g ↦ (h₃ g).choose_spec) v).symm⟩
+      (fun g ↦ (h₂ g).choose_spec.symm) (fun g ↦ (h₃ g).choose_spec.symm) v).symm⟩
 
 end Set
 
@@ -461,12 +460,11 @@ theorem TermDefinable.mono {f : (α → M) → M} (h : A.TermDefinable L f) (hAB
 
 /-- TermDefinable is transitive. If f is TermDefinable in a structure S on L, and all of the
   functions' realizations on S are TermDefinable on a structure T on L', then f is
-  TermDefinable on T in L'.
--/
+  TermDefinable on T in L'. -/
 @[fun_prop]
 theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
-    (h₂ : ∀ {n} (g : L[[A]].Functions n), A.TermDefinable L' g.term.realize)
-    : A.TermDefinable L' f := by
+    (h₂ : ∀ {n} (g : L[[A]].Functions n), A.TermDefinable L' g.term.realize) :
+    A.TermDefinable L' f := by
   obtain ⟨x,rfl⟩ := h₁
   use x.substFunc (fun {n} (g : L[[A]].Functions n) ↦ Classical.choose (h₂ g))
   have hc : ∀ {n} (g : L[[A]].Functions n), _ := fun {n} g ↦ congrFun (Classical.choose_spec (h₂ g))
