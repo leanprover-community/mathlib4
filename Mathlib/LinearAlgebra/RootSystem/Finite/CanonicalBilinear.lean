@@ -55,7 +55,11 @@ namespace RootPairing
 section CommRing
 
 variable [Fintype ι] [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-(P : RootPairing ι R M N)
+  (P : RootPairing ι R M N)
+
+instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
+
+instance : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range P.coroot
 
 /-- An invariant linear map from weight space to coweight space. -/
 def Polarization : M →ₗ[R] N :=
@@ -87,8 +91,32 @@ def CorootForm : LinearMap.BilinForm R N :=
   ∑ i, (P.root' i).smulRight (P.root' i)
 
 lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
-    ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
+    ∑ i, P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
+
+lemma corootForm_apply_apply (x y : N) : P.CorootForm x y =
+    ∑ i, P.root' i x * P.root' i y := by
+  simp [CorootForm]
+
+lemma flip_comp_polarization_eq_rootForm :
+    P.flip.toLin ∘ₗ P.Polarization = P.RootForm := by
+  ext; simp [rootForm_apply_apply, RootPairing.flip]
+
+lemma self_comp_coPolarization_eq_corootForm :
+    P.toLin ∘ₗ P.CoPolarization = P.CorootForm := by
+  ext; simp [corootForm_apply_apply]
+
+lemma polarization_apply_eq_zero_iff (m : M) :
+    P.Polarization m = 0 ↔ P.RootForm m = 0 := by
+  rw [← flip_comp_polarization_eq_rootForm]
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  change P.toDualRight (P.Polarization m) = 0 at h
+  simp only [EmbeddingLike.map_eq_zero_iff] at h
+  exact h
+
+lemma coPolarization_apply_eq_zero_iff (n : N) :
+    P.CoPolarization n = 0 ↔ P.CorootForm n = 0 :=
+  P.flip.polarization_apply_eq_zero_iff n
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
@@ -143,6 +171,39 @@ theorem range_polarization_domRestrict_le_span_coroot :
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 
+lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
+    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
+      LinearMap.range (P.Polarization.domRestrict (P.rootSpan)) := by
+  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a))
+    (Finset.mem_univ i)
+  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
+  refine LinearMap.mem_range.mpr ?_
+  use ⟨(c • 2 • P.root i), by aesop⟩
+  simp
+
+section IsCrystallographic
+
+variable [CharZero R] (h : P.IsCrystallographic) (i : ι)
+include h
+
+lemma rootForm_apply_root_self_ne_zero :
+    P.RootForm (P.root i) (P.root i) ≠ 0 := by
+  choose z hz using P.isCrystallographic_iff.mp h i
+  simp only [rootForm_apply_apply, PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, ← hz]
+  suffices 0 < ∑ i, z i * z i by norm_cast; exact this.ne'
+  refine Finset.sum_pos' (fun i _ ↦ mul_self_nonneg (z i)) ⟨i, Finset.mem_univ i, ?_⟩
+  have hzi : z i = 2 := by
+    specialize hz i
+    rw [pairing_same] at hz
+    norm_cast at hz
+  simp [hzi]
+
+lemma corootForm_apply_coroot_self_ne_zero :
+    P.CorootForm (P.coroot i) (P.coroot i) ≠ 0 :=
+  P.flip.rootForm_apply_root_self_ne_zero h.flip i
+
+end IsCrystallographic
+
 end CommRing
 
 section LinearOrderedCommRing
@@ -171,16 +232,6 @@ lemma rootForm_root_self_pos (j : ι) :
 lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
   Finset.prod_pos fun i _ => rootForm_root_self_pos P i
-
-lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
-    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
-      LinearMap.range (P.Polarization.domRestrict (P.rootSpan)) := by
-  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a))
-    (Finset.mem_univ i)
-  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
-  refine LinearMap.mem_range.mpr ?_
-  use ⟨(c • 2 • P.root i), by aesop⟩
-  simp
 
 end LinearOrderedCommRing
 
