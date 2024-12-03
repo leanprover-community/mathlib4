@@ -30,8 +30,8 @@ An ad hoc multiplication is defined, for which `EReal` is a `CommMonoidWithZero`
 choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined non-ambiguously).
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
 Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where either `0 ≤ x < ⊤`,
-see `left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `left_distrib_of_nonneg` (similarily
-for right distributivity).
+see `Ereal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `Ereal.left_distrib_of_nonneg`
+(similarily for right distributivity).
 
 `EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
 the fact that `WithBot (WithTop L)` is a complete linear order if `L` is
@@ -873,12 +873,17 @@ lemma add_ne_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y ≠ ⊤
 lemma add_ne_top_iff_ne_top₂ {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
   refine ⟨?_, fun h ↦ add_ne_top h.1 h.2⟩
-  cases x <;> simp_all
-  cases y <;> simp_all
+  cases x <;> simp_all only [ne_eq, not_false_eq_true, top_add_of_ne_bot, not_true_eq_false,
+    IsEmpty.forall_iff]
+  cases y <;> simp_all only [not_false_eq_true, ne_eq, add_top_of_ne_bot, not_true_eq_false,
+    coe_ne_top, and_self, implies_true]
 
-lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
+lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
   cases x <;> simp [add_ne_top_iff_ne_top₂, hy, hy']
+
+lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
+    x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
 
 /-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
@@ -953,21 +958,21 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
-/-- `-a ≤ b`iff `-b ≤ a` on `EReal`. -/
+/-- `-a ≤ b` if and only if `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
  rw [← neg_le_neg_iff, neg_neg]
 
 /-- If `-a ≤ b` then `-b ≤ a` on `EReal`. -/
 protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
 
-/-- `a ≤ -b` iff `b ≤ -a` on `EReal`. -/
+/-- `a ≤ -b` if and only if `b ≤ -a` on `EReal`. -/
 protected theorem le_neg {a b : EReal} : a ≤ -b ↔ b ≤ -a := by
   rw [← neg_le_neg_iff, neg_neg]
 
 /-- If `a ≤ -b` then `b ≤ -a` on `EReal`. -/
 protected theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := EReal.le_neg.mp h
 
-/-- `-a < b` iff `-b < a` on `EReal`. -/
+/-- `-a < b` if and only if `-b < a` on `EReal`. -/
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
 
 @[deprecated (since := "2024-11-19")] alias neg_lt_iff_neg_lt := neg_lt_comm
@@ -975,7 +980,7 @@ theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_i
 /-- If `-a < b` then `-b < a` on `EReal`. -/
 protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.mp h
 
-/-- `a < -b` iff `b < -a` on `EReal`. -/
+/-- `-a < b` if and only if `-b < a` on `EReal`. -/
 theorem lt_neg_comm {a b : EReal} : a < -b ↔ b < -a := by
   rw [← neg_lt_neg_iff, neg_neg]
 
@@ -1468,10 +1473,10 @@ lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     x * (y + z) = x * y + x * z := by
   by_cases hx0 : x = 0
   · simp [hx0]
-  have hx_pos : 0 < x := hx_nonneg.lt_of_ne' hx0
-  lift x to ℝ using ⟨hx_ne_top, hx_pos.ne_bot⟩
+  replace hx0 : 0 < x := hx_nonneg.lt_of_ne' hx0
+  lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩
   cases y <;> cases z <;>
-    simp [mul_bot_of_pos hx_pos, mul_top_of_pos hx_pos, ← coe_mul];
+    simp [mul_bot_of_pos hx0, mul_top_of_pos hx0, ← coe_mul];
     rw_mod_cast [mul_add]
 
 lemma right_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
