@@ -57,7 +57,7 @@ noncomputable def vadic_abv : AbsoluteValue K ℝ where
     intro x y
     simp only
     norm_cast
-    -- the triangular inequality is implied by the ultrametric one
+    -- the triangle inequality is implied by the ultrametric one
     apply le_trans _ <| max_le_add_of_nonneg (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation x)))
       (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation y)))
     have h_mono := StrictMono.monotone (toNNReal_strictMono (one_lt_norm v))
