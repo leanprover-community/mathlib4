@@ -105,7 +105,7 @@ def FinitePlace (K : Type*) [Field K] [NumberField K] := {w : AbsoluteValue K �
 
 /-- Return the finite place defined by a maximal ideal `v`. -/
 noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace K :=
-    ⟨place (embedding v), ⟨v, rfl⟩⟩
+  ⟨place (embedding v), ⟨v, rfl⟩⟩
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
