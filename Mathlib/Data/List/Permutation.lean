@@ -10,7 +10,6 @@ import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lemmas
 
 /-!
 # Permutations of a list
@@ -184,9 +183,8 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
 
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) =
-      Nat.sum (map length L) + length r := by
-  simp [foldr_permutationsAux2, Function.comp_def, length_permutationsAux2, length_flatMap',
-    Nat.sum_eq_listSum]
+      (map length L).sum + length r := by
+  simp [foldr_permutationsAux2, Function.comp_def, length_permutationsAux2, length_flatMap]
 
 theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List α)) (n)
     (H : ∀ l ∈ L, length l = n) :
@@ -196,7 +194,6 @@ theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List
   · simp
   have sum_map : (map length L).sum = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
   have length_l : length l = n := H _ (mem_cons_self _ _)
-  simp only [Nat.sum_eq_listSum] at sum_map
   simp [sum_map, length_l, Nat.mul_add, Nat.add_comm, mul_succ]
 
 @[simp]
