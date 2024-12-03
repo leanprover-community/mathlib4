@@ -1113,6 +1113,10 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
   gc_ord_card.lt_iff_lt
 
 @[simp]
+theorem ord_pos {c : Cardinal} : 0 < c.ord ↔ 0 < c := by
+  rw [lt_ord, card_zero]
+
+@[simp]
 theorem card_ord (c) : (ord c).card = c :=
   c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
 
@@ -1228,6 +1232,9 @@ theorem ord_inj {a b : Cardinal} : a.ord = b.ord ↔ a = b :=
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
   ord_injective.eq_iff' ord_zero
+
+theorem ord_ne_zero {a : Cardinal} : a.ord ≠ 0 ↔ a ≠ 0 :=
+  ord_eq_zero.ne
 
 @[simp]
 theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
@@ -1360,8 +1367,11 @@ theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < 
   rfl
 
 @[simp]
-theorem zero_lt_card {o} : 0 < card o ↔ 0 < o := by
+theorem card_pos {o} : 0 < card o ↔ 0 < o := by
   simpa using nat_lt_card (n := 0)
+
+@[deprecated card_pos (since := "2024-10-25")]
+alias zero_lt_card := card_pos
 
 @[simp]
 theorem one_lt_card {o} : 1 < card o ↔ 1 < o := by
@@ -1404,6 +1414,9 @@ theorem card_eq_nat {o} {n : ℕ} : card o = n ↔ o = n := by
 @[simp]
 theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by
   simpa using card_eq_nat (n := 0)
+
+theorem card_ne_zero {o} : card o ≠ 0 ↔ o ≠ 0 :=
+  card_eq_zero.ne
 
 @[simp]
 theorem card_eq_one {o} : card o = 1 ↔ o = 1 := by
