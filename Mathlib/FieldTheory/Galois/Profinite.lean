@@ -102,9 +102,13 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f :
     induction L₁ with | _ L₁ => ?_
     induction L₂ with | _ L₂ => ?_
     induction L₃ with | _ L₃ => ?_
-  letI : Algebra L₃ L₂ := RingHom.toAlgebra (Subsemiring.inclusion g.unop.le)
-  letI : Algebra L₂ L₁ := RingHom.toAlgebra (Subsemiring.inclusion f.unop.le)
-  letI : Algebra L₃ L₁ := RingHom.toAlgebra (Subsemiring.inclusion (g.unop.le.trans f.unop.le))
+  let alg32 : Algebra L₃ L₂ := RingHom.toAlgebra (Subsemiring.inclusion g.unop.le)
+  let alg21 : Algebra L₂ L₁ := RingHom.toAlgebra (Subsemiring.inclusion f.unop.le)
+  let alg31 : Algebra L₃ L₁ :=
+    RingHom.toAlgebra (Subsemiring.inclusion (g.unop.le.trans f.unop.le))
+  letI : SMul L₃ L₂ := alg32.toSMul
+  letI : SMul L₂ L₁ := alg21.toSMul
+  letI : SMul L₃ L₁ := alg31.toSMul
   haveI : IsScalarTower k L₂ L₁ := IsScalarTower.of_algebraMap_eq' rfl
   haveI : IsScalarTower k L₃ L₁ := IsScalarTower.of_algebraMap_eq' rfl
   haveI : IsScalarTower k L₃ L₂ := IsScalarTower.of_algebraMap_eq' rfl
