@@ -82,7 +82,7 @@ class SMul (M : Type u) (α : Type v) where
   but it is intended to be used for left actions. -/
   smul : M → α → α
 
-@[inherit_doc] infixl:65 " +ᵥ " => HVAdd.hVAdd
+@[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
 @[inherit_doc] infixr:73 " • " => HSMul.hSMul
 
