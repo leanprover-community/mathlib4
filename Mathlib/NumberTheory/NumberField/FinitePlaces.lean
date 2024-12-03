@@ -71,7 +71,7 @@ end absoluteValue
 section FinitePlace
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
-/-- The embedding of a NumberField inside its completion with respect to `v`. -/
+/-- The embedding of a number field inside its completion with respect to `v`. -/
 def embedding : K →+* adicCompletion K v :=
     @UniformSpace.Completion.coeRingHom K _ v.adicValued.toUniformSpace _ _
 
