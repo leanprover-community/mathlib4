@@ -146,7 +146,7 @@ instance : FunLike (FinitePlace K) K ℝ where
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext <| congr_fun h)
 
 instance : MonoidWithZeroHomClass (FinitePlace K) K ℝ where
-  map_mul w _ _ := w.1.map_mul _ _
+  map_mul w := w.1.map_mul
   map_one w := w.1.map_one
   map_zero w := w.1.map_zero
 
