@@ -93,8 +93,7 @@ lemma fac_aux₁ {n : ℕ}
 
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
-    (x : s.pt)
-    (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
+    (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
     X.map (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij).op (lift s x) =
       s.π.app (strArrowMk₂ (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by omega)) x := by
   obtain ⟨k, hk⟩ := Nat.le.dest hij
