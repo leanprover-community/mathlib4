@@ -257,10 +257,9 @@ instance groupWithZero : GroupWithZero (WithZero α) where
   inv_zero := WithZero.inv_zero
   mul_inv_cancel a ha := by
     lift a to α using ha
-    -- FIXME: norm_cast is not working on #6123
-    -- norm_cast
-    -- apply mul_inv_cancel
-    sorry
+    #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
+    norm_cast +zeta
+    apply mul_inv_cancel
 
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/

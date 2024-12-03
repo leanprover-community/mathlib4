@@ -44,7 +44,8 @@ lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico
   rintro a ⟨ha₀, ha⟩ b ⟨hb₀, hb⟩ hab
   lift a to ℕ using ha₀
   lift b to ℕ using hb₀
-  norm_cast at *
+  #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
+  norm_cast +zeta at *
   exact natCast_injOn_Iio _ _ ha hb hab
 
 end AddGroupWithOne

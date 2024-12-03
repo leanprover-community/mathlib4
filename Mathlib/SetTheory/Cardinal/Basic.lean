@@ -1416,20 +1416,24 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
 
 lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Cardinal.nat_succ]
-  norm_cast
+  #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
+  norm_cast +zeta
 
 lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
   rw [← Order.succ_le_iff, Cardinal.succ_natCast]
 
 lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
   convert natCast_add_one_le_iff
-  norm_cast
+  #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
+  norm_cast +zeta
 
 @[simp]
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 
 -- This works generally to prove inequalities between numeric cardinals.
-theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
+theorem one_lt_two : (1 : Cardinal) < 2 := by
+  #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
+  norm_cast +zeta
 
 theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
     ∃ s : Finset α, n ≤ s.card := by

@@ -66,7 +66,8 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
 lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
-  · norm_cast
+  · #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
+    norm_cast +zeta
     rw [iInf, Nat.sInf_eq_zero]
     exact ⟨fun h ↦ by simp_all, .inl⟩
 
