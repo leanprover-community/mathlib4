@@ -1270,6 +1270,7 @@ scoped notation "ℵ₀" => Cardinal.aleph0
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm
 
+@[simp]
 theorem aleph0_ne_zero : ℵ₀ ≠ 0 :=
   mk_ne_zero _
 

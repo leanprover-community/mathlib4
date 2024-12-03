@@ -237,9 +237,37 @@ theorem cof_succ (o : Ordinal) : cof (succ o) = 1 := by
   rw [← cof_toType, cof_eq_one]
 
 @[simp]
+theorem cof_nat_succ (n : ℕ) : cof (n + 1) = 1 :=
+  cof_succ n
+
+@[simp]
 theorem cof_eq_one : cof o = 1 ↔ ¬ IsSuccPrelimit o := by
   rw [← cof_toType, cof_eq_one_iff]
   sorry
+
+@[simp]
+theorem cof_le_one : cof o ≤ 1 ↔ ¬ IsLimit o := by
+  sorry
+
+theorem cof_le_one_of_cof_lt_aleph0 (h : cof o < ℵ₀) : cof o ≤ 1 := by
+  obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.1 h
+  apply_fun cof ∘ ord at hn
+  cases n
+  · suffices o = 0 by simp [this]
+    simpa using hn
+  · simp_rw [comp_apply, ord_nat, Nat.cast_succ, cof_nat_succ, cof_cof] at hn
+    rw [hn]
+
+-- TODO: Order.cof version
+theorem aleph0_le_cof : ℵ₀ ≤ cof o ↔ IsLimit o := by
+  obtain rfl | ⟨o, rfl⟩ | ho := zero_or_succ_or_limit o
+  · simp
+  · simp
+  · simp_rw [ho, iff_true]
+    refine le_of_not_lt fun h => ?_
+    have := cof_le_one_of_cof_lt_aleph0 h
+    rw [cof_le_one] at this
+    contradiction
 
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
@@ -383,7 +411,35 @@ theorem IsNormal.cof_eq {f : Ordinal → Ordinal} (hf : IsNormal f) (ho : IsLimi
   obtain ⟨g, hg⟩ := exists_isFundamentalSeq o
   exact (ord_injective (hf.isFundamentalSeq ho hg).cof_eq).symm
 
-#exit
+@[simp]
+theorem cof_add {b : Ordinal} (h : b ≠ 0) : cof (a + b) = cof b := by
+  obtain rfl | ⟨c, rfl⟩ | hb := zero_or_succ_or_limit b
+  · contradiction
+  · rw [add_succ, cof_succ, cof_succ]
+  · exact (isNormal_add_right a).cof_eq hb
+
+@[simp]
+theorem cof_preOmega {o : Ordinal} (ho : o.IsLimit) : (preOmega o).cof = o.cof :=
+  isNormal_preOmega.cof_eq ho
+
+@[simp]
+theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
+  isNormal_omega.cof_eq ho
+
+@[simp]
+theorem cof_omega0 : cof ω = ℵ₀ := by
+  apply (aleph0_le_cof.2 isLimit_omega0).antisymm'
+  rw [← card_omega0]
+  apply cof_le_card
+
+@[simp]
+theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
+  apply le_antisymm (cof_le_card _)
+  obtain ⟨s, hs, ho⟩ := cof_eq Ordinal.{u}
+  rw [← not_bddAbove_iff_isCofinal, bddAbove_iff_small, small_iff_lift_mk_lt_univ,
+    Cardinal.lift_id, ← ho, not_lt, ← Cardinal.lift_le.{v}, Cardinal.lift_univ,
+    Cardinal.univ_umax] at hs
+  rwa [card_univ, univ, ← lift_cof, cof_type]
 
 #exit
 
@@ -404,105 +460,8 @@ theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ 
 
 /-! ### Basic results -/
 
-/-- A fundamental sequence for `a` is an increasing sequence of length `o = cof a` that converges at
-    `a`. We provide `o` explicitly in order to avoid type rewrites. -/
-def IsFundamentalSequence (a o : Ordinal.{u}) (f : ∀ b < o, Ordinal.{u}) : Prop :=
-  o ≤ a.cof.ord ∧ (∀ {i j} (hi hj), i < j → f i hi < f j hj) ∧ blsub.{u, u} o f = a
-
-namespace IsFundamentalSequence
 
 
-protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
-    {a o} (ha : IsLimit a) {g} (hg : IsFundamentalSequence a o g) :
-    IsFundamentalSequence (f a) o fun b hb => f (g b hb) := by
-  refine ⟨?_, @fun i j _ _ h => hf.strictMono (hg.2.1 _ _ h), ?_⟩
-  · rcases exists_lsub_cof (f a) with ⟨ι, f', hf', hι⟩
-    rw [← hg.cof_eq, ord_le_ord, ← hι]
-    suffices (lsub.{u, u} fun i => sInf { b : Ordinal | f' i ≤ f b }) = a by
-      rw [← this]
-      apply cof_lsub_le
-    have H : ∀ i, ∃ b < a, f' i ≤ f b := fun i => by
-      have := lt_lsub.{u, u} f' i
-      rw [hf', ← IsNormal.blsub_eq.{u, u} hf ha, lt_blsub_iff] at this
-      simpa using this
-    refine (lsub_le fun i => ?_).antisymm (le_of_forall_lt fun b hb => ?_)
-    · rcases H i with ⟨b, hb, hb'⟩
-      exact lt_of_le_of_lt (csInf_le' hb') hb
-    · have := hf.strictMono hb
-      rw [← hf', lt_lsub_iff] at this
-      cases' this with i hi
-      rcases H i with ⟨b, _, hb⟩
-      exact
-        ((le_csInf_iff'' ⟨b, by exact hb⟩).2 fun c hc =>
-          hf.strictMono.le_iff_le.1 (hi.trans hc)).trans_lt (lt_lsub _ i)
-  · rw [@blsub_comp.{u, u, u} a _ (fun b _ => f b) (@fun i j _ _ h => hf.strictMono.monotone h) g
-        hg.2.2]
-    exact IsNormal.blsub_eq.{u, u} hf ha
-
-theorem IsNormal.cof_eq {f} (hf : IsNormal f) {a} (ha : IsLimit a) : cof (f a) = cof a :=
-  let ⟨_, hg⟩ := exists_fundamental_sequence a
-  ord_injective (hf.isFundamentalSequence ha hg).cof_eq
-
-theorem IsNormal.cof_le {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_limit a with (rfl | ⟨b, rfl⟩ | ha)
-  · rw [cof_zero]
-    exact zero_le _
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_ne_zero, ← Ordinal.pos_iff_ne_zero]
-    exact (Ordinal.zero_le (f b)).trans_lt (hf.1 b)
-  · rw [hf.cof_eq ha]
-
-@[simp]
-theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
-  rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
-  · contradiction
-  · rw [add_succ, cof_succ, cof_succ]
-  · exact (isNormal_add_right a).cof_eq hb
-
-theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
-  rcases zero_or_succ_or_limit o with (rfl | ⟨o, rfl⟩ | l)
-  · simp [not_zero_isLimit, Cardinal.aleph0_ne_zero]
-  · simp [not_succ_isLimit, Cardinal.one_lt_aleph0]
-  · simp only [l, iff_true]
-    refine le_of_not_lt fun h => ?_
-    cases' Cardinal.lt_aleph0.1 h with n e
-    have := cof_cof o
-    rw [e, ord_nat] at this
-    cases n
-    · simp at e
-      simp [e, not_zero_isLimit] at l
-    · rw [natCast_succ, cof_succ] at this
-      rw [← this, cof_eq_one_iff_is_succ] at e
-      rcases e with ⟨a, rfl⟩
-      exact not_succ_isLimit _ l
-
-@[simp]
-theorem cof_preOmega {o : Ordinal} (ho : o.IsLimit) : (preOmega o).cof = o.cof :=
-  isNormal_preOmega.cof_eq ho
-
-@[simp]
-theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
-  isNormal_omega.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem preAleph_cof {o : Ordinal} (ho : o.IsLimit) : (preAleph o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_preOmega (since := "2024-10-22")]
-theorem aleph'_cof {o : Ordinal} (ho : o.IsLimit) : (aleph' o).ord.cof = o.cof :=
-  aleph'_isNormal.cof_eq ho
-
-set_option linter.deprecated false in
-@[deprecated cof_omega (since := "2024-10-22")]
-theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (ℵ_  o).ord.cof = o.cof :=
-  aleph_isNormal.cof_eq ho
-
-@[simp]
-theorem cof_omega0 : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 isLimit_omega0).antisymm' <| by
-    rw [← card_omega0]
-    apply cof_le_card
 
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
@@ -519,25 +478,6 @@ theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r
         ab⟩,
     e⟩
 
-@[simp]
-theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
-  le_antisymm (cof_le_card _)
-    (by
-      refine le_of_forall_lt fun c h => ?_
-      rcases lt_univ'.1 h with ⟨c, rfl⟩
-      rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
-      refine lt_of_not_ge fun h => ?_
-      cases' Cardinal.mem_range_lift_of_le h with a e
-      refine Quotient.inductionOn a (fun α e => ?_) e
-      cases' Quotient.exact e with f
-      have f := Equiv.ulift.symm.trans f
-      let g a := (f a).1
-      let o := succ (iSup g)
-      rcases H o with ⟨b, h, l⟩
-      refine l (lt_succ_iff.2 ?_)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
-      apply Ordinal.le_iSup)
 
 /-! ### Infinite pigeonhole principle -/
 

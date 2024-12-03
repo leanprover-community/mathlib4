@@ -213,9 +213,11 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
 @[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
 alias isSuccLimit_zero := isSuccPrelimit_zero
 
+@[simp]
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
 
+@[simp]
 theorem not_succ_isLimit (o) : ¬IsLimit (succ o)
   | ⟨_, h⟩ => lt_irrefl _ (h _ (lt_succ o))
 
