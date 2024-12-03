@@ -20,8 +20,6 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁,u₁} C] [Category.{v�
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D] {F : C ⥤ D} {G : D ⥤ C} [F.CommShift ℤ] [G.CommShift ℤ]
 
-variable (X : C)
-
 open ComposableArrows in
 lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
     [CommShift.adjunction_compat ℤ adj] [F.IsTriangulated] (T : Triangle D)
@@ -42,9 +40,51 @@ lemma isTriangulated_of_left_adjoint_triangulated_aux (adj : F ⊣ G)
     apply @homologySequenceComposableArrows₅_iso_of_natIso _ _ _ _ _
       (preadditiveCoyoneda.obj (op (F.obj X)) ⋙ AddCommGrp.uliftFunctor)
       (ShiftSequence.comp_right _ _ _) T 0 1 (by simp) ((G ⋙ preadditiveCoyoneda.obj (op X)) ⋙
-      AddCommGrp.uliftFunctor)  (@ShiftSequence.comp_right _ _ _ _ (G ⋙ preadditiveCoyoneda.obj
+      AddCommGrp.uliftFunctor) (@ShiftSequence.comp_right _ _ _ _ (G ⋙ preadditiveCoyoneda.obj
       (op X)) ℤ _ _ (ShiftSequence.comp_left _ _ _) _ _ _)
-    sorry
+    refine @ShiftSequenceIso.mk  _ _ _ _
+      (preadditiveCoyoneda.obj (op (F.obj X)) ⋙ AddCommGrp.uliftFunctor.{v₂, max v₁ v₂}) ℤ _ _
+      ((G ⋙ preadditiveCoyoneda.obj (op X)) ⋙ AddCommGrp.uliftFunctor)
+      (ShiftSequence.comp_right _ _ _) (@ShiftSequence.comp_right _ _ _ _
+      (G ⋙ preadditiveCoyoneda.obj (op X)) ℤ _ _ (ShiftSequence.comp_left _ _ _) _ _ _) ?_ ?_
+    · intro n
+      change (shiftFunctor D n ⋙ preadditiveCoyoneda.obj (op (F.obj X))) ⋙
+        AddCommGrp.uliftFunctor ≅ (G ⋙ (shiftFunctor C n ⋙ preadditiveCoyoneda.obj (op X)))
+        ⋙ AddCommGrp.uliftFunctor
+      refine NatIso.ofComponents (fun Y ↦ ?_) ?_
+      · refine adj.homAddEquiv_of_left_adjoint_additive_ulift X (Y⟦n⟧) ≪≫ ?_
+        change AddCommGrp.uliftFunctor.obj ((preadditiveCoyoneda.obj (op X)).obj _) ≅
+          AddCommGrp.uliftFunctor.obj ((preadditiveCoyoneda.obj (op X)).obj _)
+        apply AddCommGrp.uliftFunctor.mapIso
+        apply (preadditiveCoyoneda.obj (op X)).mapIso
+        exact (CommShift.iso n).app Y
+      · intro Y₁ Y₂ f
+        ext u
+        conv_rhs => change {down := (adj.homEquiv _ _ u.down ≫ (CommShift.iso n).hom.app Y₁) ≫
+                      (G.map f)⟦n⟧'}
+        conv_lhs => change {down := adj.homEquiv _ _ (u.down ≫ f⟦n⟧') ≫
+                      (CommShift.iso n).hom.app Y₂}
+                    rw [adj.homEquiv_naturality_right, assoc]
+                    erw [(CommShift.iso (F := G) n).hom.naturality]
+        simp only [assoc]; rfl
+    · intro n a a' h
+      ext Y u
+      change ULift (F.obj X ⟶ (Y⟦n⟧)⟦a⟧) at u
+      rw [NatTrans.comp_app, whiskerLeft_app]
+      have : (CommShift.iso a').hom.app Y = (Functor.CommShift.isoAdd' h (G.commShiftIso n)
+          (G.commShiftIso a)).hom.app Y := by
+        change (G.commShiftIso a').hom.app Y = _
+        rw [G.commShiftIso_add' h]
+      conv_rhs => change {down := (adj.homEquiv _ _ (u.down ≫
+                    (shiftFunctorAdd' D n a a' h).inv.app Y) ≫ (CommShift.iso a').hom.app Y)}
+                  rw [adj.homEquiv_naturality_right, assoc, this]
+      conv_lhs => change {down := ((adj.homEquiv _ _ u.down ≫ (CommShift.iso a).hom.app (Y⟦n⟧)) ≫
+                    ((CommShift.iso n).hom.app Y)⟦a⟧') ≫ (shiftFunctorAdd' C n a a' h).inv.app _}
+      simp only [preadditiveCoyoneda_obj, comp_obj, assoc, CommShift.isoAdd'_hom_app]
+      conv_rhs => rw [← assoc, ← assoc, assoc ((adj.homEquiv X ((shiftFunctor D a).obj
+                    ((shiftFunctor D n).obj Y))) u.down), ← map_comp, Iso.inv_hom_id_app]
+                  erw [map_id]; rw [comp_id]
+      rfl
   rw [exact_iff_of_iso e.symm]
   exact (homologySequenceComposableArrows₅_exact (preadditiveCoyoneda.obj (op (F.obj X))) _ dT 0 1
     (by simp)).comp_exact _
