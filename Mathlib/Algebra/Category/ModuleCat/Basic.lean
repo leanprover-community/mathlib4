@@ -134,8 +134,13 @@ abbrev asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
 
 @[deprecated (since := "2024-10-06")] alias ofHom := ModuleCat.asHom
 
+/- Doesn't need to be `@[simp]` since the `simp` tactic applies this rewrite automatically:
+`asHom` and `hom` are reducibly equal to the constructor and projection respectively. -/
+@[simp]
 lemma hom_asHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
     [Module R Y] (f : X →ₗ[R] Y) : (asHom f).hom = f := rfl
+
+#lint
 
 @[simp]
 lemma asHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
