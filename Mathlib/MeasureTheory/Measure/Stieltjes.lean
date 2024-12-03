@@ -488,12 +488,12 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
 lemma measure_univ_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) :
     f.measure univ = ∞ := by
   rw [← top_le_iff, ← f.measure_Ioi_of_tendsto_atTop_atTop hf 0]
-  exact measure_mono fun _ _ ↦ trivial
+  exact measure_mono (subset_univ _)
 
 lemma measure_univ_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) :
     f.measure univ = ∞ := by
   rw [← top_le_iff, ← f.measure_Iio_of_tendsto_atBot_atBot hf 0]
-  exact measure_mono fun _ _ ↦ trivial
+  exact measure_mono (subset_univ _)
 
 lemma isFiniteMeasure {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     IsFiniteMeasure f.measure := ⟨by simp [f.measure_univ hfl hfu]⟩
