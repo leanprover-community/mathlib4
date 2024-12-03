@@ -202,7 +202,7 @@ theorem mulSupport_Finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 := by
     have := norm_le_one w.maximal_ideal x
     rw [norm_embedding_eq] at this
-    exact Decidable.ne_iff_lt_iff_le.mpr this
+    exact ne_iff_lt_iff_le.mpr this
   simp_rw [Function.mulSupport, this, ← norm_embedding_eq, norm_lt_one_iff_mem,
     ← Ideal.dvd_span_singleton]
   have h : {v : HeightOneSpectrum (𝓞 K) | v.asIdeal ∣ span {x}}.Finite := by
