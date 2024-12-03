@@ -34,7 +34,7 @@ the unused variable linter can not see usages of variables in
 set_option linter.unusedVariables false
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -161,7 +161,7 @@ below. The reason for this is that when this is applied, to prove e.g. `100 + 20
 by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
 will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
 ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
-this could cause a `(kernel) deep recursion detected` error (see lean4#2171, mathlib4#4048).
+this could cause a `(kernel) deep recursion detected` error (see https://github.com/leanprover/lean4/issues/2171, https://github.com/leanprover-community/mathlib4/pull/4048).
 
 By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
 opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively

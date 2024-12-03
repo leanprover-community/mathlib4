@@ -234,6 +234,9 @@ theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
   Filter.Tendsto.inv hf
 
 @[to_additive]
+instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
+
+@[to_additive]
 instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
     ContinuousInv (G × H) :=
   ⟨continuous_inv.fst'.prod_mk continuous_inv.snd'⟩
@@ -284,7 +287,7 @@ variable [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] {s : Set G}
 
 @[to_additive]
 theorem IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
-  rw [← image_inv]
+  rw [← image_inv_eq_inv]
   exact hs.image continuous_inv
 
 variable (G)
@@ -391,7 +394,7 @@ continuous. Topological additive groups are defined in the same way. Equivalentl
 that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continuous.
 -/
 
--- Porting note (#11215): TODO should this docstring be extended
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO should this docstring be extended
 -- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
@@ -535,6 +538,9 @@ end OrderedCommGroup
 @[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prodMap continuous_inv
+
+@[to_additive]
+instance OrderDual.instTopologicalGroup : TopologicalGroup Gᵒᵈ where
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]

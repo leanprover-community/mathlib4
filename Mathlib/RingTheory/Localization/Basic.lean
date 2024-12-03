@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
 
@@ -68,12 +67,13 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+assert_not_exists Ideal
 
 open Function
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
+variable {R : Type*} [CommSemiring R] {M N : Submonoid R} {S : Type*} [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
@@ -81,15 +81,6 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
-
-theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
-  constructor <;> intro h
-  · rw [← mk'_spec S x y, mul_comm]
-    exact I.mul_mem_left ((algebraMap R S) y) h
-  · rw [← mk'_spec S x y] at h
-    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
-    have := I.mul_mem_left b h
-    rwa [mul_comm, mul_assoc, hb, mul_one] at this
 
 variable (M S) in
 include M in
@@ -237,7 +228,7 @@ end IsLocalization
 
 section
 
-variable (M)
+variable (M N)
 
 theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃ₐ[R] P) :
     IsLocalization M P := by
@@ -264,6 +255,14 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
   isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+
+variable (S) in
+/-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra
+is a localization of one submonoid iff it is a localization of the other. -/
+theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalization N S]
+    [Algebra R P] : IsLocalization M P ↔ IsLocalization N P :=
+  ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
+    fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
 
 end
 

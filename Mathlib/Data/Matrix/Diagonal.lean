@@ -3,7 +3,9 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Matrix.Defs
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Diagonal matrices
@@ -43,7 +45,7 @@ Note that bundled versions exist as:
 def diagonal [Zero α] (d : n → α) : Matrix n n α :=
   of fun i j => if i = j then d i else 0
 
--- TODO: set as an equation lemma for `diagonal`, see mathlib4#3024
+-- TODO: set as an equation lemma for `diagonal`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem diagonal_apply [Zero α] (d : n → α) (i j) : diagonal d i j = if i = j then d i else 0 :=
   rfl
 
@@ -232,7 +234,7 @@ def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 
 -- Porting note: new, because of removed `simp` above.
--- TODO: set as an equation lemma for `diag`, see mathlib4#3024
+-- TODO: set as an equation lemma for `diag`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl

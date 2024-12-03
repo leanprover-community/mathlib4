@@ -15,6 +15,8 @@ the forgetful functor from `R`-modules to types.
 -/
 
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open CategoryTheory
@@ -211,7 +213,7 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
--- Porting note(#5171): Removed has_nonempty_instance nolint; linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/5171): Removed has_nonempty_instance nolint; linter not ported yet
 @[nolint unusedArguments]
 def Free (_ : Type*) (C : Type u) :=
   C
@@ -288,7 +290,7 @@ def embedding : C ⥤ Free R C where
   map {_ _} f := Finsupp.single f 1
   map_id _ := rfl
   map_comp {X Y Z} f g := by
-    -- Porting note (#10959): simp used to be able to close this goal
+    -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
     dsimp only []
     rw [single_comp_single, one_mul]
 

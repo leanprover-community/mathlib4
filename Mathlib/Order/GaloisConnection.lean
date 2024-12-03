@@ -407,7 +407,7 @@ theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
 
 end Nat
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
@@ -606,7 +606,7 @@ end lift
 
 end GaloisInsertion
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
