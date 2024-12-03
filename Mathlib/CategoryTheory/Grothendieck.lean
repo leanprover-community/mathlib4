@@ -271,9 +271,6 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
     · rfl
     · simp
 
-theorem map_comp_eq_assoc (α : F ⟶ G) (β : G ⟶ H) (I : Grothendieck H ⥤ D) :
-    map (α ≫ β) ⋙ I = map α ⋙ map β ⋙ I := by rw [map_comp_eq, Functor.assoc]
-
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
@@ -407,7 +404,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
     simp
     rfl
 
--- TODO: Grothendieck F = pre identity F
 variable (F) in
 /-- Applying a functor `G : D ⥤ C` to the base of the Grothendieck construction induces a functor
 `Grothendieck (G ⋙ F) ⥤ Grothendieck F`. -/
