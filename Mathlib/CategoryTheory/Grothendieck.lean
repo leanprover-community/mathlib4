@@ -517,7 +517,7 @@ def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
     map (whiskerLeft G.functor α) ≅
       (preEquivalence F G).functor ⋙ map α ⋙ (preEquivalence F G).inverse := by
   apply Iso.symm
-  apply Equivalence.isoCancelRight (preEquivalence F G)
+  apply preEquivalence F G |>.congrRight.fullyFaithfulFunctor.preimageIso
   exact isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F G).counitIso
 
 section FunctorFrom

@@ -383,36 +383,6 @@ theorem whiskerLeft_rightUnitor_inv (f : a ⟶ b) (g : b ⟶ c) :
     f ◁ (ρ_ g).inv = (ρ_ (f ≫ g)).inv ≫ (α_ f g (𝟙 c)).hom :=
   eq_of_inv_eq_inv (by simp)
 
-/--
-In a bicategory, if a morphism `f` has a left inverse (up to isomorphism), then right-cancellation
-is possible in the sense that `g₁ ≫ f ≅ g₂ ≫ f` induces `g₁ ≅ g₂`.
--/
-def isoCancelRightOfWeaklyLeftInvertible {C : Type*} [Bicategory C] {c d e : C} {f : d ⟶ e}
-    {finv : e ⟶ d} {g₁ g₂ : c ⟶ d} (η : 𝟙 _ ≅ f ≫ finv) (α : g₁ ≫ f ≅ g₂ ≫ f) : g₁ ≅ g₂ := by
-  calc
-    g₁ ≅ g₁ ≫ 𝟙 _ := rightUnitor _ |>.symm
-    _ ≅ g₁ ≫ f ≫ finv := whiskerLeftIso _ η
-    _ ≅ (g₁ ≫ f) ≫ finv := associator _ _ _ |>.symm
-    _ ≅ (g₂ ≫ f) ≫ finv := whiskerRightIso α _
-    _ ≅ g₂ ≫ f ≫ finv := associator _ _ _
-    _ ≅ g₂ ≫ 𝟙 _ := whiskerLeftIso _ η.symm
-    _ ≅ g₂ := rightUnitor _
-
-/--
-In a bicategory, if a morphism `f` has a right inverse (up to isomorphism), then left-cancellation
-is possible in the sense that `f ≫ g₁ ≅ f ≫ g₂` induces `g₁ ≅ g₂`.
--/
-def isoCancelLeftOfWeaklyRightInvertible {C : Type*} [Bicategory C] {c d e : C} {f : e ⟶ d}
-    {finv : d ⟶ e} {g₁ g₂ : d ⟶ c} (ε : finv ≫ f ≅ 𝟙 _) (α : f ≫ g₁ ≅ f ≫ g₂) : g₁ ≅ g₂ := by
-  calc
-    g₁ ≅ 𝟙 _ ≫ g₁ := leftUnitor _ |>.symm
-    _ ≅ (finv ≫ f) ≫ g₁ := whiskerRightIso ε.symm _
-    _ ≅ finv ≫ f ≫ g₁ := associator _ _ _
-    _ ≅ finv ≫ f ≫ g₂ := whiskerLeftIso  _ α
-    _ ≅ (finv ≫ f) ≫ g₂ := associator _ _ _ |>.symm
-    _ ≅ 𝟙 _ ≫ g₂ := whiskerRightIso ε _
-    _ ≅ g₂ := leftUnitor _
-
 /-
 It is not so obvious whether `leftUnitor_whiskerRight` or `leftUnitor_comp` should be a simp
 lemma. Our choice is the former. One reason is that the latter yields the following loop:
