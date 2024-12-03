@@ -226,7 +226,7 @@ theorem mulSupport_Finite {x : K} (h_x_nezero : x ≠ 0) :
   simp_all only [ne_eq, div_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff, not_or,
     map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
-  rw [← RingOfIntegers.coe_eq_algebraMap, ← RingOfIntegers.coe_eq_algebraMap]
+  simp_rw [← RingOfIntegers.coe_eq_algebraMap]
   apply Set.Finite.subset (Set.Finite.union (mulSupport_Finite_int ha) (mulSupport_Finite_int hb))
   intro w
   contrapose!
