@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
@@ -36,8 +37,6 @@ A `Subalgebra` is closed under all operations except `⁻¹`,
 intermediate field, field extension
 -/
 
-
-open Polynomial
 
 open Polynomial
 
@@ -614,6 +613,19 @@ theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
+
+/--The algEquiv between an intermediate field and its lift-/
+def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
+  toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
+  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
+    (liftAlgEquiv F x).1 = x := rfl
 
 section RestrictScalars
 
