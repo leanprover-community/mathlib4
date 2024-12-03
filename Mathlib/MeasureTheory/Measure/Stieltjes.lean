@@ -129,6 +129,8 @@ instance : Module ℝ≥0 StieltjesFunction where
   add_smul _ _ _ := ext fun _ ↦ add_mul _ _ _
   zero_smul _ := ext fun _ ↦ zero_mul _
 
+@[simp] lemma zero_apply (x : ℝ) : (0 : StieltjesFunction) x = 0 := rfl
+
 @[simp] lemma add_apply (f g : StieltjesFunction) (x : ℝ) : (f + g) x = f x + g x := rfl
 
 /-- If a function `f : ℝ → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
@@ -433,7 +435,7 @@ theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
 lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
   rw [← Iic_diff_right, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
-    f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' (le_refl _))]
+    f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
 theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
@@ -450,7 +452,7 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
 lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
     f.measure (Ioi x) = ofReal (l - f x) := by
   rw [← Ici_diff_left, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
-    f.measure_Ici hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' (le_refl _))]
+    f.measure_Ici hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
 lemma measure_Ioi_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : ℝ) :
@@ -538,7 +540,7 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
 
 @[simp]
 lemma measure_zero : StieltjesFunction.measure 0 = 0 :=
-  Measure.ext_of_Ioc _ _ (fun _ _ _ ↦ by simp; rfl)
+  Measure.ext_of_Ioc _ _ (fun _ _ _ ↦ by simp)
 
 @[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const c).measure = 0 :=
