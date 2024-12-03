@@ -41,8 +41,7 @@ lemma one_lt_norm : 1 < (absNorm v.asIdeal : NNReal) := by
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    have : Fintype (𝓞 K ⧸ v.asIdeal) := Ideal.fintypeQuotientOfFreeOfNeBot v.asIdeal v.ne_bot
-    exact Fintype.finite this
+    exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
   omega
 
 private lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 := ne_zero_of_lt (one_lt_norm v)
