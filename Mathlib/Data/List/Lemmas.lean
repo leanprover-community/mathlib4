@@ -17,6 +17,10 @@ variable {α β γ : Type*}
 
 namespace List
 
+set_option linter.deprecated false in
+@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
+lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
+
 @[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
 
 theorem tail_reverse_eq_reverse_dropLast (l : List α) :

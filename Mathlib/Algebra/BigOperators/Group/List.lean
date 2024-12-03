@@ -634,10 +634,6 @@ end MonoidHom
 
 end MonoidHom
 
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
-lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
-
 namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
