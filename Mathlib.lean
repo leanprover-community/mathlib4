@@ -1625,6 +1625,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Adjunction
+import Mathlib.CategoryTheory.Category.Cat.AsSmall
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.Factorisation
 import Mathlib.CategoryTheory.Category.GaloisConnection
@@ -2129,6 +2130,8 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Construction
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
+import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 import Mathlib.CategoryTheory.SmallObject.Iteration.UniqueHom
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Subobject.Basic
@@ -2388,6 +2391,7 @@ import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.BigOperators
+import Mathlib.Data.ENat.Defs
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
@@ -2766,6 +2770,7 @@ import Mathlib.Data.PNat.Equiv
 import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
 import Mathlib.Data.PNat.Interval
+import Mathlib.Data.PNat.Notation
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
@@ -3757,6 +3762,7 @@ import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Types
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.NumberTheory.ADEInequality
+import Mathlib.NumberTheory.AbelSummation
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.Bernoulli
@@ -4213,8 +4219,13 @@ import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.AlgebraTower
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.Algebraic.Cardinality
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.Algebraic.LinearIndependent
+import Mathlib.RingTheory.Algebraic.MvPolynomial
+import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
@@ -4984,6 +4995,7 @@ import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
@@ -5316,7 +5328,6 @@ import Mathlib.Topology.Sober
 import Mathlib.Topology.Specialization
 import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
-import Mathlib.Topology.Support
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.UniformSpace.AbsoluteValue
