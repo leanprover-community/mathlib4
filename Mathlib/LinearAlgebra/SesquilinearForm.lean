@@ -830,7 +830,7 @@ lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
       · simpa [hx, hy] using hs (x + y)
 
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite symmetric forms. -/
-lemma apply_mul_apply_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
+lemma apply_sq_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 ≤ (B x x) * (B y y) := by
   rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
   exact apply_mul_apply_le_of_forall_zero_le B hs x y
@@ -883,7 +883,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
 
 /-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
 forms. -/
-lemma apply_mul_apply_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
+lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
     (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]

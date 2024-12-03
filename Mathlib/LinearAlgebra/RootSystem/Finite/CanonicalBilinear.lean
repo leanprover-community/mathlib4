@@ -264,7 +264,7 @@ lemma coxeterWeight_le_four (i j : ι) : P.coxeterWeight i j ≤ 4 := by
   have hj := P.rootForm_root_self_pos j
   have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
     rw [mul_le_mul_left four_pos]
-    exact LinearMap.BilinForm.apply_mul_apply_le_of_symm P.RootForm P.rootForm_self_non_neg
+    exact LinearMap.BilinForm.apply_sq_le_of_symm P.RootForm P.rootForm_self_non_neg
       P.rootForm_symmetric (P.root i) (P.root j)
   have key : 4 • lij ^ 2 = _ • (li * lj) := P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
   simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
@@ -275,25 +275,16 @@ instance instIsRootPositiveRootForm : IsRootPositive P P.RootForm where
   symm := P.rootForm_symmetric
   apply_reflection_eq := P.rootForm_reflection_reflection_apply
 
-lemma coxeterWeight_eq_one_or_two_or_three (i j : ι) (hP : P.IsCrystallographic)
-    (hO : ¬ P.IsOrthogonal i j) (h : LinearIndependent R ![P.root i, P.root j]) :
-    P.coxeterWeight i j = 1 ∨ P.coxeterWeight i j = 2 ∨ P.coxeterWeight i j = 3 := by
-  have hn0 : P.coxeterWeight i j ≠ 0 :=
-    fun hc ↦ hO <| (P.coxeterWeight_zero_iff_isOrthogonal P.RootForm i j).mp hc
-  have hn4 : P.coxeterWeight i j ≠ 4 := by
-    have : Module.IsReflexive R M := P.toPerfectPairing.reflexive_left
-    have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-    intro hc
-    exact (P.infinite_of_linearIndependent_coxeterWeight_four i j h hc).not_finite inferInstance
-  have h4 : P.coxeterWeight i j ≤ 4 := P.coxeterWeight_le_four i j
-  have : ∃ n : ℕ, P.coxeterWeight i j = n := by
+lemma coxeterWeight_mem_set_of_isCrystallographic (i j : ι) (hP : P.IsCrystallographic) :
+    P.coxeterWeight i j ∈ ({0, 1, 2, 3, 4} : Set R) := by
+  obtain ⟨n, hcn⟩ : ∃ n : ℕ, P.coxeterWeight i j = n := by
     obtain ⟨z, hz⟩ := P.exists_int_eq_coxeterWeight hP i j
     have hz₀ : 0 ≤ z := by simpa [hz] using P.coxeterWeight_non_neg P.RootForm i j
     obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hz₀
     exact ⟨n, by simp [hz]⟩
-  obtain ⟨n, hcn⟩ := this
-  simp only [hcn] at *
-  norm_cast at *
+  have : P.coxeterWeight i j ≤ 4 := P.coxeterWeight_le_four i j
+  simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
+  norm_cast at this ⊢
   omega
 
 lemma prod_rootForm_root_self_pos :

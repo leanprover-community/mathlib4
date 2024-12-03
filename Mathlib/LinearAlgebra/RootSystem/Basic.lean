@@ -94,6 +94,13 @@ lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulD
 
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
 
+lemma coxeterWeight_ne_four_of_linearIndependent [CharZero R] [NoZeroSMulDivisors ℤ M]
+    (hl : LinearIndependent R ![P.root i, P.root j]) :
+    P.coxeterWeight i j ≠ 4 := by
+  intro contra
+  have := P.infinite_of_linearIndependent_coxeterWeight_four i j hl contra
+  exact not_finite ι
+
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
 
