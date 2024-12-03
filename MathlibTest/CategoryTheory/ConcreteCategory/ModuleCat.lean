@@ -14,20 +14,20 @@ variable (R : Type u) [CommRing R]
 example (X : Type v) [AddCommGroup X] [Module R X] : ⇑(𝟙 (of R X)) = id := by simp
 
 example {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) :
-    ⇑(ModuleCat.asHom f) = ⇑f := by simp
+    ⇑(ModuleCat.ofHom f) = ⇑f := by simp
 
 example {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y)
-    (x : X) : (ModuleCat.asHom f) x = f x := by simp
+    (x : X) : (ModuleCat.ofHom f) x = f x := by simp
 
 example {X Y Z : ModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) : ⇑(f ≫ g) = ⇑g ∘ ⇑f := by simp
 
 example {X Y Z : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] [Ring Z]
     [Algebra R Z] (f : X →ₗ[R] Y) (g : Y →ₗ[R] Z) :
-    ⇑(ModuleCat.asHom f ≫ ModuleCat.asHom g) = g ∘ f := by simp
+    ⇑(ModuleCat.ofHom f ≫ ModuleCat.ofHom g) = g ∘ f := by simp
 
 example {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y] {Z : ModuleCat R}
     (f : X →ₗ[R] Y) (g : of R Y ⟶ Z) :
-    ⇑(ModuleCat.asHom f ≫ g) = g ∘ f := by simp
+    ⇑(ModuleCat.ofHom f ≫ g) = g ∘ f := by simp
 
 example {X Y : ModuleCat R} {Z : Type v} [Ring Z] [Algebra R Z] (f : X ⟶ Y) (g : Y ⟶ of R Z) :
     ⇑(f ≫ g) = g ∘ f := by simp
