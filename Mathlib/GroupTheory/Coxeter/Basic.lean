@@ -417,7 +417,7 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
   induction p with
   | zero =>
     intro k hk
-    simp[alternatingWord] at hk
+    simp [alternatingWord] at hk
   | succ n h =>
     intro k hk
     simp_rw [alternatingWord_succ' i j n]
