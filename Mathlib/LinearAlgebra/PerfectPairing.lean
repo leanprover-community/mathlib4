@@ -165,6 +165,23 @@ include p in
 theorem reflexive_right : IsReflexive R N :=
   p.flip.reflexive_left
 
+instance : EquivLike (PerfectPairing R M N) M (Dual R N) where
+  coe p := p.toDualLeft
+  inv p := p.toDualLeft.symm
+  left_inv p x := LinearEquiv.symm_apply_apply _ _
+  right_inv p x := LinearEquiv.apply_symm_apply _ _
+  coe_injective' p q h h' := by
+    cases p
+    cases q
+    simp only [mk.injEq]
+    ext m n
+    simp only [DFunLike.coe_fn_eq] at h
+    exact LinearMap.congr_fun (LinearEquiv.congr_fun h m) n
+
+instance : LinearEquivClass (PerfectPairing R M N) R M (Dual R N) where
+  map_add p m₁ m₂ := p.toLin.map_add m₁ m₂
+  map_smulₛₗ p t m := p.toLin.map_smul t m
+
 include p in
 theorem finrank_eq [Module.Finite R M] [Module.Free R M] :
     finrank R M = finrank R N :=

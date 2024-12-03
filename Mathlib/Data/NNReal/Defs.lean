@@ -53,7 +53,7 @@ open Function
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
   CanonicallyOrderedCommSemiring, Inhabited
 
 namespace NNReal

@@ -902,7 +902,7 @@ private theorem evaln_map (k c n) :
     ((List.range k)[n]?.bind fun a ↦ evaln k c a) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.getElem?_range kn]
-  · rw [List.getElem?_len_le]
+  · rw [List.getElem?_eq_none]
     · cases e : evaln k c n
       · rfl
       exact kn.elim (evaln_bound e)
