@@ -155,6 +155,10 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     · apply h
     rfl
 
+@[simp]
+theorem forall_coeff_eq_zero (φ : R⟦X⟧) : (∀ n, coeff R n φ = 0) ↔ φ = 0 :=
+  ⟨fun h => ext h, fun h => by simp [h]⟩
+
 /-- Two formal power series are equal if all their coefficients are equal. -/
 add_decl_doc PowerSeries.ext_iff
 
@@ -214,7 +218,7 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
-  -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
   rw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
   rfl
 
@@ -758,6 +762,7 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
+section CommSemiring
 variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
@@ -876,6 +881,21 @@ def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
 theorem coeToPowerSeries.algHom_apply :
     coeToPowerSeries.algHom A φ = PowerSeries.map (algebraMap R A) ↑φ :=
   rfl
+
+end CommSemiring
+
+section CommRing
+variable {R : Type*} [CommRing R]
+
+@[simp, norm_cast]
+lemma coe_neg (p : R[X]) : ((- p : R[X]) : PowerSeries R) = - p :=
+  coeToPowerSeries.ringHom.map_neg p
+
+@[simp, norm_cast]
+lemma coe_sub (p q : R[X]) : ((p - q : R[X]) : PowerSeries R) = p - q :=
+  coeToPowerSeries.ringHom.map_sub p q
+
+end CommRing
 
 end Polynomial
 

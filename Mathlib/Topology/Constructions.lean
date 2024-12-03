@@ -115,9 +115,9 @@ theorem nhds_ofMul (x : X) : 𝓝 (ofMul x) = map ofMul (𝓝 x) := rfl
 
 theorem nhds_ofAdd (x : X) : 𝓝 (ofAdd x) = map ofAdd (𝓝 x) := rfl
 
-theorem nhds_toMul (x : Additive X) : 𝓝 (toMul x) = map toMul (𝓝 x) := rfl
+theorem nhds_toMul (x : Additive X) : 𝓝 x.toMul = map toMul (𝓝 x) := rfl
 
-theorem nhds_toAdd (x : Multiplicative X) : 𝓝 (toAdd x) = map toAdd (𝓝 x) := rfl
+theorem nhds_toAdd (x : Multiplicative X) : 𝓝 x.toAdd = map toAdd (𝓝 x) := rfl
 
 end
 
@@ -288,7 +288,7 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
--- Porting note (#11215): TODO: Lean 4 fails to deduce implicit args
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean 4 fails to deduce implicit args
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
   (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
@@ -475,13 +475,11 @@ theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continu
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)
 
--- Porting note (#11215): TODO: Lean fails to find `t₁` and `t₂` by unification
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
+  rw [prod_eq_inf, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 
--- Porting note: moved from `Topology.ContinuousOn`
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
@@ -504,7 +502,6 @@ theorem mem_nhdsWithin_prod_iff {x : X} {y : Y} {s : Set (X × Y)} {tx : Set X} 
     s ∈ 𝓝[tx ×ˢ ty] (x, y) ↔ ∃ u ∈ 𝓝[tx] x, ∃ v ∈ 𝓝[ty] y, u ×ˢ v ⊆ s := by
   rw [nhdsWithin_prod_eq, mem_prod_iff]
 
--- Porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιX ιY : Type*} {px : ιX → Prop} {py : ιY → Prop}
     {sx : ιX → Set X} {sy : ιY → Set Y} {x : X} {y : Y} (hx : (𝓝 x).HasBasis px sx)
     (hy : (𝓝 y).HasBasis py sy) :
@@ -512,7 +509,6 @@ theorem Filter.HasBasis.prod_nhds {ιX ιY : Type*} {px : ιX → Prop} {py : ι
   rw [nhds_prod_eq]
   exact hx.prod hy
 
--- Porting note: moved up
 theorem Filter.HasBasis.prod_nhds' {ιX ιY : Type*} {pX : ιX → Prop} {pY : ιY → Prop}
     {sx : ιX → Set X} {sy : ιY → Set Y} {p : X × Y} (hx : (𝓝 p.1).HasBasis pX sx)
     (hy : (𝓝 p.2).HasBasis pY sy) :
@@ -664,7 +660,7 @@ theorem prod_eq_generateFrom :
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 
--- Porting note (#11215): TODO: align with `mem_nhds_prod_iff'`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=
@@ -793,7 +789,7 @@ theorem DenseRange.prodMap {ι : Type*} {κ : Type*} {f : ι → Y} {g : κ → 
 
 @[deprecated (since := "2024-10-05")] alias DenseRange.prod_map := DenseRange.prodMap
 
-lemma IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : IsInducing g) :
+lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : IsInducing g) :
     IsInducing (Prod.map f g) :=
   isInducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
@@ -803,7 +799,7 @@ lemma IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f) (hg : I
 @[deprecated (since := "2024-10-05")] alias Inducing.prod_map := IsInducing.prodMap
 
 @[simp]
-lemma isInducing_const_prod {x : X} {f : Y → Z} :
+lemma Topology.isInducing_const_prod {x : X} {f : Y → Z} :
     IsInducing (fun x' => (x, f x')) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, top_inf_eq]
@@ -811,22 +807,20 @@ lemma isInducing_const_prod {x : X} {f : Y → Z} :
 @[deprecated (since := "2024-10-28")] alias inducing_const_prod := isInducing_const_prod
 
 @[simp]
-lemma isInducing_prod_const {y : Y} {f : X → Z} :
+lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
     IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, inf_top_eq]
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
-lemma IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
+lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
   toIsInducing := hf.isInducing.prodMap hg.isInducing
-  inj := hf.inj.prodMap hg.inj
+  injective := hf.injective.prodMap hg.injective
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.prodMap := IsEmbedding.prodMap
-
-@[deprecated (since := "2024-10-05")] alias Embedding.prod_map := Embedding.prodMap
+@[deprecated (since := "2024-10-08")] alias Embedding.prodMap := Topology.IsEmbedding.prodMap
+@[deprecated (since := "2024-10-05")] alias Embedding.prod_map := Topology.IsEmbedding.prodMap
 
 protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Prod.map f g) := by
@@ -837,7 +831,7 @@ protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap 
 
 @[deprecated (since := "2024-10-05")] alias IsOpenMap.prod := IsOpenMap.prodMap
 
-protected theorem IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenEmbedding f)
+protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenEmbedding f)
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
@@ -925,7 +919,7 @@ theorem isOpenMap_inl : IsOpenMap (@inl X Y) := fun u hu => by
 theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
   simpa [isOpen_sum_iff, preimage_image_eq u Sum.inr_injective]
 
-protected lemma IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
+protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
   .of_continuous_injective_isOpenMap continuous_inl inl_injective isOpenMap_inl
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inl := IsOpenEmbedding.inl
@@ -933,7 +927,7 @@ protected lemma IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_inl := IsOpenEmbedding.inl
 
-protected lemma IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
+protected lemma Topology.IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inr := IsOpenEmbedding.inr
@@ -941,8 +935,8 @@ protected lemma IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_inr := IsOpenEmbedding.inr
 
-protected lemma IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
-protected lemma IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
+protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
+protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_inr := IsEmbedding.inr
@@ -958,7 +952,7 @@ theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
   rw [← isOpen_compl_iff, compl_range_inr]
   exact isOpen_range_inl
 
-theorem IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
+theorem Topology.IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨.inl, isClosed_range_inl⟩
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inl := IsClosedEmbedding.inl
@@ -966,7 +960,7 @@ theorem IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_inl := IsClosedEmbedding.inl
 
-theorem IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
+theorem Topology.IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨.inr, isClosed_range_inr⟩
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inr := IsClosedEmbedding.inr
@@ -1025,22 +1019,22 @@ section Subtype
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
-lemma IsInducing.subtypeVal {t : Set Y} : IsInducing ((↑) : t → Y) := ⟨rfl⟩
+lemma Topology.IsInducing.subtypeVal {t : Set Y} : IsInducing ((↑) : t → Y) := ⟨rfl⟩
 
 @[deprecated (since := "2024-10-28")] alias inducing_subtype_val := IsInducing.subtypeVal
 
-lemma IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
+lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
     (h : IsInducing (t.codRestrict f ht)) : IsInducing f := subtypeVal.comp h
 
 @[deprecated (since := "2024-10-28")] alias Inducing.of_codRestrict := IsInducing.of_codRestrict
 
-lemma IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
+lemma Topology.IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_subtype_val := IsEmbedding.subtypeVal
 
-theorem IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
+theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, by rwa [Subtype.range_coe_subtype]⟩
 
@@ -1147,20 +1141,20 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
     Continuous (s.restrictPreimage f) :=
   h.restrict _
 
-theorem IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
+theorem Topology.IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
     (hs : ∀ x, e x ∈ s) : IsInducing (codRestrict e s hs) :=
   he.of_comp (he.continuous.codRestrict hs) continuous_subtype_val
 
 @[deprecated (since := "2024-10-28")] alias Inducing.codRestrict := IsInducing.codRestrict
 
-protected lemma IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding e) (s : Set Y)
+protected lemma Topology.IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding e) (s : Set Y)
     (hs : ∀ x, e x ∈ s) : IsEmbedding (codRestrict e s hs) :=
   he.of_comp (he.continuous.codRestrict hs) continuous_subtype_val
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.codRestrict := IsEmbedding.codRestrict
 
-protected lemma IsEmbedding.inclusion {s t : Set X} (h : s ⊆ t) :
+protected lemma Topology.IsEmbedding.inclusion {s t : Set X} (h : s ⊆ t) :
     IsEmbedding (inclusion h) := IsEmbedding.subtypeVal.codRestrict _ _
 
 @[deprecated (since := "2024-10-26")]
@@ -1182,7 +1176,7 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
 
 /-- If `f : X → Y` is a quotient map,
 then its restriction to the preimage of an open set is a quotient map too. -/
-theorem IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
+theorem Topology.IsQuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : IsQuotientMap f)
     {s : Set Y} (hs : IsOpen s) : IsQuotientMap (s.restrictPreimage f) := by
   refine isQuotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
   rw [hs.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen, ← hf.isOpen_preimage,
@@ -1416,7 +1410,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
--- Porting note (#11215): TODO: restore @[continuity]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore @[continuity]
 @[to_additive "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
@@ -1622,7 +1616,7 @@ theorem isClosedMap_sigmaMk {i : ι} : IsClosedMap (@Sigma.mk ι σ i) := by
 theorem isClosed_range_sigmaMk {i : ι} : IsClosed (range (@Sigma.mk ι σ i)) :=
   isClosedMap_sigmaMk.isClosed_range
 
-lemma IsOpenEmbedding.sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :=
+lemma Topology.IsOpenEmbedding.sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :=
   .of_continuous_injective_isOpenMap continuous_sigmaMk sigma_mk_injective isOpenMap_sigmaMk
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
@@ -1630,7 +1624,7 @@ lemma IsOpenEmbedding.sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι σ i) :=
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
 
-lemma IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
+lemma Topology.IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
   .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective isClosedMap_sigmaMk
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_sigmaMk := IsClosedEmbedding.sigmaMk
@@ -1638,7 +1632,7 @@ lemma IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i)
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_sigmaMk := IsClosedEmbedding.sigmaMk
 
-lemma IsEmbedding.sigmaMk {i : ι} : IsEmbedding (@Sigma.mk ι σ i) :=
+lemma Topology.IsEmbedding.sigmaMk {i : ι} : IsEmbedding (@Sigma.mk ι σ i) :=
   IsClosedEmbedding.sigmaMk.1
 
 @[deprecated (since := "2024-10-26")]
@@ -1708,14 +1702,14 @@ theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ 
   isOpenMap_sigma.trans <|
     forall_congr' fun i => (@IsOpenEmbedding.sigmaMk _ _ _ (f₁ i)).isOpenMap_iff.symm
 
-lemma isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
+lemma Topology.isInducing_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h₁ : Injective f₁) : IsInducing (Sigma.map f₁ f₂) ↔ ∀ i, IsInducing (f₂ i) := by
   simp only [isInducing_iff_nhds, Sigma.forall, Sigma.nhds_mk, Sigma.map_mk,
     ← map_sigma_mk_comap h₁, map_inj sigma_mk_injective]
 
 @[deprecated (since := "2024-10-28")] alias inducing_sigma_map := isInducing_sigmaMap
 
-lemma isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
+lemma Topology.isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)}
     (h : Injective f₁) : IsEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsEmbedding (f₂ i) := by
   simp only [isEmbedding_iff, Injective.sigma_map, isInducing_sigmaMap h, forall_and,
     h.sigma_map_iff]
@@ -1723,7 +1717,7 @@ lemma isEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i
 @[deprecated (since := "2024-10-26")]
 alias embedding_sigma_map := isEmbedding_sigmaMap
 
-lemma isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h : Injective f₁) :
+lemma Topology.isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (h : Injective f₁) :
     IsOpenEmbedding (Sigma.map f₁ f₂) ↔ ∀ i, IsOpenEmbedding (f₂ i) := by
   simp only [isOpenEmbedding_iff_isEmbedding_isOpenMap, isOpenMap_sigma_map, isEmbedding_sigmaMap h,
     forall_and]
@@ -1753,13 +1747,13 @@ theorem continuous_uLift_down [TopologicalSpace X] : Continuous (ULift.down : UL
 theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
 
-lemma IsEmbedding.uliftDown [TopologicalSpace X] :
+lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_uLift_down := IsEmbedding.uliftDown
 
-lemma IsClosedEmbedding.uliftDown [TopologicalSpace X] :
+lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
     IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨.uliftDown, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
 
