@@ -19,8 +19,6 @@ variable {R α : Type*}
 
 namespace Matrix
 
-open Matrix
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
 
 section Zero

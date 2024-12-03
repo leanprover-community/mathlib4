@@ -203,7 +203,6 @@ lemma Submodule.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule 
     Submodule.finrank_eq_rank]
   exact HasRankNullity.rank_quotient_add_rank _
 
-
 /-- Rank-nullity theorem using `finrank` and subtraction. -/
 lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul R S] [Module S M]
     [IsScalarTower R S M] (N : Submodule S M) : finrank R (M ⧸ N) = finrank R M - finrank R N := by
