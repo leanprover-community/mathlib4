@@ -283,10 +283,9 @@ lemma ge_of_leftDeriv_nonpos_of_rightDeriv_nonneg (hf : ConvexOn ℝ s f) (hx : 
 lemma nonneg_of_todo (hf : ConvexOn ℝ (Ioi 0) f)
     (hf_one : f 1 = 0) (hf_deriv : rightDeriv f 1 = 0) (hx : 0 < x) :
     0 ≤ f x := by
-  calc 0
-  _ = rightDeriv f 1 * x + (f 1 - rightDeriv f 1 * 1) := by simp [hf_one, hf_deriv]
-  _ ≤ f x := hf.affine_rightDeriv_le_of_mem_interior
-    ((interior_Ioi (a := (0 : ℝ))).symm ▸ mem_Ioi.mpr zero_lt_one) hx
+  rw [← hf_one]
+  refine ge_of_leftDeriv_nonpos_of_rightDeriv_nonneg hf (by simp) ?_ hf_deriv.ge hx
+  exact (leftDeriv_le_rightDeriv_of_mem_interior hf (by simp)).trans hf_deriv.le
 
 lemma nonneg_of_todo' (hf : ConvexOn ℝ (Ioi 0) f)
     (hf_one : f 1 = 0) (hf_ld : leftDeriv f 1 ≤ 0) (hf_rd : 0 ≤ rightDeriv f 1) (hx : 0 < x) :

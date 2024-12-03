@@ -90,11 +90,11 @@ lemma kl_ne_top_iff : kl μ ν ≠ ∞ ↔ μ ≪ ν ∧ Integrable (llr μ ν) 
   rfl
 
 open Classical in
-lemma kl_eq_integral [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+lemma kl_eq_integral_klFun [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     kl μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
       else ∞ :=
-  if_ctx_congr Iff.rfl (fun h ↦ by rw [todo_integral h.1 h.2]) fun _ ↦ rfl
+  if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
 section kl_nonneg
 
@@ -119,7 +119,7 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   by_cases h_int : Integrable (llr μ ν) μ
   swap; · rw [kl_of_not_integrable h_int] at h; exact (ENNReal.top_ne_zero h).elim
   simp only [kl_of_ac_of_integrable hμν h_int, ENNReal.ofReal_eq_zero] at h
-  rw [← todo_integral hμν h_int] at h
+  rw [← integral_klFun_rnDeriv hμν h_int] at h
   have h' : ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = 0 :=
     le_antisymm h (integral_nonneg fun x ↦ klFun_nonneg ENNReal.toReal_nonneg)
   rw [integral_eq_zero_iff_of_nonneg] at h'
@@ -128,9 +128,7 @@ lemma kl_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   · rwa [integrable_klFun_iff hμν]
   refine (Measure.rnDeriv_eq_one_iff_eq hμν).mp ?_
   filter_upwards [h'] with x hx
-  rw [Pi.zero_apply, klFun_eq_zero_iff (x := (μ.rnDeriv ν x).toReal) ENNReal.toReal_nonneg,
-    ENNReal.toReal_eq_one_iff] at hx
-  exact hx
+  rwa [Pi.zero_apply, klFun_eq_zero_iff ENNReal.toReal_nonneg, ENNReal.toReal_eq_one_iff] at hx
 
 -- /-- **Gibbs' inequality**: the Kullback-Leibler divergence between two probability distributions is
 -- nonnegative.
