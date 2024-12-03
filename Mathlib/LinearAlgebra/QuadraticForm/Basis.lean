@@ -52,9 +52,13 @@ end Finset
 
 section Prod
 
+theorem and_not_self_and_iff_and_not (P Q : Prop) :  P ∧ ¬(P ∧ Q) ↔ P ∧ ¬Q := by
+  rw [not_and, and_congr_right_iff]
+  exact imp_iff_right
+
 theorem xor_iff_or_and_not_and (P Q : Prop) : Xor' P Q ↔ (P ∨ Q) ∧ (¬ (P ∧ Q)) := by
-  rw [← symmDiff_eq_Xor', symmDiff_eq2]
-  rfl
+  rw [Xor', or_and_right, and_not_self_and_iff_and_not, (and_comm (a := P) (b := Q)),
+    and_not_self_and_iff_and_not]
 
 variable {ι₁ : Type*}
 variable {ι₂ : Type*}
