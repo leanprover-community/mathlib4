@@ -28,6 +28,8 @@ variable {C : Type u'} [Category.{v'} C] {R R' : Cᵒᵖ ⥤ RingCat.{u}}
 noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶ R') :
     PresheafOfModules R where
   obj := fun X ↦ (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X)
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
   map := fun {X Y} f ↦ ModuleCat.asHom
       (X := (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X))
       (Y := (ModuleCat.restrictScalars (R.map f)).obj

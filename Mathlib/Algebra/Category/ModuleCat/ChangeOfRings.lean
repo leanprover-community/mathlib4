@@ -64,6 +64,8 @@ def obj' : ModuleCat R :=
 `M'` by means of restriction of scalars.
 -/
 def map' {M M' : ModuleCat.{v} S} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
+  -- This suggests `RestrictScalars.obj'` needs to be redesigned.
   asHom (X := obj' f M) (Y := obj' f M')
     { g.hom with map_smul' := fun r => g.hom.map_smul (f r) }
 
@@ -125,7 +127,9 @@ morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/
 def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     (M : ModuleCat.{v} R) (N : ModuleCat.{v} S) :
     (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
-  toFun g := asHom (X := M) (Y := (ModuleCat.restrictScalars f).obj N) <|
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
+  toFun g := asHom (Y := (ModuleCat.restrictScalars f).obj N) <|
     { toFun := g
       map_add' := by simp
       map_smul' := by simp }
@@ -470,6 +474,8 @@ corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
 def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
     (restrictScalars f).obj Y ⟶ X :=
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
   asHom (X := (restrictScalars f).obj Y)
   { toFun := fun y : Y => (g y) (1 : S)
     map_add' := fun x y => by dsimp; rw [g.hom.map_add, LinearMap.add_apply]
@@ -532,6 +538,8 @@ identity functor.
 -/
 @[simps]
 protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (ModuleCat R) where
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
   app X := asHom (X := (restrictScalars f).obj ((coextendScalars f).obj X))
     { toFun := fun g => g.toFun (1 : S)
       map_add' := fun x1 x2 => by
@@ -592,7 +600,9 @@ map `S ⨂ X → Y`, there is a `X ⟶ (restrictScalars f).obj Y`, i.e. `R`-line
 @[simps hom_apply]
 def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     X ⟶ (restrictScalars f).obj Y :=
-  asHom (X := X) (Y := (restrictScalars f).obj Y)
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
+  asHom (Y := (restrictScalars f).obj Y)
   { toFun := fun x => g <| (1 : S)⊗ₜ[R,f]x
     map_add' := fun _ _ => by dsimp; rw [tmul_add, map_add]
     map_smul' := fun r s => by
@@ -691,7 +701,9 @@ For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by
 -/
 -- @[simps] Porting note: not in normal form and not used
 def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
-  asHom (X := X) (Y := (extendScalars f ⋙ restrictScalars f).obj X)
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
+  asHom (Y := (extendScalars f ⋙ restrictScalars f).obj X)
   { toFun := fun x => (1 : S)⊗ₜ[R,f]x
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by

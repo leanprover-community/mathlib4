@@ -159,7 +159,8 @@ noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
     { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
       map := fun {U V} i ↦ asHom
-        (X := of ((Spec (CommRingCat.of R)).ringCatSheaf.val.obj U) (M.tildeInType.val.obj U))
+        -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
+        -- This suggests `restrictScalars` needs to be redesigned.
         (Y := (restrictScalars ((Spec (CommRingCat.of R)).ringCatSheaf.val.map i)).obj
           (of ((Spec (CommRingCat.of R)).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
@@ -204,6 +205,8 @@ If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `
 -/
 def toOpen (U : Opens (PrimeSpectrum.Top R)) :
     ModuleCat.of R M ⟶ (tildeInModuleCat M).1.obj (op U) :=
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
+  -- This suggests `restrictScalars` needs to be redesigned.
   ModuleCat.asHom (Y := (tildeInModuleCat M).1.obj (op U))
   { toFun := fun f =>
     ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
@@ -266,6 +269,8 @@ the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
     (tildeInModuleCat M).obj (op U) ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`
+  -- This suggests `restrictScalars` needs to be redesigned.
   ModuleCat.asHom
     (X := (tildeInModuleCat M).obj (op U))
     (Y := ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M))

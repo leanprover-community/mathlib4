@@ -134,6 +134,8 @@ noncomputable def map :
   letI := (g ≫ f').toAlgebra
   have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
   have := IsScalarTower.of_algebraMap_eq' fac
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
   ModuleCat.asHom (Y := (ModuleCat.restrictScalars g').obj (KaehlerDifferential f'))
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
     map_add' := by simp

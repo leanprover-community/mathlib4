@@ -161,6 +161,8 @@ when the preferred constructor `PresheafOfModules.mk` is not as convenient as th
 @[simps]
 def ofPresheaf : PresheafOfModules.{v} R where
   obj X := ModuleCat.of _ (M.obj X)
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
   map {X Y} f := ModuleCat.asHom
       (Y := (ModuleCat.restrictScalars (R.map f)).obj (ModuleCat.of _ (M.obj Y)))
     { toFun := fun x ↦ M.map f x
@@ -259,6 +261,8 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 /-- The obvious free presheaf of modules of rank `1`. -/
 def unit : PresheafOfModules R where
   obj X := ModuleCat.of _ (R.obj X)
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
   map {X Y} f := ModuleCat.asHom
       (Y := (ModuleCat.restrictScalars (R.map f)).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
     { toFun := fun x ↦ R.map f x
