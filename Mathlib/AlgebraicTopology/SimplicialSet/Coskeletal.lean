@@ -115,8 +115,7 @@ lemma fac_aux₂ {n : ℕ}
         Int.reduceAdd, Fin.eta, comp_obj, StructuredArrow.proj_obj, op_obj, const_obj_obj,
         const_obj_map, types_comp_apply, types_id_apply, Functor.comp_map, StructuredArrow.proj_map,
         op_map] at nat
-      rw [nat]
-      rw [op_comp, Functor.map_comp]
+      rw [nat, op_comp, Functor.map_comp]
       simp only [types_comp_apply]
       refine congrArg (X.map ([1].const [0] 0).op) ?_
       unfold strArrowMk₂
