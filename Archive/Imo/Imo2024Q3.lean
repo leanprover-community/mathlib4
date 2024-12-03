@@ -377,7 +377,7 @@ lemma k_pos : 0 < k a := by
 
 lemma small_one : Small a 1 := by
   by_contra hns
-  simp only [not_le, Nat.lt_one_iff, hc.k_pos.ne'] at hns
+  simp only [Small, not_le, Nat.lt_one_iff, hc.k_pos.ne'] at hns
 
 lemma infinite_setOf_apply_eq_one : {i | a i = 1}.Infinite :=
   (hc.infinite_setOf_apply_eq_iff_small (by decide)).mpr hc.small_one
