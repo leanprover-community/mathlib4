@@ -17,6 +17,9 @@ i.e. `X ≅ (cosk 2).obj X`. In particular, nerves of categories are 2-coskeleta
 This isomorphism follows from the fact that `rightExtensionInclusion X 2` is a right Kan
 extension. In fact, we show that when `X` is `StrictSegal` then
 `(rightExtensionInclusion X n).IsPointwiseRightKanExtension` holds.
+
+As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that that nerves of categories
+are 2-coskeletal.
 -/
 
 
