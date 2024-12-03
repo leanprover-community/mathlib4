@@ -114,7 +114,7 @@ theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebra
   isAlgebraic a := isAlgebraic_iff_not_injective.mpr
     fun inj ↦ h <| by convert inj.comp C_injective; ext; simp
 
-theorem Algebra.injective_of_transcendental [Algebra.Transcendental R A] :
+theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
     Function.Injective (algebraMap R A) := by
   rw [transcendental_iff_not_isAlgebraic] at h
   contrapose! h
