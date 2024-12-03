@@ -31,7 +31,7 @@ with a formula).
     `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
     of `S` over `R`.
   * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
-    factor of the minimal polynomial of a `x` generator of `S` over `R`, taken
+    factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
     `mod I`. Then (the reduction of) `Q` corresponds via
     `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
     `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.
