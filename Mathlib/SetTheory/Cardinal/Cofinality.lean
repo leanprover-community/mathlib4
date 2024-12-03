@@ -48,9 +48,9 @@ noncomputable section
 open Function Cardinal Set Order
 open scoped Ordinal
 
-universe u v w
+universe u v
 
-variable {α : Type u} {β : Type v}
+variable {α ι : Type u} {β : Type v} {a o o' : Ordinal.{u}}
 
 /-! ### Cofinality of orders -/
 
@@ -185,6 +185,13 @@ theorem cof_eq_cof_toType (o : Ordinal) : o.cof = Order.cof o.toType :=
   (cof_toType o).symm
 
 @[simp]
+theorem _root_.Order.cof_Iio_ordinal (o : Ordinal.{u}) :
+    Order.cof (Iio o) = Cardinal.lift.{u + 1} o.cof := by
+  convert (enumIsoToType o).cof_eq_lift
+  · rw [Cardinal.lift_id'.{u, u + 1}]
+  · rw [cof_toType]
+
+@[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
   refine inductionOnWellOrder o fun α _ _ ↦ ?_
   rw [← typeLT_uLift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof (ULift _)),
@@ -219,156 +226,166 @@ theorem cof_zero : cof 0 = 0 := by
   rw [← cof_toType, cof_eq_zero]
 
 @[simp]
-theorem cof_eq_zero {o : Ordinal} : cof o = 0 ↔ o = 0 := by
+theorem cof_eq_zero : cof o = 0 ↔ o = 0 := by
   rw [← cof_toType, cof_eq_zero_iff, toType_empty_iff_eq_zero]
+
+theorem cof_ne_zero : cof o ≠ 0 ↔ o ≠ 0 :=
+  cof_eq_zero.not
 
 @[simp]
 theorem cof_succ (o : Ordinal) : cof (succ o) = 1 := by
   rw [← cof_toType, cof_eq_one]
 
 @[simp]
-theorem cof_eq_one {o : Ordinal} : cof o = 1 ↔ ¬ IsSuccPrelimit o := by
+theorem cof_eq_one : cof o = 1 ↔ ¬ IsSuccPrelimit o := by
   rw [← cof_toType, cof_eq_one_iff]
+  sorry
 
-#exit
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
+/-- The range of an indexed supremum is cofinal within the supremum. -/
+theorem isCofinal_range_iSup {f : ι → Ordinal} (H : ∀ i, f i < ⨆ i, f i) :
+    IsCofinal (range fun i ↦ enumIsoToType _ ⟨_, H i⟩) := by
+  intro x
+  have H' := ((enumIsoToType _).symm x).2
+  rw [mem_Iio, lt_ciSup_iff'] at H'
+  · obtain ⟨i, hi⟩ := H'
+    use enumIsoToType _ ⟨_, H i⟩
+    simpa [← (enumIsoToType _).symm.le_iff_le] using hi.le
+  · use iSup f
+    rintro _ ⟨i, rfl⟩
+    exact (H i).le
 
-private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
-  ⟨_, _, lsub_typein o, mk_toType o⟩
+theorem cof_iSup_le_lift {f : ι → Ordinal.{v}} (H : ∀ i, f i < ⨆ i, f i) :
+    Cardinal.lift.{u} (cof (⨆ i, f i)) ≤ Cardinal.lift.{v} #ι := by
+  rw [← cof_toType]
+  exact (Cardinal.lift_le.2 (isCofinal_range_iSup H).cof_le).trans mk_range_le_lift
 
-/-- The set in the `lsub` characterization of `cof` is nonempty. -/
-theorem cof_lsub_def_nonempty (o) :
-    { a : Cardinal | ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a }.Nonempty :=
-  ⟨_, card_mem_cof⟩
+theorem cof_iSup_le {f : ι → Ordinal} (H : ∀ i, f i < ⨆ i, f i) : cof (⨆ i, f i) ≤ #ι := by
+  simpa using cof_iSup_le_lift H
 
-theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
-    sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
-  refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
-  · rintro a ⟨ι, f, hf, rfl⟩
-    rw [← type_toType o]
-    refine
-      (cof_type_le fun a => ?_).trans
-        (@mk_le_of_injective _ _
-          (fun s : typein ((· < ·) : o.toType → o.toType → Prop) ⁻¹' Set.range f =>
-            Classical.choose s.prop)
-          fun s t hst => by
-          let H := congr_arg f hst
-          rwa [Classical.choose_spec s.prop, Classical.choose_spec t.prop, typein_inj,
-            Subtype.coe_inj] at H)
-    have := typein_lt_self a
-    simp_rw [← hf, lt_lsub_iff] at this
-    cases' this with i hi
-    refine ⟨enum (α := o.toType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
-    · rw [type_toType, ← hf]
-      apply lt_lsub
-    · rw [mem_preimage, typein_enum]
-      exact mem_range_self i
-    · rwa [← typein_le_typein, typein_enum]
-  · rcases cof_eq (α := o.toType) (· < ·) with ⟨S, hS, hS'⟩
-    let f : S → Ordinal := fun s => typein LT.lt s.val
-    refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
-      (le_of_forall_lt fun a ha => ?_), by rwa [type_toType o] at hS'⟩
-    rw [← type_toType o] at ha
-    rcases hS (enum (· < ·) ⟨a, ha⟩) with ⟨b, hb, hb'⟩
-    rw [← typein_le_typein, typein_enum] at hb'
-    exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
+theorem cof_iSup_Iio_le {f : Iio a → Ordinal} (H : ∀ i, f i < ⨆ i, f i) :
+    cof (⨆ i, f i) ≤ a.card := by
+  convert cof_iSup_le_lift H
+  rw [Cardinal.lift_id'.{u, u + 1}, mk_Iio_ordinal, Cardinal.lift_le]
 
-theorem exists_lsub_cof (o : Ordinal) :
-    ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = cof o := by
-  rw [cof_eq_sInf_lsub]
-  exact csInf_mem (cof_lsub_def_nonempty o)
+theorem iSup_lt_of_lt_cof_lift {f : ι → Ordinal} {o : Ordinal.{v}} (H : ∀ i, f i < o)
+    (h : Cardinal.lift.{v} #ι < Cardinal.lift.{u} o.cof) : ⨆ i, f i < o := by
+  apply (ciSup_le' fun i ↦ (H i).le).lt_of_ne
+  rintro rfl
+  exact (cof_iSup_le_lift H).not_lt h
 
-theorem cof_lsub_le {ι} (f : ι → Ordinal) : cof (lsub.{u, u} f) ≤ #ι := by
-  rw [cof_eq_sInf_lsub]
-  exact csInf_le' ⟨ι, f, rfl, rfl⟩
+theorem iSup_lt_of_lt_cof {ι} {f : ι → Ordinal} (H : ∀ i, f i < o) (h : #ι < o.cof) :
+    ⨆ i, f i < o := by
+  apply iSup_lt_of_lt_cof_lift H
+  simpa
 
-theorem cof_lsub_le_lift {ι} (f : ι → Ordinal) :
-    cof (lsub.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← mk_uLift.{u, v}]
-  convert cof_lsub_le.{max u v} fun i : ULift.{v, u} ι => f i.down
-  exact
-    lsub_eq_of_range_eq.{u, max u v, max u v}
-      (Set.ext fun x => ⟨fun ⟨i, hi⟩ => ⟨ULift.up.{v, u} i, hi⟩, fun ⟨i, hi⟩ => ⟨_, hi⟩⟩)
+theorem iSup_Iio_lt_of_lt_cof {f : Iio a → Ordinal} (H : ∀ i, f i < o) (h : a < o.cof.ord) :
+    ⨆ i, f i < o := by
+  apply iSup_lt_of_lt_cof_lift H
+  rwa [Cardinal.lift_id'.{u, u + 1}, mk_Iio_ordinal, Cardinal.lift_lt, ← lt_ord]
 
-theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
-    a ≤ cof o ↔ ∀ {ι} (f : ι → Ordinal), lsub.{u, u} f = o → a ≤ #ι := by
-  rw [cof_eq_sInf_lsub]
-  exact
-    (le_csInf_iff'' (cof_lsub_def_nonempty o)).trans
-      ⟨fun H ι f hf => H _ ⟨ι, f, hf, rfl⟩, fun H b ⟨ι, f, hf, hb⟩ => by
-        rw [← hb]
-        exact H _ hf⟩
+/-! ### Fundamental sequences -/
 
-theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
-    (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
-  lt_of_le_of_ne (lsub_le hf) fun h => by
-    subst h
-    exact (cof_lsub_le_lift.{u, v} f).not_lt hι
+/-- A fundamental sequence for an ordinal `a` is a strictly monotonic function from `Iio a.cof` to
+`Iio a` with cofinal range. We provide `o = a.cof` explicitly to avoid type rewrites. -/
+structure IsFundamentalSeq (f : Iio o → Iio a) : Prop where
+  /-- This, alongside the other conditions, implies `o = a.cof.ord`. -/
+  le_cof : o ≤ a.cof.ord
+  /-- A fundamental sequence is strictly monotonic. -/
+  strictMono : StrictMono f
+  /-- A fundamental sequence has cofinal range. -/
+  isCofinal_range : IsCofinal (range f)
 
-theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
-    (∀ i, f i < c) → lsub.{u, u} f < c :=
-  lsub_lt_ord_lift (by rwa [(#ι).lift_id])
+namespace IsFundamentalSeq
 
-theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
-    cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← Ordinal.sup] at *
-  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
-  rw [H]
-  exact cof_lsub_le_lift f
+variable {f : Iio o → Iio a}
 
-set_option linter.deprecated false in
-@[deprecated cof_iSup_le_lift (since := "2024-08-27")]
-theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
-    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
-  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
-  rw [H]
-  exact cof_lsub_le_lift f
+theorem monotone (h : IsFundamentalSeq f) : Monotone f :=
+  h.strictMono.monotone
 
-theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
-    cof (iSup f) ≤ #ι := by
-  rw [← (#ι).lift_id]
-  exact cof_iSup_le_lift H
+theorem cof_eq (h : IsFundamentalSeq f) : o = a.cof.ord := by
+  apply h.le_cof.antisymm
+  have := h.isCofinal_range.cof_le.trans mk_range_le
+  rwa [cof_Iio_ordinal, mk_Iio_ordinal, Cardinal.lift_le, ← ord_le] at this
 
-set_option linter.deprecated false in
-@[deprecated cof_iSup_le (since := "2024-08-27")]
-theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
-    cof (sup.{u, u} f) ≤ #ι := by
-  rw [← (#ι).lift_id]
-  exact cof_sup_le_lift H
+theorem id_of_le_cof (h : o ≤ o.cof.ord) : IsFundamentalSeq (@id (Iio o)) :=
+  ⟨h, strictMono_id, by simp⟩
 
-theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : iSup f < c :=
-  (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
+/-- The empty sequence is a fundamental sequence for `0`. -/
+protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f :=
+  ⟨by simp, isEmptyElim, isEmptyElim⟩
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_lift (since := "2024-08-27")]
-theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
-  iSup_lt_ord_lift hι hf
+/-- The sequence `{o}` is a fundamental sequence for `succ o`. -/
+protected theorem succ : IsFundamentalSeq fun _ : Iio 1 ↦ ⟨o, lt_succ o⟩ := by
+  refine ⟨?_, Subsingleton.strictMono _, ?_⟩ <;> simp
 
-theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
-    (∀ i, f i < c) → iSup f < c :=
-  iSup_lt_ord_lift (by rwa [(#ι).lift_id])
+/-- The composition of fundamental sequences is a fundamental sequence. -/
+theorem trans {g : Iio o' → Iio o} (hf : IsFundamentalSeq f) (hg : IsFundamentalSeq g) :
+    IsFundamentalSeq (f ∘ g) := by
+  refine ⟨?_, hf.strictMono.comp hg.strictMono, fun x ↦ ?_⟩
+  · rw [hg.cof_eq, hf.cof_eq, cof_cof]
+  · obtain ⟨_, ⟨y, rfl⟩, hx⟩ := hf.isCofinal_range x
+    obtain ⟨_, ⟨z, rfl⟩, hy⟩ := hg.isCofinal_range y
+    exact ⟨_, mem_range_self z, hx.trans (hf.monotone hy)⟩
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord (since := "2024-08-27")]
-theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
-    (∀ i, f i < c) → sup.{u, u} f < c :=
-  sup_lt_ord_lift (by rwa [(#ι).lift_id])
+end IsFundamentalSeq
 
-theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
-    (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
-    (hf : ∀ i, f i < c) : iSup f < c := by
-  rw [← ord_lt_ord, iSup_ord (Cardinal.bddAbove_range _)]
-  refine iSup_lt_ord_lift hι fun i => ?_
-  rw [ord_lt_ord]
-  apply hf
+/-- Every ordinal has a fundamental sequence. -/
+theorem exists_isFundamentalSeq (o : Ordinal) :
+    ∃ f : Iio o.cof.ord → Iio o, IsFundamentalSeq f := by
+  obtain ⟨s, hs, ho⟩ := ord_cof_eq o.toType
+  rw [cof_toType] at ho
+  rw [ho]
+  let g := OrderIso.ofRelIsoLT (enum (α := s) (· < ·))
+  refine ⟨fun x ↦ (enumIsoToType _).symm (g x), ho.ge, ?_, fun x ↦ ?_⟩
+  · exact (OrderIso.strictMono _).comp g.strictMono
+  · obtain ⟨y, hy, hx⟩ := hs (enumIsoToType o x)
+    refine ⟨(enumIsoToType o).symm y, ⟨g.symm ⟨y, hy⟩, ?_⟩, ?_⟩ <;>
+      simp [← o.enumIsoToType.le_iff_le, hx]
 
-theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.ord.cof) :
-    (∀ i, f i < c) → iSup f < c :=
-  iSup_lt_lift (by rwa [(#ι).lift_id])
+theorem IsNormal.cof_le {f : Ordinal → Ordinal} (hf : IsNormal f) : cof o ≤ cof (f o) := by
+  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_limit o
+  · simp
+  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_ne_zero]
+    exact (hf.strictMono (lt_succ a)).ne_bot
+  · obtain ⟨g, hg⟩ := exists_isFundamentalSeq (f o)
+    have H (x : Iio (f o)) : ∃ y : Iio o, x < f y := by simpa using (hf.limit_lt ho).1 x.2
+    choose s hs using H
+    have hs' : ⨆ i, (s (g i)).1 = o := by
+      apply (ciSup_le' fun x ↦ (s (g x)).2.le).antisymm
+      apply le_of_forall_lt fun x hx ↦ ?_
+      rw [lt_ciSup_iff']
+      · obtain ⟨_, ⟨y, rfl⟩, h : f x ≤ g y⟩ := hg.isCofinal_range ⟨f x, hf.strictMono hx⟩
+        exact ⟨y, hf.lt_iff.1 <| h.trans_lt (hs (g y))⟩
+      · use o
+        rintro _ ⟨x, rfl⟩
+        exact (s (g x)).2.le
+    convert cof_iSup_Iio_le (f := fun x ↦ s (g x)) _ using 1
+    · rw [hs']
+    · rw [card_ord]
+    · simpa only [hs'] using fun x ↦ (s (g x)).2
+
+/-- If `g` is a fundamental sequence for `o` and `f` is normal, then `f ∘ g` is a fundamental
+sequence for `f o`. -/
+protected theorem IsNormal.isFundamentalSeq {f : Ordinal → Ordinal} (hf : IsNormal f)
+    (ho : IsLimit o) {g : Iio a → Iio o} (hg : IsFundamentalSeq g) :
+    IsFundamentalSeq fun x : Iio a ↦ ⟨f (g x), hf.strictMono (g x).2⟩ := by
+  refine ⟨?_, fun x y h ↦ hf.strictMono (hg.strictMono h), fun x ↦ ?_⟩
+  · rw [hg.cof_eq, ord_le_ord]
+    exact hf.cof_le
+  · obtain ⟨y, hy, hx⟩ := (hf.limit_lt ho).1 x.2
+    obtain ⟨_, ⟨z, rfl⟩, hz⟩ := hg.isCofinal_range ⟨y, hy⟩
+    exact ⟨_, mem_range_self z, hx.le.trans (hf.monotone hz)⟩
+
+theorem IsNormal.cof_eq {f : Ordinal → Ordinal} (hf : IsNormal f) (ho : IsLimit o) :
+    cof (f o) = cof o := by
+  obtain ⟨g, hg⟩ := exists_isFundamentalSeq o
+  exact (ord_injective (hf.isFundamentalSeq ho hg).cof_eq).symm
+
+#exit
+
+#exit
 
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} #ι < cof c) (hf : ∀ (i), ∀ b < c, f i b < c) {a} (ha : a < c) :
@@ -385,141 +402,7 @@ theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ 
     (hf : ∀ (i), ∀ b < c, f i b < c) {a} : a < c → nfpFamily.{u, u} f a < c :=
   nfpFamily_lt_ord_lift hc (by rwa [(#ι).lift_id]) hf
 
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord_lift (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
-    (hc' : Cardinal.lift.{v, u} o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
-    a < c → nfpBFamily.{u, v} o f a < c :=
-  nfpFamily_lt_ord_lift hc (by rwa [mk_toType]) fun _ => hf _ _
-
-set_option linter.deprecated false in
-@[deprecated nfpFamily_lt_ord (since := "2024-10-14")]
-theorem nfpBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
-    (hc' : o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
-    a < c → nfpBFamily.{u, u} o f a < c :=
-  nfpBFamily_lt_ord_lift hc (by rwa [o.card.lift_id]) hf
-
-theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀ i < c, f i < c) {a} :
-    a < c → nfp f a < c :=
-  nfpFamily_lt_ord_lift hc (by simpa using Cardinal.one_lt_aleph0.trans hc) fun _ => hf
-
-theorem exists_blsub_cof (o : Ordinal) :
-    ∃ f : ∀ a < (cof o).ord, Ordinal, blsub.{u, u} _ f = o := by
-  rcases exists_lsub_cof o with ⟨ι, f, hf, hι⟩
-  rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
-  rw [← @blsub_eq_lsub' ι r hr] at hf
-  rw [← hι, hι']
-  exact ⟨_, hf⟩
-
-theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
-    a ≤ cof b ↔ ∀ {o} (f : ∀ a < o, Ordinal), blsub.{u, u} o f = b → a ≤ o.card :=
-  le_cof_iff_lsub.trans
-    ⟨fun H o f hf => by simpa using H _ hf, fun H ι f hf => by
-      rcases Cardinal.ord_eq ι with ⟨r, hr, hι'⟩
-      rw [← @blsub_eq_lsub' ι r hr] at hf
-      simpa using H _ hf⟩
-
-theorem cof_blsub_le_lift {o} (f : ∀ a < o, Ordinal) :
-    cof (blsub.{u, v} o f) ≤ Cardinal.lift.{v, u} o.card := by
-  rw [← mk_toType o]
-  exact cof_lsub_le_lift _
-
-theorem cof_blsub_le {o} (f : ∀ a < o, Ordinal) : cof (blsub.{u, u} o f) ≤ o.card := by
-  rw [← o.card.lift_id]
-  exact cof_blsub_le_lift f
-
-theorem blsub_lt_ord_lift {o : Ordinal.{u}} {f : ∀ a < o, Ordinal} {c : Ordinal}
-    (ho : Cardinal.lift.{v, u} o.card < c.cof) (hf : ∀ i hi, f i hi < c) : blsub.{u, v} o f < c :=
-  lt_of_le_of_ne (blsub_le hf) fun h =>
-    ho.not_le (by simpa [← iSup_ord, hf, h] using cof_blsub_le_lift.{u, v} f)
-
-theorem blsub_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o.card < c.cof)
-    (hf : ∀ i hi, f i hi < c) : blsub.{u, u} o f < c :=
-  blsub_lt_ord_lift (by rwa [o.card.lift_id]) hf
-
-theorem cof_bsup_le_lift {o : Ordinal} {f : ∀ a < o, Ordinal} (H : ∀ i h, f i h < bsup.{u, v} o f) :
-    cof (bsup.{u, v} o f) ≤ Cardinal.lift.{v, u} o.card := by
-  rw [← bsup_eq_blsub_iff_lt_bsup.{u, v}] at H
-  rw [H]
-  exact cof_blsub_le_lift.{u, v} f
-
-theorem cof_bsup_le {o : Ordinal} {f : ∀ a < o, Ordinal} :
-    (∀ i h, f i h < bsup.{u, u} o f) → cof (bsup.{u, u} o f) ≤ o.card := by
-  rw [← o.card.lift_id]
-  exact cof_bsup_le_lift
-
-theorem bsup_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal}
-    (ho : Cardinal.lift.{v, u} o.card < c.cof) (hf : ∀ i hi, f i hi < c) : bsup.{u, v} o f < c :=
-  (bsup_le_blsub f).trans_lt (blsub_lt_ord_lift ho hf)
-
-theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o.card < c.cof) :
-    (∀ i hi, f i hi < c) → bsup.{u, u} o f < c :=
-  bsup_lt_ord_lift (by rwa [o.card.lift_id])
-
 /-! ### Basic results -/
-
-
-@[simp]
-theorem cof_zero : cof 0 = 0 := by
-  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
-  rw [← card_zero]
-  exact cof_le_card 0
-
-@[simp]
-theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
-  ⟨inductionOn o fun _ r _ z =>
-      let ⟨_, hl, e⟩ := cof_eq r
-      type_eq_zero_iff_isEmpty.2 <|
-        ⟨fun a =>
-          let ⟨_, h, _⟩ := hl a
-          (mk_eq_zero_iff.1 (e.trans z)).elim' ⟨_, h⟩⟩,
-    fun e => by simp [e]⟩
-
-theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
-  cof_eq_zero.not
-
-@[simp]
-theorem cof_succ (o) : cof (succ o) = 1 := by
-  apply le_antisymm
-  · refine inductionOn o fun α r _ => ?_
-    change cof (type _) ≤ _
-    rw [← (_ : #_ = 1)]
-    · apply cof_type_le
-      refine fun a => ⟨Sum.inr PUnit.unit, Set.mem_singleton _, ?_⟩
-      rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp [EmptyRelation]
-    · rw [Cardinal.mk_fintype, Set.card_singleton]
-      simp
-  · rw [← Cardinal.succ_zero, succ_le_iff]
-    simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
-      succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
-
-@[simp]
-theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
-  ⟨inductionOn o fun α r _ z => by
-      rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
-      cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
-      refine
-        ⟨typein r a,
-          Eq.symm <|
-            Quotient.sound
-              ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ fun x y => ?_) fun x => ?_⟩⟩
-      · apply Sum.rec <;> [exact Subtype.val; exact fun _ => a]
-      · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
-          simp [Subrel, Order.Preimage, EmptyRelation]
-        exact x.2
-      · suffices r x a ∨ ∃ _ : PUnit.{u}, ↑a = x by
-          convert this
-          dsimp [RelEmbedding.ofMonotone]; simp
-        rcases trichotomous_of r x a with (h | h | h)
-        · exact Or.inl h
-        · exact Or.inr ⟨PUnit.unit, h.symm⟩
-        · rcases hl x with ⟨a', aS, hn⟩
-          refine absurd h ?_
-          convert hn
-          change (a : α) = ↑(⟨a', aS⟩ : S)
-          have := le_one_iff_subsingleton.1 (le_of_eq e)
-          congr!,
-    fun ⟨a, e⟩ => by simp [e]⟩
 
 /-- A fundamental sequence for `a` is an increasing sequence of length `o = cof a` that converges at
     `a`. We provide `o` explicitly in order to avoid type rewrites. -/
@@ -528,94 +411,6 @@ def IsFundamentalSequence (a o : Ordinal.{u}) (f : ∀ b < o, Ordinal.{u}) : Pro
 
 namespace IsFundamentalSequence
 
-variable {a o : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}}
-
-protected theorem cof_eq (hf : IsFundamentalSequence a o f) : a.cof.ord = o :=
-  hf.1.antisymm' <| by
-    rw [← hf.2.2]
-    exact (ord_le_ord.2 (cof_blsub_le f)).trans (ord_card_le o)
-
-protected theorem strict_mono (hf : IsFundamentalSequence a o f) {i j} :
-    ∀ hi hj, i < j → f i hi < f j hj :=
-  hf.2.1
-
-theorem blsub_eq (hf : IsFundamentalSequence a o f) : blsub.{u, u} o f = a :=
-  hf.2.2
-
-theorem ord_cof (hf : IsFundamentalSequence a o f) :
-    IsFundamentalSequence a a.cof.ord fun i hi => f i (hi.trans_le (by rw [hf.cof_eq])) := by
-  have H := hf.cof_eq
-  subst H
-  exact hf
-
-theorem id_of_le_cof (h : o ≤ o.cof.ord) : IsFundamentalSequence o o fun a _ => a :=
-  ⟨h, @fun _ _ _ _ => id, blsub_id o⟩
-
-protected theorem zero {f : ∀ b < (0 : Ordinal), Ordinal} : IsFundamentalSequence 0 0 f :=
-  ⟨by rw [cof_zero, ord_zero], @fun i _ hi => (Ordinal.not_lt_zero i hi).elim, blsub_zero f⟩
-
-protected theorem succ : IsFundamentalSequence (succ o) 1 fun _ _ => o := by
-  refine ⟨?_, @fun i j hi hj h => ?_, blsub_const Ordinal.one_ne_zero o⟩
-  · rw [cof_succ, ord_one]
-  · rw [lt_one_iff_zero] at hi hj
-    rw [hi, hj] at h
-    exact h.false.elim
-
-protected theorem monotone (hf : IsFundamentalSequence a o f) {i j : Ordinal} (hi : i < o)
-    (hj : j < o) (hij : i ≤ j) : f i hi ≤ f j hj := by
-  rcases lt_or_eq_of_le hij with (hij | rfl)
-  · exact (hf.2.1 hi hj hij).le
-  · rfl
-
-theorem trans {a o o' : Ordinal.{u}} {f : ∀ b < o, Ordinal.{u}} (hf : IsFundamentalSequence a o f)
-    {g : ∀ b < o', Ordinal.{u}} (hg : IsFundamentalSequence o o' g) :
-    IsFundamentalSequence a o' fun i hi =>
-      f (g i hi) (by rw [← hg.2.2]; apply lt_blsub) := by
-  refine ⟨?_, @fun i j _ _ h => hf.2.1 _ _ (hg.2.1 _ _ h), ?_⟩
-  · rw [hf.cof_eq]
-    exact hg.1.trans (ord_cof_le o)
-  · rw [@blsub_comp.{u, u, u} o _ f (@IsFundamentalSequence.monotone _ _ f hf)]
-    · exact hf.2.2
-    · exact hg.2.2
-
-protected theorem lt {a o : Ordinal} {s : Π p < o, Ordinal}
-    (h : IsFundamentalSequence a o s) {p : Ordinal} (hp : p < o) : s p hp < a :=
-  h.blsub_eq ▸ lt_blsub s p hp
-
-end IsFundamentalSequence
-
-/-- Every ordinal has a fundamental sequence. -/
-theorem exists_fundamental_sequence (a : Ordinal.{u}) :
-    ∃ f, IsFundamentalSequence a a.cof.ord f := by
-  suffices h : ∃ o f, IsFundamentalSequence a o f by
-    rcases h with ⟨o, f, hf⟩
-    exact ⟨_, hf.ord_cof⟩
-  rcases exists_lsub_cof a with ⟨ι, f, hf, hι⟩
-  rcases ord_eq ι with ⟨r, wo, hr⟩
-  haveI := wo
-  let r' := Subrel r { i | ∀ j, r j i → f j < f i }
-  let hrr' : r' ↪r r := Subrel.relEmbedding _ _
-  haveI := hrr'.isWellOrder
-  refine
-    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' ⟨j, h⟩).prop _ ?_,
-      le_antisymm (blsub_le fun i hi => lsub_le_iff.1 hf.le _) ?_⟩
-  · rw [← hι, hr]
-  · change r (hrr'.1 _) (hrr'.1 _)
-    rwa [hrr'.2, @enum_lt_enum _ r']
-  · rw [← hf, lsub_le_iff]
-    intro i
-    suffices h : ∃ i' hi', f i ≤ bfamilyOfFamily' r' (fun i => f i) i' hi' by
-      rcases h with ⟨i', hi', hfg⟩
-      exact hfg.trans_lt (lt_blsub _ _ _)
-    by_cases h : ∀ j, r j i → f j < f i
-    · refine ⟨typein r' ⟨i, h⟩, typein_lt_type _ _, ?_⟩
-      rw [bfamilyOfFamily'_typein]
-    · push_neg at h
-      cases' wo.wf.min_mem _ h with hji hij
-      refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
-      · by_contra! H
-        exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
-      · rwa [bfamilyOfFamily'_typein]
 
 protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsLimit a) {g} (hg : IsFundamentalSequence a o g) :

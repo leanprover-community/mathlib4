@@ -383,6 +383,9 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
 
+instance : IsEmpty (Iio (0 : Ordinal)) :=
+  ⟨fun x ↦ Ordinal.not_lt_zero _ x.2⟩
+
 instance : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
@@ -1018,6 +1021,15 @@ theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
 
 @[deprecated one_toType_eq (since := "2024-08-26")]
 alias one_out_eq := one_toType_eq
+
+-- TODO: generalize to SuccOrder
+instance {o : Ordinal} : OrderTop (Iio (succ o)) where
+  top := ⟨o, lt_succ o⟩
+  le_top x := le_of_lt_succ (α := Ordinal) x.2
+
+@[simp]
+theorem top_Iio_succ_eq {o : Ordinal} : (⊤ : Iio (succ o)) = ⟨o, lt_succ o⟩ :=
+  rfl
 
 /-! ### Extra properties of typein and enum -/
 

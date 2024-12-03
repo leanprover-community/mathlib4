@@ -367,6 +367,7 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
     type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
   typein_ordinal o
 
+@[simp]
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]
