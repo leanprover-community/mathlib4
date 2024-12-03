@@ -185,11 +185,9 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
   contrapose!
   intro h
   rw [DFunLike.ne_iff]
-  have : ∃ x : 𝓞 K, x ∈ v₁.asIdeal ∧ x ∉ v₂.asIdeal := by
-    by_contra!
-    apply h
-    exact HeightOneSpectrum.ext_iff.mpr (IsMaximal.eq_of_le (isMaximal v₁) IsPrime.ne_top' this)
-  rcases this with ⟨x, hx1, hx2⟩
+  have ⟨x, hx1, hx2⟩ : ∃ x : 𝓞 K, x ∈ v₁.asIdeal ∧ x ∉ v₂.asIdeal := by
+    by_contra! H
+    exact h <| HeightOneSpectrum.ext_iff.mpr (IsMaximal.eq_of_le (isMaximal v₁) IsPrime.ne_top' H)
   use x
   simp only [apply]
   rw [← norm_lt_one_iff_mem ] at hx1
