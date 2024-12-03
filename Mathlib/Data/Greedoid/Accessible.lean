@@ -3,9 +3,7 @@ Copyright (c) 2024 Jihoon Hyun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jihoon Hyun
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
-import Init.Data.Nat.Basic
 
 /-!
 # Accessible
@@ -81,13 +79,13 @@ theorem construction_on_accessible
       ∃ s', Multiset.ofList l' = s'.val ∧ Sys s' := by
   have hS := nonempty_contains_empty hs
   induction hs using induction_on_accessible hS with
-  | empty => use []; simp; use ∅; simp [hS]
+  | empty => use [], nodup_nil, rfl; intro _ h; exact ⟨∅, suffix_nil.mp h ▸ rfl, hS⟩
   | insert hs hs₂ h₁ h₂ h₃ =>
     rename_i s₁ s₂; clear hs₂; rcases h₃ with ⟨l₀, hl₀₁, hl₀₂, hl₀₃⟩
     have h₃ : ∃! a, a ∈ s₁ ∧ a ∉ l₀ := by
       have h₃ : #(s₁ \ s₂) = 1 := by rw [card_sdiff h₁]; omega
       rcases card_eq_one.mp h₃ with ⟨a, ha⟩; rw [eq_singleton_iff_unique_mem] at ha
-      rcases ha with ⟨h₄, h₅⟩; simp at h₄ h₅
+      rcases ha with ⟨h₄, h₅⟩; simp only [mem_sdiff, and_imp] at h₄ h₅
       rw [← @mem_val _ _ s₂, ← hl₀₂, Multiset.mem_coe] at h₄
       use a; simp [h₄, h₅]; intro _ h₁ h₂; apply h₅ _ h₁
       intro h; apply h₂; rw [← Multiset.mem_coe, hl₀₂, mem_val]; exact h
@@ -101,9 +99,8 @@ theorem construction_on_accessible
     have h₅ : Multiset.card s₁.val ≤ Multiset.card (Multiset.ofList (x :: l₀)) := by
       simp [← h₂, ← card_val s₂, ← hl₀₂]
     have h₆ := Multiset.eq_of_le_of_card_le h₄ h₅
-    apply And.intro (by simp [hl₀₁, hx]) (And.intro h₆ _)
-    intro l' hl'; rw [suffix_cons_iff] at hl'; apply hl'.elim _ (fun h => hl₀₃ _ h)
-    intro hl'; use s₁; simp [hs, hl', h₆]
+    exact ⟨by simp [hl₀₁, hx], ⟨h₆, fun l' hl' ↦ (suffix_cons_iff.mp hl').elim
+      (fun h ↦ ⟨s₁, by simp [hs, h, h₆]⟩) (hl₀₃ _)⟩⟩
 
 end Accessible
 

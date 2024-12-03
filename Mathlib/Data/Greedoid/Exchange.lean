@@ -3,9 +3,7 @@ Copyright (c) 2024 Jihoon Hyun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jihoon Hyun
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
-import Init.Data.Nat.Basic
 
 /-!
 # Exchange property
@@ -16,7 +14,7 @@ Not to be confused with 'Exchange System'. [Brylawski & Dieter, 1986]
 
 A set system `S` satisfies the exchange property if there is some `x ∈ s \ t` for `s, t ∈ S`
 which `#t < #s`, that `t ∪ {x} ∈ S`.
-This definition is modified in implementation to remove the need of decidability.
+This definition is modified in the implementation to remove the need of decidability:
 -/
 
 namespace Greedoid
@@ -50,12 +48,13 @@ theorem exists_superset_of_card_le
     (hS : ExchangeProperty Sys) (hs₁ : Sys s₁) (hs₂ : Sys s₂)
     {n : ℕ} (hn₁ : n ≤ #s₁) (hn₂ : #s₂ ≤ n) :
     ∃ s, Sys s ∧ s₂ ⊆ s ∧ (∀ e ∈ s, e ∈ s₁ ∨ e ∈ s₂) ∧ #s = n := by
-    induction n, hn₂ using le_induction with
-    | base => use s₂; simp [hs₂]; intro _ h; exact .inr h
-    | succ _ h ih =>
+    induction n, hn₂ using le_induction
+    case base => use s₂; simp only [hs₂, subset_refl, true_and]; exact ⟨fun _ h ↦ .inr h, ⟨⟩⟩
+    case succ _ h ih =>
       rcases ih (by omega) with ⟨s, hs, h₁, h₂, rfl⟩
       rcases hS hs₁ hs hn₁ with ⟨a, ha₁, ha₂, ha₃⟩
-      use cons a s ha₂; simp_all; intro _ h; simp [h₁ h]
+      use cons a s ha₂; refine ⟨ha₃, subset_trans h₁ (subset_cons _), fun _ h₃ ↦ ?_, card_cons ha₂⟩
+      exact (mem_cons.mp h₃).elim (fun h ↦ .inl (h ▸ ha₁)) fun h ↦ h₂ _ h
 
 -- TODO: Find a better name.
 theorem exists_feasible_superset_add_element_feasible
@@ -63,18 +62,17 @@ theorem exists_feasible_superset_add_element_feasible
     {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
     ∃ s, Sys s ∧ s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, Sys (cons a s h) := by
   induction' hn : #s₁ - #s₂ generalizing s₂
-  case zero =>
-    exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn) ▸ ha₂) ha₁)
+  case zero => exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn) ▸ ha₂) ha₁)
   case succ _ ih =>
     rcases exists_superset_of_card_le hS hs₁ hs₂ (by omega) (le_succ _)
       with ⟨s, hs₃, hs₄, hs₅, hs₆⟩
     by_cases h : a ∈ s
-    · use s₂; simp [hs₂, hs, ha₂]
+    · use s₂, hs₂, subset_rfl, hs, ha₂
       exact (eq_of_subset_of_card_le
         ((@cons_subset _ _ _ _ ha₂).mpr ⟨h, hs₄⟩)  (hs₆ ▸ card_cons ha₂ ▸ le_rfl)) ▸ hs₃
     · rcases ih hs₃ (fun e h ↦ (hs₅ _ h).elim id (fun f ↦ hs f)) h (by omega)
-        with ⟨t, ht⟩
-      use t; simp [ht, subset_trans hs₄]
+        with ⟨t, ht₁, ht₂, ht₃⟩
+      use t, ht₁, subset_trans hs₄ ht₂
 
 end ExchangeProperty
 

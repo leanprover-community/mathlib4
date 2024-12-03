@@ -5,7 +5,7 @@ Authors: Jihoon Hyun
 -/
 import Mathlib.Data.Greedoid.Accessible
 import Mathlib.Data.Greedoid.Exchange
--- import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Minimal
 
 /-!
 # Greedoid
@@ -15,6 +15,14 @@ main subject `Greedoid α`.
 
 Greedoid is a set system, i.e., a family of sets, over a finite ground set, which satisfies both
 exchange and accessible properties.
+
+Main definitions:
+* `Greedoid`: The greedoid structure.
+* `Greedoid.ground`: The ground set of the greedoid.
+* `Greedoid.Feasible`: The feasible property of the greedoid.
+* `Greedoid.Bases`: A bases of a greedoid `G` is a maximal feasible set of `G`.
+* `Greedoid.Basis`: A basis of a set `s` with respect to a greedoid `G` is a maximal subset of `s`
+  which is feasible in `G`.
 -/
 
 /-- Greedoid is a nonempty (finite) set system satisfying both accessible and exchange property. -/
@@ -75,13 +83,66 @@ protected theorem accessible_property :
   rcases ExchangeProperty.exists_superset_of_card_le
     G.exchange_property h₁ G.feasible_empty (le_of_lt hu₁) (zero_le _)
     with ⟨t, ht₁, _, ht₂, ht₃⟩
-  simp only [not_mem_empty, or_false] at ht₂; rw [← ht₃] at hu₁
-  rcases G.exchange_property h₁ ht₁ hu₁ with ⟨_, _, hx₁, hx₂⟩
+  simp only [not_mem_empty, or_false] at ht₂
+  rcases G.exchange_property h₁ ht₁ (ht₃ ▸ hu₁) with ⟨_, _, hx₁, hx₂⟩
   have h : #(t.cons _ hx₁) < #s := by by_contra h''; simp at h''; apply h' _ ht₂ _ ht₁; omega
   have := card_cons _ ▸ ht₃ ▸ hu₂ _ hx₂ h; omega
 
 instance : Accessible G.Feasible :=
   ⟨G.accessible_property⟩
+
+/-- The bases of a greedoid is a maximal feasible set. -/
+protected def Bases (G : Greedoid α) : Finset α → Prop := fun b ↦
+  Maximal (fun t ↦ G.Feasible t ∧ t ⊆ G.ground) b
+
+/-- The basis of a greedoid with respect to a set `s` is a maximal feasible subset of `s`. -/
+protected def Basis (G : Greedoid α) (s : Finset α) : Finset α → Prop := fun b ↦
+  s ⊆ G.ground ∧ Maximal (fun t ↦ G.Feasible t ∧ t ⊆ s) b
+
+section Bases
+
+variable {b : Finset α}
+
+theorem bases_eq_basis_ground : G.Bases = G.Basis G.ground := by
+  funext x; simp [Greedoid.Bases, Greedoid.Basis]
+
+theorem bases_feasible (hb : G.Bases b) : G.Feasible b :=
+  hb.prop.1
+
+theorem basis_feasible (hb : G.Basis s b) : G.Feasible b :=
+  hb.2.prop.1
+
+theorem bases_subset_ground (hb : G.Bases b) : b ⊆ G.ground :=
+  hb.prop.2
+
+theorem basis_subset (hb : G.Basis s b) : b ⊆ s :=
+  hb.2.prop.2
+
+theorem basis_subset_ground (hb : G.Basis s b) : b ⊆ G.ground :=
+  subset_trans (basis_subset hb) hb.1
+
+theorem bases_maximal (hb : G.Bases b) : Maximal (fun t ↦ G.Feasible t ∧ t ⊆ G.ground) b :=
+  hb
+
+theorem basis_maximal (hb : G.Basis s b) : Maximal (fun t ↦ G.Feasible t ∧ t ⊆ s) b :=
+  hb.2
+
+theorem basis_card_eq
+    {b₁ : Finset α} (hb₁ : G.Basis s b₁) {b₂ : Finset α} (hb₂ : G.Basis s b₂) :
+    #b₁ = #b₂ := by
+  by_contra h'; rcases ne_iff_lt_or_gt.mp h' with h' | h'
+  · have ⟨_, h₁, h₂, h₃⟩ := G.exchange_property (basis_feasible hb₂) (basis_feasible hb₁) h'
+    have ⟨⟨_, h₄⟩, h₅⟩ := basis_maximal hb₁
+    have ⟨h₆, _⟩ := Finset.cons_subset.mp
+      (h₅ ⟨h₃, (Finset.cons_subset.mpr ⟨basis_subset hb₂ h₁, h₄⟩)⟩ (subset_cons _))
+    exact h₂ h₆
+  · have ⟨_, h₁, h₂, h₃⟩ := G.exchange_property (basis_feasible hb₁) (basis_feasible hb₂) h'
+    have ⟨⟨_, h₄⟩, h₅⟩ := basis_maximal hb₂
+    have ⟨h₆, _⟩ := Finset.cons_subset.mp
+      (h₅ ⟨h₃, (Finset.cons_subset.mpr ⟨basis_subset hb₁ h₁, h₄⟩)⟩ (subset_cons _))
+    exact h₂ h₆
+
+end Bases
 
 end Greedoid
 
