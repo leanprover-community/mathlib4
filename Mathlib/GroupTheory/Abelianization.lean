@@ -388,4 +388,4 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top
   rw [← sup_assoc]
   congr
   · rw [left_eq_sup]
-  · rw [← MonoidHom.range_eq_map, subtype_range]
+  · rw [← MonoidHom.range_eq_map, range_subtype]
