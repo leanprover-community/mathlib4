@@ -79,53 +79,29 @@ lemma i_w : h.i.left ≫ g = f ≫ h.i.right := h.i.w
 @[reassoc]
 lemma r_w : h.r.left ≫ f = g ≫ h.r.right := h.r.w
 
-@[simp, reassoc]
-lemma retract_left : h.i.left ≫ h.r.left = 𝟙 X := Arrow.hom.congr_left h.retract
-
-@[simp, reassoc]
-lemma retract_right : h.i.right ≫ h.r.right = 𝟙 Y := Arrow.hom.congr_right h.retract
-
-@[reassoc]
-lemma fac : h.i.left ≫ g ≫ h.r.right = f := by simp
-
 /-- The top of a retract diagram of morphisms determines a retract of objects. -/
 @[simps!]
 def left : Retract X Z := h.map Arrow.leftFunc
 
+/-- The bottom of a retract diagram of morphisms determines a retract of objects. -/
+@[simps!]
+def right : Retract Y W := h.map Arrow.rightFunc
+
 @[reassoc (attr := simp)]
 lemma retract_left : h.i.left ≫ h.r.left = 𝟙 X := h.left.retract
 
-/-- The bottom of a retract diagram of morphisms determines a retract of objects. -/
-@[simps]
-def right : Retract Y W where
-  i := h.i.right
-  r := h.r.right
-  retract := h.retract_right
+@[reassoc (attr := simp)]
+lemma retract_right : h.i.right ≫ h.r.right = 𝟙 Y := h.right.retract
 
-/-- The bottom of a retract diagram determines a split epimorphism. -/
-@[simps] def splitEpiLeft : SplitEpi h.r.left where
-  section_ := h.i.left
+instance : IsSplitEpi h.r.left := ⟨⟨h.left.splitEpi⟩⟩
 
-/-- The top of a retract diagram determines a split epimorphism. -/
-@[simps] def splitEpiRight : SplitEpi h.r.right where
-  section_ := h.i.right
+instance : IsSplitEpi h.r.right := ⟨⟨h.right.splitEpi⟩⟩
 
-/-- The bottom of a retract diagram determines a split monomorphism. -/
-@[simps] def splitMonoLeft : SplitMono h.i.left where
-  retraction := h.r.left
+instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 
-/-- The top of a retract diagram determines a split monomorphism. -/
-@[simps] def splitMonoRight : SplitMono h.i.right where
-  retraction := h.r.right
-
-instance : IsSplitEpi h.r.left := ⟨⟨h.splitEpiLeft⟩⟩
-
-instance : IsSplitEpi h.r.right := ⟨⟨h.splitEpiRight⟩⟩
-
-instance : IsSplitMono h.i.left := ⟨⟨h.splitMonoLeft⟩⟩
-
-instance : IsSplitMono h.i.right := ⟨⟨h.splitMonoRight⟩⟩
+instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
 
 end RetractArrow
 
 end CategoryTheory
+#lint
