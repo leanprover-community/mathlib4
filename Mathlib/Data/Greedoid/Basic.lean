@@ -5,7 +5,6 @@ Authors: Jihoon Hyun
 -/
 import Mathlib.Data.Greedoid.Accessible
 import Mathlib.Data.Greedoid.Exchange
-import Mathlib.Order.Minimal
 
 /-!
 # Greedoid
