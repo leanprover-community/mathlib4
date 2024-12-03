@@ -278,25 +278,6 @@ theorem map_comp_eq_assoc (α : F ⟶ G) (β : G ⟶ H) (I : Grothendieck H ⥤ 
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
 
-/--
-Isomorphisms of functors induce isomorphisms of their respective Grothendieck constructions.
--/
-def mapIso (α : F ≅ G) : Grothendieck F ≌ Grothendieck G where
-  functor := map α.hom
-  inverse := map α.inv
-  unitIso := by
-    apply eqToIso
-    rw [← map_comp_eq, Iso.hom_inv_id, map_id_eq]
-    rfl
-  counitIso := by
-    apply eqToIso
-    rw [← map_comp_eq, Iso.inv_hom_id, map_id_eq]
-    rfl
-
-instance IsEquivalence_map (α : F ⟶ G) [IsIso α] : (map α).IsEquivalence := by
-  suffices mapIso (asIso α) |>.functor |>.IsEquivalence by simpa
-  infer_instance
-
 variable (F)
 
 /-- The inverse functor to build the equivalence `compAsSmallFunctorEquivalence`. -/
@@ -439,19 +420,7 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
 
 variable (F) in
 @[simp]
-theorem pre_id : pre F (𝟭 C) = 𝟭 _ := by
-  simp only [pre, Functor.id_obj, Functor.id_map, map, Functor.comp_obj, NatTrans.id_app,
-    Cat.id_obj, Functor.comp_map, Cat.comp_obj, eqToHom_refl, Cat.id_app, Cat.id_map,
-    Category.id_comp]
-  rfl
-
-@[simp]
-lemma base_eqToHom {x y : Grothendieck F} (h : x = y) : (eqToHom h).base = eqToHom (by congr) := by
-  cases h ; rfl
-
-@[simp]
-lemma fiber_eqToHom {x y : Grothendieck F} (h : x = y) :
-    (eqToHom h).fiber = eqToHom (by cases h; simp) := by cases h ; rfl
+theorem pre_id : pre F (𝟭 C) = 𝟭 _ := rfl
 
 variable (F) in
 /--
@@ -464,10 +433,6 @@ def preNatIso {G H : D ⥤ C} (α : G ≅ H) :
   NatIso.ofComponents
     (fun X => (transportIso ⟨G.obj X.base, X.fiber⟩ (α.app X.base)).symm)
     (fun f => by fapply Grothendieck.ext <;> simp [transport_hom])
-
-instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
-  simp only [pre_id]
-  infer_instance
 
 variable (F) in
 /--
