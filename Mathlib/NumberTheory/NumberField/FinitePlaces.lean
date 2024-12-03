@@ -222,8 +222,7 @@ theorem mulSupport_Finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
 
 theorem mulSupport_Finite {x : K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
-  rcases @IsFractionRing.div_surjective (𝓞 K) _ K _ _ _ x with ⟨a, b, hb, hfrac⟩
-  subst hfrac
+  rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
   simp_all only [ne_eq, div_eq_zero_iff, NoZeroSMulDivisors.algebraMap_eq_zero_iff, not_or,
     map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
