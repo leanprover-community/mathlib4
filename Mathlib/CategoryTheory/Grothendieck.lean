@@ -28,6 +28,16 @@ Really we should treat `Cat` as a 2-category, and allow `F` to be a 2-functor.
 There is also a closely related construction starting with `G : Cᵒᵖ ⥤ Cat`,
 where morphisms consists again of `β : b ⟶ b'` and `φ : f ⟶ (F.map (op β)).obj f'`.
 
+## Notable constructions
+
+- `Grothendieck F` is the Grothendieck construction.
+- Elements of `Grothendieck F` whose base is `c : C` can be transported along `f : c ⟶ d` using
+`transport`.
+- A natural transformation `α : F ⟶ G` induces `map α : Grothendieck F ⥤ Grothendieck G`.
+- The Grothendieck construction and `map` together form a functor (`functor`) from the functor
+category `E ⥤ Cat` to the over category `Over E`.
+- A functor `G : D ⥤ C` induces `pre F G : Grothendieck (G ⋙ F) ⥤ Grothendieck F`.
+
 ## References
 
 See also `CategoryTheory.Functor.Elements` for the category of elements of functor `F : C ⥤ Type`.
@@ -248,6 +258,7 @@ if possible, and we should prefer `map_id_iso` to `map_id_eq` whenever we can. -
 def mapIdIso : map (𝟙 F) ≅ 𝟙 (Cat.of <| Grothendieck <| F) := eqToIso map_id_eq
 
 variable {H : C ⥤ Cat}
+
 theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
     map (α ≫ β) = map α ⋙ map β := by
   fapply Functor.ext
