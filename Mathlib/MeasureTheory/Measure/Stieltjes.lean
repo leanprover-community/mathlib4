@@ -540,11 +540,11 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
 
 @[simp]
 lemma measure_zero : StieltjesFunction.measure 0 = 0 :=
-  Measure.ext_of_Ioc _ _ (fun _ _ _ ↦ by simp)
+  Measure.ext_of_Ioc _ _ (by simp)
 
 @[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const c).measure = 0 :=
-  Measure.ext_of_Ioc _ _ (fun _ _ _ ↦ by simp)
+  Measure.ext_of_Ioc _ _ (by simp)
 
 @[simp]
 lemma measure_add (f g : StieltjesFunction) : (f + g).measure = f.measure + g.measure := by
