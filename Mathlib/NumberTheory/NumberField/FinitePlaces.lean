@@ -208,8 +208,7 @@ theorem mulSupport_Finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   have h : {v : HeightOneSpectrum (𝓞 K) | v.asIdeal ∣ span {x}}.Finite := by
     apply Ideal.finite_factors
     simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, h_x_nezero, not_false_eq_true]
-  have h_inj : Set.InjOn (fun w : FinitePlace K ↦ maximal_ideal w)
-      {x_1 | x_1.maximal_ideal.asIdeal ∣ span {x}} := by
+  have h_inj : Set.InjOn FinitePlace.maximal_ideal {w | w.maximal_ideal.asIdeal ∣ span {x}} := by
     apply Function.Injective.injOn
     intro w₁ w₂ h
     rw [← mk_max_ideal w₁, ← mk_max_ideal w₂]
