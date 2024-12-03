@@ -227,7 +227,7 @@ theorem mulSupport_Finite {x : K} (h_x_nezero : x ≠ 0) :
     map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
-  apply Set.Finite.subset (Set.Finite.union (mulSupport_Finite_int ha) (mulSupport_Finite_int hb))
+  apply ((mulSupport_Finite_int ha).union (mulSupport_Finite_int hb)).subset
   intro w
   contrapose!
   intro a_1
