@@ -2925,6 +2925,9 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.ByteArray
+import Mathlib.Deprecated.Cardinal.Continuum
+import Mathlib.Deprecated.Cardinal.Finite
+import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Combinator
 import Mathlib.Deprecated.Equiv
 import Mathlib.Deprecated.Group
@@ -4618,7 +4621,6 @@ import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Finsupp
 import Mathlib.SetTheory.Cardinal.Free
-import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.SetTheory.Cardinal.ToNat
