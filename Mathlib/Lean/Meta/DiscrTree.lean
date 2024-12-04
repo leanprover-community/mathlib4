@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Init
 import Lean.Meta.DiscrTree
@@ -24,21 +24,21 @@ so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
 -/
 partial def getSubexpressionMatches {α : Type}
-    (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) : MetaM (Array α) := do
+    (d : DiscrTree α) (e : Expr) : MetaM (Array α) := do
   match e with
   | .bvar _ => return #[]
   | .forallE _ _ _ _ => forallTelescope e (fun args body => do
       args.foldlM (fun acc arg => do
-          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg) config))
-        (← d.getSubexpressionMatches body config).reverse)
+          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
+        (← d.getSubexpressionMatches body).reverse)
   | .lam _ _ _ _
   | .letE _ _ _ _ _ => lambdaLetTelescope e (fun args body => do
       args.foldlM (fun acc arg => do
-          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg) config))
-        (← d.getSubexpressionMatches body config).reverse)
+          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
+        (← d.getSubexpressionMatches body).reverse)
   | _ =>
     e.foldlM (fun a f => do
-      pure <| a ++ (← d.getSubexpressionMatches f config)) (← d.getMatch e config).reverse
+      pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
 
 /--
 Check if a `keys : Array DiscTree.Key` is "specific",

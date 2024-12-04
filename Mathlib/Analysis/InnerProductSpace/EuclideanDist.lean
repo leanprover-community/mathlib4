@@ -29,7 +29,7 @@ variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup 
 
 noncomputable section
 
-open FiniteDimensional
+open Module
 
 /-- If `E` is a finite dimensional space over `ℝ`, then `toEuclidean` is a continuous `ℝ`-linear
 equivalence between `E` and the Euclidean space of the same dimension. -/

@@ -159,7 +159,7 @@ theorem mem_cons_of_mem (y : α) {a : α} : ∀ {s : Seq α}, a ∈ s → a ∈ 
   | ⟨_, _⟩ => Stream'.mem_cons_of_mem (some y)
 
 theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → a = b ∨ a ∈ s
-  | ⟨f, al⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h => by injection h
+  | ⟨_, _⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h => by injection h
 
 @[simp]
 theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
@@ -376,7 +376,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 @[coe]
 def ofList (l : List α) : Seq α :=
   ⟨List.get? l, fun {n} h => by
-    rw [List.get?_eq_none] at h ⊢
+    rw [List.get?_eq_none_iff] at h ⊢
     exact h.trans (Nat.le_succ n)⟩
 
 instance coeList : Coe (List α) (Seq α) :=
@@ -393,6 +393,9 @@ theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
   ext1 (_ | n) <;> rfl
+
+theorem ofList_injective : Function.Injective (ofList : List α → _) :=
+  fun _ _ h => List.ext_get? fun _ => congr_fun (Subtype.ext_iff.1 h) _
 
 /-- Embed an infinite stream as a sequence -/
 @[coe]
@@ -512,8 +515,6 @@ def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
   ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
     Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
 
-variable {s : Seq α} {s' : Seq β} {n : ℕ}
-
 @[simp]
 theorem get?_zipWith (f : α → β → γ) (s s' n) :
     (zipWith f s s').get? n = Option.map₂ f (s.get? n) (s'.get? n) :=
@@ -545,9 +546,13 @@ theorem get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk
 theorem enum_nil : enum (nil : Seq α) = nil :=
   rfl
 
+/-- The length of a terminating sequence. -/
+def length (s : Seq α) (h : s.Terminates) : ℕ :=
+  Nat.find h
+
 /-- Convert a sequence which is known to terminate into a list -/
 def toList (s : Seq α) (h : s.Terminates) : List α :=
-  take (Nat.find h) s
+  take (length s h) s
 
 /-- Convert a sequence which is known not to terminate into a stream -/
 def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α := fun n =>
@@ -569,6 +574,140 @@ theorem nil_append (s : Seq α) : append nil s = s := by
     rw [destruct_cons]
     dsimp
     exact ⟨rfl, s, rfl, rfl⟩
+
+@[simp]
+theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
+    (s.take k)[n]? = if n < k then s.get? n else none
+  | n, 0, s => by simp [take]
+  | n, k+1, s => by
+    rw [take]
+    cases h : destruct s with
+    | none =>
+      simp [destruct_eq_nil h]
+    | some a =>
+      match a with
+      | (x, r) =>
+        rw [destruct_eq_cons h]
+        match n with
+        | 0 => simp
+        | n+1 => simp [List.get?_cons_succ, Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
+
+theorem terminatedAt_ofList (l : List α) :
+    (ofList l).TerminatedAt l.length := by
+  simp [ofList, TerminatedAt]
+
+theorem terminates_ofList (l : List α) : (ofList l).Terminates :=
+  ⟨_, terminatedAt_ofList l⟩
+
+theorem terminatedAt_nil : TerminatedAt (nil : Seq α) 0 := rfl
+
+@[simp]
+theorem terminates_nil : Terminates (nil : Seq α) := ⟨0, rfl⟩
+
+@[simp]
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
+
+@[simp]
+theorem get?_zero_eq_none {s : Seq α} : s.get? 0 = none ↔ s = nil := by
+  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
+  ext1 n
+  exact le_stable s (Nat.zero_le _) h
+
+@[simp] theorem length_eq_zero {s : Seq α} {h : s.Terminates} :
+    s.length h = 0 ↔ s = nil := by
+  simp [length, TerminatedAt]
+
+theorem terminatedAt_zero_iff {s : Seq α} : s.TerminatedAt 0 ↔ s = nil := by
+  refine ⟨?_, ?_⟩
+  · intro h
+    ext n
+    rw [le_stable _ (Nat.zero_le _) h]
+    simp
+  · rintro rfl
+    simp [TerminatedAt]
+
+/-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
+simpler statement of the theorem where the sequence is known to terminate see `length_le_iff` -/
+theorem length_le_iff' {s : Seq α} {n : ℕ} :
+    (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
+  simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨_, k, hkn, hk⟩
+    exact le_stable s hkn hk
+  · intro hn
+    exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
+
+/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
+statement of the where the sequence is not known to terminate see `length_le_iff'` -/
+theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
+    s.length h ≤ n ↔ s.TerminatedAt n := by
+  rw [← length_le_iff']; simp [h]
+
+/-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
+simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff` -/
+theorem lt_length_iff' {s : Seq α} {n : ℕ} :
+    (∀ h : s.Terminates, n < s.length h) ↔ ∃ a, a ∈ s.get? n := by
+  simp only [Terminates, TerminatedAt, length, Nat.lt_find_iff, forall_exists_index, Option.mem_def,
+    ← Option.ne_none_iff_exists', ne_eq]
+  refine ⟨?_, ?_⟩
+  · intro h hn
+    exact h n hn n le_rfl hn
+  · intro hn _ _ k hkn hk
+    exact hn <| le_stable s hkn hk
+
+/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
+statement of the where the sequence is not known to terminate see `length_le_iff'` -/
+theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
+    n < s.length h ↔ ∃ a, a ∈ s.get? n := by
+  rw [← lt_length_iff']; simp [h]
+
+theorem length_take_of_le_length {s : Seq α} {n : ℕ}
+    (hle : ∀ h : s.Terminates, n ≤ s.length h) : (s.take n).length = n := by
+  induction n generalizing s with
+  | zero => simp [take]
+  | succ n ih =>
+      rw [take, destruct]
+      let ⟨a, ha⟩ := lt_length_iff'.1 (fun ht => lt_of_lt_of_le (Nat.succ_pos _) (hle ht))
+      simp [Option.mem_def.1 ha]
+      rw [ih]
+      intro h
+      simp only [length, tail, Nat.le_find_iff, TerminatedAt, get?_mk, Stream'.tail]
+      intro m hmn hs
+      have := lt_length_iff'.1 (fun ht => (Nat.lt_of_succ_le (hle ht)))
+      rw [le_stable s (Nat.succ_le_of_lt hmn) hs] at this
+      simp at this
+
+@[simp]
+theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = length s h := by
+  rw [toList, length_take_of_le_length]
+  intro _
+  exact le_rfl
+
+@[simp]
+theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
+  ext k
+  simp only [ofList, toList, get?_mk, Option.mem_def, getElem?_take, Nat.lt_find_iff, length,
+    Option.ite_none_right_eq_some, and_iff_right_iff_imp, TerminatedAt, List.get?_eq_getElem?]
+  intro h m hmn
+  let ⟨a, ha⟩ := ge_stable s hmn h
+  simp [ha]
+
+@[simp]
+theorem ofList_toList (s : Seq α) (h : s.Terminates) :
+    ofList (toList s h) = s := by
+  ext n; simp [ofList, List.get?_eq_getElem?]
+
+@[simp]
+theorem toList_ofList (l : List α) : toList (ofList l) (terminates_ofList l) = l :=
+  ofList_injective (by simp)
+
+@[simp]
+theorem toList_nil : toList (nil : Seq α) ⟨0, terminatedAt_zero_iff.2 rfl⟩ = [] := by
+  ext; simp [nil, toList, const]
+
+theorem getLast?_toList (s : Seq α) (h : s.Terminates) :
+    (toList s h).getLast? = s.get? (s.length h - 1) := by
+  rw [List.getLast?_eq_getElem?, getElem?_toList, length_toList]
 
 @[simp]
 theorem cons_append (a : α) (s t) : append (cons a s) t = cons a (append s t) :=
@@ -647,6 +786,24 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
 @[simp]
 theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
   | ⟨_, _⟩, _ => rfl
+
+@[simp]
+theorem terminatedAt_map_iff {f : α → β} {s : Seq α} {n : ℕ} :
+    (map f s).TerminatedAt n ↔ s.TerminatedAt n := by
+  simp [TerminatedAt]
+
+@[simp]
+theorem terminates_map_iff {f : α → β} {s : Seq α}  :
+    (map f s).Terminates ↔ s.Terminates := by
+  simp [Terminates]
+
+@[simp]
+theorem length_map {s : Seq α} {f : α → β} (h : (s.map f).Terminates) :
+    (s.map f).length h = s.length (terminates_map_iff.1 h) := by
+  rw [length]
+  congr
+  ext
+  simp
 
 instance : Functor Seq where map := @map
 
@@ -912,7 +1069,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  -- porting note (#10745): was `simp [bind, map]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]

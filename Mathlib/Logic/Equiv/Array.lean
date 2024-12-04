@@ -42,7 +42,7 @@ namespace Equiv
 
 /-- The natural equivalence between arrays and lists. -/
 def arrayEquivList (α : Type*) : Array α ≃ List α :=
-  ⟨Array.data, Array.mk, fun _ => rfl, fun _ => rfl⟩
+  ⟨Array.toList, Array.mk, fun _ => rfl, fun _ => rfl⟩
 
 end Equiv
 

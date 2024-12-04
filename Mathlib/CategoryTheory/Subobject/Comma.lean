@@ -94,7 +94,7 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
     Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
   invFun P := liftSubobject P.val P.prop.choose_spec
-  left_inv P := lift_projectSubobject _ _
+  left_inv _ := lift_projectSubobject _ _
   right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
       Subobject.mk_arrow, Subtype.coe_eta])
   map_rel_iff' := by
@@ -107,7 +107,7 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
   CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 
@@ -199,7 +199,7 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
     Subobject (op A) ≃o { P : Subobject (op A.left) // ∃ q, S.map P.arrow.unop ≫ q = A.hom } where
   toFun P := ⟨projectQuotient P, projectQuotient_factors P⟩
   invFun P := liftQuotient P.val P.prop.choose_spec
-  left_inv P := lift_projectQuotient _ _
+  left_inv _ := lift_projectQuotient _ _
   right_inv P := Subtype.ext (by simp only [liftQuotient, Quiver.Hom.unop_op, homMk_left,
       Quiver.Hom.op_unop, projectQuotient_mk, Subobject.mk_arrow])
   map_rel_iff' := by

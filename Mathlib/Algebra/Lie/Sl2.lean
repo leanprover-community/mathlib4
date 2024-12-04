@@ -148,7 +148,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
     (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
-      Module.End.HasEigenvector, Module.End.mem_eigenspace_iff])).finite
+      Module.End.hasEigenvector_iff, Module.End.mem_eigenspace_iff])).finite
 
 lemma pow_toEnd_f_ne_zero_of_eq_nat
     [CharZero R] [NoZeroSMulDivisors R M]
@@ -174,7 +174,7 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat
       lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
       lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }
   obtain ⟨m, hm⟩ := this.exists_nat
-  have : (n : ℤ) < m + 2 * (n + 1) := by linarith
+  have : (n : ℤ) < m + 2 * (n + 1) := by omega
   exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith

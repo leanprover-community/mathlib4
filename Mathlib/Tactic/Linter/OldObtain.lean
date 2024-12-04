@@ -5,6 +5,9 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # The `oldObtain` linter, against stream-of-conciousness `obtain`

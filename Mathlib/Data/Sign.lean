@@ -5,7 +5,9 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Fintype.BigOperators
+
 /-!
 # Sign function
 
@@ -13,7 +15,7 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
--- Porting note (#11081): cannot automatically derive Fintype, added manually
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive Fintype, added manually
 /-- The type of signs. -/
 inductive SignType
   | zero
@@ -120,7 +122,13 @@ instance : BoundedOrder SignType where
   top := 1
   le_top := LE.of_pos
   bot := -1
-  bot_le := LE.of_neg
+  bot_le :=
+    #adaptation_note
+    /--
+    Added `by exact` after https://github.com/leanprover/lean4/pull/6053,
+    but don't understand why it was needed.
+    -/
+    by exact LE.of_neg
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
@@ -373,7 +381,6 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 
@@ -391,7 +398,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {a b : α}
+variable [LinearOrderedRing α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -430,7 +437,7 @@ section AddGroup
 
 variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 
-theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign (-a) = -sign a := by
+theorem Left.sign_neg [AddLeftStrictMono α] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
@@ -438,7 +445,7 @@ theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign
   · simp
   · simp
 
-theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)] (a : α) :
+theorem Right.sign_neg [AddRightStrictMono α] (a : α) :
     sign (-a) = -sign a := by
   simp_rw [sign_apply, Right.neg_pos_iff, Right.neg_neg_iff]
   split_ifs with h h'
@@ -484,7 +491,7 @@ because lean4 infers α to live in a different universe u_2 otherwise -/
 private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
-        (t.card = ∑ a ∈ s, (f a).natAbs) ∧
+        (#t = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
   refine
     ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,

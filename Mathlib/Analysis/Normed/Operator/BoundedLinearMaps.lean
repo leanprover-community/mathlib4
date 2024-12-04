@@ -59,14 +59,14 @@ open Filter (Tendsto)
 
 open Metric ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
-structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
+structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
   IsLinearMap 𝕜 f : Prop where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
 
@@ -145,7 +145,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   let ⟨hf, M, _, hM⟩ := hf
   tendsto_iff_norm_sub_tendsto_zero.2 <|
-    squeeze_zero (fun e => norm_nonneg _)
+    squeeze_zero (fun _ => norm_nonneg _)
       (fun e =>
         calc
           ‖f e - f x‖ = ‖hf.mk' f (e - x)‖ := by rw [(hf.mk' _).map_sub e x]; rfl
@@ -186,43 +186,26 @@ variable {ι : Type*} [Fintype ι]
 
 /-- Taking the cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
-theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
-      p.1.prod p.2 where
-  map_add p₁ p₂ := by ext : 1; rfl
-  map_smul c p := by ext : 1; rfl
-  bound := by
-    refine ⟨1, zero_lt_one, fun p ↦ ?_⟩
-    rw [one_mul]
-    apply ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) _
-    intro m
-    rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
-    constructor
-    · exact (p.1.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p) <| by positivity)
-    · exact (p.2.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p) <| by positivity)
+      p.1.prod p.2 :=
+  (ContinuousMultilinearMap.prodL 𝕜 E F G).toContinuousLinearEquiv
+    |>.toContinuousLinearMap.isBoundedLinearMap
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/6024
+we needed to add the named arguments `(ι := ι) (G := F)`
+to `ContinuousMultilinearMap.compContinuousLinearMapL`.
+-/
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
 continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operation. -/
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
-      f.compContinuousLinearMap fun _ => g := by
-  refine
-    IsLinearMap.with_bound
-      ⟨fun f₁ f₂ => by ext; rfl,
-        fun c f => by ext; rfl⟩
-      (‖g‖ ^ Fintype.card ι) fun f => ?_
-  apply ContinuousMultilinearMap.opNorm_le_bound _ _ _
-  · apply_rules [mul_nonneg, pow_nonneg, norm_nonneg]
-  intro m
-  calc
-    ‖f (g ∘ m)‖ ≤ ‖f‖ * ∏ i, ‖g (m i)‖ := f.le_opNorm _
-    _ ≤ ‖f‖ * ∏ i, ‖g‖ * ‖m i‖ := by
-      apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
-      exact Finset.prod_le_prod (fun i _ => norm_nonneg _) fun i _ => g.le_opNorm _
-    _ = ‖g‖ ^ Fintype.card ι * ‖f‖ * ∏ i, ‖m i‖ := by
-      simp only [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ]
-      ring
+      f.compContinuousLinearMap fun _ => g :=
+  (ContinuousMultilinearMap.compContinuousLinearMapL (ι := ι) (G := F) (fun _ ↦ g))
+    |>.isBoundedLinearMap
 
 end
 
@@ -244,7 +227,7 @@ variable {R : Type*}
 variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
 variable {M : Type*} [TopologicalSpace M]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
+variable {G' : Type*} [SeminormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
 variable [SMulCommClass 𝕜₂ 𝕜' G']
 
 section Semiring
@@ -304,7 +287,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
         (f.le_opNorm₂ x y).trans <| by
           apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/
 def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f) :
@@ -374,7 +357,7 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 
   (h.toContinuousLinearMap x).isBoundedLinearMap
 
 theorem isBoundedBilinearMap_smul {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × E => p.1 • p.2 :=
   (lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E).isBoundedBilinearMap
 
@@ -436,7 +419,7 @@ variable (𝕜)
 
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormedRing 𝕜']
+theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [SeminormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
@@ -471,9 +454,16 @@ theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜]
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prod hg)
 
+end
+
 namespace ContinuousLinearEquiv
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+
 open Set
+open scoped Topology
 
 /-!
 ### The set of continuous linear equivalences between two Banach spaces is open
