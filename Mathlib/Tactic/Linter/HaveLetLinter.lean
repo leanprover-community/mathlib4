@@ -93,11 +93,10 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     unless isHave? stx do return #[]
     let mctx := i.mctxAfter
     let mvdecls := i.goalsAfter.filterMap (mctx.decls.find? ·)
-    -- we extract the `MetavarDecl` with largest index after a `have`, since this one
-    -- holds information about the metavariable where `have` introduces the new hypothesis.
-    let largestIdx := mvdecls.toArray.qsort (·.index > ·.index)
-    -- the relevant `LocalContext`
-    let lc := (largestIdx.getD 0 default).lctx
+    -- We extract the `MetavarDecl` with largest index after a `have`, since this one
+    -- holds information about the metavariable where `have` introduces the new hypothesis,
+    -- and determine the relevant `LocalContext`.
+    let lc := mvdecls.toArray.getMax? (·.index < ·.index) |>.getD default |>.lctx
     -- we also accumulate all `fvarId`s from all local contexts before the use of `have`
     -- so that we can then isolate the `fvarId`s that are created by `have`
     let oldMvdecls := i.goalsBefore.filterMap (mctx.decls.find? ·)
