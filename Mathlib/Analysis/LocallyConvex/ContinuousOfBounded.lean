@@ -99,7 +99,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     refine bE.1.to_hasBasis ?_ ?_
     · intro n _
       use n + 1
-      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
+      simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and]
       -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
       refine _root_.trans ?_ h
@@ -109,7 +109,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       refine (bE1 (n + 1)).2.smul_mem ?_ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos
       rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, RCLike.norm_natCast, Nat.cast_add,
-        Nat.cast_one, inv_le h' zero_lt_one]
+        Nat.cast_one, inv_le_comm₀ h' zero_lt_one]
       simp
     intro n hn
     -- The converse direction follows from continuity of the scalar multiplication

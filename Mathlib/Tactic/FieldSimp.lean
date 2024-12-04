@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, David Renshaw
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.DischargerAsTactic
@@ -61,26 +61,27 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     if let some pf := pf? then return some pf
 
     -- Discharge strategy 4: Use the simplifier
-    let ctx ← readThe Simp.Context
-    let stats : Simp.Stats := { (← get) with }
+    Simp.withIncDischargeDepth do
+      let ctx ← readThe Simp.Context
+      let stats : Simp.Stats := { (← get) with }
 
-    -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
-    -- does not explicitly call `simp` recursively like this. It's unclear to me
-    -- whether this is because
-    --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
-    --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
-    --   3) some other reason?
-    let ⟨simpResult, stats'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
-        discharge stats
-    set { (← get) with usedTheorems := stats'.usedTheorems, diag := stats'.diag }
-    if simpResult.expr.isConstOf ``True then
-      try
-        return some (← mkOfEqTrue (← simpResult.getProof))
-      catch _ =>
+      -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
+      -- does not explicitly call `simp` recursively like this. It's unclear to me
+      -- whether this is because
+      --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
+      --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
+      --   3) some other reason?
+      let ⟨simpResult, stats'⟩ ←
+        simp prop ctx #[(← Simp.getSimprocs)]
+          discharge stats
+      set { (← get) with usedTheorems := stats'.usedTheorems, diag := stats'.diag }
+      if simpResult.expr.isConstOf ``True then
+        try
+          return some (← mkOfEqTrue (← simpResult.getProof))
+        catch _ =>
+          return none
+      else
         return none
-    else
-      return none
 
 @[inherit_doc discharge]
 elab "field_simp_discharge" : tactic => wrapSimpDischarger Mathlib.Tactic.FieldSimp.discharge
@@ -145,13 +146,13 @@ that have numerals in denominators.
 The tactics are not related: `cancel_denoms` will only handle numeric denominators, and will try to
 entirely remove (numeric) division from the expression by multiplying by a factor.
 -/
-syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
+syntax (name := fieldSimp) "field_simp" optConfig (discharger)? (&" only")?
   (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
-| `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
+| `(tactic| field_simp $cfg:optConfig $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
-  let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
+  let cfg ← elabSimpConfig cfg .simp
   -- The `field_simp` discharger relies on recursively calling the discharger.
   -- Prior to https://github.com/leanprover/lean4/pull/3523,
   -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
@@ -175,11 +176,10 @@ elab_rules : tactic
   let some ext ← getSimpExtension? `field_simps | throwError "field_simps not found"
   let thms ← ext.getTheorems
 
-  let ctx : Simp.Context := {
-     simpTheorems := #[thms, thms0]
-     congrTheorems := ← getSimpCongrTheorems
-     config := cfg
-  }
+  let ctx ← Simp.mkContext cfg
+    (simpTheorems := #[thms, thms0])
+    (congrTheorems := ← getSimpCongrTheorems)
+
   let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
   if r.starArg then
     r ← do
@@ -189,7 +189,7 @@ elab_rules : tactic
       for h in hs do
         unless simpTheorems.isErased (.fvar h) do
           simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-      let ctx := { ctx with simpTheorems }
+      let ctx := ctx.setSimpTheorems simpTheorems
       pure { ctx, simprocs := {} }
 
   _ ← simpLocation r.ctx {} dis loc

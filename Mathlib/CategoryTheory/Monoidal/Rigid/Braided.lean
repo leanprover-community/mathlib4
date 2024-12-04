@@ -25,13 +25,13 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
   /- Whitney trick transcribed: https://mathoverflow.net/a/162729/493261 -/
   calc
     _ = 𝟙 X ⊗≫ X ◁ η_ X Y ⊗≫ (X ◁ (β_ Y X).inv ⊗≫ (β_ X Y).hom ▷ X) ⊗≫ ε_ X Y ▷ X ⊗≫ 𝟙 X := by
-      coherence
+      monoidal
     _ = 𝟙 X ⊗≫ X ◁ η_ X Y ⊗≫ (𝟙 (X ⊗ X ⊗ Y) ⊗≫ (β_ X X).hom ▷ Y ⊗≫ X ◁ (β_ X Y).hom
           ⊗≫ (β_ Y X).inv ▷ X ⊗≫ Y ◁ (β_ X X).inv ⊗≫ 𝟙 ((Y ⊗ X) ⊗ X)) ⊗≫ ε_ X Y ▷ X ⊗≫ 𝟙 X := by
       congr 3
-      simp only [monoidalComp, MonoidalCoherence.assoc'_hom, MonoidalCoherence.whiskerRight_hom,
-        MonoidalCoherence.refl_hom, whiskerRight_tensor, id_whiskerRight, id_comp, Iso.inv_hom_id,
-        MonoidalCoherence.assoc_hom, comp_id]
+      simp only [monoidalComp, MonoidalCoherence.assoc'_iso, MonoidalCoherence.whiskerRight_iso,
+        MonoidalCoherence.refl_iso, whiskerRightIso_refl, Iso.refl_trans, Iso.symm_hom,
+        MonoidalCoherence.assoc_iso, Iso.trans_refl, comp_id, id_comp]
       rw [← IsIso.eq_inv_comp]
       repeat rw [← assoc]
       iterate 5 rw [← IsIso.comp_inv_eq]
@@ -49,7 +49,7 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
   rw [Iso.eq_comp_inv, ← Iso.inv_comp_eq_id]
   calc
     _ = 𝟙 Y ⊗≫ η_ X Y ▷ Y ⊗≫ ((β_ Y X).inv ▷ Y ⊗≫ Y ◁ (β_ X Y).hom) ≫ Y ◁ ε_ X Y ⊗≫ 𝟙 Y := by
-      coherence
+      monoidal
     _ = 𝟙 Y ⊗≫ η_ X Y ▷ Y ⊗≫ (𝟙 ((X ⊗ Y) ⊗ Y) ⊗≫ X ◁ (β_ Y Y).hom ⊗≫ (β_ X Y).hom ▷ Y
         ⊗≫ Y ◁ (β_ Y X).inv ⊗≫ (β_ Y Y).inv ▷ X ⊗≫ 𝟙 (Y ⊗ Y ⊗ X)) ⊗≫ Y ◁ ε_ X Y ⊗≫ 𝟙 Y := by
       congr 3

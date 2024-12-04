@@ -52,8 +52,6 @@ noncomputable section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 variable {ε : ℝ}
 
 open Filter Metric Set
@@ -144,7 +142,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     simp only [dist_le_zero] at this
     rw [this]
   have If' : (0 : ℝ) < f'symm.nnnorm := by rw [← inv_pos]; exact (NNReal.coe_nonneg _).trans_lt hc
-  have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff If'] at hc
+  have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff₀ If'] at hc
   have Jf' : (f'symm.nnnorm : ℝ) ≠ 0 := ne_of_gt If'
   have Jcf' : (1 : ℝ) - c * f'symm.nnnorm ≠ 0 := by apply ne_of_gt; linarith
   /- We have to show that `y` can be written as `f x` for some `x ∈ closedBall b ε`.
@@ -257,7 +255,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
-    simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, tendsto_principal]
+    simp only [nhdsWithin, tendsto_inf, hx, true_and, tendsto_principal]
     exact Eventually.of_forall fun n => C n _ (D n).2
   have T1 : Tendsto (f ∘ u) atTop (𝓝 (f x)) :=
     (hf.continuousOn.mono hε x xmem).tendsto.comp hx'
@@ -414,7 +412,7 @@ theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[�
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
   refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
-  rw [toPartialHomeomorph_target, image_univ, range_iff_surjective]
+  rw [toPartialHomeomorph_target, image_univ, range_eq_univ]
   exact hf.surjective hc
 
 end

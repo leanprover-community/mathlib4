@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -174,7 +174,6 @@ lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
 
 variable [CompleteLattice α]
 
--- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 

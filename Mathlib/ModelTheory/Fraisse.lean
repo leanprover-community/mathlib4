@@ -62,7 +62,7 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 
 ## TODO
 
-- Show existence and uniqueness of Fraïssé limits
+- Show existence of Fraïssé limits
 
 -/
 
@@ -351,7 +351,7 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
   erw [Substructure.coe_inclusion, Substructure.coe_inclusion]
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Set.coe_inclusion,
     Embedding.equivRange_apply, hgn]
-  -- This used to be `simp only [...]` before leanprover/lean4#2644
+  -- This used to be `simp only [...]` before https://github.com/leanprover/lean4/pull/2644
   erw [Embedding.comp_apply, Equiv.coe_toEmbedding,
     Embedding.equivRange_apply]
   simp
