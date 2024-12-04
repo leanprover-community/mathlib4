@@ -92,7 +92,11 @@ structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of dual vectors, called coroots. -/
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLin (root i) (coroot i) = 2
-  /-- A parametrized family of permutations, induced by reflection. -/
+  /-- A parametrized family of permutations, induced by reflections. This corresponds to the
+      classical requirement that the symmetry attached to each root (later defined in
+      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+      formalize this stability by fixing the image of the roots through each reflection (whence the
+      permutation); and similarly for coroots. -/
   reflection_perm : ι → (ι ≃ ι)
   reflection_perm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
@@ -359,6 +363,12 @@ lemma isCrystallographic_iff :
   · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
   · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
 
+variable {P} in
+lemma IsCrystallographic.flip (h : P.IsCrystallographic) :
+    P.flip.IsCrystallographic := by
+  rw [isCrystallographic_iff, forall_comm]
+  exact P.isCrystallographic_iff.mp h
+
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
 def IsReduced : Prop :=
@@ -373,6 +383,12 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
   · by_cases h' : i = j
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
+
+/-- The linear span of roots. -/
+abbrev rootSpan := span R (range P.root)
+
+/-- The linear span of coroots. -/
+abbrev corootSpan := span R (range P.coroot)
 
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the weight space generated
 by reflections in roots. -/
@@ -524,6 +540,12 @@ def coxeterWeight : R := pairing P i j * pairing P j i
 
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
+
+lemma exists_int_eq_coxeterWeight (h : P.IsCrystallographic) (i j : ι) :
+    ∃ z : ℤ, P.coxeterWeight i j = z := by
+  obtain ⟨a, ha⟩ := P.isCrystallographic_iff.mp h i j
+  obtain ⟨b, hb⟩ := P.isCrystallographic_iff.mp h j i
+  exact ⟨a * b, by simp [coxeterWeight, ha, hb]⟩
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
@@ -150,6 +151,9 @@ theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a 
   rw [abs_mul_abs_self]
   simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
     neg_add_rev, neg_neg, add_assoc]
+
+lemma abs_unit_intCast (a : ℤˣ) : |((a : ℤ) : α)| = 1 := by
+  cases Int.units_eq_one_or a <;> simp_all
 
 end LinearOrderedCommRing
 

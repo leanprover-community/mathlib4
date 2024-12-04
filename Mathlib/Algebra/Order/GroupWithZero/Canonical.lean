@@ -85,7 +85,7 @@ instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
     top := (0 : α)
-    top_add' := fun a ↦ zero_mul (Additive.toMul a)
+    top_add' := fun a ↦ zero_mul a.toMul
     le_top := fun _ ↦ zero_le' }
 
 variable [NoZeroDivisors α]
@@ -195,7 +195,7 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := inv_zero (G₀ := α)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0) }
 
 @[deprecated pow_lt_pow_right₀ (since := "2024-11-18")]
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := pow_lt_pow_right₀ ha n.lt_succ_self
@@ -219,7 +219,7 @@ theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
 
 @[simp]
 theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual (Multiplicative.toAdd x) = ⊤ ↔ x = 0 := Iff.rfl
+    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
 
 @[simp]
 theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
@@ -227,7 +227,7 @@ theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
 
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
-    OrderDual.ofDual (Multiplicative.toAdd (0 : Multiplicative αᵒᵈ)) = ⊤ := rfl
+    OrderDual.ofDual (0 : Multiplicative αᵒᵈ).toAdd = ⊤ := rfl
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=

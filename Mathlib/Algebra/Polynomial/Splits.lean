@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Data.List.Prime
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -77,7 +78,7 @@ theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits i f :=
   else by
     push_neg at hif
     rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.succ_coe, Nat.succ_eq_succ] at hif
-    exact splits_of_map_degree_eq_one i (le_antisymm ((degree_map_le i _).trans hf) hif)
+    exact splits_of_map_degree_eq_one i ((degree_map_le.trans hf).antisymm hif)
 
 theorem splits_of_degree_eq_one {f : K[X]} (hf : degree f = 1) : Splits i f :=
   splits_of_degree_le_one i hf.le
@@ -189,7 +190,7 @@ but its conditions are easier to check.
 -/
 theorem Splits.comp_of_degree_le_one {f : K[X]} {p : K[X]} (hd : p.degree ≤ 1)
     (h : f.Splits i) : (f.comp p).Splits i :=
-  Splits.comp_of_map_degree_le_one ((degree_map_le i _).trans hd) h
+  Splits.comp_of_map_degree_le_one (degree_map_le.trans hd) h
 
 theorem Splits.comp_X_sub_C (a : K) {f : K[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i :=
