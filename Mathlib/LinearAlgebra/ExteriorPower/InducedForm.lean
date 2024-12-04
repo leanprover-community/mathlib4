@@ -92,9 +92,4 @@ theorem bilin_symm_ιMulti (h : B.IsSymm) : ∀ v w : Fin k → M, ⟪(ιMulti R
   rw [← h (v j) (w i)]
   simp only [RingHom.id_apply]
 
--- I think this should go into the HodgeStar file
-theorem bilin_symm_of_symm (h : B.IsSymm) : (exteriorPower.BilinForm k B).IsSymm := by
-  intro v w
-  sorry
-
 end exteriorPower
