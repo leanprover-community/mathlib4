@@ -527,29 +527,29 @@ end Int
 
 section pnat
 
-theorem pnat_summable_iff_summable_add_one {α : Type*} [TopologicalSpace α] [AddCommMonoid α]
-    {f : ℕ → α} : (Summable fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
-  rw [← Equiv.summable_iff _root_.Equiv.pnatEquivNat]
+@[to_additive pnat_summable_iff_summable_add_one]
+theorem pnat_multipliable_iff_multipliable_add_one {α : Type*} [TopologicalSpace α] [CommMonoid α]
+    {f : ℕ → α} : (Multipliable fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) := by
+  rw [← Equiv.multipliable_iff _root_.Equiv.pnatEquivNat]
   constructor
-  repeat {refine fun hf => by apply Summable.congr hf (by refine fun b => by simp)}
+  repeat {refine fun hf => by apply Multipliable.congr hf (by refine fun b => by simp)}
 
-theorem tsum_pnat_eq_tsum_add_one {α : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
-    (f : ℕ → α) : ∑' n : ℕ+, f n = ∑' n, f (n + 1) := by
-  by_cases hf2 : Summable fun n : ℕ+ => f n
-  · have hpos : HasSum (fun n : ℕ => f (n + 1)) (∑' n : ℕ+, f n) := by
-      rw [← _root_.Equiv.pnatEquivNat.hasSum_iff]
-      simp_rw [Equiv.pnatEquivNat] at *
-      simp only [Equiv.coe_fn_mk] at *
-      have hf3 : Summable ((fun n : ℕ => f (n + 1)) ∘ PNat.natPred) := by
-        apply Summable.congr hf2 (by refine fun b => by simp)
-      rw [Summable.hasSum_iff hf3]
+@[to_additive tsum_pnat_eq_tsum_add_one]
+theorem tprod_pnat_eq_prod_add_one {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
+    (f : ℕ → α) : ∏' n : ℕ+, f n = ∏' n, f (n + 1) := by
+  by_cases hf2 : Multipliable fun n : ℕ+ => f n
+  · have hpos : HasProd (fun n : ℕ => f (n + 1)) (∏' n : ℕ+, f n) := by
+      rw [← _root_.Equiv.pnatEquivNat.hasProd_iff]
+      simp_rw [Equiv.pnatEquivNat, Equiv.coe_fn_mk] at *
+      have hf3 : Multipliable ((fun n : ℕ => f (n + 1)) ∘ PNat.natPred) := by
+        apply Multipliable.congr hf2 (by refine fun b => by simp)
+      rw [Multipliable.hasProd_iff hf3]
       congr
       funext
-      simp only [comp_apply, PNat.natPred_add_one]
-    apply symm
-    · apply hpos.tsum_eq
-  · rw [tsum_eq_zero_of_not_summable hf2]
-    rw [pnat_summable_iff_summable_add_one] at hf2
-    rw [tsum_eq_zero_of_not_summable hf2]
+      rw [comp_apply, PNat.natPred_add_one]
+    exact symm (HasProd.tprod_eq hpos)
+  · rw [tprod_eq_one_of_not_multipliable hf2]
+    rw [pnat_multipliable_iff_multipliable_add_one] at hf2
+    rw [tprod_eq_one_of_not_multipliable hf2]
 
 end pnat
