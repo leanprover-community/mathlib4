@@ -2,6 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Triangulated.AdjointCommShift
+import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Triangulated.UliftLemmas
 
 noncomputable section
@@ -182,26 +183,18 @@ def isTriangulated_of_left_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjun
     (G.mapTriangle.obj T) (Iso.refl _) (Iso.refl _) (asIso φ) (by simp) (by simp [hφ₁])
     (by simp [hφ₂])).symm
 
-local instance : HasShift Cᵒᵖ ℤ := Pretriangulated.Opposite.instHasShiftOppositeInt C
+open CategoryTheory.Pretriangulated.Opposite
 
-local instance : HasShift Dᵒᵖ ℤ := Pretriangulated.Opposite.instHasShiftOppositeInt D
+open CategoryTheory.Pretriangulated.Functor
 
 def isTriangulated_of_right_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjunction_compat ℤ adj]
     [G.IsTriangulated] : F.IsTriangulated := by
-  set G' : OppositeShift D ℤ ⥤ OppositeShift C ℤ := G.op
-  set F' : OppositeShift C ℤ ⥤ OppositeShift D ℤ := F.op
-  set commF' : CommShift F' ℤ := CommShift.op F ℤ inferInstance
-  set commG' : CommShift G' ℤ := CommShift.op G ℤ inferInstance
-  set adj' : G' ⊣ F' := adj.opAdjointOpOfAdjoint
-  apply Functor.IsTriangulated.mk
-  intro T dT
-  suffices dT' : F'.mapTriangle.obj ((TriangleOpEquivalence.functor C).obj (op T)) ∈
-      Opposite.distinguishedTriangles C by
-    rw [Opposite.mem_distinguishedTriangles_iff] at dT'
-    set e : unop ((triangleOpEquivalence C).inverse.obj ((TriangleOpEquivalence.functor C).obj
-      (op T))) ≅ T := ((triangleOpEquivalence C).unitIso.app (op T)).unop
-    have := (distinguished_iff_of_iso e).mp dT'
-  sorry
+  set adjop : G.op ⊣ F.op := adj.opAdjointOpOfAdjoint
+  have : CommShift.adjunction_compat ℤ adjop := sorry
+  suffices h : F.op.IsTriangulated by
+    have := h
+    exact isTriangulated_of_op_triangulated F
+  exact isTriangulated_of_left_adjoint_triangulated adjop
 
 end Adjunction
 

@@ -371,6 +371,27 @@ class adjunction_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A] where
     (((adj.comp (shiftEquiv' D a a' h).symm.toAdjunction).homEquiv _ _) u) ≫
     (CommShift.iso a).hom.app Y
 
+def adjunction_compat_op (adj : F ⊣ G) [CommShift F A] [CommShift G A]
+    [CommShift.adjunction_compat A adj] :
+    @CommShift.adjunction_compat (OppositeShift D A) (OppositeShift C A) _ _ G.op F.op A _ _ _
+    adj.opAdjointOpOfAdjoint (CommShift.op G A inferInstance) (CommShift.op F A inferInstance) := by
+  refine @CommShift.adjunction_compat.mk (OppositeShift D A) (OppositeShift C A) _ _ G.op F.op A _ _
+    _ adj.opAdjointOpOfAdjoint (CommShift.op G A inferInstance) (CommShift.op F A inferInstance) ?_
+  intro a a' h X Y u
+  rw [homEquiv_apply, homEquiv_apply]
+  simp [shiftEquiv'_symm_unit, opEquiv]
+  conv_lhs => congr; rfl; congr
+              change ((shiftFunctor D a).map (adj.counit.app ((unop X)⟦a'⟧))).op; rfl
+              change ((shiftFunctor D a).map
+                (F.map (((NatIso.op (CommShift.iso a')).symm).hom.app X ≫ u).unop)).op
+  conv_rhs => congr; rfl; congr; rfl
+              change (F.map ((shiftFunctor C a).map u.unop)).op ≫
+                ((NatIso.op (CommShift.iso a)).symm).hom.app Y
+  simp
+  set v : Y.unop ⟶ (G.obj X.unop)⟦a'⟧ := u.unop
+
+
+
 variable {A}
 
 lemma compat_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adjunction_compat A adj]

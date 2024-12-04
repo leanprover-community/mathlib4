@@ -521,6 +521,21 @@ noncomputable scoped instance [F.IsTriangulated] : F.op.IsTriangulated where
     erw [← distinguished_iff_of_iso ((triangleOpEquivalence_inverse_naturality F).app T).unop]
     exact F.map_distinguished _ ((mem_distTriang_op_iff _).mp dT)
 
+noncomputable def isTriangulated_of_op_triangulated [F.op.IsTriangulated] : F.IsTriangulated where
+  map_distinguished T dT := by
+    have := distinguished_iff_of_iso ((triangleOpEquivalence D).unitIso.app
+      (Opposite.op (F.mapTriangle.obj T))).unop
+    rw [Functor.id_obj, Opposite.unop_op (F.mapTriangle.obj T)] at this
+    rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff]
+    change (F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor).obj (Opposite.op T)
+      ∈ distinguishedTriangles
+    rw [distinguished_iff_of_iso ((triangleOpEquivalence_functor_naturality F).app (Opposite.op T))]
+    apply F.op.map_distinguished
+    have := distinguished_iff_of_iso ((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop
+    rw [Functor.id_obj, Opposite.unop_op T] at this
+    rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff] at dT
+    exact dT
+
 end Functor
 
 end Pretriangulated
