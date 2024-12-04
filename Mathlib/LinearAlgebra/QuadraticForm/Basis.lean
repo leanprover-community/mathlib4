@@ -160,22 +160,6 @@ lemma symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower [LinearOrder ι₁] [Li
   · intro h
     aesop
 
-lemma symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower2 [LinearOrder ι₁] [LinearOrder ι₂]
-    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔
-    ((symOffDiagUpper p) ∨ (symOffDiagLower p)) ∧
-      ¬ ((symOffDiagUpper p) ∧ (symOffDiagLower p)) := by
-  rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower, xor_iff_or_and_not_and]
-
-lemma symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
-    (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ↔ (symOffDiagUpper p) ∨ (symOffDiagLower p) := by
-  constructor
-  · intro h
-    exact ((symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower2 p).mp h).1
-  · intro h
-    cases' h with h1 h2
-    · apply foo _ h1
-    · apply foo2 _ h2
-
 lemma foo3 (p : Sym2 (ι₁ × ι₂)) (h : symOffDiagXor p) :
     ¬ p.IsDiag := by
   induction' p with i  j
@@ -218,22 +202,6 @@ lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag (p : Sym2 (ι₁ × ι₂)) :
       aesop
   · intro h
     aesop
-
-lemma not_IsDiag_iff_symOffDiagXor_xor_symOffDiag2
-    (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔
-    ((symOffDiagXor p) ∨ (symOffDiag p)) ∧
-      ¬ ((symOffDiagXor p) ∧ (symOffDiag p)) := by
-  rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, xor_iff_or_and_not_and]
-
-lemma not_IsDiag_iff_symOffDiagXor_or_symOffDiag
-    (p : Sym2 (ι₁ × ι₂)) : ¬ p.IsDiag ↔ (symOffDiagXor p) ∨ (symOffDiag p) := by
-  constructor
-  · intro h
-    apply ((not_IsDiag_iff_symOffDiagXor_xor_symOffDiag2 p).mp h).1
-  · intro h
-    cases' h with h1 h2
-    · apply foo3 _ h1
-    · apply foo4 _ h2
 
 lemma not_symOffDiagXor_and_symOffDiag (p : Sym2 (ι₁ × ι₂)) :
     ¬((symOffDiagXor p) ∧ (symOffDiag p)) := by
