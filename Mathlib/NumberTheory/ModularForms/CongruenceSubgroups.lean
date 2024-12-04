@@ -64,6 +64,9 @@ theorem Gamma_one_top : Gamma 1 = ⊤ := by
   ext
   simp [eq_iff_true_of_subsingleton]
 
+lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
+  simp only [Gamma_one_top, Subgroup.mem_top]
+
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
   ext
   simp only [Gamma_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply, Int.cast_id,

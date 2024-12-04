@@ -368,8 +368,9 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
-    rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl, contDiff_succ_iff_deriv,
-      deriv_rpow_const' h1]
+    rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
+      contDiff_succ_iff_deriv, deriv_rpow_const' h1]
+    simp only [WithTop.natCast_ne_top, analyticOn_univ, IsEmpty.forall_iff, true_and]
     exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
@@ -394,7 +395,7 @@ open Real
 section fderiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
-  {x : E} {s : Set E} {c p : ℝ} {n : ℕ∞}
+  {x : E} {s : Set E} {c p : ℝ} {n : WithTop ℕ∞}
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   added `by exact` to deal with unification issues. -/
