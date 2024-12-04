@@ -541,7 +541,7 @@ search. -/
 instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
 
-@[deprecated (since := "2024-11-24")]
+@[deprecated norm_neg (since := "2024-11-24")]
 theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ := norm_neg f
 
 @[deprecated (since := "2024-02-02")] alias op_norm_neg := norm_neg
@@ -672,8 +672,8 @@ def prodL :
 @[simps! apply symm_apply]
 def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] :
-    (∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) ≃ₗᵢ[𝕜]
-      ContinuousMultilinearMap 𝕜 E (∀ i, E' i) where
+    (Π i', ContinuousMultilinearMap 𝕜 E (E' i'))
+      ≃ₗᵢ[𝕜] (ContinuousMultilinearMap 𝕜 E (Π i, E' i)) where
   toLinearEquiv := piLinearEquiv
   norm_map' := opNorm_pi
 

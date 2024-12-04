@@ -241,10 +241,10 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
       replace ha := IsLocalHom.map_nonunit
-        (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
+        (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _))
+        ((stalkIso R ((PrimeSpectrum.comap f) p)).hom a) ha
       convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f p)).inv ha
-      erw [← comp_apply, show stalkToFiberRingHom R _ = (stalkIso _ _).hom from rfl,
-        Iso.hom_inv_id, id_apply]
+      erw [← comp_apply, Iso.hom_inv_id, id_apply]
 
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
