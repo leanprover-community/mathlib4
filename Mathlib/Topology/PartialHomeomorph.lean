@@ -873,7 +873,7 @@ theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
 
 @[simp, mfld_simps]
 theorem prod_coe (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
-    (eX.prod eY : X × Y → X' × Y') = fun p => (eX p.1, eY p.2) :=
+    (eX.prod eY : X × Y → X' × Y') = Prod.map eX eY :=
   rfl
 
 @[simp]
