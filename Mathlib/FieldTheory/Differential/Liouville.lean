@@ -16,7 +16,7 @@ A proof of Liouville's theorem. Follows
 
 ## Liouville field extension
 
-This file defines Liouville field extensions, which are field extensions which satisfy
+This file defines Liouville field extensions, which are differential field extensions which satisfy
 a slight generalization of Liouville's theorem. Note that this definition doesn't appear in the
 literature, and we introduce it as part of the formalization of Liouville's theorem.
 -/
@@ -27,9 +27,9 @@ variable (F : Type*) (K : Type*) [Field F] [Field K] [Differential F] [Different
 variable [Algebra F K] [DifferentialAlgebra F K]
 
 /--
-We say that a field extension `K / F` is Liouville if, whenever an element a ∈ F can be written as
-`a = v + ∑ cᵢ * logDeriv uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be written in that
-way with `v, cᵢ, uᵢ ∈ F`.
+We say that a differential field extension `K / F` is Liouville if, whenever an element a ∈ F can be
+written as `a = v + ∑ cᵢ * logDeriv uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be
+written in that way with `v, cᵢ, uᵢ ∈ F`.
 -/
 class IsLiouville : Prop where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
@@ -64,7 +64,7 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
 
 section Algebraic
 /-
-The case of Liouville's theorem for algebraic extension.
+The case of Liouville's theorem for algebraic extensions.
 -/
 
 variable {F K} [CharZero F]
@@ -97,7 +97,7 @@ lemma IsLiouville.equiv {K' : Type*} [Field K'] [Differential K'] [Algebra F K']
     apply_fun e.symm at h
     simpa [AlgEquiv.commutes, map_add, map_sum, map_mul, logDeriv, algEquiv_deriv'] using h
 
-private local instance liouville_of_finiteDimensional_galois [FiniteDimensional F K]
+private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensional F K]
     [IsGalois F K] : IsLiouville F K where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → K) (v : K) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
@@ -111,7 +111,7 @@ private local instance liouville_of_finiteDimensional_galois [FiniteDimensional 
       simp only [u'', map_prod]
       apply Fintype.prod_equiv (Equiv.mulLeft e)
       simp
-    have ffb := (IsGalois.tfae.out 0 1).mp (inferInstanceAs (IsGalois F K))
+    have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 0 1).mp (inferInstanceAs (IsGalois F K))
     simp_rw [ffb, IntermediateField.mem_bot, Set.mem_range] at this
     choose u' hu' using this
     let v'' := (∑ x : (K ≃ₐ[F] K), x v) / (Fintype.card ((K ≃ₐ[F] K)))
@@ -139,11 +139,12 @@ private local instance liouville_of_finiteDimensional_galois [FiniteDimensional 
       simp only [map_sum, div_mul_eq_mul_div]
       rw [← sum_div, ← add_div]
       field_simp
+      -- Here we rewrite logDeriv (∏ x : K ≃ₐ[F] K, x (u i)) to ∑ x : K ≃ₐ[F] K, logDeriv (x (u i))
       conv =>
-        enter [2, 1, 2, x, 2]
+        enter [2, 1, 2, i, 2]
         tactic =>
-          change _ = ∑ e : K ≃ₐ[F] K, logDeriv (e (u x))
-          by_cases h : u x = 0
+          change _ = ∑ x : K ≃ₐ[F] K, logDeriv (x (u i))
+          by_cases h : u i = 0
           · rw [logDeriv_prod_of_eq_zero]
             simp [h]
           · simp [logDeriv_prod, h]

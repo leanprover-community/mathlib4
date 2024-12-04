@@ -87,27 +87,21 @@ lemma _root_.algebraMap.coe_logDeriv {F K : Type*} [Field F] [Field K] [Differen
     [Differential K] [Algebra F K] [DifferentialAlgebra F K]
     (a : F) : logDeriv a = logDeriv (a : K) := (logDeriv_algebraMap a).symm
 
-/--
-The differential of a separable value in a field extension.
--/
-noncomputable def implicitDeriv' (F : Type*) {K : Type*} [CommRing F] [Differential F] [Field K]
-    [Algebra F K] (x : K) : K :=
-  - (aeval x (mapCoeffs (minpoly F x))) / (aeval x (derivative (minpoly F x)))
-
 variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
   deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective
     (d := implicitDeriv <| AdjoinRoot.modByMonicHom Fact.out <|
-      implicitDeriv' F (AdjoinRoot.root p)) (fun x hx ↦ by
+      - (aeval (AdjoinRoot.root p) (mapCoeffs p)) / (aeval (AdjoinRoot.root p) (derivative p))) (by
+      rintro x hx
       simp_all only [RingHom.toIntAlgHom_apply, AdjoinRoot.mk_eq_zero]
       obtain ⟨q, rfl⟩ := hx
       simp only [Derivation.leibniz, smul_eq_mul]
       apply dvd_add (dvd_mul_right ..)
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
-      unfold implicitDeriv implicitDeriv'
+      unfold implicitDeriv
       simp only [ne_eq, show p ≠ 0 from Irreducible.ne_zero Fact.out, not_false_eq_true,
         AdjoinRoot.minpoly_root, show p.Monic from Fact.out, Monic.leadingCoeff, inv_one, map_one,
         mul_one, AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
@@ -132,13 +126,16 @@ instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
 
 variable {K : Type*} [Field K] [Algebra F K]
 
+variable (F K) in
+
 /--
 If `K` is a simple finite field extension of `F` `K = F(k)`, then we can
 define a `Differential` on `K`.
 -/
 @[reducible]
-noncomputable def differentialOfAdjoinEqTop [FiniteDimensional F K]
-    (k : K) (h : F⟮k⟯ = ⊤) : Differential K :=
+noncomputable def differentialFiniteDimensional [FiniteDimensional F K] : Differential K :=
+  let k := (Field.exists_primitive_element F K).choose
+  have h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
   have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
   have : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩
@@ -146,22 +143,43 @@ noncomputable def differentialOfAdjoinEqTop [FiniteDimensional F K]
     (IsAlgebraic.of_finite F k).isIntegral |>.trans (IntermediateField.equivOfEq h) |>.trans
     IntermediateField.topEquiv).symm.toRingEquiv
 
-lemma differentialAlgebraOfAdjoinEqTop [FiniteDimensional F K] (k : K) (h : F⟮k⟯ = ⊤) :
-    letI := differentialOfAdjoinEqTop k h
+lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
+    letI := differentialFiniteDimensional F K
     DifferentialAlgebra F K := by
-  haveI : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
-  haveI : Fact (Irreducible (minpoly F k)) :=
+  let k := (Field.exists_primitive_element F K).choose
+  have h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
+  have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
+  have : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩
   apply DifferentialAlgebra.equiv
 
+noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
+    Unique ((_ : Differential K) ×' DifferentialAlgebra F K) := by
+  let default : ((_ : Differential K) ×' DifferentialAlgebra F K) :=
+      ⟨differentialFiniteDimensional F K, differentialAlgebraFiniteDimensional⟩
+  refine ⟨⟨default⟩, fun ⟨a, ha⟩ ↦ ?_⟩
+  ext x
+  · apply_fun (aeval x (mapCoeffs (minpoly F x)) + aeval x (derivative (minpoly F x)) * ·)
+    · conv_lhs => apply (deriv_aeval_eq ..).symm
+      conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.1 _ default.2 _ _).symm
+      simp
+    · apply (add_right_injective _).comp
+      apply mul_right_injective₀
+      rw [ne_eq, ← minpoly.dvd_iff]
+      have : 0 < (minpoly F x).natDegree := Irreducible.natDegree_pos
+        (minpoly.irreducible (Algebra.IsIntegral.isIntegral _))
+      apply not_dvd_of_natDegree_lt
+      · intro nh
+        simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
+      apply natDegree_derivative_lt
+      exact Nat.not_eq_zero_of_lt this
+  · apply proof_irrel_heq
+
 noncomputable instance (B : IntermediateField F K) [FiniteDimensional F B] : Differential B :=
-  differentialOfAdjoinEqTop (Field.exists_primitive_element F B).choose
-    (Field.exists_primitive_element F B).choose_spec
+  differentialFiniteDimensional F B
 
 instance (B : IntermediateField F K) [FiniteDimensional F B] :
-    DifferentialAlgebra F B :=
-  differentialAlgebraOfAdjoinEqTop (Field.exists_primitive_element F B).choose
-    (Field.exists_primitive_element F B).choose_spec
+    DifferentialAlgebra F B := differentialAlgebraFiniteDimensional
 
 instance [Differential K] [DifferentialAlgebra F K] (B : IntermediateField F K)
     [FiniteDimensional F B] : DifferentialAlgebra B K where
