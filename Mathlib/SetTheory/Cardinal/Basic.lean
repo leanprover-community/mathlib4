@@ -849,7 +849,7 @@ structure IsStrongLimit (c : Cardinal) : Prop where
 
 protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h =>
+  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
     (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
@@ -2196,4 +2196,4 @@ end Cardinal
 
 -- end Tactic
 
-set_option linter.style.longFile 2200
+set_option linter.style.longFile 2400
