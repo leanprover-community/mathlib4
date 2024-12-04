@@ -34,16 +34,16 @@ variable (a b : ∀ i, α i)
 theorem Icc_eq : Icc a b = piFinset fun i => Icc (a i) (b i) :=
   rfl
 
-theorem card_Icc : (Icc a b).card = ∏ i, (Icc (a i) (b i)).card :=
+theorem card_Icc : #(Icc a b) = ∏ i, #(Icc (a i) (b i)) :=
   card_piFinset _
 
-theorem card_Ico : (Ico a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
+theorem card_Ico : #(Ico a b) = ∏ i, #(Icc (a i) (b i)) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 
-theorem card_Ioc : (Ioc a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
+theorem card_Ioc : #(Ioc a b) = ∏ i, #(Icc (a i) (b i)) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 
-theorem card_Ioo : (Ioo a b).card = (∏ i, (Icc (a i) (b i)).card) - 2 := by
+theorem card_Ioo : #(Ioo a b) = ∏ i, #(Icc (a i) (b i)) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 
 end LocallyFiniteOrder
@@ -55,11 +55,8 @@ instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (∀ i, α i) :=
   .ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
     simp_rw [mem_piFinset, mem_Iic, le_def]
 
-theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=
-  card_piFinset _
-
-theorem card_Iio : (Iio b).card = (∏ i, (Iic (b i)).card) - 1 := by
-  rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
+lemma card_Iic : #(Iic b) = ∏ i, #(Iic (b i)) := card_piFinset _
+lemma card_Iio : #(Iio b) = ∏ i, #(Iic (b i)) - 1 := by rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 
 end LocallyFiniteOrderBot
 
@@ -70,11 +67,8 @@ instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (∀ i, α i) :=
   LocallyFiniteOrderTop.ofIci _ (fun a => piFinset fun i => Ici (a i)) fun a x => by
     simp_rw [mem_piFinset, mem_Ici, le_def]
 
-theorem card_Ici : (Ici a).card = ∏ i, (Ici (a i)).card :=
-  card_piFinset _
-
-theorem card_Ioi : (Ioi a).card = (∏ i, (Ici (a i)).card) - 1 := by
-  rw [card_Ioi_eq_card_Ici_sub_one, card_Ici]
+lemma card_Ici : #(Ici a) = ∏ i, #(Ici (a i)) := card_piFinset _
+lemma card_Ioi : #(Ioi a) = ∏ i, #(Ici (a i)) - 1 := by rw [card_Ioi_eq_card_Ici_sub_one, card_Ici]
 
 end LocallyFiniteOrderTop
 end PartialOrder
@@ -84,7 +78,7 @@ variable [∀ i, Lattice (α i)] [∀ i, LocallyFiniteOrder (α i)] (a b : ∀ i
 
 theorem uIcc_eq : uIcc a b = piFinset fun i => uIcc (a i) (b i) := rfl
 
-theorem card_uIcc : (uIcc a b).card = ∏ i, (uIcc (a i) (b i)).card := card_Icc _ _
+theorem card_uIcc : #(uIcc a b) = ∏ i, #(uIcc (a i) (b i)) := card_Icc _ _
 
 end Lattice
 end Pi

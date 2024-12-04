@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -282,7 +284,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
-      rw [Submodule.quotientRel_r_def] at hab
+      rw [Submodule.quotientRel_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
 

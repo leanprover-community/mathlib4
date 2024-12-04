@@ -79,7 +79,7 @@ variable {R : Type*} [NonAssocSemiring R] [NoZeroDivisors R] [CharZero R] {a : R
 
 @[simp]
 theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
-  simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or_iff]
+  simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or]
 
 end
 
@@ -154,7 +154,7 @@ theorem RingHom.charZero (ϕ : R →+* S) [CharZero S] : CharZero R :=
 theorem RingHom.charZero_iff {ϕ : R →+* S} (hϕ : Function.Injective ϕ) : CharZero R ↔ CharZero S :=
   ⟨fun hR =>
     ⟨by intro a b h; rwa [← @Nat.cast_inj R, ← hϕ.eq_iff, map_natCast ϕ, map_natCast ϕ]⟩,
-    fun hS => ϕ.charZero⟩
+    fun _ => ϕ.charZero⟩
 
 theorem RingHom.injective_nat (f : ℕ →+* R) [CharZero R] : Function.Injective f :=
   Subsingleton.elim (Nat.castRingHom _) f ▸ Nat.cast_injective

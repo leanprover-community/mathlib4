@@ -21,7 +21,7 @@ variable {R : Type u} {M : Type v}
 
 section Semiring
 
-variable [Semiring R] [AddCommGroup M] [Nontrivial R] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring
@@ -54,7 +54,7 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     intro x m
     rw [← b.linearCombination_repr x, span_image_eq_map_linearCombination, Submodule.mem_map]
     use b.repr x
-    simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
+    simp only [and_true, eq_self_iff_true, Finsupp.mem_supported]
     rw [Finset.coe_subset, ← Finset.le_iff_subset]
     exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
   -- Thus this finite subset of the basis elements spans the entire module.

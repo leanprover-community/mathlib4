@@ -52,7 +52,7 @@ theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
   simp only [splitCenterBox, mem_def, ← forall_and]
   refine forall_congr' fun i ↦ ?_
   dsimp only [Set.piecewise]
-  split_ifs with hs <;> simp only [hs, iff_true_iff, iff_false_iff, not_lt]
+  split_ifs with hs <;> simp only [hs, iff_true, iff_false, not_lt]
   exacts [⟨fun H ↦ ⟨⟨(left_lt_add_div_two.2 (I.lower_lt_upper i)).trans H.1, H.2⟩, H.1⟩,
       fun H ↦ ⟨H.2, H.1.2⟩⟩,
     ⟨fun H ↦ ⟨⟨H.1, H.2.trans (add_div_two_lt_right.2 (I.lower_lt_upper i)).le⟩, H.2⟩,

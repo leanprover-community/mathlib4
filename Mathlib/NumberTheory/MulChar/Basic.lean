@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.OrderOfElement
 
@@ -159,14 +160,14 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
     classical
       intro x y
       by_cases hx : IsUnit x
-      · simp only [hx, IsUnit.mul_iff, true_and_iff, dif_pos]
+      · simp only [hx, IsUnit.mul_iff, true_and, dif_pos]
         by_cases hy : IsUnit y
         · simp only [hy, dif_pos]
           have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
           rw [hm, map_mul]
           norm_cast
         · simp only [hy, not_false_iff, dif_neg, mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, zero_mul]
+      · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dif_neg, zero_mul]
   map_nonunit' := by
     intro a ha
     simp only [ha, not_false_iff, dif_neg]
@@ -311,7 +312,6 @@ theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 
 /-- The product of a character with its inverse is the trivial character. -/
--- Porting note (#10618): @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
@@ -391,13 +391,13 @@ lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := b
   simp only [Ne, eq_one_iff, not_forall]
 
 /-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
-@[deprecated (since := "2024-06-16")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
 def IsNontrivial (χ : MulChar R R') : Prop :=
   ∃ a : Rˣ, χ a ≠ 1
 
 set_option linter.deprecated false in
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
-@[deprecated (since := "2024-06-16")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
   simp only [IsNontrivial, Ne, MulChar.ext_iff, not_forall, one_apply_coe]
 
@@ -502,7 +502,7 @@ theorem IsQuadratic.pow_char {χ : MulChar R R'} (hχ : χ.IsQuadratic) (p : ℕ
   rcases hχ x with (hx | hx | hx) <;> rw [hx]
   · rw [zero_pow (@Fact.out p.Prime).ne_zero]
   · rw [one_pow]
-  · exact CharP.neg_one_pow_char R' p
+  · exact neg_one_pow_char R' p
 
 /-- The `n`th power of a quadratic character is the trivial character, when `n` is even. -/
 theorem IsQuadratic.pow_even {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ} (hn : Even n) :
@@ -515,6 +515,22 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
     χ ^ n = χ := by
   obtain ⟨n, rfl⟩ := hn
   rw [pow_add, pow_one, hχ.pow_even (even_two_mul _), one_mul]
+
+/-- A multiplicative character `χ` into an integral domain is quadratic
+if and only if `χ^2 = 1`. -/
+lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
+    [Nontrivial R] {χ : MulChar M R} :
+    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+  refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
+  · rw [one_apply_coe, χ.pow_apply_coe]
+    rcases h x with H | H | H
+    · exact (not_isUnit_zero <| H ▸ IsUnit.map χ <| x.isUnit).elim
+    · simp only [H, one_pow]
+    · simp only [H, even_two, Even.neg_pow, one_pow]
+  · by_cases hx : IsUnit x
+    · refine .inr <| sq_eq_one_iff.mp ?_
+      rw [← χ.pow_apply' two_ne_zero, h, MulChar.one_apply hx]
+    · exact .inl <| map_nonunit χ hx
 
 end quadratic_and_comp
 
@@ -557,7 +573,7 @@ theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1)
   simpa only [Finset.mul_sum, ← map_mul] using b.mulLeft_bijective.sum_comp _
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-06-16")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
 lemma IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
     ∑ a, χ a = 0 :=
   sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)
@@ -577,7 +593,7 @@ theorem sum_one_eq_card_units [DecidableEq R] :
     · exact map_nonunit _ h
   · congr
     ext a
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and_iff, Finset.mem_map,
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_map,
       Function.Embedding.coeFn_mk, exists_true_left, IsUnit]
 
 end sum

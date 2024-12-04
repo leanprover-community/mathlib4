@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Type of functions with finite support
@@ -116,11 +118,6 @@ instance instFunLike : FunLike (α →₀ M) α M :=
     ext a
     exact (hf _).trans (hg _).symm⟩
 
-/-- Helper instance for when there are too many metavariables to apply the `DFunLike` instance
-directly. -/
-instance instCoeFun : CoeFun (α →₀ M) fun _ => α → M :=
-  inferInstance
-
 @[ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
@@ -176,7 +173,7 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
 
-theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
+theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
@@ -393,11 +390,11 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 
 theorem card_support_eq_one {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
+    #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
   simp only [card_eq_one, support_eq_singleton]
 
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
+    #f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
@@ -408,11 +405,11 @@ theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a}
     rw [hb, support_subset_singleton, single_eq_same]⟩
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
-    card f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
+    #f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton]
 
 theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
-    card f.support ≤ 1 ↔ ∃ a b, f = single a b := by
+    #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
 
 @[simp]
@@ -627,7 +624,7 @@ otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
   support :=
     haveI := Classical.decEq M
-    s.filter (f · ≠ 0)
+    {a ∈ s | f a ≠ 0}
   toFun := f
   mem_support_toFun := by classical simpa
 
@@ -642,14 +639,13 @@ theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
     (onFinset s f hf).support ⊆ s := by
   classical convert filter_subset (f · ≠ 0) s
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]
 
 theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
     (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
-    (Finsupp.onFinset s f hf).support = s.filter fun a => f a ≠ 0 := by
+    (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
   dsimp [onFinset]; congr
 
 end OnFinset
@@ -714,6 +710,10 @@ theorem mapRange_comp (f : N → P) (hf : f 0 = 0) (f₂ : M → N) (hf₂ : f�
     (g : α →₀ M) : mapRange (f ∘ f₂) h g = mapRange f hf (mapRange f₂ hf₂ g) :=
   ext fun _ => rfl
 
+@[simp]
+lemma mapRange_mapRange (e₁ : N → P) (e₂ : M → N) (he₁ he₂) (f : α →₀ M) :
+    mapRange e₁ he₁ (mapRange e₂ he₂ f) = mapRange (e₁ ∘ e₂) (by simp [*]) f := ext fun _ ↦ rfl
+
 theorem support_mapRange {f : M → N} {hf : f 0 = 0} {g : α →₀ M} :
     (mapRange f hf g).support ⊆ g.support :=
   support_onFinset_subset
@@ -729,6 +729,34 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
   ext
   simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
+
+lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
+    Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
+  ext g
+  simp only [Set.mem_range, Set.mem_setOf]
+  constructor
+  · rintro ⟨g, rfl⟩ i
+    simp
+  · intro h
+    classical
+    choose f h using h
+    use onFinset g.support (Set.indicator g.support f) (by aesop)
+    ext i
+    simp only [mapRange_apply, onFinset_apply, Set.indicator_apply]
+    split_ifs <;> simp_all
+
+/-- `Finsupp.mapRange` of a injective function is injective. -/
+lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
+    Injective (Finsupp.mapRange (α := α) e he₀) := by
+  intro a b h
+  rw [Finsupp.ext_iff] at h ⊢
+  simpa only [mapRange_apply, he.eq_iff] using h
+
+/-- `Finsupp.mapRange` of a surjective function is surjective. -/
+lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
+    Surjective (Finsupp.mapRange (α := α) e he₀) := by
+  rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
+  simp
 
 end MapRange
 
@@ -756,7 +784,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne]
+    · simp only [h, true_iff, Ne]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
     · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
@@ -1048,6 +1076,60 @@ theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 
     (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
   induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
 
+section LinearOrder
+
+variable [LinearOrder α] {p : (α →₀ M) → Prop}
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max₂` swaps the argument order in the sum. -/
+theorem induction_on_max (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← single_add_erase a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min₂` swaps the argument order in the sum. -/
+theorem induction_on_min (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
+    p f :=
+  induction_on_max (α := αᵒᵈ) f h0 ha
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max` swaps the argument order in the sum. -/
+theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← erase_add_single a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min` swaps the argument order in the sum. -/
+theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
+    p f :=
+  induction_on_max₂ (α := αᵒᵈ) f h0 ha
+
+end LinearOrder
+
 @[simp]
 theorem add_closure_setOf_eq_single :
     AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=
@@ -1137,8 +1219,8 @@ instance instAddMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
+  { DFunLike.coe_injective.addCommMonoid DFunLike.coe coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1182,15 +1264,15 @@ instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
   ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 
 instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
+  { DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
+  { DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
+      (fun _ _ => rfl) fun _ _ => rfl with
     toAddGroup := Finsupp.instAddGroup }
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

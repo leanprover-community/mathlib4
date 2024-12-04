@@ -25,11 +25,11 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace List
 
-variable {l l₁ l₂ l₃ : List α} {a b : α} {m n : ℕ}
+variable {l l₁ l₂ l₃ : List α} {a b : α}
 
 /-! ### prefix, suffix, infix -/
 
@@ -51,6 +51,21 @@ theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.lengt
 theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
   h.eq_of_length
 
+@[gcongr] lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
+  simpa [prefix_take_iff, Nat.min_le_left] using (take_prefix n l₁).trans h
+
+@[gcongr] lemma IsPrefix.drop (h : l₁ <+: l₂) (n : ℕ) : l₁.drop n <+: l₂.drop n := by
+  rw [prefix_iff_eq_take.mp h, drop_take]; apply take_prefix
+
+attribute [gcongr] take_prefix_take_left
+
+lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l₂ ++ l₃ ↔ l₁ <+: l₂ :=
+  ⟨fun h ↦ by rw [prefix_iff_eq_take] at *; nth_rw 1 [h, take_eq_left_iff]; tauto,
+   fun h ↦ h.trans <| l₂.prefix_append l₃⟩
+
+@[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
+  simp [prefix_take_iff, take_prefix]; omega
+
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
     l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, Nat.add_comm]
@@ -63,18 +78,14 @@ lemma dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
 lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
   dropSlice_subset n m l h
 
-attribute [gcongr] drop_sublist_drop_left
-
 theorem tail_subset (l : List α) : tail l ⊆ l :=
   (tail_sublist l).subset
 
 theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
   dropLast_subset l h
 
-theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
-  tail_subset l h
-
 attribute [gcongr] Sublist.drop
+attribute [refl] prefix_refl suffix_refl infix_refl
 
 theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
@@ -82,6 +93,14 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
+
+instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
+  | [], l₂ => isTrue ⟨[], l₂, rfl⟩
+  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
+  | l₁, b :: l₂ =>
+    letI := l₁.decidableInfix l₂
+    @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
+      infix_cons_iff.symm
 
 @[deprecated cons_prefix_cons (since := "2024-08-14")]
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
@@ -226,6 +245,15 @@ theorem getElem_inits (l : List α) (n : Nat) (h : n < length (inits l)) :
 
 theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
   simp
+
+lemma map_inits {β : Type*} (g : α → β) : (l.map g).inits = l.inits.map (map g) := by
+  induction' l using reverseRecOn <;> simp [*]
+
+lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (map g) := by
+  induction' l using reverseRecOn <;> simp [*]
+
+lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
+  apply ext_getElem <;> (simp [take_take]; omega)
 
 end InitsTails
 
