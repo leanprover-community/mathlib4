@@ -5,6 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Data.Matroid.Restrict
 import Mathlib.Order.Closure
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Matroid Closure

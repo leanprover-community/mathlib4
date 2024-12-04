@@ -22,6 +22,8 @@ and deducde that `Module.Free` is stable under base change.
 
 -/
 
+assert_not_exists Cardinal
+
 suppress_compilation
 
 open scoped TensorProduct
