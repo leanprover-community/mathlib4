@@ -19,7 +19,7 @@ instances for `Prop` and `fun`.
   It captures the properties of `Disjoint` that are common to `GeneralizedBooleanAlgebra` and
   `DistribLattice` when `OrderBot`.
 * Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
-  Typical examples include `Prop` and `Det α`.
+  Typical examples include `Prop` and `Set α`.
 -/
 
 open Function OrderDual
