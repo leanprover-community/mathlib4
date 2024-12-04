@@ -963,7 +963,7 @@ product `∏ R' i` at `M` to the direct product of the localizations of each `R'
 is injective.
 -/
 theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq ι]
-    (h : ∀ i, (M' i) = M.map (Pi.evalRingHom R' i)) :
+    (h : ∀ i, M' i = M.map (Pi.evalRingHom R' i)) :
     Function.Injective (sloc.lift (isUnit_of_product_of_localizations R' S' h)) := by
   set R := ∀ i, R' i
   set P := ∀ i, S' i
