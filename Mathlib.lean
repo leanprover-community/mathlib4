@@ -4378,6 +4378,7 @@ import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.JacobsonPolynomial
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.Polynomial
