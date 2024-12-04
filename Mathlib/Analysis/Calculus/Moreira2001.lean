@@ -129,9 +129,8 @@ theorem iteratedFDerivWithin_comp_of_eventually
     (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : ∀ᶠ x in 𝓝[insert x₀ s] x₀, UniqueDiffWithinAt 𝕜 s x)
     (hmaps : ∀ᶠ x in 𝓝[s] x₀, f x ∈ t) :
-    iteratedFDerivWithin 𝕜 n (g ∘ f) s x₀ = ∑ c : OrderedFinpartition n,
-      c.compAlongOrderedFinpartition (iteratedFDerivWithin 𝕜 c.length g t (f x₀))
-        (fun m ↦ iteratedFDerivWithin 𝕜 (c.partSize m) f s x₀) := by
+    iteratedFDerivWithin 𝕜 n (g ∘ f) s x₀ =
+      (ftaylorSeriesWithin 𝕜 g t (f x₀)).taylorComp (ftaylorSeriesWithin 𝕜 f s x₀) n := by
   rcases hg.hasFTaylorSeriesUpToOn_subset_of_eventually le_rfl (by simp) ht univ_mem
     with ⟨u, huo, hx₀u, -, -, hu⟩
   have hmem : f ⁻¹' (t ∩ u) ∈ 𝓝[s] x₀ :=
@@ -148,9 +147,8 @@ theorem iteratedFDerivWithin_comp {g : F → G} {f : E → F} {s : Set E} {t : S
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (ht : UniqueDiffOn 𝕜 t)
     (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s)
     (hmaps : MapsTo f s t) (hx : x ∈ s) :
-    iteratedFDerivWithin 𝕜 n (g ∘ f) s x = ∑ c : OrderedFinpartition n,
-      c.compAlongOrderedFinpartition (iteratedFDerivWithin 𝕜 c.length g t (f x))
-        (fun m ↦ iteratedFDerivWithin 𝕜 (c.partSize m) f s x) := by
+    iteratedFDerivWithin 𝕜 n (g ∘ f) s x =
+      (ftaylorSeriesWithin 𝕜 g t (f x)).taylorComp (ftaylorSeriesWithin 𝕜 f s x) n := by
   apply iteratedFDerivWithin_comp_of_eventually hg _ hf
   · rw [insert_eq_of_mem hx]
     exact eventually_mem_nhdsWithin.mono hs
@@ -160,11 +158,31 @@ theorem iteratedFDerivWithin_comp {g : F → G} {f : E → F} {s : Set E} {t : S
 
 theorem iteratedFDeriv_comp {g : F → G} {f : E → F} {n : ℕ} {x : E} (hg : ContDiffAt 𝕜 n g (f x))
     (hf : ContDiffAt 𝕜 n f x) :
-    iteratedFDeriv 𝕜 n (g ∘ f) x = ∑ c : OrderedFinpartition n,
-      c.compAlongOrderedFinpartition (iteratedFDeriv 𝕜 c.length g (f x))
-        (fun m ↦ iteratedFDeriv 𝕜 (c.partSize m) f x) := by
-  simp only [← iteratedFDerivWithin_univ]
+    iteratedFDeriv 𝕜 n (g ∘ f) x =
+      (ftaylorSeries 𝕜 g (f x)).taylorComp (ftaylorSeries 𝕜 f x) n := by
+  simp only [← ftaylorSeriesWithin_univ, ← iteratedFDerivWithin_univ]
   apply iteratedFDerivWithin_comp <;> simp [contDiffWithinAt_univ, hf, hg, uniqueDiffOn_univ]
+
+namespace OrderedFinpartition
+
+variable {n : ℕ} (c : OrderedFinpartition n)
+
+theorem norm_compAlongOrderedFinpartition_sub_compAlongOrderedFinpartition_le
+    (f₁ f₂ : F [×c.length]→L[𝕜] G) (g₁ g₂ : ∀ i, E [×c.partSize i]→L[𝕜] F) :
+    ‖c.compAlongOrderedFinpartition f₁ g₁ - c.compAlongOrderedFinpartition f₂ g₂‖ ≤
+      ‖f₁‖ * c.length * max ‖g₁‖ ‖g₂‖ ^ (c.length - 1) * ‖g₁ - g₂‖ + ‖f₁ - f₂‖ * ∏ i, ‖g₂ i‖ := calc
+  _ ≤ ‖c.compAlongOrderedFinpartition f₁ g₁ - c.compAlongOrderedFinpartition f₁ g₂‖ +
+      ‖c.compAlongOrderedFinpartition f₁ g₂ - c.compAlongOrderedFinpartition f₂ g₂‖ :=
+    norm_sub_le_norm_sub_add_norm_sub ..
+  _ ≤ ‖f₁‖ * c.length * max ‖g₁‖ ‖g₂‖ ^ (c.length - 1) * ‖g₁ - g₂‖ + ‖f₁ - f₂‖ * ∏ i, ‖g₂ i‖ := by
+    gcongr
+    · refine ((c.compAlongOrderedFinpartitionL 𝕜 E F G f₁).norm_image_sub_le g₁ g₂).trans ?_
+      simp only [Fintype.card_fin]
+      gcongr
+      apply norm_compAlongOrderedFinpartitionL_apply_le
+    · exact c.norm_compAlongOrderedFinpartition_le (f₁ - f₂) g₂
+
+end OrderedFinpartition
 
 end NormedField
 
@@ -198,14 +216,6 @@ theorem isBigO_dist_mul_of_fderiv {f : E → F} {x₀ : E} {g : ℝ → ℝ}
   · simp [dist_nonneg]
   · exact le_refl (dist x x₀)
 
-theorem iteratedFDeriv_comp {f : F → G} {g : E → F} {x : E} {n : ℕ}
-    (hf : ContDiffAt ℝ n f (g x)) (hg : ContDiffAt ℝ n g x) :
-    iteratedFDeriv ℝ n (f ∘ g) x = ∑ c : OrderedFinpartition n,
-      c.compAlongOrderedFinpartition (iteratedFDeriv ℝ c.length f (g x))
-        (fun m ↦ iteratedFDeriv ℝ (c.partSize m) g x) := by
-  rcases hf.contDiffOn' le_rfl (by simp) with ⟨U, hUo, hxU, hf⟩
-  
-
 structure ContDiffHolder (k : ℕ) (α : I) (f : E → F) (K U : Set E) : Prop where
   contDiffOn : ContDiffOn ℝ k f U
   isBigO : ∀ x ∈ K, (iteratedFDeriv ℝ k f · - iteratedFDeriv ℝ k f x) =O[𝓝 x] (dist · x ^ (α : ℝ))
@@ -222,12 +232,27 @@ theorem subset_right {U'} (h : ContDiffHolder k α f K U) (h' : U' ⊆ U) :
     ContDiffHolder k α f K U' :=
   ⟨h.1.mono h', h.2⟩
 
-theorem comp {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : F → G} {V L : Set F}
-    (hg : ContDiffHolder k α g L V) (hf : ContDiffHolder k α f K U) (hUV : MapsTo f U V) :
+theorem isBigO_of_le (h : ContDiffHolder k α f K U) (hU : IsOpen U) (hKU : K ⊆ U)
+    {m : ℕ} (hle : m ≤ k) {x} (hx : x ∈ K) :
+    (iteratedFDeriv ℝ m f · - iteratedFDeriv ℝ m f x) =O[𝓝 x] (dist · x ^ (α : ℝ)) := by
+  rcases hle.eq_or_lt with rfl | hlt
+  · exact h.isBigO x hx
+  · apply hKU at hx
+    have := (h.1.differentiableOn_iteratedFDerivWithin (mod_cast hlt)
+      hU.uniqueDiffOn).differentiableAt (hU.mem_nhds hx)
+    refine (this.isBigO_sub.congr' ?_ .rfl).trans <| .of_bound' ?_
+    · filter_upwards [hU.mem_nhds hx] with z hz
+      rw [iteratedFDerivWithin_of_isOpen, iteratedFDerivWithin_of_isOpen] <;> assumption
+    · filter_upwards [closedBall_mem_nhds _ one_pos] with y hy
+      rw [Real.norm_of_nonneg (by positivity), ← dist_eq_norm]
+      exact Real.self_le_rpow_of_nonneg_of_le_one dist_nonneg hy α.2.2
+
+theorem comp {g : F → G} {V L : Set F} (hg : ContDiffHolder k α g L V)
+    (hf : ContDiffHolder k α f K U) (hUV : MapsTo f U V) :
     ContDiffHolder k α (g ∘ f) K U where
   contDiffOn := hg.contDiffOn.comp hf.contDiffOn hUV
-  isBigO := by
-    intro x hx
+  isBigO x hx := by
+    
     
 
 end ContDiffHolder
