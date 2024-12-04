@@ -89,7 +89,7 @@ and lazy entries, or returns `none` if the last key has been reached already.
 
 namespace Lean.Meta.RefinedDiscrTree
 
-variable {α β : Type}
+variable {α : Type}
 
 /-- Creates the core context used for initializing a tree using the current context. -/
 private def treeCtx (ctx : Core.Context) : Core.Context := {

@@ -208,7 +208,7 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId) (r
 
 /-- Repeatedly reduce while stripping lambda binders and introducing their variables -/
 @[specialize]
-private partial def lambdaTelescopeReduce {m} [Inhabited (m α)] [Monad m] [MonadLiftT MetaM m]
+private partial def lambdaTelescopeReduce {m} [Nonempty (m α)] [Monad m] [MonadLiftT MetaM m]
     [MonadControlT MetaM m] (e : Expr) (lambdas : List FVarId) (noIndex : List FVarId → m α)
     (k : Expr → List FVarId → m α) : m α := do
   /- expressions marked with `no_index` should be indexed with a star -/

@@ -24,7 +24,7 @@ from the current file.
 -/
 namespace Lean.Meta.RefinedDiscrTree
 
-variable {α β : Type}
+variable {α : Type}
 
 /-- Directly insert a `Key` `LazyEntry` pair into a `RefinedDiscrTree`. -/
 def insert (d : RefinedDiscrTree α) (k : Key) (e : LazyEntry × α) : RefinedDiscrTree α :=
