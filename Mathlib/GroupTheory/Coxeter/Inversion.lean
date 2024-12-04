@@ -277,7 +277,7 @@ theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none.mpr (by omega)]
+  · rw [get?_eq_none_iff.mpr (by omega)]
     simp
 
 theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
@@ -286,7 +286,7 @@ theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none.mpr (by omega)]
+  · rw [get?_eq_none_iff.mpr (by omega)]
     simp
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :

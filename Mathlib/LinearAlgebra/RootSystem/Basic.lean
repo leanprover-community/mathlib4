@@ -73,7 +73,7 @@ protected def equiv_of_mapsTo :
 
 end reflection_perm
 
-lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
     (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
     (hc : P.coxeterWeight i j = 4) : Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -93,6 +93,13 @@ lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSM
     exact hl
 
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
+
+lemma coxeterWeight_ne_four_of_linearIndependent [CharZero R] [NoZeroSMulDivisors ℤ M]
+    (hl : LinearIndependent R ![P.root i, P.root j]) :
+    P.coxeterWeight i j ≠ 4 := by
+  intro contra
+  have := P.infinite_of_linearIndependent_coxeterWeight_four i j hl contra
+  exact not_finite ι
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
@@ -161,7 +168,8 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   rw [← hl]
   have hkl : (p.flip (coroot l)) (root k) = 2 := by
     simp only [hl, preReflection_apply, hk, PerfectPairing.flip_apply_apply, map_sub, hp j,
-      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add]
+      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add, LinearMap.sub_apply,
+      LinearMap.smul_apply]
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.bijectiveRight.injective this
