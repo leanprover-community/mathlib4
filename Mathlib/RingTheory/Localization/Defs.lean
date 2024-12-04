@@ -955,8 +955,8 @@ lemma isUnit_of_product_of_localizations (h : ∀ i, (M' i) = M.map (Pi.evalRing
   refine isUnit_iff_exists_inv.mpr ?_
   use fun i ↦ Ring.inverse ((f' i) y)
   rw [mul_comm]
-  exact funext (fun i ↦ Ring.inverse_mul_cancel ((f' i) y) ((isloc i).map_units (S' i) ⟨y.1 i,
-    by rw [h i]; exact Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2⟩))
+  exact funext fun i ↦ Ring.inverse_mul_cancel (f' i y) ((isloc i).map_units (S' i) ⟨y.1 i, ?_⟩)
+  rw [h i]; exact Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R' i`, and let `M' i` denote
 the projection of `M` onto each factor. Then the canonical map from the localization of the direct
