@@ -404,17 +404,6 @@ theorem prod_disjiUnion (s : Finset ι) (t : ι → Finset α) (h) :
   exact prod_const_one.symm
 
 @[to_additive]
-theorem prod_disjoint_filters (p q : α → Prop) [DecidablePred p] [DecidablePred q]
-    (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
-    (∏ x ∈ s with (p x ∨ q x), f x) = (∏ x ∈ s with p x, f x) * (∏ x ∈ s with q x, f x) := by
-  rw [← prod_disjUnion (disjoint_of_or_not_and (fun x ↦ p x) (fun x ↦ q x) h)]
-  exact prod_congr (by
-    ext _
-    simp only [mem_filter, mem_disjUnion]
-    exact and_or_left
-  ) (fun _ _ ↦ rfl)
-
-@[to_additive]
 theorem prod_union_inter [DecidableEq α] :
     (∏ x ∈ s₁ ∪ s₂, f x) * ∏ x ∈ s₁ ∩ s₂, f x = (∏ x ∈ s₁, f x) * ∏ x ∈ s₂, f x :=
   fold_union_inter
@@ -436,6 +425,21 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
     [∀ x, Decidable (¬p x)] (f : α → β) :
     (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
+
+@[to_additive]
+theorem prod_disjoint_filters (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q] :
+    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+      (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
+  rw [← prod_union (by
+    apply disjoint_of_or_not_and
+    simp only [mem_filter, not_and, Decidable.not_not, and_imp]
+    exact fun x a a a a_1 a_2 ↦ a
+  ) ]
+  exact prod_congr (by
+    ext _
+    simp only [mem_filter, mem_union]
+    exact and_or_left
+  ) (fun _ _ ↦ rfl)
 
 section ToList
 
