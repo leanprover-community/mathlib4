@@ -220,7 +220,7 @@ theorem disjoint_filter_and_not_filter :
   simp [bot_eq_empty, le_eq_subset, subset_empty]
   by_contra hn
   rw [← not_nonempty_iff_eq_empty, not_not] at hn
-  obtain ⟨x, hx⟩ := hn
+  obtain ⟨_, hx⟩ := hn
   exact (mem_filter.mp (htq hx)).2.2 (mem_filter.mp (htp hx)).2.1
 
 variable {p q}
