@@ -12,7 +12,7 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 
 ## Definitions
  * `VertexOperator` is an `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
- * `VertexOperator.ncoef` is the coefficient of a vertex operator under normalized indexing.
+ * `VertexOperator.ncoeff` is the coefficient of a vertex operator under normalized indexing.
 
 ## TODO
  * `HasseDerivative` : A divided-power derivative.
@@ -20,9 +20,9 @@ In this file we introduce vertex operators as linear maps to Laurent series.
  * `Residue products` : A family of products on `VertexOperator R V` parametrized by integers.
 
 ## References
- * G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
- * A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
-  arXiv:hep-th/9706118
+ * [G. Mason, *Vertex rings and Pierce bundles*][mason2017]
+ * [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
+   fields*][matsuo1997]
 -/
 
 noncomputable section
@@ -44,34 +44,34 @@ theorem ext (A B : VertexOperator R V) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
 /-- The coefficient of a vertex operator under normalized indexing. -/
-def ncoef {R} [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+def ncoeff {R} [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := HVertexOperator.coeff A (-n - 1)
 
 /-- In the literature, the `n`th normalized coefficient of a vertex operator `A` is written as
 either `Aₙ` or `A(n)`. -/
-scoped[VertexOperator] notation A "[[" n "]]" => ncoef A n
+scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 
 @[simp]
-theorem coeff_eq_ncoef (A : VertexOperator R V)
+theorem coeff_eq_ncoeff (A : VertexOperator R V)
     (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
-  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
+  rw [ncoeff, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
 
 @[simp]
-theorem ncoef_add (A B : VertexOperator R V) (n : ℤ) : (A + B) [[n]] = A [[n]] + B [[n]] := by
-  rw [ncoef, ncoef, ncoef, add_coeff, Pi.add_apply]
+theorem ncoeff_add (A B : VertexOperator R V) (n : ℤ) : (A + B) [[n]] = A [[n]] + B [[n]] := by
+  rw [ncoeff, ncoeff, ncoeff, add_coeff, Pi.add_apply]
 
 @[simp]
-theorem ncoef_smul (A : VertexOperator R V) (r : R) (n : ℤ) : (r • A) [[n]] = r • A [[n]] := by
-  rw [ncoef, ncoef, smul_coeff, Pi.smul_apply]
+theorem ncoeff_smul (A : VertexOperator R V) (r : R) (n : ℤ) : (r • A) [[n]] = r • A [[n]] := by
+  rw [ncoeff, ncoeff, smul_coeff, Pi.smul_apply]
 
-theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
+theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A [[n]]) x = 0 := by
-  simp only [ncoef, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
+  simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : n < HahnSeries.order ((HahnModule.of R).symm (A x))) : coeff A n x = 0 := by
-  rw [coeff_eq_ncoef, ncoef_eq_zero_of_lt_order A (-n - 1) x]
+  rw [coeff_eq_ncoeff, ncoeff_eq_zero_of_lt_order A (-n - 1) x]
   omega
 
 /-- Given an endomorphism-valued function on integers satisfying a pointwise bounded-pole condition,
@@ -90,10 +90,10 @@ theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
   rfl
 
 @[simp]
-theorem ncoef_of_coeff (f : ℤ → Module.End R V)
+theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
-  rw [ncoef, coeff_apply, of_coeff_apply_coeff]
+  rw [ncoeff, coeff_apply, of_coeff_apply_coeff]
 
 end VertexOperator
