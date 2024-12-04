@@ -31,7 +31,7 @@ then the fiberwise colimit of the limit of a functor `K : J ⥤ Grothendieck F �
 isomorphic to taking the limit of the composition `K ⋙ fiberwiseColim F H`. -/
 @[simps!]
 def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
-    [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H] [HasColimitsOfShape C H]
+    [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasLimitsOfShape J H]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     fiberwiseColimit (limit K) ≅ limit (K ⋙ fiberwiseColim F H) :=
   NatIso.ofComponents
@@ -58,9 +58,8 @@ variable (C) (F) in
 /-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on
 every `F.obj c` for a functor `F : C ⥤ Cat`, then `colim` on `Grothendieck F` also preserves limits
 of shape `J`. -/
-instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H]
-    [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [∀ c, HasLimitsOfShape J ((F.obj c) ⥤ H)]
-    [HasLimitsOfShape J H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
+instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H] [HasLimitsOfShape J H]
+    [∀ c, HasColimitsOfShape (↑(F.obj c)) H] [PreservesLimitsOfShape J (colim (J := C) (C := H))]
     [∀ c, PreservesLimitsOfShape J (colim (J := F.obj c) (C := H))] :
     PreservesLimitsOfShape J (colim (J := Grothendieck F) (C := H)) := by
   constructor

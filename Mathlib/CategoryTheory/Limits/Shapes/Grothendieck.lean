@@ -95,7 +95,7 @@ def natTransIntoForgetCompFiberwiseColimit :
     G ⟶ Grothendieck.forget F ⋙ fiberwiseColimit G where
   app X := colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber
   naturality _ _ f := by
-    simp only [Functor.comp_obj, Grothendieck.forget_obj, fiberwiseColim_obj, Functor.comp_map,
+    simp only [Functor.comp_obj, Grothendieck.forget_obj, fiberwiseColimit_obj, Functor.comp_map,
       Grothendieck.forget_map, fiberwiseColimit_map, ι_colimMap_assoc, Grothendieck.ι_obj,
       NatTrans.comp_app, whiskerRight_app, Functor.associator_hom_app, Category.comp_id,
       colimit.ι_pre]
