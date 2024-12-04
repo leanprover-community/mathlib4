@@ -547,7 +547,7 @@ notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
 /-- `ContinuousAlgEquivClass F R A B` asserts that `F` is a type of bundled continuous
 `R`-algebra equivalences `A → B`. -/
 class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
-    [Semiring A][TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
+    [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
     [Algebra R B] [EquivLike F A B] extends AlgEquivClass F R A B : Prop where
   map_continuous : ∀ (f : F), Continuous f
   inv_continuous : ∀ (f : F), Continuous (EquivLike.inv f)
@@ -629,18 +629,6 @@ theorem isClosed_image (e : A ≃A[R] B) {S : Set A} : IsClosed (e '' S) ↔ IsC
 theorem map_nhds_eq (e : A ≃A[R] B) (a : A) : Filter.map e (𝓝 a) = 𝓝 (e a) :=
   e.toHomeomorph.map_nhds_eq a
 
-theorem map_zero (e : A ≃A[R] B) : e (0 : A) = 0 :=
-  e.toAlgHom.map_zero'
-
-theorem map_add (e : A ≃A[R] B) (a₁ a₂ : A) : e (a₁ + a₂) = e a₁ + e a₂ :=
-  e.toAlgHom.map_add' a₁ a₂
-
-theorem map_smul (e : A ≃A[R] B) (r : R) (a : A) : e (r • a) = r • e a :=
-  _root_.map_smul e r a
-
-theorem map_eq_zero_iff (e : A ≃A[R] B) {a : A} : e a = 0 ↔ a = 0 :=
-  e.toAlgEquiv.toLinearEquiv.map_eq_zero_iff
-
 attribute [continuity]
   ContinuousAlgEquiv.continuous_invFun ContinuousAlgEquiv.continuous_toFun
 
@@ -701,7 +689,7 @@ theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' (e.symm '' S) = S 
   e.symm.symm_image_image S
 
 @[simp]
-theorem symm_toAlgEquiv (e : A ≃A[R] B) : e.symm.toAlgEquiv = e.toAlgEquiv.symm := rfl
+theorem toAlgEquiv_symm (e : A ≃A[R] B) : e.symm.toAlgEquiv = e.toAlgEquiv.symm := rfl
 
 @[simp]
 theorem symm_toHomeomorph (e : A ≃A[R] B) : e.symm.toHomeomorph = e.toHomeomorph.symm := rfl
