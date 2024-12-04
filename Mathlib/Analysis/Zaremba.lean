@@ -38,6 +38,11 @@ instance Finsupp.pointwiseScalar' {α β γ : Type*} [AddCommMonoid β] [Semirin
       apply hx
       rw [h, zero_smul])
 
+@[simp] theorem Finsupp.pointwiseScalar.smul_apply {α β γ : Type*}
+    [AddCommMonoid β] [Semiring γ] [Module γ β] (f : α → β) (g : α →₀ γ) (a : α) :
+    (f • g) a = g a • f a := by
+  rfl
+
 def SupportedCoprime (μ : (Fin 2 → ℤ) →₀ ℝ≥0) : Prop :=
   ∀ p ∈ μ.support, IsCoprime (p 0) (p 1)
 
@@ -76,6 +81,16 @@ def Finsupp.mass {α A : Type*} [AddCommMonoid A] (a : α →₀ A) : A := a.sum
 
 notation3 "∑ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => Finsupp.mass (r • μ)
 
+theorem Finsupp.smul_mass {α A : Type*} [AddCommMonoid A] [Module ℝ≥0 A] (μ : α →₀ ℝ≥0) (f : α → A)
+    (c : ℝ≥0) :
+    (c • ∑ a, f a ∂μ) = ∑ a, c • f a ∂μ := by
+  unfold Finsupp.mass
+  symm
+  convert Finsupp.sum_smul_index_linearMap' (v := (fun a ↦ f a) • μ) (h := fun _ ↦ LinearMap.id)
+  ext a
+  simp only [pointwiseScalar.smul_apply, coe_smul, Pi.smul_apply]
+  rw [smul_comm]
+
 set_option quotPrecheck false in
 notation "S" =>
  ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), exp (2 * π * I * θ * (p.1 ⬝ᵥ p.2)) ∂(μ.pointwise_prod ν)
@@ -112,6 +127,47 @@ theorem cauchy_schwarz {α : Type*} (μ : α →₀ ℝ≥0) (f g : α → ℂ) 
     ‖∑ x, f x * g x ∂μ‖ ^ 2 ≤ (∑ x, ‖f x‖ ^ 2 ∂μ) * (∑ x, ‖g x‖ ^ 2 ∂μ) := by
   sorry
 
+theorem Finsupp.sum_comm_tsum {α β E : Type*} [AddCommMonoid E] [Module ℝ≥0 E] [TopologicalSpace E]
+    [T2Space E] [ContinuousAdd E] [ContinuousConstSMul ℝ≥0 E]
+    (μ : α →₀ ℝ≥0) (f : α → β → E) (hf : ∀ a ∈ μ.support, Summable (f a)) :
+    ∑ a : α, (∑' b : β, f a b) ∂μ = ∑' b : β, (∑ a : α, f a b ∂μ) := by
+  calc
+  ∑ a : α, (∑' b : β, f a b) ∂μ
+    = ∑ a ∈ μ.support, μ a • (∑' b : β, f a b) := by
+      -- FIXME lemma here
+      refine Finsupp.sum_of_support_subset _ ?_ _ (by simp)
+      intro a
+      contrapose!
+      simp
+      intro ha
+      simp [ha]
+  _ = ∑ a ∈ μ.support, (∑' b : β, μ a • f a b) := by
+      congr! with a ha
+      rw [tsum_const_smul _ (hf _ ha)]
+  _ = ∑' b : β, (∑ a ∈ μ.support, μ a • f a b) := by
+      symm
+      apply tsum_sum
+      intro a ha
+      apply (hf a ha).const_smul
+  _ = ∑' b : β, (∑ a : α, f a b ∂μ) := by
+      congr! with b
+      symm
+      -- FIXME use previous lemma
+      refine Finsupp.sum_of_support_subset _ ?_ _ (by simp)
+      intro a
+      contrapose!
+      simp
+      intro ha
+      simp [ha]
+
+theorem Finsupp.sum_comm_tsum_weight {α β E : Type*} [AddCommMonoid E] [Module ℝ≥0 E]
+    [TopologicalSpace E] [T2Space E] [ContinuousAdd E] [ContinuousConstSMul ℝ≥0 E]
+    (μ : α →₀ ℝ≥0) (ν : β → ℝ≥0) (f : α → β → E) (hf : ∀ a ∈ μ.support, Summable (ν • f a)) :
+    ∑ a : α, (∑' b : β, ν b • f a b) ∂μ = ∑' b : β, ν b • (∑ a : α, f a b ∂μ) := by
+  convert Finsupp.sum_comm_tsum μ (ν • f) ?_ with _ _ b
+  · apply Finsupp.smul_mass
+  · exact hf
+
 example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
   let g (x : Fin 2 → ℤ) : ℂ :=  ∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
@@ -128,6 +184,9 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   rw [Finsupp.mass_eq_tsum]
   let μ' : (Fin 2 → ℤ) → ℝ≥0 := sorry
   have hμ : μ ≤ μ' := sorry
+  have hμ' : Summable μ' := sorry
+  have hμ'_exp (n : Fin 2 → ℤ) : Summable (μ' • fun x ↦ exp (2 * π * I * (a / q + β) * (x ⬝ᵥ n))) :=
+    sorry
   calc _ ≤ ∑' (x : Fin 2 → ℤ), μ' x • ‖g x‖ ^ 2 := by
         apply tsum_mono
         · sorry -- summability of finsupps
@@ -135,6 +194,7 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
         intro x
         dsimp
         gcongr
+        apply hμ
     _ ≤ _ := ?_
   have hg (x : Fin 2 → ℤ) :=
   calc
@@ -157,20 +217,14 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
         · sorry -- casting issue
         rw [hg]
         rfl
-    _ = ∑' (x : Fin 2 → ℤ), μ' x • (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
-          (ν.pointwise_prod ν) p • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2)))) := by
-        simp_rw [Finsupp.mass_eq_tsum]
-    _ = ∑' (x : Fin 2 → ℤ), (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
-          μ' x • ((ν.pointwise_prod ν) p • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
-    _ = ∑' (x : Fin 2 → ℤ), (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
-          (ν.pointwise_prod ν) p  • (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
-    _ = (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ), ∑' (x : Fin 2 → ℤ),
-          (ν.pointwise_prod ν) p  • (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
-    _ = (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (ν.pointwise_prod ν) p • ∑' (x : Fin 2 → ℤ),
-          (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
     _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (x : Fin 2 → ℤ),
           (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) ∂(ν.pointwise_prod ν) := by
-        rw [Finsupp.mass_eq_tsum]
+        rw [Finsupp.sum_comm_tsum_weight]
+        intro (n₁, n₂) hn
+        simp [-ne_eq] at hn
+        dsimp
+        apply hμ'_exp
+
 
 
 
