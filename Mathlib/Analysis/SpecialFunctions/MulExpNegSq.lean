@@ -12,7 +12,7 @@ import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 import Mathlib.Topology.MetricSpace.Pseudo.Basic
 import Mathlib.Topology.Order.Bounded

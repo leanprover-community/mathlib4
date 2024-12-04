@@ -3,11 +3,12 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Adam Topaz
 -/
-import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.FilteredColimits
+import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.Geometry.Manifold.Sheaf.Basic
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+import Mathlib.Geometry.Manifold.Sheaf.Basic
 
 /-! # The sheaf of smooth functions on a manifold
 
@@ -64,6 +65,10 @@ https://github.com/leanprover-community/mathlib4/pull/5726.
 
 noncomputable section
 open TopologicalSpace Opposite
+
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 universe u
 
@@ -125,7 +130,7 @@ def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
 lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eval IM I N x) := by
   apply TopCat.stalkToFiber_surjective
   intro n
-  exact ⟨⊤, fun _ ↦ n, smooth_const, rfl⟩
+  exact ⟨⊤, fun _ ↦ n, contMDiff_const, rfl⟩
 
 instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) :=
   (smoothSheaf.eval_surjective IM I N x).nontrivial
@@ -137,10 +142,13 @@ variable {IM I N}
     smoothSheaf.eval IM I N (x : M) ((smoothSheaf IM I M N).presheaf.germ U x hx f) = f ⟨x, hx⟩ :=
   TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp ⊤).localPredicate M N) _ _ _ _
 
-lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}
+lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
     (f : (smoothSheaf IM I M N).presheaf.obj U) :
-    Smooth IM I f :=
+    ContMDiff IM I ⊤ f :=
   (contDiffWithinAt_localInvariantProp ⊤).section_spec _ _ _ _
+
+@[deprecated (since := "2024-11-21")]
+alias smoothSheaf.smooth_section := smoothSheaf.contMDiff_section
 
 end TypeCat
 
@@ -212,7 +220,7 @@ noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGrp.{u} (TopCat.of M) 
 @[to_additive "For a manifold `M` and a smooth homomorphism `φ` between abelian additive Lie groups
 `A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from `smoothSheafAddCommGroup IM I M A`
 to `smoothSheafAddCommGroup IM I' M A'`."]
-def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : Smooth I I' φ) :
+def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : ContMDiff I I' ⊤ φ) :
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
   CategoryTheory.Sheaf.Hom.mk <|
   { app := fun _ ↦ CommGrp.ofHom <| SmoothMap.compLeftMonoidHom _ _ φ hφ
