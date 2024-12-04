@@ -21,9 +21,11 @@ exact sequence in the heart of a t-structure
 
 universe w v u
 
-namespace CategoryTheory
+open CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+
+namespace CategoryTheory
 
 open Category DerivedCategory Pretriangulated
 
@@ -72,6 +74,7 @@ lemma singleTriangle_distinguished :
     hS.singleTriangle ∈ distTriang (DerivedCategory C) :=
   isomorphic_distinguished _ (triangleOfSES_distinguished (hS.map_of_exact
     (HomologicalComplex.single C (ComplexShape.up ℤ) 0))) _ (singleTriangleIso hS)
+
 
 end ShortExact
 

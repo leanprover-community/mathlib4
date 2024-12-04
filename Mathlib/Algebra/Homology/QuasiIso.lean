@@ -5,7 +5,6 @@ Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!

@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
