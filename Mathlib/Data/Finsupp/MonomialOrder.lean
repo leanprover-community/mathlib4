@@ -15,6 +15,7 @@ A *monomial order* is well ordering relation on a type of the form `σ →₀ �
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
+
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
@@ -135,7 +136,6 @@ example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 1) := by
 example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 2) := by
   use 0; simp
 
-
 variable {σ : Type*} [LinearOrder σ]
 
 /-- The lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
@@ -152,5 +152,24 @@ theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 
 theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ toLex c < toLex d := Iff.rfl
+
+theorem MonomialOrder.lex_unit_lt_iff {c d : Unit →₀ ℕ} :
+    c ≺[lex] d ↔ c () < d () := by
+  simp [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff]
+  rcases lt_trichotomy (c ()) (d ()) with (h | h)
+  · simp [h]
+  rcases h with (h | h)
+  · simp [h]
+  · rw [← not_iff_not, not_lt]
+    simp [le_of_lt h]
+
+theorem MonomialOrder.lex_unit_le_iff {c d : Unit →₀ ℕ} :
+    c ≼[lex] d ↔ c () ≤ d () := by
+  simp [MonomialOrder.lex_le_iff, Finsupp.lex_le_iff, le_iff_eq_or_lt]
+  apply or_congr _ MonomialOrder.lex_unit_lt_iff
+  simp only [Finsupp.ext_iff]
+  by_cases h : c () = d ()
+  · simp [h]
+  · simp [← not_iff_not, h]
 
 end Lex
