@@ -7,7 +7,7 @@ Authors: Daniel Morrison
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Temp
+import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 Documentation
@@ -62,12 +62,39 @@ private def BilinFormAux :
     AlternatingMap.ext fun w ↦ Matrix.det_zero_of_row_eq hl' <| funext fun i ↦ by simp [hl]
 
 protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
-  (liftAlternating R M R k) ∘ₗ
-    liftAlternating R M (M [⋀^Fin k]→ₗ[R] R) k (BilinFormAux k B)
+  (liftAlternating k) ∘ₗ liftAlternating k (BilinFormAux k B)
 
-theorem symm_of_symm (h : ∀ v w : M, B v w = B w v) : ∀ v w : ⋀[R]^k M, exteriorPower.BilinForm k B
-  v w = exteriorPower.BilinForm k B w v := by
+local notation "⟪" v ", " w "⟫" => exteriorPower.BilinForm k B v w
 
+theorem bilin_apply_ιMulti (v w : Fin k → M) :
+  ⟪(ιMulti R k v), (ιMulti R k w)⟫ = (Matrix.of fun i j ↦ B (v i) (w j)).det := by
+  unfold exteriorPower.BilinForm
+  simp only [LinearMap.coe_comp, comp_apply, liftAlternating_apply_ιMulti]
+  rfl
+
+theorem bilin_apply_ιMulti_family {I : Type*} [LinearOrder I] (b : I → M)
+  (s t : {s : Finset I // Finset.card s = k}) :
+  ⟪ιMulti_family R k b s, ιMulti_family R k b t⟫ = (Matrix.of fun i j ↦
+  B (b (Finset.orderIsoOfFin s.1 s.2 i)) (b (Finset.orderIsoOfFin t.1 t.2 j))).det := by
+  unfold exteriorPower.BilinForm
+  unfold ιMulti_family
+  simp only [LinearMap.coe_comp, comp_apply, liftAlternating_apply_ιMulti]
+  rfl
+
+theorem bilin_symm_ιMulti (h : B.IsSymm) : ∀ v w : Fin k → M, ⟪(ιMulti R k v), (ιMulti R k w)⟫ =
+  ⟪(ιMulti R k w), (ιMulti R k v)⟫ := by
+  intro v w
+  simp only [bilin_apply_ιMulti]
+  rw [← Matrix.det_transpose]
+  congr 1
+  ext i j
+  simp only [Matrix.transpose_apply, Matrix.of_apply]
+  rw [← h (v j) (w i)]
+  simp only [RingHom.id_apply]
+
+-- I think this should go into the HodgeStar file
+theorem bilin_symm_of_symm (h : B.IsSymm) : (exteriorPower.BilinForm k B).IsSymm := by
+  intro v w
   sorry
 
 end exteriorPower
