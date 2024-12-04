@@ -102,6 +102,9 @@ instance symOffDiagXor.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
     DecidablePred (@symOffDiagXor ι₁ ι₂) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagXor_iff_proj_eq a)
 
+/--
+Left coord equal, right not-equal
+-/
 def symOffDiagLeft : Sym2 (ι₁ × ι₂) → Prop :=
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₁ = j₁) ∧ ¬ (i₂ = j₂), by aesop⟩
 
@@ -117,7 +120,9 @@ instance symOffDiagLeft.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
     DecidablePred (@symOffDiagLeft ι₁ ι₂) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagLeft_iff_proj_eq a)
 
-
+/--
+Right coord equal, left not-equal
+-/
 def symOffDiagRight : Sym2 (ι₁ × ι₂) → Prop :=
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₂ = j₂) ∧ ¬(i₁ = j₁), by aesop⟩
 
