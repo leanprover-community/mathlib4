@@ -588,9 +588,6 @@ theorem bihimp_eq : a ⇔ b = (a ⊔ bᶜ) ⊓ (b ⊔ aᶜ) := by simp only [(·
 theorem symmDiff_eq' : a ∆ b = (a ⊔ b) ⊓ (aᶜ ⊔ bᶜ) := by
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq, compl_inf]
 
-theorem symmDiff_eq2 : a ∆ b = (a ⊔ b) ⊓ (a ⊓ b)ᶜ := by
-  rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq]
-
 theorem bihimp_eq' : a ⇔ b = a ⊓ b ⊔ aᶜ ⊓ bᶜ :=
   @symmDiff_eq' αᵒᵈ _ _ _
 
