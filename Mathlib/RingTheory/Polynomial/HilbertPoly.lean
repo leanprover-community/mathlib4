@@ -145,15 +145,11 @@ theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
     exact fun n hn => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn
   · rintro h ⟨N, hhN⟩
     refine eq_of_infinite_eval_eq h (hilbertPoly p d) ?_
-    intro hfin
-    have hsub : Nat.cast '' Set.Ioi (N ⊔ p.natDegree) ⊆
-        { x | h.eval x = (p.hilbertPoly d).eval x } := by
+    · apply ((Set.Ioi_infinite (N ⊔ p.natDegree)).image cast_injective.injOn).mono
       intro x hx
       simp only [Set.mem_image, Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hx ⊢
       rcases hx with ⟨n, ⟨hn1, hn2⟩, hn3⟩
       rw [← hn3, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn2, hhN n hn1]
-    exact Set.Infinite.image (Set.injOn_of_injective Nat.cast_injective)
-      (Set.Ioi_infinite (N ⊔ p.natDegree)) (Set.Finite.subset hfin hsub)
 
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
@@ -171,15 +167,11 @@ lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
         simp_rw [natDegree_mul hp hne] at hlt
         exact lt_of_add_right_lt hlt
   refine eq_of_infinite_eval_eq _ _ ?_
-  · intro hfin
-    have hsub : Nat.cast '' Set.Ioi (p * (1 - X)).natDegree ⊆
-        { x | ((p * (1 - X)).hilbertPoly (d + 1)).eval x = (p.hilbertPoly d).eval x } := by
-      intro x hx
-      rcases hx with ⟨n, hn1, hn2⟩
-      rw [← hn2]
-      exact heq ⟨n, hn1⟩
-    exact Set.Infinite.image (Set.injOn_of_injective cast_injective) (Set.Ioi_infinite _)
-      (Set.Finite.subset hfin hsub)
+  · apply ((Set.Ioi_infinite (p * (1 - X)).natDegree).image cast_injective.injOn).mono
+    intro x hx
+    rcases hx with ⟨n, hn1, hn2⟩
+    rw [← hn2]
+    exact heq ⟨n, hn1⟩
 
 lemma hilbertPoly_mul_one_sub_pow_add (p : F[X]) (d e : ℕ) :
     hilbertPoly (p * (1 - X) ^ e) (d + e) = hilbertPoly p d := by
