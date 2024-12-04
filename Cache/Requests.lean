@@ -161,19 +161,25 @@ into the `lean-toolchain` file at the root directory of your project"
 
 /-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
 def getProofWidgets (buildDir : FilePath) : IO Unit := do
-  -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
-  -- NB: This is done unconditionally because cache has no simple heuristic
-  -- to determine whether the ProofWidgets JS is out-of-date
-  let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "proofwidgets:release"]}).wait
-  if exitCode != 0 then
-    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: lake failed with error code {exitCode}"
-  -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
-  try
-    IO.FS.removeDirAll (buildDir / "lib")
-    IO.FS.removeDirAll (buildDir / "ir")
-  catch
-    | .noFileOrDirectory .. => pure ()
-    | e => throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
+  -- Check if ProofWidgets is out-of-date via `lake`.
+  -- This is done through Lake as cache has no simple heuristic
+  -- to determine whether the ProofWidgets JS is out-of-date.
+  let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "--no-build", "proofwidgets:release"]}).wait
+  if exitCode == 0 then -- up-to-date
+    return
+  else if exitCode == 3 then -- needs fetch (`--no-build` triggered)
+    -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
+    let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "proofwidgets:release"]}).wait
+    if exitCode != 0 then
+      throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: lake failed with error code {exitCode}"
+    -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
+    try
+      IO.FS.removeDirAll (buildDir / "lib")
+      IO.FS.removeDirAll (buildDir / "ir")
+    catch e =>
+      throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
+  else
+    throw <| IO.userError s!"Failed to validate ProofWidgets cloud release: lake failed with error code {exitCode}"
 
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
