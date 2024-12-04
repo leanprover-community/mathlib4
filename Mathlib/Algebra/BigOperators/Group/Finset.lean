@@ -404,6 +404,17 @@ theorem prod_disjiUnion (s : Finset ι) (t : ι → Finset α) (h) :
   exact prod_const_one.symm
 
 @[to_additive]
+theorem prod_disjoint_filters_on_set (s : Finset α) (p q : α → Prop) [DecidablePred p]
+    [DecidablePred q] (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) (f : α → β) :
+    (∏ x ∈ s with (p x ∨ q x), f x) = (∏ x ∈ s with p x, f x) * (∏ x ∈ s with q x, f x) := by
+  rw [← prod_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
+  exact prod_congr (by
+    ext _
+    simp only [mem_filter, mem_disjUnion]
+    exact and_or_left
+  ) (fun _ _ ↦ rfl)
+
+@[to_additive]
 theorem prod_union_inter [DecidableEq α] :
     (∏ x ∈ s₁ ∪ s₂, f x) * ∏ x ∈ s₁ ∩ s₂, f x = (∏ x ∈ s₁, f x) * ∏ x ∈ s₂, f x :=
   fold_union_inter
