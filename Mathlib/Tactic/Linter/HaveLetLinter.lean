@@ -39,7 +39,7 @@ There are three settings:
 The default value is `1`.
 -/
 register_option linter.haveLet : Nat := {
-  defValue := 0
+  defValue := 2
   descr := "enable the `have` vs `let` linter:\n\
             * 0 -- inactive;\n\
             * 1 -- active only on noisy declarations;\n\
