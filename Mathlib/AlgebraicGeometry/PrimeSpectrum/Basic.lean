@@ -548,49 +548,6 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
 
-variable [DiscreteTopology (PrimeSpectrum R)]
-
-variable (R) in
-lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
-    Function.Surjective (RingHom.toLocalizationIsMaximal R) := fun x ↦ by
-  have (p : PrimeSpectrum R) : ∃ f, (basicOpen f : Set _) = {p} :=
-    have ⟨_, ⟨f, rfl⟩, hpf, hfp⟩ := isTopologicalBasis_basic_opens.isOpen_iff.mp
-      (isOpen_discrete {p}) p rfl
-    ⟨f, hfp.antisymm <| Set.singleton_subset_iff.mpr hpf⟩
-  choose f hf using this
-  let e := Equiv.ofInjective f fun p q eq ↦ Set.singleton_injective (hf p ▸ eq ▸ hf q)
-  have loc a : IsLocalization.AtPrime (Localization.Away a.1) (e.symm a).1 :=
-    (isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton <| hf _).mp <| by
-      simp_rw [Equiv.apply_ofInjective_symm]; infer_instance
-  let algE a := IsLocalization.algEquiv (e.symm a).1.primeCompl
-    (Localization.AtPrime (e.symm a).1) (Localization.Away a.1)
-  have span_eq : Ideal.span (Set.range f) = ⊤ := iSup_basicOpen_eq_top_iff.mp <| top_unique
-    fun p _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨p, (hf p).ge rfl⟩
-  replace hf a : (basicOpen a.1 : Set _) = {e.symm a} := by
-    simp_rw [← hf, Equiv.apply_ofInjective_symm]
-  have := (discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mp ‹_›).2
-  obtain ⟨r, eq, -⟩ := Localization.existsUnique_algebraMap_eq_of_span_eq_top _ span_eq
-    (fun a ↦ algE a (x ⟨_, this _ inferInstance⟩)) fun a b ↦ by
-      obtain rfl | ne := eq_or_ne a b; · rfl
-      have ⟨n, hn⟩ : IsNilpotent (a * b : R) := (basicOpen_eq_bot_iff _).mp <| by
-        simp_rw [basicOpen_mul, SetLike.ext'_iff, TopologicalSpace.Opens.coe_inf, hf]
-        exact bot_unique (fun _ ⟨ha, hb⟩ ↦ ne <| e.symm.injective (ha.symm.trans hb))
-      have := IsLocalization.subsingleton (M := .powers (a * b : R))
-        (S := Localization.Away (a * b : R)) <| hn ▸ ⟨n, rfl⟩
-      apply Subsingleton.elim
-  refine ⟨r, funext fun I ↦ ?_⟩
-  have := eq (e ⟨I, I.2.isPrime⟩)
-  rwa [← AlgEquiv.symm_apply_eq, AlgEquiv.commutes, e.symm_apply_apply] at this
-
-/-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
-canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
-@[stacks 00JA
-"See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
-def _root_.RingHom.toLocalizationIsMaximalEquiv : R ≃+*
-    Π I : {I : Ideal R // I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
-  .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R,
-    RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology R⟩
-
 end BasicOpen
 
 section DiscreteTopology
