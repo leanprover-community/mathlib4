@@ -136,7 +136,7 @@ variable (k K) in
 /--`finGaloisGroupFunctor` composite with the forgetful functor from `FiniteGrp` to `ProfiniteGrp`-/
 noncomputable abbrev profinGaloisGroupFunctor :
     (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ ProfiniteGrp :=
-    (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
+  (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
 variable (k K) in
 /--Define the homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
