@@ -146,6 +146,17 @@ theorem HasFTaylorSeriesUpToOn.congr (h : HasFTaylorSeriesUpToOn n f p s)
   rw [h₁ x hx]
   exact h.zero_eq x hx
 
+theorem HasFTaylorSeriesUpToOn.congr_series {q} (hp : HasFTaylorSeriesUpToOn n f p s)
+    (hpq : ∀ m : ℕ, m ≤ n → EqOn (p · m) (q · m) s) :
+    HasFTaylorSeriesUpToOn n f q s where
+  zero_eq x hx := by simp only [← (hpq 0 (zero_le n) hx), hp.zero_eq x hx]
+  fderivWithin m hm x hx := by
+    refine ((hp.fderivWithin m hm x hx).congr' ?_ hx).congr_fderiv ?_
+    · exact (hpq m hm.le).symm
+    · refine congrArg _ (hpq (m + 1) ?_ hx)
+      exact ENat.add_one_natCast_le_withTop_of_lt hm
+  cont m hm := (hp.cont m hm).congr (hpq m hm).symm
+
 theorem HasFTaylorSeriesUpToOn.mono (h : HasFTaylorSeriesUpToOn n f p s) {t : Set E} (hst : t ⊆ s) :
     HasFTaylorSeriesUpToOn n f p t :=
   ⟨fun x hx => h.zero_eq x (hst hx), fun m hm x hx => (h.fderivWithin m hm x (hst hx)).mono hst,
