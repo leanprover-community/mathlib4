@@ -93,16 +93,45 @@ def symOffDiagXor : Sym2 (ι₁ × ι₂) → Prop :=
 theorem mk_symOffDiagXor_iff {i j : (ι₁ × ι₂)} :
     symOffDiagXor s(i, j) ↔ Xor' (i.1 = j.1) (i.2 = j.2) := Iff.rfl
 
-
 @[simp]
 theorem symOffDiagXor_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
     symOffDiagXor (Sym2.mk z) ↔ Xor' (z.1.1 = z.2.1) (z.1.2 = z.2.2) :=
   Prod.recOn z fun _ _ => mk_symOffDiagXor_iff
 
-
 instance symOffDiagXor.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
     DecidablePred (@symOffDiagXor ι₁ ι₂) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagXor_iff_proj_eq a)
+
+def symOffDiagLeft : Sym2 (ι₁ × ι₂) → Prop :=
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₁ = j₁) ∧ ¬ (i₂ = j₂), by aesop⟩
+
+theorem mk_symOffDiagLeft_iff {i j : (ι₁ × ι₂)} :
+    symOffDiagLeft s(i, j) ↔ (i.1 = j.1) ∧ ¬ (i.2 = j.2) := Iff.rfl
+
+@[simp]
+theorem symOffDiagLeft_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+    symOffDiagLeft (Sym2.mk z) ↔ (z.1.1 = z.2.1) ∧ ¬(z.1.2 = z.2.2) :=
+  Prod.recOn z fun _ _ => mk_symOffDiagLeft_iff
+
+instance symOffDiagLeft.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
+    DecidablePred (@symOffDiagLeft ι₁ ι₂) :=
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagLeft_iff_proj_eq a)
+
+
+def symOffDiagRight : Sym2 (ι₁ × ι₂) → Prop :=
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) => (i₂ = j₂) ∧ ¬(i₁ = j₁), by aesop⟩
+
+theorem mk_symOffDiagRight_iff {i j : (ι₁ × ι₂)} :
+    symOffDiagRight s(i, j) ↔ (i.2 = j.2) ∧ ¬(i.1 = j.1)  := Iff.rfl
+
+@[simp]
+theorem symOffDiagRight_iff_proj_eq (z : (ι₁ × ι₂) × (ι₁ × ι₂)) :
+    symOffDiagRight (Sym2.mk z) ↔ (z.1.2 = z.2.2) ∧ ¬(z.1.1 = z.2.1) :=
+  Prod.recOn z fun _ _ => mk_symOffDiagRight_iff
+
+instance symOffDiagRight.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
+    DecidablePred (@symOffDiagRight ι₁ ι₂) :=
+  fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagRight_iff_proj_eq a)
 
 lemma f1 (p : Sym2 (ι₁ × ι₂)) : Xor' p.IsDiag ¬ p.IsDiag :=
   xor_not_right.mpr (Eq.to_iff rfl)
