@@ -829,6 +829,8 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
       exact h.not_lt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
+/-! ### Limit cardinals -/
+
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 Deprecated. Use `Order.IsSuccLimit` instead. -/
@@ -847,19 +849,21 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
 protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
   h.2
 
+set_option linter.deprecated false in
 @[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
 protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
   h.1
 
+set_option linter.deprecated false in
 @[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
 alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
 theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
   h.isSuccPrelimit.succ_lt
@@ -868,6 +872,25 @@ theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
 alias isSuccLimit_zero := isSuccPrelimit_zero
 
 end deprecated
+
+/-- A cardinal is a strong limit if it is not zero and it is closed under powersets. Note that `ℵ₀`
+is a strong limit by this definition. -/
+structure IsStrongLimit (c : Cardinal) : Prop where
+  ne_zero : c ≠ 0
+  two_power_lt {x} : x < c → 2 ^ x < c
+
+protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+  rw [Cardinal.isSuccLimit_iff]
+  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
+    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
+
+protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
+  H.isSuccLimit.isSuccPrelimit
+
+set_option linter.deprecated false in
+@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
+theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
+  ⟨H.ne_zero, H.isSuccPrelimit⟩
 
 /-! ### Indexed cardinal `sum` -/
 
@@ -1550,19 +1573,28 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
   contrapose! h
   exact not_isSuccLimit_of_lt_aleph0 h
 
+theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
+  refine ⟨aleph0_ne_zero, fun hx ↦ ?_⟩
+  obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
+  exact_mod_cast nat_lt_aleph0 _
+
+theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
+  aleph0_le_of_isSuccLimit H.isSuccLimit
+
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
 theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+set_option linter.deprecated false in
 @[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
 lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+set_option linter.deprecated false in
 @[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'

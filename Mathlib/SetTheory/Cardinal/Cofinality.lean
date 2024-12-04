@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Order.Cofinal
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.FixedPoint
 
@@ -548,38 +549,6 @@ end Ordinal
 namespace Cardinal
 
 open Ordinal
-
-/-- A cardinal is a strong limit if it is not zero and it is
-  closed under powersets. Note that `ℵ₀` is a strong limit by this definition. -/
-def IsStrongLimit (c : Cardinal) : Prop :=
-  c ≠ 0 ∧ ∀ x < c, (2^x) < c
-
-theorem IsStrongLimit.ne_zero {c} (h : IsStrongLimit c) : c ≠ 0 :=
-  h.1
-
-theorem IsStrongLimit.two_power_lt {x c} (h : IsStrongLimit c) : x < c → (2^x) < c :=
-  h.2 x
-
-theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
-  ⟨aleph0_ne_zero, fun x hx => by
-    rcases lt_aleph0.1 hx with ⟨n, rfl⟩
-    exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
-
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
-  rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h =>
-    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
-
-protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
-  H.isSuccLimit.isSuccPrelimit
-
-theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
-  aleph0_le_of_isSuccLimit H.isSuccLimit
-
-set_option linter.deprecated false in
-@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
-theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.ne_zero, H.isSuccPrelimit⟩
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
   rcases eq_or_ne o 0 with (rfl | h)
