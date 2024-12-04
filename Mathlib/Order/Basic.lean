@@ -386,7 +386,7 @@ theorem exists_ge_of_linear [LinearOrder α] (a b : α) : ∃ c, a ≤ c ∧ b �
 lemma exists_forall_ge_and [LinearOrder α] {p q : α → Prop} :
     (∃ i, ∀ j ≥ i, p j) → (∃ i, ∀ j ≥ i, q j) → ∃ i, ∀ j ≥ i, p j ∧ q j
   | ⟨a, ha⟩, ⟨b, hb⟩ =>
-    let ⟨c, hac, hbc⟩ := exists_ge_of_linear a b
+    let_fun ⟨c, hac, hbc⟩ := exists_ge_of_linear a b
     ⟨c, fun _d hcd ↦ ⟨ha _ <| hac.trans hcd, hb _ <| hbc.trans hcd⟩⟩
 
 theorem lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
@@ -1242,7 +1242,7 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
 theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
-    let ⟨a, ha₁, ha₂⟩ := exists_between ha
+    let_fun ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_lt_of_le ‹a < a₁› (h _ ‹a₂ < a›)
 
 theorem eq_of_le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
@@ -1252,7 +1252,7 @@ theorem eq_of_le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a�
 theorem le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
-    let ⟨a, ha₁, ha₂⟩ := exists_between ha
+    let_fun ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_le_of_lt (h _ ‹a < a₁›) ‹a₂ < a›
 
 theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)

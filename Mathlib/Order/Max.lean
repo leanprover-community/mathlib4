@@ -188,12 +188,12 @@ def IsMax (a : α) : Prop :=
 
 @[simp]
 theorem not_isBot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
-  let ⟨_, hb⟩ := exists_not_ge a
+  let_fun ⟨_, hb⟩ := exists_not_ge a
   hb <| h _
 
 @[simp]
 theorem not_isTop [NoTopOrder α] (a : α) : ¬IsTop a := fun h =>
-  let ⟨_, hb⟩ := exists_not_le a
+  let_fun ⟨_, hb⟩ := exists_not_le a
   hb <| h _
 
 protected theorem IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b

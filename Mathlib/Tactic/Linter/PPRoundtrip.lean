@@ -43,7 +43,7 @@ After that, it applies some pre-emptive changes:
 * `notation3` is not followed by a pretty-printer space, so we add it here (https://github.com/leanprover-community/mathlib4/pull/15515).
 -/
 def polishPP (s : String) : String :=
-  let s := s.split (·.isWhitespace)
+  let_fun s := s.split (·.isWhitespace)
   (" ".intercalate (s.filter (!·.isEmpty)))
     |>.replace "/-!" "/-! "
     |>.replace "``` " "```  " -- avoid losing an existing space after the triple back-ticks
@@ -56,12 +56,12 @@ def polishPP (s : String) : String :=
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
-  let split := s.split (· == '\n')
-  let preWS := split.foldl (init := #[]) fun p q =>
-    let txt := q.trimLeft.length
+  let_fun split := s.split (· == '\n')
+  let_fun preWS := split.foldl (init := #[]) fun p q =>
+    let_fun txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt
-  let preWS := preWS.eraseIdxIfInBounds 0
-  let s := (split.map .trimLeft).filter (· != "")
+  let_fun preWS := preWS.eraseIdxIfInBounds 0
+  let_fun s := (split.map .trimLeft).filter (· != "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 
 /-- `posToShiftedPos lths diff` takes as input an array `lths` of natural numbers,

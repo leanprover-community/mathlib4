@@ -61,7 +61,7 @@ open CCM
 
 /-- Make an new `CCState` from the given `config`. -/
 def mkCore (config : CCConfig) : CCState :=
-  let s : CCState := { config with }
+  let_fun s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false
 
 /-- Create a congruence closure state object from the given `config` using the hypotheses in the
@@ -147,7 +147,7 @@ instance : ToMessageData CCState :=
 /-- Continue to append following expressions in the equivalence class of `e` to `r` until `f` is
 found. -/
 partial def eqcOfCore (s : CCState) (e : Expr) (f : Expr) (r : List Expr) : List Expr :=
-  let n := s.next e
+  let_fun n := s.next e
   if n == f then e :: r else eqcOfCore s n f (e :: r)
 
 /-- The equivalence class of `e`. -/
@@ -164,8 +164,8 @@ Loops until the element `first` is encountered.
 See `foldEqc` for folding `f` over all elements of the equivalence class. -/
 partial def foldEqcCore {α} (s : CCState) (f : α → Expr → α) (first : Expr) (c : Expr) (a : α) :
     α :=
-  let new_a := f a c
-  let next := s.next c
+  let_fun new_a := f a c
+  let_fun next := s.next c
   if next == first then new_a else foldEqcCore s f first next new_a
 
 /-- Fold the function of `f` over the equivalence class of `e`. -/

@@ -59,7 +59,7 @@ Note that since this and `instNonemptyOfInhabited` are the most "obvious" way to
 instance if no direct instance can be found, we give this a higher priority than the usual `100`.
 -/
 instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α :=
-  let ⟨x, _⟩ := _root_.exists_pair_ne α
+  let_fun ⟨x, _⟩ := _root_.exists_pair_ne α
   ⟨x⟩
 
 theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=

@@ -36,7 +36,7 @@ theorem const_def {y : β} : (fun _ : α ↦ y) = const α y :=
   rfl
 
 theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun _ _ h ↦
-  let ⟨x⟩ := ‹Nonempty α›
+  let_fun ⟨x⟩ := ‹Nonempty α›
   congr_fun h x
 
 @[simp]
@@ -151,7 +151,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
-  let ⟨x, h⟩ := S y
+  let_fun ⟨x, h⟩ := S y
   ⟨g x, h⟩
 
 @[simp]
@@ -160,7 +160,7 @@ theorem Surjective.of_comp_iff (f : α → β) {g : γ → α} (hg : Surjective 
   ⟨Surjective.of_comp, fun h ↦ h.comp hg⟩
 
 theorem Surjective.of_comp_left {g : γ → α} (S : Surjective (f ∘ g)) (hf : Injective f) :
-    Surjective g := fun a ↦ let ⟨c, hc⟩ := S (f a); ⟨c, hf hc⟩
+    Surjective g := fun a ↦ let_fun ⟨c, hc⟩ := S (f a); ⟨c, hf hc⟩
 
 theorem Injective.bijective₂_of_surjective {g : γ → α} (hf : Injective f) (hg : Injective g)
     (S : Surjective (f ∘ g)) : Bijective f ∧ Bijective g :=
@@ -178,7 +178,7 @@ instance decidableEqPFun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, De
 protected theorem Surjective.forall (hf : Surjective f) {p : β → Prop} :
     (∀ y, p y) ↔ ∀ x, p (f x) :=
   ⟨fun h x ↦ h (f x), fun h y ↦
-    let ⟨x, hx⟩ := hf y
+    let_fun ⟨x, hx⟩ := hf y
     hx ▸ h x⟩
 
 protected theorem Surjective.forall₂ (hf : Surjective f) {p : β → β → Prop} :
@@ -192,7 +192,7 @@ protected theorem Surjective.forall₃ (hf : Surjective f) {p : β → β → β
 protected theorem Surjective.exists (hf : Surjective f) {p : β → Prop} :
     (∃ y, p y) ↔ ∃ x, p (f x) :=
   ⟨fun ⟨y, hy⟩ ↦
-    let ⟨x, hx⟩ := hf y
+    let_fun ⟨x, hx⟩ := hf y
     ⟨x, hx.symm ▸ hy⟩,
     fun ⟨x, hx⟩ ↦ ⟨f x, hx⟩⟩
 
@@ -218,7 +218,7 @@ theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g
 
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
   ⟨fun hf b ↦
-      let ⟨a, ha⟩ := hf.surjective b
+      let_fun ⟨a, ha⟩ := hf.surjective b
       ⟨a, ha, fun _ ha' ↦ hf.injective (ha'.trans ha.symm)⟩,
     fun he ↦ ⟨fun {_a a'} h ↦ (he (f a')).unique h rfl, fun b ↦ (he b).exists⟩⟩
 
@@ -230,11 +230,11 @@ protected theorem Bijective.existsUnique {f : α → β} (hf : Bijective f) (b :
 theorem Bijective.existsUnique_iff {f : α → β} (hf : Bijective f) {p : β → Prop} :
     (∃! y, p y) ↔ ∃! x, p (f x) :=
   ⟨fun ⟨y, hpy, hy⟩ ↦
-    let ⟨x, hx⟩ := hf.surjective y
+    let_fun ⟨x, hx⟩ := hf.surjective y
     ⟨x, by simpa [hx], fun z (hz : p (f z)) ↦ hf.injective <| hx.symm ▸ hy _ hz⟩,
     fun ⟨x, hpx, hx⟩ ↦
     ⟨f x, hpx, fun y hy ↦
-      let ⟨z, hz⟩ := hf.surjective y
+      let_fun ⟨z, hz⟩ := hf.surjective y
       hz ▸ congr_arg f (hx _ (by simpa [hz]))⟩⟩
 
 theorem Bijective.of_comp_iff (f : α → β) {g : γ → α} (hg : Bijective g) :
@@ -248,7 +248,7 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h {a | ¬ f a a}
+  | h => let_fun ⟨D, e⟩ := h {a | ¬ f a a}
         @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
@@ -327,7 +327,7 @@ theorem LeftInverse.rightInverse_of_injective {f : α → β} {g : β → α} (h
 
 theorem LeftInverse.rightInverse_of_surjective {f : α → β} {g : β → α} (h : LeftInverse f g)
     (hg : Surjective g) : RightInverse f g :=
-  fun x ↦ let ⟨y, hy⟩ := hg x; hy ▸ congr_arg g (h y)
+  fun x ↦ let_fun ⟨y, hy⟩ := hg x; hy ▸ congr_arg g (h y)
 
 theorem RightInverse.leftInverse_of_surjective {f : α → β} {g : β → α} :
     RightInverse f g → Surjective f → LeftInverse f g :=
@@ -452,7 +452,7 @@ theorem injective_surjInv (h : Surjective f) : Injective (surjInv h) :=
 
 theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) :
     Surjective f :=
-  fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
+  fun _ ↦ let_fun ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
@@ -839,13 +839,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
-  let ⟨b⟩ := ‹Nonempty β›
+  let_fun ⟨b⟩ := ‹Nonempty β›
   hf.left b <| (congr_fun h b : _)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
   fun _ _ h ↦
-    let ⟨a⟩ := ‹Nonempty α›
+    let_fun ⟨a⟩ := ‹Nonempty α›
     hf.right a <| (congr_fun h a : _)
 
 theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=

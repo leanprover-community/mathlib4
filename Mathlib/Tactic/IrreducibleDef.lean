@@ -85,7 +85,7 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
   let n_def ← match n_def.getD ⟨mkNullNode⟩ with
     | `(irredDefLemma| (lemma := $id)) => pure id
     | _ => pure <| mkIdentFrom n <| (·.review) <|
-      let scopes := extractMacroScopes n.getId
+      let_fun scopes := extractMacroScopes n.getId
       { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|
       $[$doc:docComment]? $[@[$attrs,*]]?

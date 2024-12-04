@@ -168,7 +168,7 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 
 See note [reducible non-instances]. -/
 abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
-  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
+  let_fun hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
     ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
       h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r

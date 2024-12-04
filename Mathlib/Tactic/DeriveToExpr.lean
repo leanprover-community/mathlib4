@@ -135,7 +135,7 @@ def mkLocalInstanceLetDecls (ctx : Deriving.Context) (argNames : Array Name) :
 def fixIndType (indVal : InductiveVal) (t : Term) : TermElabM Term :=
   match t with
   | `(@$f $args*) =>
-    let levels := indVal.levelParams.toArray.map mkIdent
+    let_fun levels := indVal.levelParams.toArray.map mkIdent
     `(@$f.{$levels,*} $args*)
   | _ => throwError "(internal error) expecting output of `mkInductiveApp`"
 

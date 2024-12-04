@@ -1228,7 +1228,7 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
   else
     have ha : 0 < a := Nat.pos_of_ne_zero ha
     have h1 : ∃ d, c = a * b * d := h
-    let ⟨d, hd⟩ := h1
+    let_fun ⟨d, hd⟩ := h1
     have h2 : c / a = b * d := Nat.div_eq_of_eq_mul_right ha (by simpa [Nat.mul_assoc] using hd)
     show ∃ d, c / a = b * d from ⟨d, h2⟩
 

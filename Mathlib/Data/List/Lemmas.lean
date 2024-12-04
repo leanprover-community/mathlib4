@@ -109,7 +109,7 @@ section MapAccumr
 
 theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
     mapAccumr f as s = List.foldr (fun a s =>
-                                    let r := f a s.1
+                                    let_fun r := f a s.1
                                     (r.1, r.2 :: s.2)
                                   ) (s, []) as
   | [], _ => rfl
@@ -119,7 +119,7 @@ theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as :
 theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ) :
     ∀ (as : List α) (bs : List β) (s : σ),
     mapAccumr₂ f as bs s = foldr (fun ab s =>
-                              let r := f ab.1 ab.2 s.1
+                              let_fun r := f ab.1 ab.2 s.1
                               (r.1, r.2 :: s.2)
                             ) (s, []) (as.zip bs)
   | [], [], _ => rfl

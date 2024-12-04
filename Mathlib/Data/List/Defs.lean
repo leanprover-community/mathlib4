@@ -155,7 +155,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
+    let_fun (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 
 -- Porting note: removed `[elab_as_elim]` per Mario C
@@ -221,7 +221,7 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
   | a :: l =>
     if p a then (some a, l)
     else
-      let (a', l') := extractp p l
+      let_fun (a', l') := extractp p l
       (a', a :: l')
 
 /-- Notation for calculating the product of a `List`
@@ -282,7 +282,7 @@ def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l �
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
       -- pattern matching on `hx` too makes this not reducible!
-      let ⟨a, ha⟩ :=
+      let_fun ⟨a, ha⟩ :=
         chooseX ls
           (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
       ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
@@ -328,7 +328,7 @@ def map₂Left' (f : α → Option β → γ) : List α → List β → List γ 
   | [], bs => ([], bs)
   | a :: as, [] => ((a :: as).map fun a => f a none, [])
   | a :: as, b :: bs =>
-    let rec' := map₂Left' f as bs
+    let_fun rec' := map₂Left' f as bs
     (f a (some b) :: rec'.fst, rec'.snd)
 
 /-- Right-biased version of `List.map₂`. `map₂Right' f as bs` applies `f` to each
@@ -453,8 +453,8 @@ section MapAccumr
 def mapAccumr (f : α → γ → γ × β) : List α → γ → γ × List β
   | [], c => (c, [])
   | y :: yr, c =>
-    let r := mapAccumr f yr c
-    let z := f y r.1
+    let_fun r := mapAccumr f yr c
+    let_fun z := f y r.1
     (z.1, z.2 :: r.2)
 
 /-- Length of the list obtained by `mapAccumr`. -/
@@ -469,8 +469,8 @@ def mapAccumr₂ (f : α → β → γ → γ × δ) : List α → List β → �
   | [], _, c => (c, [])
   | _, [], c => (c, [])
   | x :: xr, y :: yr, c =>
-    let r := mapAccumr₂ f xr yr c
-    let q := f x y r.1
+    let_fun r := mapAccumr₂ f xr yr c
+    let_fun q := f x y r.1
     (q.1, q.2 :: r.2)
 
 /-- Length of a list obtained using `mapAccumr₂`. -/

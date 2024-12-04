@@ -450,18 +450,18 @@ instance : ToMessageData ProjectionRule where toMessageData
 
 /-- Returns the projection information of a structure. -/
 def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : MessageData :=
-  let ⟨defaults, nondefaults⟩ := l.partition (·.isDefault)
-  let toPrint : List MessageData :=
+  let_fun ⟨defaults, nondefaults⟩ := l.partition (·.isDefault)
+  let_fun toPrint : List MessageData :=
     defaults.map fun s ↦
-      let prefixStr := if s.isPrefix then "(prefix) " else ""
+      let_fun prefixStr := if s.isPrefix then "(prefix) " else ""
       m!"Projection {prefixStr}{s.name}: {s.expr}"
-  let print2 : MessageData :=
+  let_fun print2 : MessageData :=
     String.join <| (nondefaults.map fun nm : ProjectionData ↦ toString nm.1).intersperse ", "
-  let toPrint :=
+  let_fun toPrint :=
     toPrint ++
       if nondefaults.isEmpty then [] else
       [("No lemmas are generated for the projections: " : MessageData) ++ print2 ++ "."]
-  let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
+  let_fun toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
   m!"{pref} {str}:\n{toPrint}"
 
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
@@ -500,7 +500,7 @@ private def splitOnNotNumber (s delim : String) : List String :=
       | [] => []
       | (x :: xs) =>
         -- flag is true when this segment is nonempty and starts with a digit.
-        let flag := x.data.head?.elim false Char.isDigit
+        let_fun flag := x.data.head?.elim false Char.isDigit
         if flag then
           process xs (tail ++ delim ++ x)
         else

@@ -149,7 +149,7 @@ def MatchState.getBinders (s : MatchState) : Array (TSyntax ``extBinderParenthes
 
 /-- Push a delaborated term onto a foldr/foldl array. -/
 def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :=
-  let ts := (s.getFoldArray name).push t
+  let_fun ts := (s.getFoldArray name).push t
   {s with foldState := s.foldState.insert name ts}
 
 /-- Matcher that assigns the current `SubExpr` into the match state;
@@ -589,9 +589,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         match boundType.getD name .normal with
         | .normal => result ← `(MatchState.delabVar s $(quote name) (some e) >>= fun $id => $result)
         | .foldl => result ←
-          `(let $id := (MatchState.getFoldArray s $(quote name)).reverse; $result)
+          `(let_fun $id := (MatchState.getFoldArray s $(quote name)).reverse; $result)
         | .foldr => result ←
-          `(let $id := MatchState.getFoldArray s $(quote name); $result)
+          `(let_fun $id := MatchState.getFoldArray s $(quote name); $result)
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
       elabCommand <| ← `(command|

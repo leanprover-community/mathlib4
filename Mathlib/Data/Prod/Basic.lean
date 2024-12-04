@@ -212,8 +212,8 @@ theorem Injective.prodMap (hf : Injective f) (hg : Injective g) : Injective (map
 
 theorem Surjective.prodMap (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
   fun p ↦
-  let ⟨x, hx⟩ := hf p.1
-  let ⟨y, hy⟩ := hg p.2
+  let_fun ⟨x, hx⟩ := hf p.1
+  let_fun ⟨y, hy⟩ := hg p.2
   ⟨(x, y), Prod.ext hx hy⟩
 
 theorem Bijective.prodMap (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=

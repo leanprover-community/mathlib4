@@ -143,7 +143,7 @@ protected theorem Nontrivial.choose_fst_ne_choose_snd (hs : s.Nontrivial) :
   hs.choose_spec.right.choose_spec.right
 
 theorem Nontrivial.mono (hs : s.Nontrivial) (hst : s ⊆ t) : t.Nontrivial :=
-  let ⟨x, hx, y, hy, hxy⟩ := hs
+  let_fun ⟨x, hx, y, hy, hxy⟩ := hs
   ⟨x, hst hx, y, hst hy, hxy⟩
 
 theorem nontrivial_pair {x y} (hxy : x ≠ y) : ({x, y} : Set α).Nontrivial :=
@@ -153,16 +153,16 @@ theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.N
   (nontrivial_pair hxy).mono h
 
 theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
-  let ⟨x, hx, y, hy, hxy⟩ := hs
+  let_fun ⟨x, hx, y, hy, hxy⟩ := hs
   ⟨x, y, hxy, insert_subset hx <| singleton_subset_iff.2 hy⟩
 
 theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
   ⟨Nontrivial.pair_subset, fun H =>
-    let ⟨_, _, hxy, h⟩ := H
+    let_fun ⟨_, _, hxy, h⟩ := H
     nontrivial_of_pair_subset hxy h⟩
 
 theorem nontrivial_of_exists_ne {x} (hx : x ∈ s) (h : ∃ y ∈ s, y ≠ x) : s.Nontrivial :=
-  let ⟨y, hy, hyx⟩ := h
+  let_fun ⟨y, hy, hyx⟩ := h
   ⟨y, hy, x, hx, hyx⟩
 
 theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := by
@@ -180,11 +180,11 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
 
 theorem nontrivial_of_exists_lt [Preorder α]
     (H : ∃ᵉ (x ∈ s) (y ∈ s), x < y) : s.Nontrivial :=
-  let ⟨_, hx, _, hy, hxy⟩ := H
+  let_fun ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 
 theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
-  let ⟨x, hx, y, hy, hxy⟩ := hs
+  let_fun ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
@@ -192,7 +192,7 @@ theorem nontrivial_iff_exists_lt [LinearOrder α] :
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 
 protected theorem Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty :=
-  let ⟨x, hx, _⟩ := hs
+  let_fun ⟨x, hx, _⟩ := hs
   ⟨x, hx⟩
 
 protected theorem Nontrivial.ne_empty (hs : s.Nontrivial) : s ≠ ∅ :=
@@ -218,11 +218,11 @@ theorem Nontrivial.not_subset_singleton {x} (hs : s.Nontrivial) : ¬s ⊆ {x} :=
   (not_congr subset_singleton_iff_eq).2 (not_or_intro hs.ne_empty hs.ne_singleton)
 
 theorem nontrivial_univ [Nontrivial α] : (univ : Set α).Nontrivial :=
-  let ⟨x, y, hxy⟩ := exists_pair_ne α
+  let_fun ⟨x, y, hxy⟩ := exists_pair_ne α
   ⟨x, mem_univ _, y, mem_univ _, hxy⟩
 
 theorem nontrivial_of_univ_nontrivial (h : (univ : Set α).Nontrivial) : Nontrivial α :=
-  let ⟨x, _, y, _, hxy⟩ := h
+  let_fun ⟨x, _, y, _, hxy⟩ := h
   ⟨⟨x, y, hxy⟩⟩
 
 @[simp]
@@ -230,7 +230,7 @@ theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
   ⟨nontrivial_of_univ_nontrivial, fun h => @nontrivial_univ _ h⟩
 
 theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
-  let ⟨x, _, y, _, hxy⟩ := hs
+  let_fun ⟨x, _, y, _, hxy⟩ := hs
   ⟨⟨x, y, hxy⟩⟩
 
 /-- `s`, coerced to a type, is a nontrivial type if and only if `s` is a nontrivial set. -/

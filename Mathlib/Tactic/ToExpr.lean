@@ -33,7 +33,7 @@ attribute [-instance] Lean.instToExprArray
 
 universe u in
 instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
-  let type := toTypeExpr α
+  let_fun type := toTypeExpr α
   { toExpr     := fun as => mkApp2 (mkConst ``List.toArray [toLevel.{u}]) type (toExpr as.toList)
     toTypeExpr := mkApp (mkConst ``Array [toLevel.{u}]) type }
 

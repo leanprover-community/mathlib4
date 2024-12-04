@@ -540,22 +540,22 @@ variable [Preorder α] [Preorder β] {f g : α → β} {a : α}
 
 theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax a :=
   of_not_not fun h ↦
-    let ⟨_, hb⟩ := not_isMax_iff.1 h
+    let_fun ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMax ha
 
 theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
   of_not_not fun h ↦
-    let ⟨_, hb⟩ := not_isMin_iff.1 h
+    let_fun ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMin ha
 
 theorem StrictAnti.isMax_of_apply (hf : StrictAnti f) (ha : IsMin (f a)) : IsMax a :=
   of_not_not fun h ↦
-    let ⟨_, hb⟩ := not_isMax_iff.1 h
+    let_fun ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMin ha
 
 theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin a :=
   of_not_not fun h ↦
-    let ⟨_, hb⟩ := not_isMin_iff.1 h
+    let_fun ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMax ha
 
 lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
@@ -943,8 +943,8 @@ variable (α)
 /-- If `α` is a nonempty preorder with no maximal elements, then there exists a strictly monotone
 function `ℕ → α`. -/
 theorem exists_strictMono [Nonempty α] [NoMaxOrder α] : ∃ f : ℕ → α, StrictMono f :=
-  let ⟨a⟩ := ‹Nonempty α›
-  let ⟨f, hf, _⟩ := exists_strictMono' a
+  let_fun ⟨a⟩ := ‹Nonempty α›
+  let_fun ⟨f, hf, _⟩ := exists_strictMono' a
   ⟨f, hf⟩
 
 /-- If `α` is a nonempty preorder with no minimal elements, then there exists a strictly antitone

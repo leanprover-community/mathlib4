@@ -247,8 +247,8 @@ def ACApps.mkApps (op : Expr) (args : Array Expr) : ACApps :=
 
 /-- Flattens given two `ACApps`. -/
 def ACApps.mkFlatApps (op : Expr) (e₁ e₂ : ACApps) : ACApps :=
-  let newArgs := ACApps.append op e₁
-  let newArgs := ACApps.append op e₂ newArgs
+  let_fun newArgs := ACApps.append op e₁
+  let_fun newArgs := ACApps.append op e₂ newArgs
   -- TODO: this does a full sort but `newArgs` consists of two sorted subarrays,
   -- so if we want to optimize this, some form of merge sort might be faster.
   ACApps.mkApps op newArgs
@@ -482,7 +482,7 @@ attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
 def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool) :
     CCState :=
   assert! ccs.entries.find? e |>.isNone
-  let n : Entry :=
+  let_fun n : Entry :=
     { next := e
       root := e
       cgRoot := e
@@ -617,21 +617,21 @@ def ppEqc (ccs : CCState) (e : Expr) : MessageData := Id.run do
 If the `nonSingleton` argument is set to `true` then singleton equivalence classes will be
 omitted. -/
 def ppEqcs (ccs : CCState) (nonSingleton : Bool := true) : MessageData :=
-  let roots := ccs.getRoots #[] nonSingleton
-  let a := roots.map (fun root => ccs.ppEqc root)
-  let l := a.toList
+  let_fun roots := ccs.getRoots #[] nonSingleton
+  let_fun a := roots.map (fun root => ccs.ppEqc root)
+  let_fun l := a.toList
   bracket "{" (group <| joinSep l (ofFormat ("," ++ .line))) "}"
 
 def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
   match ccs.parents.find? e with
   | some poccs =>
-    let r := ofExpr e ++ ofFormat (.line ++ ":=" ++ .line)
-    let ps := poccs.toList.map fun o => ofExpr o.expr
+    let_fun r := ofExpr e ++ ofFormat (.line ++ ":=" ++ .line)
+    let_fun ps := poccs.toList.map fun o => ofExpr o.expr
     group (r ++ bracket "{" (group <| joinSep ps (ofFormat ("," ++ .line))) "}")
   | none => ofFormat .nil
 
 def ppParentOccs (ccs : CCState) : MessageData :=
-  let r := ccs.parents.toList.map fun (k, _) => ccs.ppParentOccsAux k
+  let_fun r := ccs.parents.toList.map fun (k, _) => ccs.ppParentOccsAux k
   bracket "{" (group <| joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppACDecl (ccs : CCState) (e : Expr) : MessageData :=
@@ -640,7 +640,7 @@ def ppACDecl (ccs : CCState) (e : Expr) : MessageData :=
   | none => nil
 
 def ppACDecls (ccs : CCState) : MessageData :=
-  let r := ccs.acEntries.toList.map fun (k, _) => ccs.ppACDecl k
+  let_fun r := ccs.acEntries.toList.map fun (k, _) => ccs.ppACDecl k
   bracket "{" (joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppACExpr (ccs : CCState) (e : Expr) : MessageData :=
@@ -651,12 +651,12 @@ def ppACExpr (ccs : CCState) (e : Expr) : MessageData :=
 
 partial def ppACApps (ccs : CCState) : ACApps → MessageData
   | .apps op args =>
-    let r := ofExpr op :: args.toList.map fun arg => ccs.ppACExpr arg
+    let_fun r := ofExpr op :: args.toList.map fun arg => ccs.ppACExpr arg
     sbracket (joinSep r (ofFormat .line))
   | .ofExpr e => ccs.ppACExpr e
 
 def ppACR (ccs : CCState) : MessageData :=
-  let r := ccs.acR.toList.map fun (k, p, _) => group <|
+  let_fun r := ccs.acR.toList.map fun (k, p, _) => group <|
     ccs.ppACApps k ++ ofFormat (Format.line ++ "--> ") ++ nest 4 (Format.line ++ ccs.ppACApps p)
   bracket "{" (joinSep r (ofFormat ("," ++ .line))) "}"
 

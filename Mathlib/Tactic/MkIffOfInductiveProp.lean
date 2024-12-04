@@ -57,11 +57,11 @@ partial def compactRelation :
 | b::bs, as_ps =>
   match as_ps.span (fun ⟨_, p⟩ ↦ p != b) with
     | (_, []) => -- found nothing in ps equal to b
-      let (bs, as_ps', subst) := compactRelation bs as_ps
+      let_fun (bs, as_ps', subst) := compactRelation bs as_ps
       (b::bs, as_ps', subst)
     | (ps₁, (a, _) :: ps₂) => -- found one that matches b. Remove it.
-      let i := fun e ↦ e.replaceFVar b a
-      let (bs, as_ps', subst) :=
+      let_fun i := fun e ↦ e.replaceFVar b a
+      let_fun (bs, as_ps', subst) :=
         compactRelation (bs.map i) ((ps₁ ++ ps₂).map (fun ⟨a, p⟩ ↦ (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 

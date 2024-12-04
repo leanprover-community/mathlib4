@@ -178,10 +178,10 @@ theorem Injective.sum_map {f : α → β} {g : α' → β'} (hf : Injective f) (
 theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
     Surjective (Sum.map f g)
   | inl y =>
-    let ⟨x, hx⟩ := hf y
+    let_fun ⟨x, hx⟩ := hf y
     ⟨inl x, congr_arg inl hx⟩
   | inr y =>
-    let ⟨x, hx⟩ := hg y
+    let_fun ⟨x, hx⟩ := hg y
     ⟨inr x, congr_arg inr hx⟩
 
 theorem Bijective.sum_map {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :

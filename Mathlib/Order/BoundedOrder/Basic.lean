@@ -151,7 +151,7 @@ lemma top_not_mem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
 variable [Nontrivial α]
 
 theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h =>
-  let ⟨_, ha⟩ := exists_ne (⊤ : α)
+  let_fun ⟨_, ha⟩ := exists_ne (⊤ : α)
   ha <| top_le_iff.1 <| h le_top
 
 end OrderTop

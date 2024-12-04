@@ -901,7 +901,7 @@ partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : 
   if p.atEnd i || s.atEnd i then
     p
   else
-    let j := p.next i
+    let_fun j := p.next i
     if (s.get i).isLower then
       capitalizeLikeAux s j <| p.set i (p.get i |>.toLower)
     else if (s.get i).isUpper then

@@ -156,7 +156,7 @@ partial
 def extractCtxAndGoals : InfoTree →
     Array (Syntax × MetavarContext × MetavarContext × List MVarId × List MVarId)
   | .node k args =>
-    let kargs := (args.map extractCtxAndGoals).foldl (· ++ ·) #[]
+    let_fun kargs := (args.map extractCtxAndGoals).foldl (· ++ ·) #[]
     if let .ofTacticInfo i := k then
       if take? i.stx && (i.stx.getRange? true).isSome then
         #[(i.stx, i.mctxBefore, i.mctxAfter, i.goalsTargetedBy, i.goalsCreatedBy)] ++ kargs
@@ -228,7 +228,7 @@ if `getStained stx = {}`, then `getStained' stx = {.goal}`.
 This means that tactics that do not have an explicit "`at`" in their syntax will be treated as
 acting on the main goal. -/
 def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Std.HashSet Stained :=
-  let out := getStained stx all?
+  let_fun out := getStained stx all?
   if out.size == 0 then {.goal} else out
 
 /-- `Stained.toFMVarId mv lctx st` takes a metavariable `mv`, a local context `lctx` and
@@ -342,8 +342,8 @@ If an `FVarId` with the same unique name exists in the new context, use it.
 Otherwise, if an `FVarId` with the same `userName` exists in the new context, use it.
 If both of these fail, return `default` (i.e. "fail"). -/
 def persistFVars (fv : FVarId) (before after : LocalContext) : FVarId :=
-  let ldecl := (before.find? fv).getD default
-  let name := ldecl.userName
+  let_fun ldecl := (before.find? fv).getD default
+  let_fun name := ldecl.userName
   (getFVarIdCandidates fv name after).getD 0 default
 
 /-- `reallyPersist` converts an array of pairs `(fvar, mvar)` to another array of the same type. -/

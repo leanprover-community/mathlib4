@@ -43,13 +43,13 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
 Given a `List Nat`, return the minimum, maximum, and standard deviation.
 -/
 def variation (counts : List Nat) : List Nat :=
-  let min := counts.min?.getD 0
-  let max := counts.max?.getD 0
-  let toFloat (n : Nat) := n.toUInt64.toFloat
-  let toNat (f : Float) := f.toUInt64.toNat
-  let counts' := counts.map toFloat
-  let μ : Float := counts'.foldl (· + ·) 0 / toFloat counts.length
-  let stddev : Float := Float.sqrt <|
+  let_fun min := counts.min?.getD 0
+  let_fun max := counts.max?.getD 0
+  let_fun toFloat (n : Nat) := n.toUInt64.toFloat
+  let_fun toNat (f : Float) := f.toUInt64.toNat
+  let_fun counts' := counts.map toFloat
+  let_fun μ : Float := counts'.foldl (· + ·) 0 / toFloat counts.length
+  let_fun stddev : Float := Float.sqrt <|
     ((counts'.map fun i => (i - μ)^2).foldl (· + ·) 0) / toFloat counts.length
   [min, max, toNat stddev]
 

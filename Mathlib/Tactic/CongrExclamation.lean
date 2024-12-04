@@ -741,7 +741,7 @@ elab_rules : tactic
   let config ← elabConfig cfg
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
-    let depth := n.map (·.getNat)
+    let_fun depth := n.map (·.getNat)
     g.congrN! depth config patterns
 
 end Congr!

@@ -131,7 +131,7 @@ protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
 
 protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
     LeftTotal r₁₂ → LeftTotal r₂₃ → LeftTotal r₁₃ :=
-  fun h₁ h₂ a ↦ let ⟨b, hab⟩ := h₁ a; let ⟨c, hbc⟩ := h₂ b; ⟨c, hr _ _ _ hab hbc⟩
+  fun h₁ h₂ a ↦ let_fun ⟨b, hab⟩ := h₁ a; let_fun ⟨c, hbc⟩ := h₂ b; ⟨c, hr _ _ _ hab hbc⟩
 
 end LeftTotal
 

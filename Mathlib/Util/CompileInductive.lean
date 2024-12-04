@@ -36,7 +36,7 @@ def mkRecNames (all : List Name) (numMotives : Nat) : List Name :=
   if numMotives ≤ all.length then
     all.map mkRecName
   else
-    let main := all[0]!
+    let_fun main := all[0]!
     all.map mkRecName ++
       (List.range (numMotives - all.length)).map (fun i => main.str s!"rec_{i+1}")
 
@@ -94,8 +94,8 @@ elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
 
 private def compileStructOnly (iv : InductiveVal) (rv : RecursorVal) : MetaM Unit := do
   let value ← forallTelescope rv.type fun xs _ =>
-    let val := xs[rv.getFirstMinorIdx]!
-    let val := mkAppN val ⟨.map (xs[rv.getMajorIdx]!.proj iv.name) <| .range rv.rules[0]!.nfields⟩
+    let_fun val := xs[rv.getFirstMinorIdx]!
+    let_fun val := mkAppN val ⟨.map (xs[rv.getMajorIdx]!.proj iv.name) <| .range rv.rules[0]!.nfields⟩
     mkLambdaFVars xs val
   go value
 where

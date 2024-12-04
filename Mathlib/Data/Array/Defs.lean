@@ -26,7 +26,7 @@ def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
 where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 | a, [], x, i0 => a.set! i0 x
 | a, i :: is, x, i0 =>
-  let (y, a) := a.swapAt! i x
+  let_fun (y, a) := a.swapAt! i x
   cyclicPermuteAux a is y i0
 
 /-- Permute the array using a list of cycles. -/

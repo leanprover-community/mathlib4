@@ -86,7 +86,7 @@ theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | �
 
 theorem ExistsUnique.unique {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
-  let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
+  let_fun ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 
 -- TODO
 -- attribute [congr] forall_congr'

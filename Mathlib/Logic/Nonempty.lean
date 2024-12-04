@@ -107,8 +107,8 @@ theorem subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingl
 
 theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.Surjective f) :
     Nonempty α :=
-  let ⟨y⟩ := h
-  let ⟨x, _⟩ := hf y
+  let_fun ⟨y⟩ := h
+  let_fun ⟨x, _⟩ := hf y
   ⟨x⟩
 
 end

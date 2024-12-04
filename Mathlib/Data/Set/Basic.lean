@@ -379,7 +379,7 @@ theorem Nonempty.mono (ht : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   hs.imp ht
 
 theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
-  let ⟨x, xs, xt⟩ := not_subset.1 h
+  let_fun ⟨x, xs, xt⟩ := not_subset.1 h
   ⟨x, xs, xt⟩
 
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=

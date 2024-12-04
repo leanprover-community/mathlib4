@@ -116,7 +116,7 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   modify fun ccs =>
     { ccs with
       parents := ccs.parents.alter childRoot fun ps? =>
-        let ps := ps?.getD ∅
+        let_fun ps := ps?.getD ∅
         ps.insert { expr := parent, symmTable } }
 
 /--
@@ -1016,9 +1016,9 @@ def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
       insertRRHSOccs newRrhs Rlhs
       let ccs ← get
       trace[Debug.Meta.Tactic.cc.ac] group <|
-        let oldRw :=
+        let_fun oldRw :=
           paren (ccs.ppACApps Rlhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps Rrhs)
-        let newRw :=
+        let_fun newRw :=
           paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
         "compose: " ++ nest 9 (group
           (oldRw ++ ofFormat (Format.line ++ "with" ++ .line) ++ newRw) ++
@@ -1041,9 +1041,9 @@ def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
       modifyACTodo fun todo => todo.push (newRlhs, Rrhs, newRH)
       let ccs ← get
       trace[Debug.Meta.Tactic.cc.ac] group <|
-        let newRw :=
+        let_fun newRw :=
           paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
-        let oldRw :=
+        let_fun oldRw :=
           paren (ccs.ppACApps Rrhs ++ ofFormat (Format.line ++ "<--" ++ .line) ++ ccs.ppACApps Rlhs)
         "collapse: " ++ nest 10 (group
           (newRw ++ ofFormat (Format.line ++ "at" ++ .line) ++ oldRw) ++
@@ -1079,11 +1079,11 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
         modifyACTodo fun todo => todo.push (ra, sb, raEqsb)
         let ccs ← get
         trace[Debug.Meta.Tactic.cc.ac] group <|
-          let rw₁ :=
+          let_fun rw₁ :=
             paren (ccs.ppACApps ts ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps a)
-          let rw₂ :=
+          let_fun rw₂ :=
             paren (ccs.ppACApps tr ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps b)
-          let eq :=
+          let_fun eq :=
             paren (ccs.ppACApps ra ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps sb)
           "superpose: " ++ nest 11 (group
             (rw₁ ++ ofFormat (Format.line ++ "with" ++ .line) ++ rw₂) ++
@@ -1204,7 +1204,7 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
 
   let ccs ← get
   trace[Debug.Meta.Tactic.cc.ac] group <|
-    let d := paren (ccs.ppACApps e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
+    let_fun d := paren (ccs.ppACApps e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
     "new term: " ++ d ++ ofFormat (Format.line ++ "===>" ++ .line) ++ ccs.ppACApps rep
 
   modifyACTodo fun todo => todo.push (e, rep, pr)

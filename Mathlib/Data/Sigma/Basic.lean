@@ -97,10 +97,10 @@ theorem _root_.sigma_mk_injective {i : α} : Injective (@Sigma.mk α β i)
   | _, _, rfl => rfl
 
 theorem fst_surjective [h : ∀ a, Nonempty (β a)] : Surjective (fst : (Σ a, β a) → α) := fun a ↦
-  let ⟨b⟩ := h a; ⟨⟨a, b⟩, rfl⟩
+  let_fun ⟨b⟩ := h a; ⟨⟨a, b⟩, rfl⟩
 
 theorem fst_surjective_iff : Surjective (fst : (Σ a, β a) → α) ↔ ∀ a, Nonempty (β a) :=
-  ⟨fun h a ↦ let ⟨x, hx⟩ := h a; hx ▸ ⟨x.2⟩, @fst_surjective _ _⟩
+  ⟨fun h a ↦ let_fun ⟨x, hx⟩ := h a; hx ▸ ⟨x.2⟩, @fst_surjective _ _⟩
 
 theorem fst_injective [h : ∀ a, Subsingleton (β a)] : Injective (fst : (Σ a, β a) → α) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (rfl : a₁ = a₂)

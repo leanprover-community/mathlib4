@@ -145,7 +145,7 @@ theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p 
 
 theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
     Surjective (coind f h) := fun x ↦
-  let ⟨a, ha⟩ := hf x
+  let_fun ⟨a, ha⟩ := hf x
   ⟨a, coe_injective ha⟩
 
 theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Bijective f) :

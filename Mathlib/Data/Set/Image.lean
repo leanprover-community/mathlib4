@@ -153,7 +153,7 @@ theorem eq_preimage_subtype_val_iff {p : α → Prop} {s : Set (Subtype p)} {t :
 
 theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻¹' s).Nonempty) :
     s.Nonempty :=
-  let ⟨x, hx⟩ := hf
+  let_fun ⟨x, hx⟩ := hf
   ⟨f x, hx⟩
 
 @[simp] theorem preimage_singleton_true (p : α → Prop) : p ⁻¹' {True} = {a | p a} := by ext; simp
@@ -403,8 +403,8 @@ theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.No
 
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
-  let ⟨y, hy⟩ := hs
-  let ⟨x, hx⟩ := hf y
+  let_fun ⟨y, hy⟩ := hs
+  let_fun ⟨x, hx⟩ := hf y
   ⟨x, mem_preimage.2 <| hx.symm ▸ hy⟩
 
 instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
@@ -428,7 +428,7 @@ theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻
 @[simp]
 theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f '' (f ⁻¹' s) = s :=
   Subset.antisymm (image_preimage_subset f s) fun x hx =>
-    let ⟨y, e⟩ := h x
+    let_fun ⟨y, e⟩ := h x
     ⟨y, (e.symm ▸ hx : f y ∈ s), e⟩
 
 @[simp]
@@ -624,8 +624,8 @@ theorem _root_.Nat.mem_range_succ (i : ℕ) : i ∈ range Nat.succ ↔ 0 < i :=
 
 theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : s ⊆ range f) :
     (f ⁻¹' s).Nonempty :=
-  let ⟨_, hy⟩ := hs
-  let ⟨x, hx⟩ := hf hy
+  let_fun ⟨_, hy⟩ := hs
+  let_fun ⟨x, hx⟩ := hf hy
   ⟨x, Set.mem_preimage.2 <| hx.symm ▸ hy⟩
 
 theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f := by aesop
@@ -1028,7 +1028,7 @@ theorem Nontrivial.preimage {s : Set β} (hs : s.Nontrivial)
 /-- The image of a nontrivial set under an injective map is nontrivial. -/
 theorem Nontrivial.image (hs : s.Nontrivial) (hf : Function.Injective f) :
     (f '' s).Nontrivial :=
-  let ⟨x, hx, y, hy, hxy⟩ := hs
+  let_fun ⟨x, hx, y, hy, hxy⟩ := hs
   ⟨f x, mem_image_of_mem f hx, f y, mem_image_of_mem f hy, hf.ne hxy⟩
 
 theorem Nontrivial.image_of_injOn (hs : s.Nontrivial) (hf : s.InjOn f) :
@@ -1038,7 +1038,7 @@ theorem Nontrivial.image_of_injOn (hs : s.Nontrivial) (hf : s.InjOn f) :
 
 /-- If the image of a set is nontrivial, the set is nontrivial. -/
 theorem nontrivial_of_image (f : α → β) (s : Set α) (hs : (f '' s).Nontrivial) : s.Nontrivial :=
-  let ⟨_, ⟨x, hx, rfl⟩, _, ⟨y, hy, rfl⟩, hxy⟩ := hs
+  let_fun ⟨_, ⟨x, hx, rfl⟩, _, ⟨y, hy, rfl⟩, hxy⟩ := hs
   ⟨x, hx, y, hy, mt (congr_arg f) hxy⟩
 
 @[simp]

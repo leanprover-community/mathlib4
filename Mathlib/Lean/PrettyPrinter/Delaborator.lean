@@ -28,7 +28,7 @@ def withBindingBodyUnusedName' {α} (d : Syntax → Expr → DelabM α) : DelabM
 to have the boolean value `v`. -/
 def OptionsPerPos.setBool (opts : OptionsPerPos) (p : SubExpr.Pos) (n : Name) (v : Bool) :
     OptionsPerPos :=
-  let e := opts.findD p {} |>.setBool n v
+  let_fun e := opts.findD p {} |>.setBool n v
   opts.insert p e
 
 end Lean.PrettyPrinter.Delaborator

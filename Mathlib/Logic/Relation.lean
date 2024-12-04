@@ -175,7 +175,7 @@ theorem _root_.Acc.of_fibration (fib : Fibration rα rβ f) {a} (ha : Acc rα a)
 theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f c = b) (a : α)
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
-    let ⟨a', he⟩ := dc h
+    let_fun ⟨a', he⟩ := dc h
     -- Porting note: Lean 3 did not need the motive
     ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
 
@@ -641,7 +641,7 @@ theorem reflexive_join (h : Reflexive r) : Reflexive (Join r) := fun a ↦ ⟨a,
 theorem transitive_join (ht : Transitive r) (h : ∀ a b c, r a b → r a c → Join r b c) :
     Transitive (Join r) :=
   fun _ b _ ⟨x, hax, hbx⟩ ⟨y, hby, hcy⟩ ↦
-  let ⟨z, hxz, hyz⟩ := h b x y hbx hby
+  let_fun ⟨z, hxz, hyz⟩ := h b x y hbx hby
   ⟨z, ht hax hxz, ht hcy hyz⟩
 
 theorem equivalence_join (hr : Reflexive r) (ht : Transitive r)

@@ -46,9 +46,9 @@ open Parser Tactic
 /-- This is a slight modification of `Parser.runParserCategory`. -/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``tacticSeq) :=
-  let p := andthenFn whitespace Tactic.tacticSeq.fn
-  let ictx := mkInputContext input fileName
-  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  let_fun p := andthenFn whitespace Tactic.tacticSeq.fn
+  let_fun ictx := mkInputContext input fileName
+  let_fun s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if s.hasError then
     Except.error (s.toErrorMsg ictx)
   else if input.atEnd s.pos then

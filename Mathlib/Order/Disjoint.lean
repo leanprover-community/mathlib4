@@ -610,7 +610,7 @@ variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
 
 instance : ComplementedLattice αᵒᵈ :=
   ⟨fun a ↦
-    let ⟨b, hb⟩ := exists_isCompl (show α from a)
+    let_fun ⟨b, hb⟩ := exists_isCompl (show α from a)
     ⟨b, hb.dual⟩⟩
 
 end ComplementedLattice

@@ -41,7 +41,7 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩
 
 theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
-  ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
+  ⟨fun y ↦ let_fun ⟨x, _⟩ := hf y; IsEmpty.false x⟩
 
 instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x

@@ -67,7 +67,7 @@ def getSyntaxNodeKinds : Syntax → NameSet
 -- source:
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Counting.20prerequisites.20of.20a.20theorem/near/425370265
 def getVisited (env : Environment) (decl : Name) : NameSet :=
-  let (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
+  let_fun (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
   visited
 
 /-- `getId stx` takes as input a `Syntax` `stx`.
@@ -120,13 +120,13 @@ by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
 -/
 def previousInstName : Name → Name
   | nm@(.str init tail) =>
-    let last := tail.takeRightWhile (· != '_')
-    let newTail := match last.toNat? with
+    let_fun last := tail.takeRightWhile (· != '_')
+    let_fun newTail := match last.toNat? with
                     | some (n + 2) => s!"_{n + 1}"
                     | _ => ""
-    let newTailPrefix := tail.dropRightWhile (· != '_')
+    let_fun newTailPrefix := tail.dropRightWhile (· != '_')
     if newTailPrefix.isEmpty then nm else
-    let newTail :=
+    let_fun newTail :=
       (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
     .str init newTail
   | nm => nm

@@ -72,7 +72,7 @@ def lastComponentAsString : Name → String
   `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
   Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
-  let (nm2, nm1) := nm.componentsRev.splitAt n
+  let_fun (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
@@ -182,8 +182,8 @@ Each entry in the array is an `Expr.app`,
 and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
 @[inline]
 def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
-  let nargs := e.getAppNumArgs
+  let_fun dummy := mkSort levelZero
+  let_fun nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
 /-- Erase proofs in an expression by replacing them with `sorry`s.
@@ -262,10 +262,10 @@ section recognizers
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
-    let f := e.getAppFn
+    let_fun f := e.getAppFn
     if !f.isConst then none
     else
-      let fName := f.constName!
+      let_fun fName := f.constName!
       if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral? e.appArg!).map Nat.succ
       else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral? (e.getArg! 1)
       else if fName == ``Nat.zero && e.getAppNumArgs == 0 then some 0

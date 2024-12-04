@@ -108,7 +108,7 @@ theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f
 
 @[simp] theorem surjective_lift {f : α → γ} (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
     Function.Surjective (lift f h) ↔ Function.Surjective f :=
-  ⟨fun hf => hf.comp Quot.exists_rep, fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
+  ⟨fun hf => hf.comp Quot.exists_rep, fun hf y => let_fun ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
 protected def lift₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)

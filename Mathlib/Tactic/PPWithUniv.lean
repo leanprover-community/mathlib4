@@ -23,9 +23,9 @@ unless `pp.universes` is explicitly set to `false`.
 -/
 def delabWithUniv : Delab :=
   whenPPOption (·.get pp.universes.name true) <|
-  let enablePPUnivOnHead subExpr :=
-    let expr := subExpr.expr
-    let expr := mkAppN (expr.getAppFn.setOption pp.universes.name true) expr.getAppArgs
+  let_fun enablePPUnivOnHead subExpr :=
+    let_fun expr := subExpr.expr
+    let_fun expr := mkAppN (expr.getAppFn.setOption pp.universes.name true) expr.getAppArgs
     { subExpr with expr }
   withTheReader SubExpr enablePPUnivOnHead delabApp
 

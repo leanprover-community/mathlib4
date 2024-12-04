@@ -81,7 +81,7 @@ lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
-  ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
+  ⟨fun m => let_fun ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
 
 @[simp]
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
@@ -120,10 +120,10 @@ lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) 
   length_injective_iff.mpr inferInstance
 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
-  ⟨fun _ => let [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ => e ▸ rfl⟩
+  ⟨fun _ => let_fun [a, b] := l; ⟨a, b, rfl⟩, fun ⟨_, _, e⟩ => e ▸ rfl⟩
 
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
-  ⟨fun _ => let [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
+  ⟨fun _ => let_fun [a, b, c] := l; ⟨a, b, c, rfl⟩, fun ⟨_, _, _, e⟩ => e ▸ rfl⟩
 
 /-! ### set-theoretic notation of lists -/
 
@@ -958,7 +958,7 @@ theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f :=
 
 theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
     Surjective (map f) :=
-  let ⟨_, h⟩ := h.hasRightInverse; h.list_map.surjective
+  let_fun ⟨_, h⟩ := h.hasRightInverse; h.list_map.surjective
 
 @[simp]
 theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
@@ -2002,7 +2002,7 @@ theorem map₂Right'_nil_cons : map₂Right' f [] (b :: bs) = (f none b :: bs.ma
 @[simp]
 theorem map₂Right'_cons_cons :
     map₂Right' f (a :: as) (b :: bs) =
-      let r := map₂Right' f as bs
+      let_fun r := map₂Right' f as bs
       (f (some a) b :: r.fst, r.snd) :=
   rfl
 
@@ -2030,7 +2030,7 @@ theorem zipLeft'_cons_nil :
 @[simp]
 theorem zipLeft'_cons_cons :
     zipLeft' (a :: as) (b :: bs) =
-      let r := zipLeft' as bs
+      let_fun r := zipLeft' as bs
       ((a, some b) :: r.fst, r.snd) :=
   rfl
 
@@ -2058,7 +2058,7 @@ theorem zipRight'_nil_cons :
 @[simp]
 theorem zipRight'_cons_cons :
     zipRight' (a :: as) (b :: bs) =
-      let r := zipRight' as bs
+      let_fun r := zipRight' as bs
       ((some a, b) :: r.fst, r.snd) :=
   rfl
 

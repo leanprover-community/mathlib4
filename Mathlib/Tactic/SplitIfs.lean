@@ -45,8 +45,8 @@ match loc with
 private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
   match e.find? fun e => (e.isIte || e.isDIte) && !(e.getArg! 1 5).hasLooseBVars with
   | some iteApp =>
-    let cond := iteApp.getArg! 1 5
-    let dec := iteApp.getArg! 2 5
+    let_fun cond := iteApp.getArg! 1 5
+    let_fun dec := iteApp.getArg! 2 5
     -- Try to find a nested `if` in `cond`
     findIfToSplit? cond |>.getD (cond, dec)
   | none => none
@@ -145,10 +145,10 @@ syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binder
 
 elab_rules : tactic
 | `(tactic| split_ifs $[$loc:location]? $[with $withArg*]?) =>
-  let loc := match loc with
+  let_fun loc := match loc with
   | none => Location.targets #[] true
   | some loc => expandLocation loc
-  let names := match withArg with
+  let_fun names := match withArg with
   | none => []
   | some args => args.toList
   withMainContext do
