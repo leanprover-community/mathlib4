@@ -98,13 +98,15 @@ lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
+variable [CharZero F]
+
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbertPoly p d).eval (n : F)` equals the
 coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 -/
 theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
-    [CharZero F] {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
+    {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
     PowerSeries.coeff F n (p * (invOneSubPow F d)) = (hilbertPoly p d).eval (n : F) := by
   delta hilbertPoly; induction d with
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
@@ -135,7 +137,7 @@ words, if `h : F[X]` and there exists some `N : ℕ` such that for any number `n
 `N` we have `PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F)`, then `h` is exactly
 `Polynomial.hilbertPoly p d`.
 -/
-theorem exists_unique_hilbertPoly [CharZero F] (p : F[X]) (d : ℕ) :
+theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! (h : F[X]), (∃ (N : ℕ), (∀ (n : ℕ) (_ : N < n),
     PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F))) := by
   use hilbertPoly p d; constructor
@@ -144,12 +146,45 @@ theorem exists_unique_hilbertPoly [CharZero F] (p : F[X]) (d : ℕ) :
   · rintro h ⟨N, hhN⟩
     refine eq_of_infinite_eval_eq h (hilbertPoly p d) ?_
     intro hfin
-    have : Nat.cast '' Set.Ioi (N ⊔ p.natDegree) ⊆ {x | h.eval x = (p.hilbertPoly d).eval x} := by
+    have hsub : Nat.cast '' Set.Ioi (N ⊔ p.natDegree) ⊆
+        { x | h.eval x = (p.hilbertPoly d).eval x } := by
       intro x hx
       simp only [Set.mem_image, Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hx ⊢
-      rcases hx with ⟨n, ⟨h1, h2⟩, h3⟩
-      rw [← h3, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d h2, hhN n h1]
+      rcases hx with ⟨n, ⟨hn1, hn2⟩, hn3⟩
+      rw [← hn3, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn2, hhN n hn1]
     exact Set.Infinite.image (Set.injOn_of_injective Nat.cast_injective)
-      (Set.Ioi_infinite (N ⊔ p.natDegree)) (Set.Finite.subset hfin this)
+      (Set.Ioi_infinite (N ⊔ p.natDegree)) (Set.Finite.subset hfin hsub)
+
+lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
+    hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
+  have heq (n : Set.Ioi (p * (1 - X)).natDegree) :
+      (hilbertPoly (p * (1 - X)) (d + 1)).eval (n : F) = (hilbertPoly p d).eval (n : F) := by
+    by_cases hp : p = 0
+    · simp only [hp, zero_mul, hilbertPoly_zero_nat]
+    · have hlt : (p * (1 - X)).natDegree < (n : ℕ) := Set.mem_Ioi.1 n.2
+      rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval _ hlt,
+        ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval]
+      · apply PowerSeries.ext_iff.1 <| by simp only [coe_mul, mul_assoc, coe_sub, coe_one, coe_X,
+          ← one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val F d 1, pow_one]
+      · have hne : (1 : F[X]) - X ≠ 0 := fun h0 => by simpa only [coeff_sub, coeff_one_zero,
+          coeff_X_zero, sub_zero, coeff_zero, one_ne_zero] using ext_iff.1 h0 0
+        simp_rw [natDegree_mul hp hne] at hlt
+        exact lt_of_add_right_lt hlt
+  refine eq_of_infinite_eval_eq _ _ ?_
+  · intro hfin
+    have hsub : Nat.cast '' Set.Ioi (p * (1 - X)).natDegree ⊆
+        { x | ((p * (1 - X)).hilbertPoly (d + 1)).eval x = (p.hilbertPoly d).eval x } := by
+      intro x hx
+      rcases hx with ⟨n, hn1, hn2⟩
+      rw [← hn2]
+      exact heq ⟨n, hn1⟩
+    exact Set.Infinite.image (Set.injOn_of_injective cast_injective) (Set.Ioi_infinite _)
+      (Set.Finite.subset hfin hsub)
+
+lemma hilbertPoly_mul_one_sub_pow_add (p : F[X]) (d e : ℕ) :
+    hilbertPoly (p * (1 - X) ^ e) (d + e) = hilbertPoly p d := by
+  induction e with
+  | zero => simp
+  | succ e he => rw [pow_add, pow_one, ← mul_assoc, ← add_assoc, hilbertPoly_mul_one_sub_succ, he]
 
 end Polynomial
