@@ -147,9 +147,8 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
 def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
   k.components.contains `Conv ||
   "slice".isPrefixOf k.toString ||
-  match k with
-  | .str _ "quot" => true
-  | _ => ignoreTacticKinds.contains k
+  k matches .str _ "quot" ||
+  ignoreTacticKinds.contains k
 
 /--
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
