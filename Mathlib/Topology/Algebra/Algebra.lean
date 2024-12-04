@@ -541,6 +541,7 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
+@[inherit_doc]
 notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
 
 /-- `ContinuousAlgEquivClass F R A B` asserts that `F` is a type of bundled continuous
@@ -732,7 +733,7 @@ theorem symm_trans_apply (e₁ : B ≃A[R] A) (e₂ : C ≃A[R] B) (a : A) :
 
 @[simp]
 theorem comp_coe (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
-    e₂.toAlgHom.comp e₁.toAlgHom = e₁.trans e₂ :=
+    (e₂ : B →ₐ[R] C).comp (e₁ : A →ₐ[R] B) = e₁.trans e₂ :=
   rfl
 
 @[simp high]
@@ -746,11 +747,11 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
   ContinuousAlgHom.ext e.symm_apply_apply
 
 @[simp]
-theorem symm_comp_self (e : A ≃A[R] B) : e.symm.toFun  ∘ e.toFun =_root_.id :=
+theorem symm_comp_self (e : A ≃A[R] B) : e.symm  ∘ e =_root_.id :=
   funext <| e.symm_apply_apply
 
 @[simp]
-theorem self_comp_symm (e : A ≃A[R] B) : e.toFun ∘ e.symm.toFun = _root_.id :=
+theorem self_comp_symm (e : A ≃A[R] B) : e ∘ e.symm = _root_.id :=
   funext <| e.apply_symm_apply
 
 @[simp]
