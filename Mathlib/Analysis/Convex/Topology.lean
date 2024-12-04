@@ -283,11 +283,12 @@ theorem Convex.interior_closure_eq_interior_of_nonempty_interior {s : Set E} (hs
     (hs' : (interior s).Nonempty) : interior (closure s) = interior s := by
   refine subset_antisymm ?_ (interior_mono subset_closure)
   intro y hy
-  have h := AffineMap.lineMap_apply_one (k := 𝕜) hs'.choose y
+  rcases hs' with ⟨x, hx⟩
+  have h := AffineMap.lineMap_apply_one (k := 𝕜) x y
   obtain ⟨t, ht1, ht⟩ := AffineMap.lineMap_continuous.tendsto' _ _ h |>.eventually_mem
     (mem_interior_iff_mem_nhds.1 hy) |>.exists_gt
-  apply hs.openSegment_interior_closure_subset_interior hs'.choose_spec ht
-  nth_rw 1 [← AffineMap.lineMap_apply_zero (k := 𝕜) hs'.choose y, ← image_openSegment]
+  apply hs.openSegment_interior_closure_subset_interior hx ht
+  nth_rw 1 [← AffineMap.lineMap_apply_zero (k := 𝕜) x y, ← image_openSegment]
   exact ⟨1, Ioo_subset_openSegment ⟨zero_lt_one, ht1⟩, h⟩
 
 end ContinuousSMul
