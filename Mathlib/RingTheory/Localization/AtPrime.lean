@@ -252,29 +252,23 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
 namespace AtPrime
 
 variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
-variable {i : ι} (J : Ideal (R i)) [J.IsPrime]
+variable {i : ι} (I : Ideal (R i)) [I.IsPrime]
 
 /-- `Localization.localRingHom` specialized to a projection homomorphism from a product ring. -/
-noncomputable abbrev piRingHom :
-    Localization.AtPrime (J.comap <| Pi.evalRingHom R i) →+* Localization.AtPrime J :=
+noncomputable abbrev mapPiEvalRingHom :
+    Localization.AtPrime (I.comap <| Pi.evalRingHom R i) →+* Localization.AtPrime I :=
   localRingHom _ _ _ rfl
 
-open Function in
-theorem piRingHom_bijective : Bijective (piRingHom J) := by
-  let J' := J.comap (Pi.evalRingHom R i)
-  refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
-  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective J'.primeCompl x₁
-    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective J'.primeCompl x₂
-    simp_rw [localRingHom_mk'] at eq
-    rw [IsLocalization.eq] at eq ⊢
-    obtain ⟨s, hs⟩ := eq
-    refine ⟨⟨update 0 i s, by apply update_same i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
-    obtain rfl | ne := eq_or_ne j i
-    · simpa using hs
-    · simp [update_noteq ne]
-  · obtain ⟨r, s, rfl⟩ := mk'_surjective J.primeCompl x
-    exact ⟨mk' (M := J'.primeCompl) _ (update 0 i r) ⟨update 0 i s, by
-      apply update_same i s.1 0 ▸ s.2⟩, by simp [localRingHom_mk']⟩
+theorem mapPiEvalRingHom_bijective : Function.Bijective (mapPiEvalRingHom I) :=
+  Localization.mapPiEvalRingHom_bijective _
+
+theorem mapPiEvalRingHom_comp_algebraMap :
+    (mapPiEvalRingHom I).comp (algebraMap _ _) = (algebraMap _ _).comp (Pi.evalRingHom R i) :=
+  IsLocalization.map_comp _
+
+theorem mapPiEvalRingHom_algebraMap_apply {r : Π i, R i} :
+    mapPiEvalRingHom I (algebraMap _ _ r) = algebraMap _ _ (r i) :=
+  localRingHom_to_map ..
 
 end AtPrime
 
@@ -299,5 +293,51 @@ theorem toLocalizationIsMaximal_injective :
   have ⟨I, mI, hI⟩ := (Module.eqIdeal R r r').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
   have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp (congr_fun eq ⟨I, mI⟩)
   exact s.2 (hI hs)
+
+theorem toLocalizationIsMaximal_apply_apply {r I} :
+    toLocalizationIsMaximal R r I = algebraMap R _ r := rfl
+
+variable {R S} (f : R →+* S) (g : S →+* P) (hf : Function.Bijective f) (hg : Function.Bijective g)
+omit [Algebra R S]
+
+/-- Functoriality of `PiLocalizationIsMaximal` but restricted to bijective ring homs.
+If R and S are commutative rings, surjectivity would be enough. -/
+noncomputable def mapPiLocalizationIsMaximal :
+    PiLocalizationIsMaximal R →+* PiLocalizationIsMaximal S :=
+  Pi.ringHom fun I ↦ have := I.2.isPrime
+    (Localization.localRingHom _ _ f rfl).comp <|
+      Pi.evalRingHom _ (⟨_, Ideal.comap.isMaximal f hf I.2⟩ : setOf _)
+
+theorem mapPiLocalizationIsMaximal_naturality :
+    (mapPiLocalizationIsMaximal f hf).comp (toLocalizationIsMaximal R) =
+      (toLocalizationIsMaximal S).comp f := by
+  ext r I
+  have := I.2.isPrime
+  show Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
+  simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
+    ← IsLocalization.mk'_one (M := I.1.primeCompl), Submonoid.coe_one, map_one f]
+  rfl
+
+theorem mapPiLocalizationIsMaximal_id :
+    mapPiLocalizationIsMaximal (.id R) Function.bijective_id = .id _ :=
+  RingHom.ext fun _ ↦ funext fun I ↦ have := I.2.isPrime
+    congr($(Localization.localRingHom_id _) _)
+
+theorem mapPiLocalizationIsMaximal_comp :
+    mapPiLocalizationIsMaximal (g.comp f) (hg.comp hf) =
+      (mapPiLocalizationIsMaximal g hg).comp (mapPiLocalizationIsMaximal f hf) :=
+  RingHom.ext fun _ ↦ funext fun I ↦ have := I.2.isPrime
+    congr($(Localization.localRingHom_comp _ _ _ _ rfl _ rfl) _)
+
+theorem mapPiLocalizationIsMaximal_bijective :
+    Function.Bijective (mapPiLocalizationIsMaximal f hf) := by
+  let f := RingEquiv.ofBijective f hf
+  let e := RingEquiv.ofRingHom (mapPiLocalizationIsMaximal f hf)
+    (mapPiLocalizationIsMaximal f.symm f.symm.bijective) ?_ ?_
+  · exact e.bijective
+  · rw [← mapPiLocalizationIsMaximal_comp f.symm f f.symm.bijective hf]
+    simp_rw [RingEquiv.comp_symm, mapPiLocalizationIsMaximal_id]
+  · rw [← mapPiLocalizationIsMaximal_comp f f.symm hf f.symm.bijective]
+    simp_rw [RingEquiv.symm_comp, mapPiLocalizationIsMaximal_id]
 
 end RingHom

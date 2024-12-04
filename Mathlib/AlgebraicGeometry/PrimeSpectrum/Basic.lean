@@ -237,20 +237,11 @@ theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
       rwa [← hM.eq_of_le hI.1 hMI]
     exact ⟨fin.subset hpm, hpm⟩
 
-theorem discreteTopology_of_toPiLocalization_surjective
-    (surj : Function.Surjective (toPiLocalization R)) :
-    DiscreteTopology (PrimeSpectrum R) := by
-  rw [discreteTopology_iff_finite_and_isPrime_imp_isMaximal, and_comm]
-  by_contra h
-  obtain h | h := not_and_or.mp h
-  · push_neg at h
-    obtain ⟨I, _, hI⟩ := h
-    exact toPiLocalization_not_surjective_of_prime_not_maximal _ hI surj
-  rw [not_finite_iff_infinite] at h
-  have ⟨I, max, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite
-    (fun I : PrimeSpectrum R ↦ Localization I.asIdeal.primeCompl)
-  sorry
-
+theorem discreteTopology_of_toLocalization_surjective
+    (surj : Function.Surjective (toLocalization R)) :
+    DiscreteTopology (PrimeSpectrum R) :=
+  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mpr ⟨finite_of_toLocalization_surjective
+    surj, fun I prime ↦ isMaximal_of_toLocalization_surjective surj ⟨I, prime⟩⟩
 
 section Comap
 
@@ -557,11 +548,14 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
 
-variable [DiscreteTopology (PrimeSpectrum R)]
+end BasicOpen
 
-variable (R) in
-lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
-    Function.Surjective (RingHom.toLocalizationIsMaximal R) := fun x ↦ by
+section DiscreteTopology
+
+variable (R) [DiscreteTopology (PrimeSpectrum R)]
+
+theorem toLocalization_surjective_of_discreteTopology :
+    Function.Surjective (toLocalization R) := fun x ↦ by
   have (p : PrimeSpectrum R) : ∃ f, (basicOpen f : Set _) = {p} :=
     have ⟨_, ⟨f, rfl⟩, hpf, hfp⟩ := isTopologicalBasis_basic_opens.isOpen_iff.mp
       (isOpen_discrete {p}) p rfl
@@ -577,9 +571,8 @@ lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
     fun p _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨p, (hf p).ge rfl⟩
   replace hf a : (basicOpen a.1 : Set _) = {e.symm a} := by
     simp_rw [← hf, Equiv.apply_ofInjective_symm]
-  have := (discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mp ‹_›).2
   obtain ⟨r, eq, -⟩ := Localization.existsUnique_algebraMap_eq_of_span_eq_top _ span_eq
-    (fun a ↦ algE a (x ⟨_, this _ inferInstance⟩)) fun a b ↦ by
+    (fun a ↦ algE a (x _)) fun a b ↦ by
       obtain rfl | ne := eq_or_ne a b; · rfl
       have ⟨n, hn⟩ : IsNilpotent (a * b : R) := (basicOpen_eq_bot_iff _).mp <| by
         simp_rw [basicOpen_mul, SetLike.ext'_iff, TopologicalSpace.Opens.coe_inf, hf]
@@ -588,8 +581,14 @@ lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
         (S := Localization.Away (a * b : R)) <| hn ▸ ⟨n, rfl⟩
       apply Subsingleton.elim
   refine ⟨r, funext fun I ↦ ?_⟩
-  have := eq (e ⟨I, I.2.isPrime⟩)
+  have := eq (e I)
   rwa [← AlgEquiv.symm_apply_eq, AlgEquiv.commutes, e.symm_apply_apply] at this
+
+theorem _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
+    Function.Surjective (RingHom.toLocalizationIsMaximal R) := by
+  rw [← piLocalizationToIsMaximal_comp_toLocalization]
+  exact (piLocalizationToIsMaximal_surjective R).comp
+    (toLocalization_surjective_of_discreteTopology R)
 
 /-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
@@ -600,7 +599,17 @@ def _root_.RingHom.toLocalizationIsMaximalEquiv : R ≃+*
   .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R,
     RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology R⟩
 
-end BasicOpen
+theorem discreteTopology_iff_toLocalization_surjective {R} [CommSemiring R] :
+    DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toLocalization R) :=
+  ⟨fun _ ↦ toLocalization_surjective_of_discreteTopology _,
+    discreteTopology_of_toLocalization_surjective⟩
+
+theorem discreteTopology_iff_toLocalization_bijective {R} [CommSemiring R] :
+    DiscreteTopology (PrimeSpectrum R) ↔ Function.Bijective (toLocalization R) :=
+  discreteTopology_iff_toLocalization_surjective.trans
+    (and_iff_right <| toLocalization_injective _).symm
+
+end DiscreteTopology
 
 section Order
 
