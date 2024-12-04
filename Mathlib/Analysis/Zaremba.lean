@@ -52,7 +52,7 @@ class WellDistributed {ι : Type*} (μ : ι →₀ ℝ≥0) : Prop where
 
 variable (μ ν : (Fin 2 → ℤ) →₀ ℝ≥0)
   (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
-  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N : ℝ≥0) (Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
+  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ≥0) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
   (hQ : Q ^ 2 < N)
   (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q / 2 ≤ q) (hq₂ : q ≤ Q) (hβ₁ : K / (2 * N) ≤ |β|)
   (hβ₂ : |β| ≤ K / N)
@@ -124,7 +124,7 @@ theorem Finsupp.sum_const {α A K : Type*} [Semiring A] [AddCommMonoid K] [Modul
   sorry
 
 theorem cauchy_schwarz {α : Type*} (μ : α →₀ ℝ≥0) (f g : α → ℂ) :
-    ‖∑ x, f x * g x ∂μ‖ ^ 2 ≤ (∑ x, ‖f x‖ ^ 2 ∂μ) * (∑ x, ‖g x‖ ^ 2 ∂μ) := by
+    ‖∑ x, f x * g x ∂μ‖₊ ^ 2 ≤ (∑ x, ‖f x‖₊ ^ 2 ∂μ) * (∑ x, ‖g x‖₊ ^ 2 ∂μ) := by
   sorry
 
 theorem Finsupp.sum_comm_tsum {α β E : Type*} [AddCommMonoid E] [Module ℝ≥0 E] [TopologicalSpace E]
@@ -182,25 +182,30 @@ lemma PoissonSum (f : (Fin 2 → ℝ) → ℂ) : -- add conditions
     ∑' (x : Fin 2 → ℤ), f (Int.cast ∘ x) = ∑' (k : Fin 2 → ℤ), FT f (Int.cast ∘ k) := by
   sorry
 
+-- distance to nearest lattice point in `Fin 2 → ℤ`
+noncomputable def Hdist (z : Fin 2 → ℝ) : ℝ≥0 := sorry
 
-
-example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
+set_option synthInstance.maxHeartbeats 400000 in
+example : ‖S‖₊ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
   let g (x : Fin 2 → ℤ) : ℂ :=  ∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
   calc _ = _ := by simp [f, g]
     _ ≤ _ := cauchy_schwarz μ f g
-    _ = μ.mass * ∑ x, ‖g x‖ ^ 2 ∂μ := by
+    _ = μ.mass * ∑ x, ‖g x‖₊ ^ 2 ∂μ := by
         congr
-        simp only [Pi.one_apply, norm_one, one_pow, Finsupp.sum_const, f]
-        change (algebraMap NNReal ℝ μ.mass) * 1 = _
-        simp -- FIXME ought to have better simp-lemmas here
-    _ ≤ μ.mass * ((μ.mass * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2) := ?_
-    _ = _ := by ring
+        simp only [Pi.one_apply, nnnorm_one, one_pow, f]
+        --change (algebraMap NNReal ℝ μ.mass) * 1 = _
+        sorry -- should be ring
+    _ ≤ μ.mass * ((μ.mass * ν.mass ^ 2) / (K * Q) ^ 2) := ?_
+    _ = _ := by
+      sorry -- should be ring
   gcongr
   rw [Finsupp.mass_eq_tsum]
   let φ : (Fin 2 → ℝ) → ℝ≥0 := sorry
   have φ_bnd : ∀ x, (∀ i, (x i)^2 ≤ 1) → 1 ≤ φ x := sorry
   let ψ : (Fin 2 → ℝ) → ℝ≥0 := sorry
+  let ψ_max : ℝ≥0 := sorry
+  have ψ_bnd : ∀ k, ψ k ≤ ψ_max := sorry
   have ψ_eq_FTφ : FT (fun x ↦ (φ x : ℂ)) = (fun x ↦ (ψ x : ℂ)) := sorry
   have FTφ_supp : (FT (fun x ↦ (φ x : ℂ))).support ⊆ {x : Fin 2 → ℝ | ∀ i, (x i)^2 ≤ 1/4} := sorry
   let μ' : (Fin 2 → ℝ) → ℝ≥0 := fun x ↦ φ ((√N)⁻¹ • x)
@@ -208,7 +213,7 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   have hμ' : Summable (fun (x : Fin 2 → ℤ) ↦ μ' (Int.cast ∘ x)) := sorry
   have hμ'_exp (n : Fin 2 → ℤ) : Summable (fun (y : Fin 2 → ℤ) ↦
     μ' (Int.cast ∘ y) • exp (2 * π * I * (a / q + β) * (y ⬝ᵥ n))) := sorry
-  calc _ ≤ ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • ‖g x‖ ^ 2 := by
+  calc _ ≤ ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • ‖g x‖₊ ^ 2 := by
         apply tsum_mono
         · sorry -- summability of finsupps
         · sorry -- summability of the new `μ'`
@@ -219,7 +224,7 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
     _ ≤ _ := ?_
   have hg (x : Fin 2 → ℤ) :=
   calc
-    ‖g x‖ ^ 2
+    ‖g x‖₊ ^ 2
       = g x * conj (g x) := sorry
     _ = (∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν)
         * conj (∑ y' : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y')) ∂ν) := sorry
@@ -229,12 +234,12 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
     _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
           exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))) ∂(ν.pointwise_prod ν) := sorry
   have :=
-  calc ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • ‖g x‖ ^ 2
+  calc ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • ‖g x‖₊ ^ 2
       = ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • (∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
           exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))) ∂(ν.pointwise_prod ν)) := by
         push_cast
         congr! with x
-        trans μ' (Int.cast ∘ x) • ‖g x‖ ^ 2
+        trans μ' (Int.cast ∘ x) • ‖g x‖₊ ^ 2
         · sorry -- casting issue
         rw [hg]
         rfl
@@ -267,12 +272,29 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
         congr! 5 with p k
         dsimp [μ']
         apply FTdilate
-    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
-          (√N)^2 * ψ (√N • ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2)))))
-             ∂(ν.pointwise_prod ν) := by
+    _ = ((∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
+          (NNReal.sqrt N)^2 * ψ (√N • ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2)))))
+             ∂(ν.pointwise_prod ν) ) ) := by
         push_cast
         sorry
-
+  norm_cast at this
+  rw [this]; clear this
+  have fact1 (z : Fin 2 → ℝ) (k : Fin 2 → ℤ) : ψ (√N • (Int.cast ∘ k - z)) ≠ 0 →
+    Hdist z < 1 / (NNReal.sqrt N) := sorry
+  have fact2 (z : Fin 2 → ℝ) : {k : Fin 2 → ℤ | ψ (√N • (Int.cast ∘ k - z)) ≠ 0}.ncard ≤ 1 := by
+    sorry
+  let IndSet : Set ((Fin 2 → ℤ) × (Fin 2 → ℤ)) :=
+    {p : (Fin 2 → ℤ) × (Fin 2 → ℤ) | Hdist (θ • Int.cast ∘ (p.1 - p.2)) < 1 / NNReal.sqrt N}
+  have :=
+  calc
+  ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)),
+    ∑' (k : Fin 2 → ℤ),
+      NNReal.sqrt N ^ 2 * ψ (√↑N • (Int.cast ∘ k - θ • Int.cast ∘ (p.1 - p.2))) ∂ν.pointwise_prod ν
+    ≤
+      ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)),
+        (IndSet.indicator 1 p * NNReal.sqrt N ^ 2 * ψ_max) ∂(ν.pointwise_prod ν) := by
+          sorry
+  -- getting max heartbeat errors???
   sorry
 #exit
 
