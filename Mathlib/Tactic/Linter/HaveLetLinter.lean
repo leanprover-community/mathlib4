@@ -92,7 +92,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     let .original .. := stx.getHeadInfo | return #[]
     unless isHave? stx do return #[]
     let mctx := i.mctxAfter
-    let mvdecls := (i.goalsAfter.map (mctx.decls.find? ·)).reduceOption
+    let mvdecls := i.goalsAfter.filterMap (mctx.decls.find? ·)
     -- we extract the `MetavarDecl` with largest index after a `have`, since this one
     -- holds information about the metavariable where `have` introduces the new hypothesis.
     let largestIdx := mvdecls.toArray.qsort (·.index > ·.index)
@@ -100,7 +100,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     let lc := (largestIdx.getD 0 default).lctx
     -- we also accumulate all `fvarId`s from all local contexts before the use of `have`
     -- so that we can then isolate the `fvarId`s that are created by `have`
-    let oldMvdecls := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
+    let oldMvdecls := i.goalsBefore.filterMap (mctx.decls.find? ·)
     let oldLctx := oldMvdecls.map (·.lctx)
     let oldDecls := (oldLctx.map (·.decls.toList.reduceOption)).flatten
     let oldFVars := oldDecls.map (·.fvarId)
@@ -120,7 +120,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     return
   unless gh == 1 && (← MonadState.get).messages.unreported.isEmpty do
     let trees ← getInfoTrees
-    for t in trees.toArray do
+    for t in trees do
       for (s, fmt) in ← nonPropHaves t do
         -- Since the linter option is not in `Bool`, the standard `Linter.logLint` does not work.
         -- We emulate it with `logWarningAt`
