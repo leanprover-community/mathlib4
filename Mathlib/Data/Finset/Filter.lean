@@ -214,7 +214,7 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
   obtain ⟨-, rfl⟩ : x ∈ t ∧ f x = j := by simpa using hj hx
   contradiction
 
-theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
+theorem disjoint_of_or_not_and (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     Disjoint (s.filter p) (s.filter q) := by
   intro _ htp htq
   simp only [bot_eq_empty, le_eq_subset, subset_empty]
