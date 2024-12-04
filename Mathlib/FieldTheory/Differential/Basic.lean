@@ -147,12 +147,16 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     letI := differentialFiniteDimensional F K
     DifferentialAlgebra F K := by
   let k := (Field.exists_primitive_element F K).choose
-  have h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
-  have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
-  have : Fact (Irreducible (minpoly F k)) :=
+  haveI h : F⟮k⟯ = ⊤ := (Field.exists_primitive_element F K).choose_spec
+  haveI : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
+  haveI : Fact (Irreducible (minpoly F k)) :=
     ⟨minpoly.irreducible (IsAlgebraic.of_finite ..).isIntegral⟩
   apply DifferentialAlgebra.equiv
 
+/--
+A finite extension of a differential field has a unique derivation which agrees with the one on the
+base field.
+-/
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     Unique {_a : Differential K // DifferentialAlgebra F K} := by
   let default : {_a : Differential K // DifferentialAlgebra F K} :=
