@@ -527,15 +527,15 @@ end Int
 
 section pnat
 
-@[to_additive pnat_summable_iff_summable_add_one]
-theorem pnat_multipliable_iff_multipliable_add_one {α : Type*} [TopologicalSpace α] [CommMonoid α]
+@[to_additive]
+theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace α] [CommMonoid α]
     {f : ℕ → α} : (Multipliable fun x : ℕ+ => f x) ↔ Multipliable fun x : ℕ => f (x + 1) := by
   rw [← Equiv.multipliable_iff _root_.Equiv.pnatEquivNat]
   constructor
   repeat {refine fun hf => by apply Multipliable.congr hf (by refine fun b => by simp)}
 
-@[to_additive tsum_pnat_eq_tsum_add_one]
-theorem tprod_pnat_eq_prod_add_one {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
+@[to_additive tsum_pnat_eq_tsum_succ]
+theorem tprod_pnat_eq_prod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     (f : ℕ → α) : ∏' n : ℕ+, f n = ∏' n, f (n + 1) := by
   by_cases hf2 : Multipliable fun n : ℕ+ => f n
   · have hpos : HasProd (fun n : ℕ => f (n + 1)) (∏' n : ℕ+, f n) := by
@@ -549,7 +549,7 @@ theorem tprod_pnat_eq_prod_add_one {α : Type*} [TopologicalSpace α] [CommMonoi
       rw [comp_apply, PNat.natPred_add_one]
     exact symm (HasProd.tprod_eq hpos)
   · rw [tprod_eq_one_of_not_multipliable hf2]
-    rw [pnat_multipliable_iff_multipliable_add_one] at hf2
+    rw [pnat_multipliable_iff_multipliable_succ] at hf2
     rw [tprod_eq_one_of_not_multipliable hf2]
 
 end pnat
