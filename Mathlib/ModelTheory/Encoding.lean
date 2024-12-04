@@ -82,8 +82,8 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
-    · rw [List.getElem_append_left, List.getElem_map, List.getElem_finRange]
-      simp only [length_map, length_finRange, i.2]
+    · simp only [length_map, length_finRange, is_lt, getElem_append_left, getElem_map,
+      getElem_finRange, cast_mk, Fin.eta]
     · simp only [length_map, length_finRange, drop_left']
 
 /-- An encoding of terms as lists. -/
@@ -181,13 +181,6 @@ or returns `default` if not possible. -/
 def sigmaImp : (Σn, L.BoundedFormula α n) → (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
   | ⟨m, φ⟩, ⟨n, ψ⟩ => if h : m = n then ⟨m, φ.imp (Eq.mp (by rw [h]) ψ)⟩ else default
 
-#adaptation_note
-/--
-`List.drop_sizeOf_le` is deprecated.
-See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Why.20is.20.60Mathlib.2EModelTheory.2EEncoding.60.20using.20.60SizeOf.2EsizeOf.60.3F
-for discussion about adapting this code.
--/
-set_option linter.deprecated false in
 /-- Decodes a list of symbols as a list of formulas. -/
 @[simp]
 lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
@@ -241,10 +234,10 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
         Σn, L.Term (α ⊕ (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
       intro i
       simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
-        get?_eq_some, length_append, length_map, length_finRange]
+        get?_eq_some_iff, length_append, length_map, length_finRange]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
       rw [get_eq_getElem, getElem_append_left, getElem_map]
-      · simp only [getElem_finRange, Fin.eta, Function.comp_apply, Sum.getLeft?]
+      · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
       · simp only [length_map, length_finRange, is_lt]
     rw [dif_pos]
     swap

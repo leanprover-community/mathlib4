@@ -732,7 +732,7 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
 
 /-- It's just the same as `Lean.Meta.setInlineAttribute` but with type `CoreM Unit`.
 
-TODO (lean4#4965): make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
+TODO (https://github.com/leanprover/lean4/issues/4965): make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
 def setInlineAttribute (declName : Name) (kind := Compiler.InlineAttributeKind.inline) :
     CoreM Unit := do
   let env ← getEnv
@@ -866,7 +866,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
   for (nm, lemmas) in names.zip auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx 0 do
+  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation srcLemma tgtLemma
 
@@ -964,6 +964,7 @@ def nameDict : String → List String
   | "powers"      => ["multiples"]
   | "multipliable"=> ["summable"]
   | "gpfree"      => ["apfree"]
+  | "quantale"    => ["add", "Quantale"]
   | x             => [x]
 
 /--

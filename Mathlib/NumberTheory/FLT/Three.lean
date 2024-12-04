@@ -321,7 +321,6 @@ section DecidableRel
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K] [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b]
 
-open PartENat in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :

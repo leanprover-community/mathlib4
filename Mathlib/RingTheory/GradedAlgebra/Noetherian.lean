@@ -3,8 +3,8 @@ Copyright (c) 2023 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li
 -/
-import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # The properties of a graded Noetherian ring.

@@ -3,6 +3,7 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
@@ -105,7 +106,7 @@ def IsTrivialBlock (B : Set X) := B.Subsingleton ∨ B = univ
 "A set `B` is a `G`-block iff the sets of the form `g +ᵥ B` are pairwise equal or disjoint. "]
 def IsBlock (B : Set X) := ∀ ⦃g₁ g₂ : G⦄, g₁ • B ≠ g₂ • B → Disjoint (g₁ • B) (g₂ • B)
 
-variable {G}
+variable {G} {s : Set G} {g g₁ g₂ : G}
 
 @[to_additive]
 lemma isBlock_iff_smul_eq_smul_of_nonempty :
@@ -120,6 +121,27 @@ lemma isBlock_iff_pairwiseDisjoint_range_smul :
 lemma isBlock_iff_smul_eq_smul_or_disjoint :
     IsBlock G B ↔ ∀ g₁ g₂ : G, g₁ • B = g₂ • B ∨ Disjoint (g₁ • B) (g₂ • B) :=
   forall₂_congr fun _ _ ↦ or_iff_not_imp_left.symm
+
+@[to_additive]
+lemma IsBlock.smul_eq_smul_of_subset (hB : IsBlock G B) (hg : g₁ • B ⊆ g₂ • B) :
+    g₁ • B = g₂ • B := by
+  by_contra! hg'
+  obtain rfl : B = ∅ := by simpa using (hB hg').eq_bot_of_le hg
+  simp at hg'
+
+@[to_additive]
+lemma IsBlock.not_smul_set_ssubset_smul_set (hB : IsBlock G B) : ¬ g₁ • B ⊂ g₂ • B :=
+  fun hab ↦ hab.ne <| hB.smul_eq_smul_of_subset hab.subset
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_set_smul (hB : IsBlock G B) (hgs : ¬ g • B ⊆ s • B) :
+    Disjoint (g • B) (s • B) := by
+  rw [← iUnion_smul_set, disjoint_iUnion₂_right]
+  exact fun b hb ↦ hB fun h ↦ hgs <| h.trans_subset <| smul_set_subset_smul hb
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_smul_set (hB : IsBlock G B) (hgs : ¬ g • B ⊆ s • B) :
+    Disjoint (s • B) (g • B) := (hB.disjoint_smul_set_smul hgs).symm
 
 alias ⟨IsBlock.smul_eq_smul_of_nonempty, _⟩ := isBlock_iff_smul_eq_smul_of_nonempty
 alias ⟨IsBlock.pairwiseDisjoint_range_smul, _⟩ := isBlock_iff_pairwiseDisjoint_range_smul
@@ -148,6 +170,19 @@ lemma IsFixedBlock.isInvariantBlock (hB : IsFixedBlock G B) : IsInvariantBlock G
   fun _ ↦ (hB _).le
 
 end SMul
+
+section Monoid
+variable {M X : Type*} [Monoid M] [MulAction M X] {B : Set X} {s : Set M}
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_right (hB : IsBlock M B) (hs : ¬ B ⊆ s • B) : Disjoint B (s • B) := by
+  simpa using hB.disjoint_smul_set_smul (g := 1) (by simpa using hs)
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_left (hB : IsBlock M B) (hs : ¬ B ⊆ s • B) : Disjoint (s • B) B :=
+  (hB.disjoint_smul_right hs).symm
+
+end Monoid
 
 section Group
 
@@ -286,7 +321,8 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
-  rw [← Subgroup.map_comap_eq_self_of_surjective (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  rw [← Subgroup.map_comap_eq_self_of_surjective
+          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
 
@@ -552,7 +588,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
       smul_smul, ← mul_inv_rev] at hg hx ⊢
     exact fun _ ↦ hx _ ∘ hg _
   have hag' (g : G) (hg : a ∈ g • B') : B' = g • B' := by
-    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_of_finite_iff_le_smul _ hfB']
+    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_set_iff_subset_smul_set hfB']
     exact hag g hg
   rw [isBlock_iff_smul_eq_of_nonempty]
   rintro g ⟨b : X, hb' : b ∈ g • B', hb : b ∈ B'⟩

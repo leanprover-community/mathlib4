@@ -209,21 +209,21 @@ variable {X₁ X₂ : Type v}
 open ModuleCat
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
-def ModuleCat.asHom [AddCommGroup X₁] [Module R X₁] [AddCommGroup X₂] [Module R X₂] :
+def ModuleCat.ofHom [AddCommGroup X₁] [Module R X₁] [AddCommGroup X₂] [Module R X₂] :
     (X₁ →ₗ[R] X₂) → (ModuleCat.of R X₁ ⟶ ModuleCat.of R X₂) :=
   id
 
-@[deprecated (since := "2024-10-06")] alias ModuleCat.ofHom := ModuleCat.asHom
+@[deprecated (since := "2024-12-03")] alias ModuleCat.asHom := ModuleCat.ofHom
 
 /-- Reinterpreting a linear map in the category of `R`-modules -/
-scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
+scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
 
 @[simp 1100]
-theorem ModuleCat.asHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
+theorem ModuleCat.ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
     [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : (↟ f) x = f x :=
   rfl
 
-@[deprecated (since := "2024-10-06")] alias ModuleCat.ofHom_apply := ModuleCat.asHom_apply
+@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
 def ModuleCat.asHomRight [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R} :
@@ -391,7 +391,7 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
@@ -440,9 +440,8 @@ end ModuleCat
 @[simp] theorem LinearMap.comp_id_moduleCat
     {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
     f.comp (𝟙 G) = f :=
-  Category.id_comp (ModuleCat.asHom f)
+  Category.id_comp (ModuleCat.ofHom f)
 @[simp] theorem LinearMap.id_moduleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H) f = f :=
-  Category.comp_id (ModuleCat.asHom f)
-
+  Category.comp_id (ModuleCat.ofHom f)
