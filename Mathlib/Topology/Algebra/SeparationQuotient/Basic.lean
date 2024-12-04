@@ -85,7 +85,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 @[to_additive]
 instance instMul [Mul M] [ContinuousMul M] : Mul (SeparationQuotient M) where
-  mul := Quotient.map₂' (· * ·) fun _ _ h₁ _ _ h₂ ↦ Inseparable.mul h₁ h₂
+  mul := Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ Inseparable.mul h₁ h₂
 
 @[to_additive (attr := simp)]
 theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b := rfl
@@ -168,7 +168,7 @@ instance instInvOneClass [InvOneClass G] [ContinuousInv G] :
 
 @[to_additive]
 instance instDiv [Div G] [ContinuousDiv G] : Div (SeparationQuotient G) where
-  div := Quotient.map₂' (· / ·) fun _ _ h₁ _ _ h₂ ↦ (Inseparable.prod h₁ h₂).map continuous_div'
+  div := Quotient.map₂ (· / ·) fun _ _ h₁ _ _ h₂ ↦ (Inseparable.prod h₁ h₂).map continuous_div'
 
 @[to_additive (attr := simp)]
 theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y := rfl
