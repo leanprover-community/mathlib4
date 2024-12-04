@@ -70,7 +70,6 @@ import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
 import Mathlib.Algebra.Category.CoalgebraCat.Monoidal
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.Grp.AB5
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
@@ -428,7 +427,6 @@ import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 import Mathlib.Algebra.Homology.Embedding.ExtendMap
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
 import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.Embedding.Limits
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 import Mathlib.Algebra.Homology.Embedding.StupidFiltration

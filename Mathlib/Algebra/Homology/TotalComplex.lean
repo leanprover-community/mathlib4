@@ -32,14 +32,8 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-<<<<<<< HEAD
   (K L M : HomologicalComplex₂ C c₁ c₂) (φ φ' : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
-  (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
-  [TotalComplexShape c₁ c₂ c₁₂]
-=======
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [TotalComplexShape c₁ c₂ c₁₂]
->>>>>>> origin/ext-change-of-universes
 
 /-- A bicomplex has a total bicomplex if for any `i₁₂ : I₁₂`, the coproduct
 of the objects `(K.X i₁).X i₂` such that `ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂` exists. -/
