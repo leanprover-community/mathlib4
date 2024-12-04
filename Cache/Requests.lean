@@ -183,7 +183,6 @@ def getProofWidgets (buildDir : FilePath) : IO Unit := do
   catch e =>
     throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
 
-
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO.CacheM Unit := do
