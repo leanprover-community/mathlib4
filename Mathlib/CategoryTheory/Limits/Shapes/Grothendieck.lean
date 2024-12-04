@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
