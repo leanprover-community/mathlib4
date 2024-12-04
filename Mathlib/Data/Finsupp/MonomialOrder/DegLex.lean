@@ -110,18 +110,18 @@ theorem lt_iff [LT α] {a b : DegLex (α →₀ ℕ)} :
 
 variable [LinearOrder α]
 
-instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) :=
-  { irrefl := fun a ↦ by simp [lt_def]
-    trans := by
-      intro a b c hab hbc
-      simp only [lt_iff] at hab hbc ⊢
-      rcases hab with (hab | hab)
-      · rcases hbc with (hbc | hbc)
-        · left; exact lt_trans hab hbc
-        · left; exact lt_of_lt_of_eq hab hbc.1
-      · rcases hbc with (hbc | hbc)
-        · left; exact lt_of_eq_of_lt hab.1 hbc
-        · right; exact ⟨Eq.trans hab.1 hbc.1, lt_trans hab.2 hbc.2⟩ }
+instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
+  irrefl := fun a ↦ by simp [lt_def]
+  trans := by
+    intro a b c hab hbc
+    simp only [lt_iff] at hab hbc ⊢
+    rcases hab with (hab | hab)
+    · rcases hbc with (hbc | hbc)
+      · left; exact lt_trans hab hbc
+      · left; exact lt_of_lt_of_eq hab hbc.1
+    · rcases hbc with (hbc | hbc)
+      · left; exact lt_of_eq_of_lt hab.1 hbc
+      · right; exact ⟨Eq.trans hab.1 hbc.1, lt_trans hab.2 hbc.2⟩
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
 instance : LinearOrder (DegLex (α →₀ ℕ)) :=
