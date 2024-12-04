@@ -554,6 +554,7 @@ import Mathlib.Algebra.Module.Presentation.Differentials
 import Mathlib.Algebra.Module.Presentation.DirectSum
 import Mathlib.Algebra.Module.Presentation.Finite
 import Mathlib.Algebra.Module.Presentation.Free
+import Mathlib.Algebra.Module.Presentation.RestrictScalars
 import Mathlib.Algebra.Module.Presentation.Tautological
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
@@ -2526,6 +2527,7 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Cast.Field
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.ConditionallyCompleteOrder
@@ -2925,6 +2927,9 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Deprecated.AlgebraClasses
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.ByteArray
+import Mathlib.Deprecated.Cardinal.Continuum
+import Mathlib.Deprecated.Cardinal.Finite
+import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Combinator
 import Mathlib.Deprecated.Equiv
 import Mathlib.Deprecated.Group
@@ -4215,6 +4220,7 @@ import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Field
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
@@ -4226,7 +4232,12 @@ import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.Algebraic.LinearIndependent
 import Mathlib.RingTheory.Algebraic.MvPolynomial
 import Mathlib.RingTheory.Algebraic.Pi
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+import Mathlib.RingTheory.AlgebraicIndependent.Basic
+import Mathlib.RingTheory.AlgebraicIndependent.Defs
+import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.Bialgebra.Basic
@@ -4420,10 +4431,13 @@ import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.RingTheory.MvPolynomial.EulerIdentity
 import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Localization
+import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
@@ -4434,6 +4448,7 @@ import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.MvPowerSeries.LexOrder
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Order
+import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
@@ -4474,6 +4489,8 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
+import Mathlib.RingTheory.Polynomial.HilbertPoly
+import Mathlib.RingTheory.Polynomial.Ideal
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
 import Mathlib.RingTheory.Polynomial.Nilpotent
@@ -4495,6 +4512,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
+import Mathlib.RingTheory.PowerSeries.PiTopology
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Presentation
@@ -4608,7 +4626,6 @@ import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Finsupp
 import Mathlib.SetTheory.Cardinal.Free
-import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.SetTheory.Cardinal.ToNat
@@ -5340,6 +5357,7 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompareReals
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.UniformSpace.Dini
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.HeineCantor

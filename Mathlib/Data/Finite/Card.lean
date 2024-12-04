@@ -172,21 +172,6 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
 
 end ENat
 
-namespace PartENat
-
-set_option linter.deprecated false in
-@[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
-theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
-  unfold PartENat.card
-  apply symm
-  rw [Cardinal.natCast_eq_toPartENat_iff]
-  exact Finite.cast_card_eq_mk
-
-
-@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
-
-end PartENat
-
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by

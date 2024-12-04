@@ -26,7 +26,7 @@ variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
   -- Porting note: previously proven by tidy
-  KernelFork.ofι (asHom f.ker.subtype) <| by ext x; cases x; assumption
+  KernelFork.ofι (ofHom f.ker.subtype) <| by ext x; cases x; assumption
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit (kernelCone f) :=
@@ -44,7 +44,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (asHom f.range.mkQ) <| LinearMap.range_mkQ_comp _
+  CokernelCofork.ofπ (ofHom f.range.mkQ) <| LinearMap.range_mkQ_comp _
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit (cokernelCocone f) :=
@@ -53,10 +53,10 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
       f.range.liftQ (Cofork.π s) <| LinearMap.range_le_ker_iff.2 <| CokernelCofork.condition s)
     (fun s => f.range.liftQ_mkQ (Cofork.π s) _) fun s m h => by
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
-    haveI : Epi (asHom (LinearMap.range f).mkQ) :=
+    haveI : Epi (ofHom (LinearMap.range f).mkQ) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
-    apply (cancel_epi (asHom (LinearMap.range f).mkQ)).1
+    apply (cancel_epi (ofHom (LinearMap.range f).mkQ)).1
     convert h
     -- Porting note: no longer necessary
     -- exact Submodule.liftQ_mkQ _ _ _
