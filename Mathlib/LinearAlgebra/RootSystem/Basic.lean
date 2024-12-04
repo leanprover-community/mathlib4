@@ -136,7 +136,7 @@ lemma root_reflection_perm_trans_iterate (k : ι) (n : ℕ) :
     comp_apply, root_reflection_perm, ← Equiv.coe_trans, ih, comp_apply, LinearEquiv.trans_apply]
 
 /-- We should be able to eliminate the NoZeroSMulDivisors ℤ M hypothesis. -/
-lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
     (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
     (hc : P.coxeterWeight i j = 4) : Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -188,6 +188,13 @@ lemma Commute_IsOrthogonal (h : Commute (P.reflection i) (P.reflection j)) :
 --lemma parallel_linearIndependent
 
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
+
+lemma coxeterWeight_ne_four_of_linearIndependent [CharZero R] [NoZeroSMulDivisors ℤ M]
+    (hl : LinearIndependent R ![P.root i, P.root j]) :
+    P.coxeterWeight i j ≠ 4 := by
+  intro contra
+  have := P.infinite_of_linearIndependent_coxeterWeight_four i j hl contra
+  exact not_finite ι
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.

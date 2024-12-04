@@ -159,6 +159,18 @@ theorem mk_add_choose_mul_one_sub_pow_eq_one :
     (mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧) * ((1 - X) ^ (d + 1)) = 1 :=
   (invOneSubPow S (d + 1)).val_inv
 
+theorem invOneSubPow_add (e : ℕ) :
+    invOneSubPow S (d + e) = invOneSubPow S d * invOneSubPow S e := by
+  simp_rw [invOneSubPow_eq_inv_one_sub_pow, pow_add]
+
+theorem one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val (e : ℕ) :
+    (1 - X) ^ e * (invOneSubPow S (d + e)).val = (invOneSubPow S d).val := by
+  simp [invOneSubPow_add, Units.val_mul, mul_comm, mul_assoc, ← invOneSubPow_inv_eq_one_sub_pow]
+
+theorem one_sub_pow_add_mul_invOneSubPow_val_eq_one_sub_pow (e : ℕ) :
+    (1 - X) ^ (d + e) * (invOneSubPow S e).val = (1 - X) ^ d := by
+  simp [pow_add, mul_assoc, ← invOneSubPow_inv_eq_one_sub_pow S e]
+
 end invOneSubPow
 
 section Field
