@@ -214,10 +214,10 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- -/
+/-- Extendions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
-/-- -/
+/-- Environment extension for transition theorems. -/
 initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -227,7 +227,18 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
-/-- -/
+/-- Get transition theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` might return theorems implying continuity
+from linearity over finite dimensional spaces or differentiability.  -/
+def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let ext := transitionTheoremsExt.getState (← getEnv)
+  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    ext.theorems.getMatchWithScore e false
+  let candidates := candidates.map (·.1) |>.flatten
+  return candidates
+
+/-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -237,6 +248,28 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
+
+/-- Get morphism theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
+infering continuity from the bundled morphism. -/
+def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let ext := morTheoremsExt.getState (← getEnv)
+  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    ext.theorems.getMatchWithScore e false
+  let candidates := candidates.map (·.1) |>.flatten
+  return candidates
+
+/-- Get morphism theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
+infering continuity from the bundled morphism. -/
+def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let ext := morTheoremsExt.getState (← getEnv)
+  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    ext.theorems.getMatchWithScore e false
+  let candidates := candidates.map (·.1) |>.flatten
+  return candidates
 
 
 --------------------------------------------------------------------------------
@@ -285,13 +318,11 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-
     let .some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
-
-    let fData? ← getFunctionData? f defaultUnfoldPred {zeta := false}
-
+    let fData? ←
+      withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
     if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
@@ -322,7 +353,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys ← RefinedDiscrTree.initializeLazyEntry b' {}
+      let keys ← RefinedDiscrTree.initializeLazyEntry b'
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName

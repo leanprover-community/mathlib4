@@ -325,10 +325,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
-    let thms := (← get).morTheorems.theorems
-    let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
-    modify ({ · with morTheorems := ⟨thms⟩ })
-    let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
+    let candidates ← getMorphismTheorems e
 
     trace[Meta.Tactic.fun_prop]
       "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -345,10 +342,7 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let thms := (← get).transitionTheorems.theorems
-  let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
-  modify ({ · with transitionTheorems := ⟨thms⟩ })
-  let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
+  let candidates ← getTransitionTheorems e
 
   trace[Meta.Tactic.fun_prop]
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -436,7 +430,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false}
+      let .data fData ← getFunctionData? f (← unfoldNamePred)
         | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
@@ -675,7 +669,7 @@ mutual
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    match ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false} with
+    match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>
       trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f

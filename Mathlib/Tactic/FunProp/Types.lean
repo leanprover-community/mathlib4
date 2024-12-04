@@ -108,9 +108,9 @@ structure GeneralTheorem where
   priority    : Nat  := eval_prio default
   deriving Inhabited
 
-/-- -/
+/-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
-  /-- -/
+  /-- Discrimination tree indexing theorems. -/
   theorems     : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 

@@ -239,12 +239,14 @@ def prec (f g : Code) : Code :=
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
-theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector ℕ m →. ℕ}
-    (hf : ∃ c : Code, ∀ v : Vector ℕ n, c.eval v.1 = pure <$> f v)
-    (hg : ∀ i, ∃ c : Code, ∀ v : Vector ℕ m, c.eval v.1 = pure <$> g i v) :
-    ∃ c : Code, ∀ v : Vector ℕ m, c.eval v.1 = pure <$> ((Vector.mOfFn fun i => g i v) >>= f) := by
+theorem exists_code.comp {m n} {f : Mathlib.Vector ℕ n →. ℕ} {g : Fin n → Mathlib.Vector ℕ m →. ℕ}
+    (hf : ∃ c : Code, ∀ v : Mathlib.Vector ℕ n, c.eval v.1 = pure <$> f v)
+    (hg : ∀ i, ∃ c : Code, ∀ v : Mathlib.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
+    ∃ c : Code, ∀ v : Mathlib.Vector ℕ m,
+      c.eval v.1 = pure <$> ((Mathlib.Vector.mOfFn fun i => g i v) >>= f) := by
   rsuffices ⟨cg, hg⟩ :
-    ∃ c : Code, ∀ v : Vector ℕ m, c.eval v.1 = Subtype.val <$> Vector.mOfFn fun i => g i v
+    ∃ c : Code, ∀ v : Mathlib.Vector ℕ m,
+      c.eval v.1 = Subtype.val <$> Mathlib.Vector.mOfFn fun i => g i v
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
@@ -259,8 +261,8 @@ theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector
         simp [Vector.mOfFn, hg₁, map_bind, seq_bind_eq, bind_assoc, (· ∘ ·), hl]
         rfl⟩
 
-theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
-    ∃ c : Code, ∀ v : Vector ℕ n, c.eval v.1 = pure <$> f v := by
+theorem exists_code {n} {f : Mathlib.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
+    ∃ c : Code, ∀ v : Mathlib.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
   | prim hf =>
     induction hf with
@@ -1402,8 +1404,8 @@ theorem succ_ok {q s n} {c d : List Γ'} :
   simp only [TM2.step, trList, trNat.eq_1, Nat.cast_succ, Num.add_one]
   cases' (n : Num) with a
   · refine TransGen.head rfl ?_
-    simp only [Option.mem_def, TM2.stepAux, elim_main, decide_False, elim_update_main, ne_eq,
-      Function.update_noteq, elim_rev, elim_update_rev, decide_True, Function.update_same,
+    simp only [Option.mem_def, TM2.stepAux, elim_main, decide_false, elim_update_main, ne_eq,
+      Function.update_noteq, elim_rev, elim_update_rev, decide_true, Function.update_same,
       cond_true, cond_false]
     convert unrev_ok using 1
     simp only [elim_update_rev, elim_rev, elim_main, List.reverseAux_nil, elim_update_main]
@@ -1446,7 +1448,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   · simp only [trPosNum, List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     simp only [Option.mem_def, TM2.stepAux, elim_main, List.head?_cons, Option.some.injEq,
-      decide_False, List.tail_cons, elim_update_main, ne_eq, Function.update_noteq, elim_rev,
+      decide_false, List.tail_cons, elim_update_main, ne_eq, Function.update_noteq, elim_rev,
       elim_update_rev, natEnd, Function.update_same,  cond_true, cond_false]
     convert unrev_ok using 2
     simp
