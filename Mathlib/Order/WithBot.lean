@@ -102,10 +102,10 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
     map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none'
 
-theorem map_eq_some_iff {α β : Type*} {f : α → β} {y : β} {v : WithBot α} :
+theorem map_eq_some_iff {f : α → β} {y : β} {v : WithBot α} :
     WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some'
 
-theorem some_eq_map_iff {α β : Type*} {f : α → β} {y : β} {v : WithBot α} :
+theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
     .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
@@ -677,10 +677,10 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
     map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none'
 
-theorem map_eq_some_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
+theorem map_eq_some_iff {f : α → β} {y : β} {v : WithTop α} :
     WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some'
 
-theorem some_eq_map_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
+theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
     .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
