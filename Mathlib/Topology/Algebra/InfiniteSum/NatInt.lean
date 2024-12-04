@@ -534,8 +534,8 @@ theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace �
   constructor
   repeat {refine fun hf => by apply Multipliable.congr hf (by refine fun b => by simp)}
 
-@[to_additive tsum_pnat_eq_tsum_succ]
-theorem tprod_pnat_eq_prod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
+@[to_additive]
+theorem tprod_pnat_eq_tprod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     (f : ℕ → α) : ∏' n : ℕ+, f n = ∏' n, f (n + 1) := by
   by_cases hf2 : Multipliable fun n : ℕ+ => f n
   · have hpos : HasProd (fun n : ℕ => f (n + 1)) (∏' n : ℕ+, f n) := by
