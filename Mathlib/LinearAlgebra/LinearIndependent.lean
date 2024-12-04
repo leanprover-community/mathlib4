@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -82,12 +81,11 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
 
+assert_not_exists Cardinal
 
 noncomputable section
 
 open Function Set Submodule
-
-open Cardinal
 
 universe u' u
 
@@ -402,18 +400,6 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
   obtain ⟨b, _hb, rfl⟩ := hy
   simp only [f, imp_self, Subtype.mk_eq_mk]
 
-/-- If every finite set of linearly independent vectors has cardinality at most `n`,
-then the same is true for arbitrary sets of linearly independent vectors.
--/
-theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
-    (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
-    ∀ s : Set M, LinearIndependent R ((↑) : s → M) → #s ≤ n := by
-  intro s li
-  apply Cardinal.card_le_of
-  intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
-  apply H
-  apply linearIndependent_finset_map_embedding_subtype _ li
 
 section Subtype
 

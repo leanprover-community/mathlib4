@@ -135,6 +135,11 @@ instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] wh
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 
+instance {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] :
+    NoZeroSMulDivisors S R[X] where
+  eq_zero_or_eq_zero_of_smul_eq_zero eq :=
+    (eq_zero_or_eq_zero_of_smul_eq_zero <| congr_arg toFinsupp eq).imp id (congr_arg ofFinsupp)
+
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
 
@@ -758,6 +763,12 @@ theorem support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = si
 theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n := by
   rw [← ofFinsupp_single, support]
   exact Finsupp.support_single_subset
+
+theorem support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 :=
+  support_monomial 0 h
+
+theorem support_C_subset (a : R) : (C a).support ⊆ singleton 0 :=
+  support_monomial' 0 a
 
 theorem support_C_mul_X {c : R} (h : c ≠ 0) : Polynomial.support (C c * X) = singleton 1 := by
   rw [C_mul_X_eq_monomial, support_monomial 1 h]

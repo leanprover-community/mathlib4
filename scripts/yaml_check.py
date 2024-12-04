@@ -1,7 +1,13 @@
 """
-This file is copied from the mathlib3 file of the same name.
-It reads in the three yaml files, and translates them to simpler json files that are easier to
-process in Lean.
+This file reads in the three yaml files, and translates them to simpler json files
+that are easier to process in Lean.
+
+Usage:
+  python3 yaml_check.py <100.yaml> <overview.yaml> <undergrad.yaml>
+
+(Each <name> is the path to a yaml file containing information about the respective class
+ of theorems. The order of these files is important.)
+
 """
 from typing import Dict, Optional, Union, Tuple, List
 import yaml
