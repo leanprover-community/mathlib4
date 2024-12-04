@@ -110,11 +110,6 @@ theorem swapRow_involutive (M : Matrix m n α) (i : m) (j : m) :
 
 /-! ### swapRow is equivalent to a multiplication by the identity matrix -/
 
-
--- mul_apply: [Fintype m] [Mul α] [AddCommMonoid α]
--- one_apply: [DecidableEq n] [Zero α] [One α]
--- one_mul : [MulOneClass M]
--- sum_ite_eq: [AddCommMonoid β]
 /-- Multiplying matrix `M` by the elementary matrix derived from swapping rows `i` and `j` of the
 identity matrix is equivalent to swapping rows `i` and `j` of matrix `M`. -/
 @[simp]
@@ -244,9 +239,8 @@ theorem mulRow_elem_mat_eq_mulRow [Fintype m] [Monoid R] [NonAssocSemiring α]
 
 /-! ### mulRow elementary matrix has a left inverse -/
 
-/-- Multiplying the elementary matrix derived from  multiplying row `i` of the identity matrix by
-scalar `x` of the identity matrix by itself reverts it to the identity matrix. `mulRow_elem_mat`
-is it's own inverse. -/
+/-- The elementary matrix  derived from multiplying row `i` of the identity matrix by scalar `x` has
+a left inverse. -/
 theorem mulRow_elem_inv [Fintype m] [Group R] [NonAssocSemiring α] [DistribMulAction R α]
     [IsScalarTower R α α]
     (i : m) (x : R) :
@@ -277,13 +271,13 @@ def addMulRow [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (x : R): 
   updateRow M i (M i + x • M j)
 
 /-- Adds the `j`th row of the identity matrix times scalar `x` to row `i`, resulting in an
-elementary matrix -/
+elementary matrix. -/
 def addMulRow_elem_mat [SMul R α] [Add α] [One α] [Zero α] (i : m) (j : m) (x : R) : Matrix m m α :=
   addMulRow (1 : Matrix m m α) i j x
 
 /-! ### Basic properties of addMulRow -/
 
-/-- Row `i` of matrix `M` will be the result of adding row `j` times scalar `x` to row the original
+/-- Row `i` of matrix `M` will be the result of adding row `j` times scalar `x` to the original
 row `i` after adding row `j` times scalar `x` to row `i`. -/
 @[simp]
 lemma addMulRow_eq_add_mul_row [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (x : R) :
@@ -293,7 +287,7 @@ lemma addMulRow_eq_add_mul_row [SMul R α] [Add α] (M : Matrix m n α) (i : m) 
   · rw [h, updateRow_self]
   · rw [updateRow_self]
 
-/-- Some row `k`of matrix `M` will remain unchanged after adding row `j` times scalar `x` to
+/-- Some row `k` of matrix `M` will remain unchanged after adding row `j` times scalar `x` to
 row `i`. -/
 @[simp]
 lemma addMulRow_other_rows_same [SMul R α] [Add α] (M : Matrix m n α) (i : m) (j : m) (k : m)
@@ -316,15 +310,12 @@ theorem addMulRow_addMulRow_neg_cancel_left [Ring R] [AddCommGroup α] [Module R
   · rw [h]
     repeat rw [updateRow_self]
     rw [updateRow_ne]
-    --rw [add_assoc]
-    simp only [neg_smul]
-    simp only [Pi.add_apply]
-    simp only [Pi.smul_apply, Pi.neg_apply, add_neg_cancel_right]
+    simp
     exact h1
   · rw [updateRow_ne h]
     rw [updateRow_ne h]
 
-/-- Adding row `j` of matrix `M` times scalar `x` to row `i` and then adding row `j` times `-x` to
+/-- Adding row `j` of matrix `M` times scalar `-x` to row `i` and then adding row `j` times `x` to
 row `i` will return the original matrix `M`. -/
 @[simp]
 theorem addMulRow_addMulRow_neg_cancel_right [Ring R] [AddCommGroup α] [Module R α]
@@ -345,13 +336,14 @@ theorem addMulRow_addMulRow_neg_cancel_right [Ring R] [AddCommGroup α] [Module 
 
 
 /-- Multiplying matrix `M` by the elementary matrix derived from adding row `j` of the identity
-matrix times scalar `x` to row `i`of the identity matrix is equivalent to adding row `j` of matrix
+matrix times scalar `x` to row `i` of the identity matrix is equivalent to adding row `j` of matrix
 `M` times scalar `x` to row `i` of matrix `M`. -/
 @[simp]
--- [SMul R α] [Add α] [One α] [Zero α]
-theorem addMulRow_elem_mat_eq_addMulRow [SMul R α] [Add α] [One α] [Zero α]
+theorem addMulRow_elem_mat_eq_addMulRow [Fintype m] [NonAssocSemiring α] [SMulZeroClass R α]
+    [IsScalarTower R α α]
     (M : Matrix m m α) (i : m) (j : m) (x : R) :
     (addMulRow_elem_mat i j x) * M = addMulRow M i j x := by
+  rw [addMulRow_elem_mat]
   ext k l
   by_cases h : k = i
   · rw [h, addMulRow_eq_add_mul_row]
@@ -368,44 +360,19 @@ theorem addMulRow_elem_mat_eq_addMulRow [SMul R α] [Add α] [One α] [Zero α]
     exact h
     exact h
 
--- /-- Multiplying matrix `M` by the elementary matrix derived from adding row `j` of the identity
--- matrix times scalar `x` to row `i`of the identity matrix is equivalent to adding row `j` of matrix
--- `M` times scalar `x` to row `i` of matrix `M`. -/
--- @[simp]
--- -- [SMul R α] [Add α] [One α] [Zero α]
--- theorem addMulRow_elem_mat_eq_addMulRow [Fintype m] [Semiring α] [SMulZeroClass R α]
---     [IsScalarTower R α α] (M : Matrix m m α) (i : m) (j : m) (x : R) :
---     addMulRow (1 : Matrix m m α) i j x * M = addMulRow M i j x := by
---   ext k l
---   by_cases h : k = i
---   · rw [h, addMulRow_eq_add_mul_row]
---     rw [mul_apply, addMulRow_eq_add_mul_row]
---     simp
---     simp_rw [one_apply]
---     simp [add_mul]
---     rw [Finset.sum_add_distrib]
---     simp only [Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
---   · rw [addMulRow_other_rows_same]
---     rw [mul_apply, addMulRow_other_rows_same]
---     simp_rw [one_apply]
---     simp
---     exact h
---     exact h
-
 /-! ### addMulRow elementary matrix has a left inverse -/
 
-/-- Multiplying the elementary matrix derived from multiplying row `i` of the identity matrix by
-scalar `x` of the identity matrix by itself reverts it to the identity matrix. `addMulRow_elem_mat`
-is it's own inverse. -/
-theorem addMulRow_elem_inv [Fintype m] [Ring R] [AddCommGroup α] [Module R α] [Semiring α] [SMulZeroClass R α]
+/-- The elementary matrix derived from adding row `j` of the identity matrix times scalar `x` to
+row `i` has a left inverse. -/
+theorem addMulRow_elem_inv [Fintype m] [Ring R] [NonAssocRing α] [Module R α]
     [IsScalarTower R α α]
-    (i : m) (j: m) (x : R) :
+    (i : m) (j: m) (x : R) (h1 : j ≠ i) :
     addMulRow_elem_mat i j (-x) * addMulRow_elem_mat i j x = (1 : Matrix m m α) := by
   rw [addMulRow_elem_mat_eq_addMulRow, addMulRow_elem_mat, addMulRow_addMulRow_neg_cancel_left]
+  exact h1
 
 /-! ### extra -/
 
--- k is the row where the value will become
 /-- The value at row `i` and column `l` of matrix `M` will be 0 after adding row `j` times the
 negative of the value at row `i` and column `l` divided by the value at row `j` and column `l`
 to row `i`. -/

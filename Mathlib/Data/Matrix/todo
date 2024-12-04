@@ -1,7 +1,6 @@
 TODO:
 - change variable names inside of bodies when using ext
 - Remove non-closing simps
-- will generalize identity matrices of mulRow and addMulRow
 - will have to troubleshoot issues with continuous integration
 - ask if i should leave sections as is or do namespaces
 - simplify bodies of theorems 
