@@ -14,7 +14,7 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 
 A typical type of isomorphisms should be declared as:
 ```
-structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B :=
+structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B where
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyIso
@@ -77,12 +77,12 @@ The second step is to add instances of your new `MyIsoClass` for all types exten
 Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B :=
+structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B where
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerIsoClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [EquivLike F A B]
-    extends MyIsoClass F A B :=
+    extends MyIsoClass F A B where
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 @[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B]
@@ -149,7 +149,7 @@ class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
 
 namespace EquivLike
 
-variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ]
+variable {E F α β γ : Sort*} [EquivLike E α β] [EquivLike F β γ]
 
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
@@ -206,6 +206,9 @@ TODO: define a generic form of `Equiv.symm`. -/
 theorem apply_inv_apply (e : E) (b : β) : e (EquivLike.inv e b) = b :=
   right_inv _ _
 
+lemma inv_apply_eq_iff_eq_apply {e : E} {b : β} {a : α} : (EquivLike.inv e b) = a ↔ b = e a := by
+  constructor <;> rintro ⟨_, rfl⟩ <;> simp
+
 theorem comp_injective (f : α → β) (e : F) : Function.Injective (e ∘ f) ↔ Function.Injective f :=
   EmbeddingLike.comp_injective f e
 
@@ -218,7 +221,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
   (EquivLike.bijective e).of_comp_iff' f
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
-lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
+lemma subsingleton_dom [FunLike F β γ] [Subsingleton β] : Subsingleton F :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 
 end EquivLike

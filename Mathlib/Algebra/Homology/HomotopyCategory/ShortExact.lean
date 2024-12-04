@@ -110,6 +110,7 @@ open ComposableArrows
 
 set_option simprocs false
 
+include hS in
 lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
   quasiIsoAt n := by
     rw [quasiIsoAt_iff_isIso_homologyMap]

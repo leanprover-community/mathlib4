@@ -3,9 +3,10 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -19,8 +20,17 @@ These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are res
 left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 -/
 
+assert_not_exists OrderTop
 
 namespace Nat
+
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/5338 we just unused argument warnings,
+but these are used in the decreasing by blocks.
+If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers.
+-/
+set_option linter.unusedVariables false
 
 /-! ### Floor logarithm -/
 
@@ -51,6 +61,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
   rw [Nat.pos_iff_ne_zero, Ne, log_eq_zero_iff, not_or, not_lt, not_le]
 
+@[bound]
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
   log_pos_iff.2 ⟨hbn, hb⟩
 
@@ -58,7 +69,7 @@ theorem log_of_one_lt_of_le {b n : ℕ} (h : 1 < b) (hn : b ≤ n) : log b n = l
   rw [log]
   exact if_pos ⟨hn, h⟩
 
-@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one $ Nat.zero_le _
+@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one <| Nat.zero_le _
 
 @[simp]
 theorem log_zero_right (b : ℕ) : log b 0 = 0 :=
@@ -76,7 +87,7 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
 theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     b ^ x ≤ y ↔ x ≤ log b y := by
-  induction' y using Nat.strong_induction_on with y ih generalizing x
+  induction y using Nat.strong_induction_on generalizing x with | h y ih => ?_
   cases x with
   | zero => dsimp; omega
   | succ x =>
@@ -109,14 +120,23 @@ theorem log_lt_of_lt_pow {b x y : ℕ} (hy : y ≠ 0) : y < b ^ x → log b y < 
 theorem lt_pow_of_log_lt {b x y : ℕ} (hb : 1 < b) : log b y < x → y < b ^ x :=
   lt_imp_lt_of_le_imp_le (le_log_of_pow_le hb)
 
+lemma log_lt_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : log b x < x :=
+  match le_or_lt b 1 with
+  | .inl h => log_of_left_le_one h x ▸ Nat.pos_iff_ne_zero.2 hx
+  | .inr h => log_lt_of_lt_pow hx <| Nat.lt_pow_self h
+
+lemma log_le_self (b x : ℕ) : log b x ≤ x :=
+  if hx : x = 0 then by simp [hx]
+  else (log_lt_self b hx).le
+
 theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x).succ :=
   lt_pow_of_log_lt hb (lt_succ_self _)
 
 theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     log b n = m ↔ b ^ m ≤ n ∧ n < b ^ (m + 1) := by
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
-  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
-      assumption
+  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt,
+      and_comm] <;> assumption
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)
@@ -179,7 +199,7 @@ theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) 
 theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb, Nat.zero_sub]
-  cases' lt_or_le n b with h h
+  rcases lt_or_le n b with h | h
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, Nat.add_sub_cancel_right]
 
@@ -187,7 +207,7 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
-  cases' lt_or_le n b with h h
+  rcases lt_or_le n b with h | h
   · rw [div_eq_of_lt h, Nat.zero_mul, log_zero_right, log_of_lt h]
   rw [log_mul_base hb (Nat.div_pos h (by omega)).ne', log_div_base,
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
@@ -196,6 +216,13 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (by omega), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (by omega)]
   exact Nat.add_le_mul hn hb
+
+lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · rw [log2_zero, log_zero_right]
+  apply eq_of_forall_le_iff
+  intro m
+  rw [Nat.le_log2 hn, ← Nat.pow_le_iff_le_log Nat.one_lt_two hn]
 
 /-! ### Ceil logarithm -/
 
@@ -242,7 +269,7 @@ theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := b
 
 /-- `clog b` and `pow b` form a Galois connection. -/
 theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y := by
-  induction' x using Nat.strong_induction_on with x ih generalizing y
+  induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
     refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩

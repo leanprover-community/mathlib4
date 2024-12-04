@@ -58,11 +58,11 @@ local notation "π(" a ", " b ")" => prod.lift a b
 
 /-- Left unit cancellation `1 ⊗ X ≅ X` in `Dial C`. -/
 @[simps!] def leftUnitor (X : Dial C) : tensorObj tensorUnit X ≅ X :=
-  isoMk (prod.leftUnitor _) (prod.leftUnitor _) <| by simp [Subobject.pullback_top]
+  isoMk (Limits.prod.leftUnitor _) (Limits.prod.leftUnitor _) <| by simp [Subobject.pullback_top]
 
 /-- Right unit cancellation `X ⊗ 1 ≅ X` in `Dial C`. -/
 @[simps!] def rightUnitor (X : Dial C) : tensorObj X tensorUnit ≅ X :=
-  isoMk (prod.rightUnitor _) (prod.rightUnitor _) <| by simp [Subobject.pullback_top]
+  isoMk (Limits.prod.rightUnitor _) (Limits.prod.rightUnitor _) <| by simp [Subobject.pullback_top]
 
 /-- The associator for tensor, `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` in `Dial C`. -/
 @[simps!]

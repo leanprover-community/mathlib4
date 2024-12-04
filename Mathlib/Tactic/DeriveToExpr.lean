@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Lean.Elab.Deriving.Ord
 import Mathlib.Tactic.ToLevel
 
 /-!
@@ -166,7 +167,7 @@ def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
     | _ => throwError "(internal error) expecting inst binder"
   let binders := header.binders.pop
     ++ (← mkToLevelBinders indVal)
-    ++ #[← addLevels header.binders.back]
+    ++ #[← addLevels header.binders.back!]
   let levels := indVal.levelParams.toArray.map mkIdent
   if ctx.usePartial then
     `(private partial def $(mkIdent auxFunName):ident.{$levels,*} $binders:bracketedBinder* :
@@ -223,7 +224,7 @@ def mkToExprInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
     return false
 
 initialize
-  registerDerivingHandler `Lean.ToExpr mkToExprInstanceHandler
+  registerDerivingHandler ``Lean.ToExpr mkToExprInstanceHandler
   registerTraceClass `Elab.Deriving.toExpr
 
 end Mathlib.Deriving.ToExpr

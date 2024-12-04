@@ -37,7 +37,7 @@ variable {z : ℂ} {n : ℕ}
 theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => Complex.sin (2 * z * y) / (2 * z)) (Complex.cos (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
-  have b : HasDerivAt (fun y : ℂ => Complex.sin (y * (2 * z))) _ x :=
+  have b : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_sin (x * (2 * z))) a
   have c := b.comp_ofReal.div_const (2 * z)
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
@@ -46,7 +46,7 @@ theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
 theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => -Complex.cos (2 * z * y) / (2 * z)) (Complex.sin (2 * z * x)) x := by
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
-  have b : HasDerivAt (fun y : ℂ => Complex.cos (y * (2 * z))) _ x :=
+  have b : HasDerivAt (Complex.cos ∘ fun y : ℂ => (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
   have c := (b.comp_ofReal.div_const (2 * z)).neg
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
@@ -141,7 +141,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
   · apply Continuous.intervalIntegrable
     exact Complex.continuous_sin.comp (continuous_const.mul Complex.continuous_ofReal)
 
-/-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`.  -/
+/-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
     (((1 : ℂ) - (4 : ℂ) * z ^ 2 / (n : ℂ) ^ 2) *
       ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =
@@ -177,8 +177,7 @@ theorem integral_cos_pow_eq (n : ℕ) :
   have L : IntervalIntegrable _ volume 0 (π / 2) := (continuous_sin.pow n).intervalIntegrable _ _
   have R : IntervalIntegrable _ volume (π / 2) π := (continuous_sin.pow n).intervalIntegrable _ _
   rw [← integral_add_adjacent_intervals L R]
-  -- Porting note: was `congr 1` but it timeouts
-  refine congr_arg₂ _ ?_ ?_
+  congr 1
   · nth_rw 1 [(by ring : 0 = π / 2 - π / 2)]
     nth_rw 3 [(by ring : π / 2 = π / 2 - 0)]
     rw [← integral_comp_sub_left]

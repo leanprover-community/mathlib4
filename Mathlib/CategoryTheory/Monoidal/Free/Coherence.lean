@@ -50,7 +50,7 @@ variable (C)
 
 /-- We say an object in the free monoidal category is in normal form if it is of the form
     `(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 inductive NormalMonoidalObject : Type u
   | unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject
@@ -83,9 +83,9 @@ theorem inclusion_obj (X : N C) :
 
 @[simp]
 theorem inclusion_map {X Y : N C} (f : X ⟶ Y) :
-    inclusion.map f = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom f))) := by
+    inclusion.map f = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom f))) := by
   rcases f with ⟨⟨⟩⟩
-  cases Discrete.ext _ _ (by assumption)
+  cases Discrete.ext (by assumption)
   apply inclusion.map_id
 
 /-- Auxiliary definition for `normalize`. -/
@@ -161,7 +161,7 @@ def fullNormalize : F C ⥤ N C where
 @[simp]
 def tensorFunc : F C ⥤ N C ⥤ F C where
   obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
-  map f := Discrete.natTrans (fun n => _ ◁ f)
+  map f := Discrete.natTrans (fun _ => _ ◁ f)
 
 theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = _ ◁ f :=
   rfl
@@ -185,7 +185,7 @@ def normalizeIsoApp :
   | tensor X a, n =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp X n) a ≪≫ normalizeIsoApp _ _
 
-/-- Almost non-definitionally equall to `normalizeIsoApp`, but has a better definitional property
+/-- Almost non-definitionally equal to `normalizeIsoApp`, but has a better definitional property
 in the proof of `normalize_naturality`. -/
 @[simp]
 def normalizeIsoApp' :
@@ -197,7 +197,7 @@ def normalizeIsoApp' :
 
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
-  | of X, _ => rfl
+  | of _, _ => rfl
   | unit, _ => rfl
   | tensor X Y, n => by
       rw [normalizeIsoApp, normalizeIsoApp']
@@ -248,7 +248,7 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     inclusionObj n ◁ f ≫ (normalizeIsoApp' C Y n).hom =
       (normalizeIsoApp' C X n).hom ≫
-        inclusion.map (eqToHom (Discrete.ext _ _ (normalizeObj_congr n f))) := by
+        inclusion.map (eqToHom (Discrete.ext (normalizeObj_congr n f))) := by
   revert n
   induction f using Hom.inductionOn
   case comp f g ihf ihg => simp [ihg, reassoc_of% (ihf _)]

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
@@ -28,7 +28,7 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
--- Porting note(#5171): linter not yet ported
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported
 -- @[nolint has_nonempty_instance]
 
 def Core (C : Type u₁) := C
@@ -39,7 +39,7 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : C) := X ≅ Y
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
-  inv {X Y} f := Iso.symm f
+  inv {_ _} f := Iso.symm f
 
 namespace Core
 
@@ -72,7 +72,7 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 /-- A functor from a groupoid to a category C factors through the core of C. -/
 def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := F.obj X
-  map f := ⟨F.map f, F.map (Groupoid.inv f), _, _⟩
+  map f := { hom := F.map f, inv := F.map (Groupoid.inv f) }
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
 a functor from the groupoid to `C`, simply by composing with the embedding `Core C ⥤ C`.

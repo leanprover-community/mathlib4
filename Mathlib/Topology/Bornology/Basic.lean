@@ -75,10 +75,6 @@ lemma Bornology.ext (t t' : Bornology α)
   cases t'
   congr
 
-lemma Bornology.ext_iff (t t' : Bornology α) :
-    t = t' ↔ @Bornology.cobounded α t = @Bornology.cobounded α t' :=
-⟨congrArg _, Bornology.ext _ _⟩
-
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps]
@@ -204,7 +200,7 @@ end
 
 theorem ext_iff' {t t' : Bornology α} :
     t = t' ↔ ∀ s, s ∈ @cobounded α t ↔ s ∈ @cobounded α t' :=
-  (Bornology.ext_iff _ _).trans Filter.ext_iff
+  Bornology.ext_iff.trans Filter.ext_iff
 
 theorem ext_iff_isBounded {t t' : Bornology α} :
     t = t' ↔ ∀ s, @IsBounded α t s ↔ @IsBounded α t' s :=
@@ -265,7 +261,7 @@ open Bornology
 
 theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : ι → Prop}
     {s : ι → Set α} {l : Filter α} (h : l.HasBasis p s) :
-    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ IsBounded (s i) :=
+    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ Bornology.IsBounded (s i) :=
   h.disjoint_iff_left
 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=

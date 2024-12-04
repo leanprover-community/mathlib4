@@ -3,10 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type
@@ -40,7 +41,7 @@ and Chris Hughes (on an earlier repository).
 -/
 
 -- A dividing line between this file and `AlgebraicGeometry.PrimeSpectrum.Basic` is
--- that we should not depened on the Zariski topology here
+-- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
 noncomputable section
@@ -81,6 +82,14 @@ instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 
 variable (R S)
+
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+@[simps]
+def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
+  toFun I := ⟨I.asIdeal, I.2⟩
+  invFun I := ⟨I, I.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -186,7 +195,7 @@ theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi R R).gc
-  simpa [zeroLocus_span, Function.comp] using ideal_gc.compose (gc R)
+  simpa [zeroLocus_span, Function.comp_def] using ideal_gc.compose (gc R)
 
 theorem subset_zeroLocus_iff_subset_vanishingIdeal (t : Set (PrimeSpectrum R)) (s : Set R) :
     t ⊆ zeroLocus s ↔ s ⊆ vanishingIdeal t :=
@@ -364,6 +373,37 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
+section Order
+
+/-!
+## The specialization order
+
+We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
+This is exactly the specialization order.
+See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
+-/
+
+instance : PartialOrder (PrimeSpectrum R) :=
+  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
+
+@[simp]
+theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
+  Iff.rfl
+
+@[simp]
+theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
+  Iff.rfl
+
+instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
+  bot := ⟨⊥, Ideal.bot_prime⟩
+  bot_le I := @bot_le _ _ _ I.asIdeal
+
+instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
+  default := ⊥
+  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+
+end Order
+
 section Noetherian
 
 open Submodule
@@ -449,3 +489,112 @@ end Noetherian
 end CommSemiRing
 
 end PrimeSpectrum
+
+open PrimeSpectrum
+
+/-- The pullback of an element of `PrimeSpectrum S` along a ring homomorphism `f : R →+* S`.
+The bundled continuous version is `PrimeSpectrum.comap`. -/
+abbrev RingHom.specComap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
+    PrimeSpectrum S → PrimeSpectrum R :=
+  fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩
+
+namespace PrimeSpectrum
+
+open RingHom
+
+variable {R S} {S' : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring S']
+
+theorem preimage_specComap_zeroLocus_aux (f : R →+* S) (s : Set R) :
+    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) := by
+  ext x
+  simp only [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus, Ideal.coe_comap]
+
+variable (f : R →+* S)
+
+@[simp]
+theorem specComap_asIdeal (y : PrimeSpectrum S) :
+    (f.specComap y).asIdeal = Ideal.comap f y.asIdeal :=
+  rfl
+
+@[simp]
+theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
+  rfl
+
+@[simp]
+theorem specComap_comp (f : R →+* S) (g : S →+* S') :
+    (g.comp f).specComap = f.specComap.comp g.specComap :=
+  rfl
+
+theorem specComap_comp_apply (f : R →+* S) (g : S →+* S') (x : PrimeSpectrum S') :
+    (g.comp f).specComap x = f.specComap (g.specComap x) :=
+  rfl
+
+@[simp]
+theorem preimage_specComap_zeroLocus (s : Set R) :
+    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
+  preimage_specComap_zeroLocus_aux f s
+
+theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
+    Function.Injective f.specComap := fun x y h =>
+  PrimeSpectrum.ext
+    (Ideal.comap_injective_of_surjective f hf
+      (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
+
+variable (S)
+
+theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Function.Injective (algebraMap R S).specComap := by
+  intro p q h
+  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
+  dsimp only [specComap] at h
+  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
+  ext1
+  exact h
+
+theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
+    Set.range (algebraMap R S).specComap = { p | Disjoint (M : Set R) p.asIdeal } := by
+  ext x
+  constructor
+  · simp_rw [disjoint_iff_inf_le]
+    rintro ⟨p, rfl⟩ x ⟨hx₁, hx₂⟩
+    exact (p.2.1 : ¬_) (p.asIdeal.eq_top_of_isUnit_mem hx₂ (IsLocalization.map_units S ⟨x, hx₁⟩))
+  · intro h
+    use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
+    ext1
+    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
+
+end PrimeSpectrum
+
+section SpecOfSurjective
+
+open Function RingHom
+
+variable [CommRing R] [CommRing S]
+variable (f : R →+* S)
+variable {R}
+
+theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
+    f.specComap '' zeroLocus I = zeroLocus (I.comap f) := by
+  simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
+  refine fun p => ⟨?_, fun h_I_p => ?_⟩
+  · rintro ⟨p, hp, rfl⟩ a ha
+    exact hp ha
+  · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
+    refine ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => ?_, ?_⟩
+    · obtain ⟨x', rfl⟩ := hf x
+      exact Ideal.mem_map_of_mem f (h_I_p hx)
+    · ext x
+      rw [specComap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
+      refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
+      rintro ⟨x', hx', heq⟩
+      rw [← sub_sub_cancel x' x]
+      refine p.asIdeal.sub_mem hx' (hp ?_)
+      rwa [mem_ker, map_sub, sub_eq_zero]
+
+theorem range_specComap_of_surjective (hf : Surjective f) :
+    Set.range f.specComap = zeroLocus (ker f) := by
+  rw [← Set.image_univ]
+  convert image_specComap_zeroLocus_eq_zeroLocus_comap _ _ hf _
+  rw [zeroLocus_bot]
+
+end SpecOfSurjective

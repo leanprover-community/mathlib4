@@ -3,8 +3,9 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
 # Maximal spectrum of a commutative ring
@@ -53,7 +54,7 @@ def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
   ⟨x.asIdeal, x.IsMaximal.isPrime⟩
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
-  simpa only [MaximalSpectrum.mk.injEq] using (PrimeSpectrum.ext_iff _ _).mp h
+  simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
 
 open PrimeSpectrum Set
 

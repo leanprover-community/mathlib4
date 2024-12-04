@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Junyan Xu
 -/
-import Mathlib.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.PathCategory.Basic
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Bicategory.Free
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
@@ -86,9 +86,9 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
 
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
-    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
+    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
-  cases Discrete.ext _ _ (by assumption)
+  cases Discrete.ext (by assumption)
   convert (inclusionPath a b).map_id _
 
 /-- The normalization of the composition of `p : Path a b` and `f : Hom b c`.
@@ -151,7 +151,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
 theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
-        (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
+        (preinclusion B).map₂ (eqToHom (Discrete.ext (normalizeAux_congr p η))) := by
   rcases η with ⟨η'⟩; clear η
   induction η' with
   | id => simp
@@ -186,9 +186,9 @@ def normalize (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
   obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
-  map₂ η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
-  mapId a := eqToIso <| Discrete.ext _ _ rfl
-  mapComp f g := eqToIso <| Discrete.ext _ _ <| normalizeAux_nil_comp f g
+  map₂ η := eqToHom <| Discrete.ext <| normalizeAux_congr nil η
+  mapId _ := eqToIso <| Discrete.ext rfl
+  mapComp f g := eqToIso <| Discrete.ext <| normalizeAux_nil_comp f g
 
 /-- Auxiliary definition for `normalizeEquiv`. -/
 def normalizeUnitIso (a b : FreeBicategory B) :
@@ -204,11 +204,11 @@ def normalizeUnitIso (a b : FreeBicategory B) :
 def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
     (Discrete.natIso fun f => eqToIso (by
-      induction' f with f
-      induction' f with _ _ _ _ ih
-      -- Porting note: `tidy` closes the goal in mathlib3 but `aesop` doesn't here.
-      · rfl
-      · ext1
+      obtain ⟨f⟩ := f
+      induction f with
+      | nil => rfl
+      | cons _ _ ih =>
+        ext1 -- Porting note: `tidy` closes the goal in mathlib3 but `aesop` doesn't here.
         injection ih with ih
         conv_rhs => rw [← ih]
         rfl))
@@ -232,7 +232,7 @@ def inclusion (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with
-    mapId := fun a => Iso.refl _
+    mapId := fun _ => Iso.refl _
     mapComp := fun f g => inclusionMapCompAux f.as g.as }
 
 end FreeBicategory

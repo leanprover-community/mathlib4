@@ -59,7 +59,7 @@ variable (p)
 
 /-- Multiplication by `n` is a polynomial function. -/
 @[is_poly]
-theorem mulN_isPoly (n : ℕ) : IsPoly p fun R _Rcr x => x * n :=
+theorem mulN_isPoly (n : ℕ) : IsPoly p fun _ _Rcr x => x * n :=
   ⟨⟨wittMulN p n, fun R _Rcr x => by funext k; exact mulN_coeff n x k⟩⟩
 
 @[simp]
@@ -70,7 +70,7 @@ theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
   · rw [wittMulN, ← bind₁_bind₁, wittAdd, wittStructureInt_prop]
     simp only [map_add, Nat.cast_succ, bind₁_X_right]
     rw [add_mul, one_mul, bind₁_rename, bind₁_rename]
-    simp only [ih, Function.uncurry, Function.comp, bind₁_X_left, AlgHom.id_apply,
+    simp only [ih, Function.uncurry, Function.comp_def, bind₁_X_left, AlgHom.id_apply,
       Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
 
 end

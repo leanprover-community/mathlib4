@@ -103,11 +103,13 @@ immediate predecessors and what conditions are added to each of them.
   - `CommRing` & `IsDomain` & linear order structure
 -/
 
+assert_not_exists MonoidHom
+
 open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u}
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
@@ -193,7 +195,7 @@ class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMono
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] {a b c d : α}
+variable [OrderedSemiring α]
 -- see Note [lower instance priority]
 instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
   { ‹OrderedSemiring α› with }
@@ -210,7 +212,7 @@ end OrderedSemiring
 
 section OrderedRing
 
-variable [OrderedRing α] {a b c d : α}
+variable [OrderedRing α] {a b c : α}
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
@@ -219,6 +221,22 @@ instance (priority := 100) OrderedRing.toOrderedSemiring : OrderedSemiring α :=
       simpa only [mul_sub, sub_nonneg] using OrderedRing.mul_nonneg _ _ hc (sub_nonneg.2 h),
     mul_le_mul_of_nonneg_right := fun a b c h hc => by
       simpa only [sub_mul, sub_nonneg] using OrderedRing.mul_nonneg _ _ (sub_nonneg.2 h) hc }
+
+lemma one_add_le_one_sub_mul_one_add (h : a + b + b * c ≤ c) : 1 + a ≤ (1 - b) * (1 + c) := by
+  rw [one_sub_mul, mul_one_add, le_sub_iff_add_le, add_assoc, ← add_assoc a]
+  gcongr
+
+lemma one_add_le_one_add_mul_one_sub (h : a + c + b * c ≤ b) : 1 + a ≤ (1 + b) * (1 - c) := by
+  rw [mul_one_sub, one_add_mul, le_sub_iff_add_le, add_assoc, ← add_assoc a]
+  gcongr
+
+lemma one_sub_le_one_sub_mul_one_add (h : b + b * c ≤ a + c) : 1 - a ≤ (1 - b) * (1 + c) := by
+  rw [one_sub_mul, mul_one_add, sub_le_sub_iff, add_assoc, add_comm c]
+  gcongr
+
+lemma one_sub_le_one_add_mul_one_sub (h : c + b * c ≤ a + b) : 1 - a ≤ (1 + b) * (1 - c) := by
+  rw [mul_one_sub, one_add_mul, sub_le_sub_iff, add_assoc, add_comm b]
+  gcongr
 
 end OrderedRing
 
@@ -234,7 +252,7 @@ end OrderedCommRing
 
 section StrictOrderedSemiring
 
-variable [StrictOrderedSemiring α] {a b c d : α}
+variable [StrictOrderedSemiring α]
 
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α :=
@@ -302,7 +320,7 @@ instance (priority := 100) StrictOrderedCommSemiring.toOrderedCommSemiring :
 end StrictOrderedCommSemiring
 
 section StrictOrderedRing
-variable [StrictOrderedRing α] {a b c : α}
+variable [StrictOrderedRing α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrderedSemiring α :=
@@ -355,7 +373,7 @@ end StrictOrderedCommRing
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] {a b c d : α}
+variable [LinearOrderedSemiring α]
 
 -- see Note [lower instance priority]
 instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulReflectLT α :=
@@ -387,19 +405,14 @@ instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α where
     obtain ha | ha := ha.lt_or_lt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedSemiring.toLinearOrderedCancelAddCommMonoid :
+    LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedSemiring α›
+
 end LinearOrderedSemiring
 
-section LinearOrderedCommSemiring
-variable [LinearOrderedCommSemiring α] {a b c d : α}
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid :
-    LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedCommSemiring α›
-
-end LinearOrderedCommSemiring
-
 section LinearOrderedRing
-variable [LinearOrderedRing α] {a b c : α}
+variable [LinearOrderedRing α]
 
 attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 
@@ -422,5 +435,3 @@ instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-
-assert_not_exists MonoidHom

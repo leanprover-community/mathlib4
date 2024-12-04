@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Richard Hill
+Authors: Kevin Buzzard, Richard M. Hill
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Module.AEval
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of univariate polynomials

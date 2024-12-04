@@ -151,18 +151,6 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
     (forget₂ (ModuleCat R) AddCommGrp).map f = LinearMap.toAddMonoidHom f :=
   rfl
 
--- Porting note (#11215): TODO: `ofHom` and `asHom` are duplicates!
-
-/-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
-def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
-    [Module R Y] (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
-  f
-
-@[simp 1100]
-theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
-    [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : ofHom f x = f x :=
-  rfl
-
 instance : Inhabited (ModuleCat R) :=
   ⟨of R PUnit⟩
 
@@ -218,13 +206,24 @@ end ModuleCat
 variable {R}
 variable {X₁ X₂ : Type v}
 
+open ModuleCat
+
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
-def ModuleCat.asHom [AddCommGroup X₁] [Module R X₁] [AddCommGroup X₂] [Module R X₂] :
+def ModuleCat.ofHom [AddCommGroup X₁] [Module R X₁] [AddCommGroup X₂] [Module R X₂] :
     (X₁ →ₗ[R] X₂) → (ModuleCat.of R X₁ ⟶ ModuleCat.of R X₂) :=
   id
 
+@[deprecated (since := "2024-12-03")] alias ModuleCat.asHom := ModuleCat.ofHom
+
 /-- Reinterpreting a linear map in the category of `R`-modules -/
-scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.asHom f
+scoped[ModuleCat] notation "↟" f:1024 => ModuleCat.ofHom f
+
+@[simp 1100]
+theorem ModuleCat.ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X]
+    [AddCommGroup Y] [Module R Y] (f : X →ₗ[R] Y) (x : X) : (↟ f) x = f x :=
+  rfl
+
+@[deprecated (since := "2024-10-06")] alias ModuleCat.asHom_apply := ModuleCat.ofHom_apply
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
 def ModuleCat.asHomRight [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R} :
@@ -304,7 +303,7 @@ section
 variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) where
-  homModule X Y := LinearMap.module
+  homModule _ _ := LinearMap.module
   smul_comp := by
     intros
     ext
@@ -353,10 +352,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext _ _ (by aesop_cat)
-  map_zero' := NatTrans.ext _ _ (by aesop_cat)
-  map_mul' _ _ := NatTrans.ext _ _ (by aesop_cat)
-  map_add' _ _ := NatTrans.ext _ _ (by aesop_cat)
+  map_one' := NatTrans.ext (by aesop_cat)
+  map_zero' := NatTrans.ext (by aesop_cat)
+  map_mul' _ _ := NatTrans.ext (by aesop_cat)
+  map_add' _ _ := NatTrans.ext (by aesop_cat)
 
 variable {R}
 
@@ -392,7 +391,7 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 

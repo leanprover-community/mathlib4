@@ -9,9 +9,9 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
 
-universe u v
+universe u
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u}
 
 open Function
 

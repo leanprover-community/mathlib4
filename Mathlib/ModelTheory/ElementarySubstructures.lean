@@ -9,11 +9,13 @@ import Mathlib.ModelTheory.ElementaryMaps
 # Elementary Substructures
 
 ## Main Definitions
-* A `FirstOrder.Language.ElementarySubstructure` is a substructure where the realization of each
+
+- A `FirstOrder.Language.ElementarySubstructure` is a substructure where the realization of each
   formula agrees with the realization in the larger model.
 
 ## Main Results
-* The Tarski-Vaught Test for substructures:
+
+- The Tarski-Vaught Test for substructures:
   `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
   substructure to be elementary.
  -/
@@ -27,8 +29,7 @@ namespace Language
 
 open Structure
 
-variable {L : Language} {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
+variable {L : Language} {M : Type*} [L.Structure M]
 
 /-- A substructure is elementary when every formula applied to a tuple in the substructure
   agrees with its value in the overall structure. -/

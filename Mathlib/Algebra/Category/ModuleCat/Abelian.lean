@@ -37,9 +37,9 @@ def normalMono (hf : Mono f) : NormalMono f where
         might help you understand what's going on here:
         ```
         calc
-        M   ≃ₗ[R] f.ker.quotient  : (submodule.quot_equiv_of_eq_bot _ (ker_eq_bot_of_mono _)).symm
-        ... ≃ₗ[R] f.range         : linear_map.quot_ker_equiv_range f
-        ... ≃ₗ[R] r.range.mkq.ker : linear_equiv.of_eq _ _ (submodule.ker_mkq _).symm
+        M   ≃ₗ[R] f.ker.quotient  : (Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm
+        ... ≃ₗ[R] f.range         : LinearMap.quotKerEquivRange f
+        ... ≃ₗ[R] r.range.mkQ.ker : LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm
         ```
       -/
         IsKernel.isoKernel _ _ (kernelIsLimit _)
@@ -57,9 +57,9 @@ def normalEpi (hf : Epi f) : NormalEpi f where
     /- The following invalid Lean code might help you understand what's going on here:
         ```
         calc f.ker.subtype.range.quotient
-            ≃ₗ[R] f.ker.quotient : submodule.quot_equiv_of_eq _ _ (submodule.range_subtype _)
-        ... ≃ₗ[R] f.range        : linear_map.quot_ker_equiv_range f
-        ... ≃ₗ[R] N              : linear_equiv.of_top _ (range_eq_top_of_epi _)
+            ≃ₗ[R] f.ker.quotient : Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _)
+        ... ≃ₗ[R] f.range        : LinearMap.quotKerEquivRange f
+        ... ≃ₗ[R] N              : LinearEquiv.ofTop _ (range_eq_top_of_epi _)
         ```
       -/
         IsCokernel.cokernelIso _ _ (cokernelIsColimit _)
@@ -82,19 +82,19 @@ instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
-instance forgetReflectsLimitsOfSize :
+instance forget_reflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
-  reflectsLimitsOfReflectsIsomorphisms
+  reflectsLimits_of_reflectsIsomorphisms
 
-instance forget₂ReflectsLimitsOfSize :
+instance forget₂_reflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGrp.{max v w}) :=
-  reflectsLimitsOfReflectsIsomorphisms
+  reflectsLimits_of_reflectsIsomorphisms
 
-instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
-  ModuleCat.forgetReflectsLimitsOfSize.{v, v}
+instance forget_reflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
+  ModuleCat.forget_reflectsLimitsOfSize.{v, v}
 
-instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
-  ModuleCat.forget₂ReflectsLimitsOfSize.{v, v}
+instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
+  ModuleCat.forget₂_reflectsLimitsOfSize.{v, v}
 
 end ReflectsLimits
 

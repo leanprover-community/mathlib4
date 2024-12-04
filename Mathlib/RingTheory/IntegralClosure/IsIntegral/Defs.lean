@@ -3,7 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Tactic.Algebraize
 
 /-!
 # Integral closure of a subring.
@@ -35,6 +37,7 @@ def RingHom.IsIntegralElem (f : R →+* A) (x : A) :=
 
 /-- A ring homomorphism `f : R →+* A` is said to be integral
 if every element `A` is integral with respect to the map `f` -/
+@[algebraize Algebra.IsIntegral.mk]
 def RingHom.IsIntegral (f : R →+* A) :=
   ∀ x : A, f.IsIntegralElem x
 

@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.GroupTheory.MonoidLocalization.Away
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Ideals in localizations of commutative rings
@@ -23,10 +24,21 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 variable [Algebra R S] [IsLocalization M S]
 
+variable {M S} in
+theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
+  constructor <;> intro h
+  · rw [← mk'_spec S x y, mul_comm]
+    exact I.mul_mem_left ((algebraMap R S) y) h
+  · rw [← mk'_spec S x y] at h
+    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
+    have := I.mul_mem_left b h
+    rwa [mul_comm, mul_assoc, hb, mul_one] at this
+
 /-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
 In practice, this ideal differs only in that the carrier set is defined explicitly.
 This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
+-- TODO: golf this using `Submodule.localized'`
 private def map_ideal (I : Ideal R) : Ideal S where
   carrier := { z : S | ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 }
   zero_mem' := ⟨⟨0, 1⟩, by simp⟩
@@ -68,7 +80,9 @@ lemma mk'_mem_map_algebraMap_iff (I : Ideal R) (x : R) (s : M) :
   exact ⟨fun ⟨⟨y, t⟩, c, h⟩ ↦ ⟨_, (c * t).2, h ▸ I.mul_mem_left c.1 y.2⟩, fun ⟨s, hs, h⟩ ↦
     ⟨⟨⟨_, h⟩, ⟨s, hs⟩⟩, 1, by simp⟩⟩
 
-theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
+include M in
+theorem map_comap (J : Ideal S) :
+    Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
     rw [← hx] at hJ ⊢
@@ -163,6 +177,7 @@ section CommRing
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
+include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
   and the localization necessarily maps the equivalence class of the inverse in the localization -/
@@ -197,9 +212,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
               (Ideal.Quotient.eq_zero_iff_mem.2
                 (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
           (_root_.trans hn ?_))
-    -- Porting note (#10691): was `rw`, but this took extremely long.
-    refine Eq.trans ?_ (RingHom.map_mul (Ideal.Quotient.mk I) (algebraMap R S m) (mk' S 1 ⟨m, hm⟩))
-    rw [← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one]
+    rw [← map_mul, ← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one]
 
 open nonZeroDivisors
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Nat
 
 /-! # Embeddings of complex shapes
 
@@ -52,7 +52,7 @@ namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
-a compatiblity with respect to the relations `c.Rel` and `c'.Rel`. -/
+a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'

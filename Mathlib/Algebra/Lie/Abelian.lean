@@ -201,20 +201,21 @@ def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃
 
 @[simp]
 theorem coe_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
-    (maxTrivLinearMapEquivLieModuleHom f : M → N) = f := by ext; rfl
+    (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) f : M → N) = f := by ext; rfl
 
 @[simp]
 theorem coe_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
-    (maxTrivLinearMapEquivLieModuleHom.symm f : M → N) = f :=
+    (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) |>.symm f : M → N) = f :=
   rfl
 
 @[simp]
 theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L (M →ₗ[R] N)) :
-    (maxTrivLinearMapEquivLieModuleHom f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by ext; rfl
+    (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by
+  ext; rfl
 
 @[simp]
 theorem coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
-    (maxTrivLinearMapEquivLieModuleHom.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
+    (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) |>.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
   rfl
 
 end LieModule
@@ -252,6 +253,7 @@ namespace LieModule
 
 variable {R L}
 variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
+include hx
 
 lemma commute_toEnd_of_mem_center_left :
     Commute (toEnd R L M x) (toEnd R L M y) := by
@@ -271,8 +273,7 @@ open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] [LieModule R L M]
-variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
+variable [LieRingModule L M] (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by

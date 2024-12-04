@@ -94,7 +94,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
         isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' <|
         isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n
       rw [derivative_map, eval_map_algebraMap, ← mul_assoc, mul_neg, Ring.mul_inverse_cancel _ this,
-        neg_mul, one_mul, add_right_neg]
+        neg_mul, one_mul, add_neg_cancel]
     · rw [neg_mul, even_two.neg_pow, mul_pow, pow_succ, pow_mul]
       exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd ih 2) _
 
@@ -111,7 +111,7 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
   · -- Existence
     obtain ⟨n, hn⟩ := id h
     refine ⟨P.newtonMap^[n] x, isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n, ?_⟩
-    rw [← zero_dvd_iff, ← pow_eq_zero_of_le n.lt_two_pow.le hn]
+    rw [← zero_dvd_iff, ← pow_eq_zero_of_le (n.lt_two_pow_self).le hn]
     exact aeval_pow_two_pow_dvd_aeval_iterate_newtonMap h h' n
   · -- Uniqueness
     have ⟨u, hu⟩ := binomExpansion (P.map (algebraMap R S)) r₁ (r₂ - r₁)

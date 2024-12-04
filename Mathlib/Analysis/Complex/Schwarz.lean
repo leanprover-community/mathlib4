@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.RemovableSingularity
@@ -56,7 +56,7 @@ namespace Complex
 
 section Space
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {R₁ R₂ : ℝ} {f : ℂ → E}
   {c z z₀ : ℂ}
 
 /-- An auxiliary lemma for `Complex.norm_dslope_le_div_of_mapsTo_ball`. -/
@@ -80,7 +80,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     intro z hz
     have hz' : z ≠ c := ne_of_mem_sphere hz hr₀.ne'
     rw [dslope_of_ne _ hz', slope_def_module, norm_smul, norm_inv, mem_sphere_iff_norm.1 hz, ←
-      div_eq_inv_mul, div_le_div_right hr₀, ← dist_eq_norm]
+      div_eq_inv_mul, div_le_div_iff_of_pos_right hr₀, ← dist_eq_norm]
     exact le_of_lt (h_maps (mem_ball.2 (by rw [mem_sphere.1 hz]; exact hr.2)))
   · rw [closure_ball c hr₀.ne', mem_closedBall]
     exact hr.1.le
@@ -122,7 +122,7 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
     (differentiableOn_dslope (isOpen_ball.mem_nhds (mem_ball_self h_R₁))).mpr hd
   have : g z = g z₀ := eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball c R₁).isPreconnected
     isOpen_ball g_diff h_z₀ g_max hz
-  simp [g] at this
+  simp only [g] at this
   simp [g, ← this]
 
 theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]
@@ -149,7 +149,7 @@ theorem dist_le_div_mul_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c
   rcases eq_or_ne z c with (rfl | hne)
   · simp only [dist_self, mul_zero, le_rfl]
   simpa only [dslope_of_ne _ hne, slope_def_module, norm_smul, norm_inv, ← div_eq_inv_mul, ←
-    dist_eq_norm, div_le_iff (dist_pos.2 hne)] using norm_dslope_le_div_of_mapsTo_ball hd h_maps hz
+    dist_eq_norm, div_le_iff₀ (dist_pos.2 hne)] using norm_dslope_le_div_of_mapsTo_ball hd h_maps hz
 
 end Space
 

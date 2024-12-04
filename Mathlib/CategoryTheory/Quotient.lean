@@ -141,10 +141,9 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   simpa only [compClosure_eq_self r] using h.equivalence
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
-  (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/
-def lift : Quotient r ⥤ D where
+def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
   obj a := F.obj a.as
   map := @fun a b hf ↦
     Quot.liftOn hf (fun f ↦ F.map f)
@@ -155,6 +154,8 @@ def lift : Quotient r ⥤ D where
   map_comp := by
     rintro a b c ⟨f⟩ ⟨g⟩
     exact F.map_comp f g
+
+variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
   apply Functor.ext; rotate_left
@@ -173,7 +174,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
   · rintro _ _ f
     dsimp [lift, Functor]
     refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
-    simp only [Quot.liftOn_mk, Functor.comp_map]
+    simp only [heq_eq_eq]
     congr
 
 lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = functor r ⋙ F₂) :
@@ -187,7 +188,7 @@ lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = func
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents fun X ↦ Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 @[simp]
 theorem lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X) :=
@@ -210,7 +211,7 @@ variable {r}
 
 lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
     (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
-  NatTrans.ext _ _ (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
+  NatTrans.ext (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
 
 variable (r)
 
