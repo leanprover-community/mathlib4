@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Basic definitions about topological spaces
 
@@ -150,7 +151,7 @@ def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U
 /-- A map `f : X → Y` is said to be a *closed map*,
 if the image of any closed `U : Set X` is closed in `Y`. -/
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
-
+#check Mathlib.Tactic.MkIff.compactRelation
 /-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
 Equivalently, it is a surjective continuous open map.
 We use the latter characterization as a definition.
