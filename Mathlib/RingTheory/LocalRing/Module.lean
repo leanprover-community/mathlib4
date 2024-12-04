@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Jacobson
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.TensorProduct.Free
