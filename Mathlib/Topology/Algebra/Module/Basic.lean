@@ -309,7 +309,7 @@ instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
   { s with }
 
-instance (priority := 100) HomeomorphClass [EquivLike F M M₂]
+instance (priority := 100) [EquivLike F M M₂]
     [s : ContinuousSemilinearEquivClass F σ M M₂] : HomeomorphClass F M M₂ :=
   { s with }
 
