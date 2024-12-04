@@ -209,16 +209,16 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId) (r
 /-- Repeatedly reduce while stripping lambda binders and introducing their variables -/
 @[specialize]
 private partial def lambdaTelescopeReduce {m} [Inhabited (m α)] [Monad m] [MonadLiftT MetaM m]
-    [MonadControlT MetaM m] (e : Expr) (lambdas : List FVarId) (config : WhnfCoreConfig)
-    (noIndex : List FVarId → m α) (k : Expr → List FVarId → m α) : m α := do
+    [MonadControlT MetaM m] (e : Expr) (lambdas : List FVarId) (noIndex : List FVarId → m α)
+    (k : Expr → List FVarId → m α) : m α := do
   /- expressions marked with `no_index` should be indexed with a star -/
   if DiscrTree.hasNoindexAnnotation e then
     noIndex lambdas
   else
-    match ← DiscrTree.reduce e config with
+    match ← DiscrTree.reduce e with
     | .lam n d b bi =>
       withLocalDecl n bi d fun fvar =>
-        lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config noIndex k
+        lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) noIndex k
     | e => k e lambdas
 
 private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → LazyM Key
@@ -236,7 +236,7 @@ private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → L
 /-- A single step in encoding an `Expr` into `Key`s. -/
 private def encodingStep (original : Expr) (root : Bool)
     (entry : LazyEntry) : ReaderT Context MetaM (List (Key × LazyEntry)) :=
-  lambdaTelescopeReduce original [] entry.config
+  lambdaTelescopeReduce original []
     (fun lambdas =>
       return [← (do withLams lambdas (← mkNewStar)).run entry])
     (fun e lambdas => do
@@ -248,7 +248,7 @@ private def encodingStep (original : Expr) (root : Bool)
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
 private def encodingStep' (original : Expr) (root : Bool) : LazyM Key := do
-  lambdaTelescopeReduce original [] (← get).config
+  lambdaTelescopeReduce original []
     (fun lambdas => do withLams lambdas (← mkNewStar))
     (fun e lambdas => do
       unless root do
@@ -257,20 +257,17 @@ private def encodingStep' (original : Expr) (root : Bool) : LazyM Key := do
       encodingStepAux e lambdas root)
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-@[inline] def initializeLazyEntryAux (e : Expr) (config : WhnfCoreConfig) :
-    MetaM (List (Key × LazyEntry)) := do
-  encodingStep e true { config, mctx := ← getMCtx } |>.run { bvars := [] }
+@[inline] def initializeLazyEntryAux (e : Expr) : MetaM (List (Key × LazyEntry)) := do
+  encodingStep e true { mctx := ← getMCtx } |>.run { bvars := [] }
 
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-def initializeLazyEntry (e : Expr) (config : WhnfCoreConfig) :
-    MetaM (List (Key × LazyEntry)) := do
-  withReducible do initializeLazyEntryAux e config
+def initializeLazyEntry (e : Expr) : MetaM (List (Key × LazyEntry)) := do
+  withReducible do initializeLazyEntryAux e
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-private def initializeLazyEntry' (e : Expr) (config : WhnfCoreConfig) :
-    MetaM (Key × LazyEntry) := do
-  encodingStep' e true |>.run { bvars := [] } { config, mctx := ← getMCtx }
+private def initializeLazyEntry' (e : Expr) : MetaM (Key × LazyEntry) := do
+  encodingStep' e true |>.run { bvars := [] } { mctx := ← getMCtx }
 
 
 /-- If there is a loose `.bvar` returns `none`. Otherwise returns the index
@@ -288,7 +285,7 @@ private partial def hasLooseBVarsAux (depth : Nat) (keys : List Key) : Option (L
     | _               => some keys
 where
   recurse (nargs : Nat) (keys : List Key) : Option (List Key) :=
-    nargs.foldRevM (init := keys) (fun _ => hasLooseBVarsAux depth)
+    nargs.foldRevM (init := keys) fun _ _ => hasLooseBVarsAux depth
 
 /-- Determine whether `keys` contains a loose bound variable. -/
 private def hasLooseBVars (keys : List Key) : Bool :=
@@ -426,9 +423,9 @@ private def evalLazyEntry' (entry : LazyEntry) :
 
 /-- Return all encodings of `e` as a `Array Key`.
 This is used for inserting `e` into a `RefinedDiscrTree`. -/
-partial def encodeExpr (e : Expr) (config : WhnfCoreConfig) : MetaM (Array (Array Key)) :=
+partial def encodeExpr (e : Expr) : MetaM (Array (Array Key)) :=
   withReducible do
-    let entries ← encodingStep e true { config, mctx := ← getMCtx } |>.run { bvars := [] }
+    let entries ← encodingStep e true { mctx := ← getMCtx } |>.run { bvars := [] }
     let entries := entries.map fun (key, entry) => (#[key], entry)
     go entries.toArray #[]
 where
@@ -438,7 +435,7 @@ where
     if todo.isEmpty then
       return result
     else
-      let (keys, entry) := todo.back
+      let (keys, entry) := todo.back!
       let todo := todo.pop
       match ← evalLazyEntry entry with
       | some xs =>
@@ -462,8 +459,8 @@ partial def LazyEntry.toList (entry : LazyEntry) (result : List Key := []) : Met
 
 /-- Return the canonical encoding of `e` as a `Array Key`.
 This is used for looking up `e` in a `RefinedDiscrTree`. -/
-def encodeExpr' (e : Expr) (config : WhnfCoreConfig) : MetaM (Key × List Key) := withReducible do
-  let (key, entry) ← initializeLazyEntry' e config
+def encodeExpr' (e : Expr) : MetaM (Key × List Key) := withReducible do
+  let (key, entry) ← initializeLazyEntry' e
   return (key, ← entry.toList)
 
 end Lean.Meta.RefinedDiscrTree

@@ -7,7 +7,7 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 import Batteries.Data.RBMap.Alter
 
 /-!
@@ -232,11 +232,11 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
 from linearity over finite dimensional spaces or differentiability.  -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
-  let ext := transitionTheoremsExt.getState (← getEnv)
-  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
-    ext.theorems.getMatchWithScore e false
-  let candidates := candidates.map (·.1) |>.flatten
-  return candidates
+  let thms := (← get).transitionTheorems.theorems
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    thms.getMatch e false true
+  modify ({ · with transitionTheorems := ⟨thms⟩ })
+  return candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -254,22 +254,11 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
 For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
 infering continuity from the bundled morphism. -/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
-  let ext := morTheoremsExt.getState (← getEnv)
-  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
-    ext.theorems.getMatchWithScore e false
-  let candidates := candidates.map (·.1) |>.flatten
-  return candidates
-
-/-- Get morphism theorems applicable to `e`.
-
-For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
-infering continuity from the bundled morphism. -/
-def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
-  let ext := morTheoremsExt.getState (← getEnv)
-  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
-    ext.theorems.getMatchWithScore e false
-  let candidates := candidates.map (·.1) |>.flatten
-  return candidates
+  let thms := (← get).morTheorems.theorems
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    thms.getMatch e false true
+  modify ({ · with morTheorems := ⟨thms⟩ })
+  return candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
 
 --------------------------------------------------------------------------------

@@ -134,9 +134,9 @@ Append results to array
 partial def appendResults (mr : MatchResult α) (a : Array β) (f : Nat → α → β) : Array β :=
   let aa := mr.elts
   let n := aa.size
-  Nat.fold (n := n) (init := a) fun i r =>
+  Nat.fold (n := n) (init := a) fun i _ r =>
     let j := n-1-i
-    let b := aa[j]!
+    let b := aa[j]
     b.foldl (init := r) (· ++ ·.map (f j))
 
 end MatchResult
@@ -234,7 +234,7 @@ private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResu
   if todo.isEmpty then
     return result
   else
-    let pMatch := todo.back
+    let pMatch := todo.back!
     let todo := todo.pop
     let (values, stars, children) ← evalNode pMatch.trie
     match pMatch.keys with
@@ -264,9 +264,9 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
 
 /-- Find values that match `e` in `d`.
 if `unify == true` then metavarables in `e` can be assigned. -/
-def getMatch (d : RefinedDiscrTree α) (e : Expr) (config : WhnfCoreConfig := {})
-    (unify matchRootStar : Bool) : MetaM (MatchResult α × RefinedDiscrTree α) := do
-  let (key, keys) ← encodeExpr' e config
+def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
+    MetaM (MatchResult α × RefinedDiscrTree α) := do
+  let (key, keys) ← encodeExpr' e
   withReducible do runTreeM d do
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
     if key == .star 0 then

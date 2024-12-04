@@ -106,8 +106,7 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry)))) (ty : Expr)
-    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
-    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
+    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
@@ -118,16 +117,15 @@ def findImportMatches
     profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
       createImportedDiscrTree
         (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
-  let (importCandidates, importTree) ← getMatch importTree ty config false false
+  let (importCandidates, importTree) ← getMatch importTree ty false false
   ref.set (some importTree)
   return importCandidates
 
 /-- Returns candidates from this module that match the expression. -/
-def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr)
-    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
+def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
   profileitM Exception  "RefinedDiscrTree local search" (← getOptions) do
     let discrTree ← moduleRef.ref.get
-    let (localCandidates, localTree) ← getMatch discrTree ty config false false
+    let (localCandidates, localTree) ← getMatch discrTree ty false false
     moduleRef.ref.set localTree
     return localCandidates
 
@@ -142,14 +140,13 @@ def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr)
   new task.
 * `capacityPerTask` is the initial capacity of the `HashMap` at the root of the
   `RefinedDiscrTree` for each new task.
-* `config` is the `WhnfCoreConfig` used for reducing `ty`.
 -/
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry))))
-    (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
-    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
-  let moduleMatches ← findModuleMatches (← createModuleTreeRef addEntry) ty config
-  let importMatches ← findImportMatches ext addEntry ty constantsPerTask capacityPerTask config
+    (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128) :
+    MetaM (MatchResult α × MatchResult α) := do
+  let moduleMatches ← findModuleMatches (← createModuleTreeRef addEntry) ty
+  let importMatches ← findImportMatches ext addEntry ty constantsPerTask capacityPerTask
   return (moduleMatches, importMatches)
 
 end Lean.Meta.RefinedDiscrTree

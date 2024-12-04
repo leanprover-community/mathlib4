@@ -171,9 +171,6 @@ structure LazyEntry where
   previous : Option ExprInfo := none
   /-- The stack, used to emulate recursion. -/
   stack    : List StackEntry := []
-  /-- The configuration for normalization.
-  It could also be stored in the `RefinedDiscrTree` instead, but that is less convenient -/
-  config : WhnfCoreConfig
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
   /-- The `MVarId` assignments for converting into `.star` keys. -/
@@ -186,7 +183,7 @@ structure LazyEntry where
   cache    : AssocList Expr (List Key) := {}
 
 instance : Inhabited (LazyEntry) where
-  default := { config := {}, mctx := {} }
+  default := { mctx := {} }
 
 private def LazyEntry.format (entry : LazyEntry) : Format :=
   let results := if entry.results matches [] then f!"" else f!", results: {entry.results}, "
