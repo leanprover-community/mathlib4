@@ -505,8 +505,8 @@ theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a �
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
-              | b + 2 => by omega
-          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
+              | b+2 => by omega
+          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
 @[deprecated (since := "2024-11-30")]
