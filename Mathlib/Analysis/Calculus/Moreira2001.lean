@@ -245,7 +245,7 @@ theorem isBigO_of_le (h : ContDiffHolder k α f K U) (hU : IsOpen U) (hKU : K �
       rw [iteratedFDerivWithin_of_isOpen, iteratedFDerivWithin_of_isOpen] <;> assumption
     · filter_upwards [closedBall_mem_nhds _ one_pos] with y hy
       rw [Real.norm_of_nonneg (by positivity), ← dist_eq_norm]
-      exact Real.self_le_rpow_of_nonneg_of_le_one dist_nonneg hy α.2.2
+      exact Real.self_le_rpow_of_le_one dist_nonneg hy α.2.2
 
 theorem comp {g : F → G} {V L : Set F} (hg : ContDiffHolder k α g L V)
     (hf : ContDiffHolder k α f K U) (hUV : MapsTo f U V) :
