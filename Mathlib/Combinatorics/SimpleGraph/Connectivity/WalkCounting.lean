@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
