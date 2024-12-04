@@ -3,7 +3,6 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
-import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
@@ -51,8 +50,6 @@ universe u v
 namespace Ideal
 
 variable {R : Type u} {S : Type v}
-
-open Polynomial
 
 section Jacobson
 
