@@ -145,6 +145,7 @@ lemma commShiftIso_zero :
 
 variable {A}
 
+/-- Docstring, why prime?-/
 lemma commShiftIso_zero' (a : A) (ha : a = 0) :
     F.commShiftIso a = CommShift.isoZero' F a ha := by
   ext X

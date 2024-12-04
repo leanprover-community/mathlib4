@@ -6,6 +6,8 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+import Mathlib.CategoryTheory.Triangulated.Functor
+import Mathlib.CategoryTheory.Triangulated.Lemmas
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -465,6 +467,61 @@ lemma op_distinguished (T : Triangle C) (hT : T ∈ distTriang C) :
 
 lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
+
+namespace Functor
+
+variable {D : Type*} [Category D] [HasShift D ℤ] [HasZeroObject D] [Preadditive D]
+  [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+
+variable (F : C ⥤ D) [F.CommShift ℤ]
+
+/-- If `F` commutes with shifts, so does `F.op`, for the shifts chosen on `Cᵒᵖ` at the
+beginning of this file. This is a scoped instance.
+-/
+noncomputable scoped instance : @Functor.CommShift Cᵒᵖ Dᵒᵖ _ _ F.op ℤ _
+    (instHasShiftOppositeInt C) (instHasShiftOppositeInt D) :=
+  @Functor.pullbackCommShift (OppositeShift C ℤ) _  ℤ ℤ _ _
+  (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+  (inferInstance : HasShift (OppositeShift C ℤ) ℤ) (OppositeShift D ℤ) _
+  (inferInstance : HasShift (OppositeShift D ℤ) ℤ) F.op
+  (Functor.CommShift.op F ℤ inferInstance)
+
+noncomputable def triangleOpEquivalence_functor_naturality :
+    F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor ≅
+    (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle := by
+  refine NatIso.ofComponents (fun T ↦ ?_) ?_
+  · refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
+    simp
+    have := (opShiftFunctorEquivalence C 1).counitIso.inv.naturality
+    apply Quiver.Hom.unop_inj
+    simp only [unop_comp, assoc, Quiver.Hom.unop_op]
+    sorry
+  · sorry
+
+noncomputable def triangleOpEquivalence_inverse_naturality :
+    F.op.mapTriangle ⋙ (triangleOpEquivalence D).inverse ≅
+    (triangleOpEquivalence C).inverse ⋙ F.mapTriangle.op := by
+  refine (Functor.leftUnitor _).symm ≪≫ ?_
+  refine isoWhiskerRight (triangleOpEquivalence C).counitIso.symm _ ≪≫ ?_
+  refine Functor.associator _ _ _ ≪≫ ?_
+  refine isoWhiskerLeft (triangleOpEquivalence C).inverse (Functor.associator _ _ _).symm ≪≫ ?_
+  refine isoWhiskerLeft _ (isoWhiskerRight
+    (triangleOpEquivalence_functor_naturality F).symm _) ≪≫ ?_
+  refine isoWhiskerLeft (triangleOpEquivalence C).inverse (Functor.associator _ _ _) ≪≫ ?_
+  refine isoWhiskerLeft (triangleOpEquivalence C).inverse (isoWhiskerLeft _
+    (triangleOpEquivalence D).unitIso.symm) ≪≫ ?_
+  exact isoWhiskerLeft _ (Functor.rightUnitor _)
+
+/-- If `F` is triangulated, is `F.op`. This is a scoped instance because the pretriangulated
+structures on `Cᵒᵖ` and `Dᵒᵖ` are.
+-/
+noncomputable scoped instance [F.IsTriangulated] : F.op.IsTriangulated where
+  map_distinguished T dT := by
+    rw [mem_distTriang_op_iff]
+    erw [← distinguished_iff_of_iso ((triangleOpEquivalence_inverse_naturality F).app T).unop]
+    exact F.map_distinguished _ ((mem_distTriang_op_iff _).mp dT)
+
+end Functor
 
 end Pretriangulated
 

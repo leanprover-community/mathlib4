@@ -105,13 +105,9 @@ lemma pullbackShiftFunctorAdd'_hom_app :
 
 section CommShift
 
-variable (D : Type*) [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 
-def Functor.pullbackShift : PullbackShift C φ ⥤ PullbackShift D φ where
-  obj := F.obj
-  map := F.map
-  map_id := F.map_id
-  map_comp := F.map_comp
+abbrev Functor.pullbackShift : PullbackShift C φ ⥤ PullbackShift D φ := F
 
 noncomputable def Functor.pullbackCommShift : Functor.CommShift (F.pullbackShift φ) A where
   iso a := by
@@ -128,7 +124,6 @@ noncomputable def Functor.pullbackCommShift : Functor.CommShift (F.pullbackShift
     simp only [comp_obj, CommShift.isoZero'_hom_app, shiftFunctorZero', Iso.trans_hom, eqToIso.hom,
       NatTrans.comp_app, id_obj, eqToHom_app, map_comp, Iso.trans_inv, eqToIso.inv, assoc,
       pullbackShiftFunctorZero_hom_app, pullbackShiftIso, pullbackShiftFunctorZero_inv_app]
-    rfl
   add a b := by
     ext X
     simp only [comp_obj, NatIso.ofComponents_hom_app, Iso.app_hom, CommShift.isoAdd_hom_app]

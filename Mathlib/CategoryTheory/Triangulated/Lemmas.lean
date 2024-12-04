@@ -568,6 +568,7 @@ theorem zero' (a : A) (ha : a = 0) : ∀ [self : F.CommShift A],
     NatTrans.comp_app, id_obj, eqToHom_app, map_comp, Iso.trans_inv, eqToIso.inv, Category.assoc]
 -/
 
+-- Should be `Functor.CommShift.op` probably, and take an instance argument.
 def op (commF : CommShift F A) :
     CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
   iso a := (NatIso.op (commF.iso a)).symm
