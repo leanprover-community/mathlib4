@@ -112,6 +112,13 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
   simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
 
+lemma fromSpecStalk_appTop {x : X} :
+    (X.fromSpecStalk x).appTop =
+      X.presheaf.germ ⊤ x trivial ≫
+        (ΓSpecIso (X.presheaf.stalk x)).inv ≫
+          (Spec (X.presheaf.stalk x)).presheaf.map (homOfLE le_top).op :=
+  fromSpecStalk_app ..
+
 @[reassoc (attr := simp)]
 lemma Spec_map_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
     Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := by
@@ -184,7 +191,7 @@ instance {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
 lemma fromSpecStalk_toSpecΓ (X : Scheme.{u}) (x : X) :
     X.fromSpecStalk x ≫ X.toSpecΓ = Spec.map (X.presheaf.germ ⊤ x trivial) := by
   rw [Scheme.toSpecΓ_naturality, ← SpecMap_ΓSpecIso_hom, ← Spec.map_comp,
-    @Scheme.fromSpecStalk_app X ⊤ _ trivial]
+    Scheme.fromSpecStalk_appTop]
   simp
 
 @[reassoc (attr := simp)]

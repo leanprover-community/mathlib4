@@ -122,7 +122,13 @@ instance : BoundedOrder SignType where
   top := 1
   le_top := LE.of_pos
   bot := -1
-  bot_le := LE.of_neg
+  bot_le :=
+    #adaptation_note
+    /--
+    Added `by exact` after https://github.com/leanprover/lean4/pull/6053,
+    but don't understand why it was needed.
+    -/
+    by exact LE.of_neg
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl

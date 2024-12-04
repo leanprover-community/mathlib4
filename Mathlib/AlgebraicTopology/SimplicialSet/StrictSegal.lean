@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Emily Riehl, Joël Riou
+Authors: Mario Carneiro, Emily Riehl, Joël Riou, Johan Commelin, Nick Ward
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
@@ -19,6 +19,10 @@ Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
 TODO: Show that these are the only examples: that a `StrictSegal` simplicial set is isomorphic to
 the nerve of its homotopy category.
+
+`StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
+in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
+
 -/
 
 universe v u
@@ -86,15 +90,79 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
+/-- For any `σ : X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
+commutes with `Path.map`. -/
+lemma spineToSimplex_map {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
+    {n : ℕ} (f : Path X (n + 1)) (σ : X ⟶ Y) :
+    spineToSimplex (f.map σ) = σ.app _ (spineToSimplex f) := by
+  apply spineInjective
+  ext k
+  dsimp only [spineEquiv, Equiv.coe_fn_mk, Path.map, spine_arrow]
+  rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
+  simp only [types_comp_apply, spineToSimplex_arrow]
+
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+the common vertices will agree with those of the original path `f`. In particular,
+a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
+lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)}
+    (h : i.castSucc < j) :
+    (X.spine n (X.δ j (spineToSimplex f))).vertex i = f.vertex i.castSucc := by
+  simp only [SimplicialObject.δ, spine_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
+    OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
+  rw [Fin.succAbove_of_castSucc_lt j i h]
+
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+a vertex `i` with `i ≥ j` can be identified with vertex `i + 1` in the original
+path. -/
+lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)}
+    (h : j ≤ i.castSucc) :
+    (X.spine n (X.δ j (spineToSimplex f))).vertex i = f.vertex i.succ := by
+  simp only [SimplicialObject.δ, spine_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
+    OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
+  rw [Fin.succAbove_of_le_castSucc j i h]
+
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+the common arrows will agree with those of the original path `f`. In particular,
+an arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
+lemma spine_δ_arrow_lt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
+    (h : i.succ.castSucc < j) :
+    (X.spine n (X.δ j (spineToSimplex f))).arrow i = f.arrow i.castSucc := by
+  simp only [SimplicialObject.δ, spine_arrow]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_lt h, spineToSimplex_arrow]
+
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+an arrow `i` with `i + 1 > j` can be identified with arrow `i + 1` in the
+original path. -/
+lemma spine_δ_arrow_gt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
+    (h : j < i.succ.castSucc) :
+    (X.spine n (X.δ j (spineToSimplex f))).arrow i = f.arrow i.succ := by
+  simp only [SimplicialObject.δ, spine_arrow]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_gt h, spineToSimplex_arrow]
+
+/-- If we take the path along the spine of a face of a `spineToSimplex`, the
+arrows not contained in the original path can be recovered as the diagonal edge
+of the `spineToSimplex` that "composes" arrows `i` and `i + 1`. -/
+lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
+    (h : j = i.succ.castSucc) :
+    (X.spine n (X.δ j (spineToSimplex f))).arrow i =
+      spineToDiagonal (Path.interval f i 2 (by omega)) := by
+  simp only [SimplicialObject.δ, spine_arrow]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
+
 end StrictSegal
 
 end SSet
 
-namespace Nerve
+namespace CategoryTheory.Nerve
 
 open SSet
-
-variable {C : Type*} [Category C] {n : ℕ}
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
 property describes the essential image of the nerve functor.-/
@@ -118,4 +186,4 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
 
-end Nerve
+end CategoryTheory.Nerve
