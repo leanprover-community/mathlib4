@@ -952,7 +952,7 @@ lemma isUnit_of_product_of_localizations (h : ∀ i, (M' i) = M.map (Pi.evalRing
     IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)) y) := by
   set f' i : (∀ i, R' i) →+* S' i := (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)
   refine isUnit_iff_exists_inv.mpr ?_
-  use fun i ↦ Ring.inverse ((f' i) y)
+  use fun i ↦ Ring.inverse (f' i y)
   rw [mul_comm]
   exact funext fun i ↦ Ring.inverse_mul_cancel (f' i y) ((isloc i).map_units (S' i) ⟨y.1 i, ?_⟩)
   rw [h i]; exact Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2
