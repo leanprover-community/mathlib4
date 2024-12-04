@@ -139,7 +139,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   constructor
   · rw [PartialEquiv.prod_symm, PartialEquiv.refl_symm, PartialEquiv.prod_coe,
       ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.refl_coe,
-      PartialHomeomorph.prod_symm, PartialHomeomorph.refl_symm, PartialHomeomorph.prod_coe,
+      PartialHomeomorph.prod_symm, PartialHomeomorph.refl_symm, PartialHomeomorph.prod_apply,
       PartialHomeomorph.refl_apply]
     convert hz.1
     apply Trivialization.proj_symm_apply'
