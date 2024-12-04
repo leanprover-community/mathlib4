@@ -980,7 +980,7 @@ theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq �
   have (x : R × M) : f (mk' S x.1 x.2) = fun i ↦ (isloc i).mk' (S' i) (x.1 i) ⟨x.2.1 i,
     h₁ x.2 i⟩ := by
     refine funext fun i ↦ eq_mk'_iff_mul_eq.mpr ?_
-    show _ * (f'' _) _ = f'' (x.1) i
+    show _ * f'' _ _ = f'' (x.1) i
     rw [← Pi.mul_apply, ← sloc.lift_eq (isUnit_of_product_of_localizations R' S' h) ↑x.2,
       ← RingHom.map_mul, mk'_spec, lift_eq (isUnit_of_product_of_localizations R' S' h) x.1]
   rw [this] at s₀
