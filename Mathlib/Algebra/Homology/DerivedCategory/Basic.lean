@@ -321,6 +321,10 @@ lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
 noncomputable def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
+
 /- to be moved to TStructure.Basic
 noncomputable def DerivedCategory.singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=

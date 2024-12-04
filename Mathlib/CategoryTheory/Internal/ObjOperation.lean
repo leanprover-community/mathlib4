@@ -1,8 +1,19 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ConcreteCategory.Operation
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
+/-!
+# Operations on objects in a category
+
+-/
+
+/-- If `f` is injective, `f x₁ = y₁`, `f x₂ = y₂`, then `x₁ = x₂ ↔ y₁ = y₂`. -/
 lemma Function.Injective.eq_iff'' {X Y : Type _} {f : X → Y} (hf : Function.Injective f)
     (x₁ x₂ : X) (y₁ y₂ : Y) (h₁ : f x₁ = y₁) (h₂ : f x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
   subst h₁ h₂
@@ -63,7 +74,7 @@ noncomputable def yonedaEquiv [HasTerminal C] (X : C) :
   left_inv := fun f => by
     dsimp
     simp only [Subsingleton.elim (terminal.from (⊤_ C)) (𝟙 _), Category.id_comp]
-  right_inv := fun φ => NatTrans.ext _ _ (by
+  right_inv := fun φ => NatTrans.ext (by
     ext T ⟨⟩
     exact (congr_fun (φ.naturality (terminal.from T.unop).op) PUnit.unit).symm)
 
@@ -87,6 +98,7 @@ end ObjOperation₁
 
 namespace ObjOperation₂
 
+/-- yonedaEquiv' -/
 noncomputable def yonedaEquiv' (X Y Z : C) [HasBinaryProduct X Y] :
   (X ⨯ Y ⟶ Z) ≃ (Types.functorConcat (yoneda.obj X) (yoneda.obj Y) ⟶ yoneda.obj Z ) where
   toFun f :=
@@ -153,6 +165,7 @@ lemma comm_iff (oper : ObjOperation₂ X) :
     simp only [← h]
   · apply (yonedaEquiv X).injective
 
+/-- comm_iff' -/
 lemma comm_iff' (oper : Types.functorOperation₂ (yoneda.obj X)) :
     oper.comm ↔ ((yonedaEquiv _).symm oper).comm := by
   rw [comm_iff, Equiv.apply_symm_apply]
@@ -173,12 +186,12 @@ lemma add_left_neg_iff (oper : ObjOperation₂ X) (neg : ObjOperation₁ X) (zer
       types_id_apply]
     congr
     simp [ObjOperation₁.yonedaEquiv, CategoryTheory.yonedaEquiv]
-    rfl
   · apply (ObjOperation₁.yonedaEquiv X).symm.injective
     simp only [Equiv.symm_apply_apply, Types.natTransConcat, yoneda_obj_obj, NatTrans.id_app,
       types_id_apply]
     rfl
 
+/-- add_left_neg_iff' -/
 lemma add_left_neg_iff' (oper : Types.functorOperation₂ (yoneda.obj X))
   (neg : Types.functorOperation₁ (yoneda.obj X)) (zero : Types.functorOperation₀ (yoneda.obj X)) :
   oper.add_left_neg neg zero ↔
@@ -201,6 +214,7 @@ lemma zero_add_iff (oper : ObjOperation₂ X) (zero : ObjOperation₀ X) :
     simp
     rfl
 
+/-- zero_add_iff' -/
 lemma zero_add_iff' (oper : Types.functorOperation₂ (yoneda.obj X))
   (zero : Types.functorOperation₀ (yoneda.obj X)) :
   oper.zero_add zero ↔
@@ -216,6 +230,7 @@ lemma add_zero_iff (oper : ObjOperation₂ X) (zero : ObjOperation₀ X) :
     simp
     rfl
 
+/-- add_zero_iff' -/
 lemma add_zero_iff' (oper : Types.functorOperation₂ (yoneda.obj X))
   (zero : Types.functorOperation₀ (yoneda.obj X)) :
   oper.add_zero zero ↔
@@ -227,6 +242,7 @@ noncomputable def map (h : ObjOperation₂ X) (F : C ⥤ D) [HasBinaryProduct (F
     ObjOperation₂ (F.obj X) :=
   (PreservesLimitPair.iso F X X).inv ≫ F.map h
 
+omit [HasTerminal C] in
 lemma map_swap (h : ObjOperation₂ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X) (F.obj X)]
     [PreservesLimit (pair X X) F] :
     (h.map F).swap = h.swap.map F := by
@@ -236,7 +252,7 @@ lemma map_swap (h : ObjOperation₂ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X)
   simp only [← cancel_mono ((PreservesLimitPair.iso F X X).hom),
     ← cancel_epi  (PreservesLimitPair.iso F X X).hom,
     Category.assoc, Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc]
-  apply prod.hom_ext
+  apply Limits.prod.hom_ext
   · simp only [PreservesLimitPair.iso_hom, prod.comp_lift, prodComparison_snd,
       prodComparison_fst, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left,
       BinaryFan.mk_fst, Category.assoc, ← F.map_comp]
@@ -244,6 +260,7 @@ lemma map_swap (h : ObjOperation₂ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X)
       prodComparison_fst, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right,
       BinaryFan.mk_snd, Category.assoc, ← F.map_comp]
 
+omit [HasTerminal C] in
 lemma comm.map {add : ObjOperation₂ X} (h : add.comm) (F : C ⥤ D)
     [HasBinaryProduct (F.obj X) (F.obj X)] [PreservesLimit (pair X X) F] :
     (add.map F).comm := by
@@ -255,13 +272,13 @@ lemma add_zero.map {add : ObjOperation₂ X} {zero : ObjOperation₀ X}
     [HasBinaryProduct (F.obj X) (F.obj X)] [PreservesLimit (pair X X) F] :
     (add.map F).add_zero (zero.map F) := by
   dsimp only [add_zero]
-  refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans ?_)
   · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc,
       Iso.inv_hom_id, Category.comp_id]
-    apply prod.hom_ext
+    apply Limits.prod.hom_ext
     · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
         Functor.map_id]
@@ -278,13 +295,13 @@ lemma zero_add.map {add : ObjOperation₂ X} {zero : ObjOperation₀ X}
     [HasBinaryProduct (F.obj X) (F.obj X)] [PreservesLimit (pair X X) F] :
     (add.map F).zero_add (zero.map F) := by
   --dsimp only [add_zero]
-  refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans ?_)
   · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc,
       Iso.inv_hom_id, Category.comp_id]
-    apply prod.hom_ext
+    apply Limits.prod.hom_ext
     · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp ]
       rw [F.map_comp, ← Category.assoc]
@@ -300,13 +317,13 @@ lemma add_left_neg.map {add : ObjOperation₂ X} {neg : ObjOperation₁ X} {zero
     [HasBinaryProduct (F.obj X) (F.obj X)] [PreservesLimit (pair X X) F] :
     (add.map F).add_left_neg (neg.map F) (zero.map F) := by
   --dsimp only [add_zero]
-  refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans ?_)
   · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    apply prod.hom_ext
+    apply Limits.prod.hom_ext
     · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp]
     · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
@@ -321,6 +338,7 @@ end ObjOperation₂
 
 namespace ObjOperation₃
 
+/-- yonedaEquiv' -/
 noncomputable def yonedaEquiv' (X₁ X₂ X₃ Y : C) [HasBinaryProduct X₂ X₃]
   [HasBinaryProduct X₁ (X₂ ⨯ X₃)] :
   (X₁ ⨯ (X₂ ⨯ X₃) ⟶ Y) ≃
@@ -335,10 +353,11 @@ noncomputable def yonedaEquiv' (X₁ X₂ X₃ Y : C) [HasBinaryProduct X₂ X�
     ⟨prod.fst, prod.snd ≫ prod.fst, prod.snd ≫ prod.snd⟩
   left_inv := fun f => by
     convert Category.id_comp f
-    refine' prod.hom_ext (by simp) (prod.hom_ext (by simp) (by simp))
+    exact Limits.prod.hom_ext (by simp) (Limits.prod.hom_ext (by simp) (by simp))
   right_inv := fun φ => by
     ext Z ⟨x, y, z⟩
-    refine' (congr_fun (φ.naturality (prod.lift x (prod.lift y z)).op) ⟨prod.fst, prod.snd ≫ prod.fst, prod.snd ≫ prod.snd⟩).symm.trans _
+    refine (congr_fun (φ.naturality (prod.lift x (prod.lift y z)).op)
+      ⟨prod.fst, prod.snd ≫ prod.fst, prod.snd ≫ prod.snd⟩).symm.trans ?_
     dsimp
     simp
 
@@ -380,6 +399,7 @@ lemma assoc_iff (oper : ObjOperation₂ X) :
     congr
     aesop_cat
 
+/-- assoc_iff' -/
 lemma assoc_iff' (oper : Types.functorOperation₂ (yoneda.obj X)) :
     oper.assoc ↔ ((yonedaEquiv _).symm oper).assoc := by
   rw [assoc_iff, Equiv.apply_symm_apply]
@@ -391,20 +411,20 @@ lemma assoc.map {add : ObjOperation₂ X} (h : add.assoc) (F : C ⥤ D)
     [PreservesLimit (pair X (X ⨯ X)) F] :
   (add.map F).assoc := by
   dsimp only [assoc] at h ⊢
-  refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₃ X) => f.map F) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (f : ObjOperation₃ X) => f.map F) h).trans ?_)
   · dsimp [ObjOperation₃.map, ObjOperation₂.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    apply prod.hom_ext
+    apply Limits.prod.hom_ext
     · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp]
       simp only [F.map_comp, ← Category.assoc]
       congr 1
       simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
         Category.comp_id]
-      apply prod.hom_ext
+      apply Limits.prod.hom_ext
       · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
           PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
           PreservesLimitPair.iso_inv_comp_map_fst]
@@ -423,7 +443,7 @@ lemma assoc.map {add : ObjOperation₂ X} (h : add.assoc) (F : C ⥤ D)
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    apply prod.hom_ext
+    apply Limits.prod.hom_ext
     · simp only [PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
         limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_inv_comp_map_fst]
@@ -433,7 +453,7 @@ lemma assoc.map {add : ObjOperation₂ X} (h : add.assoc) (F : C ⥤ D)
       congr 1
       simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
         Category.comp_id]
-      apply prod.hom_ext
+      apply Limits.prod.hom_ext
       · simp
       · simp
 

@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ConcreteCategory.Operation
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
+
+/-!
+# The category `Internal A C`
+
+-/
 
 universe v₁ v₂ u₁ u₂
 
@@ -13,7 +23,7 @@ lemma NatTrans.hcomp_id {C D E : Type _} [Category C] [Category D] [Category E]
 variable (A : Type u₁) [Category.{v₁} A] [ConcreteCategory.{v₂} A]
   (C : Type u₂) [Category.{v₂} C]
 
-structure Internal :=
+structure Internal where
 (obj : C)
 (presheaf : Cᵒᵖ ⥤ A)
 (iso : yoneda.obj obj ≅ presheaf ⋙ forget A)
@@ -41,16 +51,16 @@ def Internal.presheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ A := inducedFunctor 
 def Internal.typesPresheafFunctor : Internal A C ⥤ Cᵒᵖ ⥤ Type v₂ :=
   Internal.presheafFunctor A C ⋙ (whiskeringRight Cᵒᵖ A (Type v₂)).obj (forget A)
 
-def Internal.objFunctor : Internal A C ⥤ C where
+noncomputable def Internal.objFunctor : Internal A C ⥤ C where
   obj X := X.obj
   map {X Y} f := yoneda.preimage (X.iso.hom ≫ (f ◫ (𝟙 (forget A))) ≫ Y.iso.inv)
   map_id X := yoneda.map_injective (by
     dsimp
-    erw [Functor.image_preimage, Functor.map_id, NatTrans.hcomp_id,
+    erw [Functor.map_preimage, Functor.map_id, NatTrans.hcomp_id,
       Category.id_comp, Iso.hom_inv_id])
   map_comp {X Y Z} f g := yoneda.map_injective (by
     dsimp
-    simp only [Functor.image_preimage, Functor.map_comp, Category.assoc,
+    simp only [Functor.map_preimage, Functor.map_comp, Category.assoc,
       Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left]
     ext X
     dsimp
@@ -62,7 +72,7 @@ variable {A C}
 lemma Internal.map_objFunctor_map {X Y : Internal A C} (f : X ⟶ Y) :
   yoneda.map ((Internal.objFunctor A C).map f) =
     X.iso.hom ≫ (f ◫ (𝟙 (forget A))) ≫ Y.iso.inv := by
-  simp only [Internal.objFunctor, Functor.image_preimage]
+  simp only [Internal.objFunctor, Functor.map_preimage]
 
 lemma Internal.forget_app {X Y : Internal A C} (f : X ⟶ Y) (T : Cᵒᵖ) :
     (forget A).map (f.app T) = X.iso.inv.app T ≫
@@ -89,10 +99,10 @@ def Internal.mkIso {X Y : Internal A C} (e : X.presheaf ≅ Y.presheaf) : X ≅ 
 lemma Internal.isIso_of_isIso {X Y : Internal A C} (f : X ⟶ Y)
     (hf : @IsIso (Cᵒᵖ ⥤ A) _ _ _ f) : IsIso f := by
   let e := @asIso (Cᵒᵖ ⥤ A) _ _ _ f
-  exact IsIso.of_iso (@Internal.mkIso _ _ _ _ _ X Y e)
+  exact (@Internal.mkIso _ _ _ _ _ X Y e).isIso_hom
 
 instance : (Internal.presheafFunctor A C).ReflectsIsomorphisms :=
-  ⟨fun f hf => IsIso.of_iso (Internal.mkIso (@asIso (Cᵒᵖ ⥤ A) _ _ _ f hf))⟩
+  ⟨fun f hf => (Internal.mkIso (@asIso (Cᵒᵖ ⥤ A) _ _ _ f hf)).isIso_hom⟩
 
 instance [(forget A).ReflectsIsomorphisms] :
     (Internal.objFunctor A C).ReflectsIsomorphisms := ⟨fun {X Y f hf} => by

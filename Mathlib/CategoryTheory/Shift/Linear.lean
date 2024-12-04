@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Localization.Linear
+
+/-!
+# Localization of the linearity of the shift functors
+
+-/
 
 namespace CategoryTheory
 
@@ -12,8 +22,10 @@ variable (R : Type _) [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear
   [∀ (n : M), (shiftFunctor C n).Additive] [∀ (n : M), (shiftFunctor D n).Additive]
   [∀ (n : M), (shiftFunctor C n).Linear R]
 
+include L W in
 lemma linear_of_localization (n : M) : (shiftFunctor D n).Linear R := by
-  have : Localization.Lifting L W (shiftFunctor C n ⋙ L) (shiftFunctor D n) := ⟨(L.commShiftIso n).symm⟩
+  have : Localization.Lifting L W (shiftFunctor C n ⋙ L) (shiftFunctor D n) :=
+    ⟨(L.commShiftIso n).symm⟩
   rw [← Localization.functor_linear_iff L W R (shiftFunctor C n ⋙ L) (shiftFunctor D n)]
   infer_instance
 

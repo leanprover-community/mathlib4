@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
+
+/-!
+# Operations on elements in a concrete category
+
+-/
 
 universe w v u v' u'
 
@@ -132,6 +142,7 @@ variable {X₁ X₂ X₃ X₁₂ X₂₃ X₁₂₃ : D ⥤ Type w}
   (φ₁₂ : functorConcat X₁ X₂ ⟶ X₁₂) (ψ₁₂ : functorConcat X₁₂ X₃ ⟶ X₁₂₃)
   (φ₂₃ : functorConcat X₂ X₃ ⟶ X₂₃) (ψ₂₃ : functorConcat X₁ X₂₃ ⟶ X₁₂₃)
 
+/-- Associativity -/
 def functorOperation_assoc' : Prop :=
   Types.natTransConcat (Types.natTransConcat Types.functorPr₃₁ Types.functorPr₃₂ ≫ φ₁₂)
     Types.functorPr₃₃ ≫ ψ₁₂ =
@@ -143,7 +154,7 @@ def functorOperation₂.assoc {F : D ⥤ Type w} (oper : functorOperation₂ F) 
 
 lemma functorOperation₂.assoc.of_iso {F₁ F₂ : D ⥤ Type w} {oper : functorOperation₂ F₁}
     (h : oper.assoc) (e : F₁ ≅ F₂) : (oper.of_iso e).assoc := by
-  refine' Eq.trans _ ((congr_arg (fun (o : functorOperation₃ F₁) => o.of_iso e) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (o : functorOperation₃ F₁) => o.of_iso e) h).trans ?_)
   all_goals
     apply NatTrans.ext
     ext1 X
@@ -159,6 +170,7 @@ variable {X Y : D ⥤ Type w}
   (add : functorConcat X Y ⟶ Y)
   (zero : functorOperation₀ X)
 
+/-- zero_add -/
 def functorOperation_zero_add' : Prop :=
   (natTransConcat (Types.functorPr₀ ≫ zero) (𝟙 Y)) ≫ add = 𝟙 Y
 
@@ -168,7 +180,7 @@ def functorOperation₂.zero_add (add : functorOperation₂ Y) (zero : functorOp
 lemma functorOperation₂.zero_add.of_iso {F₁ F₂ : D ⥤ Type w} {add : functorOperation₂ F₁}
   {zero : functorOperation₀ F₁} (h : add.zero_add zero) (e : F₁ ≅ F₂) :
   (add.of_iso e).zero_add (zero.of_iso e) := by
-  refine' Eq.trans _ ((congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h).trans ?_)
   all_goals
     apply NatTrans.ext
     ext1
@@ -184,6 +196,7 @@ variable {X Y : D ⥤ Type w}
   (add : functorConcat Y X ⟶ Y)
   (zero : functorOperation₀ X)
 
+/-- add_zero -/
 def functorOperation_add_zero' : Prop :=
   (natTransConcat (𝟙 Y) (Types.functorPr₀ ≫ zero)) ≫ add = 𝟙 Y
 
@@ -193,7 +206,7 @@ def functorOperation₂.add_zero (add : functorOperation₂ Y) (zero : functorOp
 lemma functorOperation₂.add_zero.of_iso {F₁ F₂ : D ⥤ Type w} {add : functorOperation₂ F₁}
   {zero : functorOperation₀ F₁} (h : add.add_zero zero) (e : F₁ ≅ F₂) :
   (add.of_iso e).add_zero (zero.of_iso e) := by
-  refine' Eq.trans _ ((congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h).trans _)
+  refine Eq.trans ?_ ((congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h).trans ?_)
   all_goals
     apply NatTrans.ext
     ext1
@@ -227,7 +240,7 @@ lemma functorOperation₂.add_left_neg.of_iso {F₁ F₂ : D ⥤ Type w} {add : 
     {neg : functorOperation₁ F₁} {zero : functorOperation₀ F₁}
     (h : add.add_left_neg neg zero) (e : F₁ ≅ F₂) :
     (add.of_iso e).add_left_neg (neg.of_iso e) (zero.of_iso e) := by
-  refine' Eq.trans _ (congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h)
+  refine Eq.trans ?_ (congr_arg (fun (o : functorOperation₁ F₁) => o.of_iso e) h)
   apply NatTrans.ext
   ext1
   funext
@@ -245,7 +258,8 @@ namespace ConcreteCategory
 def Operation₀ := (Functor.const A).obj PUnit ⟶ forget A
 def Operation₁ := forget A ⟶ forget A
 def Operation₂ := Types.functorConcat (forget A) (forget A) ⟶ forget A
-def Operation₃ := Types.functorConcat (forget A) (Types.functorConcat (forget A) (forget A)) ⟶ forget A
+def Operation₃ := Types.functorConcat (forget A)
+  (Types.functorConcat (forget A) (forget A)) ⟶ forget A
 
 namespace Operation₂
 
@@ -273,15 +287,15 @@ end Operation₂
 -- the naturality of these operations should be made automatic...
 
 @[simps]
-def addCommGroupCat_zero : Operation₀ AddCommGroupCat.{u} where
+def addCommGroupCat_zero : Operation₀ Ab.{u} where
   app M _ := (0 : M)
 
 @[simps]
-def addCommGroupCat_neg : Operation₁ AddCommGroupCat.{u} where
+def addCommGroupCat_neg : Operation₁ Ab.{u} where
   app M (x : M) := -x
 
 @[simps]
-def addCommGroupCat_add : Operation₂ AddCommGroupCat.{u} where
+def addCommGroupCat_add : Operation₂ Ab.{u} where
   app M := fun ⟨(x : M), (y : M)⟩ => x + y
 
 lemma addCommGroupCat_add_assoc : addCommGroupCat_add.assoc := by
@@ -313,7 +327,7 @@ lemma addCommGroupCat_add_left_neg : addCommGroupCat_add.add_left_neg
   apply NatTrans.ext
   ext1 X
   funext (x : X)
-  exact add_left_neg x
+  exact neg_add_cancel x
 
 end ConcreteCategory
 

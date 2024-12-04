@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Internal.Preadditive
+
+/-!
+# Localization of preadditive categorires
+
+-/
 
 namespace CategoryTheory
 
@@ -98,8 +108,9 @@ noncomputable def preservesLimitsOfShapeDiscreteOfComp (F : C ⥤ D) (G : D ⥤ 
     let e : Discrete.functor U ⋙ F ≅ K := Discrete.natIso (fun _ => F.objObjPreimageIso _)
     have : PreservesLimit (Discrete.functor U ⋙ F) G := by
       let c := Limits.getLimitCone (Discrete.functor U)
-      exact preservesLimitOfPreservesLimitCone (isLimitOfPreserves F c.2) (isLimitOfPreserves (F ⋙ G) c.2)
-    exact preservesLimitOfIsoDiagram G e
+      exact preservesLimit_of_preserves_limit_cone (isLimitOfPreserves F c.2)
+        (isLimitOfPreserves (F ⋙ G) c.2)
+    exact preservesLimit_of_iso_diagram G e
 
 lemma preservesFiniteProductsOfComp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [HasFiniteProducts C]
     [PreservesFiniteProducts F] [PreservesFiniteProducts (F ⋙ G)] :

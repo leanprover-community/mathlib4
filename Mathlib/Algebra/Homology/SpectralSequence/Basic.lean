@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Tactic.Linarith
+
+/-!
+# Spectral sequences
+
+-/
 
 namespace ComplexShape
 
@@ -126,7 +136,8 @@ instance : Category (SpectralSequence C c r₀) where
 
 variable {E E'}
 
-lemma hom_ext {f f' : E ⟶ E'} (h : ∀ (r : ℤ) (_ : E.HasPage r) (_ : E'.HasPage r), f.hom r = f'.hom r) :
+lemma hom_ext {f f' : E ⟶ E'}
+    (h : ∀ (r : ℤ) (_ : E.HasPage r) (_ : E'.HasPage r), f.hom r = f'.hom r) :
     f = f' := by
   apply Hom.ext
   ext r hr : 2
@@ -320,7 +331,8 @@ lemma leftHomologyData_i_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r] :
       left.π ≫ left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
         (E.iso r r' hr pq').hom := by
   rw [← cancel_mono (E.iso r r' hr pq').inv,
-    ← cancel_mono ((E.page r).isoHomologyι  pq' pq'' hpq'' (by apply d_eq_zero_of_hasEdgeEpiAt)).hom]
+    ← cancel_mono ((E.page r).isoHomologyι  pq' pq'' hpq''
+      (by apply d_eq_zero_of_hasEdgeEpiAt)).hom]
   simp [edgeEpiStep]
 
 @[reassoc (attr := simp)]
@@ -354,14 +366,14 @@ lemma isIso_hom_succ (f : E ⟶ E') (r : ℤ) [E.HasPage r] [E'.HasPage r]
 lemma isIso_hom_of_GE (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r')
     [E.HasPage r] [E'.HasPage r] [E.HasPage r'] [E'.HasPage r']
     (hf : IsIso (f.hom r)) : IsIso (f.hom r') := by
-  obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hrr'
+  obtain ⟨k, hk⟩ := Int.le.dest hrr'
   revert r' hrr'
   induction' k with k hk
   · intro r' _ _ _ hr'
-    obtain rfl : r = r' := by simp [hr']
+    obtain rfl : r = r' := by omega
     exact hf
   · intro r' hrr' _ _ hr'
-    obtain rfl : r' = (r + k) + 1 := by simp only [hr', Nat.cast_succ, add_assoc]
+    obtain rfl : r' = (r + k) + 1 := by omega
     exact isIso_hom_succ f (r + k) (hk (r + k) (by linarith) (by rfl))
 
 end

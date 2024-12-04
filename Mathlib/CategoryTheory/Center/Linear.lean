@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Center.Basic
+
+/-!
+# Center of a linear category
+
+-/
 
 universe w v u
 
@@ -42,6 +52,7 @@ lemma smulOfRingMorphism_smul_eq (a : R) (f : X ⟶ Y) :
     letI := smulOfRingMorphism φ X Y
     a • f = (φ a).app X ≫ f := rfl
 
+/-- `a • f = f ≫ (φ a).app Y`. -/
 lemma smulOfRingMorphism_smul_eq' (a : R) (f : X ⟶ Y) :
     letI := smulOfRingMorphism φ X Y
     a • f = f ≫ (φ a).app Y := by

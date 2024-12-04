@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Internal.Basic
 import Mathlib.CategoryTheory.Internal.ObjOperation
+
+/-!
+# Internal abelian groups
+
+-/
 
 namespace CategoryTheory
 
@@ -11,16 +21,16 @@ open ConcreteCategory
 
 variable {C D : Type _} [Category C] [Category D]
 
-def zero (G : Internal AddCommGroupCat C) (X : C) : Zero (X ⟶ G.obj) where
+def zero (G : Internal Ab C) (X : C) : Zero (X ⟶ G.obj) where
   zero := (addCommGroupCat_zero.onInternal G).app _ PUnit.unit
 
-def add (G : Internal AddCommGroupCat C) (X : C) : Add (X ⟶ G.obj) where
+def add (G : Internal Ab C) (X : C) : Add (X ⟶ G.obj) where
   add := fun a b => (addCommGroupCat_add.onInternal G).app _ ⟨a, b⟩
 
-def neg (G : Internal AddCommGroupCat C) (X : C) : Neg (X ⟶ G.obj) where
+def neg (G : Internal Ab C) (X : C) : Neg (X ⟶ G.obj) where
   neg := (addCommGroupCat_neg.onInternal G).app (Opposite.op X)
 
-def addCommGroup (G : Internal AddCommGroupCat C) (X : C) :
+def addCommGroup (G : Internal Ab C) (X : C) :
     AddCommGroup (X ⟶ G.obj) := by
   letI := zero G
   letI := add G
@@ -30,19 +40,20 @@ def addCommGroup (G : Internal AddCommGroupCat C) (X : C) :
       add_assoc := fun a b c =>
         congr_fun (congr_app (addCommGroupCat_add_assoc.onInternal G) _) ⟨a, ⟨b, c⟩⟩
       add_zero := congr_fun (congr_app (addCommGroupCat_add_zero.onInternal G) (Opposite.op X))
-      add_left_neg := congr_fun (congr_app (addCommGroupCat_add_left_neg.onInternal G) (Opposite.op X))
+      neg_add_cancel := congr_fun
+        (congr_app (addCommGroupCat_add_left_neg.onInternal G) (Opposite.op X))
       add_comm := fun a b =>
          congr_fun (congr_app (addCommGroupCat_add_comm.onInternal G) (Opposite.op X)) ⟨a, b⟩
       nsmul := nsmulRec
       zsmul := zsmulRec }
 
 @[simp]
-lemma addCommGroup_add (G : Internal AddCommGroupCat C) {X : C} (a b : X ⟶ G.obj) :
+lemma addCommGroup_add (G : Internal Ab C) {X : C} (a b : X ⟶ G.obj) :
     letI := addCommGroup G X
     a + b = (addCommGroupCat_add.onInternal G).app _ ⟨a, b⟩ := rfl
 
 @[simp]
-def addCommGroup_addMonoidHom (G : Internal AddCommGroupCat C) {X Y : C} (f : X ⟶ Y) :
+def addCommGroup_addMonoidHom (G : Internal Ab C) {X Y : C} (f : X ⟶ Y) :
     letI := addCommGroup G X
     letI := addCommGroup G Y
     (Y ⟶ G.obj) →+ (X ⟶ G.obj) :=
@@ -51,8 +62,9 @@ def addCommGroup_addMonoidHom (G : Internal AddCommGroupCat C) {X Y : C} (f : X 
   AddMonoidHom.mk' (fun φ => f ≫ φ)
     (fun a b => (congr_fun ((addCommGroupCat_add.onInternal G).naturality f.op) ⟨a, b⟩).symm)
 
+/-- `addCommGroup_addMonoidHom'`. -/
 @[simp]
-def addCommGroup_addMonoidHom' {G₁ G₂ : Internal AddCommGroupCat C} (f : G₁ ⟶ G₂) (f_obj : G₁.obj ⟶ G₂.obj)
+def addCommGroup_addMonoidHom' {G₁ G₂ : Internal Ab C} (f : G₁ ⟶ G₂) (f_obj : G₁.obj ⟶ G₂.obj)
   (h : f_obj = (Internal.objFunctor _ _).map f) (X : C) :
     letI := addCommGroup G₁ X
     letI := addCommGroup G₂ X
@@ -64,7 +76,7 @@ def addCommGroup_addMonoidHom' {G₁ G₂ : Internal AddCommGroupCat C} (f : G�
       (addCommGroupCat_add.onInternal_naturality f f_obj h) _) ⟨a, b⟩).symm)
 
 structure AddCommGroupCatObjOperations (G : C)
-    [HasTerminal C] [HasBinaryProduct G G] [HasBinaryProduct G (G ⨯ G)] :=
+    [HasTerminal C] [HasBinaryProduct G G] [HasBinaryProduct G (G ⨯ G)] where
   zero : ObjOperation₀ G
   neg : ObjOperation₁ G
   add : ObjOperation₂ G
@@ -95,11 +107,16 @@ noncomputable def presheafObj (Y : C) : AddCommGroup (Y ⟶ G) := by
   letI := presheafObjNeg h Y
   letI := presheafObjAdd h Y
   exact
-    { add_assoc := fun a b c => congr_fun (congr_app ((ObjOperation₂.assoc_iff h.add).1 h.add_assoc) (Opposite.op Y)) ⟨a, b, c⟩
-      add_zero := congr_fun (congr_app ((ObjOperation₂.add_zero_iff h.add h.zero).1 h.add_zero) (Opposite.op Y))
-      zero_add := congr_fun (congr_app ((ObjOperation₂.zero_add_iff h.add h.zero).1 h.zero_add) (Opposite.op Y))
-      add_left_neg := congr_fun (congr_app ((ObjOperation₂.add_left_neg_iff h.add h.neg h.zero).1 h.add_left_neg) (Opposite.op Y))
-      add_comm := fun a b => congr_fun (congr_app ((ObjOperation₂.comm_iff h.add).1 h.add_comm) (Opposite.op Y)) ⟨a, b⟩
+    { add_assoc := fun a b c => congr_fun
+        (congr_app ((ObjOperation₂.assoc_iff h.add).1 h.add_assoc) (Opposite.op Y)) ⟨a, b, c⟩
+      add_zero := congr_fun (congr_app ((ObjOperation₂.add_zero_iff h.add h.zero).1 h.add_zero)
+        (Opposite.op Y))
+      zero_add := congr_fun (congr_app ((ObjOperation₂.zero_add_iff h.add h.zero).1 h.zero_add)
+        (Opposite.op Y))
+      neg_add_cancel := congr_fun (congr_app
+        ((ObjOperation₂.add_left_neg_iff h.add h.neg h.zero).1 h.add_left_neg) (Opposite.op Y))
+      add_comm := fun a b => congr_fun (congr_app ((ObjOperation₂.comm_iff h.add).1 h.add_comm)
+        (Opposite.op Y)) ⟨a, b⟩
       nsmul := nsmulRec
       zsmul := zsmulRec }
 
@@ -107,21 +124,21 @@ noncomputable def presheafObj (Y : C) : AddCommGroup (Y ⟶ G) := by
 noncomputable def presheaf_map {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
     letI := h.presheafObj Y₁
     letI := h.presheafObj Y₂
-    AddCommGroupCat.of (Y₂ ⟶ G) ⟶ AddCommGroupCat.of (Y₁ ⟶ G) := by
+    AddCommGrp.of (Y₂ ⟶ G) ⟶ AddCommGrp.of (Y₁ ⟶ G) :=
   letI := h.presheafObj Y₁
   letI := h.presheafObj Y₂
-  refine' AddCommGroupCat.ofHom (AddMonoidHom.mk' (fun g => f ≫ g)
+  AddCommGrp.ofHom (AddMonoidHom.mk' (fun g => f ≫ g)
     (fun a b => (congr_fun (((ObjOperation₂.yonedaEquiv G) h.add).naturality f.op) ⟨a, b⟩).symm))
 
-noncomputable def presheaf : Cᵒᵖ ⥤ AddCommGroupCat := by
+noncomputable def presheaf : Cᵒᵖ ⥤ Ab := by
   letI := fun (Y : C) => h.presheafObj Y
   exact
-  { obj := fun Y => AddCommGroupCat.of (Y.unop ⟶ G)
+  { obj := fun Y => AddCommGrp.of (Y.unop ⟶ G)
     map := fun f => h.presheaf_map f.unop }
 
 @[simps]
 noncomputable def internal :
-  Internal AddCommGroupCat C where
+  Internal Ab C where
   obj := G
   presheaf := h.presheaf
   iso := Iso.refl _
@@ -152,7 +169,7 @@ end
 
 section
 
-variable (G : Internal AddCommGroupCat C) [HasTerminal C] [HasBinaryProduct G.obj G.obj]
+variable (G : Internal Ab C) [HasTerminal C] [HasBinaryProduct G.obj G.obj]
   [HasBinaryProduct G.obj (G.obj ⨯ G.obj)]
 
 noncomputable def ofInternal : AddCommGroupCatObjOperations G.obj where
@@ -225,12 +242,12 @@ lemma internal_app_apply (φ : Hom h₁ h₂) (X : C) (x : X ⟶ G₁) :
     φ.internal.app (Opposite.op X) x = x ≫ φ.map := rfl
 
 section
-variable {G₁ G₂ : Internal AddCommGroupCat C} [HasTerminal C]
+variable {G₁ G₂ : Internal Ab C} [HasTerminal C]
   [HasBinaryProduct G₁.obj G₁.obj] [HasBinaryProduct G₁.obj (G₁.obj ⨯ G₁.obj)]
   [HasBinaryProduct G₂.obj G₂.obj] [HasBinaryProduct G₂.obj (G₂.obj ⨯ G₂.obj)]
 
 @[simps]
-def ofInternal (φ : G₁ ⟶ G₂) : Hom (ofInternal G₁) (ofInternal G₂) where
+noncomputable def ofInternal (φ : G₁ ⟶ G₂) : Hom (ofInternal G₁) (ofInternal G₂) where
   map := (Internal.objFunctor _ _).map φ
   map_add := by
     dsimp only [AddCommGroupCatObjOperations.ofInternal]
@@ -266,6 +283,7 @@ namespace Ab
 
 variable {C}
 
+/-- Constructor for `Internal.Ab C`. -/
 @[simps]
 def mk' {G : C} (h : AddCommGroupCatObjOperations G) : Internal.Ab C where
   obj := G
@@ -273,7 +291,7 @@ def mk' {G : C} (h : AddCommGroupCatObjOperations G) : Internal.Ab C where
 
 @[ext]
 lemma hom_ext {G₁ G₂ : Internal.Ab C} (φ φ' : G₁ ⟶ G₂) (h : φ.map = φ'.map) : φ = φ' :=
-  AddCommGroupCatObjOperations.Hom.ext _ _ h
+  AddCommGroupCatObjOperations.Hom.ext h
 
 @[simp]
 lemma id_map (G : Internal.Ab C) : AddCommGroupCatObjOperations.Hom.map (𝟙 G) = 𝟙 G.obj := rfl
@@ -291,7 +309,7 @@ def forget : Internal.Ab C ⥤ C where
 namespace Equivalence
 
 @[simps]
-noncomputable def functor : Internal.Ab C ⥤ Internal AddCommGroupCat C where
+noncomputable def functor : Internal.Ab C ⥤ Internal Ab C where
   obj G :=  G.str.internal
   map φ := φ.internal
   map_id G := by
@@ -310,7 +328,7 @@ noncomputable def functor : Internal.Ab C ⥤ Internal AddCommGroupCat C where
     simp only [comp_map, Category.assoc]
 
 @[simps]
-noncomputable def inverse : Internal AddCommGroupCat C ⥤ Internal.Ab C where
+noncomputable def inverse : Internal Ab C ⥤ Internal.Ab C where
   obj G := mk' (AddCommGroupCatObjOperations.ofInternal G)
   map φ := AddCommGroupCatObjOperations.Hom.ofInternal φ
   map_id G := by
@@ -387,7 +405,7 @@ noncomputable def mapInternalAb : Internal.Ab C ⥤ Internal.Ab D where
           prodComparison_snd_assoc, ← F.map_comp] }
 
 noncomputable def mapInternalAddCommGroupCat :
-    Internal AddCommGroupCat C ⥤ Internal AddCommGroupCat D :=
+    Internal Ab C ⥤ Internal Ab D :=
   Internal.Ab.Equivalence.inverse C ⋙ F.mapInternalAb ⋙
     Internal.Ab.Equivalence.functor D
 

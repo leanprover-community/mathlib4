@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Center.Basic
 import Mathlib.CategoryTheory.Localization.Preadditive
+
+/-!
+# Localization of the center of a category
+
+-/
 
 universe w v₁ v₂ u₁ u₂
 
@@ -21,6 +31,8 @@ lemma localization_app (X : C) :
   dsimp [localization]
   simp only [Localization.liftNatTrans_app, Functor.id_obj, whiskerRight_app,
     NatTrans.naturality, Functor.comp_map, Functor.id_map, Iso.hom_inv_id_app_assoc]
+
+include W
 
 lemma ext_of_localization (r s : CatCenter D)
     (h : ∀ (X : C), r.app (L.obj X) = s.app (L.obj X)) : r = s :=

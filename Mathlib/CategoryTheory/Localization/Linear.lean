@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.Preadditive
 import Mathlib.CategoryTheory.Center.Localization
 import Mathlib.CategoryTheory.Center.Linear
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+
+/-!
+# Localization of linear categories
+
+-/
 
 universe w v₁ v₂ u₁ u₂
 
@@ -51,8 +61,7 @@ section
 
 variable {E : Type _} [Category E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
-  [Preadditive C] [Preadditive D] [Preadditive E]
-  [L.Additive]
+  [Preadditive E] [L.Additive]
   (R : Type _) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
 
@@ -61,7 +70,7 @@ lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G]
     F.Linear R ↔ G.Linear R := by
   constructor
   · intro
-    have : (L ⋙ G).Linear R := Functor.linear_of_iso R (Lifting.iso L W F G).symm
+    have : (L ⋙ G).Linear R := Functor.linear_of_iso _ (Lifting.iso L W F G).symm
     have := Localization.essSurj L W
     rw [Functor.linear_iff]
     intro X r
@@ -72,7 +81,7 @@ lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G]
     dsimp
     rw [Category.id_comp, ← G.map_comp, e.inv_hom_id, G.map_id]
   · intro
-    exact Functor.linear_of_iso R (Lifting.iso L W F G)
+    exact Functor.linear_of_iso _ (Lifting.iso L W F G)
 
 end
 

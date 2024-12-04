@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+/-!
+# ℤ with bot and top
+
+-/
 
 open CategoryTheory Limits
 
@@ -26,7 +36,7 @@ lemma mk_monotone : Monotone ℤt.mk := by
 def _root_.ιℤt  : ℤ ⥤ ℤt := ℤt.mk_monotone.functor
 
 instance {α : Type _} [Preorder α] (a : α) : IsIso (homOfLE (le_refl a)) :=
-  IsIso.of_iso (Iso.refl a)
+  (Iso.refl a).isIso_hom
 
 @[simp]
 lemma some_le_some_none_iff (a : ℤ) :

@@ -1,5 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Endomorphism
 
+/-!
+# Center of a category
+
+-/
 universe v u w
 
 namespace CategoryTheory
@@ -16,8 +25,9 @@ variable {C}
 
 @[ext]
 lemma ext (x y : CatCenter C) (h : ∀ (X : C), x.app X = y.app X) : x = y :=
-  NatTrans.ext _ _ (funext h)
+  NatTrans.ext (funext h)
 
+/-- `(x * y).app X = y.app X ≫ x.app X`. -/
 lemma mul_app' (x y : CatCenter C) (X : C) : (x * y).app X = y.app X ≫ x.app X := rfl
 
 lemma mul_app (x y : CatCenter C) (X : C) : (x * y).app X = x.app X ≫ y.app X := by

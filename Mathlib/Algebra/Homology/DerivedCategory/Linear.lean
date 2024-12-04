@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Shift.Linear
+
+/-!
+# The derived category of a linear category is linear
+
+-/
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
 
@@ -20,7 +30,7 @@ instance : Functor.Linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C) :=
   Localization.functor_linear _ _ _
 
 instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) :=
-  Functor.linear_of_iso R (quotientCompQhIso C)
+  Functor.linear_of_iso _ (quotientCompQhIso C)
 
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R := by
   rw [← Localization.functor_linear_iff

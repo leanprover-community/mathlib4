@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.SpectralSequence.Convergence
 import Mathlib.Algebra.Homology.ConnectShortExact
 import Mathlib.Tactic.FinCases
+
+/-!
+# The low degree exact sequence of a spectral sequence
+
+-/
 
 namespace HomologicalComplex
 
@@ -129,10 +139,10 @@ lemma ιE₂OneZero_πE₃ZeroOne : ιE₂OneZero hE ≫ πE₃ZeroOne hE = 0 :=
 
 lemma ιE₂OneZero_πE₃ZeroOne_exact :
     (ShortComplex.mk _ _ (ιE₂OneZero_πE₃ZeroOne hE)).Exact := by
-  refine' ShortComplex.exact_of_iso _
+  refine ShortComplex.exact_of_iso ?_
     (((hE 1).shortExact_of_collapses 0 1 ⟨1, 0⟩ ⟨0, 1⟩ rfl rfl).exact)
-  refine' ShortComplex.isoMk (E.pageInfinityIso ⟨1, 0⟩ 2) (Iso.refl _)
-    (E.pageInfinityIso ⟨0, 1⟩ 3) _ _
+  refine ShortComplex.isoMk (E.pageInfinityIso ⟨1, 0⟩ 2) (Iso.refl _)
+    (E.pageInfinityIso ⟨0, 1⟩ 3) ?_ ?_
   · simp [ιE₂OneZero]
   · simp [πE₃ZeroOne]
 
@@ -177,12 +187,12 @@ instance : Mono ((d₂Sequence E).map' 0 1) := by
   infer_instance
 
 instance : Epi ((d₂Sequence E).map' 2 3) := by
-  dsimp
+  dsimp [ComposableArrows.Precomp.map]
   infer_instance
 
 lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
   apply ComposableArrows.exact_of_δ₀
-  · apply ComposableArrows.exact₂_mk _ (by simp)
+  · apply ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map])
     let S := ShortComplex.mk _ _ ((E.page 2).iCycles_d ⟨0, 1⟩ ⟨2, 0⟩)
     have hS : S.Exact := by
       apply ShortComplex.exact_of_f_is_kernel
@@ -193,8 +203,9 @@ lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
         apply (E.page 2).shape_from
         rintro ⟨p, q⟩ hpq
         simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_zero, Nat.cast_one] at hpq
-        linarith) ≪≫ (E.iso 2 3 rfl) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-  · apply ComposableArrows.exact₂_mk _ (by simp)
+        linarith) ≪≫ (E.iso 2 3 rfl) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by simp)
+          (by simp [ComposableArrows.Precomp.map])
+  · apply ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map])
     let S := ShortComplex.mk _ _ ((E.page 2).d_pOpcycles ⟨0, 1⟩ ⟨2, 0⟩)
     have hS : S.Exact := by
       apply ShortComplex.exact_of_g_is_cokernel
@@ -207,7 +218,7 @@ lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
         rintro ⟨p, q⟩ hpq
         simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_ofNat,
           Nat.cast_zero, zero_add] at hpq
-        linarith)) (by simp) (by simp)
+        linarith)) (by simp) (by simp [ComposableArrows.Precomp.map])
 
 end LowDegreesExactSequence
 
@@ -233,13 +244,14 @@ lemma lowDegreesComposableArrows_exact :
         ((d₂Sequence_exact E).exact 0) (Iso.refl _) (toE₂ZeroOne hE) (by simp)
         (by infer_instance) (by infer_instance))
     exact ComposableArrows.isoMk₃ (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by simp) (by simp) (by simp)
-  · refine' ComposableArrows.exact₂_mk _ (by simp) _
+      (by simp) (by simp; rfl) (by simp; rfl)
+  · refine ComposableArrows.exact₂_mk _ (by simp [ComposableArrows.Precomp.map]) ?_
     let φ : ShortComplex.mk _ _ ((d₂Sequence_exact E).toIsComplex.zero 1) ⟶
         ShortComplex.mk _ _ (d₂_fromE₂TwoZero hE) :=
       { τ₁ := 𝟙 _
         τ₂ := 𝟙 _
-        τ₃ := ιE₃TwoZero hE }
+        τ₃ := ιE₃TwoZero hE
+        comm₂₃ := by simp [ComposableArrows.Precomp.map] }
     exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1 ((d₂Sequence_exact E).exact 1)
 
 end CohomologicalSpectralSequenceNat

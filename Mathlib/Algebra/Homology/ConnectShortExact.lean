@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ExactSequence
+
+/-!
+# Connect two exact sequences
+
+-/
 
 namespace CategoryTheory
 
@@ -16,16 +26,18 @@ def connect (e : S₁.X₃ ≅ S₂.X₁) (f : S₁.X₂ ⟶ S₂.X₂) (_ : f =
     ComposableArrows C 3 :=
   mk₃ S₁.f f S₂.g
 
+include h₁ h₂ hS₁ hS₂
+
 lemma connect_exact :
     (connect S₁ S₂ e f hf).Exact :=
   exact_of_δ₀
-    (exact₂_mk _ (by simp [hf]) (by
+    (exact₂_mk _ (by simp [Precomp.map, hf]) (by
       let φ : S₁ ⟶ ShortComplex.mk S₁.f f (by simp [hf]) :=
         { τ₁ := 𝟙 _
           τ₂ := 𝟙 _
           τ₃ := e.hom ≫ S₂.f }
       exact (exact_iff_of_epi_of_isIso_of_mono φ).1 hS₁))
-    (exact₂_mk _ (by simp [hf]) (by
+    (exact₂_mk _ (by simp [Precomp.map, hf]) (by
       dsimp
       let φ : ShortComplex.mk f S₂.g (by simp [hf]) ⟶ S₂ :=
         { τ₁ := S₁.g ≫ e.hom

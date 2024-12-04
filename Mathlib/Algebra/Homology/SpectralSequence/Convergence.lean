@@ -1,11 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
-universe w₁ w₂ w₃ v u
+/-!
+# Convergence of spectral sequences
 
-lemma Nat.eq_add_of_le {i j : ℕ} (hij : i ≤ j) :
-    ∃ (d : ℕ), j = i + d :=
-  ⟨j - i, by rw [← Nat.sub_eq_iff_eq_add' hij]⟩
+-/
+
+universe w₁ w₂ w₃ v u
 
 namespace CategoryTheory
 
@@ -41,17 +47,17 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
   finite_segment _ i j := by
     rw [Set.finite_def]
     by_cases hij : i ≤ j
-    · obtain ⟨d, rfl⟩ := Int.eq_add_ofNat_of_le hij
+    · obtain ⟨d, rfl⟩ := Int.le.dest hij
       refine ⟨Fintype.ofSurjective (fun (k : Fin (d + 1)) =>
         ⟨i + k, ⟨by linarith, by linarith [k.is_lt]⟩⟩) ?_⟩
       rintro ⟨x, h₁, h₂⟩
-      obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le h₁
+      obtain ⟨k, rfl⟩ := Int.le.dest h₁
       exact ⟨⟨k, by linarith⟩, rfl⟩
     · refine ⟨@Fintype.ofIsEmpty _ ⟨?_⟩⟩
       rintro ⟨x, h₁, h₂⟩
       linarith
   discrete n (i j : ℤ) h := by
-    linarith [show i - 1 < j from WithBot.some_lt_some.1 h]
+    linarith [show i - 1 < j from WithBot.coe_lt_coe.1 h]
 
 @[simps]
 def cohomomologicalStripesFin (l : ℕ) : ConvergenceStripes (ℤ × Fin l) (fun (_ : ℤ) => Fin l) where
@@ -91,8 +97,10 @@ noncomputable instance (n : σ) (i j : α n) : Fintype (s.segment n i j) := by
   rw [Set.finite_def] at h
   exact h.some
 
+/-- Variant of `segment` but as `Set (WithBot (α n))`. -/
 @[nolint unusedArguments]
-def segment' (_ : ConvergenceStripes ι α) (n : σ) (i : α n) (j : WithBot (α n)) : Set (WithBot (α n)) :=
+def segment' (_ : ConvergenceStripes ι α) (n : σ) (i : α n)
+    (j : WithBot (α n)) : Set (WithBot (α n)) :=
   fun k => WithBot.some i ≤ k ∧ k ≤ j
 
 instance (n : σ) (i : α n) : Subsingleton (s.segment' n i ⊥) where
@@ -130,8 +138,8 @@ lemma pred_monotone (n : σ) (i j : α n) (hij : i ≤ j) :
       have hj := s.discrete n j k (by simpa only [← hk] using this)
       have hk' := s.pred_lt n i
       rw [← hk] at hk'
-      replace hij : WithBot.some i ≤ WithBot.some j := WithBot.some_le_some.2 hij
-      replace hj : WithBot.some j ≤ WithBot.some k := WithBot.some_le_some.2 hj
+      replace hij : WithBot.some i ≤ WithBot.some j := WithBot.coe_le_coe.2 hij
+      replace hj : WithBot.some j ≤ WithBot.some k := WithBot.coe_le_coe.2 hj
       have := lt_of_le_of_lt (hij.trans hj) hk'
       simp at this
     · rw [← WithBot.ne_bot_iff_exists, ne_eq, not_not] at hi
@@ -139,6 +147,7 @@ lemma pred_monotone (n : σ) (i j : α n) (hij : i ≤ j) :
       simp at this
   · rfl
 
+/-- `pred` on `WithBot (α n)`. -/
 def pred' (n : σ) : WithBot (α n) → WithBot (α n)
   | ⊥ => ⊥
   | WithBot.some x => s.pred n x
@@ -154,7 +163,6 @@ lemma pred'_le (n : σ) (i : WithBot (α n)) :
     s.pred' n i ≤ i := by
   cases' i with i
   · erw [pred'_bot]
-    rfl
   · erw [pred'_some]
     exact s.pred_le n i
 
@@ -186,9 +194,10 @@ lemma le_pred'_of_lt (n : σ) (i j : WithBot (α n)) (hi : i < j) :
     · simp at hi
     · by_contra!
       simp only [not_le] at this
-      have := lt_of_le_of_lt (s.discrete n j i this) (WithBot.some_lt_some.1 hi)
+      have := lt_of_le_of_lt (s.discrete n j i this) (WithBot.coe_lt_coe.1 hi)
       simp at this
 
+/-- `i < j ↔ i ≤ s.pred' n j`. -/
 lemma lt_iff_le_pred' (n : σ) (i : α n) (j : WithBot (α n)) :
     i < j ↔ i ≤ s.pred' n j := by
   constructor
@@ -199,6 +208,7 @@ lemma lt_iff_le_pred' (n : σ) (i : α n) (j : WithBot (α n)) :
       simp at h
     · exact lt_of_le_of_lt h (s.pred_lt n j)
 
+/-- Substraction by `k : ℕ` on `WithBot (α n)`. -/
 def sub' (n : σ) : ℕ → WithBot (α n) → WithBot (α n)
   | 0 => id
   | k + 1 => s.pred' n ∘ sub' n k
@@ -244,7 +254,7 @@ lemma sub_le_self (n : σ) (i : WithBot (α n)) (k : ℕ) :
 
 lemma sub_antitone (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ) (h : k₁ ≤ k₂) :
     s.sub n i k₂ ≤ s.sub n i k₁ := by
-  obtain ⟨k, rfl⟩ := Nat.eq_add_of_le h
+  obtain ⟨k, rfl⟩ := Nat.le.dest h
   rw [← s.sub_sub n i k₁ k _ rfl]
   apply sub_le_self
 
@@ -260,7 +270,7 @@ lemma sub_eq_self_iff (n : σ) (i : WithBot (α n)) (k : ℕ) :
   · intro h
     obtain _ | i := i
     · exact Or.inl rfl
-    · refine' Or.inr _
+    · refine Or.inr ?_
       obtain _ | k := k
       · rfl
       · change s.sub n i (k + 1) = (WithBot.some i) at h
@@ -280,7 +290,7 @@ lemma sub_injective (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ)
       · exact Or.inl (hk.trans h')
       · exact Or.inr h'.symm
   intro i k₁ k₂ hk h
-  obtain ⟨d, rfl⟩ := Nat.eq_add_of_le hk
+  obtain ⟨d, rfl⟩ := Nat.le.dest hk
   replace h := h.symm
   rw [← s.sub_sub n i k₁ d _ rfl, sub_eq_self_iff] at h
   obtain h | rfl := h
@@ -292,7 +302,7 @@ lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
   let S : Set ℕ := fun k => (WithBot.some i) ≤ s.sub n (WithBot.some j) k
   have hS : S.Finite := by
     let φ : S → s.segment' n i j := fun x => ⟨s.sub n j x.1, x.2, s.sub_le_self _ _ _⟩
-    refine' Finite.of_injective φ _
+    refine Finite.of_injective φ ?_
     intro k₁ k₂ h
     simp only [φ, Subtype.mk.injEq] at h
     obtain h' | h' := s.sub_injective n _ _ _ h
@@ -317,7 +327,7 @@ lemma exists_sub_le (n : σ) (i : WithBot (α n)) (j : α n) :
   · exact ⟨0, by simp⟩
   · obtain hij | hij := le_total i j
     · use 0
-      simpa only [sub_zero] using WithBot.some_le_some.2 hij
+      simpa only [sub_zero] using WithBot.coe_le_coe.2 hij
     · obtain ⟨k, hk⟩ := s.exists_sub_eq n j i hij
       use k
       rw [← hk]
@@ -336,7 +346,8 @@ structure StronglyConvergesToInDegree (n : σ) (X : C) where
   π' (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     ((filtration' ⋙ MonoOver.forget _ ⋙ Over.forget _).obj (WithBot.some i)) ⟶ E.pageInfinity pq
   epi_π' (i : α n) (pq : ι) (hpq : s.position n i = pq) : Epi (π' i pq hpq) := by infer_instance
-  comp_π' (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
+  comp_π' (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i)
+    (pq : ι) (hpq : s.position n j = pq) :
     (filtration' ⋙ MonoOver.forget X ⋙ Over.forget X).map
       (homOfLE (show i ≤ WithBot.some j by
         subst hij
@@ -411,6 +422,7 @@ section
 variable (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i)
   (pq : ι) (hpq : s.position n j = pq)
 
+/-- Vanishing of `h.filtration.map _ ≫ h.π j pq hpq = 0`. -/
 lemma comp_π'' :
     h.filtration.map (homOfLE (show i ≤ some j by subst hij; exact s.pred_le n j)) ≫
       h.π j pq hpq = 0 :=
@@ -573,17 +585,17 @@ lemma isIso_filtration_map_iff (i j : WithBot (α n)) (φ : i ⟶ j) :
           exact H k bot_le hk pq hpq
         · apply this
           intro k h₁ h₂ pq hpq
-          exact H k h₁ (WithBot.some_le_some.2 h₂) pq hpq
+          exact H k h₁ (WithBot.coe_le_coe.2 h₂) pq hpq
       intro i φ H
-      have hij : i ≤ j := WithBot.some_le_some.1 (leOfHom φ)
+      have hij : i ≤ j := WithBot.coe_le_coe.1 (leOfHom φ)
       obtain ⟨k, hk⟩ := s.exists_sub_eq n i j hij
       rw [h.isIso_filtration_map'_iff j i φ k hk]
       intro d hd l hl pq hpq
-      refine' H l ?_ ?_ pq hpq
+      refine H l ?_ ?_ pq hpq
       · rw [← s.pred'_some, ← hl, ← s.sub_one, s.sub_sub n j d 1 _ rfl, ← hk]
         apply s.sub_antitone
         linarith
-      · rw [← WithBot.some_le_some]
+      · rw [← WithBot.coe_le_coe]
         change (WithBot.some l) ≤ (WithBot.some j)
         rw [← hl]
         apply s.sub_le_self
@@ -625,6 +637,7 @@ lemma isIso_filtrationι_of_isZero (i : WithBot (α n))
     IsIso (h.filtrationι i) :=
   (h.isIso_filtrationι_iff i).2 hi
 
+/-- `IsIso (h.π i pq hpq) ↔ IsZero (h.filtration.obj (s.pred n i))`. -/
 lemma isIso_π_iff' (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     IsIso (h.π i pq hpq) ↔ IsZero (h.filtration.obj (s.pred n i)) :=
   (h.shortExact _ i rfl pq hpq).isIso_g_iff
@@ -829,6 +842,7 @@ lemma collapsesAsSESAt_of_succ (hij : s.pred n j = i) (pq : ι) (hpq : s.positio
     infer_instance
 
 variable [H : h.CollapsesAsSESAt i j]
+include H
 
 lemma lt_of_collapsesAsSESAt : i < j := H.hij
 
@@ -908,7 +922,8 @@ lemma _root_.CategoryTheory.SpectralSequence.StronglyConvergesToInDegree.exists_
     h'.isIso_filtrationι_of_GE _ _ (by simp) hk₂⟩⟩
 
 lemma _root_.CategoryTheory.SpectralSequence.StronglyConvergesToInDegree.exists_isZero_aux :
-    ∃ (k : α n), IsZero (h.filtration.obj (s.pred n k)) ∧ IsZero (h'.filtration.obj (s.pred n k)) := by
+    ∃ (k : α n), IsZero (h.filtration.obj (s.pred n k)) ∧
+      IsZero (h'.filtration.obj (s.pred n k)) := by
   obtain ⟨k₁, hk₁⟩ := h.exists_isZero
   obtain ⟨k₂, hk₂⟩ := h'.exists_isZero
   obtain H | H := le_total k₁ k₂
@@ -959,6 +974,8 @@ section
 variable (β : h.Hom h' f) (hβ : ∀ (pq : ι) (_ : s.stripe pq = n), IsIso (Hom.mapPageInfinity f pq))
 -- note: the assumption hβ could be slightly sharper in the next lemma below
 
+include hβ
+
 lemma Hom.isIso_τ_of_sub (i j : WithBot (α n)) (k : ℕ)
     (hk : s.sub n j k = i) (hi : IsIso (β.τ.app i)) :
     IsIso (β.τ.app j) := by
@@ -968,7 +985,8 @@ lemma Hom.isIso_τ_of_sub (i j : WithBot (α n)) (k : ℕ)
     obtain rfl : j = i := by simpa using hij
     infer_instance
   · intro i j hij _
-    rw [Nat.succ_eq_add_one, ← s.sub_sub n j 1 k _ (add_comm _ _)] at hij
+    have := hβ
+    rw [← s.sub_sub n j 1 k _ (add_comm _ _)] at hij
     have := hk _ _ hij inferInstance
     have : ∀ (l : WithBot (α n)) (_ : s.sub n j 1 = l)
       (_ : IsIso (β.τ.app l)), IsIso (β.τ.app j) := fun l hl hl' => by
@@ -1006,7 +1024,6 @@ end
 end
 
 end StronglyConvergesToInDegree
-
 
 end SpectralSequence
 
