@@ -1704,4 +1704,13 @@ theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
 
 end IntermediateField
 
+namespace IntermediateField
+
+lemma finiteDimensional_of_le {E F : Type*} [Field F] [Field E] [Algebra F E]
+    {M N : IntermediateField F E} (le : M ≤ N) [FiniteDimensional F N] : FiniteDimensional F M :=
+  FiniteDimensional.of_injective (AlgHom.toLinearMap (IntermediateField.inclusion le))
+    (IntermediateField.inclusion_injective le)
+
+end IntermediateField
+
 set_option linter.style.longFile 1800
