@@ -208,9 +208,9 @@ lemma corootForm_self_smul_root (i : ι) :
 lemma rootForm_mul_pairing (i j : ι) : P.RootForm (P.root i) (P.root i) * P.pairing j i =
     P.RootForm (P.root j) (P.root j) * P.pairing i j := by
   rw [pairing, root', ← smul_eq_mul, ← map_smul, rootForm_self_smul_coroot, map_nsmul,
-    Polarization_apply_apply, pairing, root', ← smul_eq_mul,
+    toPerfectPairing_apply_apply_Polarization, pairing, root', ← smul_eq_mul,
     ← map_smul _ ((P.RootForm (P.root j)) (P.root j)), rootForm_self_smul_coroot, map_nsmul,
-    Polarization_apply_apply]
+    toPerfectPairing_apply_apply_Polarization]
   simp [RootForm, mul_comm]
 
 lemma rootForm_self_sum_of_squares (x : M) :
