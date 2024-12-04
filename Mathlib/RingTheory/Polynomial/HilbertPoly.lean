@@ -142,36 +142,30 @@ theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
     PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F))) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
-    exact fun n hn => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn
+    exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
   · rintro h ⟨N, hhN⟩
-    refine eq_of_infinite_eval_eq h (hilbertPoly p d) ?_
-    · apply ((Set.Ioi_infinite (N ⊔ p.natDegree)).image cast_injective.injOn).mono
-      intro x hx
-      simp only [Set.mem_image, Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hx ⊢
-      rcases hx with ⟨n, ⟨hn1, hn2⟩, hn3⟩
-      rw [← hn3, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn2, hhN n hn1]
+    apply eq_of_infinite_eval_eq h (hilbertPoly p d)
+    apply ((Set.Ioi_infinite (max N p.natDegree)).image cast_injective.injOn).mono
+    rintro x ⟨n, hn, rfl⟩
+    simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
+    rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
-  have heq (n : Set.Ioi (p * (1 - X)).natDegree) :
-      (hilbertPoly (p * (1 - X)) (d + 1)).eval (n : F) = (hilbertPoly p d).eval (n : F) := by
-    by_cases hp : p = 0
-    · simp only [hp, zero_mul, hilbertPoly_zero_nat]
-    · have hlt : (p * (1 - X)).natDegree < (n : ℕ) := Set.mem_Ioi.1 n.2
-      rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval _ hlt,
-        ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval]
-      · apply PowerSeries.ext_iff.1 <| by simp only [coe_mul, mul_assoc, coe_sub, coe_one, coe_X,
-          ← one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val F d 1, pow_one]
-      · have hne : (1 : F[X]) - X ≠ 0 := fun h0 => by simpa only [coeff_sub, coeff_one_zero,
-          coeff_X_zero, sub_zero, coeff_zero, one_ne_zero] using ext_iff.1 h0 0
-        simp_rw [natDegree_mul hp hne] at hlt
-        exact lt_of_add_right_lt hlt
-  refine eq_of_infinite_eval_eq _ _ ?_
-  · apply ((Set.Ioi_infinite (p * (1 - X)).natDegree).image cast_injective.injOn).mono
-    intro x hx
-    rcases hx with ⟨n, hn1, hn2⟩
-    rw [← hn2]
-    exact heq ⟨n, hn1⟩
+  apply eq_of_infinite_eval_eq
+  apply ((Set.Ioi_infinite (p * (1 - X)).natDegree).image cast_injective.injOn).mono
+  rintro x ⟨n, hn, rfl⟩
+  simp only [Set.mem_setOf_eq]
+  by_cases hp : p = 0
+  · simp only [hp, zero_mul, hilbertPoly_zero_nat]
+  · simp only [Set.mem_Ioi] at hn
+    have hpn : p.natDegree < n := by
+      suffices (1 : F[X]) - X ≠ 0 from lt_of_add_right_lt (natDegree_mul hp this ▸ hn)
+      rw [sub_ne_zero, ne_eq, ext_iff, not_forall]
+      use 0
+      simp
+    simp only [hn, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval, coe_mul, coe_sub, coe_one, coe_X,
+      mul_assoc, hpn, ← one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val F d 1, pow_one]
 
 lemma hilbertPoly_mul_one_sub_pow_add (p : F[X]) (d e : ℕ) :
     hilbertPoly (p * (1 - X) ^ e) (d + e) = hilbertPoly p d := by
