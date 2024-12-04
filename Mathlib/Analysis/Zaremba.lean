@@ -168,6 +168,12 @@ theorem Finsupp.sum_comm_tsum_weight {α β E : Type*} [AddCommMonoid E] [Module
   · apply Finsupp.smul_mass
   · exact hf
 
+noncomputable def FT (f : (Fin 2 → ℝ) → ℂ) : (Fin 2 → ℝ) → ℂ := sorry
+
+lemma PoissonSum (f : (Fin 2 → ℝ) → ℂ) : -- add conditions
+    ∑' (x : Fin 2 → ℤ), f (Int.cast ∘ x) = ∑' (k : Fin 2 → ℤ), FT f (Int.cast ∘ k) := by
+  sorry
+
 example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
   let g (x : Fin 2 → ℤ) : ℂ :=  ∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
