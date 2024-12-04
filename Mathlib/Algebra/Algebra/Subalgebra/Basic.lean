@@ -182,9 +182,8 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
 
 /-- The span of a set which contains one and is closed under multiplication is a subalgebra. -/
 def of_span_set {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
-    (s : Set A) (h_one_mem : 1 ∈ s)
-    (h_mul_mem : ∀ x y : A, x ∈ s → y ∈ s → x * y ∈ s)
-    : Subalgebra R A :=
+    (s : Set A) (h_one_mem : 1 ∈ s) (h_mul_mem : ∀ x y : A, x ∈ s → y ∈ s → x * y ∈ s) :
+    Subalgebra R A :=
   { Submodule.span R s with
     mul_mem' := by
       intro _ _ hx hy

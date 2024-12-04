@@ -80,15 +80,15 @@ theorem probChar_dist_le_two (he : Continuous e) (hL : Continuous fun p : V × W
   simp [Complex.norm_eq_abs, probChar_abs_one he hL w _]
   norm_num
 
-theorem probChar_one_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    : 1 ∈ {probChar he hL w | w : W} := by
+theorem probChar_one_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    1 ∈ {probChar he hL w | w : W} := by
   use 0; ext z
   simp only [probChar, map_zero, neg_zero, AddChar.map_zero_eq_one, OneMemClass.coe_one,
     ContinuousMap.coe_mk, ContinuousMap.one_apply]
 
-theorem probChar_mul_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    : ∀ x y : C(V, ℂ), x ∈ {probChar he hL w | w : W}
-    → y ∈ {probChar he hL w | w : W} →x * y ∈ {probChar he hL w | w : W} := by
+theorem probChar_mul_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    ∀ x y : C(V, ℂ), x ∈ {probChar he hL w | w : W} →
+    y ∈ {probChar he hL w | w : W} → x * y ∈ {probChar he hL w | w : W} := by
   rintro x y ⟨v, hv⟩ ⟨v', hv'⟩
   use v + v'; ext z
   simp only [probChar, map_add, ContinuousMap.coe_mk, ContinuousMap.mul_apply]
@@ -96,9 +96,8 @@ theorem probChar_mul_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦
   rw [← congrFun (congrArg DFunLike.coe hv) z, ← congrFun (congrArg DFunLike.coe hv') z]
   simp [probChar]
 
-theorem probChar_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    : ∀ x, x ∈ {probChar he hL w | w : W}
-    → star x ∈ {probChar he hL w | w : W} := by
+theorem probChar_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    ∀ x, x ∈ {probChar he hL w | w : W} → star x ∈ {probChar he hL w | w : W} := by
   intro x ⟨w, hw⟩
   use -w; ext v
   rw [← hw]
@@ -108,8 +107,8 @@ theorem probChar_star_mem (he : Continuous e) (hL : Continuous fun p : V × W �
 
 /-- If `e` and `L` are non-trivial, then `probChar` separates points. -/
 theorem probChar_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
-    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V} (hv : v ≠ v')
-    : ∃ w : W, probChar he hL w v ≠ probChar he hL w v' := by
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V} (hv : v ≠ v') :
+    ∃ w : W, probChar he hL w v ≠ probChar he hL w v' := by
   obtain ⟨w, hw⟩ := DFunLike.ne_iff.mp (hL' (v - v') (sub_ne_zero_of_ne hv))
   obtain ⟨a, ha⟩ := DFunLike.ne_iff.mp he'
   use (a / (L (v - v') w)) • w
@@ -130,8 +129,8 @@ section Submonoid
 
 /-- The set `{(probChar he hL w) | w : W}` forms a submonoid -/
 noncomputable
-def probChar_submonoid (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    : Submonoid C(V, ℂ) where
+def probChar_submonoid (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    Submonoid C(V, ℂ) where
   carrier := {(probChar he hL w) | w : W}
   mul_mem' := (fun ha hb => probChar_mul_mem he hL _ _ ha hb)
   one_mem' := probChar_one_mem he hL
@@ -148,8 +147,8 @@ namespace StarSubalgebra
 
 /-- The span of `probChar_submonoid` is a `StarSubalgebra` of `C(V, ℂ)` -/
 noncomputable
-def probChar_starSubalgebra (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    : StarSubalgebra ℂ C(V, ℂ) :=
+def probChar_starSubalgebra (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    StarSubalgebra ℂ C(V, ℂ) :=
   StarSubalgebra.of_span_submonoid ℂ (probChar_submonoid he hL)
       (probChar_star_mem he hL)
 
@@ -164,8 +163,8 @@ theorem probChar_StarSubalgebra_separatesPoints (he : Continuous e)
   exact ⟨Submodule.subset_span ⟨w, rfl⟩, hw⟩
 
 theorem probChar_starSubalgebra_bounded (he : Continuous e)
-    (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    : ∀ g ∈ (probChar_starSubalgebra he hL), ∃ C, ∀ (v v' : V), dist (g v) (g v') ≤ C := by
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+    ∀ g ∈ (probChar_starSubalgebra he hL), ∃ C, ∀ (v v' : V), dist (g v) (g v') ≤ C := by
   intro g hg
   obtain ⟨n, c, f, hf⟩ := mem_span_set'.1 hg
   by_cases hn : n = 0
@@ -222,8 +221,8 @@ words, characteristic functions separate measures.
 -/
 theorem FiniteMeasure.ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 0)
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (P P' : MeasureTheory.FiniteMeasure V)
-    : (∀ w, ∫ v, probChar he hL w v ∂P = ∫ v, probChar he hL w v ∂P') → P = P' := by
+    (P P' : MeasureTheory.FiniteMeasure V) :
+    (∀ w, ∫ v, probChar he hL w v ∂P = ∫ v, probChar he hL w v ∂P') → P = P' := by
   intro h
   apply ext_of_forall_mem_subalgebra_integral_eq
       (StarSubalgebra.probChar_StarSubalgebra_separatesPoints he he' hL hL')
@@ -291,8 +290,8 @@ theorem probChar_eq (J : Finset ι) (v w : J → ℝ) : (probFourierChar (dotPro
 
 /-- docBlame -/
 theorem ext_of_charFun_eq (J : Finset ι)
-    (P P' : MeasureTheory.FiniteMeasure ((i : J) → ℝ))
-    : (∀ w : J → ℝ, ∫ v, ((probFourierChar (dotProduct J v w)) : ℂ) ∂P
+    (P P' : MeasureTheory.FiniteMeasure ((i : J) → ℝ)) :
+    (∀ w : J → ℝ, ∫ v, ((probFourierChar (dotProduct J v w)) : ℂ) ∂P
     = ∫ v, ((probFourierChar (dotProduct J v w)) : ℂ) ∂P') → P = P' := by
   have h1 : probFourierChar ≠ 1 := by
     rw [DFunLike.ne_iff]

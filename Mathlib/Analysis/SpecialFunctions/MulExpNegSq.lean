@@ -148,8 +148,8 @@ def mulExpNegMulSq [TopologicalSpace E] {g : E → ℝ} (hg: Continuous g) (ε :
   toFun := (fun x => (g x) * (- (ε * (g x) * (g x))).exp)
   continuous_toFun := by continuity
 
-theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegSq {g : E → ℝ} {x : E} {ε : ℝ} (hε : ε > 0)
-    : (g x) * (Real.exp (- (ε * (g x) * (g x))))
+theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegSq {g : E → ℝ} {x : E} {ε : ℝ} (hε : ε > 0) :
+    (g x) * (Real.exp (- (ε * (g x) * (g x))))
     = ε.sqrt⁻¹ * mulExpNegSq (Real.sqrt ε * (g x)) := by
   simp only [neg_mul, one_div, mulExpNegSq]
   have h : ((ε.sqrt * g x * (ε.sqrt * g x))) = ε * (g x) * (g x) := by
@@ -173,8 +173,8 @@ theorem mulExpNegMulSq_abs_le {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (hε
   rw [mul_le_mul_left (inv_pos.mpr (Real.sqrt_pos_of_pos hε))]
   exact mulExpNegSq_bounded (ε.sqrt * g x)
 
-theorem mulExpNegMulSq_bounded {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (hε : ε > 0) (x y : E)
-    : dist (mulExpNegMulSq hg ε x) (mulExpNegMulSq hg ε y) ≤ 2 * ε.sqrt⁻¹ := by
+theorem mulExpNegMulSq_bounded {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (hε : ε > 0) (x y : E) :
+    dist (mulExpNegMulSq hg ε x) (mulExpNegMulSq hg ε y) ≤ 2 * ε.sqrt⁻¹ := by
   apply le_trans (dist_triangle (mulExpNegMulSq hg ε x) 0 (mulExpNegMulSq hg ε y))
   simp only [dist_zero_right, Real.norm_eq_abs, dist_zero_left, two_mul]
   exact add_le_add (mulExpNegMulSq_abs_le hg hε x) (mulExpNegMulSq_abs_le hg hε y)
@@ -183,8 +183,8 @@ theorem mulExpNegMulSq_bounded {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (h�
 For a fixed bounded function `g`, the mapping `mulExpNegMulSq g ε` is bounded by `norm g`,
 uniformly in `ε ≥ 0`.
 -/
-theorem mulExpNegMulSq_abs_le_norm (g : BoundedContinuousFunction E ℝ) {ε : ℝ} (hε : ε ≥ 0) (x : E)
-    : abs ((mulExpNegMulSq g.continuous ε) x) ≤ norm g := by
+theorem mulExpNegMulSq_abs_le_norm (g : BoundedContinuousFunction E ℝ) {ε : ℝ} (hε : ε ≥ 0)
+    (x : E) : abs ((mulExpNegMulSq g.continuous ε) x) ≤ norm g := by
   simp only [mulExpNegMulSq, ContinuousMap.coe_mk, abs_mul, Real.abs_exp]
   apply le_trans (mul_le_of_le_one_right (abs_nonneg (g x)) _) (g.norm_coe_le_norm x)
   rw [Real.exp_le_one_iff, Left.neg_nonpos_iff, mul_assoc]
@@ -206,8 +206,8 @@ theorem mulExpNegMulSq_lipschitz {f g : E → ℝ} (hf: Continuous f) (hg: Conti
       = abs ((ε.sqrt * g x) - (ε.sqrt * f x)) := rfl
   rw [h, ← mul_sub_left_distrib ε.sqrt _ _, abs_mul, abs_of_pos (Real.sqrt_pos_of_pos hε)]
 
-theorem mulExpNegMulSq_tendsto {g : E → ℝ} (hg: Continuous g) (x : E)
-    : Tendsto (fun ε => mulExpNegMulSq hg ε x) (nhds 0) (nhds (g x)) := by
+theorem mulExpNegMulSq_tendsto {g : E → ℝ} (hg: Continuous g) (x : E) :
+    Tendsto (fun ε => mulExpNegMulSq hg ε x) (nhds 0) (nhds (g x)) := by
   have : g x = (fun ε : ℝ => mulExpNegMulSq hg ε x) 0 := by
     simp only [mulExpNegMulSq, zero_mul, neg_zero, Real.exp_zero, mul_one, ContinuousMap.coe_mk]
   rw [this]
@@ -221,8 +221,8 @@ variable [MeasurableSpace E] [BorelSpace E] (P : Measure E) [IsFiniteMeasure P]
 the integral of `mulExpNegMulSq g ε` with respect to a finite measure `P` converges to the integral
 of `g`, as `ε → 0` from above.
 -/
-theorem integral_mulExpNegMulSq_tendsto (g : BoundedContinuousFunction E ℝ)
-    : Tendsto (fun ε => ∫ (x : E), (mulExpNegMulSq g.continuous ε x) ∂P)
+theorem integral_mulExpNegMulSq_tendsto (g : BoundedContinuousFunction E ℝ) :
+    Tendsto (fun ε => ∫ (x : E), (mulExpNegMulSq g.continuous ε x) ∂P)
     (nhdsWithin 0 (Set.Ioi 0)) (nhds (∫ (x : E), g x ∂P)) := by
   apply tendsto_of_seq_tendsto
   intro u hu
@@ -250,8 +250,8 @@ theorem zero_le_one_sub_div {n : ℕ} {x : ℝ} (h : x ≤ n) : 0 ≤ 1 - x / n 
   · simp only [hn, CharP.cast_eq_zero, _root_.div_zero, sub_zero, zero_le_one]
   · rwa [sub_nonneg, div_le_one ((Nat.cast_pos).mpr (Nat.zero_lt_of_ne_zero hn))]
 
-theorem bounded_of_expSeq {x : ℝ} (n : ℕ) (hxnonneg : 0 ≤ x) (hxlen : x ≤ n)
-    : abs ((1 + -((n : ℝ)⁻¹ * x)) ^ n) ≤ 1 := by
+theorem bounded_of_expSeq {x : ℝ} (n : ℕ) (hxnonneg : 0 ≤ x) (hxlen : x ≤ n) :
+    abs ((1 + -((n : ℝ)⁻¹ * x)) ^ n) ≤ 1 := by
   rw [abs_pow]
   apply pow_le_one₀ (abs_nonneg _)
   rw [inv_mul_eq_div, abs_le]
@@ -265,8 +265,8 @@ The integral of `mulExpNegMulSq g ε` with respect to a finite measure `P` can b
 the integral of the sequence approximating the exponential function.
 -/
 theorem tendsto_integral_expSeq_mulExpNegMulSq (g : BoundedContinuousFunction E ℝ)
-    {ε : ℝ} (hε : ε > 0) (P : Measure E) [IsFiniteMeasure P]
-    : Filter.Tendsto (fun (n : ℕ) => ∫ (x : E), (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
+    {ε : ℝ} (hε : ε > 0) (P : Measure E) [IsFiniteMeasure P] :
+    Filter.Tendsto (fun (n : ℕ) => ∫ (x : E), (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
     Filter.atTop (nhds (∫ (x : E), mulExpNegMulSq g.continuous ε x ∂ P)) := by
   obtain ⟨N, hgN⟩ := exists_nat_ge (ε * (norm g * norm g))
   apply FiniteMeasure.tendstoIntegral_of_eventually_boundedPointwise
@@ -306,8 +306,8 @@ theorem tendsto_integral_expSeq_mulExpNegMulSq (g : BoundedContinuousFunction E 
 
 theorem integral_mulExpNegMulSq_eq {P' : Measure E} [IsFiniteMeasure P'] {A : Subalgebra ℝ C(E, ℝ)}
     {ε : ℝ} (hε : ε > 0) (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
-    (heq : ∀ g ∈ A, ∫ (x : E), (g : E → ℝ) x ∂P = ∫ (x : E), (g : E → ℝ) x ∂P')
-    : ∀ (g : A), ∫ (x : E), (mulExpNegMulSq (g : C(E, ℝ)).continuous ε) x ∂P
+    (heq : ∀ g ∈ A, ∫ (x : E), (g : E → ℝ) x ∂P = ∫ (x : E), (g : E → ℝ) x ∂P') :
+    ∀ (g : A), ∫ (x : E), (mulExpNegMulSq (g : C(E, ℝ)).continuous ε) x ∂P
         = ∫ (x : E), (mulExpNegMulSq (g : C(E, ℝ)).continuous ε) x ∂P' := by
   rintro ⟨g, hgA⟩
   obtain ⟨C, h⟩ := hbound g hgA
@@ -328,8 +328,8 @@ theorem integral_mulExpNegMulSq_eq {P' : Measure E} [IsFiniteMeasure P'] {A : Su
   apply tendsto_nhds_unique (tendsto_integral_expSeq_mulExpNegMulSq gb hε P) limP
 
 theorem integral_mulExpNegMulSq_lt (f : C(E, ℝ)) {K : Set E} (hK : MeasurableSet K)
-    {ε : ℝ} (hε : ε > 0) (hKP : P Kᶜ < ε.toNNReal)
-    : abs (∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P
+    {ε : ℝ} (hε : ε > 0) (hKP : P Kᶜ < ε.toNNReal) :
+    abs (∫ (x : E), (mulExpNegMulSq f.continuous ε) x ∂P
     - ∫ x in K, (mulExpNegMulSq f.continuous ε) x ∂P) < ε.sqrt := by
   have hbound : ∀ᵐ (x : E) ∂P, ‖(mulExpNegMulSq f.continuous ε) x‖ ≤ ε.sqrt⁻¹ :=
     Eventually.of_forall (mulExpNegMulSq_abs_le f.continuous hε)
@@ -354,8 +354,8 @@ theorem integral_mulExpNegMulSq_le_mul_measure {K : Set E} (hK : IsCompact K)
       norm ((mulExpNegMulSq g.continuous ε) x - (mulExpNegMulSq f.continuous ε) x) ≤ δ :=
     fun x hxK => le_trans
       (mulExpNegMulSq_lipschitz f.continuous g.continuous hε x) (le_of_lt (hfg x hxK))
-  have integrable_mulExpNegMulSq : ∀ f
-      : C(E, ℝ), Integrable (fun x ↦ (mulExpNegMulSq f.continuous ε) x) (P.restrict K) :=
+  have integrable_mulExpNegMulSq :
+      ∀ f : C(E, ℝ), Integrable (fun x ↦ (mulExpNegMulSq f.continuous ε) x) (P.restrict K) :=
     fun f => ContinuousOn.integrableOn_compact' hK hKmeas
         (Continuous.continuousOn (mulExpNegMulSq f.continuous ε).continuous)
   rw [← (integral_sub (integrable_mulExpNegMulSq g) (integrable_mulExpNegMulSq f))]

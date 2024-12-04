@@ -803,14 +803,13 @@ section Span
 /-- If a set `s : Set A` is closed under `star`, then the span of `s` is closed under `star`. -/
 theorem Subalgebra.of_span_submonoid_starmem {R : Type u} {A : Type v} [CommSemiring R]
     [Semiring A] [Algebra R A][StarRing R] [StarRing A] [StarModule R A] {s : Set A}
-    (h : ∀ x, x ∈ s → star x ∈ s)
-    : ∀ x, x ∈ Submodule.span R s → star x ∈ Submodule.span R s := by
+    (h : ∀ x, x ∈ s → star x ∈ s) :
+    ∀ x, x ∈ Submodule.span R s → star x ∈ Submodule.span R s := by
   intro x hx
   obtain ⟨n, f, g, hfgx⟩ := mem_span_set'.1 hx
   simp [of_span_submonoid, of_span_set, mem_span_set']
   let fStar := fun i => star (f i)
-  let gStar : Fin n → s
-      := fun i => ⟨star (g i), h (g i) (Subtype.coe_prop (g i))⟩
+  let gStar : Fin n → s := fun i => ⟨star (g i), h (g i) (Subtype.coe_prop (g i))⟩
   use n, fStar, gStar
   rw [← hfgx]
   simp only [star_sum, star_smul]
