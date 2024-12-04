@@ -993,7 +993,6 @@ theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq �
   choose n hn using this
   let x := @Finset.univ ι inst
   use ⟨∏ j ∈ x, n j, M.prod_mem (fun i _ ↦ (hn i).left)⟩
-  simp only
   refine funext fun i ↦ ?_
   rw [Pi.mul_apply, Finset.prod_eq_mul_prod_diff_singleton (Finset.mem_univ i) n, Pi.mul_apply,
     mul_comm ((n i) i), mul_assoc, ← Pi.evalRingHom_apply R' i (n i), (hn i).right, hm i, mul_zero]
