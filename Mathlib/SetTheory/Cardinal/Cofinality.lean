@@ -17,8 +17,6 @@ This file contains the definition of cofinality of an ordinal number and regular
 * `Ordinal.cof o` is the cofinality of the ordinal `o`.
   If `o` is the order type of the relation `<` on `α`, then `o.cof` is the smallest cardinality of a
   subset `s` of α that is *cofinal* in `α`, i.e. `∀ x : α, ∃ y ∈ s, ¬ y < x`.
-* `Cardinal.IsStrongLimit c` means that `c` is a strong limit cardinal:
-  `c ≠ 0 ∧ ∀ x < c, 2 ^ x < c`.
 * `Cardinal.IsRegular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.ord.cof = c`.
 * `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
