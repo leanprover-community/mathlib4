@@ -255,5 +255,4 @@ example : single (0 : Fin 2) 1 ≺[degLex] single 1 2 := by
 
 end Examples
 
-
 end degLex
