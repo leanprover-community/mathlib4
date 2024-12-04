@@ -216,8 +216,8 @@ instance hasLimits : Limits.HasLimits Profinite :=
 instance hasColimits : Limits.HasColimits Profinite :=
   hasColimits_of_reflective profiniteToCompHaus
 
-noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by
-  apply Limits.compPreservesLimits Profinite.toTopCat (forget TopCat)
+instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := by
+  apply Limits.comp_preservesLimits Profinite.toTopCat (forget TopCat)
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
