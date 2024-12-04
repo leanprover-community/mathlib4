@@ -161,14 +161,19 @@ into the `lean-toolchain` file at the root directory of your project"
 
 /-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
 def getProofWidgets (buildDir : FilePath) : IO Unit := do
-  if (← buildDir.pathExists) then return
-  -- Unpack the ProofWidgets cloud release (for its `.js` files)
+  -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
+  -- NB: This is done unconditionally because cache has no simple heuristic
+  -- to determine whether the ProofWidgets JS is out-of-date
   let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "proofwidgets:release"]}).wait
   if exitCode != 0 then
     throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: lake failed with error code {exitCode}"
-  -- prune non-js ProofWidgets files (e.g., `olean`, `.c`)
-  IO.FS.removeDirAll (buildDir / "lib")
-  IO.FS.removeDirAll (buildDir / "ir")
+  -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
+  try
+    IO.FS.removeDirAll (buildDir / "lib")
+    IO.FS.removeDirAll (buildDir / "ir")
+  catch
+    | .noFileOrDirectory .. => pure ()
+    | e => throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
 
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
