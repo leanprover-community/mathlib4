@@ -356,6 +356,16 @@ theorem trans {g : Iio o' → Iio o} (hf : IsFundamentalSeq f) (hg : IsFundament
     obtain ⟨_, ⟨z, rfl⟩, hy⟩ := hg.isCofinal_range y
     exact ⟨_, mem_range_self z, hx.trans (hf.monotone hy)⟩
 
+protected theorem iSup (hf : IsFundamentalSeq f) (ho : IsLimit o) : ⨆ i, (f i).1 = a := by
+  apply (ciSup_le' fun i ↦ (f i).2.le).antisymm
+  apply le_of_forall_lt fun x hx ↦ ?_
+  rw [lt_ciSup_iff']
+  · obtain ⟨_, ⟨y, rfl⟩, hy⟩ := hf.isCofinal_range ⟨x, hx⟩
+    exact ⟨⟨_, ho.succ_lt y.2⟩, hy.trans_lt (hf.strictMono (lt_succ y.1))⟩
+  · use a
+    rintro _ ⟨i, rfl⟩
+    exact (f i).2.le
+
 end IsFundamentalSeq
 
 /-- Every ordinal has a fundamental sequence. -/
@@ -439,6 +449,72 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
     Cardinal.lift_id, ← ho, not_lt, ← Cardinal.lift_le.{v}, Cardinal.lift_univ,
     Cardinal.univ_umax] at hs
   rwa [card_univ, univ, ← lift_cof, cof_type]
+
+end Ordinal
+
+/-! ### Regular cardinals -/
+
+namespace Cardinal
+open Ordinal
+
+/-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
+def IsRegular (c : Cardinal) : Prop :=
+  ℵ₀ ≤ c ∧ c ≤ c.ord.cof
+
+theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
+  H.1
+
+theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
+  (cof_ord_le c).antisymm H.2
+
+theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
+  rw [← ord_aleph, H.cof_eq]
+
+theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
+  aleph0_pos.trans_le H.1
+
+theorem IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) (n : ℕ) : n < c :=
+  lt_of_lt_of_le (nat_lt_aleph0 n) H.aleph0_le
+
+theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
+  rw [Cardinal.lt_ord, card_zero]
+  exact H.pos
+
+theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
+  ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
+
+theorem isRegular_aleph0 : IsRegular ℵ₀ :=
+  ⟨le_rfl, by simp⟩
+
+theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) := by
+  refine ⟨h.trans (le_succ c), succ_le_of_lt ?_⟩
+  obtain ⟨f, hf⟩ := exists_isFundamentalSeq (succ c).ord
+  have := card_iSup_Iio_le_card_mul_iSup fun i ↦ (f i).1
+  rw [Cardinal.lift_id, hf.iSup, card_ord, card_ord] at this
+  · by_contra! hc
+    have := this.trans (mul_le_mul' hc (ciSup_le' fun i ↦ card_le_iff.2 (f i).2))
+    rw [mul_eq_self h, succ_le_iff] at this
+    exact this.false
+  · apply isLimit_ord
+    rw [aleph0_le_cof]
+    exact isLimit_ord (h.trans (le_succ _))
+
+theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
+  rw [preAleph_succ]
+  exact isRegular_succ (aleph0_le_preAleph.2 h)
+
+set_option linter.deprecated false in
+@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
+theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
+  rw [aleph'_succ]
+  exact isRegular_succ (aleph0_le_aleph'.2 h)
+
+theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
+  rw [aleph_succ]
+  exact isRegular_succ (aleph0_le_aleph o)
+
+theorem isRegular_aleph_one : IsRegular ℵ₁ := by
+  simpa using isRegular_aleph_succ 0
 
 #exit
 
@@ -607,75 +683,6 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
       exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (isLimit_ord h'.aleph0_le))
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
-
-/-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
-def IsRegular (c : Cardinal) : Prop :=
-  ℵ₀ ≤ c ∧ c ≤ c.ord.cof
-
-theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
-  H.1
-
-theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
-  (cof_ord_le c).antisymm H.2
-
-theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
-  rw [← ord_aleph, H.cof_eq]
-
-theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
-  aleph0_pos.trans_le H.1
-
-theorem IsRegular.nat_lt {c : Cardinal} (H : c.IsRegular) (n : ℕ) : n < c :=
-  lt_of_lt_of_le (nat_lt_aleph0 n) H.aleph0_le
-
-theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
-  rw [Cardinal.lt_ord, card_zero]
-  exact H.pos
-
-theorem isRegular_cof {o : Ordinal} (h : o.IsLimit) : IsRegular o.cof :=
-  ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
-
-theorem isRegular_aleph0 : IsRegular ℵ₀ :=
-  ⟨le_rfl, by simp⟩
-
-theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) :=
-  ⟨h.trans (le_succ c),
-    succ_le_of_lt
-      (by
-        have αe := Cardinal.mk_out (succ c)
-        set α := (succ c).out
-        rcases ord_eq α with ⟨r, wo, re⟩
-        have := isLimit_ord (h.trans (le_succ _))
-        rw [← αe, re] at this ⊢
-        rcases cof_eq' r this with ⟨S, H, Se⟩
-        rw [← Se]
-        apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_right' h c
-        rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
-        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
-        · simp only [← card_typein, ← mk_sigma]
-          exact
-            ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
-                let ⟨b, h, ab⟩ := H a
-                ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
-        · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
-          apply typein_lt_type)⟩
-
-theorem isRegular_aleph_one : IsRegular ℵ₁ := by
-  rw [← succ_aleph0]
-  exact isRegular_succ le_rfl
-
-theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
-  rw [preAleph_succ]
-  exact isRegular_succ (aleph0_le_preAleph.2 h)
-
-set_option linter.deprecated false in
-@[deprecated isRegular_preAleph_succ (since := "2024-10-22")]
-theorem isRegular_aleph'_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (aleph' (succ o)) := by
-  rw [aleph'_succ]
-  exact isRegular_succ (aleph0_le_aleph'.2 h)
-
-theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
-  rw [aleph_succ]
-  exact isRegular_succ (aleph0_le_aleph o)
 
 /-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
 has a fiber with cardinality strictly great than the codomain.
