@@ -16,7 +16,6 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
-
 open LinearMap (BilinMap)
 
 namespace QuadraticMap
