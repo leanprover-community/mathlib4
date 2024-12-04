@@ -154,26 +154,25 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
   apply DifferentialAlgebra.equiv
 
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
-    Unique ((_ : Differential K) ×' DifferentialAlgebra F K) := by
-  let default : ((_ : Differential K) ×' DifferentialAlgebra F K) :=
+    Unique {_a : Differential K // DifferentialAlgebra F K} := by
+  let default : {_a : Differential K // DifferentialAlgebra F K} :=
       ⟨differentialFiniteDimensional F K, differentialAlgebraFiniteDimensional⟩
   refine ⟨⟨default⟩, fun ⟨a, ha⟩ ↦ ?_⟩
   ext x
-  · apply_fun (aeval x (mapCoeffs (minpoly F x)) + aeval x (derivative (minpoly F x)) * ·)
-    · conv_lhs => apply (deriv_aeval_eq ..).symm
-      conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.1 _ default.2 _ _).symm
-      simp
-    · apply (add_right_injective _).comp
-      apply mul_right_injective₀
-      rw [ne_eq, ← minpoly.dvd_iff]
-      have : 0 < (minpoly F x).natDegree := Irreducible.natDegree_pos
-        (minpoly.irreducible (Algebra.IsIntegral.isIntegral _))
-      apply not_dvd_of_natDegree_lt
-      · intro nh
-        simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
-      apply natDegree_derivative_lt
-      exact Nat.not_eq_zero_of_lt this
-  · apply proof_irrel_heq
+  apply_fun (aeval x (mapCoeffs (minpoly F x)) + aeval x (derivative (minpoly F x)) * ·)
+  · conv_lhs => apply (deriv_aeval_eq ..).symm
+    conv_rhs => apply (@deriv_aeval_eq _ _ _ _ _ default.1 _ default.2 _ _).symm
+    simp
+  · apply (add_right_injective _).comp
+    apply mul_right_injective₀
+    rw [ne_eq, ← minpoly.dvd_iff]
+    have : 0 < (minpoly F x).natDegree := Irreducible.natDegree_pos
+      (minpoly.irreducible (Algebra.IsIntegral.isIntegral _))
+    apply not_dvd_of_natDegree_lt
+    · intro nh
+      simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
+    apply natDegree_derivative_lt
+    exact Nat.not_eq_zero_of_lt this
 
 noncomputable instance (B : IntermediateField F K) [FiniteDimensional F B] : Differential B :=
   differentialFiniteDimensional F B
