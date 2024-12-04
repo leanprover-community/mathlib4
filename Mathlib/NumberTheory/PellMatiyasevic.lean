@@ -48,6 +48,7 @@ Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
 
 -/
 
+set_option linter.haveLet 0
 
 namespace Pell
 

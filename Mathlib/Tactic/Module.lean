@@ -24,6 +24,8 @@ semirings which appear in the expression: for any two semirings `R` and `S` whic
 either `Algebra R S` or `Algebra S R`).
 -/
 
+set_option linter.haveLet 0
+
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List
 
