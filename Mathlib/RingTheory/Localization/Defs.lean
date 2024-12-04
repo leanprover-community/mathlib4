@@ -970,7 +970,7 @@ theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq �
   set P := (∀i, S' i)
   set f := sloc.lift (isUnit_of_product_of_localizations R' S' h ) -- S to P
   set f' : ∀i, R →+* S' i := fun i ↦ RingHom.comp (algebraMap (R' i) (S' i)) (Pi.evalRingHom R' i)
-  set f'' :  R →+* P := Pi.ringHom f' -- R to P
+  set f'' : R →+* P := Pi.ringHom f' 
   refine (injective_iff_map_eq_zero _ ).mpr ?_
   intro s s₀
   rw [← sloc.mk'_sec S s] at s₀ ⊢
