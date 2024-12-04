@@ -3,12 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Lattice
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # Associated, prime, and irreducible elements.

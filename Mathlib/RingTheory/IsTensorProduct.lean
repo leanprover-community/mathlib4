@@ -3,8 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Module.ULift
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
@@ -212,7 +213,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- porting note (#10745): was simp [smul_tmul', Algebra.ofId_apply]
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
         simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, LinearMap.mul_apply,
           LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
           smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]

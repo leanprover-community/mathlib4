@@ -67,7 +67,7 @@ variable [DecidableEq F]
 
 /-- Cross product on the projective plane. -/
 def cross : ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) :=
-  Quotient.map₂' (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)
+  Quotient.map₂ (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)
     (fun _ _ ⟨a, ha⟩ _ _ ⟨b, hb⟩ ↦ by
       simp_rw [← ha, ← hb, LinearMap.map_smul_of_tower, LinearMap.smul_apply, smul_smul,
         mul_comm b a, smul_eq_zero_iff_eq]
