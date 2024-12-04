@@ -661,25 +661,24 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
 
 open UniqueFactorizationMonoid in
 /--
-Every polynomial over a field factors to some constant times the product of some
-irreducible monic polynomials.
+The normalized factors of a polynomial times its leading coefficient give the polynomial.
 -/
-theorem exists_multiset_irreducible_and_monic_and_mul_prod_eq (a : R[X]) :
-    ∃ (f : Multiset R[X]) (v : R), (∀ b ∈ f, Irreducible b ∧ b.Monic) ∧ C v * f.prod = a := by
-  classical
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
+    C a.leadingCoeff * (normalizedFactors a).prod = a := by
   by_cases ha : a = 0
-  · use ∅, 0
-    simp [ha]
-  use normalizedFactors a
+  · simp [ha]
   obtain ⟨v, hv⟩ := normalizedFactors_prod ha
-  obtain ⟨v', -, hv'⟩ := Polynomial.isUnit_iff.mp v.isUnit
-  use v'
-  refine ⟨fun _ hb => ⟨irreducible_of_normalized_factor _ hb, ?_⟩,
-    by simpa [hv', mul_comm] using hv⟩
-  rw [← normalize_normalized_factor _ hb]
-  apply Polynomial.monic_normalize
-  apply Irreducible.ne_zero
-  exact irreducible_of_normalized_factor _ hb
+
+  -- nth_rw 3 [← hv]
+  -- rw [mul_comm]
+  -- congr 1
+  -- obtain ⟨v', -, hv'⟩ := Polynomial.isUnit_iff.mp v.isUnit
+  -- refine ⟨fun _ hb => ⟨irreducible_of_normalized_factor _ hb, ?_⟩,
+  --   by simpa [hv', mul_comm] using hv⟩
+  -- rw [← normalize_normalized_factor _ hb]
+  -- apply Polynomial.monic_normalize
+  -- apply Irreducible.ne_zero
+  -- exact irreducible_of_normalized_factor _ hb
 
 end Field
 
