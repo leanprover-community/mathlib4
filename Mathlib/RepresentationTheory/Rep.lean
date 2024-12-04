@@ -122,22 +122,14 @@ variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
 abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
-  Rep.of (@Representation.trivial k G V ..)
+  Rep.of (Representation.trivial k G V)
 
 variable {k G}
 
-theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
-    (trivial k G V).ρ g v = v :=
+@[simp]
+theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
+    (trivial k G V).ρ g = LinearMap.id :=
   rfl
-
-/-- A predicate for representations that fix every element. -/
-abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
-
-instance {V : Type u} [AddCommGroup V] [Module k V] :
-    IsTrivial (Rep.trivial k G V) where
-
-instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) where
 
 /-- The functor equipping a module with the trivial representation. -/
 @[simps]
@@ -449,11 +441,20 @@ lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single {α : Type u} (i : �
 end
 end Finsupp
 end
-section
+
+section Group
 
 open Finsupp Action
+open Representation (IsTrivial)
 
-variable (k G n) [Group G]
+variable [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+noncomputable abbrev ofQuotientGroup [IsTrivial (A.ρ.comp S.subtype)] :
+    Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotientGroup S)
+
+variable (k G n)
 
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
@@ -621,7 +622,7 @@ theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) 
   TensorProduct.ext' fun _ _ => rfl
 
 end MonoidalClosed
-end
+end Group
 
 namespace Representation
 open MonoidalCategory

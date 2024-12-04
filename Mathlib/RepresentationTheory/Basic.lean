@@ -64,28 +64,31 @@ theorem ρ_self_inv_apply (g : G) (x : V) :
 end
 section trivial
 
-variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
 def trivial : Representation k G V :=
   1
 
--- Porting note: why is `V` implicit
-theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
+@[simp]
+theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
-variable {k}
+variable {k G V}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
-  out : ∀ g x, ρ g x = x := by aesop
+  out : ∀ g, ρ g = LinearMap.id := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance : IsTrivial (trivial k G V) where
 
-@[simp] theorem apply_eq_self
-    (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
-    ρ g x = x := h.out g x
+@[simp]
+theorem isTrivial_def (ρ : Representation k G V) [IsTrivial ρ] (g : G) :
+    ρ g = LinearMap.id := IsTrivial.out g
+
+theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : V) :
+    ρ g x = x := congr($(isTrivial_def ρ g) x)
 
 end trivial
 
@@ -368,6 +371,23 @@ def asGroupHom : G →* Units (V →ₗ[k] V) :=
 
 theorem asGroupHom_apply (g : G) : ↑(asGroupHom ρ g) = ρ g := by
   simp only [asGroupHom, MonoidHom.coe_toHomUnits]
+
+variable (S : Subgroup G) [S.Normal]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+noncomputable def ofQuotientGroup [IsTrivial (ρ.comp S.subtype)] :
+    Representation k (G ⧸ S) V :=
+  (QuotientGroup.con S).lift ρ <| by
+    rintro x y ⟨⟨z, hz⟩, rfl⟩
+    ext w
+    have := congr($(IsTrivial.out (ρ := ρ.comp S.subtype) (⟨MulOpposite.unop z, hz⟩)) w)
+    simp_all [-isTrivial_def]
+
+@[simp]
+lemma ofQuotientGroup_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
+    ofQuotientGroup ρ S (g : G ⧸ S) x = ρ g x :=
+  rfl
 
 end Group
 

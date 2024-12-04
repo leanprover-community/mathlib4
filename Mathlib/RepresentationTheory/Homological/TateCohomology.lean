@@ -289,7 +289,7 @@ noncomputable def δNeg₁ : TateCohomology X.X₃ (-1) ⟶ TateCohomology X.X�
 
 theorem δNeg₁_apply (z : X.X₃) (hz : (Submodule.mkQ _ z) ∈ LinearMap.ker (liftRestrictNorm X.X₃))
     (y : X.X₂) (x : X.X₁.ρ.invariants)
-    (hyz : (· - z : X.X₃ → X.X₃) (X.g.hom y) ∈ X.X₃.ρ.coinvariantsKer)
+    (hyz : (· - z : X.X₃ → X.X₃) (X.g.hom y) ∈ X.X₃.ρ.augmentationSubmodule)
     (hx : X.f.hom x.1 = X.X₂.norm.hom y) :
     TateCohomology.δNeg₁ hX ⟨Submodule.mkQ _ z, hz⟩ = Submodule.mkQ _ x := by
   convert congr((π₁.mapIso <| snakeInputIso₃ hX).hom $((TateCohomology.snakeInput hX).δ_apply

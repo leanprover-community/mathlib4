@@ -302,7 +302,7 @@ open ShortComplex
 this is induced map `A_G ⟶ B_H`. -/
 noncomputable def H0Map : ModuleCat.of k (H0 A) ⟶ ModuleCat.of k (H0 B) :=
   Submodule.mapQ _ _ φ.hom <| Submodule.span_le.2 <| fun _ ⟨⟨g, y⟩, hy⟩ =>
-    mem_coinvariantsKer_of_eq (f g) (φ.hom y) _ <| by
+    mem_augmentationSubmodule_of_eq (f g) (φ.hom y) _ <| by
       simpa [← hy] using (hom_comm_apply φ _ _).symm
 
 omit [DecidableEq G] in
@@ -326,6 +326,7 @@ instance epi_H0Map_of_epi {A B : Rep k G} (f : A ⟶ B) [Epi f] :
     Epi (H0Map (MonoidHom.id G) f) :=
   (inferInstanceAs (Epi <| (coinvariantsFunctor k G).map f))
 
+omit [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp)]
 theorem H0π_comp_H0Map :
     H0π A ≫ H0Map f φ = φ.hom ≫ H0π B := by
