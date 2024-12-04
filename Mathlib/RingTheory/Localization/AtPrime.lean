@@ -333,11 +333,11 @@ theorem mapPiLocalizationIsMaximal_bijective :
     Function.Bijective (mapPiLocalizationIsMaximal f hf) := by
   let f := RingEquiv.ofBijective f hf
   let e := RingEquiv.ofRingHom (mapPiLocalizationIsMaximal f hf)
-    (mapPiLocalizationIsMaximal f.symm f.symm.bijective) ?_ ?_
+    (mapPiLocalizationIsMaximal (f.symm : S →+* R) f.symm.bijective) ?_ ?_
   · exact e.bijective
-  · rw [← mapPiLocalizationIsMaximal_comp f.symm f f.symm.bijective hf]
+  · rw [← mapPiLocalizationIsMaximal_comp]
     simp_rw [RingEquiv.comp_symm, mapPiLocalizationIsMaximal_id]
-  · rw [← mapPiLocalizationIsMaximal_comp f f.symm hf f.symm.bijective]
+  · rw [← mapPiLocalizationIsMaximal_comp]
     simp_rw [RingEquiv.symm_comp, mapPiLocalizationIsMaximal_id]
 
 end RingHom
