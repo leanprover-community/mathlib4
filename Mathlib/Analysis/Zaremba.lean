@@ -52,12 +52,12 @@ class WellDistributed {ι : Type*} (μ : ι →₀ ℝ≥0) : Prop where
 
 variable (μ ν : (Fin 2 → ℤ) →₀ ℝ≥0)
   (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
-  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
+  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N : ℝ≥0) (Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
   (hQ : Q ^ 2 < N)
   (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q / 2 ≤ q) (hq₂ : q ≤ Q) (hβ₁ : K / (2 * N) ≤ |β|)
   (hβ₂ : |β| ≤ K / N)
-  (hμN : ∀ x ∈ μ.support, x ⬝ᵥ x ≤ N)
-  (hνN : ∀ y ∈ ν.support, y ⬝ᵥ y ≤ N)
+  (hμN : ∀ x ∈ μ.support, x ⬝ᵥ x ≤ (N : ℝ))
+  (hνN : ∀ y ∈ ν.support, y ⬝ᵥ y ≤ (N : ℝ))
 
 -- FIXME why isn't this notation showing up?
 set_option quotPrecheck false in
@@ -170,9 +170,19 @@ theorem Finsupp.sum_comm_tsum_weight {α β E : Type*} [AddCommMonoid E] [Module
 
 noncomputable def FT (f : (Fin 2 → ℝ) → ℂ) : (Fin 2 → ℝ) → ℂ := sorry
 
+lemma FTtwist (f : (Fin 2 → ℝ) → ℂ) (t k : Fin 2 → ℝ) : -- add side conditions
+    FT (fun x ↦ f x * exp (2 * π * I * (x ⬝ᵥ t))) k = FT f (k - t) := by
+  sorry
+
+lemma FTdilate (f : (Fin 2 → ℝ) → ℂ) (t : ℝ) (k : Fin 2 → ℝ) : -- add side conditions
+    FT (fun x ↦ f (t⁻¹ • x)) k = t ^ 2 * FT f (t • k) := by
+  sorry
+
 lemma PoissonSum (f : (Fin 2 → ℝ) → ℂ) : -- add conditions
     ∑' (x : Fin 2 → ℤ), f (Int.cast ∘ x) = ∑' (k : Fin 2 → ℤ), FT f (Int.cast ∘ k) := by
   sorry
+
+
 
 example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
@@ -188,12 +198,17 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
     _ = _ := by ring
   gcongr
   rw [Finsupp.mass_eq_tsum]
-  let μ' : (Fin 2 → ℤ) → ℝ≥0 := sorry
-  have hμ : μ ≤ μ' := sorry
-  have hμ' : Summable μ' := sorry
-  have hμ'_exp (n : Fin 2 → ℤ) : Summable (μ' • fun x ↦ exp (2 * π * I * (a / q + β) * (x ⬝ᵥ n))) :=
-    sorry
-  calc _ ≤ ∑' (x : Fin 2 → ℤ), μ' x • ‖g x‖ ^ 2 := by
+  let φ : (Fin 2 → ℝ) → ℝ≥0 := sorry
+  have φ_bnd : ∀ x, (∀ i, (x i)^2 ≤ 1) → 1 ≤ φ x := sorry
+  let ψ : (Fin 2 → ℝ) → ℝ≥0 := sorry
+  have ψ_eq_FTφ : FT (fun x ↦ (φ x : ℂ)) = (fun x ↦ (ψ x : ℂ)) := sorry
+  have FTφ_supp : (FT (fun x ↦ (φ x : ℂ))).support ⊆ {x : Fin 2 → ℝ | ∀ i, (x i)^2 ≤ 1/4} := sorry
+  let μ' : (Fin 2 → ℝ) → ℝ≥0 := fun x ↦ φ ((√N)⁻¹ • x)
+  have hμ : ∀ x : Fin 2 → ℤ, μ x ≤ μ' (Int.cast ∘ x) := sorry -- prove from `φ_bnd`
+  have hμ' : Summable (fun (x : Fin 2 → ℤ) ↦ μ' (Int.cast ∘ x)) := sorry
+  have hμ'_exp (n : Fin 2 → ℤ) : Summable (fun (y : Fin 2 → ℤ) ↦
+    μ' (Int.cast ∘ y) • exp (2 * π * I * (a / q + β) * (y ⬝ᵥ n))) := sorry
+  calc _ ≤ ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • ‖g x‖ ^ 2 := by
         apply tsum_mono
         · sorry -- summability of finsupps
         · sorry -- summability of the new `μ'`
@@ -214,26 +229,51 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
     _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
           exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))) ∂(ν.pointwise_prod ν) := sorry
   have :=
-  calc ∑' (x : Fin 2 → ℤ), μ' x • ‖g x‖ ^ 2
-      = ∑' (x : Fin 2 → ℤ), μ' x • (∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+  calc ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • ‖g x‖ ^ 2
+      = ∑' (x : Fin 2 → ℤ), μ' (Int.cast ∘ x) • (∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
           exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))) ∂(ν.pointwise_prod ν)) := by
         push_cast
         congr! with x
-        trans μ' x • ‖g x‖ ^ 2
+        trans μ' (Int.cast ∘ x) • ‖g x‖ ^ 2
         · sorry -- casting issue
         rw [hg]
         rfl
     _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (x : Fin 2 → ℤ),
-          (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) ∂(ν.pointwise_prod ν) := by
+          (μ' (Int.cast ∘ x) • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2)))))
+            ∂(ν.pointwise_prod ν) := by
         rw [Finsupp.sum_comm_tsum_weight]
         intro (n₁, n₂) hn
-        simp [-ne_eq] at hn
-        dsimp
-        apply hμ'_exp
+        exact hμ'_exp _
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
+          FT (fun (x : Fin 2 → ℝ) ↦ μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (Int.cast ∘ (p.1 - p.2)))))
+            (Int.cast ∘ k)) ∂(ν.pointwise_prod ν) := by
+        congr! 3 with p
+        rw [← PoissonSum]
+        congr! with k
+        simp only [Matrix.dotProduct_sub, Matrix.vec2_dotProduct, Fin.isValue, Int.cast_sub,
+          Int.cast_add, Int.cast_mul, Function.comp_apply, Pi.sub_apply, ofReal_add, ofReal_mul,
+          ofReal_intCast, ofReal_sub]
+        ring
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
+          FT (fun x ↦ (μ' x : ℂ)) ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2))))
+             ∂(ν.pointwise_prod ν) := by
+        congr! 5 with p k
+        rw [← FTtwist]
+        congr! 2 with x
+        sorry -- casting and ring
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
+          (√N)^2 * FT (fun x ↦ (φ x : ℂ)) (√N • ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2)))))
+             ∂(ν.pointwise_prod ν) := by
+        congr! 5 with p k
+        dsimp [μ']
+        apply FTdilate
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
+          (√N)^2 * ψ (√N • ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2)))))
+             ∂(ν.pointwise_prod ν) := by
+        push_cast
+        sorry
 
-
-
-
+  sorry
 #exit
 
 
@@ -248,7 +288,7 @@ def SupportedCoprime (μ : Measure (Fin 2 → ℤ)) : Prop :=
 variable (μ ν : Measure (Fin 2 → ℤ)) [IsFiniteMeasure μ]
   [WellDistributed μ] [WellDistributed ν]
   (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
-  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
+  (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ) (hK₀ : 1 ≤ K) (hQ₀ : 1 ≤ Q)
   (hQ : Q ^ 2 < N)
   (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q ≤ q) (hq₂ : q ≤ 2 * Q) (hβ₁ : K / (2 * N) ≤ |β|)
   (hβ₂ : |β| ≤ K / N)
