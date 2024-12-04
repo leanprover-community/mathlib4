@@ -304,7 +304,7 @@ omit [Algebra R S]
 If R and S are commutative rings, surjectivity would be enough. -/
 noncomputable def mapPiLocalizationIsMaximal :
     PiLocalizationIsMaximal R →+* PiLocalizationIsMaximal S :=
-  Pi.ringHom fun I ↦ have := I.2.isPrime
+  Pi.ringHom fun I ↦ haveI := I.2.isPrime
     (Localization.localRingHom _ _ f rfl).comp <|
       Pi.evalRingHom _ (⟨_, Ideal.comap.isMaximal f hf I.2⟩ : setOf _)
 
@@ -320,7 +320,7 @@ theorem mapPiLocalizationIsMaximal_naturality :
 
 theorem mapPiLocalizationIsMaximal_id :
     mapPiLocalizationIsMaximal (.id R) Function.bijective_id = .id _ :=
-  RingHom.ext fun _ ↦ funext fun I ↦ have := I.2.isPrime
+  RingHom.ext fun _ ↦ funext fun I ↦ haveI := I.2.isPrime
     congr($(Localization.localRingHom_id _) _)
 
 theorem mapPiLocalizationIsMaximal_comp :
