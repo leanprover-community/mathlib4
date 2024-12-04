@@ -214,6 +214,18 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
   obtain ⟨-, rfl⟩ : x ∈ t ∧ f x = j := by simpa using hj hx
   contradiction
 
+theorem disjoint_of_or_not_and (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
+    Disjoint (s.filter p) (s.filter q) := by
+  intro _ htp htq
+  simp only [bot_eq_empty, le_eq_subset, subset_empty]
+  by_contra hn
+  rw [← not_nonempty_iff_eq_empty, not_not] at hn
+  obtain ⟨x, hx⟩ := hn
+  have px : p x := (mem_filter.mp (htp hx)).2
+  have qx : q x := (mem_filter.mp (htq hx)).2
+  simp_all only [mem_filter, not_and, and_imp, le_eq_subset, filter_subset]
+  exact h x (filter_subset p s (htp hx)) (Or.inr qx) px qx
+
 variable {p q}
 
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by

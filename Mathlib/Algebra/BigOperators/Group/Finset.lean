@@ -426,6 +426,21 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
     (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+@[to_additive]
+theorem prod_disjoint_filters (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q] :
+    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+      (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
+  rw [← prod_union (by
+    apply disjoint_of_or_not_and
+    simp only [mem_filter, not_and, Decidable.not_not, and_imp]
+    exact fun x a a a a_1 a_2 ↦ a
+  ) ]
+  exact prod_congr (by
+    ext _
+    simp only [mem_filter, mem_union]
+    exact and_or_left
+  ) (fun _ _ ↦ rfl)
+
 section ToList
 
 @[to_additive (attr := simp)]
