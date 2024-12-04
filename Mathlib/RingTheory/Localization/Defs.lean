@@ -985,8 +985,8 @@ theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq �
       ← RingHom.map_mul, mk'_spec, lift_eq (isUnit_of_product_of_localizations R' S' h) x.1]
   rw [this] at s₀
   apply (sloc.mk'_eq_zero_iff (sec M s).1 (sec M s).2).mpr
-  choose m hm using (fun i ↦ ((isloc i).mk'_eq_zero_iff ((sec M s).1 i)
-    ⟨(sec M s).2.1 i, h₁ (sec M s).2 i⟩).mp (congrFun s₀ i))
+  choose m hm using fun i ↦ ((isloc i).mk'_eq_zero_iff ((sec M s).1 i)
+    ⟨(sec M s).2.1 i, h₁ (sec M s).2 i⟩).mp (congrFun s₀ i)
   have (i : ι) : ∃ z ∈ M, Pi.evalRingHom R' i z = (m i) := by
     apply (M.mem_map).mp
     rw [← h i]
