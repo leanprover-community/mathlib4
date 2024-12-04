@@ -67,20 +67,20 @@ def InfoTree.foldInfoM {α m} [Monad m] (f : ContextInfo → Info → α → m �
   InfoTree.foldInfo (fun ctx i ma => do f ctx i (← ma)) (pure init)
 
 /-- given a `ContextInfo`, a `LocalContext` and an `Array` of `Expr`essions `es`,
-`areProp_toFormat` creates a `MetaM` context, and returns an array of pairs consisting of
-* a `Bool`ean, answering the question of whether the Type of `e` is a `Prop` or not, and
+`toFormat_propTypes` creates a `MetaM` context, and returns an array of
 * the pretty-printed `Format` of `e`
-for each `Expr`ession `e` in `es`.
-Concretely, `areProp_toFormat` runs `inferType` in `CommandElabM`.
+for each `Expr`ession `e` in `es` whose type is a `Prop`.
+
+Concretely, `toFormat_propTypes` runs `inferType` in `CommandElabM`.
 This is the kind of monadic lift that `nonPropHaves` uses to decide whether the Type of a `have`
 is in `Prop` or not.
 The output `Format` is just so that the linter displays a better message. -/
-def areProp_toFormat (ctx : ContextInfo) (lc : LocalContext) (es : Array Expr) :
-    CommandElabM (Array (Bool × Format)) := do
+def toFormat_propTypes (ctx : ContextInfo) (lc : LocalContext) (es : Array Expr) :
+    CommandElabM (Array Format) := do
   ctx.runMetaM lc do
-    es.mapM fun e => do
+    es.filterMapM fun e => do
       let typ ← inferType (← instantiateMVars e)
-      return (typ.isProp, ← ppExpr e)
+      if typ.isProp then return none else return ← ppExpr e
 
 /-- returns the `have` syntax whose corresponding hypothesis does not have Type `Prop` and
 also a `Format`ted version of the corresponding Type. -/
@@ -106,11 +106,11 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     -- `newDecls` are the local declarations whose `FVarID` did not exist before the `have`
     -- effectively they are the declarations that we want to test for being in `Prop` or not.
     let newDecls := lc.decls.toList.reduceOption.filter (! oldFVars.contains ·.fvarId)
-    -- now, we get the `MetaM` state up and running to find the types of each entry of `newDecls`
-    let fmts ← areProp_toFormat ctx lc (newDecls.map (·.type)).toArray
-    let (_propFmts, typeFmts) := (fmts.zip (newDecls.map (·.userName)).toArray).partition (·.1.1)
-    -- everything that is a Type triggers a warning on `have`
-    return typeFmts.map fun ((_, fmt), na) => (stx, f!"{na} : {fmt}"))
+    -- Now, we get the `MetaM` state up and running to find the types of each entry of `newDecls`.
+    -- For each entry which is a `Type`, we print a warning on `have`.
+    let fmts ← toFormat_propTypes ctx lc (newDecls.map (·.type)).toArray
+    let typeFmts := fmts.zip (newDecls.map (·.userName)).toArray
+    return typeFmts.map fun (fmt, na) => (stx, f!"{na} : {fmt}"))
 
 /-- The main implementation of the `have` vs `let` linter. -/
 def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
