@@ -950,12 +950,13 @@ maps to a unit under this homomorphism.
 -/
 lemma isUnit_of_product_of_localizations (h : ∀ i, (M' i) = M.map (Pi.evalRingHom R' i)) (y : M) :
     IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)) y) := by
-  set f' i : (∀ i, R' i) →+* S' i := (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)
+  let f' : ∀i, (∀i, R' i) →+* S' i :=
+    fun i ↦ RingHom.comp (algebraMap (R' i) (S' i)) (Pi.evalRingHom R' i)
   refine isUnit_iff_exists_inv.mpr ?_
   use fun i ↦ Ring.inverse (f' i y)
   rw [mul_comm]
-  exact funext fun i ↦ Ring.inverse_mul_cancel (f' i y) ((isloc i).map_units (S' i) ⟨y.1 i, ?_⟩)
-  rw [h i]; exact Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2
+  exact funext fun i ↦ Ring.inverse_mul_cancel (f' i y) ((isloc i).map_units (S' i) ⟨y.1 i,
+    by rw [h i]; exact Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2⟩)
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R' i`, and let `M' i` denote
 the projection of `M` onto each factor. Then the canonical map from the localization of the direct
@@ -965,11 +966,11 @@ is injective.
 theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq ι]
     (h : ∀ i, M' i = M.map (Pi.evalRingHom R' i)) :
     Function.Injective (sloc.lift (isUnit_of_product_of_localizations R' S' h)) := by
-  set R := ∀ i, R' i
-  set P := ∀ i, S' i
-  set f : S →+* P := sloc.lift (isUnit_of_product_of_localizations R' S' h)
-  set f' i : R →+* S' i := (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)
-  set f'' : R →+* P := Pi.ringHom f'
+  let R := ∀ i, R' i
+  let P := ∀ i, S' i
+  let f : S →+* P := sloc.lift (isUnit_of_product_of_localizations R' S' h)
+  let f' : ∀i, R →+* S' i := fun i ↦ RingHom.comp (algebraMap (R' i) (S' i)) (Pi.evalRingHom R' i)
+  let f'' : R →+* P := Pi.ringHom f'
   refine (injective_iff_map_eq_zero _ ).mpr ?_
   intro s s₀
   rw [← sloc.mk'_sec S s] at s₀ ⊢
@@ -992,6 +993,7 @@ theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq �
     exact (m i).2
   choose n hn using this
   use ⟨∏ j : ι, n j, M.prod_mem fun i _ ↦ (hn i).left⟩
+  simp only
   refine funext fun i ↦ ?_
   rw [Pi.mul_apply, Finset.prod_eq_mul_prod_diff_singleton (Finset.mem_univ i) n, Pi.mul_apply,
     mul_comm ((n i) i), mul_assoc, ← Pi.evalRingHom_apply R' i (n i), (hn i).right, hm i, mul_zero]
