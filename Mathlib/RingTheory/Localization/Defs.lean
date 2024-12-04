@@ -965,8 +965,8 @@ is injective.
 theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq ι]
     (h : ∀ i, (M' i) = M.map (Pi.evalRingHom R' i)) :
     Function.Injective (sloc.lift (isUnit_of_product_of_localizations R' S' h)) := by
-  set R := (∀i, R' i)
-  set P := (∀i, S' i)
+  set R := ∀ i, R' i
+  set P := ∀ i, S' i
   set f : S →+* P := sloc.lift (isUnit_of_product_of_localizations R' S' h)
   set f' i : R →+* S' i := (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)
   set f'' : R →+* P := Pi.ringHom f'
