@@ -21,9 +21,9 @@ section Filter
 variable {α β : Type* }
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
 
-variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β} [AddCommMonoid β]
+variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β}
 
-theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
+theorem disjoint_of_or_not_and (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
     Disjoint (s.filter p) (s.filter q) := by
   intro _ htp htq
   simp only [bot_eq_empty, le_eq_subset, subset_empty]
@@ -35,14 +35,27 @@ theorem disjoint_of_not_and_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x
   simp_all only [mem_filter, not_and, and_imp, le_eq_subset, filter_subset]
   exact h x (filter_subset p s (htp hx)) (Or.inr qx) px qx
 
-theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x)) :
-    (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
-  rw [← sum_disjUnion (disjoint_of_not_and_on_set (fun x ↦ p x) (fun x ↦ q x) h)]
-  exact sum_congr (by
+@[to_additive]
+theorem prod_disjoint_filters (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q]
+    [CommMonoid β]:
+    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+      (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
+  rw [← prod_union (by
+    apply disjoint_of_or_not_and
+    simp only [mem_filter, not_and, Decidable.not_not, and_imp]
+    exact fun x a a a a_1 a_2 ↦ a
+  ) ]
+  exact prod_congr (by
     ext _
-    simp only [mem_filter, mem_disjUnion]
+    simp only [mem_filter, mem_union]
     exact and_or_left
   ) (fun _ _ ↦ rfl)
+/-
+theorem sum_disjoint_filters_on_set (h : ∀ x ∈ s.filter (fun x => p x ∨ q x), ¬ (p x ∧ q x))
+    [AddCommMonoid β] :
+    (∑ x ∈ s with (p x ∨ q x), f x) = (∑ x ∈ s with p x, f x) + (∑ x ∈ s with q x, f x) := by
+  rw [sum_disjoint_filters]
+-/
 
 end Filter
 
@@ -275,6 +288,82 @@ lemma not_IsDiag_iff_symOffDiagXor_or_symOffDiag
     cases' h with h1 h2
     · apply foo3 _ h1
     · apply foo4 _ h2
+
+lemma not_symOffDiagXor_and_symOffDiag (p : Sym2 (ι₁ × ι₂)) :
+    ¬((symOffDiagXor p) ∧ (symOffDiag p)) := by
+  simp only [not_and]
+  intro h
+  have e1 : ¬ p.IsDiag := foo3 p h
+  rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag] at e1
+  simp_all only [xor_true, not_false_eq_true]
+
+lemma not_symOffDiagUpper_and_symOffDiagLower [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) :
+    ¬((symOffDiagUpper p) ∧ (symOffDiagLower p)) := by
+  simp only [not_and]
+  intro h
+  have e1 : symOffDiag p := by exact foo p h
+  rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower] at e1
+  simp_all only [xor_true, not_false_eq_true]
+
+
+lemma e1 (p : Sym2 (ι₁ × ι₂)) : symOffDiagXor p ∧ ¬symOffDiag p ↔ symOffDiagXor p := by
+  constructor
+  · intro h
+    aesop
+  · intro h
+    constructor
+    · exact h
+    · by_contra h'
+      have t1 : (symOffDiagXor p) ∧ (symOffDiag p) := by exact ⟨h, h'⟩
+      have f1 : ¬((symOffDiagXor p) ∧ (symOffDiag p))  :=
+        not_symOffDiagXor_and_symOffDiag p
+      exact f1 t1
+
+-- symOffDiag x ∧ ¬symOffDiagXor x)
+
+lemma e2 (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ∧ ¬symOffDiagXor p ↔ symOffDiag p := by
+  constructor
+  · intro h
+    aesop
+  · intro h
+    constructor
+    · exact h
+    · by_contra h'
+      have t1 : (symOffDiagXor p) ∧ (symOffDiag p) := by exact ⟨h', h⟩
+      have f1 : ¬((symOffDiagXor p) ∧ (symOffDiag p))  :=
+        not_symOffDiagXor_and_symOffDiag p
+      exact f1 t1
+
+lemma e3 (p : Sym2 (ι₁ × ι₂)) [LinearOrder ι₁] [LinearOrder ι₂] :
+    symOffDiagLower p ∧ ¬symOffDiagUpper p ↔ symOffDiagLower p := by
+  constructor
+  · intro h
+    aesop
+  · intro h
+    constructor
+    · exact h
+    · by_contra h'
+      have t1 : (symOffDiagLower p) ∧ (symOffDiagUpper p) := by exact ⟨h, h'⟩
+      have f1 : ¬((symOffDiagLower p) ∧ (symOffDiagUpper p))  := by
+        rw [and_comm]
+        exact not_symOffDiagUpper_and_symOffDiagLower p
+      exact f1 t1
+
+lemma e4 (p : Sym2 (ι₁ × ι₂)) [LinearOrder ι₁] [LinearOrder ι₂] :
+    symOffDiagUpper p ∧ ¬symOffDiagLower p ↔ symOffDiagUpper p := by
+  constructor
+  · intro h
+    aesop
+  · intro h
+    constructor
+    · exact h
+    · by_contra h'
+      have t1 : (symOffDiagLower p) ∧ (symOffDiagUpper p) := by exact ⟨h', h⟩
+      have f1 : ¬((symOffDiagLower p) ∧ (symOffDiagUpper p))  := by
+        rw [and_comm]
+        exact not_symOffDiagUpper_and_symOffDiagLower p
+      exact f1 t1
 
 end Prod
 
@@ -649,17 +738,8 @@ theorem sum1 (x : M₁ ⊗[R] M₂) :
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
-  have h1 : ∀ y ∈ s.filter (fun y => symOffDiagXor y ∨ symOffDiag y),
-      ¬ (symOffDiagXor y ∧ symOffDiag y) := by
-    intro y hy
-    apply ((xor_iff_or_and_not_and (symOffDiagXor y) (symOffDiag y)).mp _).2
-    rw [← not_IsDiag_iff_symOffDiagXor_xor_symOffDiag]
-    simp at hy
-    rw [not_IsDiag_iff_symOffDiagXor_or_symOffDiag]
-    exact hy.2
-  simp_rw [← Finset.sum_disjoint_filters_on_set  _ _ h1]
-  simp_rw [not_IsDiag_iff_symOffDiagXor_or_symOffDiag]
-
+  simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_disjoint_filters,
+    e1, e2]
 
 theorem sum2 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -671,16 +751,8 @@ theorem sum2 (x : M₁ ⊗[R] M₂) :
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
-  have h1 : ∀ y ∈ s.filter (fun y => symOffDiagUpper y ∨ symOffDiagLower y),
-      ¬ (symOffDiagUpper y ∧ symOffDiagLower y) := by
-    intro y hy
-    apply ((xor_iff_or_and_not_and (symOffDiagUpper y) (symOffDiagLower y)).mp _).2
-    rw [← symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
-    simp at hy
-    rw [symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
-    exact hy.2
-  simp_rw [← Finset.sum_disjoint_filters_on_set  _ _ h1]
-  simp_rw [symOffDiag_iff_symOffDiagUpper_or_symOffDiagLower]
+  simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
+  simp_rw [Finset.sum_disjoint_filters, e3, e4]
 
 theorem sum2a (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
