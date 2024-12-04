@@ -237,11 +237,6 @@ section Examples
 
 open Finsupp MonomialOrder DegLex
 
-/- These examples would not fit as actual `MonomialOrder` examples below
-because they use `ℕ` which doesn't have `WellFoundedGT`.
-This suggests to removing the `MonomialOrder.wf` field from the definition
-of a monomial order and add it in the hypotheses when needed. -/
-
 /-- for the deg-lexicographic ordering, X 1 < X 0 -/
 example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   rw [degLex_lt_iff, single_lt_iff]
