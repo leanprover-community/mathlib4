@@ -161,7 +161,7 @@ def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
     if (← get).messages.hasErrors then
       return
     let trees ← getInfoTrees
-    for t in trees.toArray do
+    for t in trees do
       for (s, before, after, n) in getManyGoals t do
         let goals (k : Nat) := if k == 1 then f!"1 goal" else f!"{k} goals"
         let fmt ← Command.liftCoreM
