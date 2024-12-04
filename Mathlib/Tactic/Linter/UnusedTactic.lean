@@ -72,7 +72,7 @@ abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
 initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
-  IO.mkRef <| .ofList [
+  IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     `Batteries.Tactic.«tacticOn_goal-_=>_»,
     -- attempt to speed up, by ignoring more tactics
@@ -97,7 +97,7 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `change?,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,
-    `Mathlib.Tactic.«tacticRename_bvar_→__»,
+    `Mathlib.Tactic.«tacticRename_bvar_→__»
   ]
 
 /-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
@@ -120,7 +120,7 @@ A list of blacklisted syntax kinds, which are expected to have subterms that con
 unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
-  IO.mkRef <| .ofList [
+  IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     ``Parser.Term.binderTactic,
     ``Lean.Parser.Term.dynamicQuot,
@@ -140,7 +140,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     ``Lean.Parser.Tactic.failIfSuccess,
     `Mathlib.Tactic.successIfFailWithMsg,
-    `Mathlib.Tactic.failIfNoProgress,
+    `Mathlib.Tactic.failIfNoProgress
   ]
 
 /-- Is this a syntax kind that contains intentionally unused tactic subterms? -/
