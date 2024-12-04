@@ -33,6 +33,7 @@ covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms 
 This version is given in `Vitali.vitaliFamily`.
 -/
 
+set_option linter.haveLet 0
 
 variable {α ι : Type*}
 
