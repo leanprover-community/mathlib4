@@ -124,9 +124,22 @@ theorem adjoin_of_disjoint {s t : Set ι} (h : Disjoint s t) :
   exact .comp hx (rename_injective _ <| Subtype.val_injective.sum_elim
     Subtype.val_injective fun i j eq ↦ h.ne_of_mem j.2 i.2 eq.symm)
 
+theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
+    (AlgebraicIndependent (adjoin R (x '' s)) fun i : t ↦ x i) ↔ Disjoint s t := by
+  refine ⟨fun ind ↦ of_not_not fun ndisj ↦ ?_, adjoin_of_disjoint hx⟩
+  have ⟨i, hs, ht⟩ := Set.not_disjoint_iff.mp ndisj
+  refine ind.transcendental ⟨i, ht⟩ (isAlgebraic_algebraMap (⟨_, subset_adjoin ?_⟩ : adjoin R _))
+  exact ⟨i, hs, rfl⟩
+
 theorem transcendental_adjoin {s : Set ι} {i : ι} (hi : i ∉ s) :
     Transcendental (adjoin R (x '' s)) (x i) := by
   convert ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
+  rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
+
+theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
+    Transcendental (adjoin R (x '' s)) (x i) ↔ i ∉ s := by
+  rw [← Set.disjoint_singleton_right]
+  convert ← hx.adjoin_iff_disjoint (t := {i})
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 end AlgebraicIndependent
