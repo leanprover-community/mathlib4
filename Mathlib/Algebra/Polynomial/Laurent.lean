@@ -551,34 +551,34 @@ lemma toLaurent_reverse (p : R[X]) :
 
 end Inversion
 
-section Eval
+section Smeval
 
 section SMulWithZero
 
 variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
-/-- Evaluate a Laurent polynomial at a unit. -/
-def eval : S := Finsupp.sum f fun n r => r • (x ^ n).val
+/-- Evaluate a Laurent polynomial at a unit, using scalar multiplication. -/
+def smeval : S := Finsupp.sum f fun n r => r • (x ^ n).val
 
-theorem eval_eq_sum : f.eval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
 
-theorem eval_congr : f = g → x = y → f.eval x = g.eval y := by rintro rfl rfl; rfl
+theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro rfl rfl; rfl
 
 @[simp]
-theorem eval_zero : (0 : R[T;T⁻¹]).eval x = (0 : S) := by
-  simp only [eval_eq_sum, Finsupp.sum_zero_index]
+theorem smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by
+  simp only [smeval_eq_sum, Finsupp.sum_zero_index]
 
-theorem eval_single (n : ℤ) (r : R) : eval (Finsupp.single n r) x = r • (x ^ n).val := by
-  simp only [eval_eq_sum]
+theorem smeval_single (n : ℤ) (r : R) : smeval (Finsupp.single n r) x = r • (x ^ n).val := by
+  simp only [smeval_eq_sum]
   rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
 
 @[simp]
-theorem eval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).eval x = r • (x ^ n).val := by
-  rw [← single_eq_C_mul_T, eval_single]
+theorem smeval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).smeval x = r • (x ^ n).val := by
+  rw [← single_eq_C_mul_T, smeval_single]
 
 @[simp]
-theorem eval_C (r : R) : (C r).eval x = r • 1 := by
-  rw [← single_eq_C, eval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
+theorem smeval_C (r : R) : (C r).smeval x = r • 1 := by
+  rw [← single_eq_C, smeval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
 
 end SMulWithZero
 
@@ -588,12 +588,12 @@ variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g 
   (x y : Sˣ)
 
 @[simp]
-theorem eval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).eval x = (x ^ n).val := by
-  rw [T, eval_single, one_smul]
+theorem smeval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).smeval x = (x ^ n).val := by
+  rw [T, smeval_single, one_smul]
 
 @[simp]
-theorem eval_one : (1 : R[T;T⁻¹]).eval x = 1 := by
-  rw [← T_zero, eval_T_pow 0 x, zpow_zero, Units.val_eq_one]
+theorem smeval_one : (1 : R[T;T⁻¹]).smeval x = 1 := by
+  rw [← T_zero, smeval_T_pow 0 x, zpow_zero, Units.val_eq_one]
 
 end MulActionWithZero
 
@@ -602,28 +602,28 @@ section Module
 variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 @[simp]
-theorem eval_add : (f + g).eval x = f.eval x + g.eval x := by
-  simp only [eval_eq_sum]
+theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
+  simp only [smeval_eq_sum]
   rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
 
 @[simp]
-theorem eval_C_mul (r : R) : (C r * f).eval x = r • (f.eval x) := by
+theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by
   induction f using LaurentPolynomial.induction_on' with
   | h_add p q hp hq=>
-    rw [mul_add, eval_add, eval_add, smul_add, hp, hq]
+    rw [mul_add, smeval_add, smeval_add, smul_add, hp, hq]
   | h_C_mul_T n s =>
-    rw [← mul_assoc, ← map_mul, eval_C_mul_T_n, eval_C_mul_T_n, mul_smul]
+    rw [← mul_assoc, ← map_mul, smeval_C_mul_T_n, smeval_C_mul_T_n, mul_smul]
 
 variable (R) in
 /-- Evaluation as an `R`-linear map. -/
 @[simps]
 def leval : R[T;T⁻¹] →ₗ[R] S where
-  toFun f := f.eval x
-  map_add' f g := eval_add f g x
+  toFun f := f.smeval x
+  map_add' f g := smeval_add f g x
   map_smul' r f := by simp [smul_eq_C_mul]
 
 end Module
 
-end Eval
+end Smeval
 
 end LaurentPolynomial
