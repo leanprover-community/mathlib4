@@ -138,6 +138,51 @@ instance symOffDiagRight.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
     DecidablePred (@symOffDiagRight ι₁ ι₂) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (symOffDiagRight_iff_proj_eq a)
 
+-- symOffDiagLeft x ∧ ¬symOffDiagRight x
+
+lemma not_symOffDiagRight_of_symOffDiagLeft [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂))
+    (h : symOffDiagLeft p) : ¬symOffDiagRight p := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  aesop
+
+lemma not_symOffDiagLeft_of_symOffDiagRight [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂))
+    (h : symOffDiagRight p) : ¬symOffDiagLeft p := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  aesop
+
+lemma e5 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    symOffDiagLeft p ∧ ¬symOffDiagRight p ↔ symOffDiagLeft p := by
+  rw [and_iff_left_of_imp]
+  exact not_symOffDiagRight_of_symOffDiagLeft _
+
+lemma e6 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
+    symOffDiagRight p ∧ ¬symOffDiagLeft p ↔ symOffDiagRight p := by
+  rw [and_iff_left_of_imp]
+  exact not_symOffDiagLeft_of_symOffDiagRight _
+
+lemma symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight [LinearOrder ι₁] [LinearOrder ι₂]
+    (p : Sym2 (ι₁ × ι₂)) : symOffDiagXor p ↔ Xor' (symOffDiagLeft p) (symOffDiagRight p) := by
+  induction' p with i  j
+  obtain ⟨i₁, i₂⟩ := i
+  obtain ⟨j₁, j₂⟩ := j
+  rw [Xor']
+  simp_all only [symOffDiagXor_iff_proj_eq, symOffDiagLeft_iff_proj_eq,
+    symOffDiagRight_iff_proj_eq, not_and, Decidable.not_not]
+  apply Iff.intro
+  · intro h
+    rcases h with (h₁ | h₂)
+    · aesop
+    · aesop
+  · intro a
+    cases a with
+    | inl h => simp_all only [xor_true, not_false_eq_true]
+    | inr h_1 => simp_all only [xor_false, id_eq]
+
+
 lemma f1 (p : Sym2 (ι₁ × ι₂)) : Xor' p.IsDiag ¬ p.IsDiag :=
   xor_not_right.mpr (Eq.to_iff rfl)
 
@@ -249,63 +294,38 @@ lemma not_symOffDiagUpper_and_symOffDiagLower [LinearOrder ι₁] [LinearOrder �
   rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower] at e1
   simp_all only [xor_true, not_false_eq_true]
 
-
 lemma e1 (p : Sym2 (ι₁ × ι₂)) : symOffDiagXor p ∧ ¬symOffDiag p ↔ symOffDiagXor p := by
-  constructor
-  · intro h
-    aesop
-  · intro h
-    constructor
-    · exact h
-    · by_contra h'
-      have t1 : (symOffDiagXor p) ∧ (symOffDiag p) := by exact ⟨h, h'⟩
-      have f1 : ¬((symOffDiagXor p) ∧ (symOffDiag p))  :=
-        not_symOffDiagXor_and_symOffDiag p
-      exact f1 t1
-
--- symOffDiag x ∧ ¬symOffDiagXor x)
+  rw [and_iff_left_of_imp]
+  by_contra h'
+  have t1 : (symOffDiagXor p) ∧ (symOffDiag p) := by aesop
+  have f1 : ¬((symOffDiagXor p) ∧ (symOffDiag p))  := not_symOffDiagXor_and_symOffDiag p
+  exact f1 t1
 
 lemma e2 (p : Sym2 (ι₁ × ι₂)) : symOffDiag p ∧ ¬symOffDiagXor p ↔ symOffDiag p := by
-  constructor
-  · intro h
-    aesop
-  · intro h
-    constructor
-    · exact h
-    · by_contra h'
-      have t1 : (symOffDiagXor p) ∧ (symOffDiag p) := by exact ⟨h', h⟩
-      have f1 : ¬((symOffDiagXor p) ∧ (symOffDiag p))  :=
-        not_symOffDiagXor_and_symOffDiag p
-      exact f1 t1
+  rw [and_iff_left_of_imp]
+  by_contra h'
+  have t1 : (symOffDiagXor p) ∧ (symOffDiag p) := by aesop
+  have f1 : ¬((symOffDiagXor p) ∧ (symOffDiag p))  := not_symOffDiagXor_and_symOffDiag p
+  exact f1 t1
 
 lemma e3 (p : Sym2 (ι₁ × ι₂)) [LinearOrder ι₁] [LinearOrder ι₂] :
     symOffDiagLower p ∧ ¬symOffDiagUpper p ↔ symOffDiagLower p := by
-  constructor
-  · intro h
-    aesop
-  · intro h
-    constructor
-    · exact h
-    · by_contra h'
-      have t1 : (symOffDiagLower p) ∧ (symOffDiagUpper p) := by exact ⟨h, h'⟩
-      have f1 : ¬((symOffDiagLower p) ∧ (symOffDiagUpper p))  := by
-        rw [and_comm]
-        exact not_symOffDiagUpper_and_symOffDiagLower p
-      exact f1 t1
+  rw [and_iff_left_of_imp]
+  by_contra h'
+  have t1 : (symOffDiagLower p) ∧ (symOffDiagUpper p) := by aesop
+  have f1 : ¬((symOffDiagLower p) ∧ (symOffDiagUpper p))  := by
+    rw [and_comm]
+    exact not_symOffDiagUpper_and_symOffDiagLower p
+  exact f1 t1
 
 lemma e4 (p : Sym2 (ι₁ × ι₂)) [LinearOrder ι₁] [LinearOrder ι₂] :
     symOffDiagUpper p ∧ ¬symOffDiagLower p ↔ symOffDiagUpper p := by
-  constructor
-  · intro h
-    aesop
-  · intro h
-    constructor
-    · exact h
-    · by_contra h'
-      have t1 : (symOffDiagLower p) ∧ (symOffDiagUpper p) := by exact ⟨h', h⟩
-      have f1 : ¬((symOffDiagLower p) ∧ (symOffDiagUpper p))  := by
-        rw [and_comm]
-        exact not_symOffDiagUpper_and_symOffDiagLower p
-      exact f1 t1
+  rw [and_iff_left_of_imp]
+  by_contra h'
+  have t1 : (symOffDiagLower p) ∧ (symOffDiagUpper p) := by aesop
+  have f1 : ¬((symOffDiagLower p) ∧ (symOffDiagUpper p))  := by
+    rw [and_comm]
+    exact not_symOffDiagUpper_and_symOffDiagLower p
+  exact f1 t1
 
 end Prod
