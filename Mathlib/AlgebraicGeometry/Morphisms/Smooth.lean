@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.RingTheory.RingHom.StandardSmooth
 
 /-!
@@ -164,5 +165,18 @@ instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsSmoothOfRelativeDimension 0 f]
 instance : MorphismProperty.IsMultiplicative (@IsSmoothOfRelativeDimension 0) where
   id_mem _ := inferInstance
   comp_mem _ _ _ _ := inferInstance
+
+/-- Smooth morphisms are of finite presentation. -/
+instance (priority := 100) [hf : IsSmooth f] : LocallyOfFinitePresentation f := by
+  rw [HasRingHomProperty.eq_affineLocally @LocallyOfFinitePresentation]
+  rw [HasRingHomProperty.eq_affineLocally @IsSmooth] at hf
+  refine affineLocally_le (fun hf ↦ ?_) f hf
+  apply RingHom.locally_of_locally (Q := RingHom.FinitePresentation) at hf
+  · rwa [RingHom.locally_iff_of_localizationSpanTarget finitePresentation_respectsIso
+      finitePresentation_ofLocalizationSpanTarget] at hf
+  · introv hf
+    algebraize [f]
+    haveI : Algebra.IsStandardSmooth R S := hf
+    exact this.finitePresentation
 
 end AlgebraicGeometry

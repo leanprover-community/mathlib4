@@ -504,6 +504,11 @@ instance IsStandardSmoothOfRelativeDimension.id :
     IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
 
+instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
+    FinitePresentation R S := by
+  obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact P.finitePresentation_of_isFinite
+
 section Composition
 
 variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
