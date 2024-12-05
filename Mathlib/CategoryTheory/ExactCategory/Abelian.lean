@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
+
+/-!
+# Abelian categories are exact
+
+-/
 
 namespace CategoryTheory
 
@@ -10,17 +20,15 @@ variable {C : Type _} [Category C] [Abelian C]
 
 namespace Abelian
 
-lemma monomorphisms_stableUnderCobaseChange :
-    (MorphismProperty.monomorphisms C).StableUnderCobaseChange :=
-  MorphismProperty.StableUnderCobaseChange.mk
-    (MorphismProperty.RespectsIso.monomorphisms _)
-    (fun _ _ _ f _ (_ : Mono f) => (inferInstance : Mono _))
+instance monomorphisms_stableUnderCobaseChange :
+    (MorphismProperty.monomorphisms C).IsStableUnderCobaseChange :=
+  MorphismProperty.IsStableUnderCobaseChange.mk' (fun _ _ _ f _ _ (_ : Mono f) ↦
+    (inferInstanceAs (Mono _)))
 
-lemma epimorphisms_stableUnderBaseChange :
-    (MorphismProperty.epimorphisms C).StableUnderBaseChange :=
-  MorphismProperty.StableUnderBaseChange.mk
-    (MorphismProperty.RespectsIso.epimorphisms _)
-    (fun _ _ _ _ g (_ : Epi g) => (inferInstance : Epi _))
+instance epimorphisms_stableUnderBaseChange :
+    (MorphismProperty.epimorphisms C).IsStableUnderBaseChange :=
+  MorphismProperty.IsStableUnderBaseChange.mk' (fun _ _ _ _ g _ (_ : Epi g) ↦
+    (inferInstanceAs (Epi _)))
 
 end Abelian
 
@@ -76,12 +84,14 @@ noncomputable def ofAbelian : ExactCategory C where
   admissibleEpi_id X := by
     rw [OfAbelian.gAdmissible_iff_epi]
     infer_instance
-  admissibleMono_stableUnderComposition _ _ _ _ _ hf hg := by
+  admissibleMono_stableUnderComposition := ⟨by
+    rintro _ _ _ f g hf hg
     rw [OfAbelian.fAdmissible_iff_mono] at hf hg ⊢
-    apply mono_comp
-  admissibleEpi_stableUnderComposition _ _ _ _ _ hf hg := by
+    apply mono_comp⟩
+  admissibleEpi_stableUnderComposition := ⟨by
+    rintro _ _ _ f g hf hg
     rw [OfAbelian.gAdmissible_iff_epi] at hf hg ⊢
-    apply epi_comp
+    apply epi_comp⟩
   admissibleMono_coquarrable X Y f _ X' g := inferInstance
   admissibleEpi_quarrable X Y f _ Y' g := inferInstance
   admissibleMono_stableUnderCobaseChange := by

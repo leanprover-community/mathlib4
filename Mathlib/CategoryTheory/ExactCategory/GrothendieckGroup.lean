@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.QuotientGroup
+
+/-!
+# The Grothendieck group of an exact category
+
+-/
 
 namespace CategoryTheory
 

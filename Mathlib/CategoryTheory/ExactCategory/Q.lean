@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.CategoryTheory.Subobject.Basic
+
+/-!
+# Quillen's Q-construction
+
+-/
 
 open CategoryTheory Category Limits
 
@@ -25,6 +35,7 @@ structure Hom (X Y : Q C) where
 
 attribute [instance] Hom.hi Hom.hj
 
+/-- Hom.mk' -/
 noncomputable def Hom.mk' (X Y : Q C) {Z : C} (j : Z ⟶ X.obj) (i : Z ⟶ Y.obj)
   [AdmissibleMono i] [AdmissibleEpi j] : Hom X Y where
   i := Subobject.mk i
@@ -47,24 +58,24 @@ lemma Hom.ext {X Y : Q C} (φ₁ φ₂ : Hom X Y) (e : (φ₁.i : C) ≅ φ₂.i
   rfl
 
 lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.obj) (i : Z ⟶ Y.obj)
-    (hi : AdmissibleMono i) (hj : AdmissibleEpi j), φ = Hom.mk' _ _ j i  := by
-  refine' ⟨_ , φ.j, φ.i.arrow, inferInstance, inferInstance, _⟩
-  refine' Hom.ext _ _ (Subobject.isoOfEq _ _ (Subobject.mk_arrow φ.i).symm) _ _
+    (_ : AdmissibleMono i) (_ : AdmissibleEpi j), φ = Hom.mk' _ _ j i  := by
+  refine ⟨_ , φ.j, φ.i.arrow, inferInstance, inferInstance, ?_⟩
+  refine Hom.ext _ _ (Subobject.isoOfEq _ _ (Subobject.mk_arrow φ.i).symm) ?_ ?_
   · dsimp
     simp
   · dsimp [mk']
     simp only [← assoc]
-    refine' (Category.id_comp φ.j).symm.trans _
+    refine (Category.id_comp φ.j).symm.trans ?_
     congr
     aesop_cat
 
+/-- Hom.ext' -/
 lemma Hom.ext' {X Y : Q C} {Z₁ Z₂ : C}
     (j₁ : Z₁ ⟶ X.obj) (i₁ : Z₁ ⟶ Y.obj) [AdmissibleMono i₁] [AdmissibleEpi j₁]
     (j₂ : Z₂ ⟶ X.obj) (i₂ : Z₂ ⟶ Y.obj) [AdmissibleMono i₂] [AdmissibleEpi j₂]
     (e : Z₁ ≅ Z₂) (comm₁ : i₁ = e.hom ≫ i₂) (comm₂ : j₁ = e.hom ≫ j₂) :
     Hom.mk' X Y j₁ i₁ = Hom.mk' X Y j₂ i₂ := by
-  refine' Hom.ext _ _ (Subobject.underlyingIso i₁ ≪≫ e ≪≫ (Subobject.underlyingIso i₂).symm)
-    _ _
+  refine Hom.ext _ _ (Subobject.underlyingIso i₁ ≪≫ e ≪≫ (Subobject.underlyingIso i₂).symm) ?_ ?_
   · dsimp [mk']
     simp only [assoc, Subobject.underlyingIso_arrow, ← comm₁,
       Subobject.underlyingIso_hom_comp_eq_mk]
@@ -75,7 +86,7 @@ noncomputable def Hom.id (X : Q C) : Hom X X :=
   Hom.mk' X X (𝟙 _) (𝟙 _)
 
 noncomputable def Hom.comp {X Y Z : Q C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z :=
-  Hom.mk' X Z (pullback.fst ≫ α.j : pullback α.i.arrow β.j ⟶ _) (pullback.snd ≫ β.i.arrow)
+  Hom.mk' X Z (pullback.fst α.i.arrow β.j ≫ α.j) (pullback.snd _ _ ≫ β.i.arrow)
 
 lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z₁₂ ⟶ X₁.obj) (i₁ : Z₁₂ ⟶ X₂.obj)
     (j₂ : Z₂₃ ⟶ X₂.obj) (i₂ : Z₂₃ ⟶ X₃.obj) [AdmissibleMono i₁] [AdmissibleMono i₂]
@@ -91,11 +102,11 @@ lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z
     let e : cospan (Subobject.arrow (mk' X₁ X₂ j₁ i₁).i) (mk' X₂ X₃ j₂ i₂).j ≅
         cospan i₁ j₂ := cospanExt (Subobject.underlyingIso i₁) (Subobject.underlyingIso i₂)
           (Iso.refl _) (by dsimp [mk'] ; simp) (by dsimp [mk'] ; simp)
-    convert IsIso.of_iso (IsLimit.conePointUniqueUpToIso
-      ((IsLimit.postcomposeHomEquiv e.symm _).symm H.isLimit) (limit.isLimit _))
+    convert (IsLimit.conePointUniqueUpToIso
+      ((IsLimit.postcomposeHomEquiv e.symm _).symm H.isLimit) (limit.isLimit _)).isIso_hom
     aesop_cat
   symm
-  refine' Hom.ext' _ _ _ _ (asIso φ) _ _
+  refine Hom.ext' _ _ _ _ (asIso φ) ?_ ?_
   all_goals dsimp [φ, mk', asIso]; simp
 
 noncomputable instance : Category (Q C) where
@@ -118,16 +129,17 @@ noncomputable instance : Category (Q C) where
     change Hom.comp (Hom.comp _ _) _ = Hom.comp _ (Hom.comp _ _)
     let Z₁₃ := pullback i₁₂ j₂₃
     let Z₂₄ := pullback i₂₃ j₃₄
-    let Z₁₄ := pullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _)
-    rw [Hom.comp_eq j₁₂ i₁₂ j₂₃ i₂₃ (pullback.fst : Z₁₃ ⟶ _) pullback.snd,
-      Hom.comp_eq j₂₃ i₂₃ j₃₄ i₃₄ (pullback.fst : Z₂₄ ⟶ _) pullback.snd,
-      Hom.comp_eq _ _ j₃₄ i₃₄ (pullback.fst : Z₁₄ ⟶ _) (pullback.snd ≫ pullback.snd),
-      Hom.comp_eq j₁₂ i₁₂ _ _ (pullback.fst ≫ pullback.fst : Z₁₄ ⟶ _) pullback.snd]
+    let Z₁₄ := pullback (pullback.snd _ _ : Z₁₃ ⟶ _) (pullback.fst _ _ : Z₂₄ ⟶ _)
+    rw [Hom.comp_eq j₁₂ i₁₂ j₂₃ i₂₃ (pullback.fst _ _ : Z₁₃ ⟶ _) (pullback.snd _ _),
+      Hom.comp_eq j₂₃ i₂₃ j₃₄ i₃₄ (pullback.fst _ _ : Z₂₄ ⟶ _) (pullback.snd _ _),
+      Hom.comp_eq _ _ j₃₄ i₃₄ (pullback.fst _ _ : Z₁₄ ⟶ _)
+        (pullback.snd _ _ ≫ pullback.snd _ _),
+      Hom.comp_eq j₁₂ i₁₂ _ _ (pullback.fst _ _ ≫ pullback.fst _ _ : Z₁₄ ⟶ _) (pullback.snd _ _ )]
     · simp only [assoc]
     · exact (IsPullback.paste_horiz_iff (IsPullback.of_hasPullback i₁₂ j₂₃) pullback.condition).2
-        (IsPullback.of_hasPullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _))
+        (IsPullback.of_hasPullback (pullback.snd _ _ : Z₁₃ ⟶ _) (pullback.fst _ _ : Z₂₄ ⟶ _))
     · exact (IsPullback.paste_vert_iff (IsPullback.of_hasPullback i₂₃ j₃₄) pullback.condition).2
-        (IsPullback.of_hasPullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _))
+        (IsPullback.of_hasPullback (pullback.snd _ _ : Z₁₃ ⟶ _) (pullback.fst _ _ : Z₂₄ ⟶ _))
     · exact (IsPullback.of_hasPullback i₂₃ j₃₄)
     · exact (IsPullback.of_hasPullback i₁₂ j₂₃)
 

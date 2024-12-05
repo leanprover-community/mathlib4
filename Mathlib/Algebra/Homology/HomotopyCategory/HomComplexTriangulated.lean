@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Opposite
-import Mathlib.Algebra.Category.GroupCat.Abelian
+import Mathlib.Algebra.Category.Grp.Abelian
 
 open CategoryTheory Category Limits Preadditive Pretriangulated.Opposite
 

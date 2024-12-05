@@ -378,6 +378,52 @@ theorem universally_mono : Monotone (universally : MorphismProperty C → Morphi
 
 end Universally
 
+variable (C)
+
+def quarrable : MorphismProperty C := fun _ Y f => ∀ ⦃Y' : C⦄ (g : Y' ⟶ Y), HasPullback f g
+
+def coquarrable : MorphismProperty C := fun X _ f => ∀ ⦃X' : C⦄ (g : X ⟶ X'), HasPushout f g
+
+variable {C}
+
+lemma quarrable.hasPullback {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback f g := hf g
+
+/-- Variant of `quarrable.hasPullback`. -/
+lemma quarrable.hasPullback' {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback g f := by
+  have : HasPullback f g := hasPullback f hf g
+  exact ⟨⟨_, (IsPullback.of_hasPullback f g).flip.isLimit'.some⟩⟩
+
+lemma coquarrable.hasPushout {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout f g := hf g
+
+/-- Variant of `coquarrable.hasPushout`. -/
+lemma coquarrable.hasPushout' {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout g f := by
+  have : HasPushout f g := hasPushout f hf g
+  exact ⟨⟨_, (IsPushout.of_hasPushout f g).flip.isColimit'.some⟩⟩
+
+lemma quarrable.op {X Y : C} (f : X ⟶ Y) (hf : quarrable C f) : coquarrable Cᵒᵖ f.op := by
+  intro _ g
+  have : HasPullback f g.unop := hf _
+  exact ⟨_, (IsPullback.of_hasPullback f g.unop).flip.op.isColimit⟩
+
+lemma quarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : quarrable Cᵒᵖ f) : coquarrable C f.unop := by
+  intro _ g
+  have : HasPullback f g.op := hf _
+  exact ⟨_, (IsPullback.of_hasPullback f g.op).flip.unop.isColimit⟩
+
+lemma coquarrable.op {X Y : C} (f : X ⟶ Y) (hf : coquarrable C f) : quarrable Cᵒᵖ f.op := by
+  intro _ g
+  have : HasPushout f g.unop := hf _
+  exact ⟨_, (IsPushout.of_hasPushout f g.unop).flip.op.isLimit⟩
+
+lemma coquarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : coquarrable Cᵒᵖ f) : quarrable C f.unop := by
+  intro _ g
+  have : HasPushout f g.op := hf _
+  exact ⟨_, (IsPushout.of_hasPushout f g.op).flip.unop.isLimit⟩
+
 end MorphismProperty
 
 end CategoryTheory
