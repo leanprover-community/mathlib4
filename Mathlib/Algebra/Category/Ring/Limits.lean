@@ -184,11 +184,6 @@ instance forget_preservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
 
 end SemiRingCat
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommSemiring.{max u v}`, to deal with unification issues. -/
-@[nolint checkUnivs]
-abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
-
 namespace CommSemiRingCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ CommSemiRingCat.{u})
@@ -291,11 +286,6 @@ instance forget_preservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :
   CommSemiRingCat.forget_preservesLimitsOfSize.{u, u}
 
 end CommSemiRingCat
-
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `RingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev RingCatMax.{u1, u2} := RingCat.{max u1 u2}
 
 namespace RingCat
 
@@ -422,11 +412,6 @@ instance forget_preservesLimits : PreservesLimits (forget RingCat.{u}) :=
   RingCat.forget_preservesLimitsOfSize.{u, u}
 
 end RingCat
-
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 namespace CommRingCat
 

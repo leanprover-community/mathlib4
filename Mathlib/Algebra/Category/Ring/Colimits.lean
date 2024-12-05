@@ -191,12 +191,12 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 
 /-- The ring homomorphism from a given ring in the diagram to the colimit
 ring. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
-  toFun := coconeFun F j
-  map_one' := by apply Quot.sound; apply Relation.one
-  map_mul' := by intros; apply Quot.sound; apply Relation.mul
-  map_zero' := by apply Quot.sound; apply Relation.zero
-  map_add' := by intros; apply Quot.sound; apply Relation.add
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom
+  { toFun := coconeFun F j
+    map_one' := by apply Quot.sound; apply Relation.one
+    map_mul' := by intros; apply Quot.sound; apply Relation.mul
+    map_zero' := by apply Quot.sound; apply Relation.zero
+    map_add' := by intros; apply Quot.sound; apply Relation.add }
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -235,7 +235,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | refl => rfl
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
-    | map j j' f x => exact RingHom.congr_fun (s.ι.naturality f) x
+    | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
     | zero j => simp
     | one j => simp
     | neg j x => simp
@@ -261,22 +261,21 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
 
 /-- The ring homomorphism from the colimit ring to the cone point of any other
 cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
-  toFun := descFun F s
-  map_one' := rfl
-  map_zero' := rfl
-  map_add' x y := by
-    refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun]
-    rw [← quot_add]
-    rfl
-  map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
+  { toFun := descFun F s
+    map_one' := rfl
+    map_zero' := rfl
+    map_add' := fun x y ↦ by
+      refine Quot.induction_on₂ x y fun a b => ?_
+      dsimp [descFun]
+      rw [← quot_add]
+      rfl
+    map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
-  uniq s m w := RingHom.ext fun x => by
-    change (colimitCocone F).pt →+* s.pt at m
+  uniq s m w := hom_ext <| RingHom.ext fun x => by
     refine Quot.inductionOn x ?_
     intro x
     induction x with
@@ -494,12 +493,12 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 
 /-- The ring homomorphism from a given commutative ring in the diagram to the colimit commutative
 ring. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
-  toFun := coconeFun F j
-  map_one' := by apply Quot.sound; apply Relation.one
-  map_mul' := by intros; apply Quot.sound; apply Relation.mul
-  map_zero' := by apply Quot.sound; apply Relation.zero
-  map_add' := by intros; apply Quot.sound; apply Relation.add
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom <|
+  { toFun := coconeFun F j
+    map_one' := by apply Quot.sound; apply Relation.one
+    map_mul' := by intros; apply Quot.sound; apply Relation.mul
+    map_zero' := by apply Quot.sound; apply Relation.zero
+    map_add' := by intros; apply Quot.sound; apply Relation.add }
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -538,7 +537,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | refl => rfl
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
-    | map j j' f x => exact RingHom.congr_fun (s.ι.naturality f) x
+    | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
     | zero j => simp
     | one j => simp
     | neg j x => simp
@@ -565,22 +564,21 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
 
 /-- The ring homomorphism from the colimit commutative ring to the cone point of any other
 cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
-  toFun := descFun F s
-  map_one' := rfl
-  map_zero' := rfl
-  map_add' x y := by
-    refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun]
-    rw [← quot_add]
-    rfl
-  map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
+  { toFun := descFun F s
+    map_one' := rfl
+    map_zero' := rfl
+    map_add' := fun x y ↦ by
+      refine Quot.induction_on₂ x y fun a b => ?_
+      dsimp [descFun]
+      rw [← quot_add]
+      rfl
+    map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
-  desc s := descMorphism F s
-  uniq s m w := RingHom.ext fun x => by
-    change (colimitCocone F).pt →+* s.pt at m
+  desc := fun s ↦ descMorphism F s
+  uniq := fun s m w ↦ hom_ext <| RingHom.ext fun x => by
     refine Quot.inductionOn x ?_
     intro x
     induction x with
