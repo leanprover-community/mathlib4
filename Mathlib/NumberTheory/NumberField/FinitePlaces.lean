@@ -198,10 +198,8 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by
   rw [← mk_eq_iff, mk_maximalIdeal]
 
-lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective := by
-  intro w₁ w₂ h
-  rw [← mk_maximalIdeal w₁, ← mk_maximalIdeal w₂]
-  exact congrArg mk h
+lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective :=
+  Function.HasLeftInverse.injective ⟨mk, mk_maximalIdeal⟩
 
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   maximalIdeal_injective.eq_iff
