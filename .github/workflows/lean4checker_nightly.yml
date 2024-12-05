@@ -14,17 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Fetch latest tags
-        run: |
-          git fetch --tags
-          # Find the most recent tag matching the pattern
-          LATEST_TAG=$(git tag | grep -E '^nightly-testing-[0-9]{4}-[0-9]{2}-[0-9]{2}$' | sort -r | head -n 1)
-          echo "LATEST_TAG=\"${LATEST_TAG}\"" >> "$GITHUB_ENV"
-
-      - name: Checkout latest tag branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.LATEST_TAG }}
 
       - name: Cleanup
         run: |
@@ -43,6 +32,18 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      - name: Fetch latest tags
+        run: |
+          git fetch --tags
+          # Find the most recent tag matching the pattern
+          LATEST_TAG=$(git tag | grep -E '^nightly-testing-[0-9]{4}-[0-9]{2}-[0-9]{2}$' | sort -r | head -n 1)
+          echo "LATEST_TAG=\"${LATEST_TAG}\"" >> "$GITHUB_ENV"
+
+      - name: Checkout latest tag branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.LATEST_TAG }}
+
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
           if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
@@ -58,12 +59,6 @@ jobs:
       - name: Run lake exe cache get
         run: |
           lake exe cache get
-
-      - name: Prune ProofWidgets .lake
-        run: |
-          rm -rf .lake/packages/proofwidgets/.lake/build/lib
-          rm -rf .lake/packages/proofwidgets/.lake/build/ir
-          lake build ProofWidgets
 
       - name: Check environments using lean4checker
         id: lean4checker
