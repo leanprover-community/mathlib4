@@ -1,9 +1,20 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 
+/-!
+# Dévissage
+
+-/
+
 open CategoryTheory Limits
 
+/-- `asIso'`. -/
 noncomputable abbrev CategoryTheory.asIso' {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y}
   (_ : IsIso f) : X ≅ Y := asIso f
 
@@ -75,15 +86,15 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
         exact K.isZero_of_isStrictlyGE a _ hn
     apply S.mem_of_isZero
     rw [IsZero.iff_id_eq_zero, ← CategoryTheory.Functor.map_id, hK', Functor.map_zero]
-  · replace h₀ := Int.eq_add_ofNat_of_le h₀
+  · replace h₀ := Int.le.dest h₀
     obtain ⟨n, hn⟩ := h₀
     revert K hn a b
     induction n with
     | zero =>
         intro K a b _ _ hK ha
-        obtain rfl : a = b := by simpa using ha.symm
-        exact mem_of_iso S.P (((singleFunctors C).shiftIso (-a) a 0 (neg_add_self a)).app _ ≪≫
-          (singleFunctorPostCompQuotientIso C a).app _ ≪≫
+        obtain rfl : a = b := by simpa using ha
+        exact mem_of_iso S.P (((singleFunctors C).shiftIso (-a) a 0 (neg_add_cancel a)).app _ ≪≫
+          (singleFunctorPostcompQuotientIso C a).app _ ≪≫
           ((quotient _ _).mapIso (K.isoSingle a)).symm) (S.shift _ (-a) (hK a (by rfl) (by rfl)))
     | succ n h =>
         intro K a b _ _ hK hab
@@ -91,21 +102,21 @@ lemma mem_subcategory_of_strictly_bounded (K : CochainComplex C ℤ) (a b : ℤ)
           (K.shortComplexStupidTruncSplitting
             (ComplexShape.Embedding.embeddingUpInt_areComplementary (a + n) b (by omega))))
         · dsimp
-          refine @h _ (a + 1) b (CochainComplex.isStrictlyGE_of_GE _ _ b (by omega))
+          refine @h _ (a + 1) b (CochainComplex.isStrictlyGE_of_ge _ _ b (by omega))
             inferInstance (fun m h₁ h₂ => ?_) (by omega)
           dsimp
           obtain h₃ | rfl := h₂.lt_or_eq
           · apply S.mem_of_isZero
             apply Functor.map_isZero
             exact CochainComplex.isZero_of_isStrictlyGE _ b _ h₃
-          · obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le h₂
-            refine' mem_of_iso _ ((singleFunctor C 0).mapIso
+          · obtain ⟨k, hk⟩ := Int.le.dest h₂
+            exact mem_of_iso _ ((singleFunctor C 0).mapIso
               ((asIso' (K.isIso_ιStupidTrunc_f (ComplexShape.embeddingUpIntGE m) (i := k)
                   (by dsimp; omega))).symm))
                 (hK m (by omega) h₂)
         · dsimp
-          refine' @h _ a (a + n) inferInstance inferInstance (fun m h₁ h₂ => ?_) rfl
-          obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le h₂
+          refine @h _ a (a + n) inferInstance inferInstance (fun m h₁ h₂ => ?_) rfl
+          obtain ⟨k, hk⟩ := Int.le.dest h₂
           exact mem_of_iso _ ((singleFunctor C 0).mapIso
             (asIso' (K.isIso_πStupidTrunc_f (ComplexShape.embeddingUpIntLE (a + n)) (i := k)
             (by dsimp; omega)))) (hK m h₁ (by omega))

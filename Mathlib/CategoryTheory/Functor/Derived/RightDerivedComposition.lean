@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+
+/-!
+# Comparison morphism for the composition of right derived functors
+
+-/
 
 namespace CategoryTheory
 
@@ -13,7 +23,7 @@ variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   {RF₁₂ : D₁ ⥤ D₂} {RF₂₃ : D₂ ⥤ D₃} {RF₁₃ : D₁ ⥤ D₃}
-  (α₁₂ : F₁₂ ⋙ L₂ ⟶ L₁ ⋙ RF₁₂) [RF₁₂.IsRightDerivedFunctor α₁₂ W₁]
+  (α₁₂ : F₁₂ ⋙ L₂ ⟶ L₁ ⋙ RF₁₂)
   (α₂₃ : F₂₃ ⋙ L₃ ⟶ L₂ ⋙ RF₂₃) [RF₂₃.IsRightDerivedFunctor α₂₃ W₂]
   (α₁₃ : F₁₃ ⋙ L₃ ⟶ L₁ ⋙ RF₁₃) [RF₁₃.IsRightDerivedFunctor α₁₃ W₁]
 

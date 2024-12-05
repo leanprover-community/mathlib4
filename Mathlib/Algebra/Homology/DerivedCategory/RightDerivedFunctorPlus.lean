@@ -1,8 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
+/-!
+# R^+F
+
+-/
 open CategoryTheory Category Limits
 
 def HomotopyCategory.Plus.mk {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
@@ -18,12 +27,12 @@ open ComplexShape
 
 lemma isIso_πStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : i ≤ n) :
     IsIso ((K.πStupidTrunc (embeddingUpIntLE n)).f i) := by
-  have ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hi
+  have ⟨k, hk⟩ := Int.le.dest hi
   exact HomologicalComplex.isIso_πStupidTrunc_f K _ (i := k) (by dsimp; omega)
 
 lemma isIso_ιStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : n ≤ i) :
     IsIso ((K.ιStupidTrunc (embeddingUpIntGE n)).f i) := by
-  have ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hi
+  have ⟨k, hk⟩ := Int.le.dest hi
   exact HomologicalComplex.isIso_ιStupidTrunc_f K _ (i := k) (by dsimp; omega)
 
 end CochainComplex
@@ -48,8 +57,8 @@ noncomputable def rightDerivedFunctorPlus :
 noncomputable def rightDerivedFunctorPlusUnit :
     F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh ⟶
       DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus :=
-  (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerivedUnit DerivedCategory.Plus.Qh
-    (HomotopyCategory.Plus.quasiIso C)
+  (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerivedUnit
+    DerivedCategory.Plus.Qh (HomotopyCategory.Plus.quasiIso C)
 
 instance :
     F.rightDerivedFunctorPlus.IsRightDerivedFunctor
@@ -86,7 +95,7 @@ instance : F.rightDerivedFunctorPlus.RightTExact t t where
         Nonempty (X ≅ DerivedCategory.Plus.Qh.obj ⟨⟨K⟩, n, hK⟩) := by
       obtain ⟨Y, _, ⟨e⟩⟩ := DerivedCategory.exists_iso_Q_obj_of_isGE
         (DerivedCategory.Plus.ι.obj X) n
-      refine' ⟨Y, inferInstance, ⟨DerivedCategory.Plus.ι.preimageIso e⟩⟩
+      exact ⟨Y, inferInstance, ⟨DerivedCategory.Plus.ι.preimageIso e⟩⟩
     let r := Injectives.rightResolution_localizerMorphism K n
     have e' : (DerivedCategory.Plus.ι.obj (DerivedCategory.Plus.Qh.obj
         ((mapHomotopyCategoryPlus F).obj
@@ -118,7 +127,8 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
         ((HomotopyCategory.Plus.singleFunctor C 0).obj (K.X i)))) :
     IsIso (F.rightDerivedFunctorPlusUnit.app
       ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, a, ha⟩) := by
-  let S := (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).map (HomotopyCategory.Plus.ι C)
+  let S := (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).map
+    (HomotopyCategory.Plus.ι C)
   suffices S.P ((HomotopyCategory.quotient _ _).obj K) by
     change (Triangulated.Subcategory.ofNatTrans (F.rightDerivedFunctorPlusUnit)).P _
     rw [← Triangulated.Subcategory.mem_map_iff _ (HomotopyCategory.Plus.ι C)]
@@ -162,7 +172,7 @@ lemma isIso_rightDerivedFunctorPlusUnit_app
       (Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) ?_)
     dsimp
-    simp only [image_preimage, assoc, Iso.inv_hom_id_app, comp_obj, map_id, comp_id, id_comp]
+    simp only [map_preimage, assoc, Iso.inv_hom_id_app, comp_obj, map_id, comp_id, id_comp]
     apply comp_id
   have : IsIso (F.rightDerivedFunctorPlusUnit.app L') := by
     apply isIso_rightDerivedFunctorPlusUnit_app_of_bounded _ _ a (n + 1)
@@ -198,12 +208,13 @@ lemma isIso_rightDerivedFunctorPlusUnit_app
       simp only [← Functor.map_comp]
       congr 1
       exact F.rightDerivedFunctorPlusUnit.naturality T'.mor₂)
-  apply ((MorphismProperty.RespectsIso.isomorphisms D).arrow_mk_iso_iff e'').2
+  apply ((MorphismProperty.isomorphisms D).arrow_mk_iso_iff e'').2
   change IsIso _
   infer_instance
 
 end
 
+/-- rightDerived' -/
 noncomputable def rightDerived' (n : ℕ) : C ⥤ D :=
   DerivedCategory.Plus.singleFunctor C 0 ⋙ F.rightDerivedFunctorPlus ⋙
     DerivedCategory.Plus.homologyFunctor D n
@@ -222,6 +233,7 @@ noncomputable def rightDerivedδ :
   (DerivedCategory.Plus.homologyFunctor D 0).homologySequenceδ
     (F.rightDerivedFunctorPlus.mapTriangle.obj (t.heartShortExactTriangle _ hS)) n₀ n₁ (by omega)
 
+include hS in
 lemma rightDerived_exact₂ :
     (ShortComplex.mk ((F.rightDerived' n₀).map S.f)
       ((F.rightDerived' n₀).map S.g)
@@ -283,6 +295,7 @@ lemma isIso_rightDerivedFunctorPlusCompNatTrans_app (K : HomotopyCategory.Plus C
     DerivedCategory.Plus.Qh (HomotopyCategory.Plus.quasiIso C)
     F.rightDerivedFunctorPlusUnit G.rightDerivedFunctorPlusUnit H.rightDerivedFunctorPlusUnit K
 
+/-- isIso_rightDerivedFunctorPlusCompNatTrans' -/
 lemma isIso_rightDerivedFunctorPlusCompNatTrans'
     (h : ∀ (K : HomotopyCategory.Plus (Injectives C)),
       IsIso (G.rightDerivedFunctorPlusUnit.app
@@ -302,8 +315,8 @@ lemma isIso_rightDerivedFunctorPlusCompNatTrans'
   obtain ⟨M, ⟨e'⟩⟩ : ∃ (M : HomotopyCategory.Plus (Injectives C)),
     Nonempty (((Injectives.ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).obj M ≅ K) :=
       ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
-  refine' ⟨((Injectives.ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).obj M,
-    e'.symm, _⟩
+  refine ⟨((Injectives.ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).obj M,
+    e'.symm, ?_⟩
   apply isIso_rightDerivedFunctorPlusCompNatTrans_app
   · infer_instance
   · apply h
