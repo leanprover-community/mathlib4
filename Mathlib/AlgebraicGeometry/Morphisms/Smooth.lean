@@ -166,7 +166,7 @@ instance : MorphismProperty.IsMultiplicative (@IsSmoothOfRelativeDimension 0) wh
   id_mem _ := inferInstance
   comp_mem _ _ _ _ := inferInstance
 
-/-- Smooth morphisms are of finite presentation. -/
+/-- Smooth morphisms are locally of finite presentation. -/
 instance (priority := 100) [hf : IsSmooth f] : LocallyOfFinitePresentation f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFinitePresentation]
   rw [HasRingHomProperty.eq_affineLocally @IsSmooth] at hf
