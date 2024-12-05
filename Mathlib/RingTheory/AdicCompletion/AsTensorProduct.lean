@@ -257,9 +257,9 @@ include hf
 
 private lemma firstRow_exact : (firstRow I M f).Exact where
   zero k _ := match k with
-    | 0 => (tens_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => LinearMap.zero_comp _
-    | 2 => LinearMap.zero_comp 0
+    | 0 => ModuleCat.hom_ext (tens_exact I M f hf).linearMap_comp_eq_zero
+    | 1 => ModuleCat.hom_ext (LinearMap.zero_comp _)
+    | 2 => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -269,9 +269,9 @@ private lemma firstRow_exact : (firstRow I M f).Exact where
 
 private lemma secondRow_exact [Fintype ι] [IsNoetherianRing R] : (secondRow I M f).Exact where
   zero k _ := match k with
-    | 0 => (adic_exact I M f hf).linearMap_comp_eq_zero
-    | 1 => LinearMap.zero_comp (map I f)
-    | 2 => LinearMap.zero_comp 0
+    | 0 => ModuleCat.hom_ext (adic_exact I M f hf).linearMap_comp_eq_zero
+    | 1 => ModuleCat.hom_ext (LinearMap.zero_comp (map I f))
+    | 2 => ModuleCat.hom_ext (LinearMap.zero_comp 0)
   exact k _ := by
     rw [ShortComplex.moduleCat_exact_iff]
     match k with
@@ -287,8 +287,8 @@ private def firstRowToSecondRow : firstRow I M f ⟶ secondRow I M f :=
     (ModuleCat.ofHom (ofTensorProduct I M))
     (ModuleCat.ofHom 0)
     (ModuleCat.ofHom 0)
-    (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm
-    (ofTensorProduct_naturality I f).symm
+    (ModuleCat.hom_ext (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm)
+    (ModuleCat.hom_ext (ofTensorProduct_naturality I f).symm)
     rfl
     rfl
 
