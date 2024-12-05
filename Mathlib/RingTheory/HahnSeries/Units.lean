@@ -361,14 +361,14 @@ theorem finsum_antidiagonal_prod [AddCommMonoid α] [HasAntidiagonal α] (f : α
 
 theorem power_series_family_supp_subset (hx : 0 < x.orderTop) (a b : PowerSeries R) (g : Γ) :
     ((PowerSeriesFamily hx (a * b)).coeff g).support ⊆
-    (((PowerSeriesFamily hx a).FamilyMul (PowerSeriesFamily hx b)).coeff g).support.image
+    (((PowerSeriesFamily hx a).mul (PowerSeriesFamily hx b)).coeff g).support.image
       fun i => i.1 + i.2 := by
-  simp_all only [coeff_support, PowerSeriesFamily_toFun, smul_coeff, smul_eq_mul, FamilyMul_toFun,
-    Algebra.mul_smul_comm, Algebra.smul_mul_assoc, Set.Finite.toFinset_subset, coe_image,
+  simp_all only [coeff_support, PowerSeriesFamily_toFun, HahnSeries.smul_coeff, smul_eq_mul,
+    mul_toFun, Algebra.mul_smul_comm, Algebra.smul_mul_assoc, Set.Finite.toFinset_subset, coe_image,
     Set.Finite.coe_toFinset, support_subset_iff, ne_eq, Set.mem_image, Function.mem_support,
     Prod.exists]
   intro n hn
-  rw [PowerSeries.coeff_mul, ← ne_eq, sum_mul] at hn
+  simp_rw [PowerSeries.coeff_mul, ← ne_eq, sum_mul] at hn
   have he : ∃p ∈ antidiagonal n, ¬((PowerSeries.coeff R p.1) a *
       (PowerSeries.coeff R p.2) b * (x ^ n).coeff g) = 0 :=
     exists_ne_zero_of_sum_ne_zero hn
@@ -379,24 +379,24 @@ theorem power_series_family_supp_subset (hx : 0 < x.orderTop) (a b : PowerSeries
 
 theorem power_series_family_prod_eq_family_mul (hx : 0 < x.orderTop) (a b : PowerSeries R) :
     (PowerSeriesFamily hx (a * b)).hsum =
-    ((PowerSeriesFamily hx a).FamilyMul (PowerSeriesFamily hx b)).hsum := by
+    ((PowerSeriesFamily hx a).mul (PowerSeriesFamily hx b)).hsum := by
   ext g
   simp only [PowerSeriesFamily_toFun, PowerSeries.coeff_mul, Finset.sum_smul, ← Finset.sum_product,
-    hsum_coeff_eq_sum, FamilyMul_toFun]
+    hsum_coeff_eq_sum, mul_toFun]
   rw [sum_subset (power_series_family_supp_subset hx a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
     · intro ij _ kl _
       simp_all
     · intro ij hij
-      simp_all only [coeff_support, FamilyMul_toFun, PowerSeriesFamily_toFun, Algebra.mul_smul_comm,
+      simp_all only [coeff_support, mul_toFun, PowerSeriesFamily_toFun, Algebra.mul_smul_comm,
         Algebra.smul_mul_assoc, smul_coeff, smul_eq_mul, Set.Finite.coe_toFinset,
         Function.mem_support, ne_eq, coe_sigma, coe_image, Set.mem_sigma_iff, Set.mem_image,
         Prod.exists, mem_coe, mem_antidiagonal, and_true]
       use ij.1, ij.2
     · intro i hi his
-      simp_all only [coeff_support, FamilyMul_toFun, PowerSeriesFamily_toFun, Algebra.mul_smul_comm,
-        Algebra.smul_mul_assoc, smul_coeff, smul_eq_mul, mem_sigma, mem_image,
+      simp_all only [coeff_support, mul_toFun, PowerSeriesFamily_toFun, Algebra.mul_smul_comm,
+        Algebra.smul_mul_assoc, HahnSeries.smul_coeff, smul_eq_mul, mem_sigma, mem_image,
         Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Prod.exists, mem_antidiagonal,
         Set.Finite.coe_toFinset, Set.mem_image, not_exists, not_and]
       have hisc : ∀ j k : ℕ, ⟨j + k, (j, k)⟩ = i → (PowerSeries.coeff R k) b *
@@ -411,9 +411,10 @@ theorem power_series_family_prod_eq_family_mul (hx : 0 < x.orderTop) (a b : Powe
       rw [smul_mul_smul_comm, pow_add]
   · intro i hi his
     classical
-    simp_all only [coeff_support, FamilyMul_toFun, PowerSeriesFamily_toFun, Algebra.mul_smul_comm,
-      Algebra.smul_mul_assoc, smul_coeff, smul_eq_mul, mem_image, Set.Finite.mem_toFinset,
-      Function.mem_support, ne_eq, Prod.exists, Decidable.not_not, HahnSeries.sum_coeff]
+    simp_all only [coeff_support, mul_toFun, PowerSeriesFamily_toFun, Algebra.mul_smul_comm,
+      Algebra.smul_mul_assoc, HahnSeries.smul_coeff, smul_eq_mul, mem_image,
+      Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Prod.exists, Decidable.not_not,
+      HahnSeries.sum_coeff]
     rw [PowerSeries.coeff_mul, sum_mul] at his
     exact his
 
@@ -525,35 +526,22 @@ open Classical in
 theorem mvPowerSeriesFamily_supp_subset {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i, 0 < (y i).orderTop) (a b : MvPowerSeries σ R) (g : Γ) :
     ((mvPowerSeriesFamily y hy (a * b)).coeff g).support ⊆
-    (((mvPowerSeriesFamily y hy a).FamilyMul (mvPowerSeriesFamily y hy b)).coeff g).support.image
+    (((mvPowerSeriesFamily y hy a).mul (mvPowerSeriesFamily y hy b)).coeff g).support.image
       fun i => i.1 + i.2 := by
-  simp_all only [coeff_support, mvPowerSeriesFamily_toFun, smul_coeff, smul_eq_mul, FamilyMul_toFun,
-    Algebra.mul_smul_comm, Algebra.smul_mul_assoc, Set.Finite.toFinset_subset, coe_image,
-    Set.Finite.coe_toFinset, support_subset_iff, ne_eq, Set.mem_image, Function.mem_support,
-    Prod.exists]
+  simp_all only [coeff_support, mvPowerSeriesFamily_toFun, mvPowers_apply, HahnSeries.smul_coeff,
+    smul_eq_mul, mul_toFun, Algebra.mul_smul_comm, Algebra.smul_mul_assoc,
+    Set.Finite.toFinset_subset, coe_image, Set.Finite.coe_toFinset, support_subset_iff, ne_eq,
+    Set.mem_image, Function.mem_support, Prod.exists]
   intro n hn
   rw [MvPowerSeries.coeff_mul, ← ne_eq, sum_mul] at hn
-  have he : ∃p ∈ antidiagonal n, ¬((MvPowerSeries.coeff R p.1) a *
-      (MvPowerSeries.coeff R p.2) b * ((mvPowers y hy) n).coeff g) = 0 :=
+  have he : ∃p ∈ antidiagonal n, ¬(MvPowerSeries.coeff R p.1) a *
+      (MvPowerSeries.coeff R p.2) b * (∏ i : σ, y i ^ n i).coeff g = 0 :=
     exists_ne_zero_of_sum_ne_zero hn
   use he.choose.1, he.choose.2
   refine ⟨?_, mem_antidiagonal.mp he.choose_spec.1⟩
   rw [← mul_assoc, mul_comm ((MvPowerSeries.coeff R he.choose.2) b)]
-  simp_rw [mvPowers_apply, ← prod_mul_distrib, ← pow_add]
-  convert he.choose_spec.2
-  · exact Eq.symm (mvPowers_apply y hy n)
-  · exact Eq.symm (mvPowers_apply y hy n)
-  · simp [mvPowers, equiv_map_on_fintype_finsupp]
-    congr 1
-    funext i
-    have h : he.choose.1 i + he.choose.2 i = n i := by
-      rw [← Finsupp.add_apply, mem_antidiagonal.mp he.choose_spec.1]
-    congr
-    convert h
-    · exact Iff.symm mem_antidiagonal
-    · exact Eq.symm (mvPowers_apply y hy n)
-    · exact Iff.symm mem_antidiagonal
-    · exact Eq.symm (mvPowers_apply y hy n)
+  simp_rw [← prod_mul_distrib, ← pow_add, ← Finsupp.add_apply, mem_antidiagonal.mp he.choose_spec.1]
+  exact he.choose_spec.2
 
 theorem prod_mul {σ M : Type*} [Fintype σ] [CommMonoid M] (i : (σ →₀ ℕ) × (σ →₀ ℕ)) (y : σ → M) :
     (∏ i_1 : σ, y i_1 ^ i.1 i_1) * ∏ i_1 : σ, y i_1 ^ i.2 i_1 = ∏ x : σ, y x ^ (i.1 + i.2) x := by
@@ -564,26 +552,26 @@ theorem prod_mul {σ M : Type*} [Fintype σ] [CommMonoid M] (i : (σ →₀ ℕ)
 theorem mvPowerSeries_family_prod_eq_family_mul {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i, 0 < (y i).orderTop) (a b : MvPowerSeries σ R) :
     (mvPowerSeriesFamily y hy (a * b)).hsum =
-    ((mvPowerSeriesFamily y hy a).FamilyMul (mvPowerSeriesFamily y hy b)).hsum := by
+    ((mvPowerSeriesFamily y hy a).mul (mvPowerSeriesFamily y hy b)).hsum := by
   ext g
   classical
   simp only [mvPowerSeriesFamily_toFun, MvPowerSeries.coeff_mul, Finset.sum_smul,
-    ← Finset.sum_product, hsum_coeff_eq_sum, FamilyMul_toFun, mvPowers_apply]
+    ← Finset.sum_product, hsum_coeff_eq_sum, mul_toFun, mvPowers_apply]
   rw [sum_subset (mvPowerSeriesFamily_supp_subset y hy a b g)]
   · rw [← HahnSeries.sum_coeff, sum_sigma', sum_coeff]
     refine (Finset.sum_of_injOn (fun x => ⟨x.1 + x.2, x⟩) ?_ ?_ ?_ ?_).symm
     · intro ij _ kl _
       simp_all
     · intro ij hij
-      simp_all only [coeff_support, FamilyMul_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
+      simp_all only [coeff_support, mul_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
         Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_coeff, smul_eq_mul,
         Set.Finite.coe_toFinset, Function.mem_support, ne_eq, coe_sigma, coe_image,
         Set.mem_sigma_iff, Set.mem_image, Prod.exists, mem_coe, mem_antidiagonal, and_true]
       use ij.1, ij.2
     · intro i hi his
-      simp_all only [coeff_support, FamilyMul_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
-        Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_coeff, smul_eq_mul, mem_sigma,
-        mem_image, Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Prod.exists,
+      simp_all only [coeff_support, mul_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
+        Algebra.mul_smul_comm, Algebra.smul_mul_assoc, HahnSeries.smul_coeff, smul_eq_mul,
+        mem_sigma, mem_image, Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Prod.exists,
         mem_antidiagonal, Set.Finite.coe_toFinset, Set.mem_image, not_exists, not_and]
       have hisc : ∀ j k : σ →₀ ℕ, ⟨j + k, (j, k)⟩ = i → (MvPowerSeries.coeff R k) b *
           ((MvPowerSeries.coeff R j) a * ((∏ p, y p ^ j p) * (∏ q, y q ^ k q)).coeff g) = 0 := by
@@ -603,8 +591,8 @@ theorem mvPowerSeries_family_prod_eq_family_mul {σ : Type*} [Fintype σ] (y : �
       congr 2
       exact prod_mul i y
   · intro i hi his
-    simp_all only [coeff_support, FamilyMul_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
-      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_coeff, smul_eq_mul, mem_image,
+    simp_all only [coeff_support, mul_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, HahnSeries.smul_coeff, smul_eq_mul, mem_image,
       Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Prod.exists, Decidable.not_not,
       HahnSeries.sum_coeff]
     rw [MvPowerSeries.coeff_mul, sum_mul] at his
@@ -637,17 +625,17 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     rw [finsum_eq_single (fun i => (if i = 0 then x ^ i else 0).coeff g) (0 : ℕ)
       (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
   map_mul' a b := by
-    simp only [← hsum_family_mul, power_series_family_prod_eq_family_mul]
+    simp only [← hsum_mul, power_series_family_prod_eq_family_mul]
   map_zero' := by
     simp only [hsum, PowerSeriesFamily_toFun, map_zero, zero_smul, zero_coeff, finsum_zero]
     exact rfl
   map_add' a b := by
     simp only [powerSeriesFamilyAdd, hsum_add]
   commutes' r := by
-    simp only [PowerSeries.algebraMap_apply, algebraMap_apply, Algebra.id.map_eq_id,
-      RingHom.id_apply, C_apply]
+    simp only [algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply]
     ext g
-    simp only [hsum_coeff, PowerSeriesFamily_toFun, smul_coeff, smul_eq_mul, PowerSeries.coeff_C]
+    simp only [hsum_coeff, PowerSeriesFamily_toFun, SummableFamily.smul_coeff, smul_eq_mul,
+      PowerSeries.coeff_C]
     rw [finsum_eq_single _ 0 fun n hn => by simp_all]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
@@ -671,7 +659,8 @@ theorem heval_coeff_zero (f : PowerSeries R) :
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn
-    simp_all only [ne_eq, coeff_toFun, PowerSeriesFamily_toFun, smul_coeff, smul_eq_mul]
+    simp_all only [ne_eq, coeff_toFun, PowerSeriesFamily_toFun, SummableFamily.smul_coeff,
+      smul_eq_mul]
     exact mul_eq_zero_of_right ((PowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop
       (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr hx) orderTop_nsmul_le_orderTop_pow))
 
@@ -700,14 +689,14 @@ def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     rw [if_true]
     rw [Fintype.prod_eq_one (fun i_1 ↦ y i_1 ^ (0 : σ →₀ ℕ) i_1) (congrFun rfl)]
   map_mul' a b := by
-    simp only [← hsum_family_mul]
+    simp only [← hsum_mul]
     exact mvPowerSeries_family_prod_eq_family_mul y hy a b
   map_zero' := by
     simp only [hsum, mvPowerSeriesFamily_toFun, map_zero, mvPowers_apply, zero_smul, zero_coeff,
       finsum_zero, mk_eq_zero, Pi.zero_def]
   map_add' a b := by
     ext g
-    simp only [hsum_coeff, map_add, mvPowers_apply, smul_coeff,
+    simp only [hsum_coeff, map_add, mvPowers_apply, SummableFamily.smul_coeff,
       smul_eq_mul, add_mul, add_coeff', Pi.add_apply]
     rw [← finsum_add_distrib (finite_co_support (mvPowerSeriesFamily y hy a) g)
       (finite_co_support (mvPowerSeriesFamily y hy b) g)]
@@ -717,7 +706,8 @@ def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
       algebraMap_apply, C_apply]
     ext g
     classical
-    simp only [hsum_coeff, mvPowerSeriesFamily_toFun, mvPowers_apply, smul_coeff, smul_eq_mul]
+    simp only [hsum_coeff, mvPowerSeriesFamily_toFun, mvPowers_apply, SummableFamily.smul_coeff,
+      smul_eq_mul]
     rw [finsum_eq_single _ 0 (fun s hs => by simp [hs, MvPowerSeries.coeff_C])]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one']
 
@@ -741,8 +731,8 @@ theorem heval_coeff_zero (f : MvPowerSeries σ R) :
     ← MvPowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn
-    simp_all only [ne_eq, coeff_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply, smul_coeff,
-      smul_eq_mul]
+    simp_all only [ne_eq, coeff_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply,
+      SummableFamily.smul_coeff, smul_eq_mul]
     refine mul_eq_zero_of_right ((MvPowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop ?_)
     refine lt_of_lt_of_le ?_ (sum_orderTop_le_orderTop_prod _)
     by_cases h : ∑ i, (y i ^ n i).orderTop = ⊤
