@@ -390,7 +390,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
         for currMVar1 in mvs1 do
           let lctx1 := (ctx1.decls.findD currMVar1 default).lctx
           let locsAfter := d.toFMVarId currMVar1 lctx1
-          stains := stains.append (locsAfter.map (fun l ↦ (l, (d, s))))
+          stains := stains ++ locsAfter.map (fun l ↦ (l, (d, s)))
       else
         let stained_in_syntax := if usesGoal? skind then (toStained s).insert d else toStained s
         if !flexible.contains skind then
