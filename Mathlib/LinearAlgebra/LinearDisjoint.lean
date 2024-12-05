@@ -161,9 +161,13 @@ theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) 
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 @[nontriviality]
-theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := by
+theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
   haveI : Subsingleton S := Module.subsingleton R S
-  exact ⟨Function.injective_of_subsingleton _⟩
+  ⟨Function.injective_of_subsingleton _⟩
+
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : M.LinearDisjoint N :=
+  ⟨Function.injective_of_subsingleton _⟩
 
 /-- Linear disjointness is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :

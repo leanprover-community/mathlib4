@@ -62,11 +62,17 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
   then `A` and `B` are linearly disjoint.
 
+The following results are related to the equivalent characterizations in
+<https://mathoverflow.net/questions/8324>.
+
 - `Subalgebra.LinearDisjoint.isDomain_of_injective`,
   `Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective`:
   under some flatness and injectivity conditions, if `A` and `B` are `R`-algebras, then `A ⊗[R] B`
   is a domain if and only if there exists a field such that `A` and `B` inject into it and their
-  images are linearly disjoint. See also <https://mathoverflow.net/questions/8324>.
+  images are linearly disjoint.
+
+- `Subalgebra.LinearDisjoint.of_isField`:
+  if `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint.
 
 ### Other main results
 
@@ -142,6 +148,10 @@ variable {A B}
 @[nontriviality]
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : A.LinearDisjoint B :=
   Submodule.LinearDisjoint.of_subsingleton
+
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : A.LinearDisjoint B :=
+  Submodule.LinearDisjoint.of_subsingleton_top
 
 /-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
@@ -451,24 +461,6 @@ theorem isDomain_of_injective [IsDomain S] {A B : Type*} [CommRing A] [CommRing 
   (Algebra.TensorProduct.congr
     (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toMulEquiv.isDomain
 
--- TODO: move to suitable place
-theorem _root_.Algebra.TensorProduct.includeLeft_injective
-    {A : Type v} [CommRing A] {B : Type w} [CommRing B] [Algebra R A] [Algebra R B]
-    [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
-    Function.Injective (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) := by
-  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
-    |>.comp (TensorProduct.rid R A).symm.injective
-  ext; simp
-
--- TODO: move to suitable place
-theorem _root_.Algebra.TensorProduct.includeRight_injective
-    {A : Type v} [CommRing A] {B : Type w} [CommRing B] [Algebra R A] [Algebra R B]
-    [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
-    Function.Injective (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B) := by
-  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
-    |>.comp (TensorProduct.lid R B).symm.injective
-  ext; simp
-
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that the algebra maps are injective, then
 their images in `A ⊗[R] B` are linearly disjoint. Note: they inject into `A ⊗[R] B`,
@@ -511,6 +503,15 @@ theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Typ
     hi.comp (Algebra.TensorProduct.includeLeft_injective hb),
     hi.comp (Algebra.TensorProduct.includeRight_injective ha), by
       simpa only [AlgHom.range_comp] using (include_range_of_injective R A B ha hb).map i hi⟩
+
+/-- If `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint. -/
+theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
+  nontriviality S
+  rw [linearDisjoint_iff_injective]
+  letI : Field (A ⊗[R] B) := H.toField
+  -- need this otherwise `RingHom.injective` does not work
+  letI : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
+  exact RingHom.injective _
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)

@@ -146,12 +146,52 @@ theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
 theorem linearDisjoint_comm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
+section
+
+variable {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTower F L' E]
+
+/-- Linear disjointness is symmetric. -/
+theorem LinearDisjoint.symm' (H : (IsScalarTower.toAlgHom F L E).fieldRange.LinearDisjoint L') :
+    (IsScalarTower.toAlgHom F L' E).fieldRange.LinearDisjoint L :=
+  Subalgebra.LinearDisjoint.symm H
+
+/-- Linear disjointness is symmetric. -/
+theorem linearDisjoint_comm' :
+    (IsScalarTower.toAlgHom F L E).fieldRange.LinearDisjoint L' ↔
+    (IsScalarTower.toAlgHom F L' E).fieldRange.LinearDisjoint L :=
+  ⟨LinearDisjoint.symm', LinearDisjoint.symm'⟩
+
+end
+
 namespace LinearDisjoint
 
 /-- Linear disjointness is preserved by field homomorphism. -/
-theorem map (H : A.LinearDisjoint B) {L : Type w} [Field L] [Algebra F L]
-    (f : E →ₐ[F] L) : (A.map f).LinearDisjoint (B.map f) :=
+theorem map (H : A.LinearDisjoint B) {K : Type*} [Field K] [Algebra F K]
+    (f : E →ₐ[F] K) : (A.map f).LinearDisjoint (B.map f) :=
   linearDisjoint_iff'.2 ((linearDisjoint_iff'.1 H).map f f.injective)
+
+/-- Linear disjointness is preserved by field homomorphism. -/
+theorem map' (H : A.LinearDisjoint L) (K : Type*) [Field K] [Algebra F K] [Algebra L K]
+    [IsScalarTower F L K] [Algebra E K] [IsScalarTower F E K] [IsScalarTower L E K] :
+    (A.map (IsScalarTower.toAlgHom F E K)).LinearDisjoint L := by
+  rw [linearDisjoint_iff] at H ⊢
+  have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
+  rw [← AlgHom.range_comp] at this
+  convert this
+  ext; exact IsScalarTower.algebraMap_apply L E K _
+
+/-- Linear disjointness is preserved by field homomorphism. -/
+theorem map'' {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTower F L' E]
+    (H : (IsScalarTower.toAlgHom F L E).fieldRange.LinearDisjoint L')
+    (K : Type*) [Field K] [Algebra F K] [Algebra L K] [IsScalarTower F L K]
+    [Algebra L' K] [IsScalarTower F L' K] [Algebra E K] [IsScalarTower F E K]
+    [IsScalarTower L E K] [IsScalarTower L' E K] :
+    (IsScalarTower.toAlgHom F L K).fieldRange.LinearDisjoint L' := by
+  rw [linearDisjoint_iff] at H ⊢
+  have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
+  simp_rw [AlgHom.fieldRange_toSubalgebra, ← AlgHom.range_comp] at this
+  rw [AlgHom.fieldRange_toSubalgebra]
+  convert this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
 
 variable (A) in
 theorem self_right : A.LinearDisjoint F := Subalgebra.LinearDisjoint.bot_right _
@@ -302,6 +342,98 @@ theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearD
   letI : Field A.toSubalgebra := inferInstanceAs <| Field A
   Subalgebra.LinearDisjoint.of_finrank_coprime_of_free <| by
     rwa [(AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.finrank_eq] at H
+
+/-- If `A` and `L` are linearly disjoint, then `A ⊗[F] L` is a domain. -/
+theorem isDomain (H : A.LinearDisjoint L) : IsDomain (A ⊗[F] L) :=
+  have : IsDomain (A ⊗[F] _) := Subalgebra.LinearDisjoint.isDomain H
+  (Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
+    (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))).toMulEquiv.isDomain
+
+/-- If `A` and `B` are field extensions of `F`, such that there exists a field `E` such that
+`A` and `B` map to `E` and their images are linearly disjoint, then `A ⊗[F] B` is a domain. -/
+theorem isDomain' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
+    {fa : A →ₐ[F] E} {fb : B →ₐ[F] E} (H : fa.fieldRange.LinearDisjoint fb.fieldRange) :
+    IsDomain (A ⊗[F] B) := by
+  simp_rw [linearDisjoint_iff', AlgHom.fieldRange_toSubalgebra] at H
+  exact H.isDomain_of_injective fa.injective fb.injective
+
+/-- If `A ⊗[F] L` is a field, then `A` and `L` are linearly disjoint. -/
+theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
+  replace H : IsField (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) := by
+    -- need these two otherwise the following typeclass will stuck
+    letI : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
+    letI : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) := Algebra.TensorProduct.instMul
+    exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
+      (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
+        |>.symm.toMulEquiv.isField _ H
+  exact Subalgebra.LinearDisjoint.of_isField H
+
+variable (F) in
+/-- If `A` and `B` are field extensions `F`, such that `A ⊗[F] B` is a domain, then there exists
+a field `K` such that `A` and `B` inject into `K`, and their images are linearly disjoint. -/
+theorem exists_field_of_isDomain (A : Type v) [Field A] (B : Type w) [Field B]
+    [Algebra F A] [Algebra F B] [IsDomain (A ⊗[F] B)] :
+    ∃ (K : Type (max v w)) (_ : Field K) (_ : Algebra F K) (fa : A →ₐ[F] K) (fb : B →ₐ[F] K),
+    fa.fieldRange.LinearDisjoint fb.fieldRange :=
+  have ⟨K, inst1, inst2, fa, fb, _, _, H⟩ :=
+    Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective F A B
+      (RingHom.injective _) (RingHom.injective _)
+  ⟨K, inst1, inst2, fa, fb, linearDisjoint_iff'.2 H⟩
+
+section
+
+variable (F E) (K : Type*) [Field K] [Algebra F K]
+
+/-- If `E` and `K` are field extensions of `F`, one of them is algebraic, such that
+`E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field. -/
+theorem _root_.Algebra.TensorProduct.isField_of_isAlgebraic [IsDomain (E ⊗[F] K)]
+    (halg : Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K) : IsField (E ⊗[F] K) :=
+  have ⟨L, _, _, fa, fb, hfa, hfb, H⟩ :=
+    Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective F E K
+      (RingHom.injective _) (RingHom.injective _)
+  let f : E ⊗[F] K ≃ₐ[F] ↥(fa.fieldRange ⊔ fb.fieldRange) :=
+    Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)
+    |>.trans (Subalgebra.LinearDisjoint.mulMap H)
+    |>.trans (Subalgebra.equivOfEq _ _
+      (sup_toSubalgebra_of_isAlgebraic fa.fieldRange fb.fieldRange <| by
+        rwa [(AlgEquiv.ofInjective fa hfa).isAlgebraic_iff,
+          (AlgEquiv.ofInjective fb hfb).isAlgebraic_iff] at halg).symm)
+  f.toMulEquiv.isField _ (Field.toIsField _)
+
+-- theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
+--     [Algebra.Transcendental F E] [Algebra.Transcendental F K] : ¬IsField (E ⊗[F] K) := by
+--   intro H
+--   letI := H.toField
+--   sorry
+
+end
+
+/-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `A ⊗[F] L` is a field. -/
+theorem isField_of_isAlgebraic (H : A.LinearDisjoint L)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) : IsField (A ⊗[F] L) :=
+  have := H.isDomain
+  Algebra.TensorProduct.isField_of_isAlgebraic F A L halg
+
+/-- If `A` and `B` are field extensions of `F`, one of them is algebraic, such that there exists a
+field `E` such that `A` and `B` map to `E` and their images are linearly disjoint, then `A ⊗[F] B`
+is a field. -/
+theorem isField_of_isAlgebraic' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
+    {fa : A →ₐ[F] E} {fb : B →ₐ[F] E} (H : fa.fieldRange.LinearDisjoint fb.fieldRange)
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F B) : IsField (A ⊗[F] B) :=
+  have := H.isDomain'
+  Algebra.TensorProduct.isField_of_isAlgebraic F A B halg
+
+/-- If `A` and `L` are linearly disjoint, one of them is algebraic, then for any `B` and `L'`
+isomorphic to `A` and `L` respectively, `B` and `L'` are also linearly disjoint. -/
+theorem algEquiv_of_isAlgebraic (H : A.LinearDisjoint L)
+    {E' : Type*} [Field E'] [Algebra F E']
+    (B : IntermediateField F E')
+    (L' : Type*) [Field L'] [Algebra F L'] [Algebra L' E'] [IsScalarTower F L' E']
+    (f1 : A ≃ₐ[F] B) (f2 : L ≃ₐ[F] L')
+    (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
+    B.LinearDisjoint L' :=
+  .of_isField ((Algebra.TensorProduct.congr f1 f2).symm.toMulEquiv.isField _
+    (H.isField_of_isAlgebraic halg))
 
 end LinearDisjoint
 
