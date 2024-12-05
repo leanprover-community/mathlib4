@@ -1,6 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Abelian.Refinements
+
+/-!
+# Refinements
 
 -- It seems I have rediscovered the point of view on "pseudoelements"
 -- described in the first page of:
@@ -10,6 +18,8 @@ import Mathlib.CategoryTheory.Abelian.Refinements
 -- in abelian groups (1974)
 -- http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
 --
+
+-/
 
 namespace CategoryTheory
 

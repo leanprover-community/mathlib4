@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.SpectralObject.Differentials
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+
+/-!
+# Images
+
+-/
 
 namespace CategoryTheory
 
@@ -78,7 +88,8 @@ noncomputable def imageMap :
   X.liftImage _ _ _ _ _ (X.imageι n f₁ f₂ f₁₂ h₁₂ ≫ (X.H n).map (homMk₁ (α.app 0) (α.app 2)
     (by dsimp; simpa only [← h₁₂, ← h₁₂'] using naturality' α 0 2))) (by
       have : twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂ ≫ homMk₁ (by exact α.app 0) (by exact α.app 2)
-        (by dsimp; simpa only [← h₁₂, ← h₁₂'] using naturality' α 0 2) ≫ twoδ₁Toδ₀ f₁' f₂' f₁₂' h₁₂' =
+        (by dsimp; simpa only [← h₁₂, ← h₁₂'] using naturality' α 0 2) ≫
+          twoδ₁Toδ₀ f₁' f₂' f₁₂' h₁₂' =
         twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂ ≫ twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂ ≫
           homMk₁ (by exact α.app 1) (by exact α.app 2) (by exact naturality' α 1 2) := by
         ext

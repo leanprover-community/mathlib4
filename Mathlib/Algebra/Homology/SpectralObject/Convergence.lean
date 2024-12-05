@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
 import Mathlib.Algebra.Homology.SpectralObject.Images
+
+/-!
+# Convergence
+
+-/
 
 namespace CategoryTheory
 
@@ -14,7 +24,6 @@ namespace Abelian
 variable {C ι κ : Type*} [Category C] [Abelian C] [LinearOrder ι] [OrderBot ι] [OrderTop ι]
   (X : SpectralObject C ι)
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
-  [∀ r, DecidableRel (c r).Rel]
 
 namespace SpectralObject
 
@@ -40,7 +49,8 @@ noncomputable def abutmentπ (n : ℤ) (j : ι) :
     X.abutment n ⟶ (X.H n).obj (mk₁ (homOfLE' j ⊤ le_top)) :=
   (X.H n).map (homMk₁ (homOfLE bot_le) (𝟙 _) rfl)
 
-noncomputable def abutmentFiltrationToPageInfinity (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+noncomputable def abutmentFiltrationToPageInfinity
+    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
     (i j : ι) (hij : i ≤ j) :
     X.abutmentFiltration n₁ j ⟶ X.pageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij :=
   X.imageToE n₀ n₁ n₂ hn₁ hn₂ (homOfLE' ⊥ i bot_le) (homOfLE hij)
@@ -90,9 +100,11 @@ instance (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
 
 section
 
+/-- abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁' -/
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁'
-    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i₀ i₁ i₂ : ι) (h₀₁ : i₀ ≤ i₁) (h₁₂ : i₁ ≤ i₂) :
+    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i₀ i₁ i₂ : ι)
+    (h₀₁ : i₀ ≤ i₁) (h₁₂ : i₁ ≤ i₂) :
     X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ (h₀₁.trans h₁₂) ≫
       X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top =
     X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ h₁₂ := by
@@ -103,7 +115,8 @@ lemma abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁'
     ← assoc]
   congr 1
   rw [← cancel_mono (X.iCycles _ _ _ _ _), assoc, toCycles_i,
-    X.cyclesMap_i n₁ n₂ hn₂ _ _ _ _ (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂) (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂) rfl,
+    X.cyclesMap_i n₁ n₂ hn₂ _ _ _ _ (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂)
+      (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂) rfl,
     toCycles_i_assoc, ← Functor.map_comp]
   rfl
 
@@ -159,6 +172,7 @@ namespace CompatibleWithConvergenceStripes
 variable {data s}
 variable (hdata : data.CompatibleWithConvergenceStripes s)
 
+omit [OrderBot ι] [OrderTop ι] in
 @[simp]
 lemma deg_position (n : σ) (i : α n) :
     data.deg (s.position n i) = hdata.deg n := by
@@ -169,22 +183,27 @@ def mapWithBot (_ : data.CompatibleWithConvergenceStripes s) (n : σ) : WithBot 
   | none => ⊥
   | some i => data.i₂ (s.position n i)
 
+omit [OrderTop ι] in
 @[simp]
 lemma mapWithBot_none (n : σ):
     hdata.mapWithBot n none = ⊥ := rfl
 
+omit [OrderTop ι] in
 @[simp]
 lemma mapWithBot_bot (n : σ):
     hdata.mapWithBot n ⊥ = ⊥ := rfl
 
+omit [OrderTop ι] in
 @[simp]
 lemma mapWithBot_some (n : σ) (i : α n):
     hdata.mapWithBot n (some i) = data.i₂ (s.position n i) := rfl
 
+omit [OrderTop ι] in
 @[simp]
 lemma mapWithBot_some' (n : σ) (i : α n):
     hdata.mapWithBot n (WithBot.some i) = data.i₂ (s.position n i) := rfl
 
+omit [OrderTop ι] in
 lemma mapWithBot_monotone (n : σ) : Monotone (hdata.mapWithBot n) := by
   rintro i j hij
   obtain _ | i := i
@@ -192,13 +211,14 @@ lemma mapWithBot_monotone (n : σ) : Monotone (hdata.mapWithBot n) := by
   · obtain _ | j := j
     · change _ ≤ ⊥ at hij
       simp at hij
-    · simp only [WithBot.some_le_some] at hij
+    · erw [WithBot.coe_le_coe] at hij
       dsimp [mapWithBot]
       exact hdata.i₂_monotone n i j hij
 
 abbrev mapWithBotFunctor (n : σ) : WithBot (α n) ⥤ ι :=
   Monotone.functor (hdata.mapWithBot_monotone n)
 
+omit [OrderTop ι] in
 lemma mapWithBot_pred_le_i₂ (n : σ) (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) :
     hdata.mapWithBot n i ≤ data.i₂ (s.position n j) := by
   obtain _|i := i
@@ -312,6 +332,7 @@ class ConvergesInDegree (n : σ) : Prop where
 
 variable (n : σ) [hX : X.ConvergesInDegree hdata n]
 
+include hX in
 lemma hasPageInfinityAt_of_convergesInDegree (pq : κ)
     (hpq : s.stripe pq = n) : X.StationaryAt data pq :=
   hX.stationnaryAt pq hpq
@@ -356,9 +377,10 @@ lemma isIso₂_of_convergesInDegree
 
 lemma isZero₁_of_convergesInDegree :
     ∃ (i : α n),
-      IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' ⊥ (hdata.mapWithBot n (s.pred n i)) bot_le))) := by
+      IsZero ((X.H (hdata.deg n)).obj
+        (mk₁ (homOfLE' ⊥ (hdata.mapWithBot n (s.pred n i)) bot_le))) := by
   obtain ⟨i, hi⟩ := hX.isZero₁
-  refine' ⟨i, _⟩
+  refine ⟨i, ?_⟩
   obtain h | ⟨j, h⟩ := Option.by_cases (s.pred n i)
   · have : IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' ⊥ ⊥ bot_le))) := by
       apply X.isZero_H_obj_of_isIso
@@ -383,8 +405,10 @@ section
 variable (i : α n) (pq : κ) (hpq : s.position n i = pq)
 
 noncomputable def π :
-    X.abutmentFiltration (hdata.deg n) (data.i₂ (s.position n i)) ⟶ (X.spectralSequence data).pageInfinity pq :=
-  X.abutmentFiltrationToPageInfinity (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp)
+    X.abutmentFiltration (hdata.deg n) (data.i₂ (s.position n i)) ⟶
+      (X.spectralSequence data).pageInfinity pq :=
+  X.abutmentFiltrationToPageInfinity (hdata.deg n - 1)
+    (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp)
   (data.i₁ (s.position n i)) (data.i₂ (s.position n i))
     (data.le₁₂ (s.position n i)) ≫ Iso.inv (by
         have := X.hasPageInfinityAt_of_convergesInDegree hdata n pq (by
@@ -452,6 +476,7 @@ section
 
 variable (h : hdata.mapWithBot n i ≤ data.i₁ pq)
 
+/-- hom' -/
 noncomputable def hom' :
     X.pageInfinity (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1) (by simp) (by simp)
       (hdata.mapWithBot n i) (data.i₂ (s.position n j))
@@ -463,6 +488,7 @@ noncomputable def hom' :
 instance : IsIso (hom' X hdata n i j hij pq hpq h) :=
   X.isIso₂_of_convergesInDegree hdata n i j hij pq hpq _ _ _ rfl rfl rfl _ _ _ _ _ _ rfl
 
+/-- iso' -/
 noncomputable def iso' := (asIso (hom' X hdata n i j hij pq hpq h)).symm
 
 lemma π_pageInfinityIso_hom :
@@ -508,7 +534,8 @@ noncomputable def iso : composableArrows X hdata n i j hij pq hpq ≅
     (X.abutmentFiltrationShortComplex (hdata.deg n - 1) (hdata.deg n) (hdata.deg n + 1)
       (by simp) (by simp) _ _ (hdata.mapWithBot_pred_le_i₂ n i j hij)).toComposableArrows :=
   isoMk₂ (Iso.refl _) (Iso.refl _)
-    (pageInfinityIso X hdata n j pq hpq ≪≫ iso₃ X hdata n i j hij pq hpq) (by simp) (by simp)
+    (pageInfinityIso X hdata n j pq hpq ≪≫ iso₃ X hdata n i j hij pq hpq) (by simp)
+    (by simp [Precomp.map])
 
 lemma composableArrows_exact :
     (composableArrows X hdata n i j hij pq hpq).Exact :=
@@ -533,7 +560,8 @@ noncomputable def convergesAt :
     exact ⟨i, X.isIso_imageι _ _ _ _ _ hi⟩
   π' i pq hpq := ConvergesAt.π X hdata n i pq hpq
   epi_π' i pq hpq := by infer_instance
-  comp_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n i j hij pq hpq).toIsComplex.zero 0
+  comp_π' i j hij pq hpq :=
+    (ConvergesAt.composableArrows_exact X hdata n i j hij pq hpq).toIsComplex.zero 0
   exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n i j hij pq hpq).exact 0
 
 instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
@@ -592,7 +620,7 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
             simp
           · apply isZero₁_of_isFirstQuadrant
             simp
-        · refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
+        · refine ⟨0, IsZero.eq_of_src ?_ _ _, IsZero.eq_of_src ?_ _ _⟩
           · apply isZero₁_of_isFirstQuadrant
             simp
           · apply isZero₁_of_isFirstQuadrant
@@ -648,7 +676,7 @@ instance (X : SpectralObject C ℤt) [X.IsThirdQuadrant] (n : ℕ) :
           · apply X.isZero₂_of_isThirdQuadrant
             subst hn₁' hn₂
             simp
-        · refine' ⟨0, IsZero.eq_of_src _ _ _, IsZero.eq_of_src _ _ _⟩
+        · refine ⟨0, IsZero.eq_of_src ?_ _ _, IsZero.eq_of_src ?_ _ _⟩
           · apply X.isZero₂_of_isThirdQuadrant
             exact bot_le
           · apply X.isZero₂_of_isThirdQuadrant

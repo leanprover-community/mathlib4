@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.SpectralObject.Homology
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
+
+/-!
+# The spectral sequence of a spectral object
+
+-/
 
 namespace ComplexShape
 
@@ -16,6 +26,7 @@ namespace CategoryTheory
 
 open Category Limits ComposableArrows
 
+/-- homOfLE' -/
 abbrev homOfLE' {ι : Type*} [Preorder ι] (a b : ι) (h : a ≤ b) : a ⟶ b := homOfLE h
 
 lemma isIso_homOfLE {ι : Type*} [Preorder ι] (i j : ι) (hij : i = j) :
@@ -28,33 +39,40 @@ namespace ComposableArrows
 
 variable {ι : Type*} [Preorder ι]
 
+/-- twoδ₁Toδ₀' -/
 noncomputable abbrev twoδ₁Toδ₀' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) :
     mk₁ (homOfLE (hi₀₁.trans hi₁₂)) ⟶ mk₁ (homOfLE hi₁₂) :=
   twoδ₁Toδ₀ (homOfLE hi₀₁) _ _ rfl
 
+/-- twoδ₂Toδ₁' -/
 noncomputable abbrev twoδ₂Toδ₁' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) :
      mk₁ (homOfLE hi₀₁) ⟶ mk₁ (homOfLE (hi₀₁.trans hi₁₂)) :=
   twoδ₂Toδ₁ _ (homOfLE hi₁₂) _ rfl
 
+/-- threeδ₂Toδ₁' -/
 noncomputable abbrev threeδ₂Toδ₁' (i₀ i₁ i₂ i₃ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) :
-     mk₂ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans h₂₃)) ⟶ mk₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE h₂₃) :=
+     mk₂ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans h₂₃)) ⟶
+      mk₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE h₂₃) :=
   threeδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ rfl _ rfl
 
+/-- fourδ₁Toδ₀' -/
 noncomputable abbrev fourδ₁Toδ₀' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
     mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) ⟶
       mk₃ (homOfLE hi₁₂) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
   fourδ₁Toδ₀ (homOfLE hi₀₁) _ _ _ _ rfl
 
+/-- fourδ₂Toδ₁' -/
 noncomputable abbrev fourδ₂Toδ₁' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
     mk₃ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) (homOfLE hi₃₄)  ⟶
       mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
   fourδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ _ rfl _ rfl
 
+/-- fourδ₄Toδ₃' -/
 noncomputable abbrev fourδ₄Toδ₃' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
     mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE hi₂₃) ⟶
@@ -70,7 +88,6 @@ namespace SpectralObject
 variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι]
   (X : SpectralObject C ι)
   (c : ℤ → ComplexShape κ) (r₀ : ℤ)
-  [∀ r, DecidableRel (c r).Rel]
 
 variable (ι)
 
@@ -186,7 +203,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     by_cases h : 0 ≤ pq.2.1 - (r - 2)
     · simp only [Int.toNat_lt h, Nat.cast_add, Nat.cast_one]
       linarith [pq.2.2]
-    · refine' lt_of_le_of_lt (le_of_eq _) (show 0 < l + 1 by linarith)
+    · refine lt_of_le_of_lt (le_of_eq ?_) (show 0 < l + 1 by linarith)
       rw [Int.toNat_eq_zero]
       linarith⟩
   i₁ pq := pq.2.castSucc
@@ -251,7 +268,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     ext
     dsimp at h₁ h₂ ⊢
     apply le_antisymm
-    · refine' (min_le_left _ _).trans _
+    · refine (min_le_left _ _).trans ?_
       rw [← Int.ofNat_le, Int.toNat_of_nonneg (by linarith)]
       simp only [Nat.cast_add, Nat.cast_one]
       linarith
@@ -270,17 +287,17 @@ variable (n n' : ℤ) (hn' : n + 1 = n') (i₀ i₁ i₂ : ι) (h₀₁ : i₀ �
   (h₁ : IsZero ((X.H n).obj (mk₁ (homOfLE h₀₁))))
   (h₂ : IsZero ((X.H n').obj (mk₁ (homOfLE h₀₁))))
 
+include h₁ in
 lemma mono_H_map_twoδ₁Toδ₀' : Mono ((X.H n).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) := by
-  have := h₁
   apply (X.exact₂ n (homOfLE h₀₁) (homOfLE h₁₂) _ rfl).mono_g
   apply h₁.eq_of_src
 
+include h₂ hn' in
 lemma epi_H_map_twoδ₁Toδ₀' : Epi ((X.H n).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) := by
-  have := hn'
-  have := h₂
   apply (X.exact₃ n n' hn' (homOfLE h₀₁) (homOfLE h₁₂) _ rfl).epi_f
   apply h₂.eq_of_tgt
 
+include h₁ h₂ hn' in
 lemma isIso_H_map_twoδ₁Toδ₀' : IsIso ((X.H n).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) := by
   have := X.mono_H_map_twoδ₁Toδ₀' n i₀ i₁ i₂ h₀₁ h₁₂ h₁
   have := X.epi_H_map_twoδ₁Toδ₀' n n' hn' i₀ i₁ i₂ h₀₁ h₁₂ h₂
@@ -294,17 +311,21 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
     (i₀ i₁ i₂ i₃ i₄ i₅ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
 
+/-- EMapFourδ₁Toδ₀' -/
 noncomputable def EMapFourδ₁Toδ₀' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₁Toδ₀' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
 
+/-- mono_EMapFourδ₁Toδ₀' -/
 instance mono_EMapFourδ₁Toδ₀' :
     Mono (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
   dsimp [EMapFourδ₁Toδ₀']
   infer_instance
 
+/-- EMapFourδ₄Toδ₃' -/
 noncomputable def EMapFourδ₄Toδ₃' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
 
+/-- epi_EMapFourδ₄Toδ₃' -/
 instance epi_EMapFourδ₄Toδ₃' :
     Epi (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
   dsimp [EMapFourδ₄Toδ₃']
@@ -328,6 +349,7 @@ lemma EMapFourδ₄Toδ₃'_comp :
   rw [← EMap_comp]
   rfl
 
+/-- EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃' -/
 @[reassoc]
 lemma EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃' :
     X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ ≫
@@ -342,11 +364,13 @@ section
 
 variable (h : IsZero ((H X n₂).obj (mk₁ (homOfLE hi₀₁))))
 
+include h in
 lemma isIso_EMapFourδ₁Toδ₀' :
     IsIso (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
   apply X.isIso_EMap_fourδ₁Toδ₀_of_isZero
   exact h
 
+/-- isoEMapFourδ₁Toδ₀' -/
 @[simps! hom]
 noncomputable def isoEMapFourδ₁Toδ₀' :
     X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) ≅
@@ -372,11 +396,13 @@ section
 
 variable (h : IsZero ((H X n₀).obj (mk₁ (homOfLE hi₃₄))))
 
+include h in
 lemma isIso_EMapFourδ₄Toδ₃' :
     IsIso (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
   apply X.isIso_EMap_fourδ₄Toδ₃_of_isZero
   exact h
 
+/-- isoEMapFourδ₄Toδ₃' -/
 @[simps! hom]
 noncomputable def isoEMapFourδ₄Toδ₃' :
     X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE hi₂₃) ≅
@@ -404,9 +430,11 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
     (i₀ i₁ i₂ i₃ i₄ i₅ : ι) (hi₀₁ : i₀ ≤ i₁)
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
 
+/-- EMapFourδ₂Toδ₁' -/
 noncomputable def EMapFourδ₂Toδ₁' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₂Toδ₁' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
 
+/-- isIso_EMapFourδ₂Toδ₁' -/
 lemma isIso_EMapFourδ₂Toδ₁'
     (h₁ : IsIso ((X.H n₁).map (twoδ₁Toδ₀' i₁ i₂ i₃ hi₁₂ hi₂₃)))
     (h₂ : IsIso ((X.H n₂).map (twoδ₂Toδ₁' i₀ i₁ i₂ hi₀₁ hi₁₂))) :
@@ -468,6 +496,7 @@ lemma isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤
     IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' hrr' hr pq)))) :=
   HasSpectralSequence.isZero_H_obj_mk₁_i₀_le r r' hrr' hr pq hpq n hn
 
+/-- isZero_H_obj_mk₁_i₀_le' -/
 lemma isZero_H_obj_mk₁_i₀_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1) (i₀' i₀ : ι)
@@ -484,6 +513,7 @@ lemma isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤
     IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₃_le r r' hrr' hr pq)))) :=
   HasSpectralSequence.isZero_H_obj_mk₁_i₃_le r r' hrr' hr pq hpq n hn
 
+/-- isZero_H_obj_mk₁_i₃_le' -/
 lemma isZero_H_obj_mk₁_i₃_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
     (n : ℤ) (hn : n = data.deg pq - 1) (i₃ i₃' : ι)
@@ -521,6 +551,7 @@ noncomputable def pageXIso (r : ℤ) (hr : r₀ ≤ r) (pq : κ) (n₀ n₁ n₂
     subst h hn₂ h₀ h₁ h₂ h₃
     rfl)
 
+open Classical in
 noncomputable def paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) :
     pageX X data r hr pq ⟶ pageX X data r hr pq' :=
   if hpq : (c r).Rel pq pq'
@@ -533,6 +564,7 @@ noncomputable def paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) :
         (data.hc₀₂ r hr pq pq' hpq) (data.hc₁₃ r hr pq pq' hpq)).inv
     else 0
 
+omit [X.HasSpectralSequence data] in
 lemma paged_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq')
     (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
     {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
@@ -540,7 +572,7 @@ lemma paged_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq'
     (h₀ : i₀ = data.i₀ r hr pq') (h₁ : i₁ = data.i₁ pq') (h₂ : i₂ = data.i₀ r hr pq)
     (h₃ : i₃ = data.i₁ pq) (h₄ : i₄ = data.i₂ pq) (h₅ : i₅ = data.i₃ r hr pq) :
     paged X data r hr pq pq' = by
-      refine'
+      refine
         (pageXIso _ _ _ _ _ _ _ _ _ _ hn₁' _ _ _ _ h₂ h₃ h₄ h₅).hom ≫
         X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫
         (pageXIso _ _ _ _ _ _ _ _ _ _
@@ -555,6 +587,7 @@ lemma paged_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq'
   rw [dif_pos hpq, id_comp]
   rfl
 
+omit [X.HasSpectralSequence data] in
 @[reassoc (attr := simp)]
 lemma paged_paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ) :
     paged X data r hr pq pq' ≫ paged X data r hr pq' pq'' = 0 := by
@@ -617,8 +650,6 @@ noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
 
 section
 
-variable [X.HasSpectralSequence data]
-
 variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (pq pq' pq'' : κ) (hpq : (c r).prev pq' = pq) (hpq' : (c r).next pq' = pq'')
   (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
@@ -643,10 +674,15 @@ section
 
 variable {r r'} {i₀' i₀ i₁ i₂ i₃ i₃'}
 
+include hi₀ hi₀' in
 lemma le₀'₀ : i₀' ≤ i₀ := by simpa only [hi₀, hi₀'] using data.i₀_le r r' hrr' hr pq'
+include hi₀ hi₁ in
 lemma le₀₁ : i₀ ≤ i₁ := by simpa only [hi₀, hi₁] using data.le₀₁ r hr pq'
+include hi₁ hi₂ in
 lemma le₁₂ : i₁ ≤ i₂ := by simpa only [hi₁, hi₂] using data.le₁₂ pq'
+include hi₂ hi₃ in
 lemma le₂₃ : i₂ ≤ i₃ := by simpa only [hi₂, hi₃] using data.le₂₃ r hr pq'
+include hi₃ hi₃' in
 lemma le₃₃' : i₃ ≤ i₃' := by simpa only [hi₃, hi₃'] using data.i₃_le r r' hrr' hr pq'
 
 end
@@ -669,6 +705,7 @@ lemma mk₃fac :
       fourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃' (le₀'₀ data hrr' hr pq' hi₀' hi₀) _ _ _ := by
   rfl
 
+omit [X.HasSpectralSequence data] in
 lemma kf_w :
     (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃ (le₀'₀ data hrr' hr pq' hi₀' hi₀)
       (le₀₁ data hr pq' hi₀ hi₁) (le₁₂ data pq' hi₁ hi₂) (le₂₃ data hr pq' hi₂ hi₃) ≫
@@ -701,18 +738,20 @@ instance : Mono (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn
   dsimp
   infer_instance
 
+include hpq' hn₁' in
 lemma isIso_EMapFourδ₁Toδ₀' (h : ¬ (c r).Rel pq' pq'') :
     IsIso (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂
       i₀' i₀ i₁ i₂ i₃ (le₀'₀ data hrr' hr pq' hi₀' hi₀) (le₀₁ data hr pq' hi₀ hi₁)
         (le₁₂ data pq' hi₁ hi₂) (le₂₃ data hr pq' hi₂ hi₃)) := by
   apply X.isIso_EMap_fourδ₁Toδ₀_of_isZero
   refine X.isZero_H_obj_mk₁_i₀_le' data r r' hrr' hr pq' ?_ _
-    (by linarith) _ _ hi₀' hi₀
+    (by omega) _ _ hi₀' hi₀
   intro k hk
   obtain rfl := (c r).next_eq' hk
   subst hpq'
   exact h hk
 
+include hpq' in
 lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).Exact := by
   by_cases h : (c r).Rel pq' pq''
@@ -749,6 +788,7 @@ noncomputable def hkf :
   (ksSc_exact X data r r' hrr' hr pq' pq'' hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).fIsKernel
 
+omit [X.HasSpectralSequence data] in
 lemma cc_w :
     (page X data r hr).d pq pq' ≫
       (pageXIso  X data _ _ _ _ _ _ _ _ hn₁' _ _ _ _ hi₀ hi₁ hi₂ hi₃).hom ≫
@@ -785,6 +825,7 @@ instance : Epi (ccSc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁
   apply epi_EMap
   all_goals rfl
 
+include hpq hn₁' in
 lemma isIso_EMapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq') :
     IsIso (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃'
       (le₀₁ data hr pq' hi₀ hi₁) (le₁₂ data pq' hi₁ hi₂)
@@ -796,6 +837,7 @@ lemma isIso_EMapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq') :
   subst hpq
   exact h hk
 
+include hpq in
 lemma ccSc_exact :
     (ccSc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃').Exact := by
@@ -833,11 +875,14 @@ noncomputable def hcc :
   (ccSc_exact X data r r' hrr' hr pq pq' hpq n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃').gIsCokernel
 
+omit [X.HasSpectralSequence data] in
 lemma fac :
   (kf X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).ι ≫
-      (cc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃').π  =
+      (cc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+        i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃').π  =
     X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀' i₁ i₂ i₃ i₃' _ _ _ (le₃₃' data hrr' hr pq' hi₃ hi₃') ≫
-      X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃' (le₀'₀ data hrr' hr pq' hi₀' hi₀) _ _ _ := by
+      X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃'
+        (le₀'₀ data hrr' hr pq' hi₀' hi₀) _ _ _ := by
   dsimp
   simpa only [assoc, Iso.inv_hom_id_assoc, EMap_comp] using
     congr_arg (X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _)
@@ -857,6 +902,7 @@ noncomputable def homologyData : ((page X data r hr).sc' pq pq' pq'').HomologyDa
     (fac X data r r' hrr' hr pq pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₀ i₁ i₂ i₃ i₃'
       hi₀' hi₀ hi₁ hi₂ hi₃ hi₃')
 
+/-- homologyIso' -/
 noncomputable def homologyIso' :
     ((page X data r hr).sc' pq pq' pq'').homology ≅ (page X data r' (by linarith)).X pq' :=
   (homologyData X data r r' hrr' hr pq pq' pq'' hpq hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
@@ -876,8 +922,6 @@ end
 end SpectralSequence
 
 section
-
-variable [X.HasSpectralSequence data]
 
 noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page' := SpectralSequence.page X data
@@ -938,6 +982,7 @@ lemma le₂₃ (r : ℤ) [(X.spectralSequence data).HasPage r] (pq' : κ)
     i₂ ≤ i₃ := by
   simpa only [hi₂, hi₃] using data.le₂₃ r _ pq'
 
+/-- le₃₃' -/
 lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') [(X.spectralSequence data).HasPage r]
     [(X.spectralSequence data).HasPage r'] (pq' : κ)
     {i₃ i₃' : ι}
@@ -1002,6 +1047,7 @@ lemma isZero_spectralSequence_page_X_of_isZero_H (r : ℤ)
   apply isZero_E_of_isZero_H
   exact h
 
+/-- isZero_spectralSequence_page_X_of_isZero_H' -/
 lemma isZero_spectralSequence_page_X_of_isZero_H' (r : ℤ)
     [(X.spectralSequence data).HasPage r] (pq : κ)
     (h : IsZero ((X.H (data.deg pq)).obj (mk₁ (homOfLE (data.le₁₂ pq))))) :
@@ -1041,7 +1087,8 @@ lemma spectralSequenceHomologyData_left_i :
 lemma spectralSequenceHomologyData_right_p :
     (X.spectralSequenceHomologyData data r r' hrr' pq pq' pq'' hpq hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃').right.p =
-        (X.spectralSequencePageXIso data r pq' n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
+        (X.spectralSequencePageXIso data r pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+          i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).hom ≫
           X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃' _ _ _
             (X.le₃₃' data hrr' pq' hi₃ hi₃') := rfl
 

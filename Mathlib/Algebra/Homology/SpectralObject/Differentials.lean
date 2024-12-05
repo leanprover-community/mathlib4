@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.SpectralObject.Basic
 import Mathlib.CategoryTheory.Abelian.Refinements
+
+/-!
+# Differentials of a spectral object
+
+-/
 
 namespace CategoryTheory
 
@@ -40,6 +50,7 @@ lemma Ψ_fromOpcycles :
     toCycles_Ψ_assoc, p_fromOpcycles, toCycles_i_assoc]
   exact (X.δ_naturality _ _ _ _ _ _ _ _ _ rfl).symm
 
+include h₂₃ in
 lemma cyclesMap_Ψ :
     X.cyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) ≫
       X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ = 0 := by
@@ -50,6 +61,7 @@ lemma cyclesMap_Ψ :
     (twoδ₁Toδ₀ f₁ f₂₃ (f₁ ≫ f₂ ≫ f₃) (by rw [h₂₃])) rfl rfl,
     toCycles_Ψ, zero₃_assoc, zero_comp]
 
+include h₁₂ in
 lemma Ψ_opcyclesMap :
     X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ ≫
       X.opcyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) = 0 := by
@@ -69,8 +81,8 @@ lemma cyclesMap_Ψ_exact :
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A z hz
   dsimp at z hz
-  refine' ⟨A, 𝟙 _, inferInstance,
-    X.liftCycles n₀ n₁ hn₁ f₁₂ f₃ (z ≫ X.iCycles n₀ n₁ hn₁ f₂ f₃) _, _⟩
+  refine ⟨A, 𝟙 _, inferInstance,
+    X.liftCycles n₀ n₁ hn₁ f₁₂ f₃ (z ≫ X.iCycles n₀ n₁ hn₁ f₂ f₃) ?_, ?_⟩
   · dsimp
     rw [assoc, ← X.Ψ_fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ , reassoc_of% hz, zero_comp]
   · dsimp
@@ -93,7 +105,7 @@ lemma Ψ_opcyclesMap_exact :
     rw [Functor.map_id, id_comp] at H
     rw [← H, ← reassoc_of% hz₁, hz₀, comp_zero])
   dsimp at z₂ hz₂
-  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, z₂ ≫ X.toCycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃, _⟩
+  refine ⟨A₂, π₂ ≫ π₁, epi_comp _ _, z₂ ≫ X.toCycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃, ?_⟩
   dsimp
   rw [← cancel_mono (X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂), assoc, assoc,
     assoc, assoc, toCycles_Ψ_assoc, p_fromOpcycles, ← reassoc_of% hz₂,
@@ -161,6 +173,7 @@ noncomputable def leftHomologyDataShortComplexE :
   wπ := cokernel.condition _
   hπ := cokernelIsCokernel _
 
+/-- `leftHomologyDataShortComplexE_f'`. -/
 @[simp]
 lemma leftHomologyDataShortComplexE_f' :
     (X.leftHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f' =
@@ -203,6 +216,7 @@ lemma δToCycles_πE :
     X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ = 0 := by
   simp only [πE, δToCycles_cyclesIso_inv_assoc, ShortComplex.toCycles_comp_homologyπ]
 
+/-- cokernelSequenceE' -/
 @[simps]
 noncomputable def cokernelSequenceE' : ShortComplex C :=
     ShortComplex.mk _ _ (X.δToCycles_πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
@@ -235,6 +249,7 @@ noncomputable def rightHomologyDataShortComplexE :
   wι := kernel.condition _
   hι := kernelIsKernel _
 
+/-- rightHomologyDataShortComplexE_g' -/
 @[simp]
 lemma rightHomologyDataShortComplexE_g' :
     (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g' =
@@ -285,6 +300,7 @@ lemma πE_ιE :
       X.iCycles n₁ n₂ hn₂ f₁ f₂ ≫ X.pOpcycles n₀ n₁ hn₁ f₂ f₃ := by
   simp [πE, ιE]
 
+/-- kernelSequenceE' -/
 @[simps]
 noncomputable def kernelSequenceE' : ShortComplex C :=
     ShortComplex.mk _ _ (X.ιE_δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
@@ -376,14 +392,15 @@ lemma kernelSequenceE_exact :
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A x₂ hx₂
   dsimp at x₂ hx₂
-  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := (X.kernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
-    (X.liftOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
-      dsimp
-      rw [← X.fromOpcyles_δ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃,
-        X.liftOpcycles_fromOpcycles_assoc ]
-      simpa using hx₂ =≫ biprod.snd)
+  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
+    (X.kernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
+      (X.liftOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
+        dsimp
+        rw [← X.fromOpcyles_δ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃,
+          X.liftOpcycles_fromOpcycles_assoc ]
+        simpa using hx₂ =≫ biprod.snd)
   dsimp at x₁ hx₁
-  refine' ⟨A₁, π₁, inferInstance, x₁, _⟩
+  refine ⟨A₁, π₁, inferInstance, x₁, ?_⟩
   dsimp
   rw [← reassoc_of% hx₁, liftOpcycles_fromOpcycles]
 
@@ -436,6 +453,7 @@ lemma toCycles_πE_d :
   subst h₁₂ h₃₄
   simp only [d, δ_toCycles_assoc, toCycles_πE_descE]
 
+include h₃₄ in
 @[reassoc]
 lemma d_ιE_fromOpcycles :
     X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫ X.ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
@@ -562,6 +580,7 @@ variable (n₀ n₁ n₂ : ℤ)
   (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
   (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3))
 
+include hβ in
 @[reassoc]
 lemma cyclesIso_inv_cyclesMap :
     (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
@@ -575,6 +594,7 @@ lemma cyclesIso_inv_cyclesMap :
   apply cyclesMap_i
   rfl
 
+include hγ in
 @[reassoc]
 lemma opcyclesMap_opcyclesIso_hom :
     ShortComplex.opcyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) ≫
@@ -588,7 +608,7 @@ lemma opcyclesMap_opcyclesIso_hom :
   apply p_opcyclesMap
   rfl
 
-
+include hβ in
 @[reassoc]
 lemma πE_EMap :
     X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α =
@@ -597,6 +617,7 @@ lemma πE_EMap :
   simp only [assoc, ShortComplex.homologyπ_naturality,
     X.cyclesIso_inv_cyclesMap_assoc n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α β hβ]
 
+include hγ in
 @[reassoc]
 lemma EMap_ιE :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' =
@@ -640,6 +661,7 @@ instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ 
     epi_comp _ _
   exact epi_of_epi_fac (X.p_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
 
+/-- cokernelSequenceE'' -/
 @[simps!]
 noncomputable def cokernelSequenceE'' : ShortComplex C where
   X₁ := (X.H n₁).obj (mk₁ f₁)
@@ -668,7 +690,7 @@ lemma cokernelSequenceE''_exact :
   obtain ⟨a, b, rfl⟩ : ∃ a b, y₁ = a ≫ biprod.inl + b ≫ biprod.inr :=
     ⟨y₁ ≫ biprod.fst, y₁ ≫ biprod.snd, by ext <;> simp⟩
   simp only [add_comp, assoc, biprod.inl_desc, biprod.inr_desc] at hy₁
-  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, a, _⟩
+  refine ⟨A₂, π₂ ≫ π₁, epi_comp _ _, a, ?_⟩
   dsimp
   simp only [assoc, hy₂, reassoc_of% hy₁, add_comp, δ_pOpcycles, comp_zero, add_zero]
 
