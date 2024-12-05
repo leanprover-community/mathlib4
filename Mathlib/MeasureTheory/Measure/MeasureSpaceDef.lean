@@ -82,9 +82,9 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
   coe μ := μ.toOuterMeasure
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
+
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
-  measure_empty m := m.empty'
+  measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
@@ -209,10 +209,6 @@ theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
 
-@[deprecated measure_iUnion_null_iff (since := "2024-01-14")]
-theorem measure_iUnion_null_iff' {ι : Prop} {s : ι → Set α} : μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
-  measure_iUnion_null_iff
-
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
   (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
 
@@ -299,8 +295,6 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
   HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
-
-  --(subset_toMeasurable _ _).EventuallyLE
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :

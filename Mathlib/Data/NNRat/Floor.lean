@@ -19,6 +19,8 @@ Note that we cannot talk about `Int.fract`, which currently only works for rings
 nnrat, rationals, ℚ≥0, floor
 -/
 
+assert_not_exists Finset
+
 namespace NNRat
 
 instance : FloorSemiring ℚ≥0 where

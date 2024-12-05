@@ -5,10 +5,11 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Data.Set.Pointwise.Interval
-import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Normed fields
@@ -295,7 +296,7 @@ instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
-noncomputable instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
+instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
     NonUnitalSeminormedRing (α × β) :=
   { seminormedAddCommGroup, instNonUnitalRing with
     norm_mul := fun x y =>
@@ -430,7 +431,7 @@ instance ULift.seminormedRing : SeminormedRing (ULift α) :=
 
 /-- Seminormed ring structure on the product of two seminormed rings,
   using the sup norm. -/
-noncomputable instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
+instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
   { nonUnitalSeminormedRing, instRing with }
 
 instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
@@ -494,8 +495,8 @@ instance ULift.nonUnitalNormedRing : NonUnitalNormedRing (ULift α) :=
 
 /-- Non-unital normed ring structure on the product of two non-unital normed rings,
 using the sup norm. -/
-noncomputable instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] :
-  NonUnitalNormedRing (α × β) := { Prod.nonUnitalSeminormedRing, Prod.normedAddCommGroup with }
+instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] : NonUnitalNormedRing (α × β) :=
+  { Prod.nonUnitalSeminormedRing, Prod.normedAddCommGroup with }
 
 instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
   __ := instNonUnitalRing
@@ -518,7 +519,7 @@ instance ULift.normedRing : NormedRing (ULift α) :=
   { ULift.seminormedRing, ULift.normedAddCommGroup with }
 
 /-- Normed ring structure on the product of two normed rings, using the sup norm. -/
-noncomputable instance Prod.normedRing [NormedRing β] : NormedRing (α × β) :=
+instance Prod.normedRing [NormedRing β] : NormedRing (α × β) :=
   { nonUnitalNormedRing, instRing with }
 
 instance MulOpposite.instNormedRing : NormedRing αᵐᵒᵖ where
@@ -537,7 +538,7 @@ instance ULift.nonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing (ULift 
 
 /-- Non-unital seminormed commutative ring structure on the product of two non-unital seminormed
 commutative rings, using the sup norm. -/
-noncomputable instance Prod.nonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
+instance Prod.nonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
     NonUnitalSeminormedCommRing (α × β) :=
   { nonUnitalSeminormedRing, instNonUnitalCommRing with }
 
@@ -570,7 +571,7 @@ instance ULift.nonUnitalNormedCommRing : NonUnitalNormedCommRing (ULift α) :=
 
 /-- Non-unital normed commutative ring structure on the product of two non-unital normed
 commutative rings, using the sup norm. -/
-noncomputable instance Prod.nonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
+instance Prod.nonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
     NonUnitalNormedCommRing (α × β) :=
   { Prod.nonUnitalSeminormedCommRing, Prod.normedAddCommGroup with }
 
@@ -589,8 +590,8 @@ instance ULift.seminormedCommRing : SeminormedCommRing (ULift α) :=
 
 /-- Seminormed commutative ring structure on the product of two seminormed commutative rings,
   using the sup norm. -/
-noncomputable instance Prod.seminormedCommRing [SeminormedCommRing β] :
-  SeminormedCommRing (α × β) := { Prod.nonUnitalSeminormedCommRing, instCommRing with }
+instance Prod.seminormedCommRing [SeminormedCommRing β] : SeminormedCommRing (α × β) :=
+  { Prod.nonUnitalSeminormedCommRing, instCommRing with }
 
 instance MulOpposite.instSeminormedCommRing : SeminormedCommRing αᵐᵒᵖ where
   __ := instSeminormedRing
@@ -619,7 +620,7 @@ instance ULift.normedCommRing : NormedCommRing (ULift α) :=
 
 /-- Normed commutative ring structure on the product of two normed commutative rings, using the sup
 norm. -/
-noncomputable instance Prod.normedCommRing [NormedCommRing β] : NormedCommRing (α × β) :=
+instance Prod.normedCommRing [NormedCommRing β] : NormedCommRing (α × β) :=
   { nonUnitalNormedRing, instCommRing with }
 
 instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
@@ -955,7 +956,7 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirecte
 
 section RingHomIsometric
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R₁ R₂ : Type*}
 
 /-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
@@ -965,7 +966,7 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
 
 attribute [simp] RingHomIsometric.is_iso
 
-variable [SeminormedRing R₁] [SeminormedRing R₂] [SeminormedRing R₃]
+variable [SeminormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
   ⟨rfl⟩

@@ -514,9 +514,12 @@ theorem isCompl_iff_coe_toSubmodule :
     IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
   simp only [isCompl_iff, disjoint_iff_coe_toSubmodule, codisjoint_iff_coe_toSubmodule]
 
-theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
-  simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
+theorem iSupIndep_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := by
+  simp [iSupIndep_def, disjoint_iff_coe_toSubmodule]
+
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_coe_toSubmodule := iSupIndep_iff_coe_toSubmodule
 
 theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
@@ -835,7 +838,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
     inf_coe_toSubmodule]
   rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
   Set.image_subset _ h
 
@@ -873,7 +876,7 @@ variable (N) in
 noncomputable def equivMapOfInjective (hf : Function.Injective f) :
     N ≃ₗ⁅R,L⁆ N.map f :=
   { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
-    -- Note: #8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
     invFun := by exact DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
     map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
 
@@ -1290,7 +1293,7 @@ theorem mem_range (n : N) : n ∈ f.range ↔ ∃ m, f m = n :=
 theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule.mem_map]
 
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
-  rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
+  rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_eq_univ]
 
 /-- A morphism of Lie modules `f : M → N` whose values lie in a Lie submodule `P ⊆ N` can be
 restricted to a morphism of Lie modules `M → P`. -/
@@ -1366,7 +1369,7 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 
 variable {R L}
 
--- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
@@ -1398,7 +1401,7 @@ This is the Lie ideal version of `Submodule.topEquiv`. -/
 def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 
--- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl

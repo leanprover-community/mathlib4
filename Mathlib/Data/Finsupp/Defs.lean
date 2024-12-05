@@ -5,7 +5,9 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Type of functions with finite support
@@ -753,7 +755,7 @@ lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
 /-- `Finsupp.mapRange` of a surjective function is surjective. -/
 lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
-  rw [← Set.range_iff_surjective, range_mapRange, he.range_eq]
+  rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
 
 end MapRange
@@ -1217,8 +1219,8 @@ instance instAddMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
+  { DFunLike.coe_injective.addCommMonoid DFunLike.coe coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1262,15 +1264,15 @@ instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
   ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 
 instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
+  { DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
+  { DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
+      (fun _ _ => rfl) fun _ _ => rfl with
     toAddGroup := Finsupp.instAddGroup }
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

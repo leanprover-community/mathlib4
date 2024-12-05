@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -102,6 +103,16 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
 
+lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] :
+    IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
+      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeLeftRingHom)
+      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeRight.toRingHom) where
+  w := by
+    ext
+    simp
+  isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
+
 end Pushout
 
 section Terminal
@@ -133,6 +144,14 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
   IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
 
+/-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
+def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨(Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
+    fun _ ↦ by
+      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (α := ℤ)).symm.toRingHom)
+        (hf := ULift.ringEquiv.symm.surjective)]
+      apply RingHom.ext_int⟩)
+
 end Terminal
 
 section Product
@@ -159,7 +178,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [← eq1, ← eq2]
     rfl
 

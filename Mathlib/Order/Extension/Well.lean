@@ -70,10 +70,9 @@ end IsWellFounded
 
 namespace WellFounded
 
-set_option linter.deprecated false
-
 variable (hwf : WellFounded r)
 
+set_option linter.deprecated false in
 /-- An arbitrary well order on `α` that extends `r`.
 
 The construction maps `r` into two well-orders: the first map is `WellFounded.rank`, which is not
@@ -89,12 +88,14 @@ noncomputable def wellOrderExtension : LinearOrder α :=
   @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (hwf.rank a, embeddingToCardinal a))
     fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
 
+set_option linter.deprecated false in
 @[deprecated IsWellFounded.wellOrderExtension.isWellFounded_lt (since := "2024-09-07")]
 instance wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExtension.lt :=
   ⟨InvImage.wf (fun a : α => (hwf.rank a, embeddingToCardinal a)) <|
     Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
 
 include hwf in
+set_option linter.deprecated false in
 /-- Any well-founded relation can be extended to a well-ordering on that type. -/
 @[deprecated IsWellFounded.exists_well_order_ge (since := "2024-09-07")]
 theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=

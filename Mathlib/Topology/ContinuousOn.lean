@@ -1252,7 +1252,7 @@ alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
 
 lemma Topology.IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
+  rw [nhdsWithin, Filter.map_inf hf.injective, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
 @[deprecated (since := "2024-10-26")]
@@ -1415,6 +1415,18 @@ lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continu
 protected lemma Continuous.mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continuous f) :
     Continuous (mulIndicator s f) := by
   classical exact hf.piecewise hs continuous_const
+
+@[to_additive]
+theorem ContinuousOn.continuousAt_mulIndicator (hf : ContinuousOn f (interior s)) {x : α}
+    (hx : x ∉ frontier s) :
+    ContinuousAt (s.mulIndicator f) x := by
+  rw [← Set.mem_compl_iff, compl_frontier_eq_union_interior] at hx
+  obtain h | h := hx
+  · have hs : interior s ∈ 𝓝 x := mem_interior_iff_mem_nhds.mp (by rwa [interior_interior])
+    exact ContinuousAt.congr (hf.continuousAt hs) <| Filter.eventuallyEq_iff_exists_mem.mpr
+      ⟨interior s, hs, Set.eqOn_mulIndicator.symm.mono interior_subset⟩
+  · exact ContinuousAt.congr continuousAt_const <| Filter.eventuallyEq_iff_exists_mem.mpr
+      ⟨sᶜ, mem_interior_iff_mem_nhds.mp h, Set.eqOn_mulIndicator'.symm⟩
 
 end Indicator
 
