@@ -416,11 +416,63 @@ lemma sum_left (x : M₁ ⊗[R] M₂) :
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     let s := (bm.repr x).support.sym2
     (∑ p ∈ s with symOffDiagLeft p, Q.polar_lift bm x p) =
-      (∑ p ∈ s with symOffDiagLeft p, polar_left_lift bm₁ Q₁ bm₂ Q₂ p) := by
+      (∑ p ∈ s with symOffDiagLeft p, polar_left_lift bm₁ Q₁ bm₂ Q₂ x p) := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
   apply Finset.sum_congr rfl _
   intro p hp
+  rw [polar_lift_eq_polarleft_lift_on_symOffDiagLeft _ _ _ _ s _ _ _]
+  exact hp
 
+/--
+Lift the right side
+-/
+noncomputable def polar_right_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  Sym2.lift ⟨fun i j => if i.2 = j.2 then (bm.repr x) i •
+    (bm.repr x) j • (polarBilin Q₁) (bm₁ i.1) (bm₁ j.1) ⊗ₜ Q₂ (bm₂ i.2) else 0,
+  fun i j => ite_congr (by rw [eq_iff_iff, eq_comm])
+    (fun h => by
+      simp_rw [polarBilin_apply_apply, h, polar_comm]
+      rw [smul_comm]
+      ) (congrFun rfl)⟩
 
+lemma polar_lift_eq_polarright_lift_on_symOffDiagRight
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
+    (h: p ∈ Finset.filter symOffDiagRight s) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    polar_lift Q bm x p =  polar_right_lift bm₁ Q₁ bm₂ Q₂ x p := by
+  induction' p with i j
+  simp
+  rw [polar_lift, polar_right_lift]
+  simp at h
+  obtain e1 := h.2.1
+  simp only [Sym2.lift_mk, polarBilin_apply_apply]
+  simp_rw [e1]
+  simp_all only [true_and, ↓reduceIte]
+  obtain ⟨fst, snd⟩ := i
+  obtain ⟨fst_1, snd_1⟩ := j
+  obtain ⟨left, right⟩ := h
+  subst e1
+  simp_all only [Basis.tensorProduct_apply]
+  rw [tensorDistriFree_polar2 _ _ _ _ _ _ _ _ rfl]
+  rfl
+
+lemma sum_right (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagRight p, Q.polar_lift bm x p) =
+      (∑ p ∈ s with symOffDiagRight p, polar_right_lift bm₁ Q₁ bm₂ Q₂ x p) := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  apply Finset.sum_congr rfl _
+  intro p hp
+  rw [polar_lift_eq_polarright_lift_on_symOffDiagRight _ _ _ _ s _ _ _]
+  exact hp
 
 theorem sum1 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -523,12 +575,26 @@ theorem qt_expansion23 (x : M₁ ⊗[R] M₂) :
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     let s := (bm.repr x).support.sym2
     ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
-      + ((∑ p ∈ s with symOffDiagLeft p, Q.polar_lift bm x p)
-      + (∑ p ∈ s with symOffDiagRight p, Q.polar_lift bm x p))
+      + (∑ p ∈ s with symOffDiagLeft p, Q.polar_lift bm x p)
+      + (∑ p ∈ s with symOffDiagRight p, Q.polar_lift bm x p)
       + (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) = Q x := by
   simp_rw [← qt_expansion22]
   simp only [add_left_inj, add_right_inj]
-  simp_rw [sum3]
+  simp_rw [add_assoc, sum3]
+
+theorem qt_expansion (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
+      + (∑ p ∈ s with symOffDiagLeft p, polar_left_lift bm₁ Q₁ bm₂ Q₂ x p)
+      + (∑ p ∈ s with symOffDiagRight p, polar_right_lift bm₁ Q₁ bm₂ Q₂ x p)
+      + (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) = Q x := by
+  simp_rw [← qt_expansion23]
+  simp only [add_left_inj]
+  simp_rw [add_assoc]
+  simp only [add_right_inj]
+  simp_rw [sum_left, sum_right]
 
 end TensorProduct
 
