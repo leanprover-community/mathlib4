@@ -484,7 +484,7 @@ theorem sum1 (x : M₁ ⊗[R] M₂) :
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
-  simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_disjoint_filters,
+  simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor,
     e1, e2]
 
 theorem sum2 (x : M₁ ⊗[R] M₂) :
@@ -498,7 +498,7 @@ theorem sum2 (x : M₁ ⊗[R] M₂) :
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
   simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
-  simp_rw [Finset.sum_disjoint_filters, e3, e4]
+  simp_rw [Finset.sum_filter_xor, e3, e4]
 
 theorem sum2a (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -537,8 +537,7 @@ theorem sum3 (x : M₁ ⊗[R] M₂) :
     (∑ p ∈ s with symOffDiagLeft p, Q.polar_lift bm x p)
       + (∑ p ∈ s with symOffDiagRight p, Q.polar_lift bm x p) =
     ∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p := by
-  simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_disjoint_filters, e5,
-    e6]
+  simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
 
 theorem qt_expansion20 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
