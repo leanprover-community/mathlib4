@@ -229,7 +229,7 @@ protected theorem Convex.interior {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜
 /-- In a topological vector space, the closure of a convex set is convex. -/
 protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 (closure s) :=
   fun x hx y hy a b ha hb hab =>
-  let f : E → E → E := fun x' y' => a • x' + b • y'
+  letI f : E → E → E := fun x' y' => a • x' + b • y'
   have hf : Continuous (Function.uncurry f) :=
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab

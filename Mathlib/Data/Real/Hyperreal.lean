@@ -245,10 +245,10 @@ theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
   dif_neg fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
 
 theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) :=
-  let S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
-  let R : ℝ := sSup S
-  let ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
-  let ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
+  letI S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
+  letI R : ℝ := sSup S
+  let_fun ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
+  let_fun ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
   have HR₁ : S.Nonempty :=
     ⟨r₁ - 1, lt_of_lt_of_le (coe_lt_coe.2 <| sub_one_lt _) (not_lt.mp hr₁)⟩
   have HR₂ : BddAbove S :=
@@ -288,7 +288,7 @@ theorem IsSt.isSt_st {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : IsSt x (st x) := by
   rwa [hxr.st_eq]
 
 theorem isSt_st_of_exists_st {x : ℝ*} (hx : ∃ r : ℝ, IsSt x r) : IsSt x (st x) :=
-  let ⟨_r, hr⟩ := hx; hr.isSt_st
+  let_fun ⟨_r, hr⟩ := hx; hr.isSt_st
 
 theorem isSt_st' {x : ℝ*} (hx : ¬Infinite x) : IsSt x (st x) :=
   (isSt_sSup hx).isSt_st
@@ -473,7 +473,7 @@ theorem infiniteNeg_add_not_infinite {x y : ℝ*} :
 theorem infinitePos_of_tendsto_top {f : ℕ → ℝ} (hf : Tendsto f atTop atTop) :
     InfinitePos (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atTop.mp hf
-  let ⟨i, hi⟩ := hf' (r + 1)
+  let_fun ⟨i, hi⟩ := hf' (r + 1)
   have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
   have hS : { a : ℕ | r < f a }ᶜ ⊆ { a : ℕ | a ≤ i } := by
     simp only [Set.compl_setOf, not_lt]
@@ -483,7 +483,7 @@ theorem infinitePos_of_tendsto_top {f : ℕ → ℝ} (hf : Tendsto f atTop atTop
 theorem infiniteNeg_of_tendsto_bot {f : ℕ → ℝ} (hf : Tendsto f atTop atBot) :
     InfiniteNeg (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atBot.mp hf
-  let ⟨i, hi⟩ := hf' (r - 1)
+  let_fun ⟨i, hi⟩ := hf' (r - 1)
   have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
   have hS : { a : ℕ | f a < r }ᶜ ⊆ { a : ℕ | a ≤ i } := by
     simp only [Set.compl_setOf, not_lt]
@@ -498,7 +498,7 @@ theorem not_infinite_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : 
   not_infinite_of_exists_st <| ⟨r + s, hr.add hs⟩
 
 theorem not_infinite_iff_exist_lt_gt {x : ℝ*} : ¬Infinite x ↔ ∃ r s : ℝ, (r : ℝ*) < x ∧ x < s :=
-  ⟨fun hni ↦ let ⟨r, hr⟩ := exists_st_of_not_infinite hni; ⟨r - 1, r + 1, hr 1 one_pos⟩,
+  ⟨fun hni ↦ let_fun ⟨r, hr⟩ := exists_st_of_not_infinite hni; ⟨r - 1, r + 1, hr 1 one_pos⟩,
     fun ⟨r, s, hr, hs⟩ hi ↦ hi.elim (fun hp ↦ (hp s).not_lt hs) (fun hn ↦ (hn r).not_lt hr)⟩
 
 theorem not_infinite_real (r : ℝ) : ¬Infinite r := by

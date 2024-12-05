@@ -452,13 +452,13 @@ def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fin
 /-- If `f : α → β` is a bijection and `α` is a fintype, then `β` is also a fintype. -/
 def ofBijective [Fintype α] (f : α → β) (H : Function.Bijective f) : Fintype β :=
   ⟨univ.map ⟨f, H.1⟩, fun b =>
-    let ⟨_, e⟩ := H.2 b
+    let_fun ⟨_, e⟩ := H.2 b
     e ▸ mem_map_of_mem _ (mem_univ _)⟩
 
 /-- If `f : α → β` is a surjection and `α` is a fintype, then `β` is also a fintype. -/
 def ofSurjective [DecidableEq β] [Fintype α] (f : α → β) (H : Function.Surjective f) : Fintype β :=
   ⟨univ.image f, fun b =>
-    let ⟨_, e⟩ := H b
+    let_fun ⟨_, e⟩ := H b
     e ▸ mem_image_of_mem _ (mem_univ _)⟩
 
 end Fintype

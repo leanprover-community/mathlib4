@@ -84,7 +84,7 @@ def List.splitEvenOdd {α : Type u} : List α → List α × List α
   | [] => ([], [])
   | [a] => ([a], [])
   | a::b::xs =>
-    let (as, bs) := List.splitEvenOdd xs
+    let_fun (as, bs) := List.splitEvenOdd xs
     (a::as, b::bs)
 
 /-- The core function for `monoidal` and `bicategory` tactics. -/

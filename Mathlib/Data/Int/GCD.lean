@@ -38,7 +38,7 @@ namespace Nat
 def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
   | 0, _, _, r', s', t' => (r', s', t')
   | succ k, s, t, r', s', t' =>
-    let q := r' / succ k
+    let_fun q := r' / succ k
     xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
 termination_by k => k
 decreasing_by exact mod_lt _ <| (succ_pos _).gt
@@ -277,7 +277,7 @@ theorem exists_gcd_one {m n : ℤ} (H : 0 < gcd m n) :
 
 theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
     ∃ (g : ℕ) (m' n' : ℤ), 0 < g ∧ gcd m' n' = 1 ∧ m = m' * g ∧ n = n' * g :=
-  let ⟨m', n', h⟩ := exists_gcd_one H
+  let_fun ⟨m', n', h⟩ := exists_gcd_one H
   ⟨_, m', n', H, h⟩
 
 theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : k ≠ 0) : m ^ k ∣ n ^ k ↔ m ∣ n := by

@@ -80,7 +80,7 @@ instance noZeroDivisors (I : Ideal R) [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I
         (Or.inr ∘ eq_zero_iff_mem.2)
 
 instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial hI.1
+  let_fun _ := Quotient.nontrivial hI.1
   NoZeroDivisors.to_isDomain _
 
 theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
@@ -140,7 +140,7 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
 theorem maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsField (R ⧸ I) :=
   ⟨fun h =>
-    let _i := @Quotient.field _ _ I h
+    letI _i := @Quotient.field _ _ I h
     Field.toIsField _,
     maximal_of_isField _⟩
 

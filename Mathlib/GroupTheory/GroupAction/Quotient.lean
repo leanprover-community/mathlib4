@@ -467,7 +467,7 @@ noncomputable def quotientCentralizerEmbedding (g : G) :
             (quotientEquivOfEq (ConjAct.stabilizer_eq_centralizer g))).symm.toEmbedding.trans
     ⟨fun x =>
       ⟨x * g⁻¹,
-        let ⟨_, x, rfl⟩ := x
+        let_fun ⟨_, x, rfl⟩ := x
         ⟨x, g, rfl⟩⟩,
       fun _ _ => Subtype.ext ∘ mul_right_cancel ∘ Subtype.ext_iff.mp⟩
 

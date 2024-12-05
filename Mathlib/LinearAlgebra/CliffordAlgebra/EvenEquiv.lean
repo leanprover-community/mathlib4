@@ -161,8 +161,8 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
       LinearMap.ext fun m₁ =>
         LinearMap.ext fun m₂ =>
           Subtype.ext <|
-            let ⟨m₁, r₁⟩ := m₁
-            let ⟨m₂, r₂⟩ := m₂
+            let_fun ⟨m₁, r₁⟩ := m₁
+            let_fun ⟨m₂, r₂⟩ := m₂
             calc
               ↑(toEven Q (ofEven Q ((even.ι (Q' Q)).bilin (m₁, r₁) (m₂, r₂)))) =
                   (e0 Q * v Q m₁ + algebraMap R _ r₁) * (e0 Q * v Q m₂ - algebraMap R _ r₂) := by

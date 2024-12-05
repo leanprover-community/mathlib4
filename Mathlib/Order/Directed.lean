@@ -67,7 +67,7 @@ theorem directedOn_image {s : Set β} {f : β → α} :
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
     (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy =>
-  let ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
+  let_fun ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   ⟨z, hz, h hx hz hxz, h hy hz hyz⟩
 
 theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ ⦃a b⦄, r a b → r' a b) :
@@ -79,7 +79,7 @@ theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f
 
 theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
     (h : Directed r f) : Directed s f := fun a b =>
-  let ⟨c, h₁, h₂⟩ := h a b
+  let_fun ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
 -- Porting note: due to some interaction with the local notation, `r` became explicit here in lean3
@@ -129,13 +129,13 @@ theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
   ⟨fun h => ⟨h⟩, @directed_id _ _⟩
 
 theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
-  let ⟨c, hc⟩ := directed_of r a b
+  let_fun ⟨c, hc⟩ := directed_of r a b
   ⟨c, trivial, hc⟩
 
 theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
   ⟨fun h =>
     ⟨fun a b =>
-      let ⟨c, _, hc⟩ := h a trivial b trivial
+      let_fun ⟨c, _, hc⟩ := h a trivial b trivial
       ⟨c, hc⟩⟩,
     @directedOn_univ _ _⟩
 
@@ -145,7 +145,7 @@ instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α 
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
   ⟨fun a b =>
-    let ⟨c, ha, hb⟩ := IsDirected.directed a b
+    let_fun ⟨c, ha, hb⟩ := IsDirected.directed a b
     ⟨c, h ha, h hb⟩⟩
 
 theorem exists_ge_ge [LE α] [IsDirected α (· ≤ ·)] (a b : α) : ∃ c, a ≤ c ∧ b ≤ c :=
@@ -217,7 +217,7 @@ section Preorder
 variable [Preorder α] {a : α}
 
 protected theorem IsMin.isBot [IsDirected α (· ≥ ·)] (h : IsMin a) : IsBot a := fun b =>
-  let ⟨_, hca, hcb⟩ := exists_le_le a b
+  let_fun ⟨_, hca, hcb⟩ := exists_le_le a b
   (h hca).trans hcb
 
 protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop a :=
@@ -225,7 +225,7 @@ protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop 
 
 lemma DirectedOn.is_bot_of_is_min {s : Set α} (hd : DirectedOn (· ≥ ·) s)
     {m} (hm : m ∈ s) (hmin : ∀ a ∈ s, a ≤ m → m ≤ a) : ∀ a ∈ s, m ≤ a := fun a as =>
-  let ⟨x, xs, xm, xa⟩ := hd m hm a as
+  let_fun ⟨x, xs, xm, xa⟩ := hd m hm a as
   (hmin x xs xm).trans xa
 
 lemma DirectedOn.is_top_of_is_max {s : Set α} (hd : DirectedOn (· ≤ ·) s)
@@ -264,7 +264,7 @@ theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] :
 variable (β) in
 theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] :
     ∃ a b : β, a < b :=
-  let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
+  let_fun ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
   ⟨b, a, h⟩
 
 protected theorem IsMin.not_isMax [IsDirected β (· ≥ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b := by

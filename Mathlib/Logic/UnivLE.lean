@@ -48,8 +48,8 @@ theorem univLE_max : UnivLE.{u, max u v} := fun α ↦ small_max.{v} α
 
 theorem Small.trans_univLE (α : Type w) [hα : Small.{u} α] [h : UnivLE.{u, v}] :
     Small.{v} α :=
-  let ⟨β, ⟨f⟩⟩ := hα.equiv_small
-  let ⟨_, ⟨g⟩⟩ := (h β).equiv_small
+  let_fun ⟨β, ⟨f⟩⟩ := hα.equiv_small
+  let_fun ⟨_, ⟨g⟩⟩ := (h β).equiv_small
   ⟨_, ⟨f.trans g⟩⟩
 
 theorem UnivLE.trans [UnivLE.{u, v}] [UnivLE.{v, w}] : UnivLE.{u, w} :=

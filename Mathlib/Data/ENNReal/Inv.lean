@@ -519,7 +519,7 @@ theorem exists_inv_nat_lt {a : ℝ≥0∞} (h : a ≠ 0) : ∃ n : ℕ, (n : ℝ
   inv_inv a ▸ by simp only [ENNReal.inv_lt_inv, ENNReal.exists_nat_gt (inv_ne_top.2 h)]
 
 theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (n : ℕ) * a :=
-  let ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
+  let_fun ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
   ⟨n, Nat.cast_pos.1 ((zero_le _).trans_lt hn), by
     rwa [← ENNReal.div_lt_iff (Or.inl ha) (Or.inr hb)]⟩
 

@@ -546,7 +546,7 @@ theorem _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : Orthonormal
 theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
     (hs : Orthonormal 𝕜 ((↑) : s → E)) :
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
-  let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
+  let_fun ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
   ⟨w, HilbertBasis.mkOfOrthogonalEqBot hw_ortho
     (by simpa only [Subtype.range_coe_subtype, Set.setOf_mem_eq,
       maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
@@ -556,7 +556,7 @@ variable (𝕜 E)
 
 /-- A Hilbert space admits a Hilbert basis. -/
 theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
-  let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
+  let_fun ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
 
 end HilbertBasis

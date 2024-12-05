@@ -137,7 +137,7 @@ theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
   e.proj_symm_apply (e.mem_target.2 hx)
 
 theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet := fun b hb =>
-  let ⟨y⟩ := ‹Nonempty F›
+  let_fun ⟨y⟩ := ‹Nonempty F›
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 
@@ -385,7 +385,7 @@ theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
     (image_subset_iff.mpr fun p hp =>
       ⟨(e.proj_toFun p (e.preimage_subset_source hb hp)).symm ▸ hp, trivial⟩)
     fun p hp =>
-    let hp' : p ∈ e.target := e.mem_target.mpr (hb hp.1)
+    let_fun hp' : p ∈ e.target := e.mem_target.mpr (hb hp.1)
     ⟨e.invFun p, mem_preimage.mpr ((e.proj_symm_apply hp').symm ▸ hp.1), e.apply_symm_apply hp'⟩
 
 theorem tendsto_nhds_iff {α : Type*} {l : Filter α} {f : α → Z} {z : Z} (hz : z ∈ e.source) :

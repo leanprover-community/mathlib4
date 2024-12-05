@@ -443,7 +443,7 @@ theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*}
 theorem mem_span_finset {s : Finset M} {x : M} :
     x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i ∈ s, f i • i = x :=
   ⟨fun hx =>
-    let ⟨v, hvs, hvx⟩ :=
+    let_fun ⟨v, hvs, hvx⟩ :=
       (Finsupp.mem_span_image_iff_linearCombination _).1
         (show x ∈ span R (_root_.id '' (↑s : Set M)) by rwa [Set.image_id])
     ⟨v, hvx ▸ (linearCombination_apply_of_mem_supported _ hvs).symm⟩,

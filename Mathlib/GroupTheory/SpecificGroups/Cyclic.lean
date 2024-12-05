@@ -76,9 +76,9 @@ proof of `CommGroup`. -/
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with
     mul_comm := fun x y =>
-      let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-      let ⟨_, hn⟩ := hg x
-      let ⟨_, hm⟩ := hg y
+      let_fun ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+      let_fun ⟨_, hn⟩ := hg x
+      let_fun ⟨_, hm⟩ := hg y
       hm ▸ hn ▸ zpow_mul_comm _ _ _ }
 
 variable [Group α] [Group G] [Group G']
@@ -205,10 +205,10 @@ instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
 @[to_additive]
 instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
   haveI := Classical.propDecidable
-  let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  let_fun ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   if hx : ∃ x : α, x ∈ H ∧ x ≠ (1 : α) then
-    let ⟨x, hx₁, hx₂⟩ := hx
-    let ⟨k, hk⟩ := hg x
+    let_fun ⟨x, hx₁, hx₂⟩ := hx
+    let_fun ⟨k, hk⟩ := hg x
     have hk : g ^ k = x := hk
     have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H :=
       ⟨k.natAbs,
@@ -219,7 +219,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
-        let ⟨k, hk⟩ := hg x
+        let_fun ⟨k, hk⟩ := hg x
         have hk : g ^ k = x := hk
         have hk₂ : g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) ∈ H := by
           rw [zpow_mul]
@@ -270,12 +270,12 @@ open scoped Classical
 @[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
 theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
     #{a : α | a ^ n = 1} ≤ n :=
-  let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  let_fun ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   calc
     #{a : α | a ^ n = 1} ≤
         #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset :=
       card_le_card fun x hx =>
-        let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
+        let_fun ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
         Set.mem_toFinset.2
           ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
             dsimp at hm
@@ -472,7 +472,7 @@ theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
     card_pos.1 <| by
       rw [Nat.card_eq_fintype_card, card_orderOf_eq_totient_aux₂ hn dvd_rfl, totient_pos]
       apply Fintype.card_pos
-  let ⟨x, hx⟩ := this
+  let_fun ⟨x, hx⟩ := this
   isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
 
 @[deprecated (since := "2024-02-21")]
@@ -512,10 +512,10 @@ variable [Group G] [Group G']
       Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance."]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
-  let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
+  let_fun ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
     IsCyclic.exists_generator (α := f.range)
-  let ⟨m, hm⟩ := hx ⟨f a, a, rfl⟩
-  let ⟨n, hn⟩ := hx ⟨f b, b, rfl⟩
+  let_fun ⟨m, hm⟩ := hx ⟨f a, a, rfl⟩
+  let_fun ⟨n, hn⟩ := hx ⟨f b, b, rfl⟩
   have hm : x ^ m = f a := by simpa [Subtype.ext_iff] using hm
   have hn : x ^ n = f b := by simpa [Subtype.ext_iff] using hn
   have ha : y ^ (-m) * a ∈ center G :=
@@ -620,8 +620,8 @@ theorem IsCyclic.exponent_eq_card [Group α] [IsCyclic α] :
 @[to_additive]
 theorem IsCyclic.of_exponent_eq_card [CommGroup α] [Finite α] (h : exponent α = Nat.card α) :
     IsCyclic α :=
-  let ⟨_⟩ := nonempty_fintype α
-  let ⟨g, _, hg⟩ := Finset.mem_image.mp (Finset.max'_mem _ _)
+  let_fun ⟨_⟩ := nonempty_fintype α
+  let_fun ⟨g, _, hg⟩ := Finset.mem_image.mp (Finset.max'_mem _ _)
   isCyclic_of_orderOf_eq_card g <| hg.trans <| exponent_eq_max'_orderOf.symm.trans h
 
 @[to_additive]
@@ -632,7 +632,7 @@ theorem IsCyclic.iff_exponent_eq_card [CommGroup α] [Finite α] :
 @[to_additive]
 theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite α] :
     exponent α = 0 :=
-  let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+  let_fun ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
   exponent_eq_zero_of_order_zero <| Infinite.orderOf_eq_zero_of_forall_mem_zpowers hg
 
 @[simp]

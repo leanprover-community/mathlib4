@@ -55,7 +55,7 @@ protected def abs ⦃α⦄ : Sigma.P F α → Sigma F α
 /-- representation function for dependent sums -/
 protected def repr ⦃α⦄ : Sigma F α → Sigma.P F α
   | ⟨a, f⟩ =>
-    let x := MvQPF.repr f
+    let_fun x := MvQPF.repr f
     ⟨⟨a, x.1⟩, x.2⟩
 
 instance : MvQPF (Sigma F) where

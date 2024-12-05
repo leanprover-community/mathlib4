@@ -366,7 +366,7 @@ variable {ι : Type*} {f : F}
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
 def giMapComap (hf : Function.Surjective f) : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
-    let ⟨y, hy⟩ := hf x
+    let_fun ⟨y, hy⟩ := hf x
     mem_map.2 ⟨y, by simp [hy, h]⟩
 
 variable (hf : Function.Surjective f)
@@ -942,7 +942,7 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := MonoidHom.mem_mrange.mp x.2
+        let_fun ⟨x', hx'⟩ := MonoidHom.mem_mrange.mp x.2
         show f (g x) = x by rw [← hx', h x'] }
 
 /-- A `MulEquiv` `φ` between two monoids `M` and `N` induces a `MulEquiv` between

@@ -633,7 +633,7 @@ variable (μ) in
 @[deprecated exists_isFiniteMeasure_absolutelyContinuous (since := "2024-08-25")]
 theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
     ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
-  let ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
+  let_fun ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
 
 end SFinite
 
@@ -777,7 +777,7 @@ theorem finite_const_le_meas_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α
 then the set has infinite measure. -/
 theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
     {s : Set α} (hs : s.Infinite) (h' : ∃ ε, ε ≠ 0 ∧ ∀ x ∈ s, ε ≤ μ {x}) : μ s = ∞ := top_unique <|
-  let ⟨ε, hne, hε⟩ := h'; have := hs.to_subtype
+  let_fun ⟨ε, hne, hε⟩ := h'; have := hs.to_subtype
   calc
     ∞ = ∑' _ : s, ε := (ENNReal.tsum_const_eq_top_of_ne_zero hne).symm
     _ ≤ ∑' x : s, μ {x.1} := ENNReal.tsum_le_tsum fun x ↦ hε x x.2
@@ -1285,7 +1285,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 instance (priority := 100) isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun x ↦
-    let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
+    let_fun ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
     ⟨K, K_mem, K_compact.measure_lt_top⟩⟩
 
 theorem exists_pos_measure_of_cover [Countable ι] {U : ι → Set α} (hU : ⋃ i, U i = univ)
@@ -1369,7 +1369,7 @@ theorem exists_eq_disjoint_finiteSpanningSetsIn (μ ν : Measure α) [SigmaFinit
     ∃ (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s })
       (T : ν.FiniteSpanningSetsIn { s | MeasurableSet s }),
       S.set = T.set ∧ Pairwise (Disjoint on S.set) :=
-  let S := (μ + ν).toFiniteSpanningSetsIn.disjointed
+  letI S := (μ + ν).toFiniteSpanningSetsIn.disjointed
   ⟨S.ofLE (Measure.le_add_right le_rfl), S.ofLE (Measure.le_add_left le_rfl), rfl,
     disjoint_disjointed _⟩
 
@@ -1426,7 +1426,7 @@ theorem finiteAt_principal : μ.FiniteAtFilter (𝓟 s) ↔ μ s < ∞ :=
 
 theorem isLocallyFiniteMeasure_of_le [TopologicalSpace α] {_m : MeasurableSpace α} {μ ν : Measure α}
     [H : IsLocallyFiniteMeasure μ] (h : ν ≤ μ) : IsLocallyFiniteMeasure ν :=
-  let F := H.finiteAtNhds
+  let_fun F := H.finiteAtNhds
   ⟨fun x => (F x).measure_mono h⟩
 
 end Measure

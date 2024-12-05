@@ -226,7 +226,7 @@ theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
 
 theorem eq_zero_of_eval_eq_zero [Finite σ] (p : MvPolynomial σ K) (h : ∀ v : σ → K, eval v p = 0)
     (hp : p ∈ restrictDegree σ K (Fintype.card K - 1)) : p = 0 :=
-  let p' : R σ K := ⟨p, hp⟩
+  letI p' : R σ K := ⟨p, hp⟩
   have : p' ∈ ker (evalᵢ σ K) := funext h
   show p'.1 = (0 : R σ K).1 from congr_arg _ <| by rwa [ker_evalₗ, mem_bot] at this
 

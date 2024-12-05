@@ -551,7 +551,7 @@ open Submodule.IsPrincipal
 variable [IsLocalization S P]
 
 theorem isFractional_span_singleton (x : P) : IsFractional S (span R {x} : Submodule R P) :=
-  let ⟨a, ha⟩ := exists_integer_multiple S x
+  let_fun ⟨a, ha⟩ := exists_integer_multiple S x
   isFractional_span_iff.mpr ⟨a, a.2, fun _ hx' => (Set.mem_singleton_iff.mp hx').symm ▸ ha⟩
 
 variable (S)

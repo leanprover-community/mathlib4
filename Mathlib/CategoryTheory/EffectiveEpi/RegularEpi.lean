@@ -33,7 +33,7 @@ instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
 theorem effectiveEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : EffectiveEpi f :=
-  let _ := regularEpiOfKernelPair f hc
+  let_fun _ := regularEpiOfKernelPair f hc
   inferInstance
 
 /-- An effective epi which has a kernel pair is a regular epi. -/

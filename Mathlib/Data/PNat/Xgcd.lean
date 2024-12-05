@@ -389,13 +389,13 @@ theorem gcdB'_coe : (gcdB' a b : ℕ) = gcdY a b + gcdZ a b := by
   rw [add_assoc]
 
 theorem gcd_props :
-    let d := gcdD a b
-    let w := gcdW a b
-    let x := gcdX a b
-    let y := gcdY a b
-    let z := gcdZ a b
-    let a' := gcdA' a b
-    let b' := gcdB' a b
+    let_fun d := gcdD a b
+    let_fun w := gcdW a b
+    let_fun x := gcdX a b
+    let_fun y := gcdY a b
+    let_fun z := gcdZ a b
+    let_fun a' := gcdA' a b
+    let_fun b' := gcdB' a b
     w * z = succPNat (x * y) ∧
       a = a' * d ∧
         b = b' * d ∧

@@ -145,7 +145,7 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
-  ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
+  ⟨let_fun ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
 section Prod
@@ -340,7 +340,7 @@ variable {A F hF hA}
 -- Might be something to do with the `let`s in the definition of `liftCover'`?
 @[simp]
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
-  let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
+  letI x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
   by delta liftCover'; exact liftCover_coe x'
 
 -- Porting note: porting program suggested `ext <| liftCover_coe'`

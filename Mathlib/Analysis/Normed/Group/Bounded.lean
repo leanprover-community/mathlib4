@@ -76,12 +76,12 @@ attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_
 
 @[to_additive exists_pos_norm_le]
 lemma Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
-  let ⟨R₀, hR₀⟩ := hs.exists_norm_le'
+  let_fun ⟨R₀, hR₀⟩ := hs.exists_norm_le'
   ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
 
 @[to_additive Bornology.IsBounded.exists_pos_norm_lt]
 lemma Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ < R :=
-  let ⟨R, hR₀, hR⟩ := hs.exists_pos_norm_le'
+  let_fun ⟨R, hR₀, hR⟩ := hs.exists_pos_norm_le'
   ⟨R + 1, by positivity, fun x hx ↦ (hR x hx).trans_lt (lt_add_one _)⟩
 
 @[to_additive]

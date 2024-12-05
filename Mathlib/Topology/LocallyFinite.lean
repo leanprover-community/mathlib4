@@ -31,11 +31,11 @@ theorem locallyFinite_of_finite [Finite ι] (f : ι → Set X) : LocallyFinite f
 namespace LocallyFinite
 
 theorem point_finite (hf : LocallyFinite f) (x : X) : { b | x ∈ f b }.Finite :=
-  let ⟨_t, hxt, ht⟩ := hf x
+  let_fun ⟨_t, hxt, ht⟩ := hf x
   ht.subset fun _b hb => ⟨x, hb, mem_of_mem_nhds hxt⟩
 
 protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : LocallyFinite g := fun a =>
-  let ⟨t, ht₁, ht₂⟩ := hf a
+  let_fun ⟨t, ht₁, ht₂⟩ := hf a
   ⟨t, ht₁, ht₂.subset fun i hi => hi.mono <| inter_subset_inter (hg i) Subset.rfl⟩
 
 theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
@@ -60,7 +60,7 @@ protected theorem eventually_smallSets (hf : LocallyFinite f) (x : X) :
 
 theorem exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop} {s : ι' → Set X}
     {x : X} (hb : (𝓝 x).HasBasis p s) : ∃ i, p i ∧ { j | (f j ∩ s i).Nonempty }.Finite :=
-  let ⟨i, hpi, hi⟩ := hb.smallSets.eventually_iff.mp (hf.eventually_smallSets x)
+  let_fun ⟨i, hpi, hi⟩ := hb.smallSets.eventually_iff.mp (hf.eventually_smallSets x)
   ⟨i, hpi, hi Subset.rfl⟩
 
 protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
@@ -169,7 +169,7 @@ theorem exists_forall_eventually_atTop_eventuallyEq {f : ℕ → X → α}
 
 theorem preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuous g) :
     LocallyFinite (g ⁻¹' f ·) := fun x =>
-  let ⟨s, hsx, hs⟩ := hf (g x)
+  let_fun ⟨s, hsx, hs⟩ := hf (g x)
   ⟨g ⁻¹' s, hg.continuousAt hsx, hs.subset fun _ ⟨y, hy⟩ => ⟨g y, hy⟩⟩
 
 theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=

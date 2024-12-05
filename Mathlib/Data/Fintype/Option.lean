@@ -89,8 +89,8 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
     [h_fintype : Fintype α] : P α := by
   obtain ⟨p⟩ :=
-    let f_empty := fun i => by convert h_empty
-    let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
+    let_fun f_empty := fun i => by convert h_empty
+    let_fun h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
           (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α)  := by
       rintro α hα - Pα hα'
       convert h_option α (Pα _)

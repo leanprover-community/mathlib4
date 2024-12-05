@@ -49,9 +49,9 @@ partial def proveNatFibAux (en' : Q(ℕ)) : (ea' eb' : Q(ℕ)) × Q(IsFibAux $en
     ⟨mkRawNatLit 1, mkRawNatLit 1, q(isFibAux_one)⟩
   | n' =>
     have en : Q(ℕ) := mkRawNatLit <| n' / 2
-    let ⟨ea, eb, H⟩ := proveNatFibAux en
-    let a := ea.natLit!
-    let b := eb.natLit!
+    let_fun ⟨ea, eb, H⟩ := proveNatFibAux en
+    let_fun a := ea.natLit!
+    let_fun b := eb.natLit!
     if n' % 2 == 0 then
       have hn : Q(2 * $en = $en') := (q(Eq.refl $en') : Expr)
       have ea' : Q(ℕ) := mkRawNatLit <| a * (2 * b - a)
@@ -84,9 +84,9 @@ def proveNatFib (en' : Q(ℕ)) : (em : Q(ℕ)) × Q(Nat.fib $en' = $em) :=
   | 2 => show (em : Q(ℕ)) × Q(Nat.fib 2 = $em) from ⟨mkRawNatLit 1, q(Nat.fib_two)⟩
   | n' =>
     have en : Q(ℕ) := mkRawNatLit <| n' / 2
-    let ⟨ea, eb, H⟩ := proveNatFibAux en
-    let a := ea.natLit!
-    let b := eb.natLit!
+    let_fun ⟨ea, eb, H⟩ := proveNatFibAux en
+    let_fun a := ea.natLit!
+    let_fun b := eb.natLit!
     if n' % 2 == 0 then
       have hn : Q(2 * $en = $en') := (q(Eq.refl $en') : Expr)
       have ea' : Q(ℕ) := mkRawNatLit <| a * (2 * b - a)

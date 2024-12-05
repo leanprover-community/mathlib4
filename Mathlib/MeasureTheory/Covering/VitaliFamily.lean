@@ -90,7 +90,7 @@ with respect to `μ`. -/
 def mono (v : VitaliFamily μ) (ν : Measure X) (hν : ν ≪ μ) : VitaliFamily ν where
   __ := v
   covering s f h h' :=
-    let ⟨t, ts, disj, mem_f, hμ⟩ := v.covering s f h h'
+    let_fun ⟨t, ts, disj, mem_f, hμ⟩ := v.covering s f h h'
     ⟨t, ts, disj, mem_f, hν hμ⟩
 
 /-- Given a Vitali family `v` for a measure `μ`, a family `f` is a fine subfamily on a set `s` if

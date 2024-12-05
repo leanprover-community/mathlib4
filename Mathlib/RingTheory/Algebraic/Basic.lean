@@ -143,7 +143,7 @@ variable {B : Type*} [Ring B] [Algebra R B]
   allows noncommutative intermediate rings `A`. -/
 protected theorem IsAlgebraic.algHom (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
-  let ⟨p, hp, ha⟩ := h
+  let_fun ⟨p, hp, ha⟩ := h
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
 
 theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
@@ -362,7 +362,7 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
   and the map from `R` to `S` is injective. -/
 theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
-  let ⟨p, hp₁, hp₂⟩ := A_alg
+  let_fun ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 

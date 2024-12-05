@@ -94,7 +94,7 @@ theorem exists_nonempty_countable_separating (α : Type*) {p : Set α → Prop} 
     (t : Set α) [HasCountableSeparatingOn α p t] :
     ∃ S : Set (Set α), S.Nonempty ∧ S.Countable ∧ (∀ s ∈ S, p s) ∧
       ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y :=
-  let ⟨S, hSc, hSp, hSt⟩ := exists_countable_separating α p t
+  let_fun ⟨S, hSc, hSp, hSt⟩ := exists_countable_separating α p t
   ⟨insert s₀ S, insert_nonempty _ _, hSc.insert _, forall_insert_of_forall hSp hp,
     fun x hx y hy hxy ↦ hSt x hx y hy <| forall_of_forall_insert hxy⟩
 
@@ -110,7 +110,7 @@ theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
     HasCountableSeparatingOn α p₂ t₂ where
   exists_countable_separating :=
-    let ⟨S, hSc, hSp, hSt⟩ := h.1
+    let_fun ⟨S, hSc, hSp, hSt⟩ := h.1
     ⟨S, hSc, fun s hs ↦ hp s (hSp s hs), fun x hx y hy ↦ hSt x (ht hx) y (ht hy)⟩
 
 theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {t : Set α}
@@ -188,7 +188,7 @@ theorem exists_singleton_mem_of_mem_of_forall_separating [Nonempty α] (p : Set 
 theorem exists_subsingleton_mem_of_forall_separating (p : Set α → Prop)
     [HasCountableSeparatingOn α p univ] (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) :
     ∃ s : Set α, s.Subsingleton ∧ s ∈ l :=
-  let ⟨t, _, hts, htl⟩ := exists_subset_subsingleton_mem_of_forall_separating p univ_mem hl
+  let_fun ⟨t, _, hts, htl⟩ := exists_subset_subsingleton_mem_of_forall_separating p univ_mem hl
   ⟨t, hts, htl⟩
 
 theorem exists_singleton_mem_of_forall_separating [Nonempty α] (p : Set α → Prop)

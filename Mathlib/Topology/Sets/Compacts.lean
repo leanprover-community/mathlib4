@@ -364,13 +364,13 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
 
 theorem _root_.exists_positiveCompacts_subset [LocallyCompactSpace α] {U : Set α} (ho : IsOpen U)
     (hn : U.Nonempty) : ∃ K : PositiveCompacts α, ↑K ⊆ U :=
-  let ⟨x, hx⟩ := hn
-  let ⟨K, hKc, hxK, hKU⟩ := exists_compact_subset ho hx
+  let_fun ⟨x, hx⟩ := hn
+  let_fun ⟨K, hKc, hxK, hKU⟩ := exists_compact_subset ho hx
   ⟨⟨⟨K, hKc⟩, ⟨x, hxK⟩⟩, hKU⟩
 
 theorem _root_.IsOpen.exists_positiveCompacts_closure_subset [R1Space α] [LocallyCompactSpace α]
     {U : Set α} (ho : IsOpen U) (hn : U.Nonempty) : ∃ K : PositiveCompacts α, closure ↑K ⊆ U :=
-  let ⟨K, hKU⟩ := exists_positiveCompacts_subset ho hn
+  let_fun ⟨K, hKU⟩ := exists_positiveCompacts_subset ho hn
   ⟨K, K.isCompact.closure_subset_of_isOpen ho hKU⟩
 
 instance [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=

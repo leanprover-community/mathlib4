@@ -80,7 +80,7 @@ instance (priority := 100) _root_.MetricSpace.toMetrizableSpace {X : Type*} [m :
 
 instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : MetrizableSpace X] :
     PseudoMetrizableSpace X :=
-  let ⟨m, hm⟩ := h.1
+  let_fun ⟨m, hm⟩ := h.1
   ⟨⟨m.toPseudoMetricSpace, hm⟩⟩
 
 /-- Construct on a metrizable space a metric compatible with the topology. -/

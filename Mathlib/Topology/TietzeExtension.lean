@@ -522,7 +522,7 @@ there exists a continuous real-valued function `g : C(Y, ℝ)` such that `g y �
 theorem exists_restrict_eq_forall_mem_of_closed {s : Set Y} (f : C(s, ℝ)) {t : Set ℝ}
     [OrdConnected t] (ht : ∀ x, f x ∈ t) (hne : t.Nonempty) (hs : IsClosed s) :
     ∃ g : C(Y, ℝ), (∀ y, g y ∈ t) ∧ g.restrict s = f :=
-  let ⟨g, hgt, hgf⟩ :=
+  let_fun ⟨g, hgt, hgf⟩ :=
     exists_extension_forall_mem_of_isClosedEmbedding f ht hne hs.isClosedEmbedding_subtypeVal
   ⟨g, hgt, coe_injective hgf⟩
 

@@ -376,7 +376,7 @@ instance : SMul S (QuadraticMap R M N) :=
       toFun_smul := fun b x => by
         rw [Pi.smul_apply, map_smul, Pi.smul_apply, smul_comm]
       exists_companion' :=
-        let ⟨B, h⟩ := Q.exists_companion
+        let_fun ⟨B, h⟩ := Q.exists_companion
         letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
@@ -417,8 +417,8 @@ instance : Add (QuadraticMap R M N) :=
     { toFun := Q + Q'
       toFun_smul := fun a x => by simp only [Pi.add_apply, smul_add, map_smul]
       exists_companion' :=
-        let ⟨B, h⟩ := Q.exists_companion
-        let ⟨B', h'⟩ := Q'.exists_companion
+        let_fun ⟨B, h⟩ := Q.exists_companion
+        let_fun ⟨B', h'⟩ := Q'.exists_companion
         ⟨B + B', fun x y => by
           simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
 
@@ -492,7 +492,7 @@ instance : Neg (QuadraticMap R M N) :=
     { toFun := -Q
       toFun_smul := fun a x => by simp only [Pi.neg_apply, map_smul, smul_neg]
       exists_companion' :=
-        let ⟨B, h⟩ := Q.exists_companion
+        let_fun ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
 
 @[simp]
@@ -534,7 +534,7 @@ def restrictScalars (Q : QuadraticMap R M N) : QuadraticMap S M N where
   toFun_smul a x := by
     simp [map_smul_of_tower]
   exists_companion' :=
-    let ⟨B, h⟩ := Q.exists_companion
+    let_fun ⟨B, h⟩ := Q.exists_companion
     ⟨B.restrictScalars₁₂ (S := R) (R' := S) (S' := S), fun x y => by
       simp only [LinearMap.restrictScalars₁₂_apply_apply, h]⟩
 
@@ -550,7 +550,7 @@ def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
   exists_companion' :=
-    let ⟨B, h⟩ := Q.exists_companion
+    let_fun ⟨B, h⟩ := Q.exists_companion
     ⟨B.compl₁₂ f f, fun x y => by simp_rw [f.map_add]; exact h (f x) (f y)⟩
 
 @[simp]
@@ -564,7 +564,7 @@ def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M 
   toFun x := f (Q x)
   toFun_smul b x := by simp only [map_smul, f.map_smul]
   exists_companion' :=
-    let ⟨B, h⟩ := Q.exists_companion
+    let_fun ⟨B, h⟩ := Q.exists_companion
     ⟨B.compr₂ f, fun x y => by simp only [h, map_add, LinearMap.compr₂_apply]⟩
 
 /-- Compose a quadratic map with a linear function on the left. -/

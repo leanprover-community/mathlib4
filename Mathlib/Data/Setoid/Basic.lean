@@ -403,7 +403,7 @@ def map (r : Setoid α) (f : α → β) : Setoid β :=
 def mapOfSurjective (r) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
   ⟨fun x y => ∃ a b, f a = x ∧ f b = y ∧ r a b,
     ⟨fun x =>
-      let ⟨y, hy⟩ := hf x
+      let_fun ⟨y, hy⟩ := hf x
       ⟨y, y, hy, hy, r.refl' y⟩,
       fun ⟨x, y, hx, hy, h⟩ => ⟨y, x, hy, hx, r.symm' h⟩,
       fun ⟨x, y, hx, hy, h₁⟩ ⟨y', z, hy', hz, h₂⟩ =>

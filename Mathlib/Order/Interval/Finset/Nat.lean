@@ -255,7 +255,7 @@ variable {P : ℕ → Prop}
 
 theorem Nat.decreasing_induction_of_not_bddAbove (h : ∀ n, P (n + 1) → P n)
     (hP : ¬BddAbove { x | P x }) (n : ℕ) : P n :=
-  let ⟨_, hm, hl⟩ := not_bddAbove_iff.1 hP n
+  let_fun ⟨_, hm, hl⟩ := not_bddAbove_iff.1 hP n
   decreasingInduction (fun _ _ => h _) hm hl.le
 
 @[elab_as_elim]

@@ -276,7 +276,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   obtain ⟨c, hc, hgc'⟩ : ∃ c > 0, ∀ y : X, y ∈ t → c ≤ g' y :=
     t.eq_empty_or_nonempty.elim
       (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
-      let ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn
+      let_fun ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
@@ -295,7 +295,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
   refine
     Set.Subset.antisymm
       ((setOfIdeal_open (idealOfSet 𝕜 s)).subset_interior_iff.mpr fun x hx =>
-        let ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
+        let_fun ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
         Set.not_mem_compl_iff.mp (mt (@hf x) hfx))
       fun x hx => ?_
   -- If `x ∉ closure sᶜ`, we must produce `f : C(X, 𝕜)` which is zero on `sᶜ` and `f x ≠ 0`.
@@ -357,7 +357,7 @@ theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 
     I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 {x}ᶜ = I := by
   refine
     ⟨?_, fun h =>
-      let ⟨x, hx⟩ := h
+      let_fun ⟨x, hx⟩ := h
       hx ▸ idealOf_compl_singleton_isMaximal 𝕜 x⟩
   intro hI'
   obtain ⟨x, hx⟩ := setOfIdeal_eq_compl_singleton I

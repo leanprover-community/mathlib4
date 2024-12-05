@@ -93,7 +93,7 @@ def toLinearMap (f : E → F) (h : IsBoundedLinearMap 𝕜 f) : E →ₗ[𝕜] F
 def toContinuousLinearMap {f : E → F} (hf : IsBoundedLinearMap 𝕜 f) : E →L[𝕜] F :=
   { toLinearMap f hf with
     cont :=
-      let ⟨C, _, hC⟩ := hf.bound
+      let_fun ⟨C, _, hC⟩ := hf.bound
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 
 theorem zero : IsBoundedLinearMap 𝕜 fun _ : E => (0 : F) :=
@@ -115,7 +115,7 @@ theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
 variable {f g : E → F}
 
 theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
-  let ⟨hlf, M, _, hM⟩ := hf
+  let_fun ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
       ‖c • f x‖ = ‖c‖ * ‖f x‖ := norm_smul c (f x)
@@ -128,8 +128,8 @@ theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => 
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
     IsBoundedLinearMap 𝕜 fun e => f e + g e :=
-  let ⟨hlf, Mf, _, hMf⟩ := hf
-  let ⟨hlg, Mg, _, hMg⟩ := hg
+  let_fun ⟨hlf, Mf, _, hMf⟩ := hf
+  let_fun ⟨hlg, Mg, _, hMg⟩ := hg
   (hlf.mk' _ + hlg.mk' _).isLinear.with_bound (Mf + Mg) fun x =>
     calc
       ‖f x + g x‖ ≤ Mf * ‖x‖ + Mg * ‖x‖ := norm_add_le_of_le (hMf x) (hMg x)
@@ -143,7 +143,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
   (hg.toContinuousLinearMap.comp hf.toContinuousLinearMap).isBoundedLinearMap
 
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
-  let ⟨hf, M, _, hM⟩ := hf
+  let_fun ⟨hf, M, _, hM⟩ := hf
   tendsto_iff_norm_sub_tendsto_zero.2 <|
     squeeze_zero (fun _ => norm_nonneg _)
       (fun e =>
@@ -165,7 +165,7 @@ section
 open Asymptotics Filter
 
 theorem isBigO_id {f : E → F} (h : IsBoundedLinearMap 𝕜 f) (l : Filter E) : f =O[l] fun x => x :=
-  let ⟨_, _, hM⟩ := h.bound
+  let_fun ⟨_, _, hM⟩ := h.bound
   IsBigO.of_bound _ (mem_of_superset univ_mem fun x _ => hM x)
 
 theorem isBigO_comp {E : Type*} {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) {f : E → F}
@@ -298,7 +298,7 @@ def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f
 
 protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p.1‖ * ‖p.2‖ :=
-  let ⟨C, _, hC⟩ := h.bound
+  let_fun ⟨C, _, hC⟩ := h.bound
   Asymptotics.IsBigO.of_bound C <|
     Filter.Eventually.of_forall fun ⟨x, y⟩ => by simpa [mul_assoc] using hC x y
 

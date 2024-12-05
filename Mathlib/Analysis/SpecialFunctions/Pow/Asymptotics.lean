@@ -248,7 +248,7 @@ theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (
 
 theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
     (fun x => f x ^ r) =O[l] fun x => g x ^ r :=
-  let ⟨_, hc, h'⟩ := h.exists_nonneg
+  let_fun ⟨_, hc, h'⟩ := h.exists_nonneg
   (h'.rpow hc hr hg).isBigO
 
 theorem IsTheta.rpow (hr : 0 ≤ r) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
@@ -318,7 +318,7 @@ theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x =>
 
 theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
     (fun x => log x ^ r) =o[atTop] fun x => x ^ s :=
-  let r' := max r 1
+  letI r' := max r 1
   have hr : 0 < r' := lt_max_iff.2 <| Or.inr one_pos
   have H : 0 < s / r' := div_pos hs hr
   calc

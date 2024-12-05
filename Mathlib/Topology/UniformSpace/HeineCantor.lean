@@ -101,7 +101,7 @@ theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β]
 if `α` is weakly locally compact and `β` is compact. -/
 theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     (f : α → β → γ) (h : Continuous ↿f) (x : α) : TendstoUniformly f (f x) (𝓝 x) :=
-  let ⟨K, hK, hxK⟩ := exists_compact_mem_nhds x
+  let_fun ⟨K, hK, hxK⟩ := exists_compact_mem_nhds x
   have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
   this.tendstoUniformly hxK

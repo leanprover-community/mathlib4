@@ -698,7 +698,7 @@ variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ} (hμ : IsPrimitiveRoot μ 
 /-- The `MonoidHom` that takes an automorphism to the power of `μ` that `μ` gets mapped to
 under it. -/
 noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
-  let μ' := hμ.toRootsOfUnity
+  letI μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
     refine Eq.trans ?_ hμ.eq_orderOf.symm -- `rw [hμ.eq_orderOf]` gives "motive not type correct"
     rw [← hμ.val_toRootsOfUnity_coe, orderOf_units, Subgroup.orderOf_coe]

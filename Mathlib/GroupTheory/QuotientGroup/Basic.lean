@@ -255,7 +255,7 @@ open Subgroup
 `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`"]
 noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Normal] :
     H ⧸ N.subgroupOf H ≃* _ ⧸ N.subgroupOf (H ⊔ N) :=
-  let
+  letI
     φ :-- φ is the natural homomorphism H →* (HN)/N.
       H →*
       _ ⧸ N.subgroupOf (H ⊔ N) :=

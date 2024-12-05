@@ -80,7 +80,7 @@ lemma normalClosure_eq_iSup_adjoin_of_splits :
     normalClosure F K L = ⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_le_iSup_adjoin.antisymm <|
     iSup_le fun x ↦ IntermediateField.adjoin_le_iff.mpr fun _ hy ↦
-      let ⟨φ, hφ⟩ := IntermediateField.exists_algHom_of_splits_of_aeval
+      let_fun ⟨φ, hφ⟩ := IntermediateField.exists_algHom_of_splits_of_aeval
         (fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, splits x⟩) (mem_rootSet.mp hy).2
       le_iSup AlgHom.fieldRange φ ⟨x, hφ⟩
 
@@ -207,7 +207,7 @@ open Cardinal in
 noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits [Algebra.IsAlgebraic F K]
     (h : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (L' : Type*) [Field L'] [Algebra F L'] :
     (K →ₐ[F] L') ↪ (K →ₐ[F] L) :=
-  let φ : ↑(⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L')) →ₐ[F] L :=
+  let_fun φ : ↑(⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L')) →ₐ[F] L :=
     Nonempty.some <| by
       rw [← gc.l_iSup]
       refine nonempty_algHom_adjoin_of_splits fun x hx ↦ ?_
@@ -217,7 +217,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits [Algebra.IsAlgebra
       · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
           (h y) (minpoly.dvd F x (mem_rootSet.mp hx).2)
       · simp [minpoly.eq_zero iy] at hx
-  let φ' := (φ.comp <| inclusion normalClosure_le_iSup_adjoin)
+  let_fun φ' := (φ.comp <| inclusion normalClosure_le_iSup_adjoin)
   { toFun := φ'.comp ∘ (normalClosure.algHomEquiv F K L').symm
     inj' := fun _ _ h ↦ (normalClosure.algHomEquiv F K L').symm.injective <| by
       rw [DFunLike.ext'_iff] at h ⊢

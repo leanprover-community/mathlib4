@@ -62,7 +62,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
 theorem exists_hasDerivWithinAt_eq_of_lt_of_gt (hab : a ≤ b)
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : m < f' a)
     (hmb : f' b < m) : m ∈ f' '' Ioo a b :=
-  let ⟨c, cmem, hc⟩ :=
+  let_fun ⟨c, cmem, hc⟩ :=
     exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx => (hf x hx).neg) (neg_lt_neg hma)
       (neg_lt_neg hmb)
   ⟨c, cmem, neg_injective hc⟩

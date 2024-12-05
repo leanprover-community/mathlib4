@@ -209,15 +209,15 @@ theorem induced_orderTopology' {α : Type u} {β : Type v} [Preorder α] [ta : T
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H₁ : ∀ {a x}, x < f a → ∃ b < a, x ≤ f b) (H₂ : ∀ {a x}, f a < x → ∃ b > a, f b ≤ x) :
     @OrderTopology _ (induced f ta) _ :=
-  let _ := induced f ta
+  letI _ := induced f ta
   ⟨induced_topology_eq_preorder hf (fun h _ => H₁ h) (fun h _ => H₂ h)⟩
 
 theorem induced_orderTopology {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H : ∀ {x y}, x < y → ∃ a, x < f a ∧ f a < y) : @OrderTopology _ (induced f ta) _ :=
   induced_orderTopology' f (hf)
-    (fun xa => let ⟨b, xb, ba⟩ := H xa; ⟨b, hf.1 ba, le_of_lt xb⟩)
-    fun ax => let ⟨b, ab, bx⟩ := H ax; ⟨b, hf.1 ab, le_of_lt bx⟩
+    (fun xa => let_fun ⟨b, xb, ba⟩ := H xa; ⟨b, hf.1 ba, le_of_lt xb⟩)
+    fun ax => let_fun ⟨b, ab, bx⟩ := H ax; ⟨b, hf.1 ab, le_of_lt bx⟩
 
 /-- The topology induced by a strictly monotone function with order-connected range is the preorder
 topology. -/
@@ -304,7 +304,7 @@ theorem nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [Ord
 theorem nhds_top_basis_Ici [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] [DenselyOrdered α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) Ici :=
   nhds_top_basis.to_hasBasis
-    (fun _a ha => let ⟨b, hab, hb⟩ := exists_between ha; ⟨b, hb, Ici_subset_Ioi.mpr hab⟩)
+    (fun _a ha => let_fun ⟨b, hab, hb⟩ := exists_between ha; ⟨b, hb, Ici_subset_Ioi.mpr hab⟩)
     fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩
 
 theorem nhds_bot_basis_Iic [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
@@ -337,7 +337,7 @@ section OrderTopology
 
 theorem order_separated [OrderTopology α] {a₁ a₂ : α} (h : a₁ < a₂) :
     ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ a₁ ∈ u ∧ a₂ ∈ v ∧ ∀ b₁ ∈ u, ∀ b₂ ∈ v, b₁ < b₂ :=
-  let ⟨x, hx, y, hy, h⟩ := h.exists_disjoint_Iio_Ioi
+  let_fun ⟨x, hx, y, hy, h⟩ := h.exists_disjoint_Iio_Ioi
   ⟨Iio x, Ioi y, isOpen_gt' _, isOpen_lt' _, hx, hy, h⟩
 
 -- see Note [lower instance priority]
@@ -345,7 +345,7 @@ instance (priority := 100) OrderTopology.to_orderClosedTopology [OrderTopology �
     OrderClosedTopology α where
   isClosed_le' := isOpen_compl_iff.1 <| isOpen_prod_iff.mpr fun a₁ a₂ (h : ¬a₁ ≤ a₂) =>
     have h : a₂ < a₁ := lt_of_not_ge h
-    let ⟨u, v, hu, hv, ha₁, ha₂, h⟩ := order_separated h
+    let_fun ⟨u, v, hu, hv, ha₁, ha₂, h⟩ := order_separated h
     ⟨v, u, hv, hu, ha₂, ha₁, fun ⟨b₁, b₂⟩ ⟨h₁, h₂⟩ => not_le_of_gt <| h b₂ h₂ b₁ h₁⟩
 
 theorem exists_Ioc_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
@@ -354,7 +354,7 @@ theorem exists_Ioc_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (
 
 theorem exists_Ioc_subset_of_mem_nhds' [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {l : α}
     (hl : l < a) : ∃ l' ∈ Ico l a, Ioc l' a ⊆ s :=
-  let ⟨l', hl'a, hl's⟩ := exists_Ioc_subset_of_mem_nhds hs ⟨l, hl⟩
+  let_fun ⟨l', hl'a, hl's⟩ := exists_Ioc_subset_of_mem_nhds hs ⟨l, hl⟩
   ⟨max l l', ⟨le_max_left _ _, max_lt hl hl'a⟩,
     (Ioc_subset_Ioc_left <| le_max_right _ _).trans hl's⟩
 
@@ -365,8 +365,8 @@ theorem exists_Ico_subset_of_mem_nhds' [OrderTopology α] {a : α} {s : Set α} 
 
 theorem exists_Ico_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
     (h : ∃ u, a < u) : ∃ u, a < u ∧ Ico a u ⊆ s :=
-  let ⟨_l', hl'⟩ := h
-  let ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
+  let_fun ⟨_l', hl'⟩ := h
+  let_fun ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
   ⟨l, hl.1.1, hl.2⟩
 
 theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici [OrderTopology α] {a : α} {s : Set α}

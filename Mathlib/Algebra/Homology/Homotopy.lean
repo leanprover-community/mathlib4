@@ -487,7 +487,7 @@ def mkInductiveAux₂ :
     ∀ n, Σ' (f : P.xNext n ⟶ Q.X n) (f' : P.X n ⟶ Q.xPrev n), e.f n = P.dFrom n ≫ f + f' ≫ Q.dTo n
   | 0 => ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩
   | n + 1 =>
-    let I := mkInductiveAux₁ e zero --comm_zero
+    letI I := mkInductiveAux₁ e zero --comm_zero
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 
@@ -501,7 +501,7 @@ def mkInductiveAux₂ :
 
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
-      let I := mkInductiveAux₁ e zero one comm_one succ n
+      letI I := mkInductiveAux₁ e zero one comm_one succ n
       ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv,
         mkInductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
   rfl
@@ -617,7 +617,7 @@ def mkCoinductiveAux₂ :
     ∀ n, Σ' (f : P.X n ⟶ Q.xPrev n) (f' : P.xNext n ⟶ Q.X n), e.f n = f ≫ Q.dTo n + P.dFrom n ≫ f'
   | 0 => ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩
   | n + 1 =>
-    let I := mkCoinductiveAux₁ e zero one comm_one succ n
+    letI I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
@@ -630,7 +630,7 @@ def mkCoinductiveAux₂ :
 
 @[simp] theorem mkCoinductiveAux₂_add_one (n) :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
-      let I := mkCoinductiveAux₁ e zero one comm_one succ n
+      letI I := mkCoinductiveAux₁ e zero one comm_one succ n
       ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1,
         mkCoinductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
   rfl

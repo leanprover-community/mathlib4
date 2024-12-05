@@ -544,15 +544,15 @@ protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.spa
 /-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
     OrthonormalBasis s 𝕜 (span 𝕜 (s.image v' : Set E)) :=
-  let e₀' : Basis s 𝕜 _ :=
+  letI e₀' : Basis s 𝕜 _ :=
     Basis.span (h.linearIndependent.comp ((↑) : s → ι') Subtype.val_injective)
-  let e₀ : OrthonormalBasis s 𝕜 _ :=
+  let_fun e₀ : OrthonormalBasis s 𝕜 _ :=
     OrthonormalBasis.mk
       (by
         convert orthonormal_span (h.comp ((↑) : s → ι') Subtype.val_injective)
         simp [e₀', Basis.span_apply])
       e₀'.span_eq.ge
-  let φ : span 𝕜 (s.image v' : Set E) ≃ₗᵢ[𝕜] span 𝕜 (range (v' ∘ ((↑) : s → ι'))) :=
+  let_fun φ : span 𝕜 (s.image v' : Set E) ≃ₗᵢ[𝕜] span 𝕜 (range (v' ∘ ((↑) : s → ι'))) :=
     LinearIsometryEquiv.ofEq _ _
       (by
         rw [Finset.coe_image, image_eq_range]
@@ -833,7 +833,7 @@ variable (𝕜 E)
 /-- A finite-dimensional inner product space admits an orthonormal basis. -/
 theorem _root_.exists_orthonormalBasis :
     ∃ (w : Finset E) (b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
-  let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_orthonormalBasis_extension
+  let_fun ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_orthonormalBasis_extension
   ⟨w, hw, hw''⟩
 
 /-- A finite-dimensional `InnerProductSpace` has an orthonormal basis. -/
@@ -865,7 +865,7 @@ inner product space `E`.  This should not be accessed directly, but only via the
 irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     (Σi, Fin (finrank 𝕜 (V i))) ≃ Fin n :=
-  let b := hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)
+  let_fun b := hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)
   Fintype.equivFinOfCardEq <| (Module.finrank_eq_card_basis b.toBasis).symm.trans hn
 
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct

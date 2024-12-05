@@ -87,7 +87,7 @@ lemma faithfulSMul_at [∀ i, SMul M (α i)] [∀ i, Nonempty (α i)] (i : ι) [
 @[to_additive]
 instance faithfulSMul [Nonempty ι] [∀ i, SMul M (α i)] [∀ i, Nonempty (α i)]
     [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (∀ i, α i) :=
-  let ⟨i⟩ := ‹Nonempty ι›
+  let_fun ⟨i⟩ := ‹Nonempty ι›
   faithfulSMul_at i
 
 @[to_additive]

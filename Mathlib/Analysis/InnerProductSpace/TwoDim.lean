@@ -170,7 +170,7 @@ theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
 irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
-  let to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
+  let_fun to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
 

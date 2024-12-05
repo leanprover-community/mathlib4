@@ -309,7 +309,7 @@ variable (R M)
 
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegenerate :=
-  let ⟨m, hm⟩ := exists_ne (0 : M)
+  let_fun ⟨m, hm⟩ := exists_ne (0 : M)
   fun h => hm (h m fun _ => rfl)
 
 end

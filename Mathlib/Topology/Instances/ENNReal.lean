@@ -158,7 +158,7 @@ theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ∞) ↔ ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a :=
   tendsto_nhds_top_iff_nnreal.trans
     ⟨fun h n => by simpa only [ENNReal.coe_natCast] using h n, fun h x =>
-      let ⟨n, hn⟩ := exists_nat_gt x
+      let_fun ⟨n, hn⟩ := exists_nat_gt x
       (h n).mono fun _ => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
 
 theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a) :
@@ -648,8 +648,8 @@ protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x �
 protected theorem tsum_eq_iSup_nat' {f : ℕ → ℝ≥0∞} {N : ℕ → ℕ} (hN : Tendsto N atTop atTop) :
     ∑' i : ℕ, f i = ⨆ i : ℕ, ∑ a ∈ Finset.range (N i), f a :=
   ENNReal.tsum_eq_iSup_sum' _ fun t =>
-    let ⟨n, hn⟩ := t.exists_nat_subset_range
-    let ⟨k, _, hk⟩ := exists_le_of_tendsto_atTop hN 0 n
+    let_fun ⟨n, hn⟩ := t.exists_nat_subset_range
+    let_fun ⟨k, _, hk⟩ := exists_le_of_tendsto_atTop hN 0 n
     ⟨k, Finset.Subset.trans hn (Finset.range_mono hk)⟩
 
 protected theorem tsum_eq_iSup_nat {f : ℕ → ℝ≥0∞} :
@@ -681,7 +681,7 @@ protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : �
 
 @[simp]
 protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ :=
-  let ⟨a⟩ := ‹Nonempty α›
+  let_fun ⟨a⟩ := ‹Nonempty α›
   ENNReal.tsum_eq_top_of_eq_top ⟨a, rfl⟩
 
 theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞} (hc : c ≠ 0) :
@@ -890,13 +890,13 @@ theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b
   have : (∑' b, (g b : ℝ≥0∞)) ≤ r := by
     refine hasSum_le (fun b => ?_) ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
     exact ENNReal.coe_le_coe.2 (hgf _)
-  let ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
+  let_fun ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
   ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summable f → Summable g
   | ⟨_r, hfr⟩ =>
-    let ⟨_p, _, hp⟩ := exists_le_hasSum_of_le hgf hfr
+    let_fun ⟨_p, _, hp⟩ := exists_le_hasSum_of_le hgf hfr
     hp.summable
 
 /-- Summable non-negative functions have countable support -/
@@ -960,7 +960,7 @@ theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
 
 theorem tsum_indicator_ne_zero {f : α → ℝ≥0} (hf : Summable f) {s : Set α} (h : ∃ a ∈ s, f a ≠ 0) :
     (∑' x, (s.indicator f) x) ≠ 0 := fun h' =>
-  let ⟨a, ha, hap⟩ := h
+  let_fun ⟨a, ha, hap⟩ := h
   hap ((Set.indicator_apply_eq_self.mpr (absurd ha)).symm.trans
     ((tsum_eq_zero_iff (indicator_summable hf s)).1 h' a))
 
@@ -982,7 +982,7 @@ nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : 
 @[mono]
 theorem hasSum_strict_mono {f g : α → ℝ≥0} {sf sg : ℝ≥0} (hf : HasSum f sf) (hg : HasSum g sg)
     (h : f < g) : sf < sg :=
-  let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
+  let_fun ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hasSum_lt hle hi hf hg
 
 theorem tsum_lt_tsum {f g : α → ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a) (hi : f i < g i)
@@ -991,7 +991,7 @@ theorem tsum_lt_tsum {f g : α → ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g 
 
 @[mono]
 theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : ∑' n, f n < ∑' n, g n :=
-  let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
+  let_fun ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tsum_lt_tsum hle hi hg
 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
@@ -1181,7 +1181,7 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
   -- Actually we need partial sums of `d` to be a Cauchy sequence.
   replace hd : CauchySeq fun n : ℕ ↦ ∑ x ∈ Finset.range n, d x :=
-    let ⟨_, H⟩ := hd
+    let_fun ⟨_, H⟩ := hd
     H.tendsto_sum_nat.cauchySeq
   -- Now we take the same `N` as in one of the definitions of a Cauchy sequence.
   refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_

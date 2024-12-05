@@ -67,11 +67,11 @@ noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{
   letI : Fintype ι := Fintype.ofFinite _
   haveI : Small.{u} ι :=
     ⟨ULift (Fin (Fintype.card ι)), ⟨(Fintype.equivFin ι).trans Equiv.ulift.symm⟩⟩
-  let is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ X i : Type u) :=
+  let_fun is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ X i : Type u) :=
     PreservesProduct.iso FintypeCat.incl (fun i ↦ X i)
-  let is₂ : (∏ᶜ fun i ↦ X i : Type u) ≅ Shrink.{u} (∀ i, X i) :=
+  let_fun is₂ : (∏ᶜ fun i ↦ X i : Type u) ≅ Shrink.{u} (∀ i, X i) :=
     Types.Small.productIso (fun i ↦ X i)
-  let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
+  let_fun e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
   (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
 
 @[simp]
@@ -124,7 +124,7 @@ noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
 lemma jointly_surjective {J : Type*} [Category J] [FinCategory J]
     (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
     ∃ j y, t.ι.app j y = x :=
-  let hs := isColimitOfPreserves FintypeCat.incl.{u} h
+  let_fun hs := isColimitOfPreserves FintypeCat.incl.{u} h
   Types.jointly_surjective (F ⋙ FintypeCat.incl) hs x
 
 end CategoryTheory.Limits.FintypeCat

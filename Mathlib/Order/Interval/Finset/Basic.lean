@@ -392,7 +392,7 @@ theorem Ioi_subset_Ici_self : Ioi a ⊆ Ici a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ici_self
 
 theorem _root_.BddBelow.finite {s : Set α} (hs : BddBelow s) : s.Finite :=
-  let ⟨a, ha⟩ := hs
+  let_fun ⟨a, ha⟩ := hs
   (Ici a).finite_toSet.subset fun _ hx => mem_Ici.2 <| ha hx
 
 theorem _root_.Set.Infinite.not_bddBelow {s : Set α} : s.Infinite → ¬BddBelow s :=

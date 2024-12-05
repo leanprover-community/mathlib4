@@ -93,7 +93,7 @@ theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x
   have : CauchySeq fun n ↦ f^[n] x :=
     cauchySeq_of_edist_le_geometric K (edist x (f x)) (ENNReal.coe_lt_one_iff.2 hf.1) hx
       (hf.toLipschitzWith.edist_iterate_succ_le_geometric x)
-  let ⟨y, hy⟩ := cauchySeq_tendsto_of_complete this
+  let_fun ⟨y, hy⟩ := cauchySeq_tendsto_of_complete this
   ⟨y, isFixedPt_of_tendsto_iterate hy hf.2.continuous.continuousAt, hy,
     edist_le_of_edist_le_geometric_of_tendsto K (edist x (f x))
       (hf.toLipschitzWith.edist_iterate_succ_le_geometric x) hy⟩

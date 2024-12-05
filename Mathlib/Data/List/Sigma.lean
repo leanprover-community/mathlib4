@@ -53,7 +53,7 @@ theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 �
 
 theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
     ∃ b : β a, Sigma.mk a b ∈ l :=
-  let ⟨⟨_, b'⟩, m, e⟩ := exists_of_mem_map h
+  let_fun ⟨⟨_, b'⟩, m, e⟩ := exists_of_mem_map h
   Eq.recOn e (Exists.intro b' m)
 
 theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigma.mk a b ∈ l :=
@@ -64,7 +64,7 @@ theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, 
 
 theorem not_eq_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
-    let ⟨_, h₂⟩ := exists_of_mem_keys h₁
+    let_fun ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
 
 /-! ### `NodupKeys` -/
@@ -558,7 +558,7 @@ def kextract (a : α) : List (Sigma β) → Option (β a) × List (Sigma β)
   | s :: l =>
     if h : s.1 = a then (some (Eq.recOn h s.2), l)
     else
-      let (b', l') := kextract a l
+      let_fun (b', l') := kextract a l
       (b', s :: l')
 
 @[simp]

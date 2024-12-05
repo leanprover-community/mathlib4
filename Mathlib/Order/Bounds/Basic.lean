@@ -645,7 +645,7 @@ theorem isGLB_univ [OrderBot α] : IsGLB (univ : Set α) ⊥ :=
 @[simp]
 theorem NoMaxOrder.upperBounds_univ [NoMaxOrder α] : upperBounds (univ : Set α) = ∅ :=
   eq_empty_of_subset_empty fun b hb =>
-    let ⟨_, hx⟩ := exists_gt b
+    let_fun ⟨_, hx⟩ := exists_gt b
     not_le_of_lt hx (hb trivial)
 
 @[simp]
@@ -693,7 +693,7 @@ theorem isLUB_empty [OrderBot α] : IsLUB ∅ (⊥ : α) :=
   @isGLB_empty αᵒᵈ _ _
 
 theorem IsLUB.nonempty [NoMinOrder α] (hs : IsLUB s a) : s.Nonempty :=
-  let ⟨a', ha'⟩ := exists_lt a
+  let_fun ⟨a', ha'⟩ := exists_lt a
   nonempty_iff_ne_empty.2 fun h =>
     not_le_of_lt ha' <| hs.right <| by rw [h, upperBounds_empty]; exact mem_univ _
 
@@ -889,19 +889,19 @@ theorem isGLB_lt_iff (h : IsGLB s a) : a < b ↔ ∃ c ∈ s, c < b :=
   lt_isLUB_iff h.dual
 
 theorem IsLUB.exists_between (h : IsLUB s a) (hb : b < a) : ∃ c ∈ s, b < c ∧ c ≤ a :=
-  let ⟨c, hcs, hbc⟩ := (lt_isLUB_iff h).1 hb
+  let_fun ⟨c, hcs, hbc⟩ := (lt_isLUB_iff h).1 hb
   ⟨c, hcs, hbc, h.1 hcs⟩
 
 theorem IsLUB.exists_between' (h : IsLUB s a) (h' : a ∉ s) (hb : b < a) : ∃ c ∈ s, b < c ∧ c < a :=
-  let ⟨c, hcs, hbc, hca⟩ := h.exists_between hb
+  let_fun ⟨c, hcs, hbc, hca⟩ := h.exists_between hb
   ⟨c, hcs, hbc, hca.lt_of_ne fun hac => h' <| hac ▸ hcs⟩
 
 theorem IsGLB.exists_between (h : IsGLB s a) (hb : a < b) : ∃ c ∈ s, a ≤ c ∧ c < b :=
-  let ⟨c, hcs, hbc⟩ := (isGLB_lt_iff h).1 hb
+  let_fun ⟨c, hcs, hbc⟩ := (isGLB_lt_iff h).1 hb
   ⟨c, hcs, h.1 hcs, hbc⟩
 
 theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ c ∈ s, a < c ∧ c < b :=
-  let ⟨c, hcs, hac, hcb⟩ := h.exists_between hb
+  let_fun ⟨c, hcs, hac, hcb⟩ := h.exists_between hb
   ⟨c, hcs, hac.lt_of_ne fun hac => h' <| hac.symm ▸ hcs, hcb⟩
 
 end LinearOrder

@@ -54,11 +54,11 @@ theorem Submonoid.fg_iff (P : Submonoid M) :
 
 theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
   ⟨fun h =>
-    let ⟨S, hS, hf⟩ := (Submonoid.fg_iff _).1 h
+    let_fun ⟨S, hS, hf⟩ := (Submonoid.fg_iff _).1 h
     (AddSubmonoid.fg_iff _).mpr
       ⟨Additive.toMul ⁻¹' S, by simp [← Submonoid.toAddSubmonoid_closure, hS], hf⟩,
     fun h =>
-    let ⟨T, hT, hf⟩ := (AddSubmonoid.fg_iff _).1 h
+    let_fun ⟨T, hT, hf⟩ := (AddSubmonoid.fg_iff _).1 h
     (Submonoid.fg_iff _).mpr
       ⟨Multiplicative.ofAdd ⁻¹' T, by simp [← AddSubmonoid.toSubmonoid'_closure, hT], hf⟩⟩
 

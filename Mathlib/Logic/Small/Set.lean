@@ -89,7 +89,7 @@ theorem small_iInter (s : ι → Set α) (i : ι)
 
 instance small_iInter' [Nonempty ι] (s : ι → Set α)
     [∀ i, Small.{u} (s i)] : Small.{u} (⋂ i, s i) :=
-  let ⟨i⟩ : Nonempty ι := inferInstance
+  let_fun ⟨i⟩ : Nonempty ι := inferInstance
   small_iInter s i
 
 theorem small_sInter {s : Set (Set α)} {t : Set α} (ht : t ∈ s)
@@ -98,7 +98,7 @@ theorem small_sInter {s : Set (Set α)} {t : Set α} (ht : t ∈ s)
 
 instance small_sInter' {s : Set (Set α)} [Nonempty s]
     [∀ t : s, Small.{u} t] : Small.{u} (⋂₀ s) :=
-  let ⟨t⟩ : Nonempty s := inferInstance
+  let_fun ⟨t⟩ : Nonempty s := inferInstance
   small_sInter t.prop
 
 theorem small_biInter {s : Set ι} {i : ι} (hi : i ∈ s)
@@ -107,7 +107,7 @@ theorem small_biInter {s : Set ι} {i : ι} (hi : i ∈ s)
 
 instance small_biInter' (s : Set ι) [Nonempty s]
     (f : (i : ι) → i ∈ s → Set α) [∀ i hi, Small.{u} (f i hi)] : Small.{u} (⋂ i, ⋂ hi, f i hi) :=
-  let ⟨t⟩ : Nonempty s := inferInstance
+  let_fun ⟨t⟩ : Nonempty s := inferInstance
   small_biInter t.prop f
 
 theorem small_empty : Small.{u} (∅ : Set α) :=

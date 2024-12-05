@@ -398,7 +398,7 @@ omit [MeasurableSpace E] in
   the set of points where the norm is differentiable at is dense. -/
 theorem dense_differentiableAt_norm :
     Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
-  let _ : MeasurableSpace E := borel E
+  letI _ : MeasurableSpace E := borel E
   have _ : BorelSpace E := ⟨rfl⟩
-  let w := Basis.ofVectorSpace ℝ E
+  letI w := Basis.ofVectorSpace ℝ E
   MeasureTheory.Measure.dense_of_ae (ae_differentiableAt_norm (μ := w.addHaar))

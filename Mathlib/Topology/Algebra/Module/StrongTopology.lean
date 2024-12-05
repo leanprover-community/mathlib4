@@ -276,7 +276,7 @@ instance instContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     ContinuousConstSMul M (UniformConvergenceCLM σ F 𝔖) :=
-  let _ := TopologicalAddGroup.toUniformSpace F
+  letI _ := TopologicalAddGroup.toUniformSpace F
   have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
   inferInstance

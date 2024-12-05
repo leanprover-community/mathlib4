@@ -557,7 +557,7 @@ theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (
 theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (g : M → N) (h0 : g 0 = 0)
     (hadd : ∀ x y, g (x + y) = g x + g y) :
     mapDomain f (mapRange g h0 v) = mapRange g h0 (mapDomain f v) :=
-  let g' : M →+ N :=
+  letI g' : M →+ N :=
     { toFun := g
       map_zero' := h0
       map_add' := hadd }
@@ -864,7 +864,7 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
 theorem zero_not_mem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
 
 theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
-  let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
+  let_fun ⟨t, ht1, ht2⟩ := mem_frange.1 hr
   ht2 ▸ by
     classical
       rw [single_apply] at ht2 ⊢
@@ -1032,8 +1032,8 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
 
 theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
     (ha : a ∈ (∑ c ∈ s, h c).support) : ∃ c ∈ s, a ∈ (h c).support :=
-  let ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
-  let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
+  let_fun ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
+  let_fun ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
 
 /-! ### Declarations about `curry` and `uncurry` -/
@@ -1311,7 +1311,7 @@ theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
 instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
-    let ⟨a⟩ := ‹Nonempty α›
+    let_fun ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
 
 instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where

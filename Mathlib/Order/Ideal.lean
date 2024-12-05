@@ -305,7 +305,7 @@ variable [SemilatticeSup P] {x y : P} {I s : Ideal P}
 
 /-- A specific witness of `I.directed` when `P` has joins. -/
 theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
-  let ⟨_, hz, hx, hy⟩ := s.directed x hx y hy
+  let_fun ⟨_, hz, hx, hy⟩ := s.directed x hx y hy
   s.lower (sup_le hx hy) hz
 
 @[simp]
@@ -349,10 +349,10 @@ instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with
     sup := (· ⊔ ·)
     le_sup_left := fun _ J i hi ↦
-      let ⟨w, hw⟩ := J.nonempty
+      let_fun ⟨w, hw⟩ := J.nonempty
       ⟨i, hi, w, hw, le_sup_left⟩
     le_sup_right := fun I _ j hj ↦
-      let ⟨w, hw⟩ := I.nonempty
+      let_fun ⟨w, hw⟩ := I.nonempty
       ⟨w, hw, j, hj, le_sup_right⟩
     sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
       K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)

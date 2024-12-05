@@ -262,7 +262,7 @@ structure _root_.Mathlib.Meta.FunProp.RefinedDiscrTree (α : Type) where
 instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
 
 private partial def format [ToFormat α] (d : RefinedDiscrTree α) : Format :=
-  let (_, r) := d.root.foldl
+  let_fun (_, r) := d.root.foldl
     (fun (p : Bool × Format) k c =>
       (false,
         p.2 ++ (if p.1 then Format.nil else Format.line) ++
@@ -402,10 +402,10 @@ def DTExpr.flatten (e : DTExpr) (initCapacity := 16) : Array Key :=
 private partial def isNumeral (e : Expr) : Bool :=
   if e.isRawNatLit then true
   else
-    let f := e.getAppFn
+    let_fun f := e.getAppFn
     if !f.isConst then false
     else
-      let fName := f.constName!
+      let_fun fName := f.constName!
       if fName == ``Nat.succ && e.getAppNumArgs == 1 then isNumeral e.appArg!
       else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then isNumeral (e.getArg! 1)
       else if fName == ``Nat.zero && e.getAppNumArgs == 0 then true
@@ -883,8 +883,8 @@ where
 /-- Insert the value `v` at index `keys : Array Key` in a `Trie`. -/
 partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie α → Trie α
   | .node cs =>
-      let k := keys[i]!
-      let c := Id.run <| cs.binInsertM
+      let_fun k := keys[i]!
+      let_fun c := Id.run <| cs.binInsertM
         (fun a b => a.1 < b.1)
         (fun (k', s) => (k', insertInTrie keys v (i+1) s))
         (fun _ => (k, Trie.singleton keys v (i+1)))
@@ -908,13 +908,13 @@ Warning: to account for η-reduction, an entry may need to be added at multiple 
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
     RefinedDiscrTree α :=
-  let k := keys[0]!
+  let_fun k := keys[0]!
   match d.root.find? k with
   | none =>
-    let c := .singleton keys v 1
+    let_fun c := .singleton keys v 1
     { root := d.root.insert k c }
   | some c =>
-    let c := insertInTrie keys v 1 c
+    let_fun c := insertInTrie keys v 1 c
     { root := d.root.insert k c }
 
 /-- Insert the value `v` at index `e : DTExpr` in a `RefinedDiscrTree`.

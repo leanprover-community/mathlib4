@@ -379,7 +379,7 @@ instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite 
 
 theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
   ⟨fun h =>
-    let ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
+    let_fun ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
     ⟨Fintype.ofEquiv _ e.symm⟩,
     fun ⟨_⟩ => inferInstance⟩
 
@@ -448,7 +448,7 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
-  let ⟨_y, hy⟩ := not_forall.1 h'
+  let_fun ⟨_y, hy⟩ := not_forall.1 h'
   card_lt_of_injective_of_not_mem f h hy
 
 theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
@@ -467,7 +467,8 @@ This is the `Fintype` version of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`
 -/
 theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Fintype.card α) :
     ∃ x y, x ≠ y ∧ f x = f y :=
-  let ⟨x, _, y, _, h⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to h fun x _ => mem_univ (f x)
+  let_fun ⟨x, _, y, _, h⟩ :=
+    Finset.exists_ne_map_eq_of_card_lt_of_maps_to h fun x _ => mem_univ (f x)
   ⟨x, y, h⟩
 
 theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
@@ -488,7 +489,7 @@ alias card_of_isEmpty := card_eq_zero
 
 theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h =>
-    let ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h
+    let_fun ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h
     ⟨{  default := d
         uniq := h }⟩,
     fun ⟨_h⟩ => Fintype.card_unique⟩
@@ -510,7 +511,7 @@ theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
 instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
 
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
-  let n := card α
+  letI n := card α
   have hn : n = card α := rfl
   match n, hn with
   | 0, ha =>
@@ -723,7 +724,7 @@ Note this cannot be an instance as it needs `h`. -/
 theorem isEmpty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fintype.card α) :
     IsEmpty (α ↪ β) :=
   ⟨fun f =>
-    let ⟨_x, _y, ne, feq⟩ := Fintype.exists_ne_map_eq_of_card_lt f h
+    let_fun ⟨_x, _y, ne, feq⟩ := Fintype.exists_ne_map_eq_of_card_lt f h
     ne <| f.injective feq⟩
 
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
@@ -911,8 +912,8 @@ theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
-  ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
-    let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
+  ⟨let_fun ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
+    let_fun ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
 
 protected theorem nonempty (α : Type*) [Infinite α] : Nonempty α := by infer_instance
@@ -944,7 +945,7 @@ instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
 
 instance [Nonempty α] : Infinite (Multiset α) :=
-  let ⟨x⟩ := ‹Nonempty α›
+  let_fun ⟨x⟩ := ‹Nonempty α›
   Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
 instance [Nonempty α] : Infinite (List α) :=

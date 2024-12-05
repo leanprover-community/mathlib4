@@ -223,7 +223,7 @@ instance :
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))
-  let c : Cone F :=
+  letI c : Cone F :=
     { pt := CommSemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
@@ -330,7 +330,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-  let c : Cone F :=
+  letI c : Cone F :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
@@ -461,10 +461,10 @@ instance :
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
     have : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
       inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-    let F' := F ⋙ forget₂ CommRingCat.{u} RingCat.{u} ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
+    letI F' := F ⋙ forget₂ CommRingCat.{u} RingCat.{u} ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
     have : Small.{u} (Functor.sections (F' ⋙ forget _)) :=
       inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
-    let c : Cone F :=
+    letI c : Cone F :=
     { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x

@@ -59,9 +59,9 @@ is covered by only finitely many others, and `b` is an element with infinitely m
 then there is a sequence starting with `b` in which each element is covered by the next. -/
 theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
     (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i+1) :=
-  let h := fun a : {a : α // (Ici a).Infinite} ↦
+  let_fun h := fun a : {a : α // (Ici a).Infinite} ↦
     exists_covby_infinite_Ici_of_infinite_Ici a.2 (hfin a)
-  let ks : ℕ → {a : α // (Ici a).Infinite} := Nat.rec ⟨b, hb⟩ fun _ a ↦ ⟨_, (h a).choose_spec.2⟩
+  letI ks : ℕ → {a : α // (Ici a).Infinite} := Nat.rec ⟨b, hb⟩ fun _ a ↦ ⟨_, (h a).choose_spec.2⟩
   ⟨fun i ↦ (ks i).1, by simp [ks], fun i ↦ by simpa using (h (ks i)).choose_spec.1⟩
 
 /-- The sequence given by Kőnig's lemma as an order embedding -/

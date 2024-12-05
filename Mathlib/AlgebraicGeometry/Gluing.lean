@@ -398,7 +398,7 @@ instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
   IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_isOpenEmbedding
 
 instance : IsIso 𝒰.fromGlued :=
-  let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
+  letI F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace
   have : IsIso (F.map (fromGlued 𝒰)) := by
     change IsIso 𝒰.fromGlued.toPshHom

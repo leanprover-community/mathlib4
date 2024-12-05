@@ -77,7 +77,7 @@ theorem jacobson_top : jacobson (⊤ : Ideal R) = ⊤ :=
 @[simp]
 theorem jacobson_eq_top_iff : jacobson I = ⊤ ↔ I = ⊤ :=
   ⟨fun H =>
-    by_contradiction fun hi => let ⟨M, hm, him⟩ := exists_le_maximal I hi
+    by_contradiction fun hi => let_fun ⟨M, hm, him⟩ := exists_le_maximal I hi
       lt_top_iff_ne_top.1
         (lt_of_le_of_lt (show jacobson I ≤ M from sInf_le ⟨him, hm⟩) <|
           lt_top_iff_ne_top.2 hm.ne_top) H,
@@ -96,19 +96,19 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
   ⟨fun hx y =>
     by_cases
       (fun hxy : I ⊔ span {y * x + 1} = ⊤ =>
-        let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 hxy)
-        let ⟨r, hr⟩ := mem_span_singleton'.1 hq
+        let_fun ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 hxy)
+        let_fun ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
           -- Porting note: supply `mul_add_one` with explicit variables
           rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel_right]
           exact I.neg_mem hpi⟩)
-      fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
+      fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let_fun ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
       fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel_left (y * x) 1 ▸
         M.sub_mem (le_sup_right.trans hm2 <| subset_span rfl) (M.mul_mem_left _ hxm),
     fun hx => mem_sInf.2 fun M ⟨him, hm⟩ => by_contradiction fun hxm =>
-      let ⟨y, i, hi, df⟩ := hm.exists_inv hxm
-      let ⟨z, hz⟩ := hx (-y)
+      let_fun ⟨y, i, hi, df⟩ := hm.exists_inv hxm
+      let_fun ⟨z, hz⟩ := hx (-y)
       hm.1.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
         M.sub_mem (by
           -- Porting note: supply `mul_add_one` with explicit variables
@@ -145,13 +145,13 @@ theorem eq_jacobson_iff_sInf_maximal' :
     I.jacobson = I ↔ ∃ M : Set (Ideal R), (∀ J ∈ M, ∀ (K : Ideal R), J < K → K = ⊤) ∧ I = sInf M :=
   eq_jacobson_iff_sInf_maximal.trans
     ⟨fun h =>
-      let ⟨M, hM⟩ := h
+      let_fun ⟨M, hM⟩ := h
       ⟨M,
         ⟨fun J hJ K hK =>
           Or.recOn (hM.1 J hJ) (fun h => h.1.2 K hK) fun h => eq_top_iff.2 (le_of_lt (h ▸ hK)),
           hM.2⟩⟩,
       fun h =>
-      let ⟨M, hM⟩ := h
+      let_fun ⟨M, hM⟩ := h
       ⟨M,
         ⟨fun J hJ =>
           Or.recOn (Classical.em (J = ⊤)) (fun h => Or.inr h) fun h => Or.inl ⟨⟨h, hM.1 J hJ⟩⟩,
@@ -286,12 +286,12 @@ theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ 
 
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) :=
   ⟨fun hx y =>
-    let ⟨z, hz⟩ := (mem_jacobson_iff.1 hx) y
+    let_fun ⟨z, hz⟩ := (mem_jacobson_iff.1 hx) y
     isUnit_iff_exists_inv.2
       ⟨z, by rwa [add_mul, one_mul, ← sub_eq_zero, mul_right_comm, mul_comm _ z, mul_right_comm]⟩,
     fun h =>
     mem_jacobson_iff.mpr fun y =>
-      let ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (h y)
+      let_fun ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (h y)
       ⟨b, (Submodule.mem_bot R).2 (hb ▸ by ring)⟩⟩
 
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
@@ -397,15 +397,15 @@ theorem isLocal_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)) 
 
 theorem IsLocal.le_jacobson {I J : Ideal R} (hi : IsLocal I) (hij : I ≤ J) (hj : J ≠ ⊤) :
     J ≤ jacobson I :=
-  let ⟨_, hm, hjm⟩ := exists_le_maximal J hj
+  let_fun ⟨_, hm, hjm⟩ := exists_le_maximal J hj
   le_trans hjm <| le_of_eq <| Eq.symm <| hi.1.eq_of_le hm.1.1 <| sInf_le ⟨le_trans hij hjm, hm⟩
 
 theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R) :
     x ∈ jacobson I ∨ ∃ y, y * x - 1 ∈ I :=
   by_cases
     (fun h : I ⊔ span {x} = ⊤ =>
-      let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
-      let ⟨r, hr⟩ := mem_span_singleton.1 hq
+      let_fun ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
+      let_fun ⟨r, hr⟩ := mem_span_singleton.1 hq
       Or.inr ⟨r, by
         rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel_right]; exact I.neg_mem hpi⟩)
     fun h : I ⊔ span {x} ≠ ⊤ =>

@@ -325,9 +325,9 @@ position, i.e. bounds for the term `|v - (GenContFract.of v).convs n|`.
 by simplifying the difference. -/
 theorem sub_convs_eq {ifp : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp) :
-    let g := of v
-    let B := (g.contsAux (n + 1)).b
-    let pB := (g.contsAux n).b
+    let_fun g := of v
+    let_fun B := (g.contsAux (n + 1)).b
+    let_fun pB := (g.contsAux n).b
     v - g.convs n = if ifp.fr = 0 then 0 else (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) := by
   -- set up some shorthand notation
   let g := of v

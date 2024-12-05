@@ -1030,9 +1030,9 @@ variable (R M N P Q)
 
 /-- A tensor product analogue of `mul_left_comm`. -/
 def leftComm : M ⊗[R] N ⊗[R] P ≃ₗ[R] N ⊗[R] M ⊗[R] P :=
-  let e₁ := (TensorProduct.assoc R M N P).symm
-  let e₂ := congr (TensorProduct.comm R M N) (1 : P ≃ₗ[R] P)
-  let e₃ := TensorProduct.assoc R N M P
+  let_fun e₁ := (TensorProduct.assoc R M N P).symm
+  let_fun e₂ := congr (TensorProduct.comm R M N) (1 : P ≃ₗ[R] P)
+  let_fun e₃ := TensorProduct.assoc R N M P
   e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
 
 variable {M N P Q}
@@ -1059,9 +1059,9 @@ the `TensorProduct.semiring` instance (currently defined "by hand" using `Tensor
 
 See also `mul_mul_mul_comm`. -/
 def tensorTensorTensorComm : (M ⊗[R] N) ⊗[R] P ⊗[R] Q ≃ₗ[R] (M ⊗[R] P) ⊗[R] N ⊗[R] Q :=
-  let e₁ := TensorProduct.assoc R M N (P ⊗[R] Q)
-  let e₂ := congr (1 : M ≃ₗ[R] M) (leftComm R N P Q)
-  let e₃ := (TensorProduct.assoc R M P (N ⊗[R] Q)).symm
+  let_fun e₁ := TensorProduct.assoc R M N (P ⊗[R] Q)
+  let_fun e₂ := congr (1 : M ≃ₗ[R] M) (leftComm R N P Q)
+  let_fun e₃ := (TensorProduct.assoc R M P (N ⊗[R] Q)).symm
   e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
 
 variable {M N P Q}

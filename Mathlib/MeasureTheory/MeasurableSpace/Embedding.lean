@@ -154,7 +154,7 @@ end gluing
 
 theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α}
     (hs : MeasurableSet s) (hne : s.Nonempty) : ∃ f : α → s, Measurable f ∧ ∀ x : s, f x = x :=
-  let ⟨f, hfm, hf⟩ :=
+  let_fun ⟨f, hfm, hf⟩ :=
     (MeasurableEmbedding.subtype_coe hs).exists_measurable_extend measurable_id fun _ =>
       hne.to_subtype
   ⟨f, hfm, congr_fun hf⟩
@@ -611,13 +611,13 @@ theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, Measurable
   `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
 def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none :=
-  let e : Option δ ≃ δ ⊕ Unit := Equiv.optionEquivSumPUnit δ
-  let em1 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
+  letI e : Option δ ≃ δ ⊕ Unit := Equiv.optionEquivSumPUnit δ
+  let_fun em1 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
     MeasurableEquiv.piCongrLeft α e.symm
-  let em2 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
+  let_fun em2 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
       × ((i' : Unit) → α (e.symm (Sum.inr i'))) :=
     MeasurableEquiv.sumPiEquivProdPi (fun i ↦ α (e.symm i))
-  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : Unit) → α (e.symm (Sum.inr i')))
+  let_fun em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : Unit) → α (e.symm (Sum.inr i')))
       ≃ᵐ ((i : δ) → α (some i)) × α none :=
     MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
       (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))

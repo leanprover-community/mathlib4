@@ -229,7 +229,7 @@ namespace CompletelyDistribLattice.MinimalAxioms
 variable (minAx : MinimalAxioms α)
 
 lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
-    let _ := minAx.toCompleteLattice
+    let_fun _ := minAx.toCompleteLattice
     ⨅ i, ⨆ j, f i j = ⨆ g : ∀ i, κ i, ⨅ i, f i (g i) := by
   let _ := minAx.toCompleteLattice
   refine le_antisymm ?_ le_iInf_iSup
@@ -243,7 +243,7 @@ lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
 
 lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
-    let _ := minAx.toCompleteLattice
+    let_fun _ := minAx.toCompleteLattice
     ⨆ i, ⨅ j, f i j = ⨅ g : ∀ i, κ i, ⨆ i, f i (g i) := by
   let _ := minAx.toCompleteLattice
   refine le_antisymm iSup_iInf_le ?_
@@ -719,12 +719,12 @@ protected abbrev Function.Injective.coframe [Max α] [Min α] [SupSet α] [InfSe
 /-- Pullback a `CompleteDistribLattice.MinimalAxioms` along an injection. -/
 protected abbrev Function.Injective.completeDistribLatticeMinimalAxioms [Max α] [Min α] [SupSet α]
     [InfSet α] [Top α] [Bot α] (minAx : CompleteDistribLattice.MinimalAxioms β) (f : α → β)
-    (hf : Injective f) (map_sup : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : let _ := minAx.toCompleteLattice
-      ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : let _ := minAx.toCompleteLattice
-      ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : let _ := minAx.toCompleteLattice
-      f ⊤ = ⊤) (map_bot : let _ := minAx.toCompleteLattice
+    (hf : Injective f) (map_sup : let_fun _ := minAx.toCompleteLattice
+      ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : let_fun _ := minAx.toCompleteLattice
+      ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : let_fun _ := minAx.toCompleteLattice
+      ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : let_fun _ := minAx.toCompleteLattice
+      ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : let_fun _ := minAx.toCompleteLattice
+      f ⊤ = ⊤) (map_bot : let_fun _ := minAx.toCompleteLattice
       f ⊥ = ⊥) :
     CompleteDistribLattice.MinimalAxioms α where
   __ := hf.frameMinimalAxioms minAx.toFrame f map_sup map_inf map_sSup map_sInf map_top map_bot
@@ -748,12 +748,12 @@ protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α] [Su
 /-- Pullback a `CompletelyDistribLattice.MinimalAxioms` along an injection. -/
 protected abbrev Function.Injective.completelyDistribLatticeMinimalAxioms [Max α] [Min α] [SupSet α]
     [InfSet α] [Top α] [Bot α] (minAx : CompletelyDistribLattice.MinimalAxioms β) (f : α → β)
-    (hf : Injective f) (map_sup : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : let _ := minAx.toCompleteLattice
-      ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : let _ := minAx.toCompleteLattice
-      ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : let _ := minAx.toCompleteLattice
-      f ⊤ = ⊤) (map_bot : let _ := minAx.toCompleteLattice
+    (hf : Injective f) (map_sup : let_fun _ := minAx.toCompleteLattice
+      ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : let_fun _ := minAx.toCompleteLattice
+      ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : let_fun _ := minAx.toCompleteLattice
+      ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : let_fun _ := minAx.toCompleteLattice
+      ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : let_fun _ := minAx.toCompleteLattice
+      f ⊤ = ⊤) (map_bot : let_fun _ := minAx.toCompleteLattice
       f ⊥ = ⊥) :
     CompletelyDistribLattice.MinimalAxioms α where
   __ := hf.completeDistribLatticeMinimalAxioms minAx.toCompleteDistribLattice f map_sup map_inf

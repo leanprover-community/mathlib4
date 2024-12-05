@@ -95,13 +95,13 @@ theorem HasFPowerSeriesAt.add (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSer
 
 theorem AnalyticWithinAt.add (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWithinAt 𝕜 g s x) :
     AnalyticWithinAt 𝕜 (f + g) s x :=
-  let ⟨_, hpf⟩ := hf
-  let ⟨_, hqf⟩ := hg
+  let_fun ⟨_, hpf⟩ := hf
+  let_fun ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticWithinAt
 
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
-  let ⟨_, hpf⟩ := hf
-  let ⟨_, hqf⟩ := hg
+  let_fun ⟨_, hpf⟩ := hf
+  let_fun ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
 
 theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
@@ -122,19 +122,19 @@ theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
 
 theorem HasFPowerSeriesWithinAt.neg (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (-f) (-pf) s x :=
-  let ⟨_, hrf⟩ := hf
+  let_fun ⟨_, hrf⟩ := hf
   hrf.neg.hasFPowerSeriesWithinAt
 
 theorem HasFPowerSeriesAt.neg (hf : HasFPowerSeriesAt f pf x) : HasFPowerSeriesAt (-f) (-pf) x :=
-  let ⟨_, hrf⟩ := hf
+  let_fun ⟨_, hrf⟩ := hf
   hrf.neg.hasFPowerSeriesAt
 
 theorem AnalyticWithinAt.neg (hf : AnalyticWithinAt 𝕜 f s x) : AnalyticWithinAt 𝕜 (-f) s x :=
-  let ⟨_, hpf⟩ := hf
+  let_fun ⟨_, hpf⟩ := hf
   hpf.neg.analyticWithinAt
 
 theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
-  let ⟨_, hpf⟩ := hf
+  let_fun ⟨_, hpf⟩ := hf
   hpf.neg.analyticAt
 
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)

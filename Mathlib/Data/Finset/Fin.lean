@@ -29,7 +29,7 @@ def attachFin (s : Finset ℕ) {n : ℕ} (h : ∀ m ∈ s, m < n) : Finset (Fin 
 theorem mem_attachFin {n : ℕ} {s : Finset ℕ} (h : ∀ m ∈ s, m < n) {a : Fin n} :
     a ∈ s.attachFin h ↔ (a : ℕ) ∈ s :=
   ⟨fun h ↦
-    let ⟨_, hb₁, hb₂⟩ := Multiset.mem_pmap.1 h
+    let_fun ⟨_, hb₁, hb₂⟩ := Multiset.mem_pmap.1 h
     hb₂ ▸ hb₁,
     fun h ↦ Multiset.mem_pmap.2 ⟨a, h, Fin.eta _ _⟩⟩
 

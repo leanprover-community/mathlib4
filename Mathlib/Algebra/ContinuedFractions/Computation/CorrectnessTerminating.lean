@@ -61,7 +61,7 @@ protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
   if fr = 0 then
     conts.a / conts.b
   else -- otherwise, we have to include the fractional part in a final continuants step.
-    let exactConts := nextConts 1 fr⁻¹ pconts conts
+    let_fun exactConts := nextConts 1 fr⁻¹ pconts conts
     exactConts.a / exactConts.b
 
 variable [FloorRing K]

@@ -388,7 +388,7 @@ This is packaged up in `SimpleGraph.Walk.toPath`. -/
 def bypass {u v : V} : G.Walk u v → G.Walk u v
   | nil => nil
   | cons ha p =>
-    let p' := p.bypass
+    let_fun p' := p.bypass
     if hs : u ∈ p'.support then
       p'.dropUntil u hs
     else

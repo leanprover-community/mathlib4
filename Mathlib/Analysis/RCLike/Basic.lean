@@ -711,7 +711,7 @@ noncomputable def cauSeqIm (f : CauSeq K norm) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_im f⟩
 
 theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (norm ∘ f) := fun ε ε0 =>
-  let ⟨i, hi⟩ := hf ε ε0
+  let_fun ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 end RCLike

@@ -410,7 +410,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (hx : x ∈ closure s)  : p x hx :=
-  let K : NonUnitalSubring R :=
+  letI K : NonUnitalSubring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
@@ -669,7 +669,7 @@ theorem coe_rangeRestrict (f : R →ₙ+* S) (x : R) : (f.rangeRestrict x : S) =
 
 theorem rangeRestrict_surjective (f : R →ₙ+* S) : Function.Surjective f.rangeRestrict :=
   fun ⟨_y, hy⟩ =>
-  let ⟨x, hx⟩ := mem_range.mp hy
+  let_fun ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
 
 theorem range_eq_top {f : R →ₙ+* S} :
@@ -759,7 +759,7 @@ def ofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g 
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := NonUnitalRingHom.mem_range.mp x.prop
+        let_fun ⟨x', hx'⟩ := NonUnitalRingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]

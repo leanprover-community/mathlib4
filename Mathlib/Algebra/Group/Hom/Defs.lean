@@ -675,7 +675,7 @@ then `f x` has a right inverse too. For elements invertible on both sides see `I
   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
   a right inverse, then `f x` has a right inverse too."]
 theorem map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f x * y = 1 :=
-  let ⟨y, hy⟩ := hx
+  let_fun ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a left inverse,
@@ -685,7 +685,7 @@ then `f x` has a left inverse too. For elements invertible on both sides see `Is
   a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
   `IsAddUnit.map`."]
 theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
-  let ⟨y, hy⟩ := hx
+  let_fun ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 
 end MonoidHom

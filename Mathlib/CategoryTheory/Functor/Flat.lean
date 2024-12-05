@@ -157,7 +157,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
 
 theorem coflat_of_preservesFiniteColimits [HasFiniteColimits C] (F : C ⥤ D)
     [PreservesFiniteColimits F] : RepresentablyCoflat F :=
-  let _ := preservesFiniteLimits_op F
+  let_fun _ := preservesFiniteLimits_op F
   (representablyFlat_op_iff _).1 (flat_of_preservesFiniteLimits _)
 
 namespace PreservesFiniteLimitsOfFlat
@@ -172,7 +172,7 @@ Given a limit cone `c : cone K` and a cone `s : cone (K ⋙ F)` with `F` represe
 `s` can factor through `F.mapCone c`.
 -/
 noncomputable def lift : s.pt ⟶ F.obj c.pt :=
-  let s' := IsCofiltered.cone (s.toStructuredArrow ⋙ StructuredArrow.pre _ K F)
+  let_fun s' := IsCofiltered.cone (s.toStructuredArrow ⋙ StructuredArrow.pre _ K F)
   s'.pt.hom ≫
     (F.map <|
       hc.lift <|

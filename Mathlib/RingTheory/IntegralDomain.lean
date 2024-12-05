@@ -218,7 +218,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
         Eq.symm <|
           sum_nbij (x ^ ·) (by simp only [mem_univ, forall_true_iff])
             (by simpa using pow_injOn_Iio_orderOf)
-            (fun b _ => let ⟨n, hn⟩ := hx b
+            (fun b _ => let_fun ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
                by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)

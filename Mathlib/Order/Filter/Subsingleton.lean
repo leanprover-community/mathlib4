@@ -25,18 +25,20 @@ theorem HasBasis.subsingleton_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set
   h.exists_iff fun _ _ hsub h ↦ h.anti hsub
 
 theorem Subsingleton.anti {l'} (hl : l.Subsingleton) (hl' : l' ≤ l) : l'.Subsingleton :=
-  let ⟨s, hsl, hs⟩ := hl; ⟨s, hl' hsl, hs⟩
+  let_fun ⟨s, hsl, hs⟩ := hl; ⟨s, hl' hsl, hs⟩
 
 @[nontriviality]
 theorem Subsingleton.of_subsingleton [Subsingleton α] : l.Subsingleton :=
   ⟨univ, univ_mem, subsingleton_univ⟩
 
 theorem Subsingleton.map (hl : l.Subsingleton) (f : α → β) : (map f l).Subsingleton :=
-  let ⟨s, hsl, hs⟩ := hl; ⟨f '' s, image_mem_map hsl, hs.image f⟩
+  let_fun ⟨s, hsl, hs⟩ := hl; ⟨f '' s, image_mem_map hsl, hs.image f⟩
 
 theorem Subsingleton.prod (hl : l.Subsingleton) {l' : Filter β} (hl' : l'.Subsingleton) :
     (l ×ˢ l').Subsingleton :=
-  let ⟨s, hsl, hs⟩ := hl; let ⟨t, htl', ht⟩ := hl'; ⟨s ×ˢ t, prod_mem_prod hsl htl', hs.prod ht⟩
+  let_fun ⟨s, hsl, hs⟩ := hl
+  let_fun ⟨t, htl', ht⟩ := hl'
+  ⟨s ×ˢ t, prod_mem_prod hsl htl', hs.prod ht⟩
 
 @[simp]
 theorem subsingleton_pure {a : α} : Filter.Subsingleton (pure a) :=

@@ -590,7 +590,7 @@ def split' : ONote → ONote × ℕ
   | oadd e n a =>
     if e = 0 then (0, n)
     else
-      let (a', m) := split' a
+      let_fun (a', m) := split' a
       (oadd (e - 1) n a', m)
 
 /-- Calculate division and remainder of `o` mod `ω`:
@@ -601,7 +601,7 @@ def split : ONote → ONote × ℕ
   | oadd e n a =>
     if e = 0 then (0, n)
     else
-      let (a', m) := split a
+      let_fun (a', m) := split a
       (oadd e n a', m)
 
 /-- `scale x o` is the ordinal notation for `ω ^ x * o`. -/
@@ -627,13 +627,13 @@ def opowAux2 (o₂ : ONote) (o₁ : ONote × ℕ) : ONote :=
   | (0, 0) => if o₂ = 0 then 1 else 0
   | (0, 1) => 1
   | (0, m + 1) =>
-    let (b', k) := split' o₂
+    let_fun (b', k) := split' o₂
     oadd b' (m.succPNat ^ k) 0
   | (a@(oadd a0 _ _), m) =>
     match split o₂ with
     | (b, 0) => oadd (a0 * b) 1 0
     | (b, k + 1) =>
-      let eb := a0 * b
+      let_fun eb := a0 * b
       scale (eb + mulNat a0 k) a + opowAux eb a0 (mulNat a m) k m
 
 /-- `opow o₁ o₂` calculates the ordinal notation for the ordinal exponential `o₁ ^ o₂`. -/
@@ -812,7 +812,7 @@ section
 set_option linter.unusedVariables false in
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
-    let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
+    let_fun R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
     (k ≠ 0 → R < ((ω ^ repr a0) ^ succ (k : Ordinal))) ∧
       ((ω ^ repr a0) ^ (k : Ordinal)) * ((ω ^ repr a0) * (n : ℕ) + repr a') + R =
         ((ω ^ repr a0) * (n : ℕ) + repr a' + m) ^ succ (k : Ordinal) := by

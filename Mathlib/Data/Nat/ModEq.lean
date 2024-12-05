@@ -287,7 +287,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
       · exact h.symm
       · rfl⟩
     else
-      ⟨let (c, d) := xgcd n m; Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m), by
+      ⟨let_fun (c, d) := xgcd n m; Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m), by
         rw [xgcd_val]
         dsimp
         rw [modEq_iff_dvd, modEq_iff_dvd,

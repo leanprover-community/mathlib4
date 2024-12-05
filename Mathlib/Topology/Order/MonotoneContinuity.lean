@@ -117,7 +117,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_surjOn {f : α → β} {s : Set
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : SurjOn f s (Ioi (f a))) :
     ContinuousWithinAt f (Ici a) a :=
   h_mono.continuousWithinAt_right_of_exists_between hs fun _ hb =>
-    let ⟨c, hcs, hcb⟩ := hfs hb
+    let_fun ⟨c, hcs, hcb⟩ := hfs hb
     ⟨c, hcs, hcb.symm ▸ hb, hcb.le⟩
 
 /-- If `f` is a strictly monotone function on a left neighborhood of `a` and the image of this
@@ -131,7 +131,7 @@ theorem StrictMonoOn.continuousWithinAt_left_of_exists_between {f : α → β} {
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)) :
     ContinuousWithinAt f (Iic a) a :=
   h_mono.dual.continuousWithinAt_right_of_exists_between hs fun b hb =>
-    let ⟨c, hcs, hcb, hca⟩ := hfs b hb
+    let_fun ⟨c, hcs, hcb, hca⟩ := hfs b hb
     ⟨c, hcs, hca, hcb⟩
 
 /-- If `f` is a monotone function on a left neighborhood of `a` and the image of this neighborhood
@@ -145,7 +145,7 @@ theorem continuousWithinAt_left_of_monotoneOn_of_exists_between {f : α → β} 
     ContinuousWithinAt f (Iic a) a :=
   @continuousWithinAt_right_of_monotoneOn_of_exists_between αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s a hf.dual hs
     fun b hb =>
-    let ⟨c, hcs, hcb, hca⟩ := hfs b hb
+    let_fun ⟨c, hcs, hcb, hca⟩ := hfs b hb
     ⟨c, hcs, hca, hcb⟩
 
 /-- If a function `f` with a densely ordered codomain is monotone on a left neighborhood of `a` and

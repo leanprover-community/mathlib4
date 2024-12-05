@@ -94,7 +94,7 @@ end
 
 theorem of_iso {P Q : C} (i : P ≅ Q) (_ : Projective P) : Projective Q where
   factors f e _ :=
-    let ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
+    let_fun ⟨f', hf'⟩ := Projective.factors (i.hom ≫ f) e
     ⟨i.inv ≫ f', by simp [hf']⟩
 
 theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=

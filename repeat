@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Initialize variables
+prev_hash=""
+current_hash=""
+
+while true; do
+    # Run the shell command
+    (lake build Mathlib | tee build.log) && python3 replace_lets.py
+
+    # Calculate the hash of build.log
+    current_hash=$(sha256sum build.log | awk '{ print $1 }')
+
+    # Check if the hash matches the previous hash
+    if [[ "$current_hash" == "$prev_hash" ]]; then
+        echo "build.log has not changed. Stopping."
+        break
+    fi
+
+    # Update the previous hash
+    prev_hash=$current_hash
+done

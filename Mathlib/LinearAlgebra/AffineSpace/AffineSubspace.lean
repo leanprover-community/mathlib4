@@ -599,7 +599,7 @@ theorem lt_iff_le_and_exists (s1 s2 : AffineSubspace k P) :
 equal. -/
 theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
     (hd : s₁.direction = s₂.direction) (hn : (s₁ : Set P).Nonempty) (hle : s₁ ≤ s₂) : s₁ = s₂ :=
-  let ⟨p, hp⟩ := hn
+  let_fun ⟨p, hp⟩ := hn
   ext_of_direction_eq hd ⟨p, hp, hle hp⟩
 
 variable (k V)

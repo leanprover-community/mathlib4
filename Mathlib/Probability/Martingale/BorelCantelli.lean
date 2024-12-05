@@ -79,7 +79,7 @@ theorem leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : �
       hitting_eq_hitting_of_exists (hπn ω) _]
     rw [not_le, leastGE, hitting_lt_iff _ (hπn ω)] at hle
     exact
-      let ⟨j, hj₁, hj₂⟩ := hle
+      let_fun ⟨j, hj₁, hj₂⟩ := hle
       ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
 
 theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → ℕ) (r : ℝ) {n : ℕ}

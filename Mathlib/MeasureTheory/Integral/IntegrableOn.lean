@@ -46,7 +46,7 @@ protected theorem StronglyMeasurableAtFilter.eventually (h : StronglyMeasurableA
 
 protected theorem StronglyMeasurableAtFilter.filter_mono (h : StronglyMeasurableAtFilter f l μ)
     (h' : l' ≤ l) : StronglyMeasurableAtFilter f l' μ :=
-  let ⟨s, hsl, hs⟩ := h
+  let_fun ⟨s, hsl, hs⟩ := h
   ⟨s, h' hsl, hs⟩
 
 protected theorem MeasureTheory.AEStronglyMeasurable.stronglyMeasurableAtFilter
@@ -408,7 +408,7 @@ protected theorem IntegrableAtFilter.norm (hf : IntegrableAtFilter f l μ) :
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
-  let ⟨s, hs, hsf⟩ := hl'
+  let_fun ⟨s, hs, hsf⟩ := hl'
   ⟨s, hl hs, hsf⟩
 
 theorem IntegrableAtFilter.inf_of_left (hl : IntegrableAtFilter f l μ) :

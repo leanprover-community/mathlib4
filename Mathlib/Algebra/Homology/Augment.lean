@@ -178,7 +178,7 @@ This is the inverse construction of `truncateTo`.
 -/
 def toSingle₀AsComplex [HasZeroObject V] (C : ChainComplex V ℕ) (X : V)
     (f : C ⟶ (single₀ V).obj X) : ChainComplex V ℕ :=
-  let ⟨f, w⟩ := toSingle₀Equiv C X f
+  let_fun ⟨f, w⟩ := toSingle₀Equiv C X f
   augment C f w
 
 end ChainComplex
@@ -353,7 +353,7 @@ This is the inverse construction of `toTruncate`.
 -/
 def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
     (f : (single₀ V).obj X ⟶ C) : CochainComplex V ℕ :=
-  let ⟨f, w⟩ := fromSingle₀Equiv C X f
+  let_fun ⟨f, w⟩ := fromSingle₀Equiv C X f
   augment C f w
 
 end CochainComplex

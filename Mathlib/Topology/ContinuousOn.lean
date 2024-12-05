@@ -615,7 +615,7 @@ theorem continuousOn_iff_isClosed :
 theorem continuous_of_cover_nhds {ι : Sort*} {s : ι → Set α}
     (hs : ∀ x : α, ∃ i, s i ∈ 𝓝 x) (hf : ∀ i, ContinuousOn f (s i)) :
     Continuous f :=
-  continuous_iff_continuousAt.mpr fun x ↦ let ⟨i, hi⟩ := hs x; by
+  continuous_iff_continuousAt.mpr fun x ↦ let_fun ⟨i, hi⟩ := hs x; by
     rw [ContinuousAt, ← nhdsWithin_eq_nhds.2 hi]
     exact hf _ _ (mem_of_mem_nhds hi)
 

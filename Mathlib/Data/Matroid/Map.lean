@@ -489,11 +489,11 @@ instance [M.Finitary] {f : α → β} (hf) : (M.map f hf).Finitary := by
   rwa [map_image_indep_iff (hJ₀I₀.trans hI₀E)] at hI
 
 instance [M.FiniteRk] {f : α → β} (hf) : (M.map f hf).FiniteRk :=
-  let ⟨_, hB⟩ := M.exists_base
+  let_fun ⟨_, hB⟩ := M.exists_base
   (hB.map hf).finiteRk_of_finite (hB.finite.image _)
 
 instance [M.RkPos] {f : α → β} (hf) : (M.map f hf).RkPos :=
-  let ⟨_, hB⟩ := M.exists_base
+  let_fun ⟨_, hB⟩ := M.exists_base
   (hB.map hf).rkPos_of_nonempty (hB.nonempty.image _)
 
 end map

@@ -123,12 +123,12 @@ theorem card_eq_iff_eq_top [Finite H] : Nat.card H = Nat.card G ↔ H = ⊤ :=
 
 @[to_additive]
 theorem eq_bot_of_card_le [Finite H] (h : Nat.card H ≤ 1) : H = ⊥ :=
-  let _ := Finite.card_le_one_iff_subsingleton.mp h
+  let_fun _ := Finite.card_le_one_iff_subsingleton.mp h
   eq_bot_of_subsingleton H
 
 @[to_additive]
 theorem eq_bot_of_card_eq (h : Nat.card H = 1) : H = ⊥ :=
-  let _ := (Nat.card_eq_one_iff_unique.mp h).1
+  let_fun _ := (Nat.card_eq_one_iff_unique.mp h).1
   eq_bot_of_subsingleton H
 
 @[to_additive card_le_one_iff_eq_bot]
@@ -232,7 +232,7 @@ theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ 
         Set.eq_of_subset_of_card_le (fun n ⟨y, hy⟩ => hy.2 ▸ h y hy.1)
           (by rw [Set.card_image_of_injective S conj_injective])
       have : x * n * x⁻¹ ∈ (fun n => x * n * x⁻¹) '' S := heq.symm ▸ h₁
-      let ⟨y, hy⟩ := this
+      let_fun ⟨y, hy⟩ := this
       conj_injective hy.2 ▸ hy.1⟩
 
 end Normalizer

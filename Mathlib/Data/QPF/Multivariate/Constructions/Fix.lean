@@ -300,7 +300,7 @@ instance mvqpfFix : MvQPF (Fix F) where
 /-- Dependent recursor for `fix F` -/
 def Fix.drec {β : Fix F α → Type u}
     (g : ∀ x : F (α ::: Sigma β), β (Fix.mk <| (id ::: Sigma.fst) <$$> x)) (x : Fix F α) : β x :=
-  let y := @Fix.rec _ F _ α (Sigma β) (fun i => ⟨_, g i⟩) x
+  letI y := @Fix.rec _ F _ α (Sigma β) (fun i => ⟨_, g i⟩) x
   have : x = y.1 := by
     symm
     dsimp [y]

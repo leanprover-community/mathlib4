@@ -49,7 +49,7 @@ theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a 
   ext_s.trans Set.ext_iff
 
 theorem exists_mem (q : Semiquot α) : ∃ a, a ∈ q :=
-  let ⟨⟨a, h⟩, _⟩ := q.2.exists_rep
+  let_fun ⟨⟨a, h⟩, _⟩ := q.2.exists_rep
   ⟨a, h⟩
 
 theorem eq_mk_of_mem {q : Semiquot α} {a : α} (h : a ∈ q) : q = @mk _ a q.1 h :=

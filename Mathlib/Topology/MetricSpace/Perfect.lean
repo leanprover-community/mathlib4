@@ -38,7 +38,7 @@ open Function ENNReal
 variable {α : Type*} [MetricSpace α] {C : Set α} {ε : ℝ≥0∞}
 
 private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
-    let D := closure (EMetric.ball x (ε / 2) ∩ C)
+    let_fun D := closure (EMetric.ball x (ε / 2) ∩ C)
     Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ EMetric.diam D ≤ ε := by
   have : x ∈ EMetric.ball x (ε / 2) := by
     apply EMetric.mem_ball_self

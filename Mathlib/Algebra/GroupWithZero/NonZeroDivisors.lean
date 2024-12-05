@@ -236,7 +236,7 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M'] [MonoidWithZeroH
   cases subsingleton_or_nontrivial M
   · simp [Subsingleton.elim S ⊥]
   · exact le_nonZeroDivisors_of_noZeroDivisors fun h ↦
-      let ⟨x, hx, hx0⟩ := h
+      let_fun ⟨x, hx, hx0⟩ := h
       zero_ne_one (hS (hf (hx0.trans (map_zero f).symm) ▸ hx : 0 ∈ S) 1 (mul_zero 1)).symm
 
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M']

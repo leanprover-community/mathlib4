@@ -140,7 +140,7 @@ variable {C D}
 /-- Two categories which are categorically equivalent have skeletons with equivalent objects.
 -/
 noncomputable def Equivalence.skeletonEquiv (e : C ≌ D) : Skeleton C ≃ Skeleton D :=
-  let f := ((skeletonEquivalence C).trans e).trans (skeletonEquivalence D).symm
+  let_fun f := ((skeletonEquivalence C).trans e).trans (skeletonEquivalence D).symm
   { toFun := f.functor.obj
     invFun := f.inverse.obj
     left_inv := fun X => skeleton_skeletal C ⟨(f.unitIso.app X).symm⟩

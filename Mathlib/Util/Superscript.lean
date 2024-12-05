@@ -73,21 +73,21 @@ where `a..b` is a token and `b..c` is whitespace.
 partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := true)
     (k : Array (String.Pos × String.Pos × String.Pos) → ParserState → ParserState) :
     ParserFn := fun c s =>
-  let start := s.pos
-  let s := takeWhile1Fn p errorMsg c s
+  let_fun start := s.pos
+  let_fun s := takeWhile1Fn p errorMsg c s
   if s.hasError then s else
-  let stop := s.pos
-  let s := whitespace c s
-  let toks := #[(start, stop, s.pos)]
+  let_fun stop := s.pos
+  let_fun s := whitespace c s
+  let_fun toks := #[(start, stop, s.pos)]
   if many then
     let rec /-- Loop body of `satisfyTokensFn` -/
     loop (toks) (s : ParserState) : ParserState :=
-      let start := s.pos
-      let s := takeWhileFn p c s
+      let_fun start := s.pos
+      let_fun s := takeWhileFn p c s
       if s.pos == start then k toks s else
-        let stop := s.pos
-        let s := whitespace c s
-        let toks := toks.push (start, stop, s.pos)
+        let_fun stop := s.pos
+        let_fun s := whitespace c s
+        let_fun toks := toks.push (start, stop, s.pos)
         loop toks s
     loop toks s
   else k toks s
@@ -98,8 +98,8 @@ returns `i`, by binary search. -/
 @[specialize]
 def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
-    let m := (lo + hi)/2
-    let a := as.get! m
+    letI m := (lo + hi)/2
+    let_fun a := as.get! m
     if leftOfPartition a then
       partitionPoint (m+1) hi
     else
@@ -119,7 +119,7 @@ If `many` is false, then whitespace (and comments) are not allowed inside the su
 -/
 partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     (many := true) : ParserFn := fun c s =>
-  let start := s.pos
+  let_fun start := s.pos
   satisfyTokensFn m.toNormal.contains errorMsg many c s (k := fun toks s => Id.run do
     let input := c.input
     let mut newStr := ""
@@ -142,8 +142,8 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
     let rec /-- Applies the alignment mapping to a position. -/
     align (pos : String.Pos) :=
-      let i := partitionPoint aligns (·.1 ≤ pos)
-      let (a, b) := aligns[i - 1]!
+      let_fun i := partitionPoint aligns (·.1 ≤ pos)
+      let_fun (a, b) := aligns[i - 1]!
       pos - a + b
     let s := { s with pos := align s'.pos, errorMsg := s'.errorMsg }
     if s.hasError then return s
@@ -185,9 +185,9 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
 -/
 def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
     (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
-  let tokens := "$" :: (m.toNormal.toArray.map (·.1.toString) |>.qsort (·<·)).toList
-  let antiquotP := mkAntiquot antiquotName `term (isPseudoKind := true)
-  let p := Superscript.scriptFnNoAntiquot m errorMsg p.fn many
+  let_fun tokens := "$" :: (m.toNormal.toArray.map (·.1.toString) |>.qsort (·<·)).toList
+  let_fun antiquotP := mkAntiquot antiquotName `term (isPseudoKind := true)
+  let_fun p := Superscript.scriptFnNoAntiquot m errorMsg p.fn many
   node kind {
     info.firstTokens := .tokens tokens
     info.collectTokens := (tokens ++ ·)

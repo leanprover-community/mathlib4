@@ -48,7 +48,7 @@ variable {X M E : Type*}
 @[to_additive]
 instance Lp.instContinuousSMulDomMulAct : ContinuousSMul Mᵈᵐᵃ (Lp E p μ) where
   continuous_smul :=
-    let g : C(Mᵈᵐᵃ × Lp E p μ, C(X, X)) :=
+    letI g : C(Mᵈᵐᵃ × Lp E p μ, C(X, X)) :=
       (ContinuousMap.mk (fun a : M × X ↦ a.1 • a.2) continuous_smul).curry.comp <|
         .comp (.mk DomMulAct.mk.symm) ContinuousMap.fst
     continuous_snd.compMeasurePreservingLp g.continuous _ Fact.out

@@ -264,7 +264,7 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
     (h : ∀ b, g b = 1 ∨ g b = f b) : Multipliable g := by
   classical
   exact multipliable_iff_vanishing.2 fun e he ↦
-    let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
+    let_fun ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
       have eq : ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t, g b :=
         calc

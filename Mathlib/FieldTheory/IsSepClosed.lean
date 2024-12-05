@@ -157,7 +157,7 @@ theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
 theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
     (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, p.eval₂ f x = 0 :=
-  let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective f.injective])
+  let_fun ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective f.injective])
     (Separable.map hsep)
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 

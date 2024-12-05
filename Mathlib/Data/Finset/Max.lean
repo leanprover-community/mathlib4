@@ -54,7 +54,7 @@ theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = 
   exact ⟨b, h⟩
 
 theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a :=
-  let ⟨_, h⟩ := h
+  let_fun ⟨_, h⟩ := h
   max_of_mem h
 
 theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
@@ -132,7 +132,7 @@ theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = 
   exact ⟨b, h⟩
 
 theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a :=
-  let ⟨_, h⟩ := h
+  let_fun ⟨_, h⟩ := h
   min_of_mem h
 
 @[simp]
@@ -442,7 +442,7 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
     s.card ≤ (t \ s).card + 1 :=
   card_le_of_interleaved fun x hx y hy hxy hs =>
-    let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
+    let_fun ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
     ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
 
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all

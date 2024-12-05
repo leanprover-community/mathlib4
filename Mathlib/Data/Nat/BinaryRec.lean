@@ -45,7 +45,7 @@ theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
 @[inline]
 def bitCasesOn {motive : Nat → Sort u} (n) (h : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
-  let x := h (1 &&& n != 0) (n >>> 1)
+  let_fun x := h (1 &&& n != 0) (n >>> 1)
   -- `congrArg motive _ ▸ x` is defeq to `x` in non-dependent case
   congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
@@ -58,7 +58,7 @@ def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n �
     (n : Nat) : motive n :=
   if n0 : n = 0 then congrArg motive n0 ▸ z
   else
-    let x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
+    let_fun x := f (1 &&& n != 0) (n >>> 1) (binaryRec z f (n >>> 1))
     congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 decreasing_by exact bitwise_rec_lemma n0
 

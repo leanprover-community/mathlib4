@@ -83,7 +83,7 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
     if f.support.card = 0 then
       "0"
     else
-      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
+      let_fun ret : Std.Format := f!"fun₀" ++ .nest 2 (
         .group (.join <| f.support.val.unquot.map fun a =>
           .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
       if p ≥ leadPrec then Format.paren ret else ret

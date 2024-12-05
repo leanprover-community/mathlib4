@@ -530,7 +530,7 @@ abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
 
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
-    let ⟨x, hx⟩ := hy
+    let_fun ⟨x, hx⟩ := hy
     ⟨x, SetCoe.ext hx⟩
 
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
@@ -556,7 +556,7 @@ def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g 
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := f.mem_range.mp x.prop
+        let_fun ⟨x', hx'⟩ := f.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]
@@ -805,7 +805,7 @@ theorem surjective_algebraMap_iff :
     Function.Surjective (algebraMap R A) ↔ (⊤ : Subalgebra R A) = ⊥ :=
   ⟨fun h =>
     eq_bot_iff.2 fun y _ =>
-      let ⟨_x, hx⟩ := h y
+      let_fun ⟨_x, hx⟩ := h y
       hx ▸ Subalgebra.algebraMap_mem _ _,
     fun h y => Algebra.mem_bot.1 <| eq_bot_iff.1 h (Algebra.mem_top : y ∈ _)⟩
 
@@ -851,7 +851,7 @@ instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsinglet
   ⟨fun f g =>
     AlgHom.ext fun a =>
       have : a ∈ (⊥ : Subalgebra R A) := Subsingleton.elim (⊤ : Subalgebra R A) ⊥ ▸ mem_top
-      let ⟨_x, hx⟩ := Set.mem_range.mp (mem_bot.mp this)
+      let_fun ⟨_x, hx⟩ := Set.mem_range.mp (mem_bot.mp this)
       hx ▸ (f.commutes _).trans (g.commutes _).symm⟩
 
 instance _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] :

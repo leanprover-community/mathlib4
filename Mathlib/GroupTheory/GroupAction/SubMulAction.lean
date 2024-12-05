@@ -363,7 +363,7 @@ variable [Module R M]
 variable (p : SubMulAction R M)
 
 theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
-  let ⟨x, hx⟩ := h
+  let_fun ⟨x, hx⟩ := h
   zero_smul R (x : M) ▸ p.smul_mem 0 hx
 
 /-- If the scalar product forms a `Module`, and the `SubMulAction` is not `⊥`, then the

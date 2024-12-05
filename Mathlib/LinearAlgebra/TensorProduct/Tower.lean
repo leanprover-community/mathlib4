@@ -412,9 +412,9 @@ variable [Module R P] [IsScalarTower R A P]
 
 /-- Heterobasic version of `TensorProduct.leftComm` -/
 def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
-  let e₁ := (assoc R A A M P Q).symm
-  let e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
-  let e₃ := assoc R A A P M Q
+  let_fun e₁ := (assoc R A A M P Q).symm
+  let_fun e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
+  let_fun e₃ := assoc R A A P M Q
   e₁ ≪≫ₗ e₂ ≪≫ₗ e₃
 
 variable {M N P Q}

@@ -75,7 +75,7 @@ to `f`. The unit of this adjoint is given by the unit of the Kan extension. -/
 def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker f)) :
       f ⊣ t.extension :=
-  let ε : t.extension ≫ f ⟶ 𝟙 b := H'.desc <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
+  letI ε : t.extension ≫ f ⟶ 𝟙 b := H'.desc <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
   have Hε : leftZigzag t.unit ε = (λ_ f).hom ≫ (ρ_ f).inv := by
     simpa [leftZigzag, bicategoricalComp] using H'.fac <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
   { unit := t.unit
@@ -154,7 +154,7 @@ to `u`. The unit of this adjoint is given by the unit of the Kan lift. -/
 def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker u)) :
       t.lift ⊣ u :=
-  let ε : u ≫ t.lift ⟶ 𝟙 b := H'.desc <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
+  letI ε : u ≫ t.lift ⟶ 𝟙 b := H'.desc <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
   have Hε : rightZigzag t.unit ε = (ρ_ u).hom ≫ (λ_ u).inv := by
     simpa [rightZigzag, bicategoricalComp] using H'.fac <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
   { unit := t.unit
@@ -201,15 +201,15 @@ def isKanOfWhiskerLeftAdjoint
     {f : a ⟶ b} {g : a ⟶ c} {t : LeftExtension f g} (H : LeftExtension.IsKan t)
       {x : B} {h : c ⟶ x} {u : x ⟶ c} (adj : h ⊣ u) :
         LeftExtension.IsKan (t.whisker h) :=
-  let η' := adj.unit
-  let H' : LeftLift.IsAbsKan (.mk _ η') := adj.isAbsoluteLeftKanLift
+  letI η' := adj.unit
+  let_fun H' : LeftLift.IsAbsKan (.mk _ η') := adj.isAbsoluteLeftKanLift
   .mk (fun s ↦
-    let k := s.extension
-    let θ := s.unit
-    let sτ := LeftExtension.mk _ <| 𝟙 _ ⊗≫ g ◁ η' ⊗≫ θ ▷ u ⊗≫ 𝟙 _
-    let τ : t.extension ⟶ k ≫ u := H.desc sτ
-    let sσ := LeftLift.mk _ <| (ρ_ _).hom ≫ τ
-    let σ : t.extension ≫ h ⟶ k := H'.desc sσ
+    letI k := s.extension
+    letI θ := s.unit
+    letI sτ := LeftExtension.mk _ <| 𝟙 _ ⊗≫ g ◁ η' ⊗≫ θ ▷ u ⊗≫ 𝟙 _
+    letI τ : t.extension ⟶ k ≫ u := H.desc sτ
+    letI sσ := LeftLift.mk _ <| (ρ_ _).hom ≫ τ
+    letI σ : t.extension ≫ h ⟶ k := H'.desc sσ
     LeftExtension.homMk σ <| (H' g).hom_ext <| by
       have Hσ : t.extension ◁ η' ⊗≫ σ ▷ u  = 𝟙 _ ⊗≫ τ := by
         simpa [bicategoricalComp] using (H' _).fac (.mk _ <| (ρ_ _).hom ≫ τ)

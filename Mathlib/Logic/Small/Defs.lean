@@ -64,11 +64,11 @@ instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 
 theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
-  let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
+  let_fun ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 
 theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
-  let ⟨⟨_, ⟨f⟩⟩⟩ := hα
+  let_fun ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 
 /-- Due to https://github.com/leanprover/lean4/issues/2297, this is useless as an instance.

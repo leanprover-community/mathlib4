@@ -29,16 +29,16 @@ variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
 def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=
-  let ⟨P, f, haf, i⟩ := normalMonoOfMono a
-  let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
-  let ⟨a', ha'⟩ :=
+  let_fun ⟨P, f, haf, i⟩ := normalMonoOfMono a
+  let_fun ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
+  let_fun ⟨a', ha'⟩ :=
     KernelFork.IsLimit.lift' i (kernel.ι (prod.lift f g)) <|
       calc kernel.ι (prod.lift f g) ≫ f
         _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.fst := by rw [prod.lift_fst]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.fst := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
 
-  let ⟨b', hb'⟩ :=
+  let_fun ⟨b', hb'⟩ :=
     KernelFork.IsLimit.lift' i' (kernel.ι (prod.lift f g)) <|
       calc kernel.ι (prod.lift f g) ≫ g
         _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd := by rw [prod.lift_snd]
@@ -179,9 +179,9 @@ variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
 @[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
 def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     HasColimit (span a b) :=
-  let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
-  let ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
-  let ⟨a', ha'⟩ :=
+  let_fun ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
+  let_fun ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
+  let_fun ⟨a', ha'⟩ :=
     CokernelCofork.IsColimit.desc' i (cokernel.π (coprod.desc f g)) <|
       calc
         f ≫ cokernel.π (coprod.desc f g) =
@@ -190,7 +190,7 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
         _ = coprod.inl ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
 
-  let ⟨b', hb'⟩ :=
+  let_fun ⟨b', hb'⟩ :=
     CokernelCofork.IsColimit.desc' i' (cokernel.π (coprod.desc f g)) <|
       calc
         g ≫ cokernel.π (coprod.desc f g) =

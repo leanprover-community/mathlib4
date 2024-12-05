@@ -115,7 +115,7 @@ theorem Separable.of_pow {f : R[X]} (hf : ¬IsUnit f) {n : ℕ} (hn : n ≠ 0)
   (hfs.of_pow'.resolve_left hf).resolve_right hn
 
 theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).Separable :=
-  let ⟨a, b, H⟩ := h
+  let_fun ⟨a, b, H⟩ := h
   ⟨a.map f, b.map f, by
     rw [derivative_map, ← Polynomial.map_mul, ← Polynomial.map_mul, ← Polynomial.map_add, H,
       Polynomial.map_one]⟩
@@ -310,7 +310,7 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
     f.Separable ↔ derivative f ≠ 0 :=
   ⟨fun h1 h2 => hf.not_unit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
     EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 =>
-      let ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
+      let_fun ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
       have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
         rwa [Units.mul_right_dvd]
@@ -736,7 +736,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
         smul_def' := fun _ _ ↦ rfl }
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
       (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
-  let e : B₁ ≃ₐ[A₂] B₂ :=
+  letI e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun x ↦ by
         simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }

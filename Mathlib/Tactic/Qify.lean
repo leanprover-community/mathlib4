@@ -59,7 +59,7 @@ syntax (name := qify) "qify" (simpArgs)? (location)? : tactic
 
 macro_rules
 | `(tactic| qify $[[$simpArgs,*]]? $[at $location]?) =>
-  let args := simpArgs.map (·.getElems) |>.getD #[]
+  let_fun args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
     simp -decide only [zify_simps, qify_simps, push_cast, $args,*]
       $[at $location]?)

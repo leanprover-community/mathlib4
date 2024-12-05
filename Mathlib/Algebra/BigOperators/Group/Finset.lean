@@ -771,7 +771,7 @@ theorem prod_image' [DecidableEq α] {s : Finset ι} {g : ι → α} (h : ι →
   calc
     ∏ a ∈ s.image g, f a = ∏ a ∈ s.image g, ∏ j ∈ s with g j = a, h j :=
       (prod_congr rfl) fun _a hx =>
-        let ⟨i, his, hi⟩ := mem_image.1 hx
+        let_fun ⟨i, his, hi⟩ := mem_image.1 hx
         hi ▸ eq i his
     _ = ∏ i ∈ s, h i := prod_fiberwise_of_maps_to (fun _ => mem_image_of_mem g) _
 

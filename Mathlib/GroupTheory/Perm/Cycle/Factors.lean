@@ -158,7 +158,7 @@ theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x
   (isCycle_iff_sameCycle this).2 @fun y =>
     ⟨fun h => mt h.apply_eq_self_iff.2 this, fun h =>
       if hxy : SameCycle f x y then
-        let ⟨i, hi⟩ := hxy
+        let_fun ⟨i, hi⟩ := hxy
         ⟨i, by rw [cycleOf_zpow_apply_self, hi]⟩
       else by
         rw [cycleOf_apply_of_not_sameCycle hxy] at h
@@ -328,7 +328,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
     if hx : f x = x then cycleFactorsAux l f (by
         intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
     else
-      let ⟨m, hm⟩ :=
+      let_fun ⟨m, hm⟩ :=
         cycleFactorsAux l ((cycleOf f x)⁻¹ * f) (by
         intro y hy
         exact List.mem_of_ne_of_mem

@@ -425,7 +425,7 @@ abbrev Invertible.algebraMapOfInvertibleAlgebraMap (f : A →ₗ[R] B) (hf : f 1
 a unit when `algebraMap R A r` is. -/
 lemma IsUnit.algebraMap_of_algebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
     (h : IsUnit (algebraMap R A r)) : IsUnit (algebraMap R B r) :=
-  let ⟨i⟩ := nonempty_invertible h
+  let_fun ⟨i⟩ := nonempty_invertible h
   letI := Invertible.algebraMapOfInvertibleAlgebraMap f hf i
   isUnit_of_invertible _
 

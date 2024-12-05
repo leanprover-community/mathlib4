@@ -79,12 +79,12 @@ where
   core (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
       (b : Q(ℤ)) (nb : Q(ℕ)) (pb : Q(IsNat $b $nb)) :
       ℤ × (q : Q(ℤ)) × Q(IsInt ($a / $b) $q) :=
-    let b := nb.natLit!
-    let q := za / b
+    let_fun b := nb.natLit!
+    let_fun q := za / b
     have nq := mkRawIntLit q
-    let r := za.natMod b
+    let_fun r := za.natMod b
     have nr : Q(ℕ) := mkRawNatLit r
-    let m := q * b
+    let_fun m := q * b
     have nm := mkRawIntLit m
     have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm) :)
     have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na) :)
@@ -140,12 +140,12 @@ where
   core (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
       (b : Q(ℤ)) (nb : Q(ℕ)) (pb : Q(IsNat $b $nb)) :
       (r : Q(ℕ)) × Q(IsNat ($a % $b) $r) :=
-    let b := nb.natLit!
-    let q := za / b
+    let_fun b := nb.natLit!
+    let_fun q := za / b
     have nq := mkRawIntLit q
-    let r := za.natMod b
+    let_fun r := za.natMod b
     have nr : Q(ℕ) := mkRawNatLit r
-    let m := q * b
+    let_fun m := q * b
     have nm := mkRawIntLit m
     have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm) :)
     have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na) :)

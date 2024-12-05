@@ -81,16 +81,16 @@ partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
     haveI : $b =Q 1 := ⟨⟩
     ⟨a, q(natPow_one)⟩
   else
-    let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
+    let_fun ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
     ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀`, `p := Nat.pow $a $b₀ = $c₀` -/
   go (depth : Nat) (a b₀ c₀ b : Q(ℕ)) (p : Q(Prop)) (hp : $p =Q (Nat.pow $a $b₀ = $c₀)) :
       (c : Q(ℕ)) × Q(IsNatPowT $p $a $b $c) :=
-    let b' := b.natLit!
+    let_fun b' := b.natLit!
     if depth ≤ 1 then
-      let a' := a.natLit!
-      let c₀' := c₀.natLit!
+      let_fun a' := a.natLit!
+      let_fun c₀' := c₀.natLit!
       if b' &&& 1 == 0 then
         have c : Q(ℕ) := mkRawNatLit (c₀' * c₀')
         haveI : $c =Q Nat.mul $c₀ $c₀ := ⟨⟩
@@ -102,10 +102,10 @@ where
         haveI : $b =Q 2 * $b₀ + 1 := ⟨⟩
         ⟨c, q(IsNatPowT.bit1)⟩
     else
-      let d := depth >>> 1
+      let_fun d := depth >>> 1
       have hi : Q(ℕ) := mkRawNatLit (b' >>> d)
-      let ⟨c1, p1⟩ := go (depth - d) a b₀ c₀ hi p (by exact hp)
-      let ⟨c2, p2⟩ := go d a hi c1 b q(Nat.pow $a $hi = $c1) ⟨⟩
+      let_fun ⟨c1, p1⟩ := go (depth - d) a b₀ c₀ hi p (by exact hp)
+      let_fun ⟨c2, p2⟩ := go d a hi c1 b q(Nat.pow $a $hi = $c1) ⟨⟩
       ⟨c2, q(($p1).trans $p2)⟩
 
 theorem intPow_ofNat (h1 : Nat.pow a b = c) :
@@ -130,14 +130,14 @@ partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)
   have a' : Q(ℕ) := a.appArg!
   if 0 ≤ za then
     haveI : $a =Q .ofNat $a' := ⟨⟩
-    let ⟨c, p⟩ := evalNatPow a' b
+    let_fun ⟨c, p⟩ := evalNatPow a' b
     ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
   else
     haveI : $a =Q .negOfNat $a' := ⟨⟩
-    let b' := b.natLit!
+    let_fun b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
-    let ⟨c₀, p⟩ := evalNatPow a' b₀
-    let c' := c₀.natLit!
+    let_fun ⟨c₀, p⟩ := evalNatPow a' b₀
+    let_fun c' := c₀.natLit!
     if b' &&& 1 == 0 then
       have c : Q(ℕ) := mkRawNatLit (c' * c')
       have pc : Q($c₀ * $c₀ = $c) := (q(Eq.refl $c) : Expr)

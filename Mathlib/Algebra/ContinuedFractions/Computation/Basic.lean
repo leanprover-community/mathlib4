@@ -181,7 +181,7 @@ The implementation uses `IntFractPair.stream` to obtain the partial denominators
 fraction. Refer to said function for more details about the computation process.
 -/
 protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GenContFract K :=
-  let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
+  let_fun ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨h.b, -- the head is just the first integer part
     s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
                             -- denominators; all partial numerators are simply 1

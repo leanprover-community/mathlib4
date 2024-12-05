@@ -38,7 +38,7 @@ theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
 
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
   dif_neg fun ⟨n, hn⟩ ↦
-    let ⟨k, hks, hk⟩ := h.exists_gt n
+    let_fun ⟨k, hks, hk⟩ := h.exists_gt n
     (hn k hks).not_lt hk
 
 @[simp]
@@ -135,7 +135,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
-  let ⟨k, hk⟩ := h₂
+  let_fun ⟨k, hk⟩ := h₂
   h₁.csSup_mem ((finite_le_nat k).subset hk)
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :

@@ -276,7 +276,7 @@ protected def uniformCore : UniformSpace.Core (α →ᵤ β) :=
           fun _ huv x => huv x⟩)
     fun _ ⟨_, hV, hVU⟩ =>
     hVU ▸
-      let ⟨W, hW, hWV⟩ := comp_mem_uniformity_sets hV
+      let_fun ⟨W, hW, hWV⟩ := comp_mem_uniformity_sets hV
       ⟨UniformFun.gen α β W, ⟨W, hW, rfl⟩, fun _ ⟨w, huw, hwv⟩ x => hWV ⟨w x, ⟨huw x, hwv x⟩⟩⟩
 
 /-- Uniform structure of uniform convergence, declared as an instance on `α →ᵤ β`.
@@ -303,7 +303,7 @@ protected theorem hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s
     (h : (𝓤 β).HasBasis p s) : (𝓤 (α →ᵤ β)).HasBasis p (UniformFun.gen α β ∘ s) :=
   (UniformFun.hasBasis_uniformity α β).to_hasBasis
     (fun _ hU =>
-      let ⟨i, hi, hiU⟩ := h.mem_iff.mp hU
+      let_fun ⟨i, hi, hiU⟩ := h.mem_iff.mp hU
       ⟨i, hi, fun _ huv x => hiU (huv x)⟩)
     fun i hi => ⟨s i, h.mem_of_mem hi, subset_refl _⟩
 
@@ -592,8 +592,8 @@ protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : Di
     IsBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
   ⟨h.prod 𝓑.nonempty, fun {U₁V₁ U₂V₂} h₁ h₂ =>
-    let ⟨U₃, hU₃, hU₁₃, hU₂₃⟩ := h' U₁V₁.1 h₁.1 U₂V₂.1 h₂.1
-    let ⟨V₃, hV₃, hV₁₂₃⟩ := 𝓑.inter_sets h₁.2 h₂.2
+    let_fun ⟨U₃, hU₃, hU₁₃, hU₂₃⟩ := h' U₁V₁.1 h₁.1 U₂V₂.1 h₂.1
+    let_fun ⟨V₃, hV₃, hV₁₂₃⟩ := 𝓑.inter_sets h₁.2 h₂.2
     ⟨⟨U₃, V₃⟩,
       ⟨⟨hU₃, hV₃⟩, fun _ H =>
         ⟨fun x hx => (hV₁₂₃ <| H x <| hU₁₃ hx).1, fun x hx => (hV₁₂₃ <| H x <| hU₂₃ hx).2⟩⟩⟩⟩
@@ -705,7 +705,7 @@ protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDire
 protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n) :
     IsCountablyGenerated (𝓤 (α →ᵤ[𝔖] β)) :=
-  let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
+  let_fun ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
   (UniformOnFun.hasAntitoneBasis_uniformity 𝔖 ht hmono hex hV).isCountablyGenerated
 
 variable (α β)
@@ -816,7 +816,7 @@ theorem uniformContinuous_eval_of_mem {x : α} (hxs : x ∈ s) (hs : s ∈ 𝔖)
 
 theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
-  let ⟨_s, hs, hxs⟩ := hx
+  let_fun ⟨_s, hs, hxs⟩ := hx
   uniformContinuous_eval_of_mem _ _ hxs hs
 
 variable {β} {𝔖}

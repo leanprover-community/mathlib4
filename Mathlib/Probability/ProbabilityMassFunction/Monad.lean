@@ -205,10 +205,10 @@ theorem support_bindOnSupport :
     mul_eq_zero, Set.mem_iUnion]
   exact
     ⟨fun hb =>
-      let ⟨a, ⟨ha, ha'⟩⟩ := hb
+      let_fun ⟨a, ⟨ha, ha'⟩⟩ := hb
       ⟨a, ha, by simpa [ha] using ha'⟩,
       fun hb =>
-      let ⟨a, ha, ha'⟩ := hb
+      let_fun ⟨a, ha, ha'⟩ := hb
       ⟨a, ⟨ha, by simpa [(mem_support_iff _ a).1 ha] using ha'⟩⟩⟩
 
 theorem mem_support_bindOnSupport_iff (b : β) :

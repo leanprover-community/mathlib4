@@ -297,7 +297,7 @@ theorem toEventualRanges_nonempty (h : F.IsMittagLeffler) [∀ j : J, Nonempty (
 /-- If `F` has all arrows surjective, then it "factors through a poset". -/
 theorem thin_diagram_of_surjective (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) {i j}
     (f g : i ⟶ j) : F.map f = F.map g :=
-  let ⟨k, φ, hφ⟩ := IsCofilteredOrEmpty.cone_maps f g
+  let_fun ⟨k, φ, hφ⟩ := IsCofilteredOrEmpty.cone_maps f g
   (Fsur φ).injective_comp_right <| by simp_rw [← types_comp, ← F.map_comp, hφ]
 
 theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]

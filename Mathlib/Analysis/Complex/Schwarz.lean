@@ -130,7 +130,7 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]
     (h_maps : Set.MapsTo f (ball c R₁) (ball (f c) R₂))
     (h_z₀ : ∃ z₀ ∈ ball c R₁, ‖dslope f c z₀‖ = R₂ / R₁) :
     ∃ C : E, ‖C‖ = R₂ / R₁ ∧ Set.EqOn f (fun z => f c + (z - c) • C) (ball c R₁) :=
-  let ⟨z₀, h_z₀, h_eq⟩ := h_z₀
+  let_fun ⟨z₀, h_z₀, h_eq⟩ := h_z₀
   ⟨dslope f c z₀, h_eq, affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div hd h_maps h_z₀ h_eq⟩
 
 /-- The **Schwarz Lemma**: if `f : ℂ → E` sends an open disk with center `c` and a positive radius

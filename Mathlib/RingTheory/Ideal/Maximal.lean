@@ -59,7 +59,7 @@ theorem isMaximal_iff {I : Ideal α} :
         exact
           ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
             fun H ⟨h₁, h₂⟩ =>
-            let ⟨x, xJ, xI⟩ := not_subset.1 h₂
+            let_fun ⟨x, xJ, xI⟩ := not_subset.1 h₂
             J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
@@ -78,14 +78,14 @@ theorem IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.I
 /-- **Krull's theorem**: if `I` is an ideal that is not the whole ring, then it is included in some
     maximal ideal. -/
 theorem exists_le_maximal (I : Ideal α) (hI : I ≠ ⊤) : ∃ M : Ideal α, M.IsMaximal ∧ I ≤ M :=
-  let ⟨m, hm⟩ := (eq_top_or_exists_le_coatom I).resolve_left hI
+  let_fun ⟨m, hm⟩ := (eq_top_or_exists_le_coatom I).resolve_left hI
   ⟨m, ⟨⟨hm.1⟩, hm.2⟩⟩
 
 variable (α)
 
 /-- Krull's theorem: a nontrivial ring has a maximal ideal. -/
 theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
-  let ⟨I, ⟨hI, _⟩⟩ := exists_le_maximal (⊥ : Ideal α) bot_ne_top
+  let_fun ⟨I, ⟨hI, _⟩⟩ := exists_le_maximal (⊥ : Ideal α) bot_ne_top
   ⟨I, hI⟩
 
 variable {α}
@@ -115,7 +115,7 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
 theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
     (H : ∀ p ∈ s, Ideal.IsPrime p) : (sInf s).IsPrime :=
   ⟨fun e =>
-    let ⟨x, hx⟩ := hs
+    let_fun ⟨x, hx⟩ := hs
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
     fun e =>
     or_iff_not_imp_left.mpr fun hx => by

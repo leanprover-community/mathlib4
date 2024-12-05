@@ -56,7 +56,7 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
 has a local extremum at some point of the corresponding open interval. -/
 theorem exists_isLocalExtr_Ioo (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
-  let ⟨c, cmem, hc⟩ := exists_Ioo_extr_on_Icc hab hfc hfI
+  let_fun ⟨c, cmem, hc⟩ := exists_Ioo_extr_on_Icc hab hfc hfI
   ⟨c, cmem, hc.isLocalExtr <| Icc_mem_nhds cmem.1 cmem.2⟩
 
 /-- If a function `f` is continuous on an open interval
@@ -76,5 +76,5 @@ then it has a local extremum on this open interval. -/
 lemma exists_isLocalExtr_Ioo_of_tendsto (hab : a < b) (hfc : ContinuousOn f (Ioo a b))
     (ha : Tendsto f (𝓝[>] a) (𝓝 l)) (hb : Tendsto f (𝓝[<] b) (𝓝 l)) :
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
-  let ⟨c, cmem, hc⟩ := exists_isExtrOn_Ioo_of_tendsto hab hfc ha hb
+  let_fun ⟨c, cmem, hc⟩ := exists_isExtrOn_Ioo_of_tendsto hab hfc ha hb
   ⟨c, cmem, hc.isLocalExtr <| Ioo_mem_nhds cmem.1 cmem.2⟩

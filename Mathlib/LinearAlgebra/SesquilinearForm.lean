@@ -611,7 +611,7 @@ variable (M₁ M₂ I₁ I₂)
 
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M).SeparatingLeft :=
-  let ⟨m, hm⟩ := exists_ne (0 : M₁)
+  let_fun ⟨m, hm⟩ := exists_ne (0 : M₁)
   fun h ↦ hm (h m fun _n ↦ rfl)
 
 variable {M₁ M₂ I₁ I₂}

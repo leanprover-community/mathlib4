@@ -376,7 +376,7 @@ def ofBases {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingF
     (smul_left : ∀ (x₀ : R) {U}, U ∈ BM → ∃ V ∈ BM, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U)
     (smul_right : ∀ (m₀ : M) {U}, U ∈ BM → ∃ V ∈ BR, V ⊆ (fun x ↦ x • m₀) ⁻¹' U) :
     @ModuleFilterBasis R M _ BR.topology _ _ :=
-  let _ := BR.topology
+  letI _ := BR.topology
   { BM with
     smul' := by
       intro U U_in

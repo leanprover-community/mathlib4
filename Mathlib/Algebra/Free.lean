@@ -584,8 +584,8 @@ variable [LawfulApplicative m]
 @[to_additive (attr := simp)]
 theorem traverse_mul (x y : FreeSemigroup α) :
     traverse F (x * y) = (· * ·) <$> traverse F x <*> traverse F y :=
-  let ⟨x, L1⟩ := x
-  let ⟨y, L2⟩ := y
+  let_fun ⟨x, L1⟩ := x
+  let_fun ⟨y, L2⟩ := y
   List.recOn L1 (fun _ ↦ rfl)
     (fun hd tl ih x ↦ show
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =

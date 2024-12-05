@@ -216,7 +216,7 @@ theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) 
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
     (h : f.IsSwap) : (ofSubtype f).IsSwap :=
-  let ⟨⟨x, hx⟩, ⟨y, hy⟩, hxy⟩ := h
+  let_fun ⟨⟨x, hx⟩, ⟨y, hy⟩, hxy⟩ := h
   ⟨x, y, by
     simp only [Ne, Subtype.ext_iff] at hxy
     exact hxy.1, by

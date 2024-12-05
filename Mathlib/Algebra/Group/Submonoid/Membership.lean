@@ -185,7 +185,7 @@ theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 
 
 @[to_additive]
 theorem eq_bot_of_card_le (h : card S ≤ 1) : S = ⊥ :=
-  let _ := card_le_one_iff_subsingleton.mp h
+  let_fun _ := card_le_one_iff_subsingleton.mp h
   eq_bot_of_subsingleton S
 
 @[to_additive]
@@ -306,7 +306,7 @@ lemma powers_one : powers (1 : M) = ⊥ := bot_unique <| powers_le.2 <| one_mem 
 
 theorem _root_.IsIdempotentElem.coe_powers {a : M} (ha : IsIdempotentElem a) :
     (Submonoid.powers a : Set M) = {1, a} :=
-  let S : Submonoid M :=
+  letI S : Submonoid M :=
   { carrier := {1, a},
     mul_mem' := by
       rintro _ _ (rfl|rfl) (rfl|rfl)

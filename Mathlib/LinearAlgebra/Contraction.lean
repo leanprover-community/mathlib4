@@ -55,7 +55,7 @@ def contractRight : M ⊗[R] Module.Dual R M →ₗ[R] R :=
 -- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural map associating a linear map to the tensor product of two modules. -/
 def dualTensorHom : Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N :=
-  let M' := Module.Dual R M
+  letI M' := Module.Dual R M
   (uncurry R M' N (M →ₗ[R] N) : _ → M' ⊗ N →ₗ[R] M →ₗ[R] N) LinearMap.smulRightₗ
 
 variable {R M N P Q}

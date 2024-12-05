@@ -57,7 +57,7 @@ theorem mem_union_right (l₁ : List α) (h : a ∈ l₂) : a ∈ l₁ ∪ l₂ 
 theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ t ++ l₂ = l₁ ∪ l₂
   | [], _ => ⟨[], by rfl, rfl⟩
   | a :: l₁, l₂ =>
-    let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
+    let_fun ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
       ⟨t, sublist_cons_of_sublist _ s, by
         simp only [e, cons_union, insert_of_mem h]⟩
@@ -69,7 +69,7 @@ theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
   (sublist_suffix_of_union l₁ l₂).imp fun _ => And.right
 
 theorem union_sublist_append (l₁ l₂ : List α) : l₁ ∪ l₂ <+ l₁ ++ l₂ :=
-  let ⟨_, s, e⟩ := sublist_suffix_of_union l₁ l₂
+  let_fun ⟨_, s, e⟩ := sublist_suffix_of_union l₁ l₂
   e ▸ (append_sublist_append_right _).2 s
 
 theorem forall_mem_union : (∀ x ∈ l₁ ∪ l₂, p x) ↔ (∀ x ∈ l₁, p x) ∧ ∀ x ∈ l₂, p x := by

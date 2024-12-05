@@ -293,7 +293,7 @@ theorem isVonNBounded_vadd (x : E) : IsVonNBounded 𝕜 (x +ᵥ s) ↔ IsVonNBou
 
 theorem IsVonNBounded.of_add_right (hst : IsVonNBounded 𝕜 (s + t)) (hs : s.Nonempty) :
     IsVonNBounded 𝕜 t :=
-  let ⟨x, hx⟩ := hs
+  let_fun ⟨x, hx⟩ := hs
   (isVonNBounded_vadd x).mp <| hst.subset <| image_subset_image2_right hx
 
 theorem IsVonNBounded.of_add_left (hst : IsVonNBounded 𝕜 (s + t)) (ht : t.Nonempty) :

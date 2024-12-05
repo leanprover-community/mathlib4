@@ -234,7 +234,7 @@ At each step we pop an element off the queue,
 compute its children (lazily) and put these back on the queue.
 -/
 def impl (maxSize : Option Nat) (f : α → MLList m α) (a : α) : MLList m α :=
-  let init : BestFirstQueue prio ε m α maxSize := RBMap.single ⟨a, ⊥⟩ (f a)
+  let_fun init : BestFirstQueue prio ε m α maxSize := RBMap.single ⟨a, ⊥⟩ (f a)
   cons a (iterate go |>.runState' init)
 where
   /-- A single step of the best first search.
@@ -253,7 +253,7 @@ def implMaxDepth (maxSize : Option Nat) (maxDepth : Option Nat) (f : α → MLLi
   match maxDepth with
   | none => impl prio ε maxSize f a
   | some max =>
-    let f' : α ×ₗ Nat → MLList m (α × Nat) := fun ⟨a, n⟩ =>
+    let_fun f' : α ×ₗ Nat → MLList m (α × Nat) := fun ⟨a, n⟩ =>
       if max < n then
         nil
       else
@@ -289,7 +289,7 @@ def bestFirstSearchCore (f : α → MLList m α) (a : α)
     MLList m α :=
   match removeDuplicatesBy? with
   | some g =>
-    let f' : α → MLList (StateT (RBSet β compare) m) α := fun a =>
+    let_fun f' : α → MLList (StateT (RBSet β compare) m) α := fun a =>
       (f a).liftM >>= fun a' => do
         let b := g a'
         guard !(← get).contains b

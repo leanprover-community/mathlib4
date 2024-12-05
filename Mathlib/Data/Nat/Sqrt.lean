@@ -25,7 +25,7 @@ See [Wikipedia, *Methods of computing square roots*]
 -/
 
 private lemma iter_fp_bound (n k : ℕ) :
-    let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
+    let_fun iter_next (n guess : ℕ) := (guess + n / guess) / 2;
     sqrt.iter n k ≤ iter_next n (sqrt.iter n k) := by
   intro iter_next
   unfold sqrt.iter

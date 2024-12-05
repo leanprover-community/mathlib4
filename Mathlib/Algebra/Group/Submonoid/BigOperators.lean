@@ -73,7 +73,7 @@ theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
     {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   multiset_prod_mem (t.1.map f) fun _x hx =>
-    let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
+    let_fun ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
 namespace Submonoid
@@ -126,7 +126,7 @@ theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : 
 theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : Finset ι}
     {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   S.multiset_prod_mem (t.1.map f) fun _ hx =>
-    let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
+    let_fun ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
 
 @[to_additive]

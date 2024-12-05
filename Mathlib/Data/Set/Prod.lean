@@ -298,7 +298,7 @@ theorem fst_image_prod_subset (s : Set α) (t : Set β) : Prod.fst '' s ×ˢ t �
 
 theorem fst_image_prod (s : Set β) {t : Set α} (ht : t.Nonempty) : Prod.fst '' s ×ˢ t = s :=
   (fst_image_prod_subset _ _).antisymm fun y hy =>
-    let ⟨x, hx⟩ := ht
+    let_fun ⟨x, hx⟩ := ht
     ⟨(y, x), ⟨hy, hx⟩, rfl⟩
 
 lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :=
@@ -312,7 +312,7 @@ theorem snd_image_prod_subset (s : Set α) (t : Set β) : Prod.snd '' s ×ˢ t �
 
 theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd '' s ×ˢ t = t :=
   (snd_image_prod_subset _ _).antisymm fun y y_in =>
-    let ⟨x, x_in⟩ := hs
+    let_fun ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
 
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=

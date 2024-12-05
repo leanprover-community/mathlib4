@@ -152,7 +152,7 @@ theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat.{u}) (f : R ⟶ S) :
 theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     {α β : X ⟶ Spec.sheafedSpaceObj R} (w : α.base = β.base)
     (h : ∀ r : R,
-      let U := PrimeSpectrum.basicOpen r
+      let_fun U := PrimeSpectrum.basicOpen r
       (toOpen R U ≫ α.c.app (op U)) ≫ X.presheaf.map (eqToHom (by rw [w])) =
         toOpen R U ≫ β.c.app (op U)) :
     α = β := by

@@ -73,7 +73,7 @@ theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.No
   Set.Nonempty.mono hst hs
 
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
-  let ⟨x, hx⟩ := h
+  let_fun ⟨x, hx⟩ := h
   ⟨fun h => h x hx, fun h _ _ => h⟩
 
 theorem Nonempty.to_subtype {s : Finset α} : s.Nonempty → Nonempty s :=
@@ -139,7 +139,7 @@ theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
 
 @[simp]
 theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := fun h =>
-  let ⟨_, he, _⟩ := exists_of_ssubset h
+  let_fun ⟨_, he, _⟩ := exists_of_ssubset h
   -- Porting note: was `he`
   not_mem_empty _ he
 

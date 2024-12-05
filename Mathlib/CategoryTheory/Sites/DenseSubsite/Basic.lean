@@ -324,7 +324,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda where
   app U :=
-    let α := (sheafCoyonedaHom α)
+    let_fun α := (sheafCoyonedaHom α)
     { app := fun X => (α.app X).app U
       naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
   naturality U V i := by
@@ -337,7 +337,7 @@ where `G` is locally-full and cover-dense, and `ℱ'` is a sheaf, we may obtain 
 transformation between presheaves.
 -/
 noncomputable def sheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ ⟶ ℱ'.val :=
-  let α' := sheafYonedaHom α
+  let_fun α' := sheafYonedaHom α
   { app := fun X => yoneda.preimage (α'.app X)
     naturality := fun X Y f => yoneda.map_injective (by simpa using α'.naturality f) }
 

@@ -482,13 +482,13 @@ theorem measure_setAverage_le_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
 /-- **First moment method**. The minimum of an integrable function is smaller than its mean. -/
 theorem exists_le_setAverage (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :
     ∃ x ∈ s, f x ≤ ⨍ a in s, f a ∂μ :=
-  let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setAverage_pos hμ hμ₁ hf).ne'
+  let_fun ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setAverage_pos hμ hμ₁ hf).ne'
   ⟨x, hx, h⟩
 
 /-- **First moment method**. The maximum of an integrable function is greater than its mean. -/
 theorem exists_setAverage_le (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : IntegrableOn f s μ) :
     ∃ x ∈ s, ⨍ a in s, f a ∂μ ≤ f x :=
-  let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setAverage_le_pos hμ hμ₁ hf).ne'
+  let_fun ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setAverage_le_pos hμ hμ₁ hf).ne'
   ⟨x, hx, h⟩
 
 section FiniteMeasure
@@ -511,12 +511,12 @@ theorem measure_average_le_pos (hμ : μ ≠ 0) (hf : Integrable f μ) :
 
 /-- **First moment method**. The minimum of an integrable function is smaller than its mean. -/
 theorem exists_le_average (hμ : μ ≠ 0) (hf : Integrable f μ) : ∃ x, f x ≤ ⨍ a, f a ∂μ :=
-  let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_le_average_pos hμ hf).ne'
+  let_fun ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_le_average_pos hμ hf).ne'
   ⟨x, hx⟩
 
 /-- **First moment method**. The maximum of an integrable function is greater than its mean. -/
 theorem exists_average_le (hμ : μ ≠ 0) (hf : Integrable f μ) : ∃ x, ⨍ a, f a ∂μ ≤ f x :=
-  let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_average_le_pos hμ hf).ne'
+  let_fun ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_average_le_pos hμ hf).ne'
   ⟨x, hx⟩
 
 /-- **First moment method**. The minimum of an integrable function is smaller than its mean, while
@@ -624,13 +624,13 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
 /-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_setLaverage (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : AEMeasurable f (μ.restrict s)) :
     ∃ x ∈ s, f x ≤ ⨍⁻ a in s, f a ∂μ :=
-  let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setLaverage_pos hμ hμ₁ hf).ne'
+  let_fun ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setLaverage_pos hμ hμ₁ hf).ne'
   ⟨x, hx, h⟩
 
 /-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_setLaverage_le (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
     (hint : ∫⁻ a in s, f a ∂μ ≠ ∞) : ∃ x ∈ s, ⨍⁻ a in s, f a ∂μ ≤ f x :=
-  let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setLaverage_le_pos hμ hs hint).ne'
+  let_fun ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setLaverage_le_pos hμ hs hint).ne'
   ⟨x, hx, h⟩
 
 /-- **First moment method**. A measurable function is greater than its mean on a set of positive
@@ -642,7 +642,7 @@ theorem measure_laverage_le_pos (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠
 
 /-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠ ∞) : ∃ x, ⨍⁻ a, f a ∂μ ≤ f x :=
-  let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_laverage_le_pos hμ hint).ne'
+  let_fun ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_laverage_le_pos hμ hint).ne'
   ⟨x, hx⟩
 
 /-- **First moment method**. The maximum of a measurable function is greater than its mean, while
@@ -666,7 +666,7 @@ theorem measure_le_laverage_pos (hμ : μ ≠ 0) (hf : AEMeasurable f μ) :
 
 /-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) : ∃ x, f x ≤ ⨍⁻ a, f a ∂μ :=
-  let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_le_laverage_pos hμ hf).ne'
+  let_fun ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_le_laverage_pos hμ hf).ne'
   ⟨x, hx⟩
 
 /-- **First moment method**. The minimum of a measurable function is smaller than its mean, while

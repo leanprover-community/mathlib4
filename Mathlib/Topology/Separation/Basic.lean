@@ -220,15 +220,15 @@ theorem comm (s t : Set X) : SeparatedNhds s t ↔ SeparatedNhds t s :=
 
 theorem preimage [TopologicalSpace Y] {f : X → Y} {s t : Set Y} (h : SeparatedNhds s t)
     (hf : Continuous f) : SeparatedNhds (f ⁻¹' s) (f ⁻¹' t) :=
-  let ⟨U, V, oU, oV, sU, tV, UV⟩ := h
+  let_fun ⟨U, V, oU, oV, sU, tV, UV⟩ := h
   ⟨f ⁻¹' U, f ⁻¹' V, oU.preimage hf, oV.preimage hf, preimage_mono sU, preimage_mono tV,
     UV.preimage f⟩
 
 protected theorem disjoint (h : SeparatedNhds s t) : Disjoint s t :=
-  let ⟨_, _, _, _, hsU, htV, hd⟩ := h; hd.mono hsU htV
+  let_fun ⟨_, _, _, _, hsU, htV, hd⟩ := h; hd.mono hsU htV
 
 theorem disjoint_closure_left (h : SeparatedNhds s t) : Disjoint (closure s) t :=
-  let ⟨_U, _V, _, hV, hsU, htV, hd⟩ := h
+  let_fun ⟨_U, _V, _, hV, hsU, htV, hd⟩ := h
   (hd.closure_left hV).mono (closure_mono hsU) htV
 
 theorem disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) :=
@@ -241,7 +241,7 @@ theorem disjoint_closure_right (h : SeparatedNhds s t) : Disjoint s (closure t) 
   (empty_right _).symm
 
 theorem mono (h : SeparatedNhds s₂ t₂) (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : SeparatedNhds s₁ t₁ :=
-  let ⟨U, V, hU, hV, hsU, htV, hd⟩ := h
+  let_fun ⟨U, V, hU, hV, hsU, htV, hd⟩ := h
   ⟨U, V, hU, hV, hs.trans hsU, ht.trans htV, hd⟩
 
 theorem union_left : SeparatedNhds s u → SeparatedNhds t u → SeparatedNhds (s ∪ t) u := by
@@ -398,7 +398,7 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
 
 theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
     ∃ x : X, IsOpen ({x} : Set X) :=
-  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _)
+  let_fun ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _)
     univ_nonempty isOpen_univ
   ⟨x, h⟩
 
@@ -440,7 +440,7 @@ theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ 
 
 theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s ∧ T0Space s) : T0Space X :=
   T0Space.of_cover fun x _ hxy =>
-    let ⟨s, hxs, hso, hs⟩ := h x
+    let_fun ⟨s, hxs, hso, hs⟩ := h x
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
 
 /-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
@@ -516,7 +516,7 @@ theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
 
 /-- In an R₀ space, the closure of a finite set is a compact set. -/
 theorem Set.Finite.isCompact_closure {s : Set X} (hs : s.Finite) : IsCompact (closure s) :=
-  let _ : Bornology X := .relativelyCompact X
+  letI _ : Bornology X := .relativelyCompact X
   Bornology.relativelyCompact.isBounded_iff.1 hs.isBounded
 
 end R0Space
@@ -1011,7 +1011,7 @@ such that
 -/
 theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
     ∃ U ∈ 𝓝[≠] x, Disjoint U s :=
-  let ⟨V, h, h'⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  let_fun ⟨V, h, h'⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
   ⟨{x}ᶜ ∩ V, inter_mem_nhdsWithin _ h,
     disjoint_iff_inter_eq_empty.mpr (by rw [inter_assoc, h', compl_inter_self])⟩
 
@@ -1234,7 +1234,7 @@ theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
 instance (priority := 900) {X Y : Type*} [TopologicalSpace X] [WeaklyLocallyCompactSpace X]
     [TopologicalSpace Y] [R1Space Y] : LocallyCompactPair X Y where
   exists_mem_nhds_isCompact_mapsTo hf hs :=
-    let ⟨_K, hKc, hKx⟩ := exists_compact_mem_nhds _
+    let_fun ⟨_K, hKc, hKx⟩ := exists_compact_mem_nhds _
     exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds hf hs hKc hKx
 
 /-- If a point in an R₁ space has a compact neighborhood,
@@ -1242,7 +1242,7 @@ then it has a basis of compact closed neighborhoods. -/
 theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCompact L)
     (hxL : L ∈ 𝓝 x) : (𝓝 x).HasBasis (fun K ↦ K ∈ 𝓝 x ∧ IsCompact K ∧ IsClosed K) (·) :=
   hasBasis_self.2 fun _U hU ↦
-    let ⟨K, hKx, hKc, hKU⟩ := exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
+    let_fun ⟨K, hKx, hKc, hKU⟩ := exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
       continuous_id (interior_mem_nhds.2 hU) hLc hxL
     ⟨closure K, mem_of_superset hKx subset_closure, ⟨hKc.closure, isClosed_closure⟩,
       (hKc.closure_subset_of_isOpen isOpen_interior hKU).trans interior_subset⟩
@@ -1273,7 +1273,7 @@ variable [WeaklyLocallyCompactSpace X]
 form a basis of neighborhoods of `x`. -/
 theorem isCompact_isClosed_basis_nhds (x : X) :
     (𝓝 x).HasBasis (fun K => K ∈ 𝓝 x ∧ IsCompact K ∧ IsClosed K) (·) :=
-  let ⟨_L, hLc, hLx⟩ := exists_compact_mem_nhds x
+  let_fun ⟨_L, hLc, hLx⟩ := exists_compact_mem_nhds x
   hLc.isCompact_isClosed_basis_nhds hLx
 
 /-- In a (weakly) locally compact R₁ space, each point admits a compact closed neighborhood. -/
@@ -1372,7 +1372,7 @@ theorem t2Space_iff_nhds :
 
 theorem t2_separation_nhds [T2Space X] {x y : X} (h : x ≠ y) :
     ∃ u v, u ∈ 𝓝 x ∧ v ∈ 𝓝 y ∧ Disjoint u v :=
-  let ⟨u, v, open_u, open_v, x_in, y_in, huv⟩ := t2_separation h
+  let_fun ⟨u, v, open_u, open_v, x_in, y_in, huv⟩ := t2_separation h
   ⟨u, v, open_u.mem_nhds x_in, open_v.mem_nhds y_in, huv⟩
 
 theorem t2_separation_compact_nhds [LocallyCompactSpace X] [T2Space X] {x y : X} (h : x ≠ y) :
@@ -1471,8 +1471,8 @@ theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [Top
     [T2Space Y] {f : X → Y} {s : Set X} (inj : InjOn f s) (sc : IsCompact s)
     (fc : ∀ x ∈ s, ContinuousAt f x) (loc : ∀ x ∈ s, ∃ u ∈ 𝓝 x, InjOn f u) :
     ∃ t, IsOpen t ∧ s ⊆ t ∧ InjOn f t :=
-  let ⟨_t, hst, ht⟩ := inj.exists_mem_nhdsSet sc fc loc
-  let ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
+  let_fun ⟨_t, hst, ht⟩ := inj.exists_mem_nhdsSet sc fc loc
+  let_fun ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
   ⟨u, huo, hsu, ht.mono hut⟩
 
 section limUnder
@@ -1561,13 +1561,13 @@ instance (priority := 100) DiscreteTopology.toT2Space
 theorem separated_by_continuous [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) {x y : X} (h : f x ≠ f y) :
     ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v :=
-  let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
+  let_fun ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f ⁻¹' u, f ⁻¹' v, uo.preimage hf, vo.preimage hf, xu, yv, uv.preimage _⟩
 
 theorem separated_by_isOpenEmbedding [TopologicalSpace Y] [T2Space X]
     {f : X → Y} (hf : IsOpenEmbedding f) {x y : X} (h : x ≠ y) :
     ∃ u v : Set Y, IsOpen u ∧ IsOpen v ∧ f x ∈ u ∧ f y ∈ v ∧ Disjoint u v :=
-  let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
+  let_fun ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.injective uv⟩
 
@@ -1807,7 +1807,7 @@ end SeparatedFinset
 /-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
   isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
-    let ⟨u, v, _, vo, su, xv, uv⟩ :=
+    let_fun ⟨u, v, _, vo, su, xv, uv⟩ :=
       SeparatedNhds.of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
     ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
 
@@ -2119,7 +2119,7 @@ section LocallyCompactRegularSpace
 theorem exists_compact_closed_between [LocallyCompactSpace X] [RegularSpace X]
     {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
     ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U :=
-  let ⟨L, L_comp, KL, LU⟩ := exists_compact_between hK hU h_KU
+  let_fun ⟨L, L_comp, KL, LU⟩ := exists_compact_between hK hU h_KU
   ⟨closure L, L_comp.closure, isClosed_closure, KL.trans <| interior_mono subset_closure,
     L_comp.closure_subset_of_isOpen hU LU⟩
 

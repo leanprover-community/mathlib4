@@ -110,7 +110,7 @@ a regular topological space with second countable topology `X` is metrizable,
 i.e., there exists a pseudometric space structure that generates the same topology. -/
 instance (priority := 90) PseudoMetrizableSpace.of_regularSpace_secondCountableTopology :
     PseudoMetrizableSpace X :=
-  let ⟨_, hf⟩ := exists_isInducing_l_infty X
+  let_fun ⟨_, hf⟩ := exists_isInducing_l_infty X
   hf.pseudoMetrizableSpace
 
 end RegularSpace
@@ -119,13 +119,13 @@ variable (X : Type*) [TopologicalSpace X] [T3Space X] [SecondCountableTopology X
 
 /-- A T₃ topological space with second countable topology can be embedded into `l^∞ = ℕ →ᵇ ℝ`. -/
 theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsEmbedding f :=
-  let ⟨f, hf⟩ := exists_isInducing_l_infty X; ⟨f, hf.isEmbedding⟩
+  let_fun ⟨f, hf⟩ := exists_isInducing_l_infty X; ⟨f, hf.isEmbedding⟩
 
 /-- *Urysohn's metrization theorem* (Tychonoff's version): a T₃ topological space with second
 countable topology `X` is metrizable, i.e., there exists a metric space structure that generates the
 same topology. -/
 instance (priority := 90) metrizableSpace_of_t3_secondCountable : MetrizableSpace X :=
-  let ⟨_, hf⟩ := exists_embedding_l_infty X
+  let_fun ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
 
 -- The `alias` command creates a definition, triggering the defLemma linter.

@@ -155,7 +155,7 @@ theorem HasSum.mul_eq (hf : HasSum f s) (hg : HasSum g t)
 theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
     (hfg : Summable fun x : ι × κ ↦ f x.1 * g x.2) :
     HasSum (fun x : ι × κ ↦ f x.1 * g x.2) (s * t) :=
-  let ⟨_u, hu⟩ := hfg
+  let_fun ⟨_u, hu⟩ := hfg
   (hf.mul_eq hg hu).symm ▸ hu
 
 /-- Product of two infinites sums indexed by arbitrary types.

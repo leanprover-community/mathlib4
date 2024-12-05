@@ -164,7 +164,7 @@ constant `C * K` where `C` only depends on `E'`. We record a working value for t
 as `lipschitzExtensionConstant E'`. -/
 irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
   [FiniteDimensional ℝ E'] : ℝ≥0 :=
-  let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
+  let_fun A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
   max (‖A.symm.toContinuousLinearMap‖₊ * ‖A.toContinuousLinearMap‖₊) 1
 
 theorem lipschitzExtensionConstant_pos (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -470,7 +470,7 @@ alias finiteDimensional_of_isCompact_closedBall := FiniteDimensional.of_isCompac
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
 theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
     FiniteDimensional 𝕜 E :=
-  let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
+  let_fun ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
   .of_isCompact_closedBall₀ 𝕜 rpos hr
 
 @[deprecated (since := "2024-02-02")]

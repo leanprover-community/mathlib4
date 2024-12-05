@@ -161,7 +161,7 @@ section Aux
 
 theorem bounds_nonempty (k n : ℕ) (f : 𝓢(E, F)) :
     ∃ c : ℝ, c ∈ { c : ℝ | 0 ≤ c ∧ ∀ x : E, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } :=
-  let ⟨M, hMp, hMb⟩ := f.decay k n
+  let_fun ⟨M, hMp, hMb⟩ := f.decay k n
   ⟨M, le_of_lt hMp, hMb⟩
 
 theorem bounds_bddBelow (k n : ℕ) (f : 𝓢(E, F)) :

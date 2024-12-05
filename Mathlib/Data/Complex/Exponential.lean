@@ -25,7 +25,7 @@ namespace Complex
 
 theorem isCauSeq_abs_exp (z : ℂ) :
     IsCauSeq _root_.abs fun n => ∑ m ∈ range n, abs (z ^ m / m.factorial) :=
-  let ⟨n, hn⟩ := exists_nat_gt (abs z)
+  let_fun ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by

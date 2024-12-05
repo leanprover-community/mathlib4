@@ -77,7 +77,7 @@ def declPriority (decl : Lean.Name) : Lean.MetaM ℕ := do
 
 /-- Map a score to either `norm apply` or `safe apply <priority>` -/
 def scoreToConfig (decl : Lean.Name) (score : ℕ) : Aesop.Frontend.RuleConfig :=
-  let (phase, priority) := match score with
+  let_fun (phase, priority) := match score with
     | 0 => (Aesop.PhaseName.norm, 0)  -- No hypotheses: this rule closes the goal immediately
     | s => (Aesop.PhaseName.safe, s)
   { term? := some (Lean.mkIdent decl)
@@ -127,7 +127,7 @@ initialize Lean.registerBuiltinAttribute {
     for ruleSet in ruleSets do
       Aesop.Frontend.addGlobalRule ruleSet rule attrKind (checkNotExists := true)
   erase := fun decl =>
-    let ruleFilter := { name := decl, scope := .global, builders := #[], phases := #[] }
+    let_fun ruleFilter := { name := decl, scope := .global, builders := #[], phases := #[] }
     Aesop.Frontend.eraseGlobalRules Aesop.RuleSetNameFilter.all ruleFilter (checkExists := true)
 }
 

@@ -240,7 +240,7 @@ theorem exists_multiset_roots [DecidableEq R] :
   | p, hp =>
     haveI := Classical.propDecidable (∃ x, IsRoot p x)
     if h : ∃ x, IsRoot p x then
-      let ⟨x, hx⟩ := h
+      let_fun ⟨x, hx⟩ := h
       have hpd : 0 < degree p := degree_pos_of_root hp hx
       have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
         rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
@@ -251,7 +251,7 @@ theorem exists_multiset_roots [DecidableEq R] :
       -/
       have wf : degree (p /ₘ (X - C x)) < degree p :=
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
-      let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
+      let_fun ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
       have hdeg : degree (X - C x) ≤ degree p := by
         rw [degree_X_sub_C, degree_eq_natDegree hp]
         rw [degree_eq_natDegree hp] at hpd

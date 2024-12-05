@@ -65,7 +65,7 @@ lemma _root_.Set.Finite.submoduleSpan [Finite R] {s : Set M} (hs : s.Finite) :
 lemma finite_basis [Nontrivial R] {ι} [Module.Finite R M]
     (b : Basis ι R M) :
     _root_.Finite ι :=
-  let ⟨s, hs⟩ := ‹Module.Finite R M›
+  let_fun ⟨s, hs⟩ := ‹Module.Finite R M›
   basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
 end Finite
 

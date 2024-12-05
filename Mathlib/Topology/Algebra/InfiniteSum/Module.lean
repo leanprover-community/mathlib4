@@ -95,7 +95,7 @@ theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
 theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
     (hfg : Summable fun x : ι × κ ↦ f x.1 • g x.2) :
     HasSum (fun x : ι × κ ↦ f x.1 • g x.2) (s • t) :=
-  let ⟨_u, hu⟩ := hfg
+  let_fun ⟨_u, hu⟩ := hfg
   (hf.smul_eq hg hu).symm ▸ hu
 
 /-- Scalar product of two infinites sums indexed by arbitrary types. -/

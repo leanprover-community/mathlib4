@@ -497,7 +497,7 @@ theorem _root_.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} (c : G
 nonrec theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {_ : MeasurableSpace α} {c : M}
     (hc : IsUnit c) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
-  let ⟨u, hu⟩ := hc
+  let_fun ⟨u, hu⟩ := hc
   hu ▸ stronglyMeasurable_const_smul_iff u
 
 theorem _root_.stronglyMeasurable_const_smul_iff₀ {_ : MeasurableSpace α} {c : G₀} (hc : c ≠ 0) :
@@ -1145,7 +1145,7 @@ theorem mono_measure {ν : Measure α} (hf : AEStronglyMeasurable f μ) (h : ν 
   ⟨hf.mk f, hf.stronglyMeasurable_mk, Eventually.filter_mono (ae_mono h) hf.ae_eq_mk⟩
 
 protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AEStronglyMeasurable f ν :=
-  let ⟨g, hg, hg'⟩ := hμ; ⟨g, hg, h.ae_eq hg'⟩
+  let_fun ⟨g, hg, hg'⟩ := hμ; ⟨g, hg, h.ae_eq hg'⟩
 
 @[deprecated (since := "2024-02-15")] protected alias mono' := AEStronglyMeasurable.mono_ac
 
@@ -1324,7 +1324,7 @@ theorem _root_.Multiset.aestronglyMeasurable_prod (s : Multiset (α → M))
 theorem _root_.Finset.aestronglyMeasurable_prod' {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aestronglyMeasurable_prod' _ fun _g hg =>
-    let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
+    let_fun ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
 
 @[to_additive (attr := measurability)]
@@ -1654,7 +1654,7 @@ theorem _root_.aestronglyMeasurable_const_smul_iff (c : G) :
 
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
-  let ⟨u, hu⟩ := hc
+  let_fun ⟨u, hu⟩ := hc
   hu ▸ aestronglyMeasurable_const_smul_iff u
 
 theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :

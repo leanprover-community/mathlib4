@@ -149,7 +149,7 @@ def preNormEDS' (b c d : R) : ℕ → R
   | 2 => 1
   | 3 => c
   | 4 => d
-  | (n + 5) => let m := n / 2
+  | (n + 5) => letI m := n / 2
     have h4 : m + 4 < n + 5 := Nat.lt_succ.mpr <| add_le_add_right (n.div_le_self 2) 4
     have h3 : m + 3 < n + 5 := (lt_add_one _).trans h4
     have h2 : m + 2 < n + 5 := (lt_add_one _).trans h3

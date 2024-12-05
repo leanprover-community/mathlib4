@@ -32,9 +32,9 @@ instance : NoncompactSpace ℝ := Int.isClosedEmbedding_coe_real.noncompactSpace
 
 theorem Real.uniformContinuous_add : UniformContinuous fun p : ℝ × ℝ => p.1 + p.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
-    let ⟨δ, δ0, Hδ⟩ := rat_add_continuous_lemma abs ε0
+    let_fun ⟨δ, δ0, Hδ⟩ := rat_add_continuous_lemma abs ε0
     ⟨δ, δ0, fun _ _ h =>
-      let ⟨h₁, h₂⟩ := max_lt_iff.1 h
+      let_fun ⟨h₁, h₂⟩ := max_lt_iff.1 h
       Hδ h₁ h₂⟩
 
 theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
@@ -62,9 +62,9 @@ theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
   isTopologicalBasis_of_isOpen_of_nhds (by simp +contextual [isOpen_Ioo])
     fun a _ hav hv =>
-    let ⟨_, _, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
-    let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
-    let ⟨p, hap, hpu⟩ := exists_rat_btwn hu
+    let_fun ⟨_, _, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
+    let_fun ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
+    let_fun ⟨p, hap, hpu⟩ := exists_rat_btwn hu
     ⟨Ioo q p, by
       simp only [mem_iUnion]
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun _ ⟨hqa', ha'p⟩ =>
@@ -92,7 +92,7 @@ theorem Real.mem_closure_iff {s : Set ℝ} {x : ℝ} :
 theorem Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀ x ∈ s, r ≤ |x|) :
     UniformContinuous fun p : s => p.1⁻¹ :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
-    let ⟨δ, δ0, Hδ⟩ := rat_inv_continuous_lemma abs ε0 r0
+    let_fun ⟨δ, δ0, Hδ⟩ := rat_inv_continuous_lemma abs ε0 r0
     ⟨δ, δ0, fun {a b} h => Hδ (H _ a.2) (H _ b.2) h⟩
 
 theorem Real.uniformContinuous_abs : UniformContinuous (abs : ℝ → ℝ) :=
@@ -109,9 +109,9 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
     (H : ∀ x ∈ s, |(x : ℝ × ℝ).1| < r₁ ∧ |x.2| < r₂) :
     UniformContinuous fun p : s => p.1.1 * p.1.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
-    let ⟨δ, δ0, Hδ⟩ := rat_mul_continuous_lemma abs ε0
+    let_fun ⟨δ, δ0, Hδ⟩ := rat_mul_continuous_lemma abs ε0
     ⟨δ, δ0, fun {a b} h =>
-      let ⟨h₁, h₂⟩ := max_lt_iff.1 h
+      let_fun ⟨h₁, h₂⟩ := max_lt_iff.1 h
       Hδ (H _ a.2).1 (H _ b.2).2 h₁ h₂⟩
 
 -- Porting note: moved `TopologicalRing` instance up
@@ -143,8 +143,8 @@ theorem closure_of_rat_image_lt {q : ℚ} :
     (isClosed_Ici.closure_subset_iff.2
       (image_subset_iff.2 fun p (h : q < p) => by simpa using h.le))
     fun x hx => mem_closure_iff_nhds.2 fun _ ht =>
-      let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
-      let ⟨p, h₁, h₂⟩ := exists_rat_btwn ((lt_add_iff_pos_right x).2 ε0)
+      let_fun ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
+      let_fun ⟨p, h₁, h₂⟩ := exists_rat_btwn ((lt_add_iff_pos_right x).2 ε0)
       ⟨p, hε <| by rwa [mem_ball, Real.dist_eq, abs_of_pos (sub_pos.2 h₁), sub_lt_iff_lt_add'],
         mem_image_of_mem _ <| Rat.cast_lt.1 <| lt_of_le_of_lt hx.out h₁⟩
 

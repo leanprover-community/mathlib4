@@ -507,7 +507,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
       (∀ b, g b ∈ s) ∧
         (Fintype.card β = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
-  let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
+  let_fun ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
     (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 

@@ -220,8 +220,8 @@ variable {α : Type u} {β : Type v} {M N : Matroid α}
 
 /-- The sum of two matroids as a matroid on the sum type. -/
 protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
-  let S := Matroid.sigma (Bool.rec (M.mapEquiv Equiv.ulift.symm) (N.mapEquiv Equiv.ulift.symm))
-  let e := Equiv.sumEquivSigmaBool (ULift.{v} α) (ULift.{u} β)
+  let_fun S := Matroid.sigma (Bool.rec (M.mapEquiv Equiv.ulift.symm) (N.mapEquiv Equiv.ulift.symm))
+  let_fun e := Equiv.sumEquivSigmaBool (ULift.{v} α) (ULift.{u} β)
   (S.mapEquiv e.symm).mapEquiv (Equiv.sumCongr Equiv.ulift Equiv.ulift)
 
 @[simp] lemma sum_ground (M : Matroid α) (N : Matroid β) :

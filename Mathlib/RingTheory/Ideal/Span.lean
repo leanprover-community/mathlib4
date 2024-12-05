@@ -117,7 +117,7 @@ theorem span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 :=
 theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
     Ideal.span ({x} : Set α) ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr fun h1 =>
-    let ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp h1
+    let_fun ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp h1
     hx ⟨⟨x, y, mul_comm y x ▸ hy, hy⟩, rfl⟩
 
 @[simp]

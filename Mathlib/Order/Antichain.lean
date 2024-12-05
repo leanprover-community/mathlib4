@@ -245,7 +245,7 @@ protected theorem isAntichain [IsRefl α r] (h : IsStrongAntichain r s) : IsAnti
 
 protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=
   fun a ha b hb =>
-  let ⟨_, hac, hbc⟩ := directed_of r a b
+  let_fun ⟨_, hac, hbc⟩ := directed_of r a b
   h.eq ha hb hac hbc
 
 protected theorem flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=

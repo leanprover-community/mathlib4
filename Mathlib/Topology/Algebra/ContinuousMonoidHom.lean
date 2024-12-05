@@ -285,8 +285,8 @@ instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
 
 @[to_additive]
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
-  let hi := isInducing_toContinuousMap A E
-  let hc := hi.continuous
+  let_fun hi := isInducing_toContinuousMap A E
+  let_fun hc := hi.continuous
   { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prodMap hc hc))
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
 
@@ -391,7 +391,7 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
     LocallyCompactSpace (ContinuousMonoidHom X Y) := by
   obtain ⟨U0, hU0c, hU0o⟩ := exists_compact_mem_nhds (1 : X)
   let U_aux : ℕ → {S : Set X | S ∈ nhds 1} :=
-    Nat.rec ⟨U0, hU0o⟩ <| fun _ S ↦ let h := exists_closed_nhds_one_inv_eq_mul_subset S.2
+    Nat.rec ⟨U0, hU0o⟩ <| fun _ S ↦ let_fun h := exists_closed_nhds_one_inv_eq_mul_subset S.2
       ⟨Classical.choose h, (Classical.choose_spec h).1⟩
   let U : ℕ → Set X := fun n ↦ (U_aux n).1
   have hU1 : ∀ n, U n ∈ nhds 1 := fun n ↦ (U_aux n).2

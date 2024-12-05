@@ -75,7 +75,7 @@ theorem ProperSpace.of_seq_closedBall {β : Type*} {l : Filter β} [NeBot l] {x 
     (hr : Tendsto r l atTop) (hc : ∀ᶠ i in l, IsCompact (closedBall x (r i))) :
     ProperSpace α where
   isCompact_closedBall a r :=
-    let ⟨_i, hci, hir⟩ := (hc.and <| hr.eventually_ge_atTop <| r + dist a x).exists
+    let_fun ⟨_i, hci, hir⟩ := (hc.and <| hr.eventually_ge_atTop <| r + dist a x).exists
     hci.of_isClosed_subset isClosed_ball <| closedBall_subset_closedBall' hir
 
 -- A compact pseudometric space is proper

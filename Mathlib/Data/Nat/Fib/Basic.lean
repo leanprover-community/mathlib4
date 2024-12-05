@@ -186,7 +186,7 @@ def fastFib (n : ℕ) : ℕ :=
 
 theorem fast_fib_aux_bit_ff (n : ℕ) :
     fastFibAux (bit false n) =
-      let p := fastFibAux n
+      let_fun p := fastFibAux n
       (p.1 * (2 * p.2 - p.1), p.2 ^ 2 + p.1 ^ 2) := by
   rw [fastFibAux, binaryRec_eq]
   · rfl
@@ -194,7 +194,7 @@ theorem fast_fib_aux_bit_ff (n : ℕ) :
 
 theorem fast_fib_aux_bit_tt (n : ℕ) :
     fastFibAux (bit true n) =
-      let p := fastFibAux n
+      let_fun p := fastFibAux n
       (p.2 ^ 2 + p.1 ^ 2, p.2 * (2 * p.1 + p.2)) := by
   rw [fastFibAux, binaryRec_eq]
   · rfl

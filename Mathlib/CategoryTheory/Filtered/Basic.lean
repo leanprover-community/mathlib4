@@ -95,7 +95,7 @@ instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [
 instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preorder α]
     [IsDirected α (· ≤ ·)] : IsFilteredOrEmpty α where
   cocone_objs X Y :=
-    let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
+    let_fun ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 
@@ -434,8 +434,8 @@ theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coe
    exists a cocone `j ⟶ k ⟵ j'` such that the square commutes. -/
 theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
     ∃ (k : C) (g : j ⟶ k) (g' : j' ⟶ k), f ≫ g = f' ≫ g' :=
-  let ⟨K, G, G', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
-  let ⟨k, e, he⟩ := IsFilteredOrEmpty.cocone_maps (f ≫ G) (f' ≫ G')
+  let_fun ⟨K, G, G', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
+  let_fun ⟨k, e, he⟩ := IsFilteredOrEmpty.cocone_maps (f ≫ G) (f' ≫ G')
   ⟨k, G ≫ e, G' ≫ e, by simpa only [← Category.assoc] ⟩
 
 /-- Given a "bowtie" of morphisms
@@ -525,7 +525,7 @@ instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u)
 instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Preorder α]
     [IsDirected α (· ≥ ·)] : IsCofilteredOrEmpty α where
   cone_objs X Y :=
-    let ⟨Z, hX, hY⟩ := exists_le_le X Y
+    let_fun ⟨Z, hX, hY⟩ := exists_le_le X Y
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
   cone_maps X Y f g := ⟨X, 𝟙 _, by
     apply ULift.ext
@@ -607,8 +607,8 @@ theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f
  there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
 theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
     ∃ (k : C) (g : k ⟶ j) (g' : k ⟶ j'), g ≫ f = g' ≫ f' :=
-  let ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'
-  let ⟨k, e, he⟩ := IsCofilteredOrEmpty.cone_maps (G ≫ f) (G' ≫ f')
+  let_fun ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'
+  let_fun ⟨k, e, he⟩ := IsCofilteredOrEmpty.cone_maps (G ≫ f) (G' ≫ f')
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :

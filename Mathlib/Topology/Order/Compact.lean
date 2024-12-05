@@ -293,7 +293,7 @@ theorem ContinuousOn.exists_isMaxOn' [ClosedIciTopology α] {s : Set β} {f : β
 away from compact sets, then it has a global minimum. -/
 theorem Continuous.exists_forall_le' [ClosedIicTopology α] {f : β → α} (hf : Continuous f)
     (x₀ : β) (h : ∀ᶠ x in cocompact β, f x₀ ≤ f x) : ∃ x : β, ∀ y : β, f x ≤ f y :=
-  let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
+  let_fun ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
     (by rwa [principal_univ, inf_top_eq])
   ⟨x, fun y => hx (mem_univ y)⟩
 
@@ -401,7 +401,7 @@ variable {α β : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace
 
 theorem IsCompact.sInf_mem [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : sInf s ∈ s :=
-  let ⟨_a, ha⟩ := hs.exists_isLeast ne_s
+  let_fun ⟨_a, ha⟩ := hs.exists_isLeast ne_s
   ha.csInf_mem
 
 theorem IsCompact.sSup_mem [ClosedIciTopology α] {s : Set α} (hs : IsCompact s)
@@ -427,7 +427,7 @@ theorem IsCompact.isGreatest_sSup [ClosedIciTopology α] {s : Set α} (hs : IsCo
 theorem IsCompact.exists_sInf_image_eq_and_le [ClosedIicTopology α] {s : Set β}
     (hs : IsCompact s) (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) :
     ∃ x ∈ s, sInf (f '' s) = f x ∧ ∀ y ∈ s, f x ≤ f y :=
-  let ⟨x, hxs, hx⟩ := (hs.image_of_continuousOn hf).sInf_mem (ne_s.image f)
+  let_fun ⟨x, hxs, hx⟩ := (hs.image_of_continuousOn hf).sInf_mem (ne_s.image f)
   ⟨x, hxs, hx.symm, fun _y hy =>
     hx.trans_le <| csInf_le (hs.image_of_continuousOn hf).bddBelow <| mem_image_of_mem f hy⟩
 
@@ -438,7 +438,7 @@ theorem IsCompact.exists_sSup_image_eq_and_ge [ClosedIciTopology α] {s : Set β
 
 theorem IsCompact.exists_sInf_image_eq [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, sInf (f '' s) = f x :=
-  let ⟨x, hxs, hx, _⟩ := hs.exists_sInf_image_eq_and_le ne_s hf
+  let_fun ⟨x, hxs, hx, _⟩ := hs.exists_sInf_image_eq_and_le ne_s hf
   ⟨x, hxs, hx⟩
 
 theorem IsCompact.exists_sSup_image_eq [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
@@ -454,13 +454,13 @@ variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpac
 theorem IsCompact.exists_isMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsMinOn f t x :=
-  let ⟨x, hxt, hfx⟩ := ht.exists_isMinOn ⟨z, hz⟩ hf
+  let_fun ⟨x, hxt, hfx⟩ := ht.exists_isMinOn ⟨z, hz⟩ hf
   ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
 theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z' < f z) : ∃ x ∈ s, IsMaxOn f t x :=
-  let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
+  let_fun ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
   ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
 -- Porting note: rfc: assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and
@@ -468,13 +468,13 @@ theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → �
 theorem IsCompact.exists_isLocalMin_mem_open [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hst : s ⊆ t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') (hs : IsOpen s) : ∃ x ∈ s, IsLocalMin f x :=
-  let ⟨x, hxs, h⟩ := ht.exists_isMinOn_mem_subset hf hz hfz
+  let_fun ⟨x, hxs, h⟩ := ht.exists_isMinOn_mem_subset hf hz hfz
   ⟨x, hxs, h.isLocalMin <| mem_nhds_iff.2 ⟨s, hst, hs, hxs⟩⟩
 
 theorem IsCompact.exists_isLocalMax_mem_open [ClosedIciTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hst : s ⊆ t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z' < f z) (hs : IsOpen s) : ∃ x ∈ s, IsLocalMax f x :=
-  let ⟨x, hxs, h⟩ := ht.exists_isMaxOn_mem_subset hf hz hfz
+  let_fun ⟨x, hxs, h⟩ := ht.exists_isMaxOn_mem_subset hf hz hfz
   ⟨x, hxs, h.isLocalMax <| mem_nhds_iff.2 ⟨s, hst, hs, hxs⟩⟩
 
 end ExistsExtr

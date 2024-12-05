@@ -125,29 +125,29 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
   let n' := nn.natLit!
   let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :
       (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) :=
-    let k := ek.natLit!
+    let_fun k := ek.natLit!
     -- remark: `deriveBool q($nn < $ek * $ek)` is 2x slower than the following test.
     if n' < k * k then
-      let r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
+      let_fun r : Q(Nat.ble ($ek * $ek) $nn = false) := (q(Eq.refl false) : Expr)
       ⟨nn, q(isNat_minFac_4 $pn $prf $r)⟩
     else
-      let d : ℕ := k.minFac
+      let_fun d : ℕ := k.minFac
       -- the following branch is not necessary for the correctness,
       -- but makes the algorithm 2x faster
       if d < k then
         have ek' : Q(ℕ) := mkRawNatLit <| k + 2
-        let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
-        let pd := deriveNotPrime k d ek
+        let_fun pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+        let_fun pd := deriveNotPrime k d ek
         aux ek' q(minFacHelper_2 $pk' $pd $prf)
       -- remark: `deriveBool q($nn % $ek = 0)` is 5x slower than the following test
       else if n' % k = 0 then
-        let r : Q(nat_lit 0 = $nn % $ek) := (q(Eq.refl 0) : Expr)
-        let r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 _ $pn $prf $r)
+        let_fun r : Q(nat_lit 0 = $nn % $ek) := (q(Eq.refl 0) : Expr)
+        let_fun r' : Q(IsNat (minFac $n) $ek) := q(isNat_minFac_3 _ $pn $prf $r)
         ⟨ek, r'⟩
       else
-        let r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
+        let_fun r : Q(Nat.beq ($nn % $ek) 0 = false) := (q(Eq.refl false) : Expr)
         have ek' : Q(ℕ) := mkRawNatLit <| k + 2
-        let pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
+        let_fun pk' : Q($ek + 2 = $ek') := (q(Eq.refl $ek') : Expr)
         aux ek' q(minFacHelper_3 $pk' $r $prf)
   let rec core : MetaM <| Result q(Nat.minFac $n) := do
     if n' = 1 then

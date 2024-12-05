@@ -68,7 +68,7 @@ theorem isBounded_principal (s : Set α) : IsBounded r (𝓟 s) ↔ ∃ t, ∀ x
 theorem isBounded_sup [IsTrans α r] [IsDirected α r] :
     IsBounded r f → IsBounded r g → IsBounded r (f ⊔ g)
   | ⟨b₁, h₁⟩, ⟨b₂, h₂⟩ =>
-    let ⟨b, rb₁b, rb₂b⟩ := directed_of r b₁ b₂
+    let_fun ⟨b, rb₁b, rb₂b⟩ := directed_of r b₁ b₂
     ⟨b, eventually_sup.mpr
       ⟨h₁.mono fun _ h => _root_.trans h rb₁b, h₂.mono fun _ h => _root_.trans h rb₂b⟩⟩
 
@@ -213,7 +213,7 @@ which bounds `f` at some point for every admissible set.
 This is only an implication, as the other direction is wrong for the trivial filter. -/
 theorem IsCobounded.mk [IsTrans α r] (a : α) (h : ∀ s ∈ f, ∃ x ∈ s, r a x) : f.IsCobounded r :=
   ⟨a, fun _ s =>
-    let ⟨_, h₁, h₂⟩ := h _ s
+    let_fun ⟨_, h₁, h₂⟩ := h _ s
     _root_.trans h₂ h₁⟩
 
 /-- A filter which is eventually bounded is in particular frequently bounded (in the opposite
@@ -221,7 +221,7 @@ direction). At least if the filter is not trivial. -/
 theorem IsBounded.isCobounded_flip [IsTrans α r] [NeBot f] : f.IsBounded r → f.IsCobounded (flip r)
   | ⟨a, ha⟩ =>
     ⟨a, fun b hb =>
-      let ⟨_, rxa, rbx⟩ := (ha.and hb).exists
+      let_fun ⟨_, rxa, rbx⟩ := (ha.and hb).exists
       show r b a from _root_.trans rbx rxa⟩
 
 theorem IsBounded.isCobounded_ge [Preorder α] [NeBot f] (h : f.IsBounded (· ≤ ·)) :
@@ -674,7 +674,7 @@ theorem limsInf_le_limsSup {f : Filter α} [NeBot f]
   liminf_le_of_le h₂ fun a₀ ha₀ =>
     le_limsup_of_le h₁ fun a₁ ha₁ =>
       show a₀ ≤ a₁ from
-        let ⟨_, hb₀, hb₁⟩ := (ha₀.and ha₁).exists
+        let_fun ⟨_, hb₀, hb₁⟩ := (ha₀.and ha₁).exists
         le_trans hb₀ hb₁
 
 theorem liminf_le_limsup {f : Filter β} [NeBot f] {u : β → α}
@@ -858,7 +858,7 @@ theorem HasBasis.limsSup_eq_iInf_sSup {ι} {p : ι → Prop} {s} {f : Filter α}
     limsSup f = ⨅ (i) (_ : p i), sSup (s i) :=
   le_antisymm (le_iInf₂ fun i hi => sInf_le <| h.eventually_iff.2 ⟨i, hi, fun _ => le_sSup⟩)
     (le_sInf fun _ ha =>
-      let ⟨_, hi, ha⟩ := h.eventually_iff.1 ha
+      let_fun ⟨_, hi, ha⟩ := h.eventually_iff.1 ha
       iInf₂_le_of_le _ hi <| sSup_le ha)
 
 theorem HasBasis.limsInf_eq_iSup_sInf {p : ι → Prop} {s : ι → Set α} {f : Filter α}
@@ -1384,7 +1384,7 @@ variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 set_option linter.unusedVariables false in
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
     ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
+  let_fun ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
   mem_of_superset h fun _a => hcb.trans_le'
 
 theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf → ∀ᶠ a in f, b < a :=
@@ -1402,8 +1402,8 @@ in `Filter.HasBasis.liminf_eq_ciSup_ciInf` and `Filter.HasBasis.liminf_eq_ite`. 
 noncomputable def liminf_reparam
     (f : ι → α) (s : ι' → Set ι) (p : ι' → Prop) [Countable (Subtype p)] [Nonempty (Subtype p)]
     (j : Subtype p) : Subtype p :=
-  let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
-  let g : ℕ → Subtype p := (exists_surjective_nat _).choose
+  let_fun m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
+  letI g : ℕ → Subtype p := (exists_surjective_nat _).choose
   have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
     by_cases H : ∃ j, j ∈ m
     · rcases H with ⟨j, hj⟩

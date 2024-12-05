@@ -139,7 +139,7 @@ protected def set : σ → StateListT σ m PUnit :=
 /-- Modify and get the state in `StateListT σ m`. -/
 @[always_inline, inline]
 protected def modifyGet (f : σ → α × σ) : StateListT σ m α :=
-  fun s => let a := f s; return StateList.nil.cons a.1 a.2
+  fun s => let_fun a := f s; return StateList.nil.cons a.1 a.2
 
 /-- Lift an action from `m α` to `StateListT σ m α`. -/
 @[always_inline, inline]

@@ -246,7 +246,7 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
 
 -- this statement doesn't use `q` because we want `K` to be an explicit parameter
 theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
-  let ⟨p, hc⟩ := CharP.exists K
+  let_fun ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
 
 -- Porting note: this was a `simp` lemma with a 5 lines proof.

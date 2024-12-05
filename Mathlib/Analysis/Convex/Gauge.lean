@@ -70,7 +70,7 @@ private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • 
 which is useful for proving many properties about the gauge. -/
 theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
-  let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
+  let_fun ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
   ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 
 theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ =>
@@ -169,7 +169,7 @@ theorem mem_openSegment_of_gauge_lt_one (absorbs : Absorbent ℝ s) (hgauge : ga
 
 theorem gauge_lt_one_subset_self (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Absorbent ℝ s) :
     { x | gauge s x < 1 } ⊆ s := fun _x hx ↦
-  let ⟨_y, hys, hx⟩ := mem_openSegment_of_gauge_lt_one absorbs hx
+  let_fun ⟨_y, hys, hx⟩ := mem_openSegment_of_gauge_lt_one absorbs hx
   hs.openSegment_subset h₀ hys hx
 
 theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
@@ -582,12 +582,12 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
 
 theorem Convex.lipschitz_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :
     ∃ K, LipschitzWith K (gauge s) :=
-  let ⟨r, hr₀, hr⟩ := Metric.mem_nhds_iff.1 h₀
+  let_fun ⟨r, hr₀, hr⟩ := Metric.mem_nhds_iff.1 h₀
   ⟨(⟨r, hr₀.le⟩ : ℝ≥0)⁻¹, hc.lipschitzWith_gauge hr₀ hr⟩
 
 theorem Convex.uniformContinuous_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :
     UniformContinuous (gauge s) :=
-  let ⟨_K, hK⟩ := hc.lipschitz_gauge h₀; hK.uniformContinuous
+  let_fun ⟨_K, hK⟩ := hc.lipschitz_gauge h₀; hK.uniformContinuous
 
 end Seminormed
 

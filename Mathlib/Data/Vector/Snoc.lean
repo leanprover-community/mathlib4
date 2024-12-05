@@ -129,8 +129,8 @@ theorem mapAccumr_nil {f : α → σ → σ × β} {s : σ} : mapAccumr f Vector
 @[simp]
 theorem mapAccumr_snoc {f : α → σ → σ × β} {s : σ} :
     mapAccumr f (xs.snoc x) s
-    = let q := f x s
-      let r := mapAccumr f xs q.1
+    = let_fun q := f x s
+      let_fun r := mapAccumr f xs q.1
       (r.1, r.2.snoc q.2) := by
   induction xs
   · rfl
@@ -151,8 +151,8 @@ theorem mapAccumr₂_nil {f : α → β → σ → σ × φ} :
 @[simp]
 theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) :
     mapAccumr₂ f (xs.snoc x) (ys.snoc y) s
-    = let q := f x y s
-      let r := mapAccumr₂ f xs ys q.1
+    = let_fun q := f x y s
+      let_fun r := mapAccumr₂ f xs ys q.1
       (r.1, r.2.snoc q.2) := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all
 

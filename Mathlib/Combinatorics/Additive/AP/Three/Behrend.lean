@@ -258,7 +258,7 @@ theorem exists_large_sphere (n d : ℕ) :
   exact one_le_cast.2 hd
 
 theorem bound_aux' (n d : ℕ) : ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) :=
-  let ⟨_, h⟩ := exists_large_sphere n d
+  let_fun ⟨_, h⟩ := exists_large_sphere n d
   h.trans <| cast_le.2 <| card_sphere_le_rothNumberNat _ _ _
 
 theorem bound_aux (hd : d ≠ 0) (hn : 2 ≤ n) :

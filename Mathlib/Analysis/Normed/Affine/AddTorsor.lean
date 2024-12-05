@@ -248,7 +248,7 @@ theorem nndist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
 it sends midpoints to midpoints. -/
 def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = midpoint ℝ (f x) (f y))
     (hfc : Continuous f) : P →ᵃ[ℝ] Q :=
-  let c := Classical.arbitrary P
+  letI c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by -- Porting note: was `by simp [h]`

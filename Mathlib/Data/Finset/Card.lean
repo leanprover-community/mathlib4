@@ -449,14 +449,14 @@ theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a h
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : #s ≤ #t) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) : a₁ = a₂ :=
   haveI : Inhabited { x // x ∈ s } := ⟨⟨a₁, ha₁⟩⟩
-  let f' : { x // x ∈ s } → { x // x ∈ t } := fun x => ⟨f x.1 x.2, hf x.1 x.2⟩
-  let g : { x // x ∈ t } → { x // x ∈ s } :=
+  letI f' : { x // x ∈ s } → { x // x ∈ t } := fun x => ⟨f x.1 x.2, hf x.1 x.2⟩
+  letI g : { x // x ∈ t } → { x // x ∈ s } :=
     @surjInv _ _ f' fun x =>
-      let ⟨y, hy₁, hy₂⟩ := hsurj x.1 x.2
+      let_fun ⟨y, hy₁, hy₂⟩ := hsurj x.1 x.2
       ⟨⟨y, hy₁⟩, Subtype.eq hy₂⟩
   have hg : Injective g := injective_surjInv _
   have hsg : Surjective g := fun x =>
-    let ⟨y, hy⟩ :=
+    let_fun ⟨y, hy⟩ :=
       surj_on_of_inj_on_of_card_le (fun (x : { x // x ∈ t }) (_ : x ∈ t.attach) => g x)
         (fun x _ => show g x ∈ s.attach from mem_attach _ _) (fun _ _ _ _ hxy => hg hxy) (by simpa)
         x (mem_attach _ _)
@@ -708,7 +708,7 @@ variable [DecidableEq α]
 
 theorem card_eq_succ : #s = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ #t = n :=
   ⟨fun h =>
-    let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < #s)
+    let_fun ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < #s)
     ⟨a, s.erase a, s.not_mem_erase a, insert_erase has, by
       simp only [h, card_erase_of_mem has, Nat.add_sub_cancel_right]⟩,
     fun ⟨_, _, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_not_mem hat⟩

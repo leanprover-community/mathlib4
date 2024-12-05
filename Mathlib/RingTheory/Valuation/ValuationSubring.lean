@@ -163,7 +163,7 @@ theorem valuation_le_one (a : A) : A.valuation a ≤ 1 :=
   (ValuationRing.mem_integer_iff A K _).2 ⟨a, rfl⟩
 
 theorem mem_of_valuation_le_one (x : K) (h : A.valuation x ≤ 1) : x ∈ A :=
-  let ⟨a, ha⟩ := (ValuationRing.mem_integer_iff A K x).1 h
+  let_fun ⟨a, ha⟩ := (ValuationRing.mem_integer_iff A K x).1 h
   ha ▸ a.2
 
 theorem valuation_le_one_iff (x : K) : A.valuation x ≤ 1 ↔ x ∈ A :=
@@ -350,7 +350,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
 instance le_total_ideal : IsTotal {S // A ≤ S} LE.le :=
-  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
+  let_fun _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
   ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
 
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where

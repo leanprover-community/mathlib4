@@ -168,7 +168,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
       (RelEmbedding.ofMonotone
           (fun a : T =>
             (⟨a,
-                let ⟨aS, _⟩ := a.2
+                let_fun ⟨aS, _⟩ := a.2
                 aS⟩ :
               S))
           fun a b h => ?_).ordinal_type_le
@@ -183,7 +183,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
       exact irrefl _ h
   intro a
   have : { b : S | ¬r b a }.Nonempty :=
-    let ⟨b, bS, ba⟩ := hS a
+    let_fun ⟨b, bS, ba⟩ := hS a
     ⟨⟨b, bS⟩, ba⟩
   let b := (IsWellFounded.wf : WellFounded s).min _ this
   have ba : ¬r b a := IsWellFounded.wf.min_mem _ this
@@ -445,10 +445,10 @@ theorem cof_zero : cof 0 = 0 := by
 @[simp]
 theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
   ⟨inductionOn o fun _ r _ z =>
-      let ⟨_, hl, e⟩ := cof_eq r
+      let_fun ⟨_, hl, e⟩ := cof_eq r
       type_eq_zero_iff_isEmpty.2 <|
         ⟨fun a =>
-          let ⟨_, h, _⟩ := hl a
+          let_fun ⟨_, h, _⟩ := hl a
           (mk_eq_zero_iff.1 (e.trans z)).elim' ⟨_, h⟩⟩,
     fun e => by simp [e]⟩
 
@@ -628,7 +628,7 @@ protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u
     exact IsNormal.blsub_eq.{u, u} hf ha
 
 theorem IsNormal.cof_eq {f} (hf : IsNormal f) {a} (ha : IsLimit a) : cof (f a) = cof a :=
-  let ⟨_, hg⟩ := exists_fundamental_sequence a
+  let_fun ⟨_, hg⟩ := exists_fundamental_sequence a
   ord_injective (hf.isFundamentalSequence ha hg).cof_eq
 
 theorem IsNormal.cof_le {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
@@ -694,10 +694,10 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
-  let ⟨S, H, e⟩ := cof_eq r
+  let_fun ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
-    let a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
-    let ⟨b, h, ab⟩ := H a'
+    letI a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
+    let_fun ⟨b, h, ab⟩ := H a'
     ⟨b, h,
       (IsOrderConnected.conn a b a' <|
             (typein_lt_typein r).1
@@ -935,7 +935,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         · simp only [← card_typein, ← mk_sigma]
           exact
             ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
-                let ⟨b, h, ab⟩ := H a
+                let_fun ⟨b, h, ab⟩ := H a
                 ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
         · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
           apply typein_lt_type)⟩
@@ -1203,7 +1203,7 @@ theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
       refine ⟨Embedding.ofSurjective ?_ ?_⟩
       · exact fun x => x.2.1
       · exact fun a =>
-          let ⟨b, h, ab⟩ := H a
+          let_fun ⟨b, h, ab⟩ := H a
           ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩
     · have := typein_lt_type r i
       rwa [← re, lt_ord] at this

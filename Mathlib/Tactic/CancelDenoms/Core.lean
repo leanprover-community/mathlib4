@@ -109,29 +109,29 @@ distribute the value `n` over products inside `e`.
 partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, e1, e2]) | (``HSub.hSub, #[_, _, _, _, e1, e2]) =>
-    let (v1, t1) := findCancelFactor e1
-    let (v2, t2) := findCancelFactor e2
-    let lcm := v1.lcm v2
+    let_fun (v1, t1) := findCancelFactor e1
+    let_fun (v2, t2) := findCancelFactor e2
+    let_fun lcm := v1.lcm v2
     (lcm, .node lcm t1 t2)
   | (``HMul.hMul, #[_, _, _, _, e1, e2]) =>
-    let (v1, t1) := findCancelFactor e1
-    let (v2, t2) := findCancelFactor e2
-    let pd := v1 * v2
+    let_fun (v1, t1) := findCancelFactor e1
+    let_fun (v2, t2) := findCancelFactor e2
+    let_fun pd := v1 * v2
     (pd, .node pd t1 t2)
   | (``HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
     -- If e2 is a rational, then it's a natural number due to the simp lemmas in `deriveThms`.
     match e2.nat? with
     | some q =>
-      let (v1, t1) := findCancelFactor e1
-      let n := v1 * q
+      let_fun (v1, t1) := findCancelFactor e1
+      let_fun n := v1 * q
       (n, .node n t1 <| .node q .nil .nil)
     | none => (1, .node 1 .nil .nil)
   | (``Neg.neg, #[_, _, e]) => findCancelFactor e
   | (``HPow.hPow, #[_, ℕ, _, _, e1, e2]) =>
     match e2.nat? with
     | some k =>
-      let (v1, t1) := findCancelFactor e1
-      let n := v1 ^ k
+      let_fun (v1, t1) := findCancelFactor e1
+      let_fun n := v1 ^ k
       (n, .node n t1 <| .node k .nil .nil)
     | none => (1, .node 1 .nil .nil)
   | (``Inv.inv, #[_, _, e]) =>

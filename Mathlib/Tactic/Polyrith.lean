@@ -194,7 +194,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
 /-- Constructs the list of arguments to pass to the external sage script `polyrith_sage.py`. -/
 def createSageArgs (trace : Bool) (α : Expr) (atoms : Nat)
     (hyps : Array (Source × Poly)) (tgt : Poly) : Array String :=
-  let hyps := hyps.map (toString ·.2) |>.toList.toString
+  let_fun hyps := hyps.map (toString ·.2) |>.toList.toString
   #[toString trace, toString α, toString atoms, hyps, toString tgt]
 
 /-- A JSON parser for `ℚ` specific to the return value of `polyrith_sage.py`. -/

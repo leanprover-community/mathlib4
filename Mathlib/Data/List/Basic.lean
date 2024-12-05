@@ -560,8 +560,8 @@ def bidirectionalRec {motive : List α → Sort*} (nil : motive []) (singleton :
   | [] => nil
   | [a] => singleton a
   | a :: b :: l =>
-    let l' := dropLast (b :: l)
-    let b' := getLast (b :: l) (cons_ne_nil _ _)
+    letI l' := dropLast (b :: l)
+    letI b' := getLast (b :: l) (cons_ne_nil _ _)
     cast (by rw [← dropLast_append_getLast (cons_ne_nil b l)]) <|
       cons_append a l' b' (bidirectionalRec nil singleton cons_append l')
 termination_by l => l.length

@@ -601,7 +601,7 @@ theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
 @[simp]
 theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫⁻ a, f a ∂μ i :=
-  let F : Measure α →+ ℝ≥0∞ :=
+  letI F : Measure α →+ ℝ≥0∞ :=
     { toFun := (lintegral · f),
       map_zero' := lintegral_zero_measure f,
       map_add' := lintegral_add_measure f }

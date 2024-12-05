@@ -236,7 +236,7 @@ then there is a non-canonical bijection
 `Field.Emb F E × Field.Emb E K ≃ Field.Emb F K`. A corollary of `algHomEquivSigma`. -/
 def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     Emb F E × Emb E K ≃ Emb F K :=
-  let e : ∀ f : E →ₐ[F] AlgebraicClosure K,
+  let_fun e : ∀ f : E →ₐ[F] AlgebraicClosure K,
       @AlgHom E K _ _ _ _ _ f.toRingHom.toAlgebra ≃ Emb E K := fun f ↦
     (@embEquivOfIsAlgClosed E K _ _ _ _ _ f.toRingHom.toAlgebra).symm
   (algHomEquivSigma (A := F) (B := E) (C := K) (D := AlgebraicClosure K) |>.trans

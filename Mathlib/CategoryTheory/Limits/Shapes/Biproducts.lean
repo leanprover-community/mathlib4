@@ -381,8 +381,8 @@ variable {J}
 theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (e : J ≃ K) :
     HasBiproductsOfShape J C :=
   ⟨fun F =>
-    let ⟨⟨h⟩⟩ := HasBiproductsOfShape.has_biproduct (F ∘ e.symm)
-    let ⟨c, hc⟩ := h
+    let_fun ⟨⟨h⟩⟩ := HasBiproductsOfShape.has_biproduct (F ∘ e.symm)
+    let_fun ⟨c, hc⟩ := h
     HasBiproduct.mk <| by
       simpa only [Function.comp_def, e.symm_apply_apply] using
         LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).2 hc)⟩
@@ -1073,7 +1073,7 @@ def limitBiconeOfUnique [Unique J] (f : J → C) : LimitBicone f where
 
 instance (priority := 100) hasBiproduct_unique [Subsingleton J] [Nonempty J] (f : J → C) :
     HasBiproduct f :=
-  let ⟨_⟩ := nonempty_unique J; .mk (limitBiconeOfUnique f)
+  let_fun ⟨_⟩ := nonempty_unique J; .mk (limitBiconeOfUnique f)
 
 /-- A biproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]

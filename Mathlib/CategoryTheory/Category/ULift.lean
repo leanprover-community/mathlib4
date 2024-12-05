@@ -94,7 +94,7 @@ the ability to turn off unused universe parameter error is desirable -/
   whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
 def ULiftHom.{w,u} (C : Type u) : Type u :=
-  let _ := ULift.{w} C
+  let_fun _ := ULift.{w} C
   C
 
 instance {C} [Inhabited C] : Inhabited (ULiftHom C) :=

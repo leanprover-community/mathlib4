@@ -417,7 +417,7 @@ theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
 
 theorem mk_eq_zero_iff {α : Type u} : #α = 0 ↔ IsEmpty α :=
   ⟨fun e =>
-    let ⟨h⟩ := Quotient.exact e
+    let_fun ⟨h⟩ := Quotient.exact e
     h.isEmpty,
     @mk_eq_zero α⟩
 
@@ -436,7 +436,7 @@ instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
 theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
-  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+  let_fun ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
@@ -555,12 +555,12 @@ theorem zero_power {a : Cardinal} : a ≠ 0 → (0 : Cardinal) ^ a = 0 :=
   inductionOn a fun _ heq =>
     mk_eq_zero_iff.2 <|
       isEmpty_pi.2 <|
-        let ⟨a⟩ := mk_ne_zero_iff.1 heq
+        let_fun ⟨a⟩ := mk_ne_zero_iff.1 heq
         ⟨a, inferInstance⟩
 
 theorem power_ne_zero {a : Cardinal} (b : Cardinal) : a ≠ 0 → a ^ b ≠ 0 :=
   inductionOn₂ a b fun _ _ h =>
-    let ⟨a⟩ := mk_ne_zero_iff.1 h
+    let_fun ⟨a⟩ := mk_ne_zero_iff.1 h
     mk_ne_zero_iff.2 ⟨fun _ => a⟩
 
 theorem mul_power {a b c : Cardinal} : (a * b) ^ c = a ^ c * b ^ c :=
@@ -958,8 +958,8 @@ end Cardinal
 open Cardinal in
 theorem nonempty_embedding_to_cardinal : Nonempty (α ↪ Cardinal.{u}) :=
   (Embedding.total _ _).resolve_left fun ⟨⟨f, hf⟩⟩ =>
-    let g : α → Cardinal.{u} := invFun f
-    let ⟨x, (hx : g x = 2 ^ sum g)⟩ := invFun_surjective hf (2 ^ sum g)
+    letI g : α → Cardinal.{u} := invFun f
+    let_fun ⟨x, (hx : g x = 2 ^ sum g)⟩ := invFun_surjective hf (2 ^ sum g)
     have : g x ≤ sum g := le_sum.{u, u} g x
     not_le_of_gt (by rw [hx]; exact cantor _) this
 
@@ -1595,7 +1595,7 @@ theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
 
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
-    let ⟨n, hn⟩ := lt_aleph0.mp hx
+    let_fun ⟨n, hn⟩ := lt_aleph0.mp hx
     ⟨n, hn.symm⟩⟩
 
 theorem add_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a + b < ℵ₀ :=

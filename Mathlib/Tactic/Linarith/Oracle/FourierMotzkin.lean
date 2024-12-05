@@ -173,12 +173,12 @@ Since the implicitly eliminated sets start off empty for the assumption,
 this formula would leave them always empty.)
 -/
 def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
-  let c := c1.c.add c2.c
-  let src := c1.src.add c2.src
-  let history := c1.history.union c2.history
-  let vars := c1.vars.union c2.vars
-  let effective := (c1.effective.union c2.effective).insert elimVar
-  let implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
+  let_fun c := c1.c.add c2.c
+  let_fun src := c1.src.add c2.src
+  let_fun history := c1.history.union c2.history
+  let_fun vars := c1.vars.union c2.vars
+  let_fun effective := (c1.effective.union c2.effective).insert elimVar
+  let_fun implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
   ⟨c, src, history, effective, implicit, vars⟩
 
 /--
@@ -209,10 +209,10 @@ abbrev PCompSet := RBSet PComp PComp.cmp
 /-- If `c1` and `c2` both contain variable `a` with opposite coefficients,
 produces `v1` and `v2` such that `a` has been cancelled in `v1*c1 + v2*c2`. -/
 def elimVar (c1 c2 : Comp) (a : ℕ) : Option (ℕ × ℕ) :=
-  let v1 := c1.coeffOf a
-  let v2 := c2.coeffOf a
+  let_fun v1 := c1.coeffOf a
+  let_fun v2 := c2.coeffOf a
   if v1 * v2 < 0 then
-    let vlcm := Nat.lcm v1.natAbs v2.natAbs
+    let_fun vlcm := Nat.lcm v1.natAbs v2.natAbs
     some ⟨vlcm / v1.natAbs, vlcm / v2.natAbs⟩
   else none
 
@@ -293,7 +293,7 @@ Returns `(pos, neg, notPresent)`.
 -/
 def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCompSet :=
   comps.foldl (fun ⟨pos, neg, notPresent⟩ pc =>
-    let n := pc.c.coeffOf a
+    let_fun n := pc.c.coeffOf a
     if n > 0 then ⟨pos.insert pc, neg, notPresent⟩
     else if n < 0 then ⟨pos, neg.insert pc, notPresent⟩
     else ⟨pos, neg, notPresent.insert pc⟩)

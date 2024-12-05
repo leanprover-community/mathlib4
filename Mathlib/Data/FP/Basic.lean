@@ -67,8 +67,8 @@ def Float.isFinite : Float → Bool
 @[nolint docBlame]
 def toRat : ∀ f : Float, f.isFinite → ℚ
   | Float.finite s e m _, _ =>
-    let (n, d) := Int.shift2 m 1 e
-    let r := mkRat n d
+    let_fun (n, d) := Int.shift2 m 1 e
+    let_fun r := mkRat n d
     if s then -r else r
 
 theorem Float.Zero.valid : ValidFinite emin 0 :=
@@ -141,7 +141,7 @@ unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
 set_option linter.unusedVariables false in
 @[nolint docBlame]
 unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
-  let m' := m.succ
+  let_fun m' := m.succ
   if ss : m'.size = m.size then
     Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') lcProof
@@ -176,7 +176,7 @@ unsafe def nextDn : Float → Float
 unsafe def ofRatUp : ℚ → Float
   | ⟨0, _, _, _⟩ => Float.zero false
   | ⟨Nat.succ n, d, h, _⟩ =>
-    let (f, exact) := ofPosRatDn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩
+    let_fun (f, exact) := ofPosRatDn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩
     if exact then f else nextUp f
   | ⟨Int.negSucc n, d, h, _⟩ => Float.neg (ofPosRatDn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩).1
 
@@ -187,8 +187,8 @@ unsafe def ofRatDn (r : ℚ) : Float :=
 @[nolint docBlame]
 unsafe def ofRat : RMode → ℚ → Float
   | RMode.NE, r =>
-    let low := ofRatDn r
-    let high := ofRatUp r
+    let_fun low := ofRatDn r
+    let_fun high := ofRatUp r
     if hf : high.isFinite then
       if r = toRat _ hf then high
       else
@@ -216,8 +216,8 @@ unsafe def add (mode : RMode) : Float → Float → Float
   | inf s₁, _ => inf s₁
   | _, inf s₂ => inf s₂
   | finite s₁ e₁ m₁ v₁, finite s₂ e₂ m₂ v₂ =>
-    let f₁ := finite s₁ e₁ m₁ v₁
-    let f₂ := finite s₂ e₂ m₂ v₂
+    letI f₁ := finite s₁ e₁ m₁ v₁
+    letI f₂ := finite s₂ e₂ m₂ v₂
     ofRat mode (toRat f₁ rfl + toRat f₂ rfl)
 
 unsafe instance : Add Float :=
@@ -237,8 +237,8 @@ unsafe def mul (mode : RMode) : Float → Float → Float
   | inf s₁, f₂ => if f₂.isZero then nan else inf (xor s₁ f₂.sign)
   | f₁, inf s₂ => if f₁.isZero then nan else inf (xor f₁.sign s₂)
   | finite s₁ e₁ m₁ v₁, finite s₂ e₂ m₂ v₂ =>
-    let f₁ := finite s₁ e₁ m₁ v₁
-    let f₂ := finite s₂ e₂ m₂ v₂
+    letI f₁ := finite s₁ e₁ m₁ v₁
+    letI f₂ := finite s₂ e₂ m₂ v₂
     ofRat mode (toRat f₁ rfl * toRat f₂ rfl)
 
 @[nolint docBlame]
@@ -249,8 +249,8 @@ unsafe def div (mode : RMode) : Float → Float → Float
   | inf s₁, f₂ => inf (xor s₁ f₂.sign)
   | f₁, inf s₂ => zero (xor f₁.sign s₂)
   | finite s₁ e₁ m₁ v₁, finite s₂ e₂ m₂ v₂ =>
-    let f₁ := finite s₁ e₁ m₁ v₁
-    let f₂ := finite s₂ e₂ m₂ v₂
+    letI f₁ := finite s₁ e₁ m₁ v₁
+    letI f₂ := finite s₂ e₂ m₂ v₂
     if f₂.isZero then inf (xor s₁ s₂) else ofRat mode (toRat f₁ rfl / toRat f₂ rfl)
 
 end Float

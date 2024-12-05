@@ -667,12 +667,12 @@ variable [MulZeroClass α] {f g : Filter α}
 
 theorem NeBot.mul_zero_nonneg (hf : f.NeBot) : 0 ≤ f * 0 :=
   le_mul_iff.2 fun _ h₁ _ h₂ =>
-    let ⟨_, ha⟩ := hf.nonempty_of_mem h₁
+    let_fun ⟨_, ha⟩ := hf.nonempty_of_mem h₁
     ⟨_, ha, _, h₂, mul_zero _⟩
 
 theorem NeBot.zero_mul_nonneg (hg : g.NeBot) : 0 ≤ 0 * g :=
   le_mul_iff.2 fun _ h₁ _ h₂ =>
-    let ⟨_, hb⟩ := hg.nonempty_of_mem h₂
+    let_fun ⟨_, hb⟩ := hg.nonempty_of_mem h₂
     ⟨_, h₁, _, hb, zero_mul _⟩
 
 end MulZeroClass
@@ -739,12 +739,12 @@ variable [GroupWithZero α] {f g : Filter α}
 
 theorem NeBot.div_zero_nonneg (hf : f.NeBot) : 0 ≤ f / 0 :=
   Filter.le_div_iff.2 fun _ h₁ _ h₂ =>
-    let ⟨_, ha⟩ := hf.nonempty_of_mem h₁
+    let_fun ⟨_, ha⟩ := hf.nonempty_of_mem h₁
     ⟨_, ha, _, h₂, div_zero _⟩
 
 theorem NeBot.zero_div_nonneg (hg : g.NeBot) : 0 ≤ 0 / g :=
   Filter.le_div_iff.2 fun _ h₁ _ h₂ =>
-    let ⟨_, hb⟩ := hg.nonempty_of_mem h₂
+    let_fun ⟨_, hb⟩ := hg.nonempty_of_mem h₂
     ⟨_, h₁, _, hb, zero_div _⟩
 
 end GroupWithZero
@@ -1074,12 +1074,12 @@ because `0 * ⊥ ≠ 0`.
 
 theorem NeBot.smul_zero_nonneg (hf : f.NeBot) : 0 ≤ f • (0 : Filter β) :=
   le_smul_iff.2 fun _ h₁ _ h₂ =>
-    let ⟨_, ha⟩ := hf.nonempty_of_mem h₁
+    let_fun ⟨_, ha⟩ := hf.nonempty_of_mem h₁
     ⟨_, ha, _, h₂, smul_zero _⟩
 
 theorem NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
   le_smul_iff.2 fun _ h₁ _ h₂ =>
-    let ⟨_, hb⟩ := hg.nonempty_of_mem h₂
+    let_fun ⟨_, hb⟩ := hg.nonempty_of_mem h₂
     ⟨_, h₁, _, hb, zero_smul _ _⟩
 
 theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by

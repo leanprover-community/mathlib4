@@ -232,7 +232,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
 
 theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
     IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
-  let ⟨i, hi⟩ := hf ε ε0
+  let_fun ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt
     (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 
@@ -274,7 +274,7 @@ theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := b
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
     IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
-  let ⟨i, hi⟩ := f.2 ε ε0
+  let_fun ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
     rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩
 
@@ -292,7 +292,7 @@ noncomputable def cauSeqAbs (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
 
 theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (lim f) :=
   lim_eq_of_equiv_const fun ε ε0 =>
-    let ⟨i, hi⟩ := equiv_lim f ε ε0
+    let_fun ⟨i, hi⟩ := equiv_lim f ε ε0
     ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 
 lemma ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : s ≠ 0 :=

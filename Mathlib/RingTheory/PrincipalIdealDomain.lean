@@ -277,7 +277,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
                   exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
                 simp [*]),
               fun hx =>
-                let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
+                let_fun ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
                 hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
       else ⟨0, Submodule.ext fun a => by
             rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]

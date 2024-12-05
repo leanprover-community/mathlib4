@@ -98,8 +98,8 @@ theorem Algebra.finite_iff_isIntegral_and_finiteType :
   ⟨fun _ ↦ ⟨⟨.of_finite R⟩, inferInstance⟩, fun ⟨h, _⟩ ↦ h.finite⟩
 
 theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.Finite :=
-  let _ := f.toAlgebra
-  let _ : Algebra.IsIntegral R S := ⟨h⟩
+  letI _ := f.toAlgebra
+  let_fun _ : Algebra.IsIntegral R S := ⟨h⟩
   Algebra.IsIntegral.finite (h' := h')
 
 alias RingHom.Finite.of_isIntegral_of_finiteType := RingHom.IsIntegral.to_finite
@@ -184,7 +184,7 @@ theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
     (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
 
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
-  let ⟨p, hpm, hpx⟩ := x.2
+  let_fun ⟨p, hpm, hpx⟩ := x.2
   ⟨p, hpm,
     Subtype.eq <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
@@ -509,7 +509,7 @@ protected theorem Algebra.IsIntegral.trans
 
 protected theorem RingHom.IsIntegral.trans
     (hf : f.IsIntegral) (hg : g.IsIntegral) : (g.comp f).IsIntegral :=
-  let _ := f.toAlgebra; let _ := g.toAlgebra; let _ := (g.comp f).toAlgebra
+  letI _ := f.toAlgebra; letI _ := g.toAlgebra; letI _ := (g.comp f).toAlgebra
   have : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
   have : Algebra.IsIntegral R S := ⟨hf⟩
   have : Algebra.IsIntegral S T := ⟨hg⟩
@@ -564,7 +564,7 @@ theorem IsIntegral.tower_bot_of_field {R A B : Type*} [CommRing R] [Field A]
 
 theorem RingHom.isIntegralElem.of_comp {x : T} (h : (g.comp f).IsIntegralElem x) :
     g.IsIntegralElem x :=
-  let ⟨p, hp, hp'⟩ := h
+  let_fun ⟨p, hp, hp'⟩ := h
   ⟨p.map f, hp.map f, by rwa [← eval₂_map] at hp'⟩
 
 theorem RingHom.IsIntegral.tower_top (h : (g.comp f).IsIntegral) : g.IsIntegral :=

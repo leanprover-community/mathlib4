@@ -179,7 +179,7 @@ def equivFinTwo [DecidableEq (Ideal K)] : Ideal K ≃ Fin 2 where
   left_inv := fun I ↦ by rcases eq_bot_or_top I with rfl | rfl <;> simp
   right_inv := fun i ↦ by fin_cases i <;> simp
 
-instance : Finite (Ideal K) := let _i := Classical.decEq (Ideal K); ⟨equivFinTwo K⟩
+instance : Finite (Ideal K) := let_fun _i := Classical.decEq (Ideal K); ⟨equivFinTwo K⟩
 
 /-- Ideals of a `DivisionSemiring` are a simple order. Thanks to the way abbreviations work,
 this automatically gives an `IsSimpleModule K` instance. -/
@@ -223,7 +223,7 @@ theorem not_isField_iff_exists_prime [Nontrivial R] :
     ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime :=
   not_isField_iff_exists_ideal_bot_lt_and_lt_top.trans
     ⟨fun ⟨I, bot_lt, lt_top⟩ =>
-      let ⟨p, hp, le_p⟩ := I.exists_le_maximal (lt_top_iff_ne_top.mp lt_top)
+      let_fun ⟨p, hp, le_p⟩ := I.exists_le_maximal (lt_top_iff_ne_top.mp lt_top)
       ⟨p, bot_lt_iff_ne_bot.mp (lt_of_lt_of_le bot_lt le_p), hp.isPrime⟩,
       fun ⟨p, ne_bot, Prime⟩ => ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
 

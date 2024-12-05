@@ -157,13 +157,13 @@ unity and `K` is a `p ^ k`-th cyclotomic extension of `ℚ`. -/
 noncomputable def _root_.IsPrimitiveRoot.adjoinEquivRingOfIntegers
     [IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
     adjoin ℤ ({ζ} : Set K) ≃ₐ[ℤ] 𝓞 K :=
-  let _ := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
+  let_fun _ := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
   IsIntegralClosure.equiv ℤ (adjoin ℤ ({ζ} : Set K)) K (𝓞 K)
 
 /-- The ring of integers of a `p ^ k`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
 instance IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {p ^ k} ℚ K] :
     IsCyclotomicExtension {p ^ k} ℤ (𝓞 K) :=
-  let _ := (zeta_spec (p ^ k) ℚ K).adjoin_isCyclotomicExtension ℤ
+  let_fun _ := (zeta_spec (p ^ k) ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec (p ^ k) ℚ K).adjoinEquivRingOfIntegers
 
 /-- The integral `PowerBasis` of `𝓞 K` given by a primitive root of unity, where `K` is a `p ^ k`
@@ -238,7 +238,7 @@ noncomputable def _root_.IsPrimitiveRoot.adjoinEquivRingOfIntegers'
 /-- The ring of integers of a `p`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
 instance _root_.IsCyclotomicExtension.ring_of_integers' [IsCyclotomicExtension {p} ℚ K] :
     IsCyclotomicExtension {p} ℤ (𝓞 K) :=
-  let _ := (zeta_spec p ℚ K).adjoin_isCyclotomicExtension ℤ
+  let_fun _ := (zeta_spec p ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec p ℚ K).adjoinEquivRingOfIntegers'
 
 /-- The integral `PowerBasis` of `𝓞 K` given by a primitive root of unity, where `K` is a `p`-th

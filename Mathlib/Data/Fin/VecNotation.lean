@@ -172,7 +172,7 @@ theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
   funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 
 theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
-  let _ : Unique (Fin 1) := inferInstance
+  letI : Unique (Fin 1) := inferInstance
   funext <| Unique.forall_iff.2 rfl
 
 /-- `![a, b, ...] 1` is equal to `b`.

@@ -26,9 +26,9 @@ namespace CategoryTheory.Limits
 theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [𝒞 : Category.{v} C]
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (pair X Y)]
     [HasLimit (parallelPair (prod.fst ≫ f) (prod.snd ≫ g))] : HasLimit (cospan f g) :=
-  let π₁ : X ⨯ Y ⟶ X := prod.fst
-  let π₂ : X ⨯ Y ⟶ Y := prod.snd
-  let e := equalizer.ι (π₁ ≫ f) (π₂ ≫ g)
+  letI π₁ : X ⨯ Y ⟶ X := prod.fst
+  letI π₂ : X ⨯ Y ⟶ Y := prod.snd
+  letI e := equalizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasLimit.mk
     { cone :=
         PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by rw [Category.assoc, equalizer.condition]; simp
@@ -60,9 +60,9 @@ end
 theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type u}
     [𝒞 : Category.{v} C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasColimit (pair Y Z)]
     [HasColimit (parallelPair (f ≫ coprod.inl) (g ≫ coprod.inr))] : HasColimit (span f g) :=
-  let ι₁ : Y ⟶ Y ⨿ Z := coprod.inl
-  let ι₂ : Z ⟶ Y ⨿ Z := coprod.inr
-  let c := coequalizer.π (f ≫ ι₁) (g ≫ ι₂)
+  letI ι₁ : Y ⟶ Y ⨿ Z := coprod.inl
+  letI ι₂ : Z ⟶ Y ⨿ Z := coprod.inr
+  letI c := coequalizer.π (f ≫ ι₁) (g ≫ ι₂)
   HasColimit.mk
     { cocone :=
         PushoutCocone.mk (ι₁ ≫ c) (ι₂ ≫ c) <| by

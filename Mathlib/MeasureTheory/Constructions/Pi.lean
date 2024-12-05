@@ -903,7 +903,7 @@ theorem measurePreserving_piFinsetUnion {ι : Type*} {α : ι → Type*}
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h)
       ((Measure.pi fun i : s ↦ μ i).prod (Measure.pi fun i : t ↦ μ i))
       (Measure.pi fun i : ↥(s ∪ t) ↦ μ i) :=
-  let e := Equiv.Finset.union s t h
+  letI e := Equiv.Finset.union s t h
   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
 

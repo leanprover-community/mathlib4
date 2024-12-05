@@ -37,7 +37,7 @@ theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
   simp
 
 theorem IsPrimePow.not_unit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
-  let ⟨_p, _k, hp, hk, hn⟩ := h
+  let_fun ⟨_p, _k, hp, hk, hn⟩ := h
   hn ▸ (isUnit_pow_iff hk.ne').not.mpr hp.not_unit
 
 theorem IsUnit.not_isPrimePow {n : R} (h : IsUnit n) : ¬IsPrimePow n := fun h' => h'.not_unit h
@@ -49,7 +49,7 @@ theorem Prime.isPrimePow {p : R} (hp : Prime p) : IsPrimePow p :=
   ⟨p, 1, hp, zero_lt_one, by simp⟩
 
 theorem IsPrimePow.pow {n : R} (hn : IsPrimePow n) {k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) :=
-  let ⟨p, k', hp, hk', hn⟩ := hn
+  let_fun ⟨p, k', hp, hk', hn⟩ := hn
   ⟨p, k * k', hp, mul_pos hk.bot_lt hk', by rw [pow_mul', hn]⟩
 
 theorem IsPrimePow.ne_zero [NoZeroDivisors R] {n : R} (h : IsPrimePow n) : n ≠ 0 := fun t =>

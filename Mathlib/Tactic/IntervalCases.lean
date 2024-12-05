@@ -242,8 +242,8 @@ def intMethods : Methods where
   roundUp (lhs rhs _ : Q(ℤ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Int.add_one_le_of_not_le $p)
   roundDown (lhs rhs _ : Q(ℤ)) (p : Q(¬$rhs ≤ $lhs)) := pure q(Int.le_sub_one_of_not_le $p)
   mkNumeral
-    | (i : Nat) => let n : Q(ℕ) := mkRawNatLit i; pure q(OfNat.ofNat $n : ℤ)
-    | .negSucc i => let n : Q(ℕ) := mkRawNatLit (i+1); pure q(-OfNat.ofNat $n : ℤ)
+    | (i : Nat) => let_fun n : Q(ℕ) := mkRawNatLit i; pure q(OfNat.ofNat $n : ℤ)
+    | .negSucc i => let_fun n : Q(ℕ) := mkRawNatLit (i+1); pure q(-OfNat.ofNat $n : ℤ)
 
 /--
 `intervalCases` proves goal `g` by splitting into cases for each integer between the given bounds.

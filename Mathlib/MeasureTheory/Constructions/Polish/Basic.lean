@@ -113,7 +113,7 @@ instance (priority := 100) standardBorel_of_polish [τ : TopologicalSpace α]
 -- See note [lower instance priority]
 instance (priority := 100) standardBorelSpace_of_discreteMeasurableSpace [DiscreteMeasurableSpace α]
     [Countable α] : StandardBorelSpace α :=
-  let _ : TopologicalSpace α := ⊥
+  letI _ : TopologicalSpace α := ⊥
   have : DiscreteTopology α := ⟨rfl⟩
   inferInstance
 

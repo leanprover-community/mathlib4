@@ -210,16 +210,16 @@ theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map
   letI := Classical.decEq L
   if hf0' : f.map i = 0 then by simp [eval₂_eq_eval_map, hf0']
   else
-    let ⟨g, hg⟩ :=
+    let_fun ⟨g, hg⟩ :=
       WfDvdMonoid.exists_irreducible_factor
         (show ¬IsUnit (f.map i) from mt isUnit_iff_degree_eq_zero.1 hf0) hf0'
-    let ⟨x, hx⟩ := exists_root_of_degree_eq_one (hs.resolve_left hf0' hg.1 hg.2)
-    let ⟨i, hi⟩ := hg.2
+    let_fun ⟨x, hx⟩ := exists_root_of_degree_eq_one (hs.resolve_left hf0' hg.1 hg.2)
+    let_fun ⟨i, hi⟩ := hg.2
     ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, zero_mul]⟩
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
     (f.map i).roots ≠ 0 :=
-  let ⟨x, hx⟩ := exists_root_of_splits' i hs fun h => hf0 <| natDegree_eq_of_degree_eq_some h
+  let_fun ⟨x, hx⟩ := exists_root_of_splits' i hs fun h => hf0 <| natDegree_eq_of_degree_eq_some h
   fun h => by
   rw [← eval_map] at hx
   have : f.map i ≠ 0 := by intro; simp_all

@@ -98,7 +98,7 @@ with a proof that it is non-empty.
 -/
 def impl
     (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=
-  let ⟨ds, w⟩ := d
+  let_fun ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
     (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
     (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
@@ -111,7 +111,7 @@ variable (x : α) (xs : List α) (y : β) (d : δ) (ds : List δ) (w : 0 < (d ::
 -- which will become an extra goal when rewriting.
 theorem impl_cons (w' : 0 < List.length ds) :
     impl C (x :: xs) y ⟨d :: ds, w⟩ =
-      let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
+      let_fun ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       ⟨min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :: r, by simp⟩ :=
   match ds, w' with | _ :: _, _ => rfl
 
@@ -119,7 +119,7 @@ theorem impl_cons (w' : 0 < List.length ds) :
 -- and should be found by matching, but `w'` will become an extra goal when rewriting.
 theorem impl_cons_fst_zero (h : 0 < (impl C (x :: xs) y ⟨d :: ds, w⟩).val.length)
     (w' : 0 < List.length ds) : (impl C (x :: xs) y ⟨d :: ds, w⟩).1[0] =
-      let ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
+      let_fun ⟨r, w⟩ := impl C xs y ⟨ds, w'⟩
       min (C.delete x + r[0]) (min (C.insert y + d) (C.substitute x y + ds[0])) :=
   match ds, w' with | _ :: _, _ => rfl
 
@@ -196,7 +196,7 @@ then the edit distance calculated here may not agree with the general
 geodesic distance on the edit graph.
 -/
 def levenshtein (xs : List α) (ys : List β) : δ :=
-  let ⟨r, w⟩ := suffixLevenshtein C xs ys
+  let_fun ⟨r, w⟩ := suffixLevenshtein C xs ys
   r[0]
 
 variable {C}
@@ -248,9 +248,9 @@ theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
 theorem suffixLevenshtein_cons_cons_fst_get_zero
     (x : α) (xs y ys) (w : 0 < (suffixLevenshtein C (x :: xs) (y :: ys)).val.length) :
     (suffixLevenshtein C (x :: xs) (y :: ys)).1[0]'w =
-      let ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
-      let ⟨dy, _⟩ := suffixLevenshtein C (x :: xs) ys
-      let ⟨dxy, _⟩ := suffixLevenshtein C xs ys
+      let_fun ⟨dx, _⟩ := suffixLevenshtein C xs (y :: ys)
+      let_fun ⟨dy, _⟩ := suffixLevenshtein C (x :: xs) ys
+      let_fun ⟨dxy, _⟩ := suffixLevenshtein C xs ys
       min
         (C.delete x + dx[0])
         (min

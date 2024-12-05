@@ -273,12 +273,12 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         ⟨fun ⟨s, f, h⟩ ↦
           ⟨F s, ⟨s, Subset.refl _⟩, fun i H ↦ (G i).mem_sets.2 ⟨f i H, fun _ h' ↦ h i H h'⟩⟩,
           fun ⟨_, ⟨s, h⟩, f⟩ ↦
-          let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦ (G i).mem_sets.1 (f i (h i.2))
+          let_fun ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦ (G i).mem_sets.1 (f i (h i.2))
           ⟨s, fun i h ↦ f' ⟨i, h⟩, fun _ H _ m ↦ h' ⟨_, H⟩ m⟩⟩⟩
 
 /-- Construct a realizer for indexed supremum -/
 protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, f i).Realizer :=
-  let F' : (⨆ i, f i).Realizer :=
+  letI F' : (⨆ i, f i).Realizer :=
     (Realizer.bind Realizer.top F).ofEq <|
       filter_eq <| Set.ext <| by simp [Filter.bind, eq_univ_iff_forall, iSup_sets_eq]
   F'.ofEquiv <|
@@ -293,8 +293,8 @@ theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :
     f ≤ g ↔ ∀ b : G.σ, ∃ a : F.σ, F.F a ≤ G.F b :=
   ⟨fun H t ↦ F.mem_sets.1 (H (G.mem_sets.2 ⟨t, Subset.refl _⟩)), fun H _ h ↦
     F.mem_sets.2 <|
-      let ⟨s, h₁⟩ := G.mem_sets.1 h
-      let ⟨t, h₂⟩ := H s
+      let_fun ⟨s, h₁⟩ := G.mem_sets.1 h
+      let_fun ⟨t, h₂⟩ := H s
       ⟨t, Subset.trans h₂ h₁⟩⟩
 
 theorem tendsto_iff (f : α → β) {l₁ : Filter α} {l₂ : Filter β} (L₁ : l₁.Realizer)
@@ -305,7 +305,7 @@ theorem ne_bot_iff {f : Filter α} (F : f.Realizer) : f ≠ ⊥ ↔ ∀ a : F.σ
   rw [not_iff_comm, ← le_bot_iff, F.le_iff Realizer.bot, not_forall]
   simp only [Set.not_nonempty_iff_eq_empty]
   exact ⟨fun ⟨x, e⟩ _ ↦ ⟨x, le_of_eq e⟩, fun h ↦
-    let ⟨x, h⟩ := h ()
+    let_fun ⟨x, h⟩ := h ()
     ⟨x, le_bot_iff.1 h⟩⟩
 
 end Filter.Realizer

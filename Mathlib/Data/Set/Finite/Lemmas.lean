@@ -40,7 +40,7 @@ theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
     ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
-  let ⟨n, f, hf⟩ := h.fin_embedding
+  let_fun ⟨n, f, hf⟩ := h.fin_embedding
   ⟨n, f, f.injective, hf⟩
 
 /-- Induction up to a finite set `S`. -/

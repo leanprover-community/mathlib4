@@ -49,7 +49,7 @@ theorem locallyConnectedSpace_iff_subsets_isOpen_isConnected :
     rcases h.mem_iff.mp hU with ⟨V, hV, hVU⟩
     exact ⟨V, hVU, hV⟩
   · exact fun h => ⟨fun U => ⟨fun hU =>
-      let ⟨V, hVU, hV⟩ := h U hU
+      let_fun ⟨V, hVU, hV⟩ := h U hU
       ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
 
 @[deprecated (since := "2024-11-18")] alias locallyConnectedSpace_iff_open_connected_subsets :=

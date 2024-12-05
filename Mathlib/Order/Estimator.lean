@@ -77,8 +77,8 @@ instance : WellFoundedGT Unit where
   wf := ⟨fun .unit => ⟨Unit.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
-  let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
-  let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
+  let_fun f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
+  let_fun f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
 
 instance {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
@@ -203,7 +203,7 @@ structure Estimator.fst
 variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
 
 instance {a : Thunk α} [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
-  let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
+  let_fun f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT
 
@@ -212,7 +212,7 @@ instance [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
     EstimatorData a (Estimator.fst (a.prod b) ε) where
   bound e := (bound (a.prod b) e.inner).1
   improve e :=
-    let bd := (bound (a.prod b) e.inner).1
+    let_fun bd := (bound (a.prod b) e.inner).1
     Estimator.improveUntil (a.prod b) (fun p => bd < p.1) e.inner
       |>.toOption |>.map Estimator.fst.mk
 

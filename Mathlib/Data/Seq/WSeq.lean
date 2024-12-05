@@ -342,7 +342,7 @@ def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
         | none => none
         | some (none, s') => some (none, a, s')
         | some (some b, s') =>
-          let a' := f a b
+          let_fun a' := f a b
           some (some a', a', s'))
       (a, s)
 
@@ -355,7 +355,7 @@ def inits (s : WSeq α) : WSeq (List α) :=
         | none => none
         | some (none, s') => some (none, l, s')
         | some (some a, s') =>
-          let l' := l.push a
+          let_fun l' := l.push a
           some (some l'.toList, l', s'))
       (Batteries.DList.empty, s)
 
@@ -883,7 +883,7 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
 
 theorem exists_dropn_of_mem {s : WSeq α} {a} (h : a ∈ s) :
     ∃ n s', some (a, s') ∈ destruct (drop s n) :=
-  let ⟨n, h⟩ := exists_get?_of_mem h
+  let_fun ⟨n, h⟩ := exists_get?_of_mem h
   ⟨n, by
     rcases (head_terminates_iff _).1 ⟨⟨_, h⟩⟩ with ⟨⟨o, om⟩⟩
     have := Computation.mem_unique (Computation.mem_map _ om) h
@@ -923,7 +923,7 @@ theorem exists_of_liftRel_right {R : α → β → Prop} {s t} (H : LiftRel R s 
     ∃ a, a ∈ s ∧ R a b := by rw [← LiftRel.swap] at H; exact exists_of_liftRel_left H h
 
 theorem head_terminates_of_mem {s : WSeq α} {a} (h : a ∈ s) : Terminates (head s) :=
-  let ⟨_, h⟩ := exists_get?_of_mem h
+  let_fun ⟨_, h⟩ := exists_get?_of_mem h
   head_terminates_of_get?_terminates ⟨⟨_, h⟩⟩
 
 theorem of_mem_append {s₁ s₂ : WSeq α} {a : α} : a ∈ append s₁ s₂ → a ∈ s₁ ∨ a ∈ s₂ :=
@@ -998,7 +998,7 @@ theorem flatten_equiv {c : Computation (WSeq α)} {s} (h : s ∈ c) : flatten c 
 
 theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c2 : Computation (WSeq β)}
     (h : c1.LiftRel (LiftRel R) c2) : LiftRel R (flatten c1) (flatten c2) :=
-  let S s t := ∃ c1 c2, s = flatten c1 ∧ t = flatten c2 ∧ Computation.LiftRel (LiftRel R) c1 c2
+  letI S s t := ∃ c1 c2, s = flatten c1 ∧ t = flatten c2 ∧ Computation.LiftRel (LiftRel R) c1 c2
   ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun {s t} h =>
     match s, t, h with
     | _, _, ⟨c1, c2, rfl, rfl, h⟩ => by
@@ -1036,7 +1036,7 @@ theorem get?_congr {s t : WSeq α} (h : s ~ʷ t) (n) : get? s n ~ get? t n :=
 theorem mem_congr {s t : WSeq α} (h : s ~ʷ t) (a) : a ∈ s ↔ a ∈ t :=
   suffices ∀ {s t : WSeq α}, s ~ʷ t → a ∈ s → a ∈ t from ⟨this h, this h.symm⟩
   fun {_ _} h as =>
-  let ⟨_, hn⟩ := exists_get?_of_mem as
+  let_fun ⟨_, hn⟩ := exists_get?_of_mem as
   get?_mem ((get?_congr h _ _).1 hn)
 
 theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Productive t := by
@@ -1288,8 +1288,8 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
 
 theorem exists_of_mem_bind {s : WSeq α} {f : α → WSeq β} {b} (h : b ∈ bind s f) :
     ∃ a ∈ s, b ∈ f a :=
-  let ⟨t, tm, bt⟩ := exists_of_mem_join h
-  let ⟨a, as, e⟩ := exists_of_mem_map tm
+  let_fun ⟨t, tm, bt⟩ := exists_of_mem_join h
+  let_fun ⟨a, as, e⟩ := exists_of_mem_map tm
   ⟨a, as, by rwa [e]⟩
 
 theorem destruct_map (f : α → β) (s : WSeq α) :
@@ -1406,8 +1406,8 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
   induction' n using Nat.strongRecOn with n IH
   intro S T ST a ra; simp only [destruct_join] at ra
   exact
-    let ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra
-    let ⟨p, mT, rop⟩ := Computation.exists_of_liftRel_left (liftRel_destruct ST) rs1.mem
+    let_fun ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra
+    let_fun ⟨p, mT, rop⟩ := Computation.exists_of_liftRel_left (liftRel_destruct ST) rs1.mem
     match o, p, rop, rs1, rs2, mT with
     | none, none, _, _, rs2, mT => by
       simp only [destruct_join]
@@ -1415,9 +1415,9 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
     | some (s, S'), some (t, T'), ⟨st, ST'⟩, _, rs2, mT => by
       simp? [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
       exact
-        let ⟨k1, rs3, ek⟩ := of_results_think rs2
-        let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
-        let ⟨p', mt, rop'⟩ := Computation.exists_of_liftRel_left (liftRel_destruct st) rs4.mem
+        let_fun ⟨k1, rs3, ek⟩ := of_results_think rs2
+        let_fun ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
+        let_fun ⟨p', mt, rop'⟩ := Computation.exists_of_liftRel_left (liftRel_destruct st) rs4.mem
         match o', p', rop', rs4, rs5, mt with
         | none, none, _, _, rs5', mt => by
           have : n1 < n := by
@@ -1518,7 +1518,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
           c1 = destruct (append s (join (append S T))) ∧
             c2 = destruct (append s (append (join S) (join T))))
       _ _ _
-      (let ⟨s, S, T, h1, h2⟩ := h
+      (let_fun ⟨s, S, T, h1, h2⟩ := h
       ⟨s, S, T, congr_arg destruct h1, congr_arg destruct h2⟩)
   rintro c1 c2 ⟨s, S, T, rfl, rfl⟩
   induction' s using WSeq.recOn with a s s <;> simp
@@ -1573,7 +1573,7 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
           c1 = destruct (append s (join (append S (join SS)))) ∧
             c2 = destruct (append s (append (join S) (join (map join SS)))))
       _ (destruct s1) (destruct s2)
-      (let ⟨s, S, SS, h1, h2⟩ := h
+      (let_fun ⟨s, S, SS, h1, h2⟩ := h
       ⟨s, S, SS, by simp [h1], by simp [h2]⟩)
   intro c1 c2 h
   exact

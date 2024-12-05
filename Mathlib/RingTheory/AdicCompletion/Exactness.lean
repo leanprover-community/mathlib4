@@ -57,10 +57,10 @@ private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauc
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
   | .succ n =>
-      let y := (hf (x (n + 1))).choose
+      letI y := (hf (x (n + 1))).choose
       have hy := (hf (x (n + 1))).choose_spec
-      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage hf x n
-      let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
+      let_fun ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage hf x n
+      let_fun ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
       ⟨yₙ - d, by simpa [p]⟩
 
 variable (I) in
@@ -151,19 +151,19 @@ include hfg in
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
   | .zero =>
-      let d := (h2 0).choose
-      let y := (h2 0).choose_spec.choose
+      letI d := (h2 0).choose
+      letI y := (h2 0).choose_spec.choose
       have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
       have hdmem := (h2 0).choose_spec.choose_spec.left
       ⟨y, by simpa [hdy]⟩
   | .succ n =>
-      let d := (h2 <| n + 1).choose
-      let y := (h2 <| n + 1).choose_spec.choose
+      letI d := (h2 <| n + 1).choose
+      letI y := (h2 <| n + 1).choose_spec.choose
       have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
       have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
-      let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
+      let_fun ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
         mapExactAux n
-      let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
+      let_fun ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
       ⟨yₙ + d, hd⟩
  where
   h1 (n : ℕ) : g (x (k + n)) ∈ Submodule.map g (I ^ (k + n) • ⊤ : Submodule R N) := by

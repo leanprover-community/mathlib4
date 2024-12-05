@@ -585,7 +585,7 @@ theorem X_add_C_ne_zero (r : R) : X + C r ≠ 0 :=
 
 theorem zero_nmem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α → R) :
     (0 : R[X]) ∉ m.map fun a => X + C (f a) := fun mem =>
-  let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
+  let_fun ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_add_C_ne_zero _ ha
 
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
@@ -735,7 +735,7 @@ theorem X_sub_C_ne_zero (r : R) : X - C r ≠ 0 :=
 
 theorem zero_nmem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α → R) :
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
-  let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
+  let_fun ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha
 
 theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n := by

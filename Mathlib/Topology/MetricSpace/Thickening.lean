@@ -418,7 +418,7 @@ theorem _root_.IsCompact.exists_isCompact_cthickening [LocallyCompactSpace α] (
 
 theorem _root_.IsCompact.exists_thickening_subset_open (hs : IsCompact s) (ht : IsOpen t)
     (hst : s ⊆ t) : ∃ δ, 0 < δ ∧ thickening δ s ⊆ t :=
-  let ⟨δ, h₀, hδ⟩ := hs.exists_cthickening_subset_open ht hst
+  let_fun ⟨δ, h₀, hδ⟩ := hs.exists_cthickening_subset_open ht hst
   ⟨δ, h₀, (thickening_subset_cthickening _ _).trans hδ⟩
 
 theorem hasBasis_nhdsSet_thickening {K : Set α} (hK : IsCompact K) :

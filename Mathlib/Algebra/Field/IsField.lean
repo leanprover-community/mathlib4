@@ -50,7 +50,7 @@ theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivia
 @[simp]
 theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
-  let ⟨_, _, h⟩ := h.exists_pair_ne
+  let_fun ⟨_, _, h⟩ := h.exists_pair_ne
   h (Subsingleton.elim _ _)
 
 open Classical in

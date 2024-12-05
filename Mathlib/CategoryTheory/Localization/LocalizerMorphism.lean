@@ -103,9 +103,9 @@ include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
 it will be so for any choice of localized categoriees. -/
 lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
-  let E₁ := Localization.uniq L₁ L₁' W₁
-  let E₂ := Localization.uniq L₂ L₂' W₂
-  let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
+  letI E₁ := Localization.uniq L₁ L₁' W₁
+  letI E₂ := Localization.uniq L₂ L₂' W₂
+  let_fun e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
     calc
       L₁ ⋙ G ⋙ E₂.functor ≅ Φ.functor ⋙ L₂ ⋙ E₂.functor :=
           (Functor.associator _ _ _).symm ≪≫

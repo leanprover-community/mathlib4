@@ -135,7 +135,7 @@ private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
     baseName
   else
     let rec loop (i : Nat := 0) : Name :=
-      let w := Name.appendIndexAfter baseName i
+      let_fun w := Name.appendIndexAfter baseName i
       if names.contains w then
         loop (i + 1)
       else

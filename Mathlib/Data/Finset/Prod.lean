@@ -170,16 +170,16 @@ theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
-  let ⟨x, hx⟩ := hs
-  let ⟨y, hy⟩ := ht
+  let_fun ⟨x, hx⟩ := hs
+  let_fun ⟨y, hy⟩ := ht
   ⟨(x, y), mem_product.2 ⟨hx, hy⟩⟩
 
 theorem Nonempty.fst (h : (s ×ˢ t).Nonempty) : s.Nonempty :=
-  let ⟨xy, hxy⟩ := h
+  let_fun ⟨xy, hxy⟩ := h
   ⟨xy.1, (mem_product.1 hxy).1⟩
 
 theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
-  let ⟨xy, hxy⟩ := h
+  let_fun ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 
 @[simp]

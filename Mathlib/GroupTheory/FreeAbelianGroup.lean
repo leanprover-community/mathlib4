@@ -133,7 +133,7 @@ open scoped Classical
 
 theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
   fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
-    let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
+    letI f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
     have hfx1 : f (of x) = 1 := (lift.of _ _).trans <| if_pos rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
     have hfy0 : f (of y) = 0 := (lift.of _ _).trans <| if_neg hxy
@@ -151,7 +151,7 @@ theorem of_ne_zero (x : α) : of x ≠ 0 := by
 theorem zero_ne_of (x : α) : 0 ≠ of x := of_ne_zero _ |>.symm
 
 instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
-  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
+  exists_pair_ne := let_fun ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
 
 end
 

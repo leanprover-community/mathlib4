@@ -99,7 +99,7 @@ noncomputable def constr {S : Type z} [Semiring S] [Module S N] [SMulCommClass R
   Basis.constr (chooseBasis R M) S
 
 instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDivisors R M :=
-  let ⟨⟨_, b⟩⟩ := exists_basis (R := R) (M := M)
+  let_fun ⟨⟨_, b⟩⟩ := exists_basis (R := R) (M := M)
   b.noZeroSMulDivisors
 
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
@@ -152,7 +152,7 @@ instance prod [Module.Free R N] : Module.Free R (M × N) :=
 /-- The product of finitely many free modules is free. -/
 instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
     [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
-  let ⟨_⟩ := nonempty_fintype ι
+  let_fun ⟨_⟩ := nonempty_fintype ι
   of_basis <| Pi.basis fun i => chooseBasis R (M i)
 
 /-- The module of finite matrices is free. -/
@@ -197,8 +197,8 @@ variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Modu
   [AddCommMonoid N] [Module R N] [Module.Free R N]
 
 instance tensor : Module.Free S (M ⊗[R] N) :=
-  let ⟨bM⟩ := exists_basis (R := S) (M := M)
-  let ⟨bN⟩ := exists_basis (R := R) (M := N)
+  let_fun ⟨bM⟩ := exists_basis (R := S) (M := M)
+  let_fun ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring

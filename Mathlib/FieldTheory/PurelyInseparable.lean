@@ -555,13 +555,13 @@ instance [Field L] [PerfectField L] [Algebra F L] : Nonempty (E →ₐ[F] L) :=
 
 theorem bijective_comp_algebraMap [Field L] [PerfectField L] :
     Function.Bijective fun f : E →+* L ↦ f.comp (algebraMap F E) :=
-  ⟨injective_comp_algebraMap F E L, fun g ↦ let _ := g.toAlgebra
+  ⟨injective_comp_algebraMap F E L, fun g ↦ letI _ := g.toAlgebra
     ⟨_, (Classical.arbitrary <| E →ₐ[F] L).comp_algebraMap⟩⟩
 
 theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsScalarTower R F E] :
     Function.Bijective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) :=
-  ⟨injective_restrictDomain F E R L, fun g ↦ let _ := g.toAlgebra
-    let f := Classical.arbitrary (E →ₐ[F] L)
+  ⟨injective_restrictDomain F E R L, fun g ↦ letI _ := g.toAlgebra
+    let_fun f := Classical.arbitrary (E →ₐ[F] L)
     ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
 
 end IsPurelyInseparable

@@ -115,7 +115,7 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
     refine stoppedValue_hitting_mem ?_
     simp only [Set.mem_setOf_eq, exists_prop, hn]
     exact
-      let ⟨j, hj₁, hj₂⟩ := hx
+      let_fun ⟨j, hj₁, hj₂⟩ := hx
       ⟨j, hj₁, hj₂⟩
   have h := setIntegral_ge_of_const_le (measurableSet_le measurable_const
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))

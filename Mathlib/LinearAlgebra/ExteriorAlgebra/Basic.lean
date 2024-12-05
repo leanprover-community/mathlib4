@@ -272,7 +272,7 @@ variable (R)
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
 `TensorAlgebra.tprod`. -/
 def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
-  let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
+  letI F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
       dsimp [F]
@@ -436,7 +436,7 @@ lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
 exterior algebras. -/
 lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
     Function.Injective (map f) :=
-  let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
+  let_fun ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
 /-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
 induces is surjective. -/

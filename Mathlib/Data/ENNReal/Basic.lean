@@ -532,7 +532,7 @@ theorem lt_iff_exists_rat_btwn :
 theorem lt_iff_exists_real_btwn :
     a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=
   ⟨fun h =>
-    let ⟨q, q0, aq, qb⟩ := ENNReal.lt_iff_exists_rat_btwn.1 h
+    let_fun ⟨q, q0, aq, qb⟩ := ENNReal.lt_iff_exists_rat_btwn.1 h
     ⟨q, Rat.cast_nonneg.2 q0, aq, qb⟩,
     fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 

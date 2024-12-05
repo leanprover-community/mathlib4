@@ -973,9 +973,9 @@ variable (R A B C) in
 
 This is the algebra version of `TensorProduct.leftComm`. -/
 def leftComm : A ⊗[R] B ⊗[R] C ≃ₐ[R] B ⊗[R] A ⊗[R] C :=
-  let e₁ := (Algebra.TensorProduct.assoc R A B C).symm
-  let e₂ := congr (Algebra.TensorProduct.comm R A B) (1 : C ≃ₐ[R] C)
-  let e₃ := Algebra.TensorProduct.assoc R B A C
+  let_fun e₁ := (Algebra.TensorProduct.assoc R A B C).symm
+  let_fun e₂ := congr (Algebra.TensorProduct.comm R A B) (1 : C ≃ₐ[R] C)
+  let_fun e₃ := Algebra.TensorProduct.assoc R B A C
   e₁.trans (e₂.trans e₃)
 
 @[simp]
@@ -997,9 +997,9 @@ variable (R A B C D) in
 
 This is the algebra version of `TensorProduct.tensorTensorTensorComm`. -/
 def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
-  let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
-  let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
-  let e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
+  let_fun e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
+  let_fun e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
+  let_fun e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
   e₁.trans (e₂.trans e₃)
 
 @[simp]

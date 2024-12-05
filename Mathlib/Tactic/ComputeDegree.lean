@@ -240,7 +240,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
     | some _ => .inl `many
     | none => match pol.getAppFnArgs with
       | (``DFunLike.coe, #[_, _, _, _, polFun, _]) =>
-        let na := polFun.getAppFn.constName
+        let_fun na := polFun.getAppFn.constName
         if na ∈ [``Polynomial.monomial, ``Polynomial.C] then
           .inr na
         else
@@ -271,7 +271,7 @@ of the form `degree f = d`.
 the congruence lemma that it returns.
 -/
 def getCongrLemma (twoH : Name × Name × List Bool) (debug : Bool := false) : Name :=
-  let nam := match twoH with
+  let_fun nam := match twoH with
     | (_,           ``LE.le, [rhs]) => if rhs then ``id else ``le_trans
     | (``natDegree, ``Eq, [rhs])    => if rhs then ``id else ``natDegree_eq_of_le_of_coeff_ne_zero'
     | (``degree,    ``Eq, [rhs])    => if rhs then ``id else ``degree_eq_of_le_of_coeff_ne_zero'
@@ -283,8 +283,8 @@ def getCongrLemma (twoH : Name × Name × List Bool) (debug : Bool := false) : N
       | true, true   => ``id
     | _ => ``id
   if debug then
-    let last := nam.lastComponentAsString
-    let natr := if last == "trans" then nam.toString else last
+    let_fun last := nam.lastComponentAsString
+    let_fun natr := if last == "trans" then nam.toString else last
     dbg_trace f!"congr lemma: '{natr}'"
     nam
   else
@@ -305,12 +305,12 @@ def dispatchLemma
     | (.anonymous, _, _) => ``id -- `twoH` gave default value, so we do nothing
     | (_, .anonymous, _) => ``id -- `twoH` gave default value, so we do nothing
     | (na1, na2, head, bools) =>
-      let msg := f!"\ndispatchLemma:\n  {head}"
+      let_fun msg := f!"\ndispatchLemma:\n  {head}"
       -- if there is some non-metavariable on the way, we "congr" it away
       if false ∈ bools then getCongrLemma (na1, na2, bools) debug
       else
       -- otherwise, we select either the first, second or third element of the triple in `nas` below
-      let π (natDegLE : Name) (degLE : Name) (coeff : Name) : Name := Id.run do
+      let_fun π (natDegLE : Name) (degLE : Name) (coeff : Name) : Name := Id.run do
         let lem := match na1, na2 with
           | ``natDegree, ``LE.le => natDegLE
           | ``degree, ``LE.le => degLE
@@ -422,7 +422,7 @@ there may be some problem.
 -/
 def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
   | tgt::tgts =>
-    let rest := miscomputedDegree? deg tgts
+    let_fun rest := miscomputedDegree? deg tgts
     if tgt.ne?.isSome then
       m!"* the coefficient of degree {deg} may be zero" :: rest
     else if let some ((Expr.const ``Nat []), lhs, _) := tgt.le? then

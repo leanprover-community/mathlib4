@@ -86,7 +86,7 @@ theorem unit_associated_one [Monoid M] {u : Mˣ} : (u : M) ~ᵤ 1 :=
 theorem associated_one_iff_isUnit [Monoid M] {a : M} : (a : M) ~ᵤ 1 ↔ IsUnit a :=
   Iff.intro
     (fun h =>
-      let ⟨c, h⟩ := h.symm
+      let_fun ⟨c, h⟩ := h.symm
       h ▸ ⟨c, (one_mul _).symm⟩)
     fun ⟨c, h⟩ => Associated.symm ⟨c, by simp [h]⟩
 
@@ -106,7 +106,7 @@ theorem associated_one_of_associated_mul_one [CommMonoid M] {a b : M} : a * b ~�
 
 theorem associated_mul_unit_left {N : Type*} [Monoid N] (a u : N) (hu : IsUnit u) :
     Associated (a * u) a :=
-  let ⟨u', hu⟩ := hu
+  let_fun ⟨u', hu⟩ := hu
   ⟨u'⁻¹, hu ▸ Units.mul_inv_cancel_right _ _⟩
 
 theorem associated_unit_mul_left {N : Type*} [CommMonoid N] (a u : N) (hu : IsUnit u) :
@@ -205,11 +205,11 @@ instance [CancelMonoidWithZero M] [DecidableRel ((· ∣ ·) : M → M → Prop)
     DecidableRel ((· ~ᵤ ·) : M → M → Prop) := fun _ _ => decidable_of_iff _ dvd_dvd_iff_associated
 
 theorem Associated.dvd_iff_dvd_left [Monoid M] {a b c : M} (h : a ~ᵤ b) : a ∣ c ↔ b ∣ c :=
-  let ⟨_, hu⟩ := h
+  let_fun ⟨_, hu⟩ := h
   hu ▸ Units.mul_right_dvd.symm
 
 theorem Associated.dvd_iff_dvd_right [Monoid M] {a b c : M} (h : b ~ᵤ c) : a ∣ b ↔ a ∣ c :=
-  let ⟨_, hu⟩ := h
+  let_fun ⟨_, hu⟩ := h
   hu ▸ Units.dvd_mul_right.symm
 
 theorem Associated.eq_zero_iff [MonoidWithZero M] {a b : M} (h : a ~ᵤ b) : a = 0 ↔ b = 0 := by
@@ -221,7 +221,7 @@ theorem Associated.ne_zero_iff [MonoidWithZero M] {a b : M} (h : a ~ᵤ b) : a �
 
 theorem Associated.neg_left [Monoid M] [HasDistribNeg M] {a b : M} (h : Associated a b) :
     Associated (-a) b :=
-  let ⟨u, hu⟩ := h; ⟨-u, by simp [hu]⟩
+  let_fun ⟨u, hu⟩ := h; ⟨-u, by simp [hu]⟩
 
 theorem Associated.neg_right [Monoid M] [HasDistribNeg M] {a b : M} (h : Associated a b) :
     Associated a (-b) :=
@@ -234,7 +234,7 @@ theorem Associated.neg_neg [Monoid M] [HasDistribNeg M] {a b : M} (h : Associate
 protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ q) (hp : Prime p) :
     Prime q :=
   ⟨h.ne_zero_iff.1 hp.ne_zero,
-    let ⟨u, hu⟩ := h
+    let_fun ⟨u, hu⟩ := h
     ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
       hu ▸ by
         simp only [IsUnit.mul_iff, Units.isUnit, and_true, IsUnit.mul_right_dvd]
@@ -299,7 +299,7 @@ theorem Associated.prime_iff [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ q) : P
   ⟨h.prime, h.symm.prime⟩
 
 protected theorem Associated.isUnit [Monoid M] {a b : M} (h : a ~ᵤ b) : IsUnit a → IsUnit b :=
-  let ⟨u, hu⟩ := h
+  let_fun ⟨u, hu⟩ := h
   fun ⟨v, hv⟩ => ⟨v * u, by simp [hv, hu.symm]⟩
 
 theorem Associated.isUnit_iff [Monoid M] {a b : M} (h : a ~ᵤ b) : IsUnit a ↔ IsUnit b :=
@@ -312,7 +312,7 @@ theorem Irreducible.isUnit_iff_not_associated_of_dvd [Monoid M]
 protected theorem Associated.irreducible [Monoid M] {p q : M} (h : p ~ᵤ q) (hp : Irreducible p) :
     Irreducible q :=
   ⟨mt h.symm.isUnit hp.1,
-    let ⟨u, hu⟩ := h
+    let_fun ⟨u, hu⟩ := h
     fun a b hab =>
     have hpab : p = a * (b * (u⁻¹ : Mˣ)) :=
       calc
@@ -327,8 +327,8 @@ protected theorem Associated.irreducible_iff [Monoid M] {p q : M} (h : p ~ᵤ q)
 
 theorem Associated.of_mul_left [CancelCommMonoidWithZero M] {a b c d : M} (h : a * b ~ᵤ c * d)
     (h₁ : a ~ᵤ c) (ha : a ≠ 0) : b ~ᵤ d :=
-  let ⟨u, hu⟩ := h
-  let ⟨v, hv⟩ := Associated.symm h₁
+  let_fun ⟨u, hu⟩ := h
+  let_fun ⟨v, hv⟩ := Associated.symm h₁
   ⟨u * (v : Mˣ),
     mul_left_cancel₀ ha
       (by
@@ -545,8 +545,8 @@ theorem isUnit_mk {a : M} : IsUnit (Associates.mk a) ↔ IsUnit a :=
 section Order
 
 theorem mul_mono {a b c d : Associates M} (h₁ : a ≤ b) (h₂ : c ≤ d) : a * c ≤ b * d :=
-  let ⟨x, hx⟩ := h₁
-  let ⟨y, hy⟩ := h₂
+  let_fun ⟨x, hx⟩ := h₁
+  let_fun ⟨y, hy⟩ := h₂
   ⟨x * y, by simp [hx, hy, mul_comm, mul_assoc, mul_left_comm]⟩
 
 theorem one_le {a : Associates M} : 1 ≤ a :=

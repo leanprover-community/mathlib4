@@ -22,7 +22,7 @@ Split a list to chunks of given lengths.
 def splitLengths : List ℕ → List α → List (List α)
   | [], _ => []
   | n::ns, x =>
-    let (x0, x1) := x.splitAt n
+    let_fun (x0, x1) := x.splitAt n
     x0 :: ns.splitLengths x1
 
 @[simp]

@@ -1195,7 +1195,7 @@ lemma not_one_mem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
-  let ⟨a, ha⟩ := h
+  let_fun ⟨a, ha⟩ := h
   mem_div.2 ⟨a, ha, a, ha, div_self' _⟩
 
 @[to_additive]

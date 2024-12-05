@@ -70,6 +70,6 @@ abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := zero_le_one
   mul_comm := mul_comm
-  mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg
+  mul_nonneg _ _ := letI _ := toOrderedCommSemiring R; mul_nonneg
 
 end StarOrderedRing

@@ -61,7 +61,7 @@ theorem congr (hf : AEStronglyMeasurable' m f μ) (hfg : f =ᵐ[μ] g) :
 
 theorem mono {m'} (hf : AEStronglyMeasurable' m f μ) (hm : m ≤ m') :
     AEStronglyMeasurable' m' f μ :=
-  let ⟨f', hf'_meas, hff'⟩ := hf; ⟨f', hf'_meas.mono hm, hff'⟩
+  let_fun ⟨f', hf'_meas, hff'⟩ := hf; ⟨f', hf'_meas.mono hm, hff'⟩
 
 theorem add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable' m f μ)
     (hg : AEStronglyMeasurable' m g μ) : AEStronglyMeasurable' m (f + g) μ := by

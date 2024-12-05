@@ -56,7 +56,7 @@ def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
 -/
 def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
-  let swapBVarArray : Array Expr := Id.run do
+  let_fun swapBVarArray : Array Expr := Id.run do
     let mut a : Array Expr := .mkEmpty e.looseBVarRange
     for k in [0:e.looseBVarRange] do
       a := a.push (.bvar (if k = i then j else if k = j then i else k))
@@ -163,7 +163,7 @@ let y := a * a; a + y + b
 ```
 -/
 def headBetaThroughLet (e : Expr) : Expr :=
-  let f := e.getAppFn
+  let_fun f := e.getAppFn
   if f.isHeadBetaTargetFn true then betaThroughLet f e.getAppArgs else e
 
 

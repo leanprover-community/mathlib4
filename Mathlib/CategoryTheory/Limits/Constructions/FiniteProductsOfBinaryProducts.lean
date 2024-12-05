@@ -100,8 +100,9 @@ private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
 theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
   ⟨fun n => ⟨fun K =>
-    let this := hasProduct_fin n fun n => K.obj ⟨n⟩
-    let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ => Iso.refl _
+    let_fun this := hasProduct_fin n fun n => K.obj ⟨n⟩
+    let_fun that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K :=
+      Discrete.natIso fun ⟨_⟩ => Iso.refl _
     @hasLimitOfIso _ _ _ _ _ _ this that⟩⟩
 
 
@@ -234,7 +235,7 @@ private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C :=
   ⟨fun n => ⟨fun K =>
     letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
-    let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ => Iso.refl _
+    let_fun that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ => Iso.refl _
     @hasColimitOfIso _ _ _ _ _ _ this that⟩⟩
 
 end

@@ -255,17 +255,18 @@ theorem AsTrue.get {c : Prop} [h₁ : Decidable c] (_ : AsTrue c) : c :=
 /- Equalities for rewriting let-expressions -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-03")] -- unused in Mathlib
 theorem let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β)
-    (h : a₁ = a₂) : (let x : α := a₁; b x) = (let x : α := a₂; b x) := congrArg b h
+    (h : a₁ = a₂) : (let_fun x : α := a₁; b x) = (let_fun x : α := a₂; b x) := congrArg b h
 
 @[deprecated "No deprecation message was provided." (since := "2024-09-03")] -- unused in Mathlib
 theorem let_value_heq {α : Sort v} {β : α → Sort u} {a₁ a₂ : α} (b : ∀ x : α, β x)
-    (h : a₁ = a₂) : HEq (let x : α := a₁; b x) (let x : α := a₂; b x) := by cases h; rfl
+    (h : a₁ = a₂) : HEq (letI x : α := a₁; b x) (letI x : α := a₂; b x) := by cases h; rfl
 
 @[deprecated "No deprecation message was provided." (since := "2024-09-03")] -- unused in Mathlib
 theorem let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀ x : α, β x}
-    (h : ∀ x, b₁ x = b₂ x) : (let x : α := a; b₁ x) = (let x : α := a; b₂ x) := by exact h _ ▸ rfl
+    (h : ∀ x, b₁ x = b₂ x) :
+    (let_fun x : α := a; b₁ x) = (letI x : α := a; b₂ x) := by exact h _ ▸ rfl
 
 @[deprecated "No deprecation message was provided." (since := "2024-09-03")] -- unused in Mathlib
 theorem let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β}
     (h₁ : a₁ = a₂) (h₂ : ∀ x, b₁ x = b₂ x) :
-    (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) := by simp [h₁, h₂]
+    (let_fun x : α := a₁; b₁ x) = (let_fun x : α := a₂; b₂ x) := by simp [h₁, h₂]

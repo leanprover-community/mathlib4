@@ -1325,7 +1325,7 @@ attribute [to_additive] Disjoint.one_not_mem_div_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
-  let ⟨a, ha⟩ := h
+  let_fun ⟨a, ha⟩ := h
   mem_div.2 ⟨a, ha, a, ha, div_self' _⟩
 
 @[to_additive]
@@ -1374,12 +1374,12 @@ theorem preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
 
 @[to_additive (attr := simp)]
 theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
-  let ⟨a, ha⟩ := hs
+  let_fun ⟨a, ha⟩ := hs
   eq_univ_of_forall fun b => ⟨a, ha, a⁻¹ * b, trivial, mul_inv_cancel_left ..⟩
 
 @[to_additive (attr := simp)]
 theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
-  let ⟨a, ha⟩ := ht
+  let_fun ⟨a, ha⟩ := ht
   eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right ..⟩
 
 @[to_additive]

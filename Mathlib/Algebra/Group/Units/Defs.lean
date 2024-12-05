@@ -461,7 +461,7 @@ theorem Units.isUnit_units_mul {M : Type*} [Monoid M] (u : Mˣ) (a : M) :
 
 @[to_additive]
 theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit x :=
-  let ⟨z, hz⟩ := isUnit_iff_exists_inv.1 hu
+  let_fun ⟨z, hz⟩ := isUnit_iff_exists_inv.1 hu
   isUnit_iff_exists_inv.2 ⟨y * z, by rwa [← mul_assoc]⟩
 
 @[to_additive]

@@ -107,7 +107,7 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
 theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
   | 1 => Nat.zero_lt_one
   | bit0 p =>
-    let h := to_nat_pos p
+    let_fun h := to_nat_pos p
     add_pos h h
   | bit1 _p => Nat.succ_pos _
 
@@ -122,11 +122,11 @@ theorem cmp_swap (m) : ∀ n, (cmp m n).swap = cmp n m := by
 theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n) ((n : ℕ) < m) : Prop)
   | 1, 1 => rfl
   | bit0 a, 1 =>
-    let h : (1 : ℕ) ≤ a := to_nat_pos a
+    let_fun h : (1 : ℕ) ≤ a := to_nat_pos a
     Nat.add_le_add h h
   | bit1 a, 1 => Nat.succ_lt_succ <| to_nat_pos <| bit0 a
   | 1, bit0 b =>
-    let h : (1 : ℕ) ≤ b := to_nat_pos b
+    let_fun h : (1 : ℕ) ≤ b := to_nat_pos b
     Nat.add_le_add h h
   | 1, bit1 b => Nat.succ_lt_succ <| to_nat_pos <| bit0 b
   | bit0 a, bit0 b => by

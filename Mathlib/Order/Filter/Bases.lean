@@ -131,7 +131,7 @@ namespace IsBasis
 protected def filterBasis {p : ι → Prop} {s : ι → Set α} (h : IsBasis p s) : FilterBasis α where
   sets := { t | ∃ i, p i ∧ s i = t }
   nonempty :=
-    let ⟨i, hi⟩ := h.nonempty
+    let_fun ⟨i, hi⟩ := h.nonempty
     ⟨s i, ⟨i, hi, rfl⟩⟩
   inter_sets := by
     rintro _ _ ⟨i, hi, rfl⟩ ⟨j, hj, rfl⟩
@@ -155,7 +155,7 @@ protected def filter (B : FilterBasis α) : Filter α where
   univ_sets := B.nonempty.imp fun s s_in => ⟨s_in, s.subset_univ⟩
   sets_of_superset := fun ⟨s, s_in, h⟩ hxy => ⟨s, s_in, Set.Subset.trans h hxy⟩
   inter_sets := fun ⟨_s, s_in, hs⟩ ⟨_t, t_in, ht⟩ =>
-    let ⟨u, u_in, u_sub⟩ := B.inter_sets s_in t_in
+    let_fun ⟨u, u_in, u_sub⟩ := B.inter_sets s_in t_in
     ⟨u, u_in, u_sub.trans (inter_subset_inter hs ht)⟩
 
 theorem mem_filter_iff (B : FilterBasis α) {U : Set α} : U ∈ B.filter ↔ ∃ s ∈ B, s ⊆ U :=
@@ -309,7 +309,7 @@ theorem HasBasis.to_hasBasis' (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', 
 theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p' i' ∧ s' i' ⊆ s i)
     (h' : ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i') : l.HasBasis p' s' :=
   hl.to_hasBasis' h fun i' hi' =>
-    let ⟨i, hi, hss'⟩ := h' i' hi'
+    let_fun ⟨i, hi, hss'⟩ := h' i' hi'
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 
 protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
@@ -332,14 +332,14 @@ theorem HasBasis.frequently_iff (hl : l.HasBasis p s) {q : α → Prop} :
 theorem HasBasis.exists_iff (hl : l.HasBasis p s) {P : Set α → Prop}
     (mono : ∀ ⦃s t⦄, s ⊆ t → P t → P s) : (∃ s ∈ l, P s) ↔ ∃ i, p i ∧ P (s i) :=
   ⟨fun ⟨_s, hs, hP⟩ =>
-    let ⟨i, hi, his⟩ := hl.mem_iff.1 hs
+    let_fun ⟨i, hi, his⟩ := hl.mem_iff.1 hs
     ⟨i, hi, mono his hP⟩,
     fun ⟨i, hi, hP⟩ => ⟨s i, hl.mem_of_mem hi, hP⟩⟩
 
 theorem HasBasis.forall_iff (hl : l.HasBasis p s) {P : Set α → Prop}
     (mono : ∀ ⦃s t⦄, s ⊆ t → P s → P t) : (∀ s ∈ l, P s) ↔ ∀ i, p i → P (s i) :=
   ⟨fun H i hi => H (s i) <| hl.mem_of_mem hi, fun H _s hs =>
-    let ⟨i, hi, his⟩ := hl.mem_iff.1 hs
+    let_fun ⟨i, hi, his⟩ := hl.mem_iff.1 hs
     mono his (H i hi)⟩
 
 protected theorem HasBasis.neBot_iff (hl : l.HasBasis p s) :
@@ -402,7 +402,7 @@ theorem HasBasis.hasBasis_self_subset {p : Set α → Prop} (h : l.HasBasis (fun
 
 theorem HasBasis.ge_iff (hl' : l'.HasBasis p' s') : l ≤ l' ↔ ∀ i', p' i' → s' i' ∈ l :=
   ⟨fun h _i' hi' => h <| hl'.mem_of_mem hi', fun h _s hs =>
-    let ⟨_i', hi', hs⟩ := hl'.mem_iff.1 hs
+    let_fun ⟨_i', hi', hs⟩ := hl'.mem_iff.1 hs
     mem_of_superset (h _ hi') hs⟩
 
 -- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
@@ -709,7 +709,7 @@ protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h
     (hf : Monotone f) : ⨅ t ∈ l, f t = ⨅ (i) (_ : p i), f (s i) :=
   le_antisymm (le_iInf₂ fun i hi => iInf₂_le (s i) (h.mem_of_mem hi)) <|
     le_iInf₂ fun _t ht =>
-      let ⟨i, hpi, hi⟩ := h.mem_iff.1 ht
+      let_fun ⟨i, hpi, hi⟩ := h.mem_iff.1 ht
       iInf₂_le_of_le i hpi (hf hi)
 
 protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
@@ -907,7 +907,7 @@ theorem antitone_seq_of_seq (s : ℕ → Set α) :
 
 theorem countable_biInf_eq_iInf_seq [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
     (Bne : B.Nonempty) (f : ι → α) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) :=
-  let ⟨g, hg⟩ := Bcbl.exists_eq_range Bne
+  let_fun ⟨g, hg⟩ := Bcbl.exists_eq_range Bne
   ⟨g, hg.symm ▸ iInf_range⟩
 
 theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
@@ -968,12 +968,12 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
 /-- A countably generated filter admits a basis formed by an antitone sequence of sets. -/
 theorem exists_antitone_basis (f : Filter α) [f.IsCountablyGenerated] :
     ∃ x : ℕ → Set α, f.HasAntitoneBasis x :=
-  let ⟨x, _, hx⟩ := f.basis_sets.exists_antitone_subbasis
+  let_fun ⟨x, _, hx⟩ := f.basis_sets.exists_antitone_subbasis
   ⟨x, hx⟩
 
 theorem exists_antitone_seq (f : Filter α) [f.IsCountablyGenerated] :
     ∃ x : ℕ → Set α, Antitone x ∧ ∀ {s}, s ∈ f ↔ ∃ i, x i ⊆ s :=
-  let ⟨x, hx⟩ := f.exists_antitone_basis
+  let_fun ⟨x, hx⟩ := f.exists_antitone_basis
   ⟨x, hx.antitone, by simp [hx.1.mem_iff]⟩
 
 instance Inf.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
@@ -984,12 +984,12 @@ instance Inf.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
 
 instance map.isCountablyGenerated (l : Filter α) [l.IsCountablyGenerated] (f : α → β) :
     (map f l).IsCountablyGenerated :=
-  let ⟨_x, hxl⟩ := l.exists_antitone_basis
+  let_fun ⟨_x, hxl⟩ := l.exists_antitone_basis
   (hxl.map _).isCountablyGenerated
 
 instance comap.isCountablyGenerated (l : Filter β) [l.IsCountablyGenerated] (f : α → β) :
     (comap f l).IsCountablyGenerated :=
-  let ⟨_x, hxl⟩ := l.exists_antitone_basis
+  let_fun ⟨_x, hxl⟩ := l.exists_antitone_basis
   (hxl.comap _).isCountablyGenerated
 
 instance Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]

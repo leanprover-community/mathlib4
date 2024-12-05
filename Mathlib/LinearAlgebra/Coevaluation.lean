@@ -37,13 +37,13 @@ variable (V : Type v) [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 /-- The coevaluation map is a linear map from a field `K` to a finite dimensional
   vector space `V`. -/
 def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
-  let bV := Basis.ofVectorSpace K V
+  let_fun bV := Basis.ofVectorSpace K V
   (Basis.singleton Unit K).constr K fun _ =>
     ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i
 
 theorem coevaluation_apply_one :
     (coevaluation K V) (1 : K) =
-      let bV := Basis.ofVectorSpace K V
+      let_fun bV := Basis.ofVectorSpace K V
       ∑ i : Basis.ofVectorSpaceIndex K V, bV i ⊗ₜ[K] bV.coord i := by
   simp only [coevaluation, id]
   rw [(Basis.singleton Unit K).constr_apply_fintype K]

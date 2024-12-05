@@ -199,8 +199,8 @@ variable [PreservesFiniteProducts F]
 
 noncomputable instance (X : Profinite) [Finite X] :
     PreservesLimitsOfShape (Discrete X) F :=
-  let X' := (Countable.toSmall.{0} X).equiv_small.choose
-  let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
+  letI X' := (Countable.toSmall.{0} X).equiv_small.choose
+  let_fun e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
   have : Finite X' := .of_equiv X e
   preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
@@ -470,8 +470,8 @@ def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
 variable [PreservesFiniteProducts F]
 
 noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
-  let X' := (Countable.toSmall.{0} X).equiv_small.choose
-  let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
+  letI X' := (Countable.toSmall.{0} X).equiv_small.choose
+  let_fun e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
   have : Fintype X' := Fintype.ofEquiv X e
   preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 

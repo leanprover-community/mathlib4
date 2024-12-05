@@ -129,13 +129,13 @@ theorem reduce.idem : reduce (reduce L) = reduce L :=
 
 @[to_additive]
 theorem reduce.Step.eq (H : Red.Step L₁ L₂) : reduce L₁ = reduce L₂ :=
-  let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (reduce.red.head H)
+  let_fun ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (reduce.red.head H)
   (reduce.min HR13).trans (reduce.min HR23).symm
 
 /-- If a word reduces to another word, then they have a common maximal reduction. -/
 @[to_additive "If a word reduces to another word, then they have a common maximal reduction."]
 theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
-  let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (Red.trans H reduce.red)
+  let_fun ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (Red.trans H reduce.red)
   (reduce.min HR13).trans (reduce.min HR23).symm
 
 alias red.reduce_eq := reduce.eq_of_red
@@ -157,7 +157,7 @@ an element of the free group to its maximal reduction is well-defined. -/
   have a common maximal reduction. This is the proof that the function that sends an element of the
   free group to its maximal reduction is well-defined."]
 theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
-  let ⟨_L₃, H13, H23⟩ := Red.exact.1 H
+  let_fun ⟨_L₃, H13, H23⟩ := Red.exact.1 H
   (reduce.eq_of_red H13).trans (reduce.eq_of_red H23).symm
 
 /-- If two words have a common maximal reduction, then they correspond to the same element in the
@@ -299,7 +299,7 @@ theorem of_ne_one (a : α) : of a ≠ 1 := one_ne_of _ |>.symm
 
 @[to_additive]
 instance [Nonempty α] : Nontrivial (FreeGroup α) where
-  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of x⟩
+  exists_pair_ne := let_fun ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of x⟩
 
 section Metric
 

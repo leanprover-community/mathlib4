@@ -168,8 +168,8 @@ lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
     m = n := by
   simp_rw [← zpow_natCast] at hm hn
   exact Int.ofNat_inj.mp <| unique_eventuallyEq_zpow_smul_nonzero
-    (let ⟨g, h₁, h₂, h₃⟩ := hm; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
-    (let ⟨g, h₁, h₂, h₃⟩ := hn; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
+    (let_fun ⟨g, h₁, h₂, h₃⟩ := hm; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
+    (let_fun ⟨g, h₁, h₂, h₃⟩ := hn; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
 
 /-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either
 `f` vanishes identically near `z₀`, or locally around `z₀` it has the form `z ↦ (z - z₀) ^ n • g z`

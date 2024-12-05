@@ -43,9 +43,9 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
 we have algebra.norm a ≤ norm_bound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
 noncomputable def normBound : ℤ :=
-  let n := Fintype.card ι
-  let i : ι := Nonempty.some bS.index_nonempty
-  let m : ℤ :=
+  let_fun n := Fintype.card ι
+  let_fun i : ι := Nonempty.some bS.index_nonempty
+  let_fun m : ℤ :=
     Finset.max'
       (Finset.univ.image fun ijk : ι × ι × ι =>
         abv (Algebra.leftMulMatrix bS (bS ijk.1) ijk.2.1 ijk.2.2))

@@ -297,15 +297,15 @@ local notation "F'" => F ⋙ FintypeCat.incl
 /-- The endomorphisms of `F` are isomorphic to the limit over the fibers of `F` on all
 Galois objects. -/
 noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
-  let i1 : End F ≃ End F' :=
+  let_fun i1 : End F ≃ End F' :=
     (FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful FintypeCat.incl) C).homEquiv
-  let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
+  let_fun i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
     (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op
-  let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅ limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
+  let_fun i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅ limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
     colimitCoyonedaHomIsoLimit' (incl F) F'
-  let i4 : limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) ≃ ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections :=
+  let_fun i4 : limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) ≃ ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections :=
     Types.limitEquivSections (incl F ⋙ (F ⋙ FintypeCat.incl) ⋙ uliftFunctor.{u₁, u₂})
-  let i5 : ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections ≃ (incl F ⋙ F').sections :=
+  let_fun i5 : ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections ≃ (incl F ⋙ F').sections :=
     (Types.sectionsEquiv (incl F ⋙ F')).symm
   i1.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
 
@@ -340,8 +340,8 @@ lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
 /-- The equivalence between endomorphisms of `F` and the limit over the automorphism groups
 of all Galois objects. -/
 noncomputable def endEquivAutGalois : End F ≃ AutGalois F :=
-  let e1 := endEquivSectionsFibers F
-  let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
+  let_fun e1 := endEquivSectionsFibers F
+  let_fun e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
   e1.trans e2
 
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :

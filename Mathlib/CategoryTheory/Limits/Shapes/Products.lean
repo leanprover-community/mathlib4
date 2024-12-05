@@ -702,7 +702,7 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
 
 instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
     HasProduct f :=
-  let ⟨_⟩ := nonempty_unique β; HasLimit.mk (limitConeOfUnique f)
+  let_fun ⟨_⟩ := nonempty_unique β; HasLimit.mk (limitConeOfUnique f)
 
 /-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
@@ -731,7 +731,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
 
 instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
     HasCoproduct f :=
-  let ⟨_⟩ := nonempty_unique β; HasColimit.mk (colimitCoconeOfUnique f)
+  let_fun ⟨_⟩ := nonempty_unique β; HasColimit.mk (colimitCoconeOfUnique f)
 
 /-- A coproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]

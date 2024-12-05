@@ -192,7 +192,7 @@ theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i)
     (fun (this : ∀ i, c i ≤ x) => Or.inl (ωSup_le _ _ this))
     (fun (this : ¬∀ i, c i ≤ x) =>
       have : ∃ i, ¬c i ≤ x := by simp only [not_forall] at this ⊢; assumption
-      let ⟨i, hx⟩ := this
+      let_fun ⟨i, hx⟩ := this
       have : x ≤ c i := (h i).resolve_left hx
       Or.inr <| le_ωSup_of_le _ this)
 

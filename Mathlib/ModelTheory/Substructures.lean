@@ -582,7 +582,7 @@ include hf
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
-    let ⟨y, hy⟩ := hf x
+    let_fun ⟨y, hy⟩ := hf x
     mem_map.2 ⟨y, by simp [hy, h]⟩
 
 theorem map_comap_eq_of_surjective (S : L.Substructure N) : (S.comap f).map f = S :=

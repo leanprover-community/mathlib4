@@ -581,7 +581,7 @@ theorem nonneg_add_lem {x y z w : ℕ} (xy : Nonneg (⟨x, -y⟩ : ℤ√d)) (zw
         Int.subNatNat_elim w y
           (fun m n i => SqLe n d k 1 → SqLe (k + j + 1) 1 m d → Nonneg ⟨-[j+1], i⟩)
           (fun m n xy zw => sqLe_cancel xy zw) fun m n xy zw =>
-          let t := Nat.le_trans zw (sqLe_of_le (Nat.le_add_right n (m + 1)) le_rfl xy)
+          let_fun t := Nat.le_trans zw (sqLe_of_le (Nat.le_add_right n (m + 1)) le_rfl xy)
           have : k + j + 1 ≤ k :=
             Nat.mul_self_le_mul_self_iff.1 (by simpa [one_mul] using t)
           absurd this (not_le_of_gt <| Nat.succ_le_succ <| Nat.le_add_right _ _))
@@ -770,7 +770,7 @@ theorem d_pos : 0 < d :=
   lt_of_le_of_ne (Nat.zero_le _) <| Ne.symm <| Nonsquare.ns d 0
 
 theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
-  let g := x.gcd y
+  letI g := x.gcd y
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
     False.elim <| by
@@ -785,7 +785,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
           _ = d * (n * g) * (n * g) := h
           _ = g * g * (d * (n * n)) := by ring
       have co2 :=
-        let co1 := co.mul_right co
+        let_fun co1 := co.mul_right co
         co1.mul co1
       exact
         Nonsquare.ns d m
@@ -795,7 +795,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
 theorem divides_sq_eq_zero_z {x y : ℤ} (h : x * x = d * y * y) : x = 0 ∧ y = 0 := by
   rw [mul_assoc, ← Int.natAbs_mul_self, ← Int.natAbs_mul_self, ← Int.ofNat_mul, ← mul_assoc] at h
   exact
-    let ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
+    let_fun ⟨h1, h2⟩ := divides_sq_eq_zero (Int.ofNat.inj h)
     ⟨Int.natAbs_eq_zero.mp h1, Int.natAbs_eq_zero.mp h2⟩
 
 theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fun e => by

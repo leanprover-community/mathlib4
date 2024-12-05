@@ -78,7 +78,7 @@ theorem nfpFamily_monotone [Small.{u} ι] (hf : ∀ i, Monotone (f i)) : Monoton
 
 theorem apply_lt_nfpFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b}
     (hb : b < nfpFamily f a) (i) : f i b < nfpFamily f a :=
-  let ⟨l, hl⟩ := lt_nfpFamily.1 hb
+  let_fun ⟨l, hl⟩ := lt_nfpFamily.1 hb
   lt_nfpFamily.2 ⟨i::l, (H i).strictMono hl⟩
 
 theorem apply_lt_nfpFamily_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :

@@ -50,7 +50,7 @@ theorem exists_isClopen_upper_of_not_le :
 
 theorem exists_isClopen_lower_of_not_le (h : ¬x ≤ y) :
     ∃ U : Set α, IsClopen U ∧ IsLowerSet U ∧ x ∉ U ∧ y ∈ U :=
-  let ⟨U, hU, hU', hx, hy⟩ := exists_isClopen_upper_of_not_le h
+  let_fun ⟨U, hU, hU', hx, hy⟩ := exists_isClopen_upper_of_not_le h
   ⟨Uᶜ, hU.compl, hU'.compl, Classical.not_not.2 hx, hy⟩
 
 end Preorder
@@ -69,7 +69,7 @@ theorem exists_isClopen_upper_or_lower_of_ne (h : x ≠ y) :
 -- See note [lower instance priority]
 instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
   ⟨fun _ _ h ↦
-    let ⟨U, hU, _, hx, hy⟩ := exists_isClopen_upper_or_lower_of_ne h
+    let_fun ⟨U, hU, _, hx, hy⟩ := exists_isClopen_upper_or_lower_of_ne h
     ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy, disjoint_compl_right⟩⟩
 
 end PartialOrder

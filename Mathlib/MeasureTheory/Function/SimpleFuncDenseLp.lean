@@ -274,7 +274,7 @@ theorem memℒp_zero (f : α →ₛ E) (μ : Measure α) : Memℒp f 0 μ :=
   memℒp_zero_iff_aestronglyMeasurable.mpr f.aestronglyMeasurable
 
 theorem memℒp_top (f : α →ₛ E) (μ : Measure α) : Memℒp f ∞ μ :=
-  let ⟨C, hfC⟩ := f.exists_forall_norm_le
+  let_fun ⟨C, hfC⟩ := f.exists_forall_norm_le
   memℒp_top_of_bound f.aestronglyMeasurable C <| Eventually.of_forall hfC
 
 protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
@@ -356,7 +356,7 @@ theorem integrable_pair {f : α →ₛ E} {g : α →ₛ F} :
 
 theorem memℒp_of_isFiniteMeasure (f : α →ₛ E) (p : ℝ≥0∞) (μ : Measure α) [IsFiniteMeasure μ] :
     Memℒp f p μ :=
-  let ⟨C, hfC⟩ := f.exists_forall_norm_le
+  let_fun ⟨C, hfC⟩ := f.exists_forall_norm_le
   Memℒp.of_bound f.aestronglyMeasurable C <| Eventually.of_forall hfC
 
 theorem integrable_of_isFiniteMeasure [IsFiniteMeasure μ] (f : α →ₛ E) : Integrable f μ :=

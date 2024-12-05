@@ -85,7 +85,7 @@ theorem eq_const_of_compQuasiMeasurePreserving_eq (h : QuasiErgodic f μ) {g : �
     (hg_eq : g.compQuasiMeasurePreserving f h.1 = g) : ∃ c, g = .const α c :=
   have : g ∘ f =ᵐ[μ] g := (g.coeFn_compQuasiMeasurePreserving h.1).symm.trans
     (hg_eq.symm ▸ .refl _ _)
-  let ⟨c, hc⟩ := h.ae_eq_const_of_ae_eq_comp_ae g.aestronglyMeasurable this
+  let_fun ⟨c, hc⟩ := h.ae_eq_const_of_ae_eq_comp_ae g.aestronglyMeasurable this
   ⟨c, AEEqFun.ext <| hc.trans (AEEqFun.coeFn_const _ _).symm⟩
 
 end QuasiErgodic

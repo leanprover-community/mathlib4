@@ -525,7 +525,7 @@ section Ring
 variable {R : Type*}
 
 instance instNontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
-  let ⟨x, y, h⟩ := exists_pair_ne R
+  let_fun ⟨x, y, h⟩ := exists_pair_ne R
   ⟨⟨↑x, ↑y, mt const_inj.1 h⟩⟩
 
 instance instMulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) :=

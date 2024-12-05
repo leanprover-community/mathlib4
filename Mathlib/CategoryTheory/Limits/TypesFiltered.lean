@@ -79,8 +79,8 @@ protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) 
   refl x := ⟨x.1, 𝟙 x.1, 𝟙 x.1, rfl⟩
   symm := fun ⟨k, f, g, h⟩ => ⟨k, g, f, h.symm⟩
   trans {x y z} := fun ⟨k, f, g, h⟩ ⟨k', f', g', h'⟩ =>
-    let ⟨l, fl, gl, _⟩ := IsFilteredOrEmpty.cocone_objs k k'
-    let ⟨m, n, hn⟩ := IsFilteredOrEmpty.cocone_maps (g ≫ fl) (f' ≫ gl)
+    let_fun ⟨l, fl, gl, _⟩ := IsFilteredOrEmpty.cocone_objs k k'
+    let_fun ⟨m, n, hn⟩ := IsFilteredOrEmpty.cocone_maps (g ≫ fl) (f' ≫ gl)
     ⟨m, f ≫ fl ≫ n, g' ≫ gl ≫ n,
       calc
         F.map (f ≫ fl ≫ n) x.2 = F.map (fl ≫ n) (F.map f x.2) := by simp

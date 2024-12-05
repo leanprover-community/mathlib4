@@ -172,7 +172,7 @@ theorem inf_iff_and {c d : RingCon R} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y 
 
 instance [Nontrivial R] : Nontrivial (RingCon R) where
   exists_pair_ne :=
-    let ⟨x, y, ne⟩ := exists_pair_ne R
+    let_fun ⟨x, y, ne⟩ := exists_pair_ne R
     ⟨⊥, ⊤, ne_of_apply_ne (· x y) <| by simp [ne]⟩
 
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals

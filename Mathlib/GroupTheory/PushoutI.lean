@@ -389,7 +389,7 @@ putting head into normal form first, by making sure it is expressed as an elemen
 of the base group multiplied by an element of the transversal. -/
 noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   letI n := (d.compl i).equiv p.head
-  let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
+  letI w := (Word.equivPair i).symm { p.toPair with head := n.2 }
   { toWord := w
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by

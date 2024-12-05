@@ -75,7 +75,7 @@ theorem zero_right : μ ⟂ₘ 0 :=
 
 @[symm]
 theorem symm (h : ν ⟂ₘ μ) : μ ⟂ₘ ν :=
-  let ⟨i, hi, his, hit⟩ := h
+  let_fun ⟨i, hi, his, hit⟩ := h
   ⟨iᶜ, hi.compl, hit, (compl_compl i).symm ▸ his⟩
 
 theorem comm : μ ⟂ₘ ν ↔ ν ⟂ₘ μ :=
@@ -86,7 +86,7 @@ theorem zero_left : 0 ⟂ₘ μ :=
   zero_right.symm
 
 theorem mono_ac (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≪ μ₁) (hν : ν₂ ≪ ν₁) : μ₂ ⟂ₘ ν₂ :=
-  let ⟨s, hs, h₁, h₂⟩ := h
+  let_fun ⟨s, hs, h₁, h₂⟩ := h
   ⟨s, hs, hμ h₁, hν h₂⟩
 
 theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ ν₁) : μ₂ ⟂ₘ ν₂ :=

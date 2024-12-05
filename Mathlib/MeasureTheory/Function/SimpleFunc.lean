@@ -99,7 +99,7 @@ theorem coe_range (f : α →ₛ β) : (↑f.range : Set β) = Set.range f :=
 
 theorem mem_range_of_measure_ne_zero {f : α →ₛ β} {x : β} {μ : Measure α} (H : μ (f ⁻¹' {x}) ≠ 0) :
     x ∈ f.range :=
-  let ⟨a, ha⟩ := nonempty_of_measure_ne_zero H
+  let_fun ⟨a, ha⟩ := nonempty_of_measure_ne_zero H
   mem_range.2 ⟨a, ha⟩
 
 theorem forall_mem_range {f : α →ₛ β} {p : β → Prop} : (∀ y ∈ f.range, p y) ↔ ∀ x, p (f x) := by

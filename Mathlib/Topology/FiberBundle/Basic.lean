@@ -248,7 +248,7 @@ theorem isOpenMap_proj : IsOpenMap (π F E) :=
 /-- The projection from a fiber bundle with a nonempty fiber to its base is a surjective
 map. -/
 theorem surjective_proj [Nonempty F] : Function.Surjective (π F E) := fun b =>
-  let ⟨p, _, hpb⟩ :=
+  let_fun ⟨p, _, hpb⟩ :=
     (trivializationAt F E b).proj_surjOn_baseSet (mem_baseSet_trivializationAt F E b)
   ⟨p, hpb⟩
 
@@ -766,7 +766,7 @@ theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivializat
 /-- Promotion from a `Pretrivialization` to a `Trivialization`. -/
 def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @Trivialization B F _ _ _ a.totalSpaceTopology (π F E) :=
-  let _ := a.totalSpaceTopology
+  letI _ := a.totalSpaceTopology
   { e with
     open_source := a.isOpen_source e,
     continuousOn_toFun := by
@@ -819,7 +819,7 @@ establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
-  let _ := a.totalSpaceTopology
+  letI _ := a.totalSpaceTopology
   { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b
       (a.totalSpaceMk_isInducing b)
     trivializationAtlas' :=

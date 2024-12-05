@@ -182,7 +182,7 @@ theorem le_last {s : CompositionSeries X} (i : Fin (s.length + 1)) : s i ≤ s.l
   s.strictMono.monotone (Fin.le_last _)
 
 theorem le_last_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : x ≤ s.last :=
-  let ⟨_i, hi⟩ := Set.mem_range.2 hx
+  let_fun ⟨_i, hi⟩ := Set.mem_range.2 hx
   hi ▸ le_last _
 
 @[simp]
@@ -190,7 +190,7 @@ theorem head_le {s : CompositionSeries X} (i : Fin (s.length + 1)) : s.head ≤ 
   s.strictMono.monotone (Fin.zero_le _)
 
 theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head ≤ x :=
-  let ⟨_i, hi⟩ := Set.mem_range.2 hx
+  let_fun ⟨_i, hi⟩ := Set.mem_range.2 hx
   hi ▸ head_le _
 
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
@@ -275,7 +275,7 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
     Equivalent (smash s₁ s₂ hs) (smash t₁ t₂ ht) :=
-  let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
+  letI e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
     calc
       Fin (s₁.length + s₂.length) ≃ (Fin s₁.length) ⊕ (Fin s₂.length) := finSumFinEquiv.symm
       _ ≃ (Fin t₁.length) ⊕ (Fin t₂.length) := Equiv.sumCongr h₁.choose h₂.choose
@@ -291,7 +291,7 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
     (hlast : Iso (s₁.last, x₁) (s₂.last, x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) :=
-  let e : Fin s₁.length.succ ≃ Fin s₂.length.succ :=
+  letI e : Fin s₁.length.succ ≃ Fin s₂.length.succ :=
     calc
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
       _ ≃ Option (Fin s₂.length) := Functor.mapEquiv Option hequiv.choose
@@ -310,7 +310,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
     {hsaty₂ : IsMaximal (snoc s x₂ hsat₂).last y₂} (hr₁ : Iso (s.last, x₁) (x₂, y₂))
     (hr₂ : Iso (x₁, y₁) (s.last, x₂)) :
     Equivalent (snoc (snoc s x₁ hsat₁) y₁ hsaty₁) (snoc (snoc s x₂ hsat₂) y₂ hsaty₂) :=
-  let e : Fin (s.length + 1 + 1) ≃ Fin (s.length + 1 + 1) :=
+  letI e : Fin (s.length + 1 + 1) ≃ Fin (s.length + 1 + 1) :=
     Equiv.swap (Fin.last _) (Fin.castSucc (Fin.last _))
   have h1 : ∀ {i : Fin s.length},
       (Fin.castSucc (Fin.castSucc i)) ≠ (Fin.castSucc (Fin.last _)) := fun {_} =>

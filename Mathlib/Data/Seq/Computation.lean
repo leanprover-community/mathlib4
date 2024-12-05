@@ -396,7 +396,7 @@ theorem mem_of_get_eq {a} : get s = a → a ∈ s := by intro h; rw [← h]; app
 @[simp]
 theorem get_think : get (think s) = get s :=
   get_eq_of_mem _ <|
-    let ⟨n, h⟩ := get_mem s
+    let_fun ⟨n, h⟩ := get_mem s
     ⟨n + 1, h⟩
 
 @[simp]
@@ -454,7 +454,7 @@ theorem get_pure (a : α) : get (pure a) = a :=
 
 @[simp]
 theorem length_pure (a : α) : length (pure a) = 0 :=
-  let h := Computation.ret_terminates a
+  let_fun h := Computation.ret_terminates a
   Nat.eq_zero_of_le_zero <| Nat.find_min' ((terminates_def (pure a)).1 h) rfl
 
 theorem results_pure (a : α) : Results (pure a) a 0 :=
@@ -673,8 +673,8 @@ theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} 
 
 theorem mem_bind {s : Computation α} {f : α → Computation β} {a b} (h1 : a ∈ s) (h2 : b ∈ f a) :
     b ∈ bind s f :=
-  let ⟨_, h1⟩ := exists_results_of_mem h1
-  let ⟨_, h2⟩ := exists_results_of_mem h2
+  let_fun ⟨_, h1⟩ := exists_results_of_mem h1
+  let_fun ⟨_, h2⟩ := exists_results_of_mem h2
   (results_bind h1 h2).mem
 
 instance terminates_bind (s : Computation α) (f : α → Computation β) [Terminates s]
@@ -709,8 +709,8 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
 
 theorem exists_of_mem_bind {s : Computation α} {f : α → Computation β} {b} (h : b ∈ bind s f) :
     ∃ a ∈ s, b ∈ f a :=
-  let ⟨_, h⟩ := exists_results_of_mem h
-  let ⟨a, _, _, h1, h2, _⟩ := of_results_bind h
+  let_fun ⟨_, h⟩ := exists_results_of_mem h
+  let_fun ⟨a, _, _, h1, h2, _⟩ := of_results_bind h
   ⟨a, h1.mem, h2.mem⟩
 
 theorem bind_promises {s : Computation α} {f : α → Computation β} {a b} (h1 : s ~> a)
@@ -758,7 +758,7 @@ instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Te
 
 theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (map f s) ↔ Terminates s :=
   ⟨fun ⟨⟨_, h⟩⟩ =>
-    let ⟨_, h1, _⟩ := exists_of_mem_map h
+    let_fun ⟨_, h1, _⟩ := exists_of_mem_map h
     ⟨⟨_, h1⟩⟩,
     @Computation.terminates_map _ _ _ _⟩
 
@@ -857,10 +857,10 @@ theorem thinkN_equiv (s : Computation α) (n) : thinkN s n ~ s := fun _ => think
 theorem bind_congr {s1 s2 : Computation α} {f1 f2 : α → Computation β} (h1 : s1 ~ s2)
     (h2 : ∀ a, f1 a ~ f2 a) : bind s1 f1 ~ bind s2 f2 := fun b =>
   ⟨fun h =>
-    let ⟨a, ha, hb⟩ := exists_of_mem_bind h
+    let_fun ⟨a, ha, hb⟩ := exists_of_mem_bind h
     mem_bind ((h1 a).1 ha) ((h2 a b).1 hb),
     fun h =>
-    let ⟨a, ha, hb⟩ := exists_of_mem_bind h
+    let_fun ⟨a, ha, hb⟩ := exists_of_mem_bind h
     mem_bind ((h1 a).2 ha) ((h2 a b).2 hb)⟩
 
 theorem equiv_pure_of_mem {s : Computation α} {a} (h : a ∈ s) : s ~ pure a :=
@@ -889,21 +889,21 @@ theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (Lif
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
   fun _ _ ⟨l, r⟩ =>
   ⟨fun {_} a2 =>
-    let ⟨b, b1, ab⟩ := r a2
+    let_fun ⟨b, b1, ab⟩ := r a2
     ⟨b, b1, H ab⟩,
     fun {_} a1 =>
-    let ⟨b, b2, ab⟩ := l a1
+    let_fun ⟨b, b2, ab⟩ := l a1
     ⟨b, b2, H ab⟩⟩
 
 theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
   fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
   ⟨fun {_} a1 =>
-    let ⟨_, b2, ab⟩ := l1 a1
-    let ⟨c, c3, bc⟩ := l2 b2
+    let_fun ⟨_, b2, ab⟩ := l1 a1
+    let_fun ⟨c, c3, bc⟩ := l2 b2
     ⟨c, c3, H ab bc⟩,
     fun {_} c3 =>
-    let ⟨_, b2, bc⟩ := r2 c3
-    let ⟨a, a1, ab⟩ := r1 b2
+    let_fun ⟨_, b2, bc⟩ := r2 c3
+    let_fun ⟨a, a1, ab⟩ := r1 b2
     ⟨a, a1, H ab bc⟩⟩
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
@@ -918,20 +918,20 @@ theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) 
     LiftRel R s t → LiftRel S s t
   | ⟨l, r⟩ =>
     ⟨fun {_} as =>
-      let ⟨b, bt, ab⟩ := l as
+      let_fun ⟨b, bt, ab⟩ := l as
       ⟨b, bt, H ab⟩,
       fun {_} bt =>
-      let ⟨a, as, ab⟩ := r bt
+      let_fun ⟨a, as, ab⟩ := r bt
       ⟨a, as, H ab⟩⟩
 
 theorem terminates_of_liftRel {R : α → β → Prop} {s t} :
     LiftRel R s t → (Terminates s ↔ Terminates t)
   | ⟨l, r⟩ =>
     ⟨fun ⟨⟨_, as⟩⟩ =>
-      let ⟨b, bt, _⟩ := l as
+      let_fun ⟨b, bt, _⟩ := l as
       ⟨⟨b, bt⟩⟩,
       fun ⟨⟨_, bt⟩⟩ =>
-      let ⟨a, as, _⟩ := r bt
+      let_fun ⟨a, as, _⟩ := r bt
       ⟨⟨a, as⟩⟩⟩
 
 theorem rel_of_liftRel {R : α → β → Prop} {ca cb} :
@@ -961,27 +961,27 @@ theorem liftRel_def {R : α → β → Prop} {ca cb} :
       rwa [mem_unique mb mb']⟩,
     fun ⟨l, r⟩ =>
     ⟨fun {_} ma =>
-      let ⟨⟨b, mb⟩⟩ := l.1 ⟨⟨_, ma⟩⟩
+      let_fun ⟨⟨b, mb⟩⟩ := l.1 ⟨⟨_, ma⟩⟩
       ⟨b, mb, r ma mb⟩,
       fun {_} mb =>
-      let ⟨⟨a, ma⟩⟩ := l.2 ⟨⟨_, mb⟩⟩
+      let_fun ⟨⟨a, ma⟩⟩ := l.2 ⟨⟨_, mb⟩⟩
       ⟨a, ma, r ma mb⟩⟩⟩
 
 theorem liftRel_bind {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 : Computation α}
     {s2 : Computation β} {f1 : α → Computation γ} {f2 : β → Computation δ} (h1 : LiftRel R s1 s2)
     (h2 : ∀ {a b}, R a b → LiftRel S (f1 a) (f2 b)) : LiftRel S (bind s1 f1) (bind s2 f2) :=
-  let ⟨l1, r1⟩ := h1
+  let_fun ⟨l1, r1⟩ := h1
   ⟨fun {_} cB =>
-    let ⟨_, a1, c₁⟩ := exists_of_mem_bind cB
-    let ⟨_, b2, ab⟩ := l1 a1
-    let ⟨l2, _⟩ := h2 ab
-    let ⟨_, d2, cd⟩ := l2 c₁
+    let_fun ⟨_, a1, c₁⟩ := exists_of_mem_bind cB
+    let_fun ⟨_, b2, ab⟩ := l1 a1
+    let_fun ⟨l2, _⟩ := h2 ab
+    let_fun ⟨_, d2, cd⟩ := l2 c₁
     ⟨_, mem_bind b2 d2, cd⟩,
     fun {_} dB =>
-    let ⟨_, b1, d1⟩ := exists_of_mem_bind dB
-    let ⟨_, a2, ab⟩ := r1 b1
-    let ⟨_, r2⟩ := h2 ab
-    let ⟨_, c₂, cd⟩ := r2 d1
+    let_fun ⟨_, b1, d1⟩ := exists_of_mem_bind dB
+    let_fun ⟨_, a2, ab⟩ := r1 b1
+    let_fun ⟨_, r2⟩ := h2 ab
+    let_fun ⟨_, c₂, cd⟩ := r2 d1
     ⟨_, mem_bind a2 c₂, cd⟩⟩
 
 @[simp]

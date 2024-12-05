@@ -75,18 +75,18 @@ protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 
 theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
     ∃ t : Set X, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
-  let ⟨m, hsm, hm⟩ :=
+  let_fun ⟨m, hsm, hm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
       (fun c hc hcc _ =>
         ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ =>
-          let ⟨p, hpc, hyp⟩ := mem_sUnion.1 hy
-          let ⟨q, hqc, hxq⟩ := mem_sUnion.1 hx
+          let_fun ⟨p, hpc, hyp⟩ := mem_sUnion.1 hy
+          let_fun ⟨q, hqc, hxq⟩ := mem_sUnion.1 hx
           Or.casesOn (hcc.total hpc hqc)
             (fun hpq : p ⊆ q =>
-              let ⟨x, hxp, hxuv⟩ := hc hqc u v hu hv ⟨y, hpq hyp, hyu⟩ ⟨x, hxq, hxv⟩
+              let_fun ⟨x, hxp, hxuv⟩ := hc hqc u v hu hv ⟨y, hpq hyp, hyu⟩ ⟨x, hxq, hxv⟩
               ⟨x, mem_sUnion_of_mem hxp hqc, hxuv⟩)
             fun hqp : q ⊆ p =>
-            let ⟨x, hxp, hxuv⟩ := hc hpc u v hu hv ⟨y, hyp, hyu⟩ ⟨x, hqp hxq, hxv⟩
+            let_fun ⟨x, hxp, hxuv⟩ := hc hpc u v hu hv ⟨y, hyp, hyu⟩ ⟨x, hqp hxq, hxv⟩
             ⟨x, mem_sUnion_of_mem hxp hpc, hxuv⟩,
           fun _ hxc => subset_sUnion_of_mem hxc⟩)
       s H

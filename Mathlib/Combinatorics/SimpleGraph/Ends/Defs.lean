@@ -67,7 +67,7 @@ theorem componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) 
 /-- In an infinite graph, the set of components out of a finite set is nonempty. -/
 instance componentCompl_nonempty_of_infinite (G : SimpleGraph V) [Infinite V] (K : Finset V) :
     Nonempty (G.ComponentCompl K) :=
-  let ⟨_, kK⟩ := K.finite_toSet.infinite_compl.nonempty
+  let_fun ⟨_, kK⟩ := K.finite_toSet.infinite_compl.nonempty
   ⟨componentComplMk _ kK⟩
 
 namespace ComponentCompl
@@ -227,7 +227,7 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
   -- Otherwise, we consider the function `touch` mapping a connected component to one of its
   -- vertices adjacent to `K`.
   · let touch (C : G.ComponentCompl K) : {v : V | ∃ k : V, k ∈ K ∧ G.Adj k v} :=
-      let p := C.exists_adj_boundary_pair Gpc.out h
+      let_fun p := C.exists_adj_boundary_pair Gpc.out h
       ⟨p.choose.1, p.choose.2, p.choose_spec.2.1, p.choose_spec.2.2.symm⟩
     -- `touch` is injective
     have touch_inj : touch.Injective := fun C D h' => ComponentCompl.pairwise_disjoint.eq

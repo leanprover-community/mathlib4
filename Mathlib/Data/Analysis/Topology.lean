@@ -163,7 +163,7 @@ protected def id : Realizer α :=
       inter_mem := fun ⟨_x, _h₁⟩ ⟨_y, _h₂⟩ _a ↦ id
       inter_sub := fun ⟨_x, _h₁⟩ ⟨_y, _h₂⟩ _a _h₃ ↦ Subset.refl _ },
     ext Subtype.property fun _x _s h ↦
-      let ⟨t, h, o, m⟩ := mem_nhds_iff.1 h
+      let_fun ⟨t, h, o, m⟩ := mem_nhds_iff.1 h
       ⟨⟨t, o⟩, m, h⟩⟩
 
 /-- Replace the representation type of a `Ctop` realizer. -/
@@ -191,7 +191,7 @@ protected def nhds (F : Realizer α) (a : α) : (𝓝 a).Realizer :=
     filter_eq <|
       Set.ext fun _x ↦
         ⟨fun ⟨⟨_s, as⟩, h⟩ ↦ mem_nhds_iff.2 ⟨_, h, F.isOpen _, as⟩, fun h ↦
-          let ⟨s, h, as⟩ := F.mem_nhds.1 h
+          let_fun ⟨s, h, as⟩ := F.mem_nhds.1 h
           ⟨⟨s, h⟩, as⟩⟩⟩
 
 @[simp]
@@ -220,15 +220,15 @@ theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.
 theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
     {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
   ⟨fun h ↦
-    let ⟨g, h₁⟩ := Classical.axiom_of_choice h
-    let ⟨g₂, h₂⟩ :=
+    let_fun ⟨g, h₁⟩ := Classical.axiom_of_choice h
+    let_fun ⟨g₂, h₂⟩ :=
       Classical.axiom_of_choice fun x ↦
         show ∃ b : F.σ, x ∈ F.F b ∧ F.F b ⊆ g x from
-          let ⟨h, _h'⟩ := h₁ x
+          let_fun ⟨h, _h'⟩ := h₁ x
           F.mem_nhds.1 h
     ⟨⟨fun x ↦ ⟨g₂ x, (h₂ x).1⟩, fun x ↦
         Finite.fintype <|
-          let ⟨_h, h'⟩ := h₁ x
+          let_fun ⟨_h, h'⟩ := h₁ x
           h'.subset fun _i hi ↦ hi.mono (inter_subset_inter_right _ (h₂ x).2)⟩⟩,
     fun ⟨R⟩ ↦ R.to_locallyFinite⟩
 

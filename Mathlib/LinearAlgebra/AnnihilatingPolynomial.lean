@@ -74,7 +74,7 @@ Since `𝕜[X]` is a principal ideal domain there is a polynomial `g` such that
  `span 𝕜 {g} = annIdeal a`. This picks some generator.
  We prefer the monic generator of the ideal. -/
 noncomputable def annIdealGenerator (a : A) : 𝕜[X] :=
-  let g := IsPrincipal.generator <| annIdeal 𝕜 a
+  let_fun g := IsPrincipal.generator <| annIdeal 𝕜 a
   g * C g.leadingCoeff⁻¹
 
 section

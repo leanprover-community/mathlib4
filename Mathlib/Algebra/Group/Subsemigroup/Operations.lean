@@ -370,7 +370,7 @@ include hf
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
-    let ⟨y, hy⟩ := hf x
+    let_fun ⟨y, hy⟩ := hf x
     mem_map.2 ⟨y, by simp [hy, h]⟩
 
 @[to_additive]
@@ -727,7 +727,7 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := MulHom.mem_srange.mp x.prop
+        let_fun ⟨x', hx'⟩ := MulHom.mem_srange.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 /-- A `MulEquiv` `φ` between two semigroups `M` and `N` induces a `MulEquiv` between

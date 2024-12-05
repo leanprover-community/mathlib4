@@ -25,7 +25,7 @@ private def lbp (m n : ℕ) : Prop :=
 variable [DecidablePred p] (H : ∃ n, p n)
 
 private def wf_lbp : WellFounded (@lbp p) :=
-  ⟨let ⟨n, pn⟩ := H
+  ⟨let_fun ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
     Nat.recOn m

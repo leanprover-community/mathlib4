@@ -138,7 +138,7 @@ theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJ
 /-- A variant of `isJacobsonRing_of_isIntegral` that takes `RingHom.IsIntegral` instead. -/
 theorem isJacobsonRing_of_isIntegral' (f : R →+* S) (hf : f.IsIntegral) [IsJacobsonRing R] :
     IsJacobsonRing S :=
-  let _ : Algebra R S := f.toAlgebra
+  letI _ : Algebra R S := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isJacobsonRing_of_isIntegral (R := R)
 
@@ -360,7 +360,7 @@ theorem jacobson_bot_of_integral_localization
     refine eq_bot_iff.mpr (le_trans ?_ (le_of_eq hϕ'))
     rw [← hSₘ.out isRadical_bot_of_noZeroDivisors, comap_jacobson]
     exact sInf_le_sInf fun j hj => ⟨bot_le,
-      let ⟨J, hJ⟩ := hj
+      let_fun ⟨J, hJ⟩ := hj
       hJ.2 ▸ this J hJ.1.2⟩
   intro I hI
   -- Remainder of the proof is pulling and pushing ideals around the square and the quotient square
@@ -514,7 +514,7 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
   · refine IsLocalization.injective (Localization M')
       (show M' ≤ _ from le_nonZeroDivisors_of_noZeroDivisors fun hM' => hM ?_)
     exact
-      let ⟨z, zM, z0⟩ := hM'
+      let_fun ⟨z, zM, z0⟩ := hM'
       quotientMap_injective (_root_.trans z0 φ.map_zero.symm) ▸ zM
   · suffices RingHom.comp (algebraMap (R[X] ⧸ P) (Localization M')) φ =
       (IsLocalization.map (Localization M') φ M.le_comap_map).comp

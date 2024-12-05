@@ -156,10 +156,10 @@ specified natural numbers. -/
 def WhiskerRight.nodes (v h₁ h₂ : ℕ) : WhiskerRight → List Node
   | WhiskerRight.of η => [.atom ⟨v, h₁, h₂, η⟩]
   | WhiskerRight.whisker _ η f =>
-    let ηs := η.nodes v h₁ h₂
-    let k₁ := (ηs.map (fun n ↦ n.srcList)).flatten.length
-    let k₂ := (ηs.map (fun n ↦ n.tarList)).flatten.length
-    let s : Node := .id ⟨v, h₁ + k₁, h₂ + k₂, f⟩
+    let_fun ηs := η.nodes v h₁ h₂
+    let_fun k₁ := (ηs.map (fun n ↦ n.srcList)).flatten.length
+    let_fun k₂ := (ηs.map (fun n ↦ n.tarList)).flatten.length
+    let_fun s : Node := .id ⟨v, h₁ + k₁, h₂ + k₂, f⟩
     ηs ++ [s]
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
@@ -167,10 +167,10 @@ specified natural numbers. -/
 def HorizontalComp.nodes (v h₁ h₂ : ℕ) : HorizontalComp → List Node
   | HorizontalComp.of η => η.nodes v h₁ h₂
   | HorizontalComp.cons _ η ηs =>
-    let s₁ := η.nodes v h₁ h₂
-    let k₁ := (s₁.map (fun n ↦ n.srcList)).flatten.length
-    let k₂ := (s₁.map (fun n ↦ n.tarList)).flatten.length
-    let s₂ := ηs.nodes v (h₁ + k₁) (h₂ + k₂)
+    let_fun s₁ := η.nodes v h₁ h₂
+    let_fun k₁ := (s₁.map (fun n ↦ n.srcList)).flatten.length
+    let_fun k₂ := (s₁.map (fun n ↦ n.tarList)).flatten.length
+    let_fun s₂ := ηs.nodes v (h₁ + k₁) (h₂ + k₂)
     s₁ ++ s₂
 
 /-- The list of nodes associated with a 2-morphism. The position is counted from the
@@ -178,8 +178,8 @@ specified natural numbers. -/
 def WhiskerLeft.nodes (v h₁ h₂ : ℕ) : WhiskerLeft → List Node
   | WhiskerLeft.of η => η.nodes v h₁ h₂
   | WhiskerLeft.whisker _ f η =>
-    let s : Node := .id ⟨v, h₁, h₂, f⟩
-    let ss := η.nodes v (h₁ + 1) (h₂ + 1)
+    let_fun s : Node := .id ⟨v, h₁, h₂, f⟩
+    let_fun ss := η.nodes v (h₁ + 1) (h₂ + 1)
     s :: ss
 
 variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]

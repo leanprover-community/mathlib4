@@ -58,7 +58,7 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
   setElem mat i j v := ⟨mat.data.modify i fun row => row.set! j v⟩
   getValues mat :=
     mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
-      let rowVals := Array.toList <| row.zipWithIndex.filterMap fun (v, j) =>
+      let_fun rowVals := Array.toList <| row.zipWithIndex.filterMap fun (v, j) =>
         if v != 0 then
           .some (i, j, v)
         else
@@ -71,7 +71,7 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
     return ⟨data⟩
   swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
-    let newData : Array (Array Rat) := mat.data.modify j fun row =>
+    let_fun newData : Array (Array Rat) := mat.data.modify j fun row =>
       row.zipWith mat.data[i]! fun x y => x - coef * y
     ⟨newData⟩
   divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
@@ -93,7 +93,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
       ⟨mat.data.modify i fun row => row.insert j v⟩
   getValues mat :=
     mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
-      let rowVals := row.toList.map fun (j, v) => (i, j, v)
+      let_fun rowVals := row.toList.map fun (j, v) => (i, j, v)
       rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
     let mut data : Array (Std.HashMap Nat Rat) := Array.mkArray n .empty
@@ -103,14 +103,14 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
     return ⟨data⟩
   swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
-    let newData := mat.data.modify j fun row =>
+    let_fun newData := mat.data.modify j fun row =>
       mat.data[i]!.fold (fun cur k val =>
-        let newVal := (cur.getD k 0) - coef * val
+        let_fun newVal := (cur.getD k 0) - coef * val
         if newVal != 0 then cur.insert k newVal else cur.erase k
       ) row
     ⟨newData⟩
   divideRow mat i coef :=
-    let newData : Array (Std.HashMap Nat Rat) := mat.data.modify i fun row =>
+    let_fun newData : Array (Std.HashMap Nat Rat) := mat.data.modify i fun row =>
       row.fold (fun cur k v => cur.insert k (v / coef)) row
     ⟨newData⟩
 

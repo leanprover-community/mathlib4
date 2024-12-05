@@ -50,7 +50,7 @@ def recEmptyOption {P : Type u → Sort v}
   match cardeq : card α with
   | 0 => congr _ _ cardeq empty
   | n + 1 =>
-    let fN := ULift.instFinEnum (α := Fin n)
+    let_fun fN := ULift.instFinEnum (α := Fin n)
     have : card (ULift.{u} <| Fin n) = n := card_ulift.trans card_fin
     congr (insertNone _ <| finChoice n) _
       (cardeq.trans <| congrArg Nat.succ this.symm) <|

@@ -669,13 +669,13 @@ instance Units.measurableSMul : MeasurableSMul Mˣ β where
 @[to_additive]
 nonrec theorem IsUnit.measurable_const_smul_iff {c : M} (hc : IsUnit c) :
     (Measurable fun x => c • f x) ↔ Measurable f :=
-  let ⟨u, hu⟩ := hc
+  let_fun ⟨u, hu⟩ := hc
   hu ▸ measurable_const_smul_iff u
 
 @[to_additive]
 nonrec theorem IsUnit.aemeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
-  let ⟨u, hu⟩ := hc
+  let_fun ⟨u, hu⟩ := hc
   hu ▸ aemeasurable_const_smul_iff u
 
 variable {G₀ : Type*} [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β]
@@ -836,7 +836,7 @@ lemma Finset.measurable_prod' {f : ι → α → β → M} {g : α → β} {s : 
 theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod' _ fun _g hg =>
-    let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
+    let_fun ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
 
 @[to_additive (attr := measurability)]

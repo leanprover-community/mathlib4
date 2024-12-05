@@ -65,7 +65,7 @@ theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
 @[mono]
 theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.sigma t₁ ⊆ s₂.sigma t₂ :=
   fun ⟨i, _⟩ h =>
-  let ⟨hi, ha⟩ := mem_sigma.1 h
+  let_fun ⟨hi, ha⟩ := mem_sigma.1 h
   mem_sigma.2 ⟨hs hi, ht i ha⟩
 
 theorem pairwiseDisjoint_map_sigmaMk :

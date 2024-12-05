@@ -38,7 +38,7 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
 /-- A non-empty convex set is a contractible space. -/
 protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :
     ContractibleSpace s :=
-  let ⟨_, hx⟩ := hne
+  let_fun ⟨_, hx⟩ := hne
   (hs.starConvex hx).contractibleSpace hne
 
 instance (priority := 100) RealTopologicalVectorSpace.contractibleSpace : ContractibleSpace E :=

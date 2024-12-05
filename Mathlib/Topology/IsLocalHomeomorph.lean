@@ -109,7 +109,7 @@ theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeo
     rw [← he, Function.comp_apply, f.right_inv hy.1]
 
 theorem map_nhds_eq (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) : (𝓝 x).map f = 𝓝 (f x) :=
-  let ⟨e, hx, he⟩ := hf x hx
+  let_fun ⟨e, hx, he⟩ := hf x hx
   he.symm ▸ e.map_nhds_eq hx
 
 protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) :

@@ -105,7 +105,7 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
   | 1, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 1 $ey = $ed) from ⟨mkRawNatLit 1, q(Nat.gcd_one_left $ey)⟩
   | _, 1 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 1 = $ed) from ⟨mkRawNatLit 1, q(Nat.gcd_one_right $ex)⟩
   | x, y =>
-    let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
+    let_fun (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then
       have pq : Q(Nat.mod $ey $ex = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
       ⟨ex, q(nat_gcd_helper_dvd_left $ex $ey $pq)⟩
@@ -155,7 +155,7 @@ def proveNatLCM (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.lcm $ex $ey = $ed) :=
   | 1, _ => show (ed : Q(ℕ)) × Q(Nat.lcm 1 $ey = $ed) from ⟨ey, q(Nat.lcm_one_left $ey)⟩
   | _, 1 => show (ed : Q(ℕ)) × Q(Nat.lcm $ex 1 = $ed) from ⟨ex, q(Nat.lcm_one_right $ex)⟩
   | x, y =>
-    let ⟨ed, pd⟩ := proveNatGCD ex ey
+    let_fun ⟨ed, pd⟩ := proveNatGCD ex ey
     have p0 : Q(Nat.beq $ed 0 = false) := (q(Eq.refl false) : Expr)
     have em : Q(ℕ) := mkRawNatLit (x * y / ed.natLit!)
     have pm : Q($ex * $ey = $ed * $em) := (q(Eq.refl ($ex * $ey)) : Expr)
@@ -176,9 +176,9 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
 /-- Given two integers, return their GCD and an equality proof.
 Panics if `ex` or `ey` aren't integer literals. -/
 def proveIntGCD (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.gcd $ex $ey = $ed) :=
-  let ⟨ex', hx⟩ := rawIntLitNatAbs ex
-  let ⟨ey', hy⟩ := rawIntLitNatAbs ey
-  let ⟨ed, pf⟩ := proveNatGCD ex' ey'
+  let_fun ⟨ex', hx⟩ := rawIntLitNatAbs ex
+  let_fun ⟨ey', hy⟩ := rawIntLitNatAbs ey
+  let_fun ⟨ed, pf⟩ := proveNatGCD ex' ey'
   ⟨ed, q(int_gcd_helper $hx $hy $pf)⟩
 
 /-- Evaluates the `Int.gcd` function. -/
@@ -195,9 +195,9 @@ def evalIntGCD : NormNumExt where eval {u α} e := do
 /-- Given two integers, return their LCM and an equality proof.
 Panics if `ex` or `ey` aren't integer literals. -/
 def proveIntLCM (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.lcm $ex $ey = $ed) :=
-  let ⟨ex', hx⟩ := rawIntLitNatAbs ex
-  let ⟨ey', hy⟩ := rawIntLitNatAbs ey
-  let ⟨ed, pf⟩ := proveNatLCM ex' ey'
+  let_fun ⟨ex', hx⟩ := rawIntLitNatAbs ex
+  let_fun ⟨ey', hy⟩ := rawIntLitNatAbs ey
+  let_fun ⟨ed, pf⟩ := proveNatLCM ex' ey'
   ⟨ed, q(int_lcm_helper $hx $hy $pf)⟩
 
 /-- Evaluates the `Int.lcm` function. -/

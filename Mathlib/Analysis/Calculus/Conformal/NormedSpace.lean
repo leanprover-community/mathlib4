@@ -78,12 +78,12 @@ theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
 namespace ConformalAt
 
 theorem differentiableAt {f : X → Y} {x : X} (h : ConformalAt f x) : DifferentiableAt ℝ f x :=
-  let ⟨_, h₁, _⟩ := h
+  let_fun ⟨_, h₁, _⟩ := h
   h₁.differentiableAt
 
 theorem congr {f g : X → Y} {x : X} {u : Set X} (hx : x ∈ u) (hu : IsOpen u) (hf : ConformalAt f x)
     (h : ∀ x : X, x ∈ u → g x = f x) : ConformalAt g x :=
-  let ⟨f', hfderiv, hf'⟩ := hf
+  let_fun ⟨f', hfderiv, hf'⟩ := hf
   ⟨f', hfderiv.congr_of_eventuallyEq ((hu.eventually_mem hx).mono h), hf'⟩
 
 theorem comp {f : X → Y} {g : Y → Z} (x : X) (hg : ConformalAt g (f x)) (hf : ConformalAt f x) :

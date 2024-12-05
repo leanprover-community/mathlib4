@@ -78,8 +78,8 @@ theorem stationary {f : CauSeq ℚ (padicNorm p)} (hf : ¬f ≈ 0) :
     ∃ N, ∀ m n, N ≤ m → N ≤ n → padicNorm p (f n) = padicNorm p (f m) :=
   have : ∃ ε > 0, ∃ N1, ∀ j ≥ N1, ε ≤ padicNorm p (f j) :=
     CauSeq.abv_pos_of_not_limZero <| not_limZero_of_not_congr_zero hf
-  let ⟨ε, hε, N1, hN1⟩ := this
-  let ⟨N2, hN2⟩ := CauSeq.cauchy₂ f hε
+  let_fun ⟨ε, hε, N1, hN1⟩ := this
+  let_fun ⟨N2, hN2⟩ := CauSeq.cauchy₂ f hε
   ⟨max N1 N2, fun n m hn hm ↦ by
     have : padicNorm p (f n - f m) < ε := hN2 _ (max_le_iff.1 hn).2 _ (max_le_iff.1 hm).2
     have : padicNorm p (f n - f m) < padicNorm p (f n) :=
@@ -133,7 +133,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 theorem equiv_zero_of_val_eq_of_equiv_zero {f g : PadicSeq p}
     (h : ∀ k, padicNorm p (f k) = padicNorm p (g k)) (hf : f ≈ 0) : g ≈ 0 := fun ε hε ↦
-  let ⟨i, hi⟩ := hf _ hε
+  let_fun ⟨i, hi⟩ := hf _ hε
   ⟨i, fun j hj ↦ by simpa [h] using hi _ hj⟩
 
 theorem norm_nonzero_of_not_equiv_zero {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm ≠ 0 :=
@@ -605,7 +605,7 @@ variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
   Quotient.inductionOn q fun q' ↦
     have : ∃ N, ∀ m ≥ N, ∀ n ≥ N, padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
-    let ⟨N, hN⟩ := this
+    let_fun ⟨N, hN⟩ := this
     ⟨q' N, by
       classical
       dsimp [padicNormE]
@@ -737,8 +737,8 @@ instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_mul' := by simp [Norm.norm, map_mul]
 
 theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - r‖ < ε :=
-  let ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
-  let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
+  let_fun ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
+  let_fun ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
   ⟨r, lt_trans (by simpa [Norm.norm] using hr) hε'r⟩
 
 end NormedSpace
@@ -801,14 +801,14 @@ instance : NontriviallyNormedField ℚ_[p] :=
 protected theorem image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦
     have : ¬f ≈ 0 := (PadicSeq.ne_zero_iff_nequiv_zero f).1 hf
-    let ⟨n, hn⟩ := PadicSeq.norm_values_discrete f this
+    let_fun ⟨n, hn⟩ := PadicSeq.norm_values_discrete f this
     ⟨n, by rw [← hn]; rfl⟩
 
 protected theorem is_rat (q : ℚ_[p]) : ∃ q' : ℚ, ‖q‖ = q' := by
   classical
   exact if h : q = 0 then ⟨0, by simp [h]⟩
   else
-    let ⟨n, hn⟩ := padicNormE.image h
+    let_fun ⟨n, hn⟩ := padicNormE.image h
     ⟨_, hn⟩
 
 /-- `ratNorm q`, for a `p`-adic number `q` is the `p`-adic norm of `q`, as rational number.

@@ -96,7 +96,7 @@ lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (‖c‖�
   · exact (egauge_le_of_smul_mem_of_ne h hc).trans ENNReal.coe_inv_le
 
 lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x ∈ s :=
-  let ⟨c, hxc, hc⟩ := egauge_lt_iff.1 hx
+  let_fun ⟨c, hxc, hc⟩ := egauge_lt_iff.1 hx
   hs c (mod_cast hc.le) hxc
 
 lemma egauge_eq_zero_iff : egauge 𝕜 s x = 0 ↔ ∃ᶠ c : 𝕜 in 𝓝 0, x ∈ c • s := by

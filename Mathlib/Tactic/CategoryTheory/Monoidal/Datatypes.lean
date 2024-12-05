@@ -308,7 +308,7 @@ instance : MonadMor₂ MonoidalM where
         have θ_iso_e : Q($g_e ≅ $h_e) := θ_iso.e.e
         have η_iso_eq : Q(Iso.hom $η_iso_e = $η_e) := η_iso.eq
         have θ_iso_eq : Q(Iso.hom $θ_iso_e = $θ_e) := θ_iso.eq
-        let eq := q(structuralIsoOfExpr_comp _ _ $η_iso_eq _ _ $θ_iso_eq)
+        let_fun eq := q(structuralIsoOfExpr_comp _ _ $η_iso_eq _ _ $θ_iso_eq)
         return .some ⟨← comp₂M η_iso.e θ_iso.e, eq⟩
       | _ => return none)
     let e : Q($f_e ⟶ $h_e) := q($η_e ≫ $θ_e)

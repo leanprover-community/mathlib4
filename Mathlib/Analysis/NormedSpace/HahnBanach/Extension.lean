@@ -132,7 +132,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
 /-- A finite dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
-  let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
+  let_fun ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
   ⟨g, DFunLike.congr_fun hg.symm⟩
 
 end RCLike

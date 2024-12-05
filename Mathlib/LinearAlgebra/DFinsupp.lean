@@ -554,7 +554,7 @@ alias Independent.linearIndependent := iSupIndep.linearIndependent
 
 theorem iSupIndep_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {ι} {v : ι → N}
     (h_ne_zero : ∀ i, v i ≠ 0) : (iSupIndep fun i => R ∙ v i) ↔ LinearIndependent R v :=
-  let _ := Classical.decEq ι
+  let_fun _ := Classical.decEq ι
   ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,
     fun hv => hv.iSupIndep_span_singleton⟩
 

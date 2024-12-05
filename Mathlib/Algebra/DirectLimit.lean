@@ -110,7 +110,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
     Quotient.inductionOn' z fun z =>
       DirectSum.induction_on z ⟨ind, 0, LinearMap.map_zero _⟩ (fun i x => ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
-        let ⟨k, hik, hjk⟩ := exists_ge_ge i j
+        let_fun ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
           rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
           rfl ⟩
@@ -118,7 +118,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
 @[elab_as_elim]
 protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of R ι G f i x)) : C z :=
-  let ⟨i, x, h⟩ := exists_of z
+  let_fun ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
 
 variable {P : Type u₁} [AddCommGroup P] [Module R P]
@@ -278,7 +278,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
   Nonempty.elim (by infer_instance) fun ind : ι =>
     span_induction (hx := (Quotient.mk_eq_zero _).1 H)
       (fun x ⟨i, j, hij, y, hxy⟩ =>
-        let ⟨k, hik, hjk⟩ := exists_ge_ge i j
+        let_fun ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, by
           subst hxy
           constructor
@@ -296,7 +296,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
             DirectSum.apply_eq_component, DirectSum.component.of]⟩)
       ⟨ind, fun _ h => (Finset.not_mem_empty _ h).elim, LinearMap.map_zero _⟩
       (fun x y _ _ ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
-        let ⟨k, hik, hjk⟩ := exists_ge_ge i j
+        let_fun ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, fun _ hl =>
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
@@ -311,7 +311,7 @@ bigger module in the directed system. -/
 theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) :=
   haveI : Nonempty ι := ⟨i⟩
-  let ⟨j, hj, hxj⟩ := of.zero_exact_aux H
+  let_fun ⟨j, hj, hxj⟩ := of.zero_exact_aux H
   if hx0 : x = 0 then ⟨i, le_rfl, by simp [hx0]⟩
   else
     have hij : i ≤ j := hj _ <| by simp [DirectSum.apply_eq_component, hx0]
@@ -558,9 +558,9 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
       FreeAbelianGroup.induction_on x ⟨ind, 0, (of _ _ ind).map_zero⟩
         (fun s =>
           Multiset.induction_on s ⟨ind, 1, (of _ _ ind).map_one⟩ fun a s ih =>
-            let ⟨i, x⟩ := a
-            let ⟨j, y, hs⟩ := ih
-            let ⟨k, hik, hjk⟩ := exists_ge_ge i j
+            let_fun ⟨i, x⟩ := a
+            let_fun ⟨j, y, hs⟩ := ih
+            let_fun ⟨k, hik, hjk⟩ := exists_ge_ge i j
             ⟨k, f i k hik x * f j k hjk y, by
               rw [(of G f k).map_mul, of_f, of_f, hs]
               /- porting note: In Lean3, from here, this was `by refl`. I have added
@@ -572,7 +572,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
           rw [(of G _ _).map_neg, ih]
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
-        let ⟨k, hik, hjk⟩ := exists_ge_ge i j
+        let_fun ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy]; rfl⟩
 
 section
@@ -586,15 +586,15 @@ nonrec theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
     ∃ i p, Polynomial.map (of G (fun i j h => f' i j h) i) p = q :=
   Polynomial.induction_on q
     (fun z =>
-      let ⟨i, x, h⟩ := exists_of z
+      let_fun ⟨i, x, h⟩ := exists_of z
       ⟨i, C x, by rw [map_C, h]⟩)
     (fun q₁ q₂ ⟨i₁, p₁, ih₁⟩ ⟨i₂, p₂, ih₂⟩ =>
-      let ⟨i, h1, h2⟩ := exists_ge_ge i₁ i₂
+      let_fun ⟨i, h1, h2⟩ := exists_ge_ge i₁ i₂
       ⟨i, p₁.map (f' i₁ i h1) + p₂.map (f' i₂ i h2), by
         rw [Polynomial.map_add, map_map, map_map, ← ih₁, ← ih₂]
         congr 2 <;> ext x <;> simp_rw [RingHom.comp_apply, of_f]⟩)
     fun n z _ =>
-    let ⟨i, x, h⟩ := exists_of z
+    let_fun ⟨i, x, h⟩ := exists_of z
     ⟨i, C x * X ^ (n + 1), by rw [Polynomial.map_mul, map_C, h, Polynomial.map_pow, map_X]⟩
 
 end
@@ -602,7 +602,7 @@ end
 @[elab_as_elim]
 theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of G f i x)) : C z :=
-  let ⟨i, x, hx⟩ := exists_of z
+  let_fun ⟨i, x, hx⟩ := exists_of z
   hx ▸ ih i x
 
 section OfZeroExact

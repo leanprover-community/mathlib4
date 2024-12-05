@@ -240,8 +240,8 @@ structure Clause where
 /-- Construct the clause expression from the input list. For example `[1, -2]` is translated to
 `Clause.cons (Literal.pos 1) (Clause.cons (Literal.neg 2) Clause.nil)`. -/
 def buildClause (arr : Array Int) : Expr :=
-  let nil  := mkConst ``Sat.Clause.nil
-  let cons := mkConst ``Sat.Clause.cons
+  let_fun nil  := mkConst ``Sat.Clause.nil
+  let_fun cons := mkConst ``Sat.Clause.cons
   arr.foldr (fun i e ↦ mkApp2 cons (toExpr <| Sat.Literal.ofInt i) e) nil
 
 /-- Constructs the formula expression from the input CNF, as a balanced tree of `Fmla.and` nodes. -/
@@ -250,7 +250,7 @@ partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
   | 0 => panic! "empty"
   | 1 => mkApp (mkConst ``Sat.Fmla.one) (buildClause arr[start]!)
   | len =>
-    let mid := start + len / 2
+    let_fun mid := start + len / 2
     mkApp2 (mkConst ``Sat.Fmla.and) (buildConj arr start mid) (buildConj arr mid stop)
 
 /-- Constructs the proofs of `⊢ ctx.proof c` for each clause `c` in `ctx`.
@@ -260,17 +260,17 @@ partial def buildClauses (arr : Array (Array Int)) (ctx : Expr) (start stop : Na
   match stop - start with
   | 0 => panic! "empty"
   | 1 =>
-    let c := f.appArg!
-    let proof := mkApp3 (mkConst ``Sat.Fmla.proof_of_subsumes) ctx c p
-    let n := accum.1 + 1
+    let_fun c := f.appArg!
+    let_fun proof := mkApp3 (mkConst ``Sat.Fmla.proof_of_subsumes) ctx c p
+    let_fun n := accum.1 + 1
     (n, accum.2.insert n { lits := arr[start]!, expr := c, proof })
   | len =>
-    let mid := start + len / 2
-    let f₁ := f.appFn!.appArg!
-    let f₂ := f.appArg!
-    let p₁ := mkApp4 (mkConst ``Sat.Fmla.subsumes_left) ctx f₁ f₂ p
-    let p₂ := mkApp4 (mkConst ``Sat.Fmla.subsumes_right) ctx f₁ f₂ p
-    let accum := buildClauses arr ctx start mid f₁ p₁ accum
+    let_fun mid := start + len / 2
+    let_fun f₁ := f.appFn!.appArg!
+    let_fun f₂ := f.appArg!
+    let_fun p₁ := mkApp4 (mkConst ``Sat.Fmla.subsumes_left) ctx f₁ f₂ p
+    let_fun p₂ := mkApp4 (mkConst ``Sat.Fmla.subsumes_right) ctx f₁ f₂ p
+    let_fun accum := buildClauses arr ctx start mid f₁ p₁ accum
     buildClauses arr ctx mid stop f₂ p₂ accum
 
 /-- A localized clause reference.
@@ -451,14 +451,14 @@ where
   reifyFmla f :=
     match f.getAppFn.constName! with
     | ``Sat.Fmla.and =>
-      let f₁ := f.appFn!.appArg!
-      let f₂ := f.appArg!
-      let (e₁, h₁) := reifyFmla f₁
-      let (e₂, h₂) := reifyFmla f₂
+      let_fun f₁ := f.appFn!.appArg!
+      let_fun f₂ := f.appArg!
+      let_fun (e₁, h₁) := reifyFmla f₁
+      let_fun (e₂, h₂) := reifyFmla f₂
       (mkApp2 (mkConst ``Or) e₁ e₂, mkApp7 (mkConst ``Sat.Fmla.reify_or) v f₁ e₁ f₂ e₂ h₁ h₂)
     | ``Sat.Fmla.one =>
-      let c := f.appArg!
-      let (e, h) := reifyClause c
+      let_fun c := f.appArg!
+      let_fun (e, h) := reifyClause c
       (e, mkApp4 (mkConst ``Sat.Fmla.reify_one) v c e h)
     | _ => panic! "not a valid formula"
   /-- Returns `a` and `pr : reify v c a` given a clause `c` -/
@@ -468,18 +468,18 @@ where
     else reifyClause1 c
   /-- Returns `a` and `pr : reify v c a` given a nonempty clause `c` -/
   reifyClause1 c :=
-    let l := c.appFn!.appArg!
-    let c := c.appArg!
-    let (e₁, h₁) := reifyLiteral l
+    let_fun l := c.appFn!.appArg!
+    let_fun c := c.appArg!
+    let_fun (e₁, h₁) := reifyLiteral l
     if c.isConst then
       (e₁, mkApp4 (mkConst ``Sat.Clause.reify_one) v l e₁ h₁)
     else
-      let (e₂, h₂) := reifyClause1 c
+      let_fun (e₂, h₂) := reifyClause1 c
       (mkApp2 (mkConst ``And) e₁ e₂, mkApp7 (mkConst ``Sat.Clause.reify_and) v l e₁ c e₂ h₁ h₂)
   /-- Returns `a` and `pr : reify v l a` given a literal `c` -/
   reifyLiteral l :=
-    let n := l.appArg!
-    let (e, h) := reifyVar n
+    let_fun n := l.appArg!
+    let_fun (e, h) := reifyVar n
     match l.appFn!.constName! with
     | ``Sat.Literal.pos =>
       (mkApp (mkConst ``Not) e, mkApp4 (mkConst ``Sat.Literal.reify_pos) v e n h)
@@ -490,7 +490,7 @@ where
   These are both lookups into the context
   `(a0 .. a(n-1) : Prop) (v) (h1 : v 0 ↔ a0) ... (hn : v (n-1) ↔ a(n-1))`. -/
   reifyVar v :=
-    let n := v.rawNatLit?.get!
+    let_fun n := v.rawNatLit?.get!
     (mkBVar (2 * nvars - n), mkBVar (nvars - n - 1))
 open Lean
 

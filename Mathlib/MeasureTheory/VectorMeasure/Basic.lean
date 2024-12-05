@@ -1002,7 +1002,7 @@ theorem mk (s : Set α) (hs : MeasurableSet s) (h₁ : ∀ t ⊆ s, MeasurableSe
   · exact not_measurable w ht
 
 theorem symm (h : v ⟂ᵥ w) : w ⟂ᵥ v :=
-  let ⟨s, hmeas, hs₁, hs₂⟩ := h
+  let_fun ⟨s, hmeas, hs₁, hs₂⟩ := h
   ⟨sᶜ, hmeas.compl, hs₂, fun t ht => hs₁ _ (compl_compl s ▸ ht : t ⊆ s)⟩
 
 theorem zero_right : v ⟂ᵥ (0 : VectorMeasure α N) :=
@@ -1036,7 +1036,7 @@ theorem add_right [T2Space M] [ContinuousAdd N] (h₁ : v ⟂ᵥ w₁) (h₂ : v
 
 theorem smul_right {R : Type*} [Semiring R] [DistribMulAction R N] [ContinuousConstSMul R N]
     (r : R) (h : v ⟂ᵥ w) : v ⟂ᵥ r • w :=
-  let ⟨s, hmeas, hs₁, hs₂⟩ := h
+  let_fun ⟨s, hmeas, hs₁, hs₂⟩ := h
   ⟨s, hmeas, hs₁, fun t ht => by simp only [coe_smul, Pi.smul_apply, hs₂ t ht, smul_zero]⟩
 
 theorem smul_left {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M] (r : R)

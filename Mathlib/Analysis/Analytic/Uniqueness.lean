@@ -144,12 +144,12 @@ theorem HasFPowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0�
       HasFPowerSeriesOnBall f p' x r') :
     HasFPowerSeriesOnBall f p x ∞ :=
   { r_le := ENNReal.le_of_forall_pos_nnreal_lt fun r hr _ =>
-      let ⟨_, hp'⟩ := h' r hr
+      let_fun ⟨_, hp'⟩ := h' r hr
       (h.exchange_radius hp').r_le
     r_pos := ENNReal.coe_lt_top
     hasSum := fun {y} _ =>
-      let ⟨r', hr'⟩ := exists_gt ‖y‖₊
-      let ⟨_, hp'⟩ := h' r' hr'.ne_bot.bot_lt
+      let_fun ⟨r', hr'⟩ := exists_gt ‖y‖₊
+      let_fun ⟨_, hp'⟩ := h' r' hr'.ne_bot.bot_lt
       (h.exchange_radius hp').hasSum <| mem_emetric_ball_zero_iff.mpr (ENNReal.coe_lt_coe.2 hr') }
 
 end Uniqueness

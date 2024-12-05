@@ -106,7 +106,7 @@ theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
   { inv_mem := fun ha =>
-      let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
+      let_fun ⟨i, hi⟩ := Set.mem_iUnion.1 ha
       Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
     toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i => (hs i).toIsSubmonoid) directed }
 
@@ -458,7 +458,7 @@ theorem exists_list_of_mem_closure {s : Set G} {a : G} (h : a ∈ closure s) :
     ⟨[], List.forall_mem_nil _, rfl⟩
     (fun {_} _ ⟨L, HL1, HL2⟩ =>
       ⟨L.reverse.map Inv.inv, fun _ hx =>
-        let ⟨y, hy1, hy2⟩ := List.exists_of_mem_map hx
+        let_fun ⟨y, hy1, hy2⟩ := List.exists_of_mem_map hx
         hy2 ▸ Or.imp id (by rw [inv_inv]; exact id) (HL1 _ <| List.mem_reverse.1 hy1).symm,
         HL2 ▸
           List.recOn L inv_one.symm fun hd tl ih => by

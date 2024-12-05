@@ -22,11 +22,11 @@ variable {X Y : Type*}
   [TopologicalSpace Y]
 
 instance [PseudoMetrizableSpace Y] : PseudoMetrizableSpace C(X, Y) :=
-  let _ := pseudoMetrizableSpacePseudoMetric Y
+  letI _ := pseudoMetrizableSpacePseudoMetric Y
   inferInstance
 
 instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) :=
-  let _ := metrizableSpaceMetric Y
+  letI _ := metrizableSpaceMetric Y
   UniformSpace.metrizableSpace
 
 end ContinuousMap

@@ -49,7 +49,7 @@ theorem Ici_mem_atTop [Preorder α] (a : α) : Ici a ∈ (atTop : Filter α) :=
   mem_atTop a
 
 theorem Ioi_mem_atTop [Preorder α] [NoMaxOrder α] (x : α) : Ioi x ∈ (atTop : Filter α) :=
-  let ⟨z, hz⟩ := exists_gt x
+  let_fun ⟨z, hz⟩ := exists_gt x
   mem_of_superset (mem_atTop z) fun _ h => lt_of_lt_of_le hz h
 
 theorem mem_atBot [Preorder α] (a : α) : { b : α | b ≤ a } ∈ @atBot α _ :=
@@ -59,7 +59,7 @@ theorem Iic_mem_atBot [Preorder α] (a : α) : Iic a ∈ (atBot : Filter α) :=
   mem_atBot a
 
 theorem Iio_mem_atBot [Preorder α] [NoMinOrder α] (x : α) : Iio x ∈ (atBot : Filter α) :=
-  let ⟨z, hz⟩ := exists_lt x
+  let_fun ⟨z, hz⟩ := exists_lt x
   mem_of_superset (mem_atBot z) fun _ h => lt_of_le_of_lt h hz
 
 theorem disjoint_atBot_principal_Ioi [Preorder α] (x : α) : Disjoint atBot (𝓟 (Ioi x)) :=
@@ -567,7 +567,7 @@ theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
 
 theorem strictMono_subseq_of_tendsto_atTop [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
-  let ⟨φ, h, h'⟩ := extraction_of_frequently_atTop (frequently_high_scores hu)
+  let_fun ⟨φ, h, h'⟩ := extraction_of_frequently_atTop (frequently_high_scores hu)
   ⟨φ, h, fun _ m hnm => h' m _ (h hnm)⟩
 
 theorem strictMono_subseq_of_id_le {u : ℕ → ℕ} (hu : ∀ n, n ≤ u n) :
@@ -773,7 +773,7 @@ theorem tendsto_atTop_atTop_of_monotone [Preorder α] [Preorder β] {f : α → 
     (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atTop atTop :=
   tendsto_iInf.2 fun b =>
     tendsto_principal.2 <|
-      let ⟨a, ha⟩ := h b
+      let_fun ⟨a, ha⟩ := h b
       mem_of_superset (mem_atTop a) fun _a' ha' => le_trans ha (hf ha')
 
 theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
@@ -783,7 +783,7 @@ theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → 
 theorem tendsto_atBot_atBot_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atBot atBot :=
   tendsto_iInf.2 fun b => tendsto_principal.2 <|
-    let ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' => le_trans (hf ha') ha
+    let_fun ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' => le_trans (hf ha') ha
 
 theorem tendsto_atBot_atTop_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
     (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atBot atTop :=
@@ -1083,7 +1083,7 @@ theorem map_val_Ici_atTop [Preorder α] [IsDirected α (· ≤ ·)] (a : α) :
 @[simp]
 theorem map_val_Ioi_atTop [Preorder α] [IsDirected α (· ≤ ·)] [NoMaxOrder α] (a : α) :
     map ((↑) : Ioi a → α) atTop = atTop :=
-  let ⟨_b, hb⟩ := exists_gt a
+  let_fun ⟨_b, hb⟩ := exists_gt a
   map_val_atTop_of_Ici_subset <| Ici_subset_Ioi.2 hb
 
 /-- The `atTop` filter for an open interval `Ioi a` comes from the `atTop` filter in the ambient
@@ -1262,7 +1262,7 @@ theorem tendsto_atBot_of_monotone_of_subseq [Preorder ι] [Preorder α] {u : ι 
 
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) {t : Set α} (ht : t ∈ l) : ∀ᶠ i in atTop, s i ⊆ t :=
-  let ⟨i, _, hi⟩ := hl.1.mem_iff.1 ht
+  let_fun ⟨i, _, hi⟩ := hl.1.mem_iff.1 ht
   (eventually_ge_atTop i).mono fun _j hj => (hl.antitone hj).trans hi
 
 protected theorem HasAntitoneBasis.tendsto [Preorder ι] {l : Filter α} {s : ι → Set α}
@@ -1453,7 +1453,7 @@ theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
 
 @[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
 theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
-  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
+  let_fun ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
   ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
 
 @[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]

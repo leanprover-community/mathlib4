@@ -1291,10 +1291,12 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
 theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
     {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
     (hs : Nonempty e.source) [HasGroupoid M G] [ClosedUnderRestriction G] :
-    let s := { carrier := e.source, is_open' := e.open_source : Opens M }
-    let t := { carrier := e.target, is_open' := e.open_target : Opens H }
+    letI s := { carrier := e.source, is_open' := e.open_source : Opens M }
+    letI t := { carrier := e.target, is_open' := e.open_target : Opens H }
     ∀ c' ∈ atlas H t, e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
-  intro s t c' hc'
+  let s := { carrier := e.source, is_open' := e.open_source : Opens M }
+  let t := { carrier := e.target, is_open' := e.open_target : Opens H }
+  intro c' hc'
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))
   obtain ⟨x, hc'⟩ := Opens.chart_eq this hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
@@ -1315,8 +1317,8 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] :
-    let s : Opens M := { carrier := e.source, is_open' := e.open_source }
-    let t : Opens H := { carrier := e.target, is_open' := e.open_target }
+    let_fun s : Opens M := { carrier := e.source, is_open' := e.open_source }
+    let_fun t : Opens H := { carrier := e.target, is_open' := e.open_target }
     Structomorph G s t := by
   intro s t
   by_cases h : Nonempty e.source

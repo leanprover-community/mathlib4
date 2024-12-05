@@ -284,7 +284,7 @@ variable {R}
 
 theorem of_irreducible_expand {p : ℕ} (hp : p ≠ 0) {f : R[X]} (hf : Irreducible (expand R p f)) :
     Irreducible f :=
-  let _ := isLocalHom_expand R hp.bot_lt
+  let_fun _ := isLocalHom_expand R hp.bot_lt
   hf.of_map
 
 theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} :

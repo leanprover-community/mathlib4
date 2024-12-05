@@ -227,7 +227,7 @@ then the uniformity on `C(α, β)` is pseudometrizable too.
 -/
 instance [WeaklyLocallyCompactSpace α] [SigmaCompactSpace α] [IsCountablyGenerated (𝓤 β)] :
     IsCountablyGenerated (𝓤 (C(α, β))) :=
-  let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
+  let_fun ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
   ((CompactExhaustion.choice α).hasAntitoneBasis_compactConvergenceUniformity
     hV).isCountablyGenerated
 

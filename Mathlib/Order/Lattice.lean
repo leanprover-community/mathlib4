@@ -511,8 +511,8 @@ def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b
       b ⊓ b = b ⊓ (b ⊔ b ⊓ b) := by rw [sup_inf_self]
       _ = b := by rw [inf_sup_self]
 
-  let semilatt_inf_inst := SemilatticeInf.mk' inf_comm inf_assoc inf_idem
-  let semilatt_sup_inst := SemilatticeSup.mk' sup_comm sup_assoc sup_idem
+  letI semilatt_inf_inst := SemilatticeInf.mk' inf_comm inf_assoc inf_idem
+  letI semilatt_sup_inst := SemilatticeSup.mk' sup_comm sup_assoc sup_idem
   have partial_order_eq : @SemilatticeSup.toPartialOrder _ semilatt_sup_inst =
                           @SemilatticeInf.toPartialOrder _ semilatt_inf_inst :=
     semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder _ _ _ _ _ _

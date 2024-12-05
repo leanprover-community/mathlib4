@@ -92,11 +92,11 @@ protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x 
   simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
 
 theorem nonzero_mem_of_bot_lt {p : Submodule R M} (bot_lt : ⊥ < p) : ∃ a : p, a ≠ 0 :=
-  let ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp bot_lt.ne'
+  let_fun ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp bot_lt.ne'
   ⟨⟨b, hb₁⟩, hb₂ ∘ congr_arg Subtype.val⟩
 
 theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b : M, b ∈ p ∧ b ≠ 0 :=
-  let ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp h
+  let_fun ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp h
   ⟨b, hb₁, hb₂⟩
 
 -- FIXME: we default PUnit to PUnit.{1} here without the explicit universe annotation

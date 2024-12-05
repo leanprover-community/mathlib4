@@ -86,7 +86,8 @@ theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} 
 
 protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε :=
-  let ⟨s, hμs, hsm, hfs⟩ := (hf.eventually_cofinite_indicator hε).exists_measurable_mem_of_smallSets
+  let_fun ⟨s, hμs, hsm, hfs⟩ :=
+    (hf.eventually_cofinite_indicator hε).exists_measurable_mem_of_smallSets
   ⟨sᶜ, hsm.compl, hμs, by rwa [compl_compl s]⟩
 
 protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
@@ -360,10 +361,10 @@ theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
   exact ⟨ms,
     tendsto_Lp_of_tendsto_ae hp hp' (fun _ => hf _) hg
       (fun ε hε => -- `UnifIntegrable` on a subsequence
-        let ⟨δ, hδ, hδ'⟩ := hui hε
+        let_fun ⟨δ, hδ, hδ'⟩ := hui hε
         ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
       (fun ε hε => -- `UnifTight` on a subsequence
-        let ⟨s, hμs, hfε⟩ := hut hε
+        let_fun ⟨s, hμs, hfε⟩ := hut hε
         ⟨s, hμs, fun i => hfε _⟩)
       hms'⟩
 

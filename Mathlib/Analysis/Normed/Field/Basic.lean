@@ -797,7 +797,7 @@ See note [lower instance priority]. -/
 instance (priority := 100) DenselyNormedField.toNontriviallyNormedField [DenselyNormedField α] :
     NontriviallyNormedField α where
   non_trivial :=
-    let ⟨a, h, _⟩ := DenselyNormedField.lt_norm_lt 1 2 zero_le_one one_lt_two
+    let_fun ⟨a, h, _⟩ := DenselyNormedField.lt_norm_lt 1 2 zero_le_one one_lt_two
     ⟨a, h⟩
 
 variable [NormedField α]
@@ -830,12 +830,12 @@ theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
   ‹NontriviallyNormedField α›.non_trivial
 
 theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
-  let ⟨w, hw⟩ := exists_one_lt_norm α
-  let ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
+  let_fun ⟨w, hw⟩ := exists_one_lt_norm α
+  let_fun ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
   ⟨w ^ n, by rwa [norm_pow]⟩
 
 theorem exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < r :=
-  let ⟨w, hw⟩ := exists_lt_norm α r⁻¹
+  let_fun ⟨w, hw⟩ := exists_lt_norm α r⁻¹
   ⟨w⁻¹, by rwa [← Set.mem_Ioo, norm_inv, ← Set.mem_inv, Set.inv_Ioo_0_left hr]⟩
 
 theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
@@ -905,7 +905,7 @@ noncomputable instance Real.normedField : NormedField ℝ :=
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
   lt_norm_lt _ _ h₀ hr :=
-    let ⟨x, h⟩ := exists_between hr
+    let_fun ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [Real.norm_eq_abs, abs_of_nonneg (h₀.trans h.1.le)]⟩
 
 namespace Real
@@ -1073,7 +1073,7 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
   -- Porting note: is this `let` a bad idea somehow?
-  let _ : SeminormedRing R := SeminormedRing.induced R S f
+  letI _ : SeminormedRing R := SeminormedRing.induced R S f
   { norm_one := (congr_arg norm (map_one f)).trans norm_one }
 
 end Induced

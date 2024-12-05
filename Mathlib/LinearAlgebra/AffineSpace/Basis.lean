@@ -341,7 +341,7 @@ theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
 variable (k V P)
 
 theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) :=
-  let ⟨s, _, hs⟩ := exists_affine_subbasis (AffineSubspace.span_univ k V P)
+  let_fun ⟨s, _, hs⟩ := exists_affine_subbasis (AffineSubspace.span_univ k V P)
   ⟨s, hs⟩
 
 end DivisionRing

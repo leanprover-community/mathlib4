@@ -109,7 +109,7 @@ def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
     the diagram indexing the (co)kernel of `F.map f`. -/
 def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [F.IsEquivalence] :
     parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
-  let app (j : WalkingParallelPair) :
+  letI app (j : WalkingParallelPair) :
       (parallelPair f 0 ⋙ F).obj j ≅ (parallelPair (F.map f) 0).obj j :=
     match j with
     | zero => Iso.refl _
@@ -160,8 +160,8 @@ def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ 
 def isKernelCompMono {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : Mono g] {h : X ⟶ Z}
     (hh : h = f ≫ g) : IsLimit (KernelFork.ofι c.ι (by simp [hh]) : KernelFork h) :=
   Fork.IsLimit.mk' _ fun s =>
-    let s' : KernelFork f := Fork.ofι s.ι (by rw [← cancel_mono g]; simp [← hh, s.condition])
-    let l := KernelFork.IsLimit.lift' i s'.ι s'.condition
+    letI s' : KernelFork f := Fork.ofι s.ι (by rw [← cancel_mono g]; simp [← hh, s.condition])
+    let_fun l := KernelFork.IsLimit.lift' i s'.ι s'.condition
     ⟨l.1, l.2, fun hm => by
       apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.2.symm⟩
 
@@ -603,13 +603,13 @@ def isCokernelEpiComp {c : CokernelCofork f} (i : IsColimit c) {W} (g : W ⟶ X)
     {h : W ⟶ Y} (hh : h = g ≫ f) :
     IsColimit (CokernelCofork.ofπ c.π (by rw [hh]; simp) : CokernelCofork h) :=
   Cofork.IsColimit.mk' _ fun s =>
-    let s' : CokernelCofork f :=
+    letI s' : CokernelCofork f :=
       Cofork.ofπ s.π
         (by
           apply hg.left_cancellation
           rw [← Category.assoc, ← hh, s.condition]
           simp)
-    let l := CokernelCofork.IsColimit.desc' i s'.π s'.condition
+    let_fun l := CokernelCofork.IsColimit.desc' i s'.π s'.condition
     ⟨l.1, l.2, fun hm => by
       apply Cofork.IsColimit.hom_ext i; rw [Cofork.π_ofπ] at hm; rw [hm]; exact l.2.symm⟩
 

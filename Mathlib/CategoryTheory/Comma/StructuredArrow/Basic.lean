@@ -351,7 +351,7 @@ theorem fac (h : IsUniversal f) (g : StructuredArrow S T) :
 
 theorem hom_desc (h : IsUniversal f) {c : C} (η : f.right ⟶ c) :
     η = h.desc (mk <| f.hom ≫ T.map η) :=
-  let g := mk <| f.hom ≫ T.map η
+  letI g := mk <| f.hom ≫ T.map η
   congrArg CommaMorphism.right (h.hom_ext (homMk η rfl : f ⟶ g) (h.to g))
 
 /-- Two morphisms out of a universal `T`-structured arrow are equal if their image under `T` are
@@ -687,7 +687,7 @@ theorem fac (h : IsUniversal f) (g : CostructuredArrow S T) :
 
 theorem hom_desc (h : IsUniversal f) {c : C} (η : c ⟶ f.left) :
     η = h.lift (mk <| S.map η ≫ f.hom) :=
-  let g := mk <| S.map η ≫ f.hom
+  letI g := mk <| S.map η ≫ f.hom
   congrArg CommaMorphism.left (h.hom_ext (homMk η rfl : g ⟶ f) (h.from g))
 
 /-- Two morphisms into a universal `S`-costructured arrow are equal if their image under `S` are

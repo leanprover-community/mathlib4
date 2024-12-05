@@ -473,7 +473,7 @@ theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
     adjoint (e : H →L[𝕜] K) = e.symm :=
-  let e' := (e : H →L[𝕜] K)
+  letI e' := (e : H →L[𝕜] K)
   calc
     adjoint e' = adjoint e' ∘L (e' ∘L e.symm) := by
       convert (adjoint e').comp_id.symm

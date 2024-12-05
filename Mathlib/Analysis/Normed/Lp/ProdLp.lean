@@ -164,7 +164,7 @@ theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
-  let hp' := ENNReal.toReal_pos_iff.mp hp
+  let_fun hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
@@ -231,7 +231,7 @@ theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
-  let hp' := ENNReal.toReal_pos_iff.mp hp
+  let_fun hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
@@ -270,7 +270,7 @@ theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔
 
 theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
-  let hp' := ENNReal.toReal_pos_iff.mp hp
+  let_fun hp' := ENNReal.toReal_pos_iff.mp hp
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 end Norm

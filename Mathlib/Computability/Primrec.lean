@@ -647,7 +647,7 @@ theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.inde
   list_findIdx₁ (.swap .beq) l
 
 theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
-  let ⟨l, _, m⟩ := Finite.exists_univ_list α
+  let_fun ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
@@ -884,7 +884,7 @@ theorem list_tail : Primrec (@List.tail α) :=
 theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β × σ → σ} (hf : Primrec f)
     (hg : Primrec g) (hh : Primrec₂ h) :
     @Primrec _ σ _ _ fun a => List.recOn (f a) (g a) fun b l IH => h a (b, l, IH) :=
-  let F (a : α) := (f a).foldr (fun (b : β) (s : List β × σ) => (b :: s.1, h a (b, s))) ([], g a)
+  letI F (a : α) := (f a).foldr (fun (b : β) (s : List β × σ) => (b :: s.1, h a (b, s))) ([], g a)
   have : Primrec F :=
     list_foldr hf (pair (const []) hg) <|
       to₂ <| pair ((list_cons.comp fst (fst.comp snd)).comp snd) hh
@@ -894,7 +894,7 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
     induction' f a with b l IH <;> simp [*]
 
 theorem list_get? : Primrec₂ (@List.get? α) :=
-  let F (l : List α) (n : ℕ) :=
+  letI F (l : List α) (n : ℕ) :=
     l.foldl
       (fun (s : ℕ ⊕ α) (a : α) =>
         Sum.casesOn s (@Nat.casesOn (fun _ => ℕ ⊕ α) · (Sum.inr a) Sum.inl) Sum.inr)

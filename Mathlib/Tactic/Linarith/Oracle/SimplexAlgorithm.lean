@@ -20,18 +20,18 @@ open Mathlib
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
     (maxVar : ℕ) : matType (maxVar + 1) (hyps.length) × List Nat :=
-  let values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
+  let_fun values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
     cur ++ comp.coeffs.map fun (var, c) => (var, idx, c)
 
-  let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
+  let_fun strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
   (ofValues values, strictIndexes)
 
 /--
 Extract the certificate from the `vec` found by `Linarith.SimplexAlgorithm.findPositiveVector`.
 -/
 def postprocess (vec : Array ℚ) : Std.HashMap ℕ ℕ :=
-  let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
-  let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
+  let_fun common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
+  let_fun vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
   Std.HashMap.empty.insertMany <| vecNat.toList.enum.filter (fun ⟨_, item⟩ => item != 0)
 
 end SimplexAlgorithm

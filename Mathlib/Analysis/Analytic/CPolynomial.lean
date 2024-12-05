@@ -79,11 +79,11 @@ def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F)
 
 theorem HasFiniteFPowerSeriesAt.toHasFPowerSeriesAt
     (hf : HasFiniteFPowerSeriesAt f p x n) : HasFPowerSeriesAt f p x :=
-  let ⟨r, hf⟩ := hf
+  let_fun ⟨r, hf⟩ := hf
   ⟨r, hf.toHasFPowerSeriesOnBall⟩
 
 theorem HasFiniteFPowerSeriesAt.finite (hf : HasFiniteFPowerSeriesAt f p x n) :
-    ∀ m : ℕ, n ≤ m → p m = 0 := let ⟨_, hf⟩ := hf; hf.finite
+    ∀ m : ℕ, n ≤ m → p m = 0 := let_fun ⟨_, hf⟩ := hf; hf.finite
 
 variable (𝕜)
 
@@ -113,7 +113,7 @@ theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt (hf : HasFiniteFPowerSeriesOnB
   hf.hasFiniteFPowerSeriesAt.cPolynomialAt
 
 theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜 f x :=
-  let ⟨p, _, hp⟩ := hf
+  let_fun ⟨p, _, hp⟩ := hf
   ⟨p, hp.toHasFPowerSeriesAt⟩
 
 theorem CPolynomialAt.analyticWithinAt {s : Set E} (hf : CPolynomialAt 𝕜 f x) :
@@ -176,7 +176,7 @@ theorem HasFiniteFPowerSeriesAt.add (hf : HasFiniteFPowerSeriesAt f pf x n)
   exact ⟨r, hr.1.add hr.2⟩
 
 theorem CPolynomialAt.congr (hf : CPolynomialAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 g x :=
-  let ⟨_, _, hpf⟩ := hf
+  let_fun ⟨_, _, hpf⟩ := hf
   (hpf.congr hg).cPolynomialAt
 
 theorem CPolynomialAt_congr (h : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 f x ↔ CPolynomialAt 𝕜 g x :=
@@ -184,8 +184,8 @@ theorem CPolynomialAt_congr (h : f =ᶠ[𝓝 x] g) : CPolynomialAt 𝕜 f x ↔ 
 
 theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (f + g) x :=
-  let ⟨_, _, hpf⟩ := hf
-  let ⟨_, _, hqf⟩ := hg
+  let_fun ⟨_, _, hpf⟩ := hf
+  let_fun ⟨_, _, hqf⟩ := hg
   (hpf.add hqf).cPolynomialAt
 
 theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
@@ -194,11 +194,11 @@ theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x
 
 theorem HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
     HasFiniteFPowerSeriesAt (-f) (-pf) x n :=
-  let ⟨_, hrf⟩ := hf
+  let_fun ⟨_, hrf⟩ := hf
   hrf.neg.hasFiniteFPowerSeriesAt
 
 theorem CPolynomialAt.neg (hf : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (-f) x :=
-  let ⟨_, _, hpf⟩ := hf
+  let_fun ⟨_, _, hpf⟩ := hf
   hpf.neg.cPolynomialAt
 
 theorem HasFiniteFPowerSeriesOnBall.sub (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
@@ -307,7 +307,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetri
 neighborhood of `x`. -/
 theorem HasFiniteFPowerSeriesAt.eventually_zero_of_bound_zero
     (hf : HasFiniteFPowerSeriesAt f pf x 0) : f =ᶠ[𝓝 x] 0 :=
-  Filter.eventuallyEq_iff_exists_mem.mpr (let ⟨r, hf⟩ := hf; ⟨EMetric.ball x r,
+  Filter.eventuallyEq_iff_exists_mem.mpr (let_fun ⟨r, hf⟩ := hf; ⟨EMetric.ball x r,
     EMetric.ball_mem_nhds x hf.r_pos, fun y hy ↦ hf.eq_zero_of_bound_zero y hy⟩)
 
 /-- If `f` has a formal power series on a ball bounded by `1`, then `f` is constant equal
@@ -326,7 +326,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_const_of_bound_one
 to `f x` in a neighborhood of `x`. -/
 theorem HasFiniteFPowerSeriesAt.eventually_const_of_bound_one
     (hf : HasFiniteFPowerSeriesAt f pf x 1) : f =ᶠ[𝓝 x] (fun _ => f x) :=
-  Filter.eventuallyEq_iff_exists_mem.mpr (let ⟨r, hf⟩ := hf; ⟨EMetric.ball x r,
+  Filter.eventuallyEq_iff_exists_mem.mpr (let_fun ⟨r, hf⟩ := hf; ⟨EMetric.ball x r,
     EMetric.ball_mem_nhds x hf.r_pos, fun y hy ↦ hf.eq_const_of_bound_one y hy⟩)
 
 /-- If a function admits a finite power series expansion on a disk, then it is continuous there. -/

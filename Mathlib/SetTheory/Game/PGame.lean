@@ -611,8 +611,8 @@ instance : Preorder PGame :=
 
 lemma Identical.le : ∀ {x y}, x ≡ y → x ≤ y
   | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => le_of_forall_lf
-    (fun i ↦ let ⟨_, hj⟩ := hL.1 i; lf_of_le_moveLeft hj.le)
-    (fun i ↦ let ⟨_, hj⟩ := hR.2 i; lf_of_moveRight_le hj.le)
+    (fun i ↦ let_fun ⟨_, hj⟩ := hL.1 i; lf_of_le_moveLeft hj.le)
+    (fun i ↦ let_fun ⟨_, hj⟩ := hR.2 i; lf_of_moveRight_le hj.le)
 
 lemma Identical.ge {x y} (h : x ≡ y) : y ≤ x := h.symm.le
 

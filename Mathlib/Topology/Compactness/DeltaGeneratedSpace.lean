@@ -141,13 +141,13 @@ omit tY in
 /-- Any topology coinduced by a delta-generated topology is delta-generated. -/
 lemma DeltaGeneratedSpace.coinduced [DeltaGeneratedSpace X] (f : X → Y) :
     @DeltaGeneratedSpace Y (tX.coinduced f) :=
-  let _ := tX.coinduced f
+  letI _ := tX.coinduced f
   ⟨(continuous_to_deltaGenerated.2 continuous_coinduced_rng).coinduced_le⟩
 
 /-- Suprema of delta-generated topologies are delta-generated. -/
 protected lemma DeltaGeneratedSpace.iSup {X : Type*} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @DeltaGeneratedSpace X (t i)) : @DeltaGeneratedSpace X (⨆ i, t i) :=
-  let _ := ⨆ i, t i
+  letI _ := ⨆ i, t i
   ⟨iSup_le_iff.2 fun i ↦ (h i).le_deltaGenerated.trans <| deltaGenerated_mono <| le_iSup t i⟩
 
 /-- Suprema of delta-generated topologies are delta-generated. -/

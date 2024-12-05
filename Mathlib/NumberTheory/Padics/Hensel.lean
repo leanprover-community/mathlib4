@@ -39,7 +39,7 @@ open Topology
 -- We begin with some general lemmas that are used below in the computation.
 theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) (x y : ℤ_[p]) :
     ‖F.eval x - F.eval y‖ ≤ ‖x - y‖ :=
-  let ⟨z, hz⟩ := F.evalSubFactor x y
+  let_fun ⟨z, hz⟩ := F.evalSubFactor x y
   calc
     ‖F.eval x - F.eval y‖ = ‖z‖ * ‖x - y‖ := by simp [hz]
     _ ≤ 1 * ‖x - y‖ := by gcongr; apply PadicInt.norm_le_one
@@ -218,8 +218,8 @@ private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q} (heq : F
 the hypothesis `ih n z`, since otherwise `z'` is not necessarily an integer. -/
 private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n + 1) z' } :=
   have h1 : ‖(↑(F.eval z) : ℚ_[p]) / ↑(F.derivative.eval z)‖ ≤ 1 := calc_norm_le_one hnorm hz
-  let z1 : ℤ_[p] := ⟨_, h1⟩
-  let z' : ℤ_[p] := z - z1
+  letI z1 : ℤ_[p] := ⟨_, h1⟩
+  letI z' : ℤ_[p] := z - z1
   ⟨z',
     have hdist : ‖F.derivative.eval z' - F.derivative.eval z‖ < ‖F.derivative.eval a‖ :=
       calc_deriv_dist hnorm rfl (by simp [z1, hz.1]) hz
@@ -227,7 +227,7 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       rw [sub_eq_add_neg, ← hz.1, ← norm_neg (F.derivative.eval z)] at hdist
       have := PadicInt.norm_eq_of_norm_add_lt_right hdist
       rwa [norm_neg, hz.1] at this
-    let ⟨_, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
+    let_fun ⟨_, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
     have hnle : ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
       calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩
@@ -412,8 +412,8 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
       _ < ‖F.derivative.eval a‖ :=
         max_lt hnlt ((norm_sub_rev soln a ▸ (soln_dist_to_a_lt_deriv hnorm)) hnsol)
 
-  let h := z - soln
-  let ⟨q, hq⟩ := F.binomExpansion soln h
+  letI h := z - soln
+  let_fun ⟨q, hq⟩ := F.binomExpansion soln h
   have : (F.derivative.eval soln + q * h) * h = 0 :=
     Eq.symm
       (calc
@@ -443,8 +443,8 @@ variable {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]} {a : ℤ_[p]}
 
 private theorem a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eval z' = 0)
     (hnormz' : ‖z' - a‖ < ‖F.derivative.eval a‖) : z' = a :=
-  let h := z' - a
-  let ⟨q, hq⟩ := F.binomExpansion a h
+  letI h := z' - a
+  let_fun ⟨q, hq⟩ := F.binomExpansion a h
   have : (F.derivative.eval a + q * h) * h = 0 :=
     Eq.symm
       (calc

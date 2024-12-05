@@ -353,7 +353,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
 
 /-- `Polynomial.Gal.restrict` for the composition of polynomials. -/
 def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
-  let h : Fact (Splits (algebraMap F (p.comp q).SplittingField) p) :=
+  let_fun h : Fact (Splits (algebraMap F (p.comp q).SplittingField) p) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
   @restrict F _ p _ _ _ h
 

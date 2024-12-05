@@ -121,14 +121,14 @@ theorem whiskering_preadditiveCoyoneda :
   rfl
 
 instance full_preadditiveYoneda : (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrp).Full :=
-  let _ : Functor.Full (preadditiveYoneda ⋙
+  let_fun _ : Functor.Full (preadditiveYoneda ⋙
       (whiskeringRight Cᵒᵖ AddCommGrp (Type v)).obj (forget AddCommGrp)) :=
     Yoneda.yoneda_full
   Functor.Full.of_comp_faithful preadditiveYoneda
     ((whiskeringRight Cᵒᵖ AddCommGrp (Type v)).obj (forget AddCommGrp))
 
 instance full_preadditiveCoyoneda : (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp).Full :=
-  let _ : Functor.Full (preadditiveCoyoneda ⋙
+  let_fun _ : Functor.Full (preadditiveCoyoneda ⋙
       (whiskeringRight C AddCommGrp (Type v)).obj (forget AddCommGrp)) :=
     Coyoneda.coyoneda_full
   Functor.Full.of_comp_faithful preadditiveCoyoneda

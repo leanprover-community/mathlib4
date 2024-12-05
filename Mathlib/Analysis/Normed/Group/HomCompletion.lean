@@ -184,7 +184,7 @@ variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 `NormedAddGroupHom (completion G) H`. -/
 def NormedAddGroupHom.extension (f : NormedAddGroupHom G H) : NormedAddGroupHom (Completion G) H :=
   .ofLipschitz (f.toAddMonoidHom.extension f.continuous) <|
-    let _ := MetricSpace.ofT0PseudoMetricSpace H
+    letI _ := MetricSpace.ofT0PseudoMetricSpace H
     f.lipschitz.completion_extension
 
 theorem NormedAddGroupHom.extension_def (f : NormedAddGroupHom G H) (v : G) :

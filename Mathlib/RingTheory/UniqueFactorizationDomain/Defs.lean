@@ -48,10 +48,10 @@ variable [WfDvdMonoid α]
 
 theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
     ∃ i, Irreducible i ∧ i ∣ a :=
-  let ⟨b, hs, hr⟩ := wellFounded_dvdNotUnit.has_min { b | b ∣ a ∧ ¬IsUnit b } ⟨a, dvd_rfl, ha⟩
+  let_fun ⟨b, hs, hr⟩ := wellFounded_dvdNotUnit.has_min { b | b ∣ a ∧ ¬IsUnit b } ⟨a, dvd_rfl, ha⟩
   ⟨b,
     ⟨hs.2, fun c d he =>
-      let h := dvd_trans ⟨d, he⟩ hs.1
+      let_fun h := dvd_trans ⟨d, he⟩ hs.1
       or_iff_not_imp_left.2 fun hc =>
         of_not_not fun hd => hr c ⟨h, hc⟩ ⟨ne_zero_of_dvd_ne_zero ha0 h, d, hd, he⟩⟩,
     hs.1⟩
@@ -66,8 +66,8 @@ theorem induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀
       else
         if hau : IsUnit a then hu a hau
         else
-          let ⟨i, hii, b, hb⟩ := exists_irreducible_factor hau ha0
-          let hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
+          let_fun ⟨i, hii, b, hb⟩ := exists_irreducible_factor hau ha0
+          let_fun hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
           hb.symm ▸ hi b i hb0 hii <| ih b ⟨hb0, i, hii.1, mul_comm i b ▸ hb⟩)
     a
 
@@ -76,7 +76,7 @@ theorem exists_factors (a : α) :
   induction_on_irreducible a (fun h => (h rfl).elim)
     (fun _ hu _ => ⟨0, fun _ h => False.elim (Multiset.not_mem_zero _ h), hu.unit, one_mul _⟩)
     fun a i ha0 hi ih _ =>
-    let ⟨s, hs⟩ := ih ha0
+    let_fun ⟨s, hs⟩ := ih ha0
     ⟨i ::ₘ s, fun b H => (Multiset.mem_cons.1 H).elim (fun h => h.symm ▸ hi) (hs.1 b), by
       rw [s.prod_cons i]
       exact hs.2.mul_left i⟩
@@ -92,7 +92,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
         exacts [Associated.irreducible ⟨u, rfl⟩ (hi b h), hi a (Multiset.mem_of_mem_erase ha)]
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨_, hi, he, hne⟩ =>
-    let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
+    let_fun ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
     not_isUnit_of_not_isUnit_dvd (hi b h).not_unit <| he ▸ Multiset.dvd_prod h⟩
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))

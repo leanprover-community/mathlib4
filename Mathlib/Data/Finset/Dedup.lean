@@ -129,7 +129,7 @@ theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.uni
   exact ⟨l, hl, (toFinset_eq hl).symm⟩
 
 theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>
-  let ⟨l, _, hls⟩ := toFinset_surj_on (Set.mem_univ s)
+  let_fun ⟨l, _, hls⟩ := toFinset_surj_on (Set.mem_univ s)
   ⟨l, hls⟩
 
 theorem toFinset_eq_iff_perm_dedup : l.toFinset = l'.toFinset ↔ l.dedup ~ l'.dedup := by

@@ -77,7 +77,7 @@ use Brendan McKay's method of "generation by canonical construction path".
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → MLList m α) (a : α) (maxDepth : Option Nat := none) : MLList m α :=
-let f' : α → MLList (StateT.{u} (Std.HashSet α) m) α := fun a =>
+let_fun f' : α → MLList (StateT.{u} (Std.HashSet α) m) α := fun a =>
   (f a).liftM >>= fun b => do
     let s ← get
     if s.contains b then failure

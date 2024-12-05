@@ -29,7 +29,7 @@ theorem IsConformalMap.preserves_angle {f' : E →L[ℝ] F} (h : IsConformalMap 
     then it preserves the angles at that point. -/
 theorem ConformalAt.preserves_angle {f : E → F} {x : E} {f' : E →L[ℝ] F} (h : HasFDerivAt f f' x)
     (H : ConformalAt f x) (u v : E) : angle (f' u) (f' v) = angle u v :=
-  let ⟨_, h₁, c⟩ := H
+  let_fun ⟨_, h₁, c⟩ := H
   h₁.unique h ▸ IsConformalMap.preserves_angle c u v
 
 end InnerProductGeometry

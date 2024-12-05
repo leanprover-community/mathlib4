@@ -59,7 +59,7 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     (hφ : IsInducing (ofFun ∘ φ)) (h : ∀ u : H, Bornology.IsVonNBounded 𝕜 (Set.range (φ u))) :
     ContinuousSMul 𝕜 H := by
   have : TopologicalAddGroup H :=
-    let ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
+    letI ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
     IsInducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
   have hb : (𝓝 (0 : H)).HasBasis (· ∈ 𝓝 (0 : E)) fun V ↦ {u | ∀ x, φ u x ∈ V} := by
     simp only [hφ.nhds_eq_comap, Function.comp_apply, map_zero]

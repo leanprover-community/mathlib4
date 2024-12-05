@@ -177,15 +177,15 @@ theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → α} :
 theorem totallyBounded_iff {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
   ⟨fun H _ε ε0 => H _ (edist_mem_uniformity ε0), fun H _r ru =>
-    let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
-    let ⟨t, ft, h⟩ := H ε ε0
+    let_fun ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
+    let_fun ⟨t, ft, h⟩ := H ε ε0
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
 theorem totallyBounded_iff' {s : Set α} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
   ⟨fun H _ε ε0 => (totallyBounded_iff_subset.1 H) _ (edist_mem_uniformity ε0), fun H _r ru =>
-    let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
-    let ⟨t, _, ft, h⟩ := H ε ε0
+    let_fun ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
+    let_fun ⟨t, _, ft, h⟩ := H ε ε0
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
 section Compact

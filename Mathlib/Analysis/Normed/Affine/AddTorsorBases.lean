@@ -112,7 +112,7 @@ theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsO
 /-- The affine span of a nonempty open set is `⊤`. -/
 theorem IsOpen.affineSpan_eq_top {u : Set P} (hu : IsOpen u) (hne : u.Nonempty) :
     affineSpan ℝ u = ⊤ :=
-  let ⟨_, hsu, _, hs'⟩ := hu.exists_subset_affineIndependent_span_eq_top hne
+  let_fun ⟨_, hsu, _, hs'⟩ := hu.exists_subset_affineIndependent_span_eq_top hne
   top_unique <| hs' ▸ affineSpan_mono _ hsu
 
 theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}

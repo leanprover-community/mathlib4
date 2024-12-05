@@ -54,7 +54,7 @@ theorem equivalent_sign_ne_zero_weighted_sum_squared {M : Type*} [AddCommGroup M
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).SeparatingLeft) :
     ∃ w : Fin (Module.finrank ℝ M) → SignType,
       (∀ i, w i ≠ 0) ∧ Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
-  let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
+  let_fun ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
   ⟨sign ∘ ((↑) : ℝˣ → ℝ) ∘ w, fun i => sign_ne_zero.2 (w i).ne_zero,
     ⟨hw₁.trans (isometryEquivSignWeightedSumSquares (((↑) : ℝˣ → ℝ) ∘ w))⟩⟩
 
@@ -64,7 +64,7 @@ theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M]
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).SeparatingLeft) :
     ∃ w : Fin (Module.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
-  let ⟨w, hw₀, hw⟩ := Q.equivalent_sign_ne_zero_weighted_sum_squared hQ
+  let_fun ⟨w, hw₀, hw⟩ := Q.equivalent_sign_ne_zero_weighted_sum_squared hQ
   ⟨(w ·), fun i ↦ by cases hi : w i <;> simp_all, hw⟩
 
 /-- **Sylvester's law of inertia**: A real quadratic form is equivalent to a weighted
@@ -73,7 +73,7 @@ theorem equivalent_signType_weighted_sum_squared {M : Type*} [AddCommGroup M] [M
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
     ∃ w : Fin (Module.finrank ℝ M) → SignType,
       Equivalent Q (weightedSumSquares ℝ fun i ↦ (w i : ℝ)) :=
-  let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares
+  let_fun ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares
   ⟨sign ∘ w, ⟨hw₁.trans (isometryEquivSignWeightedSumSquares w)⟩⟩
 
 /-- **Sylvester's law of inertia**: A real quadratic form is equivalent to a weighted
@@ -82,7 +82,7 @@ theorem equivalent_one_zero_neg_one_weighted_sum_squared {M : Type*} [AddCommGro
     [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) :
     ∃ w : Fin (Module.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 0 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
-  let ⟨w, hw⟩ := Q.equivalent_signType_weighted_sum_squared
+  let_fun ⟨w, hw⟩ := Q.equivalent_signType_weighted_sum_squared
   ⟨(w ·), fun i ↦ by cases h : w i <;> simp [h], hw⟩
 
 end QuadraticForm

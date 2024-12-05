@@ -187,8 +187,8 @@ contains an FP-set. -/
       an FS-set, one the parts contains an FS-set."]
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
-  let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
-  let ⟨c, cs, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset aU scov)
+  let_fun ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
+  let_fun ⟨c, cs, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset aU scov)
   ⟨c, cs, exists_FP_of_large U idem c hc⟩
 
 /-- The weak form of **Hindman's theorem**: in any finite cover of a nonempty semigroup, one of the
@@ -198,9 +198,10 @@ parts contains an FP-set. -/
       of a nonempty additive semigroup, one of the parts contains an FS-set."]
 theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M)) (sfin : s.Finite)
     (scov : ⊤ ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ a : Stream' M, FP a ⊆ c :=
-  let ⟨U, hU⟩ :=
+  let_fun ⟨U, hU⟩ :=
     exists_idempotent_of_compact_t2_of_continuous_mul_left (@Ultrafilter.continuous_mul_left M _)
-  let ⟨c, c_s, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset univ_mem scov)
+  let_fun ⟨c, c_s, hc⟩ :=
+    (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset univ_mem scov)
   ⟨c, c_s, exists_FP_of_large U hU c hc⟩
 
 @[to_additive FS_iter_tail_sub_FS]

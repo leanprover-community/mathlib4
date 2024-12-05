@@ -146,7 +146,7 @@ The resulting list of pairs has no duplicates.
 def uniquify : List α → List (α × ℕ)
   | []    => []
   | m::ms =>
-    let lms := uniquify ms
+    let_fun lms := uniquify ms
     (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
 
 /-- Return a sorting key so that all `(a, true)`s are in the list's order
@@ -167,7 +167,7 @@ then `a'` appears before `b'` in `L` if and only if `weight L a < weight L b` an
 similarly for the pairs with second coordinate equal to `false`.
 -/
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
-  let l := L.length
+  let_fun l := L.length
   match L.find? (Prod.fst · == a) with
     | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
     | none => 0
@@ -189,11 +189,11 @@ For example,
 * `reorderUsing [0, 1, 2] [(1, true), (0, false)] = [1, 2, 0]`.
 -/
 def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List α :=
-  let uInstructions :=
-    let (as, as?) := instructions.unzip
+  let_fun uInstructions :=
+    let_fun (as, as?) := instructions.unzip
     (uniquify as).zip as?
-  let uToReorder := (uniquify toReorder).toArray
-  let reorder := uToReorder.qsort fun x y =>
+  let_fun uToReorder := (uniquify toReorder).toArray
+  let_fun reorder := uToReorder.qsort fun x y =>
     match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
       | none, none =>
         ((uToReorder.indexOf? x).map Fin.val).get! ≤ ((uToReorder.indexOf? y).map Fin.val).get!
@@ -213,7 +213,7 @@ primed to work with operands of the same type as the ones already appearing in `
 This is useful to rearrange the operands.
 -/
 def prepareOp (sum : Expr) : Expr :=
-  let opargs := sum.getAppArgs
+  let_fun opargs := sum.getAppArgs
   (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
 /-- `sumList prepOp left_assoc? exs` assumes that `prepOp` is an `Expr`ession representing a

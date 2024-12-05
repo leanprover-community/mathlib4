@@ -108,7 +108,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     simp_rw [← comap_dist_left_atTop_eq_cocompact (0 : V), eventually_comap, eventually_atTop,
       dist_eq_norm', sub_zero]
     exact
-      let ⟨T, hT⟩ := this
+      let_fun ⟨T, hT⟩ := this
       ⟨T, fun b hb v hv => hT v (hv.symm ▸ hb)⟩
   obtain ⟨R, -, hR_bd⟩ : ∃ R : ℝ, 0 < R ∧ ∀ x : V, R ≤ ‖x‖ → f x = 0 := hf2.exists_pos_le_norm
   let A := {v : V | ‖v‖ ≤ R + 1}

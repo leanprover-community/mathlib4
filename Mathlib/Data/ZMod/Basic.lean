@@ -930,9 +930,9 @@ See `Ideal.quotientInfRingEquivPiQuotient` for the Chinese remainder theorem for
 ring.
 -/
 def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
-  let to_fun : ZMod (m * n) → ZMod m × ZMod n :=
+  letI to_fun : ZMod (m * n) → ZMod m × ZMod n :=
     ZMod.castHom (show m.lcm n ∣ m * n by simp [Nat.lcm_dvd_iff]) (ZMod m × ZMod n)
-  let inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x =>
+  letI inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x =>
     if m * n = 0 then
       if m = 1 then cast (RingHom.snd _ (ZMod n) x) else cast (RingHom.fst (ZMod m) _ x)
     else Nat.chineseRemainder h x.1.val x.2.val

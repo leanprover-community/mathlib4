@@ -99,7 +99,7 @@ variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace
   {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
-  let _ : TopologicalSpace M₁ := t.induced f
+  letI _ : TopologicalSpace M₁ := t.induced f
   IsInducing.continuousSMul ⟨rfl⟩ continuous_id (map_smul f _ _)
 
 end LatticeOps
@@ -1361,7 +1361,7 @@ variable {R M : Type*}
 protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [ContinuousSub R]
     [AddCommGroup M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
     (f : M →L[R] R) (hf : f ≠ 0) : IsOpenMap f :=
-  let ⟨x, hx⟩ := exists_ne_zero hf
+  let_fun ⟨x, hx⟩ := exists_ne_zero hf
   IsOpenMap.of_sections fun y =>
     ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by continuity, by simp,
       fun a => by simp [hx]⟩
@@ -2501,7 +2501,7 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [TopologicalAddGroup M]
     {p : Submodule R M} (hp : p.ClosedComplemented) :
     ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
-  let ⟨f, hf⟩ := hp
+  let_fun ⟨f, hf⟩ := hp
   ⟨LinearMap.ker f, .equivOfRightInverse _ p.subtypeL hf,
     fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp [hf], fun _ ↦ rfl⟩
 

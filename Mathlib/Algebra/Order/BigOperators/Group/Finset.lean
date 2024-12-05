@@ -526,7 +526,7 @@ variable [Fintype ι] [OrderedCancelCommMonoid M] {f : ι → M}
 @[to_additive sum_strictMono]
 theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
-  let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
+  let_fun ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod' (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
 
 @[to_additive sum_pos]

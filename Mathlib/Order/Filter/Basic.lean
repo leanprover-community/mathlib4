@@ -408,7 +408,7 @@ theorem nontrivial_iff_nonempty : Nontrivial (Filter α) ↔ Nonempty α :=
 theorem eq_sInf_of_mem_iff_exists_mem {S : Set (Filter α)} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ f ∈ S, s ∈ f) : l = sInf S :=
   le_antisymm (le_sInf fun f hf _ hs => h.2 ⟨f, hf, hs⟩)
-    fun _ hs => let ⟨_, hf, hs⟩ := h.1 hs; (sInf_le hf) hs
+    fun _ hs => let_fun ⟨_, hf, hs⟩ := h.1 hs; (sInf_le hf) hs
 
 theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, s ∈ f i) : l = iInf f :=
@@ -421,8 +421,8 @@ theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} 
 
 theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : Nonempty ι] :
     (iInf f).sets = ⋃ i, (f i).sets :=
-  let ⟨i⟩ := ne
-  let u :=
+  let_fun ⟨i⟩ := ne
+  letI u :=
     { sets := ⋃ i, (f i).sets
       univ_sets := mem_iUnion.2 ⟨i, univ_mem⟩
       sets_of_superset := by
@@ -844,7 +844,7 @@ theorem frequently_iSup {p : α → Prop} {fs : β → Filter α} :
 
 theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h : ∀ᶠ x in l, ∃ y, r x y) :
     ∃ f : α → β, ∀ᶠ x in l, r x (f x) := by
-  haveI : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
+  haveI : Nonempty β := let_fun ⟨_, hx⟩ := h.exists; hx.nonempty
   choose! f hf using fun x (hx : ∃ y, r x y) => hx
   exact ⟨f, h.mono hf⟩
 
@@ -1788,7 +1788,7 @@ theorem map_iInf_le {f : ι → Filter α} {m : α → β} : map m (iInf f) ≤ 
 theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· ≥ ·) f) [Nonempty ι] :
     map m (iInf f) = ⨅ i, map m (f i) :=
   map_iInf_le.antisymm fun s (hs : m ⁻¹' s ∈ iInf f) =>
-    let ⟨i, hi⟩ := (mem_iInf_of_directed hf _).1 hs
+    let_fun ⟨i, hi⟩ := (mem_iInf_of_directed hf _).1 hs
     have : ⨅ i, map m (f i) ≤ 𝓟 s :=
       iInf_le_of_le i <| by simpa only [le_principal_iff, mem_map]
     Filter.le_principal_iff.1 this

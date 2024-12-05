@@ -317,7 +317,7 @@ theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) 
 theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f i) {x₀ : M}
     (h : ∀ i, ContMDiffWithinAt I' I n (f i) s x₀) :
     ContMDiffWithinAt I' I n (fun x ↦ ∏ᶠ i, f i x) s x₀ :=
-  let ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
+  let_fun ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
   (ContMDiffWithinAt.prod fun i _hi ↦ h i).congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
 

@@ -96,13 +96,13 @@ instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralSca
 @[to_additive]
 instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) where
   eq_of_smul_eq_smul h :=
-    let ⟨b⟩ := ‹Nonempty β›
+    let_fun ⟨b⟩ := ‹Nonempty β›
     eq_of_smul_eq_smul fun a : α => by injection h (a, b)
 
 @[to_additive]
 instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (α × β) where
   eq_of_smul_eq_smul h :=
-    let ⟨a⟩ := ‹Nonempty α›
+    let_fun ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun b : β => by injection h (a, b)
 
 end

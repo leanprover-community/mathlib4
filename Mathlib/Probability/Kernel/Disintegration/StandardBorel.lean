@@ -186,7 +186,7 @@ def borelMarkovFromReal (Ω : Type*) [Nonempty Ω] [MeasurableSpace Ω] [Standar
     (η : Kernel α ℝ) :
     Kernel α Ω :=
   have he := measurableEmbedding_embeddingReal Ω
-  let x₀ := (range_nonempty (embeddingReal Ω)).choose
+  let_fun x₀ := (range_nonempty (embeddingReal Ω)).choose
   comapRight
     (piecewise ((Kernel.measurable_coe η he.measurableSet_range.compl) (measurableSet_singleton 0) :
         MeasurableSet {a | η a (range (embeddingReal Ω))ᶜ = 0})
@@ -314,7 +314,7 @@ A conditional kernel for `κ : Kernel α (γ × Ω)` where `γ` is countably gen
 standard Borel. -/
 noncomputable
 def condKernelBorel (κ : Kernel α (γ × Ω)) [IsFiniteKernel κ] : Kernel (α × γ) Ω :=
-  let κ' := map κ (Prod.map (id : γ → γ) (embeddingReal Ω))
+  letI κ' := map κ (Prod.map (id : γ → γ) (embeddingReal Ω))
   borelMarkovFromReal Ω (condKernelReal κ')
 
 instance instIsMarkovKernelCondKernelBorel (κ : Kernel α (γ × Ω)) [IsFiniteKernel κ] :
@@ -341,7 +341,7 @@ variable (κ : Kernel Unit (α × Ω)) [IsFiniteKernel κ]
 A conditional kernel for `κ : Kernel Unit (α × Ω)` where `Ω` is standard Borel. -/
 noncomputable
 def condKernelUnitBorel : Kernel (Unit × α) Ω :=
-  let κ' := map κ (Prod.map (id : α → α) (embeddingReal Ω))
+  letI κ' := map κ (Prod.map (id : α → α) (embeddingReal Ω))
   borelMarkovFromReal Ω (condKernelUnitReal κ')
 
 instance instIsMarkovKernelCondKernelUnitBorel : IsMarkovKernel κ.condKernelUnitBorel := by

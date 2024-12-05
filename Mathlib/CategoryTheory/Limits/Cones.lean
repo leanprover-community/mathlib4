@@ -427,7 +427,7 @@ equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
 @[simps]
 def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :=
-  let f : (F ⋙ e.functor) ⋙ e.inverse ≅ F :=
+  letI f : (F ⋙ e.functor) ⋙ e.inverse ≅ F :=
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
@@ -625,7 +625,7 @@ equivalence between cocones over `F` and cocones over `F ⋙ e.functor`.
 -/
 @[simps]
 def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functor) :=
-  let f : (F ⋙ e.functor) ⋙ e.inverse ≅ F :=
+  letI f : (F ⋙ e.functor) ⋙ e.inverse ≅ F :=
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor

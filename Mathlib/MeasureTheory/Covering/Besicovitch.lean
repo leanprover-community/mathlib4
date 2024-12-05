@@ -234,9 +234,9 @@ chosen balls. This is a transfinite induction. -/
 noncomputable def index : Ordinal.{u} → β
   | i =>
       -- `Z` is the set of points that are covered by already constructed balls
-      let Z := ⋃ j : { j // j < i }, ball (p.c (index j)) (p.r (index j))
+      let_fun Z := ⋃ j : { j // j < i }, ball (p.c (index j)) (p.r (index j))
       -- `R` is the supremum of the radii of balls with centers not in `Z`
-      let R := iSup fun b : { b : β // p.c b ∉ Z } => p.r b
+      let_fun R := iSup fun b : { b : β // p.c b ∉ Z } => p.r b
       -- return an index `b` for which the center `c b` is not in `Z`, and the radius is at
       -- least `R / τ`, if such an index exists (and garbage otherwise).
       Classical.epsilon fun b : β => p.c b ∉ Z ∧ R ≤ p.τ * p.r b
@@ -260,7 +260,7 @@ def R (i : Ordinal.{u}) : ℝ :=
 it does not intersect any already chosen ball of this color. -/
 noncomputable def color : Ordinal.{u} → ℕ
   | i =>
-    let A : Set ℕ :=
+    let_fun A : Set ℕ :=
       ⋃ (j : { j // j < i })
         (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩
           closedBall (p.c (p.index i)) (p.r (p.index i))).Nonempty), {color j}

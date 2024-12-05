@@ -286,7 +286,7 @@ theorem mk'_pow (x : R) (y : M) (n : ℕ) : mk' S (x ^ n) (y ^ n) = mk' S x y ^ 
 variable (M)
 
 theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
-  let ⟨r, hr⟩ := IsLocalization.surj _ z
+  let_fun ⟨r, hr⟩ := IsLocalization.surj _ z
   ⟨r.1, r.2, (eq_mk'_iff_mul_eq.2 hr).symm⟩
 
 variable (S)
@@ -508,9 +508,9 @@ on the image of the base ring, if they preserve `1` and `*`. -/
 protected theorem ext (j k : S → P) (hj1 : j 1 = 1) (hk1 : k 1 = 1)
     (hjm : ∀ a b, j (a * b) = j a * j b) (hkm : ∀ a b, k (a * b) = k a * k b)
     (h : ∀ a, j (algebraMap R S a) = k (algebraMap R S a)) : j = k :=
-  let j' : MonoidHom S P :=
+  letI j' : MonoidHom S P :=
     { toFun := j, map_one' := hj1, map_mul' := hjm }
-  let k' : MonoidHom S P :=
+  letI k' : MonoidHom S P :=
     { toFun := k, map_one' := hk1, map_mul' := hkm }
   have : j' = k' := monoidHom_ext M (MonoidHom.ext h)
   show j'.toFun = k'.toFun by rw [this]

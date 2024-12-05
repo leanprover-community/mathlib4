@@ -105,7 +105,7 @@ variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
 
 /-- The union of a chain of lifts. -/
 noncomputable def union : Lifts F E K :=
-  let t (i : ↑(insert ⊥ c)) := i.val.carrier
+  letI t (i : ↑(insert ⊥ c)) := i.val.carrier
   have hc := hc.insert fun _ _ _ ↦ .inl bot_le
   have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
   ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
@@ -116,7 +116,7 @@ noncomputable def union : Lifts F E K :=
 
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
   have hσ := Set.mem_insert_of_mem ⊥ hσ
-  let t (i : ↑(insert ⊥ c)) := i.val.carrier
+  letI t (i : ↑(insert ⊥ c)) := i.val.carrier
   ⟨le_iSup t ⟨σ, hσ⟩, fun x ↦ by
     dsimp only [union, AlgHom.comp_apply]
     exact Subalgebra.iSupLift_inclusion (K := (toSubalgebra <| t ·))
@@ -202,9 +202,9 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
     (h2 : (minpoly x.carrier s).Splits x.emb.toRingHom) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
-  let carrier := x.carrier⟮s⟯.restrictScalars F
+  letI carrier := x.carrier⟮s⟯.restrictScalars F
   letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
-  let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
+  let_fun φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
     ⟨rootOfSplits x.emb.toRingHom h2 I2, by
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
       exact map_rootOfSplits x.emb.toRingHom h2 I2⟩)

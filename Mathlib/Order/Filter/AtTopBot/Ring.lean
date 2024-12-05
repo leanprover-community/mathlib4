@@ -95,10 +95,10 @@ open Filter
 variable {R : Type*} [LinearOrderedSemiring R]
 
 theorem exists_lt_mul_self (a : R) : ∃ x ≥ 0, a < x * x :=
-  let ⟨x, hxa, hx0⟩ :=
+  let_fun ⟨x, hxa, hx0⟩ :=
     ((tendsto_mul_self_atTop.eventually (eventually_gt_atTop a)).and (eventually_ge_atTop 0)).exists
   ⟨x, hx0, hxa⟩
 
 theorem exists_le_mul_self (a : R) : ∃ x ≥ 0, a ≤ x * x :=
-  let ⟨x, hx0, hxa⟩ := exists_lt_mul_self a
+  let_fun ⟨x, hx0, hxa⟩ := exists_lt_mul_self a
   ⟨x, hx0, hxa.le⟩

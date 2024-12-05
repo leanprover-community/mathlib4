@@ -160,7 +160,7 @@ theorem Basis.restrict_base (h : M.Basis I X) : (M ↾ X).Base I :=
   (base_restrict_iff h.subset_ground).2 h
 
 instance restrict_finiteRk [M.FiniteRk] (R : Set α) : (M ↾ R).FiniteRk :=
-  let ⟨_, hB⟩ := (M ↾ R).exists_base
+  let_fun ⟨_, hB⟩ := (M ↾ R).exists_base
   hB.finiteRk_of_finite (hB.indep.of_restrict.finite)
 
 instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by

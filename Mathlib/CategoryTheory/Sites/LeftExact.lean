@@ -122,13 +122,13 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
-  let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
-  let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
+  let_fun e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
+  let_fun t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
     (isLimitOfPreserves (J.diagramFunctor D X) (limit.isLimit F)).conePointUniqueUpToIso
       (limit.isLimit _)
-  let p : (J.plusObj (limit F)).obj (op X) ≅ colimit (limit (F ⋙ J.diagramFunctor D X)) :=
+  let_fun p : (J.plusObj (limit F)).obj (op X) ≅ colimit (limit (F ⋙ J.diagramFunctor D X)) :=
     HasColimit.isoOfNatIso t
-  let s :
+  let_fun s :
     colimit (F ⋙ J.diagramFunctor D X).flip ≅ F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X) :=
     NatIso.ofComponents (fun k => colimitObjIsoColimitCompEvaluation _ k)
       (by

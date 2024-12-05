@@ -168,7 +168,7 @@ def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
-      let fmt := Std.Format.joinSep
+      let_fun fmt := Std.Format.joinSep
         [repr l n, Repr.reprPrec x n, repr r n]
         " "
       Std.Format.paren fmt
@@ -426,7 +426,7 @@ O(log n). Extract and remove the minimum element from a nonempty tree. -/
 def splitMin' : Ordnode α → α → Ordnode α → α × Ordnode α
   | nil, x, r => (x, r)
   | node _ ll lx lr, x, r =>
-    let (xm, l') := splitMin' ll lx lr
+    let_fun (xm, l') := splitMin' ll lx lr
     (xm, balanceR l' x r)
 
 /-- O(log n). Extract and remove the minimum element from the tree, if it exists.
@@ -443,7 +443,7 @@ O(log n). Extract and remove the maximum element from a nonempty tree. -/
 def splitMax' : Ordnode α → α → Ordnode α → Ordnode α × α
   | l, x, nil => (l, x)
   | l, x, node _ rl rx rr =>
-    let (r', xm) := splitMax' rl rx rr
+    let_fun (r', xm) := splitMax' rl rx rr
     (balanceL l x r', xm)
 
 /-- O(log n). Extract and remove the maximum element from the tree, if it exists.
@@ -462,10 +462,10 @@ def glue : Ordnode α → Ordnode α → Ordnode α
   | l@(node _ _ _ _), nil => l
   | l@(node sl ll lx lr), r@(node sr rl rx rr) =>
     if sl > sr then
-      let (l', m) := splitMax' ll lx lr
+      let_fun (l', m) := splitMax' ll lx lr
       balanceR l' m r
     else
-      let (m, r') := splitMin' rl rx rr
+      let_fun (m, r') := splitMin' rl rx rr
       balanceL l m r'
 
 /-- O(log(m + n)). Concatenate two trees that are ordered with respect to each other.
@@ -539,8 +539,8 @@ def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
   | node _ l x r =>
-    let (l₁, l₂) := partition p l
-    let (r₁, r₂) := partition p r
+    let_fun (l₁, l₂) := partition p l
+    let_fun (r₁, r₂) := partition p r
     if p x then (link l₁ x r₁, merge l₂ r₂) else (merge l₁ r₁, link l₂ x r₂)
 
 /-- O(n). Map a function across a tree, without changing the structure. Only valid when
@@ -721,11 +721,11 @@ def splitAtAux : Ordnode α → ℕ → Ordnode α × Ordnode α
     else
       match Nat.psub' i (size l) with
       | none =>
-        let (l₁, l₂) := splitAtAux l i
+        let_fun (l₁, l₂) := splitAtAux l i
         (l₁, link l₂ x r)
       | some 0 => (glue l r, insertMin x r)
       | some (j + 1) =>
-        let (r₁, r₂) := splitAtAux r j
+        let_fun (r₁, r₂) := splitAtAux r j
         (link l x r₁, r₂)
 
 /-- O(log n). Split a set at the `i`th element, getting the first `i` and everything else.
@@ -762,10 +762,10 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
   | nil => (nil, nil)
   | node _ l x r =>
     if p x then
-      let (r₁, r₂) := span p r
+      let_fun (r₁, r₂) := span p r
       (link l x r₁, r₂)
     else
-      let (l₁, l₂) := span p l
+      let_fun (l₁, l₂) := span p l
       (l₁, link l₂ x r)
 
 /-- Auxiliary definition for `ofAscList`.
@@ -783,7 +783,7 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
       | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
       | (l, ⟨y :: ys, h⟩) =>
         have := Nat.le_succ_of_le h
-        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
+        let_fun (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
         termination_by l => l.length
 
@@ -981,11 +981,11 @@ def split (x : α) : Ordnode α → Ordnode α × Ordnode α
   | node _ l y r =>
     match cmpLE x y with
     | Ordering.lt =>
-      let (lt, gt) := split x l
+      let_fun (lt, gt) := split x l
       (lt, link gt y r)
     | Ordering.eq => (l, r)
     | Ordering.gt =>
-      let (lt, gt) := split x r
+      let_fun (lt, gt) := split x r
       (link l y lt, gt)
 
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it,
@@ -1004,11 +1004,11 @@ def split3 (x : α) : Ordnode α → Ordnode α × Option α × Ordnode α
   | node _ l y r =>
     match cmpLE x y with
     | Ordering.lt =>
-      let (lt, f, gt) := split3 x l
+      let_fun (lt, f, gt) := split3 x l
       (lt, f, link gt y r)
     | Ordering.eq => (l, some y, r)
     | Ordering.gt =>
-      let (lt, f, gt) := split3 x r
+      let_fun (lt, f, gt) := split3 x r
       (link l y lt, f, gt)
 
 /-- O(log n). Remove an element from the set equivalent to `x`. Does nothing if there
@@ -1125,7 +1125,7 @@ def isSubsetAux : Ordnode α → Ordnode α → Bool
   | nil, _ => true
   | _, nil => false
   | node _ l x r, t =>
-    let (lt, found, gt) := split3 x t
+    let_fun (lt, found, gt) := split3 x t
     found.isSome && isSubsetAux l lt && isSubsetAux r gt
 
 /-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`?
@@ -1143,7 +1143,7 @@ def disjoint : Ordnode α → Ordnode α → Bool
   | nil, _ => true
   | _, nil => true
   | node _ l x r, t =>
-    let (lt, found, gt) := split3 x t
+    let_fun (lt, found, gt) := split3 x t
     found.isNone && disjoint l lt && disjoint r gt
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. The union of two sets, preferring members of
@@ -1163,7 +1163,7 @@ def union : Ordnode α → Ordnode α → Ordnode α
     else
       if s₁ = 1 then insert x₁ t₂
       else
-        let (l₂', r₂') := split x₁ t₂
+        let_fun (l₂', r₂') := split x₁ t₂
         link (union l₁ l₂') x₁ (union r₁ r₂')
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. Difference of two sets.
@@ -1174,9 +1174,9 @@ def diff : Ordnode α → Ordnode α → Ordnode α
   | t₁, nil => t₁
   | t₁, t₂@(node _ l₂ x r₂) =>
     cond t₁.empty t₂ <|
-      let (l₁, r₁) := split x t₁
-      let l₁₂ := diff l₁ l₂
-      let r₁₂ := diff r₁ r₂
+      let_fun (l₁, r₁) := split x t₁
+      let_fun l₁₂ := diff l₁ l₂
+      let_fun r₁₂ := diff r₁ r₂
       if size l₁₂ + size r₁₂ = size t₁ then t₁ else merge l₁₂ r₁₂
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. Intersection of two sets, preferring members of
@@ -1188,9 +1188,9 @@ def inter : Ordnode α → Ordnode α → Ordnode α
   | nil, _ => nil
   | t₁@(node _ l₁ x r₁), t₂ =>
     cond t₂.empty t₁ <|
-      let (l₂, y, r₂) := split3 x t₂
-      let l₁₂ := inter l₁ l₂
-      let r₁₂ := inter r₁ r₂
+      let_fun (l₂, y, r₂) := split3 x t₂
+      let_fun l₁₂ := inter l₁ l₂
+      let_fun r₁₂ := inter r₁ r₂
       cond y.isSome (link l₁₂ x r₁₂) (merge l₁₂ r₁₂)
 
 /-- O(n * log n). Build a set from a list, preferring elements that appear earlier in the list

@@ -313,7 +313,7 @@ theorem exists_contracting_iterate :
     FunSpace.dist_iterate_next_le f g N⟩
 
 theorem exists_fixed [CompleteSpace E] : ∃ f : v.FunSpace, f.next = f :=
-  let ⟨_N, _K, hK⟩ := exists_contracting_iterate v
+  let_fun ⟨_N, _K, hK⟩ := exists_contracting_iterate v
   ⟨_, hK.isFixedPt_fixedPoint_iterate⟩
 
 end
@@ -392,6 +392,6 @@ theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt (hv : ContDiffAt ℝ 1 v x
 theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
     ∃ f : ℝ → E, f t₀ = x₀ ∧
       ∃ ε > (0 : ℝ), ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t :=
-  let ⟨f, hf1, ε, hε, hf2⟩ :=
+  let_fun ⟨f, hf1, ε, hε, hf2⟩ :=
     exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ hv.contDiffAt
   ⟨f, hf1, ε, hε, fun _ h => hf2 _ h⟩

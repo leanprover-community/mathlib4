@@ -115,7 +115,7 @@ def SplittingFieldAuxAux (n : ℕ) : ∀ {K : Type u} [Field K], K[X] →
       Σ (L : Type u) (_ : Field L), Algebra K L) n
     (fun {K} _ _ => ⟨K, inferInstance, inferInstance⟩)
     fun _ ih _ _ f =>
-      let ⟨L, fL, _⟩ := ih f.removeFactor
+      let_fun ⟨L, fL, _⟩ := ih f.removeFactor
       ⟨L, fL, (RingHom.comp (algebraMap _ _) (AdjoinRoot.of f.factor)).toAlgebra⟩
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
@@ -244,7 +244,7 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
   Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
 
 instance instGroupWithZero : GroupWithZero (SplittingField f) :=
-  let e := algEquivSplittingFieldAux f
+  let_fun e := algEquivSplittingFieldAux f
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
     mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]

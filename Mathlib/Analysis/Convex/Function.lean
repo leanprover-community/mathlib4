@@ -617,7 +617,7 @@ theorem ConcaveOn.ge_on_segment' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx : x ∈
 /-- A convex function on a segment is upper-bounded by the max of its endpoints. -/
 theorem ConvexOn.le_on_segment (hf : ConvexOn 𝕜 s f) {x y z : E} (hx : x ∈ s) (hy : y ∈ s)
     (hz : z ∈ [x -[𝕜] y]) : f z ≤ max (f x) (f y) :=
-  let ⟨_, _, ha, hb, hab, hz⟩ := hz
+  let_fun ⟨_, _, ha, hb, hab, hz⟩ := hz
   hz ▸ hf.le_on_segment' hx hy ha hb hab
 
 /-- A concave function on a segment is lower-bounded by the min of its endpoints. -/
@@ -649,7 +649,7 @@ theorem StrictConcaveOn.lt_on_open_segment' (hf : StrictConcaveOn 𝕜 s f) {x y
 endpoints. -/
 theorem StrictConvexOn.lt_on_openSegment (hf : StrictConvexOn 𝕜 s f) {x y z : E} (hx : x ∈ s)
     (hy : y ∈ s) (hxy : x ≠ y) (hz : z ∈ openSegment 𝕜 x y) : f z < max (f x) (f y) :=
-  let ⟨_, _, ha, hb, hab, hz⟩ := hz
+  let_fun ⟨_, _, ha, hb, hab, hz⟩ := hz
   hz ▸ hf.lt_on_open_segment' hx hy hxy ha hb hab
 
 /-- A strictly concave function on an open segment is strictly lower-bounded by the min of its

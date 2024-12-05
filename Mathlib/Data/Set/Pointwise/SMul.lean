@@ -363,7 +363,7 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
 
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
-  let ⟨a, ha⟩ := hs
+  let_fun ⟨a, ha⟩ := hs
   eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul _ _⟩
 
 @[to_additive]
@@ -533,7 +533,7 @@ theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective₀ ha
 
 theorem smul_univ₀ {s : Set α} (hs : ¬s ⊆ 0) : s • (univ : Set β) = univ :=
-  let ⟨a, ha, ha₀⟩ := not_subset.1 hs
+  let_fun ⟨a, ha, ha₀⟩ := not_subset.1 hs
   eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul₀ ha₀ _⟩
 
 theorem smul_univ₀' {s : Set α} (hs : s.Nontrivial) : s • (univ : Set β) = univ :=

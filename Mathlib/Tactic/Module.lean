@@ -239,8 +239,8 @@ variable {M : Q(Type v)} {R : Q(Type u)}
 number), build an `Expr` representing an object of type `NF R M` (i.e. `List (R × M)`) in the
 in the obvious way: by forgetting the natural numbers and gluing together the `Expr`s. -/
 def toNF (l : qNF R M) : Q(NF $R $M) :=
-  let l' : List Q($R × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
-  let qt : List Q($R × $M) → Q(List ($R × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
+  let_fun l' : List Q($R × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
+  let_fun qt : List Q($R × $M) → Q(List ($R × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
   qt l'
 
 /-- Given `l` of type `qNF R₁ M`, i.e. a list of `(Q($R₁) × Q($M)) × ℕ`s (two `Expr`s and a natural
@@ -285,13 +285,13 @@ def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module 
   | l, [] => (q(add_zero (NF.eval $(l.toNF))):)
   | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
     if k₁ < k₂ then
-      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      let_fun pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
       (q(NF.add_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
-      let pf := mkAddProof iRM t₁ t₂
+      let_fun pf := mkAddProof iRM t₁ t₂
       (q(NF.add_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkAddProof iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      let_fun pf := mkAddProof iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
       (q(NF.add_eq_eval₃ ($a₂, $x₂) $pf):)
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -330,13 +330,13 @@ def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M
   | l, [] => (q(sub_zero (NF.eval $(l.toNF))):)
   | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
     if k₁ < k₂ then
-      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      let_fun pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
       (q(NF.sub_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
-      let pf := mkSubProof iR iM iRM t₁ t₂
+      let_fun pf := mkSubProof iR iM iRM t₁ t₂
       (q(NF.sub_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      let_fun pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
       (q(NF.sub_eq_eval₃ ($a₂, $x₂) $pf):)
 
 variable {iM : Q(AddCommMonoid $M)}

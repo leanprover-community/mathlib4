@@ -391,7 +391,7 @@ theorem of_eq {v' : Valuation R Γ₀} (h : v = v') : v.IsEquiv v' := by subst h
 
 theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (inf : Injective f)
     (h : v.IsEquiv v') : (v.map f hf).IsEquiv (v'.map f hf) :=
-  let H : StrictMono f := hf.strictMono_of_injective inf
+  let_fun H : StrictMono f := hf.strictMono_of_injective inf
   fun r s =>
   calc
     f (v r) ≤ f (v s) ↔ v r ≤ v s := by rw [H.le_iff_le]

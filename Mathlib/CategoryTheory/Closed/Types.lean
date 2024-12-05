@@ -56,7 +56,7 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
 target category is `Type (max u₁ v₁)`. -/
 def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
     CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
-  let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
+  let_fun e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
       C ⥤ Type (max u₁ v₁ u₂) :=
       Functor.asEquivalence ((whiskeringLeft _ _ _).obj
         (ULift.equivalence.trans ULiftHom.equiv).functor)
@@ -71,7 +71,7 @@ instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max 
 -- closed categories, replace this with that, as it will be a more explicit construction.
 instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
     CartesianClosed (C ⥤ Type v₁) :=
-  let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
+  let_fun e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
     Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
   cartesianClosedOfEquiv e
 

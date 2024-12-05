@@ -118,7 +118,7 @@ a Lindelöf set `s` contains any open set that contains all clusterpoints of `s`
 theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs : IsLindelof s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
-    let ⟨x, hx, hfx⟩ := @hs (f ⊓ 𝓟 tᶜ) _ _ <| inf_le_of_left_le hf₂
+    let_fun ⟨x, hx, hfx⟩ := @hs (f ⊓ 𝓟 tᶜ) _ _ <| inf_le_of_left_le hf₂
     have : x ∈ t := ht₂ x hx hfx.of_inf_left
     have : tᶜ ∩ t ∈ 𝓝[tᶜ] x := inter_mem_nhdsWithin _ (ht₁.mem_nhds this)
     have A : 𝓝[tᶜ] x = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
@@ -573,13 +573,13 @@ theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X]
 
 theorem countable_cover_nhds_interior [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, interior (U x) = univ :=
-  let ⟨t, ht⟩ := isLindelof_univ.elim_countable_subcover (fun x => interior (U x))
+  let_fun ⟨t, ht⟩ := isLindelof_univ.elim_countable_subcover (fun x => interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, ⟨ht.1, univ_subset_iff.1 ht.2⟩⟩
 
 theorem countable_cover_nhds [LindelofSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Set X, t.Countable ∧ ⋃ x ∈ t, U x = univ :=
-  let ⟨t, ht⟩ := countable_cover_nhds_interior hU
+  let_fun ⟨t, ht⟩ := countable_cover_nhds_interior hU
   ⟨t, ⟨ht.1, univ_subset_iff.1 <| ht.2.symm.subset.trans <|
     iUnion₂_mono fun _ _ => interior_subset⟩⟩
 

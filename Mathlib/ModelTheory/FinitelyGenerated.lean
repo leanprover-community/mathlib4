@@ -71,13 +71,13 @@ theorem fg_closure_singleton (x : M) : FG (closure L ({x} : Set M)) :=
   fg_closure (finite_singleton x)
 
 theorem FG.sup {N₁ N₂ : L.Substructure M} (hN₁ : N₁.FG) (hN₂ : N₂.FG) : (N₁ ⊔ N₂).FG :=
-  let ⟨t₁, ht₁⟩ := fg_def.1 hN₁
-  let ⟨t₂, ht₂⟩ := fg_def.1 hN₂
+  let_fun ⟨t₁, ht₁⟩ := fg_def.1 hN₁
+  let_fun ⟨t₂, ht₂⟩ := fg_def.1 hN₂
   fg_def.2 ⟨t₁ ∪ t₂, ht₁.1.union ht₂.1, by rw [closure_union, ht₁.2, ht₂.2]⟩
 
 theorem FG.map {N : Type*} [L.Structure N] (f : M →[L] N) {s : L.Substructure M} (hs : s.FG) :
     (s.map f).FG :=
-  let ⟨t, ht⟩ := fg_def.1 hs
+  let_fun ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [closure_image, ht.2]⟩
 
 theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.Substructure M}
@@ -148,13 +148,13 @@ theorem cg_closure_singleton (x : M) : CG (closure L ({x} : Set M)) :=
   (fg_closure_singleton x).cg
 
 theorem CG.sup {N₁ N₂ : L.Substructure M} (hN₁ : N₁.CG) (hN₂ : N₂.CG) : (N₁ ⊔ N₂).CG :=
-  let ⟨t₁, ht₁⟩ := cg_def.1 hN₁
-  let ⟨t₂, ht₂⟩ := cg_def.1 hN₂
+  let_fun ⟨t₁, ht₁⟩ := cg_def.1 hN₁
+  let_fun ⟨t₂, ht₂⟩ := cg_def.1 hN₂
   cg_def.2 ⟨t₁ ∪ t₂, ht₁.1.union ht₂.1, by rw [closure_union, ht₁.2, ht₂.2]⟩
 
 theorem CG.map {N : Type*} [L.Structure N] (f : M →[L] N) {s : L.Substructure M} (hs : s.CG) :
     (s.map f).CG :=
-  let ⟨t, ht⟩ := cg_def.1 hs
+  let_fun ⟨t, ht⟩ := cg_def.1 hs
   cg_def.2 ⟨f '' t, ht.1.image _, by rw [closure_image, ht.2]⟩
 
 theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.Substructure M}

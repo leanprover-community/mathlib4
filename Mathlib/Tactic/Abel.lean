@@ -455,7 +455,7 @@ partial def abelNFCore
       `go -> eval -> evalAtom -> go` which makes no progress.
     -/
     go root parent :=
-      let pre : Simp.Simproc := fun e =>
+      let_fun pre : Simp.Simproc := fun e =>
         try
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
@@ -466,7 +466,7 @@ partial def abelNFCore
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
         catch _ => pure <| .continue
-      let post : Simp.Simproc := Simp.postDefault #[]
+      let_fun post : Simp.Simproc := Simp.postDefault #[]
       (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/

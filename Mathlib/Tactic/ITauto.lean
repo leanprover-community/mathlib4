@@ -362,7 +362,7 @@ partial def Context.add : IProp → Proof → Context → Except (IProp → Proo
   | .imp .false _, _, Γ => pure Γ
   | .imp .true A, p, Γ => Γ.add A (p.app .triv)
   | .imp (.and' ak A B) C, p, Γ =>
-    let (A, B) := ak.sides A B
+    let_fun (A, B) := ak.sides A B
     Γ.add (A.imp (B.imp C)) (p.curry ak)
   | .imp (.or A B) C, p, Γ => do
     let Γ ← Γ.add (A.imp C) p.orImpL
@@ -409,7 +409,7 @@ complete. -/
 partial def search (Γ : Context) (B : IProp) : StateM Nat (Bool × Proof) := do
   if let some p := Γ.find? B then return (true, p)
   fun n =>
-  let search₁ := Γ.fold (init := none) fun r A p => do
+  let_fun search₁ := Γ.fold (init := none) fun r A p => do
     if let some r := r then return r
     let .imp A' C := A | none
     if let some q := Γ.find? A' then

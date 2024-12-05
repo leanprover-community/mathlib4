@@ -174,7 +174,7 @@ instance : incl.Faithful where
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
-    let F := Fintype.equivFin X
+    let_fun F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro
         { hom := F.symm ∘ ULift.down

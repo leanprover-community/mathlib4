@@ -487,7 +487,7 @@ that cover exactly a subbox `J ≤ I` tend to the integral of `f` over `J` along
 theorem tendsto_integralSum_toFilteriUnion_single (h : Integrable I l f vol) (hJ : J ≤ I) :
     Tendsto (integralSum f vol) (l.toFilteriUnion I (Prepartition.single I J hJ))
       (𝓝 <| integral J l f vol) :=
-  let ⟨_y, h₁, h₂⟩ := h.to_subbox_aux hJ
+  let_fun ⟨_y, h₁, h₂⟩ := h.to_subbox_aux hJ
   h₁.integral_eq.symm ▸ h₂
 
 /-- **Henstock-Sacks inequality**. Let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged

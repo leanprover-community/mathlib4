@@ -368,7 +368,7 @@ variable (α) [DenselyNormedField α]
 
 theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
-    let ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
+    let_fun ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
 
 end Densely
@@ -418,7 +418,7 @@ instance Rat.instNormedField : NormedField ℚ where
 
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
-    let ⟨q, h⟩ := exists_rat_btwn hr
+    let_fun ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 section Complete

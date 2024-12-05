@@ -408,7 +408,7 @@ theorem SetLike.homogeneous_zero_submodule [Zero ι] [Semiring S] [AddCommMonoid
 
 theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [Algebra S R] {A : ι → Submodule S R}
     {s : S} {r : R} (hr : SetLike.Homogeneous A r) : SetLike.Homogeneous A (s • r) :=
-  let ⟨i, hi⟩ := hr
+  let_fun ⟨i, hi⟩ := hr
   ⟨i, Submodule.smul_mem _ _ hi⟩
 
 end HomogeneousElement

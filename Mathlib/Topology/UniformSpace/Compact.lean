@@ -106,7 +106,7 @@ open set `U`, we can find an (open) entourage `V` such that the ball of size `V`
 `K` is contained in `U`. -/
 theorem lebesgue_number_of_compact_open {K U : Set α} (hK : IsCompact K)
     (hU : IsOpen U) (hKU : K ⊆ U) : ∃ V ∈ 𝓤 α, IsOpen V ∧ ∀ x ∈ K, UniformSpace.ball x V ⊆ U :=
-  let ⟨V, ⟨hV, hVo⟩, hVU⟩ :=
+  let_fun ⟨V, ⟨hV, hVo⟩, hVU⟩ :=
     (hK.nhdsSet_basis_uniformity uniformity_hasBasis_open).mem_iff.1 (hU.mem_nhdsSet.2 hKU)
   ⟨V, hV, hVo, iUnion₂_subset_iff.1 hVU⟩
 

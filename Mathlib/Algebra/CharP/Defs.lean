@@ -147,7 +147,7 @@ lemma «exists» : ∃ p, CharP R p :=
             zero_mul]⟩⟩⟩
 
 lemma exists_unique : ∃! p, CharP R p :=
-  let ⟨c, H⟩ := CharP.exists R
+  let_fun ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
 
 end NonAssocSemiring
@@ -234,7 +234,7 @@ variable [NoZeroDivisors R]
 lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
   suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
-  let ⟨e, hmul⟩ := hdvd
+  let_fun ⟨e, hmul⟩ := hdvd
   have : (p : R) = 0 := (cast_eq_zero_iff R p p).mpr (dvd_refl p)
   have : (d : R) * e = 0 := @Nat.cast_mul R _ d e ▸ hmul ▸ this
   Or.elim (eq_zero_or_eq_zero_of_mul_eq_zero this)
@@ -442,7 +442,7 @@ lemma ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
   exacts [⟨1, .zero⟩, ⟨p, .prime hp⟩]
 
 lemma ExpChar.exists_unique [Ring R] [IsDomain R] : ∃! q, ExpChar R q :=
-  let ⟨q, H⟩ := ExpChar.exists R
+  let_fun ⟨q, H⟩ := ExpChar.exists R
   ⟨q, H, fun _ H2 ↦ ExpChar.eq H2 H⟩
 
 instance ringExpChar.expChar [Ring R] [IsDomain R] : ExpChar R (ringExpChar R) := by

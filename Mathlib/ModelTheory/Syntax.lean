@@ -747,7 +747,7 @@ into a `L.Formula β` by renaming variables with the map `f` and then universall
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  let_fun e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
 /-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
@@ -755,7 +755,7 @@ into a `L.Formula β` by renaming variables with the map `f` and then universall
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  let_fun e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
 
 /-- The biimplication between formulas, as a formula. -/

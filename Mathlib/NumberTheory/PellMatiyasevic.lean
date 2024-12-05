@@ -203,7 +203,7 @@ theorem pell_eqz (n : ℕ) : xz a1 n * xz a1 n - d a1 * yz a1 n * yz a1 n = 1 :=
 
 @[simp]
 theorem pell_eq (n : ℕ) : xn a1 n * xn a1 n - d a1 * yn a1 n * yn a1 n = 1 :=
-  let pn := pell_eqz a1 n
+  let_fun pn := pell_eqz a1 n
   have h : (↑(xn a1 n * xn a1 n) : ℤ) - ↑(d a1 * yn a1 n * yn a1 n) = 1 := by
     repeat' rw [Int.ofNat_mul]; exact pn
   have hl : d a1 * yn a1 n * yn a1 n ≤ xn a1 n * xn a1 n :=
@@ -252,7 +252,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     have am1p : (0 : ℤ√(d a1)) ≤ ⟨a, -1⟩ := show (_ : Nat) ≤ _ by simp; exact Nat.pred_le _
     have a1m : (⟨a, 1⟩ * ⟨a, -1⟩ : ℤ√(d a1)) = 1 := isPell_norm.1 (isPell_one a1)
     if ha : (⟨↑a, 1⟩ : ℤ√(d a1)) ≤ b then
-      let ⟨m, e⟩ :=
+      let_fun ⟨m, e⟩ :=
         eq_pell_lem n (b * ⟨a, -1⟩) (by rw [← a1m]; exact mul_le_mul_of_nonneg_right ha am1p)
           (isPell_mul hp (isPell_star.1 (isPell_one a1)))
           (by
@@ -287,12 +287,12 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
           | (y + 1 : ℕ), _, yl2 =>
             yl2
               (Zsqrtd.le_of_le_le (by simp [sub_eq_add_neg])
-                (let t := Int.ofNat_le_ofNat_of_le (Nat.succ_pos y)
+                (let_fun t := Int.ofNat_le_ofNat_of_le (Nat.succ_pos y)
                 add_le_add t t))
           | Int.negSucc _, y0l, _ => y0l trivial
 
 theorem eq_pellZd (b : ℤ√(d a1)) (b1 : 1 ≤ b) (hp : IsPell b) : ∃ n, b = pellZd a1 n :=
-  let ⟨n, h⟩ := @Zsqrtd.le_arch (d a1) b
+  let_fun ⟨n, h⟩ := @Zsqrtd.le_arch (d a1) b
   eq_pell_lem a1 n b b1 hp <|
     h.trans <| by
       rw [Zsqrtd.natCast_val]
@@ -308,7 +308,7 @@ theorem eq_pell {x y : ℕ} (hp : x * x - d a1 * y * y = 1) : ∃ n, x = xn a1 n
     | 0, (hp : 0 - _ = 1) => by rw [zero_tsub] at hp; contradiction
     | x + 1, _hp =>
       Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| Nat.succ_pos x) (Int.ofNat_zero_le _)
-  let ⟨m, e⟩ := eq_pellZd a1 ⟨x, y⟩ this ((isPell_nat a1).2 hp)
+  let_fun ⟨m, e⟩ := eq_pellZd a1 ⟨x, y⟩ this ((isPell_nat a1).2 hp)
   ⟨m,
     match x, y, e with
     | _, _, rfl => ⟨rfl, rfl⟩⟩
@@ -718,7 +718,7 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
 theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) :
     j ≡ i [MOD 4 * n] ∨ j + i ≡ 0 [MOD 4 * n] :=
-  let j' := j % (4 * n)
+  letI j' := j % (4 * n)
   have n4 : 0 < 4 * n := mul_pos (by decide) (ipos.trans_le hin)
   have jl : j' < 4 * n := Nat.mod_lt _ n4
   have jj : j ≡ j' [MOD 4 * n] := by delta ModEq; rw [Nat.mod_eq_of_lt jl]
@@ -764,11 +764,11 @@ theorem matiyasevic {a k x y} :
         (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0]; exact ⟨le_rfl, Or.inl ⟨rfl, rfl⟩⟩)
           fun kpos => ?_⟩
     exact
-      let x := xn a1 k
-      let y := yn a1 k
-      let m := 2 * (k * y)
-      let u := xn a1 m
-      let v := yn a1 m
+      letI x := xn a1 k
+      letI y := yn a1 k
+      letI m := 2 * (k * y)
+      letI u := xn a1 m
+      letI v := yn a1 m
       have ky : k ≤ y := yn_ge_n a1 k
       have yv : y * y ∣ v := (ysq_dvd_yy a1 k).trans <| (y_dvd_iff _ _ _).2 <| dvd_mul_left _ _
       have uco : Nat.Coprime u (4 * y) :=
@@ -777,7 +777,7 @@ theorem matiyasevic {a k x y} :
         have : Nat.Coprime u 2 := (xy_coprime a1 m).coprime_dvd_right this
         (this.mul_right this).mul_right <|
           (xy_coprime _ _).coprime_dvd_right (dvd_of_mul_left_dvd yv)
-      let ⟨b, ba, bm1⟩ := chineseRemainder uco a 1
+      let_fun ⟨b, ba, bm1⟩ := chineseRemainder uco a 1
       have m1 : 1 < m :=
         have : 0 < k * y := mul_pos kpos (strictMono_y a1 kpos)
         Nat.mul_le_mul_left 2 this
@@ -788,8 +788,8 @@ theorem matiyasevic {a k x y} :
         lt_of_lt_of_le a1 <| by
           delta ModEq at ba; rw [Nat.mod_eq_of_lt this] at ba; rw [← ba]
           apply Nat.mod_le
-      let s := xn b1 k
-      let t := yn b1 k
+      letI s := xn b1 k
+      letI t := yn b1 k
       have sx : s ≡ x [MOD u] := (xy_modEq_of_modEq b1 a1 ba k).left
       have tk : t ≡ k [MOD 4 * y] :=
         have : 4 * y ∣ b - 1 :=

@@ -634,7 +634,7 @@ def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
     (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
     (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
-  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  letI i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
   (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
@@ -1092,8 +1092,8 @@ def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm
       exact congrArg (· ≫ h) c.condition
     IsLimit (Fork.ofι c.ι (by simp [this]) : Fork (f ≫ h) (g ≫ h)) :=
   Fork.IsLimit.mk' _ fun s =>
-    let s' : Fork f g := Fork.ofι s.ι (by apply hm.right_cancellation; simp [s.condition])
-    let l := Fork.IsLimit.lift' i s'.ι s'.condition
+    letI s' : Fork f g := Fork.ofι s.ι (by apply hm.right_cancellation; simp [s.condition])
+    let_fun l := Fork.IsLimit.lift' i s'.ι s'.condition
     ⟨l.1, l.2, fun hm => by
       apply Fork.IsLimit.hom_ext i; rw [Fork.ι_ofι] at hm; rw [hm]; exact l.2.symm⟩
 
@@ -1170,9 +1170,9 @@ def isCoequalizerEpiComp {c : Cofork f g} (i : IsColimit c) {W : C} (h : W ⟶ X
       exact congrArg (h ≫ ·) c.condition
     IsColimit (Cofork.ofπ c.π (this) : Cofork (h ≫ f) (h ≫ g)) :=
   Cofork.IsColimit.mk' _ fun s =>
-    let s' : Cofork f g :=
+    letI s' : Cofork f g :=
       Cofork.ofπ s.π (by apply hm.left_cancellation; simp_rw [← Category.assoc, s.condition])
-    let l := Cofork.IsColimit.desc' i s'.π s'.condition
+    let_fun l := Cofork.IsColimit.desc' i s'.π s'.condition
     ⟨l.1, l.2, fun hm => by
       apply Cofork.IsColimit.hom_ext i; rw [Cofork.π_ofπ] at hm; rw [hm]; exact l.2.symm⟩
 

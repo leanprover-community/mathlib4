@@ -65,7 +65,7 @@ theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : Nonarch
       have h₁ : f ⁻¹' U ∈ 𝓝 (1 : G) := by
         apply emb.continuous.tendsto
         rwa [f.map_one]
-      let ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
+      let_fun ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
       ⟨{ Subgroup.map f V with isOpen' := emb.isOpenMap _ V.isOpen }, Set.image_subset_iff.2 hV⟩ }
 
 /-- An open neighborhood of the identity in the cartesian product of two nonarchimedean groups
@@ -91,14 +91,14 @@ the cartesian square of a nonarchimedean group contains the cartesian square of
 an open neighborhood in the group."]
 theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
-  let ⟨V, W, h⟩ := prod_subset hU
+  let_fun ⟨V, W, h⟩ := prod_subset hU
   ⟨V ⊓ W, by refine Set.Subset.trans (Set.prod_mono ?_ ?_) ‹_› <;> simp⟩
 
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
 @[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
 instance : NonarchimedeanGroup (G × K) where
   is_nonarchimedean _ hU :=
-    let ⟨V, W, h⟩ := prod_subset hU
+    let_fun ⟨V, W, h⟩ := prod_subset hU
     ⟨V.prod W, ‹_›⟩
 
 end NonarchimedeanGroup

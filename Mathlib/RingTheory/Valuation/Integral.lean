@@ -28,7 +28,7 @@ include hv
 open Polynomial
 
 theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
-  let ⟨p, hpm, hpx⟩ := hx
+  let_fun ⟨p, hpm, hpx⟩ := hx
   le_of_not_lt fun hvx : 1 < v x => by
     rw [hpm.as_sum, eval₂_add, eval₂_pow, eval₂_X, eval₂_finset_sum, add_eq_zero_iff_eq_neg] at hpx
     replace hpx := congr_arg v hpx; refine ne_of_gt ?_ hpx
@@ -42,7 +42,7 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=
   bot_unique fun _ hr =>
-    let ⟨x, hx⟩ := hv.3 (hv.mem_of_integral hr)
+    let_fun ⟨x, hx⟩ := hv.3 (hv.mem_of_integral hr)
     Algebra.mem_bot.2 ⟨x, hx⟩
 
 end CommRing

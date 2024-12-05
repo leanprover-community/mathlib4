@@ -150,7 +150,7 @@ final result.
 -/
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
-    let res := List.mapAccumr f x c
+    letI res := List.mapAccumr f x c
     ⟨res.1, res.2, by simp [*, res]⟩
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
@@ -158,7 +158,7 @@ final result.
 -/
 def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
-    let res := List.mapAccumr₂ f x y c
+    letI res := List.mapAccumr₂ f x y c
     ⟨res.1, res.2, by simp [*, res]⟩
 
 end Accum

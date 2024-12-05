@@ -320,7 +320,7 @@ theorem iUnion₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set
 theorem iInter_mono' {s : ι → Set α} {t : ι' → Set α} (h : ∀ j, ∃ i, s i ⊆ t j) :
     ⋂ i, s i ⊆ ⋂ j, t j :=
   Set.subset_iInter fun j =>
-    let ⟨i, hi⟩ := h j
+    let_fun ⟨i, hi⟩ := h j
     iInter_subset_of_subset i hi
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -328,7 +328,7 @@ theorem iInter_mono' {s : ι → Set α} {t : ι' → Set α} (h : ∀ j, ∃ i,
 theorem iInter₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set α}
     (h : ∀ i' j', ∃ i j, s i j ⊆ t i' j') : ⋂ (i) (j), s i j ⊆ ⋂ (i') (j'), t i' j' :=
   subset_iInter₂_iff.2 fun i' j' =>
-    let ⟨_, _, hst⟩ := h i' j'
+    let_fun ⟨_, _, hst⟩ := h i' j'
     (iInter₂_subset _ _).trans hst
 
 theorem iUnion₂_subset_iUnion (κ : ι → Sort*) (s : ι → Set α) :
@@ -941,7 +941,7 @@ theorem nonempty_sUnion {S : Set (Set α)} : (⋃₀S).Nonempty ↔ ∃ s ∈ S,
   simp [nonempty_iff_ne_empty]
 
 theorem Nonempty.of_sUnion {s : Set (Set α)} (h : (⋃₀s).Nonempty) : s.Nonempty :=
-  let ⟨s, hs, _⟩ := nonempty_sUnion.1 h
+  let_fun ⟨s, hs, _⟩ := nonempty_sUnion.1 h
   ⟨s, hs⟩
 
 theorem Nonempty.of_sUnion_eq_univ [Nonempty α] {s : Set (Set α)} (h : ⋃₀s = univ) : s.Nonempty :=
@@ -1742,8 +1742,8 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
   simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
   exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
-    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
-    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
+    let_fun ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
+    let_fun ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
 
 @[deprecated (since := "2024-05-05")]
@@ -1890,7 +1890,7 @@ def sigmaToiUnion (x : Σi, t i) : ⋃ i, t i :=
 theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
   | ⟨b, hb⟩ =>
     have : ∃ a, b ∈ t a := by simpa using hb
-    let ⟨a, hb⟩ := this
+    let_fun ⟨a, hb⟩ := this
     ⟨⟨a, b, hb⟩, rfl⟩
 
 theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :

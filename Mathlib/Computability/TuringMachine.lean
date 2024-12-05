@@ -754,7 +754,7 @@ theorem eval_maximal₁ {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) (
     cases b0.symm.trans h'
 
 theorem eval_maximal {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) {c} : Reaches f b c ↔ c = b :=
-  let ⟨_, b0⟩ := mem_eval.1 h
+  let_fun ⟨_, b0⟩ := mem_eval.1 h
   reflTransGen_iff_eq fun b' h' ↦ by cases b0.symm.trans h'
 
 theorem reaches_eval {σ} {f : σ → Option σ} {a b} (ab : Reaches f a b) : eval f a = eval f b := by
@@ -836,10 +836,10 @@ theorem tr_eval_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H :
 theorem tr_eval_dom {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
     (aa : tr a₁ a₂) : (eval f₂ a₂).Dom ↔ (eval f₁ a₁).Dom :=
   ⟨fun h ↦
-    let ⟨_, _, h, _⟩ := tr_eval_rev H aa ⟨h, rfl⟩
+    let_fun ⟨_, _, h, _⟩ := tr_eval_rev H aa ⟨h, rfl⟩
     h,
     fun h ↦
-    let ⟨_, _, h, _⟩ := tr_eval H aa ⟨h, rfl⟩
+    let_fun ⟨_, _, h, _⟩ := tr_eval H aa ⟨h, rfl⟩
     h⟩
 
 /-- A simpler version of `Respects` when the state transition relation `tr` is a function. -/
@@ -861,7 +861,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
     (H : Respects f₁ f₂ fun a b ↦ tr a = b) (a₁) : eval f₂ (tr a₁) = tr <$> eval f₁ a₁ :=
   Part.ext fun b₂ ↦
     ⟨fun h ↦
-      let ⟨b₁, bb, hb⟩ := tr_eval_rev H rfl h
+      let_fun ⟨b₁, bb, hb⟩ := tr_eval_rev H rfl h
       (Part.mem_map_iff _).2 ⟨b₁, hb, bb⟩,
       fun h ↦ by
       rcases (Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
@@ -2252,7 +2252,7 @@ def trStAct {k : K} (q : Stmt₂₁) : StAct₂ k → Stmt₂₁
 /-- The initial state for the TM2 emulator, given an initial TM2 state. All stacks start out empty
 except for the input stack, and the stack bottom mark is set at the head. -/
 def trInit (k : K) (L : List (Γ k)) : List Γ'₂₁ :=
-  let L' : List Γ'₂₁ := L.reverse.map fun a ↦ (false, update (fun _ ↦ none) k (some a))
+  let_fun L' : List Γ'₂₁ := L.reverse.map fun a ↦ (false, update (fun _ ↦ none) k (some a))
   (true, L'.headI.2) :: L'.tail
 
 theorem step_run {k : K} (q : Stmt₂) (v : σ) (S : ∀ k, List (Γ k)) : ∀ s : StAct₂ k,
@@ -2298,9 +2298,9 @@ theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
 theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (Γ k)}
     {L : ListBlank (∀ k, Option (Γ k))}
     (hL : ∀ k, L.map (proj k) = ListBlank.mk ((S k).map some).reverse) (o : StAct₂ k) :
-    let v' := stVar v (S k) o
-    let Sk' := stWrite v (S k) o
-    let S' := update S k Sk'
+    let_fun v' := stVar v (S k) o
+    let_fun Sk' := stWrite v (S k) o
+    let_fun S' := update S k Sk'
     ∃ L' : ListBlank (∀ k, Option (Γ k)),
       (∀ k, L'.map (proj k) = ListBlank.mk ((S' k).map some).reverse) ∧
         TM1.stepAux (trStAct q o) v

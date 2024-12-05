@@ -167,7 +167,7 @@ theorem exists_lt_card_nth_eq {x} (h : p x) :
     exact ⟨n, fun hf' => absurd hf' hf, hx⟩
 
 theorem subset_range_nth : setOf p ⊆ Set.range (nth p) := fun x (hx : p x) =>
-  let ⟨n, _, hn⟩ := exists_lt_card_nth_eq hx
+  let_fun ⟨n, _, hn⟩ := exists_lt_card_nth_eq hx
   ⟨n, hn⟩
 
 theorem range_nth_subset : Set.range (nth p) ⊆ insert 0 (setOf p) :=
@@ -196,7 +196,7 @@ theorem le_nth {n : ℕ} (h : ∀ hf : (setOf p).Finite, n < #hf.toFinset) : n �
 theorem isLeast_nth {n} (h : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     IsLeast {i | p i ∧ ∀ k < n, nth p k < i} (nth p n) :=
   ⟨⟨nth_mem n h, fun _k hk => nth_lt_nth' hk h⟩, fun _x hx =>
-    let ⟨k, hk, hkx⟩ := exists_lt_card_nth_eq hx.1
+    let_fun ⟨k, hk, hkx⟩ := exists_lt_card_nth_eq hx.1
     (lt_or_le k n).elim (fun hlt => absurd hkx (hx.2 _ hlt).ne) fun hle => hkx ▸ nth_le_nth' hle hk⟩
 
 theorem isLeast_nth_of_lt_card {n : ℕ} (hf : (setOf p).Finite) (hn : n < #hf.toFinset) :
@@ -368,7 +368,7 @@ theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (co
   (le_csInf hpn fun _ => And.right).trans (nth_count_eq_sInf p n).ge
 
 theorem le_nth_count (hp : (setOf p).Infinite) (n : ℕ) : n ≤ nth p (count p n) :=
-  let ⟨m, hp, hn⟩ := hp.exists_gt n
+  let_fun ⟨m, hp, hn⟩ := hp.exists_gt n
   le_nth_count' ⟨m, hp, hn.le⟩
 
 /-- If a predicate `p : ℕ → Prop` is true for infinitely many numbers, then `Nat.count p` and

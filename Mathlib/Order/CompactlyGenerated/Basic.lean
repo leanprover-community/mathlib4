@@ -669,7 +669,7 @@ alias exists_setIndependent_isCompl_sSup_atoms := exists_sSupIndep_isCompl_sSup_
 
 theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
     ∃ s : Set α, sSupIndep s ∧ sSup s = ⊤ ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
-  let ⟨s, s_ind, s_top, s_atoms⟩ := exists_sSupIndep_isCompl_sSup_atoms h ⊥
+  let_fun ⟨s, s_ind, s_top, s_atoms⟩ := exists_sSupIndep_isCompl_sSup_atoms h ⊥
   ⟨s, s_ind, eq_top_of_isCompl_bot s_top.symm, s_atoms⟩
 
 @[deprecated (since := "2024-11-24")]
@@ -679,7 +679,7 @@ alias exists_setIndependent_of_sSup_atoms_eq_top := exists_sSupIndep_of_sSup_ato
 theorem complementedLattice_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
     ComplementedLattice α :=
   ⟨fun b =>
-    let ⟨s, _, s_top, _⟩ := exists_sSupIndep_isCompl_sSup_atoms h b
+    let_fun ⟨s, _, s_top, _⟩ := exists_sSupIndep_isCompl_sSup_atoms h b
     ⟨sSup s, s_top⟩⟩
 
 /-- See [Theorem 6.6][calugareanu]. -/

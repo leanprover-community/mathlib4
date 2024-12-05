@@ -58,7 +58,7 @@ noncomputable def _root_.Basis.tensorAlgebra (b : Basis κ R M) :
 
 /-- `TensorAlgebra R M` is free when `M` is. -/
 instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
-  let ⟨⟨_κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
+  let_fun ⟨⟨_κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   .of_basis b.tensorAlgebra
 
 /-- The `TensorAlgebra` of a free module over a commutative semiring with no zero-divisors has

@@ -360,7 +360,7 @@ variable [ConditionallyCompleteLinearOrder α] {a b : α}
 When `b < iSup f`, there is an element `i` such that `b < f i`.
 -/
 theorem exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : ∃ i, b < f i :=
-  let ⟨_, ⟨i, rfl⟩, h⟩ := exists_lt_of_lt_csSup (range_nonempty f) h
+  let_fun ⟨_, ⟨i, rfl⟩, h⟩ := exists_lt_of_lt_csSup (range_nonempty f) h
   ⟨i, h⟩
 
 /-- Indexed version of `exists_lt_of_csInf_lt`.

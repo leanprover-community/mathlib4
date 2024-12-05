@@ -61,14 +61,14 @@ def updateUnexpander : Lean.PrettyPrinter.Unexpander
 unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] [∀ i, Zero (β i)] :
     Repr (Π₀ a, β a) where
   reprPrec f p :=
-    let vals :=
+    let_fun vals :=
       ((f.support'.unquot.val.map fun i => (repr i, repr (f i))).filter
         (fun p => toString p.2 != "0")).unquot
-    let vals_dedup := vals.foldl (fun xs x => x :: xs.eraseP (toString ·.1 == toString x.1)) []
+    let_fun vals_dedup := vals.foldl (fun xs x => x :: xs.eraseP (toString ·.1 == toString x.1)) []
     if vals.length = 0 then
       "0"
     else
-      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
+      let_fun ret : Std.Format := f!"fun₀" ++ .nest 2 (
         .group (.join <| vals_dedup.map fun a =>
           .line ++ .group (f!"| {a.1} =>" ++ .line ++ a.2)))
       if p ≥ leadPrec then Format.paren ret else ret

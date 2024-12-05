@@ -27,7 +27,7 @@ section Infinite
 /-- Euclid's theorem on the **infinitude of primes**.
 Here given in the form: for every `n`, there exists a prime number `p ≥ n`. -/
 theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p :=
-  let p := minFac (n ! + 1)
+  letI p := minFac (n ! + 1)
   have f1 : n ! + 1 ≠ 1 := ne_of_gt <| succ_lt_succ <| factorial_pos _
   have pp : Prime p := minFac_prime f1
   have np : n ≤ p :=

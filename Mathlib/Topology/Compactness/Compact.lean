@@ -116,7 +116,7 @@ theorem IsCompact.image {f : X → Y} (hs : IsCompact s) (hf : Continuous f) : I
 theorem IsCompact.adherence_nhdset {f : Filter X} (hs : IsCompact s) (hf₂ : f ≤ 𝓟 s)
     (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   Classical.by_cases mem_of_eq_bot fun (this : f ⊓ 𝓟 tᶜ ≠ ⊥) =>
-    let ⟨x, hx, (hfx : ClusterPt x <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ <| inf_le_of_left_le hf₂
+    let_fun ⟨x, hx, (hfx : ClusterPt x <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ <| inf_le_of_left_le hf₂
     have : x ∈ t := ht₂ x hx hfx.of_inf_left
     have : tᶜ ∩ t ∈ 𝓝[tᶜ] x := inter_mem_nhdsWithin _ (IsOpen.mem_nhds ht₁ this)
     have A : 𝓝[tᶜ] x = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
@@ -163,10 +163,10 @@ theorem IsCompact.elim_directed_cover {ι : Type v} [hι : Nonempty ι] (hs : Is
   hι.elim fun i₀ =>
     IsCompact.induction_on hs ⟨i₀, empty_subset _⟩ (fun _ _ hs ⟨i, hi⟩ => ⟨i, hs.trans hi⟩)
       (fun _ _ ⟨i, hi⟩ ⟨j, hj⟩ =>
-        let ⟨k, hki, hkj⟩ := hdU i j
+        let_fun ⟨k, hki, hkj⟩ := hdU i j
         ⟨k, union_subset (Subset.trans hi hki) (Subset.trans hj hkj)⟩)
       fun _x hx =>
-      let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
+      let_fun ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
       ⟨U i, mem_nhdsWithin_of_mem_nhds (IsOpen.mem_nhds (hUo i) hi), i, Subset.refl _⟩
 
 /-- For every open cover of a compact set, there exists a finite subcover. -/
@@ -190,7 +190,7 @@ lemma IsCompact.elim_nhds_subcover_nhdsSet (hs : IsCompact s) {U : X → Set X}
   let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU
   classical
   exact ⟨t.image (↑), fun x hx =>
-    let ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
+    let_fun ⟨y, _, hyx⟩ := Finset.mem_image.1 hx
     hyx ▸ y.2,
     by rwa [Finset.set_biUnion_finset_image]⟩
 
@@ -227,7 +227,7 @@ there exists a single element of the family which itself avoids this compact set
 theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : IsCompact s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅)
     (hdt : Directed (· ⊇ ·) t) : ∃ i : ι, s ∩ t i = ∅ :=
-  let ⟨t, ht⟩ :=
+  let_fun ⟨t, ht⟩ :=
     hs.elim_directed_cover (compl ∘ t) (fun i => (htc i).isOpen_compl)
       (by
         simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
@@ -813,7 +813,7 @@ lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
 
 lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set X} (hs : s.Infinite)
     (hK : IsCompact K) (hsub : s ⊆ K) : ∃ x ∈ K, AccPt x (𝓟 s) :=
-  let ⟨x, hxK, hx⟩ := hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact hK hsub
+  let_fun ⟨x, hxK, hx⟩ := hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact hK hsub
   ⟨x, hxK, hx.mono inf_le_right⟩
 
 lemma Set.Infinite.exists_accPt_cofinite_inf_principal [CompactSpace X] (hs : s.Infinite) :
@@ -830,13 +830,13 @@ theorem exists_nhds_ne_neBot (X : Type*) [TopologicalSpace X] [CompactSpace X] [
 
 theorem finite_cover_nhds_interior [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Finset X, ⋃ x ∈ t, interior (U x) = univ :=
-  let ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x => interior (U x))
+  let_fun ⟨t, ht⟩ := isCompact_univ.elim_finite_subcover (fun x => interior (U x))
     (fun _ => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
   ⟨t, univ_subset_iff.1 ht⟩
 
 theorem finite_cover_nhds [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Finset X, ⋃ x ∈ t, U x = univ :=
-  let ⟨t, ht⟩ := finite_cover_nhds_interior hU
+  let_fun ⟨t, ht⟩ := finite_cover_nhds_interior hU
   ⟨t, univ_subset_iff.1 <| ht.symm.subset.trans <| iUnion₂_mono fun _ _ => interior_subset⟩
 
 /-- If `X` is a compact space, then a locally finite family of sets of `X` can have only finitely

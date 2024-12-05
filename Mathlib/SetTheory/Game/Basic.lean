@@ -897,11 +897,11 @@ Because the two halves `x⁻¹L, x⁻¹R` of `x⁻¹` are used in their own
 definition, the sets and elements are inductively generated. -/
 def inv' : PGame → PGame
   | ⟨l, r, L, R⟩ =>
-    let l' := { i // 0 < L i }
-    let L' : l' → PGame := fun i => L i.1
-    let IHl' : l' → PGame := fun i => inv' (L i.1)
-    let IHr i := inv' (R i)
-    let x := mk l r L R
+    letI l' := { i // 0 < L i }
+    let_fun L' : l' → PGame := fun i => L i.1
+    let_fun IHl' : l' → PGame := fun i => inv' (L i.1)
+    let_fun IHr i := inv' (R i)
+    let_fun x := mk l r L R
     ⟨InvTy l' r false, InvTy l' r true, invVal L' R IHl' IHr x, invVal L' R IHl' IHr x⟩
 
 theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x

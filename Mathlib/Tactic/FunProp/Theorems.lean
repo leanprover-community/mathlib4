@@ -115,7 +115,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
     initial := {}
     addEntry := fun d e =>
       {d with theorems :=
-        let es := d.theorems.getD (e.funPropName, e.thmArgs.type) #[]
+        let_fun es := d.theorems.getD (e.funPropName, e.thmArgs.type) #[]
         d.theorems.insert (e.funPropName, e.thmArgs.type) (es.push e)}
   }
 
@@ -194,9 +194,9 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
       {d with
         theorems :=
           d.theorems.alter e.funOrigin.name fun funProperties =>
-            let funProperties := funProperties.getD {}
+            let_fun funProperties := funProperties.getD {}
             funProperties.alter e.funPropName fun thms =>
-              let thms := thms.getD #[]
+              let_fun thms := thms.getD #[]
               thms.push e}
   }
 

@@ -228,8 +228,8 @@ theorem comap_mono {S₁ S₂ : StarSubalgebra R B} {f : A →⋆ₐ[R] B} :
 theorem comap_injective {f : A →⋆ₐ[R] B} (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun _S₁ _S₂ h =>
   ext fun b =>
-    let ⟨x, hx⟩ := hf b
-    let this := SetLike.ext_iff.1 h x
+    let_fun ⟨x, hx⟩ := hf b
+    let_fun this := SetLike.ext_iff.1 h x
     hx ▸ this
 
 @[simp]

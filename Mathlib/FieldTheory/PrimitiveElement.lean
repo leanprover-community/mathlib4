@@ -228,8 +228,8 @@ a finite separable field extension has a basis `1, α, α^2, ..., α^n`.
 
 See also `exists_primitive_element`. -/
 noncomputable def powerBasisOfFiniteOfSeparable : PowerBasis F E :=
-  let α := (exists_primitive_element F E).choose
-  let pb := adjoin.powerBasis (Algebra.IsSeparable.isIntegral F α)
+  letI α := (exists_primitive_element F E).choose
+  let_fun pb := adjoin.powerBasis (Algebra.IsSeparable.isIntegral F α)
   have e : F⟮α⟯ = ⊤ := (exists_primitive_element F E).choose_spec
   pb.map ((IntermediateField.equivOfEq e).trans IntermediateField.topEquiv)
 

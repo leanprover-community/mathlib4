@@ -147,7 +147,7 @@ See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
-  let _ := SeminormedAddCommGroup.induced E G f
+  letI _ := SeminormedAddCommGroup.induced E G f
   ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
 
 section NormedAddCommGroup
@@ -193,8 +193,8 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rwa [norm_pos_iff]
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
-  let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
-  let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
+  let_fun ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
+  let_fun ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
   hx.not_le (hR x trivial)
 
 protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by

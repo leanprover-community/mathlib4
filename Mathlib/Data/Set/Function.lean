@@ -551,7 +551,7 @@ theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (pre
 
 theorem InjOn.mem_of_mem_image {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (h : x ∈ s) (h₁ : f x ∈ f '' s₁) :
     x ∈ s₁ :=
-  let ⟨_, h', Eq⟩ := h₁
+  let_fun ⟨_, h', Eq⟩ := h₁
   hf (hs h') h Eq ▸ h'
 
 theorem InjOn.mem_image_iff {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (hx : x ∈ s) :
@@ -705,7 +705,7 @@ theorem surjOn_iff_exists_map_subtype :
   ⟨fun h =>
     ⟨_, (mapsTo_image f s).restrict f s _, h, surjective_mapsTo_image_restrict _ _, fun _ => rfl⟩,
     fun ⟨t', g, htt', hg, hfg⟩ y hy =>
-    let ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
+    let_fun ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
     ⟨x, x.2, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
 
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
@@ -780,10 +780,10 @@ theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := by
 
 theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
   ⟨fun H b =>
-    let ⟨a, as, e⟩ := @H b trivial
+    let_fun ⟨a, as, e⟩ := @H b trivial
     ⟨⟨a, as⟩, e⟩,
     fun H b _ =>
-    let ⟨⟨a, as⟩, e⟩ := H b
+    let_fun ⟨⟨a, as⟩, e⟩ := H b
     ⟨a, as, e⟩⟩
 
 @[simp]
@@ -810,7 +810,7 @@ lemma SurjOn.image_preimage (h : Set.SurjOn f s t) (ht : t₁ ⊆ t) : f '' (f �
 
 theorem SurjOn.mapsTo_compl (h : SurjOn f s t) (h' : Injective f) : MapsTo f sᶜ tᶜ :=
   fun _ hs ht =>
-  let ⟨_, hx', HEq⟩ := h ht
+  let_fun ⟨_, hx', HEq⟩ := h ht
   hs <| h' HEq ▸ hx'
 
 theorem MapsTo.surjOn_compl (h : MapsTo f s t) (h' : Surjective f) : SurjOn f sᶜ tᶜ :=
@@ -830,7 +830,7 @@ theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn
 
 theorem SurjOn.forall {p : β → Prop} (hf : s.SurjOn f t) (hf' : s.MapsTo f t) :
     (∀ y ∈ t, p y) ↔ (∀ x ∈ s, p (f x)) :=
-  ⟨fun H x hx ↦ H (f x) (hf' hx), fun H _y hy ↦ let ⟨x, hx, hxy⟩ := hf hy; hxy ▸ H x hx⟩
+  ⟨fun H x hx ↦ H (f x) (hf' hx), fun H _y hy ↦ let_fun ⟨x, hx, hxy⟩ := hf hy; hxy ▸ H x hx⟩
 
 end surjOn
 
@@ -863,7 +863,7 @@ theorem bijOn_empty (f : α → β) : BijOn f ∅ ∅ :=
 theorem BijOn.inter_mapsTo (h₁ : BijOn f s₁ t₁) (h₂ : MapsTo f s₂ t₂) (h₃ : s₁ ∩ f ⁻¹' t₂ ⊆ s₂) :
     BijOn f (s₁ ∩ s₂) (t₁ ∩ t₂) :=
   ⟨h₁.mapsTo.inter_inter h₂, h₁.injOn.mono inter_subset_left, fun _ hy =>
-    let ⟨x, hx, hxy⟩ := h₁.surjOn hy.1
+    let_fun ⟨x, hx, hxy⟩ := h₁.surjOn hy.1
     ⟨x, ⟨hx, h₃ ⟨hx, hxy.symm.subst hy.2⟩⟩, hxy⟩⟩
 
 theorem MapsTo.inter_bijOn (h₁ : MapsTo f s₁ t₁) (h₂ : BijOn f s₂ t₂) (h₃ : s₂ ∩ f ⁻¹' t₁ ⊆ s₁) :
@@ -924,16 +924,16 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
 
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
   ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
-    let ⟨x, hx, hxy⟩ := h.surjOn hy
+    let_fun ⟨x, hx, hxy⟩ := h.surjOn hy
     ⟨⟨x, hx⟩, Subtype.eq hxy⟩⟩
 
 theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ :=
   Iff.intro
     (fun h =>
-      let ⟨inj, surj⟩ := h
+      let_fun ⟨inj, surj⟩ := h
       ⟨mapsTo_univ f _, inj.injOn, Iff.mp surjective_iff_surjOn_univ surj⟩)
     fun h =>
-    let ⟨_map, inj, surj⟩ := h
+    let_fun ⟨_map, inj, surj⟩ := h
     ⟨Iff.mpr injective_iff_injOn_univ inj, Iff.mpr surjective_iff_surjOn_univ surj⟩
 
 alias ⟨_root_.Function.Bijective.bijOn_univ, _⟩ := bijective_iff_bijOn_univ
@@ -1242,7 +1242,7 @@ lemma exists_subset_bijOn : ∃ s' ⊆ s, BijOn f s' (f '' s) :=
   surjOn_iff_exists_bijOn_subset.mp (surjOn_image f s)
 
 lemma exists_image_eq_and_injOn : ∃ u, f '' u =  f '' s ∧ InjOn f u :=
-  let ⟨u, _, hfu⟩ := exists_subset_bijOn s f
+  let_fun ⟨u, _, hfu⟩ := exists_subset_bijOn s f
   ⟨u, hfu.image_eq, hfu.injOn⟩
 
 variable {f s}

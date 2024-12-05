@@ -222,7 +222,7 @@ theorem exists_factorization_of_apply_eq_zero [Flat R M] {ι : Type u} [_root_.F
     {f : ι →₀ R} {x : (ι →₀ R) →ₗ[R] M} (h : x f = 0) :
     ∃ (κ : Type u) (_ : Fintype κ) (a : (ι →₀ R) →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a f = 0 :=
-  let ⟨_⟩ := nonempty_fintype ι; iff_forall_exists_factorization.mp ‹Flat R M› h
+  let_fun ⟨_⟩ := nonempty_fintype ι; iff_forall_exists_factorization.mp ‹Flat R M› h
 
 /-- **Equational criterion for flatness**
 [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), backward direction, alternate form.

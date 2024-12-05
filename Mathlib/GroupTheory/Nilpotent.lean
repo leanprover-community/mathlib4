@@ -123,8 +123,8 @@ a group, and a proof that it is normal, all in one go. -/
 def upperCentralSeriesAux : ℕ → Σ'H : Subgroup G, Normal H
   | 0 => ⟨⊥, inferInstance⟩
   | n + 1 =>
-    let un := upperCentralSeriesAux n
-    let _un_normal := un.2
+    let_fun un := upperCentralSeriesAux n
+    let_fun _un_normal := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
 /-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`. -/

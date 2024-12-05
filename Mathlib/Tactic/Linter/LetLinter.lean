@@ -19,10 +19,10 @@ open Lean Elab
 
 partial
 def getLet (stx : Syntax) : Array Syntax :=
-  if stx.getKind == ``Lean.Parser.Term.let then
+  (if stx.getKind == ``Lean.Parser.Term.let then
     #[stx]
   else
-    stx.foldArgs (fun arg r => r ++ getLet arg) #[]
+    #[]) ++ stx.foldArgs (fun arg r => r ++ getLet arg) #[]
 
 def letLinter : Linter where run := withSetOptionIn fun stx => do
   unless Linter.getLinterValue linter.let (← getOptions) do

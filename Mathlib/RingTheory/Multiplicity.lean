@@ -188,7 +188,7 @@ theorem multiplicity.Finite.not_iff_forall : ¬Finite a b ↔ ∀ n : ℕ, a ^ n
     by simp [multiplicity.Finite, multiplicity, Classical.not_not]; tauto⟩
 
 theorem multiplicity.Finite.not_unit (h : Finite a b) : ¬IsUnit a :=
-  let ⟨n, hn⟩ := h
+  let_fun ⟨n, hn⟩ := h
   hn ∘ IsUnit.dvd ∘ IsUnit.pow (n + 1)
 
 theorem multiplicity.Finite.mul_left {c : α} : Finite a (b * c) → Finite a b := fun ⟨n, hn⟩ =>
@@ -472,7 +472,7 @@ section MonoidWithZero
 variable [MonoidWithZero α]
 
 theorem multiplicity.Finite.ne_zero {a b : α} (h : Finite a b) : b ≠ 0 :=
-  let ⟨n, hn⟩ := h
+  let_fun ⟨n, hn⟩ := h
   fun hb => by simp [hb] at hn
 
 @[simp]

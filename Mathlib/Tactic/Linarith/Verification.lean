@@ -48,7 +48,7 @@ open Qq
 /-- A typesafe version of `mulExpr`. -/
 def mulExpr' {u : Level} (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
   if n = 1 then e else
-    let n := ofNatQ α inst n
+    let_fun n := ofNatQ α inst n
     q($n * $e)
 
 /--

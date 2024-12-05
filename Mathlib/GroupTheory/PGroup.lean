@@ -79,12 +79,12 @@ theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
 
 theorem orderOf_coprime {n : ℕ} (hn : p.Coprime n) (g : G) : (orderOf g).Coprime n :=
-  let ⟨k, hk⟩ := hG g
+  let_fun ⟨k, hk⟩ := hG g
   (hn.pow_left k).coprime_dvd_left (orderOf_dvd_of_pow_eq_one hk)
 
 /-- If `gcd(p,n) = 1`, then the `n`th power map is a bijection. -/
 noncomputable def powEquiv {n : ℕ} (hn : p.Coprime n) : G ≃ G :=
-  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
+  let_fun h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
     (Nat.card_zpowers g).symm ▸ hG.orderOf_coprime hn g
   { toFun := (· ^ n)
     invFun := fun g => (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
@@ -129,7 +129,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
 
 theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G = p ^ n :=
   ⟨fun hGnt =>
-    let ⟨k, hk⟩ := iff_card.1 hG
+    let_fun ⟨k, hk⟩ := iff_card.1 hG
     ⟨k,
       Nat.pos_of_ne_zero fun hk0 => by
         rw [hk0, pow_zero] at hk; exact Finite.one_lt_card.ne' hk,
@@ -206,7 +206,7 @@ theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.ca
     (Fact.out (p := p.Prime)).one_lt.trans_le (Nat.le_of_dvd (Finite.card_pos_iff.2 ⟨⟨a, ha⟩⟩) hpf)
   rw [Finite.one_lt_card_iff_nontrivial] at hα
   exact
-    let ⟨⟨b, hb⟩, hba⟩ := exists_ne (⟨a, ha⟩ : fixedPoints G α)
+    let_fun ⟨⟨b, hb⟩, hba⟩ := exists_ne (⟨a, ha⟩ : fixedPoints G α)
     ⟨b, hb, fun hab => hba (by simp_rw [hab])⟩
 
 theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.center G) := by
@@ -275,7 +275,7 @@ theorem to_sup_of_normal_left {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGr
 
 theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
     (hHK : H ≤ K.normalizer) : IsPGroup p (H ⊔ K : Subgroup G) :=
-  let hHK' :=
+  let_fun hHK' :=
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
   ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)

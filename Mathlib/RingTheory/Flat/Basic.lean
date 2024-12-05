@@ -288,10 +288,10 @@ lemma iff_rTensor_preserves_injective_linearMap' [Small.{v'} R] [Small.{v'} M] :
     iff_characterModule_injective.trans <|
       (injective_characterModule_iff_rTensor_preserves_injective_linearMap R (Shrink.{v'} M)).trans
         <| forall₅_congr <| fun N N' _ _ _ => forall₃_congr <| fun _ f _ =>
-  let frmu := f.rTensor (Shrink.{v'} M)
-  let frm := f.rTensor M
-  let emn := TensorProduct.congr (LinearEquiv.refl R N) (Shrink.linearEquiv M R)
-  let emn' := TensorProduct.congr (LinearEquiv.refl R N') (Shrink.linearEquiv M R)
+  letI frmu := f.rTensor (Shrink.{v'} M)
+  letI frm := f.rTensor M
+  letI emn := TensorProduct.congr (LinearEquiv.refl R N) (Shrink.linearEquiv M R)
+  letI emn' := TensorProduct.congr (LinearEquiv.refl R N') (Shrink.linearEquiv M R)
   have h : emn'.toLinearMap.comp frmu = frm.comp emn.toLinearMap := TensorProduct.ext rfl
   (EquivLike.comp_injective frmu emn').symm.trans <|
     (congrArg Function.Injective (congrArg DFunLike.coe h)).to_iff.trans <|

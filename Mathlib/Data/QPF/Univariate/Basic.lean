@@ -431,7 +431,7 @@ theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
     (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs ⟨a, f'⟩ ∧
       ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
-  let R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
+  letI R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   Cofix.bisim R
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f, f', ux'eq, vx'eq, h'⟩

@@ -59,7 +59,7 @@ theorem to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 
 instance [Nontrivial α] : Nonempty (TwoPointing α) :=
-  let ⟨a, b, h⟩ := exists_pair_ne α
+  let_fun ⟨a, b, h⟩ := exists_pair_ne α
   ⟨⟨(a, b), h⟩⟩
 
 @[simp]

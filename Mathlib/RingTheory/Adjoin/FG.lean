@@ -112,7 +112,7 @@ theorem fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.FG :=
   fg_of_fg_toSubmodule (IsNoetherian.noetherian (Subalgebra.toSubmodule S))
 
 theorem fg_of_submodule_fg (h : (⊤ : Submodule R A).FG) : (⊤ : Subalgebra R A).FG :=
-  let ⟨s, hs⟩ := h
+  let_fun ⟨s, hs⟩ := h
   ⟨s, toSubmodule.injective <| by
     rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
     exact Algebra.subset_adjoin⟩
@@ -132,14 +132,14 @@ section
 open scoped Classical
 
 theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
-  let ⟨s, hs⟩ := hs
+  let_fun ⟨s, hs⟩ := hs
   ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
 
 end
 
 theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
     (hs : (S.map f).FG) : S.FG :=
-  let ⟨s, hs⟩ := hs
+  let_fun ⟨s, hs⟩ := hs
   ⟨s.preimage f fun _ _ _ _ h ↦ hf h,
     map_injective hf <| by
       rw [← Algebra.adjoin_image, Finset.coe_preimage, Set.image_preimage_eq_of_subset, hs]
@@ -186,7 +186,7 @@ variable [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRing R] :
     IsNoetherianRing S :=
-  let ⟨t, ht⟩ := HS
+  let_fun ⟨t, ht⟩ := HS
   ht ▸ (Algebra.adjoin_eq_range R (↑t : Set A)).symm ▸ AlgHom.isNoetherianRing_range _
 
 theorem is_noetherian_subring_closure (s : Set R) (hs : s.Finite) :

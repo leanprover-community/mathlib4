@@ -748,7 +748,7 @@ def numDenom (x : RatFunc K) : K[X] × K[X] :=
     (fun p q =>
       if q = 0 then ⟨0, 1⟩
       else
-        let r := gcd p q
+        let_fun r := gcd p q
         ⟨Polynomial.C (q / r).leadingCoeff⁻¹ * (p / r),
           Polynomial.C (q / r).leadingCoeff⁻¹ * (q / r)⟩)
   (by

@@ -63,7 +63,7 @@ We use this internally to avoid unnecessary typeclass searches.
 This function is the inverse of `Expr.intLit!`.
 -/
 def mkRawIntLit (n : ℤ) : Q(ℤ) :=
-  let lit : Q(ℕ) := mkRawNatLit n.natAbs
+  let_fun lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 
 /--
@@ -74,8 +74,8 @@ rather than the preferred `OfNat.ofNat` form.
 We use this internally to avoid unnecessary typeclass searches.
 -/
 def mkRawRatLit (q : ℚ) : Q(ℚ) :=
-  let nlit : Q(ℤ) := mkRawIntLit q.num
-  let dlit : Q(ℕ) := mkRawNatLit q.den
+  let_fun nlit : Q(ℤ) := mkRawIntLit q.num
+  let_fun dlit : Q(ℕ) := mkRawNatLit q.den
   q(mkRat $nlit $dlit)
 
 /-- Extract the raw natlit representing the absolute value of a raw integer literal
@@ -297,7 +297,7 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
     (z : Q(ℤ)) (n : ℤ) (proof : Q(IsInt $x $z)) : Result x :=
   have lit : Q(ℕ) := z.appArg!
   if 0 ≤ n then
-    let proof : Q(IsInt $x (.ofNat $lit)) := proof
+    let_fun proof : Q(IsInt $x (.ofNat $lit)) := proof
     .isNat q(instAddMonoidWithOne) lit q(IsInt.to_isNat $proof)
   else
     .isNegNat inst lit proof
@@ -419,7 +419,7 @@ def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr :
 
 /-- Convert a `Result` to a `Simp.Result`. -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
-  | r@(.isBool ..) => let ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
+  | r@(.isBool ..) => let_fun ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
   | .isNat sα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }

@@ -87,13 +87,13 @@ lemma surjectiveOnStalks_iff_forall_maximal' :
 lemma surjectiveOnStalks_of_exists_div (h : ∀ x : S, ∃ r s : R, IsUnit (f s) ∧ f s * x = f r) :
     SurjectiveOnStalks f :=
   surjectiveOnStalks_iff_forall_ideal.mpr fun I hI x ↦
-    let ⟨r, s, hr, hr'⟩ := h x
+    let_fun ⟨r, s, hr, hr'⟩ := h x
     ⟨r, s, 1, by simpa [← Ideal.eq_top_iff_one], fun h ↦ hI (I.eq_top_of_isUnit_mem h hr), by simpa⟩
 
 lemma surjectiveOnStalks_of_surjective (h : Function.Surjective f) :
     SurjectiveOnStalks f :=
   surjectiveOnStalks_iff_forall_ideal.mpr fun _ _ s ↦
-    let ⟨r, hr⟩ := h s
+    let_fun ⟨r, hr⟩ := h s
     ⟨r, 1, 1, by simpa [← Ideal.eq_top_iff_one], by simpa [← Ideal.eq_top_iff_one], by simp [hr]⟩
 
 lemma SurjectiveOnStalks.comp (hg : SurjectiveOnStalks g) (hf : SurjectiveOnStalks f) :

@@ -192,7 +192,7 @@ instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
-  let ⟨x, hx⟩ := exists_ne (0 : M)
+  let_fun ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
 variable (R M)
 
@@ -567,7 +567,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ r : R, 0 < r ∧ r • x = y :=
-  let ⟨r₁, r₂, hr₁, hr₂, h⟩ := h.exists_pos hx hy
+  let_fun ⟨r₁, r₂, hr₁, hr₂, h⟩ := h.exists_pos hx hy
   ⟨r₂⁻¹ * r₁, mul_pos (inv_pos.2 hr₂) hr₁, by rw [mul_smul, h, inv_smul_smul₀ hr₂.ne']⟩
 
 theorem exists_pos_right (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :

@@ -72,7 +72,7 @@ instance : NormedField ℂ where
 
 instance : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=
-    let ⟨x, h⟩ := exists_between hr
+    let_fun ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_eq_abs, abs_ofReal, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where

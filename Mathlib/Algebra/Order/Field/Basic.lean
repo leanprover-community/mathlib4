@@ -348,7 +348,7 @@ theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
   exact lt_max_iff.2 (Or.inl <| lt_add_one _)
 
 theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
-  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
+  let_fun ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
   ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff₀ hc₀]⟩
 
 lemma monotone_div_right_of_nonneg (ha : 0 ≤ a) : Monotone (· / a) :=

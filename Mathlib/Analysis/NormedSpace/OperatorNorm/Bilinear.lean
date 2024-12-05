@@ -101,14 +101,14 @@ follow automatically in `LinearMap.mkContinuous₂_norm_le`. -/
 def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G)
     (h : ∃ C, ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : E →SL[σ₁₃] F →SL[σ₂₃] G :=
   LinearMap.mkContinuousOfExistsBound
-    { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
+    { toFun := fun x => (f x).mkContinuousOfExistsBound <| let_fun ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
       map_add' := fun x y => by
         ext z
         simp
       map_smul' := fun c x => by
         ext z
         simp } <|
-    let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
+    let_fun ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and a bound on the norm of the image. The linear map can be constructed using

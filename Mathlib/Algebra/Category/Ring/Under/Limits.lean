@@ -87,16 +87,16 @@ def piFanTensorProductIsLimit [Finite ι] : IsLimit ((tensorProd R S).mapCone (U
 
 instance (J : Type u) [Finite J] (f : J → Under R) :
     PreservesLimit (Discrete.functor f) (tensorProd R S) :=
-  let c : Fan _ := Under.piFan f
+  letI c : Fan _ := Under.piFan f
   have hc : IsLimit c := Under.piFanIsLimit f
   preservesLimit_of_preserves_limit_cone hc (piFanTensorProductIsLimit f)
 
 instance (J : Type) [Finite J] :
     PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
-  let J' : Type u := ULift.{u} J
+  letI J' : Type u := ULift.{u} J
   have : PreservesLimitsOfShape (Discrete J') (tensorProd R S) :=
     preservesLimitsOfShape_of_discrete (tensorProd R S)
-  let e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
+  let_fun e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
   preservesLimitsOfShape_of_equiv e (R.tensorProd S)
 
 instance : PreservesFiniteProducts (tensorProd R S) where
@@ -178,9 +178,9 @@ def tensorProdMapEqualizerForkIsLimit [Module.Flat R S] {A B : Under R} (f g : A
 
 instance [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
     PreservesLimit (parallelPair f g) (tensorProd R S) :=
-  let c : Fork f g := Under.equalizerFork f g
-  let hc : IsLimit c := Under.equalizerForkIsLimit f g
-  let hc' : IsLimit ((tensorProd R S).mapCone c) :=
+  letI c : Fork f g := Under.equalizerFork f g
+  let_fun hc : IsLimit c := Under.equalizerForkIsLimit f g
+  let_fun hc' : IsLimit ((tensorProd R S).mapCone c) :=
     tensorProdMapEqualizerForkIsLimit f g
   preservesLimit_of_preserves_limit_cone hc hc'
 

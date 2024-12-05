@@ -74,7 +74,7 @@ variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
-  let ⟨I, hI⟩ := Ideal.exists_maximal R
+  let_fun ⟨I, hI⟩ := Ideal.exists_maximal R
   ⟨⟨I, hI.isPrime⟩⟩
 
 /-- The prime spectrum of the zero ring is empty. -/

@@ -49,7 +49,7 @@ the new balls has strictly smaller radius than the old one. -/
 theorem exists_iUnion_ball_eq_radius_lt {r : ι → ℝ} (uf : ∀ x, { i | x ∈ ball (c i) (r i) }.Finite)
     (uU : ⋃ i, ball (c i) (r i) = univ) :
     ∃ r' : ι → ℝ, ⋃ i, ball (c i) (r' i) = univ ∧ ∀ i, r' i < r i :=
-  let ⟨r', hU, hv⟩ := exists_subset_iUnion_ball_radius_lt isClosed_univ (fun x _ => uf x) uU.ge
+  let_fun ⟨r', hU, hv⟩ := exists_subset_iUnion_ball_radius_lt isClosed_univ (fun x _ => uf x) uU.ge
   ⟨r', univ_subset_iff.1 hU, hv⟩
 
 /-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
@@ -70,7 +70,7 @@ so that each of the new balls has strictly smaller radius than the old one. -/
 theorem exists_iUnion_ball_eq_radius_pos_lt {r : ι → ℝ} (hr : ∀ i, 0 < r i)
     (uf : ∀ x, { i | x ∈ ball (c i) (r i) }.Finite) (uU : ⋃ i, ball (c i) (r i) = univ) :
     ∃ r' : ι → ℝ, ⋃ i, ball (c i) (r' i) = univ ∧ ∀ i, r' i ∈ Ioo 0 (r i) :=
-  let ⟨r', hU, hv⟩ :=
+  let_fun ⟨r', hU, hv⟩ :=
     exists_subset_iUnion_ball_radius_pos_lt hr isClosed_univ (fun x _ => uf x) uU.ge
   ⟨r', univ_subset_iff.1 hU, hv⟩
 
@@ -113,6 +113,6 @@ theorem exists_locallyFinite_iUnion_eq_ball_radius_lt {R : α → ℝ} (hR : ∀
     ∃ (ι : Type u) (c : ι → α) (r r' : ι → ℝ),
       (∀ i, 0 < r i ∧ r i < r' i ∧ r' i < R (c i)) ∧
         (LocallyFinite fun i => ball (c i) (r' i)) ∧ ⋃ i, ball (c i) (r i) = univ :=
-  let ⟨ι, c, r, r', hlt, hfin, hsub⟩ :=
+  let_fun ⟨ι, c, r, r', hlt, hfin, hsub⟩ :=
     exists_locallyFinite_subset_iUnion_ball_radius_lt isClosed_univ fun x _ => hR x
   ⟨ι, c, r, r', fun i => (hlt i).2, hfin, univ_subset_iff.1 hsub⟩

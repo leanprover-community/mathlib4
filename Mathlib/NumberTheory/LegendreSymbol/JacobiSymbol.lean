@@ -391,7 +391,7 @@ theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
     qrSign m n * x = y ↔ x = qrSign m n * y := by
   refine
       ⟨fun h' =>
-        let h := h'.symm
+        let_fun h := h'.symm
         ?_,
         fun h => ?_⟩ <;>
     rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]

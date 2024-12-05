@@ -511,7 +511,7 @@ theorem induction_on' {α : Type*} {p : Finset α → Prop} [DecidableEq α] (S 
     (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → p s → p (insert a s)) : p S :=
   @Finset.induction_on α (fun T => T ⊆ S → p T) _ S (fun _ => h₁)
     (fun _ _ has hqs hs =>
-      let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
+      let_fun ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
       h₂ hS sS has (hqs sS))
     (Finset.Subset.refl S)
 

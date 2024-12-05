@@ -307,7 +307,7 @@ version: there is a pigeonhole with the total weight of pigeons in it greater th
 the total number of pigeonholes times `b` is less than the total weight of all pigeons. -/
 theorem exists_lt_sum_fiber_of_nsmul_lt_sum (hb : card β • b < ∑ x, w x) :
     ∃ y, b < ∑ x with f x = y, w x :=
-  let ⟨y, _, hy⟩ := exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum (fun _ _ => mem_univ _) hb
+  let_fun ⟨y, _, hy⟩ := exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum (fun _ _ => mem_univ _) hb
   ⟨y, hy⟩
 
 /-- The pigeonhole principle for finitely many pigeons of different weights, non-strict inequality
@@ -316,7 +316,7 @@ provided that the total number of pigeonholes times `b` is less than or equal to
 all pigeons. -/
 theorem exists_le_sum_fiber_of_nsmul_le_sum [Nonempty β] (hb : card β • b ≤ ∑ x, w x) :
     ∃ y, b ≤ ∑ x with f x = y, w x :=
-  let ⟨y, _, hy⟩ :=
+  let_fun ⟨y, _, hy⟩ :=
     exists_le_sum_fiber_of_maps_to_of_nsmul_le_sum (fun _ _ => mem_univ _) univ_nonempty hb
   ⟨y, hy⟩
 
@@ -344,7 +344,7 @@ with at least as many pigeons as the ceiling of the average number of pigeons ac
 pigeonholes. -/
 theorem exists_lt_card_fiber_of_nsmul_lt_card (hb : card β • b < card α) :
     ∃ y : β, b < #{x | f x = y} :=
-  let ⟨y, _, h⟩ := exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to (fun _ _ => mem_univ _) hb
+  let_fun ⟨y, _, h⟩ := exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to (fun _ _ => mem_univ _) hb
   ⟨y, h⟩
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes.
@@ -364,7 +364,7 @@ with at most as many pigeons as the floor of the average number of pigeons acros
 -/
 theorem exists_card_fiber_lt_of_card_lt_nsmul (hb : ↑(card α) < card β • b) :
     ∃ y : β, #{x | f x = y} < b :=
-  let ⟨y, _, h⟩ := Finset.exists_card_fiber_lt_of_card_lt_nsmul (f := f) hb
+  let_fun ⟨y, _, h⟩ := Finset.exists_card_fiber_lt_of_card_lt_nsmul (f := f) hb
   ⟨y, h⟩
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes.
@@ -385,7 +385,7 @@ element `y : β` such that its preimage has at least `b` elements.
 See also `Fintype.exists_lt_card_fiber_of_nsmul_lt_card` for a stronger statement. -/
 theorem exists_le_card_fiber_of_nsmul_le_card [Nonempty β] (hb : card β • b ≤ card α) :
     ∃ y : β, b ≤ #{x | f x = y} :=
-  let ⟨y, _, h⟩ :=
+  let_fun ⟨y, _, h⟩ :=
     exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun _ _ => mem_univ _) univ_nonempty hb
   ⟨y, h⟩
 
@@ -403,7 +403,7 @@ element `y : β` such that its preimage has at most `b` elements.
 See also `Fintype.exists_card_fiber_lt_of_card_lt_nsmul` for a stronger statement. -/
 theorem exists_card_fiber_le_of_card_le_nsmul [Nonempty β] (hb : ↑(card α) ≤ card β • b) :
     ∃ y : β, #{x | f x = y} ≤ b :=
-  let ⟨y, _, h⟩ := Finset.exists_card_fiber_le_of_card_le_nsmul univ_nonempty hb
+  let_fun ⟨y, _, h⟩ := Finset.exists_card_fiber_le_of_card_le_nsmul univ_nonempty hb
   ⟨y, h⟩
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes.  Given a function `f`

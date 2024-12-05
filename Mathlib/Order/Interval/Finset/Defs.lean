@@ -1179,8 +1179,8 @@ variable {α : Type*} {s : Set α}
 theorem BddBelow.finite_of_bddAbove [Preorder α] [LocallyFiniteOrder α]
     {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
     s.Finite :=
-  let ⟨a, ha⟩ := h₀
-  let ⟨b, hb⟩ := h₁
+  let_fun ⟨a, ha⟩ := h₀
+  let_fun ⟨b, hb⟩ := h₁
   (Set.finite_Icc a b).subset fun _x hx ↦ ⟨ha hx, hb hx⟩
 
 theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α] :

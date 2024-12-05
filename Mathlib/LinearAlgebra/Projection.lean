@@ -179,7 +179,7 @@ theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
 
 theorem existsUnique_add_of_isCompl (hc : IsCompl p q) (x : E) :
     ∃ (u : p) (v : q), (u : E) + v = x ∧ ∀ (r : p) (s : q), (r : E) + s = x → r = u ∧ s = v :=
-  let ⟨u, hu₁, hu₂⟩ := existsUnique_add_of_isCompl_prod hc x
+  let_fun ⟨u, hu₁, hu₂⟩ := existsUnique_add_of_isCompl_prod hc x
   ⟨u.1, u.2, hu₁, fun r s hrs => Prod.eq_iff_fst_eq_snd_eq.1 (hu₂ ⟨r, s⟩ hrs)⟩
 
 theorem linear_proj_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :

@@ -68,7 +68,7 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
 
 theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
-  let ⟨_, h⟩ := h
+  let_fun ⟨_, h⟩ := h
   ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
 
 lemma nhdsWithin_Ioi_basis [NoMaxOrder α] (a : α) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
@@ -85,7 +85,7 @@ theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃
 with `a < u`. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
-  let ⟨_u', hu'⟩ := exists_gt a
+  let_fun ⟨_u', hu'⟩ := exists_gt a
   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' hu'
 
 /-- The set of points which are isolated on the right is countable when the space is
@@ -144,7 +144,7 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ioo_subset' {a l' : α} {s : Set α} (hl' 
 with `l < a`. -/
 theorem mem_nhdsWithin_Iio_iff_exists_Ioo_subset [NoMinOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
-  let ⟨_, h⟩ := exists_lt a
+  let_fun ⟨_, h⟩ := exists_lt a
   mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `[l, a)`
@@ -155,7 +155,7 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
 
 theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
-  let ⟨_, h⟩ := h
+  let_fun ⟨_, h⟩ := h
   ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
 
 theorem nhdsWithin_Iio_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
@@ -206,7 +206,7 @@ theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' 
 with `a < u`. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  let ⟨_, hu'⟩ := exists_gt a
+  let_fun ⟨_, hu'⟩ := exists_gt a
   mem_nhdsWithin_Ici_iff_exists_Ico_subset' hu'
 
 theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
@@ -257,7 +257,7 @@ theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' 
 with `l < a`. -/
 theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset [NoMinOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  let ⟨_, hl'⟩ := exists_lt a
+  let_fun ⟨_, hl'⟩ := exists_lt a
   mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hl'
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `[l, a]`
@@ -348,7 +348,7 @@ theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
 theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
     (𝓝 a).HasBasis ((0 : α) < ·) fun ε ↦ Icc (a - ε) (a + ε) :=
   (nhds_basis_Ioo_pos a).to_hasBasis
-    (fun _ε ε₀ ↦ let ⟨δ, δ₀, δε⟩ := exists_between ε₀
+    (fun _ε ε₀ ↦ let_fun ⟨δ, δ₀, δε⟩ := exists_between ε₀
       ⟨δ, δ₀, Icc_subset_Ioo (sub_lt_sub_left δε _) (add_lt_add_left δε _)⟩)
     (fun ε ε₀ ↦ ⟨ε, ε₀, Ioo_subset_Icc_self⟩)
 

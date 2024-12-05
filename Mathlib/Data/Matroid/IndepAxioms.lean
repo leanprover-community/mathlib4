@@ -480,7 +480,7 @@ protected def ofBaseOfFinite {E : Set α} (hE : E.Finite) (Base : Set α → Pro
     (subset_ground : ∀ B, Base B → B ⊆ E) : Matroid α :=
   Matroid.ofExistsFiniteBase (E := E) (Base := Base)
     (exists_finite_base :=
-      let ⟨B, hB⟩ := exists_base
+      let_fun ⟨B, hB⟩ := exists_base
       ⟨B, hB, hE.subset (subset_ground B hB)⟩)
     (base_exchange := base_exchange)
     (subset_ground := subset_ground)

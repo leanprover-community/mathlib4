@@ -59,7 +59,7 @@ p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
-  let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
+  let_fun a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by rw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
   a (p (k + l))
 
@@ -148,7 +148,7 @@ def changeOriginIndexEquiv :
     simp [tsub_add_cancel_of_le (card_finset_fin_le s), finCongr_eq_equivCast]
 
 lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
-    let s := changeOriginIndexEquiv.symm ⟨n, t⟩
+    let_fun s := changeOriginIndexEquiv.symm ⟨n, t⟩
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) (fun _ ↦ y) =
     p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) := by
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =

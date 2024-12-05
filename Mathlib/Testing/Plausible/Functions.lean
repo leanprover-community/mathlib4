@@ -284,7 +284,7 @@ that it is a permutation.
 def Perm.slice [DecidableEq α] (n m : ℕ) :
     (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup) → Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup
   | ⟨xs, ys, h, h'⟩ =>
-    let xs' := List.dropSlice n m xs
+    letI xs' := List.dropSlice n m xs
     have h₀ : xs' ~ ys.inter xs' := List.Perm.dropSlice_inter _ _ h h'
     ⟨xs', ys.inter xs', h₀, h'.inter _⟩
 

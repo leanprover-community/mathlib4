@@ -568,7 +568,7 @@ theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
 
 theorem _root_.IsCompact.exists_infDist_eq_dist (h : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infDist x s = dist x y :=
-  let ⟨y, hys, hy⟩ := h.exists_infEdist_eq_edist hne x
+  let_fun ⟨y, hys, hy⟩ := h.exists_infEdist_eq_edist hne x
   ⟨y, hys, by rw [infDist, dist_edist, hy]⟩
 
 theorem _root_.IsClosed.exists_infDist_eq_dist [ProperSpace α] (h : IsClosed s) (hne : s.Nonempty)

@@ -592,7 +592,7 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     refine ⟨f⁻¹' Uᶜ, ?_, by simpa using (mapsTo_preimage f U).mono_right hU₁⟩
     rw [hf.isCompact_iff, image_preimage_eq_iff.mpr (by simpa [hy])]
     exact (isClosed_compl_iff.mpr hU₂).isCompact
-  let e : OnePoint X ≃ Y :=
+  letI e : OnePoint X ≃ Y :=
     { toFun := fun p ↦ p.elim y f
       invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
       left_inv := fun p ↦ by

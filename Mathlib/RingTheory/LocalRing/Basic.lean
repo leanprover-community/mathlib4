@@ -35,12 +35,12 @@ theorem of_nonunits_add [Nontrivial R]
 theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : IsLocalRing R :=
   @of_nonunits_add _ _
     (nontrivial_of_ne (0 : R) 1 <|
-      let ⟨I, Imax, _⟩ := h
+      let_fun ⟨I, Imax, _⟩ := h
       fun H : 0 = 1 => Imax.1.1 <| I.eq_top_iff_one.2 <| H ▸ I.zero_mem)
     fun x y hx hy H =>
-    let ⟨I, Imax, Iuniq⟩ := h
-    let ⟨Ix, Ixmax, Hx⟩ := exists_max_ideal_of_mem_nonunits hx
-    let ⟨Iy, Iymax, Hy⟩ := exists_max_ideal_of_mem_nonunits hy
+    let_fun ⟨I, Imax, Iuniq⟩ := h
+    let_fun ⟨Ix, Ixmax, Hx⟩ := exists_max_ideal_of_mem_nonunits hx
+    let_fun ⟨Iy, Iymax, Hy⟩ := exists_max_ideal_of_mem_nonunits hy
     have xmemI : x ∈ I := Iuniq Ix Ixmax ▸ Hx
     have ymemI : y ∈ I := Iuniq Iy Iymax ▸ Hy
     Imax.1.1 <| I.eq_top_of_isUnit_mem (I.add_mem xmemI ymemI) H

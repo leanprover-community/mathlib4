@@ -18,7 +18,7 @@ namespace CharP
 instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ) [CharP R p] :
     CharP (ι → R) p :=
   ⟨fun x =>
-    let ⟨i⟩ := hi
+    let_fun ⟨i⟩ := hi
     Iff.symm <|
       (CharP.cast_eq_zero_iff R p x).symm.trans
         ⟨fun h =>

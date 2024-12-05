@@ -133,8 +133,8 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
   invFun F x := F (Multiplicative.ofAdd ({x} : Multiset α))
   left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
-    let F' := MonoidHom.toAdditive'' F
-    let x' := x.toAdd
+    letI F' := MonoidHom.toAdditive'' F
+    letI x' := x.toAdd
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
@@ -279,7 +279,7 @@ theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite
         (isSupported_upwards hxt Set.subset_union_right)⟩
 
 theorem exists_finset_support (x : FreeCommRing α) : ∃ s : Finset α, IsSupported x ↑s :=
-  let ⟨s, hfs, hxs⟩ := exists_finite_support x
+  let_fun ⟨s, hfs, hxs⟩ := exists_finite_support x
   ⟨hfs.toFinset, by rwa [Set.Finite.coe_toFinset]⟩
 
 end FreeCommRing

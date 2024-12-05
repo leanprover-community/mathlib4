@@ -299,7 +299,7 @@ def encodeSigma : Sigma γ → ℕ
 
 /-- Explicit decoding function for `Sigma γ` -/
 def decodeSigma (n : ℕ) : Option (Sigma γ) :=
-  let (n₁, n₂) := unpair n
+  let_fun (n₁, n₂) := unpair n
   (decode n₁).bind fun a => (decode n₂).map <| Sigma.mk a
 
 instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
@@ -386,7 +386,7 @@ noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Enco
 /-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
 noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
   Nonempty.some <|
-    let ⟨f, hf⟩ := exists_injective_nat α
+    let_fun ⟨f, hf⟩ := exists_injective_nat α
     ⟨ofInj f hf⟩
 
 @[simp]
@@ -491,7 +491,7 @@ variable {p}
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
-    let ⟨w, pw⟩ := h
+    let_fun ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
   match (motive := ∀ o, good p o → { a // p a }) _, Nat.find_spec this with
   | some a, h => ⟨a, h⟩
@@ -542,7 +542,7 @@ and `r (f a) (f (x (encode a + 1))`. -/
 protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (hf : Directed r f) : ℕ → α
   | 0 => default
   | n + 1 =>
-    let p := Directed.sequence f hf n
+    let_fun p := Directed.sequence f hf n
     match (decode n : Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)

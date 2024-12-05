@@ -147,7 +147,7 @@ theorem irreducible_units_mul (a : Mˣ) (b : M) : Irreducible (↑a * b) ↔ Irr
     rw [mul_assoc, ← HAB, Units.inv_mul_cancel_left]
 
 theorem irreducible_isUnit_mul {a b : M} (h : IsUnit a) : Irreducible (a * b) ↔ Irreducible b :=
-  let ⟨a, ha⟩ := h
+  let_fun ⟨a, ha⟩ := h
   ha ▸ irreducible_units_mul a b
 
 theorem irreducible_mul_units (a : Mˣ) (b : M) : Irreducible (b * ↑a) ↔ Irreducible b := by
@@ -161,7 +161,7 @@ theorem irreducible_mul_units (a : Mˣ) (b : M) : Irreducible (b * ↑a) ↔ Irr
     rw [← mul_assoc, ← HAB, Units.mul_inv_cancel_right]
 
 theorem irreducible_mul_isUnit {a b : M} (h : IsUnit a) : Irreducible (b * a) ↔ Irreducible b :=
-  let ⟨a, ha⟩ := h
+  let_fun ⟨a, ha⟩ := h
   ha ▸ irreducible_mul_units a b
 
 theorem irreducible_mul_iff {a b : M} :
@@ -187,7 +187,7 @@ Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducibl
 -/
 theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
   ⟨fun g ↦ h.not_unit g.of_map, fun a b g ↦
-    let f := MulEquivClass.toMulEquiv f
+    letI f := MulEquivClass.toMulEquiv f
     (h.isUnit_or_isUnit (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g)).imp
       (·.of_map) (·.of_map)⟩
 

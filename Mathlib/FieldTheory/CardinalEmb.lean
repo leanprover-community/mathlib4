@@ -114,7 +114,7 @@ variable (F E) in
 `leastExt j`, `j < i`. For cardinality reasons, such `k` always exist if `ι` is infinite. -/
 def leastExt : ι → ι :=
   wellFounded_lt.fix fun i ih ↦
-    let s := range fun j : Iio i ↦ b (ih j j.2)
+    letI s := range fun j : Iio i ↦ b (ih j j.2)
     wellFounded_lt.min {k | b k ∉ adjoin F s} <| by
       rw [← compl_setOf, nonempty_compl]; by_contra!
       simp_rw [eq_univ_iff_forall, mem_setOf] at this
@@ -298,7 +298,7 @@ end Lim
 
 /-- A bijection between `E →ₐ[F] Ē` and the product of `E⟮<i⁺⟯ →ₐ[E⟮<i⟯] Ē` over all `i : ι`. -/
 def embEquivPi : Field.Emb F E ≃ ∀ i : ι, factor (F := F) (E := E) i :=
-  let e := globalEquiv
+  let_fun e := globalEquiv
     (fun i _ ↦ ⟨_, equivSucc_coherence i⟩) (fun _ hi ↦ ⟨equivLim hi, fun _ _ ↦ rfl⟩) ⊤
   (topEquiv.arrowCongr .refl).symm.trans <| e.trans <| .trans (.piCongrSet WithTop.range_coe.symm)
     <| .symm <| .piCongr (.ofInjective _ WithTop.coe_injective) fun _ ↦ .refl _

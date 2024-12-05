@@ -33,7 +33,7 @@ def proveNatSqrt (ex : Q(ℕ)) : (ey : Q(ℕ)) × Q(Nat.sqrt $ex = $ey) :=
   | 0 => show (ey : Q(ℕ)) × Q(Nat.sqrt 0 = $ey) from ⟨mkRawNatLit 0, q(Nat.sqrt_zero)⟩
   | 1 => show (ey : Q(ℕ)) × Q(Nat.sqrt 1 = $ey) from ⟨mkRawNatLit 1, q(Nat.sqrt_one)⟩
   | x =>
-    let y := Nat.sqrt x
+    let_fun y := Nat.sqrt x
     have ey : Q(ℕ) := mkRawNatLit y
     have er : Q(ℕ) := mkRawNatLit (x - y * y)
     have hr : Q($ey * $ey + $er = $ex) := (q(Eq.refl $ex) : Expr)

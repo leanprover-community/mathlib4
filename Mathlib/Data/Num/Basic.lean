@@ -498,10 +498,10 @@ def divModAux (d : PosNum) (q r : Num) : Num × Num :=
 /-- `divMod x y = (y / x, y % x)`. -/
 def divMod (d : PosNum) : PosNum → Num × Num
   | bit0 n =>
-    let (q, r₁) := divMod d n
+    let_fun (q, r₁) := divMod d n
     divModAux d q (Num.bit0 r₁)
   | bit1 n =>
-    let (q, r₁) := divMod d n
+    let_fun (q, r₁) := divMod d n
     divModAux d q (Num.bit1 r₁)
   | 1 => divModAux d 0 1
 
@@ -521,8 +521,8 @@ private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
 
 /-- Auxiliary definition for a `sqrt` function which is not currently implemented. -/
 private def sqrtAux : PosNum → Num → Num → Num
-  | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
-  | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
+  | b@(bit0 b') => fun r n => let_fun (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
+  | b@(bit1 b') => fun r n => let_fun (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
   | 1           => fun r n => (sqrtAux1 1 r n).1
 
 end PosNum

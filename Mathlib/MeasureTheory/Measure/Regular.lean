@@ -315,7 +315,7 @@ class InnerRegularCompactLTTop (μ : Measure α) : Prop where
 instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
     WeaklyRegular μ where
   innerRegular := fun _U hU r hr ↦
-    let ⟨K, KU, K_comp, hK⟩ := Regular.innerRegular hU r hr
+    let_fun ⟨K, KU, K_comp, hK⟩ := Regular.innerRegular hU r hr
     ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
       hK.trans_le (measure_mono subset_closure)⟩
 
@@ -716,7 +716,7 @@ theorem _root_.MeasurableSet.exists_isCompact_isClosed_lt_add
     [InnerRegularCompactLTTop μ] [R1Space α] [BorelSpace α]
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ IsClosed K ∧ μ A < μ K + ε :=
-  let ⟨K, hKA, hK, hμK⟩ := hA.exists_isCompact_lt_add h'A hε
+  let_fun ⟨K, hKA, hK, hμK⟩ := hA.exists_isCompact_lt_add h'A hε
   ⟨closure K, hK.closure_subset_measurableSet hA hKA, hK.closure, isClosed_closure,
     by rwa [hK.measure_closure]⟩
 

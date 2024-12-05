@@ -40,8 +40,8 @@ variable (R S T : leftTransversals (H : Set G)) [FiniteIndex H]
 /-- The difference of two left transversals -/
 @[to_additive "The difference of two left transversals"]
 noncomputable def diff : A :=
-  let α := MemLeftTransversals.toEquiv S.2
-  let β := MemLeftTransversals.toEquiv T.2
+  letI α := MemLeftTransversals.toEquiv S.2
+  letI β := MemLeftTransversals.toEquiv T.2
   (@Finset.univ (G ⧸ H) H.fintypeQuotientOfFiniteIndex).prod fun q =>
     ϕ
       ⟨(α q : G)⁻¹ * β q,
@@ -66,7 +66,7 @@ theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 
 @[to_additive]
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
-  let _ := H.fintypeQuotientOfFiniteIndex
+  letI _ := H.fintypeQuotientOfFiniteIndex
   Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun _ ↦ by
     simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
       inv_mul_cancel_left, toPerm_symm_apply]
@@ -84,7 +84,7 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 @[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
-  let T : leftTransversals (H : Set G) := Inhabited.default
+  let_fun T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     map_one' := by beta_reduce; rw [one_smul, diff_self]

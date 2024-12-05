@@ -187,7 +187,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
     ∃ I : Set ι,
       I.Finite ∧
         ∃ σ : { i | i ∈ I } → Set α, (∀ i, (σ i).Finite) ∧ (∀ i, σ i ⊆ s i) ∧ t = ⋃ i, σ i :=
-  let ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
+  let_fun ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
   ⟨I, Ifin, fun x => s x ∩ t, fun _ => tfin.subset inter_subset_right, fun _ =>
     inter_subset_left, by
     ext x

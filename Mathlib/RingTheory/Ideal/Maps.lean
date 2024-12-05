@@ -269,7 +269,7 @@ open Function
 
 theorem map_comap_of_surjective (I : Ideal S) : map f (comap f I) = I :=
   le_antisymm (map_le_iff_le_comap.2 le_rfl) fun s hsi =>
-    let ⟨r, hfrs⟩ := hf s
+    let_fun ⟨r, hfrs⟩ := hf s
     hfrs ▸ (mem_map_of_mem f <| show f r ∈ I from hfrs.symm ▸ hsi)
 
 /-- `map` and `comap` are adjoint, and the composition `map f ∘ comap f` is the
@@ -301,7 +301,7 @@ theorem mem_image_of_mem_map_of_surjective {I : Ideal R} {y} (H : y ∈ map f I)
     (fun _ _ _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
       ⟨x1 + x2, I.add_mem hx1i hx2i, hxy1 ▸ hxy2 ▸ map_add f _ _⟩)
     fun c _ _ ⟨x, hxi, hxy⟩ =>
-    let ⟨d, hdc⟩ := hf c
+    let_fun ⟨d, hdc⟩ := hf c
     ⟨d * x, I.mul_mem_left _ hxi, hdc ▸ hxy ▸ map_mul f _ _⟩
 
 theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x ∈ I ∧ f x = y :=
@@ -398,7 +398,7 @@ theorem comap_map_of_surjective (hf : Function.Surjective f) (I : Ideal R) :
     comap f (map f I) = I ⊔ comap f ⊥ :=
   le_antisymm
     (fun r h =>
-      let ⟨s, hsi, hfsr⟩ := mem_image_of_mem_map_of_surjective f hf h
+      let_fun ⟨s, hsi, hfsr⟩ := mem_image_of_mem_map_of_surjective f hf h
       Submodule.mem_sup.2
         ⟨s, hsi, r - s, (Submodule.mem_bot S).2 <| by rw [map_sub, hfsr, sub_self],
           add_sub_cancel s r⟩)

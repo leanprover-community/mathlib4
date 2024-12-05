@@ -500,7 +500,7 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
     CreatesLimit K₂ F :=
   { reflectsLimit_of_iso_diagram F h with
     lifts := fun c t =>
-      let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) c).symm t
+      let_fun t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) c).symm t
       { liftedCone := (Cones.postcompose h.hom).obj (liftLimit t')
         validLift :=
           Functor.mapConePostcompose F ≪≫
@@ -534,7 +534,7 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
     CreatesColimit K₂ F :=
   { reflectsColimit_of_iso_diagram F h with
     lifts := fun c t =>
-      let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) c).symm t
+      let_fun t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) c).symm t
       { liftedCocone := (Cocones.precompose h.inv).obj (liftColimit t')
         validLift :=
           Functor.mapCoconePrecompose F ≪≫
@@ -645,8 +645,8 @@ instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.
 instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
-    let c' : Cocone ((K ⋙ F) ⋙ G) := c
-    let t' : IsColimit c' := t
+    letI c' : Cocone ((K ⋙ F) ⋙ G) := c
+    let_fun t' : IsColimit c' := t
     { liftedCocone := liftColimit (liftedColimitIsColimit t')
       validLift :=
         (Cocones.functoriality (K ⋙ F) G).mapIso

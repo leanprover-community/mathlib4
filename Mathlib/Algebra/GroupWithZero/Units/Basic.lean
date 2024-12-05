@@ -50,15 +50,15 @@ end Units
 namespace IsUnit
 
 theorem ne_zero [Nontrivial M₀] {a : M₀} (ha : IsUnit a) : a ≠ 0 :=
-  let ⟨u, hu⟩ := ha
+  let_fun ⟨u, hu⟩ := ha
   hu ▸ u.ne_zero
 
 theorem mul_right_eq_zero {a b : M₀} (ha : IsUnit a) : a * b = 0 ↔ b = 0 :=
-  let ⟨u, hu⟩ := ha
+  let_fun ⟨u, hu⟩ := ha
   hu ▸ u.mul_right_eq_zero
 
 theorem mul_left_eq_zero {a b : M₀} (hb : IsUnit b) : a * b = 0 ↔ a = 0 :=
-  let ⟨u, hu⟩ := hb
+  let_fun ⟨u, hu⟩ := hb
   hu ▸ u.mul_left_eq_zero
 
 end IsUnit

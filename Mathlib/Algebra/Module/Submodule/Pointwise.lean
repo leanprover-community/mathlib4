@@ -398,7 +398,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
     (zero : motive 0 (Submodule.zero_mem _)) :
     motive x hx :=
-  let ⟨_, h⟩ := set_smul_le s N
+  let_fun ⟨_, h⟩ := set_smul_le s N
     { carrier := { m | ∃ (mem : m ∈ s • N), motive m mem },
       zero_mem' := ⟨Submodule.zero_mem _, zero⟩
       add_mem' := fun ⟨mem, h⟩ ⟨mem', h'⟩ ↦ ⟨_, add mem mem' h h'⟩

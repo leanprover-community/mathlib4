@@ -23,7 +23,7 @@ nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ :
   exact hfx.norm
 
 theorem Multipliable.norm (hf : Multipliable f) : Multipliable (‖f ·‖) :=
-  let ⟨x, hx⟩ := hf; ⟨‖x‖, hx.norm⟩
+  let_fun ⟨x, hx⟩ := hf; ⟨‖x‖, hx.norm⟩
 
 theorem norm_tprod (hf : Multipliable f) : ‖∏' i, f i‖ = ∏' i, ‖f i‖ :=
   hf.hasProd.norm.tprod_eq.symm

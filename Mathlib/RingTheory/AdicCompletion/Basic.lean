@@ -209,7 +209,7 @@ instance : SMul ℤ (AdicCompletion I M) where
   smul n x := ⟨n • x.val, by simp [x.property]⟩
 
 instance : AddCommGroup (AdicCompletion I M) :=
-  let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
+  letI f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
   Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -217,7 +217,7 @@ instance : SMul R (AdicCompletion I M) where
   smul r x := ⟨r • x.val, by simp [x.property]⟩
 
 instance : Module R (AdicCompletion I M) :=
-  let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
+  letI f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
     { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
   Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
@@ -390,7 +390,7 @@ instance : SMul R (AdicCauchySequence I M) where
   smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
 
 instance : Module R (AdicCauchySequence I M) :=
-  let f : AdicCauchySequence I M →+ (ℕ → M) :=
+  letI f : AdicCauchySequence I M →+ (ℕ → M) :=
     { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
   Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 

@@ -133,14 +133,14 @@ def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorCo
 `style` specifies if the error should be formatted for humans to read, github problem matchers
 to consume, or for the style exceptions file. -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
-  let errorMessage := errctx.error.errorMessage
+  let_fun errorMessage := errctx.error.errorMessage
   match style with
   | ErrorFormat.github =>
    -- We are outputting for github: duplicate file path, line number and error code,
     -- so that they are also visible in the plain text output.
-    let path := errctx.path
-    let nr := errctx.lineNumber
-    let code := errctx.error.errorCode
+    let_fun path := errctx.path
+    let_fun nr := errctx.lineNumber
+    let_fun code := errctx.error.errorCode
     s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errorMessage}"
   | ErrorFormat.exceptionsFile =>
     -- Produce an entry in the exceptions file: with error code and "line" in front of the number.
@@ -151,16 +151,16 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
-  let parts := line.split (· == ' ')
+  let_fun parts := line.split (· == ' ')
   match parts with
     | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
-      let path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
+      let_fun path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
-      let err : Option StyleError := match errorCode with
+      let_fun err : Option StyleError := match errorCode with
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
         | "ERR_ADN" => some (StyleError.adaptationNote)

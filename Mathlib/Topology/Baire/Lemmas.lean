@@ -81,7 +81,7 @@ theorem eventually_residual {p : X → Prop} :
   tauto
 
 theorem dense_of_mem_residual {s : Set X} (hs : s ∈ residual X) : Dense s :=
-  let ⟨_, hts, _, hd⟩ := mem_residual.1 hs
+  let_fun ⟨_, hts, _, hd⟩ := mem_residual.1 hs
   hd.mono hts
 
 /-- Baire theorem: a countable intersection of dense Gδ sets is dense. Formulated here with ⋂₀. -/

@@ -76,7 +76,7 @@ theorem adjoin_induction {p : (x : A) → x ∈ adjoin R s → Prop}
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x : A} (hx : x ∈ adjoin R s) : p x hx :=
-  let S : Subalgebra R A :=
+  letI S : Subalgebra R A :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := by rintro _ _ ⟨_, hpx⟩ ⟨_, hpy⟩; exact ⟨_, mul _ _ _ _ hpx hpy⟩
       add_mem' := by rintro _ _ ⟨_, hpx⟩ ⟨_, hpy⟩; exact ⟨_, add _ _ _ _ hpx hpy⟩
@@ -335,7 +335,7 @@ theorem Subalgebra.restrictScalars_adjoin {s : Set A} :
 @[simp]
 theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
-  let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
+  letI equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
     { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
       invFun := fun s => s.restrictScalars _
       left_inv := fun _ => SetLike.coe_injective rfl

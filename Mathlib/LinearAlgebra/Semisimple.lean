@@ -241,7 +241,7 @@ theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
 
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
-  let R := K[X] ⧸ Ideal.span {minpoly K f}
+  letI R := K[X] ⧸ Ideal.span {minpoly K f}
   have : Module.Finite K R :=
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|

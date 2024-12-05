@@ -128,7 +128,7 @@ theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
 @[to_additive]
 theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ orbit M a → a' = a :=
   ⟨fun h _ h₁ =>
-    let ⟨m, hm⟩ := mem_orbit_iff.1 h₁
+    let_fun ⟨m, hm⟩ := mem_orbit_iff.1 h₁
     hm ▸ h m,
     fun h _ => h _ (mem_orbit _ _)⟩
 

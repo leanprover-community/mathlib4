@@ -65,7 +65,7 @@ theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
         ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
         Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
     fun H ↦
-    let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
+    letI e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
 
 section Automorphisms

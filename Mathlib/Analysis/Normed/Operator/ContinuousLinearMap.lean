@@ -56,13 +56,13 @@ map. If you have an explicit bound, use `LinearMap.mkContinuous` instead, as a n
 follow automatically in `LinearMap.mkContinuous_norm_le`. -/
 def LinearMap.mkContinuousOfExistsBound (h : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖x‖) : E →SL[σ] F :=
   ⟨f,
-    let ⟨C, hC⟩ := h
+    let_fun ⟨C, hC⟩ := h
     AddMonoidHomClass.continuous_of_bound f C hC⟩
 
 theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = σ c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     Continuous f :=
-  let φ : E →ₛₗ[σ] F :=
+  letI φ : E →ₛₗ[σ] F :=
     { toFun := f
       map_add' := h_add
       map_smul' := h_smul }
@@ -71,7 +71,7 @@ theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x
 theorem continuous_of_linear_of_bound {f : E → G} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     Continuous f :=
-  let φ : E →ₗ[𝕜] G :=
+  letI φ : E →ₗ[𝕜] G :=
     { toFun := f
       map_add' := h_add
       map_smul' := h_smul }

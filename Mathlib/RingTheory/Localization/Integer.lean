@@ -68,7 +68,7 @@ variable [IsLocalization M S]
 This version multiplies `a` on the right, matching the argument order in `LocalizationMap.surj`.
 -/
 theorem exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMap R S b) :=
-  let ⟨⟨Num, denom⟩, h⟩ := IsLocalization.surj _ a
+  let_fun ⟨⟨Num, denom⟩, h⟩ := IsLocalization.surj _ a
   ⟨denom, Set.mem_range.mpr ⟨Num, h.symm⟩⟩
 
 /-- Each element `a : S` has an `M`-multiple which is an integer.

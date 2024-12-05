@@ -71,9 +71,9 @@ def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=
-  let s := Set.range v
-  let e : ι ≃ s := Equiv.ofInjective v hs.injective
-  let b := hs.to_subtype_range.extend (subset_univ (Set.range v))
+  letI s := Set.range v
+  let_fun e : ι ≃ s := Equiv.ofInjective v hs.injective
+  letI b := hs.to_subtype_range.extend (subset_univ (Set.range v))
   (Basis.extend hs.to_subtype_range).reindex <|
     Equiv.symm <|
       calc
@@ -261,7 +261,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
-  let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
+  let_fun ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
@@ -271,7 +271,7 @@ instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
 space. -/
 theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
     ∃ g : V →ₗ[K] V', g.comp p.subtype = f :=
-  let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
+  let_fun ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 
 open Submodule LinearMap
@@ -292,7 +292,7 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     simpa using (LinearMap.congr_fun hf _).trans this
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
-  let ⟨q, hq⟩ := p.exists_isCompl
+  let_fun ⟨q, hq⟩ := p.exists_isCompl
   Nonempty.intro <|
     ((quotientEquivOfIsCompl p q hq).prod (LinearEquiv.refl _ _)).trans
       (prodEquivOfIsCompl q p hq.symm)

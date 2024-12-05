@@ -197,7 +197,7 @@ theorem sigma_univ_range_eq {f : ∀ i, α i → β i} :
 
 protected theorem Nonempty.sigma :
     s.Nonempty → (∀ i, (t i).Nonempty) → (s.sigma t).Nonempty := fun ⟨i, hi⟩ h ↦
-  let ⟨a, ha⟩ := h i
+  let_fun ⟨a, ha⟩ := h i
   ⟨⟨i, a⟩, hi, ha⟩
 
 theorem Nonempty.sigma_fst : (s.sigma t).Nonempty → s.Nonempty := fun ⟨x, hx⟩ ↦ ⟨x.1, hx.1⟩
@@ -228,7 +228,7 @@ theorem fst_image_sigma_subset (s : Set ι) (t : ∀ i, Set (α i)) : Sigma.fst 
 
 theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst '' s.sigma t = s :=
   (fst_image_sigma_subset _ _).antisymm fun i hi ↦
-    let ⟨a, ha⟩ := ht i
+    let_fun ⟨a, ha⟩ := ht i
     ⟨⟨i, a⟩, ⟨hi, ha⟩, rfl⟩
 
 theorem sigma_diff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=

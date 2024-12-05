@@ -183,7 +183,7 @@ theorem IsTopologicalBasis.open_eq_sUnion' {B : Set (Set α)} (hB : IsTopologica
     (ou : IsOpen u) : u = ⋃₀ { s ∈ B | s ⊆ u } :=
   ext fun _a =>
     ⟨fun ha =>
-      let ⟨b, hb, ab, bu⟩ := hB.exists_subset_of_mem_open ha ou
+      let_fun ⟨b, hb, ab, bu⟩ := hB.exists_subset_of_mem_open ha ou
       ⟨b, ⟨hb, bu⟩, ab⟩,
       fun ⟨_b, ⟨_, bu⟩, ab⟩ => bu ab⟩
 
@@ -229,8 +229,8 @@ theorem IsTopologicalBasis.isOpenMap_iff {β} [TopologicalSpace β] {B : Set (Se
 
 theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTopologicalBasis B)
     {u : Set α} (hu : u.Nonempty) (ou : IsOpen u) : ∃ v ∈ B, Set.Nonempty v ∧ v ⊆ u :=
-  let ⟨x, hx⟩ := hu
-  let ⟨v, vB, xv, vu⟩ := hb.exists_subset_of_mem_open hx ou
+  let_fun ⟨x, hx⟩ := hu
+  let_fun ⟨v, vB, xv, vu⟩ := hb.exists_subset_of_mem_open hx ou
   ⟨v, vB, ⟨x, xv⟩, vu⟩
 
 theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } :=
@@ -352,7 +352,7 @@ alias _root_.DenseRange.separableSpace' := SeparableSpace.of_denseRange
 a separable space as well. E.g., the completion of a separable uniform space is separable. -/
 protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [TopologicalSpace β]
     {f : α → β} (h : DenseRange f) (h' : Continuous f) : SeparableSpace β :=
-  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
+  let_fun ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
   ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
 
 theorem _root_.Topology.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β]
@@ -602,7 +602,7 @@ end
 
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
-  let ⟨t, htc, htd⟩ := exists_countable_dense s
+  let_fun ⟨t, htc, htd⟩ := exists_countable_dense s
   ⟨(↑) '' t, Subtype.coe_image_subset s t, htc.image Subtype.val,
     hs.denseRange_val.dense_image continuous_subtype_val htd⟩
 
@@ -653,7 +653,7 @@ attribute [instance] FirstCountableTopology.nhds_generated_countable
 first-countable. -/
 theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
     [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
-  let _ := t.induced f
+  letI _ := t.induced f
   ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}

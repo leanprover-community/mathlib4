@@ -46,7 +46,7 @@ theorem LocallyIntegrableOn.mono_set (hf : LocallyIntegrableOn f s μ) {t : Set 
 
 theorem LocallyIntegrableOn.norm (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>
-  let ⟨U, hU_nhd, hU_int⟩ := hf t ht
+  let_fun ⟨U, hU_nhd, hU_int⟩ := hf t ht
   ⟨U, hU_nhd, hU_int.norm⟩
 
 theorem LocallyIntegrableOn.mono (hf : LocallyIntegrableOn f s μ) {g : X → F}
@@ -229,7 +229,7 @@ theorem LocallyIntegrable.integrableOn_nhds_isCompact (hf : LocallyIntegrable f 
 theorem locallyIntegrable_iff [LocallyCompactSpace X] :
     LocallyIntegrable f μ ↔ ∀ k : Set X, IsCompact k → IntegrableOn f k μ :=
   ⟨fun hf _k hk => hf.integrableOn_isCompact hk, fun hf x =>
-    let ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
+    let_fun ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
     ⟨K, h2K, hf K hK⟩⟩
 
 theorem LocallyIntegrable.aestronglyMeasurable [SecondCountableTopology X]

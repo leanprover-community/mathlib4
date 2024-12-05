@@ -42,7 +42,7 @@ variable {x y z}
 
 @[symm]
 theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
-  let ⟨a, b, H⟩ := H
+  let_fun ⟨a, b, H⟩ := H
   ⟨b, a, by rw [add_comm, H]⟩
 
 theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
@@ -50,12 +50,12 @@ theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
 
 theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
   ⟨fun ⟨a, b, h⟩ => isUnit_of_mul_eq_one x (a + b) <| by rwa [mul_comm, add_mul], fun h =>
-    let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h
+    let_fun ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h
     ⟨b, 0, by rwa [zero_mul, add_zero]⟩⟩
 
 theorem isCoprime_zero_left : IsCoprime 0 x ↔ IsUnit x :=
   ⟨fun ⟨a, b, H⟩ => isUnit_of_mul_eq_one x b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H =>
-    let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 H
+    let_fun ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 H
     ⟨1, b, by rwa [one_mul, zero_add]⟩⟩
 
 theorem isCoprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
@@ -98,8 +98,8 @@ theorem IsCoprime.dvd_of_dvd_mul_left (H1 : IsCoprime x y) (H2 : x ∣ y * z) : 
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
 
 theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime (x * y) z :=
-  let ⟨a, b, h1⟩ := H1
-  let ⟨c, d, h2⟩ := H2
+  let_fun ⟨a, b, h1⟩ := H1
+  let_fun ⟨c, d, h2⟩ := H2
   ⟨a * c, a * x * d + b * c * y + b * d * z,
     calc a * c * (x * y) + (a * x * d + b * c * y + b * d * z) * z
       _ = (a * x + b * z) * (c * y + d * z) := by ring
@@ -120,7 +120,7 @@ theorem IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x 
     exact (mul_dvd_mul_right H1 _).mul_right _
 
 theorem IsCoprime.of_mul_left_left (H : IsCoprime (x * y) z) : IsCoprime x z :=
-  let ⟨a, b, h⟩ := H
+  let_fun ⟨a, b, h⟩ := H
   ⟨a * y, b, by rwa [mul_right_comm, mul_assoc]⟩
 
 theorem IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z := by
@@ -149,7 +149,7 @@ theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y)
   (h.symm.of_isCoprime_of_dvd_left hdvd).symm
 
 theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
-  let ⟨k, hk⟩ := d
+  let_fun ⟨k, hk⟩ := d
   isCoprime_self.1 <| IsCoprime.of_mul_right_left <| show IsCoprime x (x * k) from hk ▸ H
 
 theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
@@ -161,11 +161,11 @@ theorem IsCoprime.isRelPrime {a b : R} (h : IsCoprime a b) : IsRelPrime a b :=
 
 theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
     IsCoprime (f x) (f y) :=
-  let ⟨a, b, h⟩ := H
+  let_fun ⟨a, b, h⟩ := H
   ⟨f a, f b, by rw [← f.map_mul, ← f.map_mul, ← f.map_add, h, f.map_one]⟩
 
 theorem IsCoprime.of_add_mul_left_left (h : IsCoprime (x + y * z) y) : IsCoprime x y :=
-  let ⟨a, b, H⟩ := h
+  let_fun ⟨a, b, H⟩ := h
   ⟨a, a * z + b, by
     simpa only [add_mul, mul_add, add_assoc, add_comm, add_left_comm, mul_assoc, mul_comm,
       mul_left_comm] using H⟩
@@ -248,12 +248,12 @@ variable {R : Type*} [CommSemiring R] {x u v : R}
 
 theorem isCoprime_mul_unit_left_left (hu : IsUnit x) (y z : R) :
     IsCoprime (x * y) z ↔ IsCoprime y z :=
-  let ⟨u, hu⟩ := hu
+  let_fun ⟨u, hu⟩ := hu
   hu ▸ isCoprime_group_smul_left u y z
 
 theorem isCoprime_mul_unit_left_right (hu : IsUnit x) (y z : R) :
     IsCoprime y (x * z) ↔ IsCoprime y z :=
-  let ⟨u, hu⟩ := hu
+  let_fun ⟨u, hu⟩ := hu
   hu ▸ isCoprime_group_smul_right u y z
 
 theorem isCoprime_mul_unit_right_left (hu : IsUnit x) (y z : R) :

@@ -398,7 +398,7 @@ paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, se
 theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : BumpCovering ι X s, f.IsSubordinate U :=
-  let ⟨f, _, hfU⟩ :=
+  let_fun ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop (fun _ => True)
       (fun _ _ hs ht hd =>
         (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
@@ -612,7 +612,7 @@ paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, se
 theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
-  let ⟨f, hf⟩ := BumpCovering.exists_isSubordinate_of_locallyFinite hs U ho hf hU
+  let_fun ⟨f, hf⟩ := BumpCovering.exists_isSubordinate_of_locallyFinite hs U ho hf hU
   ⟨f.toPartitionOfUnity, hf.toPartitionOfUnity⟩
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
@@ -620,7 +620,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
 theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed s) (U : ι → Set X)
     (ho : ∀ i, IsOpen (U i)) (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U :=
-  let ⟨f, hf⟩ := BumpCovering.exists_isSubordinate hs U ho hU
+  let_fun ⟨f, hf⟩ := BumpCovering.exists_isSubordinate hs U ho hU
   ⟨f.toPartitionOfUnity, hf.toPartitionOfUnity⟩
 
 /-- If `X` is a locally compact T2 topological space and `U` is a locally finite open covering of a
@@ -629,7 +629,7 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
     (hU : s ⊆ ⋃ i, U i) :
     ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) :=
-  let ⟨f, hfsub, hfcp⟩ :=
+  let_fun ⟨f, hfsub, hfcp⟩ :=
     BumpCovering.exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space hs U ho hf hU
   ⟨f.toPartitionOfUnity, hfsub.toPartitionOfUnity, fun i => IsCompact.of_isClosed_subset (hfcp i)
     isClosed_closure <| closure_mono (f.support_toPartitionOfUnity_subset i)⟩

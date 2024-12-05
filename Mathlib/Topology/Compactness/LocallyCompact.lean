@@ -21,8 +21,8 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
     WeaklyLocallyCompactSpace (X × Y) where
   exists_compact_mem_nhds x :=
-    let ⟨s₁, hc₁, h₁⟩ := exists_compact_mem_nhds x.1
-    let ⟨s₂, hc₂, h₂⟩ := exists_compact_mem_nhds x.2
+    let_fun ⟨s₁, hc₁, h₁⟩ := exists_compact_mem_nhds x.1
+    let_fun ⟨s₂, hc₂, h₂⟩ := exists_compact_mem_nhds x.2
     ⟨s₁ ×ˢ s₂, hc₁.prod hc₂, prod_mem_nhds h₁ h₂⟩
 
 instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
@@ -38,7 +38,7 @@ instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
 protected theorem Topology.IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
     {f : X → Y} (hf : IsClosedEmbedding f) : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds x :=
-    let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
+    let_fun ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
     ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
 
 @[deprecated (since := "2024-10-20")]
@@ -68,7 +68,7 @@ theorem exists_compact_superset [WeaklyLocallyCompactSpace X] {K : Set X} (hK : 
 the filters `𝓝 x` and `cocompact X` are disjoint for all `X`. -/
 theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace X] (x : X) :
     Disjoint (𝓝 x) (cocompact X) :=
-  let ⟨_, hc, hx⟩ := exists_compact_mem_nhds x
+  let_fun ⟨_, hc, hx⟩ := exists_compact_mem_nhds x
   disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
 
 theorem compact_basis_nhds [LocallyCompactSpace X] (x : X) :
@@ -83,7 +83,7 @@ theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → 
     {s : ∀ x, ι x → Set X} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
     (hc : ∀ x i, p x i → IsCompact (s x i)) : LocallyCompactSpace X :=
   ⟨fun x _t ht =>
-    let ⟨i, hp, ht⟩ := (h x).mem_iff.1 ht
+    let_fun ⟨i, hp, ht⟩ := (h x).mem_iff.1 ht
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 
 instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
@@ -139,11 +139,11 @@ end Pi
 
 instance (priority := 900) [LocallyCompactSpace X] : LocallyCompactPair X Y where
   exists_mem_nhds_isCompact_mapsTo hf hs :=
-    let ⟨K, hKx, hKs, hKc⟩ := local_compact_nhds (hf.continuousAt hs); ⟨K, hKx, hKc, hKs⟩
+    let_fun ⟨K, hKx, hKs, hKc⟩ := local_compact_nhds (hf.continuousAt hs); ⟨K, hKx, hKc, hKs⟩
 
 instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds (x : X) :=
-    let ⟨K, hx, _, hKc⟩ := local_compact_nhds (x := x) univ_mem; ⟨K, hKc, hx⟩
+    let_fun ⟨K, hx, _, hKc⟩ := local_compact_nhds (x := x) univ_mem; ⟨K, hKc, hx⟩
 
 /-- A reformulation of the definition of locally compact space: In a locally compact space,
   every open set containing `x` has a compact subset containing `x` in its interior. -/
@@ -173,7 +173,7 @@ lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y}
   if the space is regular. -/
 theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCompact K)
     (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U :=
-  let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
+  let_fun ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 
 theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X → Y}

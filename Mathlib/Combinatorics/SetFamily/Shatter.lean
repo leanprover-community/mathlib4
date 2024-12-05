@@ -41,19 +41,19 @@ lemma Shatters.exists_inter_eq_singleton (hs : Shatters 𝒜 s) (ha : a ∈ s) :
   hs <| singleton_subset_iff.2 ha
 
 lemma Shatters.mono_left (h : 𝒜 ⊆ ℬ) (h𝒜 : 𝒜.Shatters s) : ℬ.Shatters s :=
-  fun _t ht ↦ let ⟨u, hu, hut⟩ := h𝒜 ht; ⟨u, h hu, hut⟩
+  fun _t ht ↦ let_fun ⟨u, hu, hut⟩ := h𝒜 ht; ⟨u, h hu, hut⟩
 
 lemma Shatters.mono_right (h : t ⊆ s) (hs : 𝒜.Shatters s) : 𝒜.Shatters t := fun u hu ↦ by
   obtain ⟨v, hv, rfl⟩ := hs (hu.trans h); exact ⟨v, hv, inf_congr_right hu <| inf_le_of_left_le h⟩
 
 lemma Shatters.exists_superset (h : 𝒜.Shatters s) : ∃ t ∈ 𝒜, s ⊆ t :=
-  let ⟨t, ht, hst⟩ := h Subset.rfl; ⟨t, ht, inter_eq_left.1 hst⟩
+  let_fun ⟨t, ht, hst⟩ := h Subset.rfl; ⟨t, ht, inter_eq_left.1 hst⟩
 
 lemma shatters_of_forall_subset (h : ∀ t, t ⊆ s → t ∈ 𝒜) : 𝒜.Shatters s :=
   fun t ht ↦ ⟨t, h _ ht, inter_eq_right.2 ht⟩
 
 protected lemma Shatters.nonempty (h : 𝒜.Shatters s) : 𝒜.Nonempty :=
-  let ⟨t, ht, _⟩ := h Subset.rfl; ⟨t, ht⟩
+  let_fun ⟨t, ht, _⟩ := h Subset.rfl; ⟨t, ht⟩
 
 @[simp] lemma shatters_empty : 𝒜.Shatters ∅ ↔ 𝒜.Nonempty :=
   ⟨Shatters.nonempty, fun ⟨s, hs⟩ t ht ↦ ⟨s, hs, by rwa [empty_inter, eq_comm, ← subset_empty]⟩⟩

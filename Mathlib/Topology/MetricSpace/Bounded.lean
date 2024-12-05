@@ -69,7 +69,7 @@ theorem _root_.Bornology.IsBounded.subset_closedBall (h : IsBounded s) (c : α) 
 
 theorem _root_.Bornology.IsBounded.subset_ball_lt (h : IsBounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ ball c r :=
-  let ⟨r, hr⟩ := h.subset_closedBall c
+  let_fun ⟨r, hr⟩ := h.subset_closedBall c
   ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), hr.trans <| closedBall_subset_ball <|
     (le_max_left _ _).trans_lt (lt_add_one _)⟩
 
@@ -81,11 +81,11 @@ theorem isBounded_iff_subset_ball (c : α) : IsBounded s ↔ ∃ r, s ⊆ ball c
 
 theorem _root_.Bornology.IsBounded.subset_closedBall_lt (h : IsBounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ closedBall c r :=
-  let ⟨r, har, hr⟩ := h.subset_ball_lt a c
+  let_fun ⟨r, har, hr⟩ := h.subset_ball_lt a c
   ⟨r, har, hr.trans ball_subset_closedBall⟩
 
 theorem isBounded_closure_of_isBounded (h : IsBounded s) : IsBounded (closure s) :=
-  let ⟨C, h⟩ := isBounded_iff.1 h
+  let_fun ⟨C, h⟩ := isBounded_iff.1 h
   isBounded_iff.2 ⟨C, fun _a ha _b hb => isClosed_Iic.closure_subset <|
     map_mem_closure₂ continuous_dist ha hb h⟩
 
@@ -133,7 +133,7 @@ theorem tendsto_dist_left_cobounded_atTop (c : α) : Tendsto (dist c) (cobounded
 theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : IsBounded s :=
   -- We cover the totally bounded set by finitely many balls of radius 1,
   -- and then argue that a finite union of bounded sets is bounded
-  let ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
+  let_fun ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
   ((isBounded_biUnion fint).2 fun _ _ => isBounded_ball).subset subs
 
 /-- A compact set is bounded -/
@@ -319,8 +319,8 @@ theorem isBounded_Ioo (a b : α) : IsBounded (Ioo a b) :=
     metric structure give the same topology, any order-bounded set is metric-bounded. -/
 theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂ : BddBelow s) :
     IsBounded s :=
-  let ⟨u, hu⟩ := h₁
-  let ⟨l, hl⟩ := h₂
+  let_fun ⟨u, hu⟩ := h₁
+  let_fun ⟨l, hl⟩ := h₂
   (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
 
 end CompactIccSpace
@@ -384,7 +384,7 @@ this constant bounds the diameter. -/
 theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
     (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) : diam s ≤ C :=
   have h₀ : 0 ≤ C :=
-    let ⟨x, hx⟩ := hs
+    let_fun ⟨x, hx⟩ := hs
     le_trans dist_nonneg (h x hx x hx)
   diam_le_of_forall_dist_le h₀ h
 

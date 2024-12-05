@@ -148,7 +148,7 @@ variable [PseudoMetricSpace β]
 
 -- Porting note: added `let`, otherwise `simp` failed
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
-  let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
+  letI i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
       simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),

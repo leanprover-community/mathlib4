@@ -51,7 +51,7 @@ variable {α : Type*}
 /-- Given any function `m` assigning measures to sets satisfying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
 protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
-  let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
+  letI μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
   { measureOf := μ
     empty :=
       le_antisymm
@@ -118,7 +118,7 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
 variable {m m_empty}
 
 theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s :=
-  let f : ℕ → Set α := fun i => Nat.casesOn i s fun _ => ∅
+  letI f : ℕ → Set α := fun i => Nat.casesOn i s fun _ => ∅
   iInf_le_of_le f <|
     iInf_le_of_le (subset_iUnion f 0) <|
       le_of_eq <| tsum_eq_single 0 <| by
@@ -170,7 +170,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     calc
       μ u ≤ μ (⋃ i : I u, f i) :=
         μ.mono fun x hx =>
-          let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
+          let_fun ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
       _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
 

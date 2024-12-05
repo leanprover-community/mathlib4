@@ -125,8 +125,8 @@ of this composed diagram is `Aut F ⧸ V`. Finally, we obtain `F.obj (A ⧸ V) �
 
 private def quotientToEndObjectHom :
     V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →* End A :=
-  let ff : (functorToAction F).FullyFaithful := FullyFaithful.ofFullyFaithful (functorToAction F)
-  let e : End A ≃* End (Aut F ⧸ₐ U.toSubgroup) := (ff.mulEquivEnd A).trans (Iso.conj u)
+  let_fun ff : (functorToAction F).FullyFaithful := FullyFaithful.ofFullyFaithful (functorToAction F)
+  let_fun e : End A ≃* End (Aut F ⧸ₐ U.toSubgroup) := (ff.mulEquivEnd A).trans (Iso.conj u)
   e.symm.toMonoidHom.comp (quotientToEndHom V.toSubgroup U.toSubgroup)
 
 private lemma functorToAction_map_quotientToEndObjectHom

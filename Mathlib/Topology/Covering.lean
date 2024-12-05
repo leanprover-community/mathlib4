@@ -45,9 +45,9 @@ theorem mem_toTrivialization_baseSet {x : X} {I : Type*} [TopologicalSpace I]
 
 theorem toTrivialization_apply {x : E} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f (f x) I) : (h.toTrivialization x).2 = ⟨x, rfl⟩ :=
-  let e := Classical.choose h.2
-  let h := Classical.choose_spec h.2
-  let he := e.mk_proj_snd' h
+  letI e := Classical.choose h.2
+  let_fun h := Classical.choose_spec h.2
+  let_fun he := e.mk_proj_snd' h
   Subtype.ext
     ((e.toPartialEquiv.eq_symm_apply (e.mem_source.mpr h)
             (by rwa [he, e.mem_target, e.coe_fst (e.mem_source.mpr h)])).mpr
@@ -55,12 +55,12 @@ theorem toTrivialization_apply {x : E} {I : Type*} [TopologicalSpace I]
 
 protected theorem continuousAt {x : E} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f (f x) I) : ContinuousAt f x :=
-  let e := h.toTrivialization
+  letI e := h.toTrivialization
   e.continuousAt_proj (e.mem_source.mpr (mem_toTrivialization_baseSet h))
 
 theorem to_isEvenlyCovered_preimage {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : IsEvenlyCovered f x (f ⁻¹' {x}) :=
-  let ⟨_, h2⟩ := h
+  let_fun ⟨_, h2⟩ := h
   ⟨((Classical.choose h2).preimageSingletonHomeomorph
           (Classical.choose_spec h2)).isEmbedding.discreteTopology,
     _, h.mem_toTrivialization_baseSet⟩

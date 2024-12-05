@@ -1110,7 +1110,7 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
             has <| hia ▸ his
         -- From these two facts we deduce that `g` actually vanishes on `s`,
         have h3 : ∀ i ∈ s, g i = 0 := fun i his =>
-          let ⟨y, hy⟩ := h2 i his
+          let_fun ⟨y, hy⟩ := h2 i his
           have h : g i • i y = g i • a y := congr_fun (h1 i his) y
           Or.resolve_right (mul_eq_zero.1 <| by rw [mul_sub, sub_eq_zero]; exact h)
             (sub_ne_zero_of_ne hy)
@@ -1367,17 +1367,20 @@ noncomputable def LinearIndependent.extend (hs : LinearIndependent K (fun x => x
 
 theorem LinearIndependent.extend_subset (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : hs.extend hst ⊆ t :=
-  let ⟨hbt, _hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
+  let_fun ⟨hbt, _hsb, _htb, _hli⟩ :=
+    Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hbt
 
 theorem LinearIndependent.subset_extend (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : s ⊆ hs.extend hst :=
-  let ⟨_hbt, hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
+  let_fun ⟨_hbt, hsb, _htb, _hli⟩ :=
+    Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hsb
 
 theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : t ⊆ span K (hs.extend hst) :=
-  let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
+  let_fun ⟨_hbt, _hsb, htb, _hli⟩ :=
+    Classical.choose_spec (exists_linearIndependent_extension hs hst)
   htb
 
 theorem LinearIndependent.span_extend_eq_span (hs : LinearIndependent K (fun x => x : s → V))
@@ -1386,7 +1389,8 @@ theorem LinearIndependent.span_extend_eq_span (hs : LinearIndependent K (fun x =
 
 theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : LinearIndependent K ((↑) : hs.extend hst → V) :=
-  let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
+  let_fun ⟨_hbt, _hsb, _htb, hli⟩ :=
+    Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hli
 
 -- TODO(Mario): rewrite?
@@ -1419,12 +1423,12 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
             (le_of_eq hst)
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>
-          let ⟨u, hust, hsu, Eq⟩ := ih _ hs' hst this
+          let_fun ⟨u, hust, hsu, Eq⟩ := ih _ hs' hst this
           have hb₁u : b₁ ∉ u := fun h => (hust h).elim hb₁s hb₁t
           ⟨insert b₁ u, by simp [insert_subset_insert hust], Subset.trans hsu (by simp), by
             simp [Eq, hb₁t, hb₁s', hb₁u]⟩)
         fun this =>
-        let ⟨b₂, hb₂s, hb₂t⟩ := not_subset.mp this
+        let_fun ⟨b₂, hb₂s, hb₂t⟩ := not_subset.mp this
         have hb₂t' : b₂ ∉ s' ∪ t := fun h => hb₂t <| subset_span h
         have : s ⊆ (span K ↑(insert b₂ s' ∪ t) : Submodule K V) := fun b₃ hb₃ => by
           have : ↑(s' ∪ insert b₁ t) ⊆ insert b₁ (insert b₂ ↑(s' ∪ t) : Set V) := by
@@ -1440,7 +1444,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
           have hb₁ : b₁ ∈ span K (insert b₂ ↑(s' ∪ t)) := by
             exact mem_span_insert_exchange (this hb₂s) hb₂t
           rw [span_insert_eq_span hb₁] at hb₃; simpa using hb₃
-        let ⟨u, hust, hsu, eq⟩ := ih _ (by simp [insert_subset_iff, hb₂s, hs']) hst this
+        let_fun ⟨u, hust, hsu, eq⟩ := ih _ (by simp [insert_subset_iff, hb₂s, hs']) hst this
         -- Porting note: `hb₂t'` → `Finset.card_insert_of_not_mem hb₂t'`
         ⟨u, Subset.trans hust <| union_subset_union (Subset.refl _) (by simp [subset_insert]), hsu,
           by simp [eq, Finset.card_insert_of_not_mem hb₂t', hb₁t, hb₁s']⟩
@@ -1460,7 +1464,7 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Fin
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ span K t) :
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
   have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simpa
-  let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
+  let_fun ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
   have : s.Finite := u.finite_toSet.subset hsu
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 

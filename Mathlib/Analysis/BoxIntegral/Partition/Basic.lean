@@ -115,8 +115,8 @@ instance partialOrder : PartialOrder (Prepartition I) where
   le := (· ≤ ·)
   le_refl _ I hI := ⟨I, hI, le_rfl⟩
   le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
-    let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁
-    let ⟨I₃, hI₃, hI₂₃⟩ := h₂₃ hI₂
+    let_fun ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁
+    let_fun ⟨I₃, hI₃, hI₂₃⟩ := h₂₃ hI₂
     ⟨I₃, hI₃, hI₁₂.trans hI₂₃⟩
   le_antisymm := by
     suffices ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes from
@@ -220,8 +220,8 @@ theorem iUnion_subset : π.iUnion ⊆ I :=
 
 @[mono]
 theorem iUnion_mono (h : π₁ ≤ π₂) : π₁.iUnion ⊆ π₂.iUnion := fun _ hx =>
-  let ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
-  let ⟨J₂, hJ₂, hle⟩ := h hJ₁
+  let_fun ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
+  let_fun ⟨J₂, hJ₂, hle⟩ := h hJ₁
   π₂.mem_iUnion.2 ⟨J₂, hJ₂, hle hx⟩
 
 theorem disjoint_boxes_of_disjoint_iUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
@@ -276,7 +276,7 @@ variable {πi πi₁ πi₂ : ∀ J : Box ι, Prepartition J}
 theorem mem_biUnion : J ∈ π.biUnion πi ↔ ∃ J' ∈ π, J ∈ πi J' := by simp [biUnion]
 
 theorem biUnion_le (πi : ∀ J, Prepartition J) : π.biUnion πi ≤ π := fun _ hJ =>
-  let ⟨J', hJ', hJ⟩ := π.mem_biUnion.1 hJ
+  let_fun ⟨J', hJ', hJ⟩ := π.mem_biUnion.1 hJ
   ⟨J', hJ', (πi J').le_of_mem hJ⟩
 
 @[simp]
@@ -522,7 +522,7 @@ theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p 
   Finset.mem_filter
 
 theorem filter_le (π : Prepartition I) (p : Box ι → Prop) : π.filter p ≤ π := fun J hJ =>
-  let ⟨hπ, _⟩ := π.mem_filter.1 hJ
+  let_fun ⟨hπ, _⟩ := π.mem_filter.1 hJ
   ⟨J, hπ, le_rfl⟩
 
 theorem filter_of_true {p : Box ι → Prop} (hp : ∀ J ∈ π, p J) : π.filter p = π := by
@@ -645,7 +645,7 @@ protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) :
   exact ExistsUnique.intro J ⟨h, hx⟩ fun J' ⟨h', hx'⟩ => π.eq_of_mem_of_mem h' h hx' hx
 
 theorem nonempty_boxes (h : π.IsPartition) : π.boxes.Nonempty :=
-  let ⟨J, hJ, _⟩ := h _ I.upper_mem
+  let_fun ⟨J, hJ, _⟩ := h _ I.upper_mem
   ⟨J, hJ⟩
 
 theorem eq_of_boxes_subset (h₁ : π₁.IsPartition) (h₂ : π₁.boxes ⊆ π₂.boxes) : π₁ = π₂ :=
@@ -657,8 +657,8 @@ theorem le_iff (h : π₂.IsPartition) :
 
 protected theorem biUnion (h : IsPartition π) (hi : ∀ J ∈ π, IsPartition (πi J)) :
     IsPartition (π.biUnion πi) := fun x hx =>
-  let ⟨J, hJ, hxi⟩ := h x hx
-  let ⟨Ji, hJi, hx⟩ := hi J hJ x hxi
+  let_fun ⟨J, hJ, hxi⟩ := h x hx
+  let_fun ⟨Ji, hJi, hx⟩ := hi J hJ x hxi
   ⟨Ji, π.mem_biUnion.2 ⟨J, hJ, hJi⟩, hx⟩
 
 protected theorem restrict (h : IsPartition π) (hJ : J ≤ I) : IsPartition (π.restrict J) :=

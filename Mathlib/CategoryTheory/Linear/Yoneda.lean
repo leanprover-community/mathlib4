@@ -83,13 +83,13 @@ theorem whiskering_linearCoyoneda₂ :
   rfl
 
 instance full_linearYoneda : (linearYoneda R C).Full :=
-  let _ :  Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
+  let_fun _ :  Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
     (forget (ModuleCat.{v} R))) := Yoneda.yoneda_full
   Functor.Full.of_comp_faithful (linearYoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 
 instance full_linearCoyoneda : (linearCoyoneda R C).Full :=
-  let _ : Functor.Full (linearCoyoneda R C ⋙ (whiskeringRight _ _ _).obj
+  let_fun _ : Functor.Full (linearCoyoneda R C ⋙ (whiskeringRight _ _ _).obj
     (forget (ModuleCat.{v} R))) := Coyoneda.coyoneda_full
   Functor.Full.of_comp_faithful (linearCoyoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))

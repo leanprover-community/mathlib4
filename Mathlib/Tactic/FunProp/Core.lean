@@ -120,7 +120,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     (hint : Array (Nat×Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
-  let go : FunPropM (Option Result) := do
+  let_fun go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
     let type ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
@@ -300,7 +300,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
 
     | true, false =>
       let f := Expr.lam yName yType yBody default
-      let g := Expr.lam xName xType yValue default
+      let_fun g := Expr.lam xName xType yValue default
       applyCompRule funPropDecl e f g funProp
 
     | false, _ =>
@@ -402,8 +402,8 @@ def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
   let thms := thms
     |>.filter (fun thm => (isOrderedSubsetOf mainArgs thm.mainArgs))
     |>.qsort (fun t s =>
-      let dt := (Int.ofNat t.appliedArgs - Int.ofNat appliedArgs).natAbs
-      let ds := (Int.ofNat s.appliedArgs - Int.ofNat appliedArgs).natAbs
+      let_fun dt := (Int.ofNat t.appliedArgs - Int.ofNat appliedArgs).natAbs
+      let_fun ds := (Int.ofNat s.appliedArgs - Int.ofNat appliedArgs).natAbs
       match compare dt ds with
       | .lt => true
       | .gt => false
@@ -454,8 +454,8 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
 
   thms := thms
     |>.qsort (fun t s =>
-      let dt := (Int.ofNat t.appliedArgs - Int.ofNat appliedArgs).natAbs
-      let ds := (Int.ofNat s.appliedArgs - Int.ofNat appliedArgs).natAbs
+      let_fun dt := (Int.ofNat t.appliedArgs - Int.ofNat appliedArgs).natAbs
+      let_fun ds := (Int.ofNat s.appliedArgs - Int.ofNat appliedArgs).natAbs
       match compare dt ds with
       | .lt => true
       | .gt => false

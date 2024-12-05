@@ -355,7 +355,7 @@ namespace RingTopology
 variable {α : Type*} [Ring α]
 
 instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
-  ⟨let _ : TopologicalSpace α := ⊤;
+  ⟨letI _ : TopologicalSpace α := ⊤;
     { continuous_add := continuous_top
       continuous_mul := continuous_top
       continuous_neg := continuous_top }⟩
@@ -374,13 +374,13 @@ instance : PartialOrder (RingTopology α) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
 private def def_sInf (S : Set (RingTopology α)) : RingTopology α :=
-  let _ := sInf (toTopologicalSpace '' S)
+  letI _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
-      let _ := t.1; t.toContinuousAdd
+      let_fun _ := t.1; t.toContinuousAdd
     toContinuousMul := continuousMul_sInf <| forall_mem_image.2 fun t _ =>
-      let _ := t.1; t.toContinuousMul
+      let_fun _ := t.1; t.toContinuousMul
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
-      let _ := t.1; t.toContinuousNeg }
+      let_fun _ := t.1; t.toContinuousNeg }
 
 /-- Ring topologies on `α` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.

@@ -453,7 +453,7 @@ that corresponds to repeated application of `f`.
 The forward direction is implemented by finding this `Cycle α` using `Fintype.choose`.
 -/
 def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=
-  let f : { s : Cycle α // s.Nodup ∧ s.Nontrivial } → { f : Perm α // IsCycle f } :=
+  letI f : { s : Cycle α // s.Nodup ∧ s.Nontrivial } → { f : Perm α // IsCycle f } :=
     fun s => ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
   { toFun := Fintype.bijInv (show Function.Bijective f by
       rw [Function.bijective_iff_existsUnique]

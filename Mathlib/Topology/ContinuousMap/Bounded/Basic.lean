@@ -360,7 +360,7 @@ theorem restrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.restrict s x 
 gives a bounded continuous function. -/
 def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) : α →ᵇ γ :=
   ⟨⟨fun x => G (f x), H.continuous.comp f.continuous⟩,
-    let ⟨D, hD⟩ := f.bounded
+    let_fun ⟨D, hD⟩ := f.bounded
     ⟨max C 0 * D, fun x y =>
       calc
         dist (G (f x)) (G (f y)) ≤ C * dist (f x) (f y) := H.dist_le_mul _ _
@@ -483,8 +483,8 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   have ε₂0 : ε₂ > 0 := half_pos (half_pos ε₁0)
   have : ∀ x : α, ∃ U, x ∈ U ∧ IsOpen U ∧
       ∀ y ∈ U, ∀ z ∈ U, ∀ {f : α →ᵇ β}, f ∈ A → dist (f y) (f z) < ε₂ := fun x =>
-    let ⟨U, nhdsU, hU⟩ := H x _ ε₂0
-    let ⟨V, VU, openV, xV⟩ := _root_.mem_nhds_iff.1 nhdsU
+    let_fun ⟨U, nhdsU, hU⟩ := H x _ ε₂0
+    let_fun ⟨V, VU, openV, xV⟩ := _root_.mem_nhds_iff.1 nhdsU
     ⟨V, xV, openV, fun y hy z hz f hf => hU y (VU hy) z (VU hz) ⟨f, hf⟩⟩
   choose U hU using this
   /- For all `x`, the set `hU x` is an open set containing `x` on which the elements of `A`
@@ -553,7 +553,7 @@ theorem arzela_ascoli [T2Space β] (s : Set β) (hs : IsCompact s) (A : Set (α 
   arzela_ascoli₂ s hs (closure A) isClosed_closure
     (fun _ x hf =>
       (mem_of_closed' hs.isClosed).2 fun ε ε0 =>
-        let ⟨g, gA, dist_fg⟩ := Metric.mem_closure_iff.1 hf ε ε0
+        let_fun ⟨g, gA, dist_fg⟩ := Metric.mem_closure_iff.1 hf ε ε0
         ⟨g x, in_s g x gA, lt_of_le_of_lt (dist_coe_le_dist _) dist_fg⟩)
     (H.closure' continuous_coe)
 
@@ -1015,7 +1015,7 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
   smul c f :=
     { toContinuousMap := c • f.toContinuousMap
       map_bounded' :=
-        let ⟨b, hb⟩ := f.bounded
+        let_fun ⟨b, hb⟩ := f.bounded
         ⟨dist c 0 * b, fun x y => by
           refine (dist_smul_pair c (f x) (f y)).trans ?_
           refine mul_le_mul_of_nonneg_left ?_ dist_nonneg

@@ -226,27 +226,27 @@ theorem Periodic.int_mul_eq [Ring α] (h : Periodic f c) (n : ℤ) : f (n * c) =
   `y ∈ Ico 0 c` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico₀ [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x) : ∃ y ∈ Ico 0 c, f x = f y :=
-  let ⟨n, H, _⟩ := existsUnique_zsmul_near_of_pos' hc x
+  let_fun ⟨n, H, _⟩ := existsUnique_zsmul_near_of_pos' hc x
   ⟨x - n • c, H, (h.sub_zsmul_eq n).symm⟩
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ico a (a + c), f x = f y :=
-  let ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ico hc x a
+  let_fun ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ico hc x a
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ioc a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ioc a (a + c), f x = f y :=
-  let ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ioc hc x a
+  let_fun ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ioc hc x a
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 
 theorem Periodic.image_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (a : α) : f '' Ioc a (a + c) = range f :=
   (image_subset_range _ _).antisymm <| range_subset_iff.2 fun x =>
-    let ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
+    let_fun ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
     ⟨y, hy, hyx.symm⟩
 
 theorem Periodic.image_Icc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)

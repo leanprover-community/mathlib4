@@ -147,7 +147,7 @@ instance : Inhabited (Fin2 1) :=
 instance instFintype : ∀ n, Fintype (Fin2 n)
   | 0   => ⟨∅, Fin2.elim0⟩
   | n+1 =>
-    let ⟨elems, compl⟩ := instFintype n
+    let_fun ⟨elems, compl⟩ := instFintype n
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
       complete := by rintro (_|i) <;> simp [compl] }
 

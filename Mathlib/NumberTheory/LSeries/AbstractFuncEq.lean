@@ -193,8 +193,8 @@ def Λ : ℂ → E := mellin P.f
 
 /-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
 theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
-  let ⟨_, ht⟩ := exists_gt s.re
-  let ⟨_, hu⟩ := exists_lt s.re
+  let_fun ⟨_, ht⟩ := exists_gt s.re
+  let_fun ⟨_, hu⟩ := exists_lt s.re
   ⟨mellinConvergent_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu, rfl⟩
 
 lemma Λ_eq : P.Λ = mellin P.f := rfl
@@ -203,8 +203,8 @@ lemma symm_Λ_eq : P.symm.Λ = mellin P.g := rfl
 
 /-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
 theorem differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
-  let ⟨_, ht⟩ := exists_gt s.re
-  let ⟨_, hu⟩ := exists_lt s.re
+  let_fun ⟨_, ht⟩ := exists_gt s.re
+  let_fun ⟨_, hu⟩ := exists_lt s.re
   mellin_differentiableAt_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu
 
 /-- Main theorem about strong FE pairs: if `(f, g)` are a strong FE pair, then the Mellin
@@ -409,7 +409,7 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
 theorem hasMellin [CompleteSpace E]
     {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
   have hc1 : MellinConvergent (P.f · - P.f₀) s :=
-    let ⟨_, ht⟩ := exists_gt s.re
+    let_fun ⟨_, ht⟩ := exists_gt s.re
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
       P.hf_zero' hs
   refine ⟨hc1, ?_⟩

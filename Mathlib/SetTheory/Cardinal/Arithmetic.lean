@@ -476,7 +476,7 @@ end aleph
 section power
 
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
-  let ⟨n, H3⟩ := lt_aleph0.1 H2
+  let_fun ⟨n, H3⟩ := lt_aleph0.1 H2
   H3.symm ▸
     Quotient.inductionOn κ
       (fun α H1 =>

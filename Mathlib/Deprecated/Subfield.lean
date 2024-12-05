@@ -135,7 +135,7 @@ theorem isSubfield_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set
     (hs : ∀ i, IsSubfield (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubfield (⋃ i, s i) :=
   { inv_mem := fun hx ↦
-      let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
+      let_fun ⟨i, hi⟩ := Set.mem_iUnion.1 hx
       Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
     toIsSubring := isSubring_iUnion_of_directed (fun i ↦ (hs i).toIsSubring) directed }
 

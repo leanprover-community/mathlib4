@@ -184,7 +184,7 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
         show f (r • n) ∈ I • N.map f from
           (f.map_smul r n).symm ▸ smul_mem_smul hr (mem_map_of_mem hn)) <|
     smul_le.2 fun r hr _ hn =>
-      let ⟨p, hp, hfp⟩ := mem_map.1 hn
+      let_fun ⟨p, hp, hfp⟩ := mem_map.1 hn
       hfp ▸ f.map_smul r p ▸ mem_map_of_mem (smul_mem_smul hr hp)
 
 theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
@@ -216,7 +216,7 @@ theorem mem_smul_span_singleton {I : Ideal R} {m : M} {x : M} :
   ⟨fun hx =>
     smul_induction_on hx
       (fun r hri _ hnm =>
-        let ⟨s, hs⟩ := mem_span_singleton.1 hnm
+        let_fun ⟨s, hs⟩ := mem_span_singleton.1 hnm
         ⟨r * s, I.mul_mem_right _ hri, hs ▸ mul_smul r s m⟩)
       fun m1 m2 ⟨y1, hyi1, hy1⟩ ⟨y2, hyi2, hy2⟩ =>
       ⟨y1 + y2, I.add_mem hyi1 hyi2, by rw [add_smul, hy1, hy2]⟩,
@@ -413,7 +413,7 @@ theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
     or_iff_not_imp_left.mpr fun I_ne_bot =>
       J.eq_bot_iff.mpr fun j hj =>
-        let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
+        let_fun ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
     fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
@@ -625,7 +625,7 @@ theorem prod_le_inf {s : Finset ι} {f : ι → Ideal R} : s.prod f ≤ s.inf f 
 
 theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
   le_antisymm mul_le_inf fun r ⟨hri, hrj⟩ =>
-    let ⟨s, hsi, t, htj, hst⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
+    let_fun ⟨s, hsi, t, htj, hst⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
     mul_one r ▸
       hst ▸
         (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
@@ -822,7 +822,7 @@ theorem radical_le_radical_iff : radical I ≤ radical J ↔ I ≤ radical J :=
 theorem radical_eq_top : radical I = ⊤ ↔ I = ⊤ :=
   ⟨fun h =>
     (eq_top_iff_one _).2 <|
-      let ⟨n, hn⟩ := (eq_top_iff_one _).1 h
+      let_fun ⟨n, hn⟩ := (eq_top_iff_one _).1 h
       @one_pow R _ n ▸ hn,
     fun h => h.symm ▸ radical_top R⟩
 
@@ -897,11 +897,12 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
 theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J ∧ IsPrime J } :=
   le_antisymm (le_sInf fun _ hJ ↦ hJ.2.radical_le_iff.2 hJ.1) fun r hr ↦
     by_contradiction fun hri ↦
-      let ⟨m, hIm, hm⟩ :=
+      let_fun ⟨m, hIm, hm⟩ :=
         zorn_le_nonempty₀ { K : Ideal R | r ∉ radical K }
           (fun c hc hcc y hyc =>
             ⟨sSup c, fun ⟨n, hrnc⟩ =>
-              let ⟨_, hyc, hrny⟩ := (Submodule.mem_sSup_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
+              let_fun ⟨_, hyc, hrny⟩ :=
+                (Submodule.mem_sSup_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
               hc hyc ⟨n, hrny⟩,
               fun _ => le_sSup⟩)
           I hri
@@ -914,12 +915,12 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
         ⟨by rintro rfl; rw [radical_top] at hrm; exact hrm trivial, fun {x y} hxym =>
           or_iff_not_imp_left.2 fun hxm =>
             by_contradiction fun hym =>
-              let ⟨n, hrn⟩ := this _ hxm
-              let ⟨p, hpm, q, hq, hpqrn⟩ := Submodule.mem_sup.1 hrn
-              let ⟨c, hcxq⟩ := mem_span_singleton'.1 hq
-              let ⟨k, hrk⟩ := this _ hym
-              let ⟨f, hfm, g, hg, hfgrk⟩ := Submodule.mem_sup.1 hrk
-              let ⟨d, hdyg⟩ := mem_span_singleton'.1 hg
+              let_fun ⟨n, hrn⟩ := this _ hxm
+              let_fun ⟨p, hpm, q, hq, hpqrn⟩ := Submodule.mem_sup.1 hrn
+              let_fun ⟨c, hcxq⟩ := mem_span_singleton'.1 hq
+              let_fun ⟨k, hrk⟩ := this _ hym
+              let_fun ⟨f, hfm, g, hg, hfgrk⟩ := Submodule.mem_sup.1 hrk
+              let_fun ⟨d, hdyg⟩ := mem_span_singleton'.1 hg
               hrm
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),

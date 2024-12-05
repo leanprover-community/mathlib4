@@ -57,11 +57,11 @@ def preadditive
     (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂)) :
     Preadditive (Quotient r) where
   homGroup P Q :=
-    let iZ : Zero (P ⟶ Q) :=
+    letI iZ : Zero (P ⟶ Q) :=
       { zero := Quot.mk _ 0 }
-    let iA : Add (P ⟶ Q) :=
+    letI iA : Add (P ⟶ Q) :=
       { add := Preadditive.add r hr }
-    let iN : Neg (P ⟶ Q) :=
+    letI iN : Neg (P ⟶ Q) :=
       { neg := Preadditive.neg r hr }
     { add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_assoc _ _ _)
       zero_add := by rintro ⟨_⟩; exact congr_arg (functor r).map (zero_add _)

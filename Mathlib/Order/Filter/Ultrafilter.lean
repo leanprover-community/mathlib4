@@ -269,8 +269,8 @@ theorem eq_pure_of_finite [Finite α] (f : Ultrafilter α) : ∃ a, f = pure a :
 
 theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofinite ∨ ∃ a, f = pure a :=
   or_iff_not_imp_left.2 fun h =>
-    let ⟨_, hs, hfin⟩ := Filter.disjoint_cofinite_right.1 (disjoint_iff_not_le.2 h)
-    let ⟨a, _, hf⟩ := eq_pure_of_finite_mem hfin hs
+    let_fun ⟨_, hs, hfin⟩ := Filter.disjoint_cofinite_right.1 (disjoint_iff_not_le.2 h)
+    let_fun ⟨a, _, hf⟩ := eq_pure_of_finite_mem hfin hs
     ⟨a, hf⟩
 
 /-- Monadic bind for ultrafilters, coming from the one on filters
@@ -305,7 +305,7 @@ end
 
 /-- The ultrafilter lemma: Any proper filter is contained in an ultrafilter. -/
 theorem exists_le (f : Filter α) [h : NeBot f] : ∃ u : Ultrafilter α, ↑u ≤ f :=
-  let ⟨u, hu, huf⟩ := (eq_bot_or_exists_atom_le f).resolve_left h.ne
+  let_fun ⟨u, hu, huf⟩ := (eq_bot_or_exists_atom_le f).resolve_left h.ne
   ⟨ofAtom u hu, huf⟩
 
 alias _root_.Filter.exists_ultrafilter_le := exists_le

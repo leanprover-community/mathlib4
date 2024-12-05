@@ -229,12 +229,12 @@ down, providing the exit condition (this is the initial `b` in the return value 
 stripped by `fix`). After the `fix` is complete, the final state is `n :: 0 :: res :: v` where
 `res` is the desired result, and the rest reduces this to `[res]`. -/
 def prec (f g : Code) : Code :=
-  let G :=
+  let_fun G :=
     cons tail <|
       cons succ <|
         cons (comp pred tail) <|
           cons (comp g <| cons id <| comp tail tail) <| comp tail <| comp tail tail
-  let F := case id <| comp (comp (comp tail tail) (fix G)) zero'
+  let_fun F := case id <| comp (comp (comp tail tail) (fix G)) zero'
   cons (comp F (cons head <| cons (comp f tail) tail)) nil
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
@@ -1204,7 +1204,7 @@ def splitAtPred {α} (p : α → Bool) : List α → List α × Option α × Lis
   | [] => ([], none, [])
   | a :: as =>
     cond (p a) ([], some a, as) <|
-      let ⟨l₁, o, l₂⟩ := splitAtPred p as
+      let_fun ⟨l₁, o, l₂⟩ := splitAtPred p as
       ⟨a::l₁, o, l₂⟩
 
 theorem splitAtPred_eq {α} (p : α → Bool) :

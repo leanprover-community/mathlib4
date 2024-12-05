@@ -42,7 +42,7 @@ theorem div_add_one (h : b ≠ 0) : a / b + 1 = (a + b) / b :=
 /-- See `inv_add_inv` for the more convenient version when `K` is commutative. -/
 theorem inv_add_inv' (ha : a ≠ 0) (hb : b ≠ 0) :
     a⁻¹ + b⁻¹ = a⁻¹ * (a + b) * b⁻¹ :=
-  let _ := invertibleOfNonzero ha; let _ := invertibleOfNonzero hb; invOf_add_invOf a b
+  letI _ := invertibleOfNonzero ha; letI _ := invertibleOfNonzero hb; invOf_add_invOf a b
 
 theorem one_div_mul_add_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) :
     1 / a * (a + b) * (1 / b) = 1 / a + 1 / b := by
@@ -144,7 +144,7 @@ theorem sub_div (a b c : K) : (a - b) / c = a / c - b / c :=
 
 /-- See `inv_sub_inv` for the more convenient version when `K` is commutative. -/
 theorem inv_sub_inv' {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = a⁻¹ * (b - a) * b⁻¹ :=
-  let _ := invertibleOfNonzero ha; let _ := invertibleOfNonzero hb; invOf_sub_invOf a b
+  letI _ := invertibleOfNonzero ha; letI _ := invertibleOfNonzero hb; invOf_sub_invOf a b
 
 theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) :
     1 / a * (b - a) * (1 / b) = 1 / a - 1 / b := by

@@ -96,8 +96,8 @@ partial def Sum.pow (s : Sum) : ℕ → Sum
   | 0 => Sum.one
   | 1 => s
   | n =>
-    let m := n >>> 1
-    let a := s.pow m
+    let_fun m := n >>> 1
+    let_fun a := s.pow m
     if n &&& 1 = 0 then
       a.mul a
     else
@@ -198,7 +198,7 @@ def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
     match map.find? mn with
     | some n => ⟨map, out.insert n coeff⟩
     | none =>
-      let n := map.size
+      let_fun n := map.size
       ⟨map.insert mn n, out.insert n coeff⟩)
     (m, RBMap.empty)
 

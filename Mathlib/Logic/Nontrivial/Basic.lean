@@ -52,7 +52,7 @@ instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
 /-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
     (hf : Function.Injective f) : Nontrivial β :=
-  let ⟨x, y, h⟩ := exists_pair_ne α
+  let_fun ⟨x, y, h⟩ := exists_pair_ne α
   ⟨⟨f x, f y, hf.ne h⟩⟩
 
 /-- An injective function from a nontrivial type has an argument at

@@ -350,7 +350,7 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
     (mem : ∀ x (hx : x ∈ k), p x (subset_closure hx)) (one : p 1 (one_mem _))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx :=
-  let K : Subgroup G :=
+  letI K : Subgroup G :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, ha⟩ ⟨_, hb⟩ ↦ ⟨_, mul _ _ _ _ ha hb⟩
       one_mem' := ⟨_, one⟩
@@ -542,7 +542,7 @@ theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
     Disjoint H₁ H₂ ↔ ∀ {x y : G}, x ∈ H₁ → y ∈ H₂ → x * y = 1 → x = 1 ∧ y = 1 :=
   disjoint_def'.trans
     ⟨fun h x y hx hy hxy =>
-      let hx1 : x = 1 := h hx (H₂.inv_mem hy) (eq_inv_iff_mul_eq_one.mpr hxy)
+      let_fun hx1 : x = 1 := h hx (H₂.inv_mem hy) (eq_inv_iff_mul_eq_one.mpr hxy)
       ⟨hx1, by simpa [hx1] using hxy⟩,
       fun h _ _ hx hy hxy => (h hx (H₂.inv_mem hy) (mul_inv_eq_one.mpr hxy)).1⟩
 

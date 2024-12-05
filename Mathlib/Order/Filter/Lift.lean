@@ -124,7 +124,7 @@ theorem lift_assoc {h : Set β → Filter γ} (hg : Monotone g) :
     (le_iInf₂ fun _s hs => le_iInf₂ fun t ht =>
       iInf_le_of_le t <| iInf_le _ <| (mem_lift_sets hg).mpr ⟨_, hs, ht⟩)
     (le_iInf₂ fun t ht =>
-      let ⟨s, hs, h'⟩ := (mem_lift_sets hg).mp ht
+      let_fun ⟨s, hs, h'⟩ := (mem_lift_sets hg).mp ht
       iInf_le_of_le s <| iInf_le_of_le hs <| iInf_le_of_le t <| iInf_le _ h')
 
 theorem lift_lift_same_le_lift {g : Set α → Set α → Filter β} :

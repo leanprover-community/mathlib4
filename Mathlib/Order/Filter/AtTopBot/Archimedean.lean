@@ -50,13 +50,13 @@ alias Filter.Eventually.nat_cast_atTop := Filter.Eventually.natCast_atTop
 @[simp] theorem Int.comap_cast_atTop [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atTop = atTop :=
   comap_embedding_atTop (fun _ _ => Int.cast_le) fun r =>
-    let ⟨n, hn⟩ := exists_nat_ge r; ⟨n, mod_cast hn⟩
+    let_fun ⟨n, hn⟩ := exists_nat_ge r; ⟨n, mod_cast hn⟩
 
 @[simp]
 theorem Int.comap_cast_atBot [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atBot = atBot :=
   comap_embedding_atBot (fun _ _ => Int.cast_le) fun r =>
-    let ⟨n, hn⟩ := exists_nat_ge (-r)
+    let_fun ⟨n, hn⟩ := exists_nat_ge (-r)
     ⟨-n, by simpa [neg_le] using hn⟩
 
 theorem tendsto_intCast_atTop_iff [StrictOrderedRing R] [Archimedean R] {f : α → ℤ}
@@ -98,12 +98,12 @@ alias Filter.Eventually.int_cast_atBot := Filter.Eventually.intCast_atBot
 theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atTop = atTop :=
   comap_embedding_atTop (fun _ _ => Rat.cast_le) fun r =>
-    let ⟨n, hn⟩ := exists_nat_ge r; ⟨n, by simpa⟩
+    let_fun ⟨n, hn⟩ := exists_nat_ge r; ⟨n, by simpa⟩
 
 @[simp] theorem Rat.comap_cast_atBot [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atBot = atBot :=
   comap_embedding_atBot (fun _ _ => Rat.cast_le) fun r =>
-    let ⟨n, hn⟩ := exists_nat_ge (-r)
+    let_fun ⟨n, hn⟩ := exists_nat_ge (-r)
     ⟨-n, by simpa [neg_le]⟩
 
 theorem tendsto_ratCast_atTop_iff [LinearOrderedField R] [Archimedean R] {f : α → ℚ}
@@ -147,7 +147,7 @@ theorem atBot_hasCountableBasis_of_archimedean [OrderedRing R] [Archimedean R] :
   countable := to_countable _
   toHasBasis :=
     atBot_basis.to_hasBasis
-      (fun x _ => let ⟨m, hm⟩ := exists_int_le x; ⟨m, trivial, Iic_subset_Iic.2 hm⟩)
+      (fun x _ => let_fun ⟨m, hm⟩ := exists_int_le x; ⟨m, trivial, Iic_subset_Iic.2 hm⟩)
       fun m _ => ⟨m, trivial, Subset.rfl⟩
 
 instance (priority := 100) atTop_isCountablyGenerated_of_archimedean [OrderedSemiring R]

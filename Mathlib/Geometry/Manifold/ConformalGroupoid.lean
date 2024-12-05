@@ -29,7 +29,7 @@ def conformalPregroupoid : Pregroupoid X where
   comp {f _} _ _ hf hg _ _ _ x hx := (hg (f x) hx.2).comp x (hf x hx.1)
   id_mem x _ := conformalAt_id x
   locality _ h x hx :=
-    let ⟨_, _, h₂, h₃⟩ := h x hx
+    let_fun ⟨_, _, h₂, h₃⟩ := h x hx
     h₃ x ⟨hx, h₂⟩
   congr hu h hf x hx := (hf x hx).congr hx hu h
 

@@ -173,12 +173,12 @@ instance nonempty_Iio_subtype [NoMinOrder α] : Nonempty (Iio a) :=
 
 instance [NoMinOrder α] : NoMinOrder (Iio a) :=
   ⟨fun a =>
-    let ⟨b, hb⟩ := exists_lt (a : α)
+    let_fun ⟨b, hb⟩ := exists_lt (a : α)
     ⟨⟨b, lt_trans hb a.2⟩, hb⟩⟩
 
 instance [NoMinOrder α] : NoMinOrder (Iic a) :=
   ⟨fun a =>
-    let ⟨b, hb⟩ := exists_lt (a : α)
+    let_fun ⟨b, hb⟩ := exists_lt (a : α)
     ⟨⟨b, hb.le.trans a.2⟩, hb⟩⟩
 
 instance [NoMaxOrder α] : NoMaxOrder (Ioi a) :=

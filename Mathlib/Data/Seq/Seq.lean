@@ -505,7 +505,7 @@ def splitAt : ℕ → Seq α → List α × Seq α
     match destruct s with
     | none => ([], nil)
     | some (x, s') =>
-      let (l, r) := splitAt n s'
+      let_fun (l, r) := splitAt n s'
       (List.cons x l, r)
 
 section ZipWith

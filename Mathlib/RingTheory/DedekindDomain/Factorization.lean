@@ -263,8 +263,8 @@ variable (K)
 then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we set `val_v(I) = 0`. -/
 def count (I : FractionalIdeal R⁰ K) : ℤ :=
   dite (I = 0) (fun _ : I = 0 => 0) fun _ : ¬I = 0 =>
-    let a := choose (exists_eq_spanSingleton_mul I)
-    let J := choose (choose_spec (exists_eq_spanSingleton_mul I))
+    let_fun a := choose (exists_eq_spanSingleton_mul I)
+    let_fun J := choose (choose_spec (exists_eq_spanSingleton_mul I))
     ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 

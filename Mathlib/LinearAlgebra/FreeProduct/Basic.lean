@@ -90,7 +90,7 @@ then their quotients are also equivalent.
 case of the third isomorphism theorem.)-/
 def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop)  :
     RingQuot rel ≃+* RingQuot (rel on f.symm) :=
-  let f_alg : A ≃ₐ[ℕ] B :=
+  letI f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
   algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
 

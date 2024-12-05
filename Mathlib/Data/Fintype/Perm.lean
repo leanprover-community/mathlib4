@@ -79,8 +79,8 @@ theorem mem_of_mem_permsOfList :
   | a :: l, f, h, x =>
     (mem_append.1 h).elim (fun h hx => mem_cons_of_mem _ (mem_of_mem_permsOfList h x hx))
       fun h hx =>
-      let ⟨y, hy, hy'⟩ := List.mem_flatMap.1 h
-      let ⟨g, hg₁, hg₂⟩ := List.mem_map.1 hy'
+      let_fun ⟨y, hy, hy'⟩ := List.mem_flatMap.1 h
+      let_fun ⟨g, hg₁, hg₂⟩ := List.mem_map.1 hy'
       -- Porting note: Seems like the implicit variable `x` of type `α` is needed.
       if hxa : x = a then by simp [hxa]
       else

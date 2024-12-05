@@ -93,12 +93,12 @@ theorem isSubmonoid_iUnion_of_directed {ι : Type*} [hι : Nonempty ι] {s : ι 
     (hs : ∀ i, IsSubmonoid (s i)) (Directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubmonoid (⋃ i, s i) :=
   { one_mem :=
-      let ⟨i⟩ := hι
+      let_fun ⟨i⟩ := hι
       Set.mem_iUnion.2 ⟨i, (hs i).one_mem⟩
     mul_mem := fun ha hb =>
-      let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
-      let ⟨j, hj⟩ := Set.mem_iUnion.1 hb
-      let ⟨k, hk⟩ := Directed i j
+      let_fun ⟨i, hi⟩ := Set.mem_iUnion.1 ha
+      let_fun ⟨j, hj⟩ := Set.mem_iUnion.1 hb
+      let_fun ⟨k, hk⟩ := Directed i j
       Set.mem_iUnion.2 ⟨k, (hs k).mul_mem (hk.1 hi) (hk.2 hj)⟩ }
 
 section powers
@@ -331,13 +331,13 @@ theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
 theorem mem_closure_union_iff {M : Type*} [CommMonoid M] {s t : Set M} {x : M} :
     x ∈ Closure (s ∪ t) ↔ ∃ y ∈ Closure s, ∃ z ∈ Closure t, y * z = x :=
   ⟨fun hx =>
-    let ⟨L, HL1, HL2⟩ := exists_list_of_mem_closure hx
+    let_fun ⟨L, HL1, HL2⟩ := exists_list_of_mem_closure hx
     HL2 ▸
       List.recOn L
         (fun _ =>
           ⟨1, (closure.isSubmonoid _).one_mem, 1, (closure.isSubmonoid _).one_mem, mul_one _⟩)
         (fun hd tl ih HL1 =>
-          let ⟨y, hy, z, hz, hyzx⟩ := ih (List.forall_mem_of_forall_mem_cons HL1)
+          let_fun ⟨y, hy, z, hz, hyzx⟩ := ih (List.forall_mem_of_forall_mem_cons HL1)
           Or.casesOn (HL1 hd <| List.mem_cons_self _ _)
             (fun hs =>
               ⟨hd * y, (closure.isSubmonoid _).mul_mem (subset_closure hs) hy, z, hz, by

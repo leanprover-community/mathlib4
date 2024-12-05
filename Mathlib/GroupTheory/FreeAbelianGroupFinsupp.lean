@@ -97,7 +97,7 @@ noncomputable def basis (α : Type*) : Basis α ℤ (FreeAbelianGroup α) :=
 /-- Isomorphic free abelian groups (as modules) have equivalent bases. -/
 def Equiv.ofFreeAbelianGroupLinearEquiv {α β : Type*}
     (e : FreeAbelianGroup α ≃ₗ[ℤ] FreeAbelianGroup β) : α ≃ β :=
-  let t : Basis α ℤ (FreeAbelianGroup β) := (FreeAbelianGroup.basis α).map e
+  let_fun t : Basis α ℤ (FreeAbelianGroup β) := (FreeAbelianGroup.basis α).map e
   t.indexEquiv <| FreeAbelianGroup.basis _
 
 /-- Isomorphic free abelian groups (as additive groups) have equivalent bases. -/

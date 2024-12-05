@@ -268,7 +268,7 @@ variable {Base : Set α → Prop} {B B' : Set α}
 theorem antichain (exch : ExchangeProperty Base) (hB : Base B) (hB' : Base B') (h : B ⊆ B') :
     B = B' :=
   h.antisymm (fun x hx ↦ by_contra
-    (fun hxB ↦ let ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
+    (fun hxB ↦ let_fun ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
 
 theorem encard_diff_le_aux {B₁ B₂ : Set α}
     (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
@@ -416,11 +416,11 @@ theorem Base.infinite_of_infinite (hB : M.Base B) (h : B.Infinite) (hB₁ : M.Ba
   by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
 
 theorem Base.finite [FiniteRk M] (hB : M.Base B) : B.Finite :=
-  let ⟨_,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
+  let_fun ⟨_,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
   hB₀.1.finite_of_finite hB₀.2 hB
 
 theorem Base.infinite [InfiniteRk M] (hB : M.Base B) : B.Infinite :=
-  let ⟨_,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
+  let_fun ⟨_,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
 theorem empty_not_base [h : RkPos M] : ¬M.Base ∅ :=
@@ -448,7 +448,7 @@ theorem not_infiniteRk (M : Matroid α) [FiniteRk M] : ¬ InfiniteRk M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_base; exact hB.infinite hB.finite
 
 theorem finite_or_infiniteRk (M : Matroid α) : FiniteRk M ∨ InfiniteRk M :=
-  let ⟨B, hB⟩ := M.exists_base
+  let_fun ⟨B, hB⟩ := M.exists_base
   B.finite_or_infinite.elim
   (Or.inl ∘ hB.finiteRk_of_finite) (Or.inr ∘ hB.infiniteRk_of_infinite)
 
@@ -555,7 +555,7 @@ theorem Dep.nonempty (hD : M.Dep D) : D.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; exact hD.not_indep M.empty_indep
 
 theorem Indep.finite [FiniteRk M] (hI : M.Indep I) : I.Finite :=
-  let ⟨_, hB, hIB⟩ := hI.exists_base_superset
+  let_fun ⟨_, hB, hIB⟩ := hI.exists_base_superset
   hB.finite.subset hIB
 
 theorem Indep.rkPos_of_nonempty (hI : M.Indep I) (hne : I.Nonempty) : M.RkPos := by
@@ -572,7 +572,7 @@ theorem Indep.diff (hI : M.Indep I) (X : Set α) : M.Indep (I \ X) :=
   hI.subset diff_subset
 
 theorem Base.eq_of_subset_indep (hB : M.Base B) (hI : M.Indep I) (hBI : B ⊆ I) : B = I :=
-  let ⟨B', hB', hB'I⟩ := hI.exists_base_superset
+  let_fun ⟨B', hB', hB'I⟩ := hI.exists_base_superset
   hBI.antisymm (by rwa [hB.eq_of_subset_base hB' (hBI.trans hB'I)])
 
 theorem base_iff_maximal_indep : M.Base B ↔ Maximal M.Indep B := by
@@ -848,11 +848,11 @@ theorem Indep.subset_basis'_of_subset (hI : M.Indep I) (hIX : I ⊆ X) :
 
 theorem exists_basis (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     ∃ I, M.Basis I X :=
-  let ⟨_, hI, _⟩ := M.empty_indep.subset_basis_of_subset (empty_subset X)
+  let_fun ⟨_, hI, _⟩ := M.empty_indep.subset_basis_of_subset (empty_subset X)
   ⟨_,hI⟩
 
 theorem exists_basis' (M : Matroid α) (X : Set α) : ∃ I, M.Basis' I X :=
-  let ⟨_, hI, _⟩ := M.empty_indep.subset_basis'_of_subset (empty_subset X)
+  let_fun ⟨_, hI, _⟩ := M.empty_indep.subset_basis'_of_subset (empty_subset X)
   ⟨_,hI⟩
 
 theorem exists_basis_subset_basis (M : Matroid α) (hXY : X ⊆ Y) (hY : Y ⊆ M.E := by aesop_mat) :
@@ -869,7 +869,7 @@ theorem Basis.exists_basis_inter_eq_of_superset (hI : M.Basis I X) (hXY : X ⊆ 
 
 theorem exists_basis_union_inter_basis (M : Matroid α) (X Y : Set α) (hX : X ⊆ M.E := by aesop_mat)
     (hY : Y ⊆ M.E := by aesop_mat) : ∃ I, M.Basis I (X ∪ Y) ∧ M.Basis (I ∩ Y) Y :=
-  let ⟨J, hJ⟩ := M.exists_basis Y
+  let_fun ⟨J, hJ⟩ := M.exists_basis Y
   (hJ.exists_basis_inter_eq_of_superset subset_union_right).imp
   (fun I hI ↦ ⟨hI.1, by rwa [hI.2]⟩)
 
@@ -877,7 +877,7 @@ theorem Indep.eq_of_basis (hI : M.Indep I) (hJ : M.Basis J I) : J = I :=
   hJ.eq_of_subset_indep hI hJ.subset rfl.subset
 
 theorem Basis.exists_base (hI : M.Basis I X) : ∃ B, M.Base B ∧ I = B ∩ X :=
-  let ⟨B,hB, hIB⟩ := hI.indep.exists_base_superset
+  let_fun ⟨B,hB, hIB⟩ := hI.indep.exists_base_superset
   ⟨B, hB, subset_antisymm (subset_inter hIB hI.subset)
     (by rw [hI.eq_of_subset_indep (hB.indep.inter_right X) (subset_inter hIB hI.subset)
     inter_subset_right])⟩

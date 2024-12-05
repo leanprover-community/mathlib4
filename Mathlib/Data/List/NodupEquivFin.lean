@@ -40,7 +40,7 @@ def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x 
     { f : Fin l.length → α // Function.Bijective f } :=
   ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
    fun x =>
-    let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
+    let_fun ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
 
 variable [DecidableEq α]

@@ -417,7 +417,7 @@ theorem not_isUnit_iff {z : ℤ_[p]} : ¬IsUnit z ↔ ‖z‖ < 1 := by
 
 /-- A `p`-adic number `u` with `‖u‖ = 1` is a unit of `ℤ_[p]`. -/
 def mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : ℤ_[p]ˣ :=
-  let z : ℤ_[p] := ⟨u, le_of_eq h⟩
+  letI z : ℤ_[p] := ⟨u, le_of_eq h⟩
   ⟨z, z.inv, mul_inv h, inv_mul h⟩
 
 @[simp]
@@ -429,7 +429,7 @@ theorem norm_units (u : ℤ_[p]ˣ) : ‖(u : ℤ_[p])‖ = 1 := isUnit_iff.mp <|
 /-- `unitCoeff hx` is the unit `u` in the unique representation `x = u * p ^ n`.
 See `unitCoeff_spec`. -/
 def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
-  let u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation)
+  letI u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation)
   have hu : ‖u‖ = 1 := by
     simp [u, hx, zpow_ne_zero (G₀ := ℝ) _ (Nat.cast_ne_zero.2 hp.1.pos.ne'), norm_eq_pow_val]
   mkUnits hu

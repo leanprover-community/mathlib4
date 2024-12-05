@@ -738,12 +738,12 @@ theorem HasFDerivAt.continuousAt (h : HasFDerivAt f f' x) : ContinuousAt f x :=
 @[fun_prop]
 theorem DifferentiableWithinAt.continuousWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     ContinuousWithinAt f s x :=
-  let ⟨_, hf'⟩ := h
+  let_fun ⟨_, hf'⟩ := h
   hf'.continuousWithinAt
 
 @[fun_prop]
 theorem DifferentiableAt.continuousAt (h : DifferentiableAt 𝕜 f x) : ContinuousAt f x :=
-  let ⟨_, hf'⟩ := h
+  let_fun ⟨_, hf'⟩ := h
   hf'.continuousAt
 
 @[fun_prop]

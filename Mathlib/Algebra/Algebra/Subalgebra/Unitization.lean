@@ -181,7 +181,7 @@ isomorphic to its `Algebra.adjoin`. -/
 @[simps! apply_coe]
 noncomputable def unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
     Unitization R s ≃ₐ[R] Algebra.adjoin R (s : Set A) :=
-  let algHom : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A) :=
+  letI algHom : Unitization R s →ₐ[R] Algebra.adjoin R (s : Set A) :=
     ((unitization s).codRestrict _
       fun x ↦ (unitization_range s).le <| AlgHom.mem_range_self _ x)
   AlgEquiv.ofBijective algHom <| by
@@ -411,7 +411,7 @@ isomorphic to its `StarAlgebra.adjoin`. -/
 @[simps! apply_coe]
 noncomputable def unitizationStarAlgEquiv (h1 : (1 : A) ∉ s) :
     Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A) :=
-  let starAlgHom : Unitization R s →⋆ₐ[R] StarAlgebra.adjoin R (s : Set A) :=
+  letI starAlgHom : Unitization R s →⋆ₐ[R] StarAlgebra.adjoin R (s : Set A) :=
     ((unitization s).codRestrict _
       fun x ↦ (unitization_range s).le <| Set.mem_range_self x)
   StarAlgEquiv.ofBijective starAlgHom <| by

@@ -101,7 +101,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
 theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
     (H : ∀ (a), ∀ x ∈ f a, ∀ y ∈ g a, x = y) :
     ∃ k : α →. σ, Partrec k ∧ ∀ a x, x ∈ k a ↔ x ∈ f a ∨ x ∈ g a :=
-  let ⟨k, hk, K⟩ := merge' hf hg
+  let_fun ⟨k, hk, K⟩ := merge' hf hg
   ⟨k, hk, fun a x =>
     ⟨(K _).1 _, fun h => by
       have : (k a).Dom := (K _).2.2 (h.imp Exists.fst Exists.fst)
@@ -114,8 +114,8 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
 
 theorem cond {c : α → Bool} {f : α →. σ} {g : α →. σ} (hc : Computable c) (hf : Partrec f)
     (hg : Partrec g) : Partrec fun a => cond (c a) (f a) (g a) :=
-  let ⟨cf, ef⟩ := exists_code.1 hf
-  let ⟨cg, eg⟩ := exists_code.1 hg
+  let_fun ⟨cf, ef⟩ := exists_code.1 hf
+  let_fun ⟨cg, eg⟩ := exists_code.1 hg
   ((eval_part.comp (Computable.cond hc (const cf) (const cg)) Computable.encode).bind
     ((@Computable.decode σ _).comp snd).ofOption.to₂).of_eq
     fun a => by cases c a <;> simp [ef, eg, encodek]
@@ -215,7 +215,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
       ⟨fun h =>
         or_iff_not_imp_left.2 fun C0 =>
           Set.eq_univ_of_forall fun cg =>
-            let ⟨cf, fC⟩ := Set.nonempty_iff_ne_empty.2 C0
+            let_fun ⟨cf, fC⟩ := Set.nonempty_iff_ne_empty.2 C0
             (hC _).2 <|
               rice (eval '' C) (h.of_eq hC)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cf) Computable.id)

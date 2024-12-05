@@ -289,10 +289,10 @@ See `appr_spec`. -/
 noncomputable def appr : ℤ_[p] → ℕ → ℕ
   | _x, 0 => 0
   | x, n + 1 =>
-    let y := x - appr x n
+    let_fun y := x - appr x n
     if hy : y = 0 then appr x n
     else
-      let u := (unitCoeff hy : ℤ_[p])
+      let_fun u := (unitCoeff hy : ℤ_[p])
       appr x n + p ^ n * (toZMod ((u * (p : ℤ_[p]) ^ (y.valuation - n).natAbs) : ℤ_[p])).val
 
 theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by

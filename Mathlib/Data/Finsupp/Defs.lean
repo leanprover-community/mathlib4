@@ -385,7 +385,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
-    let h := support_eq_singleton.1 h
+    let_fun h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
     fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 

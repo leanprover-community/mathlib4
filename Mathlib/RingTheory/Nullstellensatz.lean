@@ -134,12 +134,12 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → k)) :
         x rfl)
     fun _ hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun _ hI =>
-      let ⟨x, hx⟩ := hI
+      let_fun ⟨x, hx⟩ := hI
       hx.2 ▸ fun _ hx' => (Set.mem_singleton_iff.1 hx').symm ▸ hp x hx.1
 
 theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ k)) :
     pointToPoint '' MvPolynomial.zeroLocus I ≤ PrimeSpectrum.zeroLocus ↑I := fun J hJ =>
-  let ⟨_, hx⟩ := hJ
+  let_fun ⟨_, hx⟩ := hJ
   (le_trans (le_vanishingIdeal_zeroLocus I)
       (hx.2 ▸ vanishingIdeal_anti_mono (Set.singleton_subset_iff.2 hx.1)) :
     I ≤ J.asIdeal)
@@ -151,7 +151,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   cases nonempty_fintype σ
   refine
     ⟨fun hI => ?_, fun h =>
-      let ⟨x, hx⟩ := h
+      let_fun ⟨x, hx⟩ := h
       hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
   letI : I.IsMaximal := hI
   letI : Field (MvPolynomial σ k ⧸ I) := Quotient.field I

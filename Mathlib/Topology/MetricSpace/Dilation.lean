@@ -452,7 +452,7 @@ See also `Dilation.ratio_comp'` for a version that works for more general spaces
 theorem ratio_comp [MetricSpace α] [Nontrivial α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] {g : β →ᵈ γ} {f : α →ᵈ β} : ratio (g.comp f) = ratio g * ratio f :=
   ratio_comp' <|
-    let ⟨x, y, hne⟩ := exists_pair_ne α; ⟨x, y, mt edist_eq_zero.1 hne, edist_ne_top _ _⟩
+    let_fun ⟨x, y, hne⟩ := exists_pair_ne α; ⟨x, y, mt edist_eq_zero.1 hne, edist_ne_top _ _⟩
 
 section PseudoMetricDilation
 

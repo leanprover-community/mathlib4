@@ -37,7 +37,7 @@ def pair (a b : ℕ) : ℕ :=
 /-- Unpairing function for the natural numbers. -/
 @[pp_nodot]
 def unpair (n : ℕ) : ℕ × ℕ :=
-  let s := sqrt n
+  let_fun s := sqrt n
   if n - s * s < s then (n - s * s, s) else (s, n - s * s - s)
 
 @[simp]

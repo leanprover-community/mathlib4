@@ -122,7 +122,7 @@ theorem IsIntegral.map_of_comp_eq {R S T U : Type*} [CommRing R] [Ring S]
     [CommRing T] [Ring U] [Algebra R S] [Algebra T U] (φ : R →+* T) (ψ : S →+* U)
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) {a : S} (ha : IsIntegral R a) :
     IsIntegral T (ψ a) :=
-  let ⟨p, hp⟩ := ha
+  let_fun ⟨p, hp⟩ := ha
   ⟨p.map φ, hp.1.map _, by
     rw [← eval_map, map_map, h, ← map_map, eval_map, eval₂_at_apply, eval_map, hp.2, ψ.map_zero]⟩
 
@@ -135,7 +135,7 @@ theorem isIntegral_algEquiv {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algeb
 then if the entire tower is an integral extension so is `A → B`. -/
 theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
     (hx : IsIntegral R x) : IsIntegral A x :=
-  let ⟨p, hp, hpx⟩ := hx
+  let_fun ⟨p, hp, hpx⟩ := hx
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
 /- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in

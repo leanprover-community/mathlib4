@@ -155,7 +155,7 @@ open LinearMap.BilinForm
 
 theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
     ∃ w : Fin (Module.finrank K V) → K, Equivalent Q (weightedSumSquares K w) :=
-  let ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm _ Q)
+  let_fun ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm _ Q)
   ⟨_, ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)

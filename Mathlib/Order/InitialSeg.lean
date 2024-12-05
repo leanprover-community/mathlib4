@@ -217,7 +217,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
 /-- Restrict the codomain of an initial segment -/
 def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
   ⟨RelEmbedding.codRestrict p f H, fun a ⟨b, m⟩ h =>
-    let ⟨a', e⟩ := f.mem_range_of_rel h
+    let_fun ⟨a', e⟩ := f.mem_range_of_rel h
     ⟨a', by subst e; rfl⟩⟩
 
 @[simp]

@@ -262,7 +262,7 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
 
 instance (priority := 100) WellFoundedGT.toIsSuccArchimedean [h : WellFoundedGT α]
     [SuccOrder α] : IsSuccArchimedean α :=
-  let h : IsPredArchimedean αᵒᵈ := by infer_instance
+  let_fun h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
 end IsWellFounded

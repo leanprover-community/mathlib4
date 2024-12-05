@@ -111,7 +111,7 @@ theorem restrictScalars.smul_def {R : Type u₁} {S : Type u₂} [Ring R] [Ring 
 theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     {M : ModuleCat.{v} S} (r : R) (m : M) :
     -- Porting note: clumsy way to coerce
-    let m' : (restrictScalars f).obj M := m
+    let_fun m' : (restrictScalars f).obj M := m
     (r • m' : (restrictScalars f).obj M) = (f r • m : M) :=
   rfl
 

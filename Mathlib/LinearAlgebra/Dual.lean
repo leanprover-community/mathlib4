@@ -1236,8 +1236,8 @@ noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
 open scoped Classical in
 /-- The quotient by a subspace is isomorphic to its dual annihilator. -/
 noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] W.dualAnnihilator :=
-  let φ := (Basis.ofVectorSpace K W).toDualEquiv.trans W.dualEquivDual
-  let ψ := LinearEquiv.quotEquivOfEquiv φ (Basis.ofVectorSpace K V).toDualEquiv
+  let_fun φ := (Basis.ofVectorSpace K W).toDualEquiv.trans W.dualEquivDual
+  let_fun ψ := LinearEquiv.quotEquivOfEquiv φ (Basis.ofVectorSpace K V).toDualEquiv
   ψ ≪≫ₗ W.quotDualEquivAnnihilator
   -- Porting note: this prevents the timeout; ML3 proof preserved below
   -- refine' _ ≪≫ₗ W.quotDualEquivAnnihilator
@@ -1701,7 +1701,7 @@ theorem flip_quotDualCoannihilatorToDual_bijective (W : Subspace K (Dual K V))
 
 theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [FiniteDimensional K W] :
     W.dualCoannihilator.dualAnnihilator = W :=
-  let e := (LinearEquiv.ofBijective _ W.flip_quotDualCoannihilatorToDual_bijective).trans
+  let_fun e := (LinearEquiv.ofBijective _ W.flip_quotDualCoannihilatorToDual_bijective).trans
     (Submodule.dualQuotEquivDualAnnihilator _)
   letI : AddCommGroup W := inferInstance
   haveI : FiniteDimensional K W.dualCoannihilator.dualAnnihilator := LinearEquiv.finiteDimensional e

@@ -52,8 +52,8 @@ theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i :=
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
-  let h' := Pi.lt_def.1 hlt
-  let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
+  let_fun h' := Pi.lt_def.1 hlt
+  let_fun ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
   ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
@@ -108,14 +108,14 @@ open Function
 
 theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
   or_iff_not_imp_left.2 fun hne =>
-    let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
+    let_fun ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
       (Function.ne_iff.1 hne)
     ⟨i, fun j hj => by
       contrapose! hl
       exact ⟨j, hl, hj⟩, (h i).lt_of_ne hi⟩
 
 theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
-  let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
+  let_fun ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
     (Function.ne_iff.1 h.ne)
   ⟨i, fun j hj => by
     contrapose! hl
@@ -192,13 +192,13 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
-    let ⟨_, hb⟩ := exists_gt (ofLex a)
+    let_fun ⟨_, hb⟩ := exists_gt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
-    let ⟨_, hb⟩ := exists_lt (ofLex a)
+    let_fun ⟨_, hb⟩ := exists_lt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically

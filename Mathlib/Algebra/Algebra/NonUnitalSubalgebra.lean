@@ -586,7 +586,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (smul : ∀ r x hx, p x hx → p (r • x) (SMulMemClass.smul_mem r hx))
     {x} (hx : x ∈ adjoin R s) : p x hx :=
-  let S : NonUnitalSubalgebra R A :=
+  letI S : NonUnitalSubalgebra R A :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, mul _ _ _ _ ha hb⟩))
       add_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, add _ _ _ _ ha hb⟩))
@@ -954,10 +954,10 @@ variable {ι : Type*}
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
-  let K : NonUnitalSubalgebra R A :=
+  letI K : NonUnitalSubalgebra R A :=
     { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_directed dir).symm
       smul_mem' := fun r _x hx ↦
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
+        let_fun ⟨i, hi⟩ := Set.mem_iUnion.1 hx
         Set.mem_iUnion.2 ⟨i, (S i).smul_mem' r hi⟩ }
   have : iSup S = K := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)

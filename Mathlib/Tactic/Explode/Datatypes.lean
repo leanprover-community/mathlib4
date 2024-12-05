@@ -78,7 +78,7 @@ def Entries.add (entries : Entries) (expr : Expr) (entry : Entry) : Entry × Ent
   if let some entry' := entries.find? expr then
     (entry', entries)
   else
-    let entry := { entry with line := entries.size }
+    let_fun entry := { entry with line := entries.size }
     (entry, ⟨entries.s.insert expr entry, entry :: entries.l⟩)
 
 /-- Add a pre-existing entry to the `ExprMap` for an additional expression.

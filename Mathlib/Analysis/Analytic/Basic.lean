@@ -192,7 +192,7 @@ theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ = o(1)`. -/
 theorem isLittleO_one_of_lt_radius (h : ↑r < p.radius) :
     (fun n => ‖p n‖ * (r : ℝ) ^ n) =o[atTop] (fun _ => 1 : ℕ → ℝ) :=
-  let ⟨_, ha, hp⟩ := p.isLittleO_of_lt_radius h
+  let_fun ⟨_, ha, hp⟩ := p.isLittleO_of_lt_radius h
   hp.trans <| (isLittleO_pow_pow_of_lt_left ha.1.le ha.2).congr (fun _ => rfl) one_pow
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` tends to zero exponentially:
@@ -224,19 +224,19 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem norm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ * (r : ℝ) ^ n ≤ C :=
-  let ⟨_, ha, C, hC, h⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
+  let_fun ⟨_, ha, C, hC, h⟩ := p.norm_mul_pow_le_mul_pow_of_lt_radius h
   ⟨C, hC, fun n => (h n).trans <| mul_le_of_le_one_right hC.lt.le (pow_le_one₀ ha.1.le ha.2.le)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h0 : 0 < r) (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ ≤ C / (r : ℝ) ^ n :=
-  let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
+  let_fun ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
   ⟨C, hC, fun n => Iff.mpr (le_div_iff₀ (pow_pos h0 _)) (hp n)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖₊ * r ^ n ≤ C :=
-  let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
+  let_fun ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
   ⟨⟨C, hC.lt.le⟩, hC, mod_cast hp⟩
 
 theorem le_radius_of_tendsto (p : FormalMultilinearSeries 𝕜 E F) {l : ℝ}
@@ -464,7 +464,7 @@ theorem HasFPowerSeriesWithinOnBall.radius_pos (hf : HasFPowerSeriesWithinOnBall
   lt_of_lt_of_le hf.r_pos hf.r_le
 
 theorem HasFPowerSeriesAt.radius_pos (hf : HasFPowerSeriesAt f p x) : 0 < p.radius :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   hr.radius_pos
 
 theorem HasFPowerSeriesWithinOnBall.of_le
@@ -532,13 +532,13 @@ theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝
 
 protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi (left_mem_Ico.2 hr.r_pos)) fun _ hr' =>
     hr.of_le hr'.1 hr'.2.le
 
 protected theorem HasFPowerSeriesAt.eventually (hf : HasFPowerSeriesAt f p x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesOnBall f p x r :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi (left_mem_Ico.2 hr.r_pos)) fun _ hr' =>
     hr.mono hr'.1 hr'.2.le
 
@@ -548,7 +548,7 @@ theorem HasFPowerSeriesOnBall.eventually_hasSum (hf : HasFPowerSeriesOnBall f p 
 
 theorem HasFPowerSeriesAt.eventually_hasSum (hf : HasFPowerSeriesAt f p x) :
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y)) :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   hr.eventually_hasSum
 
 theorem HasFPowerSeriesOnBall.eventually_hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) :
@@ -557,7 +557,7 @@ theorem HasFPowerSeriesOnBall.eventually_hasSum_sub (hf : HasFPowerSeriesOnBall 
 
 theorem HasFPowerSeriesAt.eventually_hasSum_sub (hf : HasFPowerSeriesAt f p x) :
     ∀ᶠ y in 𝓝 x, HasSum (fun n : ℕ => p n fun _ : Fin n => y - x) (f y) :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   hr.eventually_hasSum_sub
 
 theorem HasFPowerSeriesOnBall.eventually_eq_zero
@@ -567,7 +567,7 @@ theorem HasFPowerSeriesOnBall.eventually_eq_zero
 
 theorem HasFPowerSeriesAt.eventually_eq_zero
     (hf : HasFPowerSeriesAt f (0 : FormalMultilinearSeries 𝕜 E F) x) : ∀ᶠ z in 𝓝 x, f z = 0 :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   hr.eventually_eq_zero
 
 @[simp] lemma hasFPowerSeriesWithinOnBall_univ :
@@ -655,12 +655,12 @@ theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r)
 
 theorem HasFPowerSeriesWithinAt.coeff_zero (hf : HasFPowerSeriesWithinAt f pf s x) (v : Fin 0 → E) :
     pf 0 v = f x :=
-  let ⟨_, hrf⟩ := hf
+  let_fun ⟨_, hrf⟩ := hf
   hrf.coeff_zero v
 
 theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 → E) :
     pf 0 v = f x :=
-  let ⟨_, hrf⟩ := hf
+  let_fun ⟨_, hrf⟩ := hf
   hrf.coeff_zero v
 
 /-!
@@ -719,7 +719,7 @@ lemma AnalyticOn.congr {f g : E → F} {s : Set E}
 alias AnalyticWithinOn.congr := AnalyticOn.congr
 
 theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
-  let ⟨_, hpf⟩ := hf
+  let_fun ⟨_, hpf⟩ := hf
   (hpf.congr hg).analyticAt
 
 theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 g x :=
@@ -1271,12 +1271,12 @@ protected theorem HasFPowerSeriesWithinAt.continuousWithinAt
 
 protected theorem HasFPowerSeriesAt.continuousAt (hf : HasFPowerSeriesAt f p x) :
     ContinuousAt f x :=
-  let ⟨_, hr⟩ := hf
+  let_fun ⟨_, hr⟩ := hf
   hr.continuousOn.continuousAt (EMetric.ball_mem_nhds x hr.r_pos)
 
 protected theorem AnalyticWithinAt.continuousWithinAt_insert (hf : AnalyticWithinAt 𝕜 f s x) :
     ContinuousWithinAt f (insert x s) x :=
-  let ⟨_, hp⟩ := hf
+  let_fun ⟨_, hp⟩ := hf
   hp.continuousWithinAt_insert
 
 protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt 𝕜 f s x) :
@@ -1284,7 +1284,7 @@ protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt �
   hf.continuousWithinAt_insert.mono (subset_insert x s)
 
 protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : ContinuousAt f x :=
-  let ⟨_, hp⟩ := hf
+  let_fun ⟨_, hp⟩ := hf
   hp.continuousAt
 
 protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) :

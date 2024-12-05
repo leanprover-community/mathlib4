@@ -61,7 +61,7 @@ theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upp
   ⟨hsa, fun b hb =>
     not_lt.1 fun hba =>
       have : s ∩ { a | b < a } ∈ f ⊓ 𝓝 a := inter_mem_inf hsf (IsOpen.mem_nhds (isOpen_lt' _) hba)
-      let ⟨_x, ⟨hxs, hxb⟩⟩ := Filter.nonempty_of_mem this
+      let_fun ⟨_x, ⟨hxs, hxb⟩⟩ := Filter.nonempty_of_mem this
       have : b < b := lt_of_lt_of_le hxb <| hb hxs
       lt_irrefl b this⟩
 
@@ -184,7 +184,7 @@ theorem exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α] [First
 theorem exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝[<] x) :=
-  let ⟨u, hu, hx, h⟩ := exists_seq_strictMono_tendsto x
+  let_fun ⟨u, hu, hx, h⟩ := exists_seq_strictMono_tendsto x
   ⟨u, hu, hx, tendsto_nhdsWithin_mono_right (range_subset_iff.2 hx) <| tendsto_nhdsWithin_range.2 h⟩
 
 theorem exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder α]

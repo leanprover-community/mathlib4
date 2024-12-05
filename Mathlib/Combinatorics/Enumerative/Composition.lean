@@ -565,7 +565,7 @@ variable {α : Type*}
 def splitWrtCompositionAux : List α → List ℕ → List (List α)
   | _, [] => []
   | l, n::ns =>
-    let (l₁, l₂) := l.splitAt n
+    let_fun (l₁, l₂) := l.splitAt n
     l₁::splitWrtCompositionAux l₂ ns
 
 /-- Given a list of length `n` and a composition `[i₁, ..., iₖ]` of `n`, split `l` into a list of

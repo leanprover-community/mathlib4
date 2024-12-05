@@ -61,12 +61,12 @@ a feasible point.
 -/
 def stateLP {n m : Nat} (A : matType n m) (strictIndexes : List Nat) : matType (n + 2) (m + 3) :=
   /- +2 due to shifting by `f` and `z` -/
-  let objectiveRow : List (Nat × Nat × Rat) :=
+  let_fun objectiveRow : List (Nat × Nat × Rat) :=
     (0, 0, -1) :: strictIndexes.map fun idx => (0, idx + 2, 1)
-  let constraintRow : List (Nat × Nat × Rat) :=
+  let_fun constraintRow : List (Nat × Nat × Rat) :=
     [(1, 1, 1), (1, m + 2, -1)] ++ (List.range m).map (fun i => (1, i + 2, 1))
 
-  let valuesA := getValues A |>.map fun (i, j, v) => (i + 2, j + 2, v)
+  let_fun valuesA := getValues A |>.map fun (i, j, v) => (i + 2, j + 2, v)
 
   ofValues (objectiveRow ++ constraintRow ++ valuesA)
 

@@ -158,15 +158,15 @@ instance (x : X) : IsAffine (X.affineCover.obj x) :=
 
 instance [IsIntegral X] (x : X) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
-  let U : X.Opens := (X.affineCover.map x).opensRange
+  letI U : X.Opens := (X.affineCover.map x).opensRange
   have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.map x)
-  let x : U := ⟨x, X.affineCover.covers x⟩
+  letI x : U := ⟨x, X.affineCover.covers x⟩
   have : Nonempty U := ⟨x⟩
-  let M := (hU.primeIdealOf x).asIdeal.primeCompl
+  letI M := (hU.primeIdealOf x).asIdeal.primeCompl
   have := hU.isLocalization_stalk x
   have := functionField_isFractionRing_of_isAffineOpen X U hU
   -- Porting note: the following two lines were not needed.
-  let _hA := Presheaf.algebra_section_stalk X.presheaf x
+  letI _hA := Presheaf.algebra_section_stalk X.presheaf x
   have := functionField_isScalarTower X U x
   .isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
     (Scheme.functionField X)

@@ -323,7 +323,7 @@ instance : CompleteLattice (Subring R) :=
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
     bot_le := fun s _x hx =>
-      let ⟨n, hn⟩ := mem_bot.1 hx
+      let_fun ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ intCast_mem s n
     top := ⊤
     le_top := fun _s _x _hx => trivial
@@ -479,7 +479,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (hx : x ∈ closure s)  : p x hx :=
-  let K : Subring R :=
+  letI K : Subring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
@@ -741,7 +741,7 @@ theorem coe_rangeRestrict (f : R →+* S) (x : R) : (f.rangeRestrict x : S) = f 
 
 theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeRestrict :=
   fun ⟨_y, hy⟩ =>
-  let ⟨x, hx⟩ := mem_range.mp hy
+  let_fun ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
 
 theorem range_eq_top {f : R →+* S} :
@@ -844,7 +844,7 @@ def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) :
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := RingHom.mem_range.mp x.prop
+        let_fun ⟨x', hx'⟩ := RingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]

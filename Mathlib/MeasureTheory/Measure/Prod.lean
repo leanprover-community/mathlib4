@@ -366,8 +366,8 @@ lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
     (s_mble : NullMeasurableSet s μ) (t_mble : NullMeasurableSet t ν) :
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) :=
-  let ⟨s₀, mble_s₀, s_aeeq_s₀⟩ := s_mble
-  let ⟨t₀, mble_t₀, t_aeeq_t₀⟩ := t_mble
+  let_fun ⟨s₀, mble_s₀, s_aeeq_s₀⟩ := s_mble
+  let_fun ⟨t₀, mble_t₀, t_aeeq_t₀⟩ := t_mble
   ⟨s₀ ×ˢ t₀, ⟨mble_s₀.prod mble_t₀, set_prod_ae_eq s_aeeq_s₀ t_aeeq_t₀⟩⟩
 
 /-- If `s ×ˢ t` is a null measurable set and `μ s ≠ 0`, then `t` is a null measurable set. -/

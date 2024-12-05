@@ -95,8 +95,8 @@ private def ExistsOneDivLT (s : SignedMeasure α) (i : Set α) (n : ℕ) : Prop 
 
 private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
     ∃ n : ℕ, ExistsOneDivLT s i n :=
-  let ⟨k, hj₁, hj₂, hj⟩ := exists_pos_measure_of_not_restrict_le_zero s hi
-  let ⟨n, hn⟩ := exists_nat_one_div_lt hj
+  let_fun ⟨k, hj₁, hj₂, hj⟩ := exists_pos_measure_of_not_restrict_le_zero s hi
+  let_fun ⟨n, hn⟩ := exists_nat_one_div_lt hj
   ⟨n, k, hj₂, hj₁, hn⟩
 
 /-- Given the set `i`, if `i` is not negative, `findExistsOneDivLT s i` is the
@@ -130,7 +130,7 @@ private theorem someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
 private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
   by_cases hi : ¬s ≤[i] 0
   · exact
-      let ⟨h, _⟩ := someExistsOneDivLT_spec hi
+      let_fun ⟨h, _⟩ := someExistsOneDivLT_spec hi
       h
   · rw [someExistsOneDivLT, dif_neg hi]
     exact Set.empty_subset _
@@ -141,14 +141,14 @@ private theorem someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i 
 private theorem someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneDivLT s i) := by
   by_cases hi : ¬s ≤[i] 0
   · exact
-      let ⟨_, h, _⟩ := someExistsOneDivLT_spec hi
+      let_fun ⟨_, h, _⟩ := someExistsOneDivLT_spec hi
       h
   · rw [someExistsOneDivLT, dif_neg hi]
     exact MeasurableSet.empty
 
 private theorem someExistsOneDivLT_lt (hi : ¬s ≤[i] 0) :
     (1 / (findExistsOneDivLT s i + 1) : ℝ) < s (someExistsOneDivLT s i) :=
-  let ⟨_, _, h⟩ := someExistsOneDivLT_spec hi
+  let_fun ⟨_, _, h⟩ := someExistsOneDivLT_spec hi
   h
 
 /-- Given the set `i`, `restrictNonposSeq s i` is the sequence of sets defined inductively where
@@ -378,7 +378,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
       · refine add_le_of_nonpos_left ?_
         have : s ≤[A] 0 :=
           restrict_le_restrict_iUnion _ _ hB₁ fun m =>
-            let ⟨_, h⟩ := (hB m).1
+            let_fun ⟨_, h⟩ := (hB m).1
             h
         refine
           nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ Set.diff_subset this)
@@ -404,7 +404,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
 complement measurable sets `i` and `j` such that `i` is positive, `j` is negative. -/
 theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
     ∃ i j : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ MeasurableSet j ∧ s ≤[j] 0 ∧ IsCompl i j :=
-  let ⟨i, hi₁, hi₂, hi₃⟩ := exists_compl_positive_negative s
+  let_fun ⟨i, hi₁, hi₂, hi₃⟩ := exists_compl_positive_negative s
   ⟨i, iᶜ, hi₁, hi₂, hi₁.compl, hi₃, isCompl_compl⟩
 
 open scoped symmDiff in

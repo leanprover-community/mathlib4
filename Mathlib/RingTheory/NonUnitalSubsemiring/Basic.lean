@@ -435,7 +435,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (hx : x ∈ closure s)  : p x hx :=
-  let K : NonUnitalSubsemiring R :=
+  letI K : NonUnitalSubsemiring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
@@ -631,7 +631,7 @@ theorem coe_srangeRestrict (f : F) (x : R) : (srangeRestrict f x : S) = f x :=
 theorem srangeRestrict_surjective (f : F) :
     Function.Surjective (srangeRestrict f : R → (srange f : NonUnitalSubsemiring S)) :=
   fun ⟨_, hy⟩ =>
-  let ⟨x, hx⟩ := mem_srange.mp hy
+  let_fun ⟨x, hx⟩ := mem_srange.mp hy
   ⟨x, Subtype.ext hx⟩
 
 theorem srange_eq_top_iff_surjective {f : F} :
@@ -714,7 +714,7 @@ def sofLeftInverse' {g : S → R} {f : F} (h : Function.LeftInverse g f) : R ≃
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := NonUnitalRingHom.mem_srange.mp x.prop
+        let_fun ⟨x', hx'⟩ := NonUnitalRingHom.mem_srange.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]

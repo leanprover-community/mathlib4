@@ -194,7 +194,7 @@ instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
 
 theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
-  let ⟨_, hb, _⟩ := h _ rfl
+  let_fun ⟨_, hb, _⟩ := h _ rfl
   Option.not_mem_none _ hb
 
 /-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
@@ -307,8 +307,8 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
     cases a <;> cases b <;> simp [lt_iff_le_not_le]
   le_refl _ a ha := ⟨a, ha, le_rfl⟩
   le_trans _ _ _ h₁ h₂ a ha :=
-    let ⟨b, hb, ab⟩ := h₁ a ha
-    let ⟨c, hc, bc⟩ := h₂ b hb
+    let_fun ⟨b, hb, ab⟩ := h₁ a ha
+    let_fun ⟨c, hc, bc⟩ := h₂ b hb
     ⟨c, hc, le_trans ab bc⟩
 
 instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
@@ -504,17 +504,17 @@ instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrd
     match a, b with
     | a, none => fun h : a < ⊥ => (WithBot.not_lt_bot _ h).elim
     | none, Option.some b => fun _ =>
-      let ⟨a, ha⟩ := exists_lt b
+      let_fun ⟨a, ha⟩ := exists_lt b
       ⟨a, bot_lt_coe a, coe_lt_coe.2 ha⟩
     | Option.some _, Option.some _ => fun h =>
-      let ⟨a, ha₁, ha₂⟩ := exists_between (coe_lt_coe.1 h)
+      let_fun ⟨a, ha₁, ha₂⟩ := exists_between (coe_lt_coe.1 h)
       ⟨a, coe_lt_coe.2 ha₁, coe_lt_coe.2 ha₂⟩⟩
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α] {a b : WithBot α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
   ⟨fun h =>
-    let ⟨_, hy⟩ := exists_between h
-    let ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.1
+    let_fun ⟨_, hy⟩ := exists_between h
+    let_fun ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.1
     ⟨x, hx.1 ▸ hy⟩,
     fun ⟨_, hx⟩ => lt_trans hx.1 hx.2⟩
 
@@ -1236,8 +1236,8 @@ instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop �
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
   ⟨fun h =>
-    let ⟨_, hy⟩ := exists_between h
-    let ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.2
+    let_fun ⟨_, hy⟩ := exists_between h
+    let_fun ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.2
     ⟨x, hx.1 ▸ hy⟩,
     fun ⟨_, hx⟩ => lt_trans hx.1 hx.2⟩
 

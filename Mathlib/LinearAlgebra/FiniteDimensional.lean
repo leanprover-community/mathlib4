@@ -293,7 +293,7 @@ variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
 theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
-  let i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
+  let_fun i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
   { toNontrivial :=
       ⟨⟨⊥, ⊤, fun h => by cases hr.symm.trans (Subalgebra.bot_eq_top_iff_finrank_eq_one.1 h)⟩⟩
     eq_bot_or_eq_top := by

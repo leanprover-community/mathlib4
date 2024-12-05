@@ -164,8 +164,8 @@ theorem natAbs_norm_eq (x : ℤ[i]) :
 
 instance : Div ℤ[i] :=
   ⟨fun x y =>
-    let n := (norm y : ℚ)⁻¹
-    let c := star y
+    let_fun n := (norm y : ℚ)⁻¹
+    let_fun c := star y
     ⟨round ((x * c).re * n : ℚ), round ((x * c).im * n : ℚ)⟩⟩
 
 theorem div_def (x y : ℤ[i]) :
@@ -259,7 +259,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
     -- simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
     simpa only [true_and, not_false_iff, exists_prop, irreducible_iff, hpu, not_forall, not_or]
       using hpi
-  let ⟨a, b, hpab, hau, hbu⟩ := hab
+  let_fun ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by
         rw [← Int.natCast_inj, Int.natCast_pow, sq, ← @norm_natCast (-1), hpab]; simp).1

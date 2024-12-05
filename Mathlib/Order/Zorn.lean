@@ -72,7 +72,7 @@ If every chain has an upper bound, then there exists a maximal element. -/
 theorem exists_maximal_of_chains_bounded (h : ∀ c, IsChain r c → ∃ ub, ∀ a ∈ c, a ≺ ub)
     (trans : ∀ {a b c}, a ≺ b → b ≺ c → a ≺ c) : ∃ m, ∀ a, m ≺ a → a ≺ m :=
   have : ∃ ub, ∀ a ∈ maxChain r, a ≺ ub := h _ <| maxChain_spec.left
-  let ⟨ub, (hub : ∀ a ∈ maxChain r, a ≺ ub)⟩ := this
+  let_fun ⟨ub, (hub : ∀ a ∈ maxChain r, a ≺ ub)⟩ := this
   ⟨ub, fun a ha =>
     have : IsChain r (insert a <| maxChain r) :=
       maxChain_spec.1.insert fun b hb _ => Or.inr <| trans (hub b hb) ha
@@ -105,9 +105,9 @@ theorem zorn_le_nonempty [Nonempty α]
 
 theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
     ∃ m, Maximal (· ∈ s) m :=
-  let ⟨⟨m, hms⟩, h⟩ :=
+  let_fun ⟨⟨m, hms⟩, h⟩ :=
     @zorn_le s _ fun c hc =>
-      let ⟨ub, hubs, hub⟩ :=
+      let_fun ⟨ub, hubs, hub⟩ :=
         ih (Subtype.val '' c) (fun _ ⟨⟨_, hx⟩, _, h⟩ => h ▸ hx)
           (by
             rintro _ ⟨p, hpc, rfl⟩ _ ⟨q, hqc, rfl⟩ hpq

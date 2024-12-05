@@ -47,7 +47,7 @@ export Countable (exists_injective_nat)
 
 protected theorem Function.Injective.countable [Countable β] {f : α → β} (hf : Injective f) :
     Countable α :=
-  let ⟨g, hg⟩ := exists_injective_nat β
+  let_fun ⟨g, hg⟩ := exists_injective_nat β
   ⟨⟨g ∘ f, hg.comp hf⟩⟩
 
 protected theorem Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
@@ -55,7 +55,7 @@ protected theorem Function.Surjective.countable [Countable α] {f : α → β} (
   (injective_surjInv hf).countable
 
 theorem exists_surjective_nat (α : Sort u) [Nonempty α] [Countable α] : ∃ f : ℕ → α, Surjective f :=
-  let ⟨f, hf⟩ := exists_injective_nat α
+  let_fun ⟨f, hf⟩ := exists_injective_nat α
   ⟨invFun f, invFun_surjective hf⟩
 
 theorem countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f : ℕ → α, Surjective f :=
@@ -89,7 +89,7 @@ instance {n : ℕ} : Countable (Fin n) :=
   Function.Injective.countable (@Fin.eq_of_val_eq n)
 
 instance (priority := 100) Finite.to_countable [Finite α] : Countable α :=
-  let ⟨_, ⟨e⟩⟩ := Finite.exists_equiv_fin α
+  let_fun ⟨_, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   Countable.of_equiv _ e.symm
 
 instance : Countable PUnit.{u} :=

@@ -191,7 +191,7 @@ variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module 
   [IsNoetherian R M] [Module.Finite R N]
 
 instance isNoetherian_linearMap_pi {ι : Type*} [Finite ι] : IsNoetherian R ((ι → R) →ₗ[R] M) :=
-  let _i : Fintype ι := Fintype.ofFinite ι; isNoetherian_of_linearEquiv (Module.piEquiv ι R M)
+  let_fun _i : Fintype ι := Fintype.ofFinite ι; isNoetherian_of_linearEquiv (Module.piEquiv ι R M)
 
 instance isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := by
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R N

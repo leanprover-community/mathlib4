@@ -104,7 +104,7 @@ protected irreducible_def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X]
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P :=
   Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
-    H q.2 q'.2 (let ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
+    H q.2 q'.2 (let_fun ⟨⟨_, _⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
       mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)
 
 theorem liftOn_ofFractionRing_mk {P : Sort v} (n : K[X]) (d : K[X]⁰) (f : K[X] → K[X] → P)

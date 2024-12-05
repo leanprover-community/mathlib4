@@ -46,9 +46,9 @@ noncomputable def tensorDistrib :
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
-  let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
-  let tmulB := BilinMap.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
-  let toB := AlgebraTensorModule.map
+  let_fun toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
+  let_fun tmulB := BilinMap.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
+  let_fun toB := AlgebraTensorModule.map
       (QuadraticMap.associated : QuadraticMap A M₁ N₁ →ₗ[A] BilinMap A M₁ N₁)
       (QuadraticMap.associated : QuadraticMap R M₂ N₂ →ₗ[R] BilinMap R M₂ N₂)
   toQ ∘ₗ tmulB ∘ₗ toB

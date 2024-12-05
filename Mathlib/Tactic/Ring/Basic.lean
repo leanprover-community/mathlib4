@@ -209,7 +209,7 @@ partial def ExBase.cast
     {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
     ExBase sα a → Σ a, ExBase sβ a
   | .atom i => ⟨a, .atom i⟩
-  | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
+  | .sum a => let_fun ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
 
 /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExProd.cast
@@ -244,7 +244,7 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
 
 instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E e)] :
     Inhabited (Result E e) :=
-  let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
+  let_fun ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
 variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) {R : Type*} [CommSemiring R]
 
@@ -253,7 +253,7 @@ Constructs the expression corresponding to `.const n`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
-  let lit : Q(ℕ) := mkRawNatLit n
+  let_fun lit : Q(ℕ) := mkRawNatLit n
   ⟨q(($lit).rawCast : $α), .const n none⟩
 
 /--
@@ -261,7 +261,7 @@ Constructs the expression corresponding to `.const (-n)`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :=
-  let lit : Q(ℕ) := mkRawNatLit n
+  let_fun lit : Q(ℕ) := mkRawNatLit n
   ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n) none⟩
 
 /--
@@ -821,7 +821,7 @@ def extractCoeff {a : Q(ℕ)} (va : ExProd sℕ a) : ExtractCoeff a :=
     have k : Q(ℕ) := a.appArg!
     ⟨k, q((nat_lit 1).rawCast), .const 1, (q(coeff_one $k) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
-    let ⟨k, _, vc, pc⟩ := extractCoeff va₃
+    let_fun ⟨k, _, vc, pc⟩ := extractCoeff va₃
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
 
 theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp

@@ -31,7 +31,7 @@ theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset α} : p ∣ s.prod 
     match hp.dvd_or_dvd this with
     | Or.inl h => ⟨a, Multiset.mem_cons_self a s, h⟩
     | Or.inr h =>
-      let ⟨a, has, h⟩ := ih h
+      let_fun ⟨a, has, h⟩ := ih h
       ⟨a, Multiset.mem_cons_of_mem has, h⟩
 
 theorem exists_mem_multiset_map_dvd (hp : Prime p) {s : Multiset β} {f : β → α} :
@@ -194,7 +194,7 @@ theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Asso
     match Prime.le_or_le hp this with
     | Or.inl h => ⟨a, Multiset.mem_cons_self a s, h⟩
     | Or.inr h =>
-      let ⟨a, has, h⟩ := ih h
+      let_fun ⟨a, has, h⟩ := ih h
       ⟨a, Multiset.mem_cons_of_mem has, h⟩
 
 end CancelCommMonoidWithZero

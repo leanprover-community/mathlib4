@@ -1159,7 +1159,7 @@ end DivisionRing
 @[simp]
 theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
   ⟨fun h =>
-    let ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
+    let_fun ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
     Nontrivial.of_polynomial_ne hrs,
     fun h => @Polynomial.nontrivial _ _ h⟩
 
@@ -1169,7 +1169,7 @@ variable [Semiring R]
 
 protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
   ⟨fun p prec =>
-    let termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=
+    let_fun termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=
       List.map (fun
         | 0 => (max_prec, "C " ++ reprArg (coeff p 0))
         | 1 => if coeff p 1 = 1

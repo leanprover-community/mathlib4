@@ -86,7 +86,7 @@ theorem segment_subset_convexJoin (hx : x ∈ s) (hy : y ∈ t) : segment 𝕜 x
   subset_iUnion₂_of_subset x hx <| subset_iUnion₂ (s := fun y _ ↦ segment 𝕜 x y) y hy
 
 theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := fun _x hx =>
-  let ⟨_y, hy⟩ := h
+  let_fun ⟨_y, hy⟩ := h
   segment_subset_convexJoin hx hy <| left_mem_segment _ _ _
 
 theorem subset_convexJoin_right (h : s.Nonempty) : t ⊆ convexJoin 𝕜 s t :=

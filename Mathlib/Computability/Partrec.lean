@@ -102,19 +102,19 @@ theorem mem_rfind {p : ℕ →. Bool} {n : ℕ} :
 
 theorem rfind_min' {p : ℕ → Bool} {m : ℕ} (pm : p m) : ∃ n ∈ rfind p, n ≤ m :=
   have : true ∈ (p : ℕ →. Bool) m := ⟨trivial, pm⟩
-  let ⟨n, hn⟩ := dom_iff_mem.1 <| (@rfind_dom p).2 ⟨m, this, fun {_} _ => ⟨⟩⟩
+  let_fun ⟨n, hn⟩ := dom_iff_mem.1 <| (@rfind_dom p).2 ⟨m, this, fun {_} _ => ⟨⟩⟩
   ⟨n, hn, not_lt.1 fun h => by injection mem_unique this (rfind_min hn h)⟩
 
 theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = Part.none :=
   eq_none_iff.2 fun _ h =>
-    let ⟨_, _, h₂⟩ := rfind_dom'.1 h.fst
+    let_fun ⟨_, _, h₂⟩ := rfind_dom'.1 h.fst
     (p0 ▸ h₂ (zero_le _) : (@Part.none Bool).Dom)
 
 def rfindOpt {α} (f : ℕ → Option α) : Part α :=
   (rfind fun n => (f n).isSome).bind fun n => f n
 
 theorem rfindOpt_spec {α} {f : ℕ → Option α} {a} (h : a ∈ rfindOpt f) : ∃ n, a ∈ f n :=
-  let ⟨n, _, h₂⟩ := mem_bind_iff.1 h
+  let_fun ⟨n, _, h₂⟩ := mem_bind_iff.1 h
   ⟨n, mem_coe.1 h₂⟩
 
 theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a, a ∈ f n :=
@@ -697,7 +697,7 @@ theorem sum_casesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α 
     fun a => by cases f a <;> simp
 
 theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
-    let F : α → ℕ →. σ ⊕ α := fun a n =>
+    let_fun F : α → ℕ →. σ ⊕ α := fun a n =>
       n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
     (∃ n : ℕ,
         ((∃ b' : σ, Sum.inl b' ∈ F a n) ∧ ∀ {m : ℕ}, m < n → ∃ b : α, Sum.inr b ∈ F a m) ∧

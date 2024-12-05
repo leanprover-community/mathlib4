@@ -186,20 +186,20 @@ instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder
   ⟨fun a =>
     match a with
     | inl a =>
-      let ⟨b, h⟩ := exists_lt a
+      let_fun ⟨b, h⟩ := exists_lt a
       ⟨inl b, inl_lt_inl_iff.2 h⟩
     | inr a =>
-      let ⟨b, h⟩ := exists_lt a
+      let_fun ⟨b, h⟩ := exists_lt a
       ⟨inr b, inr_lt_inr_iff.2 h⟩⟩
 
 instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (α ⊕ β) :=
   ⟨fun a =>
     match a with
     | inl a =>
-      let ⟨b, h⟩ := exists_gt a
+      let_fun ⟨b, h⟩ := exists_gt a
       ⟨inl b, inl_lt_inl_iff.2 h⟩
     | inr a =>
-      let ⟨b, h⟩ := exists_gt a
+      let_fun ⟨b, h⟩ := exists_gt a
       ⟨inr b, inr_lt_inr_iff.2 h⟩⟩
 
 @[simp]
@@ -233,10 +233,10 @@ instance denselyOrdered [LT α] [LT β] [DenselyOrdered α] [DenselyOrdered β] 
   ⟨fun a b h =>
     match a, b, h with
     | inl _, inl _, LiftRel.inl h =>
-      let ⟨c, ha, hb⟩ := exists_between h
+      let_fun ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inl c), LiftRel.inl ha, LiftRel.inl hb⟩
     | inr _, inr _, LiftRel.inr h =>
-      let ⟨c, ha, hb⟩ := exists_between h
+      let_fun ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inr c), LiftRel.inr ha, LiftRel.inr hb⟩⟩
 
 @[simp]
@@ -410,27 +410,27 @@ instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder
   ⟨fun a =>
     match a with
     | inl a =>
-      let ⟨b, h⟩ := exists_lt a
+      let_fun ⟨b, h⟩ := exists_lt a
       ⟨toLex (inl b), inl_lt_inl_iff.2 h⟩
     | inr a =>
-      let ⟨b, h⟩ := exists_lt a
+      let_fun ⟨b, h⟩ := exists_lt a
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 
 instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (α ⊕ₗ β) :=
   ⟨fun a =>
     match a with
     | inl a =>
-      let ⟨b, h⟩ := exists_gt a
+      let_fun ⟨b, h⟩ := exists_gt a
       ⟨toLex (inl b), inl_lt_inl_iff.2 h⟩
     | inr a =>
-      let ⟨b, h⟩ := exists_gt a
+      let_fun ⟨b, h⟩ := exists_gt a
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 
 instance noMinOrder_of_nonempty [LT α] [LT β] [NoMinOrder α] [Nonempty α] : NoMinOrder (α ⊕ₗ β) :=
   ⟨fun a =>
     match a with
     | inl a =>
-      let ⟨b, h⟩ := exists_lt a
+      let_fun ⟨b, h⟩ := exists_lt a
       ⟨toLex (inl b), inl_lt_inl_iff.2 h⟩
     | inr _ => ⟨toLex (inl <| Classical.arbitrary α), inl_lt_inr _ _⟩⟩
 
@@ -439,7 +439,7 @@ instance noMaxOrder_of_nonempty [LT α] [LT β] [NoMaxOrder β] [Nonempty β] : 
     match a with
     | inl _ => ⟨toLex (inr <| Classical.arbitrary β), inl_lt_inr _ _⟩
     | inr a =>
-      let ⟨b, h⟩ := exists_gt a
+      let_fun ⟨b, h⟩ := exists_gt a
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 
 instance denselyOrdered_of_noMaxOrder [LT α] [LT β] [DenselyOrdered α] [DenselyOrdered β]
@@ -447,13 +447,13 @@ instance denselyOrdered_of_noMaxOrder [LT α] [LT β] [DenselyOrdered α] [Dense
   ⟨fun a b h =>
     match a, b, h with
     | inl _, inl _, Lex.inl h =>
-      let ⟨c, ha, hb⟩ := exists_between h
+      let_fun ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inl c), inl_lt_inl_iff.2 ha, inl_lt_inl_iff.2 hb⟩
     | inl a, inr _, Lex.sep _ _ =>
-      let ⟨c, h⟩ := exists_gt a
+      let_fun ⟨c, h⟩ := exists_gt a
       ⟨toLex (inl c), inl_lt_inl_iff.2 h, inl_lt_inr _ _⟩
     | inr _, inr _, Lex.inr h =>
-      let ⟨c, ha, hb⟩ := exists_between h
+      let_fun ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inr c), inr_lt_inr_iff.2 ha, inr_lt_inr_iff.2 hb⟩⟩
 
 instance denselyOrdered_of_noMinOrder [LT α] [LT β] [DenselyOrdered α] [DenselyOrdered β]
@@ -461,13 +461,13 @@ instance denselyOrdered_of_noMinOrder [LT α] [LT β] [DenselyOrdered α] [Dense
   ⟨fun a b h =>
     match a, b, h with
     | inl _, inl _, Lex.inl h =>
-      let ⟨c, ha, hb⟩ := exists_between h
+      let_fun ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inl c), inl_lt_inl_iff.2 ha, inl_lt_inl_iff.2 hb⟩
     | inl _, inr b, Lex.sep _ _ =>
-      let ⟨c, h⟩ := exists_lt b
+      let_fun ⟨c, h⟩ := exists_lt b
       ⟨toLex (inr c), inl_lt_inr _ _, inr_lt_inr_iff.2 h⟩
     | inr _, inr _, Lex.inr h =>
-      let ⟨c, ha, hb⟩ := exists_between h
+      let_fun ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inr c), inr_lt_inr_iff.2 ha, inr_lt_inr_iff.2 hb⟩⟩
 
 end Lex

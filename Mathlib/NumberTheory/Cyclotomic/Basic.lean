@@ -444,8 +444,8 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1
 /-- Any two `n`-th cyclotomic extensions are isomorphic. -/
 def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K L'] :
     L ≃ₐ[K] L' :=
-  let h₁ := isSplittingField_X_pow_sub_one n K L
-  let h₂ := isSplittingField_X_pow_sub_one n K L'
+  let_fun h₁ := isSplittingField_X_pow_sub_one n K L
+  let_fun h₂ := isSplittingField_X_pow_sub_one n K L'
   (@IsSplittingField.algEquiv K L _ _ _ (X ^ (n : ℕ) - 1) h₁).trans
     (@IsSplittingField.algEquiv K L' _ _ _ (X ^ (n : ℕ) - 1) h₂).symm
 

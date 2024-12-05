@@ -811,7 +811,7 @@ theorem hasFDerivAt_ring_inverse (x : Rˣ) :
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
-  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
+  let_fun ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
 
 @[fun_prop]
 theorem differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :

@@ -232,7 +232,7 @@ instance : CompleteLattice (Subsemiring R) :=
         isGLB_biInf with
     bot := ⊥
     bot_le := fun s _ hx =>
-      let ⟨n, hn⟩ := mem_bot.1 hx
+      let_fun ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ natCast_mem s n
     top := ⊤
     le_top := fun _ _ _ => trivial
@@ -449,7 +449,7 @@ theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (hx : x ∈ closure s)  : p x hx :=
-  let K : Subsemiring R :=
+  letI K : Subsemiring R :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
@@ -492,7 +492,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
     induction hx using AddSubmonoid.closure_induction with
     | mem x hx =>
       suffices ∃ t : List R, (∀ y ∈ t, y ∈ s) ∧ t.prod = x from
-        let ⟨t, ht1, ht2⟩ := this
+        let_fun ⟨t, ht1, ht2⟩ := this
         ⟨[t], List.forall_mem_singleton.2 ht1, by
           rw [List.map_singleton, List.sum_singleton, ht2]⟩
       induction hx using Submonoid.closure_induction with
@@ -509,7 +509,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
   · rintro ⟨L, HL1, HL2⟩
     exact HL2 ▸
       list_sum_mem fun r hr =>
-        let ⟨t, ht1, ht2⟩ := List.mem_map.1 hr
+        let_fun ⟨t, ht1, ht2⟩ := List.mem_map.1 hr
         ht2 ▸ list_prod_mem _ fun y hy => subset_closure <| HL1 t ht1 y hy
 
 variable (R)
@@ -686,7 +686,7 @@ theorem coe_rangeSRestrict (f : R →+* S) (x : R) : (f.rangeSRestrict x : S) = 
 
 theorem rangeSRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeSRestrict :=
   fun ⟨_, hy⟩ =>
-  let ⟨x, hx⟩ := mem_rangeS.mp hy
+  let_fun ⟨x, hx⟩ := mem_rangeS.mp hy
   ⟨x, Subtype.ext hx⟩
 
 theorem rangeS_top_iff_surjective {f : R →+* S} :
@@ -773,7 +773,7 @@ def ofLeftInverseS {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) 
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := RingHom.mem_rangeS.mp x.prop
+        let_fun ⟨x', hx'⟩ := RingHom.mem_rangeS.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]

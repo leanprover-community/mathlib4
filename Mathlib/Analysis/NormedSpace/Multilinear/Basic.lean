@@ -360,7 +360,7 @@ theorem norm_def (f : ContinuousMultilinearMap 𝕜 E G) :
 -- bounds is nonempty and bounded below.
 theorem bounds_nonempty {f : ContinuousMultilinearMap 𝕜 E G} :
     ∃ c, c ∈ { c | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖ } :=
-  let ⟨M, hMp, hMb⟩ := f.bound
+  let_fun ⟨M, hMp, hMb⟩ := f.bound
   ⟨M, le_of_lt hMp, hMb⟩
 
 theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :

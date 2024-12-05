@@ -79,7 +79,7 @@ theorem HasSeparableContraction.dvd_degree' : ∃ m : ℕ, hf.degree * q ^ m = f
 
 /-- The separable degree divides the degree. -/
 theorem HasSeparableContraction.dvd_degree : hf.degree ∣ f.natDegree :=
-  let ⟨a, ha⟩ := hf.dvd_degree'
+  let_fun ⟨a, ha⟩ := hf.dvd_degree'
   Dvd.intro (q ^ a) ha
 
 /-- In exponential characteristic one, the separable degree equals the degree. -/

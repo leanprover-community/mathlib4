@@ -657,7 +657,7 @@ empty, and the Lie span always contains `0`, the assumption that `p 0` holds can
 theorem lieSpan_induction {p : L → Prop} {x : L} (h : x ∈ lieSpan R L s) (mem : ∀ x ∈ s, p x)
     (zero : p 0) (smul : ∀ (r : R), ∀ {x : L}, p x → p (r • x))
     (add : ∀ x y, p x → p y → p (x + y)) (lie : ∀ x y, p x → p y → p ⁅x, y⁆) : p x :=
-  let S : LieSubalgebra R L :=
+  letI S : LieSubalgebra R L :=
     { carrier := p
       add_mem' := add _ _
       zero_mem' := zero

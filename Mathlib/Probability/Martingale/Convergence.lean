@@ -320,7 +320,7 @@ alias Submartingale.tendsto_snorm_one_limitProcess := Submartingale.tendsto_eLpN
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) :=
-  let ⟨_, hR⟩ := hunif.2.2
+  let_fun ⟨_, hR⟩ := hunif.2.2
   hf.ae_tendsto_limitProcess hR
 
 /-- If a martingale `f` adapted to `ℱ` converges in L¹ to `g`, then for all `n`, `f n` is almost
@@ -348,7 +348,7 @@ adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere eq
 expectation of its limiting process wrt. `ℱ n`. -/
 theorem Martingale.ae_eq_condexp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ|ℱ n] :=
-  let ⟨_, hR⟩ := hbdd.2.2
+  let_fun ⟨_, hR⟩ := hbdd.2.2
   hf.eq_condexp_of_tendsto_eLpNorm ((memℒp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
 

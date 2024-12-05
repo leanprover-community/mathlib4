@@ -319,7 +319,7 @@ See also the stronger version `Submodule.smithNormalFormOfLE`.
 -/
 noncomputable def Submodule.basisOfPidOfLE {ι : Type*} [Finite ι] {N O : Submodule R M}
     (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N :=
-  let ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.subtype)
+  let_fun ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.subtype)
   ⟨n, bN'.map (Submodule.comapSubtypeEquivOfLe hNO)⟩
 
 /-- A submodule inside the span of a linear independent family is a free `R`-module of finite rank,
@@ -541,9 +541,9 @@ an ideal is the same as the dimension of the whole ring.
 -/
 noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : Submodule R M) :
     Σn : ℕ, Basis.SmithNormalForm N ι n :=
-  let ⟨m, n, bM, bN, f, a, snf⟩ := N.smithNormalFormOfLE b ⊤ le_top
-  let bM' := bM.map (LinearEquiv.ofTop _ rfl)
-  let e := bM'.indexEquiv b
+  let_fun ⟨m, n, bM, bN, f, a, snf⟩ := N.smithNormalFormOfLE b ⊤ le_top
+  letI bM' := bM.map (LinearEquiv.ofTop _ rfl)
+  let_fun e := bM'.indexEquiv b
   ⟨n, bM'.reindex e, bN.map (comapSubtypeEquivOfLe le_top), f.trans e.toEmbedding, a, fun i ↦ by
     simp only [bM', snf, Basis.map_apply, LinearEquiv.ofTop_apply, Submodule.coe_smul_of_tower,
       Submodule.comapSubtypeEquivOfLe_apply_coe, Basis.reindex_apply,
@@ -565,9 +565,9 @@ This is a strengthening of `Submodule.basisOfPid`.
 -/
 noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     Basis.SmithNormalForm (I.restrictScalars R) ι (Fintype.card ι) :=
-  let ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).smithNormalForm b
+  let_fun ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).smithNormalForm b
   have eq := Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
-  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
+  let_fun e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
   ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
     simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
       (· ∘ ·)]⟩

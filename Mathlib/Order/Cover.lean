@@ -216,7 +216,7 @@ alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covBy
 
 /-- In a dense order, nothing covers anything. -/
 theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
-  let ⟨_, hc⟩ := exists_between h.1
+  let_fun ⟨_, hc⟩ := exists_between h.1
   h.2 hc.1 hc.2
 
 theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
@@ -467,11 +467,11 @@ variable {s t : Set α} {a : α}
   ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovBy _ _).2⟩
 
 lemma _root_.CovBy.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t :=
-  let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
+  let_fun ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_insert ha).symm⟩
 
 lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
-  let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
+  let_fun ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
     sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩
 

@@ -58,7 +58,7 @@ lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α),
     disjiUnion (cons a s ha) f H =
     (f a).disjUnion ((s.disjiUnion f) fun _ hb _ hc ↦ H (mem_cons_of_mem hb) (mem_cons_of_mem hc))
       (disjoint_left.2 fun _ hb h ↦
-        let ⟨_, hc, h⟩ := mem_disjiUnion.mp h
+        let_fun ⟨_, hc, h⟩ := mem_disjiUnion.mp h
         disjoint_left.mp
           (H (mem_cons_self a s) (mem_cons_of_mem hc) (ne_of_mem_of_not_mem hc ha).symm) hb h) :=
   eq_of_veq <| Multiset.cons_bind _ _ _
@@ -185,7 +185,7 @@ lemma subset_biUnion_of_mem (u : α → Finset β) {x : α} (xs : x ∈ s) : u x
 lemma biUnion_subset_iff_forall_subset {α β : Type*} [DecidableEq β] {s : Finset α}
     {t : Finset β} {f : α → Finset β} : s.biUnion f ⊆ t ↔ ∀ x ∈ s, f x ⊆ t :=
   ⟨fun h _ hx ↦ (subset_biUnion_of_mem f hx).trans h, fun h _ hx ↦
-    let ⟨_, ha₁, ha₂⟩ := mem_biUnion.mp hx
+    let_fun ⟨_, ha₁, ha₂⟩ := mem_biUnion.mp hx
     h _ ha₁ ha₂⟩
 
 @[simp]

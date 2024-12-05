@@ -116,13 +116,13 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : E →L[ℝ] ℝ, ∀ a ∈ s, f a < f x :=
-  let ⟨f, _s, hs, hx⟩ :=
+  let_fun ⟨f, _s, hs, hx⟩ :=
     geometric_hahn_banach_open hs₁ hs₂ (convex_singleton x) (disjoint_singleton_right.2 disj)
   ⟨f, fun a ha => lt_of_lt_of_le (hs a ha) (hx x (mem_singleton _))⟩
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : E →L[ℝ] ℝ, ∀ b ∈ t, f x < f b :=
-  let ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
+  let_fun ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
   ⟨-f, by simpa⟩
 
 theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht₁ : Convex ℝ t)
@@ -172,19 +172,19 @@ closed, and `t` is compact, there is a continuous linear functional which strong
 theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
     ∃ (f : E →L[ℝ] ℝ) (u v : ℝ), (∀ a ∈ s, f a < u) ∧ u < v ∧ ∀ b ∈ t, v < f b :=
-  let ⟨f, s, t, hs, st, ht⟩ := geometric_hahn_banach_compact_closed ht₁ ht₂ hs₁ hs₂ disj.symm
+  let_fun ⟨f, s, t, hs, st, ht⟩ := geometric_hahn_banach_compact_closed ht₁ ht₂ hs₁ hs₂ disj.symm
   ⟨-f, -t, -s, by simpa using ht, by simpa using st, by simpa using hs⟩
 
 theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : x ∉ t) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), f x < u ∧ ∀ b ∈ t, u < f b :=
-  let ⟨f, _u, v, ha, hst, hb⟩ :=
+  let_fun ⟨f, _u, v, ha, hst, hb⟩ :=
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
       (disjoint_singleton_left.2 disj)
   ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
 
 theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (disj : x ∉ s) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), (∀ a ∈ s, f a < u) ∧ u < f x :=
-  let ⟨f, s, _t, ha, hst, hb⟩ :=
+  let_fun ⟨f, s, _t, ha, hst, hb⟩ :=
     geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
@@ -261,7 +261,7 @@ theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen 
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : E →L[𝕜] 𝕜, ∀ b ∈ t, re (f x) < re (f b) :=
-  let ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
+  let_fun ⟨f, hf⟩ := geometric_hahn_banach_open_point ht₁ ht₂ disj
   ⟨-f, by simpa⟩
 
 theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s)
@@ -287,19 +287,19 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
 theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) :=
-  let ⟨f, s, t, hs, st, ht⟩ := geometric_hahn_banach_compact_closed ht₁ ht₂ hs₁ hs₂ disj.symm
+  let_fun ⟨f, s, t, hs, st, ht⟩ := geometric_hahn_banach_compact_closed ht₁ ht₂ hs₁ hs₂ disj.symm
   ⟨-f, -t, -s, by simpa using ht, by simpa using st, by simpa using hs⟩
 
 theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClosed t)
     (disj : x ∉ t) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), re (f x) < u ∧ ∀ b ∈ t, u < re (f b) :=
-  let ⟨f, _u, v, ha, hst, hb⟩ :=
+  let_fun ⟨f, _u, v, ha, hst, hb⟩ :=
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
       (disjoint_singleton_left.2 disj)
   ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
 
 theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (disj : x ∉ s) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < re (f x) :=
-  let ⟨f, s, _t, ha, hst, hb⟩ :=
+  let_fun ⟨f, s, _t, ha, hst, hb⟩ :=
     geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩

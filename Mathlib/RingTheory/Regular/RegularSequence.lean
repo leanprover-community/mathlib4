@@ -231,7 +231,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsWeaklyRegular (QuotSMulTop r M) rs :=
   have := Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
-  let e i := quotOfListConsSMulTopEquivQuotSMulTopInner M r (rs.take i)
+  let_fun e i := quotOfListConsSMulTopEquivQuotSMulTopInner M r (rs.take i)
   Iff.trans (isWeaklyRegular_iff_Fin _ _) <| Iff.trans Fin.forall_iff_succ <|
     and_congr ((quotEquivOfEqBot _ this).isSMulRegular_congr r) <|
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
@@ -299,7 +299,7 @@ def recIterModByRegular
     (h : IsWeaklyRegular M rs) → motive M rs h
   | M, _, _, [], _ => nil M
   | M, _, _, r :: rs, h =>
-    let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff M r rs).mp h
+    let_fun ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff M r rs).mp h
     cons r rs h1 h2 (recIterModByRegular nil cons h2)
 
 /-- A simplified version of `IsWeaklyRegular.recIterModByRegular` where the
@@ -334,7 +334,7 @@ def recIterModByRegularWithRing
     [Module R M] → {rs : List R} → (h : IsWeaklyRegular M rs) → motive R M rs h
   | R, _, M, _, _, [], _ => nil R M
   | _, _, M, _, _, r :: rs, h =>
-    let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
+    let_fun ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
     cons r rs h1 h2 (recIterModByRegularWithRing nil cons h2)
   termination_by _ _ _ _ _ rs => List.length rs
 
@@ -596,7 +596,7 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
 set_option linter.unusedVariables false in
 lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
     {rs'} (h'' : rs ~ rs') (h' : ∀ a b rs', (a :: b :: rs') <+~ rs →
-      let K := torsionBy R (M ⧸ (Ideal.ofList rs' • ⊤ : Submodule R M)) b
+      let_fun K := torsionBy R (M ⧸ (Ideal.ofList rs' • ⊤ : Submodule R M)) b
       K = a • K → K = ⊥) : IsWeaklyRegular M rs' :=
   have H := LinearEquiv.isWeaklyRegular_congr <| quotEquivOfEqBot _ <|
     Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)

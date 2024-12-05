@@ -65,7 +65,7 @@ variable {v O}
 
 theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
     v (algebraMap O R x) = 1 :=
-  let ⟨u, hu⟩ := hx
+  let_fun ⟨u, hu⟩ := hx
   le_antisymm (H _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
@@ -80,12 +80,12 @@ Let `O` be the integers of the valuation `v` on some commutative ring `R`. For e
 -/
 theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x))
     (hvx : v (algebraMap O R x) = 1) : IsUnit x :=
-  let ⟨u, hu⟩ := hx
+  let_fun ⟨u, hu⟩ := hx
   have h1 : v u ≤ 1 := hu.symm ▸ hv.2 x
   have h2 : v (u⁻¹ : Rˣ) ≤ 1 := by
     rw [← one_mul (v _), ← hvx, ← v.map_mul, ← hu, u.mul_inv, hu, hvx, v.map_one]
-  let ⟨r1, hr1⟩ := hv.3 h1
-  let ⟨r2, hr2⟩ := hv.3 h2
+  let_fun ⟨r1, hr1⟩ := hv.3 h1
+  let_fun ⟨r2, hr2⟩ := hv.3 h2
   ⟨⟨r1, r2, hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.mul_inv],
       hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.inv_mul]⟩,
     hv.1 <| hr1.trans hu⟩
@@ -119,7 +119,7 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]
       exact mul_le_mul_left' h _
-    let ⟨z, hz⟩ := hv.3 this
+    let_fun ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 
 theorem dvd_iff_le (hv : Integers v O) {x y : O} :

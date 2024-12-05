@@ -295,12 +295,12 @@ variable [Monoid M] {a b c : M}
 
 @[to_additive]
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
-  let ⟨u, hu⟩ := h
+  let_fun ⟨u, hu⟩ := h
   hu ▸ u.mul_left_inj
 
 @[to_additive]
 theorem mul_right_inj (h : IsUnit a) : a * b = a * c ↔ b = c :=
-  let ⟨u, hu⟩ := h
+  let_fun ⟨u, hu⟩ := h
   hu ▸ u.mul_right_inj
 
 @[to_additive]

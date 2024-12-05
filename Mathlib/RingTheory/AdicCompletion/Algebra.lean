@@ -82,7 +82,7 @@ instance : Pow (AdicCompletion I R) ℕ where
   pow x n := ⟨x.val ^ n, fun _ ↦ by simp [x.property]⟩
 
 instance : CommRing (AdicCompletion I R) :=
-  let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
+  letI f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
   Subtype.val_injective.commRing f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
@@ -147,7 +147,7 @@ instance : Pow (AdicCauchySequence I R) ℕ where
   pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
 
 instance : CommRing (AdicCauchySequence I R) :=
-  let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
+  letI f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
   Subtype.val_injective.commRing f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)

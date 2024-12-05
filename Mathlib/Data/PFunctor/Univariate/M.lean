@@ -206,7 +206,7 @@ def head (x : M F) :=
 
 /-- return all the subtrees of the root of a tree `x : M F` -/
 def children (x : M F) (i : F.B (head x)) : M F :=
-  let H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
+  let_fun H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
   { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
     consistent := by
       intro n
@@ -614,10 +614,10 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
           ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x'
       ) :
     ∀ x, Q x → u x = v x := fun x Qx =>
-  let R := fun w z : M P => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
+  letI R := fun w z : M P => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   @M.bisim P R
     (fun _ _ ⟨x', Qx', xeq, yeq⟩ =>
-      let ⟨a, f, f', ux'eq, vx'eq, h'⟩ := h x' Qx'
+      let_fun ⟨a, f, f', ux'eq, vx'eq, h'⟩ := h x' Qx'
       ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
     _ _ ⟨x, Qx, rfl, rfl⟩
 
@@ -625,10 +625,10 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
 theorem bisim_equiv (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := fun x y Rxy =>
-  let Q : M P × M P → Prop := fun p => R p.fst p.snd
+  letI Q : M P × M P → Prop := fun p => R p.fst p.snd
   bisim' Q Prod.fst Prod.snd
     (fun p Qp =>
-      let ⟨a, f, f', hx, hy, h'⟩ := h p.fst p.snd Qp
+      let_fun ⟨a, f, f', hx, hy, h'⟩ := h p.fst p.snd Qp
       ⟨a, f, f', hx, hy, fun i => ⟨⟨f i, f' i⟩, h' i, rfl, rfl⟩⟩)
     ⟨x, y⟩ Rxy
 
@@ -655,7 +655,7 @@ of the computation -/
 def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → M P ⊕ P X) (x : α) : M P :=
   corec₁
     (fun _ rec (a : M P ⊕ α) =>
-      let y := a >>= F (rec ∘ Sum.inr)
+      let_fun y := a >>= F (rec ∘ Sum.inr)
       match y with
       | Sum.inr y => y
       | Sum.inl y => P.map (rec ∘ Sum.inl) (M.dest y))

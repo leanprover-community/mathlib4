@@ -98,7 +98,7 @@ variable {m : MeasurableSpace α} {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t :
 
 instance ae_isMeasurablyGenerated : IsMeasurablyGenerated (ae μ) :=
   ⟨fun _s hs =>
-    let ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs
+    let_fun ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs
     ⟨tᶜ, compl_mem_ae_iff.2 htμ, htm.compl, compl_subset_comm.1 hst⟩⟩
 
 /-- See also `MeasureTheory.ae_restrict_uIoc_iff`. -/
@@ -1662,7 +1662,7 @@ theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h
 measurable set. -/
 theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullMeasurableSet s μb)
     (hf : QuasiMeasurePreserving f μa μb) : NullMeasurableSet (f ⁻¹' s) μa :=
-  let ⟨t, htm, hst⟩ := hs
+  let_fun ⟨t, htm, hst⟩ := hs
   ⟨f ⁻¹' t, hf.measurable htm, hf.preimage_ae_eq hst⟩
 
 theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (k : ℕ)
@@ -1776,7 +1776,7 @@ open MeasureTheory
 
 protected theorem _root_.AEMeasurable.nullMeasurable {f : α → β} (h : AEMeasurable f μ) :
     NullMeasurable f μ :=
-  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+  let_fun ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
 
 lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β}
     (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=

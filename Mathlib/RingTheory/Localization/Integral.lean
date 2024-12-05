@@ -84,7 +84,7 @@ theorem integerNormalization_spec (p : S[X]) :
 
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
-  let ⟨b, hb⟩ := integerNormalization_spec M p
+  let_fun ⟨b, hb⟩ := integerNormalization_spec M p
   ⟨b,
     Polynomial.ext fun i => by
       rw [coeff_map, coeff_smul]
@@ -94,7 +94,7 @@ variable {R' : Type*} [CommRing R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
-  let ⟨b, hb⟩ := integerNormalization_map_to_map M p
+  let_fun ⟨b, hb⟩ := integerNormalization_map_to_map M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
     (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
 
@@ -229,7 +229,7 @@ theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R 
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
         Localization M →+* _).IsIntegral :=
   -- Porting note: added
-  let _ := f.toAlgebra
+  letI _ := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
   have : IsLocalization (Algebra.algebraMapSubmonoid S M)
     (Localization (Submonoid.map (f : R →* S) M)) := Localization.isLocalization
@@ -300,7 +300,7 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
           mem_nonZeroDivisors_iff_ne_zero.mp hy
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
     surj' := fun z =>
-      let ⟨x, y, hy, hxy⟩ := exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic z) inj
+      let_fun ⟨x, y, hy, hxy⟩ := exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic z) inj
       ⟨⟨mk' C (x : L) x.2, algebraMap _ _ y,
           mem_nonZeroDivisors_iff_ne_zero.mpr fun h =>
             hy (inj _ (by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero]))⟩,

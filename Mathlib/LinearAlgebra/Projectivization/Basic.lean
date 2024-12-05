@@ -63,7 +63,7 @@ def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
 theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
 
 instance [Nontrivial V] : Nonempty (ℙ K V) :=
-  let ⟨v, hv⟩ := exists_ne (0 : V)
+  let_fun ⟨v, hv⟩ := exists_ne (0 : V)
   ⟨mk K v hv⟩
 
 variable {K}

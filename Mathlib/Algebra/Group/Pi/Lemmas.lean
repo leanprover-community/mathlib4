@@ -68,7 +68,7 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
     (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
-  let ⟨i⟩ := ‹Nonempty I›
+  let_fun ⟨i⟩ := ‹Nonempty I›
   hg i ((funext_iff.mp h : _) i)
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism

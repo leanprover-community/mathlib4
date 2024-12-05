@@ -55,7 +55,7 @@ partial def add : Linexp → Linexp → Linexp
   if n1 < n2 then b::add (a::t1) t2
   else if n2 < n1 then a::add t1 (b::t2)
   else
-    let sum := z1 + z2
+    let_fun sum := z1 + z2
     if sum = 0 then add t1 t2 else (n1, sum)::add t1 t2
 
 /-- `l.scale c` scales the values in `l` by `c` without modifying the order or keys. -/

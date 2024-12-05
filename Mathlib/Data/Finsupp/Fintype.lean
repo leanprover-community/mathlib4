@@ -20,7 +20,7 @@ noncomputable instance Finsupp.fintype : Fintype (ι →₀ α) :=
   Fintype.ofEquiv _ Finsupp.equivFunOnFinite.symm
 
 instance Finsupp.infinite_of_left [Nontrivial α] [Infinite ι] : Infinite (ι →₀ α) :=
-  let ⟨_, hm⟩ := exists_ne (0 : α)
+  let_fun ⟨_, hm⟩ := exists_ne (0 : α)
   Infinite.of_injective _ <| Finsupp.single_left_injective hm
 
 instance Finsupp.infinite_of_right [Infinite α] [Nonempty ι] : Infinite (ι →₀ α) :=

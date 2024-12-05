@@ -89,7 +89,7 @@ protected theorem tendsto_pure_self (l : Filter X) :
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
-  let ⟨_b, hb⟩ := l.exists_antitone_basis
+  let_fun ⟨_b, hb⟩ := l.exists_antitone_basis
   HasCountableBasis.isCountablyGenerated <| ⟨hb.nhds, Set.to_countable _⟩
 
 theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :

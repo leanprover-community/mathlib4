@@ -265,7 +265,7 @@ theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
   if n1 : n = 1 then by simp [n1] else (minFac_has_prop n1).2.1
 
 theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
-  let ⟨f2, fd, a⟩ := minFac_has_prop n1
+  let_fun ⟨f2, fd, a⟩ := minFac_has_prop n1
   prime_def_lt'.2 ⟨f2, fun m m2 l d => not_le_of_gt l (a m m2 (d.trans fd))⟩
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
@@ -296,7 +296,7 @@ theorem le_minFac' {m n : ℕ} : n = 1 ∨ m ≤ minFac n ↔ ∀ p, 2 ≤ p →
 theorem prime_def_minFac {p : ℕ} : Prime p ↔ 2 ≤ p ∧ minFac p = p :=
   ⟨fun pp =>
     ⟨pp.two_le,
-      let ⟨f2, fd, _⟩ := minFac_has_prop <| ne_of_gt pp.one_lt
+      let_fun ⟨f2, fd, _⟩ := minFac_has_prop <| ne_of_gt pp.one_lt
       ((dvd_prime pp).1 fd).resolve_left (ne_of_gt f2)⟩,
     fun ⟨p2, e⟩ => e ▸ minFac_prime (ne_of_gt p2)⟩
 

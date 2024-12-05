@@ -719,10 +719,10 @@ to functions that map zero to zero. This is an auxiliary definition and is not
 intended for use outside this file. The equality between the non-unital and unital
 calculi in this case is encoded in the lemma `cfcₙ_eq_cfc`. -/
 noncomputable def cfcₙHom_of_cfcHom {a : A} (ha : p a) : C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
-  let e := ContinuousMapZero.toContinuousMapHom (X := σₙ R a) (R := R)
-  let f : C(spectrum R a, quasispectrum R a) :=
+  let_fun e := ContinuousMapZero.toContinuousMapHom (X := σₙ R a) (R := R)
+  let_fun f : C(spectrum R a, quasispectrum R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  let ψ := ContinuousMap.compStarAlgHom' R R f
+  let_fun ψ := ContinuousMap.compStarAlgHom' R R f
   (cfcHom ha (R := R) : C(spectrum R a, R) →⋆ₙₐ[R] A).comp <|
     (ψ : C(σₙ R a, R) →⋆ₙₐ[R] C(spectrum R a, R)).comp e
 

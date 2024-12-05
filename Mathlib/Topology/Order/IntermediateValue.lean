@@ -73,13 +73,13 @@ theorem intermediate_value_univ₂ [PreconnectedSpace X] {a b : X} {f g : X → 
 theorem intermediate_value_univ₂_eventually₁ [PreconnectedSpace X] {a : X} {l : Filter X} [NeBot l]
     {f g : X → α} (hf : Continuous f) (hg : Continuous g) (ha : f a ≤ g a) (he : g ≤ᶠ[l] f) :
     ∃ x, f x = g x :=
-  let ⟨_, h⟩ := he.exists; intermediate_value_univ₂ hf hg ha h
+  let_fun ⟨_, h⟩ := he.exists; intermediate_value_univ₂ hf hg ha h
 
 theorem intermediate_value_univ₂_eventually₂ [PreconnectedSpace X] {l₁ l₂ : Filter X} [NeBot l₁]
     [NeBot l₂] {f g : X → α} (hf : Continuous f) (hg : Continuous g) (he₁ : f ≤ᶠ[l₁] g)
     (he₂ : g ≤ᶠ[l₂] f) : ∃ x, f x = g x :=
-  let ⟨_, h₁⟩ := he₁.exists
-  let ⟨_, h₂⟩ := he₂.exists
+  let_fun ⟨_, h₁⟩ := he₁.exists
+  let_fun ⟨_, h₂⟩ := he₂.exists
   intermediate_value_univ₂ hf hg h₁ h₂
 
 /-- Intermediate value theorem for two functions: if `f` and `g` are two functions continuous
@@ -88,7 +88,7 @@ then for some `x ∈ s` we have `f x = g x`. -/
 theorem IsPreconnected.intermediate_value₂ {s : Set X} (hs : IsPreconnected s) {a b : X}
     (ha : a ∈ s) (hb : b ∈ s) {f g : X → α} (hf : ContinuousOn f s) (hg : ContinuousOn g s)
     (ha' : f a ≤ g a) (hb' : g b ≤ f b) : ∃ x ∈ s, f x = g x :=
-  let ⟨x, hx⟩ :=
+  let_fun ⟨x, hx⟩ :=
     @intermediate_value_univ₂ s α _ _ _ _ (Subtype.preconnectedSpace hs) ⟨a, ha⟩ ⟨b, hb⟩ _ _
       (continuousOn_iff_continuous_restrict.1 hf) (continuousOn_iff_continuous_restrict.1 hg) ha'
       hb'
@@ -173,7 +173,7 @@ theorem intermediate_value_univ [PreconnectedSpace X] (a b : X) {f : X → α} (
 /-- **Intermediate Value Theorem** for continuous functions on connected spaces. -/
 theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : X → α}
     (hf : Continuous f) (h₁ : ∃ a, f a ≤ c) (h₂ : ∃ b, c ≤ f b) : c ∈ range f :=
-  let ⟨a, ha⟩ := h₁; let ⟨b, hb⟩ := h₂; intermediate_value_univ a b hf ⟨ha, hb⟩
+  let_fun ⟨a, ha⟩ := h₁; let_fun ⟨b, hb⟩ := h₂; intermediate_value_univ a b hf ⟨ha, hb⟩
 
 /-!
 ### (Pre)connected sets in a linear order
@@ -221,8 +221,8 @@ variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace �
 `(Inf s, Sup s)`. -/
 theorem IsConnected.Ioo_csInf_csSup_subset {s : Set α} (hs : IsConnected s) (hb : BddBelow s)
     (ha : BddAbove s) : Ioo (sInf s) (sSup s) ⊆ s := fun _x hx =>
-  let ⟨_y, ys, hy⟩ := (isGLB_lt_iff (isGLB_csInf hs.nonempty hb)).1 hx.1
-  let ⟨_z, zs, hz⟩ := (lt_isLUB_iff (isLUB_csSup hs.nonempty ha)).1 hx.2
+  let_fun ⟨_y, ys, hy⟩ := (isGLB_lt_iff (isGLB_csInf hs.nonempty hb)).1 hx.1
+  let_fun ⟨_z, zs, hz⟩ := (lt_isLUB_iff (isLUB_csSup hs.nonempty ha)).1 hx.2
   hs.Icc_subset ys zs ⟨hy.le, hz.le⟩
 
 theorem eq_Icc_csInf_csSup_of_connected_bdd_closed {s : Set α} (hc : IsConnected s)
@@ -233,8 +233,8 @@ theorem eq_Icc_csInf_csSup_of_connected_bdd_closed {s : Set α} (hc : IsConnecte
 theorem IsPreconnected.Ioi_csInf_subset {s : Set α} (hs : IsPreconnected s) (hb : BddBelow s)
     (ha : ¬BddAbove s) : Ioi (sInf s) ⊆ s := fun x hx =>
   have sne : s.Nonempty := nonempty_of_not_bddAbove ha
-  let ⟨_y, ys, hy⟩ : ∃ y ∈ s, y < x := (isGLB_lt_iff (isGLB_csInf sne hb)).1 hx
-  let ⟨_z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
+  let_fun ⟨_y, ys, hy⟩ : ∃ y ∈ s, y < x := (isGLB_lt_iff (isGLB_csInf sne hb)).1 hx
+  let_fun ⟨_z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
   hs.Icc_subset ys zs ⟨hy.le, hz.le⟩
 
 theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)

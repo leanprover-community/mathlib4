@@ -98,7 +98,7 @@ theorem commensurator_mem_iff (H : Subgroup G) (g : G) :
 
 theorem eq {H K : Subgroup G} (hk : Commensurable H K) : commensurator H = commensurator K :=
   Subgroup.ext fun x =>
-    let hx := (commensurable_conj x).1 hk
+    let_fun hx := (commensurable_conj x).1 hk
     ⟨fun h => hx.symm.trans (h.trans hk), fun h => hx.trans (h.trans hk.symm)⟩
 
 end Commensurable

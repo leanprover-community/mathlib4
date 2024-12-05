@@ -20,8 +20,8 @@ using the `ParserFn` `s`.
 This is a variation of `Lean.Parser.runParserCategory`.
 -/
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
-  let ictx := mkInputContext input "<input>"
-  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  let_fun ictx := mkInputContext input "<input>"
+  let_fun s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if !s.allErrors.isEmpty then
     .error (s.toErrorMsg ictx)
   else if ictx.input.atEnd s.pos then

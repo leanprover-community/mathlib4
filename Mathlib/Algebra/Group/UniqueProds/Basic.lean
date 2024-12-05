@@ -336,8 +336,8 @@ open Finset MulOpposite in
 @[to_additive]
 theorem of_mulOpposite (h : UniqueProds Gᵐᵒᵖ) : UniqueProds G where
   uniqueMul_of_nonempty hA hB :=
-    let f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
-    let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
+    letI f : G ↪ Gᵐᵒᵖ := ⟨op, op_injective⟩
+    let_fun ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
     ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩
 
 @[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ :=
@@ -618,8 +618,8 @@ open MulOpposite in
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=
-  let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
-  let _ : MulLeftStrictMono Gᵐᵒᵖ :=
+  letI _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
+  let_fun _ : MulLeftStrictMono Gᵐᵒᵖ :=
     { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
   of_mulOpposite of_covariant_right
 

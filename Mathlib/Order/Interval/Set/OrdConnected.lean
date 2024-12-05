@@ -205,7 +205,7 @@ theorem ordConnected_univ : OrdConnected (univ : Set α) :=
 instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] :
     DenselyOrdered s :=
   ⟨fun a b (h : (a : α) < b) =>
-    let ⟨x, H⟩ := exists_between h
+    let_fun ⟨x, H⟩ := exists_between h
     ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]

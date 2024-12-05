@@ -39,5 +39,5 @@ end Nat
 
 theorem Filter.nonneg_of_eventually_pow_nonneg {α : Type*} [LinearOrderedRing α] {a : α}
     (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=
-  let ⟨_n, ho, hn⟩ := (Nat.frequently_odd.and_eventually h).exists
+  let_fun ⟨_n, ho, hn⟩ := (Nat.frequently_odd.and_eventually h).exists
   ho.pow_nonneg_iff.1 hn

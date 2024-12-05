@@ -508,14 +508,14 @@ theorem mul_rightUnitor {M : Mon_ C} :
 
 @[simps tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
-  let tensorObj (M N : Mon_ C) : Mon_ C :=
+  letI tensorObj (M N : Mon_ C) : Mon_ C :=
     { X := M.X ⊗ N.X
       one := (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)
       mul := tensorμ M.X N.X M.X N.X ≫ (M.mul ⊗ N.mul)
       one_mul := Mon_tensor_one_mul M N
       mul_one := Mon_tensor_mul_one M N
       mul_assoc := Mon_tensor_mul_assoc M N }
-  let tensorHom {X₁ Y₁ X₂ Y₂ : Mon_ C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+  let_fun tensorHom {X₁ Y₁ X₂ Y₂ : Mon_ C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
       tensorObj _ _ ⟶ tensorObj _ _ :=
     { hom := f.hom ⊗ g.hom
       one_hom := by

@@ -252,8 +252,8 @@ converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (Cauchy abv) where
   reprPrec r _ :=
-    let N := 10
-    let seq := r.unquot
+    let_fun N := 10
+    let_fun seq := r.unquot
     "(sorry /- " ++ Std.Format.joinSep ((List.range N).map <| repr ∘ seq) ", " ++ ", ... -/)"
 
 end

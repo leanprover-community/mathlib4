@@ -69,7 +69,7 @@ theorem IsOpen.iUnion_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen 
 theorem IsOpen.iUnion_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne : U.Nonempty) :
     ⋃ g : G, g • U = univ :=
   iUnion_eq_univ_iff.2 fun x ↦
-    let ⟨g, hg⟩ := hUo.exists_smul_mem G x hne
+    let_fun ⟨g, hg⟩ := hUo.exists_smul_mem G x hne
     ⟨g⁻¹, _, hg, inv_smul_smul _ _⟩
 
 @[to_additive]
@@ -83,7 +83,7 @@ theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul
 @[to_additive]
 theorem dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.Nonempty)
     (hsmul : ∀ c : M, c • s ⊆ s) : Dense s :=
-  let ⟨x, hx⟩ := hne
+  let_fun ⟨x, hx⟩ := hne
   (MulAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
 
 @[to_additive]

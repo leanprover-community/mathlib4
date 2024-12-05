@@ -365,22 +365,22 @@ theorem complete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
 instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :
     CompleteSpace (α × β) where
   complete hf :=
-    let ⟨x1, hx1⟩ := CompleteSpace.complete <| hf.map uniformContinuous_fst
-    let ⟨x2, hx2⟩ := CompleteSpace.complete <| hf.map uniformContinuous_snd
+    let_fun ⟨x1, hx1⟩ := CompleteSpace.complete <| hf.map uniformContinuous_fst
+    let_fun ⟨x2, hx2⟩ := CompleteSpace.complete <| hf.map uniformContinuous_snd
     ⟨(x1, x2), by rw [nhds_prod_eq, le_prod]; constructor <;> assumption⟩
 
 lemma CompleteSpace.fst_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty β] :
     CompleteSpace α where
   complete hf :=
-    let ⟨y⟩ := h
-    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| hf.prod <| cauchy_pure (a := y)
+    let_fun ⟨y⟩ := h
+    let_fun ⟨(a, b), hab⟩ := CompleteSpace.complete <| hf.prod <| cauchy_pure (a := y)
     ⟨a, by simpa only [map_fst_prod, nhds_prod_eq] using map_mono (m := Prod.fst) hab⟩
 
 lemma CompleteSpace.snd_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty α] :
     CompleteSpace β where
   complete hf :=
-    let ⟨x⟩ := h
-    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| (cauchy_pure (a := x)).prod hf
+    let_fun ⟨x⟩ := h
+    let_fun ⟨(a, b), hab⟩ := CompleteSpace.complete <| (cauchy_pure (a := x)).prod hf
     ⟨b, by simpa only [map_snd_prod, nhds_prod_eq] using map_mono (m := Prod.snd) hab⟩
 
 lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty β] :
@@ -391,12 +391,12 @@ lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty �
 instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
   complete hf :=
     MulOpposite.op_surjective.exists.mpr <|
-      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
+      let_fun ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
       ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
 
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
-  ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
+  ⟨fun hf => let_fun ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
 
 theorem completeSpace_iff_isComplete_univ : CompleteSpace α ↔ IsComplete (univ : Set α) :=
   ⟨@complete_univ α _, completeSpace_of_isComplete_univ⟩
@@ -434,7 +434,7 @@ theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] {u : β → 
 
 theorem IsClosed.isComplete [CompleteSpace α] {s : Set α} (h : IsClosed s) : IsComplete s :=
   fun _ cf fs =>
-  let ⟨x, hx⟩ := CompleteSpace.complete cf
+  let_fun ⟨x, hx⟩ := CompleteSpace.complete cf
   ⟨x, isClosed_iff_clusterPt.mp h x (cf.left.mono (le_inf hx fs)), hx⟩
 
 /-- A set `s` is totally bounded if for every entourage `d` there is a finite
@@ -461,7 +461,7 @@ theorem TotallyBounded.exists_subset {s : Set α} (hs : TotallyBounded s) {U : S
 theorem totallyBounded_iff_subset {s : Set α} :
     TotallyBounded s ↔
       ∀ d ∈ 𝓤 α, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
-  ⟨fun H _ hd ↦ H.exists_subset hd, fun H d hd ↦ let ⟨t, _, ht⟩ := H d hd; ⟨t, ht⟩⟩
+  ⟨fun H _ hd ↦ H.exists_subset hd, fun H d hd ↦ let_fun ⟨t, _, ht⟩ := H d hd; ⟨t, ht⟩⟩
 
 theorem Filter.HasBasis.totallyBounded_iff {ι} {p : ι → Prop} {U : ι → Set (α × α)}
     (H : (𝓤 α).HasBasis p U) {s : Set α} :
@@ -477,7 +477,7 @@ theorem totallyBounded_of_forall_symm {s : Set α}
 
 theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : TotallyBounded s₂) :
     TotallyBounded s₁ := fun d hd =>
-  let ⟨t, ht₁, ht₂⟩ := h d hd
+  let_fun ⟨t, ht₁, ht₂⟩ := h d hd
   ⟨t, ht₁, Subset.trans hs ht₂⟩
 
 @[deprecated (since := "2024-06-01")]
@@ -486,7 +486,7 @@ alias totallyBounded_subset := TotallyBounded.subset
 /-- The closure of a totally bounded set is totally bounded. -/
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) :=
   uniformity_hasBasis_closed.totallyBounded_iff.2 fun V hV =>
-    let ⟨t, htf, hst⟩ := h V hV.1
+    let_fun ⟨t, htf, hst⟩ := h V hV.1
     ⟨t, htf,
       closure_minimal hst <|
         htf.isClosed_biUnion fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
@@ -558,7 +558,7 @@ protected alias ⟨_, TotallyBounded.insert⟩ := totallyBounded_insert
 theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs : TotallyBounded s)
     (hf : UniformContinuous f) : TotallyBounded (f '' s) := fun t ht =>
   have : { p : α × α | (f p.1, f p.2) ∈ t } ∈ 𝓤 α := hf ht
-  let ⟨c, hfc, hct⟩ := hs _ this
+  let_fun ⟨c, hfc, hct⟩ := hs _ this
   ⟨f '' c, hfc.image f, by
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
@@ -570,11 +570,11 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
 theorem Ultrafilter.cauchy_of_totallyBounded {s : Set α} (f : Ultrafilter α) (hs : TotallyBounded s)
     (h : ↑f ≤ 𝓟 s) : Cauchy (f : Filter α) :=
   ⟨f.neBot', fun _ ht =>
-    let ⟨t', ht'₁, ht'_symm, ht'_t⟩ := comp_symm_of_uniformity ht
-    let ⟨i, hi, hs_union⟩ := hs t' ht'₁
+    let_fun ⟨t', ht'₁, ht'_symm, ht'_t⟩ := comp_symm_of_uniformity ht
+    let_fun ⟨i, hi, hs_union⟩ := hs t' ht'₁
     have : (⋃ y ∈ i, { x | (x, y) ∈ t' }) ∈ f := mem_of_superset (le_principal_iff.mp h) hs_union
     have : ∃ y ∈ i, { x | (x, y) ∈ t' } ∈ f := (Ultrafilter.finite_biUnion_mem_iff hi).1 this
-    let ⟨y, _, hif⟩ := this
+    let_fun ⟨y, _, hif⟩ := this
     have : { x | (x, y) ∈ t' } ×ˢ { x | (x, y) ∈ t' } ⊆ compRel t' t' :=
       fun ⟨_, _⟩ ⟨(h₁ : (_, y) ∈ t'), (h₂ : (_, y) ∈ t')⟩ => ⟨y, h₁, ht'_symm h₂⟩
     mem_of_superset (prod_mem_prod hif hif) (Subset.trans this ht'_t)⟩
@@ -609,10 +609,10 @@ theorem isCompact_iff_totallyBounded_isComplete {s : Set α} :
     IsCompact s ↔ TotallyBounded s ∧ IsComplete s :=
   ⟨fun hs =>
     ⟨totallyBounded_iff_ultrafilter.2 fun f hf =>
-        let ⟨_, _, fx⟩ := isCompact_iff_ultrafilter_le_nhds.1 hs f hf
+        let_fun ⟨_, _, fx⟩ := isCompact_iff_ultrafilter_le_nhds.1 hs f hf
         cauchy_nhds.mono fx,
       fun f fc fs =>
-      let ⟨a, as, fa⟩ := @hs f fc.1 fs
+      let_fun ⟨a, as, fa⟩ := @hs f fc.1 fs
       ⟨a, as, le_nhds_of_cauchy_adhp fc fa⟩⟩,
     fun ⟨ht, hc⟩ =>
     isCompact_iff_ultrafilter_le_nhds.2 fun f hf =>
@@ -749,7 +749,7 @@ theorem complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α))
 complete. -/
 theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) :
     CompleteSpace α :=
-  let ⟨U', _, hU'⟩ := (𝓤 α).exists_antitone_seq
+  let_fun ⟨U', _, hU'⟩ := (𝓤 α).exists_antitone_seq
   complete_of_convergent_controlled_sequences U' (fun n => hU'.2 ⟨n, Subset.refl _⟩) fun u hu =>
     H' u <| cauchySeq_of_controlled U' (fun _ hs => hU'.1 hs) hu
 

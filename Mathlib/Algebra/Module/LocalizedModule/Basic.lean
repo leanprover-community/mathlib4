@@ -300,7 +300,7 @@ theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s
 
 noncomputable instance : SMul T (LocalizedModule S M) where
   smul x p :=
-    let a := IsLocalization.sec S x
+    let_fun a := IsLocalization.sec S x
     liftOn p (fun p ↦ mk (a.1 • p.1) (a.2 * p.2))
       (by
         rintro p p' ⟨s, h⟩
@@ -820,7 +820,7 @@ theorem fromLocalizedModule.inj : Function.Injective <| fromLocalizedModule S f 
     Submonoid.smul_def, f.map_smul, f.map_smul, eq1]
 
 theorem fromLocalizedModule.surj : Function.Surjective <| fromLocalizedModule S f := fun x =>
-  let ⟨⟨m, s⟩, eq1⟩ := IsLocalizedModule.surj S f x
+  let_fun ⟨⟨m, s⟩, eq1⟩ := IsLocalizedModule.surj S f x
   ⟨LocalizedModule.mk m s, by
     rw [fromLocalizedModule_mk, Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← eq1,
       Submonoid.smul_def]⟩

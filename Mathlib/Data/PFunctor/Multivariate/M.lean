@@ -74,8 +74,8 @@ inductive M.Path : P.last.M → Fin2 n → Type u
 
 instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
     Inhabited (M.Path P x i) :=
-  let a := PFunctor.M.head x
-  let f := PFunctor.M.children x
+  letI a := PFunctor.M.head x
+  letI f := PFunctor.M.children x
   ⟨M.Path.root _ a f
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)

@@ -115,13 +115,13 @@ end InteractiveUnfold
 
 /-- Return the rewrite tactic string `rw (config := ..) [← ..] at ..` -/
 def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String) (loc : Option Name) : String :=
-  let cfg := match occ with
+  let_fun cfg := match occ with
     | some n => s! " (config := \{ occs := .pos [{n}]})"
     | none => ""
-  let loc := match loc with
+  let_fun loc := match loc with
     | some n => s! " at {n}"
     | none => ""
-  let symm := if symm then "← " else ""
+  let_fun symm := if symm then "← " else ""
   s! "rw{cfg} [{symm}{rewrite}]{loc}"
 
 /--

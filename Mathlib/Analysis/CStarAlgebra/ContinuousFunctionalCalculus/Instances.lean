@@ -558,7 +558,7 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
 
 /-- The `CStarAlgebra.spectralOrder` on a unital C⋆-algebra is a `StarOrderedRing`. -/
 lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spectralOrder A) _ :=
-  let _ := CStarAlgebra.spectralOrder A
+  letI _ := CStarAlgebra.spectralOrder A
   { le_iff := by
       intro x y
       constructor

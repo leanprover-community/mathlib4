@@ -95,7 +95,7 @@ def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
 @[reassoc]
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) :
     F.map i.op ≫ F.germ U x hx = F.germ V x (i.le hx) :=
-  let i' : (⟨U, hx⟩ : OpenNhds x) ⟶ ⟨V, i.le hx⟩ := i
+  letI i' : (⟨U, hx⟩ : OpenNhds x) ⟶ ⟨V, i.le hx⟩ := i
   colimit.w ((OpenNhds.inclusion x).op ⋙ F) i'.op
 
 /-- A variant of `germ_res` with `op V ⟶ op U`
@@ -103,7 +103,7 @@ so that the LHS is more general and simp fires more easier. -/
 @[reassoc (attr := simp)]
 theorem germ_res' (F : X.Presheaf C) {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) :
     F.map i ≫ F.germ U x hx = F.germ V x (i.unop.le hx) :=
-  let i' : (⟨U, hx⟩ : OpenNhds x) ⟶ ⟨V, i.unop.le hx⟩ := i.unop
+  letI i' : (⟨U, hx⟩ : OpenNhds x) ⟶ ⟨V, i.unop.le hx⟩ := i.unop
   colimit.w ((OpenNhds.inclusion x).op ⋙ F) i'.op
 
 @[reassoc]

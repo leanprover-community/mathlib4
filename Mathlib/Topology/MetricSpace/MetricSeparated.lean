@@ -31,7 +31,7 @@ variable {X : Type*} [EMetricSpace X] {s t : Set X}
 
 @[symm]
 theorem symm (h : IsMetricSeparated s t) : IsMetricSeparated t s :=
-  let ⟨r, r0, hr⟩ := h
+  let_fun ⟨r, r0, hr⟩ := h
   ⟨r, r0, fun y hy x hx => edist_comm x y ▸ hr x hx y hy⟩
 
 theorem comm : IsMetricSeparated s t ↔ IsMetricSeparated t s :=
@@ -46,7 +46,7 @@ theorem empty_right (s : Set X) : IsMetricSeparated s ∅ :=
   (empty_left s).symm
 
 protected theorem disjoint (h : IsMetricSeparated s t) : Disjoint s t :=
-  let ⟨r, r0, hr⟩ := h
+  let_fun ⟨r, r0, hr⟩ := h
   Set.disjoint_left.mpr fun x hx1 hx2 => r0 <| by simpa using hr x hx1 x hx2
 
 theorem subset_compl_right (h : IsMetricSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>

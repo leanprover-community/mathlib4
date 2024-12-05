@@ -293,7 +293,7 @@ theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 :
 @[to_additive]
 theorem mulRothNumber_union_le (s t : Finset α) :
     mulRothNumber (s ∪ t) ≤ mulRothNumber s + mulRothNumber t :=
-  let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
+  let_fun ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
     mulRothNumber (s ∪ t) = #u := hcard.symm
     _ = #(u ∩ s ∪ u ∩ t) := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]

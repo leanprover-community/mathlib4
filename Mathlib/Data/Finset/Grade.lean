@@ -86,7 +86,7 @@ alias ⟨_, _root_.CovBy.finset_coe⟩ := coe_covBy_coe
 @[simp] lemma covBy_cons (ha : a ∉ s) : s ⋖ s.cons a ha := by simp [← val_covBy_val]
 
 lemma _root_.CovBy.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
-  let ⟨a, ha, hst⟩ := ssubset_iff_exists_cons_subset.1 h.lt
+  let_fun ⟨a, ha, hst⟩ := ssubset_iff_exists_cons_subset.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_cons _).symm⟩
 
 lemma covBy_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=

@@ -140,7 +140,7 @@ theorem mk_toAddMonoidHom (f) (h₁) (h₂) :
   rfl
 
 theorem bound : ∃ C, 0 < C ∧ ∀ x, ‖f x‖ ≤ C * ‖x‖ :=
-  let ⟨_C, hC⟩ := f.bound'
+  let_fun ⟨_C, hC⟩ := f.bound'
   exists_pos_bound_of_bound _ hC
 
 theorem antilipschitz_of_norm_ge {K : ℝ≥0} (h : ∀ x, ‖x‖ ≤ K * ‖f x‖) : AntilipschitzWith K f :=
@@ -190,7 +190,7 @@ theorem norm_def : ‖f‖ = sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖
 -- bounds is nonempty and bounded below.
 theorem bounds_nonempty {f : NormedAddGroupHom V₁ V₂} :
     ∃ c, c ∈ { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
-  let ⟨M, hMp, hMb⟩ := f.bound
+  let_fun ⟨M, hMp, hMb⟩ := f.bound
   ⟨M, le_of_lt hMp, hMb⟩
 
 theorem bounds_bddBelow {f : NormedAddGroupHom V₁ V₂} :
@@ -437,7 +437,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
     { toFun := r • ⇑f
       map_add' := (r • f.toAddMonoidHom).map_add'
       bound' :=
-        let ⟨b, hb⟩ := f.bound'
+        let_fun ⟨b, hb⟩ := f.bound'
         ⟨dist r 0 * b, fun x => by
           have := dist_smul_pair r (f x) (f 0)
           rw [map_zero, smul_zero, dist_zero_right, dist_zero_right] at this
@@ -473,7 +473,7 @@ instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
     { toFun := n • ⇑f
       map_add' := (n • f.toAddMonoidHom).map_add'
       bound' :=
-        let ⟨b, hb⟩ := f.bound'
+        let_fun ⟨b, hb⟩ := f.bound'
         ⟨n • b, fun v => by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
           exact (norm_nsmul_le _ _).trans (by gcongr; apply hb)⟩ }
@@ -491,7 +491,7 @@ instance zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
     { toFun := z • ⇑f
       map_add' := (z • f.toAddMonoidHom).map_add'
       bound' :=
-        let ⟨b, hb⟩ := f.bound'
+        let_fun ⟨b, hb⟩ := f.bound'
         ⟨‖z‖ • b, fun v => by
           rw [Pi.smul_apply, smul_eq_mul, mul_assoc]
           exact (norm_zsmul_le _ _).trans (by gcongr; apply hb)⟩ }

@@ -596,8 +596,8 @@ instance : Inhabited (rightTransversals (H : Set G)) :=
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
   refine
     ⟨disjoint_iff_inf_le.mpr fun g ⟨p, q⟩ =>
-        let x : H × K := ⟨⟨g, p⟩, 1⟩
-        let y : H × K := ⟨1, g, q⟩
+        letI x : H × K := ⟨⟨g, p⟩, 1⟩
+        letI y : H × K := ⟨1, g, q⟩
         Subtype.ext_iff.mp
           (Prod.ext_iff.mp (show x = y from h.1 ((mul_one g).trans (one_mul g).symm))).1,
       codisjoint_iff_le_sup.mpr fun g _ => ?_⟩

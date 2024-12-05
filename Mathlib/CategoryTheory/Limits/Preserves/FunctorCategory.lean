@@ -224,7 +224,7 @@ variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
 noncomputable instance : PreservesLimitsOfShape J (colim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesLimitsOfShape_of_evaluation _ _ (fun d =>
-    let i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
+    let_fun i : (colim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
         colimit ((whiskeringRight K (D ⥤ C) C).obj ((evaluation D C).obj d)).flip :=
       NatIso.ofComponents (fun X => (colimitObjIsoColimitCompEvaluation _ _) ≪≫
           (by exact HasColimit.isoOfNatIso (Iso.refl _)) ≪≫
@@ -241,7 +241,7 @@ variable [PreservesColimitsOfShape J (lim : (K ⥤ C) ⥤ _)]
 
 noncomputable instance : PreservesColimitsOfShape J (lim : (K ⥤ D ⥤ C) ⥤ _) :=
   preservesColimitsOfShape_of_evaluation _ _ (fun d =>
-    let i : (lim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
+    let_fun i : (lim : (K ⥤ D ⥤ C) ⥤ _) ⋙ (evaluation D C).obj d ≅
         limit ((whiskeringRight K (D ⥤ C) C).obj ((evaluation D C).obj d)).flip :=
       NatIso.ofComponents (fun X => (limitObjIsoLimitCompEvaluation _ _) ≪≫
           (by exact HasLimit.isoOfNatIso (Iso.refl _)) ≪≫

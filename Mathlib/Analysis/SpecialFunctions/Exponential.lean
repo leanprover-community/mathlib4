@@ -110,7 +110,7 @@ at any point `x` in the disk of convergence. -/
 theorem hasStrictFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt (exp 𝕂) (exp 𝕂 x • (1 : 𝔸 →L[𝕂] 𝔸)) x :=
-  let ⟨_, hp⟩ := analyticAt_exp_of_mem_ball x hx
+  let_fun ⟨_, hp⟩ := analyticAt_exp_of_mem_ball x hx
   hp.hasFDerivAt.unique (hasFDerivAt_exp_of_mem_ball hx) ▸ hp.hasStrictFDerivAt
 
 end AnyFieldCommAlgebra
@@ -293,7 +293,7 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x))
       (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t :=
-  let ⟨_, hp⟩ := analyticAt_exp_of_mem_ball (t • x) htx
+  let_fun ⟨_, hp⟩ := analyticAt_exp_of_mem_ball (t • x) htx
   have deriv₁ : HasStrictFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) _ t :=
     hp.hasStrictFDerivAt.comp t ((ContinuousLinearMap.id 𝕂 𝕊).smulRight x).hasStrictFDerivAt
   have deriv₂ : HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) _ t :=

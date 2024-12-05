@@ -175,7 +175,7 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
             _ = _ := by rw [Multiset.prod_add]
 
         exact
-          let ⟨q, hqf, hq⟩ := Multiset.exists_mem_of_rel_of_mem h (Multiset.mem_cons_self p _)
+          let_fun ⟨q, hqf, hq⟩ := Multiset.exists_mem_of_rel_of_mem h (Multiset.mem_cons_self p _)
           (Multiset.mem_add.1 hqf).elim
             (fun hqa =>
               Or.inl <| hq.dvd_iff_dvd_left.2 <| hfa.2.dvd_iff_dvd_right.1 (Multiset.dvd_prod hqa))
@@ -386,7 +386,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         simp [← h]
   exact
     ⟨w.map e, fun b hb =>
-        let ⟨c, hc, he⟩ := Multiset.mem_map.1 hb
+        let_fun ⟨c, hc, he⟩ := Multiset.mem_map.1 hb
         he ▸ e.prime_iff.1 (hp c hc),
         Units.map e.toMonoidHom u,
       by
@@ -464,7 +464,7 @@ theorem exists_reduced_factors :
 
 theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
     ∃ a' b' c', IsRelPrime a' b' ∧ c' * a' = a ∧ c' * b' = b :=
-  let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
+  let_fun ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
 
 @[deprecated (since := "2024-09-21")] alias pow_right_injective := pow_injective_of_not_isUnit

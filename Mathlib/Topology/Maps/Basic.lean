@@ -349,7 +349,7 @@ theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) := by
   exact hf _ isOpen_univ
 
 theorem image_mem_nhds (hf : IsOpenMap f) {x : X} {s : Set X} (hx : s ∈ 𝓝 x) : f '' s ∈ 𝓝 (f x) :=
-  let ⟨t, hts, ht, hxt⟩ := mem_nhds_iff.1 hx
+  let_fun ⟨t, hts, ht, hxt⟩ := mem_nhds_iff.1 hx
   mem_of_superset (IsOpen.mem_nhds (hf t ht) (mem_image_of_mem _ hxt)) (image_subset _ hts)
 
 theorem range_mem_nhds (hf : IsOpenMap f) (x : X) : range f ∈ 𝓝 (f x) :=
@@ -373,7 +373,7 @@ theorem of_nhds_le (hf : ∀ x, 𝓝 (f x) ≤ map f (𝓝 x)) : IsOpenMap f := 
 theorem of_sections
     (h : ∀ x, ∃ g : Y → X, ContinuousAt g (f x) ∧ g (f x) = x ∧ RightInverse g f) : IsOpenMap f :=
   of_nhds_le fun x =>
-    let ⟨g, hgc, hgx, hgf⟩ := h x
+    let_fun ⟨g, hgc, hgx, hgf⟩ := h x
     calc
       𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, map_id]
       _ ≤ map f (𝓝 (g (f x))) := map_mono hgc

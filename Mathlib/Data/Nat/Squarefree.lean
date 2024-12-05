@@ -118,7 +118,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
       have : Nat.sqrt n - k < Nat.sqrt n + 2 - k := by
         exact Nat.minFac_lemma n k h
       if k ∣ n then
-        let n' := n / k
+        letI n' := n / k
         have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
         lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) k) this
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
@@ -129,7 +129,7 @@ termination_by n k => sqrt n + 2 - k
   such `p` (that is, `n` is squarefree). See also `Nat.squarefree_iff_minSqFac`. -/
 def minSqFac (n : ℕ) : Option ℕ :=
   if 2 ∣ n then
-    let n' := n / 2
+    let_fun n' := n / 2
     if 2 ∣ n' then some 2 else minSqFacAux n' 3
   else minSqFacAux n 3
 

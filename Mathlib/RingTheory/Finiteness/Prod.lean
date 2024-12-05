@@ -24,8 +24,8 @@ variable {P : Type*} [AddCommMonoid P] [Module R P]
 
 theorem FG.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.FG) (hsc : sc.FG) :
     (sb.prod sc).FG :=
-  let ⟨tb, htb⟩ := fg_def.1 hsb
-  let ⟨tc, htc⟩ := fg_def.1 hsc
+  let_fun ⟨tb, htb⟩ := fg_def.1 hsb
+  let_fun ⟨tc, htc⟩ := fg_def.1 hsc
   fg_def.2
     ⟨LinearMap.inl R M P '' tb ∪ LinearMap.inr R M P '' tc, (htb.1.image _).union (htc.1.image _),
       by rw [LinearMap.span_inl_union_inr, htb.2, htc.2]⟩

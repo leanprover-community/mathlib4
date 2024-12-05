@@ -93,7 +93,7 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction 
 theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
   suffices
     ∀ (b) (h : true = b) (l : Lists' α b),
-      let l' : Lists' α true := by rw [h]; exact l
+      let_fun l' : Lists' α true := by rw [h]; exact l
       ofList (toList l') = l'
     from this _ rfl
   fun b h l => by

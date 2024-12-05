@@ -325,7 +325,7 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) :=
   ⟨fun z =>
     IsIntegral.isAlgebraic <|
-      let ⟨n, x, hx⟩ := exists_ofStep k z
+      let_fun ⟨n, x, hx⟩ := exists_ofStep k z
       hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)⟩
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
@@ -368,7 +368,7 @@ def algEquivAlgebraicClosureAux :
 
 -- Those two instances are copy-pasta from the analogous instances for `SplittingField`
 instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
-  let e := algEquivAlgebraicClosureAux k
+  let_fun e := algEquivAlgebraicClosureAux k
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
     mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]

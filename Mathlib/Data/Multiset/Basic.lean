@@ -238,7 +238,7 @@ theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
-    let ⟨l₁, l₂, e⟩ := append_of_mem h
+    let_fun ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
 @[simp]
@@ -400,7 +400,7 @@ theorem induction_on' {p : Multiset α → Prop} (S : Multiset α) (h₁ : p 0)
     (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → p s → p (insert a s)) : p S :=
   @Multiset.induction_on α (fun T => T ⊆ S → p T) S (fun _ => h₁)
     (fun _ _ hps hs =>
-      let ⟨hS, sS⟩ := cons_subset.1 hs
+      let_fun ⟨hS, sS⟩ := cons_subset.1 hs
       h₂ hS sS (hps sS))
     (Subset.refl S)
 
@@ -548,7 +548,7 @@ theorem zero_ne_singleton (a : α) : 0 ≠ ({a} : Multiset α) := singleton_ne_z
 @[simp]
 theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
   ⟨fun h => mem_of_le h (mem_singleton_self _), fun h =>
-    let ⟨_t, e⟩ := exists_cons_of_mem h
+    let_fun ⟨_t, e⟩ := exists_cons_of_mem h
     e.symm ▸ cons_le_cons _ (zero_le _)⟩
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
@@ -621,7 +621,7 @@ lemma subset_add_right {s t : Multiset α} : s ⊆ t + s := subset_of_le <| le_a
 theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
   ⟨fun h =>
     leInductionOn h fun s =>
-      let ⟨l, p⟩ := s.exists_perm_append
+      let_fun ⟨l, p⟩ := s.exists_perm_append
       ⟨l, Quot.sound p⟩,
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 
@@ -1180,7 +1180,7 @@ theorem map_strictMono (f : α → β) : StrictMono (map f) := fun _ _ => map_lt
 
 @[simp, gcongr]
 theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f s ⊆ map f t := fun _b m =>
-  let ⟨a, h, e⟩ := mem_map.1 m
+  let_fun ⟨a, h, e⟩ := mem_map.1 m
   mem_map.2 ⟨a, H h, e⟩
 
 theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Function.Injective f) (x : α)
@@ -1493,7 +1493,7 @@ instance : OrderedSub (Multiset α) :=
 
 instance : ExistsAddOfLE (Multiset α) where
   exists_add_of_le h := leInductionOn h fun s =>
-      let ⟨l, p⟩ := s.exists_perm_append
+      let_fun ⟨l, p⟩ := s.exists_perm_append
       ⟨l, Quot.sound p⟩
 
 theorem cons_sub_of_le (a : α) {s t : Multiset α} (h : t ≤ s) : a ::ₘ s - t = a ::ₘ (s - t) := by

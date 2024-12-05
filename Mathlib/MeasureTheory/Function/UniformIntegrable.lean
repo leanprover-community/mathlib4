@@ -82,7 +82,7 @@ protected theorem unifIntegrable {f : ι → α → β} {p : ℝ≥0∞} (hf : U
 protected theorem memℒp {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ) (i : ι) :
     Memℒp (f i) p μ :=
   ⟨hf.1 i,
-    let ⟨_, _, hC⟩ := hf.2
+    let_fun ⟨_, _, hC⟩ := hf.2
     lt_of_le_of_lt (hC i) ENNReal.coe_lt_top⟩
 
 end UniformIntegrable
@@ -225,7 +225,7 @@ which does not require measurability. -/
 theorem Memℒp.integral_indicator_norm_ge_nonneg_le_of_meas (hf : Memℒp f 1 μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
     ∃ M : ℝ, 0 ≤ M ∧ (∫⁻ x, ‖{ x | M ≤ ‖f x‖₊ }.indicator f x‖₊ ∂μ) ≤ ENNReal.ofReal ε :=
-  let ⟨M, hM⟩ := hf.integral_indicator_norm_ge_le hmeas hε
+  let_fun ⟨M, hM⟩ := hf.integral_indicator_norm_ge_le hmeas hε
   ⟨max M 0, le_max_right _ _, by simpa⟩
 
 theorem Memℒp.integral_indicator_norm_ge_nonneg_le (hf : Memℒp f 1 μ) {ε : ℝ} (hε : 0 < ε) :
@@ -622,7 +622,7 @@ theorem tendsto_Lp_finite_of_tendstoInMeasure [IsFiniteMeasure μ] (hp : 1 ≤ p
   obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε => (hfg ε hε).comp hns
   exact ⟨ms,
     tendsto_Lp_finite_of_tendsto_ae hp hp' (fun _ => hf _) hg (fun ε hε =>
-      let ⟨δ, hδ, hδ'⟩ := hui hε
+      let_fun ⟨δ, hδ, hδ'⟩ := hui hε
       ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
       hms'⟩
 

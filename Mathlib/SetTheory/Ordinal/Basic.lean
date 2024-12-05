@@ -175,7 +175,7 @@ theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :
 @[simp]
 theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α :=
   ⟨fun h =>
-    let ⟨s⟩ := type_eq.1 h
+    let_fun ⟨s⟩ := type_eq.1 h
     s.toEquiv.isEmpty,
     @type_eq_zero_of_empty α r _⟩
 
@@ -196,7 +196,7 @@ theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
-  ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
+  ⟨fun h ↦ let_fun ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
     fun ⟨_⟩ ↦ type_eq_one_of_unique r⟩
 
 theorem type_pUnit : type (@EmptyRelation PUnit) = 1 :=
@@ -1069,7 +1069,7 @@ alias mk_ordinal_out := mk_toType
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
 def ord (c : Cardinal) : Ordinal :=
-  let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
+  letI F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
   Quot.liftOn c F
     (by
       suffices ∀ {α β}, α ≈ β → F α ≤ F β from
@@ -1087,7 +1087,7 @@ theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, 
   rfl
 
 theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
-  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
+  let_fun ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
@@ -1100,7 +1100,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
       simp only [card_type]; constructor <;> intro h
       · rw [e] at h
         exact
-          let ⟨f⟩ := h
+          let_fun ⟨f⟩ := h
           ⟨f.toEmbedding⟩
       · cases' h with f
         have g := RelEmbedding.preimage f s
@@ -1114,7 +1114,7 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
 
 @[simp]
 theorem card_ord (c) : (ord c).card = c :=
-  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
+  c.inductionOn fun α ↦ let_fun ⟨r, _, e⟩ := ord_eq α; e ▸ card_type r
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩

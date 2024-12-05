@@ -931,8 +931,8 @@ theorem Valid'.node {s l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Va
 theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂ (dual t) o₁
   | .nil, _, _, h => valid'_nil h.1.dual
   | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
-    let ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
-    let ⟨or', sr', br'⟩ := Valid'.dual ⟨Or, sr, br⟩
+    let_fun ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
+    let_fun ⟨or', sr', br'⟩ := Valid'.dual ⟨Or, sr, br⟩
     ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm], sr', sl'⟩,
       ⟨by rw [size_dual, size_dual]; exact b.symm, br', bl'⟩⟩
 
@@ -1166,7 +1166,7 @@ theorem Valid'.balance' {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : 
     (H : ∃ l' r', BalancedSz l' r' ∧
           (Nat.dist (size l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l')) :
     Valid' o₁ (@balance' α l x r) o₂ :=
-  let ⟨_, _, H1, H2⟩ := H
+  let_fun ⟨_, _, H1, H2⟩ := H
   Valid'.balance'_aux hl hr (Valid'.balance'_lemma H1 H2) (Valid'.balance'_lemma H1.symm H2.symm)
 
 theorem Valid'.balance {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)

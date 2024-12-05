@@ -29,7 +29,7 @@ theorem lift_cardinalMk_le_sigma_polynomial :
     lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by
   have := @lift_mk_le_lift_mk_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
-      let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
+      let_fun p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
       ⟨p.1, x, by
         dsimp
         have := (Polynomial.map_ne_zero_iff (NoZeroSMulDivisors.algebraMap_injective R L)).2 p.2.1

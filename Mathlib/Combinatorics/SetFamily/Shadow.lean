@@ -167,7 +167,7 @@ theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
 
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
 lemma exists_subset_of_mem_shadow (hs : t ∈ ∂ 𝒜) : ∃ s ∈ 𝒜, t ⊆ s :=
-  let ⟨t, ht, hst⟩ := mem_shadow_iff_exists_mem_card_add_one.1 hs
+  let_fun ⟨t, ht, hst⟩ := mem_shadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hst.1⟩
 
 end Shadow
@@ -270,7 +270,7 @@ protected lemma _root_.Set.Sized.upShadow (h𝒜 : (𝒜 : Set (Finset α)).Size
 
 /-- Being in the upper shadow of `𝒜` means we have a superset in `𝒜`. -/
 theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=
-  let ⟨t, ht, hts, _⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 hs
+  let_fun ⟨t, ht, hts, _⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hts⟩
 
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements more than something in `𝒜`. -/

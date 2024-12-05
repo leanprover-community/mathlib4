@@ -25,7 +25,7 @@ def String.justify (s : String) (a : Alignment) (width : Nat) : String :=
   | Alignment.left => s.rightpad width
   | Alignment.right => s.leftpad width
   | Alignment.center =>
-    let pad := (width - s.length) / 2
+    let_fun pad := (width - s.length) / 2
     String.replicate pad ' ' ++ s ++ String.replicate (width - s.length - pad) ' '
 
 /--

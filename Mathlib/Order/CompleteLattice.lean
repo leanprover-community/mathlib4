@@ -109,7 +109,7 @@ theorem le_iSup_iff {s : ι → α} : a ≤ iSup s ↔ ∀ b, (∀ i, s i ≤ b)
 theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
   le_sSup_iff.2 fun _ hb =>
     sSup_le fun a ha =>
-      let ⟨_, hct, hac⟩ := h a ha
+      let_fun ⟨_, hct, hac⟩ := h a ha
       hac.trans (hb hct)
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
@@ -165,7 +165,7 @@ theorem iInf_le_iff {s : ι → α} : iInf s ≤ a ↔ ∀ b, (∀ i, b ≤ s i)
   simp [iInf, sInf_le_iff, lowerBounds]
 
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
+  le_sInf fun x hx ↦ let_fun ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 theorem sInf_singleton {a : α} : sInf {a} = a :=
@@ -452,7 +452,7 @@ lattices. -/
 theorem sSup_eq_of_forall_le_of_forall_lt_exists_gt (h₁ : ∀ a ∈ s, a ≤ b)
     (h₂ : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
   (sSup_le h₁).eq_of_not_lt fun h =>
-    let ⟨_, ha, ha'⟩ := h₂ _ h
+    let_fun ⟨_, ha, ha'⟩ := h₂ _ h
     ((le_sSup ha).trans_lt ha').false
 
 /-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
@@ -479,7 +479,7 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
   ⟨fun h _ hb => lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h =>
     top_unique <|
       le_of_not_gt fun h' =>
-        let ⟨_, ha, h⟩ := h _ h'
+        let_fun ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 
 theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
@@ -704,13 +704,13 @@ theorem iInf_mono' {g : ι' → α} (h : ∀ i', ∃ i, f i ≤ g i') : iInf f �
 theorem iSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h : ∀ i j, ∃ i' j', f i j ≤ g i' j') :
     ⨆ (i) (j), f i j ≤ ⨆ (i) (j), g i j :=
   iSup₂_le fun i j =>
-    let ⟨i', j', h⟩ := h i j
+    let_fun ⟨i', j', h⟩ := h i j
     le_iSup₂_of_le i' j' h
 
 theorem iInf₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h : ∀ i j, ∃ i' j', f i' j' ≤ g i j) :
     ⨅ (i) (j), f i j ≤ ⨅ (i) (j), g i j :=
   le_iInf₂ fun i j =>
-    let ⟨i', j', h⟩ := h i j
+    let_fun ⟨i', j', h⟩ := h i j
     iInf₂_le_of_le i' j' h
 
 theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
@@ -1055,7 +1055,7 @@ theorem inf_iInf [Nonempty ι] {f : ι → α} {a : α} : (a ⊓ ⨅ x, f x) = �
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
   haveI : Nonempty { i // p i } :=
-    let ⟨i, hi⟩ := h
+    let_fun ⟨i, hi⟩ := h
     ⟨⟨i, hi⟩⟩
   rw [iSup_subtype', iSup_subtype', iSup_sup]
 

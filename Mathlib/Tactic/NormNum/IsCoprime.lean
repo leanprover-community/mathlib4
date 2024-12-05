@@ -36,7 +36,7 @@ theorem isInt_not_isCoprime : {x y nx ny : ℤ} →
 /-- Evaluates `IsCoprime` for the given integer number literals.
 Panics if `ex` or `ey` aren't integer number literals. -/
 def proveIntIsCoprime (ex ey : Q(ℤ)) : Q(IsCoprime $ex $ey) ⊕ Q(¬ IsCoprime $ex $ey) :=
-  let ⟨ed, pf⟩ := proveIntGCD ex ey
+  let_fun ⟨ed, pf⟩ := proveIntGCD ex ey
   if ed.natLit! = 1 then
     have pf' : Q(Int.gcd $ex $ey = 1) := pf
     Sum.inl q(Int.isCoprime_iff_gcd_eq_one.mpr $pf')

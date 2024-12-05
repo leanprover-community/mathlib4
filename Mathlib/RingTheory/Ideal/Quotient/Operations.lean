@@ -249,7 +249,7 @@ lemma exists_forall_sub_mem_ideal {R : Type*} [CommRing R] {ι : Type*} [Finite 
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I ⊓ J ≃+* (R ⧸ I) × R ⧸ J :=
-  let f : Fin 2 → Ideal R := ![I, J]
+  letI f : Fin 2 → Ideal R := ![I, J]
   have hf : Pairwise (IsCoprime on f) := by
     intro i j h
     fin_cases i <;> fin_cases j <;> try contradiction
@@ -536,15 +536,16 @@ theorem quotientMap_injective {I : Ideal S} {f : R →+* S} :
 
 theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
     (hf : Function.Surjective f) : Function.Surjective (quotientMap I f H) := fun x =>
-  let ⟨x, hx⟩ := Quotient.mk_surjective x
-  let ⟨y, hy⟩ := hf x
+  let_fun ⟨x, hx⟩ := Quotient.mk_surjective x
+  let_fun ⟨y, hy⟩ := hf x
   ⟨(Quotient.mk J) y, by simp [hx, hy]⟩
 
 /-- Commutativity of a square is preserved when taking quotients by an ideal. -/
 theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f) (I : Ideal S') :
     -- Porting note: was losing track of I
-    let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
+    let_fun leq :=
+      le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
     (quotientMap I g' le_rfl).comp (quotientMap (I.comap g') f le_rfl) =
     (quotientMap I f' le_rfl).comp (quotientMap (I.comap f') g leq) := by
   refine RingHom.ext fun a => ?_

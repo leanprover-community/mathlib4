@@ -40,7 +40,7 @@ theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :
       _ = z := by rw [h, mul_one]
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
-  let ⟨y, hy⟩ := h.exists_left_inv
+  let_fun ⟨y, hy⟩ := h.exists_left_inv
   eq_top_of_unit_mem I x y hx hy
 
 theorem eq_top_iff_one : I = ⊤ ↔ (1 : α) ∈ I :=

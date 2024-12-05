@@ -176,7 +176,7 @@ theorem hasProd_lt (h : f ≤ g) (hi : f i < g i) (hf : HasProd f a₁) (hg : Ha
 
 @[to_additive (attr := mono)]
 theorem hasProd_strict_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f < g) : a₁ < a₂ :=
-  let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
+  let_fun ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hasProd_lt hle hi hf hg
 
 @[to_additive]
@@ -187,7 +187,7 @@ theorem tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf : Multipliable f) (hg 
 @[to_additive (attr := mono)]
 theorem tprod_strict_mono (hf : Multipliable f) (hg : Multipliable g) (h : f < g) :
     ∏' n, f n < ∏' n, g n :=
-  let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
+  let_fun ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tprod_lt_tprod hle hi hf hg
 
 @[to_additive tsum_pos]
@@ -256,7 +256,7 @@ theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpa
 @[to_additive]
 theorem multipliable_mabs_iff [LinearOrderedCommGroup α] [UniformSpace α] [UniformGroup α]
     [CompleteSpace α] {f : ι → α} : (Multipliable fun x ↦ mabs (f x)) ↔ Multipliable f :=
-  let s := { x | 1 ≤ f x }
+  letI s := { x | 1 ≤ f x }
   have h1 : ∀ x : s, mabs (f x) = f x := fun x ↦ mabs_of_one_le x.2
   have h2 : ∀ x : ↑sᶜ, mabs (f x) = (f x)⁻¹ := fun x ↦ mabs_of_lt_one (not_le.1 x.2)
   calc (Multipliable fun x ↦ mabs (f x)) ↔
@@ -293,7 +293,7 @@ nonrec theorem HasProd.abs (hfx : HasProd f x) : HasProd (|f ·|) |x| := by
   simpa only [HasProd, ← abs_prod] using hfx.abs
 
 theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
-  let ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
+  let_fun ⟨x, hx⟩ := hf; ⟨|x|, hx.abs⟩
 
 theorem abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
   hf.hasProd.abs.tprod_eq.symm

@@ -49,7 +49,7 @@ variable {R M N P Q : Type u} [CommRing R]
 
 open MonoidalCategory in
 noncomputable instance TensorProduct.instCoalgebra : Coalgebra R (M ⊗[R] N) :=
-  let I := Monoidal.transport ((CoalgebraCat.comonEquivalence R).symm)
+  letI I := Monoidal.transport ((CoalgebraCat.comonEquivalence R).symm)
   CoalgEquiv.toCoalgebra
     (A := (CoalgebraCat.of R M ⊗ CoalgebraCat.of R N : CoalgebraCat R))
     { LinearEquiv.refl R _ with

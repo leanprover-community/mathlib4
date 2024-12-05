@@ -153,8 +153,8 @@ theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
-  let h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
-  let inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
+  let_fun h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
+  let_fun inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
 
 section Fintype
@@ -207,7 +207,7 @@ instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Alge
   haveI : CharP K' p := charP_of_injective_algebraMap' K K' p
   exact IsGalois.of_separable_splitting_field
     (galois_poly_separable p (Fintype.card K')
-      (let ⟨n, _, hn⟩ := FiniteField.card K' p
+      (let_fun ⟨n, _, hn⟩ := FiniteField.card K' p
       hn.symm ▸ dvd_pow_self p n.ne_zero))
 
 /-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/

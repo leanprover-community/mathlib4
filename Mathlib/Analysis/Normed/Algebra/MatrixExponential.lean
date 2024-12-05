@@ -178,12 +178,12 @@ theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp �
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
-  let ⟨u, hu⟩ := hy
+  let_fun ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj 𝕂 u A
 
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
-  let ⟨u, hu⟩ := hy
+  let_fun ⟨u, hu⟩ := hy
   hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' 𝕂 u A
 
 end NormedComm

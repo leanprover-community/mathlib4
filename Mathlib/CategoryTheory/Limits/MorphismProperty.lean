@@ -128,7 +128,7 @@ def mkIdTerminal [P.ContainsIdentities] :
   IsTerminal.ofUnique _
 
 instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
-  let h : IsTerminal (Over.mk ⊤ (𝟙 X) (P.id_mem X)) := Over.mkIdTerminal P X
+  let_fun h : IsTerminal (Over.mk ⊤ (𝟙 X) (P.id_mem X)) := Over.mkIdTerminal P X
   h.hasTerminal
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,

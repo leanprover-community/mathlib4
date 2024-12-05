@@ -97,7 +97,7 @@ noncomputable
 def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
     (Hf : IsColimit (Sieve.generateSingleton f : Presieve X).cocone) :
     EffectiveEpiStruct f :=
-  let aux {W : C} (e : Y ⟶ W)
+  letI aux {W : C} (e : Y ⟶ W)
     (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
     Cocone (Sieve.generateSingleton f).arrows.diagram :=
     { pt := W
@@ -208,7 +208,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B))
     (H : IsColimit (Sieve.generateFamily X π : Presieve B).cocone) :
     EffectiveEpiFamilyStruct X π :=
-  let aux {W : C} (e : (a : α) → (X a ⟶ W))
+  letI aux {W : C} (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) :
     Cocone (Sieve.generateFamily X π).arrows.diagram := {

@@ -315,7 +315,7 @@ def toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)�
 theorem toProdMulOpposite_injective :
     Function.Injective (toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ) :=
   fun _a _b h =>
-    let h' := Prod.ext_iff.mp h
+    let_fun h' := Prod.ext_iff.mp h
     ext (𝕜 := 𝕜) (A := A) _ _ <| Prod.ext h'.1 <| MulOpposite.op_injective h'.2
 
 theorem range_toProdMulOpposite :

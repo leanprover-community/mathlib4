@@ -22,7 +22,7 @@ variable {R : Type*}
 
 lemma dvd_smul_of_dvd {M : Type*} [SMul M R] [Semigroup R] [SMulCommClass M R R] {x y : R}
     (m : M) (h : x ∣ y) : x ∣ m • y :=
-  let ⟨k, hk⟩ := h; ⟨m • k, by rw [mul_smul_comm, ← hk]⟩
+  let_fun ⟨k, hk⟩ := h; ⟨m • k, by rw [mul_smul_comm, ← hk]⟩
 
 lemma dvd_nsmul_of_dvd [NonUnitalSemiring R] {x y : R} (n : ℕ) (h : x ∣ y) : x ∣ n • y :=
   dvd_smul_of_dvd n h

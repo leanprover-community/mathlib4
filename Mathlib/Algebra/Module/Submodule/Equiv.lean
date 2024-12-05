@@ -145,7 +145,7 @@ def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := LinearMap.mem_range.mp x.prop
+        let_fun ⟨x', hx'⟩ := LinearMap.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]
@@ -282,7 +282,7 @@ variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Inje
 /-- The restriction of a bilinear map to a submodule in which it takes values. -/
 noncomputable def codRestrict₂ :
     M₁ →ₗ[R] M₂ →ₗ[R] M₃ :=
-  let e : LinearMap.range i ≃ₗ[R] M₃ := (LinearEquiv.ofInjective i hi).symm
+  let_fun e : LinearMap.range i ≃ₗ[R] M₃ := (LinearEquiv.ofInjective i hi).symm
   { toFun := fun x ↦ e.comp <| (f x).codRestrict (p := LinearMap.range i) (hf x)
     map_add' := by intro x₁ x₂; ext y; simp [f.map_add, ← e.map_add, codRestrict]
     map_smul' := by intro t x; ext y; simp [f.map_smul, ← e.map_smul, codRestrict] }

@@ -55,7 +55,7 @@ def OpensLeCover : Type w :=
 instance : Category (OpensLeCover U) := FullSubcategory.category _
 
 instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=
-  ⟨⟨⊥, let ⟨i⟩ := h; ⟨i, bot_le⟩⟩⟩
+  ⟨⟨⊥, let_fun ⟨i⟩ := h; ⟨i, bot_le⟩⟩⟩
 
 namespace OpensLeCover
 
@@ -112,7 +112,7 @@ def generateEquivalenceOpensLe_functor' (hY : Y = iSup U) :
     OpensLeCover U :=
 { obj := fun f =>
     ⟨f.1.left,
-      let ⟨_, h, _, ⟨i, hY⟩, _⟩ := f.2
+      let_fun ⟨_, h, _, ⟨i, hY⟩, _⟩ := f.2
       ⟨i, hY ▸ h.le⟩⟩
   map := fun {_ _} g => g.left }
 

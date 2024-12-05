@@ -57,7 +57,7 @@ theorem isPartition_splitCenter (I : Box ι) : IsPartition (splitCenter I) := fu
 
 theorem upper_sub_lower_of_mem_splitCenter (h : J ∈ splitCenter I) (i : ι) :
     J.upper i - J.lower i = (I.upper i - I.lower i) / 2 :=
-  let ⟨s, hs⟩ := mem_splitCenter.1 h
+  let_fun ⟨s, hs⟩ := mem_splitCenter.1 h
   hs ▸ I.upper_sub_lower_splitCenterBox s i
 
 end Prepartition

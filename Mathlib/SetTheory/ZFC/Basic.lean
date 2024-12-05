@@ -108,12 +108,12 @@ protected theorem Equiv.rfl {x} : Equiv x x :=
 protected theorem Equiv.euc : ∀ {x y z}, Equiv x y → Equiv z y → Equiv x z
   | ⟨_, _⟩, ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩, ⟨γβ, βγ⟩ =>
     ⟨ fun a =>
-        let ⟨b, ab⟩ := αβ a
-        let ⟨c, bc⟩ := βγ b
+        let_fun ⟨b, ab⟩ := αβ a
+        let_fun ⟨c, bc⟩ := βγ b
         ⟨c, Equiv.euc ab bc⟩,
       fun c =>
-        let ⟨b, cb⟩ := γβ c
-        let ⟨a, ba⟩ := βα b
+        let_fun ⟨b, cb⟩ := γβ c
+        let_fun ⟨a, ba⟩ := βα b
         ⟨a, Equiv.euc ba cb⟩ ⟩
 
 @[symm]
@@ -154,33 +154,33 @@ theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
   | ⟨_, _⟩, ⟨_, _⟩ =>
     ⟨fun ⟨αβ, βα⟩ =>
       ⟨αβ, fun b =>
-        let ⟨a, h⟩ := βα b
+        let_fun ⟨a, h⟩ := βα b
         ⟨a, Equiv.symm h⟩⟩,
       fun ⟨αβ, βα⟩ =>
       ⟨αβ, fun b =>
-        let ⟨a, h⟩ := βα b
+        let_fun ⟨a, h⟩ := βα b
         ⟨a, Equiv.symm h⟩⟩⟩
 
 theorem Subset.congr_left : ∀ {x y z : PSet}, Equiv x y → (x ⊆ z ↔ y ⊆ z)
   | ⟨_, _⟩, ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
     ⟨fun αγ b =>
-      let ⟨a, ba⟩ := βα b
-      let ⟨c, ac⟩ := αγ a
+      let_fun ⟨a, ba⟩ := βα b
+      let_fun ⟨c, ac⟩ := αγ a
       ⟨c, (Equiv.symm ba).trans ac⟩,
       fun βγ a =>
-      let ⟨b, ab⟩ := αβ a
-      let ⟨c, bc⟩ := βγ b
+      let_fun ⟨b, ab⟩ := αβ a
+      let_fun ⟨c, bc⟩ := βγ b
       ⟨c, Equiv.trans ab bc⟩⟩
 
 theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z ⊆ y)
   | ⟨_, _⟩, ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
     ⟨fun γα c =>
-      let ⟨a, ca⟩ := γα c
-      let ⟨b, ab⟩ := αβ a
+      let_fun ⟨a, ca⟩ := γα c
+      let_fun ⟨b, ab⟩ := αβ a
       ⟨b, ca.trans ab⟩,
       fun γβ c =>
-      let ⟨b, cb⟩ := γβ c
-      let ⟨a, ab⟩ := βα b
+      let_fun ⟨b, cb⟩ := γβ c
+      let_fun ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
@@ -200,16 +200,16 @@ theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := by
 theorem Mem.ext : ∀ {x y : PSet.{u}}, (∀ w : PSet.{u}, w ∈ x ↔ w ∈ y) → Equiv x y
   | ⟨_, A⟩, ⟨_, B⟩, h =>
     ⟨fun a => (h (A a)).1 (Mem.mk A a), fun b =>
-      let ⟨a, ha⟩ := (h (B b)).2 (Mem.mk B b)
+      let_fun ⟨a, ha⟩ := (h (B b)).2 (Mem.mk B b)
       ⟨a, ha.symm⟩⟩
 
 theorem Mem.congr_right : ∀ {x y : PSet.{u}}, Equiv x y → ∀ {w : PSet.{u}}, w ∈ x ↔ w ∈ y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩, _ =>
     ⟨fun ⟨a, ha⟩ =>
-      let ⟨b, hb⟩ := αβ a
+      let_fun ⟨b, hb⟩ := αβ a
       ⟨b, ha.trans hb⟩,
       fun ⟨b, hb⟩ =>
-      let ⟨a, ha⟩ := βα b
+      let_fun ⟨a, ha⟩ := βα b
       ⟨a, hb.euc ha⟩⟩
 
 theorem equiv_iff_mem {x y : PSet.{u}} : Equiv x y ↔ ∀ {w : PSet.{u}}, w ∈ x ↔ w ∈ y :=
@@ -217,7 +217,7 @@ theorem equiv_iff_mem {x y : PSet.{u}} : Equiv x y ↔ ∀ {w : PSet.{u}}, w ∈
     match x, y with
     | ⟨_, A⟩, ⟨_, B⟩ => fun h =>
       ⟨fun a => h.1 (Mem.mk A a), fun b =>
-        let ⟨a, h⟩ := h.2 (Mem.mk B b)
+        let_fun ⟨a, h⟩ := h.2 (Mem.mk B b)
         ⟨a, h.symm⟩⟩⟩
 
 theorem Mem.congr_left : ∀ {x y : PSet.{u}}, Equiv x y → ∀ {w : PSet.{u}}, x ∈ w ↔ y ∈ w
@@ -391,7 +391,7 @@ theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
   | ⟨_, A⟩, ⟨_, B⟩ =>
     ⟨fun ⟨_, e⟩ => (Subset.congr_left e).2 fun ⟨a, _⟩ => ⟨a, Equiv.refl (A a)⟩, fun βα =>
       ⟨{ a | ∃ b, Equiv (B b) (A a) }, fun b =>
-        let ⟨a, ba⟩ := βα b
+        let_fun ⟨a, ba⟩ := βα b
         ⟨⟨a, b, ba⟩, ba⟩,
         fun ⟨_, b, ba⟩ => ⟨b, ba⟩⟩⟩
 
@@ -411,8 +411,8 @@ theorem mem_sUnion : ∀ {x y : PSet.{u}}, y ∈ ⋃₀ x ↔ ∃ z ∈ x, y ∈
       fun ⟨⟨β, B⟩, ⟨a, (e : Equiv (mk β B) (A a))⟩, ⟨b, yb⟩⟩ => by
       rw [← eta (A a)] at e
       exact
-        let ⟨βt, _⟩ := e
-        let ⟨c, bc⟩ := βt b
+        let_fun ⟨βt, _⟩ := e
+        let_fun ⟨c, bc⟩ := βt b
         ⟨⟨a, c⟩, yb.trans bc⟩⟩
 
 @[simp]
@@ -624,7 +624,7 @@ def evalAux :
       { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
   | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
-    let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
+    letI F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
       @Quotient.lift _ _ PSet.setoid (fun x => evalAux.1 (a.f x)) fun _ _ h =>
         evalAux.2 _ _ (a.2 _ _ h)
     ⟨F, fun b c h =>
@@ -687,7 +687,7 @@ set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable n F
   | 0, F =>
-    let p := @Quotient.exists_rep PSet _ F
+    let_fun p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
     have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
@@ -789,7 +789,7 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
   | ⟨_, A⟩, ⟨_, _⟩ =>
     ⟨fun h a => @h ⟦A a⟧ (Mem.mk A a), fun h z =>
       Quotient.inductionOn z fun _ ⟨a, za⟩ =>
-        let ⟨b, ab⟩ := h a
+        let_fun ⟨b, ab⟩ := h a
         ⟨b, za.trans ab⟩⟩
 
 @[simp]
@@ -854,13 +854,13 @@ protected def Insert : ZFSet → ZFSet → ZFSet :=
       ⟨fun o =>
         match o with
         | some a =>
-          let ⟨b, hb⟩ := αβ a
+          let_fun ⟨b, hb⟩ := αβ a
           ⟨some b, hb⟩
         | none => ⟨none, uv⟩,
         fun o =>
         match o with
         | some b =>
-          let ⟨a, ha⟩ := βα b
+          let_fun ⟨a, ha⟩ := βα b
           ⟨some a, ha⟩
         | none => ⟨none, uv⟩⟩
 
@@ -946,10 +946,10 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
   Quotient.map (PSet.sep fun y => p (mk y))
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
-        let ⟨b, hb⟩ := αβ a
+        let_fun ⟨b, hb⟩ := αβ a
         ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
         fun ⟨b, pb⟩ =>
-        let ⟨a, ha⟩ := βα b
+        let_fun ⟨a, ha⟩ := βα b
         ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
@@ -978,12 +978,12 @@ def powerset : ZFSet → ZFSet :=
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun p =>
         ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
-          let ⟨b, ab⟩ := αβ a
+          let_fun ⟨b, ab⟩ := αβ a
           ⟨⟨b, a, pa, ab⟩, ab⟩,
           fun ⟨_, a, pa, ab⟩ => ⟨⟨a, pa⟩, ab⟩⟩,
         fun q =>
         ⟨{ a | ∃ b, q b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
-          let ⟨a, ab⟩ := βα b
+          let_fun ⟨a, ab⟩ := βα b
           ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩
 
 @[simp]
@@ -1162,12 +1162,12 @@ theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ 
     h <| (eq_empty x).2 fun y =>
       @inductionOn (fun z => z ∉ x) y fun z IH zx =>
         ne ⟨z, zx, (eq_empty _).2 fun w wxz =>
-          let ⟨wx, wz⟩ := mem_inter.1 wxz
+          let_fun ⟨wx, wz⟩ := mem_inter.1 wxz
           IH w wz wx⟩
 
 /-- The image of a (definable) ZFC set function -/
 def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
-  let r := Definable₁.out f
+  letI r := Definable₁.out f
   Quotient.map (PSet.image r)
     fun _ _ e =>
       Mem.ext fun _ =>
@@ -1302,11 +1302,11 @@ theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x z : ZFSet.{
 theorem map_isFunc {f : ZFSet → ZFSet} [Definable₁ f] {x y : ZFSet} :
     IsFunc x y (map f x) ↔ ∀ z ∈ x, f z ∈ y :=
   ⟨fun ⟨ss, h⟩ z zx =>
-    let ⟨_, t1, t2⟩ := h z zx
+    let_fun ⟨_, t1, t2⟩ := h z zx
     (t2 (f z) (image.mk _ _ zx)).symm ▸ (pair_mem_prod.1 (ss t1)).right,
     fun h =>
     ⟨fun _ yx =>
-      let ⟨z, zx, ze⟩ := mem_image.1 yx
+      let_fun ⟨z, zx, ze⟩ := mem_image.1 yx
       ze ▸ pair_mem_prod.2 ⟨zx, h z zx⟩,
       fun _ => map_unique⟩⟩
 

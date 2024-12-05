@@ -416,7 +416,7 @@ theorem generateFrom_insert_empty (S : Set (Set α)) :
   rw [insert_eq, ← generateFrom_sup_generateFrom, generateFrom_singleton_empty, bot_sup_eq]
 
 theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ ∨ s = univ :=
-  let b : MeasurableSpace α :=
+  letI b : MeasurableSpace α :=
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp +contextual [or_imp]

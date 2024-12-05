@@ -64,7 +64,7 @@ theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l
 @[simp]
 theorem prod_mem_prod_iff [f.NeBot] [g.NeBot] : s ×ˢ t ∈ f ×ˢ g ↔ s ∈ f ∧ t ∈ g :=
   ⟨fun h =>
-    let ⟨_s', hs', _t', ht', H⟩ := mem_prod_iff.1 h
+    let_fun ⟨_s', hs', _t', ht', H⟩ := mem_prod_iff.1 h
     (prod_subset_prod_iff.1 H).elim
       (fun ⟨hs's, ht't⟩ => ⟨mem_of_superset hs' hs's, mem_of_superset ht' ht't⟩) fun h =>
       h.elim (fun hs'e => absurd hs'e (nonempty_of_mem hs').ne_empty) fun ht'e =>
@@ -302,7 +302,7 @@ theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : 
     map m₁ f₁ ×ˢ map m₂ f₂ = map (fun p : α₁ × α₂ => (m₁ p.1, m₂ p.2)) (f₁ ×ˢ f₂) :=
   le_antisymm
     (fun s hs =>
-      let ⟨s₁, hs₁, s₂, hs₂, h⟩ := mem_prod_iff.mp hs
+      let_fun ⟨s₁, hs₁, s₂, hs₂, h⟩ := mem_prod_iff.mp hs
       mem_of_superset (prod_mem_prod (image_mem_map hs₁) (image_mem_map hs₂)) <|
         by rwa [prod_image_image_eq, image_subset_iff])
     ((tendsto_map.comp tendsto_fst).prod_mk (tendsto_map.comp tendsto_snd))

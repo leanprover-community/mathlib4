@@ -63,7 +63,7 @@ theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
       rw [Cardinal.mk_eq_zero (WType β)]
       exact zero_le _)
     fun hn =>
-    let m := max (lift.{v} #α) ℵ₀
+    letI m := max (lift.{v} #α) ℵ₀
     cardinalMk_le_of_le' <|
       calc
         (Cardinal.sum fun a => m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=

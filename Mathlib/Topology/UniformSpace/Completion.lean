@@ -95,10 +95,12 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
 private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
     compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyFilter α × CauchyFilter α)) :=
   fun ⟨f, g⟩ ⟨h, h₁, h₂⟩ =>
-  let ⟨t₁, (ht₁ : t₁ ∈ f.val), t₂, (ht₂ : t₂ ∈ h.val), (h₁ : t₁ ×ˢ t₂ ⊆ s)⟩ := mem_prod_iff.mp h₁
-  let ⟨t₃, (ht₃ : t₃ ∈ h.val), t₄, (ht₄ : t₄ ∈ g.val), (h₂ : t₃ ×ˢ t₄ ⊆ t)⟩ := mem_prod_iff.mp h₂
+  let_fun ⟨t₁, (ht₁ : t₁ ∈ f.val), t₂, (ht₂ : t₂ ∈ h.val), (h₁ : t₁ ×ˢ t₂ ⊆ s)⟩ :=
+    mem_prod_iff.mp h₁
+  let_fun ⟨t₃, (ht₃ : t₃ ∈ h.val), t₄, (ht₄ : t₄ ∈ g.val), (h₂ : t₃ ×ˢ t₄ ⊆ t)⟩ :=
+    mem_prod_iff.mp h₂
   have : t₂ ∩ t₃ ∈ h.val := inter_mem ht₂ ht₃
-  let ⟨x, xt₂, xt₃⟩ := h.property.left.nonempty_of_mem this
+  let_fun ⟨x, xt₂, xt₃⟩ := h.property.left.nonempty_of_mem this
   (f.val ×ˢ g.val).sets_of_superset (prod_mem_prod ht₁ ht₄)
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
@@ -166,11 +168,11 @@ alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
-    let ⟨t'', ht''₁, (ht''₂ : gen t'' ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
-    let ⟨t', ht'₁, ht'₂⟩ := comp_mem_uniformity_sets ht''₁
+    let_fun ⟨t'', ht''₁, (ht''₂ : gen t'' ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
+    let_fun ⟨t', ht'₁, ht'₂⟩ := comp_mem_uniformity_sets ht''₁
     have : t' ∈ f.val ×ˢ f.val := f.property.right ht'₁
-    let ⟨t, ht, (h : t ×ˢ t ⊆ t')⟩ := mem_prod_same_iff.mp this
-    let ⟨x, (hx : x ∈ t)⟩ := f.property.left.nonempty_of_mem ht
+    let_fun ⟨t, ht, (h : t ×ˢ t ⊆ t')⟩ := mem_prod_same_iff.mp this
+    let_fun ⟨x, (hx : x ∈ t)⟩ := f.property.left.nonempty_of_mem ht
     have : t'' ∈ f.val ×ˢ pure x :=
       mem_prod_iff.mpr
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
@@ -209,11 +211,11 @@ section
 
 instance : CompleteSpace (CauchyFilter α) :=
   completeSpace_extension isUniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
-    let f' : CauchyFilter α := ⟨f, hf⟩
+    letI f' : CauchyFilter α := ⟨f, hf⟩
     have : map pureCauchy f ≤ (𝓤 <| CauchyFilter α).lift' (preimage (Prod.mk f')) :=
       le_lift'.2 fun _ hs =>
-        let ⟨t, ht₁, ht₂⟩ := (mem_lift'_sets monotone_gen).mp hs
-        let ⟨t', ht', (h : t' ×ˢ t' ⊆ t)⟩ := mem_prod_same_iff.mp (hf.right ht₁)
+        let_fun ⟨t, ht₁, ht₂⟩ := (mem_lift'_sets monotone_gen).mp hs
+        let_fun ⟨t', ht', (h : t' ×ˢ t' ⊆ t)⟩ := mem_prod_same_iff.mp (hf.right ht₁)
         have : t' ⊆ { y : α | (f', pureCauchy y) ∈ gen t } := fun x hx =>
           (f ×ˢ pure x).sets_of_superset (prod_mem_prod ht' hx) h
         f.sets_of_superset ht' <| Subset.trans this (preimage_mono ht₂)

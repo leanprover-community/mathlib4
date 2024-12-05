@@ -190,7 +190,7 @@ def toLocallyRingedSpaceCoproductCofanIsColimit :
 noncomputable
 instance : CreatesColimit (Discrete.functor f) Scheme.forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso (disjointGlueData f).gluedScheme <|
-    let F : Discrete.functor f ⋙ Scheme.forgetToLocallyRingedSpace ≅
+    let_fun F : Discrete.functor f ⋙ Scheme.forgetToLocallyRingedSpace ≅
       Discrete.functor (Scheme.toLocallyRingedSpace ∘ f) := Discrete.natIsoFunctor
     have := (IsColimit.precomposeHomEquiv F _).symm (toLocallyRingedSpaceCoproductCofanIsColimit f)
     (colimit.isoColimitCocone ⟨_, this⟩).symm

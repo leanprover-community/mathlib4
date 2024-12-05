@@ -64,7 +64,7 @@ theorem exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
 
 lemma surjective_finset_sup_prod :
     Surjective fun I : Finset (Clopens X × Clopens Y) ↦ I.sup fun i ↦ i.1 ×ˢ i.2 := fun W ↦
-  let ⟨I, hI⟩ := W.exists_finset_eq_sup_prod; ⟨I, hI.symm⟩
+  let_fun ⟨I, hI⟩ := W.exists_finset_eq_sup_prod; ⟨I, hI.symm⟩
 
 instance countable_prod [Countable (Clopens X)]
     [Countable (Clopens Y)] : Countable (Clopens (X × Y)) :=

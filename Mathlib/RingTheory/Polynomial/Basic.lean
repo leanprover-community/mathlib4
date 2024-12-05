@@ -37,7 +37,7 @@ section Semiring
 variable [Semiring R]
 
 instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
-  let ⟨h⟩ := h
+  let_fun ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
 instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
@@ -879,10 +879,10 @@ end Prime
 protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNoetherianRing R[X] :=
   isNoetherianRing_iff.2
     ⟨fun I : Ideal R[X] =>
-      let M := inst.wf.min (Set.range I.leadingCoeffNth) ⟨_, ⟨0, rfl⟩⟩
+      letI M := inst.wf.min (Set.range I.leadingCoeffNth) ⟨_, ⟨0, rfl⟩⟩
       have hm : M ∈ Set.range I.leadingCoeffNth := WellFounded.min_mem _ _ _
-      let ⟨N, HN⟩ := hm
-      let ⟨s, hs⟩ := I.is_fg_degreeLE N
+      let_fun ⟨N, HN⟩ := hm
+      let_fun ⟨s, hs⟩ := I.is_fg_degreeLE N
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
         Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>

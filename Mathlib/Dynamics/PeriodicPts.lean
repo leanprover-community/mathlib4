@@ -118,7 +118,7 @@ protected theorem const_mul (hm : IsPeriodicPt f m x) (n : ℕ) : IsPeriodicPt f
   simp only [mul_comm n, hm.mul_const n]
 
 theorem trans_dvd (hm : IsPeriodicPt f m x) {n : ℕ} (hn : m ∣ n) : IsPeriodicPt f n x :=
-  let ⟨k, hk⟩ := hn
+  let_fun ⟨k, hk⟩ := hn
   hk.symm ▸ hm.mul_const k
 
 protected theorem iterate (hf : IsPeriodicPt f n x) (m : ℕ) : IsPeriodicPt f^[m] n x := by

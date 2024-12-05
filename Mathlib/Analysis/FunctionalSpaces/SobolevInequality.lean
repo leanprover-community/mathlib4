@@ -459,7 +459,7 @@ alias snorm_le_snorm_fderiv_one := eLpNorm_le_eLpNorm_fderiv_one
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq_inner`.
 It only depends on `E`, `μ` and `p`. -/
 def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
-  let n := finrank ℝ E
+  let_fun n := finrank ℝ E
   eLpNormLESNormFDerivOneConst μ (NNReal.conjExponent n) * (p * (n - 1) / (n - p)).toNNReal
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
@@ -597,8 +597,8 @@ variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq`.
 It only depends on `E`, `F`, `μ` and `p`. -/
 irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
-  let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
-  let e : F ≃L[ℝ] F' := toEuclidean
+  letI F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
+  let_fun e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
@@ -656,7 +656,7 @@ variable (F) in
 It only depends on `F`, `μ`, `s`, `p` and `q`. -/
 irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ≥0) :
     ℝ≥0 :=
-  let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
+  let_fun p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
 

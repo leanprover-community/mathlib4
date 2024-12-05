@@ -269,7 +269,7 @@ open Opposite
 /-- A discrete category is equivalent to its opposite category. -/
 @[simps! functor_obj_as inverse_obj]
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
-  let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
+  letI F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
   { functor := F.leftOp
     inverse := F
     unitIso := NatIso.ofComponents fun ⟨_⟩ => Iso.refl _

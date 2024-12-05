@@ -281,7 +281,7 @@ positive on any nonempty open set. In case of a regular measure, one can assume 
 @[to_additive]
 theorem measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero (hK : IsCompact K) (hμK : μ K ≠ 0)
     (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
-  let ⟨t, ht⟩ := hK.exists_finite_cover_smul G hU hne
+  let_fun ⟨t, ht⟩ := hK.exists_finite_cover_smul G hU hne
   pos_iff_ne_zero.2 fun hμU =>
     hμK <|
       measure_mono_null ht <|
@@ -298,7 +298,7 @@ include G
 theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
-    let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
+    let_fun ⟨g, hg⟩ := hU.exists_smul_mem G x hne
     ⟨(g • ·) ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
 
@@ -307,7 +307,7 @@ variable [Measure.Regular μ]
 @[to_additive]
 theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
-  let ⟨_K, hK, hμK⟩ := Regular.exists_isCompact_not_null.mpr hμ
+  let_fun ⟨_K, hK, hμK⟩ := Regular.exists_isCompact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
 
 @[to_additive]

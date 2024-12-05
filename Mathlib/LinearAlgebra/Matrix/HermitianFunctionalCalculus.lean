@@ -151,8 +151,8 @@ instance instContinuousFunctionalCalculus :
 
 instance instUniqueContinuousFunctionalCalculus :
     UniqueContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) :=
-  let _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
-  let _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
+  letI _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
+  letI _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
   inferInstance
 
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the

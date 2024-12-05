@@ -821,7 +821,7 @@ theorem HasStrongEpiMonoFactorisations.mk
 instance (priority := 100) hasImages_of_hasStrongEpiMonoFactorisations
     [HasStrongEpiMonoFactorisations C] : HasImages C where
   has_image f :=
-    let F' := Classical.choice (HasStrongEpiMonoFactorisations.has_fac f)
+    let_fun F' := Classical.choice (HasStrongEpiMonoFactorisations.has_fac f)
     HasImage.mk
       { F := F'.toMonoFactorisation
         isImage := F'.toMonoIsImage }
@@ -912,7 +912,7 @@ factorisation.
 -/
 def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f) [StrongEpi e]
     [Mono m] : I' ≅ image f :=
-  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e}
+  letI F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e}
   IsImage.isoExt F.toMonoIsImage <| Image.isImage f
 
 @[simp]

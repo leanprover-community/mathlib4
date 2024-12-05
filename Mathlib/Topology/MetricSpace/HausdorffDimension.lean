@@ -450,7 +450,7 @@ theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finra
     simpa only [dimH_ball_pi_fin (e x) hr0] using dimH_mono hr
 
 theorem dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH s = finrank ℝ E :=
-  let ⟨_, hx⟩ := h
+  let_fun ⟨_, hx⟩ := h
   dimH_of_mem_nhds (mem_interior_iff_mem_nhds.1 hx)
 
 variable (E)
@@ -498,7 +498,7 @@ TODO: do we actually need `Convex ℝ s`? -/
 theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
     (hc : Convex ℝ s) (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
   dimH_image_le_of_locally_lipschitzOn fun x hx =>
-    let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
+    let_fun ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
     ⟨C, u, nhdsWithin_mono _ ht hu, hf⟩
 
 /-- The Hausdorff dimension of the range of a `C¹`-smooth function defined on a finite dimensional

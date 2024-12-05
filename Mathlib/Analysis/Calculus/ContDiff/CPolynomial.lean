@@ -41,7 +41,7 @@ theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ�
 
 theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : WithTop ℕ∞} :
     ContDiffAt 𝕜 n f x :=
-  let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
+  let_fun ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
   hf.contDiffOn.contDiffAt hs
 
 end fderiv

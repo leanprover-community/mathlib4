@@ -34,7 +34,7 @@ variable {J : GrothendieckTopology C}
 variable [HasSheafify J D]
 
 instance sheafIsAbelian : Abelian (Sheaf J D) :=
-  let adj := sheafificationAdjunction J D
+  let_fun adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts

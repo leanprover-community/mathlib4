@@ -190,7 +190,7 @@ variable [CompactSpace γ]
 theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
   have h (b : Ultrafilter α) : ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) :=
     -- b.map f is an ultrafilter on γ, which is compact, so it converges to some c in γ.
-    let ⟨c, _, h'⟩ :=
+    let_fun ⟨c, _, h'⟩ :=
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
     ⟨c, le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h'⟩
   let _ : TopologicalSpace α := ⊥
@@ -212,7 +212,7 @@ theorem ultrafilter_extend_eq_iff {f : α → γ} {b : Ultrafilter α} {c : γ} 
      rw [ultrafilter_extend_extends]
      exact le_rfl,
    fun h ↦
-    let _ : TopologicalSpace α := ⊥
+    letI _ : TopologicalSpace α := ⊥
     isDenseInducing_pure.extend_eq_of_tendsto
       (le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h)⟩
 
@@ -294,7 +294,7 @@ lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCec
   generalize (pure a : Ultrafilter α) = F at h
   generalize (pure b : Ultrafilter α) = G at h
   induction h with
-  | rel x y a => exact let ⟨a, hx, hy⟩ := a; preStoneCechCompat hg hx hy
+  | rel x y a => exact let_fun ⟨a, hx, hy⟩ := a; preStoneCechCompat hg hx hy
   | refl x => rfl
   | symm x y _ h => rw [h]
   | trans x y z _ _ h h' => exact h.trans h'

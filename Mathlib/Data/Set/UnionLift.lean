@@ -51,7 +51,7 @@ it on each component, and proving that it agrees on the intersections. -/
 noncomputable def iUnionLift (S : ι → Set α) (f : ∀ i, S i → β)
     (_ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩) (T : Set α)
     (hT : T ⊆ iUnion S) (x : T) : β :=
-  let i := Classical.indefiniteDescription _ (mem_iUnion.1 (hT x.prop))
+  let_fun i := Classical.indefiniteDescription _ (mem_iUnion.1 (hT x.prop))
   f i ⟨x, i.prop⟩
 
 variable {S : ι → Set α} {f : ∀ i, S i → β}

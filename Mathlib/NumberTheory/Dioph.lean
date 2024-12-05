@@ -303,14 +303,14 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
   suffices ∃ (β : _) (pl : List (Poly (α ⊕ β))), ∀ v, List.Forall (fun S : Set _ => S v) l ↔
           ∃ t, List.Forall (fun p : Poly (α ⊕ β) => p (v ⊗ t) = 0) pl
     from
-    let ⟨β, pl, h⟩ := this
+    let_fun ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
   · exact ⟨ULift Empty, [], fun _ => by simp⟩
   simp? at d says simp only [List.forall_cons] at d
   exact
-    let ⟨⟨β, p, pe⟩, dl⟩ := d
-    let ⟨γ, pl, ple⟩ := IH dl
+    let_fun ⟨⟨β, p, pe⟩, dl⟩ := d
+    let_fun ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
       simp; exact
@@ -369,7 +369,7 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
   | ⟨γ, p, pe⟩ =>
     ⟨β ⊕ γ, p.map ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr), fun v =>
       ⟨fun ⟨x, hx⟩ =>
-        let ⟨t, ht⟩ := (pe _).1 hx
+        let_fun ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ⊗ t, by
           simp; rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
             funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl]
@@ -386,7 +386,7 @@ theorem ex1_dioph {S : Set (Option α → ℕ)} : Dioph S → Dioph {v | ∃ x, 
   | ⟨β, p, pe⟩ =>
     ⟨Option β, p.map (inr none ::ₒ inl ⊗ inr ∘ some), fun v =>
       ⟨fun ⟨x, hx⟩ =>
-        let ⟨t, ht⟩ := (pe _).1 hx
+        let_fun ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ::ₒ t, by
           simp only [Poly.map_apply]
           rw [show (v ⊗ x ::ₒ t) ∘ (inr none ::ₒ inl ⊗ inr ∘ some) = x ::ₒ v ⊗ t from
@@ -666,7 +666,7 @@ theorem pell_dioph :
 
 theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h (v &1)⟩ :=
   have : Dioph fun v : Vector3 ℕ 3 => ∃ y, ∃ h : 1 < v &1, xn h (v &2) = v &0 ∧ yn h (v &2) = y :=
-    let D_pell := pell_dioph.reindex_dioph (Fin2 4) [&2, &3, &1, &0]
+    let_fun D_pell := pell_dioph.reindex_dioph (Fin2 4) [&2, &3, &1, &0]
     (D∃) 3 D_pell
   (diophPFun_vec _).2 <|
     Dioph.ext this fun _ => ⟨fun ⟨_, h, xe, _⟩ => ⟨h, xe⟩, fun ⟨h, xe⟩ => ⟨_, h, xe, rfl⟩⟩
@@ -675,7 +675,7 @@ theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
 theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g) :
     DiophFn fun v => f v ^ g v := by
   have proof :=
-    let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
+    let_fun D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
     (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
     ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
     ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <| D_pell D∧

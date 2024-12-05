@@ -58,19 +58,19 @@ initialize registerTraceClass `rw_search.detail
 and pulling off terminal `)`, `]`, or `,` characters. -/
 partial def splitDelimiters (s : String) : List String :=
   let rec /-- Pull off leading delimiters. -/ auxStart front pre :=
-    let head := s.get front
+    let_fun head := s.get front
     if head = '(' || head = '[' then
       auxStart (s.next front) (head.toString :: pre)
     else
       (front, pre)
   let rec /-- Pull off trailing delimiters. -/ auxEnd back suff :=
-    let last := s.get back
+    let_fun last := s.get back
     if last = ')' || last = ']' || last = ',' then
       auxEnd (s.prev back) (last.toString :: suff)
     else
       (back, suff)
-  let (frontAfterStart, pre) := auxStart 0 []
-  let (backAfterEnd, suff) := auxEnd (s.prev s.endPos) []
+  let_fun (frontAfterStart, pre) := auxStart 0 []
+  let_fun (backAfterEnd, suff) := auxEnd (s.prev s.endPos) []
   pre.reverse ++ [s.extract frontAfterStart (s.next backAfterEnd)] ++ suff
 
 /--

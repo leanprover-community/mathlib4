@@ -311,7 +311,7 @@ theorem exists_of (z : DirectLimit G f) : ∃ i x, of L ι G f i x = z :=
 @[elab_as_elim]
 protected theorem inductionOn {C : DirectLimit G f → Prop} (z : DirectLimit G f)
     (ih : ∀ i x, C (of L ι G f i x)) : C z :=
-  let ⟨i, x, h⟩ := exists_of z
+  let_fun ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
 
 theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=

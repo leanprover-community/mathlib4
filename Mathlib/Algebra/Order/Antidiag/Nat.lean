@@ -25,7 +25,7 @@ namespace PNat
 instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) :=
   /- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
-  let divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
+  letI divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
     (Nat.divisorsAntidiagonal n).attach.map
       ⟨fun x =>
         (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,

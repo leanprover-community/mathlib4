@@ -44,7 +44,7 @@ See `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent` when `R` is a commutative r
 lemma isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
   ⟨fun hp =>
     ⟨p.coeff 0,
-      let h := eq_C_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hp)
+      let_fun h := eq_C_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hp)
       ⟨isUnit_C.1 (h ▸ hp), h.symm⟩⟩,
     fun ⟨_, hr, hrp⟩ => hrp ▸ isUnit_C.2 hr⟩
 

@@ -94,17 +94,17 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Seminormed
 theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛₗ[σ₁₂] M₂}
     (hf : IsCompactOperator f) {S : Set M₁} (hS : IsVonNBounded 𝕜₁ S) :
     ∃ K : Set M₂, IsCompact K ∧ f '' S ⊆ K :=
-  let ⟨K, hK, hKf⟩ := hf
-  let ⟨r, hr, hrS⟩ := (hS hKf).exists_pos
-  let ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜₁ r
-  let this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
+  let_fun ⟨K, hK, hKf⟩ := hf
+  let_fun ⟨r, hr, hrS⟩ := (hS hKf).exists_pos
+  let_fun ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜₁ r
+  let_fun this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   ⟨σ₁₂ c • K, hK.image <| continuous_id.const_smul (σ₁₂ c), by
     rw [image_subset_iff, preimage_smul_setₛₗ _ _ _ f this.isUnit]; exact hrS c hc.le⟩
 
 theorem IsCompactOperator.isCompact_closure_image_of_isVonNBounded [T2Space M₂] {f : M₁ →ₛₗ[σ₁₂] M₂}
     (hf : IsCompactOperator f) {S : Set M₁} (hS : IsVonNBounded 𝕜₁ S) :
     IsCompact (closure <| f '' S) :=
-  let ⟨_, hK, hKf⟩ := hf.image_subset_compact_of_isVonNBounded hS
+  let_fun ⟨_, hK, hKf⟩ := hf.image_subset_compact_of_isVonNBounded hS
   hK.closure_of_subset hKf
 
 end Bounded
@@ -186,20 +186,20 @@ variable {R₁ R₄ : Type*} [Semiring R₁] [CommSemiring R₄]
 theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
     [ContinuousConstSMul S M₂] {f : M₁ → M₂} (hf : IsCompactOperator f) (c : S) :
     IsCompactOperator (c • f) :=
-  let ⟨K, hK, hKf⟩ := hf
+  let_fun ⟨K, hK, hKf⟩ := hf
   ⟨c • K, hK.image <| continuous_id.const_smul c,
     mem_of_superset hKf fun _ hx => smul_mem_smul_set hx⟩
 
 theorem IsCompactOperator.add [ContinuousAdd M₂] {f g : M₁ → M₂} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f + g) :=
-  let ⟨A, hA, hAf⟩ := hf
-  let ⟨B, hB, hBg⟩ := hg
+  let_fun ⟨A, hA, hAf⟩ := hf
+  let_fun ⟨B, hB, hBg⟩ := hg
   ⟨A + B, hA.add hB,
     mem_of_superset (inter_mem hAf hBg) fun _ ⟨hxA, hxB⟩ => Set.add_mem_add hxA hxB⟩
 
 theorem IsCompactOperator.neg [ContinuousNeg M₄] {f : M₁ → M₄} (hf : IsCompactOperator f) :
     IsCompactOperator (-f) :=
-  let ⟨K, hK, hKf⟩ := hf
+  let_fun ⟨K, hK, hKf⟩ := hf
   ⟨-K, hK.neg, mem_of_superset hKf fun x (hx : f x ∈ K) => Set.neg_mem_neg.mpr hx⟩
 
 theorem IsCompactOperator.sub [TopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
@@ -254,7 +254,7 @@ variable {R₂ : Type*} [Semiring R₂] {M₁ M₂ : Type*}
 theorem IsCompactOperator.codRestrict {f : M₁ → M₂} (hf : IsCompactOperator f) {V : Submodule R₂ M₂}
     (hV : ∀ x, f x ∈ V) (h_closed : IsClosed (V : Set M₂)) :
     IsCompactOperator (Set.codRestrict f V hV) :=
-  let ⟨_, hK, hKf⟩ := hf
+  let_fun ⟨_, hK, hKf⟩ := hf
   ⟨_, h_closed.isClosedEmbedding_subtypeVal.isCompact_preimage hK, hKf⟩
 
 end CodRestrict

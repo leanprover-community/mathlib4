@@ -344,7 +344,7 @@ theorem relindex_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
     (⨅ i, f i).relindex L ≤ ∏ i, (f i).relindex L :=
   le_of_le_of_eq
     (Finite.card_le_of_embedding' (quotientiInfSubgroupOfEmbedding f L) fun h =>
-      let ⟨i, _hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
+      let_fun ⟨i, _hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
       relindex_eq_zero_of_le_left (iInf_le f i) h)
     Nat.card_pi
 

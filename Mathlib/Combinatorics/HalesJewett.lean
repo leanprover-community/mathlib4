@@ -218,7 +218,7 @@ protected alias ⟨_, IsMono.toSubspaceUnit⟩ := toSubspaceUnit_isMono
 /-- Consider a line in `ι → η → α` as a `η`-dimensional subspace in `ι × η → α`. -/
 def toSubspace (l : Line (η → α) ι) : Subspace η α (ι × η) where
   idxFun ie := (l.idxFun ie.1).elim (.inr ie.2) (fun f ↦ .inl <| f ie.2)
-  proper e := let ⟨i, hi⟩ := l.proper; ⟨(i, e), by simp [hi]⟩
+  proper e := let_fun ⟨i, hi⟩ := l.proper; ⟨(i, e), by simp [hi]⟩
 
 @[simp] lemma toSubspace_apply (l : Line (η → α) ι) (a ie) :
     ⇑l.toSubspace a ie = l a ie.1 ie.2 := by
@@ -342,7 +342,7 @@ private theorem exists_mono_in_high_dimension' :
       forall_imp fun _ =>
         Exists.imp fun ι =>
           Exists.imp fun _ h C =>
-            let ⟨l, c, lc⟩ := h fun v => C (e ∘ v)
+            let_fun ⟨l, c, lc⟩ := h fun v => C (e ∘ v)
             ⟨l.map e, c, e.forall_congr_right.mp fun x => by rw [← lc x, Line.map_apply]⟩)
   (by
     -- This deals with the degenerate case where `α` is empty.
@@ -442,9 +442,9 @@ such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochr
 line. -/
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
-  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
+  let_fun ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
   ⟨ι, ιfin, fun C =>
-    let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
+    let_fun ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩
 
 end Line

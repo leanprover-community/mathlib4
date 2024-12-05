@@ -182,8 +182,8 @@ such that every nonzero element is associated to a power of `p` is a unique fact
 See `DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
 theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
     UniqueFactorizationMonoid R :=
-  let p := Classical.choose hR
-  let spec := Classical.choose_spec hR
+  letI p := Classical.choose hR
+  let_fun spec := Classical.choose_spec hR
   UniqueFactorizationMonoid.of_exists_prime_factors fun x hx => by
     use Multiset.replicate (Classical.choose (spec.2 hx)) p
     constructor

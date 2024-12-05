@@ -511,14 +511,14 @@ theorem closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
 
 theorem dist_le_add_of_nonempty_closedBall_inter_closedBall
     (h : (closedBall x ε₁ ∩ closedBall y ε₂).Nonempty) : dist x y ≤ ε₁ + ε₂ :=
-  let ⟨z, hz⟩ := h
+  let_fun ⟨z, hz⟩ := h
   calc
     dist x y ≤ dist z x + dist z y := dist_triangle_left _ _ _
     _ ≤ ε₁ + ε₂ := add_le_add hz.1 hz.2
 
 theorem dist_lt_add_of_nonempty_closedBall_inter_ball (h : (closedBall x ε₁ ∩ ball y ε₂).Nonempty) :
     dist x y < ε₁ + ε₂ :=
-  let ⟨z, hz⟩ := h
+  let_fun ⟨z, hz⟩ := h
   calc
     dist x y ≤ dist z x + dist z y := dist_triangle_left _ _ _
     _ < ε₁ + ε₂ := add_lt_add_of_le_of_lt hz.1 hz.2
@@ -615,7 +615,7 @@ protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β →
 theorem uniformity_basis_dist_rat :
     (𝓤 α).HasBasis (fun r : ℚ => 0 < r) fun r => { p : α × α | dist p.1 p.2 < r } :=
   Metric.mk_uniformity_basis (fun _ => Rat.cast_pos.2) fun _ε hε =>
-    let ⟨r, hr0, hrε⟩ := exists_rat_btwn hε
+    let_fun ⟨r, hr0, hrε⟩ := exists_rat_btwn hε
     ⟨r, Rat.cast_pos.1 hr0, hrε.le⟩
 
 theorem uniformity_basis_dist_inv_nat_succ :
@@ -626,13 +626,13 @@ theorem uniformity_basis_dist_inv_nat_succ :
 theorem uniformity_basis_dist_inv_nat_pos :
     (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 < 1 / ↑n } :=
   Metric.mk_uniformity_basis (fun _ hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ ε0 =>
-    let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
+    let_fun ⟨n, hn⟩ := exists_nat_one_div_lt ε0
     ⟨n + 1, Nat.succ_pos n, mod_cast hn.le⟩
 
 theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓤 α).HasBasis (fun _ : ℕ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 < r ^ n } :=
   Metric.mk_uniformity_basis (fun _ _ => pow_pos h0 _) fun _ε ε0 =>
-    let ⟨n, hn⟩ := exists_pow_lt_of_lt_one ε0 h1
+    let_fun ⟨n, hn⟩ := exists_pow_lt_of_lt_one ε0 h1
     ⟨n, trivial, hn.le⟩
 
 theorem uniformity_basis_dist_lt {R : ℝ} (hR : 0 < R) :
@@ -667,7 +667,7 @@ theorem uniformity_basis_dist_le :
 theorem uniformity_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓤 α).HasBasis (fun _ : ℕ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ r ^ n } :=
   Metric.mk_uniformity_basis_le (fun _ _ => pow_pos h0 _) fun _ε ε0 =>
-    let ⟨n, hn⟩ := exists_pow_lt_of_lt_one ε0 h1
+    let_fun ⟨n, hn⟩ := exists_pow_lt_of_lt_one ε0 h1
     ⟨n, trivial, hn.le⟩
 
 theorem mem_uniformity_dist {s : Set (α × α)} :
@@ -1153,7 +1153,7 @@ positive radius -/
 theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : Set α}
     (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
     ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ x ∈ t, ball x e :=
-  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
+  let_fun ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
   ⟨t, hts, t.finite_toSet, ht⟩
 
 alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact

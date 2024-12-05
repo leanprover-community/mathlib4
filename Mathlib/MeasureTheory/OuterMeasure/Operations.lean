@@ -338,7 +338,7 @@ theorem comap_map {β} {f : α → β} (hf : Injective f) (m : OuterMeasure α) 
 
 @[simp]
 theorem top_apply {s : Set α} (h : s.Nonempty) : (⊤ : OuterMeasure α) s = ∞ :=
-  let ⟨a, as⟩ := h
+  let_fun ⟨a, as⟩ := h
   top_unique <| le_trans (by simp [smul_dirac_apply, as]) (le_iSup₂ (∞ • dirac a) trivial)
 
 theorem top_apply' (s : Set α) : (⊤ : OuterMeasure α) s = ⨅ _ : s = ∅, 0 :=

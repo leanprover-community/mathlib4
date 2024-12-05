@@ -781,7 +781,7 @@ theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F)
 
 theorem JoinedIn.map_continuousOn (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
     JoinedIn (f '' F) (f x) (f y) :=
-  let ⟨γ, hγ⟩ := h
+  let_fun ⟨γ, hγ⟩ := h
   ⟨γ.map' <| hf.mono (range_subset_iff.mpr hγ), fun t ↦ mem_image_of_mem _ (hγ t)⟩
 
 theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : Continuous f) :
@@ -884,13 +884,13 @@ theorem isPathConnected_iff_eq : IsPathConnected F ↔ ∃ x ∈ F, pathComponen
 
 theorem IsPathConnected.joinedIn (h : IsPathConnected F) :
     ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y := fun _x x_in _y y_in =>
-  let ⟨_b, _b_in, hb⟩ := h
+  let_fun ⟨_b, _b_in, hb⟩ := h
   (hb x_in).symm.trans (hb y_in)
 
 theorem isPathConnected_iff :
     IsPathConnected F ↔ F.Nonempty ∧ ∀ᵉ (x ∈ F) (y ∈ F), JoinedIn F x y :=
   ⟨fun h =>
-    ⟨let ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
+    ⟨let_fun ⟨b, b_in, _hb⟩ := h; ⟨b, b_in⟩, h.joinedIn⟩,
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
 
 /-- If `f` is continuous on `F` and `F` is path-connected, so is `f(F)`. -/

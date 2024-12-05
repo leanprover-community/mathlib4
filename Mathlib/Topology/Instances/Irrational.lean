@@ -54,7 +54,7 @@ variable {x : ℝ}
 
 instance : OrderTopology { x // Irrational x } :=
   induced_orderTopology _ Iff.rfl <| @fun _ _ hlt =>
-    let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
+    let_fun ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩
 
 instance : NoMaxOrder { x // Irrational x } :=
@@ -65,7 +65,7 @@ instance : NoMinOrder { x // Irrational x } :=
 
 instance : DenselyOrdered { x // Irrational x } :=
   ⟨fun _ _ hlt =>
-    let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
+    let_fun ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩⟩
 
 theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :

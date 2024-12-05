@@ -134,7 +134,7 @@ variable [Monoid α] [MulAction α β]
 
 @[to_additive]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
-  let ⟨u, hu⟩ := ha
+  let_fun ⟨u, hu⟩ := ha
   hu ▸ smul_left_cancel_iff u
 
 end IsUnit

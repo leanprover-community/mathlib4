@@ -557,7 +557,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
       Subtype.ext_iff_val.2 <|
         ext fun x y =>
           ⟨fun h =>
-            let ⟨a, b, hx, hy, H⟩ := h
+            let_fun ⟨a, b, hx, hy, H⟩ := h
             d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
             fun h => ⟨_, _, rfl, rfl, h⟩⟩
   right_inv d :=
@@ -565,7 +565,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
     by exact
       ext fun x y =>
         ⟨fun h =>
-          let ⟨_, _, hx, hy, H⟩ := h
+          let_fun ⟨_, _, hx, hy, H⟩ := h
           hx ▸ hy ▸ H,
           Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
   map_rel_iff' := @fun s t => by

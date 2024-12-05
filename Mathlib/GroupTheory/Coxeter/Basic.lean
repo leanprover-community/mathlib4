@@ -113,7 +113,7 @@ def simple (i : B) : M.Group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
     (M.reindex e).relationsSet =
-    FreeGroup.freeGroupCongr e '' M.relationsSet := let M' := M.reindex e; calc
+    FreeGroup.freeGroupCongr e '' M.relationsSet := letI M' := M.reindex e; calc
   Set.range (uncurry M'.relation)
   _ = Set.range (uncurry M'.relation ∘ Prod.map e e) := by simp [Set.range_comp]
   _ = Set.range (FreeGroup.freeGroupCongr e ∘ uncurry M.relation) := by

@@ -106,11 +106,11 @@ theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) :
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p =>
   Polynomial.induction_on' p
     (fun p q hp hq =>
-      let ⟨p', hp'⟩ := hp
-      let ⟨q', hq'⟩ := hq
+      let_fun ⟨p', hp'⟩ := hp
+      let_fun ⟨q', hq'⟩ := hq
       ⟨p' + q', by rw [Polynomial.map_add f, hp', hq']⟩)
     fun n s =>
-    let ⟨r, hr⟩ := hf s
+    let_fun ⟨r, hr⟩ := hf s
     ⟨monomial n r, by rw [map_monomial f, hr]⟩
 
 variable {f}

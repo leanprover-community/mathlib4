@@ -183,8 +183,8 @@ colimit
 -/
 noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h : ¬p₀ ⤳ y) :
     IsColimit (skyscraperPresheafCocone p₀ A y) :=
-  let h1 : ∃ U : OpenNhds y, p₀ ∉ U.1 :=
-    let ⟨U, ho, h₀, hy⟩ := not_specializes_iff_exists_open.mp h
+  let_fun h1 : ∃ U : OpenNhds y, p₀ ∉ U.1 :=
+    let_fun ⟨U, ho, h₀, hy⟩ := not_specializes_iff_exists_open.mp h
     ⟨⟨⟨U, ho⟩, h₀⟩, hy⟩
   { desc := fun c => eqToHom (if_neg h1.choose_spec).symm ≫ c.ι.app (op h1.choose)
     fac := fun c U => by
@@ -270,7 +270,7 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
 `𝓕.stalk p₀ ⟶ c` defined as the morphism from colimit to cocone at `c`.
 -/
 def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) : 𝓕.stalk p₀ ⟶ c :=
-  let χ : Cocone ((OpenNhds.inclusion p₀).op ⋙ 𝓕) :=
+  letI χ : Cocone ((OpenNhds.inclusion p₀).op ⋙ 𝓕) :=
     Cocone.mk c <|
       { app := fun U => f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (if_pos U.unop.2)
         naturality := fun U V inc => by

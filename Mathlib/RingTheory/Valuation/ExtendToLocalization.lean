@@ -24,8 +24,8 @@ variable {A : Type*} [CommRing A] {Γ : Type*} [LinearOrderedCommGroupWithZero �
 /-- We can extend a valuation `v` on a ring to a localization at a submonoid of
 the complement of `v.supp`. -/
 noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
-  let f := IsLocalization.toLocalizationMap S B
-  let h : ∀ s : S, IsUnit (v.1.toMonoidHom s) := fun s => isUnit_iff_ne_zero.2 (hS s.2)
+  letI f := IsLocalization.toLocalizationMap S B
+  let_fun h : ∀ s : S, IsUnit (v.1.toMonoidHom s) := fun s => isUnit_iff_ne_zero.2 (hS s.2)
   { f.lift h with
     map_zero' := by convert f.lift_eq (P := Γ) _ 0 <;> simp [f]
     map_add_le_max' := fun x y => by

@@ -98,7 +98,7 @@ theorem differentiableOn_update_limUnder_of_bddAbove {f : ℂ → E} {s : Set �
     (hd : DifferentiableOn ℂ f (s \ {c})) (hb : BddAbove (norm ∘ f '' (s \ {c}))) :
     DifferentiableOn ℂ (update f c (limUnder (𝓝[≠] c) f)) s :=
   differentiableOn_update_limUnder_of_isLittleO hc hd <| IsBoundedUnder.isLittleO_sub_self_inv <|
-    let ⟨C, hC⟩ := hb
+    let_fun ⟨C, hC⟩ := hb
     ⟨C + ‖f c‖, eventually_map.2 <| mem_nhdsWithin_iff_exists_mem_nhds_inter.2
       ⟨s, hc, fun _ hz => norm_sub_le_of_le (hC <| mem_image_of_mem _ hz) le_rfl⟩⟩
 

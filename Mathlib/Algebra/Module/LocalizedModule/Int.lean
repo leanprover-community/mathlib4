@@ -52,7 +52,7 @@ variable [IsLocalizedModule S f]
 
 /-- Each element `x : M'` has an `S`-multiple which is an integer. -/
 theorem exists_integer_multiple (x : M') : ∃ a : S, IsInteger f (a.val • x) :=
-  let ⟨⟨Num, denom⟩, h⟩ := IsLocalizedModule.surj S f x
+  let_fun ⟨⟨Num, denom⟩, h⟩ := IsLocalizedModule.surj S f x
   ⟨denom, Set.mem_range.mpr ⟨Num, h.symm⟩⟩
 
 /-- We can clear the denominators of a `Finset`-indexed family of fractions. -/

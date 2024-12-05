@@ -98,7 +98,7 @@ theorem SameCycle.apply_eq_self_iff : SameCycle f x y → (f x = x ↔ f y = y) 
     (f ^ i).injective.eq_iff]
 
 theorem SameCycle.eq_of_left (h : SameCycle f x y) (hx : IsFixedPt f x) : x = y :=
-  let ⟨_, hn⟩ := h
+  let_fun ⟨_, hn⟩ := h
   (hx.perm_zpow _).eq.symm.trans hn
 
 theorem SameCycle.eq_of_right (h : SameCycle f x y) (hy : IsFixedPt f y) : x = y :=
@@ -237,9 +237,9 @@ theorem not_isCycle_one : ¬(1 : Perm α).IsCycle := fun H => H.ne_one rfl
 
 protected theorem IsCycle.sameCycle (hf : IsCycle f) (hx : f x ≠ x) (hy : f y ≠ y) :
     SameCycle f x y :=
-  let ⟨g, hg⟩ := hf
-  let ⟨a, ha⟩ := hg.2 hx
-  let ⟨b, hb⟩ := hg.2 hy
+  let_fun ⟨g, hg⟩ := hf
+  let_fun ⟨a, ha⟩ := hg.2 hx
+  let_fun ⟨b, hb⟩ := hg.2 hy
   ⟨b - a, by rw [← ha, ← mul_apply, ← zpow_add, sub_add_cancel, hb]⟩
 
 theorem IsCycle.exists_zpow_eq : IsCycle f → f x ≠ x → f y ≠ y → ∃ i : ℤ, (f ^ i) x = y :=
@@ -370,7 +370,7 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
           rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne, ←
             f.injective.eq_iff, apply_inv_self]
           exact this.1
-        let ⟨i, hi⟩ := hn hb' (f.injective <| by
+        let_fun ⟨i, hi⟩ := hn hb' (f.injective <| by
           rw [apply_inv_self]; rwa [pow_succ', mul_apply] at h)
         ⟨i + 1, by
           rw [add_comm, zpow_add, mul_apply, hi, zpow_one, mul_apply, apply_inv_self,
@@ -392,7 +392,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
           split_ifs <;>
             simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc, Ne, Perm.apply_inv_self] at *
               <;> tauto
-        let ⟨i, hi⟩ :=
+        let_fun ⟨i, hi⟩ :=
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by
               rw [← zpow_natCast, ← h, ← mul_apply, ← mul_apply, ← mul_apply, zpow_negSucc,
@@ -409,8 +409,8 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
 theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f : Perm α}
     (hf : IsCycle f) {x : α} (hfx : f x ≠ x) (hffx : f (f x) = x) : f = swap x (f x) :=
   Equiv.ext fun y =>
-    let ⟨z, hz⟩ := hf
-    let ⟨i, hi⟩ := hz.2 hfx
+    let_fun ⟨z, hz⟩ := hf
+    let_fun ⟨i, hi⟩ := hz.2 hfx
     if hyx : y = x then by simp [hyx]
     else
       if hfyx : y = f x then by simp [hfyx, hffx]
@@ -429,7 +429,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
     (hx : f x ≠ x) (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) :=
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, if_neg hx, hx],
     fun y hy =>
-    let ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
+    let_fun ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
     -- Porting note: Needed to add Perm α typehint, otherwise does not know how to coerce to fun
     have hi : (f ^ (i - 1) : Perm α) (f x) = y :=
       calc
@@ -439,7 +439,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
     isCycle_swap_mul_aux₂ (i - 1) hy hi⟩
 
 theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.support :=
-  let ⟨x, hx⟩ := hf
+  let_fun ⟨x, hx⟩ := hf
   calc
     Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by
       {rw [← mul_assoc, mul_def, mul_def, swap_swap, trans_refl]}
@@ -588,7 +588,7 @@ theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : 
 theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
     f ^ n = 1 ↔ ∀ x, f x ≠ x → (f ^ n) x = x :=
   ⟨fun h _ hx => (hf.pow_eq_one_iff' hx).1 h, fun h =>
-    let ⟨_, hx, _⟩ := id hf
+    let_fun ⟨_, hx, _⟩ := id hf
     (hf.pow_eq_one_iff' hx).2 (h _ hx)⟩
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption

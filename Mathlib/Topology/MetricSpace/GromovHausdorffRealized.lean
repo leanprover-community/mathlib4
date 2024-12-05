@@ -237,7 +237,7 @@ to check that the defining sets are bounded below or above. This is done in the 
 technical lemmas. -/
 theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
-  let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
+  let_fun ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 
 private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
@@ -250,7 +250,7 @@ private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
 
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
-  let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
+  let_fun ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 
 private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
@@ -424,7 +424,7 @@ private theorem optimalGHDist_mem_candidatesB : optimalGHDist X Y ∈ candidates
 
 private theorem HD_optimalGHDist_le (g : Cb X Y) (hg : g ∈ candidatesB X Y) :
     HD (optimalGHDist X Y) ≤ HD g :=
-  let ⟨_, Z2⟩ := Classical.choose_spec (exists_minimizer X Y)
+  let_fun ⟨_, Z2⟩ := Classical.choose_spec (exists_minimizer X Y)
   Z2 g hg
 
 /-- With the optimal candidate, construct a premetric space structure on `X ⊕ Y`, on which the

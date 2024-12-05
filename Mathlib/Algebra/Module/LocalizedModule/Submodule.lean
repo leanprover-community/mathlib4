@@ -233,7 +233,7 @@ include S in
 In other words, localization commutes with kernels. -/
 lemma toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :
     IsLocalizedModule p (toKerIsLocalized p f f' g) :=
-  let e : Submodule.localized' S p f (ker g) ≃ₗ[S]
+  letI e : Submodule.localized' S p f (ker g) ≃ₗ[S]
       ker ((map p f f' g).extendScalarsOfIsLocalization p S) :=
     LinearEquiv.ofEq _ _ (localized'_ker_eq_ker_localizedMap S p f f' g)
   IsLocalizedModule.of_linearEquiv p (Submodule.toLocalized' S p f (ker g)) (e.restrictScalars R)

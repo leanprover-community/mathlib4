@@ -121,7 +121,7 @@ for an arbitrarily large `m` a positive measure of points `x ∈ s` returns back
 after `m` iterations of `f`. -/
 theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasurableSet s μ)
     (h0 : μ s ≠ 0) (N : ℕ) : ∃ m > N, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 :=
-  let ⟨m, hm, hmN⟩ :=
+  let_fun ⟨m, hm, hmN⟩ :=
     ((hf.frequently_measure_inter_ne_zero hs h0).and_eventually (eventually_gt_atTop N)).exists
   ⟨m, hmN, hm⟩
 

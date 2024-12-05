@@ -262,7 +262,7 @@ def UniformSpace.Core.mk' {α : Type u} (U : Filter (α × α)) (refl : ∀ r �
     (symm : ∀ r ∈ U, Prod.swap ⁻¹' r ∈ U) (comp : ∀ r ∈ U, ∃ t ∈ U, t ○ t ⊆ r) :
     UniformSpace.Core α :=
   ⟨U, fun _r ru => idRel_subset.2 (refl _ ru), symm, fun _r ru =>
-    let ⟨_s, hs, hsr⟩ := comp _ ru
+    let_fun ⟨_s, hs, hsr⟩ := comp _ ru
     mem_of_superset (mem_lift' hs) hsr⟩
 
 /-- Defining a `UniformSpace.Core` from a filter basis satisfying some uniformity-like axioms. -/
@@ -479,8 +479,8 @@ theorem symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
 
 theorem comp_symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, (∀ {a b}, (a, b) ∈ t → (b, a) ∈ t) ∧ t ○ t ⊆ s :=
-  let ⟨_t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
-  let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
+  let_fun ⟨_t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
+  let_fun ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
   ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.compRel monotone_id ht'₂) ht₂⟩
 
 theorem uniformity_le_symm : 𝓤 α ≤ @Prod.swap α α <$> 𝓤 α := by
@@ -522,13 +522,13 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 
 theorem comp3_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
-  let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
-  let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
+  let_fun ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
+  let_fun ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
   ⟨t, ht, (compRel_mono ((subset_comp_self (refl_le_uniformity ht)).trans htt') htt').trans ht's⟩
 
 /-- See also `comp3_mem_uniformity`. -/
 theorem comp_le_uniformity3 : ((𝓤 α).lift' fun s : Set (α × α) => s ○ (s ○ s)) ≤ 𝓤 α := fun _ h =>
-  let ⟨_t, htU, ht⟩ := comp3_mem_uniformity h
+  let_fun ⟨_t, htU, ht⟩ := comp3_mem_uniformity h
   mem_of_superset (mem_lift' htU) ht
 
 /-- See also `comp_open_symm_mem_uniformity_sets`. -/
@@ -730,7 +730,7 @@ theorem mem_nhds_right (y : α) {s : Set (α × α)} (h : s ∈ 𝓤 α) : { x :
 
 theorem exists_mem_nhds_ball_subset_of_mem_nhds {a : α} {U : Set α} (h : U ∈ 𝓝 a) :
     ∃ V ∈ 𝓝 a, ∃ t ∈ 𝓤 α, ∀ a' ∈ V, UniformSpace.ball a' t ⊆ U :=
-  let ⟨t, ht, htU⟩ := comp_mem_uniformity_sets (mem_nhds_uniformity_iff_right.1 h)
+  let_fun ⟨t, ht, htU⟩ := comp_mem_uniformity_sets (mem_nhds_uniformity_iff_right.1 h)
   ⟨_, mem_nhds_left a ht, t, ht, fun a₁ h₁ a₂ h₂ => @htU (a, a₂) ⟨a₁, h₁, h₂⟩ rfl⟩
 
 theorem tendsto_right_nhds_uniformity {a : α} : Tendsto (fun a' => (a', a)) (𝓝 a) (𝓤 α) := fun _ =>
@@ -851,7 +851,7 @@ theorem uniformity_eq_uniformity_interior : 𝓤 α = (𝓤 α).lift' interior :
           s ⊆ t := hst
           _ ⊆ interior d :=
             ht.subset_interior_iff.mpr fun x (hx : x ∈ t) =>
-              let ⟨x, y, h₁, h₂, h₃⟩ := ht_comp hx
+              let_fun ⟨x, y, h₁, h₂, h₃⟩ := ht_comp hx
               hs_comp ⟨x, h₁, y, h₂, h₃⟩
       have : interior d ∈ 𝓤 α := by filter_upwards [hs] using this
       simp [this])
@@ -861,7 +861,7 @@ theorem interior_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : inte
   rw [uniformity_eq_uniformity_interior]; exact mem_lift' hs
 
 theorem mem_uniformity_isClosed {s : Set (α × α)} (h : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, IsClosed t ∧ t ⊆ s :=
-  let ⟨t, ⟨ht_mem, htc⟩, hts⟩ := uniformity_hasBasis_closed.mem_iff.1 h
+  let_fun ⟨t, ⟨ht_mem, htc⟩, hts⟩ := uniformity_hasBasis_closed.mem_iff.1 h
   ⟨t, ht_mem, htc, hts⟩
 
 theorem isOpen_iff_isOpen_ball_subset {s : Set α} :
@@ -928,7 +928,7 @@ variable (α)
 
 theorem UniformSpace.has_seq_basis [IsCountablyGenerated <| 𝓤 α] :
     ∃ V : ℕ → Set (α × α), HasAntitoneBasis (𝓤 α) V ∧ ∀ n, SymmetricRel (V n) :=
-  let ⟨U, hsym, hbasis⟩ := (@UniformSpace.hasBasis_symmetric α _).exists_antitone_subbasis
+  let_fun ⟨U, hsym, hbasis⟩ := (@UniformSpace.hasBasis_symmetric α _).exists_antitone_subbasis
   ⟨U, hbasis, fun n => (hsym n).2⟩
 
 end

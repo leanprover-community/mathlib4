@@ -686,8 +686,8 @@ variable (R M)
 variable (s) in
 /-- Re-index the components of the tensor power by `e`. -/
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
-  let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
-  let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
+  letI f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
+  letI g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
   #adaptation_note /-- v4.7.0-rc1
   An alternative to the last two proofs would be `aesop (simp_config := {zetaDelta := true})`
   or a wrapper macro to that effect. -/

@@ -271,8 +271,8 @@ end
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
-  let b := Module.basisUnique ι h
-  let h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
+  letI b := Module.basisUnique ι h
+  let_fun h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
     { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
       invFun := fun f => f default • v
@@ -502,7 +502,7 @@ instance finiteDimensional_range [FiniteDimensional K V] (f : V →ₗ[K] V₂) 
 theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
     Injective f ↔ Surjective f :=
   ⟨surjective_of_injective, fun hsurj =>
-    let ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (range_eq_top.2 hsurj)
+    let_fun ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (range_eq_top.2 hsurj)
     have : Function.RightInverse g f := LinearMap.ext_iff.1 hg
     (leftInverse_of_surjective_of_rightInverse (surjective_of_injective this.injective)
         this).injective⟩
@@ -668,7 +668,7 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
 
 lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : IsUnit x :=
-  let _ := divisionRingOfFiniteDimensional F K; H.isUnit
+  letI _ := divisionRingOfFiniteDimensional F K; H.isUnit
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]

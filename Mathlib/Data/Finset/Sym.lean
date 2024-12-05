@@ -217,7 +217,7 @@ theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym
   mem_sym_iff.2 fun b hb ↦ by rwa [(Sym.mem_replicate.1 hb).2]
 
 protected theorem Nonempty.sym (h : s.Nonempty) (n : ℕ) : (s.sym n).Nonempty :=
-  let ⟨_a, ha⟩ := h
+  let_fun ⟨_a, ha⟩ := h
   ⟨_, replicate_mem_sym ha n⟩
 
 @[simp]

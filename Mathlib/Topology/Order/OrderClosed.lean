@@ -793,7 +793,7 @@ theorem Continuous.if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] 
 
 theorem Filter.Tendsto.eventually_lt {l : Filter γ} {f g : γ → α} {y z : α} (hf : Tendsto f l (𝓝 y))
     (hg : Tendsto g l (𝓝 z)) (hyz : y < z) : ∀ᶠ x in l, f x < g x :=
-  let ⟨_a, ha, _b, hb, h⟩ := hyz.exists_disjoint_Iio_Ioi
+  let_fun ⟨_a, ha, _b, hb, h⟩ := hyz.exists_disjoint_Iio_Ioi
   (hg.eventually (Ioi_mem_nhds hb)).mp <| (hf.eventually (Iio_mem_nhds ha)).mono fun _ h₁ h₂ =>
     h _ h₁ _ h₂
 

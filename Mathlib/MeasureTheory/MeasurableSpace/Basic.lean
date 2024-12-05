@@ -89,7 +89,7 @@ protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace �
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
   measurableSet_compl := fun _ ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
   measurableSet_iUnion s hs :=
-    let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
+    let_fun ⟨s', hs'⟩ := Classical.axiom_of_choice hs
     ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
 
 lemma measurableSet_comap {m : MeasurableSpace β} :
@@ -1263,8 +1263,8 @@ theorem Eventually.exists_measurable_mem {f : Filter α} [IsMeasurablyGenerated 
 
 theorem Eventually.exists_measurable_mem_of_smallSets {f : Filter α} [IsMeasurablyGenerated f]
     {p : Set α → Prop} (h : ∀ᶠ s in f.smallSets, p s) : ∃ s ∈ f, MeasurableSet s ∧ p s :=
-  let ⟨_s, hsf, hs⟩ := eventually_smallSets.1 h
-  let ⟨t, htf, htm, hts⟩ := IsMeasurablyGenerated.exists_measurable_subset hsf
+  let_fun ⟨_s, hsf, hs⟩ := eventually_smallSets.1 h
+  let_fun ⟨t, htf, htm, hts⟩ := IsMeasurablyGenerated.exists_measurable_subset hsf
   ⟨t, htf, htm, hs t hts⟩
 
 instance inf_isMeasurablyGenerated (f g : Filter α) [IsMeasurablyGenerated f]

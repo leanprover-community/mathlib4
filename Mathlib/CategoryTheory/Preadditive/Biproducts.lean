@@ -448,10 +448,10 @@ def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] 
   snd := c.π
   inl := f
   inr :=
-    let c' : CokernelCofork (𝟙 Y - (𝟙 Y - retraction f ≫ f)) :=
+    letI c' : CokernelCofork (𝟙 Y - (𝟙 Y - retraction f ≫ f)) :=
       CokernelCofork.ofπ (Cofork.π c) (by simp)
-    let i' : IsColimit c' := isCokernelEpiComp i (retraction f) (by simp)
-    let i'' := isColimitCoforkOfCokernelCofork i'
+    let_fun i' : IsColimit c' := isCokernelEpiComp i (retraction f) (by simp)
+    let_fun i'' := isColimitCoforkOfCokernelCofork i'
     (splitEpiOfIdempotentOfIsColimitCofork C (by simp) i'').section_
   inl_fst := by simp
   inl_snd := by simp
@@ -553,9 +553,9 @@ def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c :
     (i : IsLimit c) : BinaryBicone c.pt Y :=
   { pt := X
     fst :=
-      let c' : KernelFork (𝟙 X - (𝟙 X - f ≫ section_ f)) := KernelFork.ofι (Fork.ι c) (by simp)
-      let i' : IsLimit c' := isKernelCompMono i (section_ f) (by simp)
-      let i'' := isLimitForkOfKernelFork i'
+      letI c' : KernelFork (𝟙 X - (𝟙 X - f ≫ section_ f)) := KernelFork.ofι (Fork.ι c) (by simp)
+      let_fun i' : IsLimit c' := isKernelCompMono i (section_ f) (by simp)
+      let_fun i'' := isLimitForkOfKernelFork i'
       (splitMonoOfIdempotentOfIsLimitFork C (by simp) i'').retraction
     snd := f
     inl := c.ι

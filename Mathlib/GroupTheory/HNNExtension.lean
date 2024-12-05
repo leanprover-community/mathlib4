@@ -338,7 +338,7 @@ variable (d)
 `a * t^u * g'` where `a ∈ toSubgroup A B (-u)` -/
 noncomputable def unitsSMulGroup (u : ℤˣ) (g : G) :
     (toSubgroup A B (-u)) × d.set u :=
-  let g' := (d.compl u).equiv g
+  let_fun g' := (d.compl u).equiv g
   (toSubgroupEquiv φ u g'.1, g'.2)
 
 theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
@@ -364,7 +364,7 @@ noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
   letI := Classical.dec
   if h : Cancels u w
   then unitsSMulWithCancel φ u w h
-  else let g' := unitsSMulGroup φ d u w.head
+  else letI g' := unitsSMulGroup φ d u w.head
     cons g'.1 u ((g'.2 * w.head⁻¹ : G) • w)
       (by simp)
       (by

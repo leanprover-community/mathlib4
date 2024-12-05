@@ -217,7 +217,7 @@ theorem dvd_lcm_left (x y : R) : x ∣ lcm x y :=
       rw [lcm, hxy, div_zero]
       exact dvd_zero _)
     fun hxy =>
-    let ⟨z, hz⟩ := (gcd_dvd x y).2
+    let_fun ⟨z, hz⟩ := (gcd_dvd x y).2
     ⟨z, Eq.symm <| eq_div_of_mul_eq_left hxy <| by rw [mul_right_comm, mul_assoc, ← hz]⟩
 
 theorem dvd_lcm_right (x y : R) : y ∣ lcm x y :=
@@ -226,7 +226,7 @@ theorem dvd_lcm_right (x y : R) : y ∣ lcm x y :=
       rw [lcm, hxy, div_zero]
       exact dvd_zero _)
     fun hxy =>
-    let ⟨z, hz⟩ := (gcd_dvd x y).1
+    let_fun ⟨z, hz⟩ := (gcd_dvd x y).1
     ⟨z, Eq.symm <| eq_div_of_mul_eq_right hxy <| by rw [← mul_assoc, mul_right_comm, ← hz]⟩
 
 theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := by

@@ -25,7 +25,7 @@ variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
 instance instArchimedean : Archimedean ℝ :=
   archimedean_iff_rat_le.2 fun x =>
     Real.ind_mk x fun f =>
-      let ⟨M, _, H⟩ := f.bounded' 0
+      let_fun ⟨M, _, H⟩ := f.bounded' 0
       ⟨M, mk_le_of_forall_le ⟨0, fun i _ => Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
 
 noncomputable instance : FloorRing ℝ :=
@@ -33,7 +33,7 @@ noncomputable instance : FloorRing ℝ :=
 
 theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) where
   mp H ε ε0 :=
-    let ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
+    let_fun ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
     (H _ δ0).imp fun i hi j ij => by dsimp; exact lt_trans (mod_cast hi _ ij) δε
   mpr H ε ε0 :=
     (H _ (Rat.cast_pos.2 ε0)).imp fun i hi j ij => by dsimp at hi; exact mod_cast hi _ ij
@@ -48,9 +48,9 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
 
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
   Int.exists_greatest_of_bdd
-    (let ⟨n, hn⟩ := exists_int_gt x
+    (let_fun ⟨n, hn⟩ := exists_int_gt x
     ⟨n, fun _ h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
-    (let ⟨n, hn⟩ := exists_int_lt x
+    (let_fun ⟨n, hn⟩ := exists_int_lt x
     ⟨n, le_of_lt hn⟩)
 
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
@@ -65,7 +65,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
   choose f hf using fun d : ℕ =>
     Int.exists_greatest_of_bdd (this d) ⟨⌊L * d⌋, L, hL, Int.floor_le _⟩
   have hf₁ : ∀ n > 0, ∃ y ∈ s, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
-    let ⟨y, yS, hy⟩ := (hf n).1
+    let_fun ⟨y, yS, hy⟩ := (hf n).1
     ⟨y, yS, by simpa using (div_le_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _)).2 hy⟩
   have hf₂ : ∀ n > 0, ∀ y ∈ s, (y - ((n : ℕ) : ℝ)⁻¹) < (f n / n : ℚ) := by
     intro n n0 y yS
@@ -100,7 +100,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
   · exact
       mk_le_of_forall_le
         ⟨1, fun n n1 =>
-          let ⟨x, xS, hx⟩ := hf₁ _ n1
+          let_fun ⟨x, xS, hx⟩ := hf₁ _ n1
           le_trans hx (h xS)⟩
 
 /-- A nonempty, bounded below set of real numbers has a greatest lower bound. -/

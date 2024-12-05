@@ -133,8 +133,8 @@ private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β 
 variable [∀ a : α, Encodable (β a)]
 
 private def encodable_zero : Encodable (WType' β 0) :=
-  let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
-  let finv : Empty → WType' β 0 := by
+  let_fun f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
+  let_fun finv : Empty → WType' β 0 := by
     intro x
     cases x
   have : ∀ x, finv (f x) = x := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
@@ -149,7 +149,7 @@ private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
 
 private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
-    let f' := fun i : β a => (f i).val
+    letI f' := fun i : β a => (f i).val
     have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
     ⟨⟨a, f'⟩, this⟩
 

@@ -97,14 +97,14 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
     (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
-  let h := toIcoMod_eventuallyEq_toIocMod hp a hx
+  let_fun h := toIcoMod_eventuallyEq_toIocMod hp a hx
   continuousAt_iff_continuous_left_right.2 <|
     ⟨(continuous_left_toIocMod hp a x).congr_of_eventuallyEq (h.filter_mono nhdsWithin_le_nhds)
         h.eq_of_nhds,
       continuous_right_toIcoMod hp a x⟩
 
 theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIocMod hp a) x :=
-  let h := toIcoMod_eventuallyEq_toIocMod hp a hx
+  let_fun h := toIcoMod_eventuallyEq_toIocMod hp a hx
   continuousAt_iff_continuous_left_right.2 <|
     ⟨continuous_left_toIocMod hp a x,
       (continuous_right_toIcoMod hp a x).congr_of_eventuallyEq
@@ -438,7 +438,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
 
 theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOrder u) :
     ∃ m : ℕ, m.gcd (addOrderOf u) = 1 ∧ m < addOrderOf u ∧ ↑((m : 𝕜) / addOrderOf u * p) = u :=
-  let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
+  let_fun ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
   ⟨m, hg, hl, he⟩
 
 variable (p)

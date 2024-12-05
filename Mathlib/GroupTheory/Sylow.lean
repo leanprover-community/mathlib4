@@ -196,8 +196,8 @@ theorem exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
   then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
 theorem finite_of_ker_is_pGroup {H : Type*} [Group H] {f : H →* G}
     (hf : IsPGroup p f.ker) [Finite (Sylow p G)] : Finite (Sylow p H) :=
-  let h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
-  let g : Sylow p H → Sylow p G := fun P => Classical.choose (h_exists P)
+  let_fun h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
+  letI g : Sylow p H → Sylow p G := fun P => Classical.choose (h_exists P)
   have hg : ∀ P : Sylow p H, (g P).1.comap f = P := fun P => Classical.choose_spec (h_exists P)
   Finite.of_injective g fun P Q h => ext (by rw [← hg, h]; exact (h_exists Q).choose_spec)
 
@@ -530,7 +530,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
     mem_fixedPoints'.2 fun y =>
       Quotient.inductionOn' y fun y hy =>
         QuotientGroup.eq.2
-          (let ⟨⟨b, hb₁⟩, hb₂⟩ := hy
+          (let_fun ⟨⟨b, hb₁⟩, hb₂⟩ := hy
           have hb₂ : (b * x)⁻¹ * y ∈ H := QuotientGroup.eq.1 hb₂
           (inv_mem_iff (G := G)).1 <|
             (hx _).2 <|
@@ -574,7 +574,7 @@ theorem card_normalizer_modEq_card [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.P
 theorem prime_dvd_card_quotient_normalizer [Finite G] {p : ℕ} {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ Nat.card G) {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     p ∣ Nat.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) :=
-  let ⟨s, hs⟩ := exists_eq_mul_left_of_dvd hdvd
+  let_fun ⟨s, hs⟩ := exists_eq_mul_left_of_dvd hdvd
   have hcard : Nat.card (G ⧸ H) = s * p :=
     (mul_left_inj' (show Nat.card H ≠ 0 from Nat.card_pos.ne')).1
       (by
@@ -598,7 +598,7 @@ theorem prime_pow_dvd_card_normalizer [Finite G] {p : ℕ} {n : ℕ} [_hp : Fact
 theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     (hdvd : p ^ (n + 1) ∣ Nat.card G) {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     ∃ K : Subgroup G, Nat.card K = p ^ (n + 1) ∧ H ≤ K :=
-  let ⟨s, hs⟩ := exists_eq_mul_left_of_dvd hdvd
+  let_fun ⟨s, hs⟩ := exists_eq_mul_left_of_dvd hdvd
   have hcard : Nat.card (G ⧸ H) = s * p :=
     (mul_left_inj' (show Nat.card H ≠ 0 from Nat.card_pos.ne')).1
       (by
@@ -608,7 +608,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
       hcard ▸ (IsPGroup.of_card hH).card_modEq_card_fixedPoints _
   have hm' : p ∣ Nat.card (normalizer H ⧸ H.subgroupOf H.normalizer) :=
     Nat.dvd_of_mod_eq_zero (by rwa [Nat.mod_eq_zero_of_dvd (dvd_mul_left _ _), eq_comm] at hm)
-  let ⟨x, hx⟩ := @exists_prime_orderOf_dvd_card' _ (QuotientGroup.Quotient.group _) _ _ hp hm'
+  let_fun ⟨x, hx⟩ := @exists_prime_orderOf_dvd_card' _ (QuotientGroup.Quotient.group _) _ _ hp hm'
   have hequiv : H ≃ H.subgroupOf H.normalizer := (subgroupOfEquivOfLe le_normalizer).symm.toEquiv
   ⟨Subgroup.map (normalizer H).subtype
       (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x)), by
@@ -643,11 +643,11 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
         have _wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
-        let ⟨K, hK⟩ :=
+        let_fun ⟨K, hK⟩ :=
           @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
             (Nat.pow_dvd_of_le_of_pow_dvd tsub_le_self hdvd) H hH hnm1
         have hdvd' : p ^ (m - 1 + 1) ∣ Nat.card G := by rwa [tsub_add_cancel_of_le h0m.nat_succ_le]
-        let ⟨K', hK'⟩ := @exists_subgroup_card_pow_succ _ _ _ _ _ _ hdvd' K hK.1
+        let_fun ⟨K', hK'⟩ := @exists_subgroup_card_pow_succ _ _ _ _ _ _ hdvd' K hK.1
         ⟨K', by rw [hK'.1, tsub_add_cancel_of_le h0m.nat_succ_le], le_trans hK.2 hK'.2⟩)
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 
@@ -655,7 +655,7 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ n ∣ Nat.card G) : ∃ K : Subgroup G, Nat.card K = p ^ n :=
-  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
+  let_fun ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 
@@ -704,7 +704,7 @@ theorem dvd_card_of_dvd_card [Finite G] {p : ℕ} [Fact p.Prime] (P : Sylow p G)
 /-- Sylow subgroups are Hall subgroups. -/
 theorem card_coprime_index [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     (Nat.card P).Coprime P.index :=
-  let ⟨_n, hn⟩ := IsPGroup.iff_card.mp P.2
+  let_fun ⟨_n, hn⟩ := IsPGroup.iff_card.mp P.2
   hn.symm ▸ (hp.1.coprime_pow_of_not_dvd P.not_dvd_index).symm
 
 theorem ne_bot_of_dvd_card [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G)

@@ -41,7 +41,7 @@ variable [Ring F] [Ring K] [Module F K]
 Note this cannot be an instance as Lean cannot infer `A`.
 -/
 theorem left [Nontrivial A] : Module.Finite F K :=
-  let ⟨x, hx⟩ := exists_ne (0 : A)
+  let_fun ⟨x, hx⟩ := exists_ne (0 : A)
   Module.Finite.of_injective
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
 
@@ -49,7 +49,7 @@ variable [Semiring F] [Semiring K] [Module F K]
   [AddCommMonoid A] [Module K A] [Module F A] [IsScalarTower F K A] in
 @[stacks 09G5]
 theorem right [hf : Module.Finite F A] : Module.Finite K A :=
-  let ⟨⟨b, hb⟩⟩ := hf
+  let_fun ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
     rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
     exact Submodule.subset_span⟩⟩

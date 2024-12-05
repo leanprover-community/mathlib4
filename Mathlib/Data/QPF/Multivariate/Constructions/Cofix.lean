@@ -151,7 +151,7 @@ def Cofix.corec'₁ {α : TypeVec n} {β : Type u} (g : ∀ {X}, (β → X) → 
 value instead of making a recursive call -/
 def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Cofix F α ⊕ β))) (x : β) :
     Cofix F α :=
-  let f : (α ::: Cofix F α) ⟹ (α ::: (Cofix F α ⊕ β)) := id ::: Sum.inl
+  let_fun f : (α ::: Cofix F α) ⟹ (α ::: (Cofix F α ⊕ β)) := id ::: Sum.inl
   Cofix.corec (Sum.elim (MvFunctor.map f ∘ Cofix.dest) g) (Sum.inr x : Cofix F α ⊕ β)
 
 /-- Corecursor for `Cofix F`. The shape allows recursive calls to
@@ -291,7 +291,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
         Cofix.dest (v x) = q.abs ⟨a, q.P.appendContents f' f₁⟩ ∧
           ∀ i, ∃ x', Q x' ∧ f₀ i = u x' ∧ f₁ i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
-  let R := fun w z : Cofix F α => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
+  letI R := fun w z : Cofix F α => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   Cofix.bisim R
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f', f₀, f₁, ux'eq, vx'eq, h'⟩
@@ -359,9 +359,9 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
     LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
-  let h : ι → { x : ι' × ι' // uncurry R x } := fun x => ⟨(f x, g x), hh x⟩
-  let b : (α ::: ι) ⟹ _ := @diagSub n α ::: h
-  let c :
+  letI h : ι → { x : ι' × ι' // uncurry R x } := fun x => ⟨(f x, g x), hh x⟩
+  letI b : (α ::: ι) ⟹ _ := @diagSub n α ::: h
+  letI c :
     (Subtype_ α.repeatEq ::: { x // uncurry R x }) ⟹
       ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) ::: Subtype (uncurry R)) :=
     ofSubtype _ ::: id

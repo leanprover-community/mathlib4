@@ -577,7 +577,7 @@ alias nhdsAdjoint_nhds := nhds_nhdsAdjoint_same
 
 theorem nhds_nhdsAdjoint_of_ne {a b : α} (f : Filter α) (h : b ≠ a) :
     @nhds α (nhdsAdjoint a f) b = pure b :=
-  let _ := nhdsAdjoint a f
+  letI _ := nhdsAdjoint a f
   (isOpen_singleton_iff_nhds_eq_pure _).1 <| isOpen_singleton_nhdsAdjoint f h
 
 @[deprecated nhds_nhdsAdjoint_of_ne (since := "2024-02-10")]

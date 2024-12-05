@@ -193,7 +193,7 @@ theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes
   ext J
   constructor
   · exact fun H =>
-      let e := H.1.1.radical_le_iff.mpr H.1.2
+      let_fun e := H.1.1.radical_le_iff.mpr H.1.2
       (H.2 ⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩ e).antisymm e
   · rintro (rfl : J = I.radical)
     exact ⟨⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩, fun _ H _ => H.1.radical_le_iff.mpr H.2⟩

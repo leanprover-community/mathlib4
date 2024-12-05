@@ -430,7 +430,7 @@ end LinearEquiv
 /-- A perfect pairing induces a perfect pairing between dual spaces. -/
 def PerfectPairing.dual (p : PerfectPairing R M N) :
     PerfectPairing R (Dual R M) (Dual R N) :=
-  let _i := p.reflexive_right
+  let_fun _i := p.reflexive_right
   (p.toDualRight.symm.trans (evalEquiv R N)).toPerfectPairing
 
 namespace Submodule

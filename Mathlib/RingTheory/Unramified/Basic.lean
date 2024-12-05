@@ -269,7 +269,7 @@ consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 -- @[nolint unusedArguments] -- Porting note: removed
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   -- Porting note: added
-  let _ := M
+  let_fun _ := M
   FormallyUnramified.of_comp R Rₘ Sₘ
 
 theorem localization_map [FormallyUnramified R S] :

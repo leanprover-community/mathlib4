@@ -1678,7 +1678,7 @@ theorem toTopologicalSpace_le {x y : GroupTopology α} :
 
 @[to_additive]
 instance : Top (GroupTopology α) :=
-  let _t : TopologicalSpace α := ⊤
+  letI _t : TopologicalSpace α := ⊤
   ⟨{  continuous_mul := continuous_top
       continuous_inv := continuous_top }⟩
 
@@ -1688,7 +1688,7 @@ theorem toTopologicalSpace_top : (⊤ : GroupTopology α).toTopologicalSpace = �
 
 @[to_additive]
 instance : Bot (GroupTopology α) :=
-  let _t : TopologicalSpace α := ⊥
+  letI _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
         continuity

@@ -111,7 +111,7 @@ theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = �
       have h1 : s ≠ ∅ ∧ sᶜ ≠ ∅ :=
         ⟨mt Or.inl h,
           mt (fun h2 => Or.inr <| (by rw [← compl_compl s, h2, compl_empty] : s = univ)) h⟩
-      let ⟨_, h2, h3⟩ :=
+      let_fun ⟨_, h2, h3⟩ :=
         nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) (nonempty_iff_ne_empty.2 h1.1)
           (nonempty_iff_ne_empty.2 h1.2)
       h3 h2,

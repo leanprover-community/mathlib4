@@ -74,7 +74,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
 equivalence `α ≃ β`. -/
 theorem antisymm : (α ↪ β) → (β ↪ α) → Nonempty (α ≃ β)
   | ⟨_, h₁⟩, ⟨_, h₂⟩ =>
-    let ⟨f, hf⟩ := schroeder_bernstein h₁ h₂
+    let_fun ⟨f, hf⟩ := schroeder_bernstein h₁ h₂
     ⟨Equiv.ofBijective f hf⟩
 
 end antisymm
@@ -91,17 +91,17 @@ private abbrev sets :=
 there is an element that injects into the others.
 See `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice instances. -/
 theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j) :=
-  let ⟨s, hs⟩ := show ∃ s, Maximal (· ∈ sets β) s by
+  let_fun ⟨s, hs⟩ := show ∃ s, Maximal (· ∈ sets β) s by
     refine zorn_subset _ fun c hc hcc ↦
       ⟨⋃₀ c, fun i x ⟨p, hpc, hxp⟩ y ⟨q, hqc, hyq⟩ hi ↦ ?_, fun _ ↦ subset_sUnion_of_mem⟩
     exact (hcc.total hpc hqc).elim (fun h ↦ hc hqc i (h hxp) hyq hi)
       fun h ↦ hc hpc i hxp (h hyq) hi
-  let ⟨i, e⟩ :=
+  let_fun ⟨i, e⟩ :=
     show ∃ i, Surjective fun x : s => x.val i from
       Classical.by_contradiction fun h =>
         have h : ∀ i, ∃ y, ∀ x ∈ s, (x : ∀ i, β i) i ≠ y := by
           simpa [Surjective] using h
-        let ⟨f, hf⟩ := Classical.axiom_of_choice h
+        let_fun ⟨f, hf⟩ := Classical.axiom_of_choice h
         have : f ∈ s :=
           have : insert f s ∈ sets β := fun i x hx y hy => by
             cases' hx with hx hx <;> cases' hy with hy hy; · simp [hx, hy]
@@ -111,7 +111,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
               exact fun e => (hf i x hx e).elim
             · exact hs.prop i hx hy
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
-        let ⟨i⟩ := I
+        let_fun ⟨i⟩ := I
         hf i f this rfl
   ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
@@ -126,10 +126,10 @@ theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (�
   match @min_injective Bool (fun b => cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
     with
   | ⟨true, ⟨h⟩⟩ =>
-    let ⟨f, hf⟩ := h false
+    let_fun ⟨f, hf⟩ := h false
     Or.inl ⟨Embedding.congr Equiv.ulift Equiv.ulift ⟨f, hf⟩⟩
   | ⟨false, ⟨h⟩⟩ =>
-    let ⟨f, hf⟩ := h true
+    let_fun ⟨f, hf⟩ := h true
     Or.inr ⟨Embedding.congr Equiv.ulift Equiv.ulift ⟨f, hf⟩⟩
 
 end Embedding

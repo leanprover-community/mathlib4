@@ -63,8 +63,8 @@ open scoped Classical
 theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
     (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG :=
-  let ⟨s, hs⟩ := hRS
-  let ⟨t, ht⟩ := hSA
+  let_fun ⟨s, hs⟩ := hRS
+  let_fun ⟨t, ht⟩ := hSA
   ⟨s.image (algebraMap S A) ∪ t, by
     rw [Finset.coe_union, Finset.coe_image, Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
       hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top, Subalgebra.restrictScalars_top]⟩
@@ -144,7 +144,7 @@ References: Atiyah--Macdonald Proposition 7.8; Stacks 00IS; Altman--Kleiman 16.1
 theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
     (hBC : (⊤ : Submodule B C).FG) (hBCi : Function.Injective (algebraMap B C)) :
     (⊤ : Subalgebra A B).FG :=
-  let ⟨B₀, hAB₀, hB₀C⟩ := exists_subalgebra_of_fg A B C hAC hBC
+  let_fun ⟨B₀, hAB₀, hB₀C⟩ := exists_subalgebra_of_fg A B C hAC hBC
   Algebra.fg_trans' (B₀.fg_top.2 hAB₀) <|
     Subalgebra.fg_of_submodule_fg <|
       have : IsNoetherianRing B₀ := isNoetherianRing_of_fg hAB₀

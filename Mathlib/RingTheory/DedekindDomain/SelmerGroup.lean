@@ -82,7 +82,7 @@ namespace HeightOneSpectrum
 open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
-  let hx := IsLocalization.sec R⁰ (x : K)
+  let_fun hx := IsLocalization.sec R⁰ (x : K)
   Multiplicative.ofAdd <|
     (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {hx.fst}).factors : ℤ) -
       (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {(hx.snd : R)}).factors : ℤ)

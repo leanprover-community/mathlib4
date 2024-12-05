@@ -618,7 +618,7 @@ theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I 
   exact (mul_one I).symm
 
 theorem coeIdeal_le_one {I : Ideal R} : (I : FractionalIdeal S P) ≤ 1 := fun _ hx =>
-  let ⟨y, _, hy⟩ := (mem_coeIdeal S).mp hx
+  let_fun ⟨y, _, hy⟩ := (mem_coeIdeal S).mp hx
   (mem_one_iff S).mpr ⟨y, hy⟩
 
 theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :

@@ -64,5 +64,5 @@ neighborhood of `x`. Then there exists a continuous map `g : C(X, E)` such that 
 theorem exists_continuous_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
     (H : ∀ x : X, ∃ c : E, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C(X, E), ∀ x, g x ∈ t x :=
   exists_continuous_forall_mem_convex_of_local ht fun x =>
-    let ⟨c, hc⟩ := H x
+    let_fun ⟨c, hc⟩ := H x
     ⟨_, hc, fun _ => c, continuousOn_const, fun _ => id⟩

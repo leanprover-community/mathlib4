@@ -44,7 +44,7 @@ the least value for which the predicate is true. -/
 def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hinh : ∃ z : ℤ, P z) : { lb : ℤ // P lb ∧ ∀ z : ℤ, P z → lb ≤ z } :=
   have EX : ∃ n : ℕ, P (b + n) :=
-    let ⟨elt, Helt⟩ := Hinh
+    let_fun ⟨elt, Helt⟩ := Hinh
     match elt, le.dest (Hb _ Helt), Helt with
     | _, ⟨n, rfl⟩, Hn => ⟨n, Hn⟩
   ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h =>
@@ -79,9 +79,9 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
     (Hinh : ∃ z : ℤ, P z) : { ub : ℤ // P ub ∧ ∀ z : ℤ, P z → z ≤ ub } :=
   have Hbdd' : ∀ z : ℤ, P (-z) → -b ≤ z := fun _ h => neg_le.1 (Hb _ h)
   have Hinh' : ∃ z : ℤ, P (-z) :=
-    let ⟨elt, Helt⟩ := Hinh
+    let_fun ⟨elt, Helt⟩ := Hinh
     ⟨-elt, by rw [neg_neg]; exact Helt⟩
-  let ⟨lb, Plb, al⟩ := leastOfBdd (-b) Hbdd' Hinh'
+  let_fun ⟨lb, Plb, al⟩ := leastOfBdd (-b) Hbdd' Hinh'
   ⟨-lb, Plb, fun z h => le_neg.1 <| al _ <| by rwa [neg_neg]⟩
 
 /--

@@ -19,7 +19,7 @@ variable {α : Type*} [Preorder α]
 
 /-- A nonempty preorder with no maximal element is infinite. -/
 instance NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
-  let ⟨f, hf⟩ := Nat.exists_strictMono α
+  let_fun ⟨f, hf⟩ := Nat.exists_strictMono α
   Infinite.of_injective f hf.injective
 
 /-- A nonempty preorder with no minimal element is infinite. -/

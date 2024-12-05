@@ -426,7 +426,7 @@ theorem preimage_subset_core (f : α →. β) (s : Set β) : f.preimage s ⊆ f.
 theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ f.Dom :=
   Set.eq_of_subset_of_subset (Set.subset_inter (f.preimage_subset_core s) (f.preimage_subset_dom s))
     fun x ⟨xcore, xdom⟩ =>
-    let y := (f x).get xdom
+    letI y := (f x).get xdom
     have ys : y ∈ s := xcore _ (Part.get_mem _)
     show x ∈ f.preimage s from ⟨(f x).get xdom, ys, Part.get_mem _⟩
 

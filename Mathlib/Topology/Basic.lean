@@ -483,7 +483,7 @@ theorem mem_closure_iff :
       closure_minimal this (isClosed_compl_iff.2 oo) h ao,
     fun H _ ⟨h₁, h₂⟩ =>
     by_contradiction fun nc =>
-      let ⟨_, hc, hs⟩ := H _ h₁.isOpen_compl nc
+      let_fun ⟨_, hc, hs⟩ := H _ h₁.isOpen_compl nc
       hc (h₂ hs)⟩
 
 theorem closure_inter_open_nonempty_iff (h : IsOpen t) :
@@ -545,12 +545,12 @@ alias ⟨Dense.inter_open_nonempty, _⟩ := dense_iff_inter_open
 
 theorem Dense.exists_mem_open (hs : Dense s) {U : Set X} (ho : IsOpen U)
     (hne : U.Nonempty) : ∃ x ∈ s, x ∈ U :=
-  let ⟨x, hx⟩ := hs.inter_open_nonempty U ho hne
+  let_fun ⟨x, hx⟩ := hs.inter_open_nonempty U ho hne
   ⟨x, hx.2, hx.1⟩
 
 theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
   ⟨fun ⟨x, _⟩ => ⟨x⟩, fun ⟨x⟩ =>
-    let ⟨y, hy⟩ := hs.inter_open_nonempty _ isOpen_univ ⟨x, trivial⟩
+    let_fun ⟨y, hy⟩ := hs.inter_open_nonempty _ isOpen_univ ⟨x, trivial⟩
     ⟨y, hy.2⟩⟩
 
 theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
@@ -744,7 +744,7 @@ theorem map_nhds {f : X → α} :
   ((nhds_basis_opens x).map f).eq_biInf
 
 theorem mem_of_mem_nhds : s ∈ 𝓝 x → x ∈ s := fun H =>
-  let ⟨_t, ht, _, hs⟩ := mem_nhds_iff.1 H; ht hs
+  let_fun ⟨_t, ht, _, hs⟩ := mem_nhds_iff.1 H; ht hs
 
 /-- If a predicate is true in a neighborhood of `x`, then it is true for `x`. -/
 theorem Filter.Eventually.self_of_nhds {p : X → Prop} (h : ∀ᶠ y in 𝓝 x, p y) : p x :=
@@ -786,7 +786,7 @@ theorem exists_open_set_nhds' {U : Set X} (h : U ∈ ⨆ x ∈ s, 𝓝 x) :
 to `x` this predicate is true in a neighbourhood of `y`. -/
 theorem Filter.Eventually.eventually_nhds {p : X → Prop} (h : ∀ᶠ y in 𝓝 x, p y) :
     ∀ᶠ y in 𝓝 x, ∀ᶠ x in 𝓝 y, p x :=
-  let ⟨t, htp, hto, ha⟩ := eventually_nhds_iff.1 h
+  let_fun ⟨t, htp, hto, ha⟩ := eventually_nhds_iff.1 h
   eventually_nhds_iff.2 ⟨t, fun _x hx => eventually_nhds_iff.2 ⟨t, htp, hto, hx⟩, hto, ha⟩
 
 @[simp]
@@ -1256,7 +1256,7 @@ theorem Dense.inter_of_isOpen_right (hs : Dense s) (ht : Dense t) (hto : IsOpen 
 
 theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=
-  let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
+  let_fun ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
   (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
 
 theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
@@ -1621,7 +1621,7 @@ nonrec theorem DenseRange.exists_mem_open (hf : DenseRange f) (ho : IsOpen s) (h
 
 theorem DenseRange.mem_nhds (h : DenseRange f) (hs : s ∈ 𝓝 x) :
     ∃ a, f a ∈ s :=
-  let ⟨a, ha⟩ := h.exists_mem_open isOpen_interior ⟨x, mem_interior_iff_mem_nhds.2 hs⟩
+  let_fun ⟨a, ha⟩ := h.exists_mem_open isOpen_interior ⟨x, mem_interior_iff_mem_nhds.2 hs⟩
   ⟨a, interior_subset ha⟩
 
 end DenseRange

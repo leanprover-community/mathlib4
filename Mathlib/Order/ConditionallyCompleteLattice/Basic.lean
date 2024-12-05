@@ -275,7 +275,7 @@ See `sSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete latt
 theorem csSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Nonempty) (H : ∀ a ∈ s, a ≤ b)
     (H' : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
   (eq_of_le_of_not_lt (csSup_le hs H)) fun hb =>
-    let ⟨_, ha, ha'⟩ := H' _ hb
+    let_fun ⟨_, ha, ha'⟩ := H' _ hb
     lt_irrefl _ <| ha'.trans_le <| le_csSup ⟨b, H⟩ ha
 
 /-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`

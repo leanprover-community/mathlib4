@@ -393,7 +393,7 @@ variable [BoundedOrder α] [ComplementedLattice α]
 
 instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) :=
   ⟨fun ⟨x, hx⟩ =>
-    let ⟨y, hy⟩ := exists_isCompl x
+    let_fun ⟨y, hy⟩ := exists_isCompl x
     ⟨⟨y ⊓ a, Set.mem_Iic.2 inf_le_right⟩, by
       constructor
       · rw [disjoint_iff_inf_le]
@@ -408,7 +408,7 @@ instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) :=
 
 instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) :=
   ⟨fun ⟨x, hx⟩ =>
-    let ⟨y, hy⟩ := exists_isCompl x
+    let_fun ⟨y, hy⟩ := exists_isCompl x
     ⟨⟨y ⊔ a, Set.mem_Ici.2 le_sup_right⟩, by
       constructor
       · rw [disjoint_iff_inf_le]

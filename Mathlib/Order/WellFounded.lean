@@ -60,12 +60,12 @@ noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) 
 
 theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) :
     H.min s h ∈ s :=
-  let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
+  let_fun ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
   h
 
 theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) {x}
     (hx : x ∈ s) : ¬r x (H.min s h) :=
-  let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
+  let_fun ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
   h' _ hx
 
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
@@ -269,7 +269,7 @@ theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : A
     {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
   (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
     (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) (fun h =>
-      let ⟨y, hy₁, hy₂⟩ := ih x h hC
+      let_fun ⟨y, hy₁, hy₂⟩ := ih x h hC
       ih' y hy₁ hy₂)
 
 /-- Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.

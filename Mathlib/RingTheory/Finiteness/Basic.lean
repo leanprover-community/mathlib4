@@ -39,8 +39,8 @@ theorem fg_span_singleton (x : M) : FG (R ∙ x) :=
   fg_span (finite_singleton x)
 
 theorem FG.sup {N₁ N₂ : Submodule R M} (hN₁ : N₁.FG) (hN₂ : N₂.FG) : (N₁ ⊔ N₂).FG :=
-  let ⟨t₁, ht₁⟩ := fg_def.1 hN₁
-  let ⟨t₂, ht₂⟩ := fg_def.1 hN₂
+  let_fun ⟨t₁, ht₁⟩ := fg_def.1 hN₁
+  let_fun ⟨t₂, ht₂⟩ := fg_def.1 hN₂
   fg_def.2 ⟨t₁ ∪ t₂, ht₁.1.union ht₂.1, by rw [span_union, ht₁.2, ht₂.2]⟩
 
 theorem fg_finset_sup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).FG) :
@@ -70,14 +70,14 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
 theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
-  let ⟨t, ht⟩ := fg_def.1 hs
+  let_fun ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 
 variable {f}
 
 theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
-  let ⟨t, ht⟩ := hfn
+  let_fun ⟨t, ht⟩ := hfn
   ⟨t.preimage f fun _ _ _ _ h => hf h,
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
