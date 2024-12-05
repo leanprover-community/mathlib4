@@ -213,9 +213,11 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
 @[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
 alias isSuccLimit_zero := isSuccPrelimit_zero
 
+@[simp]
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
 
+@[simp]
 theorem not_succ_isLimit (o) : ¬IsLimit (succ o)
   | ⟨_, h⟩ => lt_irrefl _ (h _ (lt_succ o))
 
@@ -367,6 +369,7 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
     type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
   typein_ordinal o
 
+@[simp]
 theorem mk_Iio_ordinal (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]

@@ -534,6 +534,12 @@ theorem LinearOrder.ext {A B : LinearOrder α}
   ext x y
   exact H x y
 
+theorem LinearOrder.ext_lt {A B : LinearOrder α}
+    (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) : A = B := by
+  ext x y
+  rw [← not_lt, ← @not_lt _ A, not_iff_not]
+  exact H y x
+
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
 by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
 is injective). -/

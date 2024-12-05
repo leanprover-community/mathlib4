@@ -169,6 +169,18 @@ theorem _root_.RelIso.ordinal_type_eq {α β} {r : α → α → Prop} {s : β �
     [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
   type_eq.2 ⟨h⟩
 
+theorem typeLT_eq {α β} [LinearOrder α] [WellFoundedLT α] [LinearOrder β] [WellFoundedLT β] :
+    typeLT α = typeLT β ↔ Nonempty (α ≃o β) := by
+  rw [type_eq]
+  constructor <;> rintro ⟨e⟩
+  · exact ⟨OrderIso.ofRelIsoLT e⟩
+  · exact ⟨e.toRelIsoLT⟩
+
+theorem _root_.OrderIso.ordinal_type_eq {α β}
+    [LinearOrder α] [WellFoundedLT α] [LinearOrder β] [WellFoundedLT β] (h : α ≃o β) :
+    typeLT α = typeLT β :=
+  typeLT_eq.2 ⟨h⟩
+
 theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinal_type_eq
 
@@ -236,22 +248,62 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
+/-- `Quotient.inductionOn` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+/-- `Quotient.inductionOn₂` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
 
+/-- `Quotient.inductionOn₃` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
       C (type r) (type s) (type t)) : C o₁ o₂ o₃ :=
   Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
     @H α r wo₁ β s wo₂ γ t wo₃
+
+open Classical in
+/-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
+@[elab_as_elim]
+theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
+    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
+  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toIsWellFounded
+
+open Classical in
+/-- To define a function on ordinals, it suffices to define them on order types of well-orders.
+
+Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
+`Quotient.liftOn_mk` which is always def-eq. -/
+def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) : δ :=
+  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toIsWellFounded)
+    fun w₁ w₂ h ↦ @c
+      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toIsWellFounded
+      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toIsWellFounded
+      (Quotient.sound h)
+
+@[simp]
+theorem liftOnWellOrder_type {δ : Sort v} (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) {γ} [LinearOrder γ] [WellFoundedLT γ] :
+    liftOnWellOrder (typeLT γ) f c = f γ := by
+  change Quotient.liftOn' ⟦_⟧ _ _ = _
+  rw [Quotient.liftOn'_mk]
+  congr
+  exact LinearOrder.ext_lt fun _ _ ↦ Iff.rfl
 
 /-! ### The order on ordinals -/
 
@@ -330,6 +382,9 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 
 theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
+
+instance : IsEmpty (Iio (0 : Ordinal)) :=
+  ⟨fun x ↦ Ordinal.not_lt_zero _ x.2⟩
 
 instance : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
@@ -613,6 +668,11 @@ theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → 
   ((RelIso.preimage Equiv.ulift r).trans <|
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinal_type_eq
 
+theorem _root_.OrderIso.ordinal_lift_type_eq
+    [LinearOrder α] [WellFoundedLT α] [LinearOrder β] [WellFoundedLT β] (f : α ≃o β) :
+    lift.{v} (typeLT α) = lift.{u} (typeLT β) :=
+  f.toRelIsoLT.ordinal_lift_type_eq
+
 @[simp]
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     type (f ⁻¹'o r) = type r :=
@@ -628,6 +688,16 @@ theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : 
     lift.{u} (@type _ (fun x y => r (f x) (f y))
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
   type_lift_preimage r f
+
+def _root_.OrderIso.uLift [LE α] : α ≃o ULift.{v} α where
+  toFun x := ULift.up x
+  invFun x := x.down
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := Iff.rfl
+
+instance [Preorder α] [WellFoundedLT α] : WellFoundedLT (ULift.{v} α) :=
+  OrderIso.uLift.toRelIsoLT.symm.toRelEmbedding.isWellFounded
 
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
@@ -757,8 +827,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b < lift.{v} a ↔ ∃ a' < a, lift.{v} a' = b :=
   liftInitialSeg.lt_apply_iff
 
-/-! ### The first infinite ordinal ω -/
+@[simp]
+theorem typeLT_uLift [LinearOrder α] [WellFoundedLT α] :
+    typeLT (ULift.{v} α) = lift.{v} (typeLT α) := by
+  rw [← lift_id'.{u, v} (typeLT _), ← OrderIso.uLift.{u, v}.ordinal_lift_type_eq, lift_umax.{u, v}]
 
+/-! ### The first infinite ordinal ω -/
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 def omega0 : Ordinal.{u} :=
@@ -947,6 +1021,15 @@ theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
 
 @[deprecated one_toType_eq (since := "2024-08-26")]
 alias one_out_eq := one_toType_eq
+
+-- TODO: generalize to SuccOrder
+instance {o : Ordinal} : OrderTop (Iio (succ o)) where
+  top := ⟨o, lt_succ o⟩
+  le_top x := le_of_lt_succ (α := Ordinal) x.2
+
+@[simp]
+theorem top_Iio_succ_eq {o : Ordinal} : (⊤ : Iio (succ o)) = ⟨o, lt_succ o⟩ :=
+  rfl
 
 /-! ### Extra properties of typein and enum -/
 
