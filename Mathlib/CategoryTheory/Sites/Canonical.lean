@@ -4,11 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
-<<<<<<< HEAD
-
-#align_import category_theory.sites.canonical from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
-=======
->>>>>>> origin/ext-change-of-universes
 
 /-!
 # The canonical topology on a category
@@ -239,22 +234,6 @@ theorem of_isSheaf_yoneda_obj (J : GrothendieckTopology C)
 theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
     (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
-
-variable {J : GrothendieckTopology C}
-
-variable {J}
-variable (hJ : Subcanonical J)
-
-@[simps]
-def yoneda : C ⥤ Sheaf J (Type v) where
-  obj X := ⟨yoneda.obj X, by
-    rw [isSheaf_iff_isSheaf_of_type]
-    apply hJ.isSheaf_of_representable⟩
-  map f := ⟨yoneda.map f⟩
-
-def yonedaCompSheafToPresheaf :
-    hJ.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
-  Iso.refl _
 
 end Subcanonical
 
