@@ -1055,10 +1055,9 @@ theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) 
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (π C (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
-  have ha : ⊥ < o := by rw [Ordinal.bot_eq_zero, Ordinal.pos_iff_ne_zero]; exact ho.1
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
-    simp only [Finset.sup_lt_iff ha, List.mem_toFinset]
-    exact fun b hb ↦ ho.2 _ (prop_of_isGood C (ord I · < o) h b hb)
+    simp only [Finset.sup_lt_iff ho.pos, List.mem_toFinset]
+    exact fun b hb ↦ ho.succ_lt (prop_of_isGood C (ord I · < o) h b hb)
   refine ⟨hslt, fun he ↦ h ?_⟩
   have hlt : ∀ i ∈ l.val, ord I i < Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) := by
     intro i hi
@@ -1361,7 +1360,7 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
 include hC in
 theorem succ_exact :
     (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
-    (by ext; apply CC_comp_zero)).Exact := by
+    (by ext : 2; apply CC_comp_zero)).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro f
   exact CC_exact C hC hsC ho
@@ -1662,7 +1661,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   apply Submodule.add_mem
   · apply Submodule.finsupp_sum_mem
     intro q _
-    erw [LinearMap.map_smul (fₗ := πs C o) (c := w q) (x := eval (π C (ord I · < o)) q)]
+    rw [LinearMap.map_smul]
     apply Submodule.smul_mem
     apply Submodule.subset_span
     dsimp only [eval]
@@ -1703,7 +1702,7 @@ theorem linearIndependent_comp_of_eval
     LinearIndependent ℤ (eval (C' C ho)) →
     LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
   dsimp [SumEval, ModuleCat.ofHom]
-  erw [max_eq_eval_unapply C hsC ho]
+  rw [max_eq_eval_unapply C hsC ho]
   intro h
   let f := MaxToGood C hC hsC ho h₁
   have hf : f.Injective := maxToGood_injective C hC hsC ho h₁

@@ -838,7 +838,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
     inf_coe_toSubmodule]
   rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
   Set.image_subset _ h
 
