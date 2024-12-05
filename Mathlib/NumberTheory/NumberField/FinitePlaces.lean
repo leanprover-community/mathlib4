@@ -123,7 +123,7 @@ theorem FinitePlace.norm_def' (x : K) : ‖embedding v x‖ = toNNReal (norm_ne_
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation for integers. -/
-theorem FinitePlace.norm_def'' (x : 𝓞 K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
+theorem FinitePlace.norm_def_int (x : 𝓞 K) : ‖embedding v x‖ = toNNReal (norm_ne_zero v)
     (v.intValuationDef x) := by
   rw [norm_def, vadicAbv_def, valuation_eq_intValuationDef]
 
@@ -136,14 +136,14 @@ theorem norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem norm_eq_one_iff_not_mem (x : 𝓞 K) : ‖(embedding v) x‖ = 1 ↔ x ∉ v.asIdeal := by
-  rw [norm_def'', NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuationDef x)
+  rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuationDef x)
     (norm_ne_zero v) (one_lt_norm v).ne', ← dvd_span_singleton,
     ← intValuation_lt_one_iff_dvd, not_lt]
   exact (intValuation_le_one v x).ge_iff_eq.symm
 
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem norm_lt_one_iff_mem (x : 𝓞 K) : ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  rw [norm_def'', NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_norm v),
+  rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_norm v),
     intValuation_lt_one_iff_dvd]
   exact dvd_span_singleton
 
