@@ -19,7 +19,7 @@ jobs:
           git fetch --tags
           # Find the most recent tag matching the pattern
           LATEST_TAG=$(git tag | grep -E '^nightly-testing-[0-9]{4}-[0-9]{2}-[0-9]{2}$' | sort -r | head -n 1)
-          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+          echo "LATEST_TAG=\"${LATEST_TAG}\"" >> "$GITHUB_ENV"
 
       - name: Checkout latest tag branch
         uses: actions/checkout@v4
