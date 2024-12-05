@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Madison Crim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Madison Crim
+Authors: Madison Crim
 -/
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Ring.Pi
