@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.MorphismProperty.Basic
+
+/-!
+# Functor which jointly reflect isomorphisms
+
+-/
 
 namespace CategoryTheory
 
@@ -23,6 +33,7 @@ namespace JointlyReflectIsomorphisms
 
 variable {F} (h : JointlyReflectIsomorphisms F)
 
+include h in
 lemma isIso_iff {X Y : C} (f : X ⟶ Y) : IsIso f ↔ ∀ i, IsIso ((F i).map f) := by
   constructor
   · intro hf i
@@ -30,6 +41,7 @@ lemma isIso_iff {X Y : C} (f : X ⟶ Y) : IsIso f ↔ ∀ i, IsIso ((F i).map f)
   · intro
     exact h.isIso f
 
+include h in
 lemma mono {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Mono ((F i).map f)]
     [∀ i,  PreservesLimit (cospan f f) (F i)] [HasPullback f f] : Mono f := by
   have hc := pullbackIsPullback f f
@@ -38,11 +50,13 @@ lemma mono {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Mono ((F i).map f)]
   exact (mono_iff_isIso_fst ((isLimitMapConePullbackConeEquiv (F i) pullback.condition).1
     (isLimitOfPreserves (F i) hc))).1 (hf i)
 
+include h in
 lemma jointlyReflectMonomorphisms [∀ i, PreservesLimitsOfShape WalkingCospan (F i)]
     [HasPullbacks C] :
     JointlyReflectMonomorphisms F where
   mono f _ := h.mono f
 
+include h in
 lemma epi {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Epi ((F i).map f)]
     [∀ i,  PreservesColimit (span f f) (F i)] [HasPushout f f] : Epi f := by
   have hc := pushoutIsPushout f f
@@ -51,6 +65,7 @@ lemma epi {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Epi ((F i).map f)]
   exact (epi_iff_isIso_inl ((isColimitMapCoconePushoutCoconeEquiv (F i) pushout.condition).1
     (isColimitOfPreserves (F i) hc))).1 (hf i)
 
+include h in
 lemma jointlyReflectEpimorphisms [∀ i, PreservesColimitsOfShape WalkingSpan (F i)]
     [HasPushouts C] :
     JointlyReflectEpimorphisms F where
@@ -62,6 +77,7 @@ namespace JointlyReflectMonomorphisms
 
 variable {F} (h : JointlyReflectMonomorphisms F)
 
+include h in
 lemma mono_iff [∀ i, (F i).PreservesMonomorphisms] {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ ∀ i, Mono ((F i).map f) := by
   constructor
@@ -76,6 +92,7 @@ namespace JointlyReflectEpimorphisms
 
 variable {F} (h : JointlyReflectEpimorphisms F)
 
+include h in
 lemma epi_iff [∀ i, (F i).PreservesEpimorphisms] {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ ∀ i, Epi ((F i).map f) := by
   constructor
