@@ -60,7 +60,7 @@ noncomputable def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) where
     intro m₁ m₂
     dsimp [tensorObjMap]
     simp only [map_comp, Functor.comp_obj, CommRingCat.forgetToRingCat_obj, Functor.comp_map,
-      ModuleCat.restrictScalarsComp'_inv_app, ModuleCat.coe_comp, Function.comp_apply,
+      ModuleCat.restrictScalarsComp'_inv_app, ModuleCat.hom_comp, LinearMap.comp_apply,
       ModuleCat.restrictScalars.map_apply, ModuleCat.restrictScalarsComp'App_inv_apply]
     rfl)
 
@@ -71,7 +71,7 @@ lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂
     DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X : _))
       (β := fun _ ↦ (ModuleCat.restrictScalars
         ((forget₂ CommRingCat RingCat).map (R.map f))).obj (M₁.obj Y ⊗ M₂.obj Y))
-      ((tensorObj M₁ M₂).map f) (m₁ ⊗ₜ[R.obj X] m₂) = M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
+      ((tensorObj M₁ M₂).map f).hom (m₁ ⊗ₜ[R.obj X] m₂) = M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
 
 /-- The tensor product of two morphisms of presheaves of modules. -/
 @[simps]
@@ -79,10 +79,8 @@ noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj 
   app X := f.app X ⊗ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
     dsimp
-    rw [tensorObj_map_tmul]
-    erw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul,
-      naturality_apply, naturality_apply]
-    rfl)
+    rw [tensorObj_map_tmul, ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul,
+      naturality_apply, naturality_apply])
 
 end Monoidal
 

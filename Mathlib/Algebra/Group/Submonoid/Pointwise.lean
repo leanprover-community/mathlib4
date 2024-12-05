@@ -97,6 +97,21 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
+lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
+  | 1, _ => by simp
+  | n + 2, _ =>
+    calc
+      closure (s ^ (n + 2))
+      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
+      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
+      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
+      _ = closure s := sup_idem _
+
+@[to_additive]
+lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
+  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
+
+@[to_additive]
 theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk =>
@@ -572,15 +587,10 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
 
 variable {M N P Q : AddSubmonoid R}
 
-@[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  smul_le_smul hmp hnq
+@[mono, gcongr] lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q := smul_le_smul hmp hnq
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
-  smul_le_smul_left h
-
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
-  smul_le_smul_right h
+@[gcongr] lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
+@[gcongr] lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
 
 theorem mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
   smul_subset_smul
