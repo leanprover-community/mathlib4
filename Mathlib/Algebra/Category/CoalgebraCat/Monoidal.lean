@@ -50,9 +50,9 @@ noncomputable def MonoidalCategory.inducingFunctorData :
   whiskerRight_eq X f := by ext; rfl
   tensorHom_eq f g := by ext; rfl
   εIso := Iso.refl _
-  associator_eq X Y Z := TensorProduct.ext <| TensorProduct.ext <| by ext; rfl
-  leftUnitor_eq X := TensorProduct.ext <| by ext; rfl
-  rightUnitor_eq X := TensorProduct.ext <| by ext; rfl
+  associator_eq X Y Z := ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| by ext; rfl
+  leftUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
+  rightUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (CoalgebraCat R) :=
   Monoidal.induced (forget₂ _ (ModuleCat R)) (MonoidalCategory.inducingFunctorData R)

@@ -867,6 +867,16 @@ theorem Filter.comap_cocompact_le {f : X → Y} (hf : Continuous f) :
   refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
 
+/-- If a filter is disjoint from the cocompact filter, so is its image under any continuous
+function. -/
+theorem disjoint_map_cocompact {g : X → Y} {f : Filter X} (hg : Continuous g)
+    (hf : Disjoint f (Filter.cocompact X)) : Disjoint (map g f) (Filter.cocompact Y) := by
+  rw [← Filter.disjoint_comap_iff_map, disjoint_iff_inf_le]
+  calc
+    f ⊓ (comap g (cocompact Y))
+    _ ≤ f ⊓ Filter.cocompact X := inf_le_inf_left f (Filter.comap_cocompact_le hg)
+    _ = ⊥ := disjoint_iff.mp hf
+
 theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsCompact (range f) := by
   rw [← image_univ]; exact isCompact_univ.image hf
 
