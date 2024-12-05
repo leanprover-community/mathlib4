@@ -380,10 +380,50 @@ lemma polar_lift_eq_zero_on_symOffDiagLower
 /--
 Lift the left side
 -/
-noncomputable def polar_left_lift : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
-  Sym2.lift ⟨fun i j => if i.1 = j.1 then Q₁ (bm₁ i.1) ⊗ₜ polarBilin Q₂ (bm₂ i.2) (bm₂ j.2) else 0,
+noncomputable def polar_left_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  Sym2.lift ⟨fun i j => if i.1 = j.1 then (bm.repr x) i •
+    (bm.repr x) j • Q₁ (bm₁ i.1) ⊗ₜ polarBilin Q₂ (bm₂ i.2) (bm₂ j.2) else 0,
   fun _ _ => ite_congr (by rw [eq_iff_iff, eq_comm])
-    (fun h => by simp_rw [polarBilin_apply_apply, h, polar_comm]) (congrFun rfl)⟩
+    (fun h => by
+      simp_rw [polarBilin_apply_apply, h, polar_comm]
+      rw [smul_comm]) (congrFun rfl)⟩
+
+lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
+    (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
+    (h: p ∈ Finset.filter symOffDiagLeft s) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    polar_lift Q bm x p =  polar_left_lift bm₁ Q₁ bm₂ Q₂ x p := by
+  induction' p with i j
+  simp
+  rw [polar_lift, polar_left_lift]
+  simp at h
+  obtain e1 := h.2.1
+  simp only [Sym2.lift_mk, polarBilin_apply_apply]
+  simp_rw [e1]
+  simp_all only [true_and, ↓reduceIte]
+  obtain ⟨fst, snd⟩ := i
+  obtain ⟨fst_1, snd_1⟩ := j
+  obtain ⟨left, right⟩ := h
+  subst e1
+  simp_all only [Basis.tensorProduct_apply]
+  rw [tensorDistriFree_polar1]
+  · rfl
+  · rfl
+
+
+
+lemma sum_left (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagLeft p, Q.polar_lift bm x p) =
+      (∑ p ∈ s with symOffDiagLeft p, polar_left_lift bm₁ Q₁ bm₂ Q₂ p) := by
+  apply Finset.sum_congr rfl _
+  intro p hp
+
+
 
 theorem sum1 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
