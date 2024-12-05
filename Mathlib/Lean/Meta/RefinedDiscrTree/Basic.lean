@@ -186,8 +186,9 @@ instance : Inhabited (LazyEntry) where
   default := { mctx := {} }
 
 private def LazyEntry.format (entry : LazyEntry) : Format :=
-  let results := if entry.results matches [] then f!"" else f!", results: {entry.results}, "
-  f!"stack: {entry.stack}{results}"
+  let results := if entry.results matches [] then f!"" else f!", results: {entry.results}"
+  let todo    := if let some info := entry.previous then f!", todo: {info.expr}" else ""
+  f!"stack: {entry.stack}{results}{todo}"
 
 instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
 
