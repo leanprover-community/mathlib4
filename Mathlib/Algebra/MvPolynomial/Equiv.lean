@@ -357,13 +357,16 @@ theorem finSuccEquivNth_comp_C_eq_C :
 
 variable {R} {p}
 
+@[simp]
 theorem finSuccEquivNth_X_same : finSuccEquivNth R p (X p) = Polynomial.X := by
   simp [finSuccEquivNth_apply]
 
+@[simp]
 theorem finSuccEquivNth_X_above {i : Fin n} (h : p < i.succ) :
     finSuccEquivNth R p (X i.succ) = Polynomial.C (X i) := by
   simp [finSuccEquivNth_apply, Fin.insertNth_apply_above h _ _]
 
+@[simp]
 theorem finSuccEquivNth_X_below {i : Fin n} (h : i.castSucc < p) :
     finSuccEquivNth R p (X i.castSucc) = Polynomial.C (X i) := by
   simp [finSuccEquivNth_apply, Fin.insertNth_apply_below h _ _]
@@ -405,12 +408,12 @@ theorem eval_eq_eval_mv_eval_finSuccEquivNth (s : Fin n → R) (y : R)
       ((Polynomial.mapAlgHom (aeval s)).comp (finSuccEquivNth R p).toAlgHom) f
   congr 2
   apply MvPolynomial.algHom_ext
-  rw [Fin.forall_iff_succAbove p]
-  simp only [aeval_X, Fin.insertNth_apply_same, Polynomial.mapAlgHom, AlgHom.toRingHom_eq_coe,
-    coe_aeval_eq_eval, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
-    AlgHom.coe_mk, coe_mapRingHom, AlgHom.coe_coe, comp_apply, finSuccEquivNth_apply, eval₂Hom_X',
-    Polynomial.map_X, Polynomial.eval_X, Fin.insertNth_apply_succAbove, Polynomial.map_C, eval_X,
-    Polynomial.eval_C, implies_true, and_self]
+  simp only [Fin.forall_iff_succAbove p, aeval_X, Fin.insertNth_apply_same, Polynomial.mapAlgHom,
+    AlgHom.toRingHom_eq_coe, coe_aeval_eq_eval, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
+    Polynomial.coe_aeval_eq_eval, AlgHom.coe_mk, coe_mapRingHom, AlgHom.coe_coe, comp_apply,
+    finSuccEquivNth_apply, eval₂Hom_X', Polynomial.map_X, Polynomial.eval_X,
+    Fin.insertNth_apply_succAbove, Polynomial.map_C, eval_X, Polynomial.eval_C, implies_true,
+    and_self]
 
 /-- A monomial index `m` is in the support of the `i`-th coefficient of `finSuccEquivNth R p f` if
 and only if `m.insertNth p i` is in the support of `f`. -/
@@ -436,8 +439,7 @@ theorem totalDegree_coeff_finSuccEquivNth_add_le (f : MvPolynomial (Fin (n + 1))
   -- Then σ.insertNth p i is a monomial index of f with total degree equal to the desired bound
   convert le_totalDegree (s := σ.insertNth p i) _
   · rw [totalDegree, hσ2, sum_insertNth _ _ p, add_comm]
-  · rw [← support_coeff_finSuccEquivNth]
-    exact hσ1
+  · rwa [← support_coeff_finSuccEquivNth]
 
 /-- The support of `finSuccEquivNth R p f` equals the support of `f` projected onto the `p`-th
 variable. -/
@@ -572,8 +574,10 @@ theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
 
 variable {n} {R}
 
+@[simp]
 theorem finSuccEquiv_X_zero : finSuccEquiv R n (X 0) = Polynomial.X := by simp [finSuccEquiv_apply]
 
+@[simp]
 theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomial.C (X j) := by
   simp [finSuccEquiv_apply]
 
