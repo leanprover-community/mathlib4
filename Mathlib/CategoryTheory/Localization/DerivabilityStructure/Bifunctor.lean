@@ -1,7 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 import Mathlib.CategoryTheory.Localization.Prod
 
+/-!
+#
+
+-/
 universe v₁ v₂ v₁' v₂' v₃ v₄ v u₁ u₂ u₁' u₂' u₃ u₄ u
 
 namespace CategoryTheory
@@ -23,7 +32,7 @@ namespace Bifunctor
 variable {C₁ C₂ H}
 variable (RF : Bifunctor D₁ D₂ H) (F : Bifunctor C₁ C₂ H)
 
-abbrev uncurry : C₁ × C₂ ⥤ H := uncurry.obj F
+nonrec abbrev uncurry : C₁ × C₂ ⥤ H := uncurry.obj F
 
 variable {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
   {W₁' : MorphismProperty C₁'} {W₂' : MorphismProperty C₂'}
@@ -48,7 +57,7 @@ lemma precompLocalizerMorphismsInverts_iff [W₁'.ContainsIdentities] [W₂'.Con
       let φ : (⟨X₁, X₂⟩ : C₁' × C₂') ⟶ ⟨X₁, Y₂⟩ := ⟨𝟙 _, f₂⟩
       simpa using hF.isInvertedBy φ ⟨W₁'.id_mem _, hf₂⟩
   · rintro ⟨hF₁, hF₂⟩
-    refine' ⟨fun ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ ⟨f₁, f₂⟩ ⟨hf₁, hf₂⟩ => _⟩
+    refine ⟨fun ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ ⟨f₁, f₂⟩ ⟨hf₁, hf₂⟩ => ?_⟩
     dsimp
     have := hF₁ f₁ X₂ hf₁
     have := hF₂ Y₁ f₂ hf₂
@@ -100,6 +109,7 @@ def whiskeringLeft₂Equiv (F : Bifunctor C₁ C₂ H) (G : (D₁ × D₂) ⥤ H
   left_inv _ := rfl
   right_inv _ := rfl
 
+/-- whiskeringLeft₂Equiv' -/
 @[simps!]
 def whiskeringLeft₂Equiv' (F : Bifunctor C₁ C₂ H) (G : Bifunctor D₁ D₂ H)
     (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) :
@@ -116,17 +126,16 @@ def whiskeringLeft₂Equiv' (F : Bifunctor C₁ C₂ H) (G : Bifunctor D₁ D₂
     (whiskeringLeft₂Equiv F G.uncurry L₁ L₂)
 
 variable {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
-  [W₁.ContainsIdentities] [W₂.ContainsIdentities]
-  [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]
 
 variable {F}
 
-abbrev IsRightDerivedBifunctor (α : F ⟶ (whiskeringLeft₂ L₁ L₂).obj RF) :=
+abbrev IsRightDerivedBifunctor [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+    (α : F ⟶ (whiskeringLeft₂ L₁ L₂).obj RF) :=
   RF.uncurry.IsRightDerivedFunctor (whiskeringLeft₂Equiv' _ _ _ _ α) (W₁.prod W₂)
 
 section
 
-variable (α : F ⟶ (whiskeringLeft₂ L₁ L₂).obj RF)
+variable [W₁.ContainsIdentities] [W₂.ContainsIdentities] (α : F ⟶ (whiskeringLeft₂ L₁ L₂).obj RF)
     [Bifunctor.IsRightDerivedBifunctor RF W₁ W₂ α]
 
 section
@@ -135,6 +144,7 @@ variable [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructur
 variable {W₁ W₂}
 
 lemma isIso_app_app_of_isRightDerivedBifunctor
+    [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]
     [hF : PrecompLocalizerMorphismsInverts F Φ₁ Φ₂] (X₁' : C₁') (X₂' : C₂') :
     IsIso ((α.app (Φ₁.functor.obj X₁')).app (Φ₂.functor.obj X₂')) := by
   convert (Φ₁.prod Φ₂).isIso_app_of_isRightDerivedFunctor F.uncurry hF.isInvertedBy
@@ -150,6 +160,7 @@ variable (X₁ : C₁) (F₂ : D₂ ⥤ H) (α₁ : F.obj X₁ ⟶ L₂ ⋙ F₂
 noncomputable def rightDerivedNatTrans₁ : F₂ ⟶ RF.obj (L₁.obj X₁) :=
   Functor.rightDerivedDesc F₂ α₁ W₂ _ (α.app X₁)
 
+omit [W₂.ContainsIdentities] in
 lemma rightDerivedNatTrans₁_fac_app (X₂ : C₂) :
     α₁.app X₂ ≫ (rightDerivedNatTrans₁ RF W₂ α X₁ F₂ α₁).app (L₂.obj X₂) =
       (α.app X₁).app X₂ := by
@@ -165,6 +176,7 @@ noncomputable def rightDerivedNatTrans₂ : F₁ ⟶ RF.flip.obj (L₂.obj X₂)
   Functor.rightDerivedDesc F₁ α₂ W₁ _
     (toWhiskeringLeft₂Eval₂ α X₂)
 
+omit [W₁.ContainsIdentities] in
 lemma rightDerivedNatTrans₂_fac_app (X₁ : C₁) :
   α₂.app X₁ ≫ (rightDerivedNatTrans₂ RF W₁ α X₂ F₁ α₂).app (L₁.obj X₁) =
     (α.app X₁).app X₂ := by
@@ -177,7 +189,7 @@ end
 section
 
 variable (F L₁ L₂)
-variable [HasRightDerivedBifunctor F W₁ W₂]
+variable [HasRightDerivedBifunctor F W₁ W₂] [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 
 noncomputable def rightDerivedBifunctor : D₁ ⥤ D₂ ⥤ H :=
     curry.obj (F.uncurry.totalRightDerived (L₁.prod L₂) (W₁.prod W₂))
@@ -190,42 +202,52 @@ noncomputable def rightDerivedUnit :
 end
 
 variable {W₁ W₂} (F)
-variable [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructure]
-  [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]
+section
+
+variable
   [hF : PrecompLocalizerMorphismsInverts F Φ₁ Φ₂]
 
-lemma hasRightDerivedBifunctor_of_precompLocalizerMorphismsInverts :
+include hF in
+lemma hasRightDerivedBifunctor_of_precompLocalizerMorphismsInverts
+    [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+    [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]
+    [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructure] :
     HasRightDerivedBifunctor F W₁ W₂ :=
   (Φ₁.prod Φ₂).hasRightDerivedFunctor F.uncurry hF.isInvertedBy
 
-lemma isInverted₁_of_precompLocalizerMorphismsInverts (X₁ : C₁'):
+lemma isInverted₁_of_precompLocalizerMorphismsInverts (X₁ : C₁') [W₁'.ContainsIdentities] :
     W₂'.IsInvertedBy (Φ₂.functor ⋙ F.obj (Φ₁.functor.obj X₁)) := by
   intro X₂ Y₂ f₂ hf₂
   let φ : (⟨X₁, X₂⟩ : C₁' × C₂') ⟶ ⟨X₁, Y₂⟩ := ⟨𝟙 _, f₂⟩
   simpa using hF.isInvertedBy φ ⟨W₁'.id_mem _, hf₂⟩
 
-lemma hasRightDerivedFunctor₁_of_precompLocalizerMorphismsInverts (X₁ : C₁') :
+lemma hasRightDerivedFunctor₁_of_precompLocalizerMorphismsInverts
+    [W₁'.ContainsIdentities]
+    [Φ₂.IsRightDerivabilityStructure] (X₁ : C₁') :
     (F.obj (Φ₁.functor.obj X₁)).HasRightDerivedFunctor W₂ :=
   Φ₂.hasRightDerivedFunctor _ (isInverted₁_of_precompLocalizerMorphismsInverts F Φ₁ Φ₂ X₁)
 
-lemma isInverted₂_of_precompLocalizerMorphismsInverts (X₂ : C₂'):
+lemma isInverted₂_of_precompLocalizerMorphismsInverts [W₂'.ContainsIdentities] (X₂ : C₂') :
     W₁'.IsInvertedBy (Φ₁.functor ⋙ F.flip.obj (Φ₂.functor.obj X₂)) := by
   intro X₁ Y₁ f₁ hf₁
   let φ : (⟨X₁, X₂⟩ : C₁' × C₂') ⟶ ⟨Y₁, X₂⟩ := ⟨f₁, 𝟙 _⟩
   simpa using hF.isInvertedBy φ ⟨hf₁, W₂'.id_mem _⟩
 
-lemma hasRightDerivedFunctor₂_of_precompLocalizerMorphismsInverts (X₂ : C₂') :
+lemma hasRightDerivedFunctor₂_of_precompLocalizerMorphismsInverts
+    [W₂'.ContainsIdentities] [Φ₁.IsRightDerivabilityStructure] (X₂ : C₂') :
     (F.flip.obj (Φ₂.functor.obj X₂)).HasRightDerivedFunctor W₁ :=
   Φ₁.hasRightDerivedFunctor _ (isInverted₂_of_precompLocalizerMorphismsInverts F Φ₁ Φ₂ X₂)
 
-variable (α : F ⟶ (whiskeringLeft₂ L₁ L₂).obj RF) [IsRightDerivedBifunctor RF W₁ W₂ α]
+variable (α : F ⟶ (whiskeringLeft₂ L₁ L₂).obj RF) [W₁.ContainsIdentities]
+  [W₂.ContainsIdentities] [IsRightDerivedBifunctor RF W₁ W₂ α]
 
 section
 
 variable (X₁ : C₁') (F₂ : D₂ ⥤ H)
   (α₁ : F.obj (Φ₁.functor.obj X₁) ⟶ L₂ ⋙ F₂) [F₂.IsRightDerivedFunctor α₁ W₂]
 
-lemma isIso_rightDerivedNatTrans₁ :
+lemma isIso_rightDerivedNatTrans₁ [Φ₂.IsRightDerivabilityStructure]
+    [Φ₁.IsRightDerivabilityStructure] [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     IsIso (rightDerivedNatTrans₁ RF W₂ α (Φ₁.functor.obj X₁) F₂ α₁) := by
   rw [Φ₂.isIso_iff_of_hasRightResolutions L₂]
   intro X₂
@@ -235,7 +257,11 @@ lemma isIso_rightDerivedNatTrans₁ :
   exact IsIso.of_isIso_fac_left (rightDerivedNatTrans₁_fac_app RF W₂ α (Φ₁.functor.obj X₁)
     F₂ α₁ (Φ₂.functor.obj X₂))
 
-lemma isRightDerivedFunctor₁_of_isRightDerivedBifunctor :
+include Φ₂ in
+lemma isRightDerivedFunctor₁_of_isRightDerivedBifunctor [W₁'.ContainsIdentities]
+    [W₂'.ContainsIdentities]
+    [Φ₁.IsRightDerivabilityStructure]
+    [Φ₂.IsRightDerivabilityStructure] :
     (RF.obj (L₁.obj (Φ₁.functor.obj X₁))).IsRightDerivedFunctor
       (α.app (Φ₁.functor.obj X₁)) W₂ := by
   have := hasRightDerivedFunctor₁_of_precompLocalizerMorphismsInverts F Φ₁ Φ₂ X₁
@@ -253,7 +279,9 @@ section
 variable (X₂ : C₂') (F₁ : D₁ ⥤ H) (α₂ : F.flip.obj (Φ₂.functor.obj X₂) ⟶ L₁ ⋙ F₁)
     [F₁.IsRightDerivedFunctor α₂ W₁]
 
-lemma isIso_rightDerivedNatTrans₂ :
+include Φ₁ in
+lemma isIso_rightDerivedNatTrans₂ [Φ₁.IsRightDerivabilityStructure]
+    [Φ₂.IsRightDerivabilityStructure] [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     IsIso (rightDerivedNatTrans₂ RF W₁ α (Φ₂.functor.obj X₂) F₁ α₂) := by
   rw [Φ₁.isIso_iff_of_hasRightResolutions L₁]
   intro X₁
@@ -263,7 +291,8 @@ lemma isIso_rightDerivedNatTrans₂ :
   exact IsIso.of_isIso_fac_left (rightDerivedNatTrans₂_fac_app RF W₁ α (Φ₂.functor.obj X₂)
     F₁ α₂ (Φ₁.functor.obj X₁))
 
-lemma isRightDerivedFunctor₂_of_isRightDerivedBifunctor :
+lemma isRightDerivedFunctor₂_of_isRightDerivedBifunctor [Φ₁.IsRightDerivabilityStructure]
+    [Φ₂.IsRightDerivabilityStructure] [W₁'.ContainsIdentities] [W₂'.ContainsIdentities] :
     (RF.flip.obj (L₂.obj (Φ₂.functor.obj X₂))).IsRightDerivedFunctor
       (toWhiskeringLeft₂Eval₂ α (Φ₂.functor.obj X₂)) W₁ := by
   have := hasRightDerivedFunctor₂_of_precompLocalizerMorphismsInverts F Φ₁ Φ₂ X₂
@@ -273,6 +302,8 @@ lemma isRightDerivedFunctor₂_of_isRightDerivedBifunctor :
     (RF.flip.obj (L₂.obj (Φ₂.functor.obj X₂)))
     (toWhiskeringLeft₂Eval₂ α (Φ₂.functor.obj X₂))]
   exact isIso_rightDerivedNatTrans₂ RF F Φ₁ Φ₂ α X₂ RF₁ α₂
+
+end
 
 end
 

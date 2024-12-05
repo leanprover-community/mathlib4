@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.Prod
+
+/-!
+# Product of derivability structures
+
+-/
 
 namespace CategoryTheory
 
@@ -30,7 +40,7 @@ variable (Φ₁ Φ₂)
 
 instance [Φ₁.HasRightResolutions] [Φ₂.HasRightResolutions] :
     (Φ₁.prod Φ₂).HasRightResolutions := fun ⟨X₁, X₂⟩ => by
-  refine' ⟨RightResolution.prod _ _⟩
+  refine ⟨RightResolution.prod ?_ ?_⟩
   all_goals apply Classical.arbitrary
 
 variable [W₁.ContainsIdentities] [W₂.ContainsIdentities]

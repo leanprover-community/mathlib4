@@ -25,6 +25,7 @@ variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProp
   [W.HasLeftCalculusOfFractions] [W.HasRightCalculusOfFractions]
   [L.IsLocalization W]
 
+include W in
 lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj where
   mem_essImage Y := by
     obtain ⟨Y₀, Y₁, Y₂, f, g, rfl⟩ := ComposableArrows.mk₂_surjective Y
@@ -33,7 +34,7 @@ lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj where
       ((L.objObjPreimageIso Y₀).hom ≫ f ≫ (L.objObjPreimageIso Y₁).inv)
     obtain ⟨g', hg'⟩ := exists_leftFraction L W
       ((L.objObjPreimageIso Y₁).hom ≫ g ≫ (L.objObjPreimageIso Y₂).inv)
-    refine' ⟨ComposableArrows.mk₂ f'.f g'.f,
+    refine ⟨ComposableArrows.mk₂ f'.f g'.f,
       ⟨ComposableArrows.isoMk₂
         (Localization.isoOfHom L W f'.s f'.hs ≪≫ L.objObjPreimageIso Y₀)
         (L.objObjPreimageIso Y₁)
@@ -41,7 +42,7 @@ lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj where
     · dsimp
       rw [← cancel_mono (L.objObjPreimageIso Y₁).inv, assoc, assoc, assoc, hf',
         Iso.hom_inv_id, comp_id, MorphismProperty.RightFraction.map_s_comp_map]
-    · dsimp
+    · dsimp [ComposableArrows.Precomp.map]
       rw [← cancel_mono (L.objObjPreimageIso Y₂).inv, assoc, assoc, assoc, hg',
         Iso.hom_inv_id, comp_id]
       rfl

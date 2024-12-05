@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+/-!
+# Anodyne extensions
+
+-/
 
 universe w v u
 
@@ -61,14 +71,21 @@ structure IsStableUnderInfiniteComposition : Prop where
     (c : Cocone X) (hc : IsColimit c) : W (c.ι.app 0)
 
 class IsGabrielZismanSaturated [W.IsMultiplicative] where
-  subset_mono : W ⊆ monomorphisms C
-  iso_subset : isomorphisms C ⊆ W
-  stableUnderCobaseChange : W.StableUnderCobaseChange
+  subset_mono : W ≤ monomorphisms C
+  iso_subset : isomorphisms C ≤ W
+  isStableUnderCobaseChange : W.IsStableUnderCobaseChange := by infer_instance
   isStableUnderRetract : W.IsStableUnderRetract
-  isStableUnderCoproducts : W.IsStableUnderCoproducts
-  isStableUnderInfiniteComposition : W.IsStableUnderInfiniteComposition
+  isStableUnderCoproducts : W.IsStableUnderCoproducts := by infer_instance
+  isStableUnderInfiniteComposition : W.IsStableUnderInfiniteComposition := by infer_instance
 
-inductive gabrielZismanSaturation : MorphismProperty C :=
+namespace IsGabrielZismanSaturated
+
+attribute [instance] isStableUnderCobaseChange isStableUnderCoproducts
+  isStableUnderInfiniteComposition
+
+end IsGabrielZismanSaturated
+
+inductive gabrielZismanSaturation : MorphismProperty C where
   | of_mem {X Y : C} (f : X ⟶ Y) (hf : W f) : gabrielZismanSaturation f
   | of_iso {X Y : C} (e : X ≅ Y) : gabrielZismanSaturation e.hom
   | of_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : gabrielZismanSaturation f)
@@ -87,25 +104,25 @@ inductive gabrielZismanSaturation : MorphismProperty C :=
       gabrielZismanSaturation (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
 
 instance : W.gabrielZismanSaturation.ContainsIdentities where
-  id_mem' X := gabrielZismanSaturation.of_iso (Iso.refl X)
+  id_mem X := gabrielZismanSaturation.of_iso (Iso.refl X)
 
 instance : W.gabrielZismanSaturation.IsMultiplicative where
-  stableUnderComposition _ _ _ _ _ hf hg :=
+  comp_mem _ _ hf hg :=
     gabrielZismanSaturation.of_comp _ _ hf hg
 
 section
 
 instance : ContainsIdentities (monomorphisms C) where
-  id_mem' _ := monomorphisms.infer_property _
+  id_mem _ := monomorphisms.infer_property _
 
 instance : IsMultiplicative (monomorphisms C) where
-  stableUnderComposition _ _ _ f g hf hg := by
+  comp_mem f g hf hg := by
     have : Mono f := hf
     have : Mono g := hg
     exact mono_comp f g
 
 lemma IsGabrielZismanSaturated.monomorphisms
-    (hmono₁ : (monomorphisms C).StableUnderCobaseChange)
+    (hmono₁ : (monomorphisms C).IsStableUnderCobaseChange)
     (hmono₂ : (monomorphisms C).IsStableUnderCoproducts)
     (hmono₃ : (monomorphisms C).IsStableUnderInfiniteComposition) :
     IsGabrielZismanSaturated (monomorphisms C) where
@@ -113,19 +130,19 @@ lemma IsGabrielZismanSaturated.monomorphisms
   iso_subset _ _ f hf := by
     have : IsIso f := hf
     apply monomorphisms.infer_property
-  stableUnderCobaseChange := hmono₁
+  isStableUnderCobaseChange := hmono₁
   isStableUnderRetract := IsStableUnderRetract.monomorphisms C
   isStableUnderCoproducts := hmono₂
   isStableUnderInfiniteComposition := hmono₃
 
 end
 
-lemma subset_gabrielZismanSaturation : W ⊆ W.gabrielZismanSaturation :=
+lemma subset_gabrielZismanSaturation : W ≤ W.gabrielZismanSaturation :=
   fun _ _ _ hf => gabrielZismanSaturation.of_mem _ hf
 
 lemma gabrielZismanSaturation_subset_iff (W₁ W₂ : MorphismProperty C) [W₂.IsMultiplicative]
     [W₂.IsGabrielZismanSaturated] :
-    W₁.gabrielZismanSaturation ⊆ W₂ ↔ W₁ ⊆ W₂ := by
+    W₁.gabrielZismanSaturation ≤ W₂ ↔ W₁ ≤ W₂ := by
   constructor
   · intro h X Y f hf
     exact h _ (subset_gabrielZismanSaturation _ _ hf)
@@ -134,8 +151,7 @@ lemma gabrielZismanSaturation_subset_iff (W₁ W₂ : MorphismProperty C) [W₂.
       | of_mem f hf => exact h _ hf
       | of_iso f => exact IsGabrielZismanSaturated.iso_subset _ (isomorphisms.infer_property _)
       | of_comp f g _ _ hf hg => exact W₂.comp_mem _ _ hf hg
-      | of_isPushout f g f' g' h _ hf =>
-          exact IsGabrielZismanSaturated.stableUnderCobaseChange h hf
+      | of_isPushout f g f' g' h _ hf => exact MorphismProperty.of_isPushout h hf
       | of_retract f f' i p hip _ h =>
           exact IsGabrielZismanSaturated.isStableUnderRetract.mem_of_retract f f' i p hip h
       | of_infinite_composition X _ c hc h =>
@@ -144,15 +160,16 @@ lemma gabrielZismanSaturation_subset_iff (W₁ W₂ : MorphismProperty C) [W₂.
           exact IsGabrielZismanSaturated.isStableUnderCoproducts _ X₁ X₂ c₁ c₂ h₁ h₂ f h
 
 lemma gabrielZismanSaturation_isGabrielZismanSaturated
-    (hW : W ⊆ monomorphisms C)
+    (hW : W ≤ monomorphisms C)
     [(monomorphisms C).IsGabrielZismanSaturated] :
     (W.gabrielZismanSaturation).IsGabrielZismanSaturated where
   subset_mono := by simpa only [gabrielZismanSaturation_subset_iff] using hW
   iso_subset _ _ f hf := by
     have : IsIso f := hf
     exact gabrielZismanSaturation.of_iso (asIso f)
-  stableUnderCobaseChange _ _ _ _ f g f' g' h hf :=
-    gabrielZismanSaturation.of_isPushout _ _ _ _ h hf
+  isStableUnderCobaseChange := ⟨by
+    rintro _ _ _ _ f g f' g' h hf
+    exact gabrielZismanSaturation.of_isPushout _ _ _ _ h hf⟩
   isStableUnderRetract :=
     ⟨fun f g i p hip hg => gabrielZismanSaturation.of_retract _ _ _ _ hip hg⟩
   isStableUnderCoproducts J := gabrielZismanSaturation.of_coproduct

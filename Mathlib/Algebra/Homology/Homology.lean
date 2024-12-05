@@ -7,7 +7,6 @@ import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.CategoryTheory.GradedObject
 
-#align_import algebra.homology.homology from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
 /-!
 # The homology of a complex
@@ -86,7 +85,6 @@ abbrev boundaries (C : HomologicalComplex V c) (j : ι) : Subobject (C.X j) :=
 theorem boundaries_eq_imageSubobject [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
     C.boundaries j = imageSubobject (C.d i j) :=
   C.image_to_eq_image r
-#align homological_complex.boundaries_eq_image_subobject HomologicalComplex.boundaries_eq_imageSubobject
 
 /-- The underlying object of `C.boundaries j` is isomorphic to `image (C.d i j)`,
 for any `i` such that `Rel i j`. -/
@@ -122,7 +120,6 @@ abbrev boundariesToCycles' (C : HomologicalComplex V c) (i : ι) :
 @[simp 1100]
 theorem imageToKernel_as_boundariesToCycles' (C : HomologicalComplex V c) (i : ι) (h) :
     (C.boundaries i).ofLE (C.cycles' i) h = C.boundariesToCycles' i := rfl
-#align homological_complex.image_to_kernel_as_boundaries_to_cycles HomologicalComplex.imageToKernel_as_boundariesToCycles'
 
 variable [HasCokernels V]
 
