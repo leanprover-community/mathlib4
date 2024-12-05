@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Abelian.Basic
+
+/-!
+# Constructor for abelian categories
+
+-/
 
 namespace CategoryTheory
 
@@ -7,11 +17,13 @@ open Category Limits
 namespace Abelian
 
 variable (C : Type*) [Category C] [Preadditive C] [HasFiniteProducts C]
-  (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), ∃ (K : C) (i : K ⟶ X) (wi : i ≫ f = 0) (_hi : IsLimit (KernelFork.ofι _ wi))
+  (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), ∃ (K : C) (i : K ⟶ X) (wi : i ≫ f = 0)
+    (_hi : IsLimit (KernelFork.ofι _ wi))
     (Q : C) (p : Y ⟶ Q) (wp : f ≫ p = 0) (_hp : IsColimit (CokernelCofork.ofπ _ wp))
     (I : C) (π : X ⟶ I) (wπ : i ≫ π = 0) (_hπ : IsColimit (CokernelCofork.ofπ _ wπ))
     (ι : I ⟶ Y) (wι : ι ≫ p = 0) (_hι : IsLimit (KernelFork.ofι _ wι)), f = π ≫ ι)
 
+/-- Constructor for abelian categories. -/
 noncomputable def mk' : Abelian C where
   toPreadditive := inferInstance
   has_kernels := ⟨fun {X Y} f => by
@@ -23,7 +35,7 @@ noncomputable def mk' : Abelian C where
   normalMonoOfMono {X Y} f _ := by
     apply Nonempty.some
     obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
-    refine'
+    refine
      ⟨{ Z := Q
         g := p
         w := by rw [fac, assoc, wι, comp_zero]
@@ -35,7 +47,7 @@ noncomputable def mk' : Abelian C where
   normalEpiOfEpi {X Y} f _ := by
     apply Nonempty.some
     obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
-    refine'
+    refine
      ⟨{ W := K
         g := i
         w := by rw [fac, reassoc_of% wπ, zero_comp]

@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+/-!
+# ShortComplex₄
+
+-/
 
 namespace CategoryTheory
 
@@ -63,7 +73,7 @@ instance : Category (ShortComplex₄ C) where
 @[ext]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃)
     (h₄ : f.τ₄ = g.τ₄) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃ h₄
+  Hom.ext h₁ h₂ h₃ h₄
 
 /-- A constructor for morphisms in `ShortComplex₄ C` when the commutativity conditions
 are not obvious. -/
@@ -266,6 +276,7 @@ section
 variable (hS : S.Exact) (cc : CokernelCofork S.f) (kf : KernelFork S.h)
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+/-- cokerToKer' -/
 def cokerToKer' : cc.pt ⟶ kf.pt :=
   IsColimit.desc hcc (CokernelCofork.ofπ _
     (show S.f ≫ IsLimit.lift hkf (KernelFork.ofι _ S.zero₂) = 0 from
@@ -340,6 +351,7 @@ lemma connectShortComplex_exact (hS : S.Exact) (hT : T.Exact) [Epi S.g] [Mono T.
   exact₃ := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono
     (connectShortComplexπ S T e φ hφ)).2 hT
 
+/-- `connectShortComplex_exact'`. -/
 lemma connectShortComplex_exact' (hS : S.Exact) (hT : T.Exact) (_ : Epi S.g) (_ : Mono T.f) :
     (connectShortComplex S T e φ hφ).Exact :=
   connectShortComplex_exact S T e φ hφ hS hT
@@ -355,11 +367,11 @@ variable [Preadditive C] (S : ShortComplex₄ C)
   (hS : S.Exact) (cc : CokernelCofork S.f) (kf : KernelFork S.h)
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
+/-- epi_cokerToKer' -/
 lemma epi_cokerToKer' (hS : S.shortComplex₂.Exact) :
     Epi (S.cokerToKer' cc kf hcc hkf) := by
   have := hS.hasZeroObject
   have := hS.hasHomology
-  have : Epi cc.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext hcc⟩
   let h := (hS.leftHomologyDataOfIsLimitKernelFork kf hkf)
   have := h.exact_iff_epi_f'.1 hS
   have fac : cc.π ≫ S.cokerToKer' cc kf hcc hkf = h.f' := by
@@ -367,11 +379,11 @@ lemma epi_cokerToKer' (hS : S.shortComplex₂.Exact) :
       assoc, cokerToKer'_fac, shortComplex₂_f]
   exact epi_of_epi_fac fac
 
+/-- mono_cokerToKer' -/
 lemma mono_cokerToKer' (hS : S.shortComplex₁.Exact) :
     Mono (S.cokerToKer' cc kf hcc hkf) := by
   have := hS.hasZeroObject
   have := hS.hasHomology
-  have : Mono kf.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext hkf⟩
   let h := (hS.rightHomologyDataOfIsColimitCokernelCofork cc hcc)
   have := h.exact_iff_mono_g'.1 hS
   have fac : S.cokerToKer' cc kf hcc hkf ≫ kf.ι = h.g' := by
@@ -382,6 +394,9 @@ lemma mono_cokerToKer' (hS : S.shortComplex₁.Exact) :
 variable {S}
 variable [Balanced C]
 
+include hS
+
+/-- isIso_cokerToKer' -/
 lemma Exact.isIso_cokerToKer' : IsIso (S.cokerToKer' cc kf hcc hkf) := by
   have := S.mono_cokerToKer' cc kf hcc hkf hS.exact₂
   have := S.epi_cokerToKer' cc kf hcc hkf hS.exact₃
@@ -396,6 +411,7 @@ lemma Exact.isIso_opcyclesToCycles
     IsIso S.opcyclesToCycles :=
   hS.isIso_cokerToKer' _ _ _ _
 
+/-- Exact.cokerIsoKer' -/
 @[simps! hom]
 noncomputable def Exact.cokerIsoKer' : cc.pt ≅ kf.pt :=
   have := hS.isIso_cokerToKer' cc kf hcc hkf
@@ -408,7 +424,7 @@ noncomputable def Exact.cokerIsoKer [HasCokernel S.f] [HasKernel S.h] :
   asIso S.cokerToKer
 
 @[simps! hom]
-lemma Exact.opcyclesIsoCycles
+noncomputable def Exact.opcyclesIsoCycles
     [S.shortComplex₁.HasRightHomology] [S.shortComplex₂.HasLeftHomology] :
     S.shortComplex₁.opcycles ≅ S.shortComplex₂.cycles :=
   have := hS.isIso_opcyclesToCycles

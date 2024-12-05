@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+
+/-!
+# t-exact functors
+
+-/
 
 namespace CategoryTheory
 
@@ -27,13 +37,13 @@ lemma isGE_obj (X : C) (n : ℤ) [t₁.IsGE X n] [h : F.RightTExact t₁ t₂] :
 lemma isLE_obj (X : C) (n : ℤ) [t₁.IsLE X n] [h : F.LeftTExact t₁ t₂] : t₂.IsLE (F.obj X) n :=
   h.objLE X n
 
-@[pp_dot]
 class TExact : Prop where
   rightTExact : F.RightTExact t₁ t₂
   leftTExact : F.LeftTExact t₁ t₂
 
 attribute [instance] TExact.rightTExact TExact.leftTExact
 
+/-- Constructor for `RightTExact`. -/
 lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     F.RightTExact t₁ t₂ where
   objGE X n _ := by
@@ -42,6 +52,7 @@ lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     have : t₂.IsGE ((F.obj X)⟦n⟧) 0 := t₂.isGE_of_iso ((F.commShiftIso n).app X) 0
     exact t₂.isGE_of_shift (F.obj X) n n 0 (add_zero n)
 
+/-- Constructor for `LeftTExact`. -/
 lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
     F.LeftTExact t₁ t₂ where
   objLE X n _ := by
@@ -132,7 +143,7 @@ def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
     rw [← cancel_mono e.hom.hom₂, Iso.inv_hom_id_triangle_hom₂, h₂]
     dsimp
     rw [comp_id]
-  refine' ⟨e, _, _, h₂⟩
+  refine ⟨e, ?_, ?_, h₂⟩
   · apply t₂.to_truncLE_obj_ext
     simpa [h₂'] using e.inv.comm₁.symm
   · apply t₂.from_truncGE_obj_ext

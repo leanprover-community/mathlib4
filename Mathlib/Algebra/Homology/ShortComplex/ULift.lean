@@ -1,30 +1,31 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.MorphismProperty.Basic
+
+/-!
+# Change of universe
+
+-/
 
 universe v v'
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
-namespace AddCommGroupCat
+namespace AddCommGrp
 
-lemma isZero (X : AddCommGroupCat) (hX : ∀ (x : X), x = 0) :
+lemma isZero (X : Ab) (hX : ∀ (x : X), x = 0) :
     CategoryTheory.Limits.IsZero X := by
   rw [CategoryTheory.Limits.IsZero.iff_id_eq_zero]
   ext x
   exact hX x
 
-@[simps]
-def uliftFunctor : AddCommGroupCat.{v'} ⥤ AddCommGroupCat.{max v v'} where
-  obj G := AddCommGroupCat.of (ULift.{v, v'} G.α)
-  map f := AddCommGroupCat.ofHom (AddMonoidHom.mk' (uliftFunctor.map f) (by
-    rintro ⟨a⟩ ⟨b⟩
-    dsimp
-    rw [map_add]
-    rfl))
-
 @[simps!]
-def addEquivULiftFunctorObj (X : AddCommGroupCat.{v'}) :
-    uliftFunctor.{v, v'}.obj X ≃+ X :=
+def addEquivULiftFunctorObj (X : Ab.{v'}) :
+    uliftFunctor.{v', v}.obj X ≃+ X :=
   AddEquiv.mk' Equiv.ulift (fun _ _ => rfl)
 
 instance : uliftFunctor.{v, v'}.Additive where
@@ -36,15 +37,15 @@ instance : uliftFunctor.{v, v'}.Faithful where
     rw [h]
 
 instance : uliftFunctor.{v, v'}.Full where
-  preimage {X Y} f := AddMonoidHom.mk' (fun x => (f ⟨x⟩).down) (by
+  map_surjective {X Y} f := ⟨AddMonoidHom.mk' (fun x => (f ⟨x⟩).down) (by
     rintro a b
     dsimp
     erw [f.map_add ⟨a⟩ ⟨b⟩]
-    rfl)
+    rfl), rfl⟩
 
 lemma _root_.CategoryTheory.ShortComplex.ab_exact_iff_ulift
-    (S : ShortComplex (AddCommGroupCat.{v'})) :
-    (S.map (uliftFunctor.{v, v'})).Exact ↔ S.Exact := by
+    (S : ShortComplex (Ab.{v'})) :
+    (S.map (uliftFunctor.{v', v})).Exact ↔ S.Exact := by
   simp only [ShortComplex.ab_exact_iff]
   constructor
   · intro h x₂ hx₂
@@ -54,17 +55,17 @@ lemma _root_.CategoryTheory.ShortComplex.ab_exact_iff_ulift
     obtain ⟨x₁, hx₁⟩ := h x₂.down (congr_arg ULift.down.{v, v'} hx₂)
     exact ⟨ULift.up x₁, congr_arg ULift.up hx₁⟩
 
-def ShortComplexIso (S : ShortComplex AddCommGroupCat.{v}) (S' : ShortComplex AddCommGroupCat.{v'}) :=
-  S.map (uliftFunctor.{v', v}) ≅ S'.map (uliftFunctor.{v, v'})
+def ShortComplexIso (S : ShortComplex Ab.{v}) (S' : ShortComplex Ab.{v'}) :=
+  S.map (uliftFunctor.{v, v'}) ≅ S'.map (uliftFunctor.{v', v})
 
 @[simps!]
-def _root_.AddEquiv.toIsoULift {A : AddCommGroupCat.{v}} {B : AddCommGroupCat.{v'}} (e : A ≃+ B) :
-    uliftFunctor.{v', v}.obj A ≅ uliftFunctor.{v, v'}.obj B :=
-  AddEquiv.toAddCommGroupCatIso ((addEquivULiftFunctorObj.{v', v} A).trans
+def _root_.AddEquiv.toIsoULift {A : Ab.{v}} {B : Ab.{v'}} (e : A ≃+ B) :
+    uliftFunctor.{v, v'}.obj A ≅ uliftFunctor.{v', v}.obj B :=
+  AddEquiv.toAddCommGrpIso ((addEquivULiftFunctorObj.{v', v} A).trans
     (e.trans (addEquivULiftFunctorObj.{v, v'} B).symm))
 
-lemma mono_iff_ulift {X Y : AddCommGroupCat.{v'}} (f : X ⟶ Y) :
-    Mono (uliftFunctor.{v, v'}.map f) ↔ Mono f := by
+lemma mono_iff_ulift {X Y : Ab.{v'}} (f : X ⟶ Y) :
+    Mono (uliftFunctor.{v', v}.map f) ↔ Mono f := by
   simp only [mono_iff_injective]
   constructor
   · intro h x₁ x₂ eq
@@ -72,8 +73,8 @@ lemma mono_iff_ulift {X Y : AddCommGroupCat.{v'}} (f : X ⟶ Y) :
   · intro h x₁ x₂ eq
     exact Equiv.ulift.{v, v'}.injective (h (congr_arg ULift.down eq))
 
-lemma epi_iff_ulift {X Y : AddCommGroupCat.{v'}} (f : X ⟶ Y) :
-    Epi (uliftFunctor.{v, v'}.map f) ↔ Epi f := by
+lemma epi_iff_ulift {X Y : Ab.{v'}} (f : X ⟶ Y) :
+    Epi (uliftFunctor.{v', v}.map f) ↔ Epi f := by
   simp only [epi_iff_surjective]
   constructor
   · intro h y
@@ -85,26 +86,28 @@ lemma epi_iff_ulift {X Y : AddCommGroupCat.{v'}} (f : X ⟶ Y) :
 
 section
 
-variable {X₁ X₂ : AddCommGroupCat.{v}} (f : X₁ ⟶ X₂)
-  {X₁' X₂' : AddCommGroupCat.{v'}} (f' : X₁' ⟶ X₂')
+variable {X₁ X₂ : Ab.{v}} (f : X₁ ⟶ X₂)
+  {X₁' X₂' : Ab.{v'}} (f' : X₁' ⟶ X₂')
   (e₁ : X₁ ≃+ X₁') (e₂ : X₂ ≃+ X₂')
   (comm : ∀ (x₁ : X₁), f' (e₁ x₁) = e₂ (f x₁))
 
+include comm
+
 @[simps!]
-def arrowIsoMk : Arrow.mk (uliftFunctor.{v', v}.map f) ≅
-    Arrow.mk (uliftFunctor.{v, v'}.map f') :=
+def arrowIsoMk : Arrow.mk (uliftFunctor.{v, v'}.map f) ≅
+    Arrow.mk (uliftFunctor.{v', v}.map f') :=
   Arrow.isoMk e₁.toIsoULift e₂.toIsoULift (by
     ext x₁
     exact Equiv.ulift.injective (comm x₁.down))
 
 lemma mono_iff_of_addEquiv : Mono f ↔ Mono f' := by
   rw [← mono_iff_ulift.{v', v} f, ← mono_iff_ulift.{v, v'} f']
-  exact (MorphismProperty.RespectsIso.monomorphisms _).arrow_mk_iso_iff
+  exact (MorphismProperty.monomorphisms _).arrow_mk_iso_iff
     (arrowIsoMk f f' e₁ e₂ comm)
 
 lemma epi_iff_of_addEquiv : Epi f ↔ Epi f' := by
   rw [← epi_iff_ulift.{v', v} f, ← epi_iff_ulift.{v, v'} f']
-  exact (MorphismProperty.RespectsIso.epimorphisms _).arrow_mk_iso_iff
+  exact (MorphismProperty.epimorphisms _).arrow_mk_iso_iff
     (arrowIsoMk f f' e₁ e₂ comm)
 
 end
@@ -112,12 +115,14 @@ end
 section
 
 variable
-  (S : ShortComplex AddCommGroupCat.{v}) (S' : ShortComplex AddCommGroupCat.{v'})
+  (S : ShortComplex Ab.{v}) (S' : ShortComplex Ab.{v'})
   (e₁ : S.X₁ ≃+ S'.X₁) (e₂ : S.X₂ ≃+ S'.X₂) (e₃ : S.X₃ ≃+ S'.X₃)
   (commf : ∀ (x₁ : S.X₁), S'.f (e₁ x₁) = e₂ (S.f x₁))
   (commg : ∀ (x₂ : S.X₂), S'.g (e₂ x₂) = e₃ (S.g x₂))
 
-def shortComplexULiftIsoMk : S.map (uliftFunctor.{v', v}) ≅ S'.map (uliftFunctor.{v, v'}) :=
+include commf commg
+
+def shortComplexULiftIsoMk : S.map (uliftFunctor.{v, v'}) ≅ S'.map (uliftFunctor.{v', v}) :=
   ShortComplex.isoMk e₁.toIsoULift e₂.toIsoULift e₃.toIsoULift (by
     ext x₁
     exact Equiv.ulift.injective (commf x₁.down)) (by
@@ -145,17 +150,17 @@ end
 section
 
 variable
-  {S S' : Arrow₂ AddCommGroupCat.{v}}
+  {S S' : Arrow₂ Ab.{v}}
   (e₀ : S.X₀ ≃+ S'.X₀) (e₁ : S.X₁ ≃+ S'.X₁) (e₂ : S.X₂ ≃+ S'.X₂)
   (commf : ∀ (x₁ : S.X₀), S'.f (e₀ x₁) = e₁ (S.f x₁))
   (commg : ∀ (x₂ : S.X₁), S'.g (e₁ x₂) = e₂ (S.g x₂))
 
 @[simps!]
 def arrow₂IsoMk : S ≅ S' :=
-  Arrow₂.isoMk e₀.toAddCommGroupCatIso
-    e₁.toAddCommGroupCatIso e₂.toAddCommGroupCatIso
+  Arrow₂.isoMk e₀.toAddCommGrpIso
+    e₁.toAddCommGrpIso e₂.toAddCommGrpIso
       (by ext; apply commf) (by ext; apply commg)
 
 end
 
-end AddCommGroupCat
+end AddCommGrp

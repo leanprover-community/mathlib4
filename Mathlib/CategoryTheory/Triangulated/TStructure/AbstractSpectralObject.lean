@@ -1,9 +1,18 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.SpectralObject
+
+/-!
+# "Abstract" spectral object of truncations
+
+-/
 
 open CategoryTheory Category Limits Pretriangulated
 
-variable (C : Type _) [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+variable (C : Type _) [Category C]  [HasShift C ℤ]
 
 namespace CategoryTheory
 
@@ -133,6 +142,10 @@ def truncLTGELTSelfToTruncGELT :
     congr 2
     rw [← NatTrans.comp_app, truncLTmap_ι]
 
+variable
+  [Preadditive C] [HasZeroObject C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+
 class IsCompatible where
   isIso_truncGEToTruncGEGE : IsIso F.truncGEToTruncGEGE := by infer_instance
   isIso_truncLTLTToTruncLT : IsIso F.truncLTLTToTruncLT := by infer_instance
@@ -260,6 +273,7 @@ noncomputable def truncLTGELTIsoTruncGELT :
 
 def truncGELTι := whiskerRight Arrow₂.δ₂Toδ₁ F.truncGELT
 
+/-- truncLTGELTIsoTruncGELT_compatibility' -/
 @[reassoc]
 lemma truncLTGELTIsoTruncGELT_compatibility' (D : Arrow₂ ι) (X : C) :
     (F.truncLTGELTIsoTruncGELT.inv.app D).app X ≫
@@ -281,10 +295,10 @@ lemma truncLTGELTIsoTruncGELT_compatibility (D : Arrow₂ ι) (X : C) :
 
 noncomputable def truncGELTδ : Arrow₂.δ₀ ⋙ F.truncGELT ⟶
     Arrow₂.δ₂ ⋙ F.truncGELT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) := by
-  refine' F.truncGEGELTIsoTruncGELT.hom ≫
+  refine F.truncGEGELTIsoTruncGELT.hom ≫
     (((whiskeringRight₂ (Arrow₂ ι) (C ⥤ C) (C ⥤ C) (C ⥤ C)).obj
       (whiskeringLeft C C C)).obj (Arrow₂.δ₁ ⋙ F.truncGELT)).map
-        (whiskerLeft Arrow₂.obj₁ F.truncGEδLT) ≫ _ ≫
+        (whiskerLeft Arrow₂.obj₁ F.truncGEδLT) ≫ ?_ ≫
     whiskerRight F.truncLTGELTIsoTruncGELT.inv
       ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ)))
   exact { app := fun D => 𝟙 _ }
@@ -300,8 +314,8 @@ noncomputable def triangle : Arrow₂ ι ⥤ C ⥤ Triangle C where
 @[simps!]
 noncomputable def triangleObjIsoTriangleLTGEPrecompTruncGELTObj (D : Arrow₂ ι) :
     F.triangle.obj D ≅ F.triangleLTGEPrecompTruncGELT.obj D := by
-  refine' Triangle.functorIsoMk _ _ (F.truncLTGELTIsoTruncGELT.app D) (Iso.refl _)
-    (F.truncGEGELTIsoTruncGELT.app D) _ _ _
+  refine Triangle.functorIsoMk _ _ (F.truncLTGELTIsoTruncGELT.app D) (Iso.refl _)
+    (F.truncGEGELTIsoTruncGELT.app D) ?_ ?_ ?_
   · ext X
     dsimp [triangleLTGEPrecompTruncGELT]
     rw [comp_id]
@@ -345,7 +359,8 @@ noncomputable def spectralObject (X : C) :
       map_comp := fun {D₁ D₂ d₃} f g => by
         dsimp
         conv_rhs =>
-          rw [← NatTrans.comp_app, ← Functor.map_comp] }
+          rw [← NatTrans.comp_app, ← Functor.map_comp]
+        rfl }
   δ' :=
     { app := fun D => (F.truncGELTδ.app (Arrow₂.mk (D.map' 0 1) (D.map' 1 2))).app X
       naturality := fun {D₁ D₂} f => by
@@ -359,13 +374,6 @@ noncomputable def spectralObject (X : C) :
   distinguished' D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D
     exact F.triangle_distinguished (Arrow₂.mk f g) X
-
---@[simps]
---noncomputable def spectralObject (X : C) :
---    SpectralObject C ι where
---  ω₁ := ((whiskeringRight (Arrow ι) _ _).obj ((evaluation C C).obj X)).obj F.truncGELT
---  δ := whiskerRight F.truncGELTδ ((evaluation C C).obj X)
---  distinguished' D := F.triangle_distinguished D X
 
 end AbstractSpectralObject
 

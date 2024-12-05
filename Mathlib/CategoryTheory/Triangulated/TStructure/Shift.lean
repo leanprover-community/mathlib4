@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+
+/-!
+# Truncations and shifts
+
+-/
 
 namespace CategoryTheory
 
@@ -25,10 +35,12 @@ lemma hom_ι : hom t X h ≫ (t.truncLEι _).app _ = ((t.truncLEι a').app X)⟦
   have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
   apply liftTruncLE_ι
 
+/-- inv' -/
 noncomputable def inv' : ((t.truncLE a).obj (X⟦n⟧))⟦-n⟧ ⟶ (t.truncLE a').obj X := by
   have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
   apply t.liftTruncLE
-  exact (shiftEquiv C n).inverse.map ((t.truncLEι a).app (X⟦n⟧)) ≫ (shiftEquiv C n).unitIso.inv.app X
+  exact (shiftEquiv C n).inverse.map ((t.truncLEι a).app (X⟦n⟧)) ≫
+    (shiftEquiv C n).unitIso.inv.app X
 
 @[reassoc (attr := simp)]
 lemma inv'_ι :
@@ -39,7 +51,8 @@ lemma inv'_ι :
 
 noncomputable def inv :
     (t.truncLE a).obj (X⟦n⟧) ⟶ ((t.truncLE a').obj X)⟦n⟧ :=
-  (shiftFunctorCompIsoId C (-n) n (neg_add_self n)).inv.app ((t.truncLE a).obj (X⟦n⟧)) ≫ (inv' t X h)⟦n⟧'
+  (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).inv.app ((t.truncLE a).obj (X⟦n⟧)) ≫
+    (inv' t X h)⟦n⟧'
 
 @[reassoc (attr := simp)]
 lemma inv_ι : inv t X h ≫ ((t.truncLEι a').app X)⟦n⟧' = (t.truncLEι a).app (X⟦n⟧) := by
@@ -49,14 +62,14 @@ lemma inv_ι : inv t X h ≫ ((t.truncLEι a').app X)⟦n⟧' = (t.truncLEι a).
   rw [Functor.map_comp]
   erw [← NatTrans.naturality_assoc]
   simp only [Functor.id_obj, Functor.id_map, Functor.comp_obj,
-    shift_shiftFunctorCompIsoId_add_neg_self_hom_app, Iso.inv_hom_id_app, comp_id]
+    shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app, Iso.inv_hom_id_app, comp_id]
 
 @[reassoc (attr := simp)]
 lemma shift_inv :
-    (inv t X h)⟦-n⟧' ≫ (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.app _ ≫
+    (inv t X h)⟦-n⟧' ≫ (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).hom.app _ ≫
       (t.truncLEι a').app X =
     ((t.truncLEι a).app (X⟦n⟧))⟦-n⟧' ≫
-      (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.app _ := by
+      (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).hom.app _ := by
   dsimp
   erw [← NatTrans.naturality]
   dsimp
@@ -78,7 +91,7 @@ noncomputable def iso : ((t.truncLE a').obj X)⟦n⟧ ≅ (t.truncLE a).obj (X�
       Equivalence.toAdjunction_counit, Equivalence.Equivalence_mk'_counit, Iso.symm_symm_eq, assoc,
       shift_inv, Functor.map_id, id_comp]
     rw [← Functor.map_comp_assoc, hom_ι]
-    exact (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.naturality ((t.truncLEι a').app X)
+    exact (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).hom.naturality ((t.truncLEι a').app X)
   inv_hom_id := by
     apply to_truncLE_obj_ext
     simp
@@ -96,11 +109,13 @@ lemma π_hom : (t.truncGEπ a).app (X⟦n⟧) ≫ hom t X h = ((t.truncGEπ a').
   have := t.isGE_shift ((t.truncGE a').obj X) a' n a h
   apply π_descTruncGE
 
+/-- inv' -/
 noncomputable def inv' : (t.truncGE a').obj X ⟶ ((t.truncGE a).obj (X⟦n⟧))⟦-n⟧  := by
   have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
   apply t.descTruncGE
   exact (shiftEquiv C n).unitIso.hom.app X ≫ ((t.truncGEπ a).app (X⟦n⟧))⟦-n⟧'
 
+/-- π_inv' -/
 @[reassoc (attr := simp)]
 lemma π_inv' :
     (t.truncGEπ a').app X ≫ inv' t X h =
@@ -110,7 +125,7 @@ lemma π_inv' :
 
 noncomputable def inv :
     ((t.truncGE a').obj X)⟦n⟧ ⟶ (t.truncGE a).obj (X⟦n⟧) :=
-  (inv' t X h)⟦n⟧' ≫ (shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.app
+  (inv' t X h)⟦n⟧' ≫ (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.app
     ((t.truncGE a).obj (X⟦n⟧))
 
 @[reassoc (attr := simp)]
@@ -120,18 +135,19 @@ lemma π_inv :
   rw [← Functor.map_comp_assoc, π_inv']
   dsimp
   rw [Functor.map_comp, assoc]
-  erw [(shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.naturality]
+  erw [(shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.naturality]
   dsimp
-  rw [shift_shiftFunctorCompIsoId_add_neg_self_inv_app, Iso.inv_hom_id_app_assoc]
+  rw [shift_shiftFunctorCompIsoId_add_neg_cancel_inv_app, Iso.inv_hom_id_app_assoc]
 
 @[reassoc (attr := simp)]
 lemma shift_inv :
-    (t.truncGEπ a').app X ≫ (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app ((t.truncGE a').obj X) ≫
+    (t.truncGEπ a').app X ≫ (shiftFunctorCompIsoId C n (-n)
+      (add_neg_cancel n)).inv.app ((t.truncGE a').obj X) ≫
       (inv t X h)⟦-n⟧' =
-        (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app _ ≫
+        (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.app _ ≫
           ((t.truncGEπ a).app (X⟦n⟧))⟦-n⟧' := by
   dsimp
-  erw [(shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.naturality_assoc]
+  erw [(shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.naturality_assoc]
   dsimp
   erw [← Functor.map_comp, π_inv]
 
@@ -153,7 +169,7 @@ noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)�
       Equivalence.toAdjunction_unit, Functor.map_comp, Functor.map_id, comp_id]
     erw [shift_inv_assoc t X h]
     rw [← Functor.map_comp, π_hom]
-    exact ((shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.naturality _).symm
+    exact ((shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.naturality _).symm
 
 end ShiftTruncGE
 
