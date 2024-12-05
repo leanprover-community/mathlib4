@@ -47,13 +47,8 @@ example : IsLimit <| Scheme.Spec.mapCone (Limits.Cocone.op (tensorProductCocone 
 example : IsLimit (asEmptyCone (Spec (of ℤ))) := by 
   exact specZIsTerminal
 
-
-#check asEmptyCone (Spec (of ℤ))
 example : ChosenFiniteProducts AffineScheme where
   product := by
     sorry
-  terminal := by
-    constructor
-    have := specZIsTerminal
-    unfold IsTerminal at this
+  terminal := ⟨_,AffineScheme.specZIsTerminal⟩
 
