@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
-import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
@@ -635,10 +634,6 @@ end MonoidHom
 
 end MonoidHom
 
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
-lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
-
 namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
@@ -663,9 +658,7 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
   rw [← mem_range, ← ranges_flatten, mem_flatten]
 
 @[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
-
 @[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
 @[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
 
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
