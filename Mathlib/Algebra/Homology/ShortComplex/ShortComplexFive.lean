@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+/-!
+# ShortComplex₅
+
+-/
 
 namespace CategoryTheory
 
@@ -70,7 +80,7 @@ instance : Category (ShortComplex₅ C) where
 @[ext]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃)
     (h₄ : f.τ₄ = g.τ₄) (h₅ : f.τ₅ = g.τ₅) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃ h₄ h₅
+  Hom.ext h₁ h₂ h₃ h₄ h₅
 
 /-- A constructor for morphisms in `ShortComplex₄ C` when the commutativity conditions
 are not obvious. -/

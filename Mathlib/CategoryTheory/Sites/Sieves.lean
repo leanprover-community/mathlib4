@@ -391,11 +391,6 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 
-@[simp]
-lemma generate_le_iff (R : Presieve X) (S : Sieve X) :
-    generate R ≤ S ↔ R ≤ S :=
-  (giGenerate (X := X)).gc _ _
-
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
@@ -647,7 +642,7 @@ lemma functorPushforward_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) (R : Sieve X) :
   ext Y f
   constructor
   · rintro ⟨W, a, b, ha, fac⟩
-    refine' ⟨W, a, b ≫ e.hom.app W, ha, _⟩
+    refine ⟨W, a, b ≫ e.hom.app W, ha, ?_⟩
     rw [← cancel_mono (e.inv.app X), fac, assoc, assoc,
       NatTrans.naturality, Iso.hom_inv_id_app_assoc]
   · rintro ⟨W, a, b, ha, rfl⟩

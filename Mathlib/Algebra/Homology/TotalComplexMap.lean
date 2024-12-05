@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.Linear
+
+/-!
+# Action of an additive functor on a total complex
+
+-/
 
 open CategoryTheory Category Limits
 
@@ -93,7 +103,10 @@ noncomputable def mapTotalIso : ((F.mapHomologicalComplex₂ c₁ c₂).obj K).t
   HomologicalComplex.Hom.isoOfComponents (mapTotalXIso F K c) (by
     intros
     ext
-    simp [-Functor.map_comp, ← F.map_comp])
+    simp only [Functor.mapHomologicalComplex_obj_d, total_d,
+      Functor.map_add, Preadditive.comp_add, ι_mapTotalXIso_hom_assoc, ← F.map_comp, ι_D₁, ι_D₂,
+      Preadditive.add_comp, ι_D₁_assoc, mapHomologicalComplex₂_d₁, assoc, Iso.inv_hom_id, comp_id,
+      ι_D₂_assoc, mapHomologicalComplex₂_d₂])
 
 variable {K L}
 
