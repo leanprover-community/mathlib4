@@ -232,6 +232,20 @@ theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
   apply mul_le_of_le_one_left (norm_nonneg  _)
   exact ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
+theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0 := by
+  suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
+  apply Finset.sum_eq_zero (fun s hs ↦ ?_)
+  ext v
+  have : p (1 + n) = 0 := by
+    apply p.congr_zero _ hp
+    abel
+  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.curryFinFinset_apply,
+    ContinuousMultilinearMap.zero_apply, this]
+
+
+
+#exit
+
 end
 
 -- From this point on, assume that the space is complete, to make sure that series that converge

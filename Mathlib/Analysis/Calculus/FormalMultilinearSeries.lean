@@ -125,6 +125,10 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
   congr with ⟨i, hi⟩
   exact h2 i hi hi
 
+lemma congr_zero (p : FormalMultilinearSeries 𝕜 E F) {k l : ℕ} (h : k = l) (h' : p k = 0) :
+    p l = 0 := by
+  subst h; exact h'
+
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
 continuous linear map, gives a new formal multilinear series `p.compContinuousLinearMap u`. -/
 def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
