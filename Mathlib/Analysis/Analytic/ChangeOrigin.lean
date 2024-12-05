@@ -236,15 +236,9 @@ theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0
   suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
   apply Finset.sum_eq_zero (fun s hs ↦ ?_)
   ext v
-  have : p (1 + n) = 0 := by
-    apply p.congr_zero _ hp
-    abel
+  have : p (1 + n) = 0 := p.congr_zero (by abel) hp
   simp [changeOriginSeriesTerm, ContinuousMultilinearMap.curryFinFinset_apply,
     ContinuousMultilinearMap.zero_apply, this]
-
-
-
-#exit
 
 end
 
