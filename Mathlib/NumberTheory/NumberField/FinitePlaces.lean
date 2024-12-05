@@ -176,7 +176,7 @@ theorem mk_maximalIdeal (w : FinitePlace K) : mk (maximalIdeal w) = w := Subtype
 @[simp]
 theorem norm_embedding_eq (w : FinitePlace K) (x : K) :
     ‖embedding (maximalIdeal w) x‖ = w x := by
-  rw [show w x = (mk (maximalIdeal w)) x by simp only [mk_maximalIdeal], apply]
+  conv_rhs => rw [← mk_maximalIdeal w, apply]
 
 theorem pos_iff {w : FinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
