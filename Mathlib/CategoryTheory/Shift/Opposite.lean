@@ -110,4 +110,18 @@ lemma oppositeShiftFunctorAdd'_hom_app :
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
 
+lemma oppositeShiftFunctorCompIsoId_hom_app (i j : A) (h : i + j = 0) (X : Cᵒᵖ) :
+    (shiftFunctorCompIsoId (OppositeShift C A) i j h).hom.app X =
+    ((shiftFunctorCompIsoId C i j h).inv.app X.unop).op := by
+  simp only [Functor.comp_obj, Functor.id_obj, shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom,
+    NatTrans.comp_app, Iso.trans_inv, Iso.symm_inv, op_comp, Opposite.op_unop]
+  rw [oppositeShiftFunctorAdd'_inv_app, oppositeShiftFunctorZero_hom_app]
+
+lemma oppositeShiftFunctorCompIsoId_inv_app (i j : A) (h : i + j = 0) (X : Cᵒᵖ) :
+    (shiftFunctorCompIsoId (OppositeShift C A) i j h).inv.app X =
+    ((shiftFunctorCompIsoId C i j h).hom.app (Opposite.unop X)).op := by
+  simp only [Functor.id_obj, Functor.comp_obj, shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv,
+    NatTrans.comp_app, Iso.trans_hom, Iso.symm_hom, op_comp, Opposite.op_unop]
+  rw [oppositeShiftFunctorAdd'_hom_app, oppositeShiftFunctorZero_inv_app]
+
 end CategoryTheory

@@ -371,41 +371,62 @@ class adjunction_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A] where
     (((adj.comp (shiftEquiv' D a a' h).symm.toAdjunction).homEquiv _ _) u) ≫
     (CommShift.iso a).hom.app Y
 
+variable {A}
+
+lemma adjunction_compat.right_left_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A]
+    [CommShift.adjunction_compat A adj]
+    (a a' : A) (h : a + a' = 0) (X : C) (Y : D) (v : X ⟶ (G.obj Y)⟦a⟧) :
+    (CommShift.iso a').inv.app X ≫
+    (((shiftEquiv' C a a' h).symm.toAdjunction.comp adj).homEquiv _ _).symm v =
+    ((adj.comp (shiftEquiv' D a a' h).symm.toAdjunction).homEquiv _ _).symm
+    (v ≫ (CommShift.iso a).inv.app Y) := by
+  have := adjunction_compat.left_right_compat (adj := adj) a a' h _ _ ((CommShift.iso a').inv.app X
+    ≫ (((shiftEquiv' C a a' h).symm.toAdjunction.comp adj).homEquiv _ _).symm v)
+  conv_lhs at this => rw [← assoc, Iso.hom_inv_id_app]; erw [id_comp]
+                      rw [Equiv.apply_symm_apply]
+  apply_fun (fun h ↦ h ≫ (CommShift.iso a).inv.app Y) at this
+  conv_rhs at this => rw [assoc, Iso.hom_inv_id_app]; erw [comp_id]
+  conv_rhs => rw [this, Equiv.symm_apply_apply]
+
+variable (A)
+
 def adjunction_compat_op (adj : F ⊣ G) [CommShift F A] [CommShift G A]
     [CommShift.adjunction_compat A adj] :
     @CommShift.adjunction_compat (OppositeShift D A) (OppositeShift C A) _ _ G.op F.op A _ _ _
     adj.opAdjointOpOfAdjoint (CommShift.op G A inferInstance) (CommShift.op F A inferInstance) := by
   refine @CommShift.adjunction_compat.mk (OppositeShift D A) (OppositeShift C A) _ _ G.op F.op A _ _
     _ adj.opAdjointOpOfAdjoint (CommShift.op G A inferInstance) (CommShift.op F A inferInstance) ?_
-  intro a a' h X Y u
+  intro a a' h Y X u
+  have := adjunction_compat.right_left_compat adj a' a (by simp [eq_neg_of_add_eq_zero_left h])
+    X.unop Y.unop u.unop
+  rw [homEquiv_symm_apply, homEquiv_symm_apply] at this
+  simp only [comp_obj, Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
+    shiftEquiv'_functor, op_obj, Functor.comp_map, comp_counit_app, id_obj,
+    Equivalence.toAdjunction_counit, shiftEquiv'_symm_counit, map_shiftFunctorCompIsoId_hom_app,
+    assoc, commShiftIso_hom_naturality_assoc, map_comp] at this
+  apply_fun Quiver.Hom.op at this
+  simp only [op_unop, op_comp, assoc] at this
   rw [homEquiv_apply, homEquiv_apply]
-  simp [shiftEquiv'_symm_unit, opEquiv]
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, op_obj,
+    Equivalence.symm_functor, shiftEquiv'_inverse, comp_unit_app, id_obj,
+    Equivalence.toAdjunction_unit, shiftEquiv'_symm_unit, opAdjointOpOfAdjoint_unit_app, opEquiv,
+    Equiv.coe_fn_mk, unop_id, map_id, id_comp, Equiv.coe_fn_symm_mk, Functor.comp_map, op_map,
+    assoc]
   conv_lhs => congr; rfl; congr
-              change ((shiftFunctor D a).map (adj.counit.app ((unop X)⟦a'⟧))).op; rfl
+              change ((shiftFunctor D a).map (adj.counit.app ((unop Y)⟦a'⟧))).op; rfl
               change ((shiftFunctor D a).map
-                (F.map (((NatIso.op (CommShift.iso a')).symm).hom.app X ≫ u).unop)).op
+                (F.map (((NatIso.op (CommShift.iso a')).symm).hom.app Y ≫ u).unop)).op
   conv_rhs => congr; rfl; congr; rfl
               change (F.map ((shiftFunctor C a).map u.unop)).op ≫
-                ((NatIso.op (CommShift.iso a)).symm).hom.app Y
+                ((NatIso.op (CommShift.iso a)).symm).hom.app X
+  simp only [oppositeShiftFunctorCompIsoId_inv_app, comp_obj, id_obj, op_obj, Iso.symm_hom,
+    NatIso.op_inv, NatTrans.op_app, unop_comp, Quiver.Hom.unop_op, map_comp, op_comp,
+    map_shiftFunctorCompIsoId_hom_app, assoc]
+  rw [← this]
+  slice_lhs 4 5 => rw [← op_comp]; erw [← (F.commShiftIso a).hom.naturality]; rw [op_comp]
   simp
-  set v : Y.unop ⟶ (G.obj X.unop)⟦a'⟧ := u.unop
-
-
 
 variable {A}
-
-lemma compat_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adjunction_compat A adj]
-    (a : A) (X : C) :
-    (F.map (adj.unit.app X))⟦a⟧' ≫ (CommShift.iso a).inv.app (G.obj (F.obj X)) ≫
-    F.map ((CommShift.iso a).inv.app (F.obj X)) ≫ adj.counit.app ((F.obj X)⟦a⟧) = 𝟙 _ := by
-  have := adjunction_compat.left_right_compat a (-a) (by simp) (G.obj ((F.obj X)⟦a⟧)) (F.obj X)
-    (((adj.comp (shiftEquiv' D a (-a) (by simp)).symm.toAdjunction).homEquiv _ _).symm (𝟙 _))
-    (adj := adj)
-  rw [Equiv.apply_symm_apply, id_comp] at this
-  conv_rhs at this => rw [← NatIso.inv_inv_app]
-  rw [homEquiv_apply, homEquiv_symm_apply] at this
-  simp [shiftEquiv'_symm_unit, shiftEquiv'_symm_counit] at this
-  sorry
 
 lemma compat_right_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adjunction_compat A adj]
     (a : A) (Y : D) :
@@ -437,6 +458,19 @@ lemma compat_right_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adj
               rw [adj.right_triangle]
   simp
 
+lemma compat_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adjunction_compat A adj]
+    (a : A) (X : C) :
+    (F.map (adj.unit.app X))⟦a⟧' ≫ (CommShift.iso a).inv.app (G.obj (F.obj X)) ≫
+    F.map ((CommShift.iso a).inv.app (F.obj X)) ≫ adj.counit.app ((F.obj X)⟦a⟧) = 𝟙 _ := by
+  have := @adjunction_compat_op C D _ _ F G A _ _ _ adj _ _ _
+  have := @compat_right_triangle (OppositeShift D A) (OppositeShift C A) _ _ G.op F.op A _ _ _
+    (opAdjointOpOfAdjoint G F adj) (CommShift.op G A inferInstance) (CommShift.op F A inferInstance)
+    _ a (op X)
+  apply_fun Quiver.Hom.unop at this
+  simp [opEquiv] at this
+  rw [unop_comp, unop_comp, unop_comp, Quiver.Hom.unop_op, Quiver.Hom.unop_op] at this
+  simp only [assoc] at this
+  exact this
 
 noncomputable def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
     @adjunction_compat C D _ _ F G A _ _ _ adj inferInstance

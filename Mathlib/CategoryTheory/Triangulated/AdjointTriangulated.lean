@@ -190,7 +190,8 @@ open CategoryTheory.Pretriangulated.Functor
 def isTriangulated_of_right_adjoint_triangulated (adj : F ⊣ G) [CommShift.adjunction_compat ℤ adj]
     [G.IsTriangulated] : F.IsTriangulated := by
   set adjop : G.op ⊣ F.op := adj.opAdjointOpOfAdjoint
-  have : CommShift.adjunction_compat ℤ adjop := sorry
+  have : CommShift.adjunction_compat ℤ adjop := by sorry
+--    apply CommShift.adjunction_compat_op
   suffices h : F.op.IsTriangulated by
     have := h
     exact isTriangulated_of_op_triangulated F
