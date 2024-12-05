@@ -678,8 +678,8 @@ def extendEquiv (n : ℕ) :
           · simp only [↓reduceDIte, comp_apply]
             rcases eq_or_ne j 0 with rfl | hj
             · simpa using c.emb_zero
-            · let j' := Fin.pred (cast B.symm j) (by simpa using hj)
-              have : j = cast B (succ j') := by simp [j']
+            · let j' := Fin.pred (j.cast B.symm) (by simpa using hj)
+              have : j = (succ j').cast B := by simp [j']
               simp only [this, coe_cast, val_succ, cast_mk, cases_succ', comp_apply, succ_mk,
                 Nat.succ_eq_add_one, succ_pred]
               rfl
