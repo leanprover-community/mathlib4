@@ -554,6 +554,7 @@ import Mathlib.Algebra.Module.Presentation.Differentials
 import Mathlib.Algebra.Module.Presentation.DirectSum
 import Mathlib.Algebra.Module.Presentation.Finite
 import Mathlib.Algebra.Module.Presentation.Free
+import Mathlib.Algebra.Module.Presentation.RestrictScalars
 import Mathlib.Algebra.Module.Presentation.Tautological
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
@@ -1054,6 +1055,7 @@ import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
@@ -2482,6 +2484,7 @@ import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.MonomialOrder
+import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Notation
@@ -3332,6 +3335,7 @@ import Mathlib.LinearAlgebra.Eigenspace.Zero
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+import Mathlib.LinearAlgebra.ExteriorPower.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
@@ -4430,10 +4434,13 @@ import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.RingTheory.MvPolynomial.EulerIdentity
 import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Localization
+import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
