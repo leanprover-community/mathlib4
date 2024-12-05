@@ -559,9 +559,30 @@ theorem iteratedFDerivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) (n : �
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t :=
   iteratedFDerivWithin_eventually_congr_set' x (h.filter_mono inf_le_left) n
 
+/-- If two sets coincide in a punctured neighborhood of `x`,
+then the corresponding iterated derivatives are equal.
+
+Note that we also allow to puncture the neighborhood of `x` at `y`.
+If `y ≠ x`, then this is a no-op. -/
+theorem iteratedFDerivWithin_congr_set' {y} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
+  (iteratedFDerivWithin_eventually_congr_set' y h n).self_of_nhds
+
+@[simp]
+theorem iteratedFDerivWithin_insert {n y} :
+    iteratedFDerivWithin 𝕜 n f (insert x s) y = iteratedFDerivWithin 𝕜 n f s y :=
+  iteratedFDerivWithin_congr_set' (y := x)
+    (eventually_mem_nhdsWithin.mono <| by intros; simp_all).set_eq _
+
 theorem iteratedFDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (iteratedFDerivWithin_eventually_congr_set h n).self_of_nhds
+
+@[simp]
+theorem ftaylorSeriesWithin_insert :
+    ftaylorSeriesWithin 𝕜 f (insert x s) = ftaylorSeriesWithin 𝕜 f s := by
+  ext y n : 2
+  apply iteratedFDerivWithin_insert
 
 /-- The iterated differential within a set `s` at a point `x` is not modified if one intersects
 `s` with a neighborhood of `x` within `s`. -/
