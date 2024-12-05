@@ -82,9 +82,11 @@ open BigOperators Finset in
 #guard_msgs in
 # ∑ i in range 10, i
 
-/-- info: @Nat.fold ℕ (@HAdd.hAdd (ℕ → ℕ → ℕ) (ℕ → ℕ → ℕ) *0 *1 (λ, @id ℕ) (λ, λ, #1)) 10 1 -/
+/--
+info: @Nat.fold ℕ 10 (@HAdd.hAdd (ℕ → (@LT.lt ℕ *0 #0 10) → ℕ → ℕ) (ℕ → (@LT.lt ℕ *1 #0 10) → ℕ → ℕ) *2 *3 (λ, λ, @id ℕ) (λ, λ, λ, #2)) 1
+-/
 #guard_msgs in
-# (10).fold (init := 1) (fun x y => y + x)
+# (10).fold (init := 1) (fun x _ y => y + x)
 
 /-- info: @HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) *0 *1 (@id ℕ) (@id ℕ) 4 -/
 #guard_msgs in
@@ -163,7 +165,7 @@ info: @Function.Bijective ℕ ℕ (@HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) *0 *1 
 info: Nat.sqrt (@HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) *0 *1 (@HVAdd.hVAdd ℕ (ℕ → ℕ) *2 *3 (@HSMul.hSMul ℕ ℕ *4 *5 2 1) (@id ℕ)) (@HDiv.hDiv (ℕ → ℕ) (ℕ → ℕ) *6 *7 (@HMul.hMul (ℕ → ℕ) (ℕ → ℕ) *8 *9 4 5) (@HPow.hPow (ℕ → ℕ) ℕ *10 *11 (@id ℕ) 9)) 5)
 -/
 #guard_msgs in
-# Nat.sqrt $ (2•1+ᵥid+4*5/id^9 : Nat → Nat) 5
+# Nat.sqrt $ ((2•1+ᵥ@id Nat)+4*5/id^9 : Nat → Nat) 5
 
 
 -- don't distrubute a lambda when the bound variable appears in the exponent/multiplier:
