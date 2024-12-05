@@ -9,7 +9,8 @@ import Mathlib.CategoryTheory.MorphismProperty.Basic
 /-!
 # Stability under retracts
 
-Defines the morphism property of being stable under retracts.
+Given `P : MorphismProperty C`, we introduce a typeclass `P.IsStableUnderRetracts` which
+is the property that `P` is stable under retracts.
 
 -/
 
