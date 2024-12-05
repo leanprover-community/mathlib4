@@ -87,27 +87,6 @@ theorem natFloor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋₊ 
   push_cast
   exact floor_intCast_div_natCast n d
 
-theorem _root_.Int.sign_eq_abs_ediv (b : ℤ) : b.sign = |b| / b := by
-  obtain rfl | hbz := Decidable.eq_or_ne b 0
-  · simp
-  obtain ⟨hb', hb⟩ | ⟨hb', hb⟩ := abs_cases b <;> rw [hb']
-  · replace hb := lt_of_le_of_ne' hb hbz
-    rw [Int.ediv_self hbz, Int.sign_eq_one_of_pos hb]
-  · rw [Int.sign_eq_neg_one_of_neg hb, Int.ediv_eq_of_eq_mul_left hbz]
-    rw [neg_one_mul]
-
-/-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
-theorem _root_.Int.ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
-  a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
-  constructor
-  · intro ⟨rfl, rfl⟩
-    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt _ h⟩
-  · intro ⟨rfl, hz, hb⟩
-    constructor
-    · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
-      simp [Int.zero_add]
-    · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
-
 @[deprecated (since := "2024-07-23")] alias floor_int_div_nat_eq_div := floor_intCast_div_natCast
 
 @[simp, norm_cast]
@@ -163,7 +142,7 @@ def evalIntFloor : NormNumExt where eval {u αZ} e := do
       let _i ← synthInstanceQ q(LinearOrderedField $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit ⌊q⌋
-      letI : $z =Q ⌊$n / $d⌋ := ⟨⟩
+      letI : $z =Q $n / $d := ⟨⟩
       return .isInt q(inferInstance) z ⌊q⌋ q(isInt_intFloor_ofIsRat _ $n $d $h)
   | _, _, _ => failure
 
@@ -193,7 +172,7 @@ def evalIntCeil : NormNumExt where eval {u αZ} e := do
       return .isNat q(inferInstance) _ q(isNat_intCeil $x _ $pb)
     | .isNegNat _ _ pb => do
       assertInstancesCommute
-      -- floor always keeps naturals negative, so we can shortcut `.isInt`
+      -- ceil always keeps naturals negative, so we can shortcut `.isInt`
       return .isNegNat q(inferInstance) _ q(isInt_intCeil _ _ $pb)
     | .isRat _ q n d h => do
       let _i ← synthInstanceQ q(LinearOrderedField $α)
