@@ -145,7 +145,7 @@ theorem Hereditary.is_equiv_invariant_of_fg (h : Hereditary K)
   ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn),
    fun NK => h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
 
-theorem IsFraisse.is_equiv_invariant (h : IsFraisse K) (M N : Bundled.{w} L.Structure)
+theorem IsFraisse.is_equiv_invariant [h : IsFraisse K] {M N : Bundled.{w} L.Structure}
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
   h.hereditary.is_equiv_invariant_of_fg h.FG M N hn
 
