@@ -408,11 +408,8 @@ lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
   obtain ⟨left, right⟩ := h
   subst e1
   simp_all only [Basis.tensorProduct_apply]
-  rw [tensorDistriFree_polar1]
-  · rfl
-  · rfl
-
-
+  rw [tensorDistriFree_polar1 _ _ _ _ _ _ _ _ rfl]
+  rfl
 
 lemma sum_left (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
