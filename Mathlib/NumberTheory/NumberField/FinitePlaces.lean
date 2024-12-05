@@ -18,7 +18,7 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 ## Main Definitions and Results
 * `NumberField.vadicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
-* `NumberField.FinitePlace.mulSupport_Finite`: the `v`-adic absolute value of a non-zero element of
+* `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
 `K` is different from 1 for at most finitely many `v`.
 
 ## Tags
