@@ -340,6 +340,8 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
     commutes' := by rintro r ⟨x⟩; exact congr_arg (⟦·⟧) (Algebra.commutes r x) }
 
+instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
+
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
 -- update: maybe not - removal causes timeouts
@@ -620,6 +622,9 @@ instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsT
     exact (Submodule.quotientRel_def _).mpr (I.mul_sub_mul_mem hr ha)
   smul_def' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.smul_def _ _)
   commutes' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.commutes _ _)
+
+instance (R) {A} [CommRing R] [CommRing A] (I : Ideal A) [Algebra R A] :
+    Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) := inferInstance
 
 theorem algebraMap_quotient_injective {R} [CommRing R] {I : Ideal A} [I.IsTwoSided] [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
