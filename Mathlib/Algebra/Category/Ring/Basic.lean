@@ -575,6 +575,26 @@ instance forgetReflectIsos : (forget CommRingCat).ReflectsIsomorphisms where
 
 end CommRingCat
 
+namespace CategoryTheory.Iso
+
+/-- Build a `RingEquiv` from an isomorphism in the category `SemiRingCat`. -/
+def semiRingCatIsoToRingEquiv {R S : SemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
+  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+
+/-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
+def ringCatIsoToRingEquiv {R S : RingCat.{u}} (e : R ≅ S) : R ≃+* S :=
+  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+
+/-- Build a `RingEquiv` from an isomorphism in the category `CommSemiRingCat`. -/
+def commSemiRingCatIsoToRingEquiv {R S : CommSemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
+  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+
+/-- Build a `RingEquiv` from an isomorphism in the category `CommRingCat`. -/
+def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
+  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+
+end CategoryTheory.Iso
+
 -- Porting note: typemax hacks to fix universe complaints
 /-- An alias for `SemiringCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]

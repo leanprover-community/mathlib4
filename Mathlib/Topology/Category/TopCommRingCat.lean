@@ -77,7 +77,8 @@ instance forgetTopologicalRing (R : TopCommRingCat) :
   R.isTopologicalRing
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
-  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f => f.val) HEq.rfl
+  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl)
+    (fun f => CommRingCat.ofHom f.val) HEq.rfl
 
 instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
     TopologicalSpace ((forget₂ TopCommRingCat CommRingCat).obj R) :=
