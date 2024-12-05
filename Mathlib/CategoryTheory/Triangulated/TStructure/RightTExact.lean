@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+
+/-!
+# Right t-exact functors
+
+-/
 
 namespace CategoryTheory
 
@@ -10,7 +20,7 @@ variable {C D : Type*}
   [Category D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D] [CategoryTheory.IsTriangulated D]
   (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-  (t₁ : TStructure C) (t₂ : TStructure D) [Functor.RightTExact F t₁ t₂]
+  (t₁ : TStructure C) (t₂ : TStructure D)
   [t₁.HasHeart] [t₂.HasHeart] [t₂.HasHomology₀]
   [t₂.homology₀.ShiftSequence ℤ]
 
@@ -45,6 +55,7 @@ lemma homologyRightTExact_exact₁ :
     (ShortComplex.mk _ _ (F.homologyRightTExactδ_comp t₁ t₂ S hS n₀ n₁ hn₁)).Exact :=
   t₂.homology_exact₁ _ (F.map_distinguished _ (t₁.heartShortExactTriangle_distinguished S hS)) _ _ _
 
+include hS in
 lemma homologyRightTExact_exact₂ (n : ℕ) :
     (S.map (F.homologyRightTExact t₁ t₂ n)).Exact :=
   t₂.homology_exact₂ _ (F.map_distinguished _ (t₁.heartShortExactTriangle_distinguished S hS)) _
@@ -53,9 +64,13 @@ lemma homologyRightTExact_exact₃ :
     (ShortComplex.mk _ _ (F.homologyRightTExact_comp_δ  t₁ t₂ S hS n₀ n₁ hn₁)).Exact :=
   t₂.homology_exact₃ _ (F.map_distinguished _ (t₁.heartShortExactTriangle_distinguished S hS)) _ _ _
 
-instance (X : t₁.Heart) : t₂.IsGE (F.obj (t₁.ιHeart.obj X)) 0 := F.isGE_obj t₁ t₂ _ 0
+variable [Functor.RightTExact F t₁ t₂]
 
-instance : (F.homologyRightTExact t₁ t₂ 0).PreservesMonomorphisms where
+instance (X : t₁.Heart) :
+  t₂.IsGE (F.obj (t₁.ιHeart.obj X)) 0 := F.isGE_obj t₁ t₂ _ 0
+
+instance :
+    (F.homologyRightTExact t₁ t₂ 0).PreservesMonomorphisms where
   preserves {X Y} f _ := by
     let S := ShortComplex.mk _ _ (cokernel.condition f)
     have hS : S.ShortExact :=
