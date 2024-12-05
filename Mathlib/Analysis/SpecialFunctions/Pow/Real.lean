@@ -710,6 +710,8 @@ theorem rpow_le_rpow_of_exponent_ge_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz 
       apply zero_rpow_nonneg
   · exact rpow_le_rpow_of_exponent_ge hx0' hx1 hyz
 
+/-- This version of `rpow_le_rpow_of_exponent_ge` allows `x = 0` but requires `0 ≤ z`.
+See also `rpow_le_rpow_of_exponent_ge_of_imp` for the most general version. -/
 theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
     x ^ y ≤ x ^ z :=
   rpow_le_rpow_of_exponent_ge_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
