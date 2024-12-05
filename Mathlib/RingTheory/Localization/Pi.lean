@@ -3,7 +3,8 @@ Copyright (c) 2024 Madison Crim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim
 -/
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.Algebra.Ring.Pi
 
 /-!
