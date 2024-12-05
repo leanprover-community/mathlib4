@@ -8,9 +8,9 @@ import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Support
 
 /-!
 # Monoid actions continuous in the second variable
