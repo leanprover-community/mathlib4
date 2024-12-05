@@ -57,7 +57,6 @@ theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of
 
 open MonoidalCategory
 
--- Porting note: `CoeFun` was replaced by `DFunLike`
 -- I can't seem to express the function coercion here without writing `@DFunLike.coe`.
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
     @DFunLike.coe _ _ _ LinearMap.instFunLike

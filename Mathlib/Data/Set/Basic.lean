@@ -1007,7 +1007,6 @@ def subtypeInsertEquivOption
 
 /-! ### Lemmas about singletons -/
 
-/- porting note: instance was in core in Lean3 -/
 instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
