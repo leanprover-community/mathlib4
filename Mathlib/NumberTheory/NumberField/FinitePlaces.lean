@@ -206,10 +206,8 @@ lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximal
 
 theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
-  have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 := by
-    have := norm_le_one w.maximalIdeal x
-    rw [norm_embedding_eq] at this
-    exact ne_iff_lt_iff_le.mpr this
+  have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
+    ne_iff_lt_iff_le.mpr <| norm_embedding_eq w x ▸ norm_le_one w.maximalIdeal x
   simp_rw [Function.mulSupport, this, ← norm_embedding_eq, norm_lt_one_iff_mem,
     ← Ideal.dvd_span_singleton]
   have h : {v : HeightOneSpectrum (𝓞 K) | v.asIdeal ∣ span {x}}.Finite := by
