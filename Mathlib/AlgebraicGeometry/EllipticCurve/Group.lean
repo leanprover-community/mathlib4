@@ -12,8 +12,8 @@ import Mathlib.RingTheory.Polynomial.UniqueFactorization
 # Group law on Weierstrass curves
 
 This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
-under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine` and in
-`Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian`.
+under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean` and
+in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
 
 ## Mathematical background
 
@@ -62,6 +62,7 @@ elliptic curve, group law, class group
 -/
 
 open Ideal nonZeroDivisors Polynomial
+open scoped Polynomial.Bivariate
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -581,14 +582,14 @@ noncomputable instance : AddCommGroup W.Point where
 
 end WeierstrassCurve.Jacobian.Point
 
-namespace EllipticCurve.Affine.Point
+namespace WeierstrassCurve.Affine.Point
 
 /-! ## Elliptic curves in affine coordinates -/
 
-variable {R : Type} [Nontrivial R] [CommRing R] (E : EllipticCurve R)
+variable {R : Type*} [Nontrivial R] [CommRing R] (E : WeierstrassCurve R) [E.IsElliptic]
 
 /-- An affine point on an elliptic curve `E` over `R`. -/
 def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
   WeierstrassCurve.Affine.Point.some <| nonsingular E h
 
-end EllipticCurve.Affine.Point
+end WeierstrassCurve.Affine.Point

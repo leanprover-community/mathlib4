@@ -5,8 +5,9 @@ Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.ENat.Basic
+import Mathlib.Tactic.Linarith
 
 /-!
 # Multiplicity of a divisor
@@ -413,7 +414,7 @@ theorem Nat.multiplicity_finite_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 <
               | 0 => ha rfl
               | 1 => ha1 rfl
               | b+2 => by omega
-          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
+          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
 alias ⟨_, Dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos

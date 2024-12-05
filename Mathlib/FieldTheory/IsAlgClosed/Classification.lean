@@ -7,7 +7,8 @@ import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.RingTheory.Algebraic.Cardinality
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Classification of Algebraically closed fields
@@ -28,62 +29,6 @@ universe u v w
 open scoped Cardinal Polynomial
 
 open Cardinal
-
-section AlgebraicClosure
-
-namespace Algebra.IsAlgebraic
-
-variable (R : Type u) (L : Type v) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
-variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
-
-theorem cardinalMk_le_sigma_polynomial :
-    lift #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
-  @mk_le_of_injective (ULift L) (Σ p : R[X], {x : L | x ∈ p.aroots L})
-    (fun ⟨x⟩ =>
-      let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
-      ⟨p.1, x, by
-        dsimp
-        have h : p.1.map (algebraMap R L) ≠ 0 := by
-          rw [Ne, ← Polynomial.degree_eq_bot,
-            Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
-            Polynomial.degree_eq_bot]
-          exact p.2.1
-        rw [Polynomial.mem_roots h, Polynomial.IsRoot, Polynomial.eval_map, ← Polynomial.aeval_def,
-          p.2.2]⟩)
-    fun ⟨x⟩ ⟨y⟩ => by
-      intro h
-      simp? at h says simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
-      ext
-      refine (Subtype.heq_iff_coe_eq ?_).1 h.2
-      simp only [h.1, forall_true_iff]
-
-@[deprecated (since := "2024-11-10")]
-alias cardinal_mk_le_sigma_polynomial := cardinalMk_le_sigma_polynomial
-
-/-- The cardinality of an algebraic extension is at most the maximum of the cardinality
-of the base ring or `ℵ₀` -/
-theorem cardinalMk_le_max : lift.{u} #L ≤ lift (max #R ℵ₀) :=
-  calc
-    lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
-      cardinalMk_le_sigma_polynomial R L
-    _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
-      rw [← mk_sigma]; rfl
-    _ ≤ Cardinal.sum fun _ : R[X] => ℵ₀ :=
-      (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
-    _ = lift.{v} #(R[X]) * lift ℵ₀ := sum_const _ _
-    _ ≤ max (max (lift #(R[X])) (lift ℵ₀)) ℵ₀ := mul_le_max _ _
-    _ = lift.{v, u} (max #(R[X]) ℵ₀) := by simp only [lift_aleph0, le_max_iff,
-        aleph0_le_lift, le_refl, or_true, max_eq_left, lift_max]
-    _ ≤ lift.{v, u} (max (max #R ℵ₀) ℵ₀) :=
-      lift_le.2 (max_le_max Polynomial.cardinalMk_le_max le_rfl)
-    _ = lift (max #R ℵ₀) := by simp only [le_max_iff, le_refl, or_true, max_eq_left, lift_max,
-      lift_aleph0]
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
-
-end Algebra.IsAlgebraic
-
-end AlgebraicClosure
 
 namespace IsAlgClosed
 

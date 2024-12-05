@@ -31,7 +31,11 @@ smooth manifolds.
 noncomputable section
 universe u
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
+
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
@@ -97,7 +101,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
       #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
         was `exact`; somehow `convert` bypasess unification issues -/
       convert ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
-        (f.smooth.comp (smooth_inclusion hUV)).smoothAt
+        (f.contMDiff.comp (contMDiff_inclusion hUV)).contMDiffAt
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered
 as a sheaf of commutative rings, are the functions whose values at `x` are zero. -/

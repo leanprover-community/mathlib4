@@ -44,7 +44,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits MonoidalCategory
+open Category Limits MonoidalCategory
 
 /-- An object `X` is *exponentiable* if `(X × -)` is a left adjoint.
 We define this as being `Closed` in the cartesian monoidal structure.
@@ -148,7 +148,7 @@ theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (
 end exp
 
 instance : PreservesColimits (tensorLeft A) :=
-  (ihom.adjunction A).leftAdjointPreservesColimits
+  (ihom.adjunction A).leftAdjoint_preservesColimits
 
 variable {A}
 

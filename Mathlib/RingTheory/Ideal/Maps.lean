@@ -248,15 +248,16 @@ theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra
     congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
 
 @[simp]
-theorem coe_restrictScalars {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    (I : Ideal S) : (I.restrictScalars R : Set S) = ↑I :=
+theorem coe_restrictScalars {R S : Type*} [Semiring R] [Semiring S] [Module R S]
+    [IsScalarTower R S S] (I : Ideal S) : (I.restrictScalars R : Set S) = ↑I :=
   rfl
 
 /-- The smallest `S`-submodule that contains all `x ∈ I * y ∈ J`
 is also the smallest `R`-submodule that does so. -/
 @[simp]
-theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-    (I J : Ideal S) : (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
+theorem restrictScalars_mul {R S : Type*} [Semiring R] [Semiring S] [Module R S]
+    [IsScalarTower R S S] (I J : Ideal S) :
+    (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
   rfl
 
 section Surjective
@@ -361,8 +362,19 @@ theorem comap_symm {I : Ideal R} (f : R ≃+* S) : I.comap f.symm = I.map f :=
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
 @[simp]
+
 theorem map_symm {I : Ideal S} (f : R ≃+* S) : I.map f.symm = I.comap f :=
   map_comap_of_equiv (RingEquiv.symm f)
+
+@[simp]
+theorem symm_apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {y : S} :
+    f.symm y ∈ I ↔ y ∈ I.map f := by
+  rw [← comap_symm, mem_comap]
+
+@[simp]
+theorem apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {x : R} :
+    f x ∈ I.map f ↔ x ∈ I := by
+  rw [← comap_symm, Ideal.mem_comap, f.symm_apply_apply]
 
 theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
     {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
@@ -493,13 +505,13 @@ end Ring
 
 section CommRing
 
-variable {F : Type*} [CommRing R] [CommRing S]
+variable {F : Type*} [CommSemiring R] [CommSemiring S]
 variable [FunLike F R S] [rc : RingHomClass F R S]
 variable (f : F)
-variable {I J : Ideal R} {K L : Ideal S}
-variable (I J K L)
+variable (I J : Ideal R) (K L : Ideal S)
 
-theorem map_mul : map f (I * J) = map f I * map f J :=
+theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S] (f : F) (I J : Ideal R) :
+    map f (I * J) = map f I * map f J :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       mul_le.2 fun r hri s hsj =>
@@ -511,12 +523,13 @@ theorem map_mul : map f (I * J) = map f I * map f J :=
           Set.singleton_subset_iff.2 <|
             hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
-/-- The pushforward `Ideal.map` as a monoid-with-zero homomorphism. -/
+/-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
-def mapHom : Ideal R →*₀ Ideal S where
+def mapHom : Ideal R →+* Ideal S where
   toFun := map f
-  map_mul' I J := Ideal.map_mul f I J
+  map_mul' := Ideal.map_mul f
   map_one' := by simp only [one_eq_top]; exact Ideal.map_top f
+  map_add' I J := Ideal.map_sup f I J
   map_zero' := Ideal.map_bot
 
 protected theorem map_pow (n : ℕ) : map f (I ^ n) = map f I ^ n :=

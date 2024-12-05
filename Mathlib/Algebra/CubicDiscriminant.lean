@@ -40,8 +40,6 @@ structure Cubic (R : Type*) where
 
 namespace Cubic
 
-open Cubic Polynomial
-
 open Polynomial
 
 variable {R S F K : Type*}

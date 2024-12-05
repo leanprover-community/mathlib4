@@ -271,7 +271,7 @@ theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
 theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
   rcases eq_or_ne (natDegree p) 0 with h|h
-  · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le f p]
+  · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   have h2 : p ≠ 0 := by rintro rfl; simp at h
   have h3 : degree p ≠ (0 : ℕ)  := degree_ne_of_natDegree_ne h
   simp_rw [h, or_false, natDegree, WithBot.unbot'_eq_unbot'_iff, degree_map_eq_iff]
@@ -369,20 +369,16 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
 
 end NoZeroDivisors
 
-section CommRing
-variable [CommRing R] {p q : R[X]}
-
-@[simp] lemma comp_neg_X_leadingCoeff_eq (p : R[X]) :
+@[simp] lemma comp_neg_X_leadingCoeff_eq [Ring R] (p : R[X]) :
     (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
   nontriviality R
   by_cases h : p = 0
   · simp [h]
   rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
-  simp [mul_comm, h]
+  simp [((Commute.neg_one_left _).pow_left _).eq, h]
 
-variable [IsDomain R]
-
-lemma comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
+lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
+    p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
   refine ⟨fun h ↦ ?_, Or.rec (fun h ↦ by simp [h]) fun h ↦ by rw [h.2, comp_C, h.1, C_0]⟩
   have key : p.natDegree = 0 ∨ q.natDegree = 0 := by
     rw [← mul_eq_zero, ← natDegree_comp, h, natDegree_zero]
@@ -391,8 +387,6 @@ lemma comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q
     exact Or.inl (key.trans h)
   · rw [key, comp_C, C_eq_zero] at h
     exact Or.inr ⟨h, key⟩
-
-end CommRing
 
 section DivisionRing
 
