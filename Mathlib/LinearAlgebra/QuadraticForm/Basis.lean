@@ -377,15 +377,13 @@ lemma polar_lift_eq_zero_on_symOffDiagLower
   · rw [tensorDistriFree_polar12 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c1 c2, smul_zero, smul_zero]
   · rw [tensorDistriFree_polar21 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c3 c4, smul_zero, smul_zero]
 
--- : ι₁ × ι₂ → ι₁ × ι₂ → N₁ ⊗[R] N₂
-noncomputable def polar_left (i j : ι₁ × ι₂) : N₁ ⊗[R] N₂ :=
-  if i.1 = j.1 then Q₁ (bm₁ i.1) ⊗ₜ (polarBilin Q₂) (bm₂ i.2) (bm₂ j.2) else 0
-
+/--
+Lift the left side
+-/
 noncomputable def polar_left_lift : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
-  Sym2.lift ⟨(polar_left bm₁ Q₁ bm₂ Q₂), fun _ _ => by
-    rw [polar_left, polar_left, polarBilin_apply_apply, polarBilin_apply_apply]
-    exact ite_congr (by rw [eq_iff_iff, eq_comm]) (fun h => by rw [h, polar_comm]) (congrFun rfl)⟩
-
+  Sym2.lift ⟨fun i j => if i.1 = j.1 then Q₁ (bm₁ i.1) ⊗ₜ polarBilin Q₂ (bm₂ i.2) (bm₂ j.2) else 0,
+  fun _ _ => ite_congr (by rw [eq_iff_iff, eq_comm])
+    (fun h => by simp_rw [polarBilin_apply_apply, h, polar_comm]) (congrFun rfl)⟩
 
 theorem sum1 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
