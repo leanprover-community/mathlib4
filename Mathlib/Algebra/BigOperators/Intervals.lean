@@ -268,7 +268,7 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
       ∏ m ∈ range n, ∏ k ∈ range (n - m), f m k := by
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
-    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
+    simp +contextual only [mem_sigma, mem_range, lt_tsub_iff_left,
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
       implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
       add_tsub_cancel_left, heq_eq_eq]

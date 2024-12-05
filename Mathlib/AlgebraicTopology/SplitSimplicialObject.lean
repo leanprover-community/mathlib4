@@ -3,8 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.Data.Fintype.Sigma
 
 /-!
 
@@ -197,7 +198,7 @@ def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
 
 end Splitting
 
---porting note (#5171): removed @[nolint has_nonempty_instance]
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A splitting of a simplicial object `X` consists of the datum of a sequence
 of objects `N`, a sequence of morphisms `ι : N n ⟶ X _[n]` such that
 for all `Δ : SimplexCategoryᵒᵖ`, the canonical map `Splitting.map X ι Δ`
@@ -286,7 +287,7 @@ end Splitting
 
 variable (C)
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category `SimplicialObject.Split C` is the category of simplicial objects
 in `C` equipped with a splitting, and morphisms are morphisms of simplicial objects
 which are compatible with the splittings. -/
@@ -307,7 +308,7 @@ of a simplicial object `X`. -/
 def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
   ⟨X, s⟩
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where

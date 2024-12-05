@@ -3,15 +3,16 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.LinearDisjoint
-import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.LinearDisjoint
+import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
+import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -31,7 +32,7 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 
 ## Main results
 
-### Equivalent characterization of linearly disjointness
+### Equivalent characterization of linear disjointness
 
 - `Subalgebra.LinearDisjoint.linearIndependent_left_of_flat`:
   if `A` and `B` are linearly disjoint, and if `B` is a flat `R`-module, then for any family of
@@ -62,8 +63,8 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 
 ### Other main results
 
-- `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_symm_of_commute`:
-  linearly disjoint is symmetric under some commutative conditions.
+- `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_comm_of_commute`:
+  linear disjointness is symmetric under some commutative conditions.
 
 - `Subalgebra.LinearDisjoint.bot_left`, `Subalgebra.LinearDisjoint.bot_right`:
   the image of `R` in `S` is linearly disjoint with any other subalgebras.
@@ -103,7 +104,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 noncomputable section
 
@@ -132,13 +133,13 @@ variable {A B}
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : A.LinearDisjoint B :=
   Submodule.LinearDisjoint.of_subsingleton
 
-/-- Linearly disjoint is symmetric if elements in the module commute. -/
+/-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
     (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : B.LinearDisjoint A :=
   Submodule.LinearDisjoint.symm_of_commute H hc
 
-/-- Linearly disjoint is symmetric if elements in the module commute. -/
-theorem linearDisjoint_symm_of_commute
+/-- Linear disjointness is symmetric if elements in the module commute. -/
+theorem linearDisjoint_comm_of_commute
     (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
@@ -166,12 +167,12 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 variable {A B : Subalgebra R S}
 
-/-- Linearly disjoint is symmetric in a commutative ring. -/
+/-- Linear disjointness is symmetric in a commutative ring. -/
 theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
   H.symm_of_commute fun _ _ ↦ mul_comm _ _
 
-/-- Linearly disjoint is symmetric in a commutative ring. -/
-theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
+/-- Linear disjointness is symmetric in a commutative ring. -/
+theorem linearDisjoint_comm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
 namespace LinearDisjoint

@@ -24,7 +24,8 @@ one value.
 
 -/
 
-open scoped Topology
+open Topology
+
 variable {α S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
@@ -41,14 +42,12 @@ instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
-theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
-  cases x using Prod.rec
-  exact nhds_prod_eq
+theorem nhds_def (x : tsze R M) : 𝓝 x = 𝓝 x.fst ×ˢ 𝓝 x.snd := nhds_prod_eq
 
-theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
+theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = 𝓝 x ×ˢ 𝓝 0 :=
   nhds_def _
 
-theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
+theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = 𝓝 0 ×ˢ 𝓝 m :=
   nhds_def _
 
 nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=

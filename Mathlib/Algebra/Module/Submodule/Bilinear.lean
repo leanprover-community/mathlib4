@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
@@ -84,7 +84,7 @@ theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : ma
       rw [Submodule.mem_bot] at hm ⊢
       rw [hm, LinearMap.map_zero₂]
 
-@[mono]
+@[gcongr, mono]
 theorem map₂_le_map₂ {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q₁ q₂ : Submodule R N}
     (hp : p₁ ≤ p₂) (hq : q₁ ≤ q₂) : map₂ f p₁ q₁ ≤ map₂ f p₂ q₂ :=
   map₂_le.2 fun _m hm _n hn => apply_mem_map₂ _ (hp hm) (hq hn)

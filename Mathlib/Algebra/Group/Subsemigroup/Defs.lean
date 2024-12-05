@@ -179,7 +179,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : Inf (Subsemigroup M) :=
+instance : Min (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩

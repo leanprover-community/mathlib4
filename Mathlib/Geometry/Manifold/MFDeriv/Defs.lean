@@ -99,7 +99,7 @@ derivative, manifold
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology ContDiff
 open Set ChartedSpace
 
 section DerivativesDefinitions
@@ -128,10 +128,26 @@ differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
   DifferentiableWithinAt 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ Set.range I) (I x)
 
+open scoped Manifold
+
+theorem differentiableWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E} :
+    DifferentiableWithinAtProp 𝓘(𝕜, E) I' f s x ↔ DifferentiableWithinAt 𝕜 (I' ∘ f) s x := by
+  simp_rw [DifferentiableWithinAtProp, modelWithCornersSelf_coe, range_id, inter_univ,
+    modelWithCornersSelf_coe_symm, CompTriple.comp_eq, preimage_id_eq, id_eq]
+
+theorem DifferentiableWithinAtProp_self {f : E → E'} {s : Set E} {x : E} :
+    DifferentiableWithinAtProp 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x :=
+  differentiableWithinAtProp_self_source
+
+theorem differentiableWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
+    DifferentiableWithinAtProp I 𝓘(𝕜, E') f s x ↔
+      DifferentiableWithinAt 𝕜 (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) :=
+  Iff.rfl
+
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
 theorem differentiableWithinAt_localInvariantProp :
-    (contDiffGroupoid ⊤ I).LocalInvariantProp (contDiffGroupoid ⊤ I')
+    (contDiffGroupoid ∞ I).LocalInvariantProp (contDiffGroupoid ∞ I')
       (DifferentiableWithinAtProp I I') :=
   { is_local := by
       intro s x u f u_open xu
@@ -151,7 +167,8 @@ theorem differentiableWithinAt_localInvariantProp :
       rw [this] at h
       have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-      convert (h.comp' _ (this.differentiableWithinAt le_top)).mono_of_mem _ using 1
+      convert (h.comp' _ (this.differentiableWithinAt (mod_cast le_top))).mono_of_mem_nhdsWithin _
+        using 1
       · ext y; simp only [mfld_simps]
       refine
         mem_nhdsWithin.mpr
@@ -171,7 +188,7 @@ theorem differentiableWithinAt_localInvariantProp :
       have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
         simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-      convert (this.differentiableWithinAt le_top).comp _ h _
+      convert (this.differentiableWithinAt (mod_cast le_top)).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 

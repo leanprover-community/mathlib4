@@ -67,7 +67,7 @@ variable {F α β γ : Type*}
 
 section CommMonoid
 variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] {A A₁ A₂ : Set α}
-  {B B₁ B₂ : Set β} {C : Set γ} {f f₁ f₂ : α → β} {g : β → γ} {m n : ℕ}
+  {B B₁ B₂ : Set β} {C : Set γ} {f f₁ f₂ : α → β} {g : β → γ} {n : ℕ}
 
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves sums
 of `n` elements. -/
@@ -323,7 +323,7 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
 end CancelCommMonoid
 
 section DivisionCommMonoid
-variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {m n : ℕ}
+variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {n : ℕ}
 
 @[to_additive]
 lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B⁻¹ f⁻¹ where
