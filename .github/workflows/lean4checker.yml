@@ -1,6 +1,10 @@
 # https://chat.openai.com/share/26102e95-ac9c-4d03-a000-73e4f6cee8cd
 name: lean4checker Workflow
 
+## This workflow is identical to the `lean4checker_nightly.yml` workflow, except that it runs on
+## the `master` branch instead of the most recent `nightly-testing-YYYY-MM-DD` tag.
+## Please keep the workflow up to date with `lean4checker_nightly.yml`.
+
 on:
   schedule:
     - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
