@@ -147,78 +147,81 @@ open Int Polynomial.Chebyshev
 
 variable {x y : M} {f g : Dual R M} (hf : f x = 2) (hg : g y = 2)
 
-local notation:max "t" => f y * g x - 2
-local notation:max "S_eval_t" n:max => Polynomial.eval t (S R n)
-
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is a natural number and $z \in M$. -/
-lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M) :
+lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) z =
       z +
-        (S_eval_t ((m - 2) / 2) * (S_eval_t ((m - 1) / 2) + S_eval_t ((m - 3) / 2))) •
+        ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
           ((g x * f z - g z) • y - f z • x) +
-        (S_eval_t ((m - 1) / 2) * (S_eval_t (m / 2) + S_eval_t ((m - 2) / 2))) •
+        ((S R ((m - 1) / 2)).eval t * ((S R (m / 2)).eval t + (S R ((m - 2) / 2)).eval t)) •
           ((f y * g z - f z) • x - g z • y) := by
   induction m with
   | zero => simp
   | succ m ih =>
-    /- Now, let us collect two facts about the sequence `S_eval_t`. These easily follow from the
+    /- Now, let us collect two facts about the evaluations of `S r k`. These easily follow from the
     properties of the `S` polynomials. -/
-    have S_eval_t_sub_two (k : ℤ) : S_eval_t (k - 2) = t * S_eval_t (k - 1) - S_eval_t k := by
+    have S_eval_t_sub_two (k : ℤ) :
+        (S R (k - 2)).eval t = t * (S R (k - 1)).eval t - (S R k).eval t := by
       simp [S_sub_two]
     have S_eval_t_sq_add_S_eval_t_sq (k : ℤ) :
-        S_eval_t k ^ 2 + S_eval_t (k + 1) ^ 2 - t * S_eval_t k * S_eval_t (k + 1) = 1 := by
+        (S R k).eval t ^ 2 + (S R (k + 1)).eval t ^ 2 - t * (S R k).eval t * (S R (k + 1)).eval t
+        = 1 := by
       simpa using congr_arg (Polynomial.eval t) (S_sq_add_S_sq R k)
     -- Apply the inductive hypothesis.
     rw [pow_succ', LinearEquiv.mul_apply, ih, LinearEquiv.mul_apply]
     -- Expand out all the reflections and use `hf`, `hg`.
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
-    -- `m` can either be written in the form `2 * k` or `2 * k + 1`.
-    obtain ⟨k, even | odd⟩ := Int.even_or_odd' m
-    · /- The goal contains many expressions of the form `S_eval_t n`. We may rewrite all of them as
-      `S_eval_t (-2 + k)`, `S_eval_t (-1 + k)`, or `S_eval_t k`. -/
-      push_cast
-      simp_rw [even, add_sub_assoc (2 * k), sub_eq_add_neg (2 * k), add_comm (2 * k),
-        add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
-      norm_num
-      /- Now, equate the coefficients on both sides. These linear combinations were
-      found using `polyrith`. -/
-      match_scalars
-      · rfl
-      · linear_combination (norm := ring_nf) (-g z * f y * S_eval_t (-1 + k) +
-            f z * S_eval_t (-1 + k)) * S_eval_t_sub_two k +
+    -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
+    push_cast
+    set k : ℤ := m / 2
+    set e : ℤ := m % 2
+    rw [show m = 2 * k + e from (Int.ediv_add_emod m 2).symm]
+    simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
+      add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
+    have he : e = 0 ∨ e = 1 := by omega
+    clear_value e
+    set t' := t; subst ht; set t := t'
+    /- Now, equate the coefficients on both sides. These linear combinations were
+    found using `polyrith`. -/
+    match_scalars
+    · rfl
+    · linear_combination (norm := skip) (-g z * f y * (S R (e - 1 + k)).eval t +
+          f z * (S R (e - 1 + k)).eval t) * S_eval_t_sub_two (e + k) +
           (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
-      · linear_combination (norm := ring_nf) g z * S_eval_t (-1 + k) * S_eval_t_sub_two k +
+      obtain rfl | rfl : e = 0 ∨ e = 1 := he <;> ring_nf
+    · linear_combination (norm := skip)
+          g z * (S R (e - 1 + k)).eval t * S_eval_t_sub_two (e + k) +
           g z * S_eval_t_sq_add_S_eval_t_sq (k - 1)
-    · /- The goal contains many expressions of the form `S_eval_t n`. We may rewrite all of them as
-      `S_eval_t (-1 + k)`, `S_eval_t k`, or `S_eval_t (1 + k)`. -/
-      push_cast
-      simp_rw [odd, add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
-        add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
-      norm_num
-      /- Now, equate the coefficients on both sides. These linear combinations were
-      found using `polyrith`. -/
-      match_scalars
-      · rfl
-      · linear_combination (norm := ring_nf) (-g z * f y * S_eval_t k +
-            f z * S_eval_t k) * S_eval_t_sub_two (k + 1) +
-          (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
-      · linear_combination (norm := ring_nf) g z * S_eval_t k * S_eval_t_sub_two (k + 1) +
-          g z * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+      obtain rfl | rfl : e = 0 ∨ e = 1 := he <;> ring_nf
+
+/-- A formula for $(r_1 r_2)^m$, where $m$ is a natural number. -/
+lemma reflection_mul_reflection_pow (m : ℕ)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
+    ((reflection hf * reflection hg) ^ m).toLinearMap =
+      LinearMap.id (R := R) (M := M) +
+        (((S R ((m - 2) / 2) * (S R ((m - 1) / 2) + S R ((m - 3) / 2))).eval t) •
+          ((g x • f - g).smulRight y - f.smulRight x)) +
+        (((S R ((m - 1) / 2) * (S R (m / 2) + S R ((m - 2) / 2))).eval t) •
+          ((f y • g - f).smulRight x - g.smulRight y)) := by
+  ext z
+  simpa using reflection_mul_reflection_pow_apply hf hg m z t ht
 
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
-lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M) :
+lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) z =
       z +
-        (S_eval_t ((m - 2) / 2) * (S_eval_t ((m - 1) / 2) + S_eval_t ((m - 3) / 2))) •
+        ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
           ((g x * f z - g z) • y - f z • x) +
-        (S_eval_t ((m - 1) / 2) * (S_eval_t (m / 2) + S_eval_t ((m - 2) / 2))) •
+        ((S R ((m - 1) / 2)).eval t * ((S R (m / 2)).eval t + (S R ((m - 2) / 2)).eval t)) •
           ((f y * g z - f z) • x - g z • y) := by
   induction m using Int.negInduction with
-  | nat m => exact_mod_cast reflection_mul_reflection_pow_apply hf hg m z
+  | nat m => exact_mod_cast reflection_mul_reflection_pow_apply hf hg m z t ht
   | neg _ m =>
-    rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast]
-    simp only [reflection_mul_reflection_pow_apply]
-    rw [add_right_comm z]
+    have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
+    rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
+      reflection_mul_reflection_pow_apply hg hf m z t ht', add_right_comm z]
     have aux {a b : ℤ} (hab : a + b = -3) : a / 2 = -(b / 2) - 2 := by
       rw [← mul_right_inj' (by norm_num : (2 : ℤ) ≠ 0), mul_sub, mul_neg,
         eq_sub_of_add_eq (Int.ediv_add_emod _ _), eq_sub_of_add_eq (Int.ediv_add_emod _ _)]
@@ -230,15 +233,29 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M) :
     simp only [S_neg_sub_two, Polynomial.eval_neg]
     ring_nf
 
+/-- A formula for $(r_1 r_2)^m$, where $m$ is an integer. -/
+lemma reflection_mul_reflection_zpow (m : ℤ)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
+    ((reflection hf * reflection hg) ^ m).toLinearMap =
+      LinearMap.id (R := R) (M := M) +
+        (((S R ((m - 2) / 2) * (S R ((m - 1) / 2) + S R ((m - 3) / 2))).eval t) •
+          ((g x • f - g).smulRight y - f.smulRight x)) +
+        (((S R ((m - 1) / 2) * (S R (m / 2) + S R ((m - 2) / 2))).eval t) •
+          ((f y • g - f).smulRight x - g.smulRight y)) := by
+  ext z
+  simpa using reflection_mul_reflection_zpow_apply hf hg m z t ht
+
 /-- A formula for $(r_1 r_2)^m x$, where $m$ is an integer. This is the special case of
 `Module.reflection_mul_reflection_zpow_apply` with $z = x$. -/
-lemma reflection_mul_reflection_zpow_apply_self (m : ℤ) :
+lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) x =
-      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t (m - 1) * -g x) • y := by
+      ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R (m - 1)).eval t * -g x) • y := by
   /- Even though this is a special case of `Module.reflection_mul_reflection_zpow_apply`, it is
   easier to prove it from scratch. -/
-  have S_eval_t_sub_two (k : ℤ) : S_eval_t (k - 2) = t * S_eval_t (k - 1) - S_eval_t k := by
-    simp [S_sub_two]
+  have S_eval_t_sub_two (k : ℤ) :
+      (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
+    simp [S_sub_two, ht]
   induction m using Int.induction_on with
   | hz => simp
   | hp m ih =>
@@ -263,26 +280,29 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ) :
 
 /-- A formula for $(r_1 r_2)^m x$, where $m$ is a natural number. This is the special case of
 `Module.reflection_mul_reflection_pow_apply` with $z = x$. -/
-lemma reflection_mul_reflection_pow_apply_self (m : ℕ) :
+lemma reflection_mul_reflection_pow_apply_self (m : ℕ)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m) x =
-      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t (m - 1) * -g x) • y :=
-  mod_cast reflection_mul_reflection_zpow_apply_self hf hg m
+      ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R (m - 1)).eval t * -g x) • y :=
+  mod_cast reflection_mul_reflection_zpow_apply_self hf hg m t ht
 
 /-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is an integer. -/
-lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ) :
+lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     (reflection hg * (reflection hf * reflection hg) ^ m) x =
-      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t m * -g x) • y := by
-  rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self]
+      ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y := by
+  rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
   -- Expand out all the reflections and use `hf`, `hg`.
   simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
   -- Equate coefficients of `x` and `y`.
   module
 
 /-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is a natural number. -/
-lemma reflection_mul_reflection_mul_reflection_pow_apply_self (m : ℕ) :
+lemma reflection_mul_reflection_mul_reflection_pow_apply_self (m : ℕ)
+    (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     (reflection hg * (reflection hf * reflection hg) ^ m) x =
-      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t m * -g x) • y :=
-  mod_cast reflection_mul_reflection_mul_reflection_zpow_apply_self hf hg m
+      ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y :=
+  mod_cast reflection_mul_reflection_mul_reflection_zpow_apply_self hf hg m t ht
 
 end
 
