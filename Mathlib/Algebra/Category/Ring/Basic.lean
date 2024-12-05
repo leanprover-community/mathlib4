@@ -533,7 +533,8 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} CommRingCat where
+@[instance]
+abbrev instConcreteCategory : ConcreteCategory.{u} CommRingCat where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
