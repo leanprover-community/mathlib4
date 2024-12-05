@@ -310,7 +310,7 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
   simp only [BoundedFormula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
 
 theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
-    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ cast h) := by
+    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
   subst h
   simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp_id]
 
