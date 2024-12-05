@@ -201,26 +201,52 @@ namespace Truncated
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
+/-- The map that picks up the initial vertex of a 2-simplex, as a morphism in the 2-truncated
+simplex category. -/
 def ι0₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
+
+/-- The map that picks up the middle vertex of a 2-simplex, as a morphism in the 2-truncated
+simplex category. -/
 def ι1₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
+
+/-- The map that picks up the final vertex of a 2-simplex, as a morphism in the 2-truncated
+simplex category. -/
 def ι2₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
 
+/-- The initial vertex of a 2-simplex in a 2-truncated simplicial set. -/
 def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι0₂.op φ
+
+/-- The middle vertex of a 2-simplex in a 2-truncated simplicial set. -/
 def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι1₂.op φ
+
+/-- The final vertex of a 2-simplex in a 2-truncated simplicial set. -/
 def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
 
-def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
-def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
+/-- The 0th face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
 def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
 
-def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
-  ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
-def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
-  ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
+/-- The 1st face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
+def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
+
+/-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
+def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
+
+/-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
+0th face of a 2-simplex. -/
 def ev12₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
     map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
     map_map_of_eq V rfl⟩
+
+/-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
+1st face of a 2-simplex. -/
+def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
+  ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
+
+/-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
+2nd face of a 2-simplex. -/
+def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
+  ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 
 end Truncated
 open Truncated
