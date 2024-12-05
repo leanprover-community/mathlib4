@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 namespace CategoryTheory
 

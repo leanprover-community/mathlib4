@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # The Grothendieck group of an exact category

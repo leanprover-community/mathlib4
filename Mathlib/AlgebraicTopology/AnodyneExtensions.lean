@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 universe w v u
 

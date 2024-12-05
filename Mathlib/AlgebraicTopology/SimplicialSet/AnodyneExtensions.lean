@@ -1,5 +1,5 @@
 import Mathlib.AlgebraicTopology.AnodyneExtensions
-import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 universe u
 
