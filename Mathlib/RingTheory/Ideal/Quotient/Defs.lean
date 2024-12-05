@@ -89,7 +89,7 @@ theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp
     f = g :=
   RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
 
-instance inhabited : Inhabited (R ⧸ I) :=
+instance : Nonempty (R ⧸ I) :=
   ⟨mk I 37⟩
 
 protected theorem eq : mk I x = mk I y ↔ x - y ∈ I :=
