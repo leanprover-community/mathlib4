@@ -553,7 +553,6 @@ theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
   unfold eval₂
   rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ←mul_pow,
     Units.mul_inv, one_pow]
-    
 
 theorem eval₂_T (n : ℤ) : eval₂ f x (T n) =
   if (0 ≤ n) then (x ^ n.toNat) else (x⁻¹ ^ (-n).toNat) := by
