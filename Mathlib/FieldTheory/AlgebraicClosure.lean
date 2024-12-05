@@ -38,6 +38,9 @@ def algebraicClosure : IntermediateField F E :=
 
 variable {F E}
 
+theorem algebraicClosure_toSubalgebra :
+  (algebraicClosure F E).toSubalgebra = integralClosure F E := rfl
+
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
 it is an integral element. -/
 theorem mem_algebraicClosure_iff' {x : E} :
@@ -100,14 +103,17 @@ variable (F E K)
 
 /-- The algebraic closure of `F` in `E` is algebraic over `F`. -/
 instance isAlgebraic : Algebra.IsAlgebraic F (algebraicClosure F E) :=
-  ⟨fun x ↦
-    isAlgebraic_iff.mpr (IsAlgebraic.isIntegral (mem_algebraicClosure_iff.mp x.2)).isAlgebraic⟩
+  ⟨fun x ↦ isAlgebraic_iff.mpr x.2.isAlgebraic⟩
 
 /-- The algebraic closure of `F` in `E` is the integral closure of `F` in `E`. -/
 instance isIntegralClosure : IsIntegralClosure (algebraicClosure F E) F E :=
   inferInstanceAs (IsIntegralClosure (integralClosure F E) F E)
 
 end algebraicClosure
+
+protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
+    Transcendental (algebraicClosure F E) a :=
+  ha.extendScalars Subtype.val_injective
 
 variable (F E K)
 
