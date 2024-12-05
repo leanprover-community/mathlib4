@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.RingTheory.Polynomial.Basic
@@ -114,8 +115,7 @@ theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.singl
 
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
-  -- Porting note: was `ext i j`
-  refine LinearMap.pi_ext' (fun (i : n) => LinearMap.ext_ring (funext (fun (j : n) => ?_)))
+  ext i j
   convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
   · simp
   · intro j
@@ -123,7 +123,7 @@ theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
 
 theorem cramer_smul (r : α) (A : Matrix n n α) :
     cramer (r • A) = r ^ (Fintype.card n - 1) • cramer A :=
-  LinearMap.ext fun _ => funext fun _ => det_updateColumn_smul' _ _ _ _
+  LinearMap.ext fun _ => funext fun _ => det_updateColumn_smul_left _ _ _ _
 
 @[simp]
 theorem cramer_subsingleton_apply [Subsingleton n] (A : Matrix n n α) (b : n → α) (i : n) :
@@ -256,7 +256,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
 
 theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
     A i k * adjugate A k j = cramer Aᵀ (Pi.single k (A i k)) j := by
-  erw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← LinearMap.map_smul, ← Pi.single_smul',
+  rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← LinearMap.map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by

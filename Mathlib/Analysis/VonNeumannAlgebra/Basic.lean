@@ -3,9 +3,8 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Von Neumann algebras
@@ -39,8 +38,7 @@ One the other hand, not picking one means that the weak-* topology
 (which depends on a choice of predual) must be defined using the choice,
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
-class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CStarRing M] [Module ℂ M]
-    [NormedAlgebra ℂ M] [StarModule ℂ M] : Prop where
+class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :

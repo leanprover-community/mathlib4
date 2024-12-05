@@ -149,7 +149,7 @@ namespace CommShift
 
 variable (C) in
 instance id : CommShift (𝟭 C) A where
-  iso := fun a => rightUnitor _ ≪≫ (leftUnitor _).symm
+  iso := fun _ => rightUnitor _ ≪≫ (leftUnitor _).symm
 
 instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
   iso a := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a) _ ≪≫

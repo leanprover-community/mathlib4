@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Defs
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
@@ -102,9 +103,9 @@ theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
 
 end
 
-@[deprecated (since := "2024-06-07")] alias decide_True := decide_true_eq_true
+@[deprecated (since := "2024-06-07")] alias decide_True := decide_true
 
-@[deprecated (since := "2024-06-07")] alias decide_False := decide_false_eq_false
+@[deprecated (since := "2024-06-07")] alias decide_False := decide_false
 
 @[deprecated (since := "2024-06-07")] alias coe_decide := decide_eq_true_iff
 
@@ -218,7 +219,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
     | isTrue hm => subst hm; have h := Nat.le_antisymm h (Nat.zero_le n); contradiction
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
-  cases b₀ <;> cases b₁ <;> simp_all (config := { decide := true })
+  cases b₀ <;> cases b₁ <;> simp_all +decide
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
   cases b <;> rfl

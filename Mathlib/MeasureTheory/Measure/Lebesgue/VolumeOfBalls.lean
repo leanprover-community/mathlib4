@@ -3,10 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 /-!
 # Volume of balls
@@ -48,10 +49,10 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   obtain hE | hE := subsingleton_or_nontrivial E
-  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← integral_univ, Set.univ_nonempty.eq_zero,
-      integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add,
-      Real.Gamma_one, div_one, norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero,
-      smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]
+  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← setIntegral_univ,
+      Set.univ_nonempty.eq_zero, integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero,
+      zero_div, zero_add, Real.Gamma_one, div_one, norm_zero, Real.zero_rpow hp.ne', neg_zero,
+      Real.exp_zero, smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]
   · have : (0 : ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
     have : ((∫ y in Set.Ioi (0 : ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
         Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
@@ -96,7 +97,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
-  let ν : Measure F := @Measure.map E F _ mE φ μ
+  let ν : Measure F := @Measure.map E F mE _ φ μ
   have : IsAddHaarMeasure ν :=
     @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
@@ -112,7 +113,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     -- The map `ψ` is measure preserving by construction
     have : @MeasurePreserving E F mE _ ψ μ ν :=
       @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
-    erw [← this.integral_comp']
+    rw [← this.integral_comp']
     rfl
 
 theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
@@ -139,7 +140,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
-  let ν : Measure F := @Measure.map E F _ mE φ μ
+  let ν : Measure F := @Measure.map E F mE _ φ μ
   have : IsAddHaarMeasure ν :=
     @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert addHaar_closedBall_eq_addHaar_ball ν 0 r using 1
@@ -206,7 +207,7 @@ theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
       ext x
       refine ⟨fun hx => ?_, fun hx => hx.elim⟩
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
-    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.size_pos'.ne', zero_mul]
+    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.pos'.ne', zero_mul]
   · rw [← volume_sum_rpow_lt_one _ hp, ← ofReal_pow (le_of_lt hr), ← finrank_pi ℝ]
     convert addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℝ | ∑ i, |x i| ^ p < 1} using 2
     simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
@@ -279,7 +280,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
       ext x
       refine ⟨fun hx => ?_, fun hx => hx.elim⟩
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
-    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.size_pos'.ne', zero_mul]
+    rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.pos'.ne', zero_mul]
   · rw [← Complex.volume_sum_rpow_lt_one _ hp, ← ENNReal.ofReal_pow (le_of_lt hr)]
     convert addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℂ |  ∑ i, ‖x i‖ ^ p < 1} using 2
     · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,

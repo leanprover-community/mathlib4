@@ -10,13 +10,8 @@ import Mathlib.Order.Interval.Set.Basic
 /-!
 # Minimality and Maximality
 
-This file defines minimality and maximality of an element with respect to a predicate `P` on
-an ordered type `α`.
-
-## Main declarations
-
-* `Minimal P x`: `x` is minimal satisfying `P`.
-* `Maximal P x`: `x` is maximal satisfying `P`.
+This file proves basic facts about minimality and maximality
+of an element with respect to a predicate `P` on an ordered type `α`.
 
 ## Implementation Details
 
@@ -51,24 +46,6 @@ variable {α : Type*} {P Q : α → Prop} {a x y : α}
 section LE
 
 variable [LE α]
-
-/-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
-def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
-
-/-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/
-def Maximal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → x ≤ y → y ≤ x
-
-lemma Minimal.prop (h : Minimal P x) : P x :=
-  h.1
-
-lemma Maximal.prop (h : Maximal P x) : P x :=
-  h.1
-
-lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
-  h.2 hy hle
-
-lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
-  h.2 hy hge
 
 @[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
@@ -621,15 +598,17 @@ theorem map_maximal_mem (f : s ≃o t) (hx : Maximal (· ∈ s) x) :
 def mapSetOfMinimal (f : s ≃o t) : {x | Minimal (· ∈ s) x} ≃o {x | Minimal (· ∈ t) x} where
   toFun x := ⟨f ⟨x, x.2.1⟩, f.map_minimal_mem x.2⟩
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_minimal_mem x.2⟩
-  left_inv x := Subtype.ext (by apply congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩)
-  right_inv x := Subtype.ext (by apply congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩)
-  map_rel_iff' {_ _} := f.map_rel_iff
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  map_rel_iff' := f.map_rel_iff
 
 /-- If two sets are order isomorphic, their maximals are also order isomorphic. -/
 def mapSetOfMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) x} where
   toFun x := ⟨f ⟨x, x.2.1⟩, f.map_maximal_mem x.2⟩
   invFun x := ⟨f.symm ⟨x, x.2.1⟩, f.symm.map_maximal_mem x.2⟩
-  __ := (show OrderDual.ofDual ⁻¹' s ≃o OrderDual.ofDual ⁻¹' t from f.dual).mapSetOfMinimal
+  left_inv x := Subtype.ext (congr_arg Subtype.val <| f.left_inv ⟨x, x.2.1⟩ :)
+  right_inv x := Subtype.ext (congr_arg Subtype.val <| f.right_inv ⟨x, x.2.1⟩ :)
+  map_rel_iff' := f.map_rel_iff
 
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :

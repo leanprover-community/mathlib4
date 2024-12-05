@@ -5,7 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.NoZeroSMulDivisors.Pi
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!

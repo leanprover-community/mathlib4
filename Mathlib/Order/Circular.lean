@@ -346,7 +346,7 @@ See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
-  btw_refl a := Or.inl ⟨le_rfl, le_rfl⟩
+  btw_refl _ := Or.inl ⟨le_rfl, le_rfl⟩
   btw_cyclic_left {a b c} h := by
     dsimp
     rwa [← or_assoc, or_comm]

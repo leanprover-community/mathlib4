@@ -93,6 +93,10 @@ protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y]
     ⇑(f : C(X, Y)) = f :=
   rfl
 
+protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
+    (f : C(X, Y)) x = f x :=
+  rfl
+
 @[ext]
 theorem ext {f g : C(X, Y)} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h

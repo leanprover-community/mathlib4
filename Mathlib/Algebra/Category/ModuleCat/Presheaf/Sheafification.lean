@@ -124,7 +124,7 @@ noncomputable def sheafificationAdjunction :
         apply (toPresheaf _).map_injective
         erw [toPresheaf_map_sheafificationHomEquiv] }
 
-lemma sheaififcationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
+lemma sheafificationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
     {F : SheafOfModules.{v} R} (f : (sheafification α).obj P ⟶ F) :
     (sheafificationAdjunction α).homEquiv P F f = sheafificationHomEquiv α f := rfl
 
@@ -144,7 +144,7 @@ variable [HasSheafify J AddCommGrp.{v}]
 
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
-  compPreservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrp)
+  comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrp)
 
 instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
   inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
@@ -156,7 +156,7 @@ noncomputable instance : ReflectsFiniteLimits (SheafOfModules.toSheaf.{v} R) whe
   reflects _ _ _ := inferInstance
 
 noncomputable instance : PreservesFiniteLimits (sheafification.{v} α) :=
-  preservesFiniteLimitsOfReflectsOfPreserves
+  preservesFiniteLimits_of_reflects_of_preserves
     (sheafification.{v} α) (SheafOfModules.toSheaf.{v} R)
 
 end

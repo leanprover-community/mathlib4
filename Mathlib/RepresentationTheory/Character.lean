@@ -19,8 +19,8 @@ is the theorem `char_orthonormal`
 
 ## Implementation notes
 
-Irreducible representations are implemented categorically, using the `Simple` class defined in
-`Mathlib.CategoryTheory.Simple`
+Irreducible representations are implemented categorically, using the `CategoryTheory.Simple` class
+defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
@@ -89,7 +89,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
-  erw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
+  rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 end Group
@@ -116,8 +116,8 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     rw [char_iso (FDRep.dualTensorIsoLinHom W.ρ V)]
   -- The average over the group of the character of a representation equals the dimension of the
   -- space of invariants.
-  rw [average_char_eq_finrank_invariants]
-  rw [show (of (linHom W.ρ V.ρ)).ρ = linHom W.ρ V.ρ from FDRep.of_ρ (linHom W.ρ V.ρ)]
+  rw [average_char_eq_finrank_invariants, ← FDRep.endMulEquiv_comp_ρ (of _),
+      FDRep.of_ρ (linHom W.ρ V.ρ)]
   -- The space of invariants of `Hom(W, V)` is the subspace of `G`-equivariant linear maps,
   -- `Hom_G(W, V)`.
   erw [(linHom.invariantsEquivFDRepHom W V).finrank_eq] -- Porting note: Changed `rw` to `erw`

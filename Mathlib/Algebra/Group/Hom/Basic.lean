@@ -109,7 +109,7 @@ For the iff statement on the triviality of the kernel, see `injective_iff_map_eq
 theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
-  ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
+  ⟨fun h _ => (map_eq_one_iff f h).mp, fun h x y hxy =>
     mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_cancel, map_one]⟩
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial,
