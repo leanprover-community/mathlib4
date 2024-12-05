@@ -67,6 +67,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
+          # Read lean-toolchain file and checkout appropriate branch
           TOOLCHAIN=$(cat ../lean-toolchain)
           if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
             VERSION=${TOOLCHAIN#leanprover/lean4:}
@@ -74,10 +75,15 @@ jobs:
           else
             git checkout master
           fi
+          # Now that the git hash is embedded in each olean,
+          # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
           lake build
           ./test.sh
           cd ..
+          # After https://github.com/leanprover/lean4checker/pull/26
+          # lean4checker by default only runs on the current project
+          # so we explicitly check Batteries as well here.
           lake env lean4checker/.lake/build/bin/lean4checker Batteries Mathlib
 
       - name: Post success message on Zulip
@@ -103,6 +109,20 @@ jobs:
           to: 'mathlib reviewers'
           type: 'stream'
           topic: 'lean4checker failure'
+          content: |
+            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ matrix.branch_type == 'master' && 'master' || env.LATEST_TAG }})
+        continue-on-error: true
+
+      - name: Post failure message on Zulip main topic
+        if: failure()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'lean4checker'
           content: |
             ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ matrix.branch_type == 'master' && 'master' || env.LATEST_TAG }})
         continue-on-error: true
