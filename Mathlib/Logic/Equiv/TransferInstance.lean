@@ -133,7 +133,7 @@ on `β` back along `e`. -/
 the additive structure on `α` is the one obtained by transporting an additive structure
 on `β` back along `e`."]
 def mulEquiv (e : α ≃ β) [Mul β] :
-    let _ := Equiv.mul e
+    let_fun _ := Equiv.mul e
     α ≃* β := by
   intros
   exact
@@ -565,7 +565,7 @@ variable [Semiring R]
 
 /-- Transfer `Module` across an `Equiv` -/
 protected abbrev module (e : α ≃ β) [AddCommMonoid β] :
-    let _ := Equiv.addCommMonoid e
+    let_fun _ := Equiv.addCommMonoid e
     ∀ [Module R β], Module R α := by
   intros
   exact
@@ -608,7 +608,7 @@ variable [CommSemiring R]
 
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
-    let _ := Equiv.semiring e
+    let_fun _ := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := by
   intros
   letI : Module R α := e.module R
@@ -621,8 +621,8 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
     simp only [apply_symm_apply, Algebra.mul_smul_comm]
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
-    let _ := Equiv.semiring e
-    let _ := Equiv.algebra R e
+    let I := Equiv.semiring e
+    let_fun _ := Equiv.algebra R e
     (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
   intros
   simp only [Algebra.algebraMap_eq_smul_one]

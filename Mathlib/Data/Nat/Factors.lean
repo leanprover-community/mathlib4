@@ -69,7 +69,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
   | 0 => by simp
   | 1 => by simp
   | k + 2 => fun _ =>
-    let m := minFac (k + 2)
+    letI m := minFac (k + 2)
     have : (k + 2) / m < (k + 2) := factors_lemma
     show (primeFactorsList (k + 2)).prod = (k + 2) by
       have h₁ : (k + 2) / m ≠ 0 := fun h => by
