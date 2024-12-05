@@ -46,11 +46,6 @@ theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; r
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 
-theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
-  | 0      => rfl
-  | Nat.succ _ => Int.one_mul _
-  | -[_+1] => (Int.neg_eq_neg_one_mul _).symm
-
 theorem sign_mul_self_eq_abs (a : ℤ) : sign a * a = |a| := by
   rw [abs_eq_natAbs, sign_mul_self_eq_natAbs]
 
