@@ -839,7 +839,8 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]
+    simp only [kerCotangentToTensor_toCotangent, Submodule.restrictScalars_mem, LinearMap.mem_ker,
+      mapBaseChange_tmul, map_D, RingHom.mem_ker.mp x.2, map_zero, smul_zero]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective (Ω[A⁄R]) (g := Algebra.linearMap A B) h x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
