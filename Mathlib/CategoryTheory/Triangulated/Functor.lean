@@ -71,11 +71,6 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
-#adaptation_note
-/--
-At nightly-2024-08-08 we needed to increase the maxHeartbeats here.
--/
-set_option maxHeartbeats 400000 in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
@@ -178,8 +173,8 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
-    have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.ofIsoProdComparison F X₁ X₃
-    exact ⟨fun {K} ↦ preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
+    have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.of_iso_prod_comparison F X₁ X₃
+    exact ⟨fun {K} ↦ preservesLimit_of_iso_diagram F (diagramIsoPair K).symm⟩
   intro X₁ X₃
   let φ : F.mapTriangle.obj (binaryProductTriangle X₁ X₃) ⟶
       binaryProductTriangle (F.obj X₁) (F.obj X₃) :=

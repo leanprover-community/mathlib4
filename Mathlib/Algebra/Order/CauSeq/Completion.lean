@@ -140,7 +140,7 @@ private theorem one_def : 1 = mk (abv := abv) 1 :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
-  Function.Surjective.ring mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
+  Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -165,7 +165,7 @@ variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
-  Function.Surjective.commRing mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
+  Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -198,8 +198,6 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [mk_eq.2 fg, ← Ig] at If
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 

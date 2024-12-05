@@ -53,10 +53,7 @@ open Submodule MeasureTheory Module MeasureTheory Module ZSpan
 
 section General
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
-variable [ProperSpace E] [MeasurableSpace E]
-variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
+variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] (L : Submodule ℤ E)
 
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `ZLattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of
@@ -176,15 +173,15 @@ theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bo
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume ((b.ofZLatticeBasis ℝ).equivFun '' s)).toReal) := by
   refine Tendsto.congr' ?_
-    (unitPartition.tendsto_card_div_pow' ((b.ofZLatticeBasis ℝ).equivFun '' s) ?_ ?_ hs₃)
+    (tendsto_card_div_pow_atTop_volume ((b.ofZLatticeBasis ℝ).equivFun '' s) ?_ ?_ hs₃)
   · filter_upwards [eventually_gt_atTop 0] with n hn
     congr
     refine Nat.card_congr <| ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.subtypeEquiv fun x ↦ ?_).symm
     simp_rw [Set.mem_inter_iff, ← b.ofZLatticeBasis_span ℝ, LinearEquiv.coe_toEquiv,
       Basis.equivFun_apply, Set.mem_image, DFunLike.coe_fn_eq, EmbeddingLike.apply_eq_iff_eq,
-      exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀ (by aesop : (n:ℝ) ≠ 0),
-      ← Finsupp.coe_smul, ← LinearEquiv.map_smul, SetLike.mem_coe, Basis.mem_span_iff_repr_mem,
-      Pi.basisFun_repr, implies_true]
+      exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀
+      (mod_cast hn.ne' : (n : ℝ) ≠ 0), ← Finsupp.coe_smul, ← LinearEquiv.map_smul, SetLike.mem_coe,
+      Basis.mem_span_iff_repr_mem, Pi.basisFun_repr, implies_true]
   · rw [← NormedSpace.isVonNBounded_iff ℝ] at hs₁ ⊢
     exact Bornology.IsVonNBounded.image hs₁ ((b.ofZLatticeBasis ℝ).equivFunL : E →L[ℝ] ι → ℝ)
   · exact (b.ofZLatticeBasis ℝ).equivFunL.toHomeomorph.toMeasurableEquiv.measurableSet_image.mpr hs₂
@@ -207,22 +204,25 @@ theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bor
     Tendsto (fun c : ℝ ↦
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set E) / (c : ℝ))
         atTop (𝓝 (volume ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1})).toReal) := by
-  have h : (card ι : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr card_ne_zero
-  refine Tendsto.congr' ?_ <| (unitPartition.tendsto_card_div_pow
+  have aux₁ : (card ι : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr card_ne_zero
+  refine Tendsto.congr' ?_ <| (tendsto_card_div_pow_atTop_volume'
       ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1}) ?_ ?_ h₄ fun x y hx hy ↦ ?_).comp
         (tendsto_rpow_atTop <| inv_pos.mpr
           (Nat.cast_pos.mpr card_pos) : Tendsto (fun x ↦ x ^ (card ι : ℝ)⁻¹) atTop atTop)
   · filter_upwards [eventually_gt_atTop 0] with c hc
+    have aux₂ : 0 < c ^ (card ι : ℝ)⁻¹ := Real.rpow_pos_of_pos hc _
+    have aux₃ : (c ^ (card ι : ℝ)⁻¹)⁻¹ ≠ 0 := inv_ne_zero aux₂.ne'
+    have aux₄ : c ^ (-(card ι : ℝ)⁻¹) ≠ 0 := (Real.rpow_pos_of_pos hc _).ne'
     obtain ⟨hc₁, hc₂⟩ := lt_iff_le_and_ne.mp hc
-    rw [Function.comp_apply, ← Real.rpow_natCast, Real.rpow_inv_rpow hc₁ h, eq_comm]
+    rw [Function.comp_apply, ← Real.rpow_natCast, Real.rpow_inv_rpow hc₁ aux₁, eq_comm]
     congr
     refine Nat.card_congr <| Equiv.subtypeEquiv ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.trans
-          (Equiv.smulRight (a := c ^ (- (card ι : ℝ)⁻¹)) (by aesop))) fun _ ↦ ?_
+          (Equiv.smulRight aux₄)) fun _ ↦ ?_
     rw [Set.mem_inter_iff, Set.mem_inter_iff, Equiv.trans_apply, LinearEquiv.coe_toEquiv,
-      Equiv.smulRight_apply, Real.rpow_neg hc₁, Set.smul_mem_smul_set_iff₀ (by aesop),
-      ← Set.mem_smul_set_iff_inv_smul_mem₀ (by aesop), ← image_smul_set,
-      tendsto_card_le_div''_aux hX h₁ (by positivity), ← Real.rpow_natCast, ← Real.rpow_mul hc₁,
-      inv_mul_cancel₀ h, Real.rpow_one]
+      Equiv.smulRight_apply, Real.rpow_neg hc₁, Set.smul_mem_smul_set_iff₀ aux₃,
+      ← Set.mem_smul_set_iff_inv_smul_mem₀ aux₂.ne', ← image_smul_set,
+      tendsto_card_le_div''_aux hX h₁ aux₂, ← Real.rpow_natCast, ← Real.rpow_mul hc₁,
+      inv_mul_cancel₀ aux₁, Real.rpow_one]
     simp_rw [SetLike.mem_coe, Set.mem_image, EmbeddingLike.apply_eq_iff_eq, exists_eq_right,
       and_congr_right_iff, ← b.ofZLatticeBasis_span ℝ, Basis.mem_span_iff_repr_mem,
       Pi.basisFun_repr, Basis.equivFun_apply, implies_true]
@@ -233,7 +233,7 @@ theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bor
     apply Set.image_mono
     rw [tendsto_card_le_div''_aux hX h₁ hx,
       tendsto_card_le_div''_aux hX h₁ (lt_of_lt_of_le hx hy)]
-    exact fun a ⟨ha₁, ha₂⟩ ↦ ⟨ha₁, le_trans ha₂ <| pow_le_pow_left (le_of_lt hx) hy _⟩
+    exact fun a ⟨ha₁, ha₂⟩ ↦ ⟨ha₁, le_trans ha₂ <| pow_le_pow_left₀ (le_of_lt hx) hy _⟩
 
 end General
 

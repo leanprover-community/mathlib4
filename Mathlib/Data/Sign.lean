@@ -15,7 +15,7 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
--- Porting note (#11081): cannot automatically derive Fintype, added manually
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive Fintype, added manually
 /-- The type of signs. -/
 inductive SignType
   | zero
@@ -122,7 +122,13 @@ instance : BoundedOrder SignType where
   top := 1
   le_top := LE.of_pos
   bot := -1
-  bot_le := LE.of_neg
+  bot_le :=
+    #adaptation_note
+    /--
+    Added `by exact` after https://github.com/leanprover/lean4/pull/6053,
+    but don't understand why it was needed.
+    -/
+    by exact LE.of_neg
 
 instance : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
@@ -392,7 +398,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {a b : α}
+variable [LinearOrderedRing α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -431,7 +437,7 @@ section AddGroup
 
 variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 
-theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign (-a) = -sign a := by
+theorem Left.sign_neg [AddLeftStrictMono α] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
@@ -439,7 +445,7 @@ theorem Left.sign_neg [CovariantClass α α (· + ·) (· < ·)] (a : α) : sign
   · simp
   · simp
 
-theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)] (a : α) :
+theorem Right.sign_neg [AddRightStrictMono α] (a : α) :
     sign (-a) = -sign a := by
   simp_rw [sign_apply, Right.neg_pos_iff, Right.neg_neg_iff]
   split_ifs with h h'

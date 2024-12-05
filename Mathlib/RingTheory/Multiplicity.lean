@@ -5,8 +5,9 @@ Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.ENat.Basic
+import Mathlib.Tactic.Linarith
 
 /-!
 # Multiplicity of a divisor
@@ -60,7 +61,10 @@ theorem emultiplicity_lt_top {a b : α} : emultiplicity a b < ⊤ ↔ Finite a b
 theorem finite_iff_emultiplicity_ne_top :
     Finite a b ↔ emultiplicity a b ≠ ⊤ := by simp
 
-alias ⟨Finite.emultiplicity_ne_top, _⟩ := finite_iff_emultiplicity_ne_top
+alias ⟨multiplicity.Finite.emultiplicity_ne_top, _⟩ := finite_iff_emultiplicity_ne_top
+
+@[deprecated (since := "2024-11-08")]
+alias Finite.emultiplicity_ne_top := multiplicity.Finite.emultiplicity_ne_top
 
 theorem finite_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     Finite a b := by
@@ -410,7 +414,7 @@ theorem Nat.multiplicity_finite_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 <
               | 0 => ha rfl
               | 1 => ha1 rfl
               | b+2 => by omega
-          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
+          not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
 alias ⟨_, Dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos

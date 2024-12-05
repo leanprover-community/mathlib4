@@ -100,23 +100,15 @@ lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valE
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [← card_Icc, Fintype.card_ofFinset]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
   rw [← card_Ico, Fintype.card_ofFinset]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 
@@ -183,23 +175,15 @@ theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmb
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by
   rw [Fintype.card_ofFinset, card_Ici]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by
   rw [Fintype.card_ofFinset, card_Ioi]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
   rw [Fintype.card_ofFinset, card_Iic]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by
   rw [Fintype.card_ofFinset, card_Iio]
 

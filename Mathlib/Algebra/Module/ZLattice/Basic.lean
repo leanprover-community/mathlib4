@@ -3,6 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -67,7 +68,7 @@ theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K
 
 open scoped Pointwise in
 theorem smul {c : K} (hc : c ≠ 0) :
-    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ Ne.isUnit hc))) := by
+    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ hc.isUnit))) := by
   rw [smul_span, Set.smul_set_range]
   congr!
   rw [Basis.isUnitSMul_apply]
@@ -315,11 +316,11 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
 theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
-    Set.Finite (s ∩ (span ℤ (Set.range b))) := by
-  have : DiscreteTopology (span ℤ (Set.range b)) := by infer_instance
+    Set.Finite (s ∩ span ℤ (Set.range b)) := by
+  have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed hs ?_
-  change IsClosed (span ℤ (Set.range b)).toAddSubgroup
-  exact inferInstance
+  change IsClosed ((span ℤ (Set.range b)).toAddSubgroup : Set E)
+  exact AddSubgroup.isClosed_of_discrete
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :

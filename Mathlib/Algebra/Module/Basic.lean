@@ -6,7 +6,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
@@ -22,6 +23,17 @@ open Function Set
 universe u v
 
 variable {α R M M₂ : Type*}
+
+@[simp]
+theorem Units.neg_smul [Ring R] [AddCommGroup M] [Module R M] (u : Rˣ) (x : M) :
+    -u • x = -(u • x) := by
+  rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
+
+@[simp]
+theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Module R M]
+    [Invertible (2 : R)] (x : M) :
+    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
+  Convex.combo_self invOf_two_add_invOf_two _
 
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast_smul := map_natCast_smul
