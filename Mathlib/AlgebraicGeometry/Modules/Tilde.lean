@@ -92,7 +92,7 @@ lemma sections_smul_localizations_def
     {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
     (r : (Spec.structureSheaf R).val.obj U)
     (m : Localizations M ↑x) :
-  r • m = r.1 x • m := rfl
+  r • m = letI r' : Localization.AtPrime _ := r.1 x; r' • m := rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
@@ -130,8 +130,9 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul] at wa wr ⊢
       rw [mul_comm, ← Algebra.smul_def] at wr
       rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr, mul_smul,
-        wr, mul_comm rr, Algebra.smul_def, ← map_mul]
-      rfl
+        wr, mul_comm rr, Algebra.smul_def]
+      delta StructureSheaf.Localizations
+      rw [← map_mul, algebraMap_smul]
 
 end Tilde
 
@@ -184,16 +185,20 @@ theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
 
 lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
     (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
-    (r • s).1 x = r • (s.1 x) := rfl
+    (r • s).1 x = r • (s.1 x) := by
+  show (algebraMap R (Localization.AtPrime x.1.1)) r • (s.1 x) = _
+  rw [algebraMap_smul]
 
+unseal OreLocalization.zero in
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
   refine Limits.Concrete.colimit_no_zero_smul_divisor
     _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
     _ hst
-  apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
-    (congr_fun (Subtype.ext_iff.1 hs) pt)
+  refine LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _ ?_
+  convert (congr_fun (Subtype.ext_iff.1 hs) pt)
+  rw [smul_section_apply]
 
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
@@ -206,9 +211,10 @@ def toOpen (U : Opens (PrimeSpectrum.Top R)) :
     ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
   map_add' f g := Subtype.eq <| funext fun x ↦ LinearMap.map_add _ _ _
   map_smul' r m := by
+    apply Subtype.ext
+    ext i
     simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
-      RingHom.id_apply]
-    rfl
+      RingHom.id_apply, smul_section_apply]
 
 @[simp]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
@@ -236,7 +242,9 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
           germ_ext (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _) (iWV := homOfLE inf_le_left) _ <|
-          Subtype.eq <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
+          Subtype.eq <| funext fun y ↦ by
+            rw [map_smul, smul_section_apply]
+            exact smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
   obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
   obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
@@ -263,7 +271,7 @@ def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   toFun s := (s.1 ⟨x, hx⟩ : _)
   map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+  map_smul' _ _ := by simp [smul_section_apply]
 
 /--
 The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization of `M` at the
@@ -362,6 +370,10 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     added this refine hack to be able to add type hint in `change` -/
   refine (?_ : @Eq ?ty _ _)
+  simp only [homOfLE_leOfHom, Quiver.Hom.unop_op, Opens.coe_top, Set.subset_univ, Set.coe_inclusion,
+    isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, op_id, CategoryTheory.Functor.map_id,
+    map_smul, CategoryTheory.id_apply]
+  rw [smul_section_apply]
   change LocalizedModule.mk f 1 = (s.1 • LocalizedModule.mk f _ : ?ty)
   rw [LocalizedModule.smul'_mk, LocalizedModule.mk_eq]
   exact ⟨1, by simp⟩

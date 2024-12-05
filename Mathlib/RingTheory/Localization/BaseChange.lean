@@ -33,6 +33,7 @@ theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A 
     refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩
     cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
+attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
 `(Localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
 bilinear map).

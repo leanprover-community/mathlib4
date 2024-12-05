@@ -112,7 +112,7 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
 
 /-- The addition on the Ore localization. -/
 @[irreducible]
-private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
+def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
