@@ -3,6 +3,7 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
+import Mathlib.Analysis.Complex.Circle
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
