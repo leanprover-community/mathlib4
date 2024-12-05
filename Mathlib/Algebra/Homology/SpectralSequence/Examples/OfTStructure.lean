@@ -1,7 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 import Mathlib.Algebra.Homology.SpectralObject.Convergence
 import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 
+/-!
+# The spectral sequence of a t-structure
+-/
 open CategoryTheory Category Limits Pretriangulated Triangulated ZeroObject Preadditive
 
 variable {C A : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
@@ -23,6 +31,7 @@ class VanishesOnLESubOne (H : C ⥤ D) (t : TStructure C) where
 
 variable (H : C ⥤ D) (t : TStructure C)
 
+omit [CategoryTheory.IsTriangulated C] in
 lemma isZero_shift_obj_of_vanishesOnGEOne
     [hH : H.VanishesOnGEOne t] [H.ShiftSequence ℤ]
     (a b : ℤ) (h : a < b) (X : C)
@@ -32,13 +41,15 @@ lemma isZero_shift_obj_of_vanishesOnGEOne
     (((H.shiftIso a 0 a (add_zero a)).symm ≪≫
       isoWhiskerLeft (shiftFunctor C a) (H.isoShiftZero ℤ)).app X)
 
+omit [CategoryTheory.IsTriangulated C] in
 lemma isZero_shift_obj_of_vanishesOnLESubOne
     [hH : H.VanishesOnLESubOne t] [H.ShiftSequence ℤ]
     (a b : ℤ) (h : a < b) (X : C)
     [t.IsLE X a] : IsZero ((H.shift b).obj X) := by
   have : t.IsLE (X⟦b⟧) (a-b) := t.isLE_shift _ a b (a-b) (by linarith)
   exact IsZero.of_iso (hH.isZero' _ (t.isLE_of_LE (X⟦b⟧) (a - b) (-1) (by linarith)))
-    (((H.shiftIso b 0 b (add_zero b)).symm ≪≫ isoWhiskerLeft (shiftFunctor C b) (H.isoShiftZero ℤ)).app X)
+    (((H.shiftIso b 0 b (add_zero b)).symm ≪≫
+      isoWhiskerLeft (shiftFunctor C b) (H.isoShiftZero ℤ)).app X)
 
 end Functor
 
@@ -56,7 +67,7 @@ variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.
 instance [t.IsGE X 0] :
     ((t.spectralObject X).mapHomologicalFunctor H).IsFirstQuadrant where
   isZero₁ i j hij hj n := by
-    refine' IsZero.of_iso _
+    refine IsZero.of_iso ?_
       ((t.truncGEt.obj i ⋙ H.shift n).mapIso ((t.isZero_truncLTt_obj_obj X 0 j hj).isoZero))
     rw [IsZero.iff_id_eq_zero]
     dsimp
@@ -129,7 +140,8 @@ variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.
 instance  :
     ((t.spectralObject X).mapHomologicalFunctor H).IsThirdQuadrant where
   isZero₁ i j hij hi n := by
-    refine IsZero.of_iso ?_ ((H.shift n).mapIso (t.isZero_truncGEt_obj_obj (((t.truncLTt).obj j).obj X) 0 i hi).isoZero)
+    refine IsZero.of_iso ?_ ((H.shift n).mapIso (t.isZero_truncGEt_obj_obj
+      (((t.truncLTt).obj j).obj X) 0 i hi).isoZero)
     rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
   isZero₂ i j hij n hj := by
     dsimp
