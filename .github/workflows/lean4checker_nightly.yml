@@ -36,9 +36,6 @@ jobs:
               : # Do nothing on failure, but suppress errors
           fi
 
-      - name: Setup jq
-        uses: dcarbone/install-jq-action@v2.1.0
-
       - name: Install elan
         run: |
           set -o pipefail
