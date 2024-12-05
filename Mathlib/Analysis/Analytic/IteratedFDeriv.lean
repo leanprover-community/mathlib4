@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+import Mathlib.Data.Fintype.Perm
 
 /-!
 # The iterated derivative of an analytic function
@@ -13,10 +15,13 @@ derivative at `x` is given by `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., 
 is over all permutations of `{1, ..., n}`. In particular, it is symmetric.
 -/
 
+open scoped ENNReal
+open Equiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+{f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
 
 noncomputable def FormalMultilinearSeries.iteratedFDerivSeries
     (p : FormalMultilinearSeries 𝕜 E F) (k : ℕ) :
@@ -30,8 +35,7 @@ noncomputable def FormalMultilinearSeries.iteratedFDerivSeries
 
 /-- If a function has a power series on a ball, then so do its iterated derivatives. -/
 protected theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin [CompleteSpace F]
-    (h : HasFPowerSeriesWithinOnBall f p s x r) (k : ℕ)
-    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    (h : HasFPowerSeriesWithinOnBall f p s x r) (k : ℕ) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     HasFPowerSeriesWithinOnBall (iteratedFDerivWithin 𝕜 k f s)
       (p.iteratedFDerivSeries k) s x r := by
   induction k with
@@ -72,15 +76,33 @@ lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_zero [CompleteSpace F]
   rw [this, p.iteratedFDerivSeries_eq_zero (p.congr_zero (Nat.zero_add n).symm hn)]
   rfl
 
+lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
+    {n : ℕ} (f : E [×n]→L[𝕜] F) (x : E) (v : Fin n → E) :
+    iteratedFDeriv 𝕜 n (fun x ↦ f (fun _ ↦ x)) x v = ∑ σ : Perm (Fin n), f (fun i ↦ v (σ i)) := by
+  rw [← sum_comp (Equiv.inv (Perm (Fin n)))]
+  let g : E →L[𝕜] (Fin n → E) := ContinuousLinearMap.pi (fun i ↦ ContinuousLinearMap.id 𝕜 E)
+  change iteratedFDeriv 𝕜 n (f ∘ g) x v = _
+  rw [ContinuousLinearMap.iteratedFDeriv_comp_right _ f.contDiff _ le_rfl, f.iteratedFDeriv_eq]
+  simp only [ContinuousMultilinearMap.iteratedFDeriv,
+    ContinuousMultilinearMap.compContinuousLinearMap_apply, ContinuousMultilinearMap.sum_apply,
+    ContinuousMultilinearMap.iteratedFDerivComponent_apply, Set.mem_range, Pi.compRightL_apply]
+  rw [← sum_comp (embedding_equiv_equiv_of_fintype (Fin n))]
+  congr with σ
+  congr with i
+  have A : ∃ y, σ y = i := by
+    have : Function.Bijective σ := (Fintype.bijective_iff_injective_and_card _).2 ⟨σ.injective, rfl⟩
+    exact this.surjective i
+  rcases A with ⟨y, rfl⟩
+  simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte,
+    Function.Embedding.toEquivRange_symm_apply_self, ContinuousLinearMap.coe_pi',
+    ContinuousLinearMap.coe_id', id_eq, g]
+  congr 1
+  symm
+  simp only [embedding_equiv_equiv_of_fintype, coe_fn_mk, inv_apply, Perm.inv_def,
+    ofBijective_symm_apply_apply]
 
 
-section
 
-variable {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
-
-lemma zou {n : ℕ} (f : E [×n]→L[𝕜] F) (x : E) (v : Fin n → E) :
-    iteratedFDeriv 𝕜 n (fun x ↦ f (fun _ ↦ x)) x v = 0 := by
-  have Z := iteratedFDeriv_comp
 
 #exit
 
