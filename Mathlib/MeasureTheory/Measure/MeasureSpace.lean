@@ -641,7 +641,7 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
   have hzero : μ (⋂ n, f n) = 0 := by
     simp only [hfem, measure_empty]
   rw [← hzero]
-  exact tendsto_measure_iInter' hm hfin
+  exact tendsto_measure_iInter_le hm hfin
 
 /-- The measure of the intersection of a decreasing sequence of measurable
 sets indexed by a linear order with first countable topology is the limit of the measures. -/
