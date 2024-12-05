@@ -19,17 +19,17 @@ In addition, we provide some additional `ToExpr` instances for core definitions.
 section override -- Note: this section uses `autoImplicit` pervasively
 namespace Lean
 
-attribute [-instance] Lean.instToExprOption
+attribute [-instance] Lean.instToExprOptionOfToLevel
 
 set_option autoImplicit true in
 deriving instance ToExpr for Option
 
-attribute [-instance] Lean.instToExprList
+attribute [-instance] Lean.instToExprListOfToLevel
 
 set_option autoImplicit true in
 deriving instance ToExpr for List
 
-attribute [-instance] Lean.instToExprArray
+attribute [-instance] Lean.instToExprArrayOfToLevel
 
 universe u in
 instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
@@ -37,7 +37,7 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
   { toExpr     := fun as => mkApp2 (mkConst ``List.toArray [toLevel.{u}]) type (toExpr as.toList)
     toTypeExpr := mkApp (mkConst ``Array [toLevel.{u}]) type }
 
-attribute [-instance] Lean.instToExprProd
+attribute [-instance] Lean.instToExprProdOfToLevel
 
 set_option autoImplicit true in
 deriving instance ToExpr for Prod
