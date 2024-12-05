@@ -480,7 +480,7 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →+* S) (x : S) (hx : IsUnit x)
+variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →+* S) (x : Sˣ)
 
 instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
   { Polynomial.toLaurent with
@@ -534,48 +534,51 @@ theorem mk'_one_X : IsLocalization.mk' R[T;T⁻¹] 1
 def eval₂ : R[T;T⁻¹] →+* S :=
   IsLocalization.lift (M := Submonoid.powers (X : R[X])) (g := Polynomial.eval₂RingHom f x) (by
     rintro ⟨y, n, rfl⟩
-    simpa only [coe_eval₂RingHom, eval₂_X_pow] using IsUnit.pow n hx
+    simpa only [coe_eval₂RingHom, eval₂_X_pow] using IsUnit.pow n x.isUnit
   )
 
 @[simp]
-theorem eval₂_toLaurent (p : R[X]) : eval₂ f x hx (toLaurent p) = Polynomial.eval₂ f x p := by
+theorem eval₂_toLaurent (p : R[X]) : eval₂ f x (toLaurent p) = Polynomial.eval₂ f x p := by
   unfold eval₂
   rw [←algebraMap_eq_toLaurent, IsLocalization.lift_eq]
   rfl
 
 @[simp]
-theorem eval₂_T_n (n : ℕ) : eval₂ f x hx (T n) = x ^ n := by
+theorem eval₂_T_n (n : ℕ) : eval₂ f x (T n) = x ^ n := by
   rw [←Polynomial.toLaurent_X_pow, eval₂_toLaurent, eval₂_X_pow f x]
 
 @[simp]
-theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x hx (T (-n)) = hx.unit⁻¹ ^ n := by
+theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
   rw [←mk'_one_X_pow]
   unfold eval₂
   rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ←mul_pow,
-    IsUnit.mul_val_inv, one_pow]
+    Units.mul_inv, one_pow]
+    
 
-theorem eval₂_T (n : ℤ) : eval₂ f x hx (T n) =
-  if (0 ≤ n) then (x ^ n.toNat) else (hx.unit⁻¹ ^ (-n).toNat) := by
+theorem eval₂_T (n : ℤ) : eval₂ f x (T n) =
+  if (0 ≤ n) then (x ^ n.toNat) else (x⁻¹ ^ (-n).toNat) := by
   by_cases hn : 0 ≤ n
   · lift n to ℕ using hn
     rw [if_pos (Int.ofNat_zero_le n), Int.toNat_ofNat, eval₂_T_n]
+    rfl
   · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
     rw [if_neg hn, eval₂_T_neg_n, neg_neg, Int.toNat_ofNat]
+    rfl
 
 @[simp]
-theorem eval₂_C (r : R) : eval₂ f x hx (C r) = f r := by
+theorem eval₂_C (r : R) : eval₂ f x (C r) = f r := by
   rw [← toLaurent_C, eval₂_toLaurent, Polynomial.eval₂_C]
 
 @[simp]
-theorem eval₂_C_mul_T_n (r : R) (n : ℕ) : eval₂ f x hx (C r * T n) = f r * x ^ n := by
+theorem eval₂_C_mul_T_n (r : R) (n : ℕ) : eval₂ f x (C r * T n) = f r * x ^ n := by
   rw [←Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
 
 @[simp]
-theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x hx (C r * T (-n)) =
-  f r * hx.unit⁻¹ ^ n := by rw [map_mul, eval₂_T_neg_n, eval₂_C]
+theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) =
+  f r * x⁻¹ ^ n := by rw [map_mul, eval₂_T_neg_n, eval₂_C]
 
-theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x hx (C r * T n) =
-  if (0 ≤ n) then f r * x ^ n.toNat else f r * hx.unit⁻¹ ^ (-n).toNat := by
+theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x (C r * T n) =
+  if (0 ≤ n) then f r * x ^ n.toNat else f r * x⁻¹ ^ (-n).toNat := by
   by_cases hn : 0 ≤ n
   · lift n to ℕ using hn
     rw [map_mul, eval₂_C, eval₂_T_n, if_pos (Int.ofNat_zero_le n), Int.toNat_ofNat]
