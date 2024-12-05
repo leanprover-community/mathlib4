@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
 import Mathlib.CategoryTheory.Triangulated.Functor
+
+/-!
+# The right derived functor is triangulated
+
+-/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -30,18 +40,19 @@ variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
   [F.CommShift ℤ] [L₂.CommShift ℤ] [RF.CommShift ℤ] [Φ.functor.CommShift ℤ]
   [NatTrans.CommShift α ℤ] [F.IsTriangulated] [L₂.IsTriangulated] [Φ.functor.IsTriangulated]
 
+include α hF in
 lemma isTriangulated_of_isRightDerivedFunctor : RF.IsTriangulated :=
   RF.isTriangulated_of_isRightDerivedFunctor α (fun X Y f => by
     have φ : Φ.arrow.RightResolution (L₂.mapArrow.objPreimage (Arrow.mk f)) :=
       Classical.arbitrary _
     obtain ⟨Z, a, b, hT⟩ := distinguished_cocone_triangle φ.X₁.hom
-    refine' ⟨_, Φ.functor.map_distinguished _ hT,
+    refine ⟨_, Φ.functor.map_distinguished _ hT,
       Φ.isIso_app_of_isRightDerivedFunctor F hF L₂ RF α _,
       Φ.isIso_app_of_isRightDerivedFunctor F hF L₂ RF α _,
       Φ.isIso_app_of_isRightDerivedFunctor F hF L₂ RF α _,
-      ⟨Iso.symm _ ≪≫ L₂.mapArrow.objObjPreimageIso (Arrow.mk f)⟩⟩
-    refine' Arrow.isoMk (Localization.isoOfHom L₂ W₂ _ φ.hw.left)
-      (Localization.isoOfHom L₂ W₂ _ φ.hw.right) _
+      ⟨Iso.symm ?_ ≪≫ L₂.mapArrow.objObjPreimageIso (Arrow.mk f)⟩⟩
+    refine Arrow.isoMk (Localization.isoOfHom L₂ W₂ _ φ.hw.left)
+      (Localization.isoOfHom L₂ W₂ _ φ.hw.right) ?_
     dsimp
     simp only [← L₂.map_comp, Arrow.w_mk_right])
 

@@ -1,8 +1,19 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Factorizations.CM5b
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+import Mathlib.CategoryTheory.Functor.OfSequence
+
+/-!
+# Factorization lemma
+
+-/
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
@@ -18,73 +29,6 @@ lemma direct_factor {X I : C} {i : X ⟶ I} {p : I ⟶ X} (fac : i ≫ p = 𝟙 
     by rw [comp_factorThru_assoc, assoc, fac, comp_id]⟩
 
 end Injective
-
-namespace Functor
-
-variable {X : ℕ → C} (f : ∀ n, X n ⟶ X (n + 1))
-
-namespace OfSequence
-
-lemma congr_f (i j : ℕ) (h : i = j) :
-    f i = eqToHom (by rw [h]) ≫ f j ≫ eqToHom (by rw [h]) := by
-  subst h
-  simp
-
-@[simp]
-def map' : ∀ (i k : ℕ), X i ⟶ X (i + k)
-  | _, 0 => 𝟙 _
-  | i, (k+1) => map' i k ≫ f (i + k)
-
-lemma comp_map' (i k₁ k₂ : ℕ) :
-    map' f i k₁ ≫ map' f (i + k₁) k₂ =
-      map' f i (k₁ + k₂) ≫ eqToHom (by rw [add_assoc]) := by
-  revert i k₁
-  induction' k₂ with k₂ hk₂
-  · intro i k₁
-    simp
-  · intro i k₁
-    simp [reassoc_of% (hk₂ i k₁), congr_f f _ _ (add_assoc i k₁ k₂)]
-
-def map (i j : ℕ) (hij : i ≤ j) : X i ⟶ X j :=
-  map' f i (j-i) ≫ eqToHom (by
-    obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hij
-    simp)
-
-lemma map_eq (i j k : ℕ) (hk : i + k = j) :
-    map f i j (by linarith) = map' f i k ≫ eqToHom (by rw [hk]) := by
-  obtain rfl := tsub_eq_of_eq_add_rev hk.symm
-  rfl
-
-lemma map_id (i : ℕ) : map f i i (by rfl) = 𝟙 _ := by
-  rw [map_eq f i i 0 (by linarith), eqToHom_refl, comp_id]
-  rfl
-
-lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
-    map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
-  obtain ⟨k₁, rfl⟩ := Nat.exists_eq_add_of_le hij
-  obtain ⟨k₂, rfl⟩ := Nat.exists_eq_add_of_le hjk
-  rw [map_eq f i _ k₁ rfl, eqToHom_refl, comp_id, map_eq f (i + k₁) _ k₂ rfl, eqToHom_refl,
-    comp_id, comp_map', map_eq f i (i + k₁ + k₂) (k₁ + k₂) (by rw [add_assoc])]
-
-lemma map_of_le_succ (n : ℕ) :
-    map f n (n+1) (by linarith) = f n := by
-  simp [map_eq f n _ 1 rfl]
-
-end OfSequence
-
-@[simps obj]
-def ofSequence : ℕ ⥤ C where
-  obj := X
-  map {i j} φ := OfSequence.map f i j (leOfHom φ)
-  map_id i := OfSequence.map_id f i
-  map_comp {i j k} α β := OfSequence.map_comp f i j k (leOfHom α) (leOfHom β)
-
-@[simp]
-lemma ofSequence_map_of_le_succ (n : ℕ) :
-    (ofSequence f).map (homOfLE (Nat.le_add_right n 1)) = f n :=
-  OfSequence.map_of_le_succ f n
-
-end Functor
 
 namespace NatTrans
 
@@ -176,9 +120,9 @@ noncomputable def homologyδOfDistinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n�
   homologyMap T.mor₃ n₀ ≫
     ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso 1 n₀ n₁ (by linarith)).hom.app T.obj₁
 
+include hT in
 lemma homologyMap_comp₁₂_eq_zero_of_distinguished (n : ℤ) :
     homologyMap T.mor₁ n ≫ homologyMap T.mor₂ n = 0 := by
-  have := hT
   rw [← homologyMap_comp]
   apply homologyMap_eq_zero_of_Q_map_eq_zero
   rw [Functor.map_comp]
@@ -188,11 +132,12 @@ lemma homology_exact₂_of_distinguished (n : ℤ) :
     (ShortComplex.mk (homologyMap T.mor₁ n) (homologyMap T.mor₂ n)
       (homologyMap_comp₁₂_eq_zero_of_distinguished T hT n)).Exact := by
   let e := DerivedCategory.homologyFunctorFactors C n
-  refine' ShortComplex.exact_of_iso _ (DerivedCategory.HomologySequence.exact₂ _ hT n)
+  refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₂ _ hT n)
   exact ShortComplex.isoMk
     (e.app T.obj₁) (e.app T.obj₂) (e.app T.obj₃)
     (e.hom.naturality T.mor₁).symm (e.hom.naturality T.mor₂).symm
 
+include hT in
 lemma comp_homologyδOfDistinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyMap T.mor₂ n₀ ≫ homologyδOfDistinguished T n₀ n₁ h = 0 := by
   have hT' : DerivedCategory.Q.mapTriangle.obj T.rotate ∈ distTriang _ :=
@@ -209,14 +154,15 @@ lemma homology_exact₃_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
   have hT' : DerivedCategory.Q.mapTriangle.obj T.rotate ∈ distTriang _ :=
     Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleRotateIso.app T).symm
-  refine' ShortComplex.exact_of_iso _ (homology_exact₂_of_distinguished _ hT' n₀)
-  refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    (((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso 1 n₀ n₁ (by linarith)).app T.obj₁) _ _
+  refine ShortComplex.exact_of_iso ?_ (homology_exact₂_of_distinguished _ hT' n₀)
+  refine ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
+    (((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso 1 n₀ n₁ (by linarith)).app T.obj₁) ?_ ?_
   · dsimp
     simp
   · dsimp [homologyδOfDistinguished]
     simp
 
+omit [HasDerivedCategory C] in
 lemma homologyMap_shift {K L : CochainComplex C ℤ} (f : K ⟶ L) (a n m : ℤ) (hm : a + n = m) :
     homologyMap (f⟦a⟧') n =
       ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso a n m hm).hom.app K ≫ homologyMap f m ≫
@@ -224,12 +170,12 @@ lemma homologyMap_shift {K L : CochainComplex C ℤ} (f : K ⟶ L) (a n m : ℤ)
   erw [← NatTrans.naturality_assoc, Iso.hom_inv_id_app, comp_id]
   rfl
 
+include hT in
 lemma homologyδOfDistinguished_comp (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyδOfDistinguished T n₀ n₁ h ≫ homologyMap T.mor₁ n₁ = 0 := by
   -- the proof most duplicates the proof of `homology_exact₁_of_distinguished` below
   -- it would be nicer to introduce an isomorphism in `Arrow₂`, and to deduce both
   -- this vanishing and the exactness
-  have := hT
   have hT' : DerivedCategory.Q.mapTriangle.obj T.invRotate ∈ distTriang _ :=
     Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleInvRotateIso.app T).symm
@@ -248,7 +194,7 @@ lemma homologyδOfDistinguished_comp (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   rw [← cancel_epi (((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀
     (by linarith)).hom.app (T.obj₁⟦(1 : ℤ)⟧)), Iso.hom_inv_id_app_assoc]
   rw [(homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso_hom_app_comp
-      (-1 : ℤ) 1 0 (add_neg_self 1) n₁ n₀ n₁ (by linarith) (by linarith),
+      (-1 : ℤ) 1 0 (add_neg_cancel 1) n₁ n₀ n₁ (by linarith) (by linarith),
       Functor.shiftIso_zero_hom_app, ← Functor.map_comp]
   dsimp [shiftFunctorCompIsoId]
   rfl
@@ -259,16 +205,17 @@ lemma homology_exact₁_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
   have hT' : DerivedCategory.Q.mapTriangle.obj T.invRotate ∈ distTriang _ :=
     Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleInvRotateIso.app T).symm
-  refine' ShortComplex.exact_of_iso _ (homology_exact₂_of_distinguished _ hT' n₁)
-  refine' ShortComplex.isoMk
-    (-((((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀ (by linarith)).app T.obj₃))) (Iso.refl _) (Iso.refl _) _ _
+  refine ShortComplex.exact_of_iso ?_ (homology_exact₂_of_distinguished _ hT' n₁)
+  refine ShortComplex.isoMk
+    (-((((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀ (by linarith)).app T.obj₃)))
+    (Iso.refl _) (Iso.refl _) ?_ ?_
   · dsimp [homologyδOfDistinguished]
     simp only [neg_smul, one_smul, neg_comp, homologyMap_neg, comp_id, neg_inj]
     erw [← NatTrans.naturality_assoc]
     rw [homologyMap_comp]
     congr 1
     rw [(homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso_hom_app_comp
-      (-1 : ℤ) 1 0 (add_neg_self 1) n₁ n₀ n₁ (by linarith) (by linarith),
+      (-1 : ℤ) 1 0 (add_neg_cancel 1) n₁ n₀ n₁ (by linarith) (by linarith),
       Functor.shiftIso_zero_hom_app, ← Functor.map_comp]
     dsimp [shiftFunctorCompIsoId]
     rfl
@@ -292,7 +239,7 @@ noncomputable def double : HomologicalComplex C c where
   d i j :=
     if h : i = n₀ ∧ j = n₁
       then by
-        refine' eqToHom _ ≫ f ≫ eqToHom _
+        refine eqToHom ?_ ≫ f ≫ eqToHom ?_
         · dsimp
           rw [if_pos h.1]
         · dsimp
@@ -327,7 +274,8 @@ noncomputable def doubleXIso₁ : (double _ _ h h' f).X n₁ ≅ X₁ := eqToIso
 
 @[simp]
 lemma double_d :
-    (double _ _ h h' f).d n₀ n₁ = (doubleXIso₀ _ _ h h' f).hom ≫ f ≫ (doubleXIso₁ _ _ h h' f).inv := by
+    (double _ _ h h' f).d n₀ n₁ =
+      (doubleXIso₀ _ _ h h' f).hom ≫ f ≫ (doubleXIso₁ _ _ h h' f).inv := by
   simp [double, doubleXIso₀, doubleXIso₁]
 
 lemma double_d_eq_zero₀ (i j : ι) (h₀ : i ≠ n₀) :
@@ -424,9 +372,9 @@ namespace mappingCocone
 noncomputable def inl : Cochain K (mappingCocone f) 0 :=
   (mappingCone.inl f).rightShift (-1) 0 (zero_add _)
 noncomputable def inr : Cocycle L (mappingCocone f) 1 :=
-    (Cocycle.ofHom (mappingCone.inr _)).rightShift (-1) 1 (add_neg_self 1)
+    (Cocycle.ofHom (mappingCone.inr _)).rightShift (-1) 1 (add_neg_cancel 1)
 noncomputable def fst : (mappingCocone f) ⟶ K :=
-  -((mappingCone.fst _).leftShift (-1) 0 (add_neg_self 1)).homOf
+  -((mappingCone.fst _).leftShift (-1) 0 (add_neg_cancel 1)).homOf
 noncomputable def snd : Cochain (mappingCocone f) L (-1) :=
   (mappingCone.snd _).leftShift (-1) (-1) (zero_add _)
 
@@ -438,14 +386,16 @@ lemma inr_fst (p q : ℤ) (hpq : p + 1 = q) : (inr f).1.v p q hpq ≫ (fst f).f 
     simp
 
 @[reassoc (attr := simp)]
-lemma inl_snd (p q : ℤ) (hpq : p + (-1) = q) : (inl f).v p p (add_zero _) ≫ (snd f).v p q hpq = 0 := by
+lemma inl_snd (p q : ℤ) (hpq : p + (-1) = q) :
+    (inl f).v p p (add_zero _) ≫ (snd f).v p q hpq = 0 := by
   dsimp [inl, snd]
   rw [Cochain.rightShift_v _ (-1) 0 _ p p _ q (by linarith),
     Cochain.leftShift_v _ (-1) (-1) _ p q _ q (by linarith)]
   simp
 
 @[reassoc (attr := simp)]
-lemma inr_snd (p q : ℤ) (hpq : p + 1 = q) : (inr f).1.v p q hpq ≫ (snd f).v q p (by linarith) = 𝟙 _ := by
+lemma inr_snd (p q : ℤ) (hpq : p + 1 = q) :
+    (inr f).1.v p q hpq ≫ (snd f).v q p (by linarith) = 𝟙 _ := by
   dsimp [inr, snd]
   have : ((1 : ℤ) + 1)/2 = 1 := rfl
   rw [Cochain.rightShift_v _ (-1) 1 _ p q _ p (by linarith),
@@ -489,7 +439,7 @@ noncomputable def triangle : Pretriangulated.Triangle (CochainComplex C ℤ) :=
   Pretriangulated.Triangle.mk (fst f) f (triangleδ f)
 
 noncomputable def triangleIso : triangle f ≅ (mappingCone.triangle f).invRotate := by
-  refine' Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
+  refine Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
   · dsimp
     ext n
     have : ((1 : ℤ) + 1) / 2 = 1 := rfl
@@ -506,18 +456,19 @@ noncomputable def triangleIso : triangle f ≅ (mappingCone.triangle f).invRotat
   · dsimp
     simp only [comp_id, id_comp]
   · dsimp
-    simp only [triangle, triangleδ, shiftEquiv'_inverse, shiftEquiv'_functor, shiftEquiv'_counitIso,
-      Pretriangulated.Triangle.mk_obj₁, Pretriangulated.Triangle.mk_mor₃, CategoryTheory.Functor.map_id, comp_id,
-      id_comp]
+    simp only [triangle, triangleδ, shiftEquiv'_inverse, shiftEquiv'_functor,
+      shiftEquiv'_counitIso, Pretriangulated.Triangle.mk_obj₁, Pretriangulated.Triangle.mk_mor₃,
+      CategoryTheory.Functor.map_id, comp_id, id_comp]
     rfl
 
 variable [HasDerivedCategory C]
 
-lemma Q_map_triangle_distinguished : DerivedCategory.Q.mapTriangle.obj (triangle f) ∈ distTriang _ := by
-  refine' Pretriangulated.isomorphic_distinguished _ _ _
+lemma Q_map_triangle_distinguished :
+    DerivedCategory.Q.mapTriangle.obj (triangle f) ∈ distTriang _ := by
+  refine Pretriangulated.isomorphic_distinguished _ ?_ _
     ((DerivedCategory.Q.mapTriangle.mapIso (triangleIso f)) ≪≫
       (DerivedCategory.Q.mapTriangleInvRotateIso.app (mappingCone.triangle f)).symm)
-  refine' Pretriangulated.inv_rot_of_distTriang _ _
+  refine Pretriangulated.inv_rot_of_distTriang _ ?_
   rw [DerivedCategory.mem_distTriang_iff]
   exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
 
@@ -571,6 +522,7 @@ variable {f}
 
 namespace HomFactorization
 
+/-- mk' -/
 @[simps]
 def mk' {I : C} {i : X ⟶ I} {p : I ⟶ Y} (fac : i ≫ p = f) : HomFactorization f where
   fac := fac
@@ -605,7 +557,7 @@ instance : Category (HomFactorization f) where
 
 @[ext]
 lemma hom_ext (f g : F₁ ⟶ F₂) (h : f.φ = g.φ) : f = g :=
-  Hom.ext f g h
+  Hom.ext h
 
 variable (f)
 
@@ -656,6 +608,7 @@ def IsIsoLE (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), IsIso (F.1.p.f i)
 class QuasiIsoLE (n : ℤ) : Prop where
   quasiIsoAt (i : ℤ) (_ : i ≤ n) : QuasiIsoAt (F.1.i) i
 
+omit [EnoughInjectives C] in
 lemma quasiIsoAt_of_quasiIsoLE (F : CofFibFactorization f)
     (n : ℤ) [F.QuasiIsoLE n] (i : ℤ) (hi : i ≤ n) : QuasiIsoAt (F.1.i) i :=
   QuasiIsoLE.quasiIsoAt i hi
@@ -683,9 +636,9 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   let σ : L ⟶ M := biprod.inr
   have σp : σ ≫ p = 𝟙 _ := by simp [σ, p]
   have hp : degreewiseEpiWithInjectiveKernel p := fun n => by
-    rw [epiWithInjectiveKernel_iff]
-    refine' ⟨S.X n, _, (biprod.inl : _ ⟶ M).f n, (biprod.inr : _ ⟶ M).f n,
-        (biprod.fst : M ⟶ _).f n, _, _, _ , _, _⟩
+    rw [Abelian.epiWithInjectiveKernel_iff]
+    refine ⟨S.X n,?_, (biprod.inl : _ ⟶ M).f n, ?_,
+      ⟨(biprod.fst : M ⟶ _).f n, (biprod.inr : _ ⟶ M).f n, ?_, ?_, ?_⟩⟩
     · dsimp [S, single]
       by_cases h : n = n₁
       · rw [if_pos h]
@@ -693,13 +646,15 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
       · rw [if_neg h]
         infer_instance
     · rw [← comp_f, biprod.inl_snd, zero_f]
-    · rw [← comp_f, biprod.inr_fst, zero_f]
-    · rw [← comp_f, biprod.inl_fst, id_f]
-    · rw [← comp_f, biprod.inr_snd, id_f]
-    · rw [← id_f, ← biprod.total, add_f_apply, comp_f, comp_f]
+    · dsimp
+      rw [← comp_f, biprod.inl_fst, id_f]
+    · dsimp
+      rw [← comp_f, biprod.inr_snd, id_f]
+    · dsimp
+      rw [← id_f, ← biprod.total, add_f_apply, comp_f, comp_f]
   have fac : i ≫ p = f := by simp [i, p]
   have hp' : ∀ (n : ℤ) (_ : n ≤ n₀), IsIso (p.f n) := fun n hn => by
-    refine' ⟨(biprod.inr : _ ⟶ M).f n, _, _⟩
+    refine ⟨(biprod.inr : _ ⟶ M).f n, ?_, ?_⟩
     · rw [← cancel_mono ((HomologicalComplex.eval C (ComplexShape.up ℤ) n).mapBiprod _ _).hom]
       ext
       · apply IsZero.eq_of_tgt
@@ -719,7 +674,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
       have : IsIso φ.τ₃ := hp' _ (by linarith)
       apply ShortComplex.quasiIso_of_epi_of_isIso_of_mono φ
     · rw [quasiIsoAt_iff_isIso_homologyMap]
-      refine' ⟨homologyMap σ n, _, _⟩
+      refine ⟨homologyMap σ n, ?_, ?_⟩
       · have : cyclesMap (biprod.inl : _ ⟶ M) n = 0 := by
           have : (biprod.inl : _ ⟶ M).f n = 0 := by
             apply IsZero.eq_of_src
@@ -737,7 +692,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     have : QuasiIsoAt p n := hp'' n hn
     have : QuasiIsoAt (i ≫ p) n := by simpa only [fac] using hf n hn
     exact quasiIsoAt_of_comp_right i p n
-  refine' ⟨CofFibFactorization.mk fac hp, hp', ⟨hi⟩, mono_of_cancel_zero _ _⟩
+  refine ⟨CofFibFactorization.mk fac hp, hp', ⟨hi⟩, mono_of_cancel_zero _ ?_⟩
   intro A₀ x₀ (hx₀ : x₀ ≫ homologyMap i n₁ = 0)
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := surjective_up_to_refinements_of_epi (K.homologyπ n₁) x₀
   rw [← cancel_epi π₁, comp_zero, hx₁,
@@ -764,7 +719,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
       ← cancel_epi π₂, comp_zero, hx₂]
   rw [K.comp_pOpcycles_eq_zero_iff_up_to_refinements (x₁ ≫ K.iCycles n₁) n₀ (by simp [hn₁])] at hx₁'
   obtain ⟨A₃, π₃, _, x₃, hx₃⟩ := hx₁'
-  refine' ⟨A₃, π₃, inferInstance, x₃, _⟩
+  refine ⟨A₃, π₃, inferInstance, x₃, ?_⟩
   rw [← cancel_mono (K.iCycles n₁), assoc, hx₃, assoc, toCycles_i]
 
 def CofFibFactorizationQuasiIsoLE (n : ℤ) :=
@@ -785,9 +740,11 @@ noncomputable def homologyShortComplex : ShortComplex C :=
   ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
     (by rw [← homologyMap_comp, cokernel.condition, homologyMap_zero])
 
+omit [EnoughInjectives C] in
 lemma shortExact : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
+omit [Mono (homologyMap f n)] [EnoughInjectives C] in
 lemma homologyShortComplex_exact : (homologyShortComplex f n).Exact :=
   (shortExact f).homology_exact₂ n
 
@@ -795,8 +752,10 @@ instance mono_homologyShortComplex_f : Mono (homologyShortComplex f n).f := by
   dsimp
   infer_instance
 
-noncomputable def I := (single C (ComplexShape.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
+noncomputable def I :=
+  (single C (ComplexShape.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma isZero_homology_I (q : ℤ) (hq : q ≠ n) : IsZero ((I f n).homology q) := by
   rw [← exactAt_iff_isZero_homology, exactAt_iff]
   apply ShortComplex.exact_of_isZero_X₂
@@ -808,6 +767,7 @@ instance (p : ℤ) : Injective ((I f n).X p) := by
   dsimp [I, single]
   split_ifs <;> infer_instance
 
+/-- π' -/
 noncomputable def π' : (cokernel f).truncGE n ⟶ I f n :=
   (toSingleEquiv _ _ (n-1) n (by simp)).symm ⟨Injective.ι _, by
     apply IsZero.eq_of_src
@@ -818,12 +778,14 @@ instance : Mono ((π' f n).f n) := by
   simp [π', toSingleEquiv]
   infer_instance
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma mono_cyclesMap_π' : Mono (cyclesMap (π' f n) n) := by
   have : Mono (cyclesMap (π' f n) n ≫ (I f n).iCycles  n) := by
     rw [cyclesMap_i]
     infer_instance
   apply mono_of_mono _ ((I f n).iCycles n)
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma mono_homologyMap_π' : Mono (homologyMap (π' f n) n) := by
   have := mono_cyclesMap_π' f n
   have := ((cokernel f).truncGE n).isIso_homologyπ (n-1) n (by simp)
@@ -841,18 +803,22 @@ lemma mono_homologyMap_π' : Mono (homologyMap (π' f n) n) := by
 
 noncomputable def α : L ⟶ I f n := cokernel.π f ≫ (cokernel f).πTruncGE n ≫ π' f n
 
+omit [Mono (homologyMap f n)] [Mono f] in
 @[reassoc (attr := simp)]
 lemma f_α : f ≫ α f n = 0 := by simp [α]
 
+omit [Mono (homologyMap f n)] [Mono f] in
 @[reassoc (attr := simp)]
 lemma f_α_f (i : ℤ) : f.f i ≫ (α f n).f i = 0 := by
   rw [← comp_f, f_α, zero_f]
 
+omit [Mono (homologyMap f n)] [Mono f] in
 @[simps]
 noncomputable def homologyShortComplex' : ShortComplex C :=
   ShortComplex.mk (homologyMap f n) (homologyMap (α f n) n) (by
     rw [← homologyMap_comp, f_α, homologyMap_zero])
 
+omit [Mono (homologyMap f n)] in
 lemma homologyShortComplex'_exact : (homologyShortComplex' f n).Exact := by
   let φ : homologyShortComplex f n ⟶ homologyShortComplex' f n :=
     { τ₁ := 𝟙 _
@@ -876,16 +842,19 @@ instance mono_homologyShortComplex'_f : Mono (homologyShortComplex' f n).f := by
   dsimp
   infer_instance
 
+/-- L' -/
 noncomputable def L' := (mappingCone (α f n))⟦(-1 : ℤ)⟧
 
+/-- i' -/
 noncomputable def i' : Cocycle K (mappingCone (α f n)) (-1) :=
-  mappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_self 1) (by aesop_cat)
+  mappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_cancel 1) (by aesop_cat)
 
 noncomputable def i : K ⟶ L' f n :=
   Cocycle.homOf ((i' f n).rightShift (-1) 0 (zero_add _))
 
 noncomputable def p : L' f n ⟶ L := mappingCocone.fst _
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma fac : i f n ≫ p f n = f := by
   ext q
   dsimp [i, p, mappingCocone.fst]
@@ -898,8 +867,9 @@ lemma fac : i f n ≫ p f n = f := by
 
 instance : Mono (i f n) := mono_of_mono_fac (fac f n)
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma isIso_p_f (q : ℤ) (hq : q ≤ n) : IsIso ((p f n).f q) := by
-  refine' ⟨(mappingCocone.inl _).v q q (add_zero _), _, by simp [p]⟩
+  refine ⟨(mappingCocone.inl _).v q q (add_zero _), ?_, by simp [p]⟩
   have : (mappingCocone.snd (α f n)).v q (q-1) (by linarith) = 0 := by
     apply IsZero.eq_of_tgt
     dsimp [I, single]
@@ -916,16 +886,18 @@ noncomputable def cofFibFactorization : CofFibFactorization f where
         infer_instance
       hp := fun q => by
         dsimp
-        rw [epiWithInjectiveKernel_iff]
-        refine' ⟨_, _, (mappingCocone.inr _).1.v (q-1) q (by linarith),
-          (mappingCocone.inl _).v q q (add_zero _), (mappingCocone.snd _).v q (q-1) (by linarith),
-          by simp [p], by simp, by simp, by simp [p], _⟩
-        · infer_instance
-        · rw [add_comm, p, mappingCocone.id]
-          rfl }
+        rw [Abelian.epiWithInjectiveKernel_iff]
+        refine ⟨_, inferInstance, (mappingCocone.inr _).1.v (q-1) q (by omega),
+          by simp [p], ⟨(mappingCocone.snd (α f n)).v q (q-1) (by linarith),
+          (mappingCocone.inl (α f n)).v q q (add_zero _), by simp, by simp [p], ?_⟩⟩
+        dsimp
+        rw [add_comm, p, mappingCocone.id]
+        rfl }
 
 variable (hf : ∀ (i : ℤ) (_ : i ≤ n - 1), QuasiIsoAt f i)
 
+omit [EnoughInjectives C] in
+include hf in
 lemma isGE_cokernel : (cokernel f).IsGE n := by
   rw [isGE_iff]
   intro i hi
@@ -943,18 +915,22 @@ lemma isGE_cokernel : (cokernel f).IsGE n := by
     · obtain rfl : n = i + 1 := by linarith
       infer_instance
 
+omit [EnoughInjectives C] in
+include hf in
 lemma quasiIso_truncGEπ : QuasiIso ((cokernel f).πTruncGE n) := by
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
 variable [HasDerivedCategory C]
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma mono_homologyMap_p (q : ℤ) (hq : q ≤ n) : Mono (homologyMap (p f n) q) :=
   (mappingCocone.homology_exact₁ (α f n) (q-1) q (by linarith)).mono_g (by
     apply IsZero.eq_of_src
     apply isZero_homology_I
     linarith)
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma epi_homologyMap_p (q : ℤ) (hq : q < n) : Epi (homologyMap (p f n) q) :=
   (mappingCocone.homology_exact₂ (α f n) q).epi_f (by
     apply IsZero.eq_of_tgt
@@ -962,11 +938,14 @@ lemma epi_homologyMap_p (q : ℤ) (hq : q < n) : Epi (homologyMap (p f n) q) :=
     apply isZero_homology_I
     linarith)
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma isIso_homologyMap_p (q : ℤ) (hq : q < n) : IsIso (homologyMap (p f n) q) := by
   have := mono_homologyMap_p f n q (by linarith)
   have := epi_homologyMap_p f n q hq
   apply isIso_of_mono_of_epi
 
+omit [Mono (homologyMap f n)] [Mono f] in
+include hf in
 lemma isIso_homologyMap_i' (q : ℤ) (hq : q < n) : IsIso (homologyMap (i f n) q) := by
   have := isIso_homologyMap_p f n q hq
   have h : IsIso (homologyMap f q) := by
@@ -974,6 +953,7 @@ lemma isIso_homologyMap_i' (q : ℤ) (hq : q < n) : IsIso (homologyMap (i f n) q
   rw [← fac f n, homologyMap_comp] at h
   exact IsIso.of_isIso_comp_right (homologyMap (i f n) q) (homologyMap (p f n) q)
 
+/-- homologyShortComplex'' -/
 @[simps]
 noncomputable def homologyShortComplex'' : ShortComplex C :=
   ShortComplex.mk (homologyMap (p f n) n) (homologyMap (α f n) n)
@@ -982,6 +962,7 @@ noncomputable def homologyShortComplex'' : ShortComplex C :=
 instance : Mono (homologyShortComplex'' f n).f :=
   mono_homologyMap_p f n n (by rfl)
 
+omit [Mono (homologyMap f n)] [Mono f] in
 lemma homologyShortComplex''_exact : (homologyShortComplex'' f n).Exact :=
   mappingCocone.homology_exact₂ (α f n) n
 
@@ -996,8 +977,8 @@ lemma isIso_homologyMap_i : IsIso (homologyMap (i f n) n) := by
   rw [this]
   infer_instance
 
+include hf in
 lemma quasiIsoLE_cofFibFactorization : (cofFibFactorization f n).QuasiIsoLE n := ⟨fun q hq => by
-  have := hf
   dsimp
   rw [quasiIsoAt_iff_isIso_homologyMap]
   obtain hq | rfl := hq.lt_or_eq
@@ -1027,8 +1008,8 @@ lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   obtain ⟨F₂, hF₂, hF₂'⟩ := step₂ F₁.1.i n₀ n₁ hn₁ (F₁.quasiIsoAt_of_quasiIsoLE n₀)
   have fac : F₂.1.i ≫ F₂.1.p ≫ F₁.1.p = f := by
     rw [reassoc_of% F₂.1.fac, F₁.1.fac]
-  refine' ⟨CofFibFactorization.mk fac
-    (MorphismProperty.comp_mem _ _ _ F₂.2.hp F₁.2.hp), _,
+  refine ⟨CofFibFactorization.mk fac
+    (MorphismProperty.comp_mem _ _ _ F₂.2.hp F₁.2.hp), ?_,
       ⟨F₂.quasiIsoAt_of_quasiIsoLE n₁⟩⟩
   · intro i hi
     have := hF₁ i hi
@@ -1036,6 +1017,7 @@ lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     dsimp
     infer_instance
 
+/-- step' -/
 lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (F : CofFibFactorizationQuasiIsoLE f n₀) :
     ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (f : F'.1 ⟶ F.1),
@@ -1050,15 +1032,15 @@ namespace CofFibFactorizationQuasiIsoLE
 def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
     CofFibFactorizationQuasiIsoLE f (n + (0 : ℕ)) where
   obj := CofFibFactorization.mk (comp_id _) (fun n => by
-    rw [epiWithInjectiveKernel_iff]
-    refine' ⟨0, inferInstance, 0, 𝟙 _, 0, _, _, _, _, _⟩
+    rw [Abelian.epiWithInjectiveKernel_iff]
+    refine ⟨0, inferInstance, 0, ?_, ⟨0, 𝟙 _, ?_, ?_, ?_⟩⟩
     all_goals simp)
   property := ⟨by
     intro i hi
     simp only [Nat.cast_zero, add_zero] at hi
     dsimp
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine' ⟨0, _, _⟩
+    refine ⟨0, ?_, ?_⟩
     all_goals
       apply IsZero.eq_of_src
       rw [← exactAt_iff_isZero_homology, exactAt_iff]
@@ -1067,14 +1049,17 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
 
 variable {f}
 
-noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) :
+noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) :
     CofFibFactorizationQuasiIsoLE f n₁ :=
   (step' f _ _ hn₁ F).choose
 
-noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) : (F.next n₁ hn₁).1 ⟶ F.1 :=
+noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) : (F.next n₁ hn₁).1 ⟶ F.1 :=
   (step' f _ _ hn₁ F).choose_spec.choose
 
-lemma isIso_fromNext_φ_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) (i : ℤ) (hi : i ≤ n₀) :
+lemma isIso_fromNext_φ_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) (i : ℤ) (hi : i ≤ n₀) :
     IsIso ((F.fromNext n₁ hn₁).φ.f i) :=
   (step' f _ _ hn₁ F).choose_spec.choose_spec i hi
 
@@ -1105,11 +1090,12 @@ lemma isIso_inverseSystemI_map_succ (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
   dsimp only [inverseSystemI, inverseSystem]
   simp only [Functor.comp_obj, Functor.leftOp_obj, Opposite.unop_op, Functor.ofSequence_obj,
     HomFactorization.forget_obj, Functor.comp_map, Functor.leftOp_map, Quiver.Hom.unop_op,
-    Functor.ofSequence_map_of_le_succ, HomFactorization.forget_map]
+    HomFactorization.forget_map, Functor.ofSequence_map_homOfLE_succ]
   change IsIso ((CofFibFactorizationQuasiIsoLE.sequenceFromNext f n₀ n).1.f q)
   apply CofFibFactorizationQuasiIsoLE.isIso_fromNext_φ_f
   simpa only [Nat.add_eq, add_zero] using hq
 
+/-- isIso_inverseSystemI_map' -/
 lemma isIso_inverseSystemI_map' (n n' : ℕ) (h : n ≤ n')
     (q : ℤ) (hq : q ≤ n₀ + n) : IsIso (((inverseSystemI f n₀).map (homOfLE h).op).f q) := by
   suffices ∀ (k n n' : ℕ) (h : n + k = n') (q : ℤ) (_ : q ≤ n₀ + n),
@@ -1138,13 +1124,14 @@ lemma isIso_inverseSystemI_map {n n' : ℕ} (φ : Opposite.op n' ⟶ Opposite.op
   isIso_inverseSystemI_map' f n₀ n n' (leOfHom φ.unop) q hq
 
 lemma isEventuallyConstantTo_inverseSystemI_comp_eval (q : ℤ) (n : ℕ) (hq : q ≤ n₀ + n) :
-    (inverseSystemI f n₀ ⋙ HomologicalComplex.eval _ _ q).IsEventuallyConstantTo (Opposite.op n) := by
+    (inverseSystemI f n₀ ⋙
+      HomologicalComplex.eval _ _ q).IsEventuallyConstantTo (Opposite.op n) := by
   rintro ⟨n'⟩ φ
   exact isIso_inverseSystemI_map f n₀ φ q hq
 
 instance (q : ℤ) :
-    (inverseSystemI f n₀ ⋙ HomologicalComplex.eval _ _ q).IsEventuallyConstant where
-  isEventuallyConstantTo :=
+    IsCofiltered.IsEventuallyConstant (inverseSystemI f n₀ ⋙ HomologicalComplex.eval _ _ q) where
+  exists_isEventuallyConstantTo :=
     ⟨Opposite.op (q - n₀).toNat, isEventuallyConstantTo_inverseSystemI_comp_eval _ _ _ _
       (by linarith [Int.self_le_toNat (q - n₀)])⟩
 
@@ -1176,16 +1163,19 @@ lemma fac : i f n₀ ≫ p f n₀ = f := by simp [i, p, cone]
 
 instance : Mono (i f n₀) := mono_of_mono_fac (fac f n₀)
 
+/-- p' -/
 noncomputable def p' (n : ℕ) : (inverseSystemI f n₀).obj (Opposite.op n) ⟶ L :=
   ((inverseSystem f n₀).obj (Opposite.op n)).1.p
 
 @[simp]
 lemma p'_zero : p' f n₀ 0 = 𝟙 _ := rfl
 
+/-- `w_p'` -/
 lemma w_p' (n n' : ℕ) (h : n ≤ n') :
     ((inverseSystemI f n₀).map (homOfLE h).op) ≫ p' f n₀ n = p' f n₀ n' :=
   ((inverseSystem f n₀).map (homOfLE h).op).commp
 
+/-- `π_comp_p'` -/
 lemma π_comp_p' (n : ℕ) : limit.π _ (Opposite.op n) ≫ p' f n₀ n = p f n₀ := by
   dsimp [p]
   rw [← limit.w (inverseSystemI f n₀) (homOfLE (show 0 ≤ n by linarith)).op, assoc,
@@ -1203,15 +1193,17 @@ lemma degreewiseEpiWithInjectiveKernel_p :
   obtain ⟨n, hq⟩ : ∃ (n : ℕ), q ≤ n₀ + n :=
     ⟨Int.toNat (q - n₀), by linarith [Int.self_le_toNat (q - n₀)]⟩
   rw [← π_comp_p' f n₀ n, comp_f]
-  refine' MorphismProperty.comp_mem _ _ _ _ _
+  refine MorphismProperty.comp_mem _ _ _ ?_ ?_
   · have := isIso_π_f f n₀ n q hq
-    apply epiWithInjectiveKernel_of_iso
+    apply Abelian.epiWithInjectiveKernel_of_iso
   · exact ((inverseSystem f n₀).obj (Opposite.op n)).2.hp q
 
 
+/-- i' -/
 noncomputable def i' (n : ℕ) : K ⟶ (inverseSystemI f n₀).obj (Opposite.op n) :=
   ((inverseSystem f n₀).obj (Opposite.op n)).1.i
 
+/-- quasiIsoAt_i' -/
 lemma quasiIsoAt_i' (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) : QuasiIsoAt (i' f n₀ n) q :=
   (CofFibFactorizationQuasiIsoLE.sequence f n₀ n).2.quasiIsoAt q hq
 
@@ -1248,8 +1240,8 @@ lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
   let n₀ := n - 1
-  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_GE (n₀ + 1) (n + 1) (by omega)
-  have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_GE (n₀ + 1) n (by omega)
+  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_ge (n₀ + 1) (n + 1) (by omega)
+  have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_ge (n₀ + 1) n (by omega)
   have : (CM5aCof.I f n₀).IsStrictlyGE n := by
     rw [isStrictlyGE_iff]
     intro q hq
@@ -1266,20 +1258,21 @@ lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
   obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := CM5b f n
   obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := CM5a_cof i₁ n
-  refine' ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
+  refine ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
     MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩
 
 variable (K)
 
+/-- exists_injective_resolution' -/
 lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
     ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi : Mono i) (_hi' : QuasiIso i)
-      (hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE (n-1) := by
+      (_ : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE (n-1) := by
   have : K.IsStrictlyGE (n - 1 + 1) := by
     simp only [sub_add_cancel]
     infer_instance
   obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := CM5a (0 : K ⟶ 0) (n - 1)
   have hp₀ : p = 0 := (isZero_zero _).eq_of_tgt _ _
-  refine' ⟨L, i, hi, hi', fun n => Injective.of_iso _ ((hp n).2), hL⟩
+  refine ⟨L, i, hi, hi', fun n => Injective.of_iso ?_ ((hp n).2), hL⟩
   exact
     { hom := kernel.ι _
       inv := kernel.lift _ (𝟙 _) (by simp [hp₀])
@@ -1315,7 +1308,7 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
       { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
     exact Injective.direct_factor (hS.splittingOfInjective).s_g
   -- note: this `i ≫ L.πTruncGE n` is a mono in degrees > n, but it may not be in degree n
-  refine' ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, _, inferInstance⟩
+  refine ⟨L.truncGE n, i ≫ L.πTruncGE n, inferInstance, ?_, inferInstance⟩
   intro q
   by_cases h : q < n
   · apply Injective.injective_of_isZero

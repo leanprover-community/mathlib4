@@ -3,7 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
@@ -22,56 +23,23 @@ variable {C : Type _} [Category C] [Abelian C] [HasDerivedCategory.{w} C]
 
 namespace TStructure
 
-namespace t_aux
-
-variable {K L : CochainComplex C ℤ} [K.IsStrictlyLE 0]
-
-lemma zero₁ (f : K ⟶ L) [L.IsGE 1] : Q.map f = 0 := by
-  have : QuasiIso (L.πTruncGE 1) := by
-    rw [CochainComplex.quasiIso_πTruncGE_iff]
-    infer_instance
-  have hK : IsZero (K.truncGE 1) := by
-    rw [IsZero.iff_id_eq_zero]
-    ext n
-    by_cases hn : 0 < n
-    · apply (CochainComplex.isZero_of_isStrictlyLE _ 0 _ hn).eq_of_src
-    · simp only [not_lt] at hn
-      apply (CochainComplex.isZero_of_isStrictlyGE _ 1 _ (by omega)).eq_of_tgt
-  rw [← cancel_mono (Q.map (L.πTruncGE 1)), zero_comp, ← Q.map_comp,
-    ← CochainComplex.πTruncGE_naturality, hK.eq_of_tgt (K.πTruncGE 1) 0,
-    zero_comp, Q.map_zero]
-
-lemma zero (f : Q.obj K ⟶ Q.obj L) [L.IsGE 1] : f = 0 := by
-  obtain ⟨L', g, s, hs, fac⟩ := left_fac _ _ f
-  rw [← cancel_mono (Q.map s), zero_comp, fac, assoc, IsIso.inv_hom_id, comp_id]
-  have : L'.IsGE 1 := by
-    rw [CochainComplex.isGE_iff]
-    intro i hi
-    rw [HomologicalComplex.exactAt_iff_isZero_homology]
-    apply ((L.exactAt_of_isGE 1 i hi).isZero_homology).of_iso
-    rw [isIso_Q_map_iff_quasiIso] at hs
-    exact (asIso (HomologicalComplex.homologyMap s i)).symm
-  exact zero₁ g
-
-end t_aux
-
 def t : TStructure (DerivedCategory C) where
   LE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
   GE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
   LE_closedUnderIsomorphisms n :=
-    { mem_of_iso := by
+    { of_iso := by
         rintro X Y e ⟨K, e', _⟩
         exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
   GE_closedUnderIsomorphisms n :=
-    { mem_of_iso := by
+    { of_iso := by
         rintro X Y e ⟨K, e', _⟩
         exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
-  shift_LE := by
+  LE_shift := by
     rintro n a n' h X ⟨K, e, _⟩
     exact ⟨(shiftFunctor (CochainComplex C ℤ) a).obj K,
       (shiftFunctor (DerivedCategory C) a).mapIso e ≪≫ (Q.commShiftIso a).symm.app K,
       K.isStrictlyLE_shift n a n' h⟩
-  shift_GE := by
+  GE_shift := by
     rintro n a n' h X ⟨K, e, _⟩
     exact ⟨(shiftFunctor (CochainComplex C ℤ) a).obj K,
       (shiftFunctor (DerivedCategory C) a).mapIso e ≪≫ (Q.commShiftIso a).symm.app K,
@@ -79,23 +47,23 @@ def t : TStructure (DerivedCategory C) where
   zero' X Y f := by
     rintro ⟨K, e₁, _⟩ ⟨L, e₂, _⟩
     rw [← cancel_epi e₁.inv, ← cancel_mono e₂.hom, comp_zero, zero_comp]
-    apply t_aux.zero
+    apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE K L 0 1 (by simp)).elim
   LE_zero_le := by
     rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyLE_of_LE 0 1 (by omega)⟩
+    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by omega)⟩
   GE_one_le := by
     rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyGE_of_GE 0 1 (by omega)⟩
+    exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by omega)⟩
   exists_triangle_zero_one X := by
     obtain ⟨K, ⟨e₂⟩⟩ : ∃ K, Nonempty (Q.obj K ≅ X) := ⟨_, ⟨Q.objObjPreimageIso X⟩⟩
     have h := K.shortComplexTruncLE_shortExact 0
-    refine' ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
+    refine ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
       ⟨_, Iso.refl _, inferInstance⟩, ⟨_, Iso.refl _, inferInstance⟩,
       Q.map (K.ιTruncLE 0) ≫ e₂.hom, e₂.inv ≫ Q.map (K.πTruncGE 1),
       inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega))) ≫ (triangleOfSES h).mor₃,
-      isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm _)⟩
-    refine' Triangle.isoMk _ _ (Iso.refl _) e₂
-      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) _ _ (by simp)
+      isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
+    refine Triangle.isoMk _ _ (Iso.refl _) e₂
+      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) ?_ ?_ (by simp)
     · dsimp
       rw [id_comp]
       rfl
@@ -186,89 +154,6 @@ instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   dsimp only [Functor.comp_obj] at e
   exact TStructure.t.isLE_of_iso e.symm n
 
-lemma right_fac_of_isStrictlyLE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) (n : ℤ)
-    [X.IsStrictlyLE n] :
-    ∃ (X' : CochainComplex C ℤ) (_ : X'.IsStrictlyLE n) (s : X' ⟶ X) (hs : IsIso (Q.map s))
-      (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
-  obtain ⟨X', s, hs, g, rfl⟩ := right_fac X Y f
-  have : IsIso (Q.map (CochainComplex.truncLEMap s n)) := by
-    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncLEMap_iff]
-    rw [isIso_Q_map_iff_quasiIso] at hs
-    infer_instance
-  refine' ⟨X'.truncLE n, inferInstance, CochainComplex.truncLEMap s n ≫ X.ιTruncLE n, _,
-      CochainComplex.truncLEMap g n ≫ Y.ιTruncLE n, _⟩
-  · rw [Q.map_comp]
-    infer_instance
-  · have eq := Q.congr_map (CochainComplex.ιTruncLE_naturality s n)
-    have eq' := Q.congr_map (CochainComplex.ιTruncLE_naturality g n)
-    simp only [Functor.map_comp] at eq eq'
-    simp only [Functor.map_comp, ← cancel_epi (Q.map (CochainComplex.truncLEMap s n) ≫
-      Q.map (CochainComplex.ιTruncLE X n)), IsIso.hom_inv_id_assoc, assoc, reassoc_of% eq, eq']
-
-lemma left_fac_of_isStrictlyGE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) (n : ℤ)
-    [Y.IsStrictlyGE n] :
-    ∃ (Y' : CochainComplex C ℤ) (_ : Y'.IsStrictlyGE n) (g : X ⟶ Y') (s : Y ⟶ Y')
-      (hs : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
-  obtain ⟨Y', g, s, hs, rfl⟩ := left_fac X Y f
-  have : IsIso (Q.map (CochainComplex.truncGEMap s n)) := by
-    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncGEMap_iff]
-    rw [isIso_Q_map_iff_quasiIso] at hs
-    infer_instance
-  refine' ⟨Y'.truncGE n, inferInstance, X.πTruncGE n ≫ CochainComplex.truncGEMap g n,
-    Y.πTruncGE n ≫ CochainComplex.truncGEMap s n, _, _⟩
-  · rw [Q.map_comp]
-    infer_instance
-  · have eq := Q.congr_map (CochainComplex.πTruncGE_naturality s n)
-    have eq' := Q.congr_map (CochainComplex.πTruncGE_naturality g n)
-    simp only [Functor.map_comp] at eq eq'
-    simp only [Functor.map_comp, ← cancel_mono (Q.map (CochainComplex.πTruncGE Y n)
-      ≫ Q.map (CochainComplex.truncGEMap s n)), assoc, IsIso.inv_hom_id, comp_id]
-    simp only [eq, IsIso.inv_hom_id_assoc, eq']
-
-lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
-    (X Y : CochainComplex C ℤ) (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b]
-    [Y.IsStrictlyGE a] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (X' : CochainComplex C ℤ) ( _ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
-    (s : X' ⟶ X) (hs : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
-  obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE _ _ f b
-  have : IsIso (Q.map (CochainComplex.truncGEMap s a)) := by
-    rw [isIso_Q_map_iff_quasiIso] at hs
-    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncGEMap_iff]
-    infer_instance
-  refine' ⟨X'.truncGE a, inferInstance, inferInstance,
-    CochainComplex.truncGEMap s a ≫ inv (X.πTruncGE a), _,
-      CochainComplex.truncGEMap g a ≫ inv (Y.πTruncGE a), _⟩
-  · rw [Q.map_comp]
-    infer_instance
-  · simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
-      ← cancel_epi (Q.map s), IsIso.hom_inv_id_assoc]
-    simp only [← Functor.map_comp_assoc, ← CochainComplex.πTruncGE_naturality s a]
-    simp only [Functor.map_comp, assoc, IsIso.hom_inv_id_assoc]
-    simp only [← Functor.map_comp_assoc, CochainComplex.πTruncGE_naturality g a]
-    simp only [Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
-
-lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
-    (X Y : CochainComplex C ℤ) (a b : ℤ)
-    [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
-    (g : X ⟶ Y') (s : Y ⟶ Y') (hs : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
-  obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE _ _ f a
-  have : IsIso (Q.map (CochainComplex.truncLEMap s b)) := by
-    rw [isIso_Q_map_iff_quasiIso] at hs
-    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncLEMap_iff]
-    infer_instance
-  refine' ⟨Y'.truncLE b, inferInstance, inferInstance,
-    inv (X.ιTruncLE b) ≫ CochainComplex.truncLEMap g b,
-    inv (Y.ιTruncLE b) ≫ CochainComplex.truncLEMap s b, _, _⟩
-  · rw [Q.map_comp]
-    infer_instance
-  · simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
-      ← cancel_mono (Q.map s), IsIso.inv_hom_id, comp_id]
-    simp only [← Functor.map_comp, ← CochainComplex.ιTruncLE_naturality s b]
-    simp only [Functor.map_comp, IsIso.inv_hom_id_assoc]
-    simp only [← Functor.map_comp, CochainComplex.ιTruncLE_naturality g b]
-    simp only [Functor.map_comp, IsIso.inv_hom_id_assoc]
-
 lemma exists_iso_Q_obj_of_isLE (X : DerivedCategory C) (n : ℤ) [hX : X.IsLE n] :
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyLE n), Nonempty (X ≅ Q.obj K) := by
   obtain ⟨K, e, _⟩ := hX
@@ -294,7 +179,7 @@ lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] 
   obtain ⟨Y, _, _, ⟨e⟩⟩ := X.exists_iso_Q_obj_of_isGE_of_isLE n n
   obtain ⟨A, ⟨e'⟩⟩ := Y.exists_iso_single n
   exact ⟨A, ⟨e ≪≫ Q.mapIso e' ≪≫
-    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)).symm.app A⟩⟩
+    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQIso C)).symm.app A⟩⟩
 
 instance (n : ℤ) : (singleFunctor C n).Faithful := ⟨fun {A B} f₁ f₂ h => by
   have eq₁ := NatIso.naturality_1 (singleFunctorCompHomologyFunctorIso C n) f₁
@@ -305,47 +190,48 @@ instance (n : ℤ) : (singleFunctor C n).Faithful := ⟨fun {A B} f₁ f₂ h =>
 noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n).Full :=
   (inferInstance : (HomologicalComplex.single _ _ _).Full)
 
-noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n ⋙ Q).Full := by
-  apply Functor.fullOfSurjective
-  intro A B f
-  suffices ∃ (f' : (CochainComplex.singleFunctor C n).obj A ⟶
-    (CochainComplex.singleFunctor C n).obj B), f = Q.map f' by
-    obtain ⟨f', rfl⟩ := this
-    obtain ⟨g, hg⟩ := (CochainComplex.singleFunctor C n).map_surjective f'
-    refine' ⟨g, _⟩
-    dsimp
-    rw [hg]
-  obtain ⟨X, _, _, s, hs, g, fac⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE _ _ n n f
-  have : IsIso s := by
-    obtain ⟨A', ⟨e⟩⟩ := X.exists_iso_single n
-    have ⟨φ, hφ⟩ := (CochainComplex.singleFunctor C n).map_surjective (e.inv ≫ s)
-    suffices IsIso φ by
-      have : IsIso (e.inv ≫ s) := by
-        rw [← hφ]
+noncomputable instance (n : ℤ) : (CochainComplex.singleFunctor C n ⋙ Q).Full where
+  map_surjective {A B} f := by
+    suffices ∃ (f' : (CochainComplex.singleFunctor C n).obj A ⟶
+      (CochainComplex.singleFunctor C n).obj B), f = Q.map f' by
+      obtain ⟨f', rfl⟩ := this
+      obtain ⟨g, hg⟩ := (CochainComplex.singleFunctor C n).map_surjective f'
+      refine ⟨g, ?_⟩
+      dsimp
+      rw [hg]
+    obtain ⟨X, _, _, s, hs, g, fac⟩ := right_fac_of_isStrictlyLE_of_isStrictlyGE f n n
+    have : IsIso s := by
+      obtain ⟨A', ⟨e⟩⟩ := X.exists_iso_single n
+      have ⟨φ, hφ⟩ := (CochainComplex.singleFunctor C n).map_surjective (e.inv ≫ s)
+      suffices IsIso φ by
+        have : IsIso (e.inv ≫ s) := by
+          rw [← hφ]
+          infer_instance
+        exact IsIso.of_isIso_comp_left e.inv s
+      apply (NatIso.isIso_map_iff (singleFunctorCompHomologyFunctorIso C n) φ).1
+      have : IsIso (Q.map ((CochainComplex.singleFunctor C n).map φ)) := by
+        rw [hφ]
+        rw [Q.map_comp]
         infer_instance
-      exact IsIso.of_isIso_comp_left e.inv s
-    apply (NatIso.isIso_map_iff (singleFunctorCompHomologyFunctorIso C n) φ).1
-    have : IsIso (Q.map ((CochainComplex.singleFunctor C n).map φ)) := by
-      rw [hφ]
-      rw [Q.map_comp]
+      have : IsIso ((singleFunctor C n).map φ) :=
+        (NatIso.isIso_map_iff ((SingleFunctors.evaluation _ _ n).mapIso
+          (singleFunctorsPostcompQIso C)) φ).2 this
+      dsimp
       infer_instance
-    have : IsIso ((singleFunctor C n).map φ) :=
-      (NatIso.isIso_map_iff ((SingleFunctors.evaluation _ _ n).mapIso
-        (singleFunctorsPostCompQIso C)) φ).2 this
-    dsimp
-    infer_instance
-  exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
+    exact ⟨inv s ≫ g, by rw [Q.map_comp, fac, Q.map_inv]⟩
 
 noncomputable instance (n : ℤ) : (singleFunctor C n).Full := by
-  have : _ ≅ (CochainComplex.singleFunctor C n ⋙ Q) := ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C))
-  exact Functor.Full.ofIso this.symm
+  have : _ ≅ (CochainComplex.singleFunctor C n ⋙ Q) :=
+    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQIso C))
+  exact Functor.Full.of_iso this.symm
 
 lemma singleFunctor_preimage {A B : C} {n : ℤ}
     (f : (singleFunctor C n).obj A ⟶  (singleFunctor C n).obj B) :
     (singleFunctor C n).preimage f = (singleFunctorCompHomologyFunctorIso C n).inv.app A ≫
         (homologyFunctor _ n).map f ≫ (singleFunctorCompHomologyFunctorIso C n).hom.app B := by
   obtain ⟨φ, rfl⟩ := (singleFunctor C n).map_surjective f
-  erw [Functor.preimage_map, ← NatTrans.naturality_assoc, Iso.inv_hom_id_app, comp_id, Functor.id_map]
+  erw [Functor.preimage_map, ← NatTrans.naturality_assoc, Iso.inv_hom_id_app,
+    comp_id, Functor.id_map]
 
 namespace TStructure
 

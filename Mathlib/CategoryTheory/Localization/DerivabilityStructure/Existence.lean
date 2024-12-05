@@ -1,5 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Pointwise
 import Mathlib.CategoryTheory.Functor.Derived.Pointwise
+
+/-!
+# Existence of a right derived functor
+-/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -15,6 +24,8 @@ namespace LocalizerMorphism
 
 variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
   (F : C₂ ⥤ H) (hF : W₁.IsInvertedBy (Φ.functor ⋙ F))
+
+include hF
 
 lemma hasPointwiseRightDerivedFunctor : F.HasPointwiseRightDerivedFunctor W₂ := by
   rw [Φ.hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure F]

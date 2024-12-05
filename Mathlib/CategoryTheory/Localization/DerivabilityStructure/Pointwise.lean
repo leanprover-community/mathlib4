@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Functor.Derived.Pointwise
 import Mathlib.CategoryTheory.Limits.Final
+
+/-!
+# Properties of right derived functors
+
+-/
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -66,12 +76,13 @@ variable (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) (L₂ : C₂ 
 noncomputable def rightDerivedFunctorComparison :
     F₁ ⟶ Φ.localizedFunctor L₁ L₂ ⋙ F₂ :=
   F₁.rightDerivedDesc α₁ W₁ (Φ.localizedFunctor L₁ L₂ ⋙ F₂)
-    (whiskerLeft _ α₂ ≫ (Functor.associator _ _ _).inv ≫ whiskerRight ((Φ.catCommSq L₁ L₂).iso).hom F₂ ≫ (Functor.associator _ _ _).hom)
+    (whiskerLeft _ α₂ ≫ (Functor.associator _ _ _).inv ≫
+      whiskerRight ((Φ.catCommSq L₁ L₂).iso).hom F₂ ≫ (Functor.associator _ _ _).hom)
 
 lemma rightDerivedFunctorComparison_fac :
     α₁ ≫ whiskerLeft _ (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) =
-      whiskerLeft Φ.functor α₂ ≫ ((Functor.associator _ _ _).inv ≫ whiskerRight ((Φ.catCommSq L₁ L₂).iso).hom F₂ ≫ (Functor.associator _ _ _).hom)
-      := by
+      whiskerLeft Φ.functor α₂ ≫ ((Functor.associator _ _ _).inv ≫
+      whiskerRight ((Φ.catCommSq L₁ L₂).iso).hom F₂ ≫ (Functor.associator _ _ _).hom) := by
   dsimp only [rightDerivedFunctorComparison]
   rw [Functor.rightDerived_fac]
 
@@ -110,10 +121,10 @@ lemma hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure :
     simpa only [hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure,
       ← F.hasPointwiseRightDerivedFunctorAt_iff_of_mem W₂ R.w R.hw ] using hF R.X₁
 
-variable [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁]
-  [F₂.IsRightDerivedFunctor α₂ W₂]
+variable [F₂.IsRightDerivedFunctor α₂ W₂]
 
-instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
+instance [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁] :
+    IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
   suffices ∀ Y, IsIso ((rightDerivedFunctorComparison Φ L₁ L₂ F F₁ α₁ F₂ α₂).app Y) from
     NatIso.isIso_of_isIso_app _
   intro Y

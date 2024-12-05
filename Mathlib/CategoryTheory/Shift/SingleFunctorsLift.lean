@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Shift.SingleFunctors
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+/-!
+# Lift of a "single functor" to a full subcategory
+
+-/
 
 namespace CategoryTheory
 
@@ -18,9 +28,10 @@ namespace Lift
 
 variable {F G Φ}
 
-def shiftIso (n a a' : A) (h : n + a = a') :
+noncomputable def shiftIso (n a a' : A) (h : n + a = a') :
     Φ a' ⋙ shiftFunctor D n ≅ Φ a :=
-  natIsoOfCompFullyFaithful G (Functor.associator _ _ _ ≪≫
+  ((Functor.FullyFaithful.ofFullyFaithful G).whiskeringRight _).preimageIso
+    (Functor.associator _ _ _ ≪≫
       isoWhiskerLeft _ (G.commShiftIso n) ≪≫ (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (hΦ a') _ ≪≫ F.shiftIso n a a' h ≪≫ (hΦ a).symm)
 
@@ -32,7 +43,7 @@ lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 
 end Lift
 
-def lift : SingleFunctors C D A where
+noncomputable def lift : SingleFunctors C D A where
   functor := Φ
   shiftIso := Lift.shiftIso hΦ
   shiftIso_zero a := by

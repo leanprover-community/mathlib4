@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.Plus
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
@@ -6,6 +11,11 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.Algebra.Homology.Factorizations.CM5a
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+
+/-!
+# The injective derivability structure
+
+-/
 
 universe w₁ w₂
 
@@ -32,7 +42,8 @@ def closedUnderLimitsOfShapeDiscrete (J : Type*) :
     change HasProduct X
     infer_instance
   have : ∀ j, Injective (X j) := fun j => H ⟨j⟩
-  have e' : ∏ X ≅ c.pt := IsLimit.conePointUniqueUpToIso (limit.isLimit _) ((IsLimit.postcomposeHomEquiv e c).symm hc)
+  have e' : ∏ᶜ X ≅ c.pt := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+    ((IsLimit.postcomposeHomEquiv e c).symm hc)
   exact Injective.of_iso e' inferInstance
 
 instance : HasFiniteProducts (Injectives C) :=
@@ -44,7 +55,7 @@ instance : HasBinaryBiproducts (Injectives C) := hasBinaryBiproducts_of_finite_b
 
 instance : HasZeroObject (Injectives C) where
   zero := by
-    refine' ⟨⟨0, inferInstance⟩, _⟩
+    refine ⟨⟨0, inferInstance⟩, ?_⟩
     rw [IsZero.iff_id_eq_zero]
     apply id_zero
 
@@ -68,7 +79,7 @@ def liftHomotopyCategoryPlusOfInjective (K : HomotopyCategory.Plus C)
           d_comp_d' := fun i j hij => K.obj.as.d_comp_d' i j hij }⟩
       property := by
         obtain ⟨n, hn⟩ := K.2
-        refine' ⟨n, _⟩
+        refine ⟨n, ?_⟩
         rw [CochainComplex.isStrictlyGE_iff]
         intro i hi
         simpa only [IsZero.iff_id_eq_zero] using
@@ -78,6 +89,7 @@ def isoMapHomotopyCategoryPlusιObj (K : HomotopyCategory.Plus C)
     [∀ (n : ℤ), Injective (K.obj.as.X n)] :
     (ι C).mapHomotopyCategoryPlus.obj (liftHomotopyCategoryPlusOfInjective K) ≅ K := Iso.refl _
 
+omit [HasDerivedCategory C] in
 lemma mem_essImage_mapHomotopyCategoryPlus_ι_of_injective (K : HomotopyCategory.Plus C)
     [∀ (n : ℤ), Injective (K.obj.as.X n)] :
     K ∈ (ι C).mapHomotopyCategoryPlus.essImage :=
@@ -123,7 +135,8 @@ instance (K : HomotopyCategory.Plus (Injectives C)) :
   obtain ⟨n, hn⟩ := K.2
   have : CochainComplex.IsStrictlyGE
       (((ι C).mapHomotopyCategoryPlus.obj K)).obj.as n := by
-    change CochainComplex.IsStrictlyGE (((ι C).mapHomologicalComplex (ComplexShape.up ℤ)).obj K.obj.as) n
+    change CochainComplex.IsStrictlyGE (((ι C).mapHomologicalComplex
+      (ComplexShape.up ℤ)).obj K.obj.as) n
     infer_instance
   apply CochainComplex.isKInjective_of_injective _ n
 
@@ -134,17 +147,19 @@ instance (K : HomotopyCategory.Plus (Injectives C)) :
 
 lemma Qh_map_bijective_ι_mapHomotopyCategoryPlus
     (K : HomotopyCategory.Plus C) (L : HomotopyCategory.Plus (Injectives C)) :
-    Function.Bijective (DerivedCategory.Plus.Qh.map : (K ⟶ ((ι C).mapHomotopyCategoryPlus).obj L) → _):= by
+    Function.Bijective (DerivedCategory.Plus.Qh.map :
+      (K ⟶ ((ι C).mapHomotopyCategoryPlus).obj L) → _):= by
   apply DerivedCategory.Plus.Qh_map_bijective_of_isKInjective
   infer_instance
 
 variable (C)
 
-noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).Full :=
-  Functor.fullOfSurjective _ (fun K L f => by
-    obtain ⟨g, rfl⟩ := (Qh_map_bijective_ι_mapHomotopyCategoryPlus (((ι C).mapHomotopyCategoryPlus).obj K) L).2 f
+noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).Full where
+  map_surjective {K L} f := by
+    obtain ⟨g, rfl⟩ :=
+      (Qh_map_bijective_ι_mapHomotopyCategoryPlus (((ι C).mapHomotopyCategoryPlus).obj K) L).2 f
     obtain ⟨h, rfl⟩ := ((ι C).mapHomotopyCategoryPlus).map_surjective g
-    exact ⟨h, rfl⟩)
+    exact ⟨h, rfl⟩
 
 noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).Faithful where
   map_injective {K L} f₁ f₂ hf := by
@@ -152,17 +167,21 @@ noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plu
     exact ((Qh_map_bijective_ι_mapHomotopyCategoryPlus
       (((ι C).mapHomotopyCategoryPlus).obj K) L).1 hf)
 
-noncomputable instance : ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).ReflectsIsomorphisms :=
+noncomputable instance :
+    ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).ReflectsIsomorphisms :=
   reflectsIsomorphisms_of_full_and_faithful _
 
 variable {C}
 
-noncomputable def rightResolution_localizerMorphism (K : CochainComplex C ℤ) (n : ℤ) [hK : K.IsStrictlyGE n] [EnoughInjectives C] :
-    (localizerMorphism C).RightResolution (⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, hK⟩) where
+noncomputable def rightResolution_localizerMorphism
+    (K : CochainComplex C ℤ) (n : ℤ) [hK : K.IsStrictlyGE n] [EnoughInjectives C] :
+    (localizerMorphism C).RightResolution
+      (⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, hK⟩) where
   X₁ := liftHomotopyCategoryPlusOfInjective ⟨⟨K.injectiveResolution n⟩, ⟨n, inferInstance⟩⟩
   w := (HomotopyCategory.quotient _ _).map (K.ιInjectiveResolution n)
   hw := by
-    dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Triangulated.Subcategory.ι]
+    dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage,
+      HomotopyCategory.Plus.ι, Triangulated.Subcategory.ι]
     rw [HomotopyCategory.quotient_map_mem_quasiIso_iff, HomologicalComplex.mem_quasiIso_iff]
     infer_instance
 
@@ -180,8 +199,7 @@ instance [EnoughInjectives C] :
       DerivedCategory.Plus.Qh.objObjPreimageIso Y⟩⟩
 
 noncomputable instance [EnoughInjectives C] :
-    ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).IsEquivalence := by
-  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj
+    ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).IsEquivalence where
 
 instance [EnoughInjectives C] : (localizerMorphism C).IsLocalizedEquivalence :=
   LocalizerMorphism.IsLocalizedEquivalence.mk'
@@ -193,8 +211,9 @@ lemma localizerMorphism_lift_map_on_resolutions {X Y : HomotopyCategory.Plus C} 
     ∃ (ψ : X'.X₁ ⟶ Y'.X₁), X'.w ≫ (localizerMorphism C).functor.map ψ = φ ≫ Y'.w := by
   let F := ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
   have := Localization.inverts (DerivedCategory.Plus.Qh) _ _ X'.hw
-  obtain ⟨γ, hγ⟩ := F.map_surjective (inv (DerivedCategory.Plus.Qh.map X'.w) ≫ DerivedCategory.Plus.Qh.map φ ≫ DerivedCategory.Plus.Qh.map Y'.w)
-  refine' ⟨γ, (DerivedCategory.Plus.Qh_map_bijective_of_isKInjective _ _ _).1 _⟩
+  obtain ⟨γ, hγ⟩ := F.map_surjective (inv (DerivedCategory.Plus.Qh.map X'.w) ≫
+    DerivedCategory.Plus.Qh.map φ ≫ DerivedCategory.Plus.Qh.map Y'.w)
+  refine ⟨γ, (DerivedCategory.Plus.Qh_map_bijective_of_isKInjective _ _ ?_).1 ?_⟩
   · dsimp [localizerMorphism]
     infer_instance
   · dsimp
@@ -248,7 +267,8 @@ instance : F.HasPointwiseRightDerivedFunctor (HomotopyCategory.Plus.quasiIso C) 
 variable (F' : DerivedCategory.Plus C ⥤ H) (α : F ⟶ DerivedCategory.Plus.Qh ⋙ F')
   [F'.IsRightDerivedFunctor α (HomotopyCategory.Plus.quasiIso C)]
 
-instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n))] : IsIso (α.app K) := by
+instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n))] :
+    IsIso (α.app K) := by
   have : ∀ (Y : HomotopyCategory.Plus (Injectives C)),
       IsIso (α.app ((ι C).mapHomotopyCategoryPlus.obj Y)) := fun Y =>
     (localizerMorphism C).isIso_app_of_isRightDerivedFunctor _

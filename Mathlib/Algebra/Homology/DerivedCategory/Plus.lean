@@ -1,13 +1,22 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 
+/-!
+# The category D^+
+
+-/
+
 open CategoryTheory Category Triangulated Limits
 
 variable {C : Type*} [Category C] [Abelian C]
-  [HasDerivedCategory C]
 
 namespace HomotopyCategory
 
@@ -37,6 +46,7 @@ namespace DerivedCategory
 
 open TStructure
 
+variable [HasDerivedCategory C]
 namespace Plus
 
 def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
@@ -77,9 +87,9 @@ instance : IsRightLocalizing (HomotopyCategory.Plus.ι C)
     have : IsIso (L.πTruncGE n) := by
       rw [CochainComplex.isIso_πTruncGE_iff]
       infer_instance
-    refine' ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.πTruncGE n),
+    refine ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.πTruncGE n),
       (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
-        (CochainComplex.truncGEMap φ n ≫ inv (L.πTruncGE n)), _⟩
+        (CochainComplex.truncGEMap φ n ≫ inv (L.πTruncGE n)), ?_⟩
     erw [← (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_comp]
     congr 1
     rw [← cancel_mono (L.πTruncGE n), CochainComplex.πTruncGE_naturality_assoc,
@@ -95,8 +105,8 @@ instance : (Qh (C := C)).EssSurj := by
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
       Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
         rintro ⟨X, n, hn⟩
-        obtain ⟨K, e, h⟩ := hn.mem
-        refine' ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, h⟩,
+        obtain ⟨K, e, h⟩ := hn
+        refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, h⟩,
           ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩⟩
   intro X n hn
   have : (Q.objPreimage X).IsGE n := by
@@ -137,7 +147,7 @@ instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
   infer_instance
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
-  Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
+  Localization.essSurj_mapArrow _
     (HomotopyCategory.Plus.subcategoryAcyclic C).W
 
 variable {C}

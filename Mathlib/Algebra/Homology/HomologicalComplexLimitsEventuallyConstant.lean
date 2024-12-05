@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.Algebra.Homology.QuasiIso
+
+/-!
+# Limits of eventually constant systems
+
+-/
 
 open CategoryTheory Category Limits
 
@@ -15,7 +25,7 @@ lemma isIso_π_f_of_isLimit_of_isEventuallyConstantTo
     {κ : Cone F} (hκ : IsLimit κ)
     (q : ι) (j : J) (hq : (F ⋙ eval C c q).IsEventuallyConstantTo j) :
     IsIso ((κ.π.app j).f q) :=
-  hq.isIso_π_ofIsLimit (isLimitOfPreserves (eval C c q) hκ)
+  hq.isIso_π_of_isLimit (isLimitOfPreserves (eval C c q) hκ)
 
 lemma isIso_limit_π_of_isEventuallyConstantTo
     [HasZeroMorphisms C] (F : J ⥤ HomologicalComplex C c)

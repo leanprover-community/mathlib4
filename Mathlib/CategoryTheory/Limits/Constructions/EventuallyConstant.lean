@@ -242,6 +242,7 @@ instance [hF : IsEventuallyConstant F] [IsCofiltered J] : HasLimit F := by
   obtain ⟨j, h⟩ := hF.exists_isEventuallyConstantTo
   exact h.hasLimit
 
+/-- Constructor for `IsEventuallyConstant`. -/
 lemma IsEventuallyConstant.mk' (i : J) (hF : F.IsEventuallyConstantTo i) :
     IsEventuallyConstant F := ⟨⟨i, hF⟩⟩
 
@@ -258,6 +259,7 @@ instance [hF : IsEventuallyConstant F] [IsFiltered J] : HasColimit F := by
   obtain ⟨j, h⟩ := hF.exists_isEventuallyConstantFrom
   exact h.hasColimit
 
+/-- Constructor for `IsEventuallyConstant`. -/
 lemma IsEventuallyConstant.mk' (i : J) (hF : F.IsEventuallyConstantFrom i) :
     IsEventuallyConstant F := ⟨⟨i, hF⟩⟩
 

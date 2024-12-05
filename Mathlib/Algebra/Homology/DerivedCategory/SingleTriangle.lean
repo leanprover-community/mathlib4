@@ -75,7 +75,6 @@ lemma singleTriangle_distinguished :
   isomorphic_distinguished _ (triangleOfSES_distinguished (hS.map_of_exact
     (HomologicalComplex.single C (ComplexShape.up ℤ) 0))) _ (singleTriangleIso hS)
 
-
 end ShortExact
 
 end ShortComplex

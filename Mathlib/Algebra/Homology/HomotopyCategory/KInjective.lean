@@ -1,14 +1,24 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Triangulated.Orthogonal
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
+
+/-!
+# K-injective cochain complexes
+
+-/
 
 open CategoryTheory Category Preadditive Limits
 
 namespace CochainComplex
 
 variable {C : Type*} [Category C] [Abelian C]
-  (K L : CochainComplex C ℤ) [HasDerivedCategory C]
+  (K L : CochainComplex C ℤ)
 
 class IsKInjective : Prop where
   nonempty_homotopy_zero (K : CochainComplex C ℤ) (hK : ∀ (n : ℤ), K.ExactAt n) (f : K ⟶ L) :
@@ -25,16 +35,17 @@ variable (L)
 
 lemma isKInjective_iff_mem_rightOrthogonal :
     L.IsKInjective ↔
-      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.P ((HomotopyCategory.quotient _ _).obj L) := by
+      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.P
+        ((HomotopyCategory.quotient _ _).obj L) := by
   constructor
   · intro _ ⟨(K : CochainComplex C ℤ)⟩ f hK
     obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
     erw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_exactAt] at hK
     rw [HomotopyCategory.eq_of_homotopy f 0 (homotopyZero f hK), Functor.map_zero]
   · intro hL
-    refine' ⟨fun K hK f => _⟩
+    refine ⟨fun K hK f => ?_⟩
     erw [← HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_exactAt] at hK
-    refine' ⟨HomotopyCategory.homotopyOfEq _ _ _⟩
+    refine ⟨HomotopyCategory.homotopyOfEq _ _ ?_⟩
     rw [hL ((HomotopyCategory.quotient _ _).map f) hK, Functor.map_zero]
 
 variable {L}
@@ -64,9 +75,10 @@ lemma isKInjective_shift_iff (n : ℤ) :
   · intro
     infer_instance
 
-lemma Qh_map_bijective_of_isKInjective
+lemma Qh_map_bijective_of_isKInjective [HasDerivedCategory C]
     (K : HomotopyCategory C (ComplexShape.up ℤ)) (L : CochainComplex C ℤ) [L.IsKInjective] :
-    Function.Bijective (DerivedCategory.Qh.map : (K ⟶ (HomotopyCategory.quotient _ _).obj L) → _ ) := by
+    Function.Bijective (DerivedCategory.Qh.map :
+      (K ⟶ (HomotopyCategory.quotient _ _).obj L) → _ ) := by
   apply (HomotopyCategory.subcategoryAcyclic C).map_bijective_of_rightOrthogonal
   rw [← isKInjective_iff_mem_rightOrthogonal]
   infer_instance
@@ -83,7 +95,7 @@ lemma homComplex_exactAt_of_KInjective [L.IsKInjective] (hK : ∀ (n : ℤ), K.E
     ((Cocycle.mk x₂ (n+1) (by simp) hx₂).rightShift n 0 (zero_add n))) hK)
   simp only [Cocycle.equivHom_symm_apply, Cocycle.cochain_ofHom_homOf_eq_coe,
     Cocycle.rightShift_coe, Cocycle.mk_coe, Cochain.ofHom_zero, add_zero] at hα
-  refine' ⟨n.negOnePow • α.rightUnshift (n-1) (by linarith), _⟩
+  refine ⟨n.negOnePow • α.rightUnshift (n-1) (by linarith), ?_⟩
   apply (Cochain.rightShiftAddEquiv K L n n 0 (zero_add n)).injective
   dsimp [HomComplex]
   simp only [hα, δ_smul, Cochain.rightShift_smul,
@@ -109,6 +121,7 @@ def sequence : ∀ n, X n
   | 0 => x₀
   | n+1 => φ n (sequence n)
 
+include hφ in
 lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
     (sequence φ x₀ n₁).1.EqUpTo (sequence φ x₀ n₂).1 (p₀ + n₁) := by
   obtain ⟨k, rfl⟩ : ∃ (k : ℕ), n₂ = n₁ + k := Nat.exists_eq_add_of_le h
@@ -130,7 +143,7 @@ lemma limitSequence_eqUpTo (n : ℕ) :
     (limitSequence φ hφ x₀).EqUpTo (sequence φ x₀ n).1 (p₀ + n) := by
   intro p q hpq hp
   dsimp [limitSequence]
-  refine' sequence_eqUpTo φ hφ _ _ _ _ _ _ _ _
+  refine sequence_eqUpTo φ hφ _ _ _ ?_ _ _ _ ?_
   · rw [Int.toNat_le]
     linarith
   · linarith [Int.self_le_toNat (p - p₀)]
@@ -155,26 +168,28 @@ lemma isKInjective_of_injective_aux
   have hu : K.d n (n+1) ≫ u = 0 := by
     dsimp [u]
     have eq := hα n n (add_zero n) (by rfl)
-    simp only [δ_v (-1) 0 (neg_add_self 1) α n n (add_zero _) (n-1) (n+1) (by linarith) (by linarith),
-      neg_add_self, Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
+    simp only [δ_v (-1) 0 (neg_add_cancel 1) α n n (add_zero _) (n-1) (n+1)
+      (by linarith) (by linarith),
+      neg_add_cancel, Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
     simp only [comp_sub, HomologicalComplex.d_comp_d_assoc, zero_comp, sub_zero,
       ← f.comm, ← eq, add_comp, assoc, L.d_comp_d, comp_zero, zero_add, sub_self]
   rw [K.exactAt_iff' n (n+1) (n+2) (by simp) (by simp; linarith)] at hK
   obtain ⟨h, hh⟩ : ∃ (h : K.X (n+2) ⟶ L.X (n+1)), K.d (n+1) (n+2) ≫ h = u :=
     ⟨hK.descToInjective _ hu, hK.comp_descToInjective _ _⟩
-  refine' ⟨h, _⟩
+  refine ⟨h, ?_⟩
   intro p q hpq hp
   obtain rfl : p = q := by linarith
   obtain hp | rfl := hp.lt_or_eq
   · rw [Int.lt_add_one_iff] at hp
     rw [δ_add, Cochain.add_v, hα p p (by linarith) (by linarith), add_right_eq_self,
-      δ_v (-1) 0 (neg_add_self 1) _ p p hpq (p-1) (p+1) rfl rfl]
-    simp only [neg_add_self, Int.negOnePow_zero, one_smul]
+      δ_v (-1) 0 (neg_add_cancel 1) _ p p hpq (p-1) (p+1) rfl rfl]
+    simp only [neg_add_cancel, Int.negOnePow_zero, one_smul]
     rw [Cochain.single_v_eq_zero _ _ _ _ _ (by linarith),
       Cochain.single_v_eq_zero _ _ _ _ _ (by linarith), zero_comp, comp_zero,
       add_zero]
-  · rw [δ_v (-1) 0 (neg_add_self 1) _ (n+1) (n+1) (by linarith) n (n+2) (by linarith) (by linarith)]
-    simp only [neg_add_self, Int.negOnePow_zero, one_smul, Cochain.add_v, add_comp,
+  · rw [δ_v (-1) 0 (neg_add_cancel 1) _ (n+1) (n+1) (by linarith) n (n+2)
+      (by linarith) (by linarith)]
+    simp only [neg_add_cancel, Int.negOnePow_zero, one_smul, Cochain.add_v, add_comp,
       comp_add, Cochain.ofHom_v, Cochain.single_v]
     rw [Cochain.single_v_eq_zero _ _ _ _ _ (by linarith)]
     simp only [ComplexShape.up_Rel, not_true, zero_comp, add_zero, Cochain.single_v,
@@ -199,14 +214,14 @@ lemma isKInjective_of_injective (d : ℤ) [L.IsStrictlyGE d] [∀ (n : ℤ), Inj
     simp only [add_right_eq_self]
     apply Cochain.single_v_eq_zero
     linarith
-  refine' ⟨(Cochain.equivHomotopy f 0).symm ⟨Cochain.Induction.limitSequence φ hφ x₀, _⟩⟩
+  refine ⟨(Cochain.equivHomotopy f 0).symm ⟨Cochain.Induction.limitSequence φ hφ x₀, ?_⟩⟩
   rw [Cochain.ofHom_zero, add_zero]
   ext n
   let k₀ : ℕ := (n - d + 1).toNat
   have := Int.self_le_toNat (n - d + 1)
   rw [← (Cochain.Induction.sequence φ x₀ k₀).2 n n (add_zero n) (by linarith),
-    δ_v (-1) 0 (neg_add_self 1) _ n n (by linarith) (n-1) (n+1) rfl (by linarith),
-    δ_v (-1) 0 (neg_add_self 1) _ n n (by linarith) (n-1) (n+1) rfl (by linarith),
+    δ_v (-1) 0 (neg_add_cancel 1) _ n n (by linarith) (n-1) (n+1) rfl (by linarith),
+    δ_v (-1) 0 (neg_add_cancel 1) _ n n (by linarith) (n-1) (n+1) rfl (by linarith),
     Cochain.Induction.limitSequence_eqUpTo φ hφ x₀ k₀ n (n-1) (by linarith) (by linarith),
     Cochain.Induction.limitSequence_eqUpTo φ hφ x₀ k₀ (n+1) n (by linarith) (by linarith)]⟩
 
