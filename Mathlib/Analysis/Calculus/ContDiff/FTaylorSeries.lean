@@ -554,12 +554,12 @@ then the corresponding iterated derivatives are equal.
 
 Note that we also allow to puncture the neighborhood of `x` at `y`.
 If `y ≠ x`, then this is a no-op. -/
-theorem iteratedFDerivWithin_congr_set' (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+theorem iteratedFDerivWithin_congr_set' {y} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (iteratedFDerivWithin_eventually_congr_set' y h n).self_of_nhds
 
 @[simp]
-theorem iteratedFDerivWithin_insert {n} :
+theorem iteratedFDerivWithin_insert {n y} :
     iteratedFDerivWithin 𝕜 n f (insert x s) y = iteratedFDerivWithin 𝕜 n f s y :=
   iteratedFDerivWithin_congr_set' (y := x)
     (eventually_mem_nhdsWithin.mono <| by intros; simp_all).set_eq _
