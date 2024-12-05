@@ -140,32 +140,30 @@ instance symOffDiagRight.decidablePred [DecidableEq ι₁] [DecidableEq ι₂] :
 
 -- symOffDiagLeft x ∧ ¬symOffDiagRight x
 
-lemma not_symOffDiagRight_of_symOffDiagLeft [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂))
+lemma not_symOffDiagRight_of_symOffDiagLeft (p : Sym2 (ι₁ × ι₂))
     (h : symOffDiagLeft p) : ¬symOffDiagRight p := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
   aesop
 
-lemma not_symOffDiagLeft_of_symOffDiagRight [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂))
+lemma not_symOffDiagLeft_of_symOffDiagRight (p : Sym2 (ι₁ × ι₂))
     (h : symOffDiagRight p) : ¬symOffDiagLeft p := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
   aesop
 
-lemma e5 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    symOffDiagLeft p ∧ ¬symOffDiagRight p ↔ symOffDiagLeft p := by
+lemma e5 (p : Sym2 (ι₁ × ι₂)) : symOffDiagLeft p ∧ ¬symOffDiagRight p ↔ symOffDiagLeft p := by
   rw [and_iff_left_of_imp]
   exact not_symOffDiagRight_of_symOffDiagLeft _
 
-lemma e6 [LinearOrder ι₁] [LinearOrder ι₂] (p : Sym2 (ι₁ × ι₂)) :
-    symOffDiagRight p ∧ ¬symOffDiagLeft p ↔ symOffDiagRight p := by
+lemma e6 (p : Sym2 (ι₁ × ι₂)) : symOffDiagRight p ∧ ¬symOffDiagLeft p ↔ symOffDiagRight p := by
   rw [and_iff_left_of_imp]
   exact not_symOffDiagLeft_of_symOffDiagRight _
 
-lemma symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight [LinearOrder ι₁] [LinearOrder ι₂]
-    (p : Sym2 (ι₁ × ι₂)) : symOffDiagXor p ↔ Xor' (symOffDiagLeft p) (symOffDiagRight p) := by
+lemma symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight (p : Sym2 (ι₁ × ι₂)) :
+    symOffDiagXor p ↔ Xor' (symOffDiagLeft p) (symOffDiagRight p) := by
   induction' p with i  j
   obtain ⟨i₁, i₂⟩ := i
   obtain ⟨j₁, j₂⟩ := j
