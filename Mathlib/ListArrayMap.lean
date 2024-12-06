@@ -1,9 +1,13 @@
-universe u v
+universe u v w
 variable {α : Type u} {β : Type v}
 
 namespace List
 
 def toArrayMap (l : List α) (f : α → β) : Array β := l.foldl (init := #[]) fun acc x ↦ acc.push (f x)
+
+-- Future: a toArrayMapM version could be useful (e.g. in DeriveToExpr)
+-- def toArrayMapM {m : Type v → Type w} [Monad m] (l : List α) (f : α → m β) : m (Array β) :=
+--   l.foldlM (init := #[]) fun acc x ↦ acc.push (f x)
 
 /-- info: #[3, 4, 5, 6] -/
 #guard_msgs in
