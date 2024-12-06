@@ -15,14 +15,18 @@ derivative at `x` is given by `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., 
 is over all permutations of `{1, ..., n}`. In particular, it is symmetric.
 -/
 
-open scoped ENNReal
-open Equiv
+open scoped ENNReal Topology
+open Equiv Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-{f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
 
+/-- Formal multilinear series associated to the iterated derivative, defined by iterating
+`p ↦ p.derivSeries` and currying suitably. It is defined so that, if a function has `p` has a power
+series, then its iterated derivative of order `k` has `p.iteratedFDerivSeries k` as a power
+series. -/
 noncomputable def FormalMultilinearSeries.iteratedFDerivSeries
     (p : FormalMultilinearSeries 𝕜 E F) (k : ℕ) :
     FormalMultilinearSeries 𝕜 E (E [×k]→L[𝕜] F) :=
@@ -67,6 +71,8 @@ lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
     · apply ih
       apply p.congr_zero (by abel) h
 
+/-- If the `n`-th term in a power series is zero, then the `n`-th derivative of the corresponding
+function vanished. -/
 lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_zero [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (hn : p n = 0) :
@@ -101,23 +107,21 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   simp [coe_fn_mk, inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
 
-lemma foo (n : ℕ) (hs : UniqueDiffOn 𝕜 s) (hf : ContDiffAt 𝕜 n f x) (hx : x ∈ s) :
-    iteratedFDerivWithin 𝕜 n f s x = iteratedFDeriv 𝕜 n f x := by
-  have Z := hf.hasFTaylorSeriesUpTo
-
-
-lemma glouk [CompleteSpace F]
+private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
-    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hx : x ∈ s)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     {n : ℕ} (v : Fin n → E) (h's : s ⊆ EMetric.ball x r) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   have I : insert x s ∩ EMetric.ball x r = s := by
     rw [Set.insert_eq_of_mem hx]
     exact Set.inter_eq_left.2 h's
   have fcont : ContDiffOn 𝕜 (↑n) f s := by
-    apply AnalyticOn.contDiffOn _ hu
+    apply AnalyticOn.contDiffOn _ hs
     simpa [I] using h.analyticOn
   let g : E → F := fun z ↦ p n (fun _ ↦ z - x)
+  have gcont : ContDiff 𝕜 n g := by
+    apply (p n).contDiff.comp
+    exact contDiff_pi.2 (fun i ↦ contDiff_id.sub contDiff_const)
   let q : FormalMultilinearSeries 𝕜 E F := fun k ↦ if h : n = k then (h ▸ p n) else 0
   have A : HasFiniteFPowerSeriesOnBall g q x (n + 1) r := by
     apply HasFiniteFPowerSeriesOnBall.mk' _ h.r_pos
@@ -132,20 +136,39 @@ lemma glouk [CompleteSpace F]
       simp [q, this]
   have B : HasFPowerSeriesWithinOnBall g q s x r :=
     A.toHasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
-  have gcont : ContDiffOn 𝕜 (↑n) g s := by
-    apply AnalyticOn.contDiffOn _ hu
-    simpa [I] using B.analyticOn
   have J1 : iteratedFDerivWithin 𝕜 n f s x =
       iteratedFDerivWithin 𝕜 n g s x + iteratedFDerivWithin 𝕜 n (f - g) s x := by
     have : f = g + (f - g) := by abel
     nth_rewrite 1 [this]
-    rw [iteratedFDerivWithin_add_apply gcont (by exact fcont.sub gcont) hu hx]
+    rw [iteratedFDerivWithin_add_apply gcont.contDiffOn (by exact fcont.sub gcont.contDiffOn) hs hx]
   have J2 : iteratedFDerivWithin 𝕜 n (f - g) s x = 0 := by
-    apply (h.sub B).iteratedFDerivWithin_eq_zero hu hx
+    apply (h.sub B).iteratedFDerivWithin_eq_zero hs hx
     simp [q]
-  simp [J1, J2]
+  have J3 : iteratedFDerivWithin 𝕜 n g s x = iteratedFDeriv 𝕜 n g x :=
+    iteratedFDerivWithin_eq_iteratedFDeriv hs gcont hx
+  simp only [J1, J3, J2, add_zero]
   let g' : E → F := fun z ↦ p n (fun _ ↦ z)
   have : g = fun z ↦ g' (z - x) := rfl
-  rw [this, iteratedFDerivWithin_comp_sub]
-  simp only [sub_self]
-  rw [iteratedFDerivWithin_of_mem]
+  rw [this, iteratedFDeriv_comp_sub]
+  exact (p n).iteratedFDeriv_comp_diagonal _ v
+
+/-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
+`(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
+permutations of `{1, ..., n}`.-/
+theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
+    iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
+  have : iteratedFDerivWithin 𝕜 n f s x
+      = iteratedFDerivWithin 𝕜 n f (s ∩ EMetric.ball x r) x := by
+    apply iteratedFDerivWithin_congr_set
+    have : EMetric.ball x r ∈ 𝓝 x := EMetric.ball_mem_nhds _ h.r_pos
+    filter_upwards [this] with y hy
+    change (y ∈ s) = (y ∈ (s ∩ EMetric.ball x r))
+    simp [hy]
+  rw [this]
+  apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
+  · exact h.mono inter_subset_left
+  · exact hs.inter EMetric.isOpen_ball
+  · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
+  · exact inter_subset_right
