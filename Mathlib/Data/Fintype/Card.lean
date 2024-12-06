@@ -721,7 +721,9 @@ theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
 @[deprecated (since := "2024-12-05")]
 alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteSelfEmbedding
 
-noncomputable def _root_.Equiv.embeddingEquivOfFinite [Finite α] : (α ↪ α) ≃ (α ≃ α) where
+/-- On a finite type, equivalence between the self-embeddings and the bijections. -/
+@[simps] noncomputable def _root_.Equiv.embeddingEquivOfFinite (α : Type*) [Finite α] :
+    (α ↪ α) ≃ (α ≃ α) where
   toFun e := e.equivOfFiniteSelfEmbedding
   invFun e := e.toEmbedding
   left_inv e := rfl

@@ -86,7 +86,7 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   simp only [ContinuousMultilinearMap.iteratedFDeriv,
     ContinuousMultilinearMap.compContinuousLinearMap_apply, ContinuousMultilinearMap.sum_apply,
     ContinuousMultilinearMap.iteratedFDerivComponent_apply, Set.mem_range, Pi.compRightL_apply]
-  rw [← sum_comp (embedding_equiv_equiv_of_fintype (Fin n))]
+  rw [← sum_comp (Equiv.embeddingEquivOfFinite (Fin n))]
   congr with σ
   congr with i
   have A : ∃ y, σ y = i := by
@@ -100,21 +100,3 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   symm
   simp only [embedding_equiv_equiv_of_fintype, coe_fn_mk, inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply]
-
-
-
-
-#exit
-
-lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq [CompleteSpace F]
-
-    (h : HasFPowerSeriesWithinOnBall f p s x r)
-    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (hn : p n = 0) :
-    iteratedFDerivWithin 𝕜 n f s x = 0 := by
-  have : iteratedFDerivWithin 𝕜 n f s x = p.iteratedFDerivSeries n 0 (fun _ ↦ 0) :=
-    ((h.iteratedFDerivWithin n hu hx).coeff_zero _).symm
-  rw [this, p.iteratedFDerivSeries_eq_zero (p.congr_zero (Nat.zero_add n).symm hn)]
-  rfl
-
-
-end
