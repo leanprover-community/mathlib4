@@ -161,7 +161,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   have hij : preReflection (sα β) (p.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
     ext
     have hpi : (p.flip (coroot i)) (root i) = 2 := by rw [PerfectPairing.flip_apply_apply, hp i]
-    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
+    simp +zetaDelta [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply]
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   obtain ⟨l, hl⟩ := hc i (mem_range_self j)
@@ -257,7 +257,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
   have hij : preReflection (sα β) (p.toLin.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
     ext
     have hpi : (p.flip (coroot i)) (root i) = 2 := by rw [PerfectPairing.flip_apply_apply, hp i]
-    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
+    simp +zetaDelta [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply] -- v4.7.0-rc1 issues
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   apply p.bijectiveRight.injective

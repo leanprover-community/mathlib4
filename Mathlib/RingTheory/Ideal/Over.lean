@@ -381,7 +381,8 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
   have : Iₚ ≠ ⊤ := by
     rw [Ne, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
-    simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
+    simp +zetaDelta only
+      [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
       not_exists]
     exact fun x c ↦ hI'.ne_of_mem (mul_mem c.2 x.2.2) (I.mul_mem_left c x.1.2)
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal _ this

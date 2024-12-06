@@ -194,7 +194,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
       _ = μ S * ν T := by
         rw [prod_apply hSTm]
-        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw +zetaDelta [mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]

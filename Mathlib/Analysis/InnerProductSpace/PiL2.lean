@@ -926,7 +926,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       calc
         finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by
           simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-        _ = finrank 𝕜 V - finrank 𝕜 S := by simp only [LinearMap.finrank_range_of_inj L.injective]
+        _ = finrank 𝕜 V - finrank 𝕜 S := by
+          simp +zetaDelta only [LinearMap.finrank_range_of_inj L.injective]
         _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
 
     exact
@@ -952,8 +953,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
         LinearMap.mem_range_self L.toLinearMap (p1 x)
       have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
-        simp only [LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ, ←
-          Submodule.range_subtype LSᗮ]
+        simp +zetaDelta only [LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ,
+          ← Submodule.range_subtype LSᗮ]
         apply LinearMap.mem_range_self
       apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
     -- Apply the Pythagorean theorem and simplify

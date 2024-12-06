@@ -200,7 +200,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
       exact exists_pos_mul_lt hε.lt r
     apply (hf' q hqpos.gt).mono
     intro n hn y hy
-    simp_rw [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg] at hn ⊢
+    simp_rw +zetaDelta [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg] at hn ⊢
     have mvt :=
       Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
         (fun z hz => ((hf n.1 z hz).sub (hf n.2 z hz)).hasFDerivWithinAt) (fun z hz => (hn z hz).le)
@@ -342,7 +342,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
           (‖a.2 - x‖⁻¹ : 𝕜) • (f a.1 a.2 - f a.1 x - ((f' a.1 x) a.2 - (f' a.1 x) x))) +
         fun a : ι × E => (‖a.2 - x‖⁻¹ : 𝕜) • (f' a.1 x - g' x) (a.2 - x) := by
     ext; simp only [Pi.add_apply]; rw [← smul_add, ← smul_add]; congr
-    simp only [map_sub, sub_add_sub_cancel, ContinuousLinearMap.coe_sub', Pi.sub_apply]
+    simp +zetaDelta only [map_sub, sub_add_sub_cancel, ContinuousLinearMap.coe_sub', Pi.sub_apply]
     -- Porting note: added
     abel
   simp_rw [this]
@@ -374,19 +374,19 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     refine Tendsto.mono_left ?_ curry_le_prod
     have h1 : Tendsto (fun n : ι × E => g' n.2 - f' n.1 n.2) (l ×ˢ 𝓝 x) (𝓝 0) := by
       rw [Metric.tendstoUniformlyOnFilter_iff] at hf'
-      exact Metric.tendsto_nhds.mpr fun ε hε => by simpa using hf' ε hε
+      exact Metric.tendsto_nhds.mpr fun ε hε => by simpa +zetaDelta using hf' ε hε
     have h2 : Tendsto (fun n : ι => g' x - f' n x) l (𝓝 0) := by
       rw [Metric.tendsto_nhds] at h1 ⊢
       exact fun ε hε => (h1 ε hε).curry.mono fun n hn => hn.self_of_nhds
     refine squeeze_zero_norm ?_
       (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prod_map tendsto_id)))
     intro n
-    simp_rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
+    simp_rw +zetaDelta [norm_smul, norm_inv, RCLike.norm_coe_norm]
     by_cases hx : x = n.2; · simp [hx]
     have hnx : 0 < ‖n.2 - x‖ := by
       rw [norm_pos_iff]; intro hx'; exact hx (eq_of_sub_eq_zero hx').symm
     rw [inv_mul_le_iff₀ hnx, mul_comm]
-    simp only [Function.comp_apply, Prod.map_apply']
+    simp +zetaDelta only [Function.comp_apply, Prod.map_apply']
     rw [norm_sub_rev]
     exact (f' n.1 x - g' x).le_opNorm (n.2 - x)
 

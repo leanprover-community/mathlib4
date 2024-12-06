@@ -679,8 +679,8 @@ theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     w.toList = [] := by
   rcases hw with ⟨g, hg⟩
   let w' : ReducedWord G A B := { ReducedWord.empty G A B with head := g }
-  have : w.prod φ = w'.prod φ := by simp [ReducedWord.prod, hg]
-  simpa using (map_fst_eq_and_of_prod_eq φ this).1
+  have : w.prod φ = w'.prod φ := by simp +zetaDelta [ReducedWord.prod, hg]
+  simpa +zetaDelta using (map_fst_eq_and_of_prod_eq φ this).1
 
 end ReducedWord
 

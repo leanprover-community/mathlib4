@@ -438,7 +438,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
   ext x
   apply ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units g s)).1
   have : ∀ x, g (l' x) = s.1 • (l (f x)) := LinearMap.congr_fun H
-  simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+  simp +zetaDelta only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
     LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.1, hsu.mul_val_inv, one_smul]

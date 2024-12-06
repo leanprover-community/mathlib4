@@ -1342,7 +1342,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     cases' hx with hx₀ hx₁
     · have hx₀' : ProjRestrict C (ord I · < o) ⟨x, hx⟩ = x := by
         simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using C0_projOrd C hsC ho hx₀
-      simp only [πs_apply_apply, hx₀', hx₀, LocallyConstant.piecewise'_apply_left,
+      simp +zetaDelta only [πs_apply_apply, hx₀', hx₀, LocallyConstant.piecewise'_apply_left,
         LocallyConstant.coe_comap, ContinuousMap.coe_mk, Function.comp_apply]
     · have hx₁' : (ProjRestrict C (ord I · < o) ⟨x, hx⟩).val ∈ π (C1 C ho) (ord I · < o) := by
         simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using ⟨x, hx₁, rfl⟩

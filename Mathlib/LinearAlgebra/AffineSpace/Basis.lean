@@ -233,7 +233,7 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     have hw : s.sum w = 1 := by simp [s, w, Finset.sum_ite, Finset.filter_insert, hij,
       Finset.filter_true_of_mem, Finset.filter_false_of_mem]
     use s.affineCombination k b w
-    simp [w, b.coord_apply_combination_of_mem hi hw]
+    simp +zetaDelta [w, b.coord_apply_combination_of_mem hi hw]
 
 /-- Barycentric coordinates as an affine map. -/
 noncomputable def coords : P →ᵃ[k] ι → k where

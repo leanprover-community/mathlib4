@@ -474,10 +474,10 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
   -- need this instance otherwise it only has semigroup structure
   letI : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
   let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
-  have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
+  have hm : mulRightMap M n m = 0 := by simp +zetaDelta [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_right_of_flat hn, mem_bot] at hm
-  simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
-    SetLike.coe_eq_coe, false_and, false_or, m] at hm
+  simp +zetaDelta only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one,
+    Subtype.mk.injEq, SetLike.coe_eq_coe, false_and, false_or, m] at hm
   repeat rw [AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero] at hm
   exact h.ne_zero 0 hm.2
 
@@ -490,10 +490,10 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
   -- need this instance otherwise it only has semigroup structure
   letI : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
   let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩
-  have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
+  have hn : mulLeftMap N m n = 0 := by simp +zetaDelta [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_left_of_flat hm, mem_bot] at hn
-  simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
-    SetLike.coe_eq_coe, false_and, false_or, n] at hn
+  simp +zetaDelta only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one,
+    Subtype.mk.injEq, SetLike.coe_eq_coe, false_and, false_or, n] at hn
   repeat rw [AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero] at hn
   exact h.ne_zero 0 hn.2
 

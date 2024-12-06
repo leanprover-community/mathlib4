@@ -353,7 +353,7 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
     obtain ⟨k, hk⟩ := id hI
     refine Set.Nonempty.ne_empty ⟨k, ?_⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
-  simp [s, hne]
+  simp +zetaDelta [s, hne]
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable R I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by

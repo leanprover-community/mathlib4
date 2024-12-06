@@ -952,7 +952,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
         hf.hasFDerivWithinAt (le_trans (mod_cast Nat.le_add_left 1 m)
           (ENat.add_one_natCast_le_withTop_of_lt hm)) hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
-      simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
+      simp +zetaDelta only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
         (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),

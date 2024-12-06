@@ -318,7 +318,8 @@ instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemis
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   classical
   exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
-    (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
+    (fun i ↦ .range _)
+    (by simp_rw +zetaDelta [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
 
 /-- A binary product of semisimple rings is semisimple. -/
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by

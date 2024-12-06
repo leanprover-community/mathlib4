@@ -145,8 +145,8 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
   -- ... and the former is the sum of x over G.
   -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
-  simp only [h_unchanged, mulLeftEmbedding_apply, Subgroup.coe_mul, Units.val_mul, ← mul_sum,
-    a_mul_emb] at h_sum_map
+  simp +zetaDelta only [h_unchanged, mulLeftEmbedding_apply, Subgroup.coe_mul, Units.val_mul,
+    ← mul_sum, a_mul_emb] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
   have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
     rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]

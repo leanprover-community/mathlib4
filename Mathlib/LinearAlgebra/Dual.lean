@@ -793,7 +793,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
   let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
   have : ⨅ i, ker (L' i) ≤ ker K' := by
-    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
+    simp_rw +zetaDelta [← ker_pi, pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
     exact bot_le
   obtain ⟨c, hK'⟩ :=
     (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
@@ -802,7 +802,8 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   rw [← p.liftQ_mkQ K h]
   ext x
   convert LinearMap.congr_fun hK' (p.mkQ x)
-  simp only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply, smul_eq_mul]
+  simp +zetaDelta only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
+    smul_eq_mul]
 
 end Submodule
 
@@ -1406,7 +1407,7 @@ theorem quotDualCoannihilatorToDual_nondegenerate (W : Submodule R (Dual R M)) :
     W.quotDualCoannihilatorToDual.Nondegenerate := by
   rw [Nondegenerate, separatingLeft_iff_ker_eq_bot, separatingRight_iff_flip_ker_eq_bot]
   letI : AddCommGroup W := inferInstance
-  simp_rw [ker_eq_bot]
+  simp_rw +zetaDelta [ker_eq_bot]
   exact ⟨W.quotDualCoannihilatorToDual_injective, W.flip_quotDualCoannihilatorToDual_injective⟩
 
 end Submodule

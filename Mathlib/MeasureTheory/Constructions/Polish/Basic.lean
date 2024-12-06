@@ -262,7 +262,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       choose x hx using A
       have xt : x ∈ t := by
         refine mem_iInter.2 fun n => ?_
-        simp [hx]
+        simp +zetaDelta [hx]
       refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
   rw [← F_range]
@@ -280,7 +280,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
-    simp only [γ, range_sigma_eq_iUnion_range, f_range]
+    simp +zetaDelta only [γ, range_sigma_eq_iUnion_range, f_range]
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
 
@@ -918,7 +918,7 @@ lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
     {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ} (hg : Measurable g) :
     MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
   letI := TopologicalSpace.pseudoMetrizableSpacePseudoMetric γ
-  simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
+  simp_rw +zetaDelta [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
   exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
@@ -931,11 +931,11 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
   · simp
   letI := upgradePolishSpace γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
-  simp_rw [← cauchy_map_iff_exists_tendsto]
+  simp_rw +zetaDelta [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }
   have : ∀ x, (map (f · x) l ×ˢ map (f · x) l).HasAntitoneBasis fun n =>
       ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x => (hu.map _).prod (hu.map _)
-  simp_rw [and_iff_right (hl.map _),
+  simp_rw +zetaDelta [and_iff_right (hl.map _),
     Filter.HasBasis.le_basis_iff (this _).toHasBasis Metric.uniformity_basis_dist_inv_nat_succ,
     Set.setOf_forall]
   refine MeasurableSet.biInter Set.countable_univ fun K _ => ?_

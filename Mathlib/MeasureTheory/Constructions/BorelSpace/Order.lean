@@ -907,10 +907,13 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   have : F1 = fun x ↦ if x ∈ m j then F0 j x else F0 (g (Nat.find (Z x))) x := by
     ext x
     have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
+    #adaptation_note /-- lean4#6123: `split_ifs` is doing too much zetaDelta, so we `show` -/
     split_ifs with hjx
-    · have : reparam x j = j := by rw [A, if_pos hjx]
+    · show F1 x = F0 j x
+      have : reparam x j = j := by rw [A, if_pos hjx]
       simp only [hF1, this]
-    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, if_neg hjx]
+    · show F1 x = F0 (g (Nat.find (Z x))) x
+      have : reparam x j = g (Nat.find (Z x)) := by rw [A, if_neg hjx]
       simp only [hF1, this]
   rw [this]
   apply Measurable.piecewise (m_meas j) (F0_meas j)

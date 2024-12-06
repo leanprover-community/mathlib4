@@ -613,7 +613,8 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       simp only [sub_comp, assoc]
       erw [← (productTriangle.π T j).comm₃]
       rw [← φ'.comm₃_assoc]
-      rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
+      rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp]
+      simp +zetaDelta)
     let b := fun j => (ha'' j).choose
     have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=

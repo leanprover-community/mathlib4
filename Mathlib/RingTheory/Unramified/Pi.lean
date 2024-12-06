@@ -76,7 +76,7 @@ theorem pi_iff :
       · intros r s; simp [Pi.single_mul]
     suffices f₁' = f₂' by
       have := AlgHom.congr_fun this (g x)
-      simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
+      simp +zetaDelta only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
         LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply, ← map_sub,
         Ideal.Quotient.mkₐ_eq_mk, ← sub_eq_zero (b := Ideal.Quotient.mk J' _), sub_zero, f₁', f₂',
         Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton, J'] at this

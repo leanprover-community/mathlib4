@@ -344,7 +344,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   have hb' : image b' univ ⊂ image b univ := by
     convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
     convert max'_mem (α := α) _ _
-  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [hij]
-  simp [hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
+  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw +zetaDelta [hij]
+  simp +zetaDelta [hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 
 end Matrix

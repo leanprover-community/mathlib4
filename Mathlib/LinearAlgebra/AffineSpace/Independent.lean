@@ -457,14 +457,14 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     simp only [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w ((↑) : t → V) hw 0,
       vsub_eq_sub, Finset.weightedVSubOfPoint_apply, sub_zero] at hwt
     let f : ∀ x : V, x ∈ t → k := fun x hx => w ⟨x, hx⟩
-    refine ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp [hi]⟩
+    refine ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp +zetaDelta [hi]⟩
     on_goal 1 =>
       suffices (∑ e ∈ t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
         convert this
         rename V => x
         by_cases hx : x ∈ t <;> simp [hx]
     all_goals
-      simp only [Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
+      simp +zetaDelta only [Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
 
 variable {s : Finset ι} {w w₁ w₂ : ι → k} {p : ι → V}
 
@@ -618,7 +618,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     ext
     fin_cases i
     · simp at hi
-    · simp
+    · simp +zetaDelta
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   apply linearIndependent_unique
   rw [he' default]

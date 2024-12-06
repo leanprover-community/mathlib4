@@ -161,7 +161,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         ∈ P'.ker ^ 2 := by
     rw [pow_two]
     refine Ideal.add_mem _ (Ideal.mul_mem_mul ?_ ?_) (Ideal.mul_mem_mul ?_ ?_) <;>
-      simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_comp,
+      simp +zetaDelta only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_comp,
         RingHom.coe_coe, Function.comp_apply, map_aeval, ← IsScalarTower.algebraMap_eq,
         coe_eval₂Hom, ← aeval_def, ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
         algebraMap_σ, sub_self, toAlgHom_apply]

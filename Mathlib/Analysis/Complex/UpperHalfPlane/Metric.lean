@@ -162,7 +162,7 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
   After the bug fix in https://github.com/leanprover/lean4/pull/6024,
   we need to give Lean the hint `(y := w.im * Real.sinh r)`.
   -/
-  simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
+  simp +zetaDelta only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
     ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
     dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]

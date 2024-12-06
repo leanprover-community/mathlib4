@@ -220,9 +220,9 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
   · simp_rw [sum_pointsWithCircumcenter, pointsWithCircumcenter_eq_circumcenter,
       pointsWithCircumcenter_point, Pi.sub_apply, pointWeightsWithCircumcenter]
     rw [← sum_subset fs.subset_univ _]
-    · simp_rw [sum_insert (not_mem_singleton.2 h), sum_singleton]
+    · simp_rw +zetaDelta [sum_insert (not_mem_singleton.2 h), sum_singleton]
       repeat rw [← sum_subset fs.subset_univ _]
-      · simp_rw [sum_insert (not_mem_singleton.2 h), sum_singleton]
+      · simp_rw +zetaDelta [sum_insert (not_mem_singleton.2 h), sum_singleton]
         simp [h, Ne.symm h, dist_comm (s.points i₁)]
       all_goals intro i _ hi; simp [hfs i hi]
     · intro i _ hi

@@ -1901,7 +1901,8 @@ theorem exists_pos_lintegral_lt_of_sigmaFinite (μ : Measure α) [SigmaFinite μ
   have hNs : ∀ n, N ⁻¹' {n} = s n := preimage_spanningSetsIndex_singleton μ
   refine ⟨δ ∘ N, fun x => δpos _, measurable_from_nat.comp hN_meas, ?_⟩
   erw [lintegral_comp measurable_from_nat.coe_nnreal_ennreal hN_meas]
-  simpa [N, hNs, lintegral_countable', measurableSet_spanningSetsIndex, mul_comm] using δsum
+  simpa +zetaDelta [N, hNs, lintegral_countable', measurableSet_spanningSetsIndex, mul_comm]
+    using δsum
 
 theorem lintegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     ∫⁻ a, f a ∂μ.trim hm = ∫⁻ a, f a ∂μ := by

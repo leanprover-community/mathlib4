@@ -218,7 +218,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
       change _ = Localization.awayMap g' a.val (algebraMap S _ (f x))
       simp only [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_eq]
       rfl
-    simp only [this]
+    simp +zetaDelta only [this]
     apply hPc _ _ (hsf a.val a.property)
     apply @hPl _ _ _ _ g' _ _ _ _ _ _ _ _ ?_ (hsg b.val b.property)
     exact IsLocalization.Away.instMapRingHomPowersOfCoe (Localization.Away (g' a.val)) a.val
@@ -240,12 +240,13 @@ lemma locally_StableUnderCompositionWithLocalizationAwayTarget
     have : (algebraMap (Localization.Away a) (Localization.Away (algebraMap S T a))).comp
         (algebraMap S (Localization.Away a)) =
         (algebraMap T (Localization.Away (algebraMap S T a))).comp (algebraMap S T) := by
-      simp [algebraMap_toAlgebra, IsLocalization.Away.map]
+      simp +zetaDelta [algebraMap_toAlgebra, IsLocalization.Away.map]
     rw [← comp_assoc, ← this, comp_assoc]
     haveI : IsScalarTower S (Localization.Away a) (Localization.Away ((algebraMap S T) a)) := by
       apply IsScalarTower.of_algebraMap_eq
       intro x
-      simp [algebraMap_toAlgebra, IsLocalization.Away.map, ← IsScalarTower.algebraMap_apply]
+      simp +zetaDelta [algebraMap_toAlgebra, IsLocalization.Away.map,
+        ← IsScalarTower.algebraMap_apply]
     haveI : IsLocalization.Away (algebraMap S (Localization.Away a) t)
         (Localization.Away (algebraMap S T a)) :=
       IsLocalization.Away.commutes _ T ((Localization.Away (algebraMap S T a))) a t
@@ -281,7 +282,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
   haveI (a : s) : IsScalarTower S (S ⊗[R] T) (S ⊗[R] Localization.Away a.val) :=
       IsScalarTower.of_algebraMap_eq <| by
     intro x
-    simp [RingHom.algebraMap_toAlgebra]
+    simp +zetaDelta [RingHom.algebraMap_toAlgebra]
   haveI (a : s) : Algebra.IsPushout T (Localization.Away a.val) (S ⊗[R] T)
       (S ⊗[R] Localization.Away a.val) := by
     rw [← Algebra.IsPushout.comp_iff (R := R) (R' := S)]
@@ -303,7 +304,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
         Algebra.TensorProduct.includeLeftRingHom =
         Algebra.TensorProduct.includeLeftRingHom := by
       ext x
-      simp [RingHom.algebraMap_toAlgebra]
+      simp +zetaDelta [RingHom.algebraMap_toAlgebra]
     rw [this]
     apply hPb R (Localization.Away a.val)
     rw [IsScalarTower.algebraMap_eq R T (Localization.Away a.val)]
@@ -323,10 +324,10 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
     convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
-    simp [Algebra.algebraMapSubmonoid]
+    simp +zetaDelta [Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
-    simp [Submonoid.powers_le]
+    simp +zetaDelta [Submonoid.powers_le]
   letI (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val)) (H a)).toAlgebra
   haveI (a : s) : IsScalarTower S S' (Sₐ a) :=

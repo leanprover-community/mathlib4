@@ -552,7 +552,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le'
   calc
     ‖f y - f x - φ (y - x)‖ = ‖f y - f x - (φ y - φ x)‖ := by simp
     _ = ‖f y - φ y - (f x - φ x)‖ := by congr 1; abel
-    _ = ‖g y - g x‖ := by simp
+    _ = ‖g y - g x‖ := by simp +zetaDelta
     _ ≤ C * ‖y - x‖ := Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le hg bound hs xs ys
 
 /-- Variant of the mean value inequality on a convex set. Version with `fderivWithin`. -/

@@ -101,7 +101,7 @@ when `f : A ⟶ B` is a morphism in the category `CommRingCat`. -/
 noncomputable def D : (KaehlerDifferential f).Derivation f :=
   letI := f.toAlgebra
   ModuleCat.Derivation.mk
-    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp) (by simp)
+    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp +zetaDelta) (by simp +zetaDelta)
       (_root_.KaehlerDifferential.D A B).map_algebraMap
 
 /-- When `f : A ⟶ B` is a morphism in the category `CommRingCat`, this is the
@@ -134,8 +134,8 @@ noncomputable def map :
   have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
   have := IsScalarTower.of_algebraMap_eq' fac
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
-    map_add' := by simp
-    map_smul' := by simp }
+    map_add' := by simp +zetaDelta
+    map_smul' := by simp +zetaDelta }
 
 @[simp]
 lemma map_d (b : B) : map fac (d b) = d (g' b) := by

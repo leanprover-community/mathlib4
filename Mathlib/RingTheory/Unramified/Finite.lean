@@ -109,7 +109,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     · intros; simp only [add_smul]
   have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
     simpa only [Finsupp.linearCombination_apply, Finsupp.sum] using b.linearCombination_repr
-  simp_rw [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
+  simp_rw +zetaDelta [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
     TensorProduct.smul_tmul', ← TensorProduct.sum_tmul, ← Finset.smul_sum, h₂]
   apply Finset.sum_congr rfl
   intros i hi

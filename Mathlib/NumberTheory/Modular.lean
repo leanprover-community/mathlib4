@@ -117,7 +117,7 @@ theorem tendsto_normSq_coprime_pair :
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
   have f_def : ⇑f = fun p : Fin 2 → ℝ => (p 0 : ℂ) * ↑z + p 1 := by
     ext1
-    dsimp only [π₀, π₁, f, LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight,
+    dsimp +zetaDelta only [π₀, π₁, f, LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight,
       LinearMap.add_apply]
     rw [mul_one]
   have :
@@ -478,7 +478,10 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 :=
     by_contra hc
     let a := g' 0 0
     let d := g' 1 1
-    have had : T ^ (-a) * g' = S * T ^ d := by rw [g_eq_of_c_eq_one hc]; group
+    have had : T ^ (-a) * g' = S * T ^ d := by
+      rw [g_eq_of_c_eq_one hc]
+      dsimp +zetaDelta
+      group
     let w := T ^ (-a) • g' • z
     have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
     replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one (one_lt_normSq_T_zpow_smul hz d)
