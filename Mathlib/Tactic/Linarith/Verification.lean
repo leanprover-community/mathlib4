@@ -135,9 +135,11 @@ def typeOfIneqProof (prf : Expr) : MetaM Expr := do
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,
 where the numerals are natively of type `tp`.
 -/
-def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none]
-  mkAppM `neg_neg_of_pos #[zero_lt_one]
+def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} proving 0 < 1") do
+    let ⟨.succ u, ~q(Type u), ~q($α)⟩ ← inferTypeQ' tp | throwError "wat"
+    letI := ← synthInstanceQ q(StrictOrderedRing $α)
+    return q(neg_neg_of_pos <| Linarith.zero_lt_one (α := $α))
 
 /--
 `addNegEqProofs l` inspects the list of proofs `l` for proofs of the form `t = 0`. For each such
@@ -217,17 +219,20 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
       let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
       -- `sm` is the sum of input terms, scaled to cancel out all variables.
-      let sm ← addExprs mls
+      let sm ← withTraceNode `linarith (return m!"{exceptEmoji ·} building expr for ring") <|
+        addExprs mls
       -- let sm ← instantiateMVars sm
       trace[linarith] "The expression\n  {sm}\nshould be both 0 and negative"
       -- we prove that `sm = 0`, typically with `ring`.
       let sm_eq_zero ← proveEqZeroUsing discharger sm
       -- we also prove that `sm < 0`
-      let sm_lt_zero ← mkLTZeroProof zip
+      let sm_lt_zero ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving negative") do
+        mkLTZeroProof zip
       -- this is a contradiction.
-      let pftp ← inferType sm_lt_zero
-      let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
-      let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
-      mkAppM ``Linarith.lt_irrefl #[pf']
+      withTraceNode `linarith (return m!"{exceptEmoji ·} antisymmetry of lt") do
+        let pftp ← inferType sm_lt_zero
+        let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
+        let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
+        mkAppM ``Linarith.lt_irrefl #[pf']
 
 end Linarith

@@ -53,7 +53,7 @@ return the new index (and the stored form of the atom, which will be itself).
 In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
 -/
 def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} inspecting the atom. total: {(← get).atoms.size}") do
+  withTraceNode `linarith (return m!"{exceptEmoji ·} inspecting the atom") do
   let c ← get
   for h : i in [:c.atoms.size] do
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then

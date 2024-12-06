@@ -285,18 +285,19 @@ It produces a pair `(R', h')`, where `h'` is a proof of `c*t R' 0`.
 Typically `R` and `R'` will be the same, except when `c = 0`, in which case `R'` is `=`.
 If `c = 1`, `h'` is the same as `h` -- specifically, it does *not* change the type to `1*t R 0`.
 -/
-def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
-  let tp ← inferType h
-  let (iq, e) ← parseCompAndExpr tp
-  if c = 0 then do
-    let e' ← mkAppM ``zero_mul #[e]
-    return (Ineq.eq, e')
-  else if c = 1 then return (iq, h)
-  else do
-    let (_, tp, _) ← tp.ineq?
-    let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
-    let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
-    let e' ← mkAppM iq.toConstMulName #[h, ex]
-    return (iq, e')
+def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} make single comp with zero") do
+    let tp ← inferType h
+    let (iq, e) ← parseCompAndExpr tp
+    if c = 0 then do
+      let e' ← mkAppM ``zero_mul #[e]
+      return (Ineq.eq, e')
+    else if c = 1 then return (iq, h)
+    else do
+      let (_, tp, _) ← tp.ineq?
+      let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
+      let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
+      let e' ← mkAppM iq.toConstMulName #[h, ex]
+      return (iq, e')
 
 end Linarith

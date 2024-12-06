@@ -137,7 +137,7 @@ If `e` appears with index `k` in `map`, it returns the singleton sum `var k`.
 Otherwise it updates `map`, adding `e` with index `n`, and returns the singleton sum `var n`.
 -/
 def linearFormOfAtom (red : TransparencyMode) (m : ExprMap) (e : Expr) : MetaM (ExprMap × Sum) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} inspecting an atom. length: {m.length}") do
+  withTraceNode `linarith (return m!"{exceptEmoji ·} inspecting an atom.") do
   try
     let k ← m.findDefeq red e
     return (m, var k)
@@ -158,7 +158,7 @@ and forces some functions that call it into `MetaM` as well.
 
 partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
     MetaM (ExprMap × Sum) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} {e}") <|
+  withTraceNode `linarith (return m!"{exceptEmoji ·} linearFormOfExpr") <|
   go m e
   where go m e := do
   match e.numeral? with
@@ -241,7 +241,9 @@ the same length, such that `c[i]` represents the linear form of the type of `pfs
 It also returns the largest variable index that appears in comparisons in `c`.
 -/
 def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Expr) :
-    MetaM (List Comp × ℕ) := do
+    MetaM (List Comp × ℕ) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} parsing comparisons") do
+  withTraceNode `linarith.foo (return m!"{exceptEmoji ·}") do
   let pftps ← (pfs.mapM inferType)
   let (l, _, map) ← toCompFold red [] pftps RBMap.empty
   trace[linarith.detail] "monomial map: {map.toList.map fun ⟨k,v⟩ => (k.toList, v)}"
