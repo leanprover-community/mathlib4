@@ -241,13 +241,19 @@ theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
 
-@[reducible]
-private def f {n : ℕ} : ∀ a ∈ finMulAntidiag 3 n, ℕ × ℕ := fun a _ => (a 0 * a 1, a 0 * a 2)
-
-private theorem finMulAntidiag_three {n : ℕ} :
+theorem finMulAntidiag_three {n : ℕ} :
     ∀ a ∈ finMulAntidiag 3 n, a 0 * a 1 * a 2 = n := by
   intro a ha
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]
+
+namespace card_pair_lcm_eq
+
+/-!
+The following private declarations are ingredients for the proof of `card_pair_lcm_eq`.
+-/
+
+@[reducible]
+private def f {n : ℕ} : ∀ a ∈ finMulAntidiag 3 n, ℕ × ℕ := fun a _ => (a 0 * a 1, a 0 * a 2)
 
 private theorem f_img {n : ℕ} (hn : Squarefree n) (a : Fin 3 → ℕ)
     (ha : a ∈ finMulAntidiag 3 n) :
@@ -301,8 +307,11 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
   · apply Nat.gcd_dvd_left
   · apply Nat.gcd_dvd_right
 
+end card_pair_lcm_eq
+
+open card_pair_lcm_eq in
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
-    Finset.card ((n.divisors ×ˢ n.divisors).filter fun p => p.1.lcm p.2 = n) = 3 ^ ω n := by
+    #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]
   apply Finset.card_bij f (f_img hn) (f_inj) (f_surj hn.ne_zero)
 
