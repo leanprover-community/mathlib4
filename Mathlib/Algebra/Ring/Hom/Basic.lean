@@ -49,7 +49,7 @@ end Semiring
 end RingHom
 
 /-- Pullback `IsDomain` instance along an injective function. -/
-protected theorem Function.Injective.isDomain [Semiring α] [IsDomain α] [Semiring β] (f : β →*₀ α)
-    (hf : Injective f) : IsDomain β where
-  __ := pullback_nonzero f f.map_zero f.map_one
+protected theorem Function.Injective.isDomain [Semiring α] [IsDomain α] [Semiring β] {F}
+    [FunLike F β α] [MonoidWithZeroHomClass F β α] (f : F) (hf : Injective f) : IsDomain β where
+  __ := pullback_nonzero f (map_zero _) (map_one _)
   __ := hf.isCancelMulZero f (map_zero _) (map_mul _)
