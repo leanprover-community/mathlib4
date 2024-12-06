@@ -174,7 +174,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     · simp [q]
     · apply gcont.contDiffOn.analyticOn
   have J3 : iteratedFDerivWithin 𝕜 n g s x = iteratedFDeriv 𝕜 n g x :=
-    iteratedFDerivWithin_eq_iteratedFDeriv hs (gcont.of_le le_top) hx
+    iteratedFDerivWithin_eq_iteratedFDeriv hs (gcont.of_le le_top).contDiffAt hx
   simp only [J1, J3, J2, add_zero]
   let g' : E → F := fun z ↦ p n (fun _ ↦ z)
   have : g = fun z ↦ g' (z - x) := rfl
