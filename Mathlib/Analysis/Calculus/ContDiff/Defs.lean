@@ -1025,6 +1025,20 @@ protected theorem ContDiffAt.eventually (h : ContDiffAt 𝕜 n f x) (h' : n ≠ 
     ∀ᶠ y in 𝓝 x, ContDiffAt 𝕜 n f y := by
   simpa [nhdsWithin_univ] using ContDiffWithinAt.eventually h h'
 
+theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
+    (hs : UniqueDiffOn 𝕜 s) (h : ContDiffAt 𝕜 n f x) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDeriv 𝕜 n f x := by
+  rw [← iteratedFDerivWithin_univ]
+  rcases h.contDiffOn' le_rfl (by simp) with ⟨u, u_open, xu, hu⟩
+  rw [← iteratedFDerivWithin_inter_open u_open xu,
+    ← iteratedFDerivWithin_inter_open u_open xu (s := univ)]
+  apply iteratedFDerivWithin_subset
+  · exact inter_subset_inter_left _ (subset_univ _)
+  · exact hs.inter u_open
+  · apply uniqueDiffOn_univ.inter u_open
+  · simpa using hu
+  · exact ⟨hx, xu⟩
+
 /-! ### Smooth functions -/
 
 variable (𝕜) in
@@ -1162,7 +1176,7 @@ theorem ContDiff.ftaylorSeries (hf : ContDiff 𝕜 n f) :
     at hf ⊢
   exact ContDiffOn.ftaylorSeriesWithin hf uniqueDiffOn_univ
 
-/-- For `n ≤ ∞`, a function is `C^n` iff it admits `ftaylorSeries 𝕜 f`
+/-- For `n : ℕ∞`, a function is `C^n` iff it admits `ftaylorSeries 𝕜 f`
 as a Taylor series up to order `n`. -/
 theorem contDiff_iff_ftaylorSeries {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
@@ -1233,9 +1247,3 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B
-
-theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
-    (hs : UniqueDiffOn 𝕜 s) (h : ContDiff 𝕜 n f) (hx : x ∈ s) :
-    iteratedFDerivWithin 𝕜 n f s x = iteratedFDeriv 𝕜 n f x := by
-  rw [← iteratedFDerivWithin_univ]
-  exact iteratedFDerivWithin_subset (subset_univ _) hs uniqueDiffOn_univ h.contDiffOn hx
