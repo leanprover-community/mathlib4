@@ -181,7 +181,6 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
       add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
     have he : e = 0 ∨ e = 1 := by omega
     clear_value e
-    set t' := t; subst ht; set t := t'
     /- Now, equate the coefficients on both sides. These linear combinations were
     found using `polyrith`. -/
     match_scalars
@@ -189,10 +188,12 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     · linear_combination (norm := skip) (-g z * f y * (S R (e - 1 + k)).eval t +
           f z * (S R (e - 1 + k)).eval t) * S_eval_t_sub_two (e + k) +
           (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+      subst ht
       obtain rfl | rfl : e = 0 ∨ e = 1 := he <;> ring_nf
     · linear_combination (norm := skip)
           g z * (S R (e - 1 + k)).eval t * S_eval_t_sub_two (e + k) +
           g z * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+      subst ht
       obtain rfl | rfl : e = 0 ∨ e = 1 := he <;> ring_nf
 
 /-- A formula for $(r_1 r_2)^m$, where $m$ is a natural number. -/
@@ -200,10 +201,10 @@ lemma reflection_mul_reflection_pow (m : ℕ)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m).toLinearMap =
       LinearMap.id (R := R) (M := M) +
-        (((S R ((m - 2) / 2) * (S R ((m - 1) / 2) + S R ((m - 3) / 2))).eval t) •
-          ((g x • f - g).smulRight y - f.smulRight x)) +
-        (((S R ((m - 1) / 2) * (S R (m / 2) + S R ((m - 2) / 2))).eval t) •
-          ((f y • g - f).smulRight x - g.smulRight y)) := by
+        ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
+          ((g x • f - g).smulRight y - f.smulRight x) +
+        ((S R ((m - 1) / 2)).eval t * ((S R (m / 2)).eval t + (S R ((m - 2) / 2)).eval t)) •
+          ((f y • g - f).smulRight x - g.smulRight y) := by
   ext z
   simpa using reflection_mul_reflection_pow_apply hf hg m z t ht
 
@@ -238,10 +239,10 @@ lemma reflection_mul_reflection_zpow (m : ℤ)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     ((reflection hf * reflection hg) ^ m).toLinearMap =
       LinearMap.id (R := R) (M := M) +
-        (((S R ((m - 2) / 2) * (S R ((m - 1) / 2) + S R ((m - 3) / 2))).eval t) •
-          ((g x • f - g).smulRight y - f.smulRight x)) +
-        (((S R ((m - 1) / 2) * (S R (m / 2) + S R ((m - 2) / 2))).eval t) •
-          ((f y • g - f).smulRight x - g.smulRight y)) := by
+        ((S R ((m - 2) / 2)).eval t * ((S R ((m - 1) / 2)).eval t + (S R ((m - 3) / 2)).eval t)) •
+          ((g x • f - g).smulRight y - f.smulRight x) +
+        ((S R ((m - 1) / 2)).eval t * ((S R (m / 2)).eval t + (S R ((m - 2) / 2)).eval t)) •
+          ((f y • g - f).smulRight x - g.smulRight y) := by
   ext z
   simpa using reflection_mul_reflection_zpow_apply hf hg m z t ht
 
