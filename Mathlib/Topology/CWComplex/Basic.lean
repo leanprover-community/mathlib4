@@ -19,8 +19,8 @@ together.
 ## Main definitions
 * `RelCWComplex C D` : The class of CW-structures on a subspace `C` realtive to `D` of a topological
   space `X`.
-* `CWComplex C` : An abbreviation for `RelCWComplex C ∅`. The class of CW-structures on a subspace
-  `C` of the topological space `X`.
+* `ClasCWComplex C` : An abbreviation for `RelCWComplex C ∅`. The class of CW-structures on a
+  subspace `C` of the topological space `X`.
 * `openCell n i` : An open cell of dimension `n`.
 * `closedCell n i` : A closed cell of dimension `n`.
 * `cellFrontier n i` : The edge of a cell of dimension `n`.
@@ -90,9 +90,9 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
     instead.-/
   union' : D ∪ ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
-abbrev CWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComplex C ∅
+abbrev ClasCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComplex C ∅
 
-def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
+def ClasCWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ)  → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = closedBall 0 1)
     (cont : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i) (closedBall 0 1))
@@ -103,7 +103,7 @@ def CWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
       MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1))
     (closed' : ∀ (A : Set X), (asubc : A ⊆ C) →
       (∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) → IsClosed A)
-    (union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C) : CWComplex C where
+    (union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C) : ClasCWComplex C where
   cell := cell
   map := map
   source_eq := source_eq
@@ -132,14 +132,14 @@ def RelCWComplex.closedCell [RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X 
 def RelCWComplex.cellFrontier [RelCWComplex C D] (n : ℕ) (i : cell C n) : Set X :=
   map n i '' sphere 0 1
 
-namespace CWComplex
+namespace ClasCWComplex
 
 export RelCWComplex (cell map source_eq cont cont_symm mapsto isClosedBase openCell closedCell
   cellFrontier)
 
-end CWComplex
+end ClasCWComplex
 
-lemma CWComplex.mapsto [CWComplex C] (n : ℕ) (i : cell C n) : ∃ I : Π m, Finset (cell C m),
+lemma ClasCWComplex.mapsto [ClasCWComplex C] (n : ℕ) (i : cell C n) : ∃ I : Π m, Finset (cell C m),
     MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1) := by
   have := RelCWComplex.mapsto n i
   simp_rw [empty_union] at this
@@ -167,7 +167,7 @@ lemma RelCWComplex.cellFrontier_subset_base_union_finite_closedCell [RelCWComple
   rw [mapsTo'] at hI
   exact hI
 
-lemma CWComplex.cellFrontier_subset_finite_closedCell [CWComplex C] (n : ℕ) (i : cell C n) :
+lemma ClasCWComplex.cellFrontier_subset_finite_closedCell [ClasCWComplex C] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m), cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), closedCell m j := by
   rcases RelCWComplex.mapsto n i with ⟨I, hI⟩
   use I
@@ -177,7 +177,7 @@ lemma CWComplex.cellFrontier_subset_finite_closedCell [CWComplex C] (n : ℕ) (i
 lemma RelCWComplex.union [RelCWComplex C D] : D ∪ ⋃ (n : ℕ) (j : cell C n), closedCell n j = C :=
   RelCWComplex.union'
 
-lemma CWComplex.union [CWComplex C] : ⋃ (n : ℕ) (j : cell C n), closedCell n j = C := by
+lemma ClasCWComplex.union [ClasCWComplex C] : ⋃ (n : ℕ) (j : cell C n), closedCell n j = C := by
   have := RelCWComplex.union' (C := C) (D := ∅)
   rw [empty_union] at this
   exact this
@@ -214,16 +214,16 @@ def RelCWComplex.levelaux (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞
 def RelCWComplex.level (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
   levelaux C (n + 1)
 
-namespace CWComplex
+namespace ClasCWComplex
 
 export RelCWComplex (levelaux level)
 
-end CWComplex
+end ClasCWComplex
 
 lemma RelCWComplex.levelaux_zero_eq_base [RelCWComplex C D] : levelaux C 0 = D := by
   simp only [levelaux, ENat.not_lt_zero, iUnion_of_empty, iUnion_empty, union_empty]
 
-lemma CWComplex.levelaux_zero_eq_empty [CWComplex C] : levelaux C 0 = ∅ :=
+lemma ClasCWComplex.levelaux_zero_eq_empty [ClasCWComplex C] : levelaux C 0 = ∅ :=
     RelCWComplex.levelaux_zero_eq_base
 
 lemma RelCWComplex.isCompact_closedCell [RelCWComplex C D] {n : ℕ} {i : cell C n} :
@@ -259,7 +259,7 @@ lemma RelCWComplex.closed (C : Set X) {D : Set X} [RelCWComplex C D] [T2Space X]
     · exact closedA.inter (isClosedBase C)
   · exact RelCWComplex.closed' A asubc
 
-lemma CWComplex.closed (C : Set X) [CWComplex C] [T2Space X] (A : Set X) (asubc : A ⊆ C) :
+lemma ClasCWComplex.closed (C : Set X) [ClasCWComplex C] [T2Space X] (A : Set X) (asubc : A ⊆ C) :
     IsClosed A ↔ ∀ n (j : cell C n), IsClosed (A ∩ closedCell n j) := by
   have := RelCWComplex.closed C A asubc
   simp_all
@@ -442,7 +442,7 @@ lemma RelCWComplex.iUnion_openCell_eq_levelaux [RelCWComplex C D] (n : ℕ∞) :
     · apply subset_union_of_subset_right
         (subset_iUnion_of_subset m (subset_iUnion_of_subset hm (subset_iUnion _ j)))
 
-lemma CWComplex.iUnion_openCell_eq_levelaux [CWComplex C] (n : ℕ∞) :
+lemma ClasCWComplex.iUnion_openCell_eq_levelaux [ClasCWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j = levelaux C n := by
   rw [← RelCWComplex.iUnion_openCell_eq_levelaux, empty_union]
 
@@ -450,16 +450,17 @@ lemma RelCWComplex.iUnion_openCell_eq_level [RelCWComplex C D] (n : ℕ∞) :
     D ∪ ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = level C n :=
   iUnion_openCell_eq_levelaux _
 
-lemma CWComplex.iUnion_openCell_eq_levelAB [CWComplex C] (n : ℕ∞) :
+lemma ClasCWComplex.iUnion_openCell_eq_levelAB [ClasCWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = level C n :=
-  CWComplex.iUnion_openCell_eq_levelaux _
+  ClasCWComplex.iUnion_openCell_eq_levelaux _
 
 lemma RelCWComplex.iUnion_openCell [RelCWComplex C D] :
     D ∪ ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
   simp only [← levelaux_top (C := C) (D := D), ← iUnion_openCell_eq_levelaux,
     ENat.coe_lt_top, iUnion_true]
 
-lemma CWComplex.iUnion_openCell [CWComplex C] : ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
+lemma ClasCWComplex.iUnion_openCell [ClasCWComplex C] :
+    ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
   have := RelCWComplex.iUnion_openCell (C := C) (D := ∅)
   simp_all
 
@@ -479,10 +480,10 @@ lemma RelCWComplex.exists_mem_openCell_of_mem_levelaux [RelCWComplex C D] {n : �
     x ∈ D ∨ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
   simp_all [← iUnion_openCell_eq_levelaux]
 
-lemma CWComplex.exists_mem_openCell_of_mem_levelaux [CWComplex C] {n : ℕ∞} {x : X}
+lemma ClasCWComplex.exists_mem_openCell_of_mem_levelaux [ClasCWComplex C] {n : ℕ∞} {x : X}
     (xmemlvl : x ∈ levelaux C n) :
     ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp_all [← CWComplex.iUnion_openCell_eq_levelaux]
+  simp_all [← ClasCWComplex.iUnion_openCell_eq_levelaux]
 
 lemma RelCWComplex.exists_mem_openCell_of_mem_level [RelCWComplex C D] {n : ℕ∞} {x : X}
     (xmemlvl : x ∈ level C n) :
@@ -495,7 +496,7 @@ lemma RelCWComplex.exists_mem_openCell_of_mem_level [RelCWComplex C D] {n : ℕ�
     obtain ⟨m, mlen, _⟩ := xmem
     use m, Order.le_of_lt_add_one mlen
 
-lemma CWComplex.exists_mem_openCell_of_mem_level [CWComplex C] {n : ℕ∞} {x : X}
+lemma ClasCWComplex.exists_mem_openCell_of_mem_level [ClasCWComplex C] {n : ℕ∞} {x : X}
     (xmemlvl : x ∈ level C n) :
     ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
   rcases RelCWComplex.exists_mem_openCell_of_mem_level (C := C) (D := ∅) (n := n) xmemlvl with h | h
@@ -580,8 +581,8 @@ lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedC
   rw [← iUnion_subtype (fun i ↦ i ∈ I m) (fun i ↦ A ∩ closedCell (↑m) i.1)]
   exact isClosed_iUnion_of_finite (fun ⟨j, _⟩ ↦ hn m (Nat.le_of_lt_succ mlt) j)
 
-lemma CWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell [CWComplex C]
-    [T2Space X] {A : Set X} {n : ℕ} (hn : ∀ m ≤ n, ∀ (j : cell C m),
+lemma ClasCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell
+    [ClasCWComplex C] [T2Space X] {A : Set X} {n : ℕ} (hn : ∀ m ≤ n, ∀ (j : cell C m),
     IsClosed (A ∩ closedCell m j)) (j : cell C (n + 1)) :
     IsClosed (A ∩ cellFrontier (n + 1) j) :=
   RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j
@@ -607,8 +608,8 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
 
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
   `A` is closed. -/
-lemma CWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell [CWComplex C]
-    [T2Space X] {A : Set X} (asub : A ⊆ C) (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
+lemma ClasCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
+    [ClasCWComplex C] [T2Space X] {A : Set X} (asub : A ⊆ C) (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
     IsClosed (A ∩ openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A :=
   RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell asub
     (by simp only [inter_empty, isClosed_empty]) h
@@ -656,13 +657,13 @@ lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : �
 
 /-- A version of `cellFrontier_subset_finite_closedCell` using open cells: The edge of a cell is
   contained in a finite union of open cells of a lower dimension.-/
-lemma CWComplex.cellFrontier_subset_finite_openCellAB [CWComplex C] (n : ℕ) (i : cell C n) :
+lemma ClasCWComplex.cellFrontier_subset_finite_openCellAB [ClasCWComplex C] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), openCell m j := by
   have := RelCWComplex.cellFrontier_subset_finite_openCell n i
   simp_all only [empty_union]
 
-namespace CWComplex
+namespace ClasCWComplex
 
 export RelCWComplex (pairwiseDisjoint disjoint_openCell_of_ne openCell_subset_closedCell
   cellFrontier_subset_closedCell cellFrontier_union_openCell_eq_closedCell map_zero_mem_openCell
@@ -678,4 +679,4 @@ export RelCWComplex (pairwiseDisjoint disjoint_openCell_of_ne openCell_subset_cl
   level_inter_openCell_eq_empty levelaux_inter_closedCell_eq_levelaux_inter_cellFrontier
   level_inter_closedCell_eq_level_inter_cellFrontier)
 
-end CWComplex
+end ClasCWComplex
