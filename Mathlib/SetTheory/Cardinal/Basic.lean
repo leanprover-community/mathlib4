@@ -815,19 +815,21 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
 protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
   h.2
 
+set_option linter.deprecated false in
 @[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
 protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
   h.1
 
+set_option linter.deprecated false in
 @[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
 alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
 theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
   h.isSuccPrelimit.succ_lt
@@ -1523,17 +1525,18 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
 theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+set_option linter.deprecated false in
 @[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
 lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+set_option linter.deprecated false in
 @[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'

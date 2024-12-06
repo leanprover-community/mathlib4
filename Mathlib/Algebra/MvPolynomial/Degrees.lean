@@ -500,6 +500,15 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
 
+theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
+    p.totalDegree = 0 ↔ p = C (p.coeff 0) := by
+  constructor <;> intro h
+  · ext m; classical rw [coeff_C]; split_ifs with hm; · rw [← hm]
+    apply coeff_eq_zero_of_totalDegree_lt; rw [h]
+    exact Finset.sum_pos (fun i hi ↦ Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hi)
+      (Finsupp.support_nonempty_iff.mpr <| Ne.symm hm)
+  · rw [h, totalDegree_C]
+
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     (rename f p).totalDegree ≤ p.totalDegree :=
   Finset.sup_le fun b => by

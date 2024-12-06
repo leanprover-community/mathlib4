@@ -5,6 +5,8 @@ Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Tactic.FieldSimp
@@ -17,9 +19,9 @@ given any `p : F[X]` and `d : ℕ`, there exists some `h : F[X]` such that for a
 `n : ℕ`, `h(n)` is equal to the coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 This `h` is unique and is denoted as `Polynomial.hilbertPoly p d`.
 
-For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]` is
-`Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
-`Polynomial.hilbertPoly (1 : F[X]) d` is the polynomial `(n + 1)···(n + d)/d!`. Note that
+For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]`
+is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
+`Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(n + 1)···(n + d)/d!`. Note that
 if `d! = 0` in `F`, then the polynomial `(n + 1)···(n + d)/d!` no longer works, so we do not
 want the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take
 any `p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
@@ -96,13 +98,15 @@ lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
+variable [CharZero F]
+
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbertPoly p d).eval (n : F)` equals the
 coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 -/
 theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
-    [CharZero F] {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
+    {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
     PowerSeries.coeff F n (p * (invOneSubPow F d)) = (hilbertPoly p d).eval (n : F) := by
   delta hilbertPoly; induction d with
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
@@ -126,5 +130,47 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
       · simp only [Finset.mem_sdiff, mem_support_iff, not_not] at hx
         rw [hx.2, zero_mul]
       · rw [add_comm, Nat.add_sub_assoc (h_le ⟨x, hx⟩), succ_eq_add_one, add_tsub_cancel_right]
+
+/--
+The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is unique. In other
+words, if `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than
+`N` we have `PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F)`, then `h` is exactly
+`Polynomial.hilbertPoly p d`.
+-/
+theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
+    ∃! (h : F[X]), (∃ (N : ℕ), (∀ (n : ℕ) (_ : N < n),
+    PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F))) := by
+  use hilbertPoly p d; constructor
+  · use p.natDegree
+    exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
+  · rintro h ⟨N, hhN⟩
+    apply eq_of_infinite_eval_eq h (hilbertPoly p d)
+    apply ((Set.Ioi_infinite (max N p.natDegree)).image cast_injective.injOn).mono
+    rintro x ⟨n, hn, rfl⟩
+    simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
+    rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
+
+lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
+    hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
+  apply eq_of_infinite_eval_eq
+  apply ((Set.Ioi_infinite (p * (1 - X)).natDegree).image cast_injective.injOn).mono
+  rintro x ⟨n, hn, rfl⟩
+  simp only [Set.mem_setOf_eq]
+  by_cases hp : p = 0
+  · simp only [hp, zero_mul, hilbertPoly_zero_nat]
+  · simp only [Set.mem_Ioi] at hn
+    have hpn : p.natDegree < n := by
+      suffices (1 : F[X]) - X ≠ 0 from lt_of_add_right_lt (natDegree_mul hp this ▸ hn)
+      rw [sub_ne_zero, ne_eq, ext_iff, not_forall]
+      use 0
+      simp
+    simp only [hn, ← coeff_mul_invOneSubPow_eq_hilbertPoly_eval, coe_mul, coe_sub, coe_one, coe_X,
+      mul_assoc, hpn, ← one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val F d 1, pow_one]
+
+lemma hilbertPoly_mul_one_sub_pow_add (p : F[X]) (d e : ℕ) :
+    hilbertPoly (p * (1 - X) ^ e) (d + e) = hilbertPoly p d := by
+  induction e with
+  | zero => simp
+  | succ e he => rw [pow_add, pow_one, ← mul_assoc, ← add_assoc, hilbertPoly_mul_one_sub_succ, he]
 
 end Polynomial

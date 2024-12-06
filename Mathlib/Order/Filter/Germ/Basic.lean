@@ -198,7 +198,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 
 /-- Lift a binary function `β → γ → δ` to a function `Germ l β → Germ l γ → Germ l δ`. -/
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
-  Quotient.map₂' (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
+  Quotient.map₂ (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
     Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
 
 @[simp]

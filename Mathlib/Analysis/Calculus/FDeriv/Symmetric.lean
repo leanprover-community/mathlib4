@@ -422,7 +422,6 @@ theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
-  letI : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f''Rl : E →ₗ[ℝ] E →ₗ[ℝ] F :=
   { toFun := fun x ↦
       { toFun := fun y ↦ f'' x y
