@@ -622,6 +622,31 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
   HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedFDerivWithin_comp_const_add (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (a + z)) s =
+      fun x ↦ iteratedFDerivWithin 𝕜 n f s (a + x) := by
+  induction n with
+  | zero => simp [iteratedFDerivWithin]
+  | succ n IH =>
+    ext v
+    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
+    simp [IH]
+    congr 2
+
+#exit
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
+
+end shift_invariance
+
+#exit
 
 /-! ### Functions with a Taylor series on the whole space -/
 
