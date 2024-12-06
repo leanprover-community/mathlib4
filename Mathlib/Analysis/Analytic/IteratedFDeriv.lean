@@ -130,12 +130,11 @@ lemma glouk [CompleteSpace F]
   have gcont : ContDiffOn 𝕜 (↑n) g s := by
     apply AnalyticOn.contDiffOn _ hu
     simpa [I] using B.analyticOn
-  have J1 : iteratedFDerivWithin 𝕜 n f s x v =
-      iteratedFDerivWithin 𝕜 n g s x v + iteratedFDerivWithin 𝕜 n (f - g) s x v := by
+  have J1 : iteratedFDerivWithin 𝕜 n f s x =
+      iteratedFDerivWithin 𝕜 n g s x + iteratedFDerivWithin 𝕜 n (f - g) s x := by
     have : f = g + (f - g) := by abel
     nth_rewrite 1 [this]
     rw [iteratedFDerivWithin_add_apply gcont (by exact fcont.sub gcont) hu hx]
-    rfl
   have J2 : iteratedFDerivWithin 𝕜 n (f - g) s x = 0 := by
     apply (h.sub B).iteratedFDerivWithin_eq_zero hu hx
     simp [q]
