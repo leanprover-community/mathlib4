@@ -4,68 +4,38 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
-
 # Multivariate Fourier series
+
+In this file we define the Fourier series of an L² function on the `d`-dimensional unit circle, and
+show that it converges to the function in the L² norm. We also prove uniform convergence of the
+Fourier series if `f` is continuous and the sequence of its Fourier coefficients is summable.
 -/
 
 noncomputable section
+
 open scoped BigOperators ComplexConjugate ENNReal
 
 open Set Algebra Submodule MeasureTheory
-
-variable (d : Type*) [Fintype d]
 
 -- some instances for unit circle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
+local instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
 
-instance : IsProbabilityMeasure (volume : Measure UnitAddCircle) :=
+local instance : Measure.IsAddHaarMeasure (volume : Measure UnitAddCircle) :=
+  inferInstanceAs AddCircle.haarAddCircle.IsAddHaarMeasure
+
+local instance : IsProbabilityMeasure (volume : Measure UnitAddCircle) :=
   AddCircle.isProbabilityMeasure
 
-instance : Measure.IsAddHaarMeasure (volume : Measure UnitAddCircle) := by
-  change Measure.IsAddHaarMeasure AddCircle.haarAddCircle
-  infer_instance
+/-- The product of finitely many copies of the unit circle, indexed by `d`. -/
+abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
 
--- Query: why aren't the next two automatic?
-instance : IsFiniteMeasure (volume : Measure UnitAddCircle) :=
-  MeasureTheory.IsProbabilityMeasure.toIsFiniteMeasure _
-
--- define UnitAddTorus and give it some instances
-
-def UnitAddTorus := d → UnitAddCircle
-
-variable {d}
-
-instance : UniformSpace (UnitAddTorus d) := Pi.uniformSpace _
-
-instance : CompactSpace (UnitAddTorus d) := Pi.compactSpace
-
--- the PseudoMetrizableSpace and T2Space instances are needed to deduce the `WeaklyRegular`
--- property of the measure
-instance : TopologicalSpace.PseudoMetrizableSpace (UnitAddTorus d) :=
-  TopologicalSpace.pseudoMetrizableSpace_pi
-
-instance : T2Space (UnitAddTorus d) := Pi.t2Space
-
-instance : MeasurableSpace (UnitAddTorus d) := MeasurableSpace.pi
-
-instance : BorelSpace (UnitAddTorus d) := Pi.borelSpace
-
-instance : MeasureSpace (UnitAddTorus d) := MeasureSpace.pi
-
-instance : IsProbabilityMeasure (volume : Measure <| UnitAddTorus d) := by
-  constructor
-  rw [volume, instMeasureSpaceUnitAddTorus, MeasureSpace.pi, MeasureTheory.Measure.pi_univ,
-    IsProbabilityMeasure.measure_univ, Finset.prod_const_one]
-
-instance : Measure.IsOpenPosMeasure (volume : Measure <| UnitAddTorus d) :=
-  MeasureTheory.Measure.pi.isOpenPosMeasure (fun _ ↦ volume)
+variable {d : Type*} [Fintype d]
 
 section Monomials
 
@@ -74,29 +44,39 @@ variable (n : d → ℤ)
 /-- Exponential monomials in `d` variables. -/
 def mFourier : C(UnitAddTorus d, ℂ) where
   toFun x := ∏ i : d, fourier (n i) (x i)
-  continuous_toFun := by
-    apply continuous_finset_prod
-    intro i _
-    exact (fourier (n i)).continuous.comp <| continuous_iff_le_induced.mpr <| iInf_le _ _
+  continuous_toFun := continuous_finset_prod _
+    fun i _ ↦ (fourier (n i)).continuous.comp (continuous_apply i)
 
 variable {n} {x : UnitAddTorus d}
 
 lemma mFourier_neg : mFourier (-n) x = conj (mFourier n x) := by
-  simp_rw [starRingEnd_apply, mFourier, Pi.neg_apply,
-      ContinuousMap.coe_mk, ← starRingEnd_apply, map_prod, fourier_neg]
+  simp only [mFourier, Pi.neg_apply, fourier_neg, ContinuousMap.coe_mk, map_prod]
 
 lemma mFourier_add {m : d → ℤ} : mFourier (m + n) x = mFourier m x * mFourier n x := by
   simp only [mFourier, Pi.add_apply, fourier_add, ContinuousMap.coe_mk, ← Finset.prod_mul_distrib]
 
+lemma mFourier_zero : mFourier (0 : d → ℤ) = 1 := by
+  ext x
+  simp only [mFourier, Pi.zero_apply, fourier_zero, Finset.prod_const_one, ContinuousMap.coe_mk,
+    ContinuousMap.one_apply]
+
 lemma mFourier_norm : ‖mFourier n‖ = 1 := by
   apply le_antisymm
-  · rw [ContinuousMap.norm_le _ zero_le_one]
-    intro i
-    simp_rw [mFourier, ContinuousMap.coe_mk, norm_prod, Complex.norm_eq_abs, fourier_apply,
-      abs_coe_circle, Finset.prod_const_one, le_rfl]
-  · convert ContinuousMap.norm_coe_le_norm (mFourier n) (fun _ ↦ 0)
-    simp_rw [mFourier, ContinuousMap.coe_mk, fourier_eval_zero, Finset.prod_const_one,
-      CstarRing.norm_one]
+  · refine (ContinuousMap.norm_le _ zero_le_one).mpr fun i ↦ ?_
+    simp only [mFourier, fourier_apply, ContinuousMap.coe_mk, norm_prod, Complex.norm_eq_abs,
+      Circle.abs_coe, Finset.prod_const_one, le_rfl]
+  · refine (le_of_eq ?_).trans ((mFourier n).norm_coe_le_norm fun _ ↦ 0)
+    simp only [mFourier, ContinuousMap.coe_mk, fourier_eval_zero, Finset.prod_const_one,
+      CStarRing.norm_one]
+
+lemma mFourier_single [DecidableEq d] (z : d → AddCircle (1 : ℝ)) (i : d) :
+    mFourier (Pi.single i 1) z = fourier 1 (z i) := by
+  simp_rw [mFourier, ContinuousMap.coe_mk]
+  have := Finset.prod_mul_prod_compl {i} (fun j ↦ fourier ((Pi.single i (1 : ℤ) : d → ℤ) j) (z j))
+  rw [Finset.prod_singleton, Finset.prod_congr rfl (fun j hj ↦ ?_)] at this
+  · rw [← this, Finset.prod_const_one, mul_one, Pi.single_eq_same]
+  · rw [Finset.mem_compl, Finset.mem_singleton] at hj
+    simp only [Pi.single_eq_of_ne hj, fourier_zero]
 
 end Monomials
 
@@ -111,46 +91,33 @@ def mFourierSubalgebra (d : Type*) [Fintype d] : StarSubalgebra ℂ C(UnitAddTor
     rintro _ ⟨n, rfl⟩
     refine subset_adjoin ⟨-n, ?_⟩
     ext1 x
-    simp only [mFourier_neg, ContinuousMap.star_apply, IsROrC.star_def]
+    simp only [mFourier_neg, starRingEnd_apply, ContinuousMap.star_apply]
 
 /-- The star subalgebra of `C(UnitAddTorus d, ℂ)` generated by `fourier n` for `n ∈ ℤᵈ` is in fact
 the linear span of these functions. -/
 theorem mFourierSubalgebra_coe :
-    Subalgebra.toSubmodule (mFourierSubalgebra d).toSubalgebra = span ℂ (range mFourier) := by
+    (mFourierSubalgebra d).toSubalgebra.toSubmodule = span ℂ (range mFourier) := by
   apply adjoin_eq_span_of_subset
-  refine' Subset.trans _ Submodule.subset_span
-  intro x hx
-  refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
-  · ext1 z
+  refine .trans (fun x ↦ Submonoid.closure_induction (fun _ ↦ id) ⟨0, ?_⟩ ?_) subset_span
+  · ext z
     simp only [mFourier, Pi.zero_apply, fourier_zero, Finset.prod_const, one_pow,
       ContinuousMap.coe_mk, ContinuousMap.one_apply]
-  · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
-    refine' ⟨m + n, _⟩
-    ext1 z
-    simp only [mFourier, Pi.add_apply, fourier_apply, fourier_add',
-      Finset.prod_mul_distrib, ContinuousMap.coe_mk, ContinuousMap.mul_apply]
+  · rintro _ _ _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
+    refine ⟨m + n, ?_⟩
+    ext z
+    simp only [mFourier, Pi.add_apply, fourier_apply, fourier_add', Finset.prod_mul_distrib,
+      ContinuousMap.coe_mk, ContinuousMap.mul_apply]
 
 /-- The subalgebra of `C(UnitAddTorus d, ℂ)` generated by `mFourier n` for `n : d → ℤ` separates
 points. -/
 theorem mFourierSubalgebra_separatesPoints [DecidableEq d] :
     (mFourierSubalgebra d).SeparatesPoints := by
   intro x y hxy
-  rw [Ne.def, Function.funext_iff, not_forall] at hxy
+  rw [Ne, funext_iff, not_forall] at hxy
   obtain ⟨i, hi⟩ := hxy
-  refine' ⟨_, ⟨mFourier (Pi.single i 1), subset_adjoin ⟨Pi.single i 1, rfl⟩, rfl⟩, _⟩
+  refine ⟨_, ⟨mFourier (Pi.single i 1), subset_adjoin ⟨Pi.single i 1, rfl⟩, rfl⟩, ?_⟩
   dsimp only
-  have (z : d → AddCircle (1 : ℝ)) : mFourier (Pi.single i 1) z = fourier 1 (z i)
-  · simp_rw [mFourier, ContinuousMap.coe_mk]
-    let f := fun j ↦ (fourier ( (Pi.single i 1 : d → ℤ) j)) (z j)
-    have := Finset.prod_mul_prod_compl {i} f
-    rw [Finset.prod_singleton, Finset.prod_congr rfl (?_ : ∀ j ∈ ({i}ᶜ : Finset d), f j = 1)] at this
-    swap
-    · intro j hj
-      rw [Finset.mem_compl, Finset.mem_singleton] at hj
-      simp only [f, Pi.single_eq_of_ne hj, fourier_zero]
-    rw [← this, Finset.prod_const_one, mul_one]
-    simp only [f, Pi.single_eq_same]
-  rw [this, this, fourier_one, fourier_one, Ne.def, Subtype.coe_inj]
+  rw [mFourier_single, mFourier_single, fourier_one, fourier_one, Ne, Subtype.coe_inj]
   contrapose! hi
   exact AddCircle.injective_toCircle one_ne_zero hi
 
@@ -185,30 +152,23 @@ theorem coeFn_mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
 of functions on `UnitAddTorus d`. -/
 theorem span_mFourierLp_closure_eq_top [DecidableEq d] {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
     (span ℂ (range (@mFourierLp d _ p _))).topologicalClosure = ⊤ := by
-  convert (ContinuousMap.toLp_denseRange ℂ
-    (volume : Measure (UnitAddTorus d)) hp ℂ).topologicalClosure_map_submodule
-    span_mFourier_closure_eq_top
-  erw [map_span, range_comp]
-  simp only [ContinuousLinearMap.coe_coe]
+  simpa only [map_span, ContinuousLinearMap.coe_coe, ← range_comp, Function.comp_def] using
+    (ContinuousMap.toLp_denseRange ℂ volume ℂ hp).topologicalClosure_map_submodule
+      span_mFourier_closure_eq_top
 
 /-- The monomials `mFourierLp 2 n` are an orthonormal set in `L²`. -/
 theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   rw [orthonormal_iff_ite]
   intro m n
-  simp_rw [ContinuousMap.inner_toLp volume, ← mFourier_neg, ← mFourier_add]
+  simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · have : mFourier (0 : d → ℤ) = 1
-    · ext1 x
-      simp_rw [mFourier, ContinuousMap.coe_mk, Pi.zero_apply, fourier_zero, Finset.prod_const_one,
-        ContinuousMap.one_apply]
-    simp_rw [h, neg_add_self, this]
-    simpa only [IsProbabilityMeasure.measure_univ, ENNReal.one_toReal, one_smul]
-      using integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
-  erw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_eq_prod]
+  · simpa only [h, neg_add_cancel, mFourier_zero, measure_univ, ENNReal.one_toReal, one_smul] using
+      integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
+  rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simpa only [eq_false_intro hi, if_false, ContinuousMap.inner_toLp, ← fourier_neg,
-    ← fourier_add] using (orthonormal_iff_ite.mp <| orthonormal_fourier (T := 1)) (m i) (n i)
+    ← fourier_add] using (orthonormal_iff_ite.mp <| orthonormal_fourier) (m i) (n i)
 
 end Lp
 
@@ -218,8 +178,7 @@ variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
 
 /-- The `n`-th Fourier coefficient of a function `UnitAddTorus d → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `UnitAddTorus d` of `mFourier (-n) t • f t`. -/
-def mFourierCoeff (f : UnitAddTorus d → E) (n : d → ℤ) : E :=
-  ∫ t : UnitAddTorus d, mFourier (-n) t • f t
+def mFourierCoeff (f : UnitAddTorus d → E) (n : d → ℤ) : E := ∫ t, mFourier (-n) t • f t
 
 end fourierCoeff
 
@@ -244,37 +203,31 @@ theorem coe_mFourierBasis : ⇑(mFourierBasis (d := d)) = mFourierLp 2 := Hilber
 the `i`-th coefficient is `mFourierCoeff f i`. -/
 theorem mFourierBasis_repr (f : L²(UnitAddTorus d)) (i : d → ℤ) :
     mFourierBasis.repr f i = mFourierCoeff f i := by
-  trans ∫ t : UnitAddTorus d, conj (mFourierLp 2 i t) * f t
+  trans ∫ t, conj (mFourierLp 2 i t) * f t
   · rw [mFourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_mFourierBasis]
-    simp only [IsROrC.inner_apply]
+    simp only [RCLike.inner_apply]
   · apply integral_congr_ae
     filter_upwards [coeFn_mFourierLp 2 i] with _ ht
     rw [ht, ← mFourier_neg, smul_eq_mul]
 
 /-- The Fourier series of an `L2` function `f` sums to `f` in the `L²` norm. -/
 theorem hasSum_mFourier_series_L2 (f : L²(UnitAddTorus d)) :
-    HasSum (fun i => mFourierCoeff f i • mFourierLp 2 i) f := by
+    HasSum (fun i ↦ mFourierCoeff f i • mFourierLp 2 i) f := by
   simpa [← coe_mFourierBasis, mFourierBasis_repr] using mFourierBasis.hasSum_repr f
 
 /-- **Parseval's identity** for inner products: for `L²` functions `f, g` on `UnitAddTorus d`, the
 inner product of the Fourier coefficients of `f` and `g` is the inner product of `f` and `g`. -/
 theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
     HasSum (fun i ↦ conj (mFourierCoeff f i) * (mFourierCoeff g i)) (∫ t, conj (f t) * g t) := by
-  have := mFourierBasis.hasSum_inner_mul_inner f g
-  simp_rw [L2.inner_def f g, IsROrC.inner_apply] at this
-  convert this with n
-  · rw [←mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm]
-  · rw [←mFourierBasis_repr, HilbertBasis.repr_apply_apply]
+  refine HasSum.congr_fun (mFourierBasis.hasSum_inner_mul_inner f g) (fun n ↦ ?_)
+  simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm]
 
 /-- **Parseval's identity** for norms: for an `L²` function `f` on `UnitAddTorus d`, the sum of the
 squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_mFourierCoeff (f : L²(UnitAddTorus d)) :
     HasSum (fun i ↦ ‖mFourierCoeff f i‖ ^ 2) (∫ t, ‖f t‖ ^ 2) := by
-  have := IsROrC.hasSum_re ℂ (hasSum_prod_mFourierCoeff f f)
-  simp_rw [← IsROrC.inner_apply, ←integral_re (L2.integrable_inner f f)] at this
-  conv at this => enter [1, n]; rw [inner_self_eq_norm_sq]
-  conv at this => enter [2, 2, x]; rw [inner_self_eq_norm_sq]
-  exact this
+  simpa only [← RCLike.inner_apply, inner_self_eq_norm_sq, ← integral_re
+    (L2.integrable_inner f f)] using RCLike.hasSum_re ℂ (hasSum_prod_mFourierCoeff f f)
 
 end FourierL2
 
@@ -283,26 +236,25 @@ section Convergence
 variable (f : C(UnitAddTorus d, ℂ))
 
 theorem mFourierCoeff_toLp (n : d → ℤ) :
-    mFourierCoeff (ContinuousMap.toLp 2 volume ℂ f) n = mFourierCoeff f n :=
-  integral_congr_ae (Filter.EventuallyEq.mul (Filter.eventually_of_forall (by tauto))
-    (ContinuousMap.coeFn_toAEEqFun volume f))
+    mFourierCoeff (f.toLp 2 volume ℂ) n = mFourierCoeff f n :=
+  integral_congr_ae (ae_eq_rfl.mul <| f.coeFn_toAEEqFun _)
 
 variable {f} [DecidableEq d]
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :
-    HasSum (fun i => mFourierCoeff f i • mFourier i) f := by
+    HasSum (fun i ↦ mFourierCoeff f i • mFourier i) f := by
   have sum_L2 := hasSum_mFourier_series_L2 (ContinuousMap.toLp 2 volume ℂ f)
-  simp_rw [mFourierCoeff_toLp] at sum_L2
+  simp only [mFourierCoeff_toLp] at sum_L2
   refine ContinuousMap.hasSum_of_hasSum_Lp (.of_norm ?_) sum_L2
-  simp_rw [norm_smul, mFourier_norm, mul_one]
-  exact h.norm
+  simpa only [norm_smul, mFourier_norm, mul_one] using h.norm
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series of `f`
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_mFourier_series_of_summable (h : Summable (mFourierCoeff f))
-    (x : UnitAddTorus d) : HasSum (fun i => mFourierCoeff f i • mFourier i x) (f x) := by
-  convert (ContinuousMap.evalClm ℂ x).hasSum (hasSum_mFourier_series_of_summable h)
+    (x : UnitAddTorus d) : HasSum (fun i ↦ mFourierCoeff f i • mFourier i x) (f x) := by
+  simpa only [_root_.map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
+    (hasSum_mFourier_series_of_summable h)
 
 end Convergence
