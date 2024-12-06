@@ -1,45 +1,57 @@
 name: Label New Contributors
 
-on:
-  pull_request:
-    types: [opened]
+# Written with ChatGPT: https://chat.openai.com/share/3777ceb1-d722-4705-bacd-ba3f04b387be
+
+on: pull_request
 
 jobs:
-  label-new-contributor:
+  label-and-report-new-contributor:
     runs-on: ubuntu-latest
+    # Don't run on forks, where we wouldn't have permissions to add the label anyway.
+    if: github.repository == 'leanprover-community/mathlib4'
     permissions:
+      checks: write
       pull-requests: write
-
+      contents: read
     steps:
-    - name: Get PR author
-      id: pr-author
-      run: echo "::set-output name=author::$(jq -r .pull_request.user.login "$GITHUB_EVENT_PATH")"
-      shell: bash
+      - name: Label PR and report count
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const creator = context.payload.sender.login
+            const { owner, repo } = context.repo;
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              ...context.issue,
+              owner,
+              repo,
+              creator,
+              state: 'closed'
+            })
+            const issues = await github.paginate(opts)
+            const pullRequestCount = issues.length;
 
-    - name: Check if user is new contributor
-      id: check-contributor
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const { owner, repo } = context.repo
-          const author = "${{ steps.pr-author.outputs.author }}"
-          const prs = await github.rest.pulls.list({
-            owner,
-            repo,
-            state: "closed",
-            author
-          })
-          return (prs.data.length < 5)
+            // Determine if the creator has 5 or fewer pull requests
+            if (pullRequestCount <= 5) {
+              // Add the "new-contributor" label to the current pull request
+              await github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner,
+                repo,
+                labels: ['new-contributor']
+              });
+            }
 
-    - name: Add label if new contributor
-      if: steps.check-contributor.outputs.result == 'true'
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const { owner, repo, number } = context.issue
-          await github.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: number,
-            labels: ['new-contributor']
-          })
+            // Create a check run with a message about the PR count by this author
+            const message = `Found ${pullRequestCount} PRs by ${creator}.`;
+            await github.rest.checks.create({
+              owner,
+              repo,
+              name: 'New Contributor Check',
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: 'neutral',
+              output: {
+                title: message,
+                summary: message,
+              },
+            });

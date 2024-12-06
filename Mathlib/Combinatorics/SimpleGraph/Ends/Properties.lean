@@ -6,8 +6,6 @@ Authors: Anand Rao, Rémi Bottinelli
 import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 import Mathlib.CategoryTheory.CofilteredSystem
 
-#align_import combinatorics.simple_graph.ends.properties from "leanprover-community/mathlib"@"db53863fb135228820ee0b08e8dce9349a3d911b"
-
 /-!
 # Properties of the ends of graphs
 
