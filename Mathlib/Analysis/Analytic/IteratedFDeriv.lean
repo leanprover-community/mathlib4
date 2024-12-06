@@ -13,6 +13,32 @@ import Mathlib.Data.Fintype.Perm
 If a function is analytic, written as `f (x + y) = ∑ pₙ (y, ..., y)` then its `n`-th iterated
 derivative at `x` is given by `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum
 is over all permutations of `{1, ..., n}`. In particular, it is symmetric.
+
+## Main result
+
+* `HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum` shows that
+  `iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i))`,
+  when `f` has `p` as power series within the set `s` on the ball `B (x, r)`.
+* `ContDiffAt.iteratedFDeriv_comp_perm` proves the symmetry of the iterated derivative of an
+  analytic function, in the form `iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v`
+  for any permutation `σ` of `Fin n`.
+
+Versions within sets are also given.
+
+## Implementation
+
+To prove the formula for the iterated derivative, se decompose an analytic function as
+the sum of `fun y ↦ pₙ (y, ..., y)` and the rest. For the former, its iterated derivative follows
+from the formula for iterated derivatives of multilinear maps
+(see `ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal`). For the latter, we show by
+induction on `n` that if the `n`-th term in a power series is zero, then the `n`-th iterated
+derivative vanishes (see `HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_zero`).
+
+All these results are proved assuming additionally that the function is analytic on the relevant
+set (which does not follow from the fact that the function has a power series, if the target space
+is not complete). This makes it possible to avoid all completeness assumptions in the final
+statements. When needed, we give versions of some statements assuming completeness and dropping
+analyticity, for ease of use.
 -/
 
 open scoped ENNReal Topology ContDiff
@@ -233,13 +259,16 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
   rw [← this]
   exact AnalyticOn.iteratedFDerivWithin_comp_perm hu.analyticOn (hs.inter u_open) ⟨hx, xu⟩ _ _
 
-/-- The `n`-th iterated derivative of an analytic function on a set is symmetric. -/
+/-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem AnalyticOn.iteratedFDeriv_comp_perm
-    (h : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E)
-    (σ : Perm (Fin n)) :
-    iteratedFDeriv 𝕜 n f s x (v ∘ σ) = iteratedFDerivWithin 𝕜 n f s x v := by
-  rcases h x hx with ⟨p, r, hp⟩
-  rw [hp.iteratedFDerivWithin_eq_sum h hs hx, hp.iteratedFDerivWithin_eq_sum h hs hx]
-  let e := Equiv.mulLeft σ
-  conv_rhs => rw [← Equiv.sum_comp e]
-  rfl
+    (h : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
+    iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v := by
+  rw [← iteratedFDerivWithin_univ]
+  exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
+
+/-- The `n`-th iterated derivative of an analytic function is symmetric. -/
+theorem ContDiffAt.iteratedFDeriv_comp_perm
+    (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
+    iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v := by
+  rw [← iteratedFDerivWithin_univ]
+  exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
