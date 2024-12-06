@@ -4,6 +4,7 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Triangulated.Lemmas
 import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Shift.Pullback
 
 namespace CategoryTheory
 
@@ -373,6 +374,8 @@ class adjunction_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A] where
 
 variable {A}
 
+-- Do we need `A` to be a group for the compatibility stuff?
+-- Yes for some lemmas, maybe not for the definitions.
 lemma adjunction_compat.right_left_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A]
     [CommShift.adjunction_compat A adj]
     (a a' : A) (h : a + a' = 0) (X : C) (Y : D) (v : X ⟶ (G.obj Y)⟦a⟧) :
@@ -488,6 +491,37 @@ def left_right_equiv_compat_backward (adj : F ⊣ G) [CommShift G A] :
   exact right_to_left_compat adj inferInstance a a' h X Y u
 
 end CommShift
+
+section Pullback
+
+open Adjunction CommShift
+
+variable {B : Type*} [AddGroup B] (φ : B →+ A)
+
+def adjunction_compat_pullback (adj : F ⊣ G) [CommShift F A] [CommShift G A]
+    [CommShift.adjunction_compat A adj] :
+    @CommShift.adjunction_compat (PullbackShift C φ) (PullbackShift D φ) _ _ F G B _ _ _
+    adj (F.pullbackCommShift φ) (G.pullbackCommShift φ) := by
+  refine @CommShift.adjunction_compat.mk (PullbackShift C φ) (PullbackShift D φ) _ _ F G B _ _ _
+    adj (F.pullbackCommShift φ) (G.pullbackCommShift φ) ?_
+  intro b b' h X Y u
+  rw [← cancel_mono ((pullbackShiftIso C φ b (φ b) rfl).hom.app (G.obj Y)), homEquiv_apply,
+    homEquiv_apply]
+  simp [shiftEquiv'_symm_unit, shiftFunctorCompIsoId]
+  conv_lhs => rw [pullbackShiftFunctorZero_inv_app, pullbackShiftFunctorAdd'_hom_app φ _ b' b 0
+    sorry (φ b') (φ b) 0 rfl rfl sorry]
+              slice 2 3; rw [Iso.inv_hom_id_app]
+  conv_lhs => rw [id_comp]
+              slice 3 4; rw [← (pullbackShiftIso C φ b (φ b) rfl).inv.naturality]
+  slice_lhs 4 5 => rw [Iso.inv_hom_id_app]
+  conv_lhs => rw [id_comp]
+  have := (pullbackShiftIso C φ b' (φ b') sorry).inv.naturality
+
+
+  have := adjunction_compat.left_right_compat (φ b) (φ b') sorry X Y u (adj := adj)
+
+
+end Pullback
 
 end Adjunction
 
