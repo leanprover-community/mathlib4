@@ -208,7 +208,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith.detail] "{comps}"
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Std.HashMap Nat Nat ← try
-        withTraceNode `linarith (return m!"{exceptEmoji ·} finding a contradiction") <|
+        withTraceNode `linarith (return m!"{exceptEmoji ·} running the oracle") <|
           oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
@@ -230,9 +230,14 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
         mkLTZeroProof zip
       -- this is a contradiction.
       withTraceNode `linarith (return m!"{exceptEmoji ·} antisymmetry of lt") do
-        let pftp ← inferType sm_lt_zero
-        let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
-        let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
-        mkAppM ``Linarith.lt_irrefl #[pf']
+        let ⟨u, α, smq⟩ ← inferTypeQ' sm
+        haveI : Q(StrictOrderedCommRing $α) := ← synthInstanceQ q(StrictOrderedCommRing $α)
+        have h1 : Q($smq = 0) := sm_eq_zero
+        have h2 : Q($smq < 0) := sm_lt_zero
+        have : Q(False) := q(Linarith.lt_irrefl (($h1).symm.trans_lt $h2))
+        return this
+        -- let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
+        -- let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
+        -- mkAppM ``Linarith.lt_irrefl #[pf']
 
 end Linarith

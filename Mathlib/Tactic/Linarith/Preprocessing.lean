@@ -308,17 +308,21 @@ def nlinarithExtras : GlobalPreprocessor where
         let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
           RBSet.empty
         si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
-    let new_es ← s.filterMapM fun (e, is_sq) =>
-      observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-    let new_es ← compWithZero.globalize.transform new_es
+    let new_es ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving squares nonnegative") <|
+      s.filterMapM fun (e, is_sq) =>
+        observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
+    let new_es ← withTraceNode `linarith (return m!"{exceptEmoji ·} moving squares to lhs") <|
+      compWithZero.globalize.transform new_es
     linarithTraceProofs "so we added proofs" new_es
-    let with_comps ← (new_es ++ ls).mapM (fun e => do
-      let tp ← inferType e
-      try
-        let ⟨ine, _⟩ ← parseCompAndExpr tp
-        pure (ine, e)
-      catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    let with_comps ← withTraceNode `linarith (return m!"{exceptEmoji ·} figuring out what we proved") <|
+      (new_es ++ ls).mapM (fun e => do
+        let tp ← inferType e
+        try
+          let ⟨ine, _⟩ ← parseCompAndExpr tp
+          pure (ine, e)
+        catch _ => pure (Ineq.lt, e))
+    let products ← withTraceNode `linarith (return m!"{exceptEmoji ·} multiplying together ineqs") <|
+      with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
       try
         (some <$> match posa, posb with
           | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
@@ -332,7 +336,8 @@ def nlinarithExtras : GlobalPreprocessor where
               mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
           | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
       catch _ => pure none
-    let products ← compWithZero.globalize.transform products.reduceOption
+    let products ← withTraceNode `linarith (return m!"{exceptEmoji ·} moving products to lhs") <|
+      compWithZero.globalize.transform products.reduceOption
     return (new_es ++ ls ++ products)
 
 end nlinarith
