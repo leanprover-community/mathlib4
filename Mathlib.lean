@@ -2008,6 +2008,7 @@ import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 import Mathlib.CategoryTheory.MorphismProperty.Representable
+import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian
@@ -2046,6 +2047,7 @@ import Mathlib.CategoryTheory.Products.Unitor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
+import Mathlib.CategoryTheory.Retract
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
