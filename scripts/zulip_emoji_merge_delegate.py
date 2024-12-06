@@ -23,14 +23,14 @@ client = zulip.Client(
     site=ZULIP_SITE
 )
 
-# Fetch the messages containing the PR number from the public channels (exluding #rss).
+# Fetch the messages containing the PR number from the public channels.
 # There does not seem to be a way to search simultaneously public and private channels.
 public_response = client.get_messages({
     "anchor": "newest",
     "num_before": 5000,
     "num_after": 0,
     "narrow": [
-        {"operator": "channel", "operand": "rss", "negated": True},
+        {"operator": "channels", "operand": "public"},
         {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
@@ -57,12 +57,15 @@ pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/
 print(f"Searching for: '{pr_pattern}'")
 
 for message in messages:
+    if message['display_recipient'] == 'rss':
+        continue
     content = message['content']
     # Check for emoji reactions
     reactions = message['reactions']
     has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
     has_bors = any(reaction['emoji_name'] == 'bors' for reaction in reactions)
     has_merge = any(reaction['emoji_name'] == 'merge' for reaction in reactions)
+    has_awaiting_author = any(reaction['emoji_name'] == 'writing' for reaction in reactions)
     match = pr_pattern.search(content)
     if match:
         print(f"matched: '{message}'")
@@ -80,7 +83,9 @@ for message in messages:
             print('Removing bors')
             result = client.remove_reaction({
                 "message_id": message['id'],
-                "emoji_name": "bors"
+                "emoji_name": "bors",
+                "emoji_code": "22134",
+                "reaction_type": "realm_emoji",
             })
             print(f"result: '{result}'")
         if has_merge:
@@ -90,6 +95,14 @@ for message in messages:
                 "emoji_name": "merge"
             })
             print(f"result: '{result}'")
+        if has_awaiting_author:
+            print('Removing awaiting-author')
+            result = client.remove_reaction({
+                "message_id": message['id'],
+                "emoji_name": "writing"
+            })
+            print(f"result: '{result}'")
+
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
@@ -105,6 +118,15 @@ for message in messages:
                 "message_id": message['id'],
                 "emoji_name": "peace_sign"
             })
+        elif LABEL == 'labeled':
+            print('adding awaiting-author')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "writing"
+            })
+        elif LABEL == 'unlabeled':
+            print('awaiting-author removed')
+            # the reaction was already removed.
         elif LABEL.startswith("[Merged by Bors]"):
             print('adding [Merged by Bors]')
             client.add_reaction({

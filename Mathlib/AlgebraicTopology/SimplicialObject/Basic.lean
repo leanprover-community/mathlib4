@@ -250,7 +250,7 @@ section Truncation
 
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
-  (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion.op
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
 
 end Truncation
 
@@ -259,24 +259,24 @@ noncomputable section
 
 /-- The n-skeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
 protected abbrev Truncated.sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F] :
+    (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F] :
     SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
-  lan (SimplexCategory.Truncated.inclusion.op)
+  lan (SimplexCategory.Truncated.inclusion n).op
 
 /-- The n-coskeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
 protected abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F] :
+    (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F] :
     SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
-  ran (SimplexCategory.Truncated.inclusion.op)
+  ran (SimplexCategory.Truncated.inclusion n).op
 
 /-- The n-skeleton as an endofunctor on `SimplicialObject C`. -/
 abbrev sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F] :
+    (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.sk n
 
 /-- The n-coskeleton as an endofunctor on `SimplicialObject C`. -/
 abbrev cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F] :
+    (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.cosk n
 
 end
@@ -288,9 +288,9 @@ respectively define left and right adjoints to `truncation n`.-/
 
 variable (n : ℕ)
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F]
+    (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F]
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F]
+    (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F]
 
 /-- The adjunction between the n-skeleton and n-truncation.-/
 noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
@@ -300,20 +300,30 @@ noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
 noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
+instance : ((sk n).obj X).IsLeftKanExtension ((skAdj n).unit.app _) := by
+  dsimp [sk, skAdj]
+  rw [lanAdjunction_unit]
+  infer_instance
+
+instance : ((cosk n).obj X).IsRightKanExtension ((coskAdj n).counit.app _) := by
+  dsimp [cosk, coskAdj]
+  rw [ranAdjunction_counit]
+  infer_instance
+
 namespace Truncated
 /- When the left and right Kan extensions exist and are pointwise Kan extensions,
 `skAdj n` and `coskAdj n` are respectively coreflective and reflective.-/
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasPointwiseRightKanExtension F]
+    (SimplexCategory.Truncated.inclusion n).op.HasPointwiseRightKanExtension F]
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasPointwiseLeftKanExtension F]
+    (SimplexCategory.Truncated.inclusion n).op.HasPointwiseLeftKanExtension F]
 
 instance cosk_reflective : IsIso (coskAdj (C := C) n).counit :=
-  reflective' SimplexCategory.Truncated.inclusion.op
+  reflective' (SimplexCategory.Truncated.inclusion n).op
 
 instance sk_coreflective : IsIso (skAdj (C := C) n).unit :=
-  coreflective' SimplexCategory.Truncated.inclusion.op
+  coreflective' (SimplexCategory.Truncated.inclusion n).op
 
 /-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
 noncomputable def cosk.fullyFaithful :
@@ -675,7 +685,7 @@ section Truncation
 
 /-- The truncation functor from cosimplicial objects to truncated cosimplicial objects. -/
 def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
-  (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n)
 
 end Truncation
 

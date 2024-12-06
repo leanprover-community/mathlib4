@@ -521,7 +521,7 @@ typeclass inference is demanded by the lemmas it orchestrates.  This example too
 (and 73 ms on a good laptop) on an implementation with "minimal" typeclasses everywhere, e.g. lots of
 `CovariantClass`/`ContravariantClass`, and takes 206 heartbeats (10 ms on a good laptop) on the
 implementation at the time of joining Mathlib (November 2024). -/
-set_option maxHeartbeats 1100 in
+set_option maxHeartbeats 1200 in
 example {a b : ℝ} (h : a < b) : 0 < b - a := by
   linear_combination (norm := skip) h
   exact test_sorry
