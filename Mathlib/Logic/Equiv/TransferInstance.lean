@@ -471,10 +471,10 @@ noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} �
   (equivShrink α).symm.nontrivial
 
 /-- Transfer `IsDomain` across an `Equiv` -/
-protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
+protected theorem isDomain [Semiring α] [Semiring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
   Function.Injective.isDomain e.toRingHom e.injective
 
-noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Semiring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain (Shrink.ringEquiv α)
 
 /-- Transfer `NNRatCast` across an `Equiv` -/
