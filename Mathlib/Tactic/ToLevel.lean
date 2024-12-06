@@ -19,5 +19,4 @@ namespace Lean
 
 attribute [pp_with_univ] toLevel
 
-
 end Lean
