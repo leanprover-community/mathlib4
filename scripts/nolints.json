@@ -61,7 +61,6 @@
  ["docBlame", "AffineMap.toFun"],
  ["docBlame", "AlgHom.toAddMonoidHom'"],
  ["docBlame", "AlgHom.toMonoidHom'"],
- ["docBlame", "AlgebraCat.carrier"],
  ["docBlame", "Bifunctor.bimap"],
  ["docBlame", "Bimod.X"],
  ["docBlame", "Bimod.actLeft"],

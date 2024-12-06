@@ -322,7 +322,7 @@ lemma _root_.ContDiff.fourierPowSMulRight
 
 lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
     ‖fourierPowSMulRight L f v n‖ ≤ (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ := by
-  apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun m ↦ ?_)
+  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity) (fun m ↦ ?_)
   calc
   ‖fourierPowSMulRight L f v n m‖
     = (2 * π) ^ n * ((∏ x : Fin n, |(L v) (m x)|) * ‖f v‖) := by
