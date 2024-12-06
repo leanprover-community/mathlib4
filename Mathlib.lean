@@ -3995,6 +3995,7 @@ import Mathlib.Order.Extension.Well
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.AtTopBot.BigOperators
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Order.Filter.AtTopBot.Floor
 import Mathlib.Order.Filter.AtTopBot.Group
@@ -4008,6 +4009,7 @@ import Mathlib.Order.Filter.Cocardinal
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CountableSeparatingOn
+import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Order.Filter.Curry
 import Mathlib.Order.Filter.Defs
 import Mathlib.Order.Filter.ENNReal
