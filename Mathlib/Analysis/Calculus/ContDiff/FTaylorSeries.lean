@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 
@@ -98,7 +99,7 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 
 noncomputable section
 
-open scoped Classical
+open scoped Pointwise
 open ENat NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
@@ -623,9 +624,9 @@ alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
   HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
-lemma iteratedFDerivWithin_comp_const_add (n : ℕ) (a : E) :
+lemma iteratedFDerivWithin_comp_add_left (n : ℕ) (a : E) :
     iteratedFDerivWithin 𝕜 n (fun z ↦ f (a + z)) s =
-      fun x ↦ iteratedFDerivWithin 𝕜 n f s (a + x) := by
+      fun x ↦ iteratedFDerivWithin 𝕜 n f (a +ᵥ s) (a + x) := by
   induction n with
   | zero => simp [iteratedFDerivWithin]
   | succ n IH =>
@@ -633,20 +634,19 @@ lemma iteratedFDerivWithin_comp_const_add (n : ℕ) (a : E) :
     rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
     simp [IH]
     congr 2
-
-#exit
+    rw [fderivWithin_comp_add_left]
 
 /-- The iterated derivative commutes with shifting the function by a constant on the right. -/
-lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
-    iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
-  induction n with
-  | zero => simp only [iteratedDeriv_zero]
-  | succ n IH =>
-    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
+lemma iteratedFDerivWithin_comp_add_right (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (z + a)) s =
+      fun x ↦ iteratedFDerivWithin 𝕜 n f (a +ᵥ s) (x + a) := by
+  simpa [add_comm a] using iteratedFDerivWithin_comp_add_left n a
 
-end shift_invariance
+lemma iteratedFDerivWithin_comp_sub (n : ℕ) (a : E) :
+    iteratedFDerivWithin 𝕜 n (fun z ↦ f (z - a)) s =
+      fun x ↦ iteratedFDerivWithin 𝕜 n f (-a +ᵥ s) (x - a) := by
+  simpa [sub_eq_add_neg] using iteratedFDerivWithin_comp_add_right n (-a)
 
-#exit
 
 /-! ### Functions with a Taylor series on the whole space -/
 
@@ -890,3 +890,17 @@ lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by
   simp only [iteratedFDeriv_succ_apply_right]
   rfl
+
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedFDeriv_comp_add_left (n : ℕ) (a : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (a + z)) = fun x ↦ iteratedFDeriv 𝕜 n f (a + x) := by
+  simpa [← iteratedFDerivWithin_univ] using iteratedFDerivWithin_comp_add_left n a (s := univ)
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedFDeriv_comp_add_right (n : ℕ) (a : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (z + a)) = fun x ↦ iteratedFDeriv 𝕜 n f (x + a) := by
+  simpa [add_comm a] using iteratedFDeriv_comp_add_left n a
+
+lemma iteratedFDeriv_comp_sub (n : ℕ) (a : E) :
+    iteratedFDeriv 𝕜 n (fun z ↦ f (z - a)) = fun x ↦ iteratedFDeriv 𝕜 n f (x - a) := by
+  simpa [sub_eq_add_neg] using iteratedFDeriv_comp_add_right n (-a)
