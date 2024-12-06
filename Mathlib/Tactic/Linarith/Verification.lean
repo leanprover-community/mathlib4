@@ -190,7 +190,8 @@ tactic, which is typically `ring`. We prove (2) by folding over the set of hypot
 def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
     (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
   | _, [] => throwError "no args to linarith"
-  | g, l@(h::_) => do
+  | g, l@(h::_) => withTraceNode decl_name%
+    (fun _ => return m!"proveFalseByLinarith on {← g.getType}") do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
       Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
@@ -205,7 +206,8 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith.detail] "{comps}"
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Std.HashMap Nat Nat ← try
-        oracle.produceCertificate comps max_var
+        withTraceNode `linarith (return m!"{exceptEmoji ·} finding a contradiction") <|
+          oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
         throwError "linarith failed to find a contradiction"

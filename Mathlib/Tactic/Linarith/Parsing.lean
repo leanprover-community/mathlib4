@@ -136,7 +136,8 @@ abbrev ExprMap := List (Expr × ℕ)
 If `e` appears with index `k` in `map`, it returns the singleton sum `var k`.
 Otherwise it updates `map`, adding `e` with index `n`, and returns the singleton sum `var n`.
 -/
-def linearFormOfAtom (red : TransparencyMode) (m : ExprMap) (e : Expr) : MetaM (ExprMap × Sum) := do
+def linearFormOfAtom (red : TransparencyMode) (m : ExprMap) (e : Expr) : MetaM (ExprMap × Sum) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} inspecting an atom. length: {m.length}") do
   try
     let k ← m.findDefeq red e
     return (m, var k)
@@ -157,30 +158,33 @@ and forces some functions that call it into `MetaM` as well.
 
 partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
     MetaM (ExprMap × Sum) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} {e}") <|
+  go m e
+  where go m e := do
   match e.numeral? with
   | some 0 => return ⟨m, RBMap.empty⟩
   | some (n+1) => return ⟨m, scalar (n+1)⟩
   | none =>
   match e.getAppFnArgs with
   | (``HMul.hMul, #[_, _, _, _, e1, e2]) => do
-    let (m1, comp1) ← linearFormOfExpr red m e1
-    let (m2, comp2) ← linearFormOfExpr red m1 e2
+    let (m1, comp1) ← go m e1
+    let (m2, comp2) ← go m1 e2
     return (m2, comp1.mul comp2)
   | (``HAdd.hAdd, #[_, _, _, _, e1, e2]) => do
-    let (m1, comp1) ← linearFormOfExpr red m e1
-    let (m2, comp2) ← linearFormOfExpr red m1 e2
+    let (m1, comp1) ← go m e1
+    let (m2, comp2) ← go m1 e2
     return (m2, comp1 + comp2)
   | (``HSub.hSub, #[_, _, _, _, e1, e2]) => do
-    let (m1, comp1) ← linearFormOfExpr red m e1
-    let (m2, comp2) ← linearFormOfExpr red m1 e2
+    let (m1, comp1) ← go m e1
+    let (m2, comp2) ← go m1 e2
     return (m2, comp1 + comp2.mapVal (fun _ v => -v))
   | (``Neg.neg, #[_, _, e]) => do
-    let (m1, comp) ← linearFormOfExpr red m e
+    let (m1, comp) ← go m e
     return (m1, comp.mapVal (fun _ v => -v))
   | (``HPow.hPow, #[_, _, _, _, a, n]) => do
     match n.numeral? with
     | some n => do
-      let (m1, comp) ← linearFormOfExpr red m a
+      let (m1, comp) ← go m a
       return (m1, comp.pow n)
     | none => linearFormOfAtom red m e
   | _ => linearFormOfAtom red m e

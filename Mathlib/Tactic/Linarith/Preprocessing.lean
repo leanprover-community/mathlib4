@@ -299,16 +299,18 @@ This preprocessor is typically run last, after all inputs have been canonized.
 def nlinarithExtras : GlobalPreprocessor where
   name := "nonlinear arithmetic extras"
   transform ls := do
-    -- find the squares in `AtomM` to ensure deterministic behavior
-    let s ← AtomM.run .reducible do
-      let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-        RBSet.empty
-      si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
+    let s ← withTraceNode `linarith (fun
+      | .ok se => return m!"nlinarith preprocessing found squares: {se}"
+      | .error e => return m!"error: {e.toMessageData}"
+    ) do
+      -- find the squares in `AtomM` to ensure deterministic behavior
+      AtomM.run .reducible do
+        let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+          RBSet.empty
+        si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
     let new_es ← s.filterMapM fun (e, is_sq) =>
       observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
     let new_es ← compWithZero.globalize.transform new_es
-    trace[linarith] "nlinarith preprocessing found squares"
-    trace[linarith] "{s}"
     linarithTraceProofs "so we added proofs" new_es
     let with_comps ← (new_es ++ ls).mapM (fun e => do
       let tp ← inferType e
