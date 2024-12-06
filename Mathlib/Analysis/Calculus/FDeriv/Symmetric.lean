@@ -154,15 +154,21 @@ theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f 
   exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
 /-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt (hf : ContDiffWithinAt 𝕜 ω f s x)
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt 𝕜 ω f s x)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
   intro v w
-  rw [← iteratedFDerivWithin_two_apply' f hs hx, ← iteratedFDerivWithin_two_apply' f hs hx]
-  sorry
+  rw [← iteratedFDerivWithin_two_apply' f hs hx, ← iteratedFDerivWithin_two_apply' f hs hx,
+    ← hf.iteratedFDerivWithin_comp_perm hs hx _ (Equiv.swap 0 1)]
+  congr
+  ext i
+  fin_cases i <;> rfl
 
-
-#exit
+/-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
+theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
+    IsSymmSndFDerivAt 𝕜 f x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at hf ⊢
+  exact hf.isSymmSndFDerivWithinAt_of_omega uniqueDiffOn_univ (mem_univ _)
 
 end General
 
@@ -474,14 +480,24 @@ instance (priority := 100) [h : IsRCLikeNormedField 𝕜] (n : WithTop ℕ∞) :
 
 instance : IsAdmissibleSmoothness 𝕜 ω := ⟨Or.inl rfl⟩
 
+variable (𝕜) in
+lemma IsAdmissibleSmoothness.exists_le {n : WithTop ℕ∞} {m : ℕ}
+    [h : IsAdmissibleSmoothness 𝕜 n] (hm : m ≤ n) :
+    ∃ n', IsAdmissibleSmoothness 𝕜 n' ∧ m ≤ n' ∧ n' ≤ n ∧ n' ≠ ∞ := by
+  rcases eq_or_ne n ω with rfl | hω
+  · exact ⟨ω, by infer_instance, le_top, le_rfl, by simp⟩
+  refine ⟨m, ?_, le_rfl, hm, by simp⟩
+  rcases h.out with hn | hn
+  · exact (hω hn).elim
+  · infer_instance
+
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
 theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞} [h : IsAdmissibleSmoothness 𝕜 n]
-    (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
-    IsSymmSndFDerivAt 𝕜 f x := by
+    (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) : IsSymmSndFDerivAt 𝕜 f x := by
   rcases h.out with rfl | hk
   -- first deal with the case of analytic functions over an arbitrary normed field
-  · sorry
+  · exact hf.isSymmSndFDerivAt_of_omega
   -- then deal with the `ℝ` or `ℂ` case, where `C^2` is enough.
   · intro v w
     apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
@@ -501,13 +517,14 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞} [h : IsAdmissibleSmoot
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. -/
 theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
-    [IsAdmissibleSmoothness 𝕜 n] (hf : ContDiffWithinAt 𝕜 n f s x)
+    [h : IsAdmissibleSmoothness 𝕜 n] (hf : ContDiffWithinAt 𝕜 n f s x)
     (hn : 2 ≤ n) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
   /- We argue that, at interior points, the second derivative is symmetric, and moreover by
   continuity it converges to the second derivative at `x`. Therefore, the latter is also
   symmetric. -/
-  rcases (hf.of_le hn).contDiffOn' le_rfl (by simp) with ⟨u, u_open, xu, hu⟩
+  obtain ⟨m, m_inst, hm, hmn, m_ne⟩ := IsAdmissibleSmoothness.exists_le 𝕜 hn
+  rcases (hf.of_le hmn).contDiffOn' le_rfl (by simp [m_ne]) with ⟨u, u_open, xu, hu⟩
   simp only [insert_eq_of_mem h'x] at hu
   have h'u : UniqueDiffOn 𝕜 (s ∩ u) := hs.inter u_open
   obtain ⟨y, hy, y_lim⟩ : ∃ y, (∀ (n : ℕ), y n ∈ interior s) ∧ Tendsto y atTop (𝓝 x) :=
@@ -519,7 +536,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
       apply mem_of_superset (isOpen_interior.mem_nhds (hy k))
       exact interior_subset
     have : IsSymmSndFDerivAt 𝕜 f (y k) := by
-      apply ContDiffAt.isSymmSndFDerivAt _ le_rfl
+      apply ContDiffAt.isSymmSndFDerivAt _ (n := m) hm
       apply (hu (y k) ⟨(interior_subset (hy k)), hk⟩).contDiffAt
       exact inter_mem s_mem (u_open.mem_nhds hk)
     intro v w
@@ -527,7 +544,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
     exact this v w
   have A : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s) (s ∩ u) := by
     have : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f (s ∩ u)) (s ∩ u)) (s ∩ u) :=
-      ((hu.fderivWithin h'u (m := 1) le_rfl).fderivWithin h'u (m := 0) le_rfl).continuousOn
+      ((hu.fderivWithin h'u (m := 1) hm).fderivWithin h'u (m := 0) le_rfl).continuousOn
     apply this.congr
     intro y hy
     apply fderivWithin_fderivWithin_eq_of_eventuallyEq
