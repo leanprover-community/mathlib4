@@ -513,6 +513,16 @@ theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
   letI : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
   exact RingHom.injective _
 
+/-- If `A ⊗[R] B` is a field, then for any
+ring `S` and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
+theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
+    [Algebra R A] [Algebra R B] (H : IsField (A ⊗[R] B))
+    (fa : A →ₐ[R] S) (fb : B →ₐ[R] S) (hfa : Function.Injective fa) (hfb : Function.Injective fb) :
+    fa.range.LinearDisjoint fb.range := by
+  apply of_isField
+  exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
+    (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
+
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 :=

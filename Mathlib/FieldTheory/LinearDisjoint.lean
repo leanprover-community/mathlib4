@@ -359,17 +359,27 @@ theorem isDomain' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
 
 /-- If `A ⊗[F] L` is a field, then `A` and `L` are linearly disjoint. -/
 theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
-  replace H : IsField (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) := by
-    -- need these otherwise the `exact` will stuck at typeclass
-    haveI : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
-    haveI : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
-    letI : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
-    letI : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
-      Algebra.TensorProduct.instMul
-    exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
-      (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
-        |>.symm.toMulEquiv.isField _ H
-  exact Subalgebra.LinearDisjoint.of_isField H
+  apply Subalgebra.LinearDisjoint.of_isField
+  -- need these otherwise the `exact` will stuck at typeclass
+  haveI : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
+  haveI : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
+  letI : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
+  letI : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
+    Algebra.TensorProduct.instMul
+  exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
+    (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
+      |>.symm.toMulEquiv.isField _ H
+
+/-- If `A` and `B` are field extensions `F`, such that `A ⊗[F] B` is a field, then for any
+field `K` and injections of `A` and `B` into `K`, their images are linearly disjoint. -/
+theorem of_isField' {A : Type v} [Field A] {B : Type w} [Field B]
+    [Algebra F A] [Algebra F B] (H : IsField (A ⊗[F] B))
+    {K : Type*} [Field K] [Algebra F K] (fa : A →ₐ[F] K) (fb : B →ₐ[F] K) :
+    fa.fieldRange.LinearDisjoint fb.fieldRange := by
+  rw [linearDisjoint_iff']
+  apply Subalgebra.LinearDisjoint.of_isField
+  exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa fa.injective)
+    (AlgEquiv.ofInjective fb fb.injective) |>.symm.toMulEquiv.isField _ H
 
 variable (F) in
 /-- If `A` and `B` are field extensions `F`, such that `A ⊗[F] B` is a domain, then there exists
@@ -382,6 +392,34 @@ theorem exists_field_of_isDomain (A : Type v) [Field A] (B : Type w) [Field B]
     Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective F A B
       (RingHom.injective _) (RingHom.injective _)
   ⟨K, inst1, inst2, fa, fb, linearDisjoint_iff'.2 H⟩
+
+variable (F) in
+/-- If for any field `K` and injections of `A` and `B` into `K`, their images are
+linearly disjoint, then `A ⊗[F] B` is a field. (In the proof we choose `K` to be the quotient
+of `A ⊗[F] B` by a maximal ideal.) -/
+theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
+    [Algebra F A] [Algebra F B]
+    (H : ∀ (K : Type (max v w)) [Field K] [Algebra F K],
+      ∀ (fa : A →ₐ[F] K) (fb : B →ₐ[F] K), fa.fieldRange.LinearDisjoint fb.fieldRange) :
+    IsField (A ⊗[F] B) := by
+  have := Algebra.TensorProduct.includeRight_injective (B := B) (algebraMap F A).injective
+    |>.nontrivial
+  obtain ⟨M, hM⟩ := Ideal.exists_maximal (A ⊗[F] B)
+  apply not_imp_not.1 (Ring.ne_bot_of_isMaximal_of_not_isField hM)
+  let K : Type (max v w) := A ⊗[F] B ⧸ M
+  letI : Field K := Ideal.Quotient.field _
+  let i := IsScalarTower.toAlgHom F (A ⊗[F] B) K
+  let fa := i.comp (Algebra.TensorProduct.includeLeft : A →ₐ[F] _)
+  let fb := i.comp (Algebra.TensorProduct.includeRight : B →ₐ[F] _)
+  replace H := H K fa fb
+  simp_rw [linearDisjoint_iff', AlgHom.fieldRange_toSubalgebra,
+    Subalgebra.linearDisjoint_iff_injective] at H
+  have hi : i = (fa.range.mulMap fb.range).comp (Algebra.TensorProduct.congr
+      (AlgEquiv.ofInjective fa fa.injective) (AlgEquiv.ofInjective fb fb.injective)) := by
+    ext <;> simp [fa, fb]
+  replace H : Function.Injective i := by simpa [hi]
+  change Function.Injective (Ideal.Quotient.mk M) at H
+  rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 
 section
 
