@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Defs
 
 /-!
 # Matrix and vector notation

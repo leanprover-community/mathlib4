@@ -43,6 +43,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
+  α := X
   instHopfAlgebra := (inferInstance : HopfAlgebra R X)
 
 variable {R}

@@ -96,8 +96,8 @@ theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
 
 end Ext
 
-instance : Inf (ExtensionOf i f) where
-  inf X1 X2 :=
+instance : Min (ExtensionOf i f) where
+  min X1 X2 :=
     { X1.toLinearPMap ⊓
         X2.toLinearPMap with
       le := fun x hx =>

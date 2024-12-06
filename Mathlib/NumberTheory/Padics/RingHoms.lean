@@ -40,7 +40,7 @@ which removes some boilerplate code.
 noncomputable section
 
 open scoped Classical
-open Nat LocalRing Padic
+open Nat IsLocalRing Padic
 
 namespace PadicInt
 
@@ -178,14 +178,24 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   apply max_lt hr
   simpa using hn
 
+theorem exists_unique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
+  obtain ⟨n, hn₁, hn₂⟩ := exists_mem_range x
+  use n, ⟨hn₁, hn₂⟩, fun m ⟨hm₁, hm₂⟩ ↦ ?_
+  have := (zmod_congr_of_sub_mem_max_ideal x n m hn₂ hm₂).symm
+  rwa [ZMod.natCast_eq_natCast_iff, ModEq, mod_eq_of_lt hn₁, mod_eq_of_lt hm₁] at this
+
 /-- `zmod_repr x` is the unique natural number smaller than `p`
 satisfying `‖(x - zmod_repr x : ℤ_[p])‖ < 1`.
 -/
 def zmodRepr : ℕ :=
-  Classical.choose (exists_mem_range x)
+  Classical.choose (exists_unique_mem_range x).exists
 
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
-  Classical.choose_spec (exists_mem_range x)
+  Classical.choose_spec (exists_unique_mem_range x).exists
+
+theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
+  have h := (Classical.choose_spec (exists_unique_mem_range x)).right
+  (h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
   (zmodRepr_spec _).1
@@ -289,7 +299,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
   · simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
   simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
-  have hp : p ^ n < p ^ (n + 1) := by apply pow_lt_pow_right hp_prime.1.one_lt (lt_add_one n)
+  have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
   split_ifs with h
   · apply lt_trans (ih _) hp
   · calc
@@ -393,7 +403,7 @@ theorem ker_toZModPow (n : ℕ) :
     rw [zmod_congr_of_sub_mem_span n x _ 0 _ h, cast_zero]
     apply appr_spec
 
--- @[simp] -- Porting note: not in simpNF
+-- This is not a simp lemma; simp can't match the LHS.
 theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
     (ZMod.castHom (pow_dvd_pow p h) (ZMod (p ^ m))).comp (@toZModPow p _ n) = @toZModPow p _ m := by
   apply ZMod.ringHom_eq_of_ker_eq
@@ -489,7 +499,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   intro j hj
   refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
-  -- Added to adapt to leanprover/lean4#2734.
+  -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
   beta_reduce
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]

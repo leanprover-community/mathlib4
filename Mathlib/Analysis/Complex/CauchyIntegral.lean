@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.Dslope
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Data.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
@@ -577,9 +578,9 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
-protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : WithTop ℕ∞}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
-  (hd.analyticOnNhd hs).contDiffOn
+  (hd.analyticOnNhd hs).contDiffOn_of_completeSpace
 
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
@@ -587,7 +588,8 @@ protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differe
   hf.differentiableOn.analyticAt univ_mem
 
 /-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
-protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
+protected theorem _root_.Differentiable.contDiff
+    {f : ℂ → E} (hf : Differentiable ℂ f) {n : WithTop ℕ∞} :
     ContDiff ℂ n f :=
   contDiff_iff_contDiffAt.mpr fun z ↦ (hf.analyticAt z).contDiffAt
 

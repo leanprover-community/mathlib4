@@ -22,7 +22,7 @@ this is a small category at the next higher level.
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [CategoryTheory universes].
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open NatTrans Category CategoryTheory.Functor
 
@@ -31,6 +31,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 attribute [local simp] vcomp_app
 
 variable {C D} {E : Type u₃} [Category.{v₃} E]
+variable {E' : Type u₄} [Category.{v₄} E']
 variable {F G H I : C ⥤ D}
 
 /-- `Functor.category C D` gives the category structure on functors and natural transformations
@@ -76,6 +77,13 @@ theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f 
 theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : X ⟶ Y) :
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
   congr_fun (congr_arg app (T.naturality f)) Z
+
+@[reassoc]
+theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
+    (α : F ⟶ G) {X₁ Y₁ : C} (f : X₁ ⟶ Y₁) (X₂ : D) (X₃ : E) :
+    ((F.map f).app X₂).app X₃ ≫ ((α.app Y₁).app X₂).app X₃ =
+      ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
+  congr_app (NatTrans.naturality_app α X₂ f) X₃
 
 /-- A natural transformation is a monomorphism if each component is. -/
 theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=

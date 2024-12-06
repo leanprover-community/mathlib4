@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Jalex Stark
 -/
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Laurent
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.RingTheory.Polynomial.Nilpotent

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Radical of an element of a unique factorization normalization monoid

@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Tactic.FinCases
 import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Tactic.FinCases
 
 /-!
 # Measurable spaces and measurable functions
@@ -56,7 +57,7 @@ open Set Encodable Function Equiv Filter MeasureTheory
 
 universe uι
 
-variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort uι} {s : Set α}
 
 namespace MeasurableSpace
 
@@ -213,7 +214,7 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
--- Porting note (#11215): TODO: add TC `DiscreteMeasurable` + instances
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
@@ -226,7 +227,7 @@ variable {f g : α → β}
 
 section TypeclassMeasurableSpace
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable [MeasurableSpace α] [MeasurableSpace β]
 
 @[nontriviality, measurability]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
@@ -626,7 +627,6 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
     · intro z hz
       simp only [mem_iInter, mem_compl_iff]
       intro i hi
-      show z ∈ s i
       exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
     · apply compl_subset_compl.1
       intro z hz
@@ -802,7 +802,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     ∃ f : α → β, Measurable f ∧ ∀ n, EqOn f (g n) (t n) := by
   inhabit ι
   set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)
-  -- see #2184
+  -- see https://github.com/leanprover-community/mathlib4/issues/2184
   have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩ := by
     intro i j x hxi hxj
     rcases eq_or_ne i j with rfl | hij
@@ -1420,7 +1420,7 @@ instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ t) = (s ∪ t : Set α) :=
   rfl
 
-instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instSup : Max (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 @[simp]
@@ -1433,7 +1433,7 @@ instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ t) = (s ∩ t : Set α) :=
   rfl
 
-instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instInf : Min (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 @[simp]

@@ -22,6 +22,7 @@ The topological closure of a star subalgebra is still a star subalgebra,
 which as a star algebra is a topological star algebra.
 -/
 
+open Topology
 namespace StarSubalgebra
 
 section TopologicalStarAlgebra
@@ -36,7 +37,7 @@ instance [TopologicalSemiring A] (s : StarSubalgebra R A) : TopologicalSemiring 
 lemma isEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) :
     IsEmbedding (inclusion h) where
   eq_induced := Eq.symm induced_compose
-  inj := Subtype.map_injective h Function.injective_id
+  injective := Subtype.map_injective h Function.injective_id
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_inclusion := isEmbedding_inclusion
@@ -235,7 +236,7 @@ alias _root_.elementalStarAlgebra.le_of_isClosed_of_mem := le_of_mem
 /-- The coercion from an elemental algebra to the full algebra as a `IsClosedEmbedding`. -/
 theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x → A) where
   eq_induced := rfl
-  inj := Subtype.coe_injective
+  injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
 
 @[deprecated (since := "2024-11-05")]

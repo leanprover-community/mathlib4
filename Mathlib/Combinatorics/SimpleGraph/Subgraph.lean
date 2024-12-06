@@ -265,8 +265,8 @@ theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
   Subgraph.ext hV hadj
 
 /-- The union of two subgraphs. -/
-instance : Sup G.Subgraph where
-  sup G₁ G₂ :=
+instance : Max G.Subgraph where
+  max G₁ G₂ :=
     { verts := G₁.verts ∪ G₂.verts
       Adj := G₁.Adj ⊔ G₂.Adj
       adj_sub := fun hab => Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
@@ -274,8 +274,8 @@ instance : Sup G.Subgraph where
       symm := fun _ _ => Or.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The intersection of two subgraphs. -/
-instance : Inf G.Subgraph where
-  inf G₁ G₂ :=
+instance : Min G.Subgraph where
+  min G₁ G₂ :=
     { verts := G₁.verts ∩ G₂.verts
       Adj := G₁.Adj ⊓ G₂.Adj
       adj_sub := fun hab => G₁.adj_sub hab.1
@@ -1077,11 +1077,11 @@ theorem induce_mono (hg : G' ≤ G'') (hs : s ⊆ s') : G'.induce s ≤ G''.indu
     intro v w hv hw ha
     exact ⟨hs hv, hs hw, hg.2 ha⟩
 
-@[mono]
+@[gcongr, mono]
 theorem induce_mono_left (hg : G' ≤ G'') : G'.induce s ≤ G''.induce s :=
   induce_mono hg subset_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem induce_mono_right (hs : s ⊆ s') : G'.induce s ≤ G'.induce s' :=
   induce_mono le_rfl hs
 
@@ -1159,12 +1159,12 @@ theorem deleteVerts_empty : G'.deleteVerts ∅ = G' := by
 theorem deleteVerts_le : G'.deleteVerts s ≤ G' := by
   constructor <;> simp [Set.diff_subset]
 
-@[mono]
+@[gcongr, mono]
 theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.diff_subset_diff_left h.1)
 
-@[mono]
+@[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
   induce_mono (le_refl _) (Set.diff_subset_diff_right h)
 

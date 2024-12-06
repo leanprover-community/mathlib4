@@ -154,15 +154,15 @@ theorem ordCompl_mul (a b p : ℕ) : ordCompl[p] (a * b) = ordCompl[p] a * ordCo
 /-- A crude upper bound on `n.factorization p` -/
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
   by_cases pp : p.Prime
-  · exact (pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
-      lt_pow_self pp.one_lt _
+  · exact (Nat.pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
+      Nat.lt_pow_self pp.one_lt
   · simpa only [factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
   if hn : n = 0 then simp [hn] else
   if pp : p.Prime then
-    exact (pow_le_pow_iff_right pp.one_lt).1 ((ordProj_le p hn).trans hb)
+    exact (Nat.pow_le_pow_iff_right pp.one_lt).1 ((ordProj_le p hn).trans hb)
   else
     simp [factorization_eq_zero_of_non_prime n pp]
 
@@ -270,7 +270,7 @@ and `n'` such that `n'` is not divisible by `p` and `n = p^e * n'`. -/
 theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p ≠ 1) :
     ∃ e n' : ℕ, ¬p ∣ n' ∧ n = p ^ e * n' :=
   let ⟨a', h₁, h₂⟩ :=
-    (Nat.multiplicity_finite_iff.mpr ⟨hp, Nat.pos_of_ne_zero hn⟩).exists_eq_pow_mul_and_not_dvd
+    (Nat.finiteMultiplicity_iff.mpr ⟨hp, Nat.pos_of_ne_zero hn⟩).exists_eq_pow_mul_and_not_dvd
   ⟨_, a', h₂, h₁⟩
 
 /-- Any nonzero natural number is the product of an odd part `m` and a power of
@@ -356,7 +356,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   · simp
   rcases eq_or_ne d 0 with (rfl | hd)
   · simp only [zero_dvd_iff, hn, false_iff, not_forall]
-    exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (lt_two_pow n).not_le⟩
+    exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (n.lt_two_pow_self).not_le⟩
   refine ⟨fun h p k _ hpkd => dvd_trans hpkd h, ?_⟩
   rw [← factorization_prime_le_iff_dvd hd hn]
   intro h p pp
@@ -522,7 +522,7 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   simp only [Finset.mem_filter, mem_Ico, mem_Icc, and_congr_left_iff, and_congr_right_iff]
   rintro h1 -
   exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) <|
-    (pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
+    (Nat.pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
 
 /-! ### Factorization and coprimes -/
 

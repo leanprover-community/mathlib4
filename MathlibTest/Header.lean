@@ -12,7 +12,7 @@ import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Subfield
 
 /--
-warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
+warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: Files in mathlib cannot import the whole tactic folder.

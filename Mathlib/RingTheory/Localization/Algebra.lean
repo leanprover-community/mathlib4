@@ -32,6 +32,7 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
 open IsLocalization in
 variable (M S) in
 /-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
+-- TODO: golf using `Ideal.localized'_eq_map`
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
     IsLocalizedModule M (Algebra.idealMap I (S := S)) where
   map_units x :=

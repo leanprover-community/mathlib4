@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Ideals in localizations of commutative rings
@@ -24,10 +24,21 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 variable [Algebra R S] [IsLocalization M S]
 
+variable {M S} in
+theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
+  constructor <;> intro h
+  · rw [← mk'_spec S x y, mul_comm]
+    exact I.mul_mem_left ((algebraMap R S) y) h
+  · rw [← mk'_spec S x y] at h
+    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
+    have := I.mul_mem_left b h
+    rwa [mul_comm, mul_assoc, hb, mul_one] at this
+
 /-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
 In practice, this ideal differs only in that the carrier set is defined explicitly.
 This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
+-- TODO: golf this using `Submodule.localized'`
 private def map_ideal (I : Ideal R) : Ideal S where
   carrier := { z : S | ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 }
   zero_mem' := ⟨⟨0, 1⟩, by simp⟩

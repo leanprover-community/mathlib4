@@ -3,9 +3,9 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson
+import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
@@ -27,8 +27,6 @@ open Ideal
 noncomputable section
 
 namespace MvPolynomial
-
-open MvPolynomial
 
 variable {k : Type*} [Field k]
 variable {σ : Type*}

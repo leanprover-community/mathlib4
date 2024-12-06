@@ -140,8 +140,6 @@ theorem catalan_three : catalan 3 = 5 := by
 
 namespace Tree
 
-open Tree
-
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
 abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=

@@ -43,7 +43,7 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 /-- Any `ChosenFiniteProducts` on `A` induce a `ChosenFiniteProducts` structures on `A`-valued
 sheaves. -/
 @[simps! product_cone_pt_val terminal_cone_pt_val_obj terminal_cone_pt_val_map]
-noncomputable instance chosenFiniteProducts: ChosenFiniteProducts (Sheaf J A) where
+noncomputable instance chosenFiniteProducts : ChosenFiniteProducts (Sheaf J A) where
   product X Y :=
     { cone := BinaryFan.mk
           (P := { val := X.val ⊗ Y.val
@@ -93,10 +93,27 @@ lemma chosenFiniteProducts_whiskerLeft_val : (X ◁ f).val = (X.val ◁ f.val) :
 @[simp]
 lemma chosenFiniteProducts_whiskerRight_val : (f ▷ X).val = (f.val ▷ X.val) := rfl
 
+end Sheaf
+
 /-- The inclusion from sheaves to presheaves is monoidal with respect to the cartesian monoidal
 structures. -/
-@[simps!]
-noncomputable def monoidalSheafToPresheaf : MonoidalFunctor (Sheaf J A) (Cᵒᵖ ⥤ A) :=
-  Functor.toMonoidalFunctorOfChosenFiniteProducts (sheafToPresheaf J A)
+noncomputable instance sheafToPresheafMonoidal : (sheafToPresheaf J A).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun F G ↦ Iso.refl _ }
 
-end CategoryTheory.Sheaf
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
+@[simp]
+lemma sheafToPresheaf_ε : ε (sheafToPresheaf J A) = 𝟙 _ := rfl
+@[simp]
+lemma sheafToPresheaf_η : η (sheafToPresheaf J A) = 𝟙 _ := rfl
+
+variable {J}
+
+@[simp]
+lemma sheafToPresheaf_μ (X Y : Sheaf J A) : μ (sheafToPresheaf J A) X Y = 𝟙 _ := rfl
+@[simp]
+lemma sheafToPresheaf_δ (X Y : Sheaf J A) : δ (sheafToPresheaf J A) X Y = 𝟙 _ := rfl
+
+end CategoryTheory

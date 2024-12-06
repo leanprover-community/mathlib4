@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Tactic.GCongr
 
 /-!
@@ -259,7 +260,7 @@ theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f 
   refine tendsto_atTop.mpr fun s => ?_
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   replace hn : s ≤ (n : ℤ) • r := by simpa
-  exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul hr.le ha)
+  exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul_left hr.le ha)
 
 theorem Tendsto.atTop_zsmul_neg_const {f : α → ℤ} (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atBot := by simpa using hf.atTop_zsmul_const (neg_pos.2 hr)

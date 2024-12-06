@@ -42,9 +42,9 @@ lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ 
   obtain ⟨i, hi⟩ : ∃ i : ι, e a i ≠ 1 := by
     contrapose! ha
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
-  have hi : Multiplicative.toAdd (e a i) ≠ 0 := by
+  have hi : (e a i).toAdd ≠ 0 := by
     simp only [ne_eq, toAdd_eq_zero, hi, not_false_eq_true]
-  obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) (Multiplicative.toAdd <| e a i) hi
+  obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
 
@@ -63,7 +63,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
 /-- A finite commutative group `G` is (noncanonically) isomorphic to the group `G →* Mˣ`
 when `M` is a commutative monoid with enough `n`th roots of unity, where `n` is the exponent
 of `G`. -/
-theorem mulEquiv_monoidHom_of_hasEnoughRootsOfUnity : Nonempty (G ≃* (G →* Mˣ)) := by
+theorem monoidHom_mulEquiv_of_hasEnoughRootsOfUnity : Nonempty ((G →* Mˣ) ≃* G) := by
   classical -- to get `DecidableEq ι`
   obtain ⟨ι, _, n, ⟨h₁, h₂⟩⟩ := equiv_prod_multiplicative_zmod_of_finite G
   let e := h₂.some
@@ -76,6 +76,6 @@ theorem mulEquiv_monoidHom_of_hasEnoughRootsOfUnity : Nonempty (G ≃* (G →* M
         using dvd_exponent e i
     exact HasEnoughRootsOfUnity.of_dvd M hdvd
   let E i := (IsCyclic.monoidHom_equiv_self (Multiplicative (ZMod (n i))) M).some
-  exact ⟨e.trans (MulEquiv.piCongrRight E).symm|>.trans e'.symm|>.trans e''.symm⟩
+  exact ⟨e''.trans <| e'.trans <| (MulEquiv.piCongrRight E).trans e.symm⟩
 
 end CommGroup

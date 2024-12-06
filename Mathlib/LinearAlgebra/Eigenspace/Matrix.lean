@@ -55,7 +55,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisor
       rw [mem_eigenspace_iff]
       exact (hasEigenvector_toLin_diagonal d i b).apply_eq_smul
     have hμ_not_mem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
-    have := eigenspaces_independent (toLin b b (diagonal d)) |>.disjoint_biSup hμ_not_mem
+    have := eigenspaces_iSupIndep (toLin b b (diagonal d)) |>.disjoint_biSup hμ_not_mem
     rw [h_iSup, disjoint_top] at this
     exact h_eig this
   · rintro ⟨i, rfl⟩

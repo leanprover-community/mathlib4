@@ -3,10 +3,9 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.GaloisConnection
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
@@ -96,17 +95,6 @@ lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
 
-/--
-The kernel of a ring homomorphism, as a two-sided ideal.
--/
-def ker : TwoSidedIdeal R :=
-  .mk'
-    {r | f r = 0} (map_zero _) (by rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2])
-    (by rintro _ (h : f _ = 0); simp [h]) (by rintro _ _ (h : f _ = 0); simp [h])
-    (by rintro _ _ (h : f _ = 0); simp [h])
-
-lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
-  delta ker; rw [mem_mk']; rfl
 
 end NonUnitalNonAssocRing
 
@@ -203,6 +191,47 @@ lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
       exact ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
     · rintro - x ⟨y, hy, r, -, rfl⟩
       exact ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
+
+variable (I : TwoSidedIdeal R)
+
+instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
+
+instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
+
+instance leftModule : Module R I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
+
+@[simp]
+lemma coe_smul {r : R} {x : I} : (r • x : R) = r * (x : R) := rfl
+
+instance rightModule : Module Rᵐᵒᵖ I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
+
+@[simp]
+lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : (r • x : R) = (x : R) * r.unop := rfl
+
+instance : SMulCommClass R Rᵐᵒᵖ I where
+  smul_comm r s x := Subtype.ext <| smul_comm r s x.1
+
+/--
+For any `I : RingCon R`, when we view it as an ideal, `I.subtype` is the injective `R`-linear map
+`I → R`.
+-/
+@[simps]
+def subtype : I →ₗ[R] R where
+  toFun x := x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/--
+For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
+map `I → Rᵐᵒᵖ`.
+-/
+@[simps]
+def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
+  toFun x := MulOpposite.op x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 /-- Given an ideal `I`, `span I` is the smallest two-sided ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where

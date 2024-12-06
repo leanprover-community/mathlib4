@@ -3,9 +3,9 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Algebra.Field.Subfield
-import Mathlib.Algebra.Ring.WithAbs
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Analysis.Normed.Module.Completion
+import Mathlib.Analysis.Normed.Ring.WithAbs
 import Mathlib.NumberTheory.NumberField.Embeddings
 
 /-!
@@ -70,8 +70,24 @@ instance : NormedField v.completion :=
   letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
+lemma norm_coe (x : WithAbs v.1) :
+    ‖(x : v.completion)‖ = v (WithAbs.equiv v.1 x) :=
+  UniformSpace.Completion.norm_coe x
+
 instance : Algebra K v.completion :=
   inferInstanceAs <| Algebra (WithAbs v.1) v.1.completion
+
+/-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
+lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
+    Rat.cast (WithAbs.equiv _ x) = (x : v.completion) :=
+  (eq_ratCast (UniformSpace.Completion.coeRingHom.comp
+    (WithAbs.ringEquiv v.1).symm.toRingHom) x).symm
+
+lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
+    ‖(x : v.completion)‖ = |x| := by
+  rw [← (WithAbs.equiv v.1).apply_symm_apply x, WithAbs.ratCast_equiv,
+    norm_coe, (WithAbs.equiv v.1).apply_symm_apply,
+    Rat.infinitePlace_apply]
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
