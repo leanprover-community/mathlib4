@@ -661,24 +661,16 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
 
 open UniqueFactorizationMonoid in
 /--
-The normalized factors of a polynomial times its leading coefficient give the polynomial.
+The normalized factors of a polynomial over a field times its leading coefficient give
+the polynomial.
 -/
 theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
     C a.leadingCoeff * (normalizedFactors a).prod = a := by
   by_cases ha : a = 0
   · simp [ha]
-  obtain ⟨v, hv⟩ := normalizedFactors_prod ha
-
-  -- nth_rw 3 [← hv]
-  -- rw [mul_comm]
-  -- congr 1
-  -- obtain ⟨v', -, hv'⟩ := Polynomial.isUnit_iff.mp v.isUnit
-  -- refine ⟨fun _ hb => ⟨irreducible_of_normalized_factor _ hb, ?_⟩,
-  --   by simpa [hv', mul_comm] using hv⟩
-  -- rw [← normalize_normalized_factor _ hb]
-  -- apply Polynomial.monic_normalize
-  -- apply Irreducible.ne_zero
-  -- exact irreducible_of_normalized_factor _ hb
+  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
+    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
+  simp_all
 
 end Field
 
