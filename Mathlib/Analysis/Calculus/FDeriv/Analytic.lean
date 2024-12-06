@@ -266,7 +266,7 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
     simp
 
 @[deprecated (since := "2024-09-26")]
-alias AnalyticOn.iteratedFDeriv := AnalyticOnNhd.iteratedFDeriv
+protected alias AnalyticOn.iteratedFDeriv := AnalyticOnNhd.iteratedFDeriv
 
 /-- If a function is analytic on a neighborhood of a set `s`, then it has a Taylor series given
 by the sequence of its derivatives. Note that, if the function were just analytic on `s`, then
