@@ -422,3 +422,28 @@ theorem tensorProduct_mapIncl_injective_of_left
 end Flat
 
 end Module
+
+section Injective
+
+open scoped TensorProduct
+
+variable {R S A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+
+namespace Algebra.TensorProduct
+
+theorem includeLeft_injective [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
+    Function.Injective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
+  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
+    |>.comp (_root_.TensorProduct.rid R A).symm.injective
+  ext; simp
+
+theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
+    Function.Injective (includeRight : B →ₐ[R] A ⊗[R] B) := by
+  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
+    |>.comp (_root_.TensorProduct.lid R B).symm.injective
+  ext; simp
+
+end Algebra.TensorProduct
+
+end Injective

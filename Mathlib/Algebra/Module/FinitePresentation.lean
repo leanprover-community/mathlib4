@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Noetherian.Basic
+
 /-!
 
 # Finitely Presented Modules
@@ -232,6 +235,36 @@ section CommRing
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 
+open TensorProduct in
+instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
+    Module.FinitePresentation A (A ⊗[R] M) := by
+  classical
+  obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
+  apply Module.finitePresentation_of_surjective (f.baseChange A)
+    (LinearMap.lTensor_surjective A hf)
+  have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
+    lTensor_exact A f.exact_subtype_ker_map hf
+  rw [LinearMap.exact_iff] at this
+  rw [this, ← Submodule.map_top]
+  apply Submodule.FG.map
+  have : Module.Finite R (LinearMap.ker f) :=
+    ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
+  exact Module.Finite.out (R := A) (M := A ⊗[R] LinearMap.ker f)
+
+open TensorProduct in
+lemma FinitePresentation.of_isBaseChange
+    {A} [CommRing A] [Algebra R A] [Module A N] [IsScalarTower R A N]
+    (f : M →ₗ[R] N) (h : IsBaseChange A f) [Module.FinitePresentation R M] :
+    Module.FinitePresentation A N :=
+  Module.finitePresentation_of_surjective
+    h.equiv.toLinearMap h.equiv.surjective (by simpa using Submodule.fg_bot)
+
+open TensorProduct in
+instance (S : Submonoid R) [Module.FinitePresentation R M] :
+    Module.FinitePresentation (Localization S) (LocalizedModule S M) :=
+  FinitePresentation.of_isBaseChange (LocalizedModule.mkLinearMap S M)
+    ((isLocalizedModule_iff_isBaseChange S _ _).mp inferInstance)
 
 lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     [h : Module.FinitePresentation R M] (g : M →ₗ[R] N') :

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Dimension of modules and vector spaces
@@ -353,12 +354,15 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     subsingleton
   · exact hw.trans_eq (Cardinal.mk_singleton _).symm
 
-lemma rank_le_of_smul_regular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
+lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
     (h : ∀ x ∈ L, s • x ∈ L') :
     Module.rank R L ≤ Module.rank R L' :=
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
+
+@[deprecated (since := "2024-11-21")]
+alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
 
 end
 

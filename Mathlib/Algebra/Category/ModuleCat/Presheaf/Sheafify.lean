@@ -314,10 +314,14 @@ def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by aesop) m₀ (by simp)).symm)
 
-@[simp]
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
-    DFunLike.coe (α := M₀.obj X) (β := fun _ ↦ A.val.obj X)
-      ((toSheafify α φ).app X) x = φ.app X x := rfl
+    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
+
+/-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
+@[simp]
+lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
+    DFunLike.coe (F := (_ →ₗ[_] ↑((ModuleCat.restrictScalars (α.app X)).obj _)))
+    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
@@ -370,7 +374,7 @@ def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
     sheafify α φ ⟶ sheafify α φ' where
   val := homMk τ.val (fun X r m ↦ by
     let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
-    suffices τ.val = (toPresheaf _).map f by simpa only [this] using (f.app X).map_smul r m
+    suffices τ.val = (toPresheaf _).map f by simpa only [this] using (f.app X).hom.map_smul r m
     apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
     dsimp [f]
     erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]

@@ -514,9 +514,12 @@ theorem isCompl_iff_coe_toSubmodule :
     IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
   simp only [isCompl_iff, disjoint_iff_coe_toSubmodule, codisjoint_iff_coe_toSubmodule]
 
-theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
-  simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
+theorem iSupIndep_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := by
+  simp [iSupIndep_def, disjoint_iff_coe_toSubmodule]
+
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_coe_toSubmodule := iSupIndep_iff_coe_toSubmodule
 
 theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
@@ -835,7 +838,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
     inf_coe_toSubmodule]
   rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
   Set.image_subset _ h
 
