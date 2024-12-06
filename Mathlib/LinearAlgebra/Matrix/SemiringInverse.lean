@@ -22,7 +22,7 @@ variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
 namespace Equiv.Perm
 
-/-- Filter permutations by parity. -/
+/-- Permutations of a given sign. -/
 def ofSign : Finset (Perm n) := univ.filter (sign · = s)
 
 @[simp]
@@ -45,7 +45,7 @@ end Equiv.Perm
 
 namespace Matrix
 
-/-- Filter determinant by parity. -/
+/-- The determinant, but only the terms of a given sign. -/
 def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 
 @[simp]
@@ -68,7 +68,7 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
   exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
 
-/-- Filter adjugate matrix by parity. -/
+/-- The adjugate matrix, but only the terms of a given sign. -/
 def adjp : Matrix n n R :=
   of fun i j ↦ ∑ σ ∈ (ofSign s).filter (· j = i), ∏ k ∈ {j}ᶜ, A k (σ k)
 
@@ -174,7 +174,7 @@ theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
   rw [mem_ofSign] at hσ hτ
   rw [← hσ, ← hτ, ← sign_inv] at h
   replace h := ne_of_apply_ne sign h
-  rw [Ne, eq_comm, eq_inv_iff_mul_eq_one, eq_comm] at h
+  rw [ne_eq, eq_comm, eq_inv_iff_mul_eq_one, eq_comm] at h
   simp_rw [Equiv.ext_iff, not_forall, Perm.mul_apply, Perm.one_apply] at h
   obtain ⟨k, hk⟩ := h
   rw [mul_comm, ← Equiv.prod_comp σ, mul_comm, ← prod_mul_distrib,
@@ -195,10 +195,10 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
   rw [mem_ofSign] at hσ hτ
   rw [← hσ.1, ← hτ, ← sign_inv] at h
   replace h := ne_of_apply_ne sign h
-  rw [Ne, eq_comm, eq_inv_iff_mul_eq_one] at h
+  rw [ne_eq, eq_comm, eq_inv_iff_mul_eq_one] at h
   obtain ⟨l, hl1, hl2⟩ := exists_ne_of_one_lt_card (one_lt_card_support_of_ne_one h) (τ⁻¹ j)
   rw [mem_support, ne_comm] at hl1
-  rw [Ne, ← mem_singleton, ← mem_compl] at hl2
+  rw [ne_eq, ← mem_singleton, ← mem_compl] at hl2
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
   apply IsAddUnit.smul_right
   have h0 : ∀ k, k ∈ ({τ⁻¹ j} : Finset n)ᶜ ↔ τ k ∈ ({j} : Finset n)ᶜ := by
@@ -228,8 +228,7 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
   intro A B hAB
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
-  have h := detp_smul_adjp hAB
-  replace h := congr(B * $h)
+  replace h := congr(B * $(detp_smul_adjp hAB))
   simp only [mul_add, mul_smul, add_assoc] at h
   replace h := congr($h + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) • 1)
   simp_rw [add_smul, ← smul_smul] at h
