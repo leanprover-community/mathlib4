@@ -54,22 +54,29 @@ theorem finrank_add_le_finrank_add_finrank (s t : Submodule K V) [FiniteDimensio
   rw [← finrank_sup_add_finrank_inf_eq]
   exact self_le_add_right _ _
 
-theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
-    (hdim : finrank K s + finrank K t = finrank K V) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
-  have h_finrank_inf : finrank K ↑(s ⊓ t) = 0 := by
-    rw [disjoint_iff_inf_le, le_bot_iff] at hdisjoint
-    rw [hdisjoint, finrank_bot]
-  apply eq_top_of_finrank_eq
-  rw [← hdim]
-  convert s.finrank_sup_add_finrank_inf_eq t
-  rw [h_finrank_inf]
-  rfl
-
 theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
     {s t : Submodule K V} (hdisjoint : Disjoint s t) :
     finrank K s + finrank K t ≤ finrank K V := by
   rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
   exact Submodule.finrank_le _
+
+theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
+    (hdim : finrank K V ≤ finrank K s + finrank K t) (hdisjoint : Disjoint s t) : s ⊔ t = ⊤ := by
+  have h_finrank_inf : finrank K ↑(s ⊓ t) = 0 := by
+    rw [disjoint_iff_inf_le, le_bot_iff] at hdisjoint
+    rw [hdisjoint, finrank_bot]
+  apply eq_top_of_finrank_eq
+  replace hdim : finrank K V = finrank K s + finrank K t :=
+    le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
+  rw [hdim]
+  convert s.finrank_sup_add_finrank_inf_eq t
+  rw [h_finrank_inf]
+  rfl
+
+theorem disjoint_iff_isCompl [FiniteDimensional K V] (s t : Submodule K V)
+    (hdim : finrank K V ≤ finrank K s + finrank K t) :
+    IsCompl s t ↔ Disjoint s t :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
 
 end DivisionRing
 
