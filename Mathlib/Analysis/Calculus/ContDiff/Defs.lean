@@ -1149,9 +1149,16 @@ theorem contDiff_omega_iff_analyticOnNhd :
 
 /-! ### Iterated derivative -/
 
+/-- When a function is `C^n`, it admits
+`ftaylorSeries 𝕜 f` as a Taylor series up to order `n` in `s`. -/
+theorem ContDiff.ftaylorSeries (hf : ContDiff 𝕜 n f) :
+    HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
+  simp only [← contDiffOn_univ, ← hasFTaylorSeriesUpToOn_univ_iff, ← ftaylorSeriesWithin_univ]
+    at hf ⊢
+  exact ContDiffOn.ftaylorSeriesWithin hf uniqueDiffOn_univ
 
-/-- When a function is `C^n` in a set `s` of unique differentiability, it admits
-`ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
+/-- For `n ≤ ∞`, a function is `C^n` iff it admits `ftaylorSeries 𝕜 f`
+as a Taylor series up to order `n`. -/
 theorem contDiff_iff_ftaylorSeries {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
   constructor

@@ -101,6 +101,11 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   simp [coe_fn_mk, inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
 
+lemma foo (n : ℕ) (hs : UniqueDiffOn 𝕜 s) (hf : ContDiffAt 𝕜 n f x) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDeriv 𝕜 n f x := by
+  have Z := hf.hasFTaylorSeriesUpTo
+
+
 lemma glouk [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hx : x ∈ s)
@@ -138,3 +143,9 @@ lemma glouk [CompleteSpace F]
   have J2 : iteratedFDerivWithin 𝕜 n (f - g) s x = 0 := by
     apply (h.sub B).iteratedFDerivWithin_eq_zero hu hx
     simp [q]
+  simp [J1, J2]
+  let g' : E → F := fun z ↦ p n (fun _ ↦ z)
+  have : g = fun z ↦ g' (z - x) := rfl
+  rw [this, iteratedFDerivWithin_comp_sub]
+  simp only [sub_self]
+  rw [iteratedFDerivWithin_of_mem]
