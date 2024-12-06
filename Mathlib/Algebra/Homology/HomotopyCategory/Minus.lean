@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.CochainComplexMinus
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
@@ -5,6 +10,11 @@ import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+
+/-!
+# K^-
+
+-/
 
 open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
 
@@ -17,14 +27,14 @@ namespace HomotopyCategory
 def subcategoryMinus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) where
   P K := ∃ (n : ℤ), CochainComplex.IsStrictlyLE K.1 n
   zero' := by
-    refine' ⟨⟨0⟩, _, ⟨0, _⟩⟩
+    refine ⟨⟨0⟩, ?_, ⟨0, ?_⟩⟩
     · change IsZero ((quotient _ _).obj 0)
       rw [IsZero.iff_id_eq_zero, ← (quotient _ _).map_id, id_zero, Functor.map_zero]
     · dsimp
       infer_instance
   shift := by
     rintro ⟨X : CochainComplex C ℤ⟩ n ⟨k, _ : X.IsStrictlyLE k⟩
-    refine' ⟨k - n, _⟩
+    refine ⟨k - n, ?_⟩
     erw [Quotient.functor_obj_shift]
     exact X.isStrictlyLE_shift k n (k - n) (by linarith)
   ext₂' T hT := by
@@ -39,8 +49,8 @@ def subcategoryMinus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) wh
     have e := isoTriangleOfIso₁₂ T₁ T₂ hT₁ hT₂ (Iso.refl _)
       (((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app T.obj₁.as)
       (by dsimp [T₁, T₂]; rw [id_comp, hf])
-    refine' ⟨(quotient C (ComplexShape.up ℤ)).obj ((shiftFunctor (CochainComplex C ℤ) (-1)).obj
-      (CochainComplex.mappingCone f)), _, ⟨_⟩⟩
+    refine ⟨(quotient C (ComplexShape.up ℤ)).obj ((shiftFunctor (CochainComplex C ℤ) (-1)).obj
+      (CochainComplex.mappingCone f)), ?_, ⟨?_⟩⟩
     · let n₀ : ℤ := max n₁ n₃ - 1
       have := le_max_left n₁ n₃
       have := le_max_right n₁ n₃
@@ -72,9 +82,9 @@ instance : (quasiIso A).IsMultiplicative := by
 instance : (quasiIso A).IsCompatibleWithShift ℤ where
   condition a := by
     ext X Y f
-    refine' Iff.trans _ (MorphismProperty.IsCompatibleWithShift.iff
+    refine Iff.trans ?_ (MorphismProperty.IsCompatibleWithShift.iff
       (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)) ((ι A).map f) a)
-    exact (quasiIso_respectsIso A).arrow_mk_iso_iff
+    exact (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)).arrow_mk_iso_iff
       (Arrow.isoOfNatIso ((ι A).commShiftIso a) (Arrow.mk f))
 
 def quotient : CochainComplex.Minus C ⥤ Minus C :=
@@ -91,7 +101,7 @@ def quotientCompι :
 noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
   SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
     (fun n => (subcategoryMinus C).lift (singleFunctor C n) (fun X => by
-      refine' ⟨n, _⟩
+      refine ⟨n, ?_⟩
       change ((CochainComplex.singleFunctor C n).obj X).IsStrictlyLE n
       infer_instance))
     (fun n => Iso.refl _)
@@ -121,7 +131,7 @@ def mapHomotopyCategoryMinus : HomotopyCategory.Minus C ⥤ HomotopyCategory.Min
   (HomotopyCategory.subcategoryMinus D).lift
     (HomotopyCategory.Minus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
       rintro ⟨X, ⟨n, _⟩⟩
-      refine' ⟨n, _⟩
+      refine ⟨n, ?_⟩
       dsimp [HomotopyCategory.Minus.ι, Subcategory.ι, HomotopyCategory.quotient, Quotient.functor]
       infer_instance)
 
@@ -134,19 +144,18 @@ instance : (F.mapHomotopyCategoryMinus).IsTriangulated := by
   infer_instance
 
 noncomputable instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryMinus where
-  preimage f := (F.mapHomotopyCategory _).preimage f
-  witness f := (F.mapHomotopyCategory _).image_preimage f
+  map_surjective f := ⟨(F.mapHomotopyCategory _).preimage f,
+    (F.mapHomotopyCategory _).map_preimage f⟩
 
 noncomputable instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryMinus where
   map_injective h := (F.mapHomotopyCategory _).map_injective h
-
 
 def mapHomotopyCategoryMinusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
     [HasBinaryBiproducts E]
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :
     H.mapHomotopyCategoryMinus ≅ F.mapHomotopyCategoryMinus ⋙ G.mapHomotopyCategoryMinus :=
-  natIsoOfCompFullyFaithful (HomotopyCategory.Minus.ι E)
+  ((HomotopyCategory.subcategoryMinus _).fullyFaithfulι.whiskeringRight _).preimageIso
     (isoWhiskerLeft (HomotopyCategory.Minus.ι C)
       (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)))
 

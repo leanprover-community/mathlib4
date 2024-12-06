@@ -1,11 +1,20 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+
+/-!
+# A balanced additive category with homology is abelian
+
+-/
 
 namespace CategoryTheory
 
 open Limits ZeroObject Preadditive
 
 variable (C : Type*) [Category C] [Preadditive C] [CategoryWithHomology C]
-  [HasFiniteProducts C] [Balanced C]
 
 namespace AbelianOfCategoryWithHomologyOfBalanced
 
@@ -19,6 +28,8 @@ end AbelianOfCategoryWithHomologyOfBalanced
 
 attribute [local instance] AbelianOfCategoryWithHomologyOfBalanced.hasKernels
   AbelianOfCategoryWithHomologyOfBalanced.hasCokernels
+
+variable [HasFiniteProducts C] [Balanced C]
 
 noncomputable def abelianOfCategoryWithHomologyOfBalanced : Abelian C where
   normalMonoOfMono f _ := ⟨_, _, _,

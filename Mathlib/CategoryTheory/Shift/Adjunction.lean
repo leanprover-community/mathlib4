@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Adjunction.Unique
 
 /-!
 # Adjoints commute with shifts
@@ -27,8 +28,9 @@ namespace Adjunction
 variable {C D : Type*} [Category C] [Category D]
   {G₁ G₂ G₃ : C ⥤ D} {F₁ F₂ F₃ : D ⥤ C} (adj₁ : G₁ ⊣ F₁) (adj₂ : G₂ ⊣ F₂) (adj₃ : G₃ ⊣ F₃)
 
+/-- natTransEquiv' -/
 @[simps! apply_app symm_apply_app]
-def natTransEquiv : (G₁ ⟶ G₂) ≃ (F₂ ⟶ F₁) where
+def natTransEquiv' : (G₁ ⟶ G₂) ≃ (F₂ ⟶ F₁) where
   toFun α := F₂.rightUnitor.inv ≫ whiskerLeft F₂ adj₁.unit ≫ whiskerLeft _ (whiskerRight α _) ≫
     (Functor.associator _ _ _).inv ≫ whiskerRight adj₂.counit F₁ ≫ F₁.leftUnitor.hom
   invFun β := G₁.leftUnitor.inv ≫ whiskerRight adj₂.unit G₁ ≫ whiskerRight (whiskerLeft _ β ) _ ≫
@@ -41,15 +43,15 @@ def natTransEquiv : (G₁ ⟶ G₂) ≃ (F₂ ⟶ F₁) where
       unit_naturality_assoc, right_triangle_components_assoc, ← α.naturality]
 
 @[simp]
-lemma natTransEquiv_id : natTransEquiv adj₁ adj₁ (𝟙 _) = 𝟙 _ := by aesop_cat
+lemma natTransEquiv_id : natTransEquiv' adj₁ adj₁ (𝟙 _) = 𝟙 _ := by aesop_cat
 
 @[simp]
-lemma natTransEquiv_symm_id : (natTransEquiv adj₁ adj₁).symm (𝟙 _) = 𝟙 _ := by aesop_cat
+lemma natTransEquiv_symm_id : (natTransEquiv' adj₁ adj₁).symm (𝟙 _) = 𝟙 _ := by aesop_cat
 
 @[reassoc (attr := simp)]
 lemma natTransEquiv_comp (α : G₁ ⟶ G₂) (β : G₂ ⟶ G₃) :
-    natTransEquiv adj₂ adj₃ β ≫ natTransEquiv adj₁ adj₂ α =
-      natTransEquiv adj₁ adj₃ (α ≫ β) := by
+    natTransEquiv' adj₂ adj₃ β ≫ natTransEquiv' adj₁ adj₂ α =
+      natTransEquiv' adj₁ adj₃ (α ≫ β) := by
   ext X
   apply (adj₁.homEquiv _ _).symm.injective
   dsimp
@@ -57,20 +59,21 @@ lemma natTransEquiv_comp (α : G₁ ⟶ G₂) (β : G₂ ⟶ G₃) :
 
 @[reassoc (attr := simp)]
 lemma natTransEquiv_symm_comp (α : F₃ ⟶ F₂) (β : F₂ ⟶ F₁) :
-    (natTransEquiv adj₁ adj₂).symm β ≫ (natTransEquiv adj₂ adj₃).symm α =
-      (natTransEquiv adj₁ adj₃).symm (α ≫ β) := by
-  obtain ⟨α', rfl⟩ := (natTransEquiv adj₂ adj₃).surjective α
-  obtain ⟨β', rfl⟩ := (natTransEquiv adj₁ adj₂).surjective β
+    (natTransEquiv' adj₁ adj₂).symm β ≫ (natTransEquiv' adj₂ adj₃).symm α =
+      (natTransEquiv' adj₁ adj₃).symm (α ≫ β) := by
+  obtain ⟨α', rfl⟩ := (natTransEquiv' adj₂ adj₃).surjective α
+  obtain ⟨β', rfl⟩ := (natTransEquiv' adj₁ adj₂).surjective β
   simp
 
+/-- natIsoEquiv' -/
 @[simps]
-def natIsoEquiv : (G₁ ≅ G₂) ≃ (F₁ ≅ F₂) where
+def natIsoEquiv' : (G₁ ≅ G₂) ≃ (F₁ ≅ F₂) where
   toFun e :=
-    { hom := natTransEquiv adj₂ adj₁ e.inv
-      inv := natTransEquiv adj₁ adj₂ e.hom }
+    { hom := natTransEquiv' adj₂ adj₁ e.inv
+      inv := natTransEquiv' adj₁ adj₂ e.hom }
   invFun e :=
-    { hom := (natTransEquiv adj₁ adj₂).symm e.inv
-      inv := (natTransEquiv adj₂ adj₁).symm e.hom }
+    { hom := (natTransEquiv' adj₁ adj₂).symm e.inv
+      inv := (natTransEquiv' adj₂ adj₁).symm e.hom }
   left_inv e := by dsimp; ext1; simp only [Equiv.symm_apply_apply]
   right_inv e := by dsimp; ext1; simp only [Equiv.apply_symm_apply]
 
@@ -151,7 +154,7 @@ noncomputable def adj₃ : G ⋙ shiftFunctor D b ⊣ F ⋙ shiftFunctor C a :=
 
 /-- Auxiliary definition for `iso`. -/
 noncomputable def iso' : shiftFunctor D a ⋙ F ≅ F ⋙ shiftFunctor C a :=
-  Adjunction.natIsoEquiv (adj₁ adj a b h) (adj₃ adj a b h) (Iso.refl _)
+  Adjunction.natIsoEquiv' (adj₁ adj a b h) (adj₃ adj a b h) (Iso.refl _)
 
 noncomputable def iso : shiftFunctor D a ⋙ F ≅ F ⋙ shiftFunctor C a :=
   iso' adj _ _ (neg_add_cancel a)

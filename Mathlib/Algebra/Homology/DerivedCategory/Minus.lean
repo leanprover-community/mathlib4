@@ -1,10 +1,20 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.HomotopyCategory.Minus
 import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 
+/-!
+# D^-
+
+-/
+
 open CategoryTheory Category Triangulated Limits
 
-variable {C : Type*} [Category C] [Abelian C] [HasDerivedCategory C]
+variable {C : Type*} [Category C] [Abelian C]
 
 namespace HomotopyCategory
 
@@ -35,6 +45,8 @@ namespace DerivedCategory
 open TStructure
 
 namespace Minus
+
+variable [HasDerivedCategory C]
 
 def Qh : HomotopyCategory.Minus C ⥤ Minus C :=
   t.minus.lift (HomotopyCategory.Minus.ι _ ⋙ DerivedCategory.Qh) (by
@@ -70,9 +82,9 @@ instance : IsLeftLocalizing (HomotopyCategory.Minus.ι C)
     have : IsIso (L.ιTruncLE n) := by
       rw [CochainComplex.isIso_ιTruncLE_iff]
       infer_instance
-    refine' ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.ιTruncLE n),
+    refine ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.ιTruncLE n),
       (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
-        (inv (L.ιTruncLE n) ≫ CochainComplex.truncLEMap φ n), _⟩
+        (inv (L.ιTruncLE n) ≫ CochainComplex.truncLEMap φ n), ?_⟩
     erw [← (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_comp]
     simp
 
@@ -86,8 +98,8 @@ instance : (Qh (C := C)).EssSurj := by
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
       Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
         rintro ⟨X, n, hn⟩
-        obtain ⟨K, e, h⟩ := hn.mem
-        refine' ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, h⟩,
+        obtain ⟨K, e, h⟩ := hn
+        exact ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, h⟩,
           ⟨Minus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩⟩
   intro X n hn
   have : (Q.objPreimage X).IsGE n := by
@@ -128,7 +140,7 @@ instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
   infer_instance
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
-  Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
+  Localization.essSurj_mapArrow _
     (HomotopyCategory.Minus.subcategoryAcyclic C).W
 
 variable {C}
@@ -193,3 +205,5 @@ lemma isIso_iff {X Y : DerivedCategory.Minus C} (f : X ⟶ Y) :
     apply isIso_of_fully_faithful ι
 
 end Minus
+
+end DerivedCategory

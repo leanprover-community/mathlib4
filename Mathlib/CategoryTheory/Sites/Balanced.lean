@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -30,8 +30,7 @@ open Limits
 
 variable {C : Type u} [Category.{v} C]
   {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
-  [(forget D).PreservesMonomorphisms] [HasLimitsOfShape WalkingCospan D]
-  [(forget D).ReflectsIsomorphisms] {J : GrothendieckTopology C}
+  {J : GrothendieckTopology C}
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
@@ -41,17 +40,8 @@ section
 
 variable {F G : Sheaf J D} (φ : F ⟶ G)
 
-lemma mono_of_injective
-    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x)) : Mono φ where
-  right_cancellation := by
-    intro H f₁ f₂ h
-    ext Z x
-    have eq := congr_fun ((forget D).congr_map (congr_app (congr_arg Sheaf.Hom.val h) Z)) x
-    dsimp at eq
-    simp only [FunctorToTypes.map_comp_apply] at eq
-    exact hφ Z eq
-
-lemma mono_iff_injective :
+lemma mono_iff_injective [(forget D).PreservesMonomorphisms]
+    [HasLimitsOfShape WalkingCospan D] :
     Mono φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x) := by
   constructor
   · intro _ X
@@ -61,7 +51,7 @@ lemma mono_iff_injective :
     infer_instance
   · apply mono_of_injective
 
-lemma isIso_iff_bijective :
+lemma isIso_iff_bijective [(forget D).ReflectsIsomorphisms] :
     IsIso φ ↔ ∀ (X : Cᵒᵖ), Function.Bijective (fun (x : F.1.obj X) => φ.1.app _ x) := by
   have : IsIso φ ↔ IsIso φ.1 := by
     change _ ↔ IsIso ((sheafToPresheaf _ _).map φ)
@@ -99,23 +89,23 @@ noncomputable def isLimit_of_isPushout_of_injective {X Y S : Type w} {f : X ⟶ 
     constructor
     · intro x₁ x₂ h
       apply h₁
-      have : c.fst = φ ≫ pullback.fst := by simp [φ]
+      have : c.fst = φ ≫ pullback.fst _ _ := by simp [φ]
       rw [this, types_comp_apply, types_comp_apply, h]
     · intro t
       obtain ⟨x, hx₁, hx₂⟩ := (Types.pushoutCocone_inl_eq_inr_iff_of_isColimit hc.isColimit h₁
         (@pullback.fst _ _ _ _ _ f g _ t)
         (@pullback.snd _ _ _ _ _ f g _ t)).1 (by
           dsimp
-          rw [← types_comp_apply (pullback.fst : pullback f g ⟶ _) f,
-            ← types_comp_apply (pullback.snd : pullback f g ⟶ _) g, pullback.condition])
-      refine' ⟨x, _⟩
+          rw [← types_comp_apply (pullback.fst f g) f,
+            ← types_comp_apply (pullback.snd f g) g, pullback.condition])
+      refine ⟨x, ?_⟩
       apply (Types.pullbackIsoPullback f g).toEquiv.injective
       ext
       · rw [Iso.toEquiv_fun, Types.pullbackIsoPullback_hom_fst,
-          ← types_comp_apply φ pullback.fst, pullback.lift_fst, hx₁,
+          ← types_comp_apply φ (pullback.fst _ _), pullback.lift_fst, hx₁,
           Types.pullbackIsoPullback_hom_fst]
       · rw [Iso.toEquiv_fun, Types.pullbackIsoPullback_hom_snd,
-          ← types_comp_apply φ pullback.snd, pullback.lift_snd, hx₂,
+          ← types_comp_apply φ (pullback.snd _ _), pullback.lift_snd, hx₂,
           Types.pullbackIsoPullback_hom_snd]
   exact IsLimit.ofIsoLimit (pullbackIsPullback _ _)
     (Iso.symm (PullbackCone.ext (asIso φ) (by simp [φ]) (by simp [φ])))
@@ -141,11 +131,11 @@ instance [HasSheafify J (Type w)] : Balanced (Sheaf J (Type w)) where
     have e : Arrow.mk φ ≅ ((presheafToSheaf J _).map φ.1) :=
       Arrow.isoOfNatIso (sheafificationNatIso J (Type w)) (Arrow.mk φ)
     have : Epi ((presheafToSheaf J _).map φ.1) :=
-      ((MorphismProperty.RespectsIso.epimorphisms _).arrow_mk_iso_iff e).1 (by simpa)
+      ((MorphismProperty.epimorphisms _).arrow_mk_iso_iff e).1 (by simpa)
     have : IsIso ((presheafToSheaf J _).map φ.1) :=
-      (MorphismProperty.StableUnderBaseChange.isomorphisms (Sheaf J (Type w)))
+      (MorphismProperty.isomorphisms _).of_isPullback
         (IsPullback.of_isLimit h₂') ((epi_iff_isIso_inl h₁').1 inferInstance)
-    exact ((MorphismProperty.RespectsIso.isomorphisms _).arrow_mk_iso_iff e).2 this
+    exact ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff e).2 this
 
 lemma epi_iff_isLocallySurjective
     {F G : Sheaf J (Type w)} (φ : F ⟶ G) [HasSheafify J (Type w)] :

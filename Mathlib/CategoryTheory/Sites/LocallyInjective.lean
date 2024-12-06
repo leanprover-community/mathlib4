@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.LeftExact
-<<<<<<< HEAD
-=======
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
->>>>>>> origin/ext-change-of-universes
 import Mathlib.CategoryTheory.Sites.Subsheaf
 import Mathlib.CategoryTheory.Sites.Whiskering
 
@@ -49,8 +46,6 @@ def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) : Sieve X.u
     dsimp at hf ⊢
     simp [hf]
 
-<<<<<<< HEAD
-=======
 @[simp]
 lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : F.obj X) :
     equalizerSieve x x = ⊤ := by aesop
@@ -64,7 +59,6 @@ lemma equalizerSieve_eq_top_iff {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X
   · rintro rfl
     apply equalizerSieve_self_eq_top
 
->>>>>>> origin/ext-change-of-universes
 variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
@@ -99,22 +93,6 @@ instance isLocallyInjective_forget [IsLocallyInjective J φ] :
     IsLocallyInjective J (whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
-<<<<<<< HEAD
-instance isLocallyInjective_comp [IsLocallyInjective J φ] [IsLocallyInjective J ψ] :
-    IsLocallyInjective J (φ ≫ ψ) where
-  equalizerSieve_mem {X} x y h := by
-    let S := equalizerSieve (φ.app _ x) (φ.app _ y)
-    let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y := fun Y f _ =>
-      equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
-    refine J.superset_covering ?_
-      (J.transitive (equalizerSieve_mem J ψ (φ.app _ x) (φ.app _ y) (by simpa using h))
-      (Sieve.bind S.1 T) ?_)
-    · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
-      simpa using ha
-    · intro U f hf
-      exact J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
-        (equalizerSieve_mem J φ (F₁.map f.op x) (F₁.map f.op y) (by simpa using hf))
-=======
 lemma isLocallyInjective_forget_iff :
     IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
@@ -153,7 +131,6 @@ instance isLocallyInjective_comp [IsLocallyInjective J φ] [IsLocallyInjective J
   equalizerSieve_mem {X} x y h := by
     apply equalizerSieve_mem_of_equalizerSieve_app_mem J φ
     exact equalizerSieve_mem J ψ _ _ (by simpa using h)
->>>>>>> origin/ext-change-of-universes
 
 lemma isLocallyInjective_of_isLocallyInjective [IsLocallyInjective J (φ ≫ ψ)] :
     IsLocallyInjective J φ where
@@ -181,20 +158,12 @@ lemma isLocallyInjective_comp_iff [IsLocallyInjective J ψ] :
     IsLocallyInjective J (φ ≫ ψ) ↔ IsLocallyInjective J φ :=
   isLocallyInjective_iff_of_fac J rfl
 
-<<<<<<< HEAD
-lemma isLocallyInjective_iff_injective_of_separated (hsep : IsSeparated J F₁) :
-    IsLocallyInjective J φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.app X) := by
-  constructor
-  · intro _ X x y h
-    exact hsep X.unop _ (equalizerSieve_mem J φ x y h) _ _ (fun _ _ hf => hf)
-=======
 lemma isLocallyInjective_iff_injective_of_separated
     (hsep : Presieve.IsSeparated J (F₁ ⋙ forget D)) :
     IsLocallyInjective J φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.app X) := by
   constructor
   · intro _ X x y h
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
->>>>>>> origin/ext-change-of-universes
   · apply isLocallyInjective_of_injective
 
 instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
@@ -205,26 +174,6 @@ instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
 
 section
 
-<<<<<<< HEAD
-variable {E : Type u'} [Category.{max u v} E] [ConcreteCategory E]
-  [PreservesLimits (forget E)]
-  [∀ (P : Cᵒᵖ ⥤ E) (X : C) (S : J.Cover X),
-    HasMultiequalizer (GrothendieckTopology.Cover.index S P)]
-  [∀ (X : C), HasColimitsOfShape (GrothendieckTopology.Cover J X)ᵒᵖ E]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget E)] [(forget E).ReflectsIsomorphisms]
-
-variable (P : Cᵒᵖ ⥤ E)
-
-open GrothendieckTopology Plus
-
-instance isLocallyInjective_toPlus : IsLocallyInjective J (J.toPlus P) where
-  equalizerSieve_mem {X} x y h := by
-    erw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
-    obtain ⟨W, h₁, h₂, eq⟩ := h
-    exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
-
-instance isLocallyInjective_toSheafify : IsLocallyInjective J (J.toSheafify P) := by
-=======
 open GrothendieckTopology.Plus
 
 instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
@@ -236,22 +185,16 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
 
 instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toSheafify P) := by
->>>>>>> origin/ext-change-of-universes
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-<<<<<<< HEAD
-instance isLocallyInjective_toSheafify' : IsLocallyInjective J (toSheafify J P) := by
-  rw [← toSheafify_plusPlusIsoSheafify_hom]
-=======
 instance isLocallyInjective_toSheafify' [ConcreteCategory.{max u v} D]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallyInjective J (toSheafify J P) := by
   rw [← isLocallyInjective_forget_iff, ← sheafComposeIso_hom_fac,
     ← toSheafify_plusPlusIsoSheafify_hom]
->>>>>>> origin/ext-change-of-universes
   infer_instance
 
 end
@@ -269,8 +212,6 @@ is equivalent to the injectivity of all maps `φ.val.app X`,
 see `isLocallyInjective_iff_injective`. -/
 abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.val
 
-<<<<<<< HEAD
-=======
 lemma isLocallyInjective_sheafToPresheaf_map_iff :
     Presheaf.IsLocallyInjective J ((sheafToPresheaf J D).map φ) ↔ IsLocallyInjective φ := by rfl
 
@@ -283,7 +224,6 @@ lemma mono_of_injective
   have := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
   (sheafToPresheaf _ _).mono_of_mono_map (NatTrans.mono_of_mono_app φ.1)
 
->>>>>>> origin/ext-change-of-universes
 variable [J.HasSheafCompose (forget D)]
 
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
@@ -292,9 +232,6 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
 
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
-<<<<<<< HEAD
-  Presheaf.isLocallyInjective_iff_injective_of_separated _ _ F₁.isSeparated
-=======
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
     apply Presieve.isSeparated_of_isSheaf
     rw [← isSheaf_iff_isSheaf_of_type]
@@ -304,7 +241,6 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   apply mono_of_injective
   rw [← isLocallyInjective_iff_injective]
   infer_instance
->>>>>>> origin/ext-change-of-universes
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by

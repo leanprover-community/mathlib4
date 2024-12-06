@@ -262,7 +262,8 @@ noncomputable def shiftedHom (m : ℕ) (hm : n + 1 = m) :
     (SingleFunctors.evaluationIso (DerivedCategory.singleFunctorsPostCompQIso C) 0).hom.app X₁ ≫
       inv (DerivedCategory.Q.map E.ZToX₁) ≫
       DerivedCategory.Q.map (E.ZToX₂ (-m) (by simp [← hm])) ≫
-      (SingleFunctors.evaluationIso (DerivedCategory.singleFunctorsPostCompQIso C) (-m)).inv.app X₂ ≫
+      (SingleFunctors.evaluationIso
+        (DerivedCategory.singleFunctorsPostCompQIso C) (-m)).inv.app X₂ ≫
       ((DerivedCategory.singleFunctors C).shiftIso m (-m) 0 (add_right_neg _)).inv.app X₂
 
 noncomputable def largeExtClass (m : ℕ) (hm : n + 1 = m) : LargeExt X₁ X₂ m :=
@@ -316,7 +317,8 @@ lemma compKd_eq_d' (i j : ℤ) (hij : i + 1 = j) (hi : i ≤ n') :
   dsimp [compKd]
   rw [dif_pos hij, dif_pos hi]
 
-lemma compKd_eq_d (i j : ℤ) (hij : i + 1 = j) (hi : n'+2 ≤ i) (i' j' : ℤ) (hi' : i' + n' + 1 = i) (hj' : j' + n' + 1 = j) :
+lemma compKd_eq_d (i j : ℤ) (hij : i + 1 = j) (hi : n'+2 ≤ i) (i' j' : ℤ)
+    (hi' : i' + n' + 1 = i) (hj' : j' + n' + 1 = j) :
     compKd E E' i j = (compKXIso E E' i i' hi (by linarith)).hom ≫ E.K.d _ _ ≫
       (compKXIso E E' j j' (by linarith) (by linarith)).inv := by
   obtain rfl : i' = i - n' -1 := by linarith
@@ -435,7 +437,8 @@ def comp : IteratedExtCategory X₁ X₃ n'' where
         · rw [(compK E E').exactAt_iff' n' (n'+1) (n'+2) (by simp) (by simp; linarith)]
           exact (compShortComplex₄_exact E E').exact₂
         · obtain rfl : i = n' + 2 := by linarith
-          rw [(compK E E').exactAt_iff' (n'+1) (n'+2) (n'+3) (by simp; linarith) (by simp; linarith)]
+          rw [(compK E E').exactAt_iff' (n'+1) (n'+2) (n'+3)
+            (by simp; linarith) (by simp; linarith)]
           exact (compShortComplex₄_exact E E').exact₃
   iso₁ := compKXIso E E' (n'' + 2) (n+2) (by linarith) (by
       simp only [← hn'', Nat.cast_add, Nat.cast_one]
@@ -448,7 +451,8 @@ lemma comp_K_d_eq_d' (i j : ℤ) (hij : i + 1 = j) (hi : i ≤ n') :
       (compKXIso' E E' j (by linarith)).inv :=
   compKd_eq_d' E E' i j hij hi
 
-lemma comp_K_d_eq_d (i j : ℤ) (hij : i + 1 = j) (hi : n'+2 ≤ i) (i' j' : ℤ) (hi' : i' + n' + 1 = i) (hj' : j' + n' + 1 = j) :
+lemma comp_K_d_eq_d (i j : ℤ) (hij : i + 1 = j) (hi : n'+2 ≤ i) (i' j' : ℤ)
+    (hi' : i' + n' + 1 = i) (hj' : j' + n' + 1 = j) :
     (comp E E' hn'').K.d i j = (compKXIso E E' i i' hi (by linarith)).hom ≫ E.K.d _ _ ≫
       (compKXIso E E' j j' (by linarith) (by linarith)).inv :=
   compKd_eq_d E E' i j hij hi i' j' hi' hj'
@@ -474,7 +478,8 @@ noncomputable def compZToZf (i : ℤ) : (comp E E' hn'').Z.X i ⟶ E.Z.X i :=
   else if hi' : i = -n - 1 then
       ((comp E E' hn'').ZXIso i (n'+1) (by linarith) (by linarith)).hom ≫
         (compKXIso' E E' (n'+1) (by linarith)).hom ≫
-        E'.K.d (n'+1) (n'+2) ≫ E'.iso₁.hom ≫ E.iso₂.inv ≫ (E.ZXIso i 0 (by linarith) (by linarith)).inv
+        E'.K.d (n'+1) (n'+2) ≫ E'.iso₁.hom ≫ E.iso₂.inv ≫
+          (E.ZXIso i 0 (by linarith) (by linarith)).inv
     else
       0
 
@@ -510,23 +515,31 @@ noncomputable def compZToZ : (comp E E' hn'').Z ⟶ E.Z where
     by_cases hi : i ≤ -1
     · by_cases hi' : 0 ≤ i + n
       · subst hij
-        rw [compZToZf_eq E E' hn'' i (i+n+1) (i+n''+1) (by linarith) (by linarith) rfl (by linarith),
-          compZToZf_eq E E' hn'' (i+1) (i+n+2) (i+n''+2) (by linarith) (by linarith) (by linarith) (by linarith),
-          (comp E E' hn'').Z_d_eq i (i+1) (i+n''+1) (i+n''+2) rfl (by linarith) (by linarith) (by linarith),
-          comp_K_d_eq_d E E' hn'' (i+n''+1) (i+n''+2) (by linarith) (by linarith) (i+n+1) (i+n+2) (by linarith) (by linarith),
+        rw [compZToZf_eq E E' hn'' i (i+n+1) (i+n''+1)
+            (by linarith) (by linarith) rfl (by linarith),
+          compZToZf_eq E E' hn'' (i+1) (i+n+2) (i+n''+2)
+            (by linarith) (by linarith) (by linarith) (by linarith),
+          (comp E E' hn'').Z_d_eq i (i+1) (i+n''+1) (i+n''+2) rfl
+            (by linarith) (by linarith) (by linarith),
+          comp_K_d_eq_d E E' hn'' (i+n''+1) (i+n''+2)
+            (by linarith) (by linarith) (i+n+1) (i+n+2) (by linarith) (by linarith),
           E.Z_d_eq i (i+1) (i+n+1) (i+n+2) (by linarith) (by linarith) (by linarith) (by linarith)]
         simp only [assoc, Iso.inv_hom_id_assoc]
       · obtain rfl | _ := (show i ≤ -n -1 by linarith).eq_or_lt
         · obtain rfl : j = -n := by linarith
           rw [E.Z_d_eq (-n-1) (-n) 0 1 (by linarith) (by linarith) (by linarith) (by linarith),
-            compZToZf_eq E E' hn'' (-n) 1 (n'+2) (by linarith) (by linarith) (by linarith) (by linarith),
-            (comp E E' hn'').Z_d_eq (-n-1) (-n) (n'+1) (n'+2) (by linarith) (by linarith) (by linarith) (by linarith),
-            compZToZf_eq', comp_K_d_eq_d'_comp_d E E' hn'' (n'+1) (n'+2) (by linarith) (by linarith)]
+            compZToZf_eq E E' hn'' (-n) 1 (n'+2)
+              (by linarith) (by linarith) (by linarith) (by linarith),
+            (comp E E' hn'').Z_d_eq (-n-1) (-n) (n'+1) (n'+2)
+              (by linarith) (by linarith) (by linarith) (by linarith),
+            compZToZf_eq', comp_K_d_eq_d'_comp_d E E' hn'' (n'+1) (n'+2)
+              (by linarith) (by linarith)]
           simp only [assoc, Iso.inv_hom_id_assoc]
         · obtain rfl | _ := (show i ≤ -n - 2 by linarith).eq_or_lt
           · obtain rfl : j = -n-1 := by linarith
             rw [compZToZf_eq',
-              (comp E E' hn'').Z_d_eq (-n-2) (-n-1) n' (n'+1) (by linarith) (by linarith) (by linarith) (by linarith),
+              (comp E E' hn'').Z_d_eq (-n-2) (-n-1) n' (n'+1)
+                (by linarith) (by linarith) (by linarith) (by linarith),
               comp_K_d_eq_d' E E' hn'' n' (n'+1) (by linarith) (by linarith),
               compZToZf_eq_zero_of_le E E' hn'' (-n-2) (by linarith)]
             simp only [assoc, Iso.inv_hom_id_assoc, HomologicalComplex.d_comp_d_assoc,
@@ -592,10 +605,12 @@ noncomputable def compZToShiftZ : (comp E E' hn'').Z ⟶ E'.Z⟦(m : ℤ)⟧ whe
     · subst hij
       rw [compZToShiftZf_eq E E' hn'' m hm i (i+n''+1) (i+m) (by linarith) rfl rfl,
         compZToShiftZf_eq E E' hn'' m hm (i+1) (i+n''+2) (i+1+m) (by linarith) (by linarith) rfl,
-        (comp E E' hn'').Z_d_eq i (i+1) (i+n''+1) (i+n''+2) rfl (by linarith) (by linarith) (by linarith),
+        (comp E E' hn'').Z_d_eq i (i+1) (i+n''+1) (i+n''+2) rfl
+          (by linarith) (by linarith) (by linarith),
         comp_K_d_eq_d' E E' hn'' (i+n''+1) (i+n''+2) (by linarith) (by linarith)]
       dsimp
-      rw [E'.Z_d_eq (i+m) (i+1+m) (i+n''+1) (i+n''+2) (by linarith) (by linarith) (by linarith) (by linarith)]
+      rw [E'.Z_d_eq (i+m) (i+1+m) (i+n''+1) (i+n''+2)
+        (by linarith) (by linarith) (by linarith) (by linarith)]
       simp [smul_smul, sgn₁_rel₁]
     · exact (E'.Z.isZero_of_isStrictlyLE 0 _ (by linarith)).eq_of_tgt _ _
 
@@ -649,7 +664,8 @@ lemma compZ_comm' :
     inv (DerivedCategory.Q.map (compZToZ E E' hn'')) ≫
     DerivedCategory.Q.map (compZToShiftZ E E' hn'' m (by linarith)) =
         sgn₂ m m' • DerivedCategory.Q.map (E.ZToX₂ k (by linarith)) ≫
-          DerivedCategory.Q.map (((CochainComplex.singleFunctors C).shiftIso m k 0 (by linarith)).inv.app X₂) ≫
+          DerivedCategory.Q.map (((CochainComplex.singleFunctors C).shiftIso m k 0
+            (by linarith)).inv.app X₂) ≫
           inv (DerivedCategory.Q.map (E'.ZToX₁⟦(m : ℤ)⟧')) := by
   simp only [← cancel_epi (DerivedCategory.Q.map (compZToZ E E' hn'')), IsIso.hom_inv_id_assoc,
     ← Functor.map_comp_assoc, Preadditive.comp_zsmul, compZ_comm_assoc E E' hn'' m m' hm hm' k hk,
@@ -663,12 +679,14 @@ lemma compatibility :
   rw [ShiftedHom.γhmul_eq]
   dsimp [shiftedHom]
   simp only [assoc, Functor.map_comp, ← compZToZ_comp_ZToX₁, IsIso.inv_comp,
-    ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m') (by linarith) (-m'') (by linarith),
+    ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m')
+      (by linarith) (-m'') (by linarith),
     compZ_comm'_assoc E E' hn'' m m' hm hm' (-m) (by linarith),
     Functor.map_inv, Functor.comp_obj, assoc,
     Linear.units_smul_comp, Linear.comp_units_smul]
   congr 4
-  simp only [SingleFunctors.postComp_shiftIso_inv_app' _ (DerivedCategory.singleFunctorsPostCompQIso C), assoc,
+  simp only [SingleFunctors.postComp_shiftIso_inv_app' _
+      (DerivedCategory.singleFunctorsPostCompQIso C), assoc,
     SingleFunctors.postComp_functor, Functor.comp_obj, ← Functor.map_comp_assoc,
     SingleFunctors.inv_hom_id_hom_app_assoc, SingleFunctors.inv_hom_id_hom_app,
     Functor.map_id, id_comp]
@@ -687,7 +705,8 @@ lemma compatibility :
   clear eq
   simp only [Functor.map_comp, assoc, ← Functor.commShiftIso_hom_naturality_assoc]
   congr 1
-  rw [(CochainComplex.singleFunctors C).shiftIso_add'_inv_app m m' m'' (by linarith) (-m'') (-m') 0 (by linarith) (by linarith)]
+  rw [(CochainComplex.singleFunctors C).shiftIso_add'_inv_app m m' m''
+    (by linarith) (-m'') (-m') 0 (by linarith) (by linarith)]
   simp only [← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc]
   simp only [Functor.map_comp, assoc]
   congr 1

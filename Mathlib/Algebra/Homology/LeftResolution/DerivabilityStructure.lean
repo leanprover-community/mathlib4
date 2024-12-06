@@ -1,12 +1,23 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.LeftResolution.Basic
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.Algebra.Homology.DerivedCategory.Minus
+
+/-!
+# Derivability structure from a left resolution
+
+-/
 
 universe v u
 open CategoryTheory Category Limits
 
 namespace CategoryTheory
 
+/-- isIso_of_isIso_app' -/
 lemma NatIso.isIso_of_isIso_app' {C D : Type*} [Category C] [Category D]
     {F G : C ⥤ D} (α : F ⟶ G) (hα : ∀ X, IsIso (α.app X)) : IsIso α := by
   apply NatIso.isIso_of_isIso_app
@@ -34,18 +45,18 @@ variable {ι}
 variable (Λ : LeftResolutions ι) [Λ.F.PreservesZeroMorphisms]
 
 instance : ι.mapCochainComplexMinus.Full :=
-  Functor.Full.ofCompFaithfulIso ι.mapCochainComplexMinusCompι
+  Functor.Full.of_comp_faithful_iso ι.mapCochainComplexMinusCompι
 
 instance : ι.mapCochainComplexMinus.Faithful :=
   Functor.Faithful.of_comp_iso ι.mapCochainComplexMinusCompι
 
+include Λ in
 lemma localizerMorphism_isLocalizedEquivalence :
     (localizerMorphism ι).IsLocalizedEquivalence := by
   let W₁ := quasiIso ι
   let W₂ := CochainComplex.Minus.quasiIso (C := C)
   let L₁ := W₁.Q
   let L₂ := W₂.Q
-  have := Λ
   let G := (localizerMorphism ι).localizedFunctor L₁ L₂
   let eG := Localization.Lifting.iso L₁ W₁ ((localizerMorphism ι).functor ⋙ L₂) G
   let F : CochainComplex.Minus C ⥤ (quasiIso ι).Localization :=
@@ -63,13 +74,16 @@ lemma localizerMorphism_isLocalizedEquivalence :
       (Functor.associator _ _ _).symm ≪≫ asIso (whiskerRight Λ.resolutionNatTrans L₂) ≪≫
       L₂.leftUnitor))
   let α : (localizerMorphism ι).functor ⋙ Λ.resolutionFunctor ⟶ 𝟭 _ :=
-    natTransOfCompFullyFaithful ι.mapCochainComplexMinus ((Functor.associator _ _ _).hom ≫
+    ((Functor.FullyFaithful.ofFullyFaithful
+      ι.mapCochainComplexMinus).whiskeringRight _).preimage
+        ((Functor.associator _ _ _).hom ≫
       whiskerLeft _ Λ.resolutionNatTrans ≫ (Functor.rightUnitor _).hom ≫ (Functor.leftUnitor _).inv)
   have : IsIso (whiskerRight α L₁) := NatIso.isIso_of_isIso_app' _ (fun K => by
     apply Localization.inverts L₁ W₁
     dsimp [W₁, quasiIso, MorphismProperty.inverseImage]
     dsimp [α]
-    simp only [comp_id, id_comp, Functor.image_preimage]
+    simp only [comp_id, id_comp]
+    erw [Functor.map_preimage]
     apply quasiIso_resolutionNatTrans_app)
   let ε : 𝟭 _ ≅ G ⋙ F' := Localization.liftNatIso L₁ W₁ L₁ (L₁ ⋙ G ⋙ F') _ _
     (L₁.leftUnitor.symm ≪≫ (asIso (whiskerRight α L₁)).symm ≪≫

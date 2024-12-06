@@ -7,11 +7,6 @@ import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Stalks
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Sites.LocallySurjective
-<<<<<<< HEAD
-
-#align_import topology.sheaves.locally_surjective from "leanprover-community/mathlib"@"fb7698eb37544cbb66292b68b40e54d001f8d1a9"
-=======
->>>>>>> origin/ext-change-of-universes
 
 /-!
 
@@ -62,27 +57,11 @@ See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
-<<<<<<< HEAD
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
-
-theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
-    IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V := by
-  constructor
-  · intro h U
-    apply h.imageSieve_mem
-  · intro h
-    refine' ⟨fun _ => h _ _⟩
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
-=======
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
   ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
->>>>>>> origin/ext-change-of-universes
 
 section SurjectiveOnStalks
 
@@ -92,7 +71,6 @@ variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) := by
-  rw [isLocallySurjective_iff]
   constructor <;> intro hT
   · /- human proof:
         Let g ∈ Γₛₜ 𝒢 x be a germ. Represent it on an open set U ⊆ X

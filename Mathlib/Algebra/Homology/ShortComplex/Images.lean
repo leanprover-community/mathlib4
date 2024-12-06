@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.Refinements
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
+/-!
+# Lemmas about images
+
 -- Verdier, Des catégories dérivées des catégories abéliennes, II 4.2.7
+
+-/
 
 namespace CategoryTheory
 
@@ -113,7 +123,7 @@ lemma shortComplex_exact : I.shortComplex.Exact := by
   rw [zero_comp, assoc, shortComplex_g, image.lift_ι] at hx₂'
   obtain ⟨A₂, π₂, hπ₂, x₁, hx₁⟩ := I.hS.exact_up_to_refinements (y ≫ I.f₂)
     (by rw [← hy, assoc, assoc, hx₂', comp_zero])
-  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, x₁ ≫ Abelian.factorThruImage I.S.f, _⟩
+  refine ⟨A₂, π₂ ≫ π₁, epi_comp _ _, x₁ ≫ Abelian.factorThruImage I.S.f, ?_⟩
   simp only [← cancel_mono (Abelian.image.ι I.f₂), assoc, hy,
     image.lift_ι, kernel.lift_ι, hx₁]
 

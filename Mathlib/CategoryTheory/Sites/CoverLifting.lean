@@ -78,10 +78,6 @@ lemma Functor.cover_lift [G.IsCocontinuous J K] {U : C} {S : Sieve (G.obj U)}
 /-- The identity functor on a site is cocontinuous. -/
 instance Functor.isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
   ⟨fun h => by simpa using h⟩
-<<<<<<< HEAD
-#align category_theory.id_cover_lifting CategoryTheory.Functor.isCocontinuous_id
-=======
->>>>>>> origin/ext-change-of-universes
 
 /-- The composition of two cocontinuous functors is cocontinuous. -/
 theorem Functor.isCocontinuous_comp (J : GrothendieckTopology C)
@@ -89,8 +85,6 @@ theorem Functor.isCocontinuous_comp (J : GrothendieckTopology C)
     [G.IsCocontinuous J K] [G'.IsCocontinuous K L] :
     (G ⋙ G').IsCocontinuous J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
-<<<<<<< HEAD
-#align category_theory.comp_cover_lifting CategoryTheory.Functor.isCocontinuous_comp
 
 lemma Functor.isCocontinuous_of_iso {G : C ⥤ D}  {G' : C ⥤ D} (e : G ≅ G')
     (J : GrothendieckTopology C) (K : GrothendieckTopology D) [hG : G.IsCocontinuous J K] :
@@ -106,8 +100,6 @@ theorem Functor.isCocontinuous_comp' {F : C ⥤ D}  {G : D ⥤ E} {H : C ⥤ E} 
     H.IsCocontinuous J L := by
   have := isCocontinuous_comp F G J K L
   exact isCocontinuous_of_iso e J L
-=======
->>>>>>> origin/ext-change-of-universes
 
 end IsCocontinuous
 

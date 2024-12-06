@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+
+/-!
+# Left derived functor
+
+-/
 
 namespace CategoryTheory
 
@@ -40,6 +50,7 @@ lemma leftDerived_fac_app (G : H ⥤ D) (β : L ⋙ G ⟶ F) (X : C):
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
   LF.liftOfIsRightKanExtension_fac_app α G β X
 
+include W in
 lemma leftDerived_ext (G : H ⥤ D) (γ₁ γ₂ : G ⟶ LF)
     (hγ : whiskerLeft L γ₁ ≫ α = whiskerLeft L γ₂ ≫ α) : γ₁ = γ₂ :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
@@ -48,6 +59,7 @@ lemma leftDerived_ext (G : H ⥤ D) (γ₁ γ₂ : G ⟶ LF)
 noncomputable def leftDerivedNatTrans (τ : F ⟶ F') : LF ⟶ LF' :=
   LF'.leftDerivedLift α' W LF (α ≫ τ)
 
+omit [LF.IsLeftDerivedFunctor α W] in
 @[reassoc (attr := simp)]
 lemma leftDerivedNatTrans_fac (τ : F ⟶ F') :
     whiskerLeft L (leftDerivedNatTrans LF LF' α α' W τ) ≫ α' =
@@ -55,6 +67,7 @@ lemma leftDerivedNatTrans_fac (τ : F ⟶ F') :
   dsimp only [leftDerivedNatTrans]
   simp
 
+omit [LF.IsLeftDerivedFunctor α W] in
 @[reassoc (attr := simp)]
 lemma leftDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
   (leftDerivedNatTrans LF LF' α α' W τ).app (L.obj X) ≫ α'.app X =
@@ -67,6 +80,7 @@ lemma leftDerivedNatTrans_id :
     leftDerivedNatTrans LF LF α α W (𝟙 F) = 𝟙 LF :=
   leftDerived_ext LF α W _ _ _ (by aesop_cat)
 
+omit [LF.IsLeftDerivedFunctor α W] in
 @[simp]
 lemma leftDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
   leftDerivedNatTrans LF LF' α α' W τ ≫ leftDerivedNatTrans LF' LF'' α' α'' W τ' =
@@ -94,14 +108,13 @@ variable [L.IsLocalization W]
 
 lemma hasLeftDerivedFunctor_iff :
     HasLeftDerivedFunctor F W ↔ HasRightKanExtension L F := by
-  have : L.IsLocalization W := inferInstance
   have : HasLeftDerivedFunctor F W ↔ HasRightKanExtension W.Q F :=
     ⟨fun h => h.hasRightKanExtension', fun h => ⟨h⟩⟩
-  rw [this, hasRightExtension_iff_postcomp₁ W.Q F (Localization.uniq W.Q L W),
-    hasRightExtension_iff_of_iso₁ (Localization.compUniqFunctor W.Q L W) F]
+  rw [this, hasRightExtension_iff_postcomp₁ (Localization.compUniqFunctor W.Q L W) F]
 
 variable {F}
 
+include e in
 lemma hasLeftDerivedFunctor_iff_of_iso :
     HasLeftDerivedFunctor F W ↔ HasLeftDerivedFunctor F' W := by
   rw [hasLeftDerivedFunctor_iff F W.Q W, hasLeftDerivedFunctor_iff F' W.Q W,
@@ -115,6 +128,7 @@ lemma HasLeftDerivedFunctor.hasRightKanExtension [HasLeftDerivedFunctor F W] :
 
 variable {F L W}
 
+/-- Constructor for `HasLeftDerivedFunctor`. -/
 lemma HasLeftDerivedFunctor.mk' [LF.IsLeftDerivedFunctor α W] :
     HasLeftDerivedFunctor F W := by
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W

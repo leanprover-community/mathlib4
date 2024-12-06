@@ -394,7 +394,6 @@ import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.CategoryWithHomology
 import Mathlib.Algebra.Homology.CochainComplexMinus
 import Mathlib.Algebra.Homology.CommSq
-import Mathlib.Algebra.Homology.ComplexExtend
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
@@ -455,7 +454,6 @@ import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
-import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexTriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
@@ -1840,7 +1838,6 @@ import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.GradedObject.Associator
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
 import Mathlib.CategoryTheory.GradedObject.Braiding
-import Mathlib.CategoryTheory.GradedObject.Map
 import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.CategoryTheory.GradedObject.Single
 import Mathlib.CategoryTheory.GradedObject.Trifunctor

@@ -1,4 +1,13 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Homotopy
+
+/-!
+# Homotopy fiber
+-/
 
 open CategoryTheory Limits HomologicalComplex Category
   ZeroObject
@@ -6,7 +15,7 @@ open CategoryTheory Limits HomologicalComplex Category
 namespace HomologicalComplex
 
 variable {C ι : Type*} [Category C] [HasZeroMorphisms C]
-  [HasZeroObject C] {c : ComplexShape ι} [DecidableEq ι] [DecidableRel c.Rel]
+  [HasZeroObject C] {c : ComplexShape ι} [DecidableRel c.Rel]
   (K : HomologicalComplex C c)
 
 noncomputable def prevX (j : ι) : C :=
@@ -56,6 +65,7 @@ noncomputable def homToPrevX (j : ι) : K.X j ⟶ L.prevX j :=
   then H.hom _ _ ≫ (L.prevXIso _ _ hj).inv
   else 0
 
+omit [DecidableEq ι] in
 @[reassoc]
 lemma homToPrevX_prevXd (j : ι) :
     H.homToPrevX j ≫ L.prevXd j = prevD j H.hom := by
@@ -65,6 +75,7 @@ lemma homToPrevX_prevXd (j : ι) :
   · dsimp [dTo]
     rw [L.shape _ _ h, comp_zero, comp_zero]
 
+omit [DecidableEq ι] in
 @[reassoc (attr := simp)]
 lemma homToPrevX_prevXIso_hom (i j : ι) (hij : c.Rel i j) :
     H.homToPrevX j ≫ (L.prevXIso _ _ hij).hom = H.hom j i := by
@@ -144,7 +155,7 @@ end
 
 section
 
-variable (K L : CochainComplex C α) [DecidableEq α] [HasBinaryBiproduct K K]
+variable (K L : CochainComplex C α) [HasBinaryBiproduct K K]
   [∀ (n : α), HasBinaryBiproduct ((K ⊞ K).X n) (prevX K n)]
 
 noncomputable abbrev pathObject : CochainComplex C α := homotopyFiber (biprod.desc (𝟙 K) (-𝟙 K))

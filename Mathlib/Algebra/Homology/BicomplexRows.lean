@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.BicomplexColumns
+
+/-!
+# Rows
+
+-/
 
 open CategoryTheory Limits ComplexShape Category
 
@@ -109,7 +119,7 @@ noncomputable def singleRowObjTotal (L : CochainComplex C ℤ) (y y' : ℤ) (h :
     (fun n => (Int.negOnePow (n • y) • singleRowObjTotalXIso L _ _ _ (by dsimp; omega)).symm) (by
       intro x x' h'
       dsimp at h' ⊢
-      simp [singleRowObjTotalXIso_inv]
+      simp [singleRowObjTotalXIso_inv, total_d]
       rw [singleRow_d₁ _ _ _ _ _ _ _ (x' + y') (by dsimp; omega) _ (by dsimp; omega)]
       dsimp
       obtain rfl : y = -y' := by omega
@@ -127,7 +137,7 @@ noncomputable def singleRowObjTotal_inv_naturality {K L : CochainComplex C ℤ} 
   dsimp [singleRowObjTotal]
   rw [Int.units_inv_eq_self, Linear.units_smul_comp, Linear.comp_units_smul,
     smul_left_cancel_iff]
-  rw [singleRowObjTotalXIso_inv, singleRowObjTotalXIso_inv, assoc, ιTotal_map]
+  rw [singleRowObjTotalXIso_inv, singleRowObjTotalXIso_inv, Category.assoc, ιTotal_map]
   simp [HomologicalComplex.single_map_f_self, HomologicalComplex.singleObjXSelf,
     HomologicalComplex.singleObjXIsoOfEq, singleRowXXIso]
 
@@ -149,7 +159,7 @@ lemma singleRow₀ObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K �
     total.map ((singleRow C (up ℤ) (up ℤ) 0).map φ) (up ℤ) ≫ (singleRow₀ObjTotal L).hom =
       (singleRow₀ObjTotal K).hom ≫ φ := by
   dsimp [singleRow₀ObjTotal]
-  rw [singleRowObjTotal_hom_naturality_assoc, assoc, NatTrans.naturality]
+  rw [singleRowObjTotal_hom_naturality_assoc, Category.assoc, NatTrans.naturality]
   rfl
 
 end HomologicalComplex₂

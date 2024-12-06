@@ -1,11 +1,21 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.ExactCategory.Basic
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+/-!
+# Split exact categories
+
+-/
 
 namespace CategoryTheory
 
 open Category Limits ZeroObject
 
-variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C : Type _} [Category C] [Preadditive C]
 
 namespace ExactCategory
 
@@ -56,6 +66,8 @@ lemma admissibleSplitEpi_unop : (admissibleSplitEpi Cᵒᵖ).unop = admissibleSp
 
 variable {C}
 
+variable [HasBinaryBiproducts C]
+
 noncomputable def splitShortExactPushoutCocone (S : ShortComplex C) (h : S.Splitting) {X₁' : C}
     (i : S.X₁ ⟶ X₁') : PushoutCocone S.f i :=
   PushoutCocone.mk (S.g ≫ biprod.inl + h.r ≫ i ≫ biprod.inr : _ ⟶ biprod S.X₃ X₁')
@@ -88,9 +100,9 @@ lemma admissibleSplitEpi_quarrable {X Y : C} (f : X ⟶ Y) (hf : (admissibleSpli
 variable (C)
 
 lemma admissibleSplitMono_stableUnderComposition :
-    (admissibleSplitMono C).StableUnderComposition := by
+    (admissibleSplitMono C).IsStableUnderComposition := ⟨by
   rintro X Y Z f₁ f₂ ⟨A₁, g₁, zero₁, ⟨h₁⟩⟩ ⟨A₂, g₂, zero₂, ⟨h₂⟩⟩
-  refine' ⟨A₁ ⊞ A₂, biprod.lift (h₂.r ≫ g₁) g₂, _, ⟨_⟩⟩
+  refine ⟨A₁ ⊞ A₂, biprod.lift (h₂.r ≫ g₁) g₂, ?_, ⟨?_⟩⟩
   · ext
     · simp only [assoc, biprod.lift_fst, zero_comp]
       rw [h₂.f_r_assoc, zero₁]
@@ -120,22 +132,23 @@ lemma admissibleSplitMono_stableUnderComposition :
         dsimp
         rw [biprod.lift_desc, assoc, h₁.r_f_assoc, ← h₂.id, Preadditive.sub_comp, id_comp,
           assoc, Preadditive.comp_sub, assoc]
-        abel }
+        abel }⟩
 
 lemma admissibleSplitEpi_stableUnderComposition :
-    (admissibleSplitEpi C).StableUnderComposition := by
+    (admissibleSplitEpi C).IsStableUnderComposition := by
   simpa only [admissibleSplitMono_unop]
     using (admissibleSplitMono_stableUnderComposition Cᵒᵖ).unop
 
+omit [HasBinaryBiproducts C] in
 lemma admissibleSplitMono_stableUnderCobaseChange :
-    (admissibleSplitMono C).StableUnderCobaseChange := by
+    (admissibleSplitMono C).IsStableUnderCobaseChange := ⟨by
   intro X₁ X₂ X₁' X₂' f i f' i' sq hf
   obtain ⟨X₃, g, zero, ⟨h⟩⟩ := hf
   obtain ⟨φ : X₂' ⟶ X₃, hφ₁, hφ₂⟩ := PushoutCocone.IsColimit.desc' sq.isColimit 0 g (by simp [zero])
   obtain ⟨ψ : X₂' ⟶ X₁', hψ₁, hψ₂⟩ :=  PushoutCocone.IsColimit.desc' sq.isColimit
     (𝟙 X₁') (h.r ≫ i) (by rw [h.f_r_assoc, comp_id])
   dsimp at hφ₁ hφ₂ hψ₁ hψ₂
-  refine' ⟨X₃, φ, hφ₁, ⟨_⟩⟩
+  refine ⟨X₃, φ, hφ₁, ⟨?_⟩⟩
   exact
   { r := ψ
     s := h.s ≫ i'
@@ -150,14 +163,15 @@ lemma admissibleSplitMono_stableUnderCobaseChange :
         erw [comp_id]
       · dsimp
         erw [Preadditive.comp_add, reassoc_of% hψ₂, reassoc_of% hφ₂, comp_id, sq.w,
-          h.g_s_assoc, Preadditive.sub_comp, id_comp, assoc, add_sub_cancel] }
+          h.g_s_assoc, Preadditive.sub_comp, id_comp, assoc, add_sub_cancel] }⟩
 
+omit [HasBinaryBiproducts C] in
 lemma admissibleSplitEpi_stableUnderBaseChange :
-    (admissibleSplitEpi C).StableUnderBaseChange := by
+    (admissibleSplitEpi C).IsStableUnderBaseChange := by
   simpa only [admissibleSplitMono_unop]
     using (admissibleSplitMono_stableUnderCobaseChange Cᵒᵖ).unop
 
-def splitExactSequences : ExactCategory C where
+def splitExactSequences [HasZeroObject C] : ExactCategory C where
   shortExact' := splitShortExact C
   respectsIso_shortExact' := ⟨fun {S₁ S₂} e => by
     rintro ⟨h₁⟩

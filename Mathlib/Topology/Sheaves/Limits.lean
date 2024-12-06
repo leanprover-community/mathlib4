@@ -30,13 +30,8 @@ instance [HasLimits C] (X : TopCat.{v}) : HasLimits.{v} (Presheaf C X) :=
 instance [HasColimits.{v, u} C] (X : TopCat.{w}) : HasColimitsOfSize.{v, v} (Presheaf C X) :=
   Limits.functorCategoryHasColimitsOfSize
 
-<<<<<<< HEAD
-instance [HasLimits C] (X : TopCat) : CreatesLimits (Sheaf.forget C X) :=
-  Sheaf.createsLimitsOfSize.{u, v, v}
-=======
 instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) :=
   Sheaf.createsLimits.{u, v, v}
->>>>>>> origin/ext-change-of-universes
 
 instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X) :=
   hasLimits_of_hasLimits_createsLimits (Sheaf.forget C X)

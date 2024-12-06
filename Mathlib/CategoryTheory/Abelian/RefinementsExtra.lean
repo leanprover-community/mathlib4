@@ -1,8 +1,18 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Balanced
 import Mathlib.CategoryTheory.Sites.Limits
+
+/-!
+# Additional refinements lemmas
+
+-/
 
 universe w v u
 
@@ -107,8 +117,8 @@ lemma isPushout_of_isPullback_of_epi (hc : IsPullback π₁ π₂ f f) :
     IsPushout π₁ π₂ f f := by
   have hc' : IsColimit (PushoutCocone.mk _ _ hc.w) := by
     apply PushoutCocone.isColimitOfExactShortComplex
-    · refine' ShortComplex.exact_of_iso _ (PullbackCone.exact_shortComplex_of_isLimit _ hc.isLimit)
-      refine' ShortComplex.isoMk (Iso.refl _)
+    · refine ShortComplex.exact_of_iso ?_ (PullbackCone.exact_shortComplex_of_isLimit _ hc.isLimit)
+      exact ShortComplex.isoMk (Iso.refl _)
         { hom := biprod.desc biprod.inl (-biprod.inr)
           inv := biprod.desc biprod.inl (-biprod.inr) }
         (Iso.refl _) (by aesop_cat) (by aesop_cat)
@@ -130,7 +140,7 @@ def refinementsTopology :
   top_mem' X := ⟨X, 𝟙 X, inferInstance, by simp⟩
   pullback_stable' X Y S f hS := by
     obtain ⟨T, p, hp, h⟩ := hS
-    refine' ⟨pullback f p, pullback.fst, inferInstance, _⟩
+    refine ⟨_, pullback.fst f p, inferInstance, ?_⟩
     dsimp
     rw [pullback.condition]
     apply S.downward_closed h
@@ -149,7 +159,7 @@ lemma refinementsTopology_eq_regularTopology :
   apply le_antisymm
   · rintro X S ⟨T, p, _, hp⟩
     refine (regularTopology C).superset_covering ?_
-      (Coverage.saturate.of X _ ⟨_, p, rfl, effective_epi_of_epi p⟩)
+      (Coverage.Saturate.of X _ ⟨_, p, rfl, effective_epi_of_epi p⟩)
     rw [Sieve.generate_le_iff]
     rintro _ _ ⟨⟨⟩⟩
     exact hp
@@ -157,8 +167,8 @@ lemma refinementsTopology_eq_regularTopology :
     rintro X S ⟨Y, s, rfl, _⟩
     exact ⟨_, s, inferInstance, _, 𝟙 _, s, ⟨Unit.unit⟩, by simp⟩
 
-lemma refinementsTopology_subcanonical :
-    Sheaf.Subcanonical (refinementsTopology C) := by
+instance refinementsTopology_subcanonical :
+    (refinementsTopology C).Subcanonical := by
   rw [refinementsTopology_eq_regularTopology]
   exact regularTopology.subcanonical
 
@@ -168,22 +178,22 @@ namespace refinementsTopology
 
 lemma epi_iff_isLocallySurjective_yoneda_map {C : Type u} [Category.{v} C] [Abelian C]
   {X Y : C} (f : X ⟶ Y) :
-    Epi f ↔ Sheaf.IsLocallySurjective ((refinementsTopology_subcanonical C).yoneda.map f) := by
+    Epi f ↔ Sheaf.IsLocallySurjective ((refinementsTopology C).yoneda.map f) := by
   rw [epi_iff_surjective_up_to_refinements f]
   constructor
   · intro hf
-    refine' ⟨fun {U} (y : U.unop ⟶ Y) => _⟩
+    constructor
+    intro U (y : U ⟶ Y)
     obtain ⟨A', π, hπ, x, fac⟩ := hf y
-    dsimp
     exact ⟨A', π, hπ, x, fac.symm⟩
   · intro hf
     intro A y
     obtain ⟨A', π, hπ, x, fac⟩ := Presheaf.imageSieve_mem (refinementsTopology C)
-      ((refinementsTopology_subcanonical C).yoneda.map f).val y
+      ((refinementsTopology C).yoneda.map f).val y
     exact ⟨A', π, hπ, x, fac.symm⟩
 
 lemma epi_iff_epi_yoneda_map {C : Type u} [SmallCategory C] [Abelian C] {X Y : C} (f : X ⟶ Y) :
-    Epi f ↔ Epi ((refinementsTopology_subcanonical C).yoneda.map f) := by
+    Epi f ↔ Epi ((refinementsTopology C).yoneda.map f) := by
   rw [epi_iff_isLocallySurjective_yoneda_map, Sheaf.epi_iff_isLocallySurjective]
 
 end refinementsTopology

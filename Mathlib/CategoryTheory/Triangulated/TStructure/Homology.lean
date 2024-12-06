@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
+import Mathlib.CategoryTheory.Triangulated.Yoneda
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ULift
@@ -115,29 +116,6 @@ lemma exact_and_mono_f_iff_preadditiveCoyoneda (S : ShortComplex C) [Balanced C]
   rfl
 
 end ShortComplex
-
-
-namespace Pretriangulated
-
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-
-lemma preadditiveYoneda_map_distinguished (A : C) (T : Triangle C) (hT : T ∈ distTriang C) :
-    ((ShortComplex.mk _ _ (comp_distTriang_mor_zero₁₂ T hT)).op.map
-      (preadditiveYoneda.obj A)).Exact := by
-  rw [ShortComplex.ab_exact_iff]
-  intro (x₂ : T.obj₂ ⟶ A) (hx₂ : T.mor₁ ≫ x₂ = 0)
-  obtain ⟨x₃, hx₃⟩ := T.yoneda_exact₂ hT x₂ hx₂
-  exact ⟨x₃, hx₃.symm⟩
-
-instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
-  exact T hT := by
-    rw [ShortComplex.ab_exact_iff]
-    intro (x₂ : A.unop ⟶ T.obj₂) (hx₂ : x₂ ≫ T.mor₂ = 0)
-    obtain ⟨x₁, hx₁⟩ := T.coyoneda_exact₂ hT x₂ hx₂
-    exact ⟨x₁, hx₁.symm⟩
-
-end Pretriangulated
 
 namespace Functor
 
@@ -591,8 +569,8 @@ lemma toHomology₀_naturality {X Y : C} (f : X ⟶ Y) [t.IsLE X 0] [t.IsLE Y 0]
 instance (A X : C) [t.IsLE X 0] [t.IsGE A 0] :
     IsIso ((preadditiveYoneda.obj A).map ((t.truncGEπ 0).app X).op) := by
   have : Mono ((preadditiveYoneda.obj A).map ((t.truncGEπ 0).app X).op) :=
-    (preadditiveYoneda_map_distinguished A _
-      (rot_of_distTriang _ (t.triangleLTGE_distinguished 0 X))).mono_g (by
+    (preadditiveYoneda_map_distinguished _
+      (rot_of_distTriang _ (t.triangleLTGE_distinguished 0 X)) A).mono_g (by
       apply IsZero.eq_of_src
       apply AddCommGrp.isZero
       intro (x : ((t.truncLT 0).obj X)⟦(1 : ℤ)⟧ ⟶ A)
@@ -600,7 +578,7 @@ instance (A X : C) [t.IsLE X 0] [t.IsGE A 0] :
         t.isLE_shift ((t.truncLT 0).obj X) 0 1 (-1) (by linarith)
       exact t.zero x (-1) 0 (by linarith))
   have : Epi ((preadditiveYoneda.obj A).map ((t.truncGEπ 0).app X).op) :=
-    (preadditiveYoneda_map_distinguished A _ (t.triangleLTGE_distinguished 0 X)).epi_f (by
+    (preadditiveYoneda_map_distinguished _ (t.triangleLTGE_distinguished 0 X) A).epi_f (by
       apply IsZero.eq_of_tgt
       apply AddCommGrp.isZero
       intro (x : (t.truncLT 0).obj X ⟶ A)
@@ -731,8 +709,8 @@ lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
     (addEquivFromHomology₀OfIsLE t T.obj₃ A) (addEquivFromHomology₀OfIsLE t T.obj₂ A)
     (addEquivFromHomology₀OfIsLE t T.obj₁ A) (addEquivFromHomology₀OfIsLE_naturality t T.mor₂ A)
     (addEquivFromHomology₀OfIsLE_naturality t T.mor₁ A)).2 ?_
-  refine ⟨preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ hT,
-    (preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ (rot_of_distTriang _ hT)).mono_g ?_⟩
+  refine ⟨preadditiveYoneda_map_distinguished _ hT (t.ιHeart.obj A),
+    (preadditiveYoneda_map_distinguished _ (rot_of_distTriang _ hT) (t.ιHeart.obj A)).mono_g ?_⟩
   apply IsZero.eq_of_src
   apply AddCommGrp.isZero
   intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ t.ιHeart.obj A)

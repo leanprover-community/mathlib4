@@ -36,19 +36,10 @@ open CategoryTheory.Limits
 
 open Opposite
 
-<<<<<<< HEAD
-section Limits
-
-universe w v' v u z z'
-
-variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{v'} D]
-=======
 universe w w' v u z z' u₁ u₂
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 variable {D : Type w} [Category.{w'} D]
->>>>>>> origin/ext-change-of-universes
 variable {K : Type z} [Category.{z'} K]
 
 section Limits
@@ -174,19 +165,11 @@ instance [HasFiniteLimits D] : HasFiniteLimits (Sheaf J D) :=
 
 end
 
-<<<<<<< HEAD
-instance createsLimitsOfSize [HasLimitsOfSize.{z', z} D] :
-    CreatesLimitsOfSize.{z', z} (sheafToPresheaf J D) :=
-  ⟨createsLimitsOfShape⟩
-
-instance [HasLimitsOfSize.{z', z} D] : HasLimitsOfSize.{z', z} (Sheaf J D) :=
-=======
 instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
     CreatesLimitsOfSize.{u₁, u₂} (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
 instance hasLimitsOfSize [HasLimitsOfSize.{u₁, u₂} D] : HasLimitsOfSize.{u₁, u₂} (Sheaf J D) :=
->>>>>>> origin/ext-change-of-universes
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
 variable {D : Type w} [Category.{max v u} D]

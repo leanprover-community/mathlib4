@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+/-!
+# Functors which reflect exact sequences
+
+-/
 
 universe v₁ v₂ u₁ u₂
 
@@ -39,10 +49,12 @@ variable [HasZeroMorphisms C] [Preadditive D]
 
 lemma eq_zero_of_map_eq_zero (F : C ⥤ D) [F.ReflectsExactSequences]
     [HasZeroObject D] {X Y : C} (f : X ⟶ Y) (hf : F.map f = 0) : f = 0 := by
-  simpa only [comp_id] using (ReflectsExactSequences.reflects F f (𝟙 Y) (by rw [F.map_id, comp_id, hf]) (by
+  simpa only [comp_id] using (ReflectsExactSequences.reflects F f (𝟙 Y)
+      (by rw [F.map_id, comp_id, hf]) (by
     simp only [F.map_id, hf, ShortComplex.exact_iff_mono]
     infer_instance)).choose
 
+/-- reflectsExactSequences_iff_reflectsShortComplexExact' -/
 lemma reflectsExactSequences_iff_reflectsShortComplexExact' (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [HasZeroObject D] :
     F.ReflectsExactSequences ↔
@@ -52,7 +64,7 @@ lemma reflectsExactSequences_iff_reflectsShortComplexExact' (F : C ⥤ D)
   · intro hF
     exact ⟨fun _ _ => F.eq_zero_of_map_eq_zero, ReflectsExactSequences.reflectsShortComplexExact F⟩
   · rintro ⟨hF₁, hF₂⟩
-    refine' ⟨fun {X Y Z} f g w₂ ex₂ => _⟩
+    refine ⟨fun {X Y Z} f g w₂ ex₂ => ?_⟩
     have H := hF₁ (f ≫ g) (by rw [F.map_comp, w₂])
     exact ⟨H, hF₂ (ShortComplex.mk f g H) ex₂⟩
 
@@ -65,8 +77,8 @@ variable [Abelian C] [Abelian D] (F : C ⥤ D) [F.PreservesZeroMorphisms] [Faith
 -- adapted from the proof in `CategoryTheory.Abelian.Exact` using the previous homology API
 instance reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful : F.ReflectsExactSequences := by
   rw [reflectsExactSequences_iff_reflectsShortComplexExact']
-  refine' ⟨fun _ _ f hf => F.map_injective (by rw [hf, F.map_zero]),
-    fun S hS => _⟩
+  refine ⟨fun _ _ f hf => F.map_injective (by rw [hf, F.map_zero]),
+    fun S hS => ?_⟩
   rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero] at hS ⊢
   dsimp at hS
   obtain ⟨k, hk⟩ := kernel.lift' (F.map S.g) (F.map (kernel.ι S.g)) (by

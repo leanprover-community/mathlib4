@@ -72,9 +72,10 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
     rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
 
+/-- comp' -/
 theorem CoverPreserving.comp' {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G)
     {H : C ⥤ A} (e : F ⋙ G ≅ H) : CoverPreserving J L H :=
-  (hF.comp hG).of_iso e
+  of_iso _ _ (comp _ _ hF hG) e
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called compatible preserving if for each
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
@@ -90,7 +91,6 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
       {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (_ : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
       ℱ.val.map f₁.op (x g₁ hg₁) = ℱ.val.map f₂.op (x g₂ hg₂)
 
-<<<<<<< HEAD
 lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) {G' : C ⥤ D}
     (e : G ≅ G') :
     CompatiblePreserving.{w} K G' where
@@ -99,8 +99,8 @@ lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K
       ℱ.val.map (e.hom.app Y).op (x f hf)
     have hx' : x'.Compatible := fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac => by
       dsimp
-      refine' (congr_fun (ℱ.val.map_comp _ _) (x f₁ h₁)).symm.trans
-        (Eq.trans _ (congr_fun (ℱ.val.map_comp _ _) (x f₂ h₂)))
+      refine (congr_fun (ℱ.val.map_comp _ _) (x f₁ h₁)).symm.trans
+        (Eq.trans ?_ (congr_fun (ℱ.val.map_comp _ _) (x f₂ h₂)))
       rw [← op_comp, ← op_comp, NatTrans.naturality, NatTrans.naturality,
         op_comp, op_comp, Functor.map_comp, Functor.map_comp]
       dsimp
@@ -112,11 +112,8 @@ lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K
       (f₁ ≫ e.inv.app Y₁) (f₂ ≫ e.inv.app Y₂) hg₁ hg₂
       (by simp only [Category.assoc, ← e.inv.naturality, reassoc_of% fac])
 
-variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
-=======
 section
 variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : Sheaf K (Type w)) {Z : C}
->>>>>>> origin/ext-change-of-universes
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 include hG h
 
