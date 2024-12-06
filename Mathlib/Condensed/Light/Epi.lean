@@ -263,7 +263,7 @@ private noncomputable def isLimit : IsLimit (cone f) where
     intro n
     simp only [Functor.ofOpSequence_obj, le_refl, dite_eq_ite, limit.lift_π, Fan.mk_pt,
       Fan.mk_π_app, ← h ⟨n + 1⟩, Category.assoc]
-    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ le_rfl]
+    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ (by omega)]
     simp
 
 end General
