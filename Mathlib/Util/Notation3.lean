@@ -653,7 +653,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
       trace[notation3] "matcher:{indentD matcher}"
       let mut result ← `(withHeadRefIfTagAppFns `($pat))
-      for (name, id) in boundIdents.toArray do
+      for (name, id) in boundIdents do
         match boundType.getD name .normal with
         | .normal => result ← `(MatchState.delabVar s $(quote name) (some e) >>= fun $id => $result)
         | .foldl => result ←
