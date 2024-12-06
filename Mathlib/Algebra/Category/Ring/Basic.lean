@@ -533,8 +533,7 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-@[instance]
-abbrev instConcreteCategory : ConcreteCategory.{u} CommRingCat where
+instance : ConcreteCategory.{u} CommRingCat where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
@@ -553,6 +552,10 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
+
+lemma forgetToRingCat_obj (A : CommRingCat.{u}) :
+    (forget₂ CommRingCat RingCat).obj A = (A : Type u) :=
+  rfl
 
 instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat where
   forget₂ :=
@@ -612,3 +615,13 @@ abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
 /-- An alias for `CommRingCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
+
+lemma RingCat.forget_map_apply {R S : RingCat} (f : R ⟶ S)
+    (x : (CategoryTheory.forget RingCat).obj R) :
+    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
+  rfl
+
+lemma CommRingCat.forget_map_apply {R S : CommRingCat} (f : R ⟶ S)
+    (x : (CategoryTheory.forget CommRingCat).obj R) :
+    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
+  rfl

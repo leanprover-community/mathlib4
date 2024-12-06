@@ -38,7 +38,7 @@ variable (M₁ M₂ M₃ M₄ : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
 
 /-- Auxiliary definition for `tensorObj`. -/
 noncomputable def tensorObjMap {X Y : Cᵒᵖ} (f : X ⟶ Y) : M₁.obj X ⊗ M₂.obj X ⟶
-    (ModuleCat.restrictScalars (R.map f)).obj (M₁.obj Y ⊗ M₂.obj Y) :=
+    (ModuleCat.restrictScalars (R.map f).hom).obj (M₁.obj Y ⊗ M₂.obj Y) :=
   ModuleCat.MonoidalCategory.tensorLift (fun m₁ m₂ ↦ M₁.map f m₁ ⊗ₜ M₂.map f m₂)
     (by intro m₁ m₁' m₂; dsimp; rw [map_add, TensorProduct.add_tmul])
     (by intro a m₁ m₂; dsimp; erw [M₁.map_smul]; rfl)
@@ -70,7 +70,7 @@ variable {M₁ M₂ M₃ M₄}
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X : _))
       (β := fun _ ↦ (ModuleCat.restrictScalars
-        ((forget₂ CommRingCat RingCat).map (R.map f))).obj (M₁.obj Y ⊗ M₂.obj Y))
+        ((forget₂ CommRingCat RingCat).map (R.map f)).hom).obj (M₁.obj Y ⊗ M₂.obj Y))
       ((tensorObj M₁ M₂).map f).hom (m₁ ⊗ₜ[R.obj X] m₂) = M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
 
 /-- The tensor product of two morphisms of presheaves of modules. -/
@@ -78,7 +78,7 @@ lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ where
   app X := f.app X ⊗ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
-    dsimp
+    dsimp [CommRingCat.forgetToRingCat_obj]
     rw [tensorObj_map_tmul, ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul,
       naturality_apply, naturality_apply])
 
@@ -98,13 +98,13 @@ noncomputable instance monoidalCategoryStruct :
     (fun _ _ _ ↦ ModuleCat.MonoidalCategory.tensor_ext₃' (by intros; rfl))
   leftUnitor M := Iso.symm (isoMk (fun _ ↦ (λ_ _).symm) (fun X Y f ↦ by
     ext m
-    dsimp
-    erw [leftUnitor_inv_apply, leftUnitor_inv_apply, tensorObj_map_tmul, (R.map f).map_one]
+    dsimp [CommRingCat.forgetToRingCat_obj]
+    erw [leftUnitor_inv_apply, leftUnitor_inv_apply, tensorObj_map_tmul, (R.map f).hom.map_one]
     rfl))
   rightUnitor M := Iso.symm (isoMk (fun _ ↦ (ρ_ _).symm) (fun X Y f ↦ by
     ext m
-    dsimp
-    erw [rightUnitor_inv_apply, rightUnitor_inv_apply, tensorObj_map_tmul, (R.map f).map_one]
+    dsimp [CommRingCat.forgetToRingCat_obj]
+    erw [rightUnitor_inv_apply, rightUnitor_inv_apply, tensorObj_map_tmul, (R.map f).hom.map_one]
     rfl))
 
 noncomputable instance monoidalCategory :

@@ -92,11 +92,6 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   simp only [map_mul, map_one] at heq'
   simpa using isUnit_of_mul_eq_one _ _ heq'
 
-lemma _root_.CommRingCat.forget_map_apply {R S : CommRingCat} (f : R ⟶ S)
-    (x : (CategoryTheory.forget CommRingCat).obj R) :
-    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
-  rfl
-
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by

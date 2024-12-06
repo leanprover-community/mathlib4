@@ -58,7 +58,12 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
       fun z ↦ congr_fun ((forget _).congr_map (g.naturality p.op)) z
     change M₂.map p.op (g.app X (r' • m)) = M₂.map p.op (r' • show M₂.obj X from g.app X m)
     dsimp at hg ⊢
-    rw [← hg, M₂.map_smul, ← hg, ← hr]
+    rw [← hg]
+    rw [M₂.map_smul]
+    rw [← hg]
+    rw [RingCat.forget_map_apply] at hr
+    rw [RingCat.forget_map_apply] at hr
+    rw [← hr]
     erw [← (g.app _).hom.map_smul]
     rw [M₁.map_smul, ← hr]
     rfl)
