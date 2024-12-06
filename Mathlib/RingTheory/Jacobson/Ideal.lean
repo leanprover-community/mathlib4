@@ -96,8 +96,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
         let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 hxy)
         let ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
-          -- Porting note: supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel_right]
+          rw [mul_assoc, ← mul_add_one, hr, ← hpq, ← neg_sub, add_sub_cancel_right]
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
@@ -108,8 +107,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
       let ⟨z, hz⟩ := hx (-y)
       hm.1.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
         M.sub_mem (by
-          -- Porting note: supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one z, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
+          rw [mul_assoc, ← mul_add_one, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
             sub_add_cancel]
           exact M.mul_mem_left _ hi) <| him hz⟩
 
@@ -157,15 +155,15 @@ theorem eq_jacobson_iff_sInf_maximal' :
 /-- An ideal `I` equals its Jacobson radical if and only if every element outside `I`
 also lies outside of a maximal ideal containing `I`. -/
 theorem eq_jacobson_iff_not_mem :
-    I.jacobson = I ↔ ∀ (x) (_ : x ∉ I), ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M := by
+    I.jacobson = I ↔ ∀ x ∉ I, ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M := by
   constructor
   · intro h x hx
-    erw [← h, mem_sInf] at hx
+    rw [← h, Ideal.jacobson, mem_sInf] at hx
     push_neg at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
-    erw [mem_sInf]
+    rw [Ideal.jacobson, mem_sInf]
     push_neg
     exact h x hx
 
