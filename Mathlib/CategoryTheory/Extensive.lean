@@ -102,7 +102,7 @@ theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingP
   have : F = pair X Y := by
     apply Functor.hext
     · rintro ⟨⟨⟩⟩ <;> rfl
-    · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
+    · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp +zetaDelta
   clear_value X Y
   subst this
   exact FinitaryExtensive.van_kampen' c hc
@@ -491,7 +491,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
     hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
   have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩ := by
-    simp only [e', Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
+    simp +zetaDelta only [e', Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
       BinaryCofan.ι_app_left, BinaryCofan.mk_inl]
     exact colimit.comp_coconePointUniqueUpToIso_inv _ _
   clear_value e'

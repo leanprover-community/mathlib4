@@ -706,7 +706,7 @@ instance (priority := 100) CommRing.orzechProperty
           (by simp [show ∃ a b, c a b = c j j' from ⟨j, j', rfl⟩])⟩
         rw [show c j j' • mj j' = c' • mj j' from rfl]
         exact smul_mem _ _ (subset_span (by simp))
-    | zero => simp
+    | zero => simp +zetaDelta
     | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
     | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
   · induction hx using span_induction with
@@ -716,7 +716,7 @@ instance (priority := 100) CommRing.orzechProperty
       rcases hx with hx | ⟨j, rfl⟩
       · rw [hx, hn]; exact zero_mem _
       · exact subset_span (by simp [hnj])
-    | zero => simp
+    | zero => simp +zetaDelta
     | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
     | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
   suffices x ∈ LinearMap.range ((f.restrictScalars A).domRestrict N') by

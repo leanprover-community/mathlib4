@@ -140,7 +140,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
     { e with
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp [mul_def] }
+        simp +zetaDelta [mul_def] }
 
 @[to_additive (attr := simp)]
 theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a :=
@@ -170,10 +170,10 @@ def ringEquiv (e : α ≃ β) [Add β] [Mul β] : by
     { e with
       map_add' := fun x y => by
         apply e.symm.injective
-        simp [add_def]
+        simp +zetaDelta [add_def]
       map_mul' := fun x y => by
         apply e.symm.injective
-        simp [mul_def] }
+        simp +zetaDelta [mul_def] }
 
 @[simp]
 theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv e) a = e a :=
@@ -549,8 +549,8 @@ protected abbrev distribMulAction (e : α ≃ β) [AddCommMonoid β] :
   letI := Equiv.addCommMonoid e
   exact
     ({ Equiv.mulAction R e with
-        smul_zero := by simp [zero_def, smul_def]
-        smul_add := by simp [add_def, smul_def, smul_add] } :
+        smul_zero := by simp +zetaDelta [zero_def, smul_def]
+        smul_add := by simp +zetaDelta [add_def, smul_def, smul_add] } :
       DistribMulAction R α)
 
 noncomputable instance [Small.{v} α] [AddCommMonoid α] [DistribMulAction R α] :
@@ -570,8 +570,8 @@ protected abbrev module (e : α ≃ β) [AddCommMonoid β] :
   intros
   exact
     ({ Equiv.distribMulAction R e with
-        zero_smul := by simp [smul_def, zero_smul, zero_def]
-        add_smul := by simp [add_def, smul_def, add_smul] } :
+        zero_smul := by simp +zetaDelta [smul_def, zero_smul, zero_def]
+        add_smul := by simp +zetaDelta [add_def, smul_def, add_smul] } :
       Module R α)
 
 noncomputable instance [Small.{v} α] [AddCommMonoid α] [Module R α] : Module R (Shrink.{v} α) :=
@@ -626,7 +626,7 @@ lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
   let _ := Equiv.algebra R e
   simp only [Algebra.algebraMap_eq_smul_one]
   show e.symm (r • e 1) = e.symm (r • 1)
-  simp only [Equiv.one_def, apply_symm_apply]
+  simp +zetaDelta only [Equiv.one_def, apply_symm_apply]
 
 noncomputable instance [Small.{v} α] [Semiring α] [Algebra R α] :
     Algebra R (Shrink.{v} α) :=
@@ -645,8 +645,8 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
     { Equiv.ringEquiv e with
       commutes' := fun r => by
         apply e.symm.injective
-        simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
-          symm_apply_apply, algebraMap_def] }
+        simp +zetaDelta only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe,
+          ringEquiv_apply, symm_apply_apply, algebraMap_def] }
 
 @[simp]
 theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=

@@ -295,7 +295,7 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B�
   letI := e₁.toRingHom.toAlgebra
   letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
-    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+    (fun x ↦ by simp +zetaDelta [RingHom.algebraMap_toAlgebra])
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun r ↦ by

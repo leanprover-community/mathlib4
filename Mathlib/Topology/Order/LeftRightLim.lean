@@ -103,7 +103,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
-  · simpa [leftLim, h'] using hf h
+  · simpa +zetaDelta [leftLim, h'] using hf h
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
   rw [leftLim_eq_sSup hf h']
   refine csSup_le ?_ ?_
@@ -149,7 +149,7 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
-  · simpa [leftLim, h'] using rightLim_le hf h
+  · simpa +zetaDelta [leftLim, h'] using rightLim_le hf h
   obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty :=
     forall_mem_nonempty_iff_neBot.2 (neBot_iff.2 h') (Ioo x y)
       (Ioo_mem_nhdsWithin_Iio ⟨h, le_refl _⟩)

@@ -750,11 +750,11 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
         exact compare_gt_iff_gt.mp rfl)
       step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
     have hlast' : p'.last = x := by
-      simp only [RelSeries.last, Fin.val_last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
+      simp +zetaDelta only [RelSeries.last, Fin.val_last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
       congr
       omega
     suffices p'.length ≤ height p'.last by
-      simpa [p', hlast'] using this
+      simpa +zetaDelta [p', hlast'] using this
     apply length_le_height_last
   · rw [height_add_const]
     apply iSup₂_le
@@ -780,7 +780,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
           simp [hlast])
       step := fun i => by simpa only [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
     have hlast' : p'.last = x := by
-      simp only [RelSeries.last, Fin.val_last, WithTop.untop_eq_iff, ← hlast]
+      simp +zetaDelta only [RelSeries.last, Fin.val_last, WithTop.untop_eq_iff, ← hlast]
     suffices p'.length ≤ height p'.last by
       rw [hlast'] at this
       simpa [p'] using this

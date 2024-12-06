@@ -411,7 +411,7 @@ open MulOpposite in
     have := uniqueMul_of_nonempty (A := D.image (·⁻¹) * C) (B := D * C.image (·⁻¹)) ?_ ?_
     · obtain ⟨e, he, f, hf, hu⟩ := this
       clear_value C D
-      simp only [UniqueMul, mem_mul, mem_image] at he hf hu
+      simp +zetaDelta only [UniqueMul, mem_mul, mem_image] at he hf hu
       obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
       obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
       by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1

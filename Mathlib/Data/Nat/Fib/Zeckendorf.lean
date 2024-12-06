@@ -165,7 +165,7 @@ lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib)
     exact hl'.sum_fib_lt (by simpa)
 
 @[simp] lemma sum_zeckendorf_fib (n : ℕ) : (n.zeckendorf.map fib).sum = n := by
-  induction n using zeckendorf.induct <;> simp_all [fib_greatestFib_le]
+  induction n using zeckendorf.induct <;> simp_all +zetaDelta [fib_greatestFib_le]
 
 /-- **Zeckendorf's Theorem** as an equivalence between natural numbers and Zeckendorf
 representations. Every natural number can be written uniquely as a sum of non-consecutive Fibonacci

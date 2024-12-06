@@ -186,9 +186,10 @@ theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {�
     apply congr_arg
     ext b
     -- Porting note: added `Set.mem_toFinset`
-    simp [Rel.image, (Set.mem_toFinset)]
+    simp +zetaDelta [Rel.image, (Set.mem_toFinset)]
   -- Porting note: added `Set.mem_toFinset`
-  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [Rel.image, (Set.mem_toFinset)]
+  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by
+    simp +zetaDelta [Rel.image, (Set.mem_toFinset)]
   simp only [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 

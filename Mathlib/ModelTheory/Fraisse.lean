@@ -387,7 +387,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
     subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
   ext
-  simp [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
+  simp +zetaDelta [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
 
 /-- The Fraïssé limit of a class is unique, in that any two Fraïssé limits are isomorphic. -/
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by

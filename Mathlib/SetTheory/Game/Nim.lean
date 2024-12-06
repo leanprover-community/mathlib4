@@ -347,10 +347,10 @@ theorem grundyValue_nim_add_nim (x y : Ordinal) : grundyValue (nim x + nim y) = 
     obtain h | h := Nimber.lt_add_cases hk
     · let a := toOrdinal (k + ∗y)
       use toLeftMovesAdd (Sum.inl (toLeftMovesNim ⟨a, h⟩))
-      simp [a, grundyValue_nim_add_nim a y]
+      simp +zetaDelta [a, grundyValue_nim_add_nim a y]
     · let a := toOrdinal (k + ∗x)
       use toLeftMovesAdd (Sum.inr (toLeftMovesNim ⟨a, h⟩))
-      simp [a, grundyValue_nim_add_nim x a, add_comm (∗x)]
+      simp +zetaDelta [a, grundyValue_nim_add_nim x a, add_comm (∗x)]
 termination_by (x, y)
 
 theorem nim_add_nim_equiv (x y : Ordinal) :

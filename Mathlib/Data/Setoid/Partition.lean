@@ -166,7 +166,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
   · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
     induction' q_a using Quotient.ind with a
     induction' q_b using Quotient.ind with b
-    simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
+    simp +zetaDelta only [Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
     show a ∈ { x | r x b }
     rw [← h_eq]

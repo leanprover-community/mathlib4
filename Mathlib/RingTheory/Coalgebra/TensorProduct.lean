@@ -56,7 +56,7 @@ noncomputable instance TensorProduct.instCoalgebra : Coalgebra R (M ⊗[R] N) :=
       counit_comp := rfl
       map_comp_comul := by
         rw [CoalgebraCat.ofComonObjCoalgebraStruct_comul]
-        simp [-Mon_.monMonoidalStruct_tensorObj_X,
+        simp +zetaDelta [-Mon_.monMonoidalStruct_tensorObj_X,
           ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorHom,
           ModuleCat.comp_def, ModuleCat.of, ModuleCat.ofHom,
           ModuleCat.MonoidalCategory.tensorμ_eq_tensorTensorTensorComm] }

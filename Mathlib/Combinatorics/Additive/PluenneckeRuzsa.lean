@@ -178,7 +178,7 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
   rw [← le_div_iff₀ (cast_pos.2 hB.card_pos), mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
+  refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))

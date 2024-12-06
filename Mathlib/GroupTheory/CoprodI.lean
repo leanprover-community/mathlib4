@@ -1028,7 +1028,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     have hnne0 : n ≠ 0 := by
       rintro rfl
       apply hne1
-      simp [H, FreeGroup.freeGroupUnitEquivInt]
+      simp +zetaDelta [H, FreeGroup.freeGroupUnitEquivInt]
     clear hne1
     simp only [X']
     -- Positive and negative powers separately

@@ -58,7 +58,7 @@ theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
   | var _ => simp
   | func f a ih =>
     cases f <;>
-    simp [ih]
+    simp +zetaDelta [ih]
 
 end Ring
 

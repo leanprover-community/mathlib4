@@ -1305,7 +1305,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   have : goal ≈ e.subtypeRestr (s := s) hs :=
     (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr
       ⟨by
-        simp only [trans_toPartialEquiv, PartialEquiv.trans_source,
+        simp +zetaDelta only [trans_toPartialEquiv, PartialEquiv.trans_source,
           Homeomorph.toPartialHomeomorph_source, toFun_eq_coe, Homeomorph.toPartialHomeomorph_apply,
           Opens.partialHomeomorphSubtypeCoe_source, preimage_univ, inter_self, subtypeRestr_source,
           goal, s]

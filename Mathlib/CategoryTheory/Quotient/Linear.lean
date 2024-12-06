@@ -55,24 +55,24 @@ def module' (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f�
       rw [← (functor r).map_zero X Y, smul_eq, smul_zero]
     zero_smul := fun f => by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-      dsimp
+      dsimp +zetaDelta
       rw [zero_smul, Functor.map_zero]
     one_smul := fun f => by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-      dsimp
+      dsimp +zetaDelta
       rw [one_smul]
     mul_smul := fun a b f => by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-      dsimp
+      dsimp +zetaDelta
       rw [mul_smul]
     smul_add := fun a f g => by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       obtain ⟨g, rfl⟩ := (functor r).map_surjective g
-      dsimp
+      dsimp +zetaDelta
       rw [← (functor r).map_add, smul_eq, ← (functor r).map_add, smul_add]
     add_smul := fun a b f => by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
-      dsimp
+      dsimp +zetaDelta
       rw [add_smul, Functor.map_add] }
 
 /-- Auxiliary definition for `Quotient.linear`. -/

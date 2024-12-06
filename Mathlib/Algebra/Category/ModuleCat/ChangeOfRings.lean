@@ -656,7 +656,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
       map_smul' := fun (r : R) (s : S) => ?_}
     · ext
-      dsimp only [evalAt_apply, LinearMap.add_apply]
+      dsimp +zetaDelta only [evalAt_apply, LinearMap.add_apply]
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)
