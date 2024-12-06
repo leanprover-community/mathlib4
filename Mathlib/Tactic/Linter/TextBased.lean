@@ -276,7 +276,7 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
 
   for lint in allLinters do
     let (err, changes) := lint changed
-    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
+    allOutput := allOutput.append <| err.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)])
     -- TODO: auto-fixes do not take style exceptions into account
     if let some c := changes then
       changed := c
