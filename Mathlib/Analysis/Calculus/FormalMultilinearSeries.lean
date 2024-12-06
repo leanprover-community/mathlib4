@@ -75,6 +75,12 @@ theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := r
 @[simp]
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
+@[simp]
+theorem add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p + q) n = p n + q n := rfl
+
+@[simp]
+theorem sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p - q) n = p n - q n := rfl
+
 @[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h

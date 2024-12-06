@@ -98,5 +98,44 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
     ContinuousLinearMap.coe_id', id_eq, g]
   congr 1
   symm
-  simp only [embedding_equiv_equiv_of_fintype, coe_fn_mk, inv_apply, Perm.inv_def,
-    ofBijective_symm_apply_apply]
+  simp [coe_fn_mk, inv_apply, Perm.inv_def,
+    ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
+
+lemma glouk [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r)
+    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hx : x ∈ s)
+    {n : ℕ} (v : Fin n → E) (h's : s ⊆ EMetric.ball x r) :
+    iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
+  have I : insert x s ∩ EMetric.ball x r = s := by
+    rw [Set.insert_eq_of_mem hx]
+    exact Set.inter_eq_left.2 h's
+  have fcont : ContDiffOn 𝕜 (↑n) f s := by
+    apply AnalyticOn.contDiffOn _ hu
+    simpa [I] using h.analyticOn
+  let g : E → F := fun z ↦ p n (fun _ ↦ z - x)
+  let q : FormalMultilinearSeries 𝕜 E F := fun k ↦ if h : n = k then (h ▸ p n) else 0
+  have A : HasFiniteFPowerSeriesOnBall g q x (n + 1) r := by
+    apply HasFiniteFPowerSeriesOnBall.mk' _ h.r_pos
+    · intro y hy
+      rw [Finset.sum_eq_single_of_mem n]
+      · simp [q, g]
+      · simp
+      · intro i hi h'i
+        simp [q, h'i.symm]
+    · intro m hm
+      have : n ≠ m := by omega
+      simp [q, this]
+  have B : HasFPowerSeriesWithinOnBall g q s x r :=
+    A.toHasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
+  have gcont : ContDiffOn 𝕜 (↑n) g s := by
+    apply AnalyticOn.contDiffOn _ hu
+    simpa [I] using B.analyticOn
+  have J1 : iteratedFDerivWithin 𝕜 n f s x v =
+      iteratedFDerivWithin 𝕜 n g s x v + iteratedFDerivWithin 𝕜 n (f - g) s x v := by
+    have : f = g + (f - g) := by abel
+    nth_rewrite 1 [this]
+    rw [iteratedFDerivWithin_add_apply gcont (by exact fcont.sub gcont) hu hx]
+    rfl
+  have J2 : iteratedFDerivWithin 𝕜 n (f - g) s x = 0 := by
+    apply (h.sub B).iteratedFDerivWithin_eq_zero hu hx
+    simp [q]
