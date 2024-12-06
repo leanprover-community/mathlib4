@@ -339,13 +339,19 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
   rw [← h₁, tensorDistriFree_right_self]
 
 /--
-Lift the polar
--/
-noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
-  (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂)) (x : M₁ ⊗[R] M₂) := fun p => Sym2.lift
-    ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
+-Lift the polar (LI)
+--/
+noncomputable def polar_lift_li (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
+    (g : ι₁ × ι₂ → M₁ ⊗[R] M₂) (l : ι₁ × ι₂ →₀ A) := fun p => Sym2.lift
+    ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j => by
       simp only [polar_comm]
       rw [smul_comm]⟩ p
+
+/--
+-Lift the polar (Basis)
+--/
+noncomputable def polar_lift (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
+  (bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂)) (x : M₁ ⊗[R] M₂) := polar_lift_li Q bm (bm.repr x)
 
 lemma polar_lift_eq_polarnn_lift_on_symOffDiagUpper
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
@@ -354,7 +360,7 @@ lemma polar_lift_eq_polarnn_lift_on_symOffDiagUpper
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     polar_lift Q bm x p =  polarnn_lift bm₁ Q₁ bm₂ Q₂ x p := by
   induction' p with i j
-  simp_rw [polar_lift, polarnn_lift, Sym2.lift_mk, Prod.mk.eta]
+  simp_rw [polar_lift, polar_lift_li, polarnn_lift, Sym2.lift_mk, Prod.mk.eta]
   rw [Finset.mem_filter, symOffDiagUpper_iff_proj_eq] at h
   obtain ⟨h1, h2⟩ := h
   rw [Basis.tensorProduct_apply, Basis.tensorProduct_apply]
@@ -369,7 +375,7 @@ lemma polar_lift_eq_zero_on_symOffDiagLower
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     Q.polar_lift bm x p = 0 := by
   induction' p with i j
-  simp_rw [polar_lift, Sym2.lift_mk]
+  simp_rw [polar_lift, polar_lift_li, Sym2.lift_mk]
   rw [Finset.mem_filter, symOffDiagLower_iff_proj_eq] at h
   obtain ⟨h1, h2⟩ := h
   rw [Basis.tensorProduct_apply, Basis.tensorProduct_apply]
@@ -397,7 +403,7 @@ lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
     polar_lift Q bm x p =  polar_left_lift bm₁ Q₁ bm₂ Q₂ x p := by
   induction' p with i j
   simp
-  rw [polar_lift, polar_left_lift]
+  rw [polar_lift, polar_lift_li, polar_left_lift]
   simp at h
   obtain e1 := h.2.1
   simp only [Sym2.lift_mk, polarBilin_apply_apply]
@@ -446,7 +452,7 @@ lemma polar_lift_eq_polarright_lift_on_symOffDiagRight
     polar_lift Q bm x p =  polar_right_lift bm₁ Q₁ bm₂ Q₂ x p := by
   induction' p with i j
   simp
-  rw [polar_lift, polar_right_lift]
+  rw [polar_lift, polar_lift_li, polar_right_lift]
   simp at h
   obtain e1 := h.2.1
   simp only [Sym2.lift_mk, polarBilin_apply_apply]
@@ -549,7 +555,7 @@ theorem qt_expansion20 (x : M₁ ⊗[R] M₂) :
   simp_rw [basis_expansion Q bm x]
   have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
     rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
-  simp_rw [polar_lift, e1]
+  simp_rw [polar_lift, polar_lift_li, e1]
 
 theorem qt_expansion21 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
