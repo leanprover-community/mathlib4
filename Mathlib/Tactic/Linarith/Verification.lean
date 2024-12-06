@@ -135,11 +135,10 @@ def typeOfIneqProof (prf : Expr) : MetaM Expr := do
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,
 where the numerals are natively of type `tp`.
 -/
-def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} proving 0 < 1") do
-    let ⟨.succ u, ~q(Type u), ~q($α)⟩ ← inferTypeQ' tp | throwError "wat"
-    letI := ← synthInstanceQ q(StrictOrderedRing $α)
-    return q(neg_neg_of_pos <| Linarith.zero_lt_one (α := $α))
+def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
+  let ⟨.succ u, ~q(Type u), ~q($α)⟩ ← inferTypeQ' tp | throwError m!"{tp} is not a type"
+  letI := ← synthInstanceQ q(StrictOrderedRing $α)
+  return q(neg_neg_of_pos <| Linarith.zero_lt_one (α := $α))
 
 /--
 `addNegEqProofs l` inspects the list of proofs `l` for proofs of the form `t = 0`. For each such
