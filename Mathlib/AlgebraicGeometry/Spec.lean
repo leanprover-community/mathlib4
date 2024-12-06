@@ -221,6 +221,15 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
         rw [stalkIso_hom, stalkIso_inv, CommRingCat.comp_apply, CommRingCat.comp_apply,
             localizationToStalk_of]
         erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
+        rfl
+
+/-- Version of `localRingHom_comp_stalkIso_apply` using `CommRingCat.Hom.hom` -/
+theorem localRingHom_comp_stalkIso_apply' {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S)
+    (x) :
+    (stalkIso S p).inv ((Localization.localRingHom (PrimeSpectrum.comap f.hom p).asIdeal p.asIdeal
+          f.hom rfl) ((stalkIso R (PrimeSpectrum.comap f.hom p)).hom x)) =
+      (Spec.sheafedSpaceMap f).stalkMap p x :=
+  localRingHom_comp_stalkIso_apply _ _ _
 
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
@@ -234,14 +243,9 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
 
-      -- Use `simp` to get rid of most of the inconsistencies between the lemma and the hypothesis,
-      -- otherwise we get a timeout.
-      have := localRingHom_comp_stalkIso_apply f p a
-      simp only [locallyRingedSpaceObj_toSheafedSpace, sheafedSpaceObj_carrier,
-        sheafedSpaceObj_presheaf, sheafedSpaceMap_base] at this ha
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
-      erw [← this] at ha
+      erw [← localRingHom_comp_stalkIso_apply' f p a] at ha
 
       have : IsLocalHom (stalkIso (↑S) p).inv.hom := isLocalHom_of_isIso _
       replace ha := (isUnit_map_iff (stalkIso S p).inv.hom _).mp ha
