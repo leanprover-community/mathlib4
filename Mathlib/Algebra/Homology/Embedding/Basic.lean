@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Nat
 
 /-! # Embeddings of complex shapes
 

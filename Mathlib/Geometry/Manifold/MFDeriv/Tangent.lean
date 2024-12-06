@@ -62,7 +62,7 @@ lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y
 the basis also has unique differential. -/
 theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
-  hs.smooth_bundle_preimage _
+  hs.bundle_preimage _
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.

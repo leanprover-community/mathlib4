@@ -126,7 +126,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
       simp [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
   have : IsScalarTower (Localization S) Rₚ Mₚ :=
-    ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • _ by rw [← mul_smul, ← Algebra.smul_def]⟩
+    ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • r' • m by rw [← mul_smul, ← Algebra.smul_def]⟩
   let l := (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap S M)
     (LocalizedModule.mkLinearMap p'.primeCompl M)).extendScalarsOfIsLocalization S
     (Localization S)
@@ -203,7 +203,7 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
       simp [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
   have : IsScalarTower (Localization.Away f) Rₚ Mₚ :=
-    ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • _ by rw [← mul_smul, ← Algebra.smul_def]⟩
+    ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • r' • m by rw [← mul_smul, ← Algebra.smul_def]⟩
   let l := (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap (.powers f) M)
     (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M)).extendScalarsOfIsLocalization (.powers f)
     (Localization.Away f)

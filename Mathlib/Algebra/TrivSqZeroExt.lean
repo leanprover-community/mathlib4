@@ -6,6 +6,7 @@ Authors: Kenny Lau, Eric Wieser
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.BigOperators.Pi
 
 /-!
 # Trivial Square-Zero Extension

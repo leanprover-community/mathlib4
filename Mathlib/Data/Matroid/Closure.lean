@@ -5,6 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Data.Matroid.Restrict
 import Mathlib.Order.Closure
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Matroid Closure
@@ -176,6 +177,7 @@ lemma Flat.closure (hF : M.Flat F) : M.closure F = F :=
 @[simp] lemma closure_univ (M : Matroid α) : M.closure univ = M.E := by
   rw [← closure_inter_ground, univ_inter, closure_ground]
 
+@[gcongr]
 lemma closure_subset_closure (M : Matroid α) (h : X ⊆ Y) : M.closure X ⊆ M.closure Y :=
   subset_sInter (fun _ h' ↦ sInter_subset_of_mem
     ⟨h'.1, subset_trans (inter_subset_inter_left _ h) h'.2⟩)

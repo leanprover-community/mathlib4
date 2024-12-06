@@ -998,11 +998,19 @@ lemma cyclesOpIso_inv_op_iCycles [S.HasRightHomology] :
 @[reassoc]
 lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
-    S₂.opcyclesOpIso.hom ≫ (cyclesMap φ).op =
-      opcyclesMap (opMap φ) ≫ (S₁.opcyclesOpIso).hom := by
+    opcyclesMap (opMap φ) ≫ (S₁.opcyclesOpIso).hom =
+      S₂.opcyclesOpIso.hom ≫ (cyclesMap φ).op := by
   rw [← cancel_epi S₂.op.pOpcycles, p_opcyclesMap_assoc, opMap_τ₂,
     op_pOpcycles_opcyclesOpIso_hom, op_pOpcycles_opcyclesOpIso_hom_assoc, ← op_comp,
-    cyclesMap_i, op_comp]
+    ← op_comp, cyclesMap_i]
+
+@[reassoc]
+lemma opcyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    (cyclesMap φ).op ≫ (S₁.opcyclesOpIso).inv =
+      S₂.opcyclesOpIso.inv ≫ opcyclesMap (opMap φ) := by
+  rw [← cancel_epi (S₂.opcyclesOpIso.hom), Iso.hom_inv_id_assoc,
+    ← opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id, comp_id]
 
 @[reassoc]
 lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
@@ -1011,6 +1019,14 @@ lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
       S₂.cyclesOpIso.inv ≫ cyclesMap (opMap φ) := by
   rw [← cancel_mono S₁.op.iCycles, assoc, assoc, cyclesOpIso_inv_op_iCycles, cyclesMap_i,
     cyclesOpIso_inv_op_iCycles_assoc, ← op_comp, p_opcyclesMap, op_comp, opMap_τ₂]
+
+@[reassoc]
+lemma cyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    cyclesMap (opMap φ) ≫ (S₁.cyclesOpIso).hom =
+      S₂.cyclesOpIso.hom ≫ (opcyclesMap φ).op := by
+  rw [← cancel_mono (S₁.cyclesOpIso).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
+    cyclesOpIso_inv_naturality, Iso.hom_inv_id_assoc]
 
 @[simp]
 lemma leftHomologyMap'_op

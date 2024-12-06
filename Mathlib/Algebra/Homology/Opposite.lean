@@ -275,16 +275,59 @@ variable {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
   [K.HasHomology i] [L.HasHomology i]
 
 @[reassoc]
+lemma homologyOp_hom_naturality :
+    homologyMap ((opFunctor _ _).map φ.op) _ ≫ (K.homologyOp i).hom =
+      (L.homologyOp i).hom ≫ (homologyMap φ i).op :=
+  ShortComplex.homologyOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
 lemma opcyclesOpIso_hom_naturality :
-    (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op =
-      opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom :=
+    opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom =
+      (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma opcyclesOpIso_inv_naturality :
+    (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
+      (L.opcyclesOpIso i).inv ≫ opcyclesMap ((opFunctor _ _).map φ.op) _ :=
+  ShortComplex.opcyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma cyclesOpIso_hom_naturality :
+    cyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.cyclesOpIso i).hom =
+      (L.cyclesOpIso i).hom ≫ (opcyclesMap φ i).op :=
+  ShortComplex.cyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
 @[reassoc]
 lemma cyclesOpIso_inv_naturality :
     (opcyclesMap φ i).op ≫ (K.cyclesOpIso i).inv =
       (L.cyclesOpIso i).inv ≫ cyclesMap ((opFunctor _ _).map φ.op) _ :=
   ShortComplex.cyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
+
+end
+
+section
+
+variable (V c) [CategoryWithHomology V] (i : ι)
+
+/-- The natural isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
+@[simps!]
+def cyclesOpNatIso :
+    opFunctor V c ⋙ cyclesFunctor Vᵒᵖ c.symm i ≅ (opcyclesFunctor V c i).op :=
+  NatIso.ofComponents (fun K ↦ (unop K).cyclesOpIso i)
+    (fun _ ↦ cyclesOpIso_hom_naturality _ _)
+
+/-- The natural isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
+def opcyclesOpNatIso :
+    opFunctor V c ⋙ opcyclesFunctor Vᵒᵖ c.symm i ≅ (cyclesFunctor V c i).op :=
+  NatIso.ofComponents (fun K ↦ (unop K).opcyclesOpIso i)
+    (fun _ ↦ opcyclesOpIso_hom_naturality _ _)
+
+/-- The natural isomorphism `K.op.homology i ≅ op (K.homology i)`. -/
+def homologyOpNatIso :
+    opFunctor V c ⋙ homologyFunctor Vᵒᵖ c.symm i ≅ (homologyFunctor V c i).op :=
+  NatIso.ofComponents (fun K ↦ (unop K).homologyOp i)
+    (fun _ ↦ homologyOp_hom_naturality _ _)
 
 end
 
