@@ -222,7 +222,9 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     · simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz.2
     · simpa using hz.1
 
-/-- If a function has a power series within a set on a ball, then so does its derivative. -/
+/-- If a function has a power series within a set on a ball, then so does its derivative. For a
+version without completeness, but assuming that the function is analytic on the set `s`, see
+`HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn`. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
@@ -327,19 +329,27 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
     Matrix.zero_empty]
   rfl
 
-/-- If a function is analytic within a set with unique differentials, then so is its derivative.
-Note that this theorem does not require completeness of the space. -/
-protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
-    AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
-  intro x hx
-  rcases h x hx with ⟨p, r, hr⟩
-  refine ⟨p.derivSeries, r, ?_⟩
+/-- If a function has a power series within a set on a ball, then so does its derivative. Version
+assuming that the function is analytic on `s`. For a version without this assumption but requiring
+that `F` is complete, see `HasFPowerSeriesWithinOnBall.fderivWithin_of_mem`. -/
+protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn
+    (hr : HasFPowerSeriesWithinOnBall f p s x r)
+    (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
   · rw [insert_eq_of_mem hx] at hy ⊢
     apply DifferentiableWithinAt.hasFDerivWithinAt
     exact h.differentiableOn _ hy
   · rwa [insert_eq_of_mem hx]
+
+/-- If a function is analytic within a set with unique differentials, then so is its derivative.
+Note that this theorem does not require completeness of the space. -/
+protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
+    AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
+  intro x hx
+  rcases h x hx with ⟨p, r, hr⟩
+  refine ⟨p.derivSeries, r, hr.fderivWithin_of_mem_of_analyticOn h hu hx⟩
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/

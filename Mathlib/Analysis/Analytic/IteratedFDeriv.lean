@@ -15,7 +15,7 @@ derivative at `x` is given by `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., 
 is over all permutations of `{1, ..., n}`. In particular, it is symmetric.
 -/
 
-open scoped ENNReal Topology
+open scoped ENNReal Topology ContDiff
 open Equiv Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -37,9 +37,11 @@ noncomputable def FormalMultilinearSeries.iteratedFDerivSeries
       |>.toContinuousLinearEquiv.toContinuousLinearMap.compFormalMultilinearSeries
       (p.iteratedFDerivSeries k).derivSeries
 
+#exit
+
 /-- If a function has a power series on a ball, then so do its iterated derivatives. -/
-protected theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin [CompleteSpace F]
-    (h : HasFPowerSeriesWithinOnBall f p s x r) (k : ℕ) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+protected theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin
+    (h : HasFPowerSeriesWithinOnBall f p s x r) (k : ℕ) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     HasFPowerSeriesWithinOnBall (iteratedFDerivWithin 𝕜 k f s)
       (p.iteratedFDerivSeries k) s x r := by
   induction k with
@@ -50,7 +52,7 @@ protected theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin [CompleteSpac
     rw [iteratedFDerivWithin_succ_eq_comp_left]
     apply (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (k + 1) ↦ E) F).symm
       |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall
-        (ih.fderivWithin_of_mem hu hx)
+        (ih.fderivWithin_of_mem_of_analyticOn hu hx)
 
 lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
     (h : p (n + k) = 0) : p.iteratedFDerivSeries k n = 0 := by
