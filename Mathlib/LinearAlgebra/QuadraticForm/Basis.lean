@@ -316,11 +316,8 @@ lemma tensorDistriFree_polar22
 /--
 Lift the tensor of two polars (LC)
 -/
-noncomputable def polarnn_lift_lc
-
-    (g₁ : ι₁ → M₁ ) (g₂ : ι₂ → M₂) (l : ι₁ × ι₂ →₀ A)
-: Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
-  --let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+noncomputable def polarnn_lift_lc (g₁ : ι₁ → M₁ ) (g₂ : ι₂ → M₂) (l : ι₁ × ι₂ →₀ A) :
+  Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) =>
     l (i₁, i₂) • l (j₁, j₂) •
       (polar Q₁) (g₁ i₁) (g₁ j₁) ⊗ₜ (polar Q₂) (g₂ i₂) (g₂ j₂),
@@ -336,17 +333,6 @@ Lift the tensor of two polars (Basis)
 noncomputable def polarnn_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   polarnn_lift_lc Q₁ Q₂ bm₁ bm₂ (bm.repr x)
-
-  /-
-  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) =>
-    ((bm.repr x) (i₁, i₂)) • ((bm.repr x) (j₁, j₂)) •
-      (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂),
-    by
-      intro _ _
-      simp only [polar_comm]
-      rw [smul_comm]
-      ⟩
-  -/
 
 lemma tensorDistriFree_polar1 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ = j₁) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
@@ -500,6 +486,15 @@ lemma sum_right (x : M₁ ⊗[R] M₂) :
   rw [polar_lift_eq_polarright_lift_on_symOffDiagRight _ _ _ _ s _ _ _]
   exact hp
 
+omit [Algebra R A] [IsScalarTower R A M₁] [IsScalarTower R A N₁] in
+lemma sumA (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (s : Finset (Sym2 (ι₁ × ι₂)))
+    (g : ι₁ × ι₂ → M₁ ⊗[R] M₂) (l : ι₁ × ι₂ →₀ A) :
+    (∑ p ∈ s with symOffDiagXor p, Q.polar_lift_lc  g l p)
+      + (∑ p ∈ s with symOffDiag p, Q.polar_lift_lc g l p) =
+    ∑ p ∈ s with ¬ p.IsDiag, Q.polar_lift_lc g l p := by
+    simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor,
+    e1, e2]
+
 theorem sum1 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
@@ -510,8 +505,8 @@ theorem sum1 (x : M₁ ⊗[R] M₂) :
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   let s := (bm.repr x).support.sym2
-  simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor,
-    e1, e2]
+  simp_rw [polar_lift]
+  rw [(sumA Q s bm (bm.repr x))]
 
 theorem sum2 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
