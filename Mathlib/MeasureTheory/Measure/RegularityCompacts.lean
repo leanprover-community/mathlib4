@@ -173,8 +173,6 @@ theorem innerRegularWRT_isCompact_isClosed_of_complete_countable [UniformSpace �
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) IsClosed := by
   have : R1Space α := by
     exact instR1Space
-  have : RegularSpace α := by
-    exact UniformSpace.to_regularSpace
   rw [innerRegularWRT_isCompact_isClosed_iff_innerRegularWRT_isCompact_closure]
   exact innerRegularWRT_isCompact_closure_of_complete_countable P
 

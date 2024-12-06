@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
 import Mathlib.Analysis.SpecialFunctions.MulExpNegSq
+import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Extensionality of finite measures
