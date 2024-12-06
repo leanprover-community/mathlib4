@@ -313,12 +313,42 @@ lemma tensorDistriFree_polar22
     rw [above_diag _ _ _ _ h₂]
     rw [polar_comm, polar_comm Q₂]
 
+/-
+noncomputable def polar_lift_li (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
+    (g : ι₁ × ι₂ → M₁ ⊗[R] M₂) (l : ι₁ × ι₂ →₀ A) := fun p => Sym2.lift
+    ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j => by
+      simp only [polar_comm]
+      rw [smul_comm]⟩ p
+
+-/
+
+#check Finsupp.linearCombination
 
 /--
-Lift the tensor of two polars
+Lift the tensor of two polars (LC)
+-/
+noncomputable def polarnn_lift_lc
+
+    (g₁ : ι₁ → M₁ ) (g₂ : ι₂ → M₂) (l : ι₁ × ι₂ →₀ A)
+: Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
+  --let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) =>
+    l (i₁, i₂) • l (j₁, j₂) •
+      (polar Q₁) (g₁ i₁) (g₁ j₁) ⊗ₜ (polar Q₂) (g₂ i₂) (g₂ j₂),
+    by
+      intro i j
+      simp only [polar_comm]
+      rw [smul_comm]
+      ⟩
+
+/--
+Lift the tensor of two polars (Basis)
 -/
 noncomputable def polarnn_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  polarnn_lift_lc Q₁ Q₂ bm₁ bm₂ (bm.repr x)
+
+  /-
   Sym2.lift ⟨fun (i₁, i₂) (j₁, j₂) =>
     ((bm.repr x) (i₁, i₂)) • ((bm.repr x) (j₁, j₂)) •
       (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂),
@@ -327,6 +357,7 @@ noncomputable def polarnn_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) �
       simp only [polar_comm]
       rw [smul_comm]
       ⟩
+  -/
 
 lemma tensorDistriFree_polar1 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ = j₁) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
@@ -360,7 +391,7 @@ lemma polar_lift_eq_polarnn_lift_on_symOffDiagUpper
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     polar_lift Q bm x p =  polarnn_lift bm₁ Q₁ bm₂ Q₂ x p := by
   induction' p with i j
-  simp_rw [polar_lift, polar_lift_li, polarnn_lift, Sym2.lift_mk, Prod.mk.eta]
+  simp_rw [polar_lift, polar_lift_li, polarnn_lift, polarnn_lift_lc, Sym2.lift_mk, Prod.mk.eta]
   rw [Finset.mem_filter, symOffDiagUpper_iff_proj_eq] at h
   obtain ⟨h1, h2⟩ := h
   rw [Basis.tensorProduct_apply, Basis.tensorProduct_apply]
