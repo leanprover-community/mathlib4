@@ -5,7 +5,7 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Positivity
 
 /-!
 

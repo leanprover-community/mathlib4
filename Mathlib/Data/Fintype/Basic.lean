@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.Finite.Defs
 
 /-!
 # Finite types
@@ -139,7 +140,7 @@ theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t :=
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
 
 theorem codisjoint_right : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ t → a ∈ s :=
-  Codisjoint_comm.trans codisjoint_left
+  codisjoint_comm.trans codisjoint_left
 
 instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
   GeneralizedBooleanAlgebra.toBooleanAlgebra

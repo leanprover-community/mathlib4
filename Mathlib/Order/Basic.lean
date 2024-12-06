@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Subtype
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Spread
@@ -97,8 +97,6 @@ theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
   flip lt_of_le_of_ne'
 
 end PartialOrder
-
-attribute [simp] le_refl
 
 attribute [ext] LE
 
@@ -691,6 +689,12 @@ instance (α : Type*) [LE α] : LE αᵒᵈ :=
 instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
+instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
+  ⟨((· ⊓ ·) : α → α → α)⟩
+
+instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
+  ⟨((· ⊔ ·) : α → α → α)⟩
+
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
@@ -757,6 +761,10 @@ theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·)
 theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
 theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
 theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+
+instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
+  convert eq_isEquiv α
+  simp [compl]
 
 /-! ### Order instances on the function space -/
 
