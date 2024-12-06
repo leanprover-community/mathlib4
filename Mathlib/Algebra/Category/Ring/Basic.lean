@@ -553,8 +553,12 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
 
-lemma forgetToRingCat_obj (A : CommRingCat.{u}) :
-    (forget₂ CommRingCat RingCat).obj A = (A : Type u) :=
+@[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
+    ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=
+  rfl
+
+@[simp] lemma forgetToRingCat_obj {R : CommRingCat} :
+    (((forget₂ CommRingCat RingCat).obj R) : Type u) = R :=
   rfl
 
 instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat where
