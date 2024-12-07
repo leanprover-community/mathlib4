@@ -60,6 +60,9 @@ theorem multipliable_iff_cauchySeq_finset_and_tprod_mem (f : β → α) :
 as its product in `Completion α`. -/
 @[to_additive "If a function `f` is summable in a uniform additive group `α`, then its sum in `α` is
 the same as its sum in `Completion α`"]
-theorem Multipliable.toCompl_tprod {f : β → α} (hf : Multipliable f) :
+theorem Multipliable.toComplMulHom_tprod {f : β → α} (hf : Multipliable f) :
     ∏' i, toComplMulHom (f i) = ∏' i, f i :=
   (hf.map_tprod toComplMulHom (continuous_coe α)).symm
+
+@[deprecated (since := "2024-12-06")] alias Multipliable.toCompl_tprod :=
+  Multipliable.toComplMulHom_tprod
