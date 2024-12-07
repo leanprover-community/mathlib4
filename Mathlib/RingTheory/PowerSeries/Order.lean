@@ -38,8 +38,6 @@ variable {R : Type*}
 
 section OrderBasic
 
-open multiplicity
-
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by

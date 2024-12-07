@@ -259,7 +259,7 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
   · exact D.tensorProductTo.comp ((KaehlerDifferential.ideal R S).subtype.restrictScalars S)
   · intro x hx
     rw [LinearMap.mem_ker]
-    refine Submodule.smul_induction_on hx ?_ ?_
+    refine Submodule.smul_induction_on ((Submodule.restrictScalars_mem _ _ _).mp hx) ?_ ?_
     · rintro x hx y -
       rw [RingHom.mem_ker] at hx
       dsimp
