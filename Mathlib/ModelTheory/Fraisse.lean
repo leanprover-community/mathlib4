@@ -660,7 +660,6 @@ private theorem all_fgequiv_extend {m : ℕ} (f : L.FGEquiv (system _ m) (system
   cases h_unpair_m
   cases h_unpair_n
   let f' := f.1.map (Embedding.eq_embed (system_eq_as_structures K_fraisse (Nat.unpair_left_le r)))
-  have f'_fg : f'.dom.FG := f.1.map_fg _ f.2
   have h_f'_map : f'.map ((init_system _ r).2 (Nat.unpair r).1).2 =
       f.1.map (maps_system _ (Nat.unpair_left_le r)) := by
     apply PartialEquiv.map_map
@@ -760,7 +759,7 @@ theorem exists_fraisse_limit (K_fraisse : IsFraisse K) : ∃ M : Bundled.{w} L.S
       let ⟨n, ⟨inc_S⟩⟩ := contains_K K_fraisse S S_in_K
       use n
       simp only [age, Function.comp_apply, mem_setOf_eq]
-      refine ⟨IsFraisse.FG S S_in_K, ⟨inc_S⟩⟩
+      exact ⟨IsFraisse.FG S S_in_K, ⟨inc_S⟩⟩
 
 end IsFraisse
 
