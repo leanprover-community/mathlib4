@@ -18,6 +18,46 @@ a basis.
 
 open LinearMap (BilinMap)
 
+section sums
+
+variable {ι₁ : Type*} [LinearOrder ι₁]
+variable {ι₂ : Type*} [LinearOrder ι₂]
+variable {N : Type*} [AddCommMonoid N]
+
+lemma sumA {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
+    (∑ p ∈ s with symOffDiagXor p, f p)
+      + (∑ p ∈ s with symOffDiag p, f p) =
+    ∑ p ∈ s with ¬ p.IsDiag, f p := by
+    simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor, e1, e2]
+
+lemma sumB {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
+    (∑ p ∈ s with symOffDiagUpper p, f p)
+      + (∑ p ∈ s with symOffDiagLower p, f p) =
+    ∑ p ∈ s with symOffDiag p, f p := by
+  simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower, Finset.sum_filter_xor, e3, e4]
+
+lemma sumC {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
+    (∑ p ∈ s with symOffDiagLeft p, f p)
+      + (∑ p ∈ s with symOffDiagRight p, f p) =
+    ∑ p ∈ s with symOffDiagXor p, f p := by
+  simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
+
+lemma sum {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
+    (∑ p ∈ s with  p.IsDiag, f p) +
+    (∑ p ∈ s with symOffDiagLeft p, f p)
+      + (∑ p ∈ s with symOffDiagRight p, f p)
+      + (∑ p ∈ s with symOffDiagUpper p, f p)
+      + (∑ p ∈ s with symOffDiagLower p, f p) = (∑ p ∈ s, f p)  := by
+  rw [← Finset.sum_filter_add_sum_filter_not s Sym2.IsDiag f]
+  simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor, e1, e2]
+  rw [add_assoc]
+  simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
+  rw [add_assoc, add_assoc]
+  simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower, Finset.sum_filter_xor, e3, e4]
+  rw [add_assoc]
+
+end sums
+
 namespace QuadraticMap
 
 section
@@ -486,27 +526,13 @@ lemma sum_right (x : M₁ ⊗[R] M₂) :
   rw [polar_lift_eq_polarright_lift_on_symOffDiagRight _ _ _ _ s _ _ _]
   exact hp
 
-omit [Algebra R A] [IsScalarTower R A M₁] [IsScalarTower R A N₁] in
-lemma sumA (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)) (s : Finset (Sym2 (ι₁ × ι₂)))
-    (g : ι₁ × ι₂ → M₁ ⊗[R] M₂) (l : ι₁ × ι₂ →₀ A) :
-    (∑ p ∈ s with symOffDiagXor p, Q.polar_lift_lc  g l p)
-      + (∑ p ∈ s with symOffDiag p, Q.polar_lift_lc g l p) =
-    ∑ p ∈ s with ¬ p.IsDiag, Q.polar_lift_lc g l p := by
-    simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor,
-    e1, e2]
-
 theorem sum1 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     let s := (bm.repr x).support.sym2
     (∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p)
       + (∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p) =
-    ∑ p ∈ s with ¬ p.IsDiag, Q.polar_lift bm x p := by
-  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  let s := (bm.repr x).support.sym2
-  simp_rw [polar_lift]
-  rw [(sumA Q s bm (bm.repr x))]
+    ∑ p ∈ s with ¬ p.IsDiag, Q.polar_lift bm x p := sumA
 
 theorem sum2 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -514,12 +540,7 @@ theorem sum2 (x : M₁ ⊗[R] M₂) :
     let s := (bm.repr x).support.sym2
     (∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p)
       + (∑ p ∈ s with symOffDiagLower p, Q.polar_lift bm x p) =
-    ∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p := by
-  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  let s := (bm.repr x).support.sym2
-  simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower]
-  simp_rw [Finset.sum_filter_xor, e3, e4]
+    ∑ p ∈ s with symOffDiag p, Q.polar_lift bm x p := sumB
 
 theorem sum2a (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
@@ -557,8 +578,7 @@ theorem sum3 (x : M₁ ⊗[R] M₂) :
     let s := (bm.repr x).support.sym2
     (∑ p ∈ s with symOffDiagLeft p, Q.polar_lift bm x p)
       + (∑ p ∈ s with symOffDiagRight p, Q.polar_lift bm x p) =
-    ∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p := by
-  simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
+    ∑ p ∈ s with symOffDiagXor p, Q.polar_lift bm x p := sumC
 
 theorem qt_expansion20 (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
