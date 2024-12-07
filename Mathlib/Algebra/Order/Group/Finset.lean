@@ -14,10 +14,12 @@ import Mathlib.Data.Finset.Lattice.Fold
 # `Finset.sup` in a group
 -/
 
+open scoped Finset
+
 assert_not_exists MonoidWithZero
 
 namespace Multiset
-variable {α : Type*}
+variable {α : Type*} [DecidableEq α]
 
 @[simp] lemma toFinset_nsmul (s : Multiset α) : ∀ n ≠ 0, (n • s).toFinset = s.toFinset
   | 0, h => by contradiction
@@ -41,9 +43,9 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
     simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, Nat.mul_zero]
   simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
-lemma toFinset_card_eq_one_iff [DecidableEq α] (s : Multiset α) :
+lemma toFinset_card_eq_one_iff (s : Multiset α) :
     #s.toFinset = 1 ↔ Multiset.card s ≠ 0 ∧ ∃ a : α, s = Multiset.card s • {a} := by
-  simp_rw [card_eq_one, Multiset.toFinset_eq_singleton_iff, exists_and_left]
+  simp_rw [Finset.card_eq_one, Multiset.toFinset_eq_singleton_iff, exists_and_left]
 
 end Multiset
 
