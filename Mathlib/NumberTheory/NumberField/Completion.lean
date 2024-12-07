@@ -43,7 +43,7 @@ field at an infinite place is then derived in this file, as `InfinitePlace` is a
  - `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
   an infinite place is locally compact.
  - `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.completion →+* ℂ` is
-  an isometry. See also `isometry_extensionEmbeddingOfIsReal` for the corresponding result on
+  an isometry. See also `isometry_extensionEmbedding_of_isReal` for the corresponding result on
   `v.completion →+* ℝ` when `v` is real.
  - `NumberField.Completion.bijective_extensionEmbedding_of_isComplex` : the embedding
   `v.completion →+* ℂ` is bijective when `v` is complex. See also
@@ -98,7 +98,7 @@ theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
 
 /-- The embedding `v.completion →+* ℝ` at a real infinite palce is an isometry. -/
-theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
+theorem isometry_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)
 
@@ -166,6 +166,6 @@ def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.completion �
 /-- If the infinite place `v` is real, then `v.completion` is isometric to `ℝ`. -/
 def isometryEquiv_real_of_isReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
-  isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
+  isometry_toFun := isometry_extensionEmbedding_of_isReal hv
 
 end NumberField.InfinitePlace.Completion
