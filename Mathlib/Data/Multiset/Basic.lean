@@ -665,10 +665,7 @@ theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
 
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/
-def card : Multiset α →+ ℕ where
-  toFun s := (Quot.liftOn s length) fun _l₁ _l₂ => Perm.length_eq
-  map_zero' := rfl
-  map_add' s t := Quotient.inductionOn₂ s t length_append
+def card (s : Multiset α) : ℕ := Quot.liftOn s length fun _l₁ _l₂ => Perm.length_eq
 
 @[simp]
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
