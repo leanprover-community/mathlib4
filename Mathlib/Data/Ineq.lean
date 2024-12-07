@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Lean.Expr.Basic
+import Qq
+import Mathlib.Order.Basic
+import Mathlib.Util.Qq
 
 /-!
 # `Ineq` datatype
@@ -59,10 +62,124 @@ instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
 
 end Mathlib.Ineq
 
+/-
+
+
+private inductive Mathlib.IneqQ' :
+    Ineq → Type
+  | lt' (h : Expr) : IneqQ' .lt
+  | le' (h : Expr) : IneqQ' .le
+  | eq' (h : Expr) : IneqQ' .eq
+
+variable {u : Level}
+
+/-- A version of `Ineq` that carries a proof` -/
+def Mathlib.IneqQ {α : Q(Type u)} (inst : Q(PartialOrder $α)) (a b : Q($α)) :
+    Ineq → Type := Mathlib.IneqQ'
+
+def Mathlib.IneqQ.eq {α : Q(Type u)} (inst : Q(PartialOrder $α)) (a b : Q($α))
+    (h : Q($a = $b)) : IneqQ inst a b .eq := .eq' h
+def Mathlib.IneqQ.le {α : Q(Type u)} (inst : Q(PartialOrder $α)) (a b : Q($α))
+    (h : Q($a ≤ $b)) : IneqQ inst a b .le := .le' h
+def Mathlib.IneqQ.lt {α : Q(Type u)} (inst : Q(PartialOrder $α)) (a b : Q($α))
+    (h : Q($a < $b)) : IneqQ inst a b .lt := .lt' h
+
+-/
+
+open scoped Qq
+/-- A version of `Ineq` that carries a proof` -/
+inductive Mathlib.IneqQ {u : Level} {α : Q(Type u)} (inst : Q(PartialOrder $α)) (a b : Q($α)) :
+    Ineq → Type
+  | eq (h : Q($a = $b)) : IneqQ inst a b .eq
+  | le (h : Q($a ≤ $b)) : IneqQ inst a b .le
+  | lt (h : Q($a < $b)) : IneqQ inst a b .lt
+
+set_option linter.unusedVariables.funArgs false in
+/-- Use this to deal with instance diamonds in the `inst` argument, after calling
+`(assert|assume)InstancesCommute`. -/
+def Mathlib.IneqQ.cast
+    {u : Level} {α : Q(Type u)} {inst₁ inst₂ : Q(PartialOrder $α)} {a₁ a₂ b₁ b₂ : Q($α)}
+    {ineq : Ineq}
+    (h : Mathlib.IneqQ inst₁ a₁ b₁ ineq)
+    (ha : $a₁ =Q $a₂ := by first | exact .rfl | assumption)
+    (hb : $b₁ =Q $b₂ := by first | exact .rfl | assumption)
+    (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption) :
+    Mathlib.IneqQ inst₂ a₂ b₂ ineq :=
+  match h with
+  | .le h => .le q($h)
+  | .eq h => .eq q($h)
+  | .lt h => .lt q($h)
+
+structure Mathlib.IneqResult {u : Level} (α : Q(Type u)) (inst : Q(PartialOrder $α)) : Type where
+  ineq : Ineq
+  a : Q($α)
+  b : Q($α)
+  pf : IneqQ inst a b ineq
+
+/-- Use this to deal with instance diamonds in the `inst` argument, after calling
+`(assert|assume)InstancesCommute`. -/
+def Mathlib.IneqResult.cast
+    {u : Level} {α : Q(Type u)} {inst₁ inst₂ : Q(PartialOrder $α)}
+    (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption)
+    (h : Mathlib.IneqResult α inst₁):
+    Mathlib.IneqResult α inst₂ :=
+  let ⟨ineq, a, b, h⟩ := h
+  { a := a, b := b, pf := h.cast }
+
 /-! ### Parsing inequalities -/
 
 namespace Lean.Expr
 open Mathlib
+
+/-- Like `Lean.Expr.eq?`, but for `Qq`. -/
+def eqQ? {P : Q(Prop)} (e : Q($P)) :
+    MetaM <| Option <|
+      (u : Level) × (α : Q(Sort u)) × (a b : Q($α)) × Q($a = $b) := do
+  if let ~q(($a : $α) = $b) := P then
+    return .some ⟨u_1, α, a, b, e⟩
+  else
+    return .none
+
+/-- Like `Lean.Expr.le?`, but for `Qq`. -/
+def leQ? {P : Q(Prop)} (e : Q($P)) :
+    MetaM <| Option <|
+      (u : Level) × (α : Q(Type u)) × (a b : Q($α)) × (_ : Q(LE $α)) × Q($a ≤ $b) := do
+  if let ~q(@LE.le $α $inst $a $b) := P then
+    return .some ⟨u_1, α, a, b, inst, q($e)⟩
+  else
+    return .none
+
+/-- Like `Lean.Expr.lt?`, but for `Qq`. -/
+def ltQ? {P : Q(Prop)} (e : Q($P)) :
+    MetaM <| Option <|
+      (u : Level) × (α : Q(Type u)) × (a b : Q($α)) × (_ : Q(LT $α)) × Q($a < $b) := do
+  if let ~q(@LT.lt $α $inst $a $b) := P then
+    return .some ⟨u_1, α, a, b, inst, q($e)⟩
+  else
+    return .none
+
+/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
+`Linarith.Ineq`) together with the type in which the (in)equality occurs and the two sides of the
+(in)equality.
+
+This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
+for compositionality.
+-/
+def ineqQ? {p : Q(Prop)} (e : Q($p)) :
+    MetaM <| ((u : Level) × (α : Q(Type $u)) × (inst : _) × IneqResult α inst) := do
+  if let .some ⟨.succ u, α, a, b, e⟩ ← eqQ? q($e) then
+    let inst ← Qq.synthInstanceQ q(PartialOrder $α)
+    pure ⟨u, α, inst, {a := a, b:= b, pf := .eq q($e)} ⟩
+  else if let .some ⟨u, α, a, b, _iLE, e⟩ ← leQ? q($e) then
+    let inst ← Qq.synthInstanceQ q(PartialOrder $α)
+    assertInstancesCommute
+    pure ⟨u, α, inst, {a := a, b:= b, pf := .le q($e)} ⟩
+  else if let .some ⟨u, α, a, b, _iLT, e⟩ ← ltQ? q($e) then
+    let inst ← Qq.synthInstanceQ q(PartialOrder $α)
+    assertInstancesCommute
+    pure ⟨u, α, inst, {a := a, b:= b, pf := .lt q($e)} ⟩
+  else
+    throwError "Not a comparison: {e}"
 
 /-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
 `Linarith.Ineq`) together with the type in which the (in)equality occurs and the two sides of the
