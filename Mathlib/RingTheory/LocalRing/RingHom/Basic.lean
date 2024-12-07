@@ -55,7 +55,8 @@ alias isLocalRingHom_of_comp := isLocalHom_of_comp
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
-  haveI : Nontrivial R := f.nontrivial_domain
+  haveI : Nontrivial R := f.domain_nontrivial
+
   apply IsLocalRing.of_nonunits_add
   intro a b
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
