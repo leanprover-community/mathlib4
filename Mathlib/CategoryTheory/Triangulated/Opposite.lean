@@ -486,6 +486,20 @@ noncomputable scoped instance : @Functor.CommShift Cᵒᵖ Dᵒᵖ _ _ F.op ℤ 
   (inferInstance : HasShift (OppositeShift D ℤ) ℤ) F.op
   (Functor.CommShift.op F ℤ inferInstance)
 
+open Functor
+
+lemma truc (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
+    (opShiftFunctorEquivalence D n).unitIso.app (F.op.obj X) =
+    F.op.mapIso ((opShiftFunctorEquivalence C n).unitIso.app X) ≪≫
+    ((F.commShiftIso n).symm.app _).op ≪≫
+    (shiftFunctor D n).op.mapIso (((F.op).commShiftIso n).app X) := by sorry
+
+lemma machin (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
+    F.op.mapIso ((opShiftFunctorEquivalence C n).counitIso.app X) =
+    (F.op.commShiftIso n).app _ ≪≫
+    (shiftFunctor Dᵒᵖ n).mapIso ((F.commShiftIso n).symm.app _).op ≪≫
+    (opShiftFunctorEquivalence D n).counitIso.app (F.op.obj X) := by sorry
+
 noncomputable def triangleOpEquivalence_functor_naturality :
     F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor ≅
     (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle := by

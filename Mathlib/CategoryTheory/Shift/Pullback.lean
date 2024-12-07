@@ -118,6 +118,18 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
+-- This is proved by `simp`, but useful for rewrites.-/
+lemma pullbackShiftIso_hom_naturality {F G : C ⥤ C} (z : F ⟶ G)
+    (X : C) (a : A) (b : B) (h : b = φ a) :
+    F.map ((pullbackShiftIso C φ a b h).hom.app X) ≫ z.app _ =
+    z.app _ ≫ G.map ((pullbackShiftIso C φ a b h).hom.app X)  := by simp
+
+/-- This is proved by `simp`, but useful for rewrites.-/
+lemma pullbackShiftIso_inv_naturality {F G : C ⥤ C} (z : F ⟶ G)
+    (X : C) (a : A) (b : B) (h : b = φ a) :
+    F.map ((pullbackShiftIso C φ a b h).inv.app X) ≫ z.app _ =
+    z.app _ ≫ G.map ((pullbackShiftIso C φ a b h).inv.app X) := by simp
+
 section CommShift
 
 variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]

@@ -505,21 +505,28 @@ def adjunction_compat_pullback (adj : F ⊣ G) [CommShift F A] [CommShift G A]
   refine @CommShift.adjunction_compat.mk (PullbackShift C φ) (PullbackShift D φ) _ _ F G B _ _ _
     adj (F.pullbackCommShift φ) (G.pullbackCommShift φ) ?_
   intro b b' h X Y u
+  have h' : b' + b = 0 := by simp [eq_neg_of_add_eq_zero_left h]
   rw [← cancel_mono ((pullbackShiftIso C φ b (φ b) rfl).hom.app (G.obj Y)), homEquiv_apply,
     homEquiv_apply]
   simp [shiftEquiv'_symm_unit, shiftFunctorCompIsoId]
-  conv_lhs => rw [pullbackShiftFunctorZero_inv_app, pullbackShiftFunctorAdd'_hom_app φ _ b' b 0
-    sorry (φ b') (φ b) 0 rfl rfl sorry]
-              slice 2 3; rw [Iso.inv_hom_id_app]
-  conv_lhs => rw [id_comp]
-              slice 3 4; rw [← (pullbackShiftIso C φ b (φ b) rfl).inv.naturality]
-  slice_lhs 4 5 => rw [Iso.inv_hom_id_app]
-  conv_lhs => rw [id_comp]
-  have := (pullbackShiftIso C φ b' (φ b') sorry).inv.naturality
-
-
-  have := adjunction_compat.left_right_compat (φ b) (φ b') sorry X Y u (adj := adj)
-
+  have := adjunction_compat.left_right_compat (φ b) (φ b') (by rw [← φ.map_add, h, map_zero]) X Y
+    ((pullbackShiftIso D φ b' (φ b') rfl).inv.app _ ≫ u) (adj := adj)
+  rw [homEquiv_apply, homEquiv_apply] at this
+  simp [shiftEquiv'_symm_unit, shiftFunctorCompIsoId] at this
+  rw [pullbackShiftFunctorZero_inv_app, pullbackShiftFunctorAdd'_hom_app _ _ b' b 0 h' (φ b') (φ b)
+    0 rfl rfl (by rw [map_zero]), pullbackShiftFunctorZero_inv_app, pullbackShiftFunctorAdd'_hom_app
+     _ _ b' b 0 h' (φ b') (φ b) 0 rfl rfl (by rw [map_zero]), pullbackCommShift_iso_hom_app,
+     pullbackCommShift_iso_hom_app]
+  simp only [id_obj, comp_obj, map_comp, assoc, NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc,
+    Iso.inv_hom_id_app, comp_id]
+  slice_lhs 4 5 => rw [← map_comp]; erw [← adj.unit.naturality]; rw [Functor.id_map, map_comp]
+  slice_lhs 3 4 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+  slice_rhs 3 4 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+  slice_rhs 7 8 => rw [← map_comp, (pullbackShiftIso D φ b (φ b) rfl).hom.naturality, map_comp]
+  slice_rhs 6 7 => rw [← map_comp, (pullbackShiftIso D φ b (φ b) rfl).hom.naturality, map_comp]
+  slice_rhs 5 6 => rw [← map_comp, Iso.inv_hom_id_app]
+  simp only [id_obj, id_comp, assoc, map_id]
+  exact this
 
 end Pullback
 
