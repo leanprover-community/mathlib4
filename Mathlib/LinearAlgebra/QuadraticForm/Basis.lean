@@ -26,33 +26,39 @@ variable {ι R M N}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [DecidableEq ι]
 
+/--
+Lift the polar
+--/
+def polar_lifto (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
+  Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩
+
+
 open Finsupp in
 theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
     Q (f.sum g) = (f.sum fun i r => Q (g i r)) +
     ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩ p := by
+      polar_lifto Q f g p := by
   rw [sum, QuadraticMap.map_sum]
   exact congrArg (HAdd.hAdd _) rfl
+
+/--
+Lift the polar (LC)
+--/
+def polar_lift_lc (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) : Sym2 ι → N :=
+  Sym2.lift ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j =>
+    by simp only [polar_comm]; rw [smul_comm]⟩
 
 open Finsupp in
 theorem map_finsupp_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
     ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j => by
-          simp only [polar_comm]
-          rw [smul_comm]⟩ p := by
-  simp_rw [linearCombination_apply, map_finsupp_sum,
+      polar_lift_lc Q g l p := by
+  simp_rw [linearCombination_apply, map_finsupp_sum, polar_lift_lc, polar_lifto,
     polar_smul_left, polar_smul_right, map_smul]
 
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
-    ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
-      Sym2.lift
-        ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
-          simp only [polar_comm]
-          rw [smul_comm]⟩ p := by
+    ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag, polar_lift_lc Q bm (bm.repr x) p := by
   rw [← map_finsupp_linearCombination, Basis.linearCombination_repr]
 
 end
@@ -343,15 +349,6 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
     (polarBilin Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ Q₂ (bm₂ i₂)   := by
   rw [← h₁, tensorDistriFree_right_self]
-
-/--
--Lift the polar (LC)
---/
-noncomputable def polar_lift_lc (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
-    (g : ι₁ × ι₂ → M₁ ⊗[R] M₂) (l : ι₁ × ι₂ →₀ A) := fun p => Sym2.lift
-    ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j => by
-      simp only [polar_comm]
-      rw [smul_comm]⟩ p
 
 /--
 -Lift the polar (Basis)
