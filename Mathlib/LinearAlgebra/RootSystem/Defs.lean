@@ -541,6 +541,12 @@ def coxeterWeight : R := pairing P i j * pairing P j i
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
 
+lemma exists_int_eq_coxeterWeight (h : P.IsCrystallographic) (i j : ι) :
+    ∃ z : ℤ, P.coxeterWeight i j = z := by
+  obtain ⟨a, ha⟩ := P.isCrystallographic_iff.mp h i j
+  obtain ⟨b, hb⟩ := P.isCrystallographic_iff.mp h j i
+  exact ⟨a * b, by simp [coxeterWeight, ha, hb]⟩
+
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
