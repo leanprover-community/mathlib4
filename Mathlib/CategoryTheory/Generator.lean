@@ -351,6 +351,28 @@ def IsDetector (G : C) : Prop :=
 def IsCodetector (G : C) : Prop :=
   IsCodetecting ({G} : Set C)
 
+
+section Equivalence
+
+def IsSeparator.isSeparator_obj_of_equivalence {G : C} (hC : IsSeparator G) (α : C ≌ D) :
+    IsSeparator (α.functor.obj G) := by
+  intro d₁ d₂ f g hD
+  suffices h : α.inverse.map f = α.inverse.map g by
+    have h := congrArg α.functor.map h
+    simp only [Equivalence.fun_inv_map, Functor.comp_obj, Functor.id_obj,
+      NatIso.cancel_natIso_hom_left] at h
+    have h := congrArg (· ≫ α.counit.app d₂) h
+    simpa using h
+  apply hC
+  intro _ hG' hh
+  cases hG'
+  have := hD (α.functor.obj G) rfl (Adjunction.homEquiv α.toAdjunction G d₁ |>.symm hh)
+  have := congrArg (Adjunction.homEquiv α.toAdjunction G d₂) this
+  simp only [Adjunction.homEquiv_apply, Functor.map_comp, Adjunction.homEquiv_symm_apply] at this
+  simpa
+
+end Equivalence
+
 section Dual
 
 theorem isSeparator_op_iff (G : C) : IsSeparator (op G) ↔ IsCoseparator G := by
@@ -703,6 +725,14 @@ instance HasSeparator.wellPowered [HasPullbacks C] [Balanced C] [HasSeparator C]
     WellPowered C := HasSeparator.hasDetector.wellPowered
 
 end Instances
+
+section Equivalence
+
+theorem HasSeparator.of_equivalence [HasSeparator C] (α : C ≌ D) : HasSeparator D :=
+  ⟨α.functor.obj (separator C),
+   isSeparator_separator C |>.isSeparator_obj_of_equivalence α⟩
+
+end Equivalence
 
 section Dual
 
