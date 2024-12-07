@@ -247,7 +247,7 @@ variable (S : Finset (M₁ × M₂)) --(hS ), x = ∑ i ∈ S, i.1 ⊗ₜ[R] i.2
 variable (hQ : ∀ a b, Q (a ⊗ₜ b) = Q₁ a ⊗ₜ Q₂ b)
 
 omit [Algebra R A] [IsScalarTower R A M₁] in
-lemma exists_finset_as_lin_comb [LinearOrder S] :  ∑ i ∈ S, i.1 ⊗ₜ[R] i.2 =
+lemma exists_finset_as_lin_comb :  ∑ i ∈ S, i.1 ⊗ₜ[R] i.2 =
     (Finsupp.linearCombination A (fun (i : (M₁ × M₂)) => i.1 ⊗ₜ[R] i.2)
     (Finsupp.mk S (Set.indicator S.toSet (fun _ => (1 : A))) (fun _ => by simp))) := by
   rw [Finsupp.linearCombination_apply_of_mem_supported A (fun ⦃a⦄ a ↦ a) ]
