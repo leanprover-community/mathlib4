@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Lean.Meta
 
 /-!
 
@@ -149,8 +149,6 @@ def uniquify : List α → List (α × ℕ)
     let lms := uniquify ms
     (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
 
-variable [Inhabited α]
-
 /-- Return a sorting key so that all `(a, true)`s are in the list's order
 and sorted before all `(a, false)`s, which are also in the list's order.
 Although `weight` does not require this, we use `weight` in the case where the list obtained
@@ -197,7 +195,8 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
   let uToReorder := (uniquify toReorder).toArray
   let reorder := uToReorder.qsort fun x y =>
     match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
-      | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
+      | none, none =>
+        ((uToReorder.indexOf? x).map Fin.val).get! ≤ ((uToReorder.indexOf? y).map Fin.val).get!
       | _, _ => weight uInstructions x ≤ weight uInstructions y
   (reorder.map Prod.fst).toList
 
@@ -347,7 +346,7 @@ def move_oper_simpCtx : MetaM Simp.Context := do
     ``min_comm, ``min_assoc, ``min_left_comm   -- for `min`
     ]
   let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
-  return { simpTheorems := #[simpThms] }
+  Simp.mkContext {} (simpTheorems := #[simpThms])
 
 /-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
 operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
@@ -459,3 +458,7 @@ elab "move_mul" rws:rwRuleSeq : tactic => do
   evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
+
+end MoveAdd
+
+end Mathlib

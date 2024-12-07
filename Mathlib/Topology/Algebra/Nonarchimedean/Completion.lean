@@ -56,7 +56,7 @@ instance instNonarchimedeanGroupCompletion {G : Type*} [Group G] [UniformSpace G
       inducing and `W` is a neighborhood of `1` in `G`. -/
       haveI : ContinuousMul (Completion G) := instContinuousMul
       apply isOpen_of_mem_nhds (g := 1)
-      apply (denseInducing_toComplMulHom _).closure_image_mem_nhds
+      apply (isDenseInducing_toComplMulHom _).closure_image_mem_nhds
       exact mem_nhds_one W
     use ⟨_, this⟩
     /- Finally, it remains to show that `V ⊆ U`. It suffices to show that `V ⊆ C`, which
