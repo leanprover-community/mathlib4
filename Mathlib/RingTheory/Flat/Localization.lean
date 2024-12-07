@@ -77,28 +77,50 @@ theorem flat_of_localized_maximal
     simpa using (flat_iff _ _).mp (h J) fg
 
 include f in
-theorem flat_of_isLocalized_maixmal (H : ∀ (P : Ideal R) [P.IsMaximal], Flat R (Mₚ P)) :
+theorem flat_of_isLocalized_maximal (H : ∀ (P : Ideal R) [P.IsMaximal], Flat R (Mₚ P)) :
     Module.Flat R M :=
   flat_of_localized_maximal M fun P _ ↦ .of_linearEquiv _ _ _ (iso _ (f P))
 
-variable (s : Set R) (spn : Ideal.span s = ⊤)
+variable (s : Set S) (spn : Ideal.span s = ⊤)
   (Mₛ : ∀ _ : s, Type*)
   [∀ r : s, AddCommGroup (Mₛ r)]
   [∀ r : s, Module R (Mₛ r)]
-  (g : ∀ r : s, M →ₗ[R] Mₛ r)
+  [∀ r : s, Module S (Mₛ r)]
+  [∀ r : s, IsScalarTower R S (Mₛ r)]
+  (g : ∀ r : s, M →ₗ[S] Mₛ r)
   [∀ r : s, IsLocalizedModule (.powers r.1) (g r)]
 include spn
 
 theorem flat_of_localized_span
-    (h : ∀ r : s, Flat R (LocalizedModule (.powers r.1) M)) :
-    Flat R M :=
+    (h : ∀ r : s, Flat S (LocalizedModule (.powers r.1) M)) :
+    Flat S M :=
   (Module.flat_iff _ _).mpr fun I fg ↦ injective_of_localized_span s spn _ fun r ↦ by
-    rw [← LinearMap.coe_restrictScalars R, aux]
+    rw [← LinearMap.coe_restrictScalars S, aux]
     simpa using (Module.flat_iff _ _).mp (h r) fg
 
 include g in
-theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
-    Module.Flat R M :=
-  flat_of_localized_span M s spn fun r ↦ .of_linearEquiv _ _ _ (iso _ (g r))
+theorem flat_of_isLocalized_span (h : ∀ r : s, Module.Flat R (Mₛ r)) :
+    Module.Flat R M := by
+  rw [Module.Flat.iff_lTensor_injective]
+  intro I fg
+  let F : M ⊗[R] I →ₗ[S] M ⊗[R] R := AlgebraTensorModule.lTensor S M (Submodule.subtype I)
+  let g' (r : s) : M ⊗[R] I →ₗ[S] Mₛ r ⊗[R] I := AlgebraTensorModule.map (g r) LinearMap.id
+  haveI (r : s) : IsLocalizedModule (Submonoid.powers r.val) (g' r) :=
+    isLocalizedModule_tensorProduct_map _ _ _
+  let g'' (r : s) : M ⊗[R] R →ₗ[S] Mₛ r ⊗[R] R := AlgebraTensorModule.map (g r) LinearMap.id
+  haveI (r : s) : IsLocalizedModule (Submonoid.powers r.val) (g'' r) :=
+    isLocalizedModule_tensorProduct_map _ _ _
+  apply injective_of_isLocalized_span s spn _ g' _ g'' F
+  have (r : s) : (IsLocalizedModule.map (Submonoid.powers r.val) (g' r) (g'' r)) F =
+      AlgebraTensorModule.lTensor S (Mₛ r) (Submodule.subtype I) := by
+    apply IsLocalizedModule.ringHom_ext (Submonoid.powers r.val) (g' r) (map_units (g'' r))
+    ext x y
+    simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_comp,
+      coe_restrictScalars, Function.comp_apply, map_apply]
+    simp [g', g'', F]
+  intro r
+  rw [this]
+  apply Module.Flat.lTensor_preserves_injective_linearMap
+  exact Submodule.injective_subtype I
 
 end Module

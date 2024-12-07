@@ -6,6 +6,7 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Localized Module
@@ -118,3 +119,24 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   split_ifs with h
   swap; · simp
   simp [e, IsBaseChange.equiv_tmul]
+
+section
+
+variable (S : Submonoid A) {N : Type*} [AddCommMonoid N] [Module R N]
+variable [Module A M] [IsScalarTower R A M]
+
+open TensorProduct
+
+/-- `S⁻¹M ⊗[R] N = S⁻¹(M ⊗[R] N)`. -/
+lemma isLocalizedModule_tensorProduct_map (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule S (AlgebraTensorModule.map g (LinearMap.id (R := R) (M := N))) := by
+  let Aₚ := Localization S
+  letI : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
+  haveI : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
+  haveI : IsScalarTower R Aₚ M' :=
+    IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
+  rw [isLocalizedModule_iff_isBaseChange (R := A) (S := S) (A := Aₚ)] at h
+  rw [isLocalizedModule_iff_isBaseChange (R := A) (S := S) (A := Aₚ)]
+  exact isBaseChange_tensorProduct_map _ h
+
+end
