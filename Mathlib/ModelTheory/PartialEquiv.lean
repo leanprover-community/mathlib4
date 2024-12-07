@@ -379,7 +379,7 @@ which extends the map of `f` and whose domain contains the image of `M`.-/
 def is_fully_extendable_through (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
   ∃ f', f.map g ≤ f' ∧ g.toHom.range ≤ f'.dom
 
-theorem is_full_extendable_through_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+theorem is_fully_extendable_through_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
     (H : is_fully_extendable_through f g) : is_fully_extendable_through f (g'.comp g) := by
   let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
   use h.map g'
