@@ -73,10 +73,10 @@ instance : NormedField v.Completion :=
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
 lemma norm_coe (x : WithAbs v.1) :
-    ‖(x : v.completion)‖ = v (WithAbs.equiv v.1 x) :=
+    ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
   UniformSpace.Completion.norm_coe x
 
-instance : Algebra K v.completion :=
+instance : Algebra K v.Completion :=
   inferInstanceAs <| Algebra (WithAbs v.1) v.1.Completion
 
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
