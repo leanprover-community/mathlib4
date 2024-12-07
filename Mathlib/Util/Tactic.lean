@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jannis Limperg
 -/
+import Mathlib.Init
 import Lean.MetavarContext
 
 /-!
@@ -11,13 +12,11 @@ import Lean.MetavarContext
 [TODO] Ideally we would find good homes for everything in this file, eventually removing it.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic
 
 open Lean Meta Tactic
 
-variable [Monad m]
+variable {m : Type → Type}
 
 /--
 `modifyMetavarDecl mvarId f` updates the `MetavarDecl` for `mvarId` with `f`.
@@ -32,7 +31,7 @@ Conditions on `f`:
 If `mvarId` does not refer to a declared metavariable, nothing happens.
 -/
 def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
-    (f : MetavarDecl → MetavarDecl) : m Unit := do
+    (f : MetavarDecl → MetavarDecl) : m Unit :=
   modifyMCtx fun mctx ↦
     match mctx.decls.find? mvarId with
     | none => mctx
@@ -73,3 +72,5 @@ exist in the local context of `mvarId`, nothing happens.
 def modifyLocalDecl [MonadMCtx m] (mvarId : MVarId) (fvarId : FVarId)
     (f : LocalDecl → LocalDecl) : m Unit :=
   modifyLocalContext mvarId fun lctx ↦ lctx.modifyLocalDecl fvarId f
+
+end Mathlib.Tactic

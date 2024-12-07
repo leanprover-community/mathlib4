@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Vanishing of elements in a tensor product of two modules
 
@@ -60,7 +61,7 @@ variable (R : Type u) [CommRing R]
 variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N]
 
-open Classical DirectSum LinearMap Function Submodule
+open DirectSum LinearMap Function Submodule Finsupp
 
 namespace TensorProduct
 
@@ -102,7 +103,7 @@ vanishes, then it vanishes trivially. -/
 theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range m) = ⊤)
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
   -- Define a map $G \colon R^\iota \to M$ whose matrix entries are the $m_i$. It is surjective.
-  set G : (ι →₀ R) →ₗ[R] M := Finsupp.total ι M R m with hG
+  set G : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R m with hG
   have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG, toModule_lof]
   have G_surjective : Surjective G := by
     apply LinearMap.range_eq_top.mp
@@ -140,12 +141,13 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   use fun ⟨⟨_, yj⟩, _⟩ ↦ yj
   constructor
   · intro i
+    classical
     apply_fun finsuppScalarLeft R N ι at hkn
     apply_fun (· i) at hkn
     symm at hkn
     simp only [map_sum, finsuppScalarLeft_apply_tmul, zero_smul, Finsupp.single_zero,
       Finsupp.sum_single_index, one_smul, Finsupp.finset_sum_apply, Finsupp.single_apply,
-      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, rTensor_tmul, coeSubtype, Finsupp.sum_apply,
+      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, rTensor_tmul, coe_subtype, Finsupp.sum_apply,
       Finsupp.sum_ite_eq', Finsupp.mem_support_iff, ne_eq, ite_not, en] at hkn
     simp only [Finset.univ_eq_attach, Finset.sum_attach ma (fun x ↦ (x.1 : ι →₀ R) i • x.2)]
     convert hkn using 2 with x _
@@ -153,7 +155,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     · next h'x => rw [h'x, zero_smul]
     · rfl
   · rintro ⟨⟨⟨k, hk⟩, _⟩, _⟩
-    simpa only [hG, Finsupp.total_apply, zero_smul, implies_true, Finsupp.sum_fintype] using
+    simpa only [hG, linearCombination_apply, zero_smul, implies_true, Finsupp.sum_fintype] using
       mem_ker.mp hk
 
 /-- **Equational criterion for vanishing**
@@ -180,11 +182,11 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective
   set m' : ι → span R (Set.range m) := Subtype.coind m mem_M' with m'_eq
   have hm' : span R (Set.range m') = ⊤ := by
     apply map_injective_of_injective (injective_subtype (span R (Set.range m)))
-    rw [Submodule.map_span, Submodule.map_top, range_subtype, coeSubtype, ← Set.range_comp]
+    rw [Submodule.map_span, Submodule.map_top, range_subtype, coe_subtype, ← Set.range_comp]
     rfl
   have hm'n : ∑ i, m' i ⊗ₜ n i = (0 : span R (Set.range m) ⊗[R] N) := by
     apply hm
-    simp only [m'_eq, map_sum, rTensor_tmul, coeSubtype, Subtype.coind_coe, _root_.map_zero, hmn]
+    simp only [m'_eq, map_sum, rTensor_tmul, coe_subtype, Subtype.coind_coe, _root_.map_zero, hmn]
   have : VanishesTrivially R m' n := vanishesTrivially_of_sum_tmul_eq_zero R hm' hm'n
   unfold VanishesTrivially at this ⊢
   convert this with κ _ a y j
@@ -217,7 +219,7 @@ theorem rTensor_injective_of_forall_vanishesTrivially
   obtain ⟨s, rfl⟩ := exists_finset x
   rw [← Finset.sum_attach]
   apply sum_tmul_eq_zero_of_vanishesTrivially
-  simp only [map_sum, rTensor_tmul, coeSubtype] at hx
+  simp only [map_sum, rTensor_tmul, coe_subtype] at hx
   have := hMN ((Finset.sum_attach s _).trans hx)
   unfold VanishesTrivially at this ⊢
   convert this with κ _ a y j

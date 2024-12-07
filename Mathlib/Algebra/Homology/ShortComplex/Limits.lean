@@ -14,8 +14,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 In this file, it is shown if a category `C` with zero morphisms has limits
 of a certain shape `J`, then it is also the case of the category `ShortComplex C`.
 
-TODO (@rioujoel): Do the same for colimits.
-
 -/
 
 namespace CategoryTheory
@@ -59,7 +57,8 @@ def isLimitOfIsLimitπ (c : Cone F)
 
 section
 
-variable (F) [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
+variable (F)
+variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
 
 /-- Construction of a limit cone for a functor `J ⥤ ShortComplex C` using the limits
 of the three components `J ⥤ C`. -/
@@ -94,13 +93,13 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
 instance hasLimit_of_hasLimitπ : HasLimit F := ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
 
 noncomputable instance : PreservesLimit F π₁ :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
 
 noncomputable instance : PreservesLimit F π₂ :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
 
 noncomputable instance : PreservesLimit F π₃ :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
 end
 
@@ -191,7 +190,8 @@ def isColimitOfIsColimitπ (c : Cocone F)
 
 section
 
-variable (F) [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
+variable (F)
+variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
 
 /-- Construction of a colimit cocone for a functor `J ⥤ ShortComplex C` using the colimits
 of the three components `J ⥤ C`. -/
@@ -229,15 +229,15 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
 instance hasColimit_of_hasColimitπ : HasColimit F := ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
 
 noncomputable instance : PreservesColimit F π₁ :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (isColimitπ₁MapCoconeColimitCocone F)
 
 noncomputable instance : PreservesColimit F π₂ :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F)
 
 noncomputable instance : PreservesColimit F π₃ :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (isColimitπ₃MapCoconeColimitCocone F)
 
 end
