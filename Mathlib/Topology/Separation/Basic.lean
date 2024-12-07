@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Support
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Algebra.Indicator
 
 /-!
 # Separation properties of topological spaces.
