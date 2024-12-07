@@ -534,6 +534,12 @@ variable (φ) in
 @[simp] lemma Spec.preimage_map : Spec.preimage (Spec.map φ) = φ :=
   Spec.map_injective (Spec.map_preimage (Spec.map φ))
 
+/-- Useful for replacing `f` by `Spec.map φ` everywhere in proofs. -/
+lemma Spec.exists_preimage_map {R S : CommRingCat} (f : Spec S ⟶ Spec R) :
+    ∃ φ, f = Spec.map φ := by
+  use Spec.preimage f
+  simp
+
 /-- Spec is fully faithful -/
 @[simps]
 def Spec.homEquiv {R S : CommRingCat} : (Spec S ⟶ Spec R) ≃ (R ⟶ S) where

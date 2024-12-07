@@ -1,0 +1,68 @@
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.RingTheory.RingHom.Flat
+
+/-!
+# Flat morphisms
+
+A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
+`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat.
+
+We show that these properties are local, and are stable under compositions and base change.
+
+## TODO
+
+- Show that being flat can be checked on stalks.
+
+-/
+
+noncomputable section
+
+open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+
+universe v u
+
+namespace AlgebraicGeometry
+
+variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+
+/-- A morphism of schemes `f : X ⟶ Y` is locally of finite type if for each affine `U ⊆ Y` and
+`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite type.
+-/
+@[mk_iff]
+class Flat (f : X ⟶ Y) : Prop where
+  flat_of_affine_subset :
+    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).Flat
+
+namespace Flat
+
+instance : HasRingHomProperty @Flat RingHom.Flat where
+  isLocal_ringHomProperty := RingHom.Flat.propertyIsLocal
+  eq_affineLocally' := by
+    ext X Y f
+    rw [flat_iff, affineLocally_iff_affineOpens_le]
+
+instance (priority := 900) [IsOpenImmersion f] : Flat f :=
+  HasRingHomProperty.of_isOpenImmersion
+    RingHom.Flat.containsIdentities
+
+instance : MorphismProperty.IsStableUnderComposition @Flat :=
+  HasRingHomProperty.stableUnderComposition RingHom.Flat.stableUnderComposition
+
+instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
+  MorphismProperty.comp_mem _ f g hf hg
+
+instance : MorphismProperty.IsMultiplicative @Flat where
+  id_mem _ := inferInstance
+
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Flat :=
+  HasRingHomProperty.isStableUnderBaseChange RingHom.Flat.isStableUnderBaseChange
+
+end Flat
+
+end AlgebraicGeometry
