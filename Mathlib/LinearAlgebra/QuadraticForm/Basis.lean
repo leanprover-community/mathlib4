@@ -42,7 +42,7 @@ lemma sumC {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))
     ∑ p ∈ s with symOffDiagXor p, f p := by
   simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
 
-lemma sum {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
+lemma sum_on_diag_left_right_upper_lower {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
     (∑ p ∈ s with  p.IsDiag, f p) +
     (∑ p ∈ s with symOffDiagLeft p, f p)
       + (∑ p ∈ s with symOffDiagRight p, f p)
