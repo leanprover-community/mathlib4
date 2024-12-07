@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Multiset.Basic
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
