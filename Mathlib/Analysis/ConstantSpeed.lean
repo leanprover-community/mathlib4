@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Analysis.BoundedVariation
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Constant speed
