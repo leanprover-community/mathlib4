@@ -84,6 +84,9 @@ def extensionEmbedding : v.completion →+* ℂ := extensionEmbedding_of_comp v.
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.completion →+* ℝ :=
   extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv
 
+@[deprecated (since := "2024-12-07")]
+noncomputable alias extensionEmbedding_of_isReal := extensionEmbeddingOfIsReal
+
 @[simp]
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
   extensionEmbedding_of_comp_coe v.norm_embedding_eq x
@@ -138,7 +141,7 @@ def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.completion ≃+* ℂ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
 
-@[deprecated (since := "2024-12-01")]
+@[deprecated (since := "2024-12-07")]
 noncomputable alias ringEquiv_complex_of_isComplex := ringEquivComplexOfIsComplex
 
 /-- If the infinite place `v` is complex, then `v.completion` is isometric to `ℂ`. -/
@@ -146,6 +149,9 @@ def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.completion ≃ᵢ ℂ where
   toEquiv := ringEquivComplexOfIsComplex hv
   isometry_toFun := isometry_extensionEmbedding v
+
+@[deprecated (since := "2024-12-07")]
+noncomputable alias isometryEquiv_complex_of_isComplex := isometryEquivComplexOfIsComplex
 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
@@ -163,9 +169,15 @@ theorem bijective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsRea
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isReal hv)
 
+@[deprecated (since := "2024-12-07")]
+noncomputable alias ringEquiv_real_of_isReal := ringEquivRealOfIsReal
+
 /-- If the infinite place `v` is real, then `v.completion` is isometric to `ℝ`. -/
-def isometryEquiv_real_of_isReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃ᵢ ℝ where
+def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbedding_of_isReal hv
+
+@[deprecated (since := "2024-12-07")]
+noncomputable alias isometryEquiv_real_of_isReal := isometryEquivRealOfIsReal
 
 end NumberField.InfinitePlace.Completion
