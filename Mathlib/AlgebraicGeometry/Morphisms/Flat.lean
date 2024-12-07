@@ -14,10 +14,6 @@ A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
 
 We show that these properties are local, and are stable under compositions and base change.
 
-## TODO
-
-- Show that being flat can be checked on stalks.
-
 -/
 
 noncomputable section
