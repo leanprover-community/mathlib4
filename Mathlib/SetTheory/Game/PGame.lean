@@ -392,7 +392,7 @@ theorem moveRight_memᵣ (x : PGame) (b) : x.moveRight b ∈ᵣ x := ⟨_, .rfl�
 theorem identical_of_isEmpty (x y : PGame)
     [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
     [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
-  identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
+  identical_iff.2 (by simp [biTotal_empty])
 
 /-- `Identical` as a `Setoid`. -/
 def identicalSetoid : Setoid PGame :=

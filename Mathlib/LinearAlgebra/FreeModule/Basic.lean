@@ -7,6 +7,7 @@ import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Matrix.Defs
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
@@ -37,6 +38,10 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 class Module.Free : Prop where
   exists_basis : Nonempty <| (I : Type v) × Basis I R M
 
+theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
+  ⟨fun h => ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
+    fun ⟨S, hS⟩ => ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
+
 /-- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
 universe.
 
@@ -48,10 +53,6 @@ theorem Module.free_def [Small.{w,v} M] :
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
     fun h => ⟨(nonempty_sigma.2 h).map fun ⟨_, b⟩ => ⟨Set.range b, b.reindexRange⟩⟩⟩
-
-theorem Module.free_iff_set : Module.Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
-  ⟨fun h => ⟨Set.range h.exists_basis.some.2, ⟨Basis.reindexRange h.exists_basis.some.2⟩⟩,
-    fun ⟨S, hS⟩ => ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
 
 variable {R M}
 
