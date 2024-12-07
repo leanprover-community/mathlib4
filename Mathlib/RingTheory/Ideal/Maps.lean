@@ -421,12 +421,12 @@ lemma comap_map_of_bijective (hf : Function.Bijective f) {I : Ideal R} :
     (I.map f).comap f = I :=
   le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
 
-theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
+theorem IsMaximal.map_bijective (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
     IsMaximal (map f I) := by
   rw [isMaximal_def] at H ⊢
   exact ((relIsoOfBijective _ hf).symm.isCoatom_iff _).mpr H
 
-theorem comap.isMaximal (hf : Function.Bijective f) {I : Ideal S} (H : IsMaximal I) :
+theorem IsMaximal.comap_bijective (hf : Function.Bijective f) {I : Ideal S} (H : IsMaximal I) :
     IsMaximal (comap f I) := by
   rw [isMaximal_def] at H ⊢
   exact ((relIsoOfBijective _ hf).isCoatom_iff _).mpr H
@@ -434,14 +434,18 @@ theorem comap.isMaximal (hf : Function.Bijective f) {I : Ideal S} (H : IsMaximal
 /-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
 instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
     {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
-  map.isMaximal e (EquivLike.bijective e) hp
+  hp.map_bijective e (EquivLike.bijective e)
+
+theorem isMaximal_iff_of_bijective (hf : Function.Bijective f) :
+    (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
+  ⟨fun h ↦ map_bot (f := f) ▸ h.map_bijective f hf, fun h ↦ have e := RingEquiv.ofBijective f hf
+    map_bot (f := e.symm) ▸ h.map_bijective _ e.symm.bijective⟩
+
+@[deprecated (since := "2024-12-07")] alias map.isMaximal := IsMaximal.map_bijective
+@[deprecated (since := "2024-12-07")] alias comap.isMaximal := IsMaximal.comap_bijective
+@[deprecated (since := "2024-12-07")] alias RingEquiv.bot_maximal_iff := isMaximal_iff_of_bijective
 
 end Bijective
-
-theorem RingEquiv.bot_maximal_iff (e : R ≃+* S) :
-    (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
-  ⟨fun h => map_bot (f := e.toRingHom) ▸ map.isMaximal e.toRingHom e.bijective h, fun h =>
-    map_bot (f := e.symm.toRingHom) ▸ map.isMaximal e.symm.toRingHom e.symm.bijective h⟩
 
 end Semiring
 
