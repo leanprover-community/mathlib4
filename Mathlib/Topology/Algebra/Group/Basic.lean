@@ -765,6 +765,7 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
     (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
   simp only [map_one, mul_one, MonoidHom.one_apply]
 
+-- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
 homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
 is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
@@ -781,10 +782,10 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
       -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
       intro U hU
       rw [← hφ.isOpen_preimage]
-      -- It suffices to show that `φ⁻¹ (φ U) = ⋃ (k + U)` as `k` runs through the kernel of `φ`,
-      -- as `k + U` is open because `k + ⬝` is a homeomorphism.
-      -- Remark: here is where we use that we have additive groups not monoids,
-      -- as the inverse of the homeomorphism is `(-k) + ⬝`.
+      -- It suffices to show that `φ⁻¹ (φ U) = ⋃ (U * k⁻¹)` as `k` runs through the kernel of `φ`,
+      -- as `U * k⁻¹` is open because `x ↦ x * k` is a homeomorphism.
+      -- Remark: here is where we use that we have groups not monoids (you cannot avoid
+      -- using both `k` and `k⁻¹` at this point).
       suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
         exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
       ext x
