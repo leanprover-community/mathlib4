@@ -42,19 +42,16 @@ lemma sumC {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))
     ∑ p ∈ s with symOffDiagXor p, f p := by
   simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
 
-lemma sum_on_diag_left_right_upper_lower {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
-    (∑ p ∈ s with  p.IsDiag, f p) +
+lemma sum_on_left_right_upper_lower {f : Sym2 (ι₁ × ι₂) → N} {s : Finset (Sym2 (ι₁ × ι₂))} :
     (∑ p ∈ s with symOffDiagLeft p, f p)
       + (∑ p ∈ s with symOffDiagRight p, f p)
       + (∑ p ∈ s with symOffDiagUpper p, f p)
-      + (∑ p ∈ s with symOffDiagLower p, f p) = (∑ p ∈ s, f p)  := by
-  rw [← Finset.sum_filter_add_sum_filter_not s Sym2.IsDiag f]
+      + (∑ p ∈ s with symOffDiagLower p, f p) = (∑ p ∈ s with ¬ p.IsDiag, f p)  := by
   simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor, e1, e2]
   rw [add_assoc]
   simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
   rw [add_assoc, add_assoc]
   simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower, Finset.sum_filter_xor, e3, e4]
-  rw [add_assoc]
 
 end sums
 
@@ -635,6 +632,26 @@ theorem qt_expansion (x : M₁ ⊗[R] M₂) :
   simp_rw [add_assoc]
   simp only [add_right_inj]
   simp_rw [sum_left, sum_right]
+
+theorem pre_tensor_expansion (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
+      + ((∑ p ∈ s with symOffDiagLeft p, polar_lift Q bm x p)
+      + (∑ p ∈ s with symOffDiagRight p, polar_lift Q bm x p)
+      + (∑ p ∈ s with symOffDiagUpper p, polar_lift Q bm x p)
+      + (∑ p ∈ s with symOffDiagLower p, polar_lift Q bm x p)) = Q x := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  simp_rw [sum_on_left_right_upper_lower]
+  simp_rw [basis_expansion Q bm x]
+  have e1 (i : ι₁ × ι₂) : Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) = Q (bm i) := by
+    rw [Basis.tensorProduct_apply, tensorDistriFree_tmul]
+  simp_rw [e1]
+  simp only [add_right_inj]
+  simp_rw [polar_lift, polar_lift_lc]
 
 end TensorProduct
 
