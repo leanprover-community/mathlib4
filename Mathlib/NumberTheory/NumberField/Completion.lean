@@ -190,7 +190,7 @@ def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion �
 @[deprecated (since := "2024-12-07")]
 noncomputable alias ringEquiv_real_of_isReal := ringEquivRealOfIsReal
 
-/-- If the infinite place `v` is real, then `v.completion` is isometric to `ℝ`. -/
+/-- If the infinite place `v` is real, then `v.Completion` is isometric to `ℝ`. -/
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbedding_of_isReal hv
