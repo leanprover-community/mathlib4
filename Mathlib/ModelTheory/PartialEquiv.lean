@@ -373,14 +373,14 @@ theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
     ext x
     simp only [Equiv.comp_apply, Equiv.apply_symm_apply]
 
-/-- A partial equivalence `f` between substructures of `M` is extended by an embedding
+/-- A partial equivalence `f` between substructures of `M` is fully extendable through an embedding
 `g` if there is a partial equivalence between substructures of the codomain of `g`
-which extends the map of `f` and contains the image of `M`.-/
-def is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
+which extends the map of `f` and whose domain contains the image of `M`.-/
+def is_fully_extendable_through (f : M ≃ₚ[L] M) (g : M ↪[L] N) : Prop :=
   ∃ f', f.map g ≤ f' ∧ g.toHom.range ≤ f'.dom
 
-theorem is_extended_by_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
-    (H : is_extended_by f g) : is_extended_by f (g'.comp g) := by
+theorem is_full_extendable_through_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+    (H : is_fully_extendable_through f g) : is_fully_extendable_through f (g'.comp g) := by
   let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
   use h.map g'
   constructor
@@ -389,8 +389,8 @@ theorem is_extended_by_comp (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] 
   · rw [map_dom, Embedding.comp_toHom, Hom.range_comp]
     exact Substructure.monotone_map le_h_dom
 
-theorem comp_is_extended_by (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
-    (H : is_extended_by (f.map g) g') : is_extended_by f (g'.comp g) := by
+theorem comp_is_fully_extendable_through (f : M ≃ₚ[L] M) (g : M ↪[L] N) (g' : N ↪[L] P)
+    (H : is_fully_extendable_through (f.map g) g') : is_fully_extendable_through f (g'.comp g) := by
   let ⟨h, ⟨le_h, le_h_dom⟩⟩ := H
   use h
   constructor

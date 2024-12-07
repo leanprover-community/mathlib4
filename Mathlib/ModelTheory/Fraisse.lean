@@ -439,3 +439,6 @@ end empty
 end Language
 
 end FirstOrder
+is_fully_extended_throughis_fully_extended_throughis_fully_extended_throughis_fully_extended_throughis_fully_extended_through
+is_full_extended_through_compis_full_extended_through_comp
+comp_is_extendable_through
