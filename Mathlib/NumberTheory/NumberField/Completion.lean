@@ -154,14 +154,14 @@ theorem surjective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsRe
   exact isClosed_image_extensionEmbedding_of_isReal hv
 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is bijective. -/
-theorem bijective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
+theorem bijective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Bijective (extensionEmbeddingOfIsReal hv) :=
   ⟨(extensionEmbeddingOfIsReal hv).injective, surjective_extensionEmbedding_of_isReal hv⟩
 
 /-- The ring isomorphism `v.completion ≃+* ℝ`, when `v` is real, given by the bijection
 `v.completion →+* ℝ`. -/
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃+* ℝ :=
-  RingEquiv.ofBijective _ (bijective_extensionEmbeddingOfIsReal hv)
+  RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isReal hv)
 
 /-- If the infinite place `v` is real, then `v.completion` is isometric to `ℝ`. -/
 def isometryEquiv_real_of_isReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃ᵢ ℝ where
