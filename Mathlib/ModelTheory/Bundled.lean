@@ -202,23 +202,23 @@ variable {M N P : CategoryTheory.Bundled.{w} L.Structure}
 namespace Embedding
 
 /-- Embedding between equal structures.-/
-def eq_embed (h : M = N) : M ↪[L] N := by
+def ofEq (h : M = N) : M ↪[L] N := by
   cases h
   exact refl L M
 
 @[simp]
-theorem refl_eq_embed : eq_embed (Eq.refl M) = refl L M := rfl
+theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
 
 @[simp]
-theorem eq_embed_trans (h : M = N) (h' : N = P) :
-    (eq_embed h').comp (eq_embed h) = eq_embed (h.trans h') := by
+theorem ofEq_comp (h : M = N) (h' : N = P) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
   cases h
   cases h'
   rfl
 
 @[simp]
-theorem eq_embed_trans_apply (h : M = N) (h' : N = P) (m : M) :
-    (eq_embed h') (eq_embed h m) = eq_embed (h.trans h') m := by
+theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
   cases h
   cases h'
   rfl
@@ -228,23 +228,30 @@ end Embedding
 namespace Equiv
 
 /-- Equivalence between equal structures.-/
-def eq_equiv (h : M = N) : M ≃[L] N := by
+def ofEq (h : M = N) : M ≃[L] N := by
   cases h
   rfl
 
 @[simp]
-theorem refl_eq_equiv : eq_equiv (Eq.refl M) = refl L M := rfl
+theorem ofEq_refl : ofEq (Eq.refl M) = refl L M := rfl
 
 @[simp]
-theorem eq_equiv_trans (h : M = N) (h' : N = P) :
-    (eq_equiv h').comp (eq_equiv h) = eq_equiv (h.trans h') := by
+theorem ofEq_comp (h : M = N) (h' : N = P) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := by
   cases h
   cases h'
   rfl
 
 @[simp]
-theorem eq_equiv_toEmbed (h : M = N) :
-    (eq_equiv h).toEmbedding = Embedding.eq_embed h := by
+theorem ofEq_comp_apply (h : M = N) (h' : N = P) (m : M) :
+    (ofEq h') (ofEq h m) = ofEq (h.trans h') m := by
+  cases h
+  cases h'
+  rfl
+
+@[simp]
+theorem ofEq_toEmbed (h : M = N) :
+    (ofEq h).toEmbedding = Embedding.ofEq h := by
   cases h
   rfl
 

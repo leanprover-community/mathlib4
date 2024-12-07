@@ -975,26 +975,55 @@ lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     T.subtype.comp (inclusion h) = S.subtype := rfl
 
 /-- Equivalence between equal substructures. -/
-def equiv_from_eq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
+def equivOfEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T := by
   cases h
   exact Equiv.refl _ _
 
 @[simp]
-theorem equiv_from_eq_symm {S T : L.Substructure M} (h : S = T) :
-    (equiv_from_eq h).symm = equiv_from_eq h.symm := by
+theorem equivOfEq_refl (S : L.Substructure M) : (equivOfEq (Eq.refl S)) = Equiv.refl L S := rfl
+
+@[simp]
+theorem equivOfEq_symm {S T : L.Substructure M} (h : S = T) :
+    (equivOfEq h).symm = equivOfEq h.symm := by
   cases h
   rfl
 
 @[simp]
-theorem equiv_from_eq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
-    equiv_from_eq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
+theorem equivOfEq_comp {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
+    (equivOfEq h').comp (equivOfEq h) = (equivOfEq (h.trans h')) := by
+  cases h
+  cases h'
+  rfl
+
+@[simp]
+theorem equivOfEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
+    equivOfEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := by
   cases h
   rfl
 
 @[simp]
-theorem subtype_comp_equiv_from_eq {S T : L.Substructure M} (h : S = T) :
-    T.subtype.comp (equiv_from_eq h).toEmbedding = S.subtype := by
+theorem subtype_comp_EquivOfEq {S T : L.Substructure M} (h : S = T) :
+    T.subtype.comp (equivOfEq h).toEmbedding = S.subtype := by
   cases h
+  rfl
+
+@[simp]
+theorem substructureEquivMap_refl (S : L.Substructure M):
+    (Embedding.refl L M).substructureEquivMap S = equivOfEq (map_id S).symm := by
+  ext ⟨⟩
+  simp only [Embedding.refl_toHom, SetLike.coe_eq_coe, equivOfEq_apply]
+  rfl
+
+@[simp]
+theorem substructureEquivMap_comp_substructureEquivMap (f : M ↪[L] N) (g : N ↪[L] P)
+    (S : L.Substructure M) : (g.substructureEquivMap (S.map f.toHom)).comp
+    (f.substructureEquivMap S) = (equivOfEq (S.map_map ..).symm).comp
+    ((g.comp f).substructureEquivMap S) := by
+  apply Equiv.injective_toEmbedding
+  apply (subtype _).comp_injective
+  simp only [Equiv.comp_toEmbedding, ← Embedding.comp_assoc, Embedding.subtype_substructureEquivMap,
+    subtype_comp_EquivOfEq]
+  ext
   rfl
 
 end Substructure
