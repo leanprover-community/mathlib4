@@ -18,13 +18,9 @@ exchange and accessible properties.
 Main definitions:
 
 * `Greedoid`: The greedoid structure.
-
 * `Greedoid.ground`: The ground set of the greedoid.
-
 * `Greedoid.Feasible`: The feasible property of the greedoid.
-
 * `Greedoid.Bases`: A bases of a greedoid `G` is a maximal feasible set of `G`.
-
 * `Greedoid.Basis`: A basis of a set `s` with respect to a greedoid `G` is a maximal subset of `s`
   which is feasible in `G`.
 -/
@@ -154,4 +150,3 @@ theorem bases_card_eq
 end Bases
 
 end Greedoid
-
