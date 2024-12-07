@@ -94,6 +94,12 @@ inductive Mathlib.IneqQ {u : Level} {α : Q(Type u)} (inst : Q(PartialOrder $α)
   | le (h : Q($a ≤ $b)) : IneqQ inst a b .le
   | lt (h : Q($a < $b)) : IneqQ inst a b .lt
 
+def Mathlib.IneqQ.raw {u : Level} {α : Q(Type u)} {inst : Q(PartialOrder $α)} {a b : Q($α)}
+    {ineq}
+    (h : Mathlib.IneqQ inst a b ineq) : Expr :=
+  match h with
+  | .eq h | .le h | .lt h => h
+
 set_option linter.unusedVariables.funArgs false in
 /-- Use this to deal with instance diamonds in the `inst` argument, after calling
 `(assert|assume)InstancesCommute`. -/
