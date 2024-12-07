@@ -51,14 +51,7 @@ theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p 
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
   revert h_two h_three hp
-  -- Porting note (#11043): was `decide!`
-  match p with
-  | 0 => decide
-  | 1 => decide
-  | 2 => decide
-  | 3 => decide
-  | 4 => decide
-  | n + 5 => exact (h.not_le <| le_add_left ..).elim
+  decide +revert
 
 end
 

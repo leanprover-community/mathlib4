@@ -37,8 +37,9 @@ def free : Type u ⥤ CommRingCat.{u} where
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=
   rfl
 
--- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover/std4/issues/86
+-- The `simpNF` linter complains here, even though it is a `rfl` lemma,
+-- because the implicit arguments on the left-hand side simplify via `dsimp`.
+-- (That is, the left-hand side really is not in simp normal form.)
 @[simp, nolint simpNF]
 theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl

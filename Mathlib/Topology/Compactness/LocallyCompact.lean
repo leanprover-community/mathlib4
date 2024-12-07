@@ -35,7 +35,7 @@ instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSp
 instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩
 
-protected theorem IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
+protected theorem Topology.IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
     {f : X → Y} (hf : IsClosedEmbedding f) : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds x :=
     let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
@@ -185,7 +185,7 @@ theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X →
 
 /-- If `f` is a topology inducing map with a locally compact codomain and a locally closed range,
 then the domain of `f` is a locally compact space. -/
-theorem IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+theorem Topology.IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsInducing f) (h : IsLocallyClosed (range f)) : LocallyCompactSpace X := by
   rcases h with ⟨U, Z, hU, hZ, hUZ⟩
   have (x : X) : (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ U)
@@ -201,14 +201,14 @@ theorem IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
 @[deprecated (since := "2024-10-28")]
 alias Inducing.locallyCompactSpace := IsInducing.locallyCompactSpace
 
-protected theorem IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+protected theorem Topology.IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.locallyCompactSpace := IsClosedEmbedding.locallyCompactSpace
 
-protected theorem IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
+protected theorem Topology.IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
 

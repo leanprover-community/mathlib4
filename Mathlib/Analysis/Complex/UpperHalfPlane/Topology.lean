@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.PartialHomeomorph
@@ -21,9 +21,7 @@ various instances.
 
 noncomputable section
 
-open Set Filter Function TopologicalSpace Complex
-
-open scoped Filter Topology UpperHalfPlane
+open Complex Filter Function Set TopologicalSpace Topology
 
 namespace UpperHalfPlane
 
@@ -59,7 +57,7 @@ instance : T3Space ℍ := Subtype.t3Space
 instance : T4Space ℍ := inferInstance
 
 instance : ContractibleSpace ℍ :=
-  (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
+  (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
 instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
@@ -123,12 +121,15 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
 
 end strips
 
-/-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
+section ofComplex
+
+/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
 def ofComplex : PartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
+@[simp]
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
   IsOpenEmbedding.toPartialHomeomorph_left_inv ..
 
@@ -140,6 +141,10 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
     exact (a.prop.not_le (by simpa using hw)).elim
+
+lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
+    ofComplex z = ⟨z, hz⟩ := by
+  simpa only [coe_mk_subtype] using ofComplex_apply ⟨z, hz⟩
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
@@ -159,18 +164,11 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
     (↑ₕ f) z = (↑ₕ f) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
+lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
+    UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
+  filter_upwards [(Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz] with x hx
+  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk_subtype]
+
+end ofComplex
+
 end UpperHalfPlane
-
-lemma Complex.isConnected_of_upperHalfPlane {s : Set ℂ} (hs₁ : {z | 0 < z.im} ⊆ s)
-    (hs₂ : s ⊆ {z | 0 ≤ z.im}) : IsConnected s := by
-  refine IsConnected.subset_closure ?_ hs₁ (by simpa using hs₂)
-  rw [isConnected_iff_connectedSpace]
-  exact inferInstanceAs (ConnectedSpace UpperHalfPlane)
-
-lemma Complex.isConnected_of_lowerHalfPlane {s : Set ℂ} (hs₁ : {z | z.im < 0} ⊆ s)
-    (hs₂ : s ⊆ {z | z.im ≤ 0}) : IsConnected s := by
-  rw [← Equiv.star.surjective.image_preimage s]
-  refine IsConnected.image (f := Equiv.star) ?_ continuous_star.continuousOn
-  apply Complex.isConnected_of_upperHalfPlane
-  · exact fun z hz ↦ hs₁ <| show star z ∈ _ by simpa
-  · exact fun z hz ↦ by simpa using show (star z).im ≤ 0 from hs₂ hz

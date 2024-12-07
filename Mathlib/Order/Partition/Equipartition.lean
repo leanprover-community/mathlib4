@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Equitable
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite equipartitions

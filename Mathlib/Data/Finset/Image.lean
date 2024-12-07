@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Finset.Union
 
 /-! # Image and map operations on finite sets
@@ -359,10 +360,6 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
   image_nonempty.2 h
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
-
-@[deprecated image_nonempty (since := "2023-12-29")]
-theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
-  image_nonempty
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=

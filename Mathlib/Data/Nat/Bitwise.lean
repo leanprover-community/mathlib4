@@ -3,7 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.GetD
@@ -51,7 +51,7 @@ lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 
 @[simp]
 lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
   unfold bitwise
-  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
+  simp only [ite_self, decide_false, Nat.zero_div, ite_true, ite_eq_right_iff]
   rintro ⟨⟩
   split_ifs <;> rfl
 
@@ -282,7 +282,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- porting note (#10745): was `simp [hn]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 

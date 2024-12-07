@@ -3,13 +3,14 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Multisets
@@ -65,7 +66,7 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
   Quotient.eq
 
 -- Porting note: new instance;
--- Porting note (#11215): TODO: move to better place
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to better place
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
@@ -412,7 +413,7 @@ section ToList
 
 /-- Produces a list of the elements in the multiset using choice. -/
 noncomputable def toList (s : Multiset α) :=
-  s.out'
+  s.out
 
 @[simp, norm_cast]
 theorem coe_toList (s : Multiset α) : (s.toList : Multiset α) = s :=
@@ -1449,7 +1450,7 @@ end DecidablePiExists
 
 section
 
-variable [DecidableEq α] {s t u : Multiset α} {a b : α}
+variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
 /-- `s - t` is the multiset such that `count a (s - t) = count a s - count a t` for all `a`
   (note that it is truncated subtraction, so it is `0` if `count a t ≥ count a s`). -/
@@ -1719,15 +1720,10 @@ def filter (s : Multiset α) : Multiset α :=
 theorem filter_zero : filter p 0 = 0 :=
   rfl
 
-#adaptation_note
-/--
-Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
--/
-set_option linter.deprecated false in
 @[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
-  Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
+  Quot.inductionOn s fun _l h => congr_arg ofList <| List.filter_congr <| by simpa using h
 
 @[simp]
 theorem filter_add (s t : Multiset α) : filter p (s + t) = filter p s + filter p t :=
@@ -1860,7 +1856,7 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
   · simp only [add_zero]
   · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, or_comm]
   · simp only [Bool.not_eq_true, decide_eq_true_eq, Bool.eq_false_or_eq_true,
-      decide_True, implies_true, Decidable.em]
+      decide_true, implies_true, Decidable.em]
 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
