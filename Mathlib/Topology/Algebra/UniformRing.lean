@@ -43,7 +43,7 @@ noncomputable section
 universe u
 namespace UniformSpace.Completion
 
-open DenseInducing UniformSpace Function
+open IsDenseInducing UniformSpace Function
 
 variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
 
@@ -55,17 +55,15 @@ instance : ContinuousMul (Completion α) := ⟨by
     apply (continuous_coe α).comp _
     simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft]
     exact _root_.continuous_mul
-  have di : DenseInducing (toComplAddHom : α → Completion α) := denseInducing_coe
+  have di : IsDenseInducing (toComplAddHom : α → Completion α) := isDenseInducing_coe
   convert di.extend_Z_bilin di this⟩
 
 theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 :=
   ContinuousMul.continuous_mul
-#align uniform_space.completion.continuous_mul UniformSpace.Completion.continuous_mul
 
 theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
   hf.mul hg
-#align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
 
 instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),

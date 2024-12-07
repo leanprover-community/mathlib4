@@ -49,17 +49,17 @@ However, this cannot create a bad diamond because a `Group` is never a `Field`. 
 is a special case of `UniformSpace.Completion.instNegCompletion` and exists solely as an additive
 counterpart to the multiplicative `UniformSpace.Completion.instInvCompletionOfGroup`."]
 noncomputable instance instInvCompletionOfGroup [Group α] : Inv (Completion α) :=
-  ⟨denseInducing_coe.extend ((↑) ∘ (·⁻¹))⟩
+  ⟨isDenseInducing_coe.extend ((↑) ∘ (·⁻¹))⟩
 
 /-- If `α` has a negation operation, then `Completion α` has a negation operation. This is
 definitionally equal to `UniformSpace.Completion.instNegCompletionOfAddGroup`, but it is more
 general: we do not require that `α` is an additive group. -/
 instance instNegCompletion [Neg α] : Neg (Completion α) :=
-  ⟨denseInducing_coe.extend ((↑) ∘ (-·))⟩
+  ⟨isDenseInducing_coe.extend ((↑) ∘ (-·))⟩
 
 @[to_additive]
 noncomputable instance [Mul α] : Mul (Completion α) :=
-  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
+  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 /-- If `α` is a group, then `Completion α` has an division operation. Note that this is defined
 differently from the division operation on the completion of a field
@@ -69,28 +69,26 @@ However, this cannot create a bad diamond because a `Group` is never a `Field`. 
 is a special case of `UniformSpace.Completion.instSubCompletion` and exists solely as an additive
 counterpart to the multiplicative `UniformSpace.Completion.instDivCompletionOfGroup`."]
 noncomputable instance instDivCompletionOfGroup [Group α] : Div (Completion α) :=
-  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· / ·))⟩
+  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· / ·))⟩
 
 /-- If `α` has a subtraction operation, then `Completion α` has a subtraction operation. This is
 definitionally equal to `UniformSpace.Completion.instSubCompletionOfAddGroup`, but it is more
 general: we do not require that `α` is an additive group. -/
 instance instSubCompletion [Sub α] : Sub (Completion α) :=
-  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· - ·))⟩
+  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· - ·))⟩
 
 variable (α)
 
 @[to_additive (attr := norm_cast)]
 theorem coe_one [One α] : ((1 : α) : Completion α) = 1 :=
   rfl
-#align uniform_space.completion.coe_zero UniformSpace.Completion.coe_zero
 
 variable {α}
 
 @[to_additive (attr := norm_cast)]
 theorem coe_mul [Mul α] [ContinuousMul α] (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((denseInducing_coe.prod denseInducing_coe).extend_eq
+  ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
-#align uniform_space.completion.coe_mul UniformSpace.Completion.coe_mul
 
 section Zero
 
@@ -106,30 +104,31 @@ end Zero
 
 section UniformGroup
 
-variable [UniformSpace α] [Group α] [UniformGroup α]
+variable [Group α] [UniformGroup α]
 
+/-- The coercion of the inverse. -/
 @[to_additive (attr := norm_cast) coe_neg]
-theorem coe_inv' (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
-  (denseInducing_coe.extend_eq ((continuous_coe α).comp (@continuous_inv α _ _ _)) a).symm
+theorem coe_inv_of_group (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
+  (isDenseInducing_coe.extend_eq ((continuous_coe α).comp (@continuous_inv α _ _ _)) a).symm
 
-@[to_additive (attr := norm_cast) coe_sub]
-theorem coe_div' (a b : α) : ((a / b : α) : Completion α) = a / b :=
-  ((denseInducing_coe.prod denseInducing_coe).extend_eq
+@[to_additive (attr := norm_cast)]
+theorem coe_div (a b : α) : ((a / b : α) : Completion α) = a / b :=
+  ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_div' α _ _ _)) (a, b)).symm
 
 @[to_additive]
 private lemma uniformContinuous_completion_mul :
     UniformContinuous (fun p : Completion α × Completion α ↦ p.1 * p.2) :=
   uniformContinuous_uniformly_extend
-    ((uniformInducing_coe α).prod (uniformInducing_coe α))
-    (denseRange_coe.prod_map denseRange_coe)
+    ((isUniformInducing_coe α).prod (isUniformInducing_coe α))
+    (denseRange_coe.prodMap denseRange_coe)
     ((uniformContinuous_coe α).comp uniformContinuous_mul)
 
 @[to_additive]
 private lemma uniformContinuous_completion_inv :
     UniformContinuous (fun p : Completion α ↦ p⁻¹) :=
   uniformContinuous_uniformly_extend
-    (uniformInducing_coe α)
+    (isUniformInducing_coe α)
     denseRange_coe
     ((uniformContinuous_coe α).comp uniformContinuous_inv)
 
@@ -137,8 +136,8 @@ private lemma uniformContinuous_completion_inv :
 private lemma uniformContinuous_completion_div :
     UniformContinuous (fun p : Completion α × Completion α ↦ p.1 / p.2) :=
   uniformContinuous_uniformly_extend
-    ((uniformInducing_coe α).prod (uniformInducing_coe α))
-    (denseRange_coe.prod_map denseRange_coe)
+    ((isUniformInducing_coe α).prod (isUniformInducing_coe α))
+    (denseRange_coe.prodMap denseRange_coe)
     ((uniformContinuous_coe α).comp uniformContinuous_div)
 
 @[to_additive]
@@ -201,23 +200,23 @@ noncomputable instance : DivInvMonoid (Completion α) :=
     zpow_succ' := fun n a ↦
       Completion.induction_on a
         (isClosed_eq continuous_map <| continuous_map.mul continuous_id) fun a ↦ by
-          simp_rw [Int.ofNat_eq_coe, pow_def, map_coe (uniformContinuous_zpow_const _),
+          simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _),
             zpow_natCast, pow_succ, coe_mul]
     zpow_neg' := fun n a ↦
       Completion.induction_on a
         (isClosed_eq continuous_map continuous_map.inv) fun a ↦ by
           simp_rw [pow_def, map_coe (uniformContinuous_zpow_const _), zpow_negSucc, zpow_natCast,
-            coe_inv'] }
+            coe_inv_of_group] }
 
 @[to_additive]
 noncomputable instance group : Group (Completion α) :=
   { (inferInstance : DivInvMonoid <| Completion α) with
-    mul_left_inv := fun a ↦
+    inv_mul_cancel := fun a ↦
       Completion.induction_on a
         (isClosed_eq (continuous_id.inv.mul continuous_id) continuous_const)
         fun a ↦
         show (a : Completion α)⁻¹ * a = 1 by
-          rw_mod_cast [mul_left_inv]
+          rw_mod_cast [inv_mul_cancel]
           rfl }
 
 @[to_additive]
@@ -230,25 +229,23 @@ def toComplMulHom : α →* Completion α where
   toFun := (↑)
   map_mul' := coe_mul
   map_one' := coe_one α
-#align uniform_space.completion.to_compl UniformSpace.Completion.toComplAddHom
 
-@[deprecated] alias toCompl := toComplAddHom
+@[deprecated (since := "2024-12-06")] alias toCompl := toComplAddHom
 
 @[to_additive]
 theorem continuous_toComplMulHom : Continuous (toComplMulHom : α →* Completion α) :=
   continuous_coe α
-#align uniform_space.completion.continuous_to_compl UniformSpace.Completion.continuous_toComplMulHom
 
-@[deprecated] alias continuous_toCompl := continuous_toComplAddHom
+@[deprecated (since := "2024-12-06")] alias continuous_toCompl := continuous_toComplAddHom
 
 variable (α)
 
 @[to_additive]
-theorem denseInducing_toComplMulHom : DenseInducing (toComplMulHom : α →* Completion α) :=
-  denseInducing_coe
-#align uniform_space.completion.dense_inducing_to_compl UniformSpace.Completion.denseInducing_toComplMulHom
+theorem isDenseInducing_toComplMulHom : IsDenseInducing (toComplMulHom : α →* Completion α) :=
+  isDenseInducing_coe
 
-@[deprecated] alias denseInducing_toCompl := denseInducing_toComplAddHom
+@[deprecated (since := "2024-12-06")] alias isDenseInducing_toCompl := isDenseInducing_toComplAddHom
+@[deprecated (since := "2024-12-06")] alias denseInducing_toCompl := isDenseInducing_toComplAddHom
 
 variable {α}
 
@@ -345,13 +342,11 @@ noncomputable def MonoidHom.extension [CompleteSpace β] [T0Space β] (f : α �
         fun a b ↦
         show Completion.extension f _ = Completion.extension f _ * Completion.extension f _ by
         rw_mod_cast [extension_coe hf, extension_coe hf, extension_coe hf, f.map_mul] }
-#align add_monoid_hom.extension AddMonoidHom.extension
 
 @[to_additive]
 theorem MonoidHom.extension_coe [CompleteSpace β] [T0Space β] (f : α →* β)
     (hf : Continuous f) (a : α) : f.extension hf a = f a :=
   UniformSpace.Completion.extension_coe (uniformContinuous_monoidHom_of_continuous hf) a
-#align add_monoid_hom.extension_coe AddMonoidHom.extension_coe
 
 @[to_additive (attr := continuity)]
 theorem MonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α →* β)
@@ -363,7 +358,6 @@ theorem MonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α �
 noncomputable def MonoidHom.completion (f : α →* β) (hf : Continuous f) :
     Completion α →* Completion β :=
   (toComplMulHom.comp f).extension (continuous_toComplMulHom.comp hf)
-#align add_monoid_hom.completion AddMonoidHom.completion
 
 @[to_additive (attr := continuity)]
 theorem MonoidHom.continuous_completion (f : α →* β) (hf : Continuous f) :
@@ -374,7 +368,6 @@ theorem MonoidHom.continuous_completion (f : α →* β) (hf : Continuous f) :
 theorem MonoidHom.completion_coe (f : α →* β) (hf : Continuous f) (a : α) :
     MonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_monoidHom_of_continuous hf) a
-#align add_monoid_hom.completion_coe AddMonoidHom.completion_coe
 
 @[to_additive]
 theorem MonoidHom.completion_one :
@@ -385,7 +378,6 @@ theorem MonoidHom.completion_one :
     exact continuous_const
   · intro a
     simp [(1 : α →* β).completion_coe continuous_const, coe_one]
-#align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
 
 @[to_additive]
 theorem MonoidHom.completion_mul {γ : Type*} [CommGroup γ] [UniformSpace γ]
@@ -399,6 +391,5 @@ theorem MonoidHom.completion_mul {γ : Type*} [CommGroup γ] [UniformSpace γ]
       ((f.continuous_completion hf).mul (g.continuous_completion hg))
   · intro a
     simp [(f * g).completion_coe hfg, coe_mul, f.completion_coe hf, g.completion_coe hg]
-#align add_monoid_hom.completion_add AddMonoidHom.completion_add
 
 end MonoidHom
