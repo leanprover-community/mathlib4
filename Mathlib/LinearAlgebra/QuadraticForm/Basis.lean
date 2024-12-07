@@ -554,6 +554,32 @@ theorem sum2a (x : M₁ ⊗[R] M₂) :
   rw [Finset.sum_subset (Finset.empty_subset _) (fun p hp₁ _ =>
     polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s x p hp₁)]
 
+theorem sum_lower (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    ∑ p ∈ s with symOffDiagLower p, Q.polar_lift bm x p = 0 := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  rw [← Finset.sum_empty]
+  rw [Finset.sum_subset (Finset.empty_subset _) (fun p hp₁ _ =>
+    polar_lift_eq_zero_on_symOffDiagLower bm₁ Q₁ bm₂ Q₂ s x p hp₁)]
+
+theorem sum_upper (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) =
+    ∑ p ∈ s with symOffDiagUpper p, Q.polar_lift bm x p := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  apply Finset.sum_congr rfl _
+  intro p hp
+  rw [polar_lift_eq_polarnn_lift_on_symOffDiagUpper bm₁ Q₁ bm₂ Q₂ s x p hp]
+
+
 theorem sum2b (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
@@ -652,6 +678,21 @@ theorem pre_tensor_expansion (x : M₁ ⊗[R] M₂) :
   simp_rw [polar_lift, polar_lift_lc]
   simp_rw [← sum_on_left_right_upper_lower]
   abel
+
+theorem tensor_expansion (x : M₁ ⊗[R] M₂) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    let s := (bm.repr x).support.sym2
+    ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2)))
+      + (∑ p ∈ s with symOffDiagLeft p, polar_left_lift bm₁ Q₁ bm₂ Q₂ x p)
+      + (∑ p ∈ s with symOffDiagRight p, polar_right_lift bm₁ Q₁ bm₂ Q₂ x p)
+      + (∑ p ∈ s with symOffDiagUpper p, polarnn_lift bm₁ Q₁ bm₂ Q₂ x p) = Q x := by
+  let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let s := (bm.repr x).support.sym2
+  simp_rw [← pre_tensor_expansion]
+  simp_rw [sum_left, sum_right, sum_lower, sum_upper]
+  rw [add_zero]
 
 end TensorProduct
 
