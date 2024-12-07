@@ -30,6 +30,11 @@ attribute [trans] Subperm.trans
 
 end Subperm
 
+/-- See also `List.subperm_ext_iff`. -/
+lemma subperm_iff_count [DecidableEq α] : l₁ <+~ l₂ ↔ ∀ a, count a l₁ ≤ count a l₂ :=
+  subperm_ext_iff.trans <| forall_congr' fun a ↦ by
+    by_cases ha : a ∈ l₁ <;> simp [ha, count_eq_zero_of_not_mem]
+
 lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   refine ⟨?_, fun ⟨l, h₁, h₂⟩ ↦ h₂.subperm.trans h₁.subperm⟩
   rintro ⟨l, h₁, h₂⟩
