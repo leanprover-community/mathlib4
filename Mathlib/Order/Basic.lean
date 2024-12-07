@@ -719,8 +719,8 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
   decidableEq := (inferInstance : DecidableEq α)
   compare_eq_compareOfLessAndEq a b := by
-    simp [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
-    congr
+    simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
+    rfl
 
 /-- The opposite linear order to a given linear order -/
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
