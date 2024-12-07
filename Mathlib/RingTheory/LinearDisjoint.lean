@@ -209,7 +209,6 @@ theorem linearDisjoint_iff_injective : A.LinearDisjoint B ↔ Function.Injective
 namespace LinearDisjoint
 
 variable (H : A.LinearDisjoint B)
-include H
 
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, then there is the natural isomorphism
@@ -220,10 +219,28 @@ protected def mulMap :=
 @[simp]
 theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
+include H in
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, and if they are free `R`-modules, then `A ⊔ B` is also a free `R`-module. -/
 theorem sup_free_of_free [Module.Free R A] [Module.Free R B] : Module.Free R ↥(A ⊔ B) :=
   Module.Free.of_equiv H.mulMap.toLinearEquiv
+
+include H in
+/-- If `A` and `B` are subalgebras in a domain `S` over `R`, and if they are
+linearly disjoint, then `A ⊗[R] B` is also a domain. -/
+theorem isDomain [IsDomain S] : IsDomain (A ⊗[R] B) :=
+  H.injective.isDomain (A.mulMap B).toRingHom
+
+/-- If `A` and `B` are `R`-algebras, such that there exists a domain `S` such that
+`A` and `B` inject into it and their images are linearly disjoint,
+then `A ⊗[R] B` is also a domain. -/
+theorem isDomain_of_injective [IsDomain S] {A B : Type*} [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] {fa : A →ₐ[R] S} {fb : B →ₐ[R] S}
+    (hfa : Function.Injective fa) (hfb : Function.Injective fb)
+    (H : fa.range.LinearDisjoint fb.range) : IsDomain (A ⊗[R] B) :=
+  have := H.isDomain
+  (Algebra.TensorProduct.congr
+    (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toMulEquiv.isDomain
 
 end LinearDisjoint
 
@@ -442,24 +459,6 @@ theorem of_basis_left {ι : Type*} (a : Basis ι R A)
 variable {A B}
 
 variable (H : A.LinearDisjoint B)
-
-include H in
-/-- If `A` and `B` are subalgebras in a domain `S` over `R`, and if they are
-linearly disjoint, then `A ⊗[R] B` is also a domain. -/
-theorem isDomain [IsDomain S] : IsDomain (A ⊗[R] B) :=
-  have := Subtype.val_injective.isDomain (algebraMap ↥(A ⊔ B) S)
-  H.mulMap.toMulEquiv.isDomain
-
-/-- If `A` and `B` are `R`-algebras, such that there exists a domain `S` such that
-`A` and `B` inject into it and their images are linearly disjoint,
-then `A ⊗[R] B` is also a domain. -/
-theorem isDomain_of_injective [IsDomain S] {A B : Type*} [CommRing A] [CommRing B]
-    [Algebra R A] [Algebra R B] {fa : A →ₐ[R] S} {fb : B →ₐ[R] S}
-    (hfa : Function.Injective fa) (hfb : Function.Injective fb)
-    (H : fa.range.LinearDisjoint fb.range) : IsDomain (A ⊗[R] B) :=
-  have := H.isDomain
-  (Algebra.TensorProduct.congr
-    (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toMulEquiv.isDomain
 
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that the algebra maps are injective, then
