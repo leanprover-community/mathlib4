@@ -3,7 +3,7 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels

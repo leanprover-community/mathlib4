@@ -268,6 +268,31 @@ protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
 
 end ContinuousConstSMul
 
+section ContinuousSMul
+
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [TopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
+
+theorem Convex.closure_interior_eq_closure_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
+    (hs' : (interior s).Nonempty) : closure (interior s) = closure s :=
+  subset_antisymm (closure_mono interior_subset)
+    fun _ h ↦ closure_mono (hs.openSegment_interior_closure_subset_interior hs'.choose_spec h)
+      (segment_subset_closure_openSegment (right_mem_segment ..))
+
+theorem Convex.interior_closure_eq_interior_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
+    (hs' : (interior s).Nonempty) : interior (closure s) = interior s := by
+  refine subset_antisymm ?_ (interior_mono subset_closure)
+  intro y hy
+  rcases hs' with ⟨x, hx⟩
+  have h := AffineMap.lineMap_apply_one (k := 𝕜) x y
+  obtain ⟨t, ht1, ht⟩ := AffineMap.lineMap_continuous.tendsto' _ _ h |>.eventually_mem
+    (mem_interior_iff_mem_nhds.1 hy) |>.exists_gt
+  apply hs.openSegment_interior_closure_subset_interior hx ht
+  nth_rw 1 [← AffineMap.lineMap_apply_zero (k := 𝕜) x y, ← image_openSegment]
+  exact ⟨1, Ioo_subset_openSegment ⟨zero_lt_one, ht1⟩, h⟩
+
+end ContinuousSMul
+
 section TopologicalSpace
 
 variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
