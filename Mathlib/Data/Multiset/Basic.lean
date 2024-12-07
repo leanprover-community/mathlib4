@@ -685,8 +685,14 @@ theorem card_zero : @card α 0 = 0 :=
 theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
   card.map_add s t
 
-theorem card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := by
-  rw [card.map_nsmul s n, Nat.nsmul_eq_mul]
+/-- `Multiset.card` bundled as a group hom. -/
+@[simps]
+def cardHom : Multiset α →+ ℕ where
+  toFun := card
+  map_zero' := card_zero
+  map_add' := card_add
+
+lemma card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := cardHom.map_nsmul ..
 
 @[simp]
 theorem card_cons (a : α) (s : Multiset α) : card (a ::ₘ s) = card s + 1 :=
