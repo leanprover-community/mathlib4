@@ -746,7 +746,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
       use Nat.le_succ_of_le <| le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁
       use a
       use evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_left _ _) hk₁
-      simpa [Nat.succ_eq_add_one, a0, -max_eq_left, -max_eq_right, add_comm, add_left_comm] using
+      simpa [a0, add_comm, add_left_comm] using
         evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂
   | _ => exact ⟨⟨_, le_rfl⟩, h.symm⟩
 

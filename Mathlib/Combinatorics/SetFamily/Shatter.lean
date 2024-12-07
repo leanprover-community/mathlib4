@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SetFamily.Compression.Down
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!

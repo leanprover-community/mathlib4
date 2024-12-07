@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.RingTheory.RingHom.Surjective
-import Mathlib.RingTheory.SurjectiveOnStalks
+import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 
 /-!
 
@@ -26,16 +25,15 @@ in the literature but it is useful for generalizing results on immersions to oth
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
 /-- A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
+class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
   base_embedding : IsEmbedding f.base
-  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=
   IsPreimmersion.base_embedding
@@ -43,12 +41,8 @@ lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : I
 @[deprecated (since := "2024-10-26")]
 alias Scheme.Hom.embedding := Scheme.Hom.isEmbedding
 
-lemma Scheme.Hom.stalkMap_surjective {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] (x) :
-    Function.Surjective (f.stalkMap x) :=
-  IsPreimmersion.surj_on_stalks x
-
 lemma isPreimmersion_eq_inf :
-    @IsPreimmersion = topologically IsEmbedding ⊓ stalkwise (Function.Surjective ·) := by
+    @IsPreimmersion = (@SurjectiveOnStalks ⊓ topologically IsEmbedding : MorphismProperty _) := by
   ext
   rw [isPreimmersion_iff]
   rfl
@@ -69,10 +63,7 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : Is
 
 instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   id_mem _ := inferInstance
-  comp_mem {X Y Z} f g hf hg := by
-    refine ⟨hg.base_embedding.comp hf.base_embedding, fun x ↦ ?_⟩
-    rw [Scheme.stalkMap_comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
+  comp_mem f g _ _ := ⟨g.isEmbedding.comp f.isEmbedding⟩
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
@@ -82,7 +73,7 @@ instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f := by
   refine (Scheme.forgetToLocallyRingedSpace ⋙
     LocallyRingedSpace.forgetToSheafedSpace).mono_of_mono_map ?_
   apply SheafedSpace.mono_of_base_injective_of_stalk_epi
-  · exact f.isEmbedding.inj
+  · exact f.isEmbedding.injective
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
@@ -104,14 +95,8 @@ lemma Spec_map_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
   haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
     rw [← RingHom.toMorphismProperty_respectsIso_iff]
     exact RingHom.surjective_respectsIso
-  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun (x : PrimeSpectrum S) ↦ ?_⟩⟩
-  · intro p hp
-    let e := Scheme.arrowStalkMapSpecIso f ⟨p, hp⟩
-    apply ((RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).arrow_mk_iso_iff e).mp
-    exact h₂ ⟨p, hp⟩
-  · let e := Scheme.arrowStalkMapSpecIso f x
-    apply ((RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).arrow_mk_iso_iff e).mpr
-    exact h₂ x.asIdeal x.isPrime
+  rw [← HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks), isPreimmersion_iff, and_comm]
+  rfl
 
 lemma mk_Spec_map {R S : CommRingCat.{u}} {f : R ⟶ S}
     (h₁ : IsEmbedding (PrimeSpectrum.comap f)) (h₂ : f.SurjectiveOnStalks) :
@@ -124,6 +109,19 @@ lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing 
   IsPreimmersion.mk_Spec_map
     (PrimeSpectrum.localization_comap_isEmbedding (R := R) S M)
     (RingHom.surjectiveOnStalks_of_isLocalization (M := M) S)
+
+open Limits MorphismProperty in
+instance : IsStableUnderBaseChange @IsPreimmersion := by
+  refine .mk' fun X Y Z f g _ _ ↦ ?_
+  have := pullback_fst (P := @SurjectiveOnStalks) f g inferInstance
+  constructor
+  let L (x : (pullback f g : _)) : { x : X × Y | f.base x.1 = g.base x.2 } :=
+    ⟨⟨(pullback.fst f g).base x, (pullback.snd f g).base x⟩,
+    by simp only [Set.mem_setOf, ← Scheme.comp_base_apply, pullback.condition]⟩
+  have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtype_val
+    (SurjectiveOnStalks.isEmbedding_pullback f g)
+  exact IsEmbedding.subtypeVal.comp ((TopCat.pullbackHomeoPreimage _ f.continuous _
+    g.isEmbedding).isEmbedding.comp this)
 
 end IsPreimmersion
 

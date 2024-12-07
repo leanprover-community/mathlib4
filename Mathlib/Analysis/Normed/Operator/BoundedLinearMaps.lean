@@ -189,40 +189,16 @@ operation. -/
 theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
-      p.1.prod p.2 where
-  map_add p₁ p₂ := by ext : 1; rfl
-  map_smul c p := by ext : 1; rfl
-  bound := by
-    refine ⟨1, zero_lt_one, fun p ↦ ?_⟩
-    rw [one_mul]
-    apply ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) _
-    intro m
-    rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
-    constructor
-    · exact (p.1.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p) <| by positivity)
-    · exact (p.2.le_opNorm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p) <| by positivity)
+      p.1.prod p.2 :=
+  (ContinuousMultilinearMap.prodL ..).toContinuousLinearEquiv
+    |>.toContinuousLinearMap.isBoundedLinearMap
 
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
 continuous multilinear map `f (g m₁, ..., g mₙ)` is a bounded linear operation. -/
 theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜] E) :
     IsBoundedLinearMap 𝕜 fun f : ContinuousMultilinearMap 𝕜 (fun _ : ι => E) F =>
-      f.compContinuousLinearMap fun _ => g := by
-  refine
-    IsLinearMap.with_bound
-      ⟨fun f₁ f₂ => by ext; rfl,
-        fun c f => by ext; rfl⟩
-      (‖g‖ ^ Fintype.card ι) fun f => ?_
-  apply ContinuousMultilinearMap.opNorm_le_bound _ _ _
-  · apply_rules [mul_nonneg, pow_nonneg, norm_nonneg]
-  intro m
-  calc
-    ‖f (g ∘ m)‖ ≤ ‖f‖ * ∏ i, ‖g (m i)‖ := f.le_opNorm _
-    _ ≤ ‖f‖ * ∏ i, ‖g‖ * ‖m i‖ := by
-      apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
-      exact Finset.prod_le_prod (fun i _ => norm_nonneg _) fun i _ => g.le_opNorm _
-    _ = ‖g‖ ^ Fintype.card ι * ‖f‖ * ∏ i, ‖m i‖ := by
-      simp only [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ]
-      ring
+      f.compContinuousLinearMap fun _ => g :=
+  (ContinuousMultilinearMap.compContinuousLinearMapL fun _ ↦ g).isBoundedLinearMap
 
 end
 
@@ -304,7 +280,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
         (f.le_opNorm₂ x y).trans <| by
           apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/
 def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f) :

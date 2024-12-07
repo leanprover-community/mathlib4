@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
@@ -23,6 +24,9 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
+`SMul (AddSubmonoid R) (AddSubmonoid A)` is also provided given `DistribSMul R A`,
+and when `R = A` it is definitionally equal to the multiplication on `AddSubmonoid R`.
+
 These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
@@ -40,13 +44,29 @@ While the statements of these lemmas are defeq, we repeat them here due to them 
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
 
+Many results about multiplication is derived from the corresponding results about
+scalar multiplication, but results requiring right distributivity do not have
+SMul versions, due to the lack of a suitable typeclass (unless one goes all the
+way to `Module`).
+
 -/
 
 
 open Set Pointwise
 
-variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
+variable {α G M R A S : Type*}
 variable [Monoid M] [AddMonoid A]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
+  aesop (add simp mem_mul)
+
+set_option linter.unusedVariables false in
+@[to_additive (attr := simp)]
+lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
+    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+  | 1, _, H => by simp
+  | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
   `GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
@@ -586,6 +606,10 @@ theorem iSup_mul (S : ι → AddSubmonoid R) (T : AddSubmonoid R) : (⨆ i, S i)
 
 theorem mul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid R) : (T * ⨆ i, S i) = ⨆ i, T * S i :=
   smul_iSup T S
+
+theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
+  le_antisymm (mul_le.mpr fun m hm n hn ↦ h m hm n hn ▸ mul_mem_mul hn hm)
+    (mul_le.mpr fun n hn m hm ↦ h m hm n hn ▸ mul_mem_mul hm hn)
 
 end NonUnitalNonAssocSemiring
 

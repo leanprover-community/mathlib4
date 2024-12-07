@@ -3,10 +3,12 @@ Copyright (c) 2021 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
+import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Order.Atoms
 import Mathlib.Order.Hom.Bounded
-import Mathlib.Algebra.GCDMonoid.Basic
 /-!
 
 # Chains of divisors

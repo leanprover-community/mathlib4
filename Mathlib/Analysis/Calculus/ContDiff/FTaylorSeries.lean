@@ -99,7 +99,7 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 noncomputable section
 
 open scoped Classical
-open NNReal Topology Filter
+open ENat NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -111,12 +111,11 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
-universe u uE uF uG uX
+universe u uE uF
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-  {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F} {m n : ℕ∞}
+  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {s t u : Set E} {f f₁ : E → F} {x : E} {m n N : WithTop ℕ∞}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Functions with a Taylor series on a domain -/
@@ -127,12 +126,12 @@ derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a pred
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
 `f` is analytic and `n = ∞`: an additional `1/m!` factor on the `m`th term is necessary for that. -/
-structure HasFTaylorSeriesUpToOn (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F)
-  (s : Set E) : Prop where
+structure HasFTaylorSeriesUpToOn
+  (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).curry0 = f x
   protected fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
     HasFDerivWithinAt (p · m) (p x m.succ).curryLeft s x
-  cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (p · m) s
+  cont : ∀ m : ℕ, m ≤ n → ContinuousOn (p · m) s
 
 theorem HasFTaylorSeriesUpToOn.zero_eq' (h : HasFTaylorSeriesUpToOn n f p s) {x : E} (hx : x ∈ s) :
     p x 0 = (continuousMultilinearCurryFin0 𝕜 E F).symm (f x) := by
@@ -172,26 +171,31 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
   exact H.1
 
-theorem hasFTaylorSeriesUpToOn_top_iff :
-    HasFTaylorSeriesUpToOn ∞ f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn n f p s := by
+theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
+    HasFTaylorSeriesUpToOn N f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn (n + k : ℕ) f p s := by
   constructor
-  · intro H n; exact H.of_le le_top
+  · intro H n
+    apply H.of_le (natCast_le_of_coe_top_le_withTop hN _)
   · intro H
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (WithTop.coe_lt_coe.2 (lt_add_one m))
+      apply (H m.succ).fderivWithin m (by norm_cast; omega)
     · intro m _
-      apply (H m).cont m le_rfl
+      apply (H m).cont m (by simp)
+
+theorem hasFTaylorSeriesUpToOn_top_iff (hN : ∞ ≤ N) :
+    HasFTaylorSeriesUpToOn N f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn n f p s := by
+  simpa using hasFTaylorSeriesUpToOn_top_iff_add hN 0
 
 /-- In the case that `n = ∞` we don't need the continuity assumption in
 `HasFTaylorSeriesUpToOn`. -/
-theorem hasFTaylorSeriesUpToOn_top_iff' :
-    HasFTaylorSeriesUpToOn ∞ f p s ↔
+theorem hasFTaylorSeriesUpToOn_top_iff' (hN : ∞ ≤ N) :
+    HasFTaylorSeriesUpToOn N f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
-        ∀ m : ℕ, ∀ x ∈ s, HasFDerivWithinAt (fun y => p y m) (p x m.succ).curryLeft s x :=
+        ∀ m : ℕ, ∀ x ∈ s, HasFDerivWithinAt (fun y => p y m) (p x m.succ).curryLeft s x := by
   -- Everything except for the continuity is trivial:
-  ⟨fun h => ⟨h.1, fun m => h.2 m (WithTop.coe_lt_top m)⟩, fun h =>
+  refine ⟨fun h => ⟨h.1, fun m => h.2 m (natCast_lt_of_coe_top_le_withTop hN _)⟩, fun h =>
     ⟨h.1, fun m _ => h.2 m, fun m _ x hx =>
       -- The continuity follows from the existence of a derivative:
       (h.2 m x hx).continuousWithinAt⟩⟩
@@ -243,21 +247,21 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y n) (p x n.succ).curryLeft s x) ∧
           ContinuousOn (fun x => p x (n + 1)) s := by
   constructor
-  · exact fun h ↦ ⟨h.of_le (WithTop.coe_le_coe.2 (Nat.le_succ n)),
-      h.fderivWithin _ (WithTop.coe_lt_coe.2 (lt_add_one n)), h.cont (n + 1) le_rfl⟩
+  · exact fun h ↦ ⟨h.of_le (mod_cast Nat.le_succ n),
+      h.fderivWithin _ (mod_cast lt_add_one n), h.cont (n + 1) le_rfl⟩
   · intro h
     constructor
     · exact h.1.zero_eq
     · intro m hm
       by_cases h' : m < n
-      · exact h.1.fderivWithin m (WithTop.coe_lt_coe.2 h')
-      · have : m = n := Nat.eq_of_lt_succ_of_not_lt (WithTop.coe_lt_coe.1 hm) h'
+      · exact h.1.fderivWithin m (mod_cast h')
+      · have : m = n := Nat.eq_of_lt_succ_of_not_lt (mod_cast hm) h'
         rw [this]
         exact h.2.1
     · intro m hm
       by_cases h' : m ≤ n
-      · apply h.1.cont m (WithTop.coe_le_coe.2 h')
-      · have : m = n + 1 := le_antisymm (WithTop.coe_le_coe.1 hm) (not_le.1 h')
+      · apply h.1.cont m (mod_cast h')
+      · have : m = n + 1 := le_antisymm (mod_cast hm) (not_le.1 h')
         rw [this]
         exact h.2.2
 
@@ -275,8 +279,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
   constructor
   · intro x _
     rfl
-  · intro m (hm : (m : ℕ∞) < n) x (hx : x ∈ s)
-    have A : (m.succ : ℕ∞) < n.succ := by
+  · intro m (hm : (m : WithTop ℕ∞) < n) x (hx : x ∈ s)
+    have A : (m.succ : WithTop ℕ∞) < n.succ := by
       rw [Nat.cast_lt] at hm ⊢
       exact Nat.succ_lt_succ hm
     change HasFDerivWithinAt (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
@@ -286,7 +290,7 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     ext y v
     change p x (m + 2) (snoc (cons y (init v)) (v (last _))) = p x (m + 2) (cons y v)
     rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
-  · intro m (hm : (m : ℕ∞) ≤ n)
+  · intro m (hm : (m : WithTop ℕ∞) ≤ n)
     suffices A : ContinuousOn (p · (m + 1)) s from
       (continuousMultilinearCurryRightEquiv' 𝕜 m E F).continuous.comp_continuousOn A
     refine H.cont _ ?_
@@ -294,8 +298,8 @@ theorem HasFTaylorSeriesUpToOn.shift_of_succ
     exact Nat.succ_le_succ hm
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
-for `p 1`, which is a derivative of `f`. -/
-theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
+for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
+theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
@@ -308,14 +312,14 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
   · rintro ⟨Hzero_eq, Hfderiv_zero, Htaylor⟩
     constructor
     · exact Hzero_eq
-    · intro m (hm : (m : ℕ∞) < n.succ) x (hx : x ∈ s)
+    · intro m (hm : (m : WithTop ℕ∞) < n.succ) x (hx : x ∈ s)
       cases' m with m
       · exact Hfderiv_zero x hx
-      · have A : (m : ℕ∞) < n := by
+      · have A : (m : WithTop ℕ∞) < n := by
           rw [Nat.cast_lt] at hm ⊢
           exact Nat.lt_of_succ_lt_succ hm
         have :
-          HasFDerivWithinAt (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
+          HasFDerivWithinAt (𝕜 := 𝕜) (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
         rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
         convert this
@@ -324,7 +328,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
           (p x (Nat.succ (Nat.succ m))) (cons y v) =
             (p x m.succ.succ) (snoc (cons y (init v)) (v (last _)))
         rw [← cons_snoc_eq_snoc_cons, snoc_init_self]
-    · intro m (hm : (m : ℕ∞) ≤ n.succ)
+    · intro m (hm : (m : WithTop ℕ∞) ≤ n.succ)
       cases' m with m
       · have : DifferentiableOn 𝕜 (fun x => p x 0) s := fun x hx =>
           (Hfderiv_zero x hx).differentiableWithinAt
@@ -333,6 +337,37 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
         refine Htaylor.cont _ ?_
         rw [Nat.cast_le] at hm ⊢
         exact Nat.lt_succ_iff.mp hm
+
+/-- `p` is a Taylor series of `f` up to `⊤` if and only if `p.shift` is a Taylor series up to `⊤`
+for `p 1`, which is a derivative of `f`. -/
+theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
+    HasFTaylorSeriesUpToOn N f p s ↔
+      (∀ x ∈ s, (p x 0).curry0 = f x) ∧
+        (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
+          HasFTaylorSeriesUpToOn N (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+            (fun x => (p x).shift) s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [hasFTaylorSeriesUpToOn_top_iff_add hN 1] at h
+    rw [hasFTaylorSeriesUpToOn_top_iff hN]
+    exact ⟨(hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h 1)).1,
+      (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h 1)).2.1,
+      fun n ↦ (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h n)).2.2⟩
+  · apply (hasFTaylorSeriesUpToOn_top_iff_add hN 1).2 (fun n ↦ ?_)
+    rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
+    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (natCast_le_of_coe_top_le_withTop hN n)⟩
+
+/-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
+for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
+theorem hasFTaylorSeriesUpToOn_succ_iff_right :
+    HasFTaylorSeriesUpToOn (n + 1) f p s ↔
+      (∀ x ∈ s, (p x 0).curry0 = f x) ∧
+        (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
+          HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+            (fun x => (p x).shift) s := by
+  match n with
+  | ⊤ => exact hasFTaylorSeriesUpToOn_top_iff_right (by simp)
+  | (⊤ : ℕ∞) => exact hasFTaylorSeriesUpToOn_top_iff_right (by simp)
+  | (n : ℕ) => exact hasFTaylorSeriesUpToOn_succ_nat_iff_right
 
 /-! ### Iterated derivative within a set -/
 
@@ -539,11 +574,11 @@ theorem iteratedFDerivWithin_inter_open {n : ℕ} (hu : IsOpen u) (hx : x ∈ u)
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
 with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
 theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
-    (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s)
+    (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
   · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
-  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (lt_add_one m)) hmn
+  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=
@@ -565,11 +600,11 @@ derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a pred
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
 `f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/
-structure HasFTaylorSeriesUpTo (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) :
-  Prop where
+structure HasFTaylorSeriesUpTo
+  (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) : Prop where
   zero_eq : ∀ x, (p x 0).curry0 = f x
-  fderiv : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
-  cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous fun x => p x m
+  fderiv : ∀ m : ℕ, m < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
+  cont : ∀ m : ℕ, m ≤ n → Continuous fun x => p x m
 
 theorem HasFTaylorSeriesUpTo.zero_eq' (h : HasFTaylorSeriesUpTo n f p) (x : E) :
     p x 0 = (continuousMultilinearCurryFin0 𝕜 E F).symm (f x) := by
@@ -602,9 +637,12 @@ theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n 
     HasFTaylorSeriesUpToOn n f p s :=
   (hasFTaylorSeriesUpToOn_univ_iff.2 h).mono (subset_univ _)
 
-theorem HasFTaylorSeriesUpTo.ofLe (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤ n) :
+theorem HasFTaylorSeriesUpTo.of_le (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤ n) :
     HasFTaylorSeriesUpTo m f p := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
+
+@[deprecated (since := "2024-11-07")]
+alias HasFTaylorSeriesUpTo.ofLe := HasFTaylorSeriesUpTo.of_le
 
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
@@ -616,17 +654,17 @@ theorem hasFTaylorSeriesUpTo_zero_iff :
   simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuous_iff_continuousOn_univ,
     hasFTaylorSeriesUpToOn_zero_iff]
 
-theorem hasFTaylorSeriesUpTo_top_iff :
-    HasFTaylorSeriesUpTo ∞ f p ↔ ∀ n : ℕ, HasFTaylorSeriesUpTo n f p := by
-  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff]
+theorem hasFTaylorSeriesUpTo_top_iff (hN : ∞ ≤ N) :
+    HasFTaylorSeriesUpTo N f p ↔ ∀ n : ℕ, HasFTaylorSeriesUpTo n f p := by
+  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff hN]
 
 /-- In the case that `n = ∞` we don't need the continuity assumption in
 `HasFTaylorSeriesUpTo`. -/
-theorem hasFTaylorSeriesUpTo_top_iff' :
-    HasFTaylorSeriesUpTo ∞ f p ↔
+theorem hasFTaylorSeriesUpTo_top_iff' (hN : ∞ ≤ N) :
+    HasFTaylorSeriesUpTo N f p ↔
       (∀ x, (p x 0).curry0 = f x) ∧
         ∀ (m : ℕ) (x), HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x := by
-  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff', mem_univ,
+  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff' hN, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
 /-- If a function has a Taylor series at order at least `1`, then the term of order `1` of this
@@ -641,15 +679,17 @@ theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. -/
-theorem hasFTaylorSeriesUpTo_succ_iff_right {n : ℕ} :
+theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
     HasFTaylorSeriesUpTo (n + 1 : ℕ) f p ↔
       (∀ x, (p x 0).curry0 = f x) ∧
         (∀ x, HasFDerivAt (fun y => p y 0) (p x 1).curryLeft x) ∧
           HasFTaylorSeriesUpTo n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1)) fun x =>
             (p x).shift := by
-  simp only [hasFTaylorSeriesUpToOn_succ_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
+  simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
+@[deprecated (since := "2024-11-07")]
+alias hasFTaylorSeriesUpTo_succ_iff_right := hasFTaylorSeriesUpTo_succ_nat_iff_right
 
 /-! ### Iterated derivative -/
 

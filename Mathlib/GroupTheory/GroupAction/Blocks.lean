@@ -3,6 +3,7 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
@@ -51,7 +52,7 @@ variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
-  simp (config := { contextual := true })
+  simp +contextual
     only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
 
 @[to_additive]
@@ -286,7 +287,8 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
-  rw [← Subgroup.map_comap_eq_self_of_surjective (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  rw [← Subgroup.map_comap_eq_self_of_surjective
+          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
 
@@ -552,7 +554,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
       smul_smul, ← mul_inv_rev] at hg hx ⊢
     exact fun _ ↦ hx _ ∘ hg _
   have hag' (g : G) (hg : a ∈ g • B') : B' = g • B' := by
-    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_of_finite_iff_le_smul _ hfB']
+    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_set_iff_subset_smul_set hfB']
     exact hag g hg
   rw [isBlock_iff_smul_eq_of_nonempty]
   rintro g ⟨b : X, hb' : b ∈ g • B', hb : b ∈ B'⟩

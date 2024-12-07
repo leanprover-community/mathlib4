@@ -114,7 +114,8 @@ lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
 
 lemma natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) := natCast_pos.2 n.succ_pos
 
-@[simp] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
+-- We want to use this lemma earlier than the lemmas simp can prove it with
+@[simp, nolint simpNF] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
 
 lemma natCast_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
@@ -267,9 +268,9 @@ end inductionOn'
 
 /-- Inductively define a function on `ℤ` by defining it on `ℕ` and extending it from `n` to `-n`. -/
 @[elab_as_elim] protected def negInduction {C : ℤ → Sort*} (nat : ∀ n : ℕ, C n)
-    (neg : ∀ n : ℕ, C n → C (-n)) : ∀ n : ℤ, C n
+    (neg : (∀ n : ℕ, C n) → ∀ n : ℕ, C (-n)) : ∀ n : ℤ, C n
   | .ofNat n => nat n
-  | .negSucc n => neg _ <| nat <| n + 1
+  | .negSucc n => neg nat <| n + 1
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)

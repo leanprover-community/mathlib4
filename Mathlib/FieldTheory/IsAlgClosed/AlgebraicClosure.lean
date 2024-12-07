@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectLimit
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
@@ -128,7 +129,7 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 
@@ -245,7 +246,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     · convert h -- Porting note: This times out at 500000
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
-  ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
+  ⟨fun _ => Nat.leRecOn_self, fun _ _ _ h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
 
 end AlgebraicClosure
 
@@ -337,6 +338,7 @@ attribute [local instance] AlgebraicClosureAux.field AlgebraicClosureAux.instAlg
 
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
+@[stacks 09GT]
 def AlgebraicClosure : Type u :=
   MvPolynomial (AlgebraicClosureAux k) k ⧸
     RingHom.ker (MvPolynomial.aeval (R := k) id).toRingHom
@@ -369,7 +371,7 @@ instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
   let e := algEquivAlgebraicClosureAux k
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (AlgebraicClosure k) where
@@ -409,3 +411,30 @@ instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L]
   isAlgClosed := inferInstance
 
 end AlgebraicClosure
+
+/-- Over an algebraically closed field of characteristic zero a necessary and sufficient condition
+for the set of roots of a nonzero polynomial `f` to be a subset of the set of roots of `g` is that
+`f` divides `f.derivative * g`. Over an integral domain, this is a sufficient but not necessary
+condition. See `isRoot_of_isRoot_of_dvd_derivative_mul` -/
+theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
+    [IsAlgClosed K] [CharZero K] {f g : K[X]} (hf0 : f ≠ 0) :
+    (∀ x, IsRoot f x → IsRoot g x) ↔ f ∣ f.derivative * g := by
+  refine ⟨?_, isRoot_of_isRoot_of_dvd_derivative_mul hf0⟩
+  by_cases hg0 : g = 0
+  · simp [hg0]
+  by_cases hdf0 : derivative f = 0
+  · rw [eq_C_of_derivative_eq_zero hdf0]
+    simp only [eval_C, derivative_C, zero_mul, dvd_zero, implies_true]
+  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
+  simp only [count_roots, rootMultiplicity_mul hdg]
+  refine forall_imp fun a => ?_
+  by_cases haf : f.eval a = 0
+  · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
+    rw [derivative_rootMultiplicity_of_root haf]
+    intro h
+    calc rootMultiplicity a f
+        = rootMultiplicity a f - 1 + 1 := (Nat.sub_add_cancel (Nat.succ_le_iff.1 h0)).symm
+      _ ≤ rootMultiplicity a f - 1 + rootMultiplicity a g := add_le_add le_rfl (Nat.succ_le_iff.1
+        ((rootMultiplicity_pos hg0).2 (h haf)))
+  · simp [haf, rootMultiplicity_eq_zero haf]

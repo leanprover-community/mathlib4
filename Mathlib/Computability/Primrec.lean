@@ -690,8 +690,8 @@ theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   if H : k = 0 then simp [H, eq_comm]
   else
     have : q * k ≤ a ∧ a < (q + 1) * k ↔ q = a / k := by
-      rw [le_antisymm_iff, ← (@Nat.lt_succ _ q), Nat.le_div_iff_mul_le' (Nat.pos_of_ne_zero H),
-          Nat.div_lt_iff_lt_mul' (Nat.pos_of_ne_zero H)]
+      rw [le_antisymm_iff, ← (@Nat.lt_succ _ q), Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero H),
+          Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero H)]
     simpa [H, zero_lt_iff, eq_comm (b := q)]
 
 theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=

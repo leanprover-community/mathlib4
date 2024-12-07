@@ -5,6 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Comm
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.SetTheory.Cardinal.Basic
 
@@ -309,6 +311,14 @@ theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) {x : R} :
 
 @[simp]
 theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRootsFinset_def]
+
+theorem map_mem_nthRootsFinset {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
+    [RingHomClass F R S] {x : R} (hx : x ∈ nthRootsFinset n R) (f : F) :
+    f x ∈ nthRootsFinset n S := by
+  by_cases hn : n = 0
+  · simp [hn] at hx
+  · rw [mem_nthRootsFinset <| Nat.pos_of_ne_zero hn, ← map_pow, (mem_nthRootsFinset <|
+      Nat.pos_of_ne_zero hn).1 hx, map_one]
 
 theorem mul_mem_nthRootsFinset
     {η₁ η₂ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) (hη₂ : η₂ ∈ nthRootsFinset n R) :
@@ -739,7 +749,17 @@ theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by
   apply Multiset.eq_of_le_of_card_le (map_roots_le_of_injective p hf)
-  simpa only [Multiset.card_map, hroots] using (card_roots' _).trans (natDegree_map_le f p)
+  simpa only [Multiset.card_map, hroots] using (card_roots' _).trans natDegree_map_le
+
+theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
+    (f : A →+* B) (h : p.map f ≠ 0) (hroots : p.roots.card = p.natDegree) :
+    p.roots.map f = (p.map f).roots :=
+  eq_of_le_of_card_le (map_roots_le h) <| by
+    simpa only [Multiset.card_map, hroots] using (p.map f).card_roots'.trans natDegree_map_le
+
+theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
+    (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f  = (p.map f).roots :=
+  roots_map_of_map_ne_zero_of_card_eq_natDegree f (map_monic_ne_zero hm) hroots
 
 end
 

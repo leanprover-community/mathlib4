@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 
--- First import Aesop and Qq
+-- First import Aesop, Qq, and Plausible
 import Aesop
 import Qq
+import Plausible
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
@@ -45,7 +46,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI

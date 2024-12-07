@@ -21,7 +21,6 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
--- Porting note: removed @[simps] as the simpNF linter complains
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
@@ -33,10 +32,10 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
   left_inv f := by
     apply TensorProduct.ext'
     intro m n
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [coe_comp]
     rw [Function.comp_apply]
-    -- This used to be `rw` and was longer (?), but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw` and was longer (?), but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
   right_inv _ := rfl
 

@@ -54,8 +54,7 @@ Vector bundle
 
 noncomputable section
 
-open Bundle Set
-open scoped Topology
+open Bundle Set Topology
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
 
@@ -523,7 +522,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
       isBoundedBilinearMap_apply.continuous.comp_continuousOn
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 
--- Porting note (#11215): TODO: restore coercion
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 
@@ -535,7 +534,7 @@ theorem coordChange_linear_comp (i j k : ι) :
   exact Z.coordChange_comp i j k x hx v
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was `nolint has_nonempty_instance`
 def Index := ι
 
 /-- The base space of a vector bundle core, as a convenience function for dot notation -/
@@ -544,7 +543,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was `nolint has_nonempty_instance`
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 
@@ -746,7 +745,7 @@ The field `exists_coordChange` is stated as an existential statement (instead of
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R
@@ -900,10 +899,10 @@ def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL
   ((trivializationAt F' E' y₀).continuousLinearMapAt 𝕜₂ y).comp <|
     ϕ.comp <| (trivializationAt F E x₀).symmL 𝕜₁ x
 
-variable {F F'}
+variable {E E' F F'}
 
 /-- Rewrite `ContinuousLinearMap.inCoordinates` using continuous linear equivalences. -/
-theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)
+theorem inCoordinates_eq {x₀ x : B} {y₀ y : B'} {ϕ : E x →SL[σ] E' y}
     (hx : x ∈ (trivializationAt F E x₀).baseSet) (hy : y ∈ (trivializationAt F' E' y₀).baseSet) :
     inCoordinates F E F' E' x₀ x y₀ y ϕ =
       ((trivializationAt F' E' y₀).continuousLinearEquivAt 𝕜₂ y hy : E' y →L[𝕜₂] F').comp

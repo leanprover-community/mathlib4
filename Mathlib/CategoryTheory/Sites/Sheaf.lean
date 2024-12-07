@@ -112,7 +112,7 @@ def conesEquivSieveCompatibleFamily :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
   CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 
@@ -376,12 +376,6 @@ theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mon
 instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
   (sheafToPresheaf J A).epi_of_epi_map h
 
-/-- The sheaf of sections guaranteed by the sheaf condition. -/
-@[simps]
-def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
-    SheafOfTypes J :=
-  ⟨ℱ.val ⋙ coyoneda.obj (op E), ℱ.cond E⟩
-
 theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
@@ -402,27 +396,39 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
       rw [Presieve.IsSheafFor.valid_glue _ _ _ hf, ← hy _ hf]
       rfl
 
+/-- The sheaf of sections guaranteed by the sheaf condition. -/
+@[simps]
+def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
+    Sheaf J (Type _) where
+  val := ℱ.val ⋙ coyoneda.obj (op E)
+  cond := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact ℱ.cond E
+
 variable {J} in
 lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsSheaf J P)
     {X : C} (S : Sieve X) (hS : S ∈ J X) : Presieve.IsSheafFor P S.arrows := by
   rw [isSheaf_iff_isSheaf_of_type] at hP
   exact hP S hS
 
-/-- The category of sheaves taking values in Type is the same as the category of set-valued sheaves.
+variable {A} in
+lemma Presheaf.isSheaf_bot (P : Cᵒᵖ ⥤ A) : IsSheaf ⊥ P := fun _ ↦ Presieve.isSheaf_bot
+
+/--
+The category of sheaves on the bottom (trivial) Grothendieck topology is
+equivalent to the category of presheaves.
 -/
 @[simps]
-def sheafEquivSheafOfTypes : Sheaf J (Type w) ≌ SheafOfTypes J where
-  functor :=
-    { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).1 S.2⟩
-      map := fun f => ⟨f.val⟩ }
+def sheafBotEquivalence : Sheaf (⊥ : GrothendieckTopology C) A ≌ Cᵒᵖ ⥤ A where
+  functor := sheafToPresheaf _ _
   inverse :=
-    { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).2 S.2⟩
-      map := fun f => ⟨f.val⟩ }
-  unitIso := NatIso.ofComponents fun _ => Iso.refl _
-  counitIso := NatIso.ofComponents fun _ => Iso.refl _
+    { obj := fun P => ⟨P, Presheaf.isSheaf_bot P⟩
+      map := fun f => ⟨f⟩ }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) :=
-  ⟨(sheafEquivSheafOfTypes _).inverse.obj default⟩
+  ⟨(sheafBotEquivalence _).inverse.obj ((Functor.const _).obj default)⟩
 
 variable {J} {A}
 
@@ -670,7 +676,7 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     rw [Equalizer.Presieve.sheaf_condition]
     refine ⟨?_⟩
     refine isSheafForIsSheafFor' _ _ _ _ ?_
-    letI := preservesSmallestLimitsOfPreservesLimits (coyoneda.obj (op U))
+    letI := preservesSmallestLimits_of_preservesLimits (coyoneda.obj (op U))
     apply isLimitOfPreserves
     apply Classical.choice (h _ S.arrows _)
     simpa
@@ -692,7 +698,7 @@ theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max 
 theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
     [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [s.ReflectsIsomorphisms] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
-  letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms
+  letI : ReflectsLimitsOfSize s := reflectsLimits_of_reflectsIsomorphisms
   exact ⟨isSheaf_comp_of_isSheaf J P s, isSheaf_of_isSheaf_comp J P s⟩
 
 /--
@@ -707,7 +713,7 @@ hold.
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
-  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSizeShrink.{_, 0, _, u₁} s
+  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSize_shrink.{_, 0, _, u₁} s
   apply isSheaf_iff_isSheaf_comp
 
 end Concrete

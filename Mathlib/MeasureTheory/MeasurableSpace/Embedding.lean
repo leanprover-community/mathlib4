@@ -500,6 +500,31 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
     piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
+/-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
+def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+    (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
+  __ := Equiv.arrowProdEquivProdArrow α β γ
+  measurable_toFun _ h := by
+    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
+    exact MeasurableSet.preimage h (Measurable.prod_mk
+        (measurable_pi_lambda (fun a c ↦ (a c).1) fun a ↦ (measurable_pi_apply a).fst)
+        (measurable_pi_lambda (fun a c ↦ (a c).2) fun a ↦ (measurable_pi_apply a).snd ))
+  measurable_invFun _ h := by
+    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_symm_mk]
+    exact MeasurableSet.preimage h (by measurability)
+
+/-- The measurable equivalence `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂`. -/
+def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [MeasurableSpace β₁] [MeasurableSpace β₂]
+    (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) :
+    (α₁ → β₁) ≃ᵐ (α₂ → β₂) where
+  __ := Equiv.arrowCongr' hα hβ
+  measurable_toFun _ h := by
+    exact MeasurableSet.preimage h <|
+      measurable_pi_iff.mpr fun _ ↦ hβ.measurable.comp' (measurable_pi_apply _)
+  measurable_invFun _ h := by
+    exact MeasurableSet.preimage h <|
+      measurable_pi_iff.mpr fun _ ↦ hβ.symm.measurable.comp' (measurable_pi_apply _)
+
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := .asFn)]
 def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :

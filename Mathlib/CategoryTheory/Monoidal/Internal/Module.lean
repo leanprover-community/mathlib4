@@ -88,7 +88,7 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A
 @[simps!]
 def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
   obj A := AlgebraCat.of R A.X
-  map {_ _} f :=
+  map {_ _} f := AlgebraCat.ofHom
     { f.hom.toAddMonoidHom with
       toFun := f.hom
       map_one' := LinearMap.congr_fun f.one_hom (1 : R)
@@ -103,9 +103,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   one := Algebra.linearMap R A
   mul := LinearMap.mul' R A
   one_mul := by
-    -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
     -- Porting note: this `dsimp` does nothing
     -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
@@ -116,7 +116,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
     erw [id_apply]
   mul_one := by
-    -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
     -- Porting note: this `dsimp` does nothing
     -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
@@ -124,21 +124,19 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --   AlgebraCat.coe_comp]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     erw [id_apply]
   mul_assoc := by
     set_option tactic.skipAssignedInstances false in
-    -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
-    dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
-      Function.comp_apply, ModuleCat.MonoidalCategory.tensorHom_tmul, AlgebraCat.coe_comp,
-      MonoidalCategory.associator_hom_apply]
+    dsimp only [compr₂_apply, TensorProduct.mk_apply]
     rw [compr₂_apply, compr₂_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
@@ -152,9 +150,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
-    { hom := f.toLinearMap
-      one_hom := LinearMap.ext f.commutes
-      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
+    { hom := f.hom.toLinearMap
+      one_hom := LinearMap.ext f.hom.commutes
+      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
 
 end MonModuleEquivalenceAlgebra
 
@@ -176,7 +174,7 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
               mul_hom := by
-                -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
+                -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
                 rfl }
@@ -186,30 +184,27 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
               mul_hom := by
-                -- Porting note (#11041): `ext` did not pick up `TensorProduct.ext`
+                -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
                 rfl } })
   counitIso :=
     NatIso.ofComponents
       (fun A =>
-        { hom :=
+        { hom := AlgebraCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one
               map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ x y
               commutes' := fun _ => rfl }
-          inv :=
+          inv := AlgebraCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one.symm
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
               commutes' := fun _ => rfl } })
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_apply
 
 /-- The equivalence `Mon_ (ModuleCat R) ≌ AlgebraCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.

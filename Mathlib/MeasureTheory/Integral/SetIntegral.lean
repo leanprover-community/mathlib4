@@ -53,9 +53,8 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Set Filter TopologicalSpace MeasureTheory Function RCLike
-
-open scoped Classical Topology ENNReal NNReal
+open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
+open scoped Classical ENNReal NNReal
 
 variable {X Y E F : Type*}
 
@@ -556,7 +555,7 @@ theorem _root_.MeasurableEmbedding.setIntegral_map {Y} {_ : MeasurableSpace Y} {
 @[deprecated (since := "2024-04-17")]
 alias _root_.MeasurableEmbedding.set_integral_map := _root_.MeasurableEmbedding.setIntegral_map
 
-theorem _root_.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpace X] {Y}
+theorem _root_.Topology.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpace X] {Y}
     [MeasurableSpace Y] [TopologicalSpace Y] [BorelSpace Y] {g : X → Y} {f : Y → E} (s : Set Y)
     (hg : IsClosedEmbedding g) : ∫ y in s, f y ∂Measure.map g μ = ∫ x in g ⁻¹' s, f (g x) ∂μ :=
   hg.measurableEmbedding.setIntegral_map _ _
@@ -565,7 +564,8 @@ theorem _root_.IsClosedEmbedding.setIntegral_map [TopologicalSpace X] [BorelSpac
 alias _root_.ClosedEmbedding.setIntegral_map := IsClosedEmbedding.setIntegral_map
 
 @[deprecated (since := "2024-04-17")]
-alias _root_.IsClosedEmbedding.set_integral_map := _root_.IsClosedEmbedding.setIntegral_map
+alias _root_.IsClosedEmbedding.set_integral_map :=
+  IsClosedEmbedding.setIntegral_map
 
 @[deprecated (since := "2024-10-20")]
 alias _root_.ClosedEmbedding.set_integral_map := IsClosedEmbedding.set_integral_map
@@ -1019,10 +1019,9 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _)
-    (Lp.eLpNorm_ne_top _)]
-  apply (le_of_eq _).trans (eLpNorm_mono_measure _ (Measure.restrict_le_self (s := s)))
-  exact eLpNorm_congr_ae (Memℒp.coeFn_toLp _)
+  rw [Lp.norm_def, Lp.norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp _)]
+  refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
+  exact eLpNorm_mono_measure _ Measure.restrict_le_self
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in

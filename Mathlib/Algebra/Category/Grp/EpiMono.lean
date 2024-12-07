@@ -384,11 +384,11 @@ instance (G : CommGrp) : CommGroup <| (forget CommGrp).obj G :=
 @[to_additive]
 theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| MonoidHom.range_top_iff_surjective.mp hf⟩
+    ConcreteCategory.epi_of_surjective _ <| MonoidHom.range_eq_top.mp hf⟩
 
 @[to_additive]
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
-  rw [epi_iff_range_eq_top, MonoidHom.range_top_iff_surjective]
+  rw [epi_iff_range_eq_top, MonoidHom.range_eq_top]
 
 @[to_additive AddCommGrp.forget_commGrp_preserves_mono]
 instance forget_commGrp_preserves_mono : (forget CommGrp).PreservesMonomorphisms where

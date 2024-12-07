@@ -6,6 +6,7 @@ Authors: Kim Morrison, Johan Commelin
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Results on bases of tensor products
@@ -29,7 +30,7 @@ namespace Algebra
 
 namespace TensorProduct
 
-variable {R S A : Type*}
+variable {R A : Type*}
 
 section Basis
 

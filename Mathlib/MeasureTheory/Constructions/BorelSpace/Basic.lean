@@ -35,9 +35,8 @@ import Mathlib.Topology.Instances.Rat
 
 noncomputable section
 
-open Set Filter MeasureTheory
-
-open scoped Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory Set Topology
+open scoped NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -331,7 +330,7 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   rw [separatesPoints_iff]
   intro x y hxy
   apply Inseparable.eq
-  rw [inseparable_iff_forall_open]
+  rw [inseparable_iff_forall_isOpen]
   exact fun s hs => hxy _ hs.measurableSet
 
 theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
@@ -629,7 +628,7 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
-protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
+protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
@@ -638,14 +637,14 @@ protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbe
 @[deprecated (since := "2024-10-26")]
 alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
-protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β}
+protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
 
-protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
+protected theorem Topology.IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 

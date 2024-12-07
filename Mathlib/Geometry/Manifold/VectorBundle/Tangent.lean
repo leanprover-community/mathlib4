@@ -36,7 +36,7 @@ and a smooth manifold.
 
 open Bundle Set SmoothManifoldWithCorners PartialHomeomorph ContinuousLinearMap
 
-open scoped Manifold Topology Bundle
+open scoped Manifold Topology Bundle ContDiff
 
 noncomputable section
 
@@ -49,7 +49,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [SmoothManifoldWithCorners I M] {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M'] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-
 /-- Auxiliary lemma for tangent spaces: the derivative of a coordinate change between two charts is
   smooth on its source. -/
 theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
@@ -58,11 +57,11 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
-  refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_top <| h hx).mono h
+  refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn (n := ∞) (mod_cast le_top)
+    <| h hx).mono h
   refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
     (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
-
 
 open SmoothManifoldWithCorners
 
@@ -104,9 +103,9 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas k.2)
-        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt le_top
+        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt (mod_cast le_top)
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt le_top
+        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt (mod_cast le_top)
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]
@@ -231,12 +230,12 @@ theorem mem_chart_source_iff (p q : TM) :
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
     p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
   /- porting note: was
-  simp (config := { contextual := true }) only [FiberBundle.chartedSpace_chartAt,
+  simp +contextual only [FiberBundle.chartedSpace_chartAt,
     and_iff_left_iff_imp, mfld_simps]
   -/
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
   rw [PartialEquiv.prod_symm]
-  simp (config := { contextual := true }) only [and_iff_left_iff_imp, mfld_simps]
+  simp +contextual only [and_iff_left_iff_imp, mfld_simps]
 
 @[simp, mfld_simps]
 theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.1 p.1 :=
@@ -286,7 +285,7 @@ end TangentBundle
 
 instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   refine ⟨fun i j => ?_⟩
-  rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.2),
+  rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.2),
     contMDiffOn_iff_contDiffOn]
   · refine ((contDiffOn_fderiv_coord_change (I := I) i j).congr fun x hx => ?_).mono ?_
     · rw [PartialEquiv.trans_source'] at hx

@@ -43,6 +43,8 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
+open CategoryTheory ContinuousMap Limits Opposite Profinite Submodule Topology
+
 universe u
 
 namespace Profinite
@@ -50,8 +52,6 @@ namespace Profinite
 namespace NobelingProof
 
 variable {I : Type u} (C : Set (I → Bool))
-
-open Profinite ContinuousMap CategoryTheory Limits Opposite Submodule
 
 section Projections
 /-!
@@ -155,7 +155,7 @@ theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective 
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp (config := { contextual := true }) only [π, Proj, ProjRestricts_coe, id_eq, if_true]
+  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
 
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by

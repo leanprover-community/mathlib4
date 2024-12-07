@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
@@ -92,7 +93,7 @@ theorem equivTuple_apply {R : Type*} (c₁ c₂ : R) (x : ℍ[R,c₁,c₂]) :
 @[simp]
 theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a.4 = a := rfl
 
-variable {S T R : Type*} {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
+variable {S T R : Type*} {c₁ c₂ : R} (r x y : R) (a b : ℍ[R,c₁,c₂])
 
 instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).subsingleton
 instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).surjective.nontrivial
@@ -741,7 +742,7 @@ instance {R : Type*} [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
 
 namespace Quaternion
 
-variable {S T R : Type*} [CommRing R] (r x y z : R) (a b c : ℍ[R])
+variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 export QuaternionAlgebra (re imI imJ imK)
 

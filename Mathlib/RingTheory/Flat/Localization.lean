@@ -27,6 +27,6 @@ theorem IsLocalization.flat : Module.Flat R S :=
         ((Submodule.subtype _ ∘ₗ h.equiv.toLinearMap).restrictScalars R) := by
       rw [LinearEquiv.eq_toLinearMap_symm_comp]; ext
       simp [h.equiv_tmul, Algebra.smul_def, mul_comm, Algebra.ofId_apply]
-    simpa [this] using Subtype.val_injective
+    simpa [this, - Subtype.val_injective] using Subtype.val_injective
 
 instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p

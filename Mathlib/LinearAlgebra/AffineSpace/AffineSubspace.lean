@@ -258,7 +258,8 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
   refine le_antisymm ?_ ?_
   · rintro v ⟨p1, hp1, p2, hp2, rfl⟩
-    exact ⟨p1 -ᵥ p2 +ᵥ p, vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
+    exact ⟨(p1 -ᵥ p2) +ᵥ p,
+      vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
   · rintro v ⟨p2, hp2, rfl⟩
     exact ⟨p2, hp2, p, hp, rfl⟩
 
@@ -686,7 +687,7 @@ theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
   cases' S.nonempty with p
   ext v
   refine ⟨imp_intro Submodule.mem_top, fun _hv => ?_⟩
-  have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
+  have hpv : ((v +ᵥ p) -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
     vsub_mem_direction (mem_top k V _) (mem_top k V _)
   rwa [vadd_vsub] at hpv
 

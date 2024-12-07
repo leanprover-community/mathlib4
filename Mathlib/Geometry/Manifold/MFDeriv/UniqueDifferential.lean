@@ -120,7 +120,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type
 
 theorem Trivialization.mdifferentiable (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
     e.toPartialHomeomorph.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
-  ⟨e.smoothOn.mdifferentiableOn, e.smoothOn_symm.mdifferentiableOn⟩
+  ⟨e.contMDiffOn.mdifferentiableOn le_top, e.contMDiffOn_symm.mdifferentiableOn le_top⟩
 
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
     (hs : UniqueMDiffWithinAt I s p.proj) :

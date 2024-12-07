@@ -83,15 +83,6 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
 theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
   cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero, reduceCtorEq]
 
-theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
-    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
-
-theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
-    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
-    getLast (ofFn f) h = f (Fin.last _) :=
-  last_ofFn f h
-
 /-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
 theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
@@ -180,6 +171,73 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
     (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, Fin.forall_iff, Fin.cast_mk,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
+
+lemma head_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
+    (ofFn f).head h = f ⟨0, Nat.pos_of_ne_zero (mt ofFn_eq_nil_iff.2 h)⟩ := by
+  rw [← getElem_zero (length_ofFn _ ▸ Nat.pos_of_ne_zero (mt ofFn_eq_nil_iff.2 h)),
+    List.getElem_ofFn]
+
+lemma getLast_ofFn {n} (f : Fin n → α) (h : ofFn f ≠ []) :
+    (ofFn f).getLast h = f ⟨n - 1, Nat.sub_one_lt (mt ofFn_eq_nil_iff.2 h)⟩ := by
+  simp [getLast_eq_getElem]
+
+lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
+    (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
+  getLast_ofFn f _
+
+@[deprecated getLast_ofFn (since := "2024-11-06")]
+theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
+    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
+    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
+
+@[deprecated getLast_ofFn_succ (since := "2024-11-06")]
+theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
+    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
+    getLast (ofFn f) h = f (Fin.last _) :=
+  getLast_ofFn_succ _
+
+lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
+  rw [ofFn_succ]
+  rfl
+
+-- Temporary local copy of result from Lean commit 1e98fd7f2d965ab035dbf1099fb4a4ffde16b151.
+theorem find?_eq_some_iff_getElem {xs : List α} {p : α → Bool} {b : α} :
+    xs.find? p = some b ↔ p b ∧ ∃ i h, xs[i] = b ∧ ∀ j : Nat, (hj : j < i) → !p xs[j] := by
+  rw [find?_eq_some]
+  simp only [Bool.not_eq_eq_eq_not, Bool.not_true, exists_and_right, and_congr_right_iff]
+  intro w
+  constructor
+  · rintro ⟨as, ⟨bs, rfl⟩, h⟩
+    refine ⟨as.length, ⟨?_, ?_, ?_⟩⟩
+    · simp only [length_append, length_cons]
+      refine Nat.lt_add_of_pos_right (zero_lt_succ bs.length)
+    · rw [getElem_append_right (Nat.le_refl as.length)]
+      simp
+    · intro j h'
+      rw [getElem_append_left h']
+      exact h _ (getElem_mem h')
+  · rintro ⟨i, h, rfl, h'⟩
+    refine ⟨xs.take i, ⟨xs.drop (i+1), ?_⟩, ?_⟩
+    · rw [getElem_cons_drop, take_append_drop]
+    · intro a m
+      rw [mem_take_iff_getElem] at m
+      obtain ⟨j, h, rfl⟩ := m
+      apply h'
+      omega
+
+lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
+    (ofFn f).find? p = some b ↔ p b = true ∧ ∃ i, f i = b ∧ ∀ j < i, ¬(p (f j) = true) := by
+  rw [find?_eq_some_iff_getElem]
+  exact ⟨fun ⟨hpb, i, hi, hfb, h⟩ ↦
+      ⟨hpb, ⟨⟨i, (length_ofFn f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
+    fun ⟨hpb, i, hfb, h⟩ ↦
+      ⟨hpb, ⟨i, (length_ofFn f).symm ▸ i.isLt, by simpa using hfb,
+        fun j hj ↦ by simpa using h ⟨j, by omega⟩ (by simpa using hj)⟩⟩⟩
+
+lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
+    (h : Function.Injective f) :
+    (ofFn f).find? p = some (f i) ↔ p (f i) = true ∧ ∀ j < i, ¬(p (f j) = true) := by
+  simp only [find?_ofFn_eq_some, h.eq_iff, Bool.not_eq_true, exists_eq_left]
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]

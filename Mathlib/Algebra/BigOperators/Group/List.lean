@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Join
+import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.ProdSigma
@@ -205,7 +205,7 @@ theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
 @[to_additive (attr := simp)]
 theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
     (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
-  simp [take_succ, p]
+  simp [← take_concat_get', p]
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -634,7 +634,7 @@ end MonoidHom
 end MonoidHom
 
 set_option linter.deprecated false in
-@[simp, deprecated (since := "2024-10-17")]
+@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
 lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 namespace List
@@ -657,7 +657,8 @@ theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
-    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
+  rw [← mem_range, ← ranges_flatten, mem_flatten]
 
 @[simp]
 theorem length_flatMap (l : List α) (f : α → List β) :

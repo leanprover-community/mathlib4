@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Basic
 

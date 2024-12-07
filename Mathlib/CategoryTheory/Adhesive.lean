@@ -293,9 +293,9 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
     [F.ReflectsIsomorphisms] :
     Adhesive C := by
   haveI : ReflectsLimitsOfShape WalkingCospan F :=
-    reflectsLimitsOfShapeOfReflectsIsomorphisms
+    reflectsLimitsOfShape_of_reflectsIsomorphisms
   haveI : ReflectsColimitsOfShape WalkingSpan F :=
-    reflectsColimitsOfShapeOfReflectsIsomorphisms
+    reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact adhesive_of_preserves_and_reflects F
 
 theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [HasPushouts C]
@@ -303,8 +303,8 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [PreservesLimitsOfShape WalkingCospan Gl] :
     Adhesive D := by
-  have := adj.leftAdjointPreservesColimits
-  have := adj.rightAdjointPreservesLimits
+  have := adj.leftAdjoint_preservesColimits
+  have := adj.rightAdjoint_preservesLimits
   apply Adhesive.mk (hasPushout_of_mono_left := H₂)
   intro W X Y Z f g h i _ H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))

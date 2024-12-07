@@ -183,7 +183,7 @@ noncomputable def relativeDifferentials' :
   obj X := CommRingCat.KaehlerDifferential (φ'.app X)
   map f := CommRingCat.KaehlerDifferential.map (φ'.naturality f)
   map_id _ := by ext; simp; rfl
-  map_comp _ _ := by ext; simp; rfl
+  map_comp _ _ := by ext; simp
 
 attribute [simp] relativeDifferentials'_obj
 

@@ -77,14 +77,14 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
 
 @[simp] lemma affineIndependent_vadd {p : ι → P} {v : V} :
     AffineIndependent k (v +ᵥ p) ↔ AffineIndependent k p := by
-  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_vadd]
+  simp +contextual [AffineIndependent, weightedVSub_vadd]
 
 protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
 
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_smul,
+  simp +contextual [AffineIndependent, weightedVSub_smul,
     ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
@@ -390,7 +390,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
 
 end Composition
@@ -618,7 +618,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     ext
     fin_cases i
     · simp at hi
-    · simp only [Fin.val_one]
+    · simp
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   apply linearIndependent_unique
   rw [he' default]

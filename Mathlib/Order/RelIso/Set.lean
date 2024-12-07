@@ -66,6 +66,14 @@ theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding 
 instance (r : α → α → Prop) [IsWellOrder α r] (p : Set α) : IsWellOrder p (Subrel r p) :=
   RelEmbedding.isWellOrder (Subrel.relEmbedding r p)
 
+-- TODO: this instance is needed as `simp` automatically simplifies `↑{a // p a}` as `{a | p a}`.
+--
+-- Should `Subrel` be redefined in terms of `p : α → Prop` instead of `p : Set α` to avoid
+-- this issue?
+instance (r : α → α → Prop) (p : α → Prop) [IsWellOrder α r] :
+    IsWellOrder {a // p a} (Subrel r {a | p a}) :=
+  instIsWellOrderElem _ _
+
 instance (r : α → α → Prop) [IsRefl α r] (p : Set α) : IsRefl p (Subrel r p) :=
   ⟨fun x => @IsRefl.refl α r _ x⟩
 

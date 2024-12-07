@@ -23,8 +23,7 @@ require "leanprover-community" / "plausible" @ git "main"
 /-- These options are used
 * as `leanOptions`, prefixed by `` `weak``, so that `lake build` uses them;
 * as `moreServerArgs`, to set their default value in mathlib
-  (as well as `Archive`, `Counterexamples` and `test`).
--/
+  (as well as `Archive`, `Counterexamples` and `test`). -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.docPrime, true⟩,
   ⟨`linter.hashCommand, true⟩,
@@ -36,6 +35,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.setOption, true⟩

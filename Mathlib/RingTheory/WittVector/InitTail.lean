@@ -174,7 +174,7 @@ elab_rules : tactic
       rintro ⟨b, k⟩ h -
       replace h := $e:term p _ h
       simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
-      have hk : k < n := by linarith
+      have hk : k < n := by omega
       fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
         WittVector.coeff_mk, Matrix.cons_val_one, WittVector.mk, Fin.mk_zero, Matrix.cons_val',
         Matrix.empty_val', Matrix.cons_val_fin_one, Matrix.cons_val_zero,

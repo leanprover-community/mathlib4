@@ -263,9 +263,9 @@ theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
   apply ae_lt_top (measurable_measure_mul_right ν' sm)
   have h1 := measure_mul_lintegral_eq μ' ν' sm (A⁻¹.indicator 1) (measurable_one.indicator hA.inv)
   rw [lintegral_indicator hA.inv] at h1
-  simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv, indicator_image inv_injective, image_inv,
-    ← indicator_mul_right _ fun x => ν' ((fun y => y * x) ⁻¹' s), Function.comp, Pi.one_apply,
-    mul_one] at h1
+  simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv_eq_inv, indicator_image inv_injective,
+    image_inv_eq_inv, ← indicator_mul_right _ fun x => ν' ((· * x) ⁻¹' s), Function.comp,
+    Pi.one_apply, mul_one] at h1
   rw [← lintegral_indicator hA, ← h1]
   exact ENNReal.mul_ne_top hμs h3A.ne
 

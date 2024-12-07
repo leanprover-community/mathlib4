@@ -39,7 +39,7 @@ show these are equivalent in `Sym.symEquivSym'`.
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1

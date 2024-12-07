@@ -32,6 +32,7 @@ is defined to be the subalgebra `integralClosure F E`
 upgraded to an intermediate field (since `F` and `E` are both fields).
 This is exactly the intermediate field of `E / F` consisting of all integral/algebraic elements.
 -/
+@[stacks 09GI]
 def algebraicClosure : IntermediateField F E :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
 
@@ -93,7 +94,7 @@ def algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
     algebraicClosure F E ≃ₐ[F] algebraicClosure F K :=
   (intermediateFieldMap i _).trans (equivOfEq (map_eq_of_algEquiv i))
 
-alias AlgEquiv.algebraicClosure := algebraicClosure.algEquivOfAlgEquiv
+alias _root_.AlgEquiv.algebraicClosure := algEquivOfAlgEquiv
 
 variable (F E K)
 

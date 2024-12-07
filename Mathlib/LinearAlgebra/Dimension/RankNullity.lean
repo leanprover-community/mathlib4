@@ -203,12 +203,22 @@ lemma Submodule.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule 
     Submodule.finrank_eq_rank]
   exact HasRankNullity.rank_quotient_add_rank _
 
-
 /-- Rank-nullity theorem using `finrank` and subtraction. -/
 lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul R S] [Module S M]
     [IsScalarTower R S M] (N : Submodule S M) : finrank R (M ⧸ N) = finrank R M - finrank R N := by
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
+
+lemma Submodule.disjoint_ker_of_finrank_eq [NoZeroSMulDivisors R M] {N : Type*} [AddCommGroup N]
+    [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
+    (h : finrank R (L.map f) = finrank R L) :
+    Disjoint L (LinearMap.ker f) := by
+  refine disjoint_iff.mpr <| LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
+    Submodule.rank_eq_zero.mp ?_
+  rw [← Submodule.finrank_eq_rank, Nat.cast_eq_zero]
+  rw [← LinearMap.range_domRestrict] at h
+  have := (LinearMap.ker (f.domRestrict L)).finrank_quotient_add_finrank
+  rwa [LinearEquiv.finrank_eq (f.domRestrict L).quotKerEquivRange, h, Nat.add_eq_left] at this
 
 end Finrank
 

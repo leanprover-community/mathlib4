@@ -234,7 +234,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
       have hdisj :
         Disjoint {i ∈ Ico 1 n.succ | p ^ i ≤ k % p ^ i + (p ^ n - k) % p ^ i}
           {i ∈ Ico 1 n.succ | p ^ i ∣ k} := by
-        simp (config := { contextual := true }) [disjoint_right, *, dvd_iff_mod_eq_zero,
+        simp +contextual [disjoint_right, *, dvd_iff_mod_eq_zero,
           Nat.mod_lt _ (pow_pos hp.pos _)]
       rw [emultiplicity_choose hp hkn (lt_succ_self _),
         emultiplicity_eq_card_pow_dvd (ne_of_gt hp.one_lt) hk0.bot_lt

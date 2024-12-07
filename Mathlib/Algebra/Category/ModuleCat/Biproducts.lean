@@ -63,13 +63,9 @@ theorem binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
 /-- We verify that the biproduct in `ModuleCat R` is isomorphic to
 the cartesian product of the underlying types:
 -/
-@[simps! hom_apply]
 noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
     (M ⊞ N : ModuleCat.{v} R) ≅ ModuleCat.of R (M × N) :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit M N) (binaryProductLimitCone M N).isLimit
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply
 
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
@@ -122,13 +118,9 @@ variable {J : Type} (f : J → ModuleCat.{v} R)
 /-- We verify that the biproduct we've just defined is isomorphic to the `ModuleCat R` structure
 on the dependent function type.
 -/
-@[simps! hom_apply]
 noncomputable def biproductIsoPi [Finite J] (f : J → ModuleCat.{v} R) :
     ((⨁ f) : ModuleCat.{v} R) ≅ ModuleCat.of R (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π [Finite J] (f : J → ModuleCat.{v} R) (j : J) :
