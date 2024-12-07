@@ -679,8 +679,8 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
 theorem card_zero : @card α 0 = 0 :=
   rfl
 
-theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
-  card.map_add s t
+@[simp] lemma card_add (s t : Multiset α) : card (s + t) = card s + card t :=
+  Quotient.inductionOn₂ s t length_append
 
 /-- `Multiset.card` bundled as a group hom. -/
 @[simps]
