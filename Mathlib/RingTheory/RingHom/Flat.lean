@@ -29,7 +29,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 variable (R) in
 /-- The identity of a ring is flat. -/
-lemma id  : RingHom.Flat (RingHom.id R) :=
+lemma id : RingHom.Flat (RingHom.id R) :=
   Module.Flat.self R
 
 /-- Composition of flat ring homomorphisms is flat. -/
