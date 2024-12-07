@@ -106,7 +106,6 @@ section UniformGroup
 
 variable [Group α] [UniformGroup α]
 
-/-- The coercion of the inverse. -/
 @[to_additive (attr := norm_cast) coe_neg]
 theorem coe_inv_of_group (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
   (isDenseInducing_coe.extend_eq ((continuous_coe α).comp (@continuous_inv α _ _ _)) a).symm
