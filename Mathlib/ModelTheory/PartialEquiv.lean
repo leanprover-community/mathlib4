@@ -182,10 +182,23 @@ theorem ext_iff {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.dom = g.dom,
     subtype _ (f.toEquiv ⟨x, h⟩) = subtype _ (g.toEquiv ⟨x, (h_dom ▸ h)⟩) := by
   constructor
   · intro h_eq
-    rcases f with ⟨dom_f, cod_f, equiv_f⟩
     cases h_eq
     exact ⟨rfl, fun _ _ ↦ rfl⟩
   · rintro ⟨h, H⟩; exact ext h H
+
+/-- Extensionality lemma using EquivOfEq. -/
+theorem ext_iff' {f g : M ≃ₚ[L] N} : f = g ↔ ∃ h_dom : f.dom = g.dom, ∃ h_cod : f.cod = g.cod,
+    (equivOfEq h_cod).comp f.toEquiv = g.toEquiv.comp (equivOfEq h_dom) := by
+  constructor
+  · intro h_eq
+    cases h_eq
+    exact ⟨rfl, rfl, rfl⟩
+  · rintro ⟨h_dom, h_cod, H⟩
+    rcases f with ⟨f, _, _⟩
+    cases h_dom
+    cases h_cod
+    simp only [equivOfEq_refl, Equiv.refl_comp, Equiv.comp_refl] at H
+    rw [H]
 
 theorem monotone_dom : Monotone (fun f : M ≃ₚ[L] N ↦ f.dom) := fun _ _ ↦ dom_le_dom
 
@@ -270,33 +283,25 @@ theorem map_dom (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).dom = g.dom.map
 @[simp]
 theorem map_cod (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).cod = g.cod.map f.toHom := rfl
 
-theorem map_commutes (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
+theorem map_toEquiv_comp_substructureEquivMap (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
     (g.map f).toEquiv.comp (f.substructureEquivMap g.dom) =
       (f.substructureEquivMap g.cod).comp g.toEquiv := by
   ext
   simp only [map, Equiv.comp_apply, Equiv.symm_apply_apply, Embedding.substructureEquivMap_apply]
 
-theorem map_commutes_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.dom) :
+theorem map_toEquiv_comp_substructureEquivMap_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.dom) :
     (g.map f).toEquiv ⟨f m, g.dom.apply_coe_mem_map _ _⟩ =
       ⟨f (g.toEquiv m), g.cod.apply_coe_mem_map _ _⟩ := by
-  exact congr_fun (congr_arg DFunLike.coe (g.map_commutes f)) m
+  exact congr_fun (congr_arg DFunLike.coe (g.map_toEquiv_comp_substructureEquivMap f)) m
 
 @[simp]
 theorem map_refl (f : M ≃ₚ[L] M) : f.map (Embedding.refl L M) = f := by
-  unfold map
-  rw [ext_iff]
-  simp only [Embedding.refl_toHom, map_id, Equiv.comp_apply, coeSubtype, exists_true_left]
-  intro x h
-  have H (h' : x ∈ (f.map (Embedding.refl L M)).dom) :
-      ⟨x, h'⟩ = ((Embedding.refl L M).substructureEquivMap f.dom) ⟨x, h⟩ := rfl
-  rw [H]
-  change subtype _ (((Embedding.refl L M).substructureEquivMap f.cod)
-      (f.toEquiv (((Embedding.refl L M).substructureEquivMap f.dom).symm.comp
-    ((Embedding.refl L M).substructureEquivMap f.dom) ⟨x, h⟩))) = _
-  simp only [Embedding.refl_toHom, Equiv.symm_comp_self, Equiv.refl_apply, coeSubtype]
-  rfl
+  rw [ext_iff']
+  simp only [map, Embedding.refl_toHom, substructureEquivMap_refl, equivOfEq_symm, map_id,
+    exists_true_left]
+  rw [← Equiv.comp_assoc, equivOfEq_comp, equivOfEq_refl, Equiv.refl_comp]
 
-theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.map f) := by
+theorem map_monotone (f : M ↪[L] N) : Monotone (map f) := by
   intro g g' h
   rw [le_iff]
   use Substructure.monotone_map (dom_le_dom h)
@@ -324,27 +329,16 @@ theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.ma
 @[simp]
 theorem map_map (f : M ↪[L] N) (g : N ↪[L] P) (h : M ≃ₚ[L] M) :
     (h.map f).map g = h.map (g.comp f) := by
-  have same_dom : ((h.map f).map g).dom = (h.map (g.comp f)).dom := Substructure.map_map ..
-  rw [ext_iff]
-  use same_dom
-  intro x hx
-  show _ = ↑(((g.comp f).substructureEquivMap h.cod) _)
-  rw [Embedding.substructureEquivMap_apply, Embedding.comp_apply]
-  simp only [map, Equiv.comp_apply, coeSubtype, Embedding.substructureEquivMap_apply,
-    Embedding.comp_toHom, EmbeddingLike.apply_eq_iff_eq, SetLike.coe_eq_coe]
-  rw [← Equiv.comp_apply, ← Equiv.comp_symm]
-  have hi : h.dom.map (g.comp f).toHom = (h.dom.map f.toHom).map g.toHom := by
-    simp only [Embedding.comp_toHom, ← FirstOrder.Language.Substructure.map_map]
-  have H : (g.substructureEquivMap (Substructure.map f.toHom h.dom)).comp
-      (f.substructureEquivMap h.dom) =
-        (Substructure.equiv_from_eq hi).comp ((g.comp f).substructureEquivMap h.dom) := by
-    ext ⟨x, hx⟩
-    show _ =(Substructure.subtype _).comp (equiv_from_eq hi).toEmbedding _
-    simp only [Equiv.comp_apply, Embedding.substructureEquivMap_apply, Embedding.comp_toHom,
-      subtype_comp_equiv_from_eq, coeSubtype]
-    rfl
-  simp only [H, Embedding.comp_toHom, Equiv.comp_symm, equiv_from_eq_symm, Equiv.comp_apply,
-    equiv_from_eq_apply]
+  rw [ext_iff']
+  use Substructure.map_map ..
+  use Substructure.map_map ..
+  simp only [map, Embedding.comp_toHom, Equiv.comp_assoc]
+  rw [← Equiv.comp_assoc _ _ (g.substructureEquivMap (Substructure.map f.toHom h.cod)),
+    substructureEquivMap_comp_substructureEquivMap]
+  simp only [← Equiv.comp_assoc, equivOfEq_comp, equivOfEq_refl, Equiv.refl_comp]
+  simp only [Equiv.comp_assoc]
+  rw [← Equiv.comp_symm, substructureEquivMap_comp_substructureEquivMap]
+  simp only [Equiv.comp_symm, equivOfEq_symm]
 
 theorem map_fg (f : M ↪[L] N) {g : M ≃ₚ[L] M} (g_fg : g.dom.FG) : (g.map f).dom.FG :=
   g_fg.map f.toHom
@@ -362,10 +356,9 @@ theorem exists_preimage_map_iff (f : M ↪[L] N) (g : N ≃ₚ[L] N) :
     let dom' := g.dom.comap f.toHom
     let cod' := g.cod.comap f.toHom
     have dom'_map : dom'.map f.toHom = g.dom := by
-      unfold_let dom'
+      unfold dom'
       rwa [Substructure.map_comap, inf_eq_left]
     have cod'_map : cod'.map f.toHom = g.cod := by
-      unfold_let dom'
       rwa [Substructure.map_comap, inf_eq_left]
     clear_value dom' cod'
     rcases g with ⟨dom, cod, g⟩
