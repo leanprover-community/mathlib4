@@ -256,7 +256,14 @@ lemma exists_finset_as_lin_comb :  ∑ i ∈ S, i.1 ⊗ₜ[R] i.2 =
   intro x hx
   simp_all only [Finset.mem_coe, Set.indicator_of_mem, one_smul]
 
-
+omit [Algebra R A] [IsScalarTower R A M₁] [IsScalarTower R A N₁] in
+theorem test [LinearOrder (M₁ × M₂)] :
+    let g := fun (i : (M₁ × M₂)) => i.1 ⊗ₜ[R] i.2
+    let l := Finsupp.mk S (Set.indicator S.toSet (fun _ => (1 : A))) (fun _ => by simp)
+    Q (Finsupp.linearCombination A g l) =
+      (l.sum fun i r => (r * r) • Q (g i)) +
+      ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, polar_lift_lc Q g l p := by
+  simp_rw [map_finsupp_linearCombination]
 
 end uniqueness
 
