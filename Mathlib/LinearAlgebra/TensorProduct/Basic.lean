@@ -728,6 +728,10 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[A] M ⊗[R] N :=
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A M N) :=
+  fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
+    fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
+
 attribute [local instance] SMulCommClass.symm
 
 /-- `mapOfCompatibleSMul R A M N` is also R-linear. -/
@@ -735,10 +739,6 @@ def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
   __ := mapOfCompatibleSMul R A M N
   map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
     fun _ _ h h' ↦ by simpa using congr($h + $h')
-
-theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A M N) :=
-  fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
-    fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
 
 /-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
 then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/

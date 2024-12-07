@@ -825,6 +825,9 @@ def mapOfCompatibleSMul : A ⊗[S] B →ₐ[S] A ⊗[R] B :=
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R S A B (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R S A B) :=
+  _root_.TensorProduct.mapOfCompatibleSMul_surjective R S A B
+
 attribute [local instance] SMulCommClass.symm
 
 /-- `mapOfCompatibleSMul R S A B` is also A-linear. -/
