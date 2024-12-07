@@ -16,10 +16,15 @@ Greedoid is a set system, i.e., a family of sets, over a finite ground set, whic
 exchange and accessible properties.
 
 Main definitions:
+
 * `Greedoid`: The greedoid structure.
+
 * `Greedoid.ground`: The ground set of the greedoid.
+
 * `Greedoid.Feasible`: The feasible property of the greedoid.
+
 * `Greedoid.Bases`: A bases of a greedoid `G` is a maximal feasible set of `G`.
+
 * `Greedoid.Basis`: A basis of a set `s` with respect to a greedoid `G` is a maximal subset of `s`
   which is feasible in `G`.
 -/
@@ -140,6 +145,11 @@ theorem basis_card_eq
     have ⟨h₆, _⟩ := Finset.cons_subset.mp
       (h₅ ⟨h₃, (Finset.cons_subset.mpr ⟨basis_subset hb₁ h₁, h₄⟩)⟩ (subset_cons _))
     exact h₂ h₆
+
+theorem bases_card_eq
+    {b₁ : Finset α} (hb₁ : G.Bases b₁) {b₂ : Finset α} (hb₂ : G.Bases b₂) :
+    #b₁ = #b₂ :=
+  basis_card_eq (bases_eq_basis_ground ▸ hb₁) (bases_eq_basis_ground ▸ hb₂)
 
 end Bases
 
