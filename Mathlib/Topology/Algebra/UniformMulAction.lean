@@ -173,6 +173,7 @@ noncomputable instance [Pow X M] : Pow (Completion X) M :=
 theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
   rfl
 
+omit [SMul M X] in
 @[to_additive existing (reorder := 5 6) smul_def]
 theorem pow_def [Pow X M] (x : Completion X) (c : M) : x ^ c = Completion.map (· ^ c) x :=
   rfl
