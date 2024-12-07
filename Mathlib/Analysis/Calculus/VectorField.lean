@@ -325,8 +325,8 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
 
 /-- The Lie bracket of vector fields in vector spaces satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
-lemma leibniz_identity_lieBracketWithin (hn : 2 ≤ n)
-    [IsAdmissibleSmoothness 𝕜 n] {U V W : E → E} {s : Set E} {x : E}
+lemma leibniz_identity_lieBracketWithin (hn : minSmoothness 𝕜 2 ≤ n)
+    {U V W : E → E} {s : Set E} {x : E}
     (hs : UniqueDiffOn 𝕜 s) (h'x : x ∈ closure (interior s)) (hx : x ∈ s)
     (hU : ContDiffWithinAt 𝕜 n U s x) (hV : ContDiffWithinAt 𝕜 n V s x)
     (hW : ContDiffWithinAt 𝕜 n W s x) :
@@ -334,14 +334,15 @@ lemma leibniz_identity_lieBracketWithin (hn : 2 ≤ n)
       lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
       + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
   apply leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt hs hx
-    (hU.of_le hn) (hV.of_le hn) (hW.of_le hn)
+    (hU.of_le (le_minSmoothness.trans hn)) (hV.of_le (le_minSmoothness.trans hn))
+    (hW.of_le (le_minSmoothness.trans hn))
   · exact hU.isSymmSndFDerivWithinAt hn hs h'x hx
   · exact hV.isSymmSndFDerivWithinAt hn hs h'x hx
   · exact hW.isSymmSndFDerivWithinAt hn hs h'x hx
 
 /-- The Lie bracket of vector fields in vector spaces satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
-lemma leibniz_identity_lieBracket (hn : 2 ≤ n) [IsAdmissibleSmoothness 𝕜 n] {U V W : E → E} {x : E}
+lemma leibniz_identity_lieBracket (hn : minSmoothness 𝕜 2 ≤ n) {U V W : E → E} {x : E}
     (hU : ContDiffAt 𝕜 n U x) (hV : ContDiffAt 𝕜 n V x) (hW : ContDiffAt 𝕜 n W x) :
     lieBracket 𝕜 U (lieBracket 𝕜 V W) x =
       lieBracket 𝕜 (lieBracket 𝕜 U V) W x + lieBracket 𝕜 V (lieBracket 𝕜 U W) x := by
@@ -570,12 +571,26 @@ lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x 
   exact pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt hf h'f hV hW uniqueDiffOn_univ
     (mem_univ _) (mapsTo_univ _ _)
 
+/-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
+second derivative. Version in a complete space. One could also give a version avoiding
+completeness but requiring that `f` is a local diffeo. -/
+lemma pullbackWithin_lieBracketWithin
+    {f : E → F} {V W : F → F} {x : E} {t : Set F} (hn : minSmoothness 𝕜 2 ≤ n)
+    (h'f : ContDiffWithinAt 𝕜 n f s x)
+    (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
+    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h'x : x ∈ closure (interior s)) (hst : MapsTo f s t) :
+    pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x
+      = lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x :=
+  pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
+  (h'f.isSymmSndFDerivWithinAt hn hu h'x hx) (h'f.of_le (le_minSmoothness.trans hn)) hV hW hu hx hst
+
 /-- The Lie bracket commutes with taking pullbacks. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeo. -/
-lemma pullback_lieBracket (hn : 2 ≤ n) [IsAdmissibleSmoothness 𝕜 n]
+lemma pullback_lieBracket (hn : minSmoothness 𝕜 2 ≤ n)
     {f : E → F} {V W : F → F} {x : E} (h'f : ContDiffAt 𝕜 n f x)
     (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
     pullback 𝕜 f (lieBracket 𝕜 V W) x = lieBracket 𝕜 (pullback 𝕜 f V) (pullback 𝕜 f W) x :=
-  pullback_lieBracket_of_isSymmSndFDerivAt (h'f.isSymmSndFDerivAt hn) (h'f.of_le hn) hV hW
+  pullback_lieBracket_of_isSymmSndFDerivAt (h'f.isSymmSndFDerivAt hn)
+    (h'f.of_le (le_minSmoothness.trans hn)) hV hW
 
 end VectorField
