@@ -390,16 +390,23 @@ lemma polar_lift_eq_zero_on_symOffDiagLower
   · rw [tensorDistriFree_polar21 bm₁ Q₁ bm₂ Q₂ _ _ _ _ c3 c4, smul_zero, smul_zero]
 
 /--
-Lift the left side
+Lift the left side (LC)
 -/
-noncomputable def polar_left_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
-  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-  Sym2.lift ⟨fun i j => if i.1 = j.1 then (bm.repr x) i •
-    (bm.repr x) j • Q₁ (bm₁ i.1) ⊗ₜ polarBilin Q₂ (bm₂ i.2) (bm₂ j.2) else 0,
+noncomputable def polar_left_lift_lc (g₁ : ι₁ → M₁ ) (g₂ : ι₂ → M₂) (l : ι₁ × ι₂ →₀ A) :
+    Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
+  Sym2.lift ⟨fun i j => if i.1 = j.1 then l i •
+    l j • Q₁ (g₁ i.1) ⊗ₜ polarBilin Q₂ (g₂ i.2) (g₂ j.2) else 0,
   fun _ _ => ite_congr (by rw [eq_iff_iff, eq_comm])
     (fun h => by
       simp_rw [polarBilin_apply_apply, h, polar_comm]
       rw [smul_comm]) (congrFun rfl)⟩
+
+/--
+Lift the left side (Basis)
+-/
+noncomputable def polar_left_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂) → N₁ ⊗[R] N₂ :=
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  polar_left_lift_lc Q₁ Q₂ bm₁ bm₂ (bm.repr x)
 
 lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
@@ -409,7 +416,7 @@ lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
     polar_lift Q bm x p =  polar_left_lift bm₁ Q₁ bm₂ Q₂ x p := by
   induction' p with i j
   simp
-  rw [polar_lift, polar_lift_lc, polar_left_lift]
+  rw [polar_lift, polar_lift_lc, polar_left_lift, polar_left_lift_lc]
   simp at h
   obtain e1 := h.2.1
   simp only [Sym2.lift_mk, polarBilin_apply_apply]
