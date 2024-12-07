@@ -197,7 +197,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
   { hf.monoidWithZero f zero one mul npow,
     hf.divInvMonoid f one mul inv div npow zpow,
-    pullback_nonzero f zero one with
+    domain_nontrivial f zero one with
     inv_zero := hf <| by rw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
       rw [one, mul, inv, mul_inv_cancel₀ ((hf.ne_iff' zero).2 hx)] }
