@@ -35,32 +35,18 @@ namespace CategoryTheory
 
 open Limits
 
-universe w v u
-variable (C : Type u) [Category.{v} C]
+universe w v u w₂ v₂ u₂
+variable (C : Type u) [Category.{v} C] (D : Type u₂) [Category.{v₂} D]
 
 /--
-An abelian category `C` is called a Grothendieck category provided that it has `AB5` and a
-separator (see `HasSeparator`).
+In the literature, an abelian category `C` is called a Grothendieck category provided that it has
+`AB5` and a separator (see `HasSeparator`).
+
+`IsGrothendieckAbelian C` is defined such that it holds if and only if `C` is equivalent to a
+Grothendieck category -- more concretely, if and only if `ShrinkHoms.{w} C` is a Grothendieck
+category.
 -/
 @[stacks 079B]
-class GrothendieckCategory [Abelian C] where
-  -- necessary for AB5
-  hasFilteredColimits : HasFilteredColimits C := by infer_instance
-  ab5 : AB5 C := by infer_instance
-  hasSeparator : HasSeparator C := by infer_instance
-
-attribute [instance] GrothendieckCategory.hasSeparator GrothendieckCategory.hasFilteredColimits
-  GrothendieckCategory.ab5
-
-section Instances
-
-variable [Abelian C] [GrothendieckCategory C]
-
-instance GrothendieckCategory.hasColimits : HasColimits C := has_colimits_of_finite_and_filtered
-instance GrothendieckCategory.hasLimits : HasLimits C := hasLimits_of_hasColimits_of_hasSeparator
-
-end Instances
-
 class IsGrothendieckAbelian : Prop where
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{w, w} C := by infer_instance
@@ -71,12 +57,7 @@ attribute [instance] IsGrothendieckAbelian.locallySmall
   IsGrothendieckAbelian.hasFilteredColimitsOfSize IsGrothendieckAbelian.ab5OfSize
   IsGrothendieckAbelian.hasSeparator
 
-instance bla₁ (C : Type u) [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{w} C] :
-    HasFilteredColimitsOfSize.{w, w} (ShrinkHoms C) := by
-  refine ⟨fun _ _ _ => ?_⟩
-  exact Adjunction.hasColimitsOfShape_of_equivalence (ShrinkHoms.equivalence C).inverse
-
-universe v' u' v₁ u₁ v₂ u₂ in
+universe v' u' v₁ u₁ in
 theorem comp_const (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v₁} C]
     (D : Type u₂) [Category.{v₂} D] (F : C ⥤ D) :
     F ⋙ Functor.const J = Functor.const J ⋙ (whiskeringRight J C D).obj F := by
@@ -97,7 +78,7 @@ theorem comp_const (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v�
     · simp only [Functor.const_obj_obj, Functor.comp_obj]
       intros ; trivial
 
-universe v' u' v₁ u₁ v₂ u₂ in
+universe v' u' v₁ u₁ in
 theorem blub (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v₁} C] (D : Type u₂)
     [Category.{v₂} D] [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] (F : C ≌ D) :
     have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence F.inverse
@@ -123,13 +104,28 @@ theorem blub (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v₁} C]
   refine Adjunction.comp F.congrRight.symm.toAdjunction ?_
   exact CategoryTheory.Limits.colimConstAdj
 
-instance IsGrothendieckAbelian.shrinkHoms (C : Type u) [Category.{v} C] [Abelian C]
-    [IsGrothendieckAbelian.{w} C] : IsGrothendieckAbelian.{w, w} (ShrinkHoms C) := by
-  refine ⟨inferInstance, inferInstance, ?_, ?_⟩
-  · refine ⟨?_⟩
-    intro J instJ filteredJ
-    apply blub J C
-    apply ShrinkHoms.equivalence
-  · exact HasSeparator.of_equivalence <| ShrinkHoms.equivalence C
+variable {C} {D} in
+theorem IsGrothendieckAbelian.of_equivalence
+    [IsGrothendieckAbelian.{w} C] (α : C ≌ D) : IsGrothendieckAbelian.{w} D := by
+  have hasFilteredColimits : HasFilteredColimitsOfSize.{w, w, v₂, u₂} D :=
+    ⟨fun _ _ _ => Adjunction.hasColimitsOfShape_of_equivalence α.inverse⟩
+  refine ⟨?_, hasFilteredColimits, ?_, ?_⟩
+  · exact locallySmall_of_faithful α.inverse
+  · refine ⟨fun _ _ _ => ?_⟩
+    exact blub _ C D α
+  · exact HasSeparator.of_equivalence α
+
+instance IsGrothendieckAbelian.shrinkHoms [IsGrothendieckAbelian.{w} C] :
+    IsGrothendieckAbelian.{w, w} (ShrinkHoms C) :=
+  IsGrothendieckAbelian.of_equivalence <| ShrinkHoms.equivalence C
+
+section Instances
+
+variable [Abelian C] [IsGrothendieckAbelian C]
+
+instance IsGrothendieckAbelian.hasColimits : HasColimits C := has_colimits_of_finite_and_filtered
+instance IsGrothendieckAbelian.hasLimits : HasLimits C := hasLimits_of_hasColimits_of_hasSeparator
+
+end Instances
 
 end CategoryTheory

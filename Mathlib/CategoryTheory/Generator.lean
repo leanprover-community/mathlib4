@@ -354,7 +354,7 @@ def IsCodetector (G : C) : Prop :=
 
 section Equivalence
 
-def IsSeparator.isSeparator_obj_of_equivalence {G : C} (hC : IsSeparator G) (α : C ≌ D) :
+theorem IsSeparator.isSeparator_obj_of_equivalence {G : C} (hC : IsSeparator G) (α : C ≌ D) :
     IsSeparator (α.functor.obj G) := by
   intro d₁ d₂ f g hD
   suffices h : α.inverse.map f = α.inverse.map g by
