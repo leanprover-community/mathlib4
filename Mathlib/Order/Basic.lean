@@ -529,10 +529,19 @@ theorem PartialOrder.ext {A B : PartialOrder α}
   ext x y
   exact H x y
 
+theorem PartialOrder.ext_lt {A B : PartialOrder α}
+    (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) : A = B := by
+  ext x y
+  rw [le_iff_lt_or_eq, @le_iff_lt_or_eq _ A, H]
+
 theorem LinearOrder.ext {A B : LinearOrder α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y
   exact H x y
+
+theorem LinearOrder.ext_lt {A B : LinearOrder α}
+    (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) : A = B :=
+  LinearOrder.toPartialOrder_injective (PartialOrder.ext_lt H)
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
 by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
