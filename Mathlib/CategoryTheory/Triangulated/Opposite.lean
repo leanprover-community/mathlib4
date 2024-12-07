@@ -488,6 +488,12 @@ noncomputable scoped instance : @Functor.CommShift Cᵒᵖ Dᵒᵖ _ _ F.op ℤ 
 
 open Functor
 
+lemma oppositeCommShift_iso (n m : ℤ) (h : n + m = 0) :
+    Functor.CommShift.iso (F := F.op) n =
+    isoWhiskerRight (shiftFunctorOpIso C n m h) F.op ≪≫
+    NatIso.op (Functor.CommShift.iso (F := F) m).symm ≪≫
+    isoWhiskerLeft F.op (shiftFunctorOpIso D n m h).symm := by sorry
+
 lemma truc (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
     (opShiftFunctorEquivalence D n).unitIso.app (F.op.obj X) =
     F.op.mapIso ((opShiftFunctorEquivalence C n).unitIso.app X) ≪≫
@@ -511,10 +517,25 @@ lemma machin_inv_app (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
     F.op.map ((opShiftFunctorEquivalence C n).counitIso.inv.app X) ≫
     (F.op.commShiftIso n).hom.app _ ≫
     (shiftFunctor Dᵒᵖ n).map ((F.commShiftIso n).inv.app _).op := by
-  simp [opShiftFunctorEquivalence]
-  sorry
+  simp only [Functor.op_obj, Functor.id_obj, opShiftFunctorEquivalence, Functor.comp_obj,
+    Iso.trans_inv, NatIso.op_inv, Iso.symm_inv, isoWhiskerLeft_inv, NatTrans.comp_app,
+    NatTrans.op_app, whiskerLeft_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op,
+    Functor.map_comp, Functor.map_shiftFunctorCompIsoId_hom_app, op_comp, assoc]
+  conv_rhs => congr; rfl; congr; rfl; congr; rfl; congr; rfl; congr; congr
+              change (Functor.CommShift.iso (F := F.op) n).hom
+              rw [oppositeCommShift_iso _ n (-n) (by simp)]
+  simp only [Iso.trans_hom, isoWhiskerRight_hom, NatIso.op_hom, Iso.symm_hom, isoWhiskerLeft_hom,
+    NatTrans.comp_app, Functor.comp_obj, Functor.op_obj, whiskerRight_app, Functor.op_map,
+    NatTrans.op_app, whiskerLeft_app, assoc]
+  slice_rhs 4 5 => rw [← op_comp, ← Functor.map_comp, ← unop_comp, Iso.inv_hom_id_app]
+                   erw [unop_id]; rw [Functor.map_id]; rw [op_id]
+  rw [id_comp]
+  slice_rhs 3 4 => rw [← op_comp]; erw [Iso.inv_hom_id_app, op_id]
+  rw [id_comp, ← (shiftFunctorOpIso D n (-n) (by simp)).inv.naturality]
+  slice_rhs 2 3 => rw [Functor.op_map, ← op_comp, ← Functor.map_comp]
+                   erw [Iso.inv_hom_id_app, Functor.map_id]; rw [op_id]
+  rw [id_comp]
 
-#exit
 noncomputable def triangleOpEquivalence_functor_naturality :
     F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor ≅
     (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle := by
