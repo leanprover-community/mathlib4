@@ -52,34 +52,36 @@ theorem ext (A B : VertexOperator R V) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
 /-- The coefficient of a vertex operator under normalized indexing. -/
-def ncoef {R} [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+def ncoeff {R} [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := HVertexOperator.coeff A (-n - 1)
 
 /-- In the literature, the `n`th normalized coefficient of a vertex operator `A` is written as
 either `Aₙ` or `A(n)`. -/
-scoped[VertexOperator] notation A "[[" n "]]" => ncoef A n
+scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 
 @[simp]
-theorem coeff_eq_ncoef (A : VertexOperator R V)
-    (n : ℤ) : HVertexOperator.coeff A n = ncoef A (-n - 1) := by
-  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
+theorem coeff_eq_ncoeff (A : VertexOperator R V)
+    (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
+  rw [ncoeff, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
 
 @[simp]
-theorem ncoef_add (A B : VertexOperator R V) (n : ℤ) : ncoef (A + B) n = ncoef A n + ncoef B n := by
-  rw [ncoef, ncoef, ncoef, add_coeff, Pi.add_apply]
+theorem ncoeff_add (A B : VertexOperator R V) (n : ℤ) :
+    (A + B) [[n]] = A [[n]] + B [[n]] := by
+  rw [ncoeff, ncoeff, ncoeff, add_coeff, Pi.add_apply]
 
 @[simp]
-theorem ncoef_smul (A : VertexOperator R V) (r : R) (n : ℤ) : ncoef (r • A) n = r • ncoef A n := by
-  rw [ncoef, ncoef, smul_coeff, Pi.smul_apply]
+theorem ncoeff_smul (A : VertexOperator R V) (r : R) (n : ℤ) :
+    (r • A) [[n]] = r • (A [[n]]) := by
+  rw [ncoeff, ncoeff, smul_coeff, Pi.smul_apply]
 
-theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : -n - 1 < HahnSeries.order (A x)) : ncoef A n x = 0 := by
-  simp only [ncoef, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
+theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
+    (h : -n - 1 < HahnSeries.order (A x)) : (A [[n]]) x = 0 := by
+  simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : n < HahnSeries.order (A x)) : HVertexOperator.coeff A n x = 0 := by
-  rw [coeff_eq_ncoef, ncoef_eq_zero_of_lt_order A (-n - 1) x]
+  rw [coeff_eq_ncoeff, ncoeff_eq_zero_of_lt_order A (-n - 1) x]
   omega
 
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
@@ -98,11 +100,11 @@ theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
   rfl
 
 @[simp]
-theorem ncoef_of_coeff (f : ℤ → Module.End R V)
+theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
-  rw [ncoef, coeff_apply, of_coeff_apply_coeff]
+  rw [ncoeff, coeff_apply, of_coeff_apply_coeff]
 
 noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
   {
@@ -115,19 +117,19 @@ theorem one_apply (x : V) :
   rfl
 
 @[simp]
-theorem one_ncoef_neg_one : ncoef (1 : VertexOperator R V) (-1) = LinearMap.id := by
+theorem one_ncoeff_neg_one : (1 : VertexOperator R V) [[-1]] = LinearMap.id := by
   ext
-  rw [show -1 = - 0 - 1 by omega, ← coeff_eq_ncoef, coeff_apply, one_apply, Equiv.symm_apply_apply,
+  rw [show -1 = - 0 - 1 by omega, ← coeff_eq_ncoeff, coeff_apply, one_apply, Equiv.symm_apply_apply,
     HahnSeries.single_coeff_same, LinearMap.id_apply]
 
 theorem one_coeff_zero : HVertexOperator.coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
   ext; simp
 
 @[simp]
-theorem one_ncoef_ne_neg_one {n : ℤ} (hn : n ≠ -1) :
-    ncoef (1 : VertexOperator R V) n = 0 := by
+theorem one_ncoeff_ne_neg_one {n : ℤ} (hn : n ≠ -1) :
+    (1 : VertexOperator R V) [[n]] = 0 := by
   ext
-  rw [LinearMap.zero_apply, show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoef, coeff_apply,
+  rw [LinearMap.zero_apply, show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoeff, coeff_apply,
     one_apply, Equiv.symm_apply_apply, HahnSeries.single_coeff_of_ne (show -n - 1 ≠ 0 by omega)]
 
 theorem one_coeff_of_ne {n : ℤ} (hn : n ≠ 0) :
@@ -162,9 +164,9 @@ theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
       (Ring.choose (n + k) k) • HVertexOperator.coeff A (n + k) :=
   rfl
 
-theorem hasseDeriv_ncoef (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
-    ncoef (hasseDeriv k A) n = (Ring.choose (-n - 1 + k) k) • ncoef A (n - k) := by
-  simp only [ncoef, hasseDeriv_coeff, show -n - 1 + k = -(n - k) - 1 by omega]
+theorem hasseDeriv_ncoeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
+    (hasseDeriv k A) [[n]] = (Ring.choose (-n - 1 + k) k) • A [[n - k]] := by
+  simp only [ncoeff, hasseDeriv_coeff, show -n - 1 + k = -(n - k) - 1 by omega]
 
 @[simp]
 theorem hasseDeriv_zero : hasseDeriv 0 = LinearMap.id (M := VertexOperator R V) := by
@@ -301,12 +303,12 @@ section Composite
 
 -- Change this section to use HetComp!
 
-/-- This is a summand in the sum defining `composite.ncoef`.  It is a scalar multiple of
+/-- This is a summand in the sum defining `composite.ncoeff`.  It is a scalar multiple of
 `A_{m+n-i}B_{k+i}x`.  More specifically, it is the summand of fixed `i` for the
 `x^{-n-1}y^{-k-1}` term in `g(x,y)A(x)B(y)` for `g(x,y) = ∑ f(i) x^{m-i}y^i`. -/
 def composite_summand (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ) (f : ℕ → ℤ) :
     Module.End R V where
-  toFun := fun x => (f i) • (ncoef A (m + n - i)) (ncoef B (k + i) x)
+  toFun := fun x => (f i) • (ncoeff A (m + n - i)) (ncoeff B (k + i) x)
   map_add' := by
     simp only [map_add, smul_add, forall_const]
   map_smul' := by
@@ -318,14 +320,14 @@ theorem composite_summand_eq_zero_of_lt_order_right (A B : VertexOperator R V) (
     (f : ℕ → ℤ) (x : V) (h : Int.toNat (-k - HahnSeries.order (B x)) ≤ i) :
     (composite_summand A B m n k i f) x = 0 := by
   simp_all only [composite_summand, LinearMap.coe_mk, AddHom.coe_mk, Int.toNat_le,
-    tsub_le_iff_right, ncoef, coeff]
+    tsub_le_iff_right, ncoeff, coeff]
   have hi : (- (k + i) - 1) < HahnSeries.order (B x) := by omega
   rw [HahnSeries.coeff_eq_zero_of_lt_order hi, LinearMap.map_zero, HahnSeries.zero_coeff, smul_zero]
 
 
 theorem composite_summand_eq_zero_of_lt_order_left (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ)
     (f : ℤ → ℕ → ℤ) (x : V)
-    (h : Int.toNat (-m + i - HahnSeries.order (A (ncoef B (k + i) x))) ≤ n) :
+    (h : Int.toNat (-m + i - HahnSeries.order (A (ncoeff B (k + i) x))) ≤ n) :
     (composite_summand A B m n k i f) x = 0 := by
   sorry
 
@@ -337,7 +339,7 @@ theorem composite_summand_smul (A B : VertexOperator R V) (m n k : ℤ) (i : ℕ
   simp only [LinearMap.coe_mk, AddHom.coe_mk, map_smul]
 
 /-- This is the `x^{-n-1}y^{-k-1}` term in `g(x,y)A(x)B(y)` where `g(x,y) = ∑ f(m,i) x^{m-i}y^i`.-/
-noncomputable def composite_ncoef (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) (x : V) :
+noncomputable def composite_ncoeff (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) (x : V) :
   V := Finset.sum (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
   fun i => composite_summand A B m n k i f x
 
@@ -361,10 +363,10 @@ theorem eventually_constant_sum_add {M : Type*} [AddCommMonoid M] {N : Type*} [A
   rw [(Finset.eventually_constant_sum hmm (Nat.min_le_right (bd (a + b)) (max (bd a) (bd b)))).symm]
   simp only [← @Finset.sum_add_distrib, map_add]
 
-theorem composite_ncoef_add (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) (x y : V) :
-    composite_ncoef A B m n k f (x + y) = (composite_ncoef A B m n k f x) +
-    (composite_ncoef A B m n k f y) := by
-  unfold composite_ncoef
+theorem composite_ncoeff_add (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) (x y : V) :
+    composite_ncoeff A B m n k f (x + y) = (composite_ncoeff A B m n k f x) +
+    (composite_ncoeff A B m n k f y) := by
+  unfold composite_ncoeff
   refine @eventually_constant_sum_add V _ V _
     (fun (x : V) => Int.toNat (-k - HahnSeries.order (B x)))
     (fun i => composite_summand A B m n k i f) ?_ x y
@@ -372,11 +374,11 @@ theorem composite_ncoef_add (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ �
   simp_all only [AddMonoidHom.coe_coe]
   exact @composite_summand_eq_zero_of_lt_order_right R V _ _ _ A B m n k i f z hi
 
-theorem composite_ncoef_smul (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) (r : R)
-    (x : V) : composite_ncoef A B m n k f (r • x) = r • composite_ncoef A B m n k f x := by
-  simp only [composite_ncoef, Finset.smul_sum, composite_summand_smul]
+theorem composite_ncoeff_smul (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) (r : R)
+    (x : V) : composite_ncoeff A B m n k f (r • x) = r • composite_ncoeff A B m n k f x := by
+  simp only [composite_ncoeff, Finset.smul_sum, composite_summand_smul]
   by_cases h₂ : B (r • x) = 0
-  · simp only [composite_summand, LinearMap.coe_mk, AddHom.coe_mk, ncoef, coeff]
+  · simp only [composite_summand, LinearMap.coe_mk, AddHom.coe_mk, ncoeff, coeff]
     simp only [h₂]
     simp only [HahnSeries.zero_coeff, map_zero, smul_zero, Finset.sum_const_zero]
   · have h₃ : HahnSeries.order (B x) ≤ HahnSeries.order (B (r • x)) := by
@@ -391,38 +393,38 @@ theorem composite_ncoef_smul (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ �
       (fun i => composite_summand_eq_zero_of_lt_order_right A B m n k i f (r • x)) h₄]
 
 /-- The coefficient of a composite of vertex operators as a linear map. -/
-noncomputable def composite_ncoef.linearMap (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) :
+noncomputable def composite_ncoeff.linearMap (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ → ℤ) :
     Module.End R V where
-  toFun := fun x => composite_ncoef A B m n k f x
+  toFun := fun x => composite_ncoeff A B m n k f x
   map_add' := by
     intro x y
     simp only [map_add, smul_add]
-    exact composite_ncoef_add A B m n k f x y
+    exact composite_ncoeff_add A B m n k f x y
   map_smul' := by
     intro r x
     simp only [RingHom.id_apply]
-    exact composite_ncoef_smul A B m n k f r x
+    exact composite_ncoeff_smul A B m n k f r x
 
 theorem composite_bdd_below_right (A B : VertexOperator R V) (m n : ℤ) (f : ℕ → ℤ) (x : V) (k : ℤ)
-    (hk : - HahnSeries.order (B x) < k) : composite_ncoef A B m n k f x = 0 := by
-  unfold composite_ncoef
+    (hk : - HahnSeries.order (B x) < k) : composite_ncoeff A B m n k f x = 0 := by
+  unfold composite_ncoeff
   have h : Int.toNat (-k - HahnSeries.order (B x)) = 0 := by
     refine Int.toNat_eq_zero.mpr ?_
     omega
   rw [h, Finset.sum_range_zero]
 
 theorem composite_bdd_below_left (A B : VertexOperator R V) (m k : ℤ) (f : ℕ → ℤ) (x : V) :
-    ∃(z : ℤ), ∀(n : ℤ), z - m < n → composite_ncoef.linearMap A B m n k f x = 0 := by
-  let bd : ℕ → ℤ := fun i => i - (HahnSeries.order (A (ncoef B (k + i) x)))
-  have hbd: ∀(i : ℕ) (n : ℤ), (bd i) ≤ m + n → (ncoef A (m + n - i)) (ncoef B (k + i) x) = 0 := by
+    ∃(z : ℤ), ∀(n : ℤ), z - m < n → composite_ncoeff.linearMap A B m n k f x = 0 := by
+  let bd : ℕ → ℤ := fun i => i - (HahnSeries.order (A (ncoeff B (k + i) x)))
+  have hbd: ∀(i : ℕ) (n : ℤ), (bd i) ≤ m + n → (ncoeff A (m + n - i)) (ncoeff B (k + i) x) = 0 := by
     intro i n hn
     simp_all only [tsub_le_iff_right]
-    refine ncoef_eq_zero_of_lt_order A (m + n - i) (ncoef B (k + i) x) ?_
+    refine ncoeff_eq_zero_of_lt_order A (m + n - i) (ncoeff B (k + i) x) ?_
     omega
   use Nat.cast (Finset.sup (Finset.range (Int.toNat (-k - HahnSeries.order (B x))))
     (fun i => Int.toNat (bd i)))
   intro n hn
-  unfold composite_ncoef.linearMap composite_ncoef composite_summand
+  unfold composite_ncoeff.linearMap composite_ncoeff composite_summand
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   refine Finset.sum_eq_zero ?_
   intro i hi
@@ -440,9 +442,9 @@ end Composite
 /-- Locality to order `≤ N` means `(x-y)^N[A(x),B(y)] = 0`.  We write this condition as
 vanishing of all coefficients.  -/
 def isLocalToOrderLeq' (A B : VertexOperator R V) (N : ℕ) : Prop :=
-  ∀ (k l : ℤ) (x : V), (composite_ncoef A B N k l
+  ∀ (k l : ℤ) (x : V), (composite_ncoeff A B N k l
   (fun i => (-1)^i • (Nat.choose N i)) x) =
-  (composite_ncoef B A N l k (fun i => (-1)^i • (Nat.choose N i)) x)
+  (composite_ncoeff B A N l k (fun i => (-1)^i • (Nat.choose N i)) x)
 
 /-- Locality to order `≤ n` means `(x-y)^n[A(x),B(y)] = 0`.  We write this condition as
 vanishing of the `x^k y^l` term, for all integers `k` and `l`. -/

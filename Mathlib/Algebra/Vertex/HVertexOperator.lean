@@ -7,18 +7,21 @@ import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.RingTheory.HahnSeries.Binomial
 
 /-!
-# Vertex operators
+# Heterogeneous vertex operators
 In this file we introduce heterogeneous vertex operators using Hahn series.  When `R = ℂ`, `V = W`,
 and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D field".  The notion we use
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
+
 ## Definitions
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
+
 ## Main results
 * `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`.  This means we can consider
   products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is expanded as
   `X^n(1-Y/X)^n` in `R((X))((Y))`
+
 ## TODO
 * curry for tensor product inputs
 * more API to make ext comparisons easier.

@@ -71,12 +71,12 @@ section NonUnital
 variable [CommRing R] [AddCommGroup V] [Module R V] (Y : stateField R V)
 
 theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 Y a b c 0 s t =
-    ncoef (Y (ncoef (Y a) t b)) s c := by
+    ncoeff (Y (ncoeff (Y a) t b)) s c := by
   unfold Borcherds_sum_1
   cases h : (Int.toNat (-t - order Y a b)) with
     | zero =>
       rw [Finset.range_zero, Finset.sum_empty]
-      rw [ncoef_zero_if_neg_order_leq Y a b t (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+      rw [ncoeff_zero_if_neg_order_leq Y a b t (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
       exact rfl
     | succ n =>
       rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
@@ -88,9 +88,9 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 Y a b c 0 s
 
 theorem associativity_right (a b c : V) (s t : ℤ) : Borcherds_sum_2 Y a b c 0 s t +
     Borcherds_sum_3 Y a b c 0 s t = Finset.sum (Finset.range (Int.toNat (-s - order Y b c)))
-    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoef (Y a) (t-i) (ncoef (Y b) (s+i) c)) +
+    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoeff (Y a) (t-i) (ncoeff (Y b) (s+i) c)) +
     Finset.sum (Finset.range (Int.toNat (- order Y a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) •
-    (Ring.choose t i) • ncoef (Y b) (s+t-i) (ncoef (Y a) i c)) := by
+    (Ring.choose t i) • ncoeff (Y b) (s+t-i) (ncoeff (Y a) i c)) := by
   unfold Borcherds_sum_2 Borcherds_sum_3
   simp only [neg_zero, zero_sub, zero_add]
 
@@ -101,12 +101,12 @@ theorem Borcherds_id_at_zero_iff_associativity (a b c : V) (s t : ℤ) :
   exact Eq.congr rfl rfl
 
 theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 Y a b c r s 0 =
-    ncoef (Y a) r (ncoef (Y b) s c) := by
+    ncoeff (Y a) r (ncoeff (Y b) s c) := by
   unfold Borcherds_sum_2
   cases h : (Int.toNat (-s - order Y b c)) with
   | zero =>
     rw [Finset.range_zero, Finset.sum_empty]
-    rw [ncoef_zero_if_neg_order_leq Y b c s (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
+    rw [ncoeff_zero_if_neg_order_leq Y b c s (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
         (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ),
@@ -116,11 +116,11 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 Y a b c r s
       zero_smul, smul_zero]
 
 theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 Y a b c r s 0 =
-    -ncoef (Y b) s (ncoef (Y a) r c) := by
+    -ncoeff (Y b) s (ncoeff (Y a) r c) := by
   unfold Borcherds_sum_3
   cases h : (Int.toNat (-r - order Y a c)) with
   | zero =>
-    rw [Finset.range_zero, Finset.sum_empty, ncoef_zero_if_neg_order_leq Y a c r
+    rw [Finset.range_zero, Finset.sum_empty, ncoeff_zero_if_neg_order_leq Y a c r
       (Int.toNat_sub_eq_zero_leq.mp h), LinearMap.map_zero, neg_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
@@ -151,7 +151,7 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
     (HVertexOperator.coeff (Y a) (-r - 1 - m.1))
     ((HVertexOperator.coeff (Y b) (-s - 1 - m.2)) c)) =
     Borcherds_sum_2 Y a b c r s (Int.toNat (-s - order Y b c)) := by
-  unfold Borcherds_sum_2 ncoef
+  unfold Borcherds_sum_2 ncoeff
   rw [Finset.Nat.antidiagonal_eq_map']
   simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-s - order Y b c)))]
@@ -175,7 +175,7 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
     (-r - order Y a c)) m.2) • HVertexOperator.coeff (Y b) (-s - 1 - m.2)
     (HVertexOperator.coeff (Y a) (-r - 1 - m.1) c)) =
     Borcherds_sum_3 Y a b c r s (Int.toNat (-r - order Y a c)) := by
-  unfold Borcherds_sum_3 ncoef
+  unfold Borcherds_sum_3 ncoeff
   rw [Finset.Nat.antidiagonal_eq_map]
   simp_all only [Finset.sum_map, Function.Embedding.coeFn_mk, neg_sub, neg_add_rev]
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-r - order Y a c)))]

@@ -11,9 +11,9 @@ We produce an algebra homomorphism from a power series ring `R[[X]]` to itself b
 into a positive order element.
 
 ## Main Definitions
-  * `PowerSeries.eval` is a linear map from `R[[X]]` to itself given by sending `X` to `X * f(X)`,
+  * `PowerSeries.eval` is the linear map from `R[[X]]` to itself given by sending `X` to `X * f(X)`,
     where `f(X)` is a power series.
-  * `PowerSeries.aeval` is an `R`-algebra map from `R[[X]]` to itself given by sending `X` to
+  * `PowerSeries.aeval` is the `R`-algebra map from `R[[X]]` to itself given by sending `X` to
   `X * f(X)`, where `f(X)` is a power series.
 
 ## Main results
@@ -85,7 +85,18 @@ lemma eval_one [Semiring R] (f : PowerSeries R) : eval f 1 = 1 := by
     simp_all only [mem_antidiagonal, pow_zero, coeff_one, ite_eq_right_iff]
     omega
 
+@[simp]
+lemma eval_monomial [Semiring R] (f : PowerSeries R) (r : R) (n : ℕ) :
+    eval f (monomial R n r) = r • X ^ n * f ^ n := by
+  ext m
+  simp only [eval_coeff, smul_eq_mul, coeff_mul, map_smul]
+  refine sum_congr rfl fun ij hij => ?_
+  by_cases h : ij.1 = n
+  · rw [h, coeff_X_pow_self, coeff_monomial_same, mul_one]
+  · simp [h, coeff_X_pow ij.1 n, coeff_monomial ij.1 n]
+
 /-- Given a power series `f(X)`, an algebra map taking `g(X)` to `g(X * f(X))`. -/
+@[simps]
 def aeval [CommSemiring R] (f : PowerSeries R) : PowerSeries R →ₐ[R] PowerSeries R where
   toFun x := eval f x
   map_one' := eval_one f

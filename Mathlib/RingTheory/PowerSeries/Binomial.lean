@@ -54,10 +54,23 @@ lemma binomial_add (r s : R) : BinomialSeries (r + s) = BinomialSeries r * Binom
   ext n
   simp [coeff_mul, Ring.add_choose_eq n (Commute.all r s)]
 
+/-!
+lemma binomialSeries_mul (r : R) : -- need mvPowerSeries
+    (1 + (X 1)) ^ r * (1 + (X 2)) ^ r = (1 + (X 1) + (X 2) + (X 1) * (X 2)) ^ r := by
+-/
+
 /-- The power series given by `(1 + X * f X) ^ r`. -/
 def BinomialEval (f : PowerSeries R) (r : R) : PowerSeries R :=
   eval f (BinomialSeries r)
 
+/-!
+/-- `(1 + X) ^ (r * s) = ((1 + X) ^ r) ^ s` -/
+lemma binomial_mul (r s : R) :
+    BinomialSeries (r * s) = BinomialEval (mk fun n => Ring.choose r (n + 1)) s := by
+  ext n
+  simp only [binomial_coeff, BinomialEval, eval_coeff, smul_eq_mul]
+  rw [some_theorem_about_(r*s).choose]
 
+-/
 
 end PowerSeries

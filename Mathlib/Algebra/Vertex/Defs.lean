@@ -51,15 +51,15 @@ abbrev stateField (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module 
 
 variable {R : Type*} {V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (Y : stateField R V)
 
---scoped[VertexAlg] notation a "[[" n "]]" => ncoef (Y a) n
+--scoped[VertexAlg] notation a "[[" n "]]" => ncoeff (Y a) n
 
 theorem Y_coeff_add_left_eq (Y : stateField R V) (a b : V) (n : ℤ) :
     HVertexOperator.coeff (Y a + Y b) n =
       HVertexOperator.coeff (Y a) n + HVertexOperator.coeff (R := R) (Y b) n := by
   exact rfl
 
-theorem Y_ncoef_add_left_eq (a b : V) (n : ℤ) :
-    ncoef (Y a + Y b) n = ncoef (Y a) n + ncoef (R := R) (Y b) n := by
+theorem Y_ncoeff_add_left_eq (a b : V) (n : ℤ) :
+    ncoeff (Y a + Y b) n = ncoeff (Y a) n + ncoeff (R := R) (Y b) n := by
   exact rfl
 
 theorem Y_coeff_smul_left_eq (r : R) (a : V) (n : ℤ) :
@@ -67,8 +67,8 @@ theorem Y_coeff_smul_left_eq (r : R) (a : V) (n : ℤ) :
   simp only [map_smul]
   exact rfl
 
-theorem Y_ncoef_smul_left_eq (r : R) (a : V) (n : ℤ) :
-    ncoef (Y (r • a)) n = r • ncoef (R := R) (Y a) n := by
+theorem Y_ncoeff_smul_left_eq (r : R) (a : V) (n : ℤ) :
+    ncoeff (Y (r • a)) n = r • ncoeff (R := R) (Y a) n := by
   simp only [map_smul]
   exact rfl
 
@@ -77,17 +77,17 @@ theorem coeff_add_left_eq (a b c : V) (n : ℤ) :
       HVertexOperator.coeff (Y a) n c + HVertexOperator.coeff (R := R) (Y b) n c := by
   rw [map_add, Y_coeff_add_left_eq, LinearMap.add_apply]
 
-theorem ncoef_add_left_eq (a b c : V) (n : ℤ) :
-    ncoef (Y (a + b)) n c = ncoef (Y a) n c + ncoef (Y b) n c := by
-  rw [map_add, Y_ncoef_add_left_eq, LinearMap.add_apply]
+theorem ncoeff_add_left_eq (a b c : V) (n : ℤ) :
+    ncoeff (Y (a + b)) n c = ncoeff (Y a) n c + ncoeff (Y b) n c := by
+  rw [map_add, Y_ncoeff_add_left_eq, LinearMap.add_apply]
 
 theorem coeff_smul_left_eq (r : R) (a b : V) (n : ℤ) :
     HVertexOperator.coeff (Y (r • a)) n b = r • HVertexOperator.coeff (Y a) n b := by
   rw [Y_coeff_smul_left_eq, LinearMap.smul_apply]
 
-theorem ncoef_smul_left_eq (r : R) (a b : V) (n : ℤ) :
-    ncoef (Y (r • a)) n b = r • ncoef (Y a) n b := by
-  rw [Y_ncoef_smul_left_eq, LinearMap.smul_apply]
+theorem ncoeff_smul_left_eq (r : R) (a b : V) (n : ℤ) :
+    ncoeff (Y (r • a)) n b = r • ncoeff (Y a) n b := by
+  rw [Y_ncoeff_smul_left_eq, LinearMap.smul_apply]
 
 /-- The order is the smallest integer `n` such that `a ⁅-n-1⁆ b ≠ 0` if `Y a b` is nonzero, and zero
 otherwise.  In particular, `a ⁅n⁆ b = 0` for `n ≥ -order a b`. -/
@@ -105,16 +105,16 @@ theorem coeff_nonzero_at_order (a b : V) (h: Y a b ≠ 0) :
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_order_ne_zero h
 
-theorem ncoef_zero_if_neg_order_leq (a b : V) (n : ℤ) (h: - order Y a b ≤ n) :
-    ncoef (Y a) n b = 0 := by
-  rw [ncoef]
+theorem ncoeff_zero_if_neg_order_leq (a b : V) (n : ℤ) (h: - order Y a b ≤ n) :
+    ncoeff (Y a) n b = 0 := by
+  rw [ncoeff]
   refine coeff_zero_if_lt_order Y a b (-n-1) ?_
   rw [Int.sub_one_lt_iff, neg_le]
   exact h
 
-theorem ncoef_nonzero_at_neg_order_minus_one (a b : V) (h: Y a b ≠ 0) :
-    ncoef (Y a) (-order Y a b - 1) b ≠ 0 := by
-  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
+theorem ncoeff_nonzero_at_neg_order_minus_one (a b : V) (h: Y a b ≠ 0) :
+    ncoeff (Y a) (-order Y a b - 1) b ≠ 0 := by
+  rw [ncoeff, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
   exact coeff_nonzero_at_order Y a b h
 
 -- Reminder: a (t + i) b = 0 for i ≥ -t - (order a b)
@@ -123,21 +123,21 @@ theorem ncoef_nonzero_at_neg_order_minus_one (a b : V) (h: Y a b ≠ 0) :
 `x^r (1 + z/x)^r (a(x)b)(z)c`. -/
 noncomputable def Borcherds_sum_1 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-t - order Y a b)))
-    (fun i ↦ (Ring.choose r i) • ncoef (Y (ncoef (Y a) (t+i) b)) (r+s-i) c)
+    (fun i ↦ (Ring.choose r i) • ncoeff (Y (ncoeff (Y a) (t+i) b)) (r+s-i) c)
 
 /-- The second sum in the Borcherds identity, giving the `y^r z^s` coefficient of
 `y^t (1 - z/y)^t a(y)b(z)c`. -/
 noncomputable def Borcherds_sum_2 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-s - order Y b c)))
-    (fun i ↦ (-1)^i • (Ring.choose t i) • ncoef (Y a) (r+t-i)
-    (ncoef (Y b) (s+i) c))
+    (fun i ↦ (-1)^i • (Ring.choose t i) • ncoeff (Y a) (r+t-i)
+    (ncoeff (Y b) (s+i) c))
 
 /-- The third sum in the Borcherds identity, giving the `y^r z^s` coefficient of
 `-(-y)^t (1 - y/z)^t b(z)a(y)c`. -/
 noncomputable def Borcherds_sum_3 (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-r - order Y a c)))
-    (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoef (Y b) (s+t-i)
-    (ncoef (Y a) (r+i) c))
+    (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoeff (Y b) (s+t-i)
+    (ncoeff (Y a) (r+i) c))
 
 /-- The Borcherds identity, also called the Jacobi identity or Cauchy-Jacobi identity when put in
 power-series form.  It is a formal distribution analogue of the combination of commutativity and
@@ -147,17 +147,17 @@ noncomputable def Borcherds_id (a b c : V) (r s t : ℤ) : Prop :=
 
 /-- The associativity property of vertex algebras. -/
 def associativity (a b c : V) (s t : ℤ) : Prop :=
-  ncoef (Y (ncoef (Y a) t b)) s c = Finset.sum (Finset.range
+  ncoeff (Y (ncoeff (Y a) t b)) s c = Finset.sum (Finset.range
     (Int.toNat (-s - order Y b c))) (fun i ↦ (-1)^i • (Ring.choose (t : ℤ)  i) •
-    (ncoef (Y a) (t-i) (ncoef (Y b) (s+i) c))) + Finset.sum (Finset.range (Int.toNat
-    (- order Y a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoef (Y b) (s+t-i)
-    (ncoef (Y a) i c))
+    (ncoeff (Y a) (t-i) (ncoeff (Y b) (s+i) c))) + Finset.sum (Finset.range (Int.toNat
+    (- order Y a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • ncoeff (Y b) (s+t-i)
+    (ncoeff (Y a) i c))
 
 /-- The commutator formula for vertex algebras. -/
 def commutator_formula (a b c : V) (r s : ℤ) : Prop :=
-  ncoef (Y a) r (ncoef (Y b) s c) - ncoef (Y b) s (ncoef (Y a) r c) =
+  ncoeff (Y a) r (ncoeff (Y b) s c) - ncoeff (Y b) s (ncoeff (Y a) r c) =
   Finset.sum (Finset.range (Int.toNat (- order Y a b))) (fun i ↦ (Ring.choose r i) •
-  ncoef (Y (ncoef (Y a) i b)) (r+s-i) c)
+  ncoeff (Y (ncoeff (Y a) i b)) (r+s-i) c)
 
 /-- The locality property, asserting that `(x-y)^N Y(a,x)Y(b,y) = (x-y)^N Y(b,y)Y(a,x)` for
 sufficiently large `N`.  That is, the vertex operators commute up to finite order poles on the
@@ -200,8 +200,8 @@ def T (Y : stateField R V) (n : ℕ) : Module.End R V where
 
 /-- The skew-symmetry property for vertex algebras: `Y(u,z)v = exp(Tz)Y(v,-z)u`. -/
 def skew_symmetry (Y : stateField R V) (a b : V) (n : ℤ) : Prop :=
-  ncoef (Y b) n a = Finset.sum (Finset.range (Int.toNat (-n - order Y a b)))
-    (fun i ↦ (-1:ℤˣ)^(n + i + 1) • T Y i (ncoef (Y a) (n+i) b))
+  ncoeff (Y b) n a = Finset.sum (Finset.range (Int.toNat (-n - order Y a b)))
+    (fun i ↦ (-1:ℤˣ)^(n + i + 1) • T Y i (ncoeff (Y a) (n+i) b))
 
 /-- A field is translation covariant with respect to a divided-power system of endomorphisms that
 stabilizes identity if left translation satisfies the Leibniz rule.  We omit conditions on `f`. -/
