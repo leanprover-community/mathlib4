@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.Data.Sym.Sym2.Prod
 
 /-!
@@ -217,6 +218,50 @@ c.f `LinearAlgebra/QuadraticForm/TensorProduct`
 
 open TensorProduct
 
+section uniqueness
+
+universe uR uA uM₁ uM₂ uN₁ uN₂
+
+variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
+
+variable [CommRing R] [CommRing A] [Nontrivial A]
+variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
+variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
+variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
+variable [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [Module R M₂] [Module R N₂]
+
+variable (Q₁ : QuadraticMap A M₁ N₁)
+variable (Q₂ : QuadraticMap R M₂ N₂)
+
+variable (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
+
+-- #check span_tmul_eq_top
+
+-- theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤
+
+-- #check TensorProduct.exists_finset
+
+variable (S : Finset (M₁ × M₂)) --(hS ), x = ∑ i ∈ S, i.1 ⊗ₜ[R] i.2
+
+variable (hQ : ∀ a b, Q (a ⊗ₜ b) = Q₁ a ⊗ₜ Q₂ b)
+
+omit [Algebra R A] [IsScalarTower R A M₁] in
+lemma exists_finset_as_lin_comb [LinearOrder S] :  ∑ i ∈ S, i.1 ⊗ₜ[R] i.2 =
+    (Finsupp.linearCombination A (fun (i : (M₁ × M₂)) => i.1 ⊗ₜ[R] i.2)
+    (Finsupp.mk S (Set.indicator S.toSet (fun _ => (1 : A))) (fun _ => by simp))) := by
+  rw [Finsupp.linearCombination_apply_of_mem_supported A (fun ⦃a⦄ a ↦ a) ]
+  simp only [Finsupp.coe_mk]
+  apply Finset.sum_congr rfl _
+  intro x hx
+  simp_all only [Finset.mem_coe, Set.indicator_of_mem, one_smul]
+
+
+
+end uniqueness
+
+
+
 section TensorProduct
 
 universe uR uA uM₁ uM₂ uN₁ uN₂
@@ -350,6 +395,8 @@ lemma tensorDistriFree_polar2 (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i�
     (polarBilin Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ Q₂ (bm₂ i₂)   := by
   rw [← h₁, tensorDistriFree_right_self]
 
+
+
 /--
 -Lift the polar (Basis)
 --/
@@ -405,12 +452,40 @@ noncomputable def polar_left_lift (x : M₁ ⊗[R] M₂) : Sym2 (ι₁ × ι₂)
   let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   polar_left_lift_lc Q₁ Q₂ bm₁ bm₂ (bm.repr x)
 
+lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft_lc (g₁ : ι₁ → M₁ ) (g₂ : ι₂ → M₂)
+    (l : ι₁ × ι₂ →₀ A)
+    (s : Finset (Sym2 (ι₁ × ι₂))) (p : Sym2 (ι₁ × ι₂))
+    (h: p ∈ Finset.filter symOffDiagLeft s) :
+    let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
+    polar_lift_lc Q (fun i => g₁ i.1 ⊗ₜ g₂ i.2) l p =  polar_left_lift_lc Q₁ Q₂ g₁ g₂ l p := by
+  induction' p with i j
+  simp
+  rw [polar_lift_lc, polar_left_lift_lc]
+  simp at h
+  obtain e1 := h.2.1
+  simp only [Sym2.lift_mk, polarBilin_apply_apply]
+  simp_rw [e1]
+  simp_all only [true_and, ↓reduceIte]
+  obtain ⟨fst, snd⟩ := i
+  obtain ⟨fst_1, snd_1⟩ := j
+  obtain ⟨left, right⟩ := h
+  subst e1
+  simp_all only [Basis.tensorProduct_apply]
+  rw [tensorDistriFree_left_self]
+  rfl
+
 lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
     (s : Finset (Sym2 (ι₁ × ι₂))) (x : M₁ ⊗[R] M₂) (p : Sym2 (ι₁ × ι₂))
     (h: p ∈ Finset.filter symOffDiagLeft s) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     polar_lift Q bm x p =  polar_left_lift bm₁ Q₁ bm₂ Q₂ x p := by
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+/-
+  simp_rw [polar_lift, polar_left_lift]
+  rw [(polar_lift_eq_polarleft_lift_on_symOffDiagLeft_lc bm₁ Q₁ bm₂ Q₂ bm)]
+-/
+
   induction' p with i j
   simp
   rw [polar_lift, polar_lift_lc, polar_left_lift, polar_left_lift_lc]
@@ -426,6 +501,7 @@ lemma polar_lift_eq_polarleft_lift_on_symOffDiagLeft
   simp_all only [Basis.tensorProduct_apply]
   rw [tensorDistriFree_polar1 _ _ _ _ _ _ _ _ rfl]
   rfl
+
 
 lemma sum_left (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
