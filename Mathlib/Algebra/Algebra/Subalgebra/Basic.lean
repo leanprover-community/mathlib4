@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.Algebra.Operations
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -180,6 +181,37 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
 -- def toSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 --     (S : Subalgebra R A) : Submonoid A :=
 --   S.toSubsemiring.toSubmonoid
+
+/-- The span of a set which contains one and is closed under multiplication is a subalgebra. -/
+def of_span_set {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+    (s : Set A) (h_one_mem : 1 ∈ s) (h_mul_mem : ∀ x y : A, x ∈ s → y ∈ s → x * y ∈ s) :
+    Subalgebra R A :=
+  { Submodule.span R s with
+    mul_mem' := by
+      intro _ _ hx hy
+      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+        Submodule.mem_toAddSubmonoid] at *
+      rcases (mem_span_set'.mp hx) with ⟨nx, fx, gx, hx⟩
+      rcases (mem_span_set'.mp hy) with ⟨ny, fy, gy, hy⟩
+      rw [← hx, ← hy, Finset.sum_mul_sum]
+      apply Submodule.sum_mem
+      intro c _
+      apply Submodule.sum_mem
+      intro d _
+      simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
+      apply Submodule.smul_mem _ _ (Submodule.smul_mem _ _ _)
+      apply Submodule.subset_span
+          (h_mul_mem _ _ (Subtype.coe_prop (gx c)) (Subtype.coe_prop (gy d)))
+    one_mem' := Submodule.subset_span (h_one_mem)
+    algebraMap_mem' := by
+      intro r
+      rw [Algebra.algebraMap_eq_smul_one]
+      exact Submodule.smul_mem (Submodule.span R (s : Set A)) _ (Submodule.subset_span h_one_mem) }
+
+/-- The span of a submonoid is a subalgebra -/
+def of_span_submonoid (R : Type u) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+    (s : Submonoid A) : Subalgebra R A :=
+  of_span_set (s : Set A) s.one_mem (@Submonoid.mul_mem _ _ s)
 
 /-- A subalgebra over a ring is also a `Subring`. -/
 @[simps toSubsemiring]
