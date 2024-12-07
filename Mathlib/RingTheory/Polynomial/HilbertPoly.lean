@@ -78,6 +78,10 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
     simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
       (monic_ascPochhammer _ _), one_mul, leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
 
+lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
+    (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
+  rw [leadingCoeff, natDegree_preHilbertPoly, coeff_preHilbertPoly_self]
+
 lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n):
     (preHilbertPoly F d k).eval (n : F) = (n - k + d).choose d := by
   have : (d ! : F) ≠ 0 := by norm_cast; positivity
@@ -95,7 +99,7 @@ is defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbertPoly F d
 `M` is a graded module whose Poincaré series can be written as `p(X)/(1 - X)ᵈ` for some
 `p : ℚ[X]` with integer coefficients, then `Polynomial.hilbertPoly p d` is the Hilbert
 polynomial of `M`. See also `Polynomial.coeff_mul_invOneSubPow_eq_hilbertPoly_eval`,
-which says that `PowerSeries.coeff F n (p * (PowerSeries.invOneSubPow F d))` equals
+which says that `PowerSeries.coeff F n (p * PowerSeries.invOneSubPow F d)` equals
 `(Polynomial.hilbertPoly p d).eval (n : F)` for any large enough `n : ℕ`.
 -/
 noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
@@ -127,7 +131,7 @@ coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 -/
 theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
     {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
-    PowerSeries.coeff F n (p * (invOneSubPow F d)) = (hilbertPoly p d).eval (n : F) := by
+    PowerSeries.coeff F n (p * invOneSubPow F d) = (hilbertPoly p d).eval (n : F) := by
   delta hilbertPoly; induction d with
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
@@ -155,8 +159,8 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
 The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is unique.
 -/
 theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
-    ∃! (h : F[X]), (∃ (N : ℕ), (∀ (n : ℕ) (_ : N < n),
-    PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F))) := by
+    ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
+    PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
     exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
@@ -169,12 +173,12 @@ theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
 
 /--
 If `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than `N`
-we have `PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F)`, then `h` is exactly
+we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h` is exactly
 `Polynomial.hilbertPoly p d`.
 -/
 theorem eq_hilbertPoly_of_forall_coeff_eq_eval
-    {p h : F[X]} {d : ℕ} (N : ℕ) (hhN : ∀ (n : ℕ) (_ : N < n),
-    PowerSeries.coeff F n (p * (invOneSubPow F d)) = h.eval (n : F)) :
+    {p h : F[X]} {d : ℕ} (N : ℕ) (hhN : ∀ n > N,
+    PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)) :
     h = hilbertPoly p d :=
   ExistsUnique.unique (exists_unique_hilbertPoly p d) ⟨N, hhN⟩
     ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
