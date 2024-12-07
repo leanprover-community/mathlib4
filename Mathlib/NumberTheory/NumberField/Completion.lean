@@ -171,7 +171,7 @@ def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
 @[deprecated (since := "2024-12-07")]
 noncomputable alias isometryEquiv_complex_of_isComplex := isometryEquivComplexOfIsComplex
 
-/-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is surjective. -/
+/-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Surjective (extensionEmbeddingOfIsReal hv) := by
   rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed]
