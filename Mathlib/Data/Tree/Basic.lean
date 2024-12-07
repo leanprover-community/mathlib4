@@ -53,8 +53,8 @@ def traverse {m:Type* → Type*} [Applicative m] {α β} (f:α → m β) :Tree �
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
 -/
 def map {β} (f : α → β) : Tree α → Tree β
-  | .nil => nil
-  | .node a l r => node (f a) (map f l) (map f r)
+  | nil => nil
+  | node a l r => node (f a) (map f l) (map f r)
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]
