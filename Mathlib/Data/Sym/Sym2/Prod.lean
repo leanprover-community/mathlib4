@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Algebra.BigOperators.Group.Finset
 
 /-!
 # Sym2 (ι₁ × ι₂)
@@ -325,5 +326,19 @@ lemma e4 (p : Sym2 (ι₁ × ι₂)) [LinearOrder ι₁] [LinearOrder ι₂] :
     rw [and_comm]
     exact not_symOffDiagUpper_and_symOffDiagLower p
   exact f1 t1
+
+variable {N : Type*} [AddCommMonoid N]
+
+lemma sum_on_left_right_upper_lower [LinearOrder ι₁] [LinearOrder ι₂] {f : Sym2 (ι₁ × ι₂) → N}
+    {s : Finset (Sym2 (ι₁ × ι₂))} :
+    (∑ p ∈ s with symOffDiagLeft p, f p)
+      + (∑ p ∈ s with symOffDiagRight p, f p)
+      + (∑ p ∈ s with symOffDiagUpper p, f p)
+      + (∑ p ∈ s with symOffDiagLower p, f p) = (∑ p ∈ s with ¬ p.IsDiag, f p)  := by
+  simp_rw [not_IsDiag_iff_symOffDiagXor_xor_symOffDiag, Finset.sum_filter_xor, e1, e2]
+  rw [add_assoc]
+  simp_rw [symOffDiagXor_iff_symOffDiagLeft_xor_symOffDiagRight, Finset.sum_filter_xor, e5, e6]
+  rw [add_assoc, add_assoc]
+  simp_rw [symOffDiag_iff_symOffDiagUpper_xor_symOffDiagLower, Finset.sum_filter_xor, e3, e4]
 
 end Prod
