@@ -19,7 +19,7 @@ completion of `α`. -/
 @[to_additive "A function `f` has a sum in an uniform additive group `α` if and only if it has that
 sum in the completion of `α`."]
 theorem hasProd_iff_hasProd_compl (f : β → α) (a : α):
-    HasProd (toComplMulHom ∘ f) a ↔ HasProd f a := (denseInducing_toComplMulHom α).hasProd_iff f a
+    HasProd (toComplMulHom ∘ f) a ↔ HasProd f a := (isDenseInducing_toComplMulHom α).hasProd_iff f a
 
 /-- A function `f` is multipliable in a uniform group `α` if and only if it is multipliable in
 `Completion α` and its product in `Completion α` lies in the range of
@@ -30,7 +30,7 @@ summable in `Completion α` and its sum in `Completion α` lies in the range of
 theorem multipliable_iff_multipliable_compl_and_tprod_mem (f : β → α) :
     Multipliable f ↔ Multipliable (toComplMulHom ∘ f) ∧
       ∏' i, toComplMulHom (f i) ∈ Set.range toComplMulHom :=
-  (denseInducing_toComplMulHom α).multipliable_iff_tprod_comp_mem_range f
+  (isDenseInducing_toComplMulHom α).multipliable_iff_tprod_comp_mem_range f
 
 /-- A function `f` is multipliable in a uniform group `α` if and only if the net of its partial
 products is Cauchy and its product in `Completion α` lies in the range of

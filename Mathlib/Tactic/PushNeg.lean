@@ -5,19 +5,23 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 -/
 
 import Lean.Elab.Tactic.Location
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
-import Mathlib.Init.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Conv
-import Mathlib.Init.Set
-import Lean.Elab.Tactic.Location
 
-set_option autoImplicit true
+/-!
+# The `push_neg` tactic
+
+The `push_neg` tactic pushes negations inside expressions: it can be applied to goals as well
+as local hypotheses and also works as a `conv` tactic.
+-/
 
 namespace Mathlib.Tactic.PushNeg
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
-variable (p q : Prop) (s : α → Prop)
+variable (p q : Prop) {α : Sort*} {β : Type*} (s : α → Prop)
 
 theorem not_not_eq : (¬ ¬ p) = p := propext not_not
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
@@ -30,21 +34,25 @@ theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not
 theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 
-variable {β : Type u} [LinearOrder β]
+section LinearOrder
+variable [LinearOrder β]
+
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
-theorem not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
-  have A : ∀ (x : γ), ¬(x ∈ (∅ : Set γ)) := fun x ↦ id
+end LinearOrder
+
+theorem not_nonempty_eq (s : Set β) : (¬ s.Nonempty) = (s = ∅) := by
+  have A : ∀ (x : β), ¬(x ∈ (∅ : Set β)) := fun x ↦ id
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
   exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
 
-theorem ne_empty_eq_nonempty (s : Set γ) : (s ≠ ∅) = s.Nonempty := by
+theorem ne_empty_eq_nonempty (s : Set β) : (s ≠ ∅) = s.Nonempty := by
   rw [ne_eq, ← not_nonempty_eq s, not_not]
 
-theorem empty_ne_eq_nonempty (s : Set γ) : (∅ ≠ s) = s.Nonempty := by
+theorem empty_ne_eq_nonempty (s : Set β) : (∅ ≠ s) = s.Nonempty := by
   rw [ne_comm, ne_empty_eq_nonempty]
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
@@ -136,10 +144,9 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
 
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
-  let myctx : Simp.Context :=
-    { config := { eta := true, zeta := false, proj := false },
-      simpTheorems := #[ ]
-      congrTheorems := (← getSimpCongrTheorems) }
+  let myctx : Simp.Context ← Simp.mkContext { eta := true, zeta := false, proj := false }
+      (simpTheorems := #[ ])
+      (congrTheorems := (← getSimpCongrTheorems))
   (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })
 
 /--
@@ -226,3 +233,5 @@ elab "push_neg" loc:(location)? : tactic =>
     pushNegLocalDecl
     pushNegTarget
     (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+
+end Mathlib.Tactic.PushNeg

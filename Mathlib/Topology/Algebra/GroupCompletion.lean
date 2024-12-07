@@ -3,11 +3,8 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Mitchell Lee, Eric Wieser
 -/
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
-
-#align_import topology.algebra.group_completion from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Completion of topological groups:
@@ -114,13 +111,11 @@ variable [UniformSpace α] [Group α] [UniformGroup α]
 @[to_additive (attr := norm_cast) coe_neg]
 theorem coe_inv' (a : α) : ((a⁻¹ : α) : Completion α) = (a : Completion α)⁻¹ :=
   (denseInducing_coe.extend_eq ((continuous_coe α).comp (@continuous_inv α _ _ _)) a).symm
-#align uniform_space.completion.coe_neg UniformSpace.Completion.coe_neg
 
 @[to_additive (attr := norm_cast) coe_sub]
 theorem coe_div' (a b : α) : ((a / b : α) : Completion α) = a / b :=
   ((denseInducing_coe.prod denseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_div' α _ _ _)) (a, b)).symm
-#align uniform_space.completion.coe_sub UniformSpace.Completion.coe_sub
 
 @[to_additive]
 private lemma uniformContinuous_completion_mul :
@@ -323,7 +318,6 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
-#align uniform_space.completion.module UniformSpace.Completion.instModule
 
 end UniformAddCommGroup
 
@@ -363,7 +357,6 @@ theorem MonoidHom.extension_coe [CompleteSpace β] [T0Space β] (f : α →* β)
 theorem MonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α →* β)
     (hf : Continuous f) : Continuous (f.extension hf) :=
   UniformSpace.Completion.continuous_extension
-#align add_monoid_hom.continuous_extension AddMonoidHom.continuous_extension
 
 /-- Completion of a continuous multiplicative group hom, as a group hom. -/
 @[to_additive "Completion of a continuous additive group hom, as a group hom."]
@@ -376,7 +369,6 @@ noncomputable def MonoidHom.completion (f : α →* β) (hf : Continuous f) :
 theorem MonoidHom.continuous_completion (f : α →* β) (hf : Continuous f) :
     Continuous (MonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
-#align add_monoid_hom.continuous_completion AddMonoidHom.continuous_completion
 
 @[to_additive]
 theorem MonoidHom.completion_coe (f : α →* β) (hf : Continuous f) (a : α) :
@@ -390,7 +382,7 @@ theorem MonoidHom.completion_one :
   ext x
   refine Completion.induction_on x ?_ ?_
   · apply isClosed_eq (MonoidHom.continuous_completion (1 : α →* β) continuous_const)
-    simp [continuous_const]
+    exact continuous_const
   · intro a
     simp [(1 : α →* β).completion_coe continuous_const, coe_one]
 #align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
