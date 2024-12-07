@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.Data.Sym.Sym2.Prod
 
 /-!
