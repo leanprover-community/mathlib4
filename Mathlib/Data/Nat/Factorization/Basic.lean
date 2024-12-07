@@ -270,7 +270,7 @@ and `n'` such that `n'` is not divisible by `p` and `n = p^e * n'`. -/
 theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p ≠ 1) :
     ∃ e n' : ℕ, ¬p ∣ n' ∧ n = p ^ e * n' :=
   let ⟨a', h₁, h₂⟩ :=
-    (Nat.multiplicity_finite_iff.mpr ⟨hp, Nat.pos_of_ne_zero hn⟩).exists_eq_pow_mul_and_not_dvd
+    (Nat.finiteMultiplicity_iff.mpr ⟨hp, Nat.pos_of_ne_zero hn⟩).exists_eq_pow_mul_and_not_dvd
   ⟨_, a', h₂, h₁⟩
 
 /-- Any nonzero natural number is the product of an odd part `m` and a power of
