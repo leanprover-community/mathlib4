@@ -616,7 +616,7 @@ instance smulCommClass_right [SMul X Y] [SMul K Y] [SMulCommClass X K Y] (F : Su
   inferInstanceAs (SMulCommClass X F.toSubsemiring Y)
 
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
-instance [SMul X Y] [SMul K X] [SMul K Y] [IsScalarTower K X Y] (F : Subfield K) :
+instance (priority := 900) [SMul X Y] [SMul K X] [SMul K Y] [IsScalarTower K X Y] (F : Subfield K) :
     IsScalarTower F X Y :=
   inferInstanceAs (IsScalarTower F.toSubsemiring X Y)
 

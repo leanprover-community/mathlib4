@@ -100,8 +100,8 @@ instance [SMul R₁ R] [SMul R₁ᵐᵒᵖ R] [Module R₁ L] [Module R₁ᵐᵒ
     IsCentralScalar R₁ L' :=
   L'.toSubmodule.isCentralScalar
 
-instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) :
-    IsScalarTower R₁ R L' :=
+instance (priority := 900) [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L]
+    (L' : LieSubalgebra R L) : IsScalarTower R₁ R L' :=
   L'.toSubmodule.isScalarTower
 
 instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=

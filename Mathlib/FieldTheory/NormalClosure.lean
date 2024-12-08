@@ -183,12 +183,12 @@ noncomputable instance algebra :
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
-instance : IsScalarTower F K (normalClosure F K L) := by
+instance (priority := 900) : IsScalarTower F K (normalClosure F K L) := by
   apply of_algebraMap_eq'
   ext x
   exact algebraMap_apply F K L x
 
-instance : IsScalarTower K (normalClosure F K L) L :=
+instance (priority := 900) : IsScalarTower K (normalClosure F K L) L :=
   of_algebraMap_eq' rfl
 
 lemma restrictScalars_eq :
