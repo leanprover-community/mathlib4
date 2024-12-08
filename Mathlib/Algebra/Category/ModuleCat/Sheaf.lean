@@ -219,7 +219,7 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
         have hφ' : ∀ (z : M₂.obj X), φ.app _ (M₂.map p.op z) =
             N.map p.op (φ.app _ z) := congr_fun ((forget _).congr_map (φ.naturality p.op))
         change N.map p.op (φ.app X (r • y)) = N.map p.op (r • φ.app X y)
-        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).map_smul, hφ, (ψ.app _).map_smul,
+        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).hom.map_smul, hφ, (ψ.app _).hom.map_smul,
           ← hφ, hx, N.map_smul, hφ'])
   left_inv φ := (toPresheaf _).map_injective
     (((J.W_of_isLocallyBijective
