@@ -181,3 +181,10 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
           MonoidHom.mul_apply, mul_apply]
 
 end MulEquiv
+
+@[to_additive]
+lemma Pi.induction_mul {ι M : Type*} [Fintype ι] [DecidableEq ι] [CommMonoid M] (p : (ι → M) → Prop)
+    (f : ι → M) (hone : p 1) (hmul : ∀ f g, p f → p g → p (f * g))
+    (hsingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
+  rw [← Finset.univ_prod_mulSingle f]
+  exact Finset.prod_induction _ _ hmul hone (by simp [hsingle])
