@@ -24,11 +24,14 @@ open Set Algebra Submodule MeasureTheory
 
 attribute [local instance] Real.fact_zero_lt_one
 
+/-- In this file we normalise the measure on `ℝ / ℤ` to have total volume 1. -/
 local instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
 
+/-- The measure on `ℝ / ℤ` is a Haar measure. -/
 local instance : Measure.IsAddHaarMeasure (volume : Measure UnitAddCircle) :=
   inferInstanceAs AddCircle.haarAddCircle.IsAddHaarMeasure
 
+/-- The measure on `ℝ / ℤ` is a probability measure. -/
 local instance : IsProbabilityMeasure (volume : Measure UnitAddCircle) :=
   AddCircle.isProbabilityMeasure
 
