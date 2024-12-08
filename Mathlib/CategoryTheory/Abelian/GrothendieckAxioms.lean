@@ -5,6 +5,7 @@ Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
@@ -87,6 +88,38 @@ lemma hasExactColimitsOfShape_of_equiv {J J' : Type*} [Category J] [Category J']
     HasExactColimitsOfShape J' C :=
   haveI : HasColimitsOfShape J' C := hasColimitsOfShape_of_equivalence e
   ⟨preservesFiniteLimits_of_natIso (Functor.Final.colimIso e.functor)⟩
+
+variable {C} in
+lemma hasExactColimitsOfShape_obj_of_equiv (J : Type*) {D : Type*} [Category J] [Category D]
+    (e : C ≌ D) [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
+    have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+    HasExactColimitsOfShape J D := by
+  have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+  refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
+  refine preservesLimit_of_natIso K (?_ : e.congrRight.inverse ⋙ colim ⋙ e.functor ≅ colim)
+  apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
+  exact isoWhiskerLeft (_ ⋙ colim) e.unitIso.symm ≪≫ (preservesColimitNatIso e.inverse).symm
+
+universe v₁ u₁ v₂ u₂ in
+theorem comp_const (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v₁} C]
+    (D : Type u₂) [Category.{v₂} D] (F : C ⥤ D) :
+    F ⋙ Functor.const J = Functor.const J ⋙ (whiskeringRight J C D).obj F := by
+  apply Functor.ext
+  · intro X Y f
+    simp only [Functor.comp_obj, Functor.comp_map, whiskeringRight_obj_obj,
+    whiskeringRight_obj_map]
+    apply NatTrans.ext
+    ext x
+    simp only [Functor.const_obj_obj, Functor.const_map_app, NatTrans.comp_app, Functor.comp_obj,
+      eqToHom_app, eqToHom_refl, whiskerRight_app, Category.comp_id, Category.id_comp]
+  · intro X
+    simp only [Functor.comp_obj, whiskeringRight_obj_obj]
+    apply Functor.ext
+    · intro A B g
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, eqToHom_refl,
+        Functor.comp_map, Functor.map_id, Category.comp_id]
+    · simp only [Functor.const_obj_obj, Functor.comp_obj]
+      intros ; trivial
 
 /--
 Transport a `HasExactLimitsOfShape` along an equivalence of the shape.
