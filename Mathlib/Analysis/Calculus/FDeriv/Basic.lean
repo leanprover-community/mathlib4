@@ -370,8 +370,7 @@ theorem HasFDerivAt.differentiableAt (h : HasFDerivAt f f' x) : DifferentiableAt
 
 @[simp]
 theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f f' x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_univ]
-  rfl
+  simp only [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
 
 alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
 
@@ -1074,8 +1073,7 @@ theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
 @[simp]
 theorem fderiv_const (c : F) : (fderiv 𝕜 fun _ : E => c) = 0 := by
   ext m
-  rw [fderiv_const_apply]
-  rfl
+  rw [fderiv_const_apply, Pi.zero_apply]
 
 theorem fderivWithin_const_apply (c : F) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun _ => c) s x = 0 := by
