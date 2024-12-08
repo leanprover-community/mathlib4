@@ -44,10 +44,10 @@ instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners �
 end ContMDiffRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) fieldContMDiffRing
+instance (priority := 100) instFieldContMDiffRing
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} :
     ContMDiffRing 𝓘(𝕜) n 𝕜 :=
-  { normedSpaceLieAddGroup with
+  { instNormedSpaceLieAddGroup with
     contMDiff_mul := by
       rw [contMDiff_iff]
       refine ⟨continuous_mul, fun x y => ?_⟩
