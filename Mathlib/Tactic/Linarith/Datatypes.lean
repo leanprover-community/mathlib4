@@ -287,11 +287,14 @@ def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
 structure Mathlib.IneqZeroResult
     {u : Level} (α : Q(Type u)) (inst : Q(StrictOrderedCommSemiring $α)) :
     Type where
+  /-- The inequality. -/
   ineq : Ineq
+  /-- The term. -/
   x : Q($α)
+  /-- The proof. -/
   pf : IneqQ q(delta% inferInstance) q($x) q(0) ineq
 
--- TODO: remove?
+/-- Comparisons with zero can be viewed as general comparisons. -/
 def Mathlib.IneqZeroResult.toIneqResult
     {u : Level} {α : Q(Type u)} {inst : Q(StrictOrderedCommSemiring $α)}
     (h : IneqZeroResult α inst) :
@@ -315,6 +318,7 @@ def _root_.Mathlib.IneqResult.toIneqZeroResult?
   else
     return none
 
+/-- The Qq version of `parseCompAndExpr`. -/
 def parseCompAndExprQ  {p : Q(Prop)} (e : Q($p)) :
     MetaM <| ((u : Level) × (α : Q(Type $u)) × (inst : _) × Mathlib.IneqZeroResult α inst) := do
   let ⟨u, α, _, r⟩ ← Lean.Expr.ineqQ? e
@@ -327,6 +331,8 @@ def parseCompAndExprQ  {p : Q(Prop)} (e : Q($p)) :
     throwError "invalid comparison, rhs not zero: {r.b}"
 
 set_option linter.unusedVariables.funArgs false in
+/-- Cast the type parameters of IneqZeroResult through Qq's defeq machinery. -/
+@[nolint unusedArguments]
 def Mathlib.IneqZeroResult.cast
     {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
     {inst₁ : Q(PartialOrder $α₁)}
@@ -340,6 +346,7 @@ def Mathlib.IneqZeroResult.cast
   -- TODO: why does `hinst` not work here?
   { ineq, x, pf := h.cast hu hα (hinst := .unsafeIntro) (hb := .unsafeIntro) }
 
+/-- Prove that `-(a * b) R 0` from `a R 0` and `b R 0`. -/
 def Mathlib.IneqZeroResult.mul {u : Level} {α : Q(Type $u)} {inst : _}
     (ha hb : Mathlib.IneqZeroResult α inst) :
     MetaM <| Mathlib.IneqZeroResult α inst := do

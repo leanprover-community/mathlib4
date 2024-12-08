@@ -94,6 +94,7 @@ inductive Mathlib.IneqQ {u : Level} {α : Q(Type u)} (inst : Q(PartialOrder $α)
   | le (h : Q($a ≤ $b)) : IneqQ inst a b .le
   | lt (h : Q($a < $b)) : IneqQ inst a b .lt
 
+/-- Throw away the type information and extract only the proof. -/
 def Mathlib.IneqQ.raw {u : Level} {α : Q(Type u)} {inst : Q(PartialOrder $α)} {a b : Q($α)}
     {ineq}
     (h : Mathlib.IneqQ inst a b ineq) : Expr :=
@@ -103,6 +104,7 @@ def Mathlib.IneqQ.raw {u : Level} {α : Q(Type u)} {inst : Q(PartialOrder $α)} 
 set_option linter.unusedVariables.funArgs false in
 /-- Use this to deal with instance diamonds in the `inst` argument, after calling
 `(assert|assume)InstancesCommute`. -/
+@[nolint unusedArguments]
 def Mathlib.IneqQ.cast
     {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
     {inst₁ : Q(PartialOrder $α₁)}
@@ -122,10 +124,15 @@ def Mathlib.IneqQ.cast
   | .eq h => .eq q($h)
   | .lt h => .lt q($h)
 
+/-- TODO -/
 structure Mathlib.IneqResult {u : Level} (α : Q(Type u)) (inst : Q(PartialOrder $α)) : Type where
+  /-- The inequality-/
   ineq : Ineq
+  /-- The LHS -/
   a : Q($α)
+  /-- The RHS -/
   b : Q($α)
+  /-- The proof -/
   pf : IneqQ inst a b ineq
 
 /-- Use this to deal with instance diamonds in the `inst` argument, after calling
