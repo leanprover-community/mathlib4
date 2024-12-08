@@ -753,6 +753,20 @@ theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
     v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
   vecMul_natCast _ _
 
+omit [Fintype n] in
+lemma ext_of_mulVec {g k : Matrix n m α} (h : ∀ i, g *ᵥ Pi.single i 1 = k *ᵥ Pi.single i 1) :
+    g = k := by
+  ext i j
+  simp only [mulVec_single, mul_one] at h
+  exact congrFun (h j) i
+
+omit [Fintype n] in
+lemma ext_of_vecMul {g k : Matrix m n α} (h : ∀ i, Pi.single i 1 ᵥ* g = Pi.single i 1 ᵥ* k) :
+    g = k := by
+  ext i j
+  simp only [single_vecMul, one_mul] at h
+  exact congrFun (h i) j
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing

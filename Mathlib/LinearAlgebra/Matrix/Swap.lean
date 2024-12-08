@@ -18,26 +18,6 @@ Swap matrices are a special case of *elementary matrices*. For transvections see
 
 namespace Matrix
 
-variable {R : Type*} [Ring R]
-variable {n m : Type*}
-
-lemma ext_of_mulVec [DecidableEq m] [Fintype m] {g k : Matrix n m R}
-    (h : ∀ i, g *ᵥ Pi.single i 1 = k *ᵥ Pi.single i 1) :
-    g = k := by
-  ext i j
-  simp only [mulVec_single, mul_one] at h
-  exact congrFun (h j) i
-
-@[simp]
-lemma stdBasisMatrix_transpose [DecidableEq n] (i j : n) (a : R) :
-    (stdBasisMatrix i j a).transpose = stdBasisMatrix j i a := by
-  unfold stdBasisMatrix
-  aesop
-
-end Matrix
-
-namespace Matrix
-
 section Def
 
 variable {R n : Type*} [Ring R] [DecidableEq n]
@@ -59,7 +39,7 @@ lemma swap_eq_swap (i j : n) :
 
 @[simp]
 lemma swap_transpose (i j : n) : (swap R i j).transpose = swap R i j := by
-  simp only [swap, transpose_add, transpose_sub, transpose_one, stdBasisMatrix_transpose]
+  simp only [swap, transpose_add, transpose_sub, transpose_one, transpose_stdBasisMatrix]
   abel
 
 @[simp]

@@ -49,6 +49,12 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
   ext
   simp
 
+@[simp]
+lemma transpose_stdBasisMatrix (i j : n) (a : α) :
+    (stdBasisMatrix i j a).transpose = stdBasisMatrix j i a := by
+  unfold stdBasisMatrix
+  aesop
+
 end Zero
 
 theorem stdBasisMatrix_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
