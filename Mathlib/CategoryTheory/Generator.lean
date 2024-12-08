@@ -731,8 +731,7 @@ end Instances
 section Equivalence
 
 theorem HasSeparator.of_equivalence [HasSeparator C] (α : C ≌ D) : HasSeparator D :=
-  ⟨α.functor.obj (separator C),
-   isSeparator_separator C |>.isSeparator_obj_of_equivalence α.functor⟩
+  ⟨α.functor.obj (separator C), isSeparator_separator C |>.isSeparator_obj_of_equivalence α.functor⟩
 
 end Equivalence
 
