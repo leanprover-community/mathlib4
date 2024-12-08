@@ -128,7 +128,7 @@ lemma coPolarization_apply_eq_zero_iff (n : N) :
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
+  simp [LinearMap.IsSymm, LinearMap.IsConjSymm, mul_comm, rootForm_apply_apply]
 
 @[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
