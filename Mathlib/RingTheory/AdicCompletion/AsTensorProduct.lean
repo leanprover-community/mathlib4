@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Flat.Algebra
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -375,8 +375,8 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
-instance flat_of_isNoetherian [IsNoetherianRing R] : Algebra.Flat R (AdicCompletion I R) where
-  out := (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr <| fun J ↦
+instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
+  (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr <| fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian

@@ -116,6 +116,13 @@ theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m 
     rw [map_add]
     apply hadd <;> assumption
 
+lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
+    IsTensorProduct f := by
+  have : TensorProduct.lift f = e := by
+    ext x y
+    simp [he]
+  simpa [IsTensorProduct, this] using e.bijective
+
 end IsTensorProduct
 
 section IsBaseChange
@@ -225,6 +232,34 @@ theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f
 
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
+
+lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗ₜ x) = f x) :
+    IsBaseChange S f := by
+  apply IsTensorProduct.of_equiv (e.restrictScalars R)
+  intro x y
+  simp [show x ⊗ₜ[R] y = x • (1 ⊗ₜ[R] y) by simp [smul_tmul'], he]
+
+section
+
+variable (A : Type*) [CommSemiring A]
+variable [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Module S M] [IsScalarTower R S M]
+variable [Module A N] [IsScalarTower S A N] [IsScalarTower R A N]
+
+/-- If `N` is the base change of `M` to `A`, then `N ⊗[R] P` is the base change
+of `M ⊗[R] P` to `A`. This is simply the isomorphism
+`A ⊗[S] (M ⊗[R] P) ≃ₗ[A] (A ⊗[S] M) ⊗[R] P`. -/
+lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f) :
+    IsBaseChange A (AlgebraTensorModule.map f (LinearMap.id (R := R) (M := P))) := by
+  let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
+    (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
+  refine IsBaseChange.of_equiv e (fun x ↦ ?_)
+  induction' x with m p _ _ h1 h2
+  · simp
+  · simp [e, IsBaseChange.equiv_tmul]
+  · simp [tmul_add, h1, h2]
+
+end
 
 variable (f)
 
