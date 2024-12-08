@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -53,16 +52,7 @@ namespace RootPairing
 variable {ι R M N : Type*}
 
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-[Module R N] (P : RootPairing ι R M N)
-
-lemma rootForm_rootPositive : IsRootPositive P P.RootForm where
-  zero_lt_apply_root i := P.rootForm_root_self_pos i
-  symm := P.rootForm_symmetric
-  apply_reflection_eq := P.rootForm_reflection_reflection_apply
-
-instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
-
-instance : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range P.coroot
+  [Module R N] (P : RootPairing ι R M N)
 
 @[simp]
 lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :

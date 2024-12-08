@@ -880,7 +880,7 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
   · have : p.natDegree ≤ 1 := by simpa using natDegree_linear_le (a := r) (b := -1)
     rw [eval₂_eq_eval_map, reverse, Polynomial.map_mul, ← reflect_map, Polynomial.map_pow,
       map_X, ← revAt_zero (1 + _), ← reflect_monomial,
-      ← reflect_mul _ _ (natDegree_map_le _ _) (by simp), pow_zero, mul_one, hc,
+      ← reflect_mul _ _ natDegree_map_le (by simp), pow_zero, mul_one, hc,
       ← add_assoc, reflect_mul _ _ (this.trans (by simp)) le_rfl,
       eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
     simp [← pow_succ']

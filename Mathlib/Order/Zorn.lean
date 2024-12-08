@@ -178,3 +178,23 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   cases' hcs₁ hsy hsz hsseq with h h
   · exact (hcs₀ hsz).right (h hysy) hzsz hyz
   · exact (hcs₀ hsy).right hysy (h hzsz) hyz
+
+/-! ### Flags -/
+
+namespace Flag
+
+variable [Preorder α] {c : Set α} {s : Flag α} {a b : α}
+
+lemma _root_.IsChain.exists_subset_flag (hc : IsChain (· ≤ ·) c) : ∃ s : Flag α, c ⊆ s :=
+  let ⟨s, hs, hcs⟩ := hc.exists_maxChain; ⟨ofIsMaxChain s hs, hcs⟩
+
+lemma exists_mem (a : α) : ∃ s : Flag α, a ∈ s :=
+  let ⟨s, hs⟩ := Set.subsingleton_singleton (a := a).isChain.exists_subset_flag
+  ⟨s, hs rfl⟩
+
+lemma exists_mem_mem (hab : a ≤ b) : ∃ s : Flag α, a ∈ s ∧ b ∈ s := by
+  simpa [Set.insert_subset_iff] using (IsChain.pair hab).exists_subset_flag
+
+instance : Nonempty (Flag α) := ⟨.ofIsMaxChain _ maxChain_spec⟩
+
+end Flag
