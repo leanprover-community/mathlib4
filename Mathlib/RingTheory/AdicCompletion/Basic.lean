@@ -252,7 +252,12 @@ instance instIsScalarTower [SMul S T] [SMul S R] [SMul T R] [SMul S M] [SMul T M
 instance instSMulCommClass [SMul S R] [SMul T R] [SMul S M] [SMul T M]
     [IsScalarTower S R M] [IsScalarTower T R M] [SMulCommClass S T M] :
     SMulCommClass S T (AdicCompletion I M) where
-  smul_comm r s f := by ext; simp [val_smul, smul_comm]
+  smul_comm s t f := by ext; simp [val_smul, smul_comm]
+
+instance instIsCentralScalar [SMul S R] [SMul Sᵐᵒᵖ R] [SMul S M] [SMul Sᵐᵒᵖ M]
+    [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
+    IsCentralScalar S (AdicCompletion I M) where
+  op_smul_eq_smul s f := by ext; simp [val_smul, op_smul_eq_smul]
 
 /-- The canonical inclusion from the completion to the product. -/
 @[simps]
