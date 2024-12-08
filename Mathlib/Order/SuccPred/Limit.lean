@@ -318,6 +318,14 @@ theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c
   rw [← not_iff_not]
   simp [h.le_iff_forall_le]
 
+variable [SuccOrder α]
+
+theorem IsSuccPrelimit.le_succ_iff (hb : IsSuccPrelimit b) : b ≤ succ a ↔ b ≤ a :=
+  le_iff_le_iff_lt_iff_lt.2 hb.succ_lt_iff
+
+theorem IsSuccLimit.le_succ_iff (hb : IsSuccLimit b) : b ≤ succ a ↔ b ≤ a :=
+  hb.isSuccPrelimit.le_succ_iff
+
 end LinearOrder
 
 /-! ### Predecessor limits -/
