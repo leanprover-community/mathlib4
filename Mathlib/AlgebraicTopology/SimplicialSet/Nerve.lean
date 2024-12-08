@@ -37,7 +37,7 @@ instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerv
 
 /-- The nerve of a category, as a functor `Cat ⥤ SSet` -/
 @[simps]
-def nerveFunctor : Cat ⥤ SSet where
+def nerveFunctor : Cat.{v, u} ⥤ SSet where
   obj C := nerve C
   map F := { app := fun _ => (F.mapComposableArrows _).obj }
 
