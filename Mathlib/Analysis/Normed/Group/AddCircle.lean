@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Topology.Instances.AddCircle
 
 /-!
@@ -208,9 +209,9 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     obtain ⟨hy₃, hy₄⟩ := hs hy₀
     rcases lt_trichotomy 0 p with (hp | (rfl : 0 = p) | hp)
     · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
-      · have : ↑z * p ≤ -p := by nlinarith
+      · have : ↑z * p ≤ -p := by linear_combination p * hz'
         linarith [abs_eq_self.mpr hp.le]
-      · have : p ≤ ↑z * p := by nlinarith
+      · have : p ≤ ↑z * p := by linear_combination p * hz'
         linarith [abs_eq_self.mpr hp.le]
     · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
