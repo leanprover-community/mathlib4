@@ -784,8 +784,30 @@ theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
         inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
           (inv_pos.2 ha)).2 h⟩⟩
 
+-- TODO: golf the proof as above
+/-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
+theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
+  ext x
+  constructor
+  · exact fun h => inv_inv x ▸ (inv_lt_inv_of_neg h.2 ha).2 h.1
+  · intro h
+    simp at h
+    constructor
+    · rwa [← inv_inv a, inv_lt_inv_of_neg]
+      · simpa
+      · trans a⁻¹
+        · exact h
+        · simpa
+    · simp
+      trans a⁻¹
+      · exact h
+      · simpa
+
 theorem inv_Ioi₀ {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
+
+theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg''.2 ha), inv_inv]
 
 theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
