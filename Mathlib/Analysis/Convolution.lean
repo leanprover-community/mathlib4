@@ -1190,7 +1190,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
       hasFDerivAt_convolution_right_with_param L hs hk hgs hf hg.one_of_succ
     rw [contDiffOn_succ_iff_fderiv_of_isOpen (hs.prod (@isOpen_univ G _))] at hg ⊢
-    refine ⟨?_, ?_⟩
+    refine ⟨?_, by simp, ?_⟩
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt
     · suffices H : ContDiffOn 𝕜 n (↿f') (s ×ˢ univ) by
@@ -1207,9 +1207,9 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         rintro ⟨p, y⟩ ⟨hp, hy⟩
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) : _) B
-      convert hg.2
+      convert hg.2.2
   | htop ih =>
-    rw [contDiffOn_top] at hg ⊢
+    rw [contDiffOn_infty] at hg ⊢
     exact fun n ↦ ih n L hgs (hg n)
 
 /-- The convolution `f * g` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly

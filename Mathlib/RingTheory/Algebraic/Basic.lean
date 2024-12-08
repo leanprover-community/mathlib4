@@ -3,10 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Polynomial.IntegralNormalization
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Algebra.MvPolynomial.Supported
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Adjoin.Polynomial
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -17,25 +18,13 @@ The main result in this file proves transitivity of algebraicity:
 a tower of algebraic field extensions is algebraic.
 -/
 
-
 universe u v w
 
-open scoped Classical
 open Polynomial
 
 section
 
 variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
-
-/-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
-with coefficients in R. -/
-@[stacks 09GC "Algebraic elements"]
-def IsAlgebraic (x : A) : Prop :=
-  ∃ p : R[X], p ≠ 0 ∧ aeval x p = 0
-
-/-- An element of an R-algebra is transcendental over R if it is not algebraic over R. -/
-def Transcendental (x : A) : Prop :=
-  ¬IsAlgebraic R x
 
 @[nontriviality]
 theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcendental R x :=
@@ -43,16 +32,24 @@ theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcenden
 
 variable {R}
 
-/-- An element `x` is transcendental over `R` if and only if for any polynomial `p`,
-`Polynomial.aeval x p = 0` implies `p = 0`. This is similar to `algebraicIndependent_iff`. -/
-theorem transcendental_iff {x : A} :
-    Transcendental R x ↔ ∀ p : R[X], aeval x p = 0 → p = 0 := by
-  rw [Transcendental, IsAlgebraic, not_exists]
-  congr! 1; tauto
+theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := by
+  contrapose! h
+  rw [not_nontrivial_iff_subsingleton] at h
+  apply is_transcendental_of_subsingleton
 
-variable (R) in
+variable (R A)
+
+theorem Algebra.IsAlgebraic.nontrivial [alg : Algebra.IsAlgebraic R A] : Nontrivial R :=
+  (alg.1 0).nontrivial
+
+instance (priority := low) Algebra.transcendental_of_subsingleton [Subsingleton R] :
+    Algebra.Transcendental R A :=
+  ⟨⟨0, is_transcendental_of_subsingleton R 0⟩⟩
+
 theorem Polynomial.transcendental_X : Transcendental R (X (R := R)) := by
   simp [transcendental_iff]
+
+variable {R A}
 
 theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
     (hf' : f.leadingCoeff ∈ nonZeroDivisors R) (H : IsAlgebraic R (aeval r f)) :
@@ -96,76 +93,6 @@ theorem Polynomial.transcendental (f : R[X]) (hf : f.natDegree ≠ 0)
     Transcendental R f := by
   simpa using (transcendental_X R).aeval f hf hf'
 
-/-- If `E / F` is a field extension, `x` is an element of `E` transcendental over `F`,
-then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`. -/
-theorem Transcendental.linearIndependent_sub_inv
-    {F E : Type*} [Field F] [Field E] [Algebra F E] {x : E} (H : Transcendental F x) :
-    LinearIndependent F fun a ↦ (x - algebraMap F E a)⁻¹ := by
-  rw [transcendental_iff] at H
-  refine linearIndependent_iff'.2 fun s m hm i hi ↦ ?_
-  have hnz (a : F) : x - algebraMap F E a ≠ 0 := fun h ↦
-    X_sub_C_ne_zero a <| H (.X - .C a) (by simp [h])
-  let b := s.prod fun j ↦ x - algebraMap F E j
-  have h1 : ∀ i ∈ s, m i • (b * (x - algebraMap F E i)⁻¹) =
-      m i • (s.erase i).prod fun j ↦ x - algebraMap F E j := fun i hi ↦ by
-    simp_rw [b, ← s.prod_erase_mul _ hi, mul_inv_cancel_right₀ (hnz i)]
-  replace hm := congr(b * $(hm))
-  simp_rw [mul_zero, Finset.mul_sum, mul_smul_comm, Finset.sum_congr rfl h1] at hm
-  let p : Polynomial F := s.sum fun i ↦ .C (m i) * (s.erase i).prod fun j ↦ .X - .C j
-  replace hm := congr(Polynomial.aeval i $(H p (by simp_rw [← hm, p, map_sum, map_mul, map_prod,
-    map_sub, aeval_X, aeval_C, Algebra.smul_def])))
-  have h2 : ∀ j ∈ s.erase i, m j * ((s.erase j).prod fun x ↦ i - x) = 0 := fun j hj ↦ by
-    have := Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm hi
-    simp_rw [← (s.erase j).prod_erase_mul _ this, sub_self, mul_zero]
-  simp_rw [map_zero, p, map_sum, map_mul, map_prod, map_sub, aeval_X,
-    aeval_C, Algebra.id.map_eq_self, ← s.sum_erase_add _ hi,
-    Finset.sum_eq_zero h2, zero_add] at hm
-  exact eq_zero_of_ne_zero_of_mul_right_eq_zero (Finset.prod_ne_zero_iff.2 fun j hj ↦
-    sub_ne_zero.2 (Finset.ne_of_mem_erase hj).symm) hm
-
-/-- A subalgebra is algebraic if all its elements are algebraic. -/
-nonrec
-def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
-  ∀ x ∈ S, IsAlgebraic R x
-
-variable (R A)
-
-/-- An algebra is algebraic if all its elements are algebraic. -/
-@[stacks 09GC "Algebraic extensions"]
-protected class Algebra.IsAlgebraic : Prop where
-  isAlgebraic : ∀ x : A, IsAlgebraic R x
-
-/-- An algebra is transcendental if some element is transcendental. -/
-protected class Algebra.Transcendental : Prop where
-  transcendental : ∃ x : A, Transcendental R x
-
-variable {R A}
-
-lemma Algebra.isAlgebraic_def : Algebra.IsAlgebraic R A ↔ ∀ x : A, IsAlgebraic R x :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-
-lemma Algebra.transcendental_def : Algebra.Transcendental R A ↔ ∃ x : A, Transcendental R x :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-
-theorem Algebra.transcendental_iff_not_isAlgebraic :
-    Algebra.Transcendental R A ↔ ¬ Algebra.IsAlgebraic R A := by
-  simp [isAlgebraic_def, transcendental_def, Transcendental]
-
-/-- A subalgebra is algebraic if and only if it is algebraic as an algebra. -/
-theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
-    S.IsAlgebraic ↔ Algebra.IsAlgebraic R S := by
-  delta Subalgebra.IsAlgebraic
-  rw [Subtype.forall', Algebra.isAlgebraic_def]
-  refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
-  have h : Function.Injective S.val := Subtype.val_injective
-  conv_rhs => rw [← h.eq_iff, map_zero]
-  rw [← aeval_algHom_apply, S.val_apply]
-
-/-- An algebra is algebraic if and only if it is algebraic as a subalgebra. -/
-theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra R A).IsAlgebraic := by
-  delta Subalgebra.IsAlgebraic
-  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
-
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by
   simp only [IsAlgebraic, injective_iff_map_eq_zero, not_forall, and_comm, exists_prop]
@@ -182,6 +109,17 @@ theorem transcendental_iff_ker_eq_bot {x : A} :
     Transcendental R x ↔ RingHom.ker (aeval (R := R) x) = ⊥ := by
   rw [transcendental_iff_injective, RingHom.injective_iff_ker_eq_bot]
 
+theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebraMap R A)) :
+    Algebra.IsAlgebraic R A where
+  isAlgebraic a := isAlgebraic_iff_not_injective.mpr
+    fun inj ↦ h <| by convert inj.comp C_injective; ext; simp
+
+theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
+    Function.Injective (algebraMap R A) := by
+  rw [transcendental_iff_not_isAlgebraic] at h
+  contrapose! h
+  exact isAlgebraic_of_not_injective h
+
 end
 
 section zero_ne_one
@@ -189,13 +127,6 @@ section zero_ne_one
 variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 variable [IsScalarTower R S A]
-
-/-- An integral element of an algebra is algebraic. -/
-theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
-  fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
-
-instance Algebra.IsIntegral.isAlgebraic [Nontrivial R] [Algebra.IsIntegral R A] :
-    Algebra.IsAlgebraic R A := ⟨fun a ↦ (Algebra.IsIntegral.isIntegral a).isAlgebraic⟩
 
 theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
   ⟨_, X_ne_zero, aeval_X 0⟩
@@ -224,6 +155,16 @@ theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Al
 theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
+
+variable (S) in
+theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalization M S] :
+    Algebra.IsAlgebraic R S where
+  isAlgebraic x := by
+    obtain rfl | hx := eq_or_ne x 0
+    · exact isAlgebraic_zero
+    have ⟨⟨r, m⟩, h⟩ := surj M x
+    refine ⟨C m.1 * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
+    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(coeff $eq 0), mk'_zero] at h
 
 open IsScalarTower
 
@@ -291,7 +232,7 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ := map_surjective f hf p
+  obtain ⟨q, rfl⟩ := map_surjective (f : R →+* S) hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
   change aeval ((g : A →+* B) a) _ = 0 at h2
   change (g : A →+* B) _ = _
@@ -414,11 +355,9 @@ instance algebra_isAlgebraic_bot_right [Nontrivial R] :
 end Subalgebra
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
-    IsAlgebraic R r := by
-  obtain ⟨p, p_nonzero, hp⟩ := ht
-  refine ⟨Polynomial.expand _ n p, ?_, ?_⟩
-  · rwa [Polynomial.expand_ne_zero hn]
-  · rwa [Polynomial.expand_aeval n p r]
+    IsAlgebraic R r :=
+  have ⟨p, p_nonzero, hp⟩ := ht
+  ⟨_, by rwa [expand_ne_zero hn], by rwa [expand_aeval n p r]⟩
 
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
@@ -442,49 +381,6 @@ lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
 alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
 
 end zero_ne_one
-
-section Field
-
-variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
-
-/-- An element of an algebra over a field is algebraic if and only if it is integral. -/
-theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
-  refine ⟨?_, IsIntegral.isAlgebraic⟩
-  rintro ⟨p, hp, hpx⟩
-  refine ⟨_, monic_mul_leadingCoeff_inv hp, ?_⟩
-  rw [← aeval_def, map_mul, hpx, zero_mul]
-
-protected theorem Algebra.isAlgebraic_iff_isIntegral :
-    Algebra.IsAlgebraic K A ↔ Algebra.IsIntegral K A := by
-  rw [Algebra.isAlgebraic_def, Algebra.isIntegral_def,
-      forall_congr' fun _ ↦ isAlgebraic_iff_isIntegral]
-
-alias ⟨IsAlgebraic.isIntegral, _⟩ := isAlgebraic_iff_isIntegral
-
-/-- This used to be an `alias` of `Algebra.isAlgebraic_iff_isIntegral` but that would make
-`Algebra.IsAlgebraic K A` an explicit parameter instead of instance implicit. -/
-protected instance Algebra.IsAlgebraic.isIntegral [Algebra.IsAlgebraic K A] :
-    Algebra.IsIntegral K A := Algebra.isAlgebraic_iff_isIntegral.mp ‹_›
-
-variable (K) in
-theorem Algebra.IsAlgebraic.of_isIntegralClosure (B C : Type*)
-    [CommRing B] [CommRing C] [Algebra K B] [Algebra K C] [Algebra B C]
-    [IsScalarTower K B C] [IsIntegralClosure B K C] : Algebra.IsAlgebraic K B :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra K C)
-
-/-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
-transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
-See also `Transcendental.aeval_of_transcendental` and `Transcendental.of_aeval`. -/
-@[simp]
-theorem transcendental_aeval_iff {r : A} {f : K[X]} :
-    Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
-  refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
-  rw [Transcendental] at h ⊢
-  contrapose! h
-  rw [isAlgebraic_iff_isIntegral] at h ⊢
-  exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
-
-end Field
 
 section
 
@@ -572,17 +468,7 @@ theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
   Algebra.IsAlgebraic.extendScalars (algebraMap K L).injective
 
-variable (K)
-
-theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
-  (IsIntegral.of_finite K e).isAlgebraic
-
-variable (A)
-
-/-- A field extension is algebraic if it is finite. -/
-@[stacks 09GG "first part"]
-instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
-  (IsIntegral.of_finite K A).isAlgebraic
+variable (K) (A)
 
 theorem Algebra.IsAlgebraic.tower_bot (K L A : Type*) [CommRing K] [Field L] [Ring A]
     [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
@@ -594,28 +480,11 @@ end Field
 
 end Ring
 
-section CommRing
-
-variable [Field K] [Field L] [Ring A]
-variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
-
-/-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
-then A is algebraic over K. -/
-@[stacks 09GJ]
-protected theorem Algebra.IsAlgebraic.trans
-    [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
-    Algebra.IsAlgebraic K A := by
-  rw [Algebra.isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
-  exact Algebra.IsIntegral.trans L
-
-end CommRing
-
 section NoZeroSMulDivisors
 
 namespace Algebra.IsAlgebraic
 
-variable [CommRing K] [Field L]
-variable [Algebra K L]
+variable [CommRing K] [Field L] [Algebra K L]
 
 theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
@@ -659,23 +528,6 @@ end Algebra.IsAlgebraic
 
 end NoZeroSMulDivisors
 
-section Field
-
-variable [Field K] [Field L]
-variable [Algebra K L]
-
-theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
-  (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
-
-variable (K L)
-
-/-- Bijection between algebra equivalences and algebra homomorphisms -/
-noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
-    (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
-  Algebra.IsAlgebraic.algEquivEquivAlgHom K L
-
-end Field
-
 end
 
 section
@@ -684,52 +536,48 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
-    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
+    ∃ q : R[X], q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
   obtain ⟨p, hp0, hp⟩ := hRs
-  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
+  obtain ⟨q, hpq, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
   simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
   rw [hpq, map_mul, aeval_X_pow] at hp
   exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
 
+theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
+  have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+  have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
+  refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
+  apply_fun aeval s at hp
+  rwa [map_sub, hq, zero_sub, map_mul, aeval_X, aeval_C, ← map_neg, eq_comm] at hp
+
 theorem IsAlgebraic.exists_nonzero_dvd
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
-    ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
+    ∃ r : R, r ≠ 0 ∧ s ∣ algebraMap R S r := by
   obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
-  have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
-  rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
+  have key := map_dvd (aeval s) (X_dvd_sub_C (p := q))
+  rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ nonZeroDivisors S) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
-  obtain ⟨r, hr, s, h⟩ := IsAlgebraic.exists_nonzero_dvd (R := R) (S := S) hRb hb
-  exact ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
+  ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
 
 variable (R)
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
-theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic R S]
+theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
     (a : S) {b : S} (hb : b ≠ 0) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
-  (Algebra.IsAlgebraic.isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
+  (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
 
 end
-
-variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
-
-theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
-    (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
-    ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), z * algebraMap R S y = x := by
-  rcases hz with ⟨p, p_ne_zero, px⟩
-  set a := p.leadingCoeff
-  have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
-  have x_integral : IsIntegral R (z * algebraMap R S a) :=
-    ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
-      integralNormalization_aeval_eq_zero px inj⟩
-  exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
 
 section Field
 
@@ -792,174 +640,15 @@ theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
 
 end Field
 
-section Pi
-
-variable (R' : Type u) (S' : Type v) (T' : Type w)
-
-/-- This is not an instance as it forms a diamond with `Pi.instSMul`.
-
-See the `instance_diamonds` test for details. -/
-def Polynomial.hasSMulPi [Semiring R'] [SMul R' S'] : SMul R'[X] (R' → S') :=
-  ⟨fun p f x => eval x p • f x⟩
-
-/-- This is not an instance as it forms a diamond with `Pi.instSMul`.
-
-See the `instance_diamonds` test for details. -/
-noncomputable def Polynomial.hasSMulPi' [CommSemiring R'] [Semiring S'] [Algebra R' S']
-    [SMul S' T'] : SMul R'[X] (S' → T') :=
-  ⟨fun p f x => aeval x p • f x⟩
-
-attribute [local instance] Polynomial.hasSMulPi Polynomial.hasSMulPi'
-
-@[simp]
-theorem polynomial_smul_apply [Semiring R'] [SMul R' S'] (p : R'[X]) (f : R' → S') (x : R') :
-    (p • f) x = eval x p • f x :=
-  rfl
-
-@[simp]
-theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [SMul S' T']
-    (p : R'[X]) (f : S' → T') (x : S') : (p • f) x = aeval x p • f x :=
-  rfl
-
-variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra S' T']
-
--- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
--- to get them to work anymore.
-/-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
-noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=
-  { Polynomial.hasSMulPi' R' S' T' with
-    toFun := fun p z => algebraMap S' T' (aeval z p)
-    map_one' := by
-      funext z
-      simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
-    map_mul' := fun f g => by
-      funext z
-      simp only [Pi.mul_apply, map_mul]
-    map_zero' := by
-      funext z
-      simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
-    map_add' := fun f g => by
-      funext z
-      simp only [Polynomial.aeval_add, Pi.add_apply, map_add]
-    commutes' := fun p f => by
-      funext z
-      exact mul_comm _ _
-    smul_def' := fun p f => by
-      funext z
-      simp only [polynomial_smul_apply', Algebra.algebraMap_eq_smul_one, RingHom.coe_mk,
-        MonoidHom.coe_mk, OneHom.coe_mk, Pi.mul_apply, Algebra.smul_mul_assoc, one_mul] }
-
-attribute [local instance] Polynomial.algebraPi
-
-@[simp]
-theorem Polynomial.algebraMap_pi_eq_aeval :
-    (algebraMap R'[X] (S' → T') : R'[X] → S' → T') = fun p z => algebraMap _ _ (aeval z p) :=
-  rfl
-
-@[simp]
-theorem Polynomial.algebraMap_pi_self_eq_eval :
-    (algebraMap R'[X] (R' → R') : R'[X] → R' → R') = fun p z => eval z p :=
-  rfl
-
-end Pi
-
-namespace MvPolynomial
-
-variable {σ : Type*} (R : Type*) [CommRing R]
-
--- TODO: move to suitable place
-private theorem rename_polynomial_aeval_X
-    {σ τ R : Type*} [CommSemiring R] (f : σ → τ) (i : σ) (p : R[X]) :
-    rename f (Polynomial.aeval (X i) p) = Polynomial.aeval (X (f i) : MvPolynomial τ R) p := by
-  rw [← AlgHom.comp_apply]
-  congr 1; ext1; simp
-
-theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
-    {f : R[X]} (hf : Transcendental R f) :
-    Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
-  rw [transcendental_iff_injective] at hf ⊢
-  let g := MvPolynomial.mapAlgHom (R := R) (σ := s) (Polynomial.aeval (R := R) f)
-  replace hf : Function.Injective g := MvPolynomial.map_injective _ hf
-  let u := (Subalgebra.val _).comp
-    ((optionEquivRight R s).symm |>.trans
-      (renameEquiv R (Set.subtypeInsertEquivOption h).symm) |>.trans
-      (supportedEquivMvPolynomial _).symm).toAlgHom |>.comp
-    g |>.comp
-    ((optionEquivLeft R s).symm.trans (optionEquivRight R s)).toAlgHom
-  let v := ((Polynomial.aeval (R := supported R s)
-    (Polynomial.aeval (X i : MvPolynomial σ R) f)).restrictScalars R).comp
-      (Polynomial.mapAlgEquiv (supportedEquivMvPolynomial s).symm).toAlgHom
-  replace hf : Function.Injective u := by
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Subalgebra.coe_val,
-      AlgHom.coe_coe, AlgEquiv.coe_trans, Function.comp_assoc, u]
-    apply Subtype.val_injective.comp
-    simp only [EquivLike.comp_injective]
-    apply hf.comp
-    simp only [EquivLike.comp_injective, EquivLike.injective]
-  have h1 : Polynomial.aeval (X i : MvPolynomial σ R) = ((Subalgebra.val _).comp
-      (supportedEquivMvPolynomial _).symm.toAlgHom |>.comp
-      (Polynomial.aeval (X ⟨i, s.mem_insert i⟩ : MvPolynomial ↑(insert i s) R))) := by
-    ext1; simp
-  have h2 : u = v := by
-    simp only [u, v, g]
-    ext1
-    · ext1
-      simp [Set.subtypeInsertEquivOption, Subalgebra.algebraMap_eq]
-    · simp [Set.subtypeInsertEquivOption, rename_polynomial_aeval_X, h1]
-  simpa only [h2, v, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
-
-theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendental R f) :
-    Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
-  have := transcendental_supported_polynomial_aeval_X R (Set.not_mem_empty i) hf
-  let g := (Algebra.botEquivOfInjective (MvPolynomial.C_injective σ R)).symm.trans
-    (Subalgebra.equivOfEq _ _ supported_empty).symm
-  rwa [Transcendental, ← isAlgebraic_ringHom_iff_of_comp_eq g (RingHom.id (MvPolynomial σ R))
-    Function.injective_id (by ext1; rfl), RingHom.id_apply, ← Transcendental]
-
-theorem transcendental_polynomial_aeval_X_iff (i : σ) {f : R[X]} :
-    Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) ↔ Transcendental R f := by
-  refine ⟨?_, transcendental_polynomial_aeval_X R i⟩
-  simp_rw [Transcendental, not_imp_not]
-  exact fun h ↦ h.algHom _
-
-theorem transcendental_supported_polynomial_aeval_X_iff
-    [Nontrivial R] {i : σ} {s : Set σ} {f : R[X]} :
-    Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) ↔
-    i ∉ s ∧ Transcendental R f := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h, hf⟩ ↦ transcendental_supported_polynomial_aeval_X R h hf⟩
-  · rw [Transcendental] at h
-    contrapose! h
-    refine isAlgebraic_algebraMap (⟨Polynomial.aeval (X i) f, ?_⟩ : supported R s)
-    exact Algebra.adjoin_mono (Set.singleton_subset_iff.2 (Set.mem_image_of_mem _ h))
-      (Polynomial.aeval_mem_adjoin_singleton _ _)
-  · rw [← transcendental_polynomial_aeval_X_iff R i]
-    refine h.restrictScalars fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
-    simp_rw [← MvPolynomial.algebraMap_eq]
-    exact congr($(heq).1)
-
-theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
-    Transcendental (supported R s) (X i : MvPolynomial σ R) := by
-  simpa using transcendental_supported_polynomial_aeval_X R h (Polynomial.transcendental_X R)
-
-theorem transcendental_X (i : σ) : Transcendental R (X i : MvPolynomial σ R) := by
-  simpa using transcendental_polynomial_aeval_X R i (Polynomial.transcendental_X R)
-
-theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
-    Transcendental (supported R s) (X i : MvPolynomial σ R) ↔ i ∉ s := by
-  simpa [Polynomial.transcendental_X] using
-    transcendental_supported_polynomial_aeval_X_iff R (i := i) (s := s) (f := Polynomial.X)
-
-end MvPolynomial
-
 section Infinite
 
-theorem Transcendental.infinite {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A :=
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A] [Nontrivial R]
+
+theorem Transcendental.infinite {x : A} (hx : Transcendental R x) : Infinite A :=
   .of_injective _ (transcendental_iff_injective.mp hx)
 
-theorem Algebra.Transcendental.infinite (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A :=
+variable (R A) in
+theorem Algebra.Transcendental.infinite [Algebra.Transcendental R A] : Infinite A :=
   have ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
   hx.infinite
 
