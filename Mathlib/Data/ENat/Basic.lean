@@ -266,6 +266,8 @@ theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_pos.trans pos_iff_ne_zero
 
+lemma pos_of_ne_zero {n : ℕ∞} (hn : n ≠ 0) : 0 < n := pos_iff_ne_zero.mpr hn
+
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
 
