@@ -76,8 +76,8 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
   rintro _ hε ⟨⟨ε, ⟨hε₀, hε₁⟩, rfl⟩, h⟩
   replace hε₀ : 0 < ε := hε₀.lt_of_ne <| by rintro rfl; simp at h
   replace hε₁ : ε < 1 := hε₁.lt_of_ne <| by rintro rfl; simp at h
-  have : 0 < 1 - ε := by linarith
-  have hwi : 0 < 1 - w i := by linarith
+  have : 0 < 1 - ε := by linear_combination hε₁
+  have hwi : 0 < 1 - w i := by linear_combination hwi
   refine hw (z := lineMap x (∑ j ∈ t, w j • a j) ((w i)⁻¹ / ((1 - ε) / ε + (w i)⁻¹)))
     ?_ <| sbtw_lineMap_iff.2 ⟨(ne_of_mem_of_not_mem ((convex_convexHull ..).sum_mem hw₀ hw₁
     fun i hi ↦ subset_convexHull _ _ <| ha _ hi) hx).symm, by positivity,
