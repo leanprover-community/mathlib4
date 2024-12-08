@@ -3,6 +3,7 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
+import Mathlib.Logic.UnivLE
 import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.ZFC.Basic
 
@@ -188,7 +189,6 @@ theorem le_succ_rank_sUnion : rank x ≤ succ (rank (⋃₀ x)) := by
   rw [mem_sUnion]
   exists z
 
-@[simp]
 theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
     rank (range f) = lsub fun i => rank (f i) := by
   apply (lsub_le _).antisymm'
