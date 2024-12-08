@@ -317,106 +317,6 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← typein_ordinal]
   rfl
 
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated isSuccLimit_iff (since := "2024-12-08")]
-theorem isLimit_iff {o} : IsLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
-  isSuccLimit_iff
-
-@[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-12-08")]
-theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
-  IsSuccLimit.isSuccPrelimit h
-
-@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
-
-@[deprecated IsSuccLimit.succ_lt (since := "2024-12-08")]
-theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
-  IsSuccLimit.succ_lt h
-
-@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
-alias isSuccLimit_zero := isSuccPrelimit_zero
-
-@[deprecated not_isSuccLimit_zero (since := "2024-12-08")]
-theorem not_zero_isLimit : ¬IsLimit 0 :=
-  not_isSuccLimit_bot
-
-@[deprecated not_isSuccLimit_succ (since := "2024-12-08")]
-theorem not_succ_isLimit (o) : ¬IsLimit (succ o) :=
-  not_isSuccLimit_succ o
-
-@[deprecated not_isSuccLimit_succ (since := "2024-12-08")]
-theorem not_succ_of_isLimit {o} (h : IsLimit o) : ¬∃ a, o = succ a
-  | ⟨a, e⟩ => not_succ_isLimit a (e ▸ h)
-
-@[deprecated IsSuccLimit.succ_lt_iff (since := "2024-12-08")]
-theorem succ_lt_of_isLimit {o a : Ordinal} (h : IsLimit o) : succ a < o ↔ a < o :=
-  IsSuccLimit.succ_lt_iff h
-
-@[deprecated IsSuccLimit.le_succ_iff (since := "2024-12-08")]
-theorem le_succ_of_isLimit {o} (h : IsLimit o) {a} : o ≤ succ a ↔ o ≤ a :=
-  h.le_succ_iff
-
-@[deprecated IsSuccLimit.le_iff_forall_le (since := "2024-12-08")]
-theorem limit_le {o} (h : IsLimit o) {a} : o ≤ a ↔ ∀ x < o, x ≤ a :=
-  h.le_iff_forall_le
-
-@[deprecated IsSuccLimit.lt_iff_exists_lt (since := "2024-12-08")]
-theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x :=
-  h.lt_iff_exists_lt
-
-@[deprecated isSuccLimit_lift (since := "2024-12-08")]
-theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
-  isSuccLimit_lift
-
-@[deprecated IsSuccLimit.bot_lt (since := "2024-12-08")]
-theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
-  IsSuccLimit.bot_lt h
-
-@[deprecated IsSuccLimit.ne_bot (since := "2024-12-08")]
-theorem IsLimit.ne_zero {o : Ordinal} (h : IsLimit o) : o ≠ 0 :=
-  h.pos.ne'
-
-@[deprecated one_lt_of_isSuccLimit (since := "2024-12-08")]
-theorem IsLimit.one_lt {o : Ordinal} (h : IsLimit o) : 1 < o :=
-  one_lt_of_isSuccLimit h
-
-@[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-08")]
-theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal) < o:=
-  natCast_lt_of_isSuccLimit h
-
-@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
-theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
-  simpa [eq_comm] using isMin_or_mem_range_succ_or_isSuccLimit o
-
-@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
-theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
-    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
-
-@[deprecated IsSuccLimit.sSup_Iio (since := "2024-12-08")]
-theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o :=
-  IsSuccLimit.sSup_Iio h
-
-@[deprecated IsSuccLimit.iSup_Iio (since := "2024-12-08")]
-theorem IsLimit.iSup_Iio {o : Ordinal} (h : IsLimit o) : ⨆ a : Iio o, a.1 = o :=
-  IsSuccLimit.iSup_Iio h
-
-@[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
-alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
-
--- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
-@[deprecated typein_ordinal (since := "2024-09-19")]
-theorem type_subrel_lt (o : Ordinal.{u}) :
-    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
-  typein_ordinal o
-
-@[deprecated mk_Iio_ordinal (since := "2024-09-19")]
-theorem mk_initialSeg (o : Ordinal.{u}) :
-    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
-
-end deprecated
-
 /-! ### Normal ordinal functions -/
 
 /-- A normal ordinal function is a strictly increasing function which is
@@ -647,48 +547,7 @@ theorem one_add_omega0 : 1 + ω = ω := by
 theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o := by
   rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega0]
 
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated IsNormal.isSuccLimit (since := "2024-12-08")]
-theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsLimit o) : IsLimit (f o) :=
-  H.isSuccLimit ho
-
-@[deprecated add_le_iff_of_isSuccLimit (since := "2024-12-08")]
-theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
-  add_le_iff_of_isSuccLimit h
-
-@[deprecated isSuccLimit_add (since := "2024-12-08")]
-theorem isLimit_add (a : Ordinal) {b : Ordinal} : IsLimit b → IsLimit (a + b) :=
-  isSuccLimit_add a
-
-@[deprecated isNormal_add_right (since := "2024-10-11")]
-alias add_isNormal := isNormal_add_right
-
-@[deprecated isLimit_add (since := "2024-10-11")]
-alias add_isLimit := isLimit_add
-
-@[deprecated isLimit_add (since := "2024-12-08")]
-alias IsLimit.add := isLimit_add
-
-@[deprecated isSuccLimit_sub (since := "2024-10-11")]
-theorem isLimit_sub {a b : Ordinal} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) :=
-  isSuccLimit_sub ha h
-
-@[deprecated isSuccLimit_sub (since := "2024-10-11")]
-alias sub_isLimit := isLimit_sub
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias one_add_omega := one_add_omega0
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias one_add_of_omega_le := one_add_of_omega0_le
-
-end deprecated
-#exit
-
 /-! ### Multiplication of ordinals -/
-
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
@@ -770,7 +629,7 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
 
-instance mulLeftMono : MulLeftMono Ordinal.{u} :=
+instance : MulLeftMono Ordinal.{u} :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine
@@ -779,7 +638,7 @@ instance mulLeftMono : MulLeftMono Ordinal.{u} :=
       · exact Prod.Lex.left _ _ (f.toRelEmbedding.map_rel_iff.2 h')
       · exact Prod.Lex.right _ h'⟩
 
-instance mulRightMono : MulRightMono Ordinal.{u} :=
+instance : MulRightMono Ordinal.{u} :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine
@@ -834,7 +693,8 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
     · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
         Sum.lex_inl_inl] using h
 
-theorem mul_le_of_limit {a b c : Ordinal} (h : IsSuccLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
+theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
+    a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
   ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
     -- Porting note: `induction` tactics are required because of the parser bug.
     le_of_not_lt <| by
@@ -844,6 +704,9 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsSuccLimit b) : a * b ≤ c ↔ 
         | H β s =>
           exact mul_le_of_limit_aux h H⟩
 
+theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
+  mul_le_iff_of_isSuccLimit h
+
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   ⟨fun b => by
@@ -852,10 +715,7 @@ theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun _ l _ => mul_le_of_limit l⟩
 
-@[deprecated isNormal_mul_right (since := "2024-10-11")]
-alias mul_isNormal := isNormal_mul_right
-
-theorem lt_mul_of_limit {a b c : Ordinal} (h : IsSuccLimit c) :
+theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
     a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
@@ -881,29 +741,22 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
   (isNormal_mul_right a0).inj
 
-theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsSuccLimit b → IsSuccLimit (a * b) :=
-  (isNormal_mul_right a0).isLimit
-
-@[deprecated isLimit_mul (since := "2024-10-11")]
-alias mul_isLimit := isLimit_mul
+theorem isSuccLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsSuccLimit b → IsSuccLimit (a * b) :=
+  (isNormal_mul_right a0).isSuccLimit
 
 theorem isLimit_mul_left {a b : Ordinal} (l : IsSuccLimit a) (b0 : 0 < b) :
     IsSuccLimit (a * b) := by
   rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
-    exact isLimit_add _ l
-  · exact isLimit_mul l.bot_lt lb
-
-@[deprecated isLimit_mul_left (since := "2024-10-11")]
-alias mul_isLimit_left := isLimit_mul_left
+    exact isSuccLimit_add _ l
+  · exact isSuccLimit_mul l.bot_lt lb
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | n + 1, a => by rw [succ_nsmul, Nat.cast_add, mul_add, Nat.cast_one, mul_one, smul_eq_mul n]
 
 /-! ### Division on ordinals -/
-
 
 /-- The set in the definition of division is nonempty. -/
 private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
@@ -943,7 +796,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp +contextual only [mul_le_of_limit, IsSuccLimit.le_iff_forall_le, forall_true_iff]
+    simp +contextual only [mul_le_iff_of_isSuccLimit, IsSuccLimit.le_iff_forall_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0
@@ -1018,7 +871,7 @@ theorem mul_sub (a b c : Ordinal) : a * (b - c) = a * b - a * c :=
   else
     eq_of_forall_ge_iff fun d => by rw [sub_le, ← le_div a0, sub_le, ← le_div a0, mul_add_div _ a0]
 
-theorem isLimit_add_iff {a b : Ordinal} :
+theorem isSuccLimit_add_iff {a b : Ordinal} :
     IsSuccLimit (a + b) ↔ IsSuccLimit b ∨ b = 0 ∧ IsSuccLimit a := by
   constructor <;> intro h
   · by_cases h' : b = 0
@@ -1027,11 +880,11 @@ theorem isLimit_add_iff {a b : Ordinal} :
       exact ⟨h', h⟩
     left
     rw [← add_sub_cancel a b]
-    apply isLimit_sub h
+    apply isSuccLimit_sub h
     suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩)
-  · exact isLimit_add a h
+  · exact isSuccLimit_add a h
   · simpa only [add_zero]
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
@@ -2435,17 +2288,11 @@ theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omeg
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias one_lt_omega := one_lt_omega0
 
-theorem isLimit_omega0 : IsSuccLimit ω := by
+theorem isSuccLimit_omega0 : IsSuccLimit ω := by
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨omega0_ne_zero, fun o h => ?_⟩
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
   exact nat_lt_omega0 (n + 1)
-
-@[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
-alias omega0_isLimit := isLimit_omega0
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias omega_isLimit := isLimit_omega0
 
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
@@ -2468,10 +2315,6 @@ theorem sup_natCast : sup Nat.cast = ω :=
 @[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias sup_nat_cast := sup_natCast
 
-@[deprecated natCast_lt_of_isSuccLimit (since := "2024-04-17")]
-theorem nat_lt_limit {o : Ordinal} (h : IsSuccLimit o) : ∀ n : ℕ, ↑n < o :=
-  natCast_lt_of_isSuccLimit h
-
 theorem omega0_le_of_isLimit {o} (h : IsSuccLimit o) : ω ≤ o :=
   omega0_le.2 fun n => (natCast_lt_of_isSuccLimit h n).le
 
@@ -2482,12 +2325,12 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω 
   refine ⟨fun l => ⟨l.ne_bot, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
   · refine l.le_iff_forall_le.2 fun x hx => le_of_lt ?_
     rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
-      add_le_of_limit isLimit_omega0]
+      add_le_iff_of_isSuccLimit isLimit_omega0]
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
-        (lt_sub.1 <| natCast_lt_of_isSuccLimit (isLimit_sub l hx) _).le
+        (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
     refine isLimit_mul_left isLimit_omega0 (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
@@ -2591,4 +2434,178 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
 
 end Cardinal
 
-set_option linter.style.longFile 2600
+/-! ### Deprecated `IsLimit` lemmas -/
+
+namespace Ordinal
+
+section deprecated
+set_option linter.deprecated false
+
+@[deprecated isSuccLimit_iff (since := "2024-12-08")]
+theorem isLimit_iff {o} : IsLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
+  isSuccLimit_iff
+
+@[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-12-08")]
+theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
+  IsSuccLimit.isSuccPrelimit h
+
+@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
+
+@[deprecated IsSuccLimit.succ_lt (since := "2024-12-08")]
+theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
+  IsSuccLimit.succ_lt h
+
+@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
+alias isSuccLimit_zero := isSuccPrelimit_zero
+
+@[deprecated not_isSuccLimit_zero (since := "2024-12-08")]
+theorem not_zero_isLimit : ¬IsLimit 0 :=
+  not_isSuccLimit_bot
+
+@[deprecated not_isSuccLimit_succ (since := "2024-12-08")]
+theorem not_succ_isLimit (o) : ¬IsLimit (succ o) :=
+  not_isSuccLimit_succ o
+
+@[deprecated not_isSuccLimit_succ (since := "2024-12-08")]
+theorem not_succ_of_isLimit {o} (h : IsLimit o) : ¬∃ a, o = succ a
+  | ⟨a, e⟩ => not_succ_isLimit a (e ▸ h)
+
+@[deprecated IsSuccLimit.succ_lt_iff (since := "2024-12-08")]
+theorem succ_lt_of_isLimit {o a : Ordinal} (h : IsLimit o) : succ a < o ↔ a < o :=
+  IsSuccLimit.succ_lt_iff h
+
+@[deprecated IsSuccLimit.le_succ_iff (since := "2024-12-08")]
+theorem le_succ_of_isLimit {o} (h : IsLimit o) {a} : o ≤ succ a ↔ o ≤ a :=
+  h.le_succ_iff
+
+@[deprecated IsSuccLimit.le_iff_forall_le (since := "2024-12-08")]
+theorem limit_le {o} (h : IsLimit o) {a} : o ≤ a ↔ ∀ x < o, x ≤ a :=
+  h.le_iff_forall_le
+
+@[deprecated IsSuccLimit.lt_iff_exists_lt (since := "2024-12-08")]
+theorem lt_limit {o} (h : IsLimit o) {a} : a < o ↔ ∃ x < o, a < x :=
+  h.lt_iff_exists_lt
+
+@[deprecated isSuccLimit_lift (since := "2024-12-08")]
+theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
+  isSuccLimit_lift
+
+@[deprecated IsSuccLimit.bot_lt (since := "2024-12-08")]
+theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
+  IsSuccLimit.bot_lt h
+
+@[deprecated IsSuccLimit.ne_bot (since := "2024-12-08")]
+theorem IsLimit.ne_zero {o : Ordinal} (h : IsLimit o) : o ≠ 0 :=
+  h.pos.ne'
+
+@[deprecated one_lt_of_isSuccLimit (since := "2024-12-08")]
+theorem IsLimit.one_lt {o : Ordinal} (h : IsLimit o) : 1 < o :=
+  one_lt_of_isSuccLimit h
+
+@[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-08")]
+theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal) < o:=
+  natCast_lt_of_isSuccLimit h
+
+@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
+theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
+  simpa [eq_comm] using isMin_or_mem_range_succ_or_isSuccLimit o
+
+@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
+theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
+    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
+
+@[deprecated IsSuccLimit.sSup_Iio (since := "2024-12-08")]
+theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o :=
+  IsSuccLimit.sSup_Iio h
+
+@[deprecated IsSuccLimit.iSup_Iio (since := "2024-12-08")]
+theorem IsLimit.iSup_Iio {o : Ordinal} (h : IsLimit o) : ⨆ a : Iio o, a.1 = o :=
+  IsSuccLimit.iSup_Iio h
+
+@[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
+alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
+
+-- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
+@[deprecated typein_ordinal (since := "2024-09-19")]
+theorem type_subrel_lt (o : Ordinal.{u}) :
+    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
+  typein_ordinal o
+
+@[deprecated mk_Iio_ordinal (since := "2024-09-19")]
+theorem mk_initialSeg (o : Ordinal.{u}) :
+    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
+
+@[deprecated IsNormal.isSuccLimit (since := "2024-12-08")]
+theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsLimit o) : IsLimit (f o) :=
+  H.isSuccLimit ho
+
+@[deprecated add_le_iff_of_isSuccLimit (since := "2024-12-08")]
+theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
+  add_le_iff_of_isSuccLimit h
+
+@[deprecated isSuccLimit_add (since := "2024-12-08")]
+theorem isLimit_add (a : Ordinal) {b : Ordinal} : IsLimit b → IsLimit (a + b) :=
+  isSuccLimit_add a
+
+@[deprecated isNormal_add_right (since := "2024-10-11")]
+alias add_isNormal := isNormal_add_right
+
+@[deprecated isLimit_add (since := "2024-10-11")]
+alias add_isLimit := isLimit_add
+
+@[deprecated isLimit_add (since := "2024-12-08")]
+alias IsLimit.add := isLimit_add
+
+@[deprecated isSuccLimit_sub (since := "2024-10-11")]
+theorem isLimit_sub {a b : Ordinal} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) :=
+  isSuccLimit_sub ha h
+
+@[deprecated isSuccLimit_sub (since := "2024-10-11")]
+alias sub_isLimit := isLimit_sub
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias one_add_omega := one_add_omega0
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias one_add_of_omega_le := one_add_of_omega0_le
+
+@[deprecated isNormal_mul_right (since := "2024-10-11")]
+alias mul_isNormal := isNormal_mul_right
+
+@[deprecated lt_mul_iff_of_isSuccLimit (since := "2024-12-08")]
+theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' :=
+  lt_mul_iff_of_isSuccLimit h
+
+@[deprecated isSuccLimit_mul (since := "2024-12-08")]
+theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
+  isSuccLimit_mul a0
+
+@[deprecated isLimit_mul (since := "2024-10-11")]
+alias mul_isLimit := isLimit_mul
+
+@[deprecated isLimit_mul_left (since := "2024-10-11")]
+alias mul_isLimit_left := isLimit_mul_left
+
+@[deprecated isSuccLimit_add_iff (since := "2024-10-11")]
+theorem isLimit_add_iff {a b : Ordinal} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLimit a :=
+  isSuccLimit_add_iff
+
+@[deprecated isSuccLimit_omega0 (since := "2024-12-08")]
+theorem isLimit_omega0 : IsLimit ω :=
+  isSuccLimit_omega0
+
+@[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
+alias omega0_isLimit := isLimit_omega0
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias omega_isLimit := isLimit_omega0
+
+@[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-08")]
+theorem nat_lt_limit {o : Ordinal} (h : IsSuccLimit o) : ∀ n : ℕ, ↑n < o :=
+  natCast_lt_of_isSuccLimit h
+
+end deprecated
+end Ordinal
+
+set_option linter.style.longFile 2800
