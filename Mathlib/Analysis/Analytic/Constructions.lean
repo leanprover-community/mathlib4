@@ -62,12 +62,13 @@ theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
 alias analyticWithinOn_const := analyticOn_const
 
 /-!
-### Addition, negation, subtraction
+### Addition, negation, subtraction, scalar multiplication
 -/
 
 section
 
 variable {f g : E → F} {pf pg : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
+  {c : 𝕜}
 
 theorem HasFPowerSeriesWithinOnBall.add (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
@@ -162,6 +163,41 @@ theorem AnalyticWithinAt.sub (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem HasFPowerSeriesWithinOnBall.smul_const (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
+    HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r :=
+  { r_le := by
+      rw [pf.radius_smul]
+      exact hf.r_le,
+    r_pos := hf.r_pos
+    hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _ }
+
+theorem HasFPowerSeriesOnBall.smul_const (hf : HasFPowerSeriesOnBall f pf x r) :
+    HasFPowerSeriesOnBall (c • f) (c • pf) x r :=
+  { r_le := by
+      rw [pf.radius_smul]
+      exact hf.r_le,
+    r_pos := hf.r_pos
+    hasSum := fun hy => (hf.hasSum hy).const_smul _ }
+
+theorem HasFPowerSeriesWithinAt.smul_const (hf : HasFPowerSeriesWithinAt f pf s x) :
+    HasFPowerSeriesWithinAt (c • f) (c • pf) s x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.smul_const.hasFPowerSeriesWithinAt
+
+theorem HasFPowerSeriesAt.smul_const (hf : HasFPowerSeriesAt f pf x) :
+    HasFPowerSeriesAt (c • f) (c • pf) x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.smul_const.hasFPowerSeriesAt
+
+theorem AnalyticWithinAt.smul_const (hf : AnalyticWithinAt 𝕜 f s x) :
+    AnalyticWithinAt 𝕜 (c • f) s x :=
+  let ⟨_, hpf⟩ := hf
+  hpf.smul_const.analyticWithinAt
+
+theorem AnalyticAt.smul_const (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
+  let ⟨_, hpf⟩ := hf
+  hpf.smul_const.analyticAt
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=

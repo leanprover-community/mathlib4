@@ -7,6 +7,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -70,6 +71,10 @@ section continuous_eval
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
+
+-- example (a : 𝕜) : ∀ i, ∀ (v : E i),  ‖a • v‖ = ‖a‖ * ‖v‖ := by
+--   intro i v
+--   apply norm_smul a v
 
 instance ContinuousMultilinearMap.instContinuousEval :
     ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
@@ -469,10 +474,40 @@ section
 
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
 
-theorem opNorm_smul_le (c : 𝕜') (f : ContinuousMultilinearMap 𝕜 E G) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
-  (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun m ↦ by
-    rw [smul_apply, norm_smul, mul_assoc]
-    exact mul_le_mul_of_nonneg_left (le_opNorm _ _) (norm_nonneg _)
+@[simp]
+theorem opNorm_smul_eq (f : ContinuousMultilinearMap 𝕜 E G) (c : 𝕜') : ‖c • f‖ = ‖c‖ * ‖f‖ := by
+  by_cases hc : c = 0
+  · simp [hc, opNorm_zero]
+  simp_rw [norm_def, smul_apply, norm_smul]
+  rw [Monotone.map_csInf_of_continuousAt (A_bdd := bounds_bddBelow) (f := fun x ↦ ‖c‖ * x)
+    (Continuous.continuousAt (continuous_mul_left ‖c‖))
+    (Monotone.const_mul monotone_id (norm_nonneg c)) bounds_nonempty]
+  congr
+  ext x
+  constructor
+  · rintro ⟨h1, h2⟩
+    use x / ‖c‖
+    constructor
+    · constructor
+      · apply div_nonneg h1 (by simp)
+      · intro m
+        field_simp
+        rw [le_div_iff₀ (norm_pos_iff.mpr hc), mul_comm]
+        exact h2 m
+    · simp
+      rw [mul_div, mul_comm, mul_div_cancel_right₀]
+      exact norm_ne_zero_iff.mpr hc
+  · rintro ⟨y, ⟨h1, h2⟩, h3⟩
+    simp at h3 ⊢
+    subst h3
+    constructor
+    · apply mul_nonneg (norm_nonneg c) h1
+    intro m
+    rw [mul_assoc]
+    exact mul_le_mul_of_nonneg_left (h2 m) (norm_nonneg c)
+
+theorem opNorm_smul_le (c : 𝕜') (f : ContinuousMultilinearMap 𝕜 E G) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
+  simp
 
 @[deprecated (since := "2024-02-02")] alias op_norm_smul_le := opNorm_smul_le
 
