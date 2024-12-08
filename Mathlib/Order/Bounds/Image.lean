@@ -248,11 +248,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2 (ha : a ∈ lowerBounds s) (hb : b ∈ lowerBounds t) :
     f a b ∈ lowerBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_upperBounds_upperBounds_subset :
     image2 f (upperBounds s) (upperBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -292,11 +292,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2_of_mem_lowerBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ lowerBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_upperBounds_lowerBounds_subset_upperBounds_image2 :
     image2 f (upperBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -338,11 +338,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_lowerBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2_of_mem_upperBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ lowerBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_upperBounds_upperBounds_subset_upperBounds_image2 :
     image2 f (lowerBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) :=
@@ -380,11 +380,11 @@ include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem mem_lowerBounds_image2_of_mem_lowerBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ lowerBounds (image2 f s t) :=
-  forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
+  forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
 theorem image2_lowerBounds_upperBounds_subset_upperBounds_image2 :
     image2 f (lowerBounds s) (upperBounds t) ⊆ upperBounds (image2 f s t) :=

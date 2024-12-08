@@ -320,7 +320,7 @@ protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith K
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
     EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
-  simp only [EMetric.diam_le_iff, forall_image2_iff]
+  simp only [EMetric.diam_le_iff, forall_mem_image2]
   intro a₁ ha₁ b₁ hb₁ a₂ ha₂ b₂ hb₂
   refine (edist_triangle _ (f a₂ b₁) _).trans ?_
   exact
