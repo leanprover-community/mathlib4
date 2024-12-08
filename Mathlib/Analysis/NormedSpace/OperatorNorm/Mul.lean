@@ -15,9 +15,8 @@ of multiplication and scalar-multiplication operations in normed algebras and no
 
 suppress_compilation
 
-
 open Metric
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
 
@@ -117,12 +116,12 @@ theorem opNorm_mulLeftRight_le :
 /-- This is a mixin class for non-unital normed algebras which states that the left-regular
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
 a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addition, so is every
-C⋆-algebra, non-unital included (see `CstarRing.instRegularNormedAlgebra`), but there are yet other
+C⋆-algebra, non-unital included (see `CStarRing.instRegularNormedAlgebra`), but there are yet other
 examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regular.
 
 This is a useful class because it gives rise to a nice norm on the unitization; in particular it is
 a C⋆-norm when the norm on `A` is a C⋆-norm. -/
-class _root_.RegularNormedAlgebra : Prop :=
+class _root_.RegularNormedAlgebra : Prop where
   /-- The left regular representation of the algebra on itself is an isometry. -/
   isometry_mul' : Isometry (mul 𝕜 𝕜')
 
@@ -240,7 +239,7 @@ section Normed
 
 namespace ContinuousLinearMap
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] (c : 𝕜)
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (𝕜) (𝕜' : Type*)
 
 section

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Topology.Algebra.Module.CharacterSpace
-import Mathlib.Analysis.NormedSpace.WeakDual
+import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 
 /-!

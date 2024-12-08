@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Basic
 
@@ -15,8 +15,6 @@ Preparatory lemmas for degree_basic.
 noncomputable section
 
 namespace Polynomial
-
-open Polynomial
 
 universe u
 
@@ -56,12 +54,9 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   set f' := f.comp (toFinsuppIso R).symm.toRingHom with hf'
   set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
   have A : f' = g' := by
-    -- Porting note: Was `ext; simp [..]; simpa [..] using h₂`.
-    ext : 1
-    · ext
-      simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
-    · refine MonoidHom.ext_mnat ?_
-      simpa [RingEquiv.toRingHom_eq_coe] using h₂
+    ext
+    simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
+    simpa using h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]
     ext x

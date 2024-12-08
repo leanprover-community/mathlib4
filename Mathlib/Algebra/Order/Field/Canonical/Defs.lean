@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
+Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Canonical
@@ -23,7 +23,7 @@ class CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedC
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero
     [CanonicallyLinearOrderedSemifield α] : LinearOrderedCommGroupWithZero α :=
   { ‹CanonicallyLinearOrderedSemifield α› with
-    mul_le_mul_left := fun a b h c ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
+    mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
 
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddCommMonoid

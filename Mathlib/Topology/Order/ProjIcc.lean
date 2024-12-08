@@ -16,26 +16,29 @@ to show that `Set.IccExtend h f` is continuous if and only if `f` is continuous.
 
 open Set Filter Topology
 
-variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace γ] {a b c : α} {h : a ≤ b}
+variable {α β γ : Type*} [LinearOrder α] {a b c : α} {h : a ≤ b}
 
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
     {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ˢ la.map (projIcc a b h)) lb) :
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
   hf.comp <| tendsto_id.prod_map tendsto_map
 
-variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β]
+variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[continuity]
 theorem continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 
-theorem quotientMap_projIcc : QuotientMap (projIcc a b h) :=
-  quotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
+theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
+  isQuotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_projIcc := isQuotientMap_projIcc
 
 @[simp]
 theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
-  quotientMap_projIcc.continuous_iff.symm
+  isQuotientMap_projIcc.continuous_iff.symm
 
 /-- See Note [continuity lemma statement]. -/
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)

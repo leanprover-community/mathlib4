@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Algebra.PUnitInstances.Algebra
@@ -46,7 +46,7 @@ add_decl_doc AddMonCat.AssocAddMonoidHom
 
 @[to_additive]
 instance bundledHom : BundledHom AssocMonoidHom where
-  toFun {X Y} _ _ f := ⇑f
+  toFun {_ _} _ _ f := ⇑f
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
 
@@ -65,7 +65,7 @@ instance : CoeSort MonCat Type* where
 @[to_additive]
 instance (X : MonCat) : Monoid X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -145,7 +145,7 @@ instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
   "Universe lift functor for additive monoids."]
 def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
   obj X := MonCat.of (ULift.{v, u} X)
-  map {X Y} f := MonCat.ofHom <|
+  map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl
@@ -181,7 +181,7 @@ instance : CoeSort CommMonCat Type* where
 @[to_additive]
 instance (X : CommMonCat) : CommMonoid X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -249,7 +249,7 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
   "Universe lift functor for additive commutative monoids."]
 def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
   obj X := CommMonCat.of (ULift.{v, u} X)
-  map {X Y} f := CommMonCat.ofHom <|
+  map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl
@@ -330,7 +330,7 @@ add_decl_doc addEquivIsoAddCommMonCatIso
 instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    -- Again a problem that exists already creeps into other things leanprover/lean4#2644
+    -- Again a problem that exists already creeps into other things https://github.com/leanprover/lean4/pull/2644
     -- this used to be `by aesop`; see next declaration
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact e.toMonCatIso.isIso_hom

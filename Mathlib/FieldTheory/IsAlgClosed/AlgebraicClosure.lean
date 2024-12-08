@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectLimit
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
@@ -26,12 +27,9 @@ In this file we construct the algebraic closure of a field
 algebraic closure, algebraically closed
 -/
 
-
 universe u v w
 
 noncomputable section
-
-open scoped Classical Polynomial
 
 open Polynomial
 
@@ -54,6 +52,7 @@ indeterminate. -/
 def spanEval : Ideal (MvPolynomial (MonicIrreducible k) k) :=
   Ideal.span <| Set.range <| evalXSelf k
 
+open Classical in
 /-- Given a finset of monic irreducible polynomials, construct an algebra homomorphism to the
 splitting field of the product of the polynomials sending each indeterminate `x_f` represented by
 the polynomial `f` in the finset to a root of `f`. -/
@@ -75,13 +74,13 @@ theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f
 
 theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [Ideal.ne_top_iff_one, spanEval, Ideal.span, ← Set.image_univ,
-    Finsupp.mem_span_image_iff_total]
+    Finsupp.mem_span_image_iff_linearCombination]
   rintro ⟨v, _, hv⟩
   replace hv := congr_arg (toSplittingField k v.support) hv
-  rw [map_one, Finsupp.total_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
+  rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
-  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
+  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf _ (s := v.support) hj,
     mul_zero]
 
 /-- A random maximal ideal that contains `spanEval k` -/
@@ -130,7 +129,7 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 
@@ -166,12 +165,8 @@ instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
   (toStepSucc k n).toAlgebra
 
 theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
-    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 := by
--- Porting note: original proof was `@AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi`,
--- but it timeouts.
-  obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
--- Porting note: using `hx` instead of `by apply hx` timeouts.
-  exact ⟨x, by apply hx⟩
+    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 :=
+  @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
 
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
@@ -188,29 +183,24 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
   toFun := toStepOfLE' k m n h
   map_one' := by
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
     induction' h with a h ih
     · exact Nat.leRecOn_self 1
-    · rw [toStepOfLE'.succ k m a h]; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_mul' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_zero' := by
+    simp only
     induction' h with a h ih
     · exact Nat.leRecOn_self 0
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_add' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
@@ -252,12 +242,11 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     apply @RingHom.IsIntegral.trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
         (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
     · intro z
-      have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
-      convert this
+      convert AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
     · convert h -- Porting note: This times out at 500000
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
-  ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
+  ⟨fun _ => Nat.leRecOn_self, fun _ _ _ h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
 
 end AlgebraicClosure
 
@@ -349,6 +338,7 @@ attribute [local instance] AlgebraicClosureAux.field AlgebraicClosureAux.instAlg
 
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
+@[stacks 09GT]
 def AlgebraicClosure : Type u :=
   MvPolynomial (AlgebraicClosureAux k) k ⧸
     RingHom.ker (MvPolynomial.aeval (R := k) id).toRingHom
@@ -381,7 +371,7 @@ instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
   let e := algEquivAlgebraicClosureAux k
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective $ by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (AlgebraicClosure k) where
@@ -394,9 +384,9 @@ instance instField : Field (AlgebraicClosure k) where
   nnratCast_def q := by change algebraMap k _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
     ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
@@ -407,7 +397,7 @@ instance : IsAlgClosure k (AlgebraicClosure k) := by
   exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
-  IsAlgClosure.algebraic
+  IsAlgClosure.isAlgebraic
 
 instance [CharZero k] : CharZero (AlgebraicClosure k) :=
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))
@@ -415,4 +405,36 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
+instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
+    IsAlgClosure k (AlgebraicClosure L) where
+  isAlgebraic := .trans (L := L)
+  isAlgClosed := inferInstance
+
 end AlgebraicClosure
+
+/-- Over an algebraically closed field of characteristic zero a necessary and sufficient condition
+for the set of roots of a nonzero polynomial `f` to be a subset of the set of roots of `g` is that
+`f` divides `f.derivative * g`. Over an integral domain, this is a sufficient but not necessary
+condition. See `isRoot_of_isRoot_of_dvd_derivative_mul` -/
+theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
+    [IsAlgClosed K] [CharZero K] {f g : K[X]} (hf0 : f ≠ 0) :
+    (∀ x, IsRoot f x → IsRoot g x) ↔ f ∣ f.derivative * g := by
+  refine ⟨?_, isRoot_of_isRoot_of_dvd_derivative_mul hf0⟩
+  by_cases hg0 : g = 0
+  · simp [hg0]
+  by_cases hdf0 : derivative f = 0
+  · rw [eq_C_of_derivative_eq_zero hdf0]
+    simp only [eval_C, derivative_C, zero_mul, dvd_zero, implies_true]
+  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
+  simp only [count_roots, rootMultiplicity_mul hdg]
+  refine forall_imp fun a => ?_
+  by_cases haf : f.eval a = 0
+  · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
+    rw [derivative_rootMultiplicity_of_root haf]
+    intro h
+    calc rootMultiplicity a f
+        = rootMultiplicity a f - 1 + 1 := (Nat.sub_add_cancel (Nat.succ_le_iff.1 h0)).symm
+      _ ≤ rootMultiplicity a f - 1 + rootMultiplicity a g := add_le_add le_rfl (Nat.succ_le_iff.1
+        ((rootMultiplicity_pos hg0).2 (h haf)))
+  · simp [haf, rootMultiplicity_eq_zero haf]

@@ -3,9 +3,9 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Deprecated.Subgroup
+import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Deprecated.Group
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Deprecated.Subgroup
 
 /-!
 # Unbundled subrings (deprecated)
@@ -64,8 +64,6 @@ theorem isSubring_set_range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R �
 
 end RingHom
 
-variable {cR : Type u} [CommRing cR]
-
 theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : IsSubring S₂) :
     IsSubring (S₁ ∩ S₂) :=
   { IsAddSubgroup.inter hS₁.toIsAddSubgroup hS₂.toIsAddSubgroup,
@@ -97,14 +95,15 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
     ∃ L : List (List R), (∀ l ∈ L, ∀ x ∈ l, x ∈ s ∨ x = (-1 : R)) ∧ (L.map List.prod).sum = a :=
   AddGroup.InClosure.recOn h
     fun {x} hx ↦ match x, Monoid.exists_list_of_mem_closure hx with
-    | _, ⟨L, h1, rfl⟩ => ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), zero_add _⟩
+    | _, ⟨L, h1, rfl⟩ =>
+      ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), List.sum_singleton⟩
     ⟨[], List.forall_mem_nil _, rfl⟩
     fun {b} _ ih ↦ match b, ih with
     | _, ⟨L1, h1, rfl⟩ =>
       ⟨L1.map (List.cons (-1)),
         fun L2 h2 ↦ match L2, List.mem_map.1 h2 with
         | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
-        simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
+        simp only [List.map_map, Function.comp_def, List.prod_cons, neg_one_mul]
         refine List.recOn L1 neg_zero.symm fun hd tl ih ↦ ?_
         rw [List.map_cons, List.sum_cons, ih, List.map_cons, List.sum_cons, neg_add]⟩
     fun {r1 r2} _ _ ih1 ih2 ↦ match r1, r2, ih1, ih2 with
@@ -115,7 +114,7 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
 protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
-  have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
+  have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
   induction' L with hd tl ih
@@ -180,6 +179,7 @@ theorem closure_subset_iff {s t : Set R} (ht : IsSubring t) : closure s ⊆ t �
   (AddGroup.closure_subset_iff ht.toIsAddSubgroup).trans
     ⟨Set.Subset.trans Monoid.subset_closure, Monoid.closure_subset ht.toIsSubmonoid⟩
 
+@[gcongr]
 theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubring <| Set.Subset.trans H subset_closure
 

@@ -3,8 +3,8 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Sesquilinear maps
@@ -112,7 +112,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
     cases' H with H H
-    · simp at H
+    · simp only [map_eq_zero] at H
       exfalso
       exact ha H
     · exact H
@@ -149,18 +149,20 @@ def IsRefl (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
 
 namespace IsRefl
 
+section
 variable (H : B.IsRefl)
+include H
 
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 
-theorem domRestrict (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
+theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
-
+end
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
   ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
@@ -239,6 +241,7 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 
 variable (H : B.IsAlt)
+include H
 
 theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
@@ -259,20 +262,18 @@ namespace IsAlt
 variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-variable (H : B.IsAlt)
-
-theorem neg (x y : M₁) : -B x y = B y x := by
+theorem neg (H : B.IsAlt) (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp? [map_add, self_eq_zero H] at H1 says
     simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
   exact H1
 
-theorem isRefl : B.IsRefl := by
+theorem isRefl (H : B.IsAlt) : B.IsRefl := by
   intro x y h
   rw [← neg H, h, neg_zero]
 
-theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+theorem ortho_comm (H : B.IsAlt) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 
 end IsAlt
@@ -457,9 +458,40 @@ theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
 
 end AddCommGroup
 
+section OrthogonalMap
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+  (B : LinearMap.BilinForm R M) (f : Module.End R M)
+
+/-- A linear transformation `f` is orthogonal with respect to a bilinear form `B` if `B` is
+bi-invariant with respect to `f`. -/
+def IsOrthogonal : Prop :=
+  ∀ x y, B (f x) (f y) = B x y
+
+variable {B f}
+
+@[simp]
+lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
+    LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
+  ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
+
+lemma isOrthogonal_of_forall_apply_same
+    (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
+    B.IsOrthogonal f := by
+  intro x y
+  suffices 2 * B (f x) (f y) = 2 * B x y from h this
+  have := hf (x + y)
+  simp only [map_add, add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
+  rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
+  simp only [add_assoc, add_right_inj] at this
+  simp only [← add_assoc, add_left_inj] at this
+  simpa only [← two_mul] using this
+
+end OrthogonalMap
+
 end AdjointPair
 
-/-! ### Self-adjoint pairs-/
+/-! ### Self-adjoint pairs -/
 
 
 section SelfadjointPair
@@ -703,7 +735,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   intro ho
   refine v.ne_zero i (hB (v i) fun m ↦ ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
-  rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum]
+  rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
@@ -732,7 +764,8 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂,
+           map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
   · intro j _hj hij
@@ -764,5 +797,98 @@ theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroSMulDivisors R
 end CommRing
 
 end Nondegenerate
+
+namespace BilinForm
+
+lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (x y : M) :
+    B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
+      (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
+  simp only [map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul, mul_sub,
+    mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
+  abel
+
+variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
+
+/-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
+lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
+    (B x y) * (B y x) ≤ (B x x) * (B y y) := by
+  have aux (x y : M) : 0 ≤ (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
+    rw [← apply_smul_sub_smul_sub_eq B x y]
+    exact hs (B x y • x - B x x • y)
+  rcases lt_or_le 0 (B x x) with hx | hx
+  · exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux x y) hx
+  · replace hx : B x x = 0 := le_antisymm hx (hs x)
+    rcases lt_or_le 0 (B y y) with hy | hy
+    · rw [mul_comm (B x y), mul_comm (B x x)]
+      exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux y x) hy
+    · replace hy : B y y = 0 := le_antisymm hy (hs y)
+      suffices B x y = - B y x by simpa [this, hx, hy] using mul_self_nonneg (B y x)
+      rw [eq_neg_iff_add_eq_zero]
+      apply le_antisymm
+      · simpa [hx, hy, le_neg_iff_add_nonpos_left] using hs (x - y)
+      · simpa [hx, hy] using hs (x + y)
+
+/-- The **Cauchy-Schwarz inequality** for positive semidefinite symmetric forms. -/
+lemma apply_sq_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
+    (B x y) ^ 2 ≤ (B x x) * (B y y) := by
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  exact apply_mul_apply_le_of_forall_zero_le B hs x y
+
+/-- The equality case of **Cauchy-Schwarz**. -/
+lemma not_linearIndependent_of_apply_mul_apply_eq (hp : ∀ x, x ≠ 0 → 0 < B x x)
+    (x y : M) (he : (B x y) * (B y x) = (B x x) * (B y y)) :
+    ¬ LinearIndependent R ![x, y] := by
+  have hz : (B x y) • x - (B x x) • y = 0 := by
+    by_contra hc
+    exact (ne_of_lt (hp ((B x) y • x - (B x) x • y) hc)).symm <|
+      (apply_smul_sub_smul_sub_eq B x y).symm ▸ (mul_eq_zero_of_right ((B x) x)
+      (sub_eq_zero_of_eq he.symm))
+  by_contra hL
+  by_cases hx : x = 0
+  · simpa [hx] using LinearIndependent.ne_zero 0 hL
+  · have h := sub_eq_zero.mpr (sub_eq_zero.mp hz).symm
+    rw [sub_eq_add_neg, ← neg_smul, add_comm] at h
+    exact (Ne.symm (ne_of_lt (hp x hx))) (LinearIndependent.eq_zero_of_pair hL h).2
+
+/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
+lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
+    (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
+    (B x y) * (B y x) < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
+  have hle : ∀ z, 0 ≤ B z z := by
+    intro z
+    by_cases hz : z = 0; simp [hz]
+    exact le_of_lt (hp z hz)
+  constructor
+  · contrapose!
+    intro h
+    rw [LinearIndependent.pair_iff] at h
+    push_neg at h
+    obtain ⟨r, s, hl, h0⟩ := h
+    by_cases hr : r = 0; · simp_all
+    by_cases hs : s = 0; · simp_all
+    suffices
+        (B (r • x) (r • x)) * (B (s • y) (s • y)) = (B (r • x) (s • y)) * (B (s • y) (r • x)) by
+      simp only [map_smul, smul_apply, smul_eq_mul] at this
+      rw [show r * (r * (B x) x) * (s * (s * (B y) y)) = (r * r * s * s) * ((B x) x * (B y) y) by
+        ring, show s * (r * (B x) y) * (r * (s * (B y) x)) = (r * r * s * s) * ((B x) y * (B y) x)
+        by ring] at this
+      have hrs : r * r * s * s ≠ 0 := by simp [hr, hs]
+      exact le_of_eq <| mul_right_injective₀ hrs this
+    simp [show s • y = - r • x by rwa [neg_smul, ← add_eq_zero_iff_eq_neg']]
+  · contrapose!
+    intro h
+    refine not_linearIndependent_of_apply_mul_apply_eq B hp x y (le_antisymm
+      (apply_mul_apply_le_of_forall_zero_le B hle x y) h)
+
+/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
+forms. -/
+lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
+    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
+    (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  exact apply_mul_apply_lt_iff_linearIndependent B hp x y
+
+end BilinForm
 
 end LinearMap

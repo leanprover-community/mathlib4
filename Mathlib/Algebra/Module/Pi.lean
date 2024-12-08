@@ -3,10 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Pi instances for modules
@@ -21,9 +21,6 @@ variable {I : Type u}
 
 -- The indexing type
 variable {f : I → Type v}
-
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 
@@ -85,18 +82,5 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     ext1
     -- Porting note: not sure why `apply zero_smul` fails here.
     rw [zero_smul]
-
-instance noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]
-    [∀ i, Module α <| f i] [∀ i, NoZeroSMulDivisors α <| f i] :
-    NoZeroSMulDivisors α (∀ i : I, f i) :=
-  ⟨fun {_ _} h =>
-    or_iff_not_imp_left.mpr fun hc =>
-      funext fun i => (smul_eq_zero.mp (congr_fun h i)).resolve_left hc⟩
-
-/-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
-synthesize this instance by itself elsewhere in the library. -/
-instance _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [AddCommMonoid β]
-    [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
-  Pi.noZeroSMulDivisors _
 
 end Pi

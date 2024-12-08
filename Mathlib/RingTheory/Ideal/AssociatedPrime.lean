@@ -3,10 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 
@@ -104,7 +104,7 @@ theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
     (associatedPrimes.subset_of_injective l.symm l.symm.injective)
 
 theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
-  ext; simp only [Set.mem_empty_iff_false, iff_false_iff]
+  ext; simp only [Set.mem_empty_iff_false, iff_false]
   apply not_isAssociatedPrime_of_subsingleton
 
 variable (R M)
@@ -148,7 +148,8 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
       Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
   apply le_antisymm
   · intro y hy
-    exact (hI.2 <| e.mp hy).resolve_left ((Submodule.Quotient.mk_eq_zero I).not.mp this)
+    exact ((Ideal.isPrimary_iff.1 hI).2 <| e.mp hy).resolve_left
+      ((Submodule.Quotient.mk_eq_zero I).not.mp this)
   · rw [hJ.radical_le_iff]
     intro y hy
     exact e.mpr (I.mul_mem_left x hy)

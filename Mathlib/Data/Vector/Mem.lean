@@ -22,9 +22,7 @@ namespace Vector
 variable {α β : Type*} {n : ℕ} (a a' : α)
 
 @[simp]
-theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by
-  rw [get_eq_get]
-  exact List.get_mem _ _ _
+theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := List.get_mem _ _
 
 theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a := by
   simp only [List.mem_iff_get, Fin.exists_iff, Vector.get_eq_get]
@@ -58,9 +56,9 @@ theorem mem_cons_of_mem (v : Vector α n) (ha' : a' ∈ v.toList) : a' ∈ (a ::
   (Vector.mem_cons_iff a a' v).2 (Or.inr ha')
 
 theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.toList := by
-  induction' n with n _
-  · exact False.elim (Vector.not_mem_zero a v.tail ha)
-  · exact (mem_succ_iff a v).2 (Or.inr ha)
+  induction n with
+  | zero => exact False.elim (Vector.not_mem_zero a v.tail ha)
+  | succ n _ => exact (mem_succ_iff a v).2 (Or.inr ha)
 
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
     b ∈ (v.map f).toList ↔ ∃ a : α, a ∈ v.toList ∧ f a = b := by

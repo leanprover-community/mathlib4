@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.Linear
@@ -17,8 +17,6 @@ with chain maps identified when they are homotopic.
 -/
 
 universe v u
-
-open scoped Classical
 
 noncomputable section
 
@@ -175,6 +173,7 @@ section
 
 variable [CategoryWithHomology V]
 
+open Classical in
 /-- The `i`-th homology, as a functor from the homotopy category. -/
 noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
   CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by

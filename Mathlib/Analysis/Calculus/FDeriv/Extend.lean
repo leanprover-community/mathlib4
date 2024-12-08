@@ -135,7 +135,7 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
   have : HasDerivWithinAt f e (Icc a b) a := by
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact hasFDerivWithinAt_closure_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
-  exact this.mono_of_mem (Icc_mem_nhdsWithin_Ici <| left_mem_Ico.2 ab)
+  exact this.mono_of_mem_nhdsWithin (Icc_mem_nhdsWithin_Ici <| left_mem_Ico.2 ab)
 
 @[deprecated (since := "2024-07-10")] alias has_deriv_at_interval_left_endpoint_of_tendsto_deriv :=
   hasDerivWithinAt_Ici_of_tendsto_deriv
@@ -173,7 +173,7 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
   have : HasDerivWithinAt f e (Icc b a) a := by
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact hasFDerivWithinAt_closure_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
-  exact this.mono_of_mem (Icc_mem_nhdsWithin_Iic <| right_mem_Ioc.2 ba)
+  exact this.mono_of_mem_nhdsWithin (Icc_mem_nhdsWithin_Iic <| right_mem_Ioc.2 ba)
 
 @[deprecated (since := "2024-07-10")] alias has_deriv_at_interval_right_endpoint_of_tendsto_deriv :=
   hasDerivWithinAt_Iic_of_tendsto_deriv

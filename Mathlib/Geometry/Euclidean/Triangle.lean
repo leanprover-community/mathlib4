@@ -33,14 +33,9 @@ unnecessarily.
 
 -/
 
-
 noncomputable section
 
-open scoped Classical
-
-open scoped Real
-
-open scoped RealInnerProductSpace
+open scoped CharZero Real RealInnerProductSpace
 
 namespace InnerProductGeometry
 
@@ -134,7 +129,10 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
       Real.mul_self_sqrt (sub_nonneg_of_le (real_inner_mul_inner_self_le x y)),
       real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    field_simp [hxn, hyn, hxyn]
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
+    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+    simp (disch := field_simp_discharge) only [sub_div', div_div, mul_div_assoc',
+      div_mul_eq_mul_div, div_sub', neg_div', neg_sub, eq_div_iff, div_eq_iff]
     ring
 
 /-- The sine of the sum of two angles in a possibly degenerate
@@ -174,7 +172,10 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
       inner_sub_right, inner_sub_right, inner_sub_right, inner_sub_right, real_inner_comm x y, H3,
       H4, real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    field_simp [hxn, hyn, hxyn]
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
+    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+    simp (disch := field_simp_discharge) only [mul_div_assoc', div_mul_eq_mul_div, div_div,
+      sub_div', Real.sqrt_div', Real.sqrt_mul_self, add_div', div_add', eq_div_iff, div_eq_iff]
     ring
 
 /-- The cosine of the sum of the angles of a possibly degenerate
@@ -242,9 +243,7 @@ This section develops some geometrical definitions and results on
 (possibly degenerate) triangles in Euclidean affine spaces.
 -/
 
-
 open InnerProductGeometry
-
 open scoped EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
@@ -296,7 +295,7 @@ theorem angle_add_angle_add_angle_eq_pi {p1 p2 p3 : P} (h2 : p2 ≠ p1) (h3 : p3
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
-    [Fact (FiniteDimensional.finrank ℝ V = 2)] {p1 p2 p3 : P} (h21 : p2 ≠ p1) (h32 : p3 ≠ p2)
+    [Fact (Module.finrank ℝ V = 2)] {p1 p2 p3 : P} (h21 : p2 ≠ p1) (h32 : p3 ≠ p2)
     (h13 : p1 ≠ p3) : ∡ p1 p2 p3 + ∡ p2 p3 p1 + ∡ p3 p1 p2 = π := by
   simpa only [neg_vsub_eq_vsub_rev] using
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
@@ -322,8 +321,19 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     simp only [m, dist_left_midpoint, dist_right_midpoint, Real.norm_two] at hm
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
-        ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by field_simp; ring
-      _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by rw [hm]; field_simp; ring
+        ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
+        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
+        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+        simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
+          mul_div_assoc', add_div', div_mul_cancel₀, div_div, eq_div_iff]
+        ring
+      _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
+        rw [hm]
+        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
+        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+        simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
+          mul_div_assoc', div_div, add_div', div_pow, eq_div_iff, div_eq_iff]
+        ring
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
@@ -341,6 +351,6 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     rw [hab₁, hab'₁, dist_comm b' c', dist_comm b c, hcb]
   · have h1 : 0 ≤ r * dist a b := by rw [← hab]; exact dist_nonneg
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
-    exact (sq_eq_sq dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
+    exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
 end EuclideanGeometry

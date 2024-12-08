@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
@@ -32,7 +32,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type*} [Category E]
 
 namespace Functor
 
@@ -79,7 +79,10 @@ theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) 
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec
 
-variable {F : C ⥤ D} [Full F] [F.Faithful] {X Y Z : C}
+variable {F : C ⥤ D} {X Y Z : C}
+
+section
+variable [Full F] [F.Faithful]
 
 @[simp]
 theorem preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
@@ -110,6 +113,9 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
   ext
   simp
 
+end
+
+variable (F) in
 /-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
 in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
@@ -122,14 +128,23 @@ namespace FullyFaithful
 
 attribute [simp] map_preimage preimage_map
 
+variable (F) in
 /-- A `FullyFaithful` structure can be obtained from the assumption the `F` is both
 full and faithful. -/
 noncomputable def ofFullyFaithful [F.Full] [F.Faithful] :
     F.FullyFaithful where
   preimage := F.preimage
 
-variable {F}
+variable (C) in
+/-- The identity functor is fully faithful. -/
+@[simps]
+def id : (𝟭 C).FullyFaithful where
+  preimage f := f
+
+section
 variable (hF : F.FullyFaithful)
+
+include hF
 
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
 @[simps]
@@ -156,6 +171,15 @@ lemma full : F.Full where
 lemma faithful : F.Faithful where
   map_injective := hF.map_injective
 
+instance : Subsingleton F.FullyFaithful where
+  allEq h₁ h₂ := by
+    have := h₁.faithful
+    cases h₁ with | mk f₁ hf₁ _ => cases h₂ with | mk f₂ hf₂ _ =>
+    simp only [Functor.FullyFaithful.mk.injEq]
+    ext
+    apply F.map_injective
+    rw [hf₁, hf₂]
+
 /-- The unique isomorphism `X ≅ Y` which induces an isomorphism `F.obj X ≅ F.obj Y`
 when `hF : F.FullyFaithful`. -/
 @[simps]
@@ -165,7 +189,7 @@ def preimageIso {X Y : C} (e : F.obj X ≅ F.obj Y) : X ≅ Y where
   hom_inv_id := hF.map_injective (by simp)
   inv_hom_id := hF.map_injective (by simp)
 
-lemma isIso_of_isIso_map (hF : F.FullyFaithful) {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
+lemma isIso_of_isIso_map {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
     IsIso f := by
   simpa using (hF.preimageIso (asIso (F.map f))).isIso_hom
 
@@ -177,18 +201,12 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-variable (C) in
-/-- The identity functor is fully faithful. -/
-@[simps]
-def id : (𝟭 C).FullyFaithful where
-  preimage f := f
-
-variable {E : Type*} [Category E]
-
 /-- Fully faithful functors are stable by composition. -/
 @[simps]
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
   preimage f := hF.preimage (hG.preimage f)
+
+end
 
 /-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :
@@ -231,7 +249,7 @@ variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
 instance Faithful.comp [F.Faithful] [G.Faithful] :
-    (F ⋙ G).Faithful  where map_injective p := F.map_injective (G.map_injective p)
+    (F ⋙ G).Faithful where map_injective p := F.map_injective (G.map_injective p)
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type

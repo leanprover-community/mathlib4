@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Synonym
 import Mathlib.Order.Hom.Set
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Image
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -50,8 +50,8 @@ open Function OrderDual Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a a₁ a₂ : α}
-  {b b₁ b₂ : β}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
+  {b₁ b₂ : β}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
 `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
@@ -67,7 +67,7 @@ namespace GaloisConnection
 
 section
 
-variable [Preorder α] [Preorder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+variable [Preorder α] [Preorder β] {l : α → β} {u : β → α}
 
 theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a))
     (hlu : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
@@ -77,6 +77,9 @@ protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l 
     GaloisConnection (OrderDual.toDual ∘ u ∘ OrderDual.ofDual)
       (OrderDual.toDual ∘ l ∘ OrderDual.ofDual) :=
   fun a b => (gc b a).symm
+
+variable (gc : GaloisConnection l u)
+include gc
 
 theorem le_iff_le {a : α} {b : β} : l a ≤ b ↔ a ≤ u b :=
   gc _ _
@@ -98,11 +101,11 @@ theorem monotone_u : Monotone u := fun a _ H => gc.le_u ((gc.l_u_le a).trans H)
 theorem monotone_l : Monotone l :=
   gc.dual.monotone_u.dual
 
-theorem upperBounds_l_image (gc : GaloisConnection l u) (s : Set α) :
+theorem upperBounds_l_image (s : Set α) :
     upperBounds (l '' s) = u ⁻¹' upperBounds s :=
   Set.ext fun b => by simp [upperBounds, gc _ _]
 
-theorem lowerBounds_u_image (gc : GaloisConnection l u) (s : Set β) :
+theorem lowerBounds_u_image (s : Set β) :
     lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
   gc.dual.upperBounds_l_image s
 
@@ -146,6 +149,7 @@ end
 section PartialOrder
 
 variable [PartialOrder α] [Preorder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+include gc
 
 theorem u_l_u_eq_u (b : β) : u (l (u b)) = u b :=
   (gc.monotone_u (gc.l_u_le _)).antisymm (gc.le_u_l _)
@@ -161,7 +165,7 @@ theorem u_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u'
 theorem exists_eq_u (a : α) : (∃ b : β, a = u b) ↔ a = u (l a) :=
   ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.u_l_u_eq_u _).symm, fun HI => ⟨_, HI⟩⟩
 
-theorem u_eq (gc : GaloisConnection l u) {z : α} {y : β} : u y = z ↔ ∀ x, x ≤ z ↔ l x ≤ y := by
+theorem u_eq {z : α} {y : β} : u y = z ↔ ∀ x, x ≤ z ↔ l x ≤ y := by
   constructor
   · rintro rfl x
     exact (gc x y).symm
@@ -173,6 +177,7 @@ end PartialOrder
 section PartialOrder
 
 variable [Preorder α] [PartialOrder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+include gc
 
 theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a := gc.dual.u_l_u_eq_u _
 
@@ -215,18 +220,18 @@ end OrderBot
 
 section SemilatticeSup
 
-variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α}
 
-theorem l_sup : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
+theorem l_sup (gc : GaloisConnection l u) : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
   (gc.isLUB_l_image isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
 
 end SemilatticeSup
 
 section SemilatticeInf
 
-variable [SemilatticeInf α] [SemilatticeInf β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+variable [SemilatticeInf α] [SemilatticeInf β] {l : α → β} {u : β → α}
 
-theorem u_inf : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ := gc.dual.l_sup
+theorem u_inf (gc : GaloisConnection l u) : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ := gc.dual.l_sup
 
 end SemilatticeInf
 
@@ -245,6 +250,7 @@ theorem l_iSup₂ (gc : GaloisConnection l u) {f : ∀ i, κ i → α} :
   simp_rw [gc.l_iSup]
 
 variable (gc : GaloisConnection l u)
+include gc
 
 theorem u_iInf {f : ι → β} : u (iInf f) = ⨅ i, u (f i) :=
   gc.dual.l_iSup
@@ -252,7 +258,7 @@ theorem u_iInf {f : ι → β} : u (iInf f) = ⨅ i, u (f i) :=
 theorem u_iInf₂ {f : ∀ i, κ i → β} : u (⨅ (i) (j), f i j) = ⨅ (i) (j), u (f i j) :=
   gc.dual.l_iSup₂
 
-theorem l_sSup (gc : GaloisConnection l u) {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
+theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
   simp only [sSup_eq_iSup, gc.l_iSup]
 
 theorem u_sInf {s : Set β} : u (sInf s) = ⨅ a ∈ s, u a :=
@@ -262,9 +268,9 @@ end CompleteLattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LinearOrder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
+variable [LinearOrder α] [LinearOrder β] {l : α → β} {u : β → α}
 
-theorem lt_iff_lt {a : α} {b : β} : b < l a ↔ u b < a :=
+theorem lt_iff_lt (gc : GaloisConnection l u) {a : α} {b : β} : b < l a ↔ u b < a :=
   lt_iff_lt_of_le_iff_le (gc a b)
 
 end LinearOrder
@@ -331,7 +337,7 @@ theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
     GaloisConnection (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   fun _ _ ↦ le_sInf_iff.symm
 
-variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {f : α → β → γ} {s : Set α}
+variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {s : Set α}
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
 theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
@@ -401,7 +407,7 @@ theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
 
 end Nat
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
@@ -545,7 +551,7 @@ abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : Semil
     sup := fun a b => l (u a ⊔ u b)
     le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
     le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
-    sup_le := fun a b c hac hbc =>
+    sup_le := fun _ _ _ hac hbc =>
       gi.gc.l_le <| sup_le (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
 -- See note [reducible non instances]
@@ -587,8 +593,8 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
     sSup := fun s => l (sSup (u '' s))
-    sSup_le := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).2
-    le_sSup := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).1
+    sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
+    le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
     sInf := fun s =>
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
@@ -600,7 +606,7 @@ end lift
 
 end GaloisInsertion
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/

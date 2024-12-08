@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -123,7 +123,7 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
   induction' p with _ x y z h p' ih
   · simp
   · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
-      ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
+      ⟨by rintro (rfl | h) <;> simp [*], by simp +contextual⟩
     simp [ih, or_assoc, this]
 
 lemma start_mem_verts_toSubgraph (p : G.Walk u v) : u ∈ p.toSubgraph.verts := by
@@ -182,6 +182,51 @@ lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
   convert Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
+
+theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
+    w.toSubgraph.Adj (w.getVert i) (w.getVert (i + 1)) := by
+  induction w generalizing i with
+  | nil => cases hi
+  | cons hxy i' ih =>
+    cases i
+    · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
+      subgraphOfAdj_adj, true_or]
+    · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
+      Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+      right
+      exact ih (Nat.succ_lt_succ_iff.mp hi)
+
+theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
+    w.toSubgraph.Adj u' v' ↔ ∃ i, s(w.getVert i, w.getVert (i + 1)) =
+      s(u', v') ∧ i < w.length := by
+  constructor
+  · intro hadj
+    unfold Walk.toSubgraph at hadj
+    match w with
+    | .nil =>
+      simp only [singletonSubgraph_adj, Pi.bot_apply, Prop.bot_eq_false] at hadj
+    | .cons h p =>
+      simp only [Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+        Prod.swap_prod_mk] at hadj
+      cases hadj with
+      | inl hl =>
+        use 0
+        simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
+        refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
+        simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+        cases hl with
+        | inl h1 => left; exact ⟨h1.1, h1.2⟩
+        | inr h2 => right; exact ⟨h2.1, h2.2⟩
+      | inr hr =>
+        obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
+        use i + 1
+        simp only [getVert_cons_succ]
+        constructor
+        · exact hi.1
+        · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]
+  · rintro ⟨i, hi⟩
+    rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
+    exact toSubgraph_adj_getVert _ hi.2
 
 end Walk
 

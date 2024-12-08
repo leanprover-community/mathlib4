@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 import Mathlib.Data.PNat.Equiv
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
 import Mathlib.Order.Hom.Basic
@@ -23,9 +22,7 @@ deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigr
 
 namespace PNat
 
--- Porting note: this instance is no longer automatically inferred in Lean 4.
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
-instance instIsWellOrder : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -117,17 +114,17 @@ def coeAddHom : AddHom ℕ+ ℕ where
   toFun := Coe.coe
   map_add' := add_coe
 
-instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
-  Positive.covariantClass_add_le
+instance addLeftMono : AddLeftMono ℕ+ :=
+  Positive.addLeftMono
 
-instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
-  Positive.covariantClass_add_lt
+instance addLeftStrictMono : AddLeftStrictMono ℕ+ :=
+  Positive.addLeftStrictMono
 
-instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
-  Positive.contravariantClass_add_le
+instance addLeftReflectLE : AddLeftReflectLE ℕ+ :=
+  Positive.addLeftReflectLE
 
-instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
-  Positive.contravariantClass_add_lt
+instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
+  Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! (config := .asFn) apply]
@@ -264,6 +261,13 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
       rw [add_coe, sub_coe, if_pos h]
       exact add_tsub_cancel_of_le h.le
 
+theorem sub_add_of_lt {a b : ℕ+} (h : b < a) : a - b + b = a := by
+  rw [add_comm, add_sub_of_lt h]
+
+@[simp]
+theorem add_sub {a b : ℕ+} : a + b - b = a :=
+  add_right_cancel (sub_add_of_lt (lt_add_left _ _))
+
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
   | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
@@ -273,11 +277,11 @@ theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n
 theorem modDivAux_spec :
     ∀ (k : ℕ+) (r q : ℕ) (_ : ¬(r = 0 ∧ q = 0)),
       ((modDivAux k r q).1 : ℕ) + k * (modDivAux k r q).2 = r + k * q
-  | k, 0, 0, h => (h ⟨rfl, rfl⟩).elim
+  | _, 0, 0, h => (h ⟨rfl, rfl⟩).elim
   | k, 0, q + 1, _ => by
     change (k : ℕ) + (k : ℕ) * (q + 1).pred = 0 + (k : ℕ) * (q + 1)
     rw [Nat.pred_succ, Nat.mul_succ, zero_add, add_comm]
-  | k, r + 1, q, _ => rfl
+  | _, _ + 1, _, _ => rfl
 
 theorem mod_add_div (m k : ℕ+) : (mod m k + k * div m k : ℕ) = m := by
   let h₀ := Nat.mod_add_div (m : ℕ) (k : ℕ)

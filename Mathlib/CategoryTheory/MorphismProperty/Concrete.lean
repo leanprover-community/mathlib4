@@ -126,7 +126,7 @@ def functorialSurjectiveInjectiveFactorizationData :
         ext x
         exact congr_fun φ.w x }
   p :=
-    { app := fun f y => y.1
+    { app := fun _ y => y.1
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

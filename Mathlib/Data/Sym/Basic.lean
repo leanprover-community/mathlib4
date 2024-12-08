@@ -39,7 +39,7 @@ show these are equivalent in `Sym.symEquivSym'`.
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -55,7 +55,7 @@ instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
 
 See note [reducible non-instances].
 -/
-abbrev Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+abbrev Mathlib.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 
 attribute [local instance] Vector.Perm.isSetoid
@@ -119,20 +119,21 @@ theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-def ofVector : Vector α n → Sym α n :=
+def ofVector : Mathlib.Vector α n → Sym α n :=
   fun x => ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
 
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-instance : Coe (Vector α n) (Sym α n) where coe x := ofVector x
+instance : Coe (Mathlib.Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
-theorem ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
+theorem ofVector_nil : ↑(Vector.nil : Mathlib.Vector α 0) = (Sym.nil : Sym α 0) :=
   rfl
 
 @[simp]
-theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
+theorem ofVector_cons (a : α) (v : Mathlib.Vector α n) :
+    ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
 
@@ -142,14 +143,24 @@ theorem card_coe : Multiset.card (s : Multiset α) = n := s.prop
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
 instance : Membership α (Sym α n) :=
-  ⟨fun a s => a ∈ s.1⟩
+  ⟨fun s a => a ∈ s.1⟩
 
 instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
 
+@[simp, norm_cast] lemma coe_mk (s : Multiset α) (h : Multiset.card s = n) : mk s h = s := rfl
+
 @[simp]
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
+
+lemma «forall» {p : Sym α n → Prop} :
+    (∀ s : Sym α n, p s) ↔ ∀ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
+
+lemma «exists» {p : Sym α n → Prop} :
+    (∃ s : Sym α n, p s) ↔ ∃ (s : Multiset α) (hs : Multiset.card s = n), p (Sym.mk s hs) := by
+  simp [Sym]
 
 @[simp]
 theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
@@ -166,17 +177,16 @@ theorem mem_coe : a ∈ (s : Multiset α) ↔ a ∈ s :=
 theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
   Multiset.mem_cons_of_mem h
 
---@[simp] Porting note (#10618): simp can prove it
 theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 
-theorem cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
+theorem cons_of_coe_eq (a : α) (v : Mathlib.Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
   Subtype.ext <| by
     cases v
     rfl
 
 open scoped List in
-theorem sound {a b : Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
+theorem sound {a b : Mathlib.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
@@ -458,7 +468,7 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
 def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
   invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
-      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
+      (·.length = 1) _ (fun _ ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
     (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
@@ -512,7 +522,7 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       rw [count_add, count_filter, Sym.coe_replicate, count_replicate]
       obtain rfl | h := eq_or_ne a b
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
-      · rw [if_pos h, if_neg h.symm, add_zero])
+      · rw [if_pos h, if_neg h, add_zero])
 
 theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
     (m.2.fill a m.1).filterNe a = m :=

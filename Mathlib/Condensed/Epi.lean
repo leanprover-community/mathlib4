@@ -27,15 +27,15 @@ namespace Condensed
 
 variable (A : Type u') [Category.{v'} A] [ConcreteCategory.{v'} A]
   [HasFunctorialSurjectiveInjectiveFactorization A]
+
+variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
+
+variable
   [(coherentTopology CompHaus).WEqualsLocallyBijective A]
   [HasSheafify (coherentTopology CompHaus) A]
   [(coherentTopology CompHaus.{u}).HasSheafCompose (CategoryTheory.forget A)]
   [Balanced (Sheaf (coherentTopology CompHaus) A)]
-  [PreservesFiniteProducts (CategoryTheory.forget A)]
-  [∀ (X : CompHausᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
-
-variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
-
+  [PreservesFiniteProducts (CategoryTheory.forget A)] in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -44,11 +44,13 @@ lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     regularTopology.isLocallySurjective_iff]
   simp_rw [((CompHaus.effectiveEpi_tfae _).out 0 2 :)]
 
-variable [(extensiveTopology Stonean).WEqualsLocallyBijective A]
+variable
+  [PreservesFiniteProducts (CategoryTheory.forget A)]
+  [∀ (X : CompHausᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
+  [(extensiveTopology Stonean).WEqualsLocallyBijective A]
   [HasSheafify (extensiveTopology Stonean) A]
   [(extensiveTopology Stonean.{u}).HasSheafCompose (CategoryTheory.forget A)]
-  [Balanced (Sheaf (extensiveTopology Stonean) A)]
-
+  [Balanced (Sheaf (extensiveTopology Stonean) A)] in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) := by
   rw [← (StoneanCompHaus.equivalence A).inverse.epi_map_iff_epi,

@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
@@ -15,8 +14,9 @@ import Mathlib.Tactic.Spread
 # Group structures on the multiplicative and additive opposites
 -/
 
-assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero
+assert_not_exists Units
 
 variable {α : Type*}
 
@@ -131,13 +131,13 @@ instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
 
 @[to_additive]
 instance instLeftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ where
-  toLeftCancelSemigroup := instLeftCancelSemigroup
-  __ := instMonoid
+  toMonoid := instMonoid
+  __ := instLeftCancelSemigroup
 
 @[to_additive]
 instance instRightCancelMonoid [LeftCancelMonoid α] : RightCancelMonoid αᵐᵒᵖ where
-  toRightCancelSemigroup := instRightCancelSemigroup
-  __ := instMonoid
+  toMonoid := instMonoid
+  __ := instRightCancelSemigroup
 
 @[to_additive]
 instance instCancelMonoid [CancelMonoid α] : CancelMonoid αᵐᵒᵖ where
@@ -151,8 +151,8 @@ instance instCommMonoid [CommMonoid α] : CommMonoid αᵐᵒᵖ where
 
 @[to_additive]
 instance instCancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ where
-  toLeftCancelMonoid := instLeftCancelMonoid
-  __ := instCommMonoid
+  toCommMonoid := instCommMonoid
+  __ := instLeftCancelMonoid
 
 @[to_additive AddOpposite.instSubNegMonoid]
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
@@ -161,11 +161,10 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
-    simp only [Int.ofNat_eq_coe]
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
-@[to_additive AddOpposite.instSubtractionMonoid]
+@[to_additive]
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
   __ := instInvolutiveInv
@@ -180,7 +179,7 @@ instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid α�
 @[to_additive]
 instance instGroup [Group α] : Group αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
-  mul_left_inv _ := unop_injective <| mul_inv_self _
+  inv_mul_cancel _ := unop_injective <| mul_inv_cancel _
 
 @[to_additive]
 instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
@@ -417,45 +416,6 @@ def MonoidHom.fromOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M 
   map_one' := f.map_one
   map_mul' _ _ := (f.map_mul _ _).trans (hf _ _).eq
 
-/-- The units of the opposites are equivalent to the opposites of the units. -/
-@[to_additive
-      "The additive units of the additive opposites are equivalent to the additive opposites
-      of the additive units."]
-def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
-  toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.4, op_injective u.3⟩
-  invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
-  map_mul' x y := unop_injective <| Units.ext <| rfl
-  left_inv x := Units.ext <| by simp
-  right_inv x := unop_injective <| Units.ext <| by rfl
-
-@[to_additive (attr := simp)]
-theorem Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
-    ((Units.opEquiv u).unop : M) = unop (u : Mᵐᵒᵖ) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
-    (Units.opEquiv.symm u : Mᵐᵒᵖ) = op (u.unop : M) :=
-  rfl
-
-@[to_additive]
-nonrec theorem IsUnit.op {M} [Monoid M] {m : M} (h : IsUnit m) : IsUnit (op m) :=
-  let ⟨u, hu⟩ := h
-  hu ▸ ⟨Units.opEquiv.symm (op u), rfl⟩
-
-@[to_additive]
-nonrec theorem IsUnit.unop {M} [Monoid M] {m : Mᵐᵒᵖ} (h : IsUnit m) : IsUnit (unop m) :=
-  let ⟨u, hu⟩ := h
-  hu ▸ ⟨unop (Units.opEquiv u), rfl⟩
-
-@[to_additive (attr := simp)]
-theorem isUnit_op {M} [Monoid M] {m : M} : IsUnit (op m) ↔ IsUnit m :=
-  ⟨IsUnit.unop, IsUnit.op⟩
-
-@[to_additive (attr := simp)]
-theorem isUnit_unop {M} [Monoid M] {m : Mᵐᵒᵖ} : IsUnit (unop m) ↔ IsUnit m :=
-  ⟨IsUnit.op, IsUnit.unop⟩
-
 /-- A semigroup homomorphism `M →ₙ* N` can equivalently be viewed as a semigroup homomorphism
 `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[to_additive (attr := simps)
@@ -572,12 +532,12 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
     { toFun := MulOpposite.op ∘ f ∘ unop, invFun := MulOpposite.op ∘ f.symm ∘ unop,
       left_inv := fun x => unop_injective (f.symm_apply_apply x.unop),
       right_inv := fun x => unop_injective (f.apply_symm_apply x.unop),
-      map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
+      map_mul' := fun x y => unop_injective (map_mul f y.unop x.unop) }
   invFun f :=
     { toFun := unop ∘ f ∘ MulOpposite.op, invFun := unop ∘ f.symm ∘ MulOpposite.op,
       left_inv := fun x => by simp,
       right_inv := fun x => by simp,
-      map_mul' := fun x y => congr_arg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
+      map_mul' := fun x y => congr_arg unop (map_mul f (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv _ := rfl
   right_inv _ := rfl
 

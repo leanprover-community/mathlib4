@@ -48,7 +48,7 @@ lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg :
 
 lemma LSeries.term_neg (f : ℕ → ℂ) (s : ℂ) : term (-f) s = -term f s := by
   ext ⟨- | n⟩
-  · simp only [Nat.zero_eq, term_zero, Pi.neg_apply, neg_zero]
+  · simp only [term_zero, Pi.neg_apply, neg_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.neg_apply, Nat.cast_succ, neg_div]
 
 lemma LSeries.term_neg_apply (f : ℕ → ℂ) (s : ℂ) (n : ℕ) : term (-f) s n = -term f s n := by
@@ -74,8 +74,6 @@ lemma LSeries_neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s :=
 /-!
 ### Subtraction
 -/
-
-open LSeries
 
 lemma LSeries.term_sub (f g : ℕ → ℂ) (s : ℂ) : term (f - g) s = term f s - term g s := by
   simp_rw [sub_eq_add_neg, term_add, term_neg]
@@ -105,7 +103,7 @@ lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg :
 
 lemma LSeries.term_smul (f : ℕ → ℂ) (c s : ℂ) : term (c • f) s = c • term f s := by
   ext ⟨- | n⟩
-  · simp only [Nat.zero_eq, term_zero, Pi.smul_apply, smul_eq_mul, mul_zero]
+  · simp only [term_zero, Pi.smul_apply, smul_eq_mul, mul_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.smul_apply, smul_eq_mul, Nat.cast_succ,
       mul_div_assoc]
 
@@ -132,3 +130,38 @@ lemma LSeriesSummable.smul_iff {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) :
 @[simp]
 lemma LSeries_smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
   simp only [LSeries, term_smul_apply, tsum_mul_left]
+
+/-!
+### Sums
+-/
+
+section sum
+
+variable {ι : Type*} (f : ι → ℕ → ℂ) (S : Finset ι) (s : ℂ)
+
+@[simp]
+lemma LSeries.term_sum_apply (n : ℕ) :
+    term (∑ i ∈ S, f i) s n  = ∑ i ∈ S, term (f i) s n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp only [term_zero, Finset.sum_const_zero]
+  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, Finset.sum_apply, Finset.sum_div]
+
+lemma LSeries.term_sum : term (∑ i ∈ S, f i) s  = ∑ i ∈ S, term (f i) s :=
+  funext fun _ ↦ by rw [Finset.sum_apply]; exact term_sum_apply f S s _
+
+variable {f S s}
+
+lemma LSeriesHasSum.sum {a : ι → ℂ} (hf : ∀ i ∈ S, LSeriesHasSum (f i) s (a i)) :
+    LSeriesHasSum (∑ i ∈ S, f i) s (∑ i ∈ S, a i) := by
+  simpa only [LSeriesHasSum, term_sum, Finset.sum_fn S fun i ↦ term (f i) s] using hasSum_sum hf
+
+lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
+    LSeriesSummable (∑ i ∈ S, f i) s := by
+  simpa only [LSeriesSummable, ← term_sum_apply] using summable_sum hf
+
+@[simp]
+lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
+    LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
+  simpa only [LSeries, term_sum, Finset.sum_apply] using tsum_sum hf
+
+end sum

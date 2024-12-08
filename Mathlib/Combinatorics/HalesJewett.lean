@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The Hales-Jewett theorem
@@ -141,7 +139,7 @@ variable {η' α' ι' : Type*}
 def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') : Subspace η' α' ι' where
   idxFun i := (l.idxFun <| eι.symm i).map eα eη
   proper e := (eι.exists_congr fun i ↦ by cases h : idxFun l i <;>
-    simp [*, Function.funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
+    simp [*, funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
 
 @[simp] lemma reindex_apply (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') (x i) :
     l.reindex eη eα eι x i = eα (l (eα.symm ∘ x ∘ eη) <| eι.symm i) := by
@@ -154,7 +152,7 @@ def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι :
 
 protected lemma IsMono.reindex {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι ≃ ι'} {C : (ι → α) → κ}
     (hl : l.IsMono C) : (l.reindex eη eα eι).IsMono fun x ↦ C <| eα.symm ∘ x ∘ eι := by
-  simp [reindex_isMono, Function.comp.assoc]; simpa [← Function.comp.assoc]
+  simp [reindex_isMono, Function.comp_assoc]; simpa [← Function.comp_assoc]
 
 end Subspace
 
@@ -486,8 +484,9 @@ namespace Subspace
 /-- The **multidimensional Hales-Jewett theorem**, aka **extended Hales-Jewett theorem**: For any
 finite types `η`, `α` and `κ`, there exists a finite type `ι` such that whenever the hypercube
 `ι → α` is `κ`-colored, there is a monochromatic combinatorial subspace of dimension `η`. -/
-theorem exists_mono_in_high_dimension (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite η] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Subspace η α ι, l.IsMono C := by
+  cases nonempty_fintype η
   obtain ⟨ι, _, hι⟩ := Line.exists_mono_in_high_dimension (Shrink.{0} η → α) κ
   refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
   obtain ⟨l, hl⟩ := hι fun x ↦ C fun (i, e) ↦ x i e
@@ -497,7 +496,7 @@ theorem exists_mono_in_high_dimension (α κ η) [Fintype α] [Fintype κ] [Fint
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the
 returned type is some `Fin n` instead of a general fintype. -/
-theorem exists_mono_in_high_dimension_fin (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+theorem exists_mono_in_high_dimension_fin (α κ η) [Finite α] [Finite κ] [Finite η] :
     ∃ n, ∀ C : (Fin n → α) → κ, ∃ l : Subspace η α (Fin n), l.IsMono C := by
   obtain ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension α κ η
   refine ⟨Fintype.card ι, fun C ↦ ?_⟩

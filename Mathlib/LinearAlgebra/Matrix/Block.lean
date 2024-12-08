@@ -62,7 +62,7 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
-    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp_id]
+    simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 
 protected theorem BlockTriangular.transpose :
     M.BlockTriangular b → Mᵀ.BlockTriangular (toDual ∘ b) :=
@@ -84,6 +84,18 @@ theorem BlockTriangular.add (hM : BlockTriangular M b) (hN : BlockTriangular N b
 
 theorem BlockTriangular.sub (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b := fun i j h => by simp_rw [Matrix.sub_apply, hM h, hN h, sub_zero]
+
+lemma BlockTriangular.add_iff_right (hM : BlockTriangular M b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular N b := ⟨(by simpa using ·.sub hM), hM.add⟩
+
+lemma BlockTriangular.add_iff_left (hN : BlockTriangular N b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular M b := by rw [add_comm, hN.add_iff_right]
+
+lemma BlockTriangular.sub_iff_right (hM : BlockTriangular M b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular N b := ⟨(by simpa using hM.sub ·), hM.sub⟩
+
+lemma BlockTriangular.sub_iff_left (hN : BlockTriangular N b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
 end LT
 
@@ -198,7 +210,6 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
     M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
-  clear N
   induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
   subst hs
   cases isEmpty_or_nonempty m
@@ -317,7 +328,6 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
 /-- The inverse of a block-triangular matrix is block-triangular. -/
 theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) : BlockTriangular M⁻¹ b := by
-  clear N
   induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
   subst hs
   intro i j hij
