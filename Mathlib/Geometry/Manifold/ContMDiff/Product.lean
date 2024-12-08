@@ -15,7 +15,7 @@ This file contains results about smoothness of standard maps associated to produ
 
 -/
 
-open Set Function Filter ChartedSpace SmoothManifoldWithCorners
+open Set Function Filter ChartedSpace IsManifold
 
 open scoped Topology Manifold
 
@@ -40,7 +40,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
-  {f : M → M'} {s : Set M} {x : M} {n : ℕ∞}
+  {f : M → M'} {s : Set M} {x : M} {n : WithTop ℕ∞}
 
 section ProdMk
 
