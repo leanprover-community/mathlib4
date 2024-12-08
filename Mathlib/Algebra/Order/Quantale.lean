@@ -3,7 +3,7 @@ Copyright (c) 2024 Pieter Cuijpers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pieter Cuijpers
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Order.CompleteLattice
 
@@ -190,6 +190,11 @@ theorem bot_mul_eq_bot : ⊥ * x = ⊥ := by
 theorem mul_bot_eq_bot : x * ⊥ = ⊥ := by
   rw [← sSup_empty, mul_sSup_distrib]
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
+
+instance : MulZeroClass α where
+  zero := ⊥
+  zero_mul _ := bot_mul_eq_bot
+  mul_zero _ := mul_bot_eq_bot
 
 end Zero
 
