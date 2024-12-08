@@ -33,7 +33,7 @@ noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } �
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))
 
 /-- If `V` is a finite `k`-module and `k` is finite, `ℙ k V` is finite. -/
-instance finite_of_finite [Finite k] [Finite V] : Finite (ℙ k V) :=
+instance finite_of_finite [Finite V] : Finite (ℙ k V) :=
   have : Finite (ℙ k V × kˣ) := Finite.of_equiv _ (nonZeroEquivProjectivizationProdUnits k V)
   Finite.prod_left kˣ
 
