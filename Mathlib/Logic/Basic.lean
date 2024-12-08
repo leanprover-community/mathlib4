@@ -353,6 +353,10 @@ theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+    and_or_left, and_not_self_iff, or_false]
+
 end Propositional
 
 /-! ### Declarations about equality -/
