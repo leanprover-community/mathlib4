@@ -1779,6 +1779,14 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   convert contDiffAt_ring_inverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
+/-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
+inversion is `C^n`, for all `n`. -/
+theorem ContinuousLinearMap.IsInvertible.contDiffAt_map_inverse [CompleteSpace E] {e : E →L[𝕜] F}
+    (he : e.IsInvertible) {n : ℕ∞} :
+    ContDiffAt 𝕜 n inverse e := by
+  rcases he with ⟨M, rfl⟩
+  exact _root_.contDiffAt_map_inverse M
+
 end MapInverse
 
 section FunctionInverse
