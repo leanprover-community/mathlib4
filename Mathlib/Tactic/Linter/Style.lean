@@ -63,30 +63,43 @@ def parse_set_option : Syntax → Option Name
 def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
 
-/-- The `setOption` linter: this lints any `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option.
-
-**Why is this bad?** These options are good for debugging, but should not be
-used in production code.
-**How to fix this?** Remove these options: usually, they are not necessary for production code.
-(Some tests will intentionally use one of these options; in this case, simply allow the linter.)
--/
-def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.setOption (← getOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    if let some head := stx.find? is_set_option then
-      if let some name := parse_set_option head then
-        let forbidden := [`debug, `pp, `profiler, `trace]
-        if forbidden.contains name.getRoot then
-          Linter.logLint linter.style.setOption head
+/-- TODO: add a doc-string! -/
+def findErrors (stx : Syntax) : Option (Syntax × MessageData):= Id.run do
+  if let some head := stx.find? is_set_option then
+    if let some name := parse_set_option head then
+      let forbidden := [`debug, `pp, `profiler, `trace]
+      if forbidden.contains name.getRoot then
+        return some (head,
             m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
-               please remove 'set_option {name}'."
+               please remove 'set_option {name}'.")
+  return none
 
-initialize addLinter setOptionLinter
+-- /-- The `setOption` linter: this lints any `set_option` command, term or tactic
+-- which sets a `pp`, `profiler` or `trace` option.
+
+-- **Why is this bad?** These options are good for debugging, but should not be
+-- used in production code.
+-- **How to fix this?** Remove these options: usually, they are not necessary for production code.
+-- (Some tests will intentionally use one of these options; in this case, simply allow the linter.)
+-- -/
+-- def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
+--     unless Linter.getLinterValue linter.style.setOption (← getOptions) do
+--       return
+--     if (← MonadState.get).messages.hasErrors then
+--       return
+--     if let some head := stx.find? is_set_option then
+--       if let some name := parse_set_option head then
+--         let forbidden := [`debug, `pp, `profiler, `trace]
+--         if forbidden.contains name.getRoot then
+--           Linter.logLint linter.style.setOption head
+--             m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
+--                is only intended for development and not for final code. \
+--                If you intend to submit this contribution to the Mathlib project, \
+--                please remove 'set_option {name}'."
+
+-- initialize addLinter setOptionLinter
 
 end Style.setOption
 
@@ -109,6 +122,24 @@ register_option linter.style.missingEnd : Bool := {
 
 namespace Style.missingEnd
 
+/-- TODO: add a doc-string! -/
+def findErrors (stx : Syntax) : CommandElabM (Option (Syntax × MessageData)) := do
+  -- Only run this linter at the end of a module.
+  unless stx.isOfKind ``Lean.Parser.Command.eoi do return none
+  let sc ← getScopes
+  -- The last scope is always the "base scope", corresponding to no active `section`s or
+  -- `namespace`s. We are interested in any *other* unclosed scopes.
+  if sc.length == 1 then return none
+  let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
+  -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
+  let ends := if ends.getLast!.2 then ends.dropLast else ends
+  -- If there are any further un-closed scopes, we emit a warning.
+  if !ends.isEmpty then
+    let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+      a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+    return some (stx, m!"unclosed sections or namespaces; expected: '{ending}'")
+  return none
+
 @[inherit_doc Mathlib.Linter.linter.style.missingEnd]
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
@@ -129,7 +160,7 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Linter.logLint linter.style.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter missingEndLinter
+--initialize addLinter missingEndLinter
 
 end Style.missingEnd
 
@@ -179,6 +210,17 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 
 namespace Style
 
+/-- TODO: add a doc-string! -/
+def cdotLinter.findErrors (stx : Syntax) : Array (Syntax × MessageData) := Id.run do
+  let res := unwanted_cdot stx |>.map (fun s ↦
+    (s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."))
+  let mut res2 := #[]
+  for cdot in Mathlib.Linter.findCDot stx do
+    if let some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) := cdot.find? (·.isOfKind `token.«· ») then
+      if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+        res2 := res2.push (cdot, m!"This central dot `·` is isolated; please merge it with the next line.")
+  return res.append res2
+
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.style.cdot (← getOptions) do
@@ -197,7 +239,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
             m!"This central dot `·` is isolated; please merge it with the next line."
       | _ => return
 
-initialize addLinter cdotLinter
+--initialize addLinter cdotLinter
 
 end Style
 
@@ -227,6 +269,10 @@ def findDollarSyntax : Syntax → Array Syntax
       | _ => dargs
   |_ => #[]
 
+/-- TODO: add a doc-string! -/
+def findErrors (stx : Syntax) : Array (Syntax × MessageData) := Id.run do
+  findDollarSyntax stx |>.map (fun s ↦ (s, m!"Please use '<|' instead of '$' for the pipe operator."))
+
 @[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.style.dollarSyntax (← getOptions) do
@@ -237,7 +283,7 @@ def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLint linter.style.dollarSyntax s
         m!"Please use '<|' instead of '$' for the pipe operator."
 
-initialize addLinter dollarSyntaxLinter
+--initialize addLinter dollarSyntaxLinter
 
 end Style.dollarSyntax
 
@@ -271,6 +317,12 @@ def findLambdaSyntax : Syntax → Array Syntax
       | _ =>  dargs
   |_ => #[]
 
+/-- TODO: add a doc-string! -/
+def findErrors (stx : Syntax) : Array (Syntax × MessageData) := Id.run do
+  findLambdaSyntax stx |>.filterMap (fun s ↦ if let .atom _ "λ" := s[0] then
+    some (s[0], m!"Please use 'fun' and not 'λ' to define anonymous \
+      functions.\nThe 'λ' syntax is deprecated in mathlib4.") else none)
+
 @[inherit_doc linter.style.lambdaSyntax]
 def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
@@ -283,7 +335,7 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
         Please use 'fun' and not 'λ' to define anonymous functions.\n\
         The 'λ' syntax is deprecated in mathlib4."
 
-initialize addLinter lambdaSyntaxLinter
+--initialize addLinter lambdaSyntaxLinter
 
 end Style.lambdaSyntax
 
@@ -372,6 +424,31 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter longFileLinter
 
 end Style.longFile
+
+/-- TODO: add a doc-string! -/
+def jointSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  if (← MonadState.get).messages.hasErrors then
+    return
+  if Linter.getLinterValue linter.style.setOption (← getOptions) then
+    if let some (s, msg) := Mathlib.Linter.Style.setOption.findErrors stx then
+      Linter.logLint linter.style.setOption s msg
+  if Linter.getLinterValue linter.style.missingEnd (← getOptions) then
+    if let some (s, msg) ← Mathlib.Linter.Style.missingEnd.findErrors stx then
+      Linter.logLint linter.style.missingEnd s msg
+  if Linter.getLinterValue linter.style.dollarSyntax (← getOptions) then
+    let err := Mathlib.Linter.Style.dollarSyntax.findErrors stx
+    for (s, msg) in err do
+      Linter.logLint linter.style.dollarSyntax s msg
+  if Linter.getLinterValue linter.style.cdot (← getOptions) then
+    let err := Mathlib.Linter.Style.cdotLinter.findErrors stx
+    for (s, msg) in err do
+      Linter.logLint linter.style.cdot s msg
+  if Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) then
+    let err := Mathlib.Linter.Style.lambdaSyntax.findErrors stx
+    for (s, msg) in err do
+      Linter.logLint linter.style.lambdaSyntax s msg
+
+initialize addLinter jointSyntaxLinter
 
 /-! # The "longLine linter" -/
 
