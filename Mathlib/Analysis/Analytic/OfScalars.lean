@@ -62,7 +62,8 @@ variable (𝕜) in
 theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalars E (𝕜 := 𝕜)) := by
   intro _ _
   refine Function.mtr fun h ↦ ?_
-  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff, smul_apply]
+  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
+    ContinuousMultilinearMap.smul_apply]
   push_neg
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩
@@ -250,7 +251,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
     cases hc' <;> aesop
   · filter_upwards [hc.eventually_ge_atTop (2*r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
-    rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff, mul_div_assoc]
+    rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff₀, mul_div_assoc]
     · convert hc
       rw [pow_succ, div_mul_cancel_left₀, NNReal.coe_inv]
       aesop

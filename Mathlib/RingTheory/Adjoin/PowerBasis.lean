@@ -79,8 +79,6 @@ namespace PowerBasis
 
 open Polynomial
 
-open Polynomial
-
 variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
 variable [IsScalarTower R S A] {B : PowerBasis S A}

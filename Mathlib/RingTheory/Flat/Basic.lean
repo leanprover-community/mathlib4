@@ -260,6 +260,15 @@ theorem rTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
 @[deprecated (since := "2024-03-29")]
 alias preserves_injective_linearMap := rTensor_preserves_injective_linearMap
 
+instance {S} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M] [Flat S M] [Flat R N] :
+    Flat S (M ⊗[R] N) :=
+  (iff_rTensor_injective' _ _).mpr fun I ↦ by
+    simpa [AlgebraTensorModule.rTensor_tensor] using
+      rTensor_preserves_injective_linearMap (.restrictScalars R <| rTensor M I.subtype)
+      (rTensor_preserves_injective_linearMap _ I.injective_subtype)
+
+example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
+
 /--
 If `M` is a flat module, then `𝟙 M ⊗ f` is injective for all injective linear maps `f`.
 -/
@@ -393,6 +402,49 @@ theorem iff_rTensor_exact : Flat R M ↔
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) :=
   iff_rTensor_exact'.{max u v}
 
+variable (p : Submodule R M) (q : Submodule R N)
+
+/-- If p and q are submodules of M and N respectively, and M and q are flat,
+then `p ⊗ q → M ⊗ N` is injective. -/
+theorem tensorProduct_mapIncl_injective_of_right
+    [Flat R M] [Flat R q] : Function.Injective (mapIncl p q) := by
+  rw [mapIncl, ← lTensor_comp_rTensor]
+  exact (lTensor_preserves_injective_linearMap _ q.injective_subtype).comp
+    (rTensor_preserves_injective_linearMap _ p.injective_subtype)
+
+/-- If p and q are submodules of M and N respectively, and N and p are flat,
+then `p ⊗ q → M ⊗ N` is injective. -/
+theorem tensorProduct_mapIncl_injective_of_left
+    [Flat R p] [Flat R N] : Function.Injective (mapIncl p q) := by
+  rw [mapIncl, ← rTensor_comp_lTensor]
+  exact (rTensor_preserves_injective_linearMap _ p.injective_subtype).comp
+    (lTensor_preserves_injective_linearMap _ q.injective_subtype)
+
 end Flat
 
 end Module
+
+section Injective
+
+open scoped TensorProduct
+
+variable {R S A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+
+namespace Algebra.TensorProduct
+
+theorem includeLeft_injective [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
+    Function.Injective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
+  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
+    |>.comp (_root_.TensorProduct.rid R A).symm.injective
+  ext; simp
+
+theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
+    Function.Injective (includeRight : B →ₐ[R] A ⊗[R] B) := by
+  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
+    |>.comp (_root_.TensorProduct.lid R B).symm.injective
+  ext; simp
+
+end Algebra.TensorProduct
+
+end Injective

@@ -98,6 +98,14 @@ theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
   rfl
 
+/-- Variant of `SemiRingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : SemiRingCat.{u}}
+    [Semiring X] [Semiring Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
+  rfl
+
 -- Sometimes neither the `ext` lemma for `SemiRingCat` nor for `RingHom` is applicable,
 -- because of incomplete unfolding of `SemiRingCat.of X ⟶ SemiRingCat.of Y := X →+* Y`,
 -- but this one will fire.
@@ -142,7 +150,7 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 /-- A variant of `ofHom_apply` that makes `simpNF` happy -/
 @[simp]
 theorem ofHom_apply' {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
-    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 /--
 Ring equivalence are isomorphisms in category of semirings
@@ -221,7 +229,7 @@ theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
 /-- A variant of `ofHom_apply` that makes `simpNF` happy -/
 @[simp]
 theorem ofHom_apply' {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) :
-    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 -- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
 @[simp] theorem coe_ringHom_id {X : RingCat} :
@@ -245,6 +253,13 @@ theorem ofHom_apply' {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) :
       (CategoryStruct.comp (X := RingCat.of X) (Y := RingCat.of Y) (Z := RingCat.of Z)
         f g) =
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+/-- Variant of `RingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : RingCat.{u}} [Ring X] [Ring Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
   rfl
 
 -- Sometimes neither the `ext` lemma for `RingCat` nor for `RingHom` is applicable,
@@ -340,7 +355,7 @@ theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+
 /-- A variant of `ofHom_apply` that makes `simpNF` happy -/
 @[simp]
 theorem ofHom_apply' {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
-    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
@@ -374,6 +389,14 @@ theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) =
       (CategoryStruct.comp (X := CommSemiRingCat.of X) (Y := CommSemiRingCat.of Y)
         (Z := CommSemiRingCat.of Z) f g) =
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+/-- Variant of `CommSemiRingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : CommSemiRingCat.{u}}
+    [CommSemiring X] [CommSemiring Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
   rfl
 
 -- Sometimes neither the `ext` lemma for `CommSemiRingCat` nor for `RingHom` is applicable,
@@ -491,8 +514,7 @@ theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x 
 /-- A variant of `ofHom_apply` that makes `simpNF` happy -/
 @[simp]
 theorem ofHom_apply' {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
-    DFunLike.coe (α := R) (β := fun _ ↦ S) (ofHom f) x = f x := rfl
-
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
@@ -526,6 +548,13 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
       (CategoryStruct.comp (X := CommRingCat.of X) (Y := CommRingCat.of Y) (Z := CommRingCat.of Z)
         f g) =
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+/-- Variant of `CommRingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : CommRingCat.{u}} [CommRing X] [CommRing Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
   rfl
 
 -- Sometimes neither the `ext` lemma for `CommRingCat` nor for `RingHom` is applicable,
