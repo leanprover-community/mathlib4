@@ -57,7 +57,7 @@ theorem wcovBy_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
 
 alias LE.le.wcovBy_of_le := wcovBy_of_le_of_le
 
-theorem AntisymmRel.wcovBy (h : a ⋚ b) : a ⩿ b :=
+theorem AntisymmRel.wcovBy (h : a ≤∧≥ b) : a ⩿ b :=
   wcovBy_of_le_of_le h.1 h.2
 
 theorem WCovBy.wcovBy_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
@@ -66,16 +66,16 @@ theorem WCovBy.wcovBy_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
 theorem wcovBy_of_eq_or_eq (hab : a ≤ b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⩿ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
-theorem AntisymmRel.trans_wcovBy (hab : a ⋚ b) (hbc : b ⩿ c) : a ⩿ c :=
+theorem AntisymmRel.trans_wcovBy (hab : a ≤∧≥ b) (hbc : b ⩿ c) : a ⩿ c :=
   ⟨hab.1.trans hbc.le, fun _ had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
 
-theorem wcovBy_congr_left (hab : a ⋚ b) : a ⩿ c ↔ b ⩿ c :=
+theorem wcovBy_congr_left (hab : a ≤∧≥ b) : a ⩿ c ↔ b ⩿ c :=
   ⟨hab.symm.trans_wcovBy, hab.trans_wcovBy⟩
 
-theorem WCovBy.trans_antisymm_rel (hab : a ⩿ b) (hbc : b ⋚ c) : a ⩿ c :=
+theorem WCovBy.trans_antisymm_rel (hab : a ⩿ b) (hbc : b ≤∧≥ c) : a ⩿ c :=
   ⟨hab.le.trans hbc.1, fun _ had hdc => hab.2 had <| hdc.trans_le hbc.2⟩
 
-theorem wcovBy_congr_right (hab : a ⋚ b) : c ⩿ a ↔ c ⩿ b :=
+theorem wcovBy_congr_right (hab : a ≤∧≥ b) : c ⩿ a ↔ c ⩿ b :=
   ⟨fun h => h.trans_antisymm_rel hab, fun h => h.trans_antisymm_rel hab.symm⟩
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
@@ -283,16 +283,16 @@ theorem wcovBy_iff_covBy_or_le_and_le : a ⩿ b ↔ a ⋖ b ∨ a ≤ b ∧ b �
 
 alias ⟨WCovBy.covBy_or_le_and_le, _⟩ := wcovBy_iff_covBy_or_le_and_le
 
-theorem AntisymmRel.trans_covBy (hab : a ⋚ b) (hbc : b ⋖ c) : a ⋖ c :=
+theorem AntisymmRel.trans_covBy (hab : a ≤∧≥ b) (hbc : b ⋖ c) : a ⋖ c :=
   ⟨hab.1.trans_lt hbc.lt, fun _ had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
 
-theorem covBy_congr_left (hab : a ⋚ b) : a ⋖ c ↔ b ⋖ c :=
+theorem covBy_congr_left (hab : a ≤∧≥ b) : a ⋖ c ↔ b ⋖ c :=
   ⟨hab.symm.trans_covBy, hab.trans_covBy⟩
 
-theorem CovBy.trans_antisymmRel (hab : a ⋖ b) (hbc : b ⋚ c) : a ⋖ c :=
+theorem CovBy.trans_antisymmRel (hab : a ⋖ b) (hbc : b ≤∧≥ c) : a ⋖ c :=
   ⟨hab.lt.trans_le hbc.1, fun _ had hdb => hab.2 had <| hdb.trans_le hbc.2⟩
 
-theorem covBy_congr_right (hab : a ⋚ b) : c ⋖ a ↔ c ⋖ b :=
+theorem covBy_congr_right (hab : a ≤∧≥ b) : c ⋖ a ↔ c ⋖ b :=
   ⟨fun h => h.trans_antisymmRel hab, fun h => h.trans_antisymmRel hab.symm⟩
 
 instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
