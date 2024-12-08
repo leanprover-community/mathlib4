@@ -100,9 +100,6 @@ lemma odd_add_one_iff_even {n : ℕ} [NeZero n] {k : Fin n} : Odd (k + 1) ↔ Ev
 
 lemma even_add_one_iff_odd {n : ℕ} [NeZero n] {k : Fin n} : Even (k + 1) ↔ Odd k := by
   refine ⟨fun ⟨k, hk⟩ ↦ ?_, Odd.add_one⟩
-  have h := congrFun (congrArg HSub.hSub hk) 1
-  rw [add_sub_cancel_right] at h
-  rw [h]
-  exact (even_add_self k).sub_odd odd_one
+  exact eq_sub_iff_add_eq.mpr hk ▸ (even_add_self k).sub_odd odd_one
 
 end Fin
