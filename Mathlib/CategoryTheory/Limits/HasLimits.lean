@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Logic.Equiv.Basic
-import Mathlib.CategoryTheory.Functor.Currying
 
 /-!
 # Existence of limits and colimits
@@ -924,31 +923,6 @@ to `G` applied to the colimit of `F`.
 def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
   colimit.desc (F ⋙ G) (G.mapCocone (colimit.cocone F))
 
-def colimit.post_nat {F₁ F₂ : J ⥤ C} [HasColimit F₁] [HasColimit F₂] (f : F₁ ⟶ F₂) (G : C ⥤ D)
-    [HasColimit (F₁ ⋙ G)] [HasColimit (F₂ ⋙ G)] :
-    colimMap (whiskerRight f G) ≫ colimit.post F₂ G = colimit.post F₁ G ≫ G.map (colimMap f) := by
-  simp only [colimMap, post]
-  ext j
-  simp only [IsColimit.map]
-  simp only [isColimit_desc, ι_desc_assoc, comp_obj, Cocones.precompose_obj_pt, cocone_x,
-    Cocones.precompose_obj_ι, NatTrans.comp_app, const_obj_obj, whiskerRight_app, cocone_ι, assoc,
-    ι_desc, mapCocone_pt, mapCocone_ι_app]
-  simp only [← Functor.map_comp]
-  simp only [ι_desc, Cocones.precompose_obj_pt, cocone_x, Cocones.precompose_obj_ι,
-    NatTrans.comp_app, const_obj_obj, cocone_ι]
-
-def colimit.post_nat' (F : J ⥤ C) [HasColimit F] {G₁ G₂ : C ⥤ D} [HasColimit (F ⋙ G₁)]
-    [HasColimit (F ⋙ G₂)] (g : G₁ ⟶ G₂) :
-    have : HasColimit (((whiskeringRight J C D).obj G₁).obj F) :=
-      inferInstanceAs <| HasColimit <| F ⋙ G₁
-    have : HasColimit (((whiskeringRight J C D).obj G₂).obj F) :=
-      inferInstanceAs <| HasColimit <| F ⋙ G₂
-    colimMap (((whiskeringRight J C D).map g).app F) ≫ colimit.post F G₂ =
-      colimit.post F G₁ ≫ g.app (colimit F) := by
-  simp only [whiskeringRight_obj_obj, post]
-  ext j
-  simp [IsColimit.map]
-
 @[reassoc (attr := simp)]
 theorem colimit.ι_post (j : J) :
     colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
@@ -1013,38 +987,6 @@ section
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
-
--- variable (J) {D : Type*} [Category D] [HasColimitsOfShape J D] in
--- def colim.post' :
---     (whiskeringLeft₂' _ _ _ _ |>.obj (whiskeringRight J C D) |>.obj colim)
---     ⟶ (colim ⋙ evaluation C D |>.flip) where
---   app := colim.post J
---   naturality G₁ G₂ g := colim_post_nat' J G₁ G₂ g
-
-variable (J) {D : Type*} [Category D] [HasColimitsOfShape J D] in
-def colim.post :
-    (whiskeringLeft₂ _ _ _ _ |>.obj (whiskeringRight J C D) |>.obj colim)
-    ⟶ (colim ⋙ evaluation C D |>.flip) where
-  app G := by
-    refine ⟨?_, ?_⟩
-    · exact fun F => colimit.post F G
-    · exact fun F₁ F₂ α => colimit.post_nat α G
-  naturality G₁ G₂ g := by ext ; apply colimit.post_nat'
-
-variable (J) {D : Type*} [Category D] [HasColimitsOfShape J D] {E : Type*} [Category E]
-  [HasColimitsOfShape J E] in
-@[reassoc]
-theorem colim.post_comp (G : C ⥤ D) (H : D ⥤ E) :
-    whiskerLeft ((whiskeringRight J C D).obj G) (post J |>.app H)
-    ≫ whiskerRight (post J |>.app G) H = (post J |>.app (G ⋙ H)) := by
-  ext F
-  simp only [comp_obj, whiskeringRight_obj_obj, colim_obj, post, NatTrans.comp_app, whiskerLeft_app,
-    whiskerRight_app, colimit.post_post]
-
-variable (J) {D : Type*} [Category D] [HasColimitsOfShape J D] {E : Type*} [Category E]
-  [HasColimitsOfShape J E] in
-theorem colim.post_id : (colim.post J |>.app (𝟭 _)) = NatTrans.id (colim : (J ⥤ C) ⥤ C) := by
-  ext F ; exact colimit.desc_cocone
 
 end
 

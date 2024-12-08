@@ -109,10 +109,6 @@ def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E
   uncurry ⋙
     whiskeringRight _ _ _ ⋙ (whiskeringLeft _ _ _).obj (prodFunctorToFunctorProd _ _ _) ⋙ curry
 
-@[simps!]
-def whiskeringLeft₂ : (B ⥤ C ⥤ D) ⥤ (D ⥤ E) ⥤ B ⥤ C ⥤ E :=
-  (whiskeringLeft _ _ _ |>.flip) ⋙ (whiskeringLeft _ _ _ |>.flip) |>.flip
-
 namespace Functor
 
 variable {B C D E}
