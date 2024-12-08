@@ -147,8 +147,7 @@ alias IsLUB.exists_of_not_isSuccLimit := IsLUB.exists_of_not_isSuccPrelimit
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
   · simp
-  · have hn : (Iio x).Nonempty := ⟨⊥, hx⟩
-    refine (csSup_le hn fun a ha ↦ ha.le).antisymm <| le_of_forall_lt fun a ha ↦ ?_
+  · refine (csSup_le ⟨⊥, hx⟩ fun a ha ↦ ha.le).antisymm <| le_of_forall_lt fun a ha ↦ ?_
     rw [lt_csSup_iff' bddAbove_Iio]
     obtain ⟨b, hb', hb⟩ := (not_covBy_iff ha).1 (h a)
     use b, hb
