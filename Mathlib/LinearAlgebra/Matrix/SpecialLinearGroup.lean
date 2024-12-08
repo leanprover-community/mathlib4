@@ -491,4 +491,8 @@ lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
     empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
   exact Eq.symm (eta_fin_two (-1))
 
+lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
+    ext i j
+    fin_cases i <;> fin_cases j <;> rfl
+
 end ModularGroup
