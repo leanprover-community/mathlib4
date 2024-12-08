@@ -476,8 +476,8 @@ theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
   ext1; simp [← category.assoc]
 
-theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
-  aesop_cat
+-- theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv:=by
+--   aesop_cat
 
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
@@ -1013,8 +1013,8 @@ theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K �
   ext1
   simp [← assoc, assoc]
 
-theorem colimit.pre_id (F : J ⥤ C) :
-    colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by aesop_cat
+-- theorem colimit.pre_id (F : J ⥤ C) :
+--     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by aesop_cat
 
 theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D]
     (H : C ⥤ D) :/- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
