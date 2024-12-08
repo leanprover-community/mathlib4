@@ -36,7 +36,7 @@ operations.
 
 Some properties of the operations are also used to discuss general tools on ordinals:
 
-* `IsLimit o`: an ordinal is a limit ordinal if it is neither `0` nor a successor.
+* `Order.IsSuccLimit o`: an ordinal is a limit ordinal if it is neither `0` nor a successor.
 * `limitRecOn` is the main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals.
 * `IsNormal`: a function `f : Ordinal → Ordinal` satisfies `IsNormal` if it is strictly increasing
@@ -193,7 +193,6 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 
 /-! ### Limit ordinals -/
 
-
 /-- A limit ordinal is an ordinal which is not zero and not a successor.
 
 Deprecated: use `Order.IsSuccLimit` instead. -/
@@ -226,41 +225,9 @@ theorem natCast_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) (n : ℕ) : 
 theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
   mod_cast natCast_lt_of_isSuccLimit h 1
 
-@[deprecated one_lt_of_isSuccLimit (since := "2024-12-08")]
-theorem IsLimit.one_lt {o : Ordinal} (h : IsLimit o) : 1 < o :=
-  one_lt_of_isSuccLimit h
-
-@[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-08")]
-theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal) < o:=
-  natCast_lt_of_isSuccLimit h
-
 theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
   simpa using isMin_or_mem_range_succ_or_isSuccLimit o
 
-@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
-theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
-  simpa [eq_comm] using isMin_or_mem_range_succ_or_isSuccLimit o
-
-@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
-theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
-    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
-
-theorem sSup_Iio_eq_self_iff {o : Ordinal} : sSup (Iio o) = o ↔ IsSuccPrelimit o := by
-  
-
-    #exit
-
--- TODO: this is an iff with `IsSuccPrelimit`
-theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o := by
-  apply (csSup_le' (fun a ha ↦ le_of_lt ha)).antisymm
-  apply le_of_forall_lt
-  intro a ha
-  exact (lt_succ a).trans_le (le_csSup bddAbove_Iio (h.succ_lt ha))
-
-theorem IsLimit.iSup_Iio {o : Ordinal} (h : IsLimit o) : ⨆ a : Iio o, a.1 = o := by
-  rw [← sSup_eq_iSup', h.sSup_Iio]
-
-#exit
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
@@ -287,26 +254,26 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
   added to all cases. The final term's domain is the ordinals below `l`. -/
 @[elab_as_elim]
-def boundedLimitRecOn {l : Ordinal} (lLim : l.IsLimit) {C : Iio l → Sort*} (o : Iio l)
-    (H₁ : C ⟨0, lLim.pos⟩) (H₂ : (o : Iio l) → C o → C ⟨succ o, lLim.succ_lt o.2⟩)
-    (H₃ : (o : Iio l) → IsLimit o → (Π o' < o, C o') → C o) : C o :=
+def boundedLimitRecOn {l : Ordinal} (lLim : IsSuccLimit l) {C : Iio l → Sort*} (o : Iio l)
+    (H₁ : C ⟨0, lLim.bot_lt⟩) (H₂ : (o : Iio l) → C o → C ⟨succ o, lLim.succ_lt o.2⟩)
+    (H₃ : (o : Iio l) → IsSuccLimit o.1 → (Π o' < o, C o') → C o) : C o :=
   limitRecOn (C := fun p ↦ (h : p < l) → C ⟨p, h⟩) o.1 (fun _ ↦ H₁)
     (fun o ih h ↦ H₂ ⟨o, _⟩ <| ih <| (lt_succ o).trans h)
     (fun _o ho ih _ ↦ H₃ _ ho fun _o' h ↦ ih _ h _) o.2
 
 @[simp]
-theorem boundedLimitRec_zero {l} (lLim : l.IsLimit) {C} (H₁ H₂ H₃) :
-    @boundedLimitRecOn l lLim C ⟨0, lLim.pos⟩ H₁ H₂ H₃ = H₁ := by
+theorem boundedLimitRec_zero {l} (lLim : IsSuccLimit l) {C} (H₁ H₂ H₃) :
+    @boundedLimitRecOn l lLim C ⟨0, lLim.bot_lt⟩ H₁ H₂ H₃ = H₁ := by
   rw [boundedLimitRecOn, limitRecOn_zero]
 
 @[simp]
-theorem boundedLimitRec_succ {l} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃) :
+theorem boundedLimitRec_succ {l} (lLim : IsSuccLimit l) {C} (o H₁ H₂ H₃) :
     @boundedLimitRecOn l lLim C ⟨succ o.1, lLim.succ_lt o.2⟩ H₁ H₂ H₃ = H₂ o
     (@boundedLimitRecOn l lLim C o H₁ H₂ H₃) := by
   rw [boundedLimitRecOn, limitRecOn_succ]
   rfl
 
-theorem boundedLimitRec_limit {l} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃ oLim) :
+theorem boundedLimitRec_limit {l} (lLim : IsSuccLimit l) {C} (o H₁ H₂ H₃ oLim) :
     @boundedLimitRecOn l lLim C o H₁ H₂ H₃ = H₃ o oLim (fun x _ ↦
     @boundedLimitRecOn l lLim C x H₁ H₂ H₃) := by
   rw [boundedLimitRecOn, limitRecOn_limit]
@@ -332,7 +299,7 @@ theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoM
 @[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
 alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
 
-theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (type r).IsLimit) (x) :
+theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
   intro b hb
@@ -424,9 +391,32 @@ theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
 theorem IsLimit.ne_zero {o : Ordinal} (h : IsLimit o) : o ≠ 0 :=
   h.pos.ne'
 
+@[deprecated one_lt_of_isSuccLimit (since := "2024-12-08")]
+theorem IsLimit.one_lt {o : Ordinal} (h : IsLimit o) : 1 < o :=
+  one_lt_of_isSuccLimit h
+
+@[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-08")]
+theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal) < o:=
+  natCast_lt_of_isSuccLimit h
+
+@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
+theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
+  simpa [eq_comm] using isMin_or_mem_range_succ_or_isSuccLimit o
+
+@[deprecated zero_or_succ_or_isSuccLimit (since := "2024-12-08")]
+theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
+    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
+
+@[deprecated IsSuccLimit.sSup_Iio (since := "2024-12-08")]
+theorem IsLimit.sSup_Iio {o : Ordinal} (h : IsLimit o) : sSup (Iio o) = o :=
+  IsSuccLimit.sSup_Iio h
+
+@[deprecated IsSuccLimit.iSup_Iio (since := "2024-12-08")]
+theorem IsLimit.iSup_Iio {o : Ordinal} (h : IsLimit o) : ⨆ a : Iio o, a.1 = o :=
+  IsSuccLimit.iSup_Iio h
+
 end deprecated
 
-#exit
 /-! ### Normal ordinal functions -/
 
 
@@ -434,13 +424,13 @@ end deprecated
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`. -/
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
-  (∀ o, f o < f (succ o)) ∧ ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
+  (∀ o, f o < f (succ o)) ∧ ∀ o, IsSuccLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
 
 theorem IsNormal.limit_le {f} (H : IsNormal f) :
-    ∀ {o}, IsLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
+    ∀ {o}, IsSuccLimit o → ∀ {a}, f o ≤ a ↔ ∀ b < o, f b ≤ a :=
   @H.2
 
-theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsLimit o) {a} :
+theorem IsNormal.limit_lt {f} (H : IsNormal f) {o} (h : IsSuccLimit o) {a} :
     a < f o ↔ ∃ b < o, a < f b :=
   not_iff_not.1 <| by simpa only [exists_prop, not_exists, not_and, not_lt] using H.2 _ h a
 
@@ -454,7 +444,7 @@ theorem IsNormal.monotone {f} (H : IsNormal f) : Monotone f :=
   H.strictMono.monotone
 
 theorem isNormal_iff_strictMono_limit (f : Ordinal → Ordinal) :
-    IsNormal f ↔ StrictMono f ∧ ∀ o, IsLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
+    IsNormal f ↔ StrictMono f ∧ ∀ o, IsSuccLimit o → ∀ a, (∀ b < o, f b ≤ a) → f o ≤ a :=
   ⟨fun hf => ⟨hf.strictMono, fun a ha c => (hf.2 a ha c).2⟩, fun ⟨hs, hl⟩ =>
     ⟨fun a => hs (lt_succ a), fun a ha c =>
       ⟨fun hac _b hba => ((hs hba).trans_le hac).le, hl a ha c⟩⟩⟩
@@ -504,22 +494,22 @@ theorem IsNormal.le_set' {f o} (H : IsNormal f) (p : Set α) (p0 : p.Nonempty) (
   simpa [H₂] using H.le_set (g '' p) (p0.image g) b
 
 theorem IsNormal.refl : IsNormal id :=
-  ⟨lt_succ, fun _o l _a => Ordinal.limit_le l⟩
+  ⟨lt_succ, fun _o l _a => l.le_iff_forall_le⟩
 
 theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal (f ∘ g) :=
   ⟨fun _x => H₁.lt_iff.2 (H₂.1 _), fun o l _a =>
-    H₁.le_set' (· < o) ⟨0, l.pos⟩ g _ fun _c => H₂.2 _ l _⟩
+    H₁.le_set' (· < o) ⟨0, l.bot_lt⟩ g _ fun _c => H₂.2 _ l _⟩
 
-theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsLimit o) : IsLimit (f o) := by
-  rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
-  use (H.lt_iff.2 ho.pos).ne_bot
+theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsSuccLimit o) : IsSuccLimit (f o) := by
+  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
+  use (H.lt_iff.2 ho.bot_lt).ne_bot
   intro a ha
   obtain ⟨b, hb, hab⟩ := (H.limit_lt ho).1 ha
   rw [← succ_le_iff] at hab
   apply hab.trans_lt
   rwa [H.lt_iff]
 
-theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
+theorem add_le_of_limit {a b c : Ordinal} (h : IsSuccLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
   ⟨fun h _ l => (add_le_add_left l.le _).trans h, fun H =>
     le_of_not_lt <| by
       -- Porting note: `induction` tactics are required because of the parser bug.
@@ -532,7 +522,7 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
             -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
             --               `enum _ _ l` in `this`.
             revert this; cases' enum _ ⟨_, l⟩ with x x <;> intro this
-            · cases this (enum s ⟨0, h.pos⟩)
+            · cases this (enum s ⟨0, h.bot_lt⟩)
             · exact irrefl _ (this _)
           intro x
           rw [← typein_lt_typein (Sum.Lex r s), typein_enum]
@@ -552,13 +542,13 @@ theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) :=
 @[deprecated isNormal_add_right (since := "2024-10-11")]
 alias add_isNormal := isNormal_add_right
 
-theorem isLimit_add (a) {b} : IsLimit b → IsLimit (a + b) :=
+theorem isLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
   (isNormal_add_right a).isLimit
 
 @[deprecated isLimit_add (since := "2024-10-11")]
 alias add_isLimit := isLimit_add
 
-alias IsLimit.add := add_isLimit
+alias IsSuccLimit.add := add_isLimit
 
 /-! ### Subtraction on ordinals -/
 
@@ -592,9 +582,9 @@ theorem sub_le_self (a b : Ordinal) : a - b ≤ a :=
 protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a :=
   (le_add_sub a b).antisymm'
     (by
-      rcases zero_or_succ_or_limit (a - b) with (e | ⟨c, e⟩ | l)
+      rcases zero_or_succ_or_isSuccLimit (a - b) with (e | ⟨c, e⟩ | l)
       · simp only [e, add_zero, h]
-      · rw [e, add_succ, succ_le_iff, ← lt_sub, e]
+      · rw [← e, add_succ, succ_le_iff, ← lt_sub, ← e]
         exact lt_succ c
       · exact (add_le_of_limit l).2 fun c l => (lt_sub.1 l).le)
 
@@ -644,8 +634,8 @@ theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a
   rintro ⟨d, hd, ha⟩
   exact ha.trans_lt (add_lt_add_left hd b)
 
-theorem isLimit_sub {a b} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) := by
-  rw [isLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
+theorem isLimit_sub {a b : Ordinal} (ha : IsSuccLimit a) (h : b < a) : IsSuccLimit (a - b) := by
+  rw [isSuccLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
   refine ⟨h, fun c hc ↦ ?_⟩
   rw [lt_sub] at hc ⊢
   rw [add_succ]
@@ -785,7 +775,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
   rw [one_mul a]
 
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
-    (h : IsLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
+    (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
     False := by
   suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) by
     cases' enum _ ⟨_, l⟩ with b a
@@ -822,7 +812,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
     · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
         Sum.lex_inl_inl] using h
 
-theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
+theorem mul_le_of_limit {a b c : Ordinal} (h : IsSuccLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
   ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
     -- Porting note: `induction` tactics are required because of the parser bug.
     le_of_not_lt <| by
@@ -843,7 +833,8 @@ theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
 @[deprecated isNormal_mul_right (since := "2024-10-11")]
 alias mul_isNormal := isNormal_mul_right
 
-theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
+theorem lt_mul_of_limit {a b c : Ordinal} (h : IsSuccLimit c) :
+    a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
   simpa only [not_forall₂, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
 
@@ -868,18 +859,19 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
   (isNormal_mul_right a0).inj
 
-theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsLimit b → IsLimit (a * b) :=
+theorem isLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsSuccLimit b → IsSuccLimit (a * b) :=
   (isNormal_mul_right a0).isLimit
 
 @[deprecated isLimit_mul (since := "2024-10-11")]
 alias mul_isLimit := isLimit_mul
 
-theorem isLimit_mul_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit (a * b) := by
-  rcases zero_or_succ_or_limit b with (rfl | ⟨b, rfl⟩ | lb)
+theorem isLimit_mul_left {a b : Ordinal} (l : IsSuccLimit a) (b0 : 0 < b) :
+    IsSuccLimit (a * b) := by
+  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
     exact isLimit_add _ l
-  · exact isLimit_mul l.pos lb
+  · exact isLimit_mul l.bot_lt lb
 
 @[deprecated isLimit_mul_left (since := "2024-10-11")]
 alias mul_isLimit_left := isLimit_mul_left
@@ -929,7 +921,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp +contextual only [mul_le_of_limit, limit_le, forall_true_iff]
+    simp +contextual only [mul_le_of_limit, IsSuccLimit.le_iff_forall_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0
@@ -1004,7 +996,8 @@ theorem mul_sub (a b c : Ordinal) : a * (b - c) = a * b - a * c :=
   else
     eq_of_forall_ge_iff fun d => by rw [sub_le, ← le_div a0, sub_le, ← le_div a0, mul_add_div _ a0]
 
-theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLimit a := by
+theorem isLimit_add_iff {a b : Ordinal} :
+    IsSuccLimit (a + b) ↔ IsSuccLimit b ∨ b = 0 ∧ IsSuccLimit a := by
   constructor <;> intro h
   · by_cases h' : b = 0
     · rw [h', add_zero] at h
@@ -1478,8 +1471,8 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
   H.map_iSup g
 
 theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {o : Ordinal}
-    (ho : IsLimit o) : f o = ⨆ a : Iio o, f a := by
-  have : Nonempty (Iio o) := ⟨0, ho.pos⟩
+    (ho : IsSuccLimit o) : f o = ⨆ a : Iio o, f a := by
+  have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
   rw [← H.map_iSup, ho.iSup_Iio]
 
 set_option linter.deprecated false in
@@ -1956,7 +1949,7 @@ theorem bsup_eq_blsub_iff_lt_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max
     rw [h]
     apply lt_blsub, fun h => le_antisymm (bsup_le_blsub f) (blsub_le h)⟩
 
-theorem bsup_eq_blsub_of_lt_succ_limit {o : Ordinal.{u}} (ho : IsLimit o)
+theorem bsup_eq_blsub_of_lt_succ_limit {o : Ordinal.{u}} (ho : IsSuccLimit o)
     {f : ∀ a < o, Ordinal.{max u v}} (hf : ∀ a ha, f a ha < f (succ a) (ho.succ_lt ha)) :
     bsup.{_, v} o f = blsub.{_, v} o f := by
   rw [bsup_eq_blsub_iff_lt_bsup]
@@ -2034,16 +2027,16 @@ theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w
     (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 
 theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
-    (h : IsLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
+    (h : IsSuccLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup.{u, u, v} H (fun x _ => x) h.ne_bot, bsup_id_limit fun _ ↦ h.succ_lt]
 
 theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
-    (h : IsLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
+    (h : IsSuccLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
   exact fun a _ => H.1 a
 
-theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
-    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧ ∀ o, IsLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
+theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} : IsNormal f ↔
+    (∀ a, f a < f (succ a)) ∧ ∀ o, IsSuccLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
   ⟨fun h => ⟨h.1, @IsNormal.bsup_eq f h⟩, fun ⟨h₁, h₂⟩ =>
     ⟨h₁, fun o ho a => by
       rw [← h₂ o ho]
@@ -2051,7 +2044,7 @@ theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}}
 
 theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
     IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
-      ∀ o, IsLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
+      ∀ o, IsSuccLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
   rw [isNormal_iff_lt_succ_and_bsup_eq.{u, v}, and_congr_right_iff]
   intro h
   constructor <;> intro H o ho <;> have := H o ho <;>
@@ -2389,7 +2382,7 @@ end Cardinal
 
 namespace Ordinal
 
-theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
+theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsSuccLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
   -- Porting note: `bex_def` is required.
   rw [← IsNormal.bsup_eq.{u, u} (isNormal_add_right b) h, lt_bsup, bex_def]
@@ -2420,8 +2413,8 @@ theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omeg
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias one_lt_omega := one_lt_omega0
 
-theorem isLimit_omega0 : IsLimit ω := by
-  rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
+theorem isLimit_omega0 : IsSuccLimit ω := by
+  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨omega0_ne_zero, fun o h => ?_⟩
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
   exact nat_lt_omega0 (n + 1)
@@ -2453,26 +2446,26 @@ theorem sup_natCast : sup Nat.cast = ω :=
 @[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias sup_nat_cast := sup_natCast
 
-theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
-  | 0 => h.pos
-  | n + 1 => h.succ_lt (nat_lt_limit h n)
+@[deprecated natCast_lt_of_isSuccLimit (since := "2024-04-17")]
+theorem nat_lt_limit {o : Ordinal} (h : IsSuccLimit o) : ∀ n : ℕ, ↑n < o :=
+  natCast_lt_of_isSuccLimit h
 
-theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
-  omega0_le.2 fun n => le_of_lt <| nat_lt_limit h n
+theorem omega0_le_of_isLimit {o} (h : IsSuccLimit o) : ω ≤ o :=
+  omega0_le.2 fun n => (natCast_lt_of_isSuccLimit h n).le
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_le_of_isLimit := omega0_le_of_isLimit
 
-theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
-  refine ⟨fun l => ⟨l.ne_zero, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
-  · refine (limit_le l).2 fun x hx => le_of_lt ?_
+theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
+  refine ⟨fun l => ⟨l.ne_bot, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
+  · refine l.le_iff_forall_le.2 fun x hx => le_of_lt ?_
     rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
       add_le_of_limit isLimit_omega0]
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
-        (lt_sub.1 <| nat_lt_limit (isLimit_sub l hx) _).le
+        (lt_sub.1 <| natCast_lt_of_isSuccLimit (isLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
     refine isLimit_mul_left isLimit_omega0 (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
@@ -2481,7 +2474,7 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 
-theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
+theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
   le_antisymm
     ((mul_le_of_limit l).2 fun c' h => by
@@ -2504,7 +2497,8 @@ theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a
     -- have := add_mul_limit_aux ba l IH
     rw [mul_succ, add_mul_limit_aux ba l IH, mul_succ, add_assoc]
 
-theorem add_mul_limit {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c) : (a + b) * c = a * c :=
+theorem add_mul_limit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c) :
+    (a + b) * c = a * c :=
   add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
 
 theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a + d < c) :
@@ -2555,14 +2549,14 @@ namespace Cardinal
 
 open Ordinal
 
-theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
-  rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
+theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
+  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_⟩
   · rw [← Ordinal.le_zero, ord_le] at h
     simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
   · rw [ord_le] at h ⊢
     rwa [← @add_one_of_aleph0_le (card a), ← card_succ]
-    rw [← ord_le, ← le_succ_of_isLimit, ord_le]
+    rw [← ord_le, ← IsSuccLimit.le_succ_iff, ord_le]
     · exact co.trans h
     · rw [ord_aleph0]
       exact Ordinal.isLimit_omega0
