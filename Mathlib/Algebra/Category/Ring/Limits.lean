@@ -455,7 +455,7 @@ instance :
     createsLimitOfFullyFaithfulOfIso (CommRingCat.of (limit (F ⋙ forget _))) (Iso.refl _)
     ```
     but it seems this would introduce additional identity morphisms in `limit.π`.
-    -/
+   -/
     -- Porting note: need to add these instances manually
     have : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _

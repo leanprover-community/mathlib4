@@ -160,7 +160,7 @@ theorem exists_forall_eventually_atTop_eventually_eq' {π : X → Sort*} {f : �
 
 /-- Let `f : ℕ → α → β` be a sequence of functions on a topological space. Suppose
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
-function `F :  α → β` such that for any `x`, for sufficiently large values of `n`, we have
+function `F : α → β` such that for any `x`, for sufficiently large values of `n`, we have
 `f n =ᶠ[𝓝 x] F`. -/
 theorem exists_forall_eventually_atTop_eventuallyEq {f : ℕ → X → α}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :

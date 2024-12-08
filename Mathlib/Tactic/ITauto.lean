@@ -178,31 +178,31 @@ inductive Proof
   * `ak = .and`: `(p: A ∧ B) ⊢ A`
   * `ak = .iff`: `(p: A ↔ B) ⊢ A → B`
   * `ak = .eq`: `(p: A = B) ⊢ A → B`
-  -/
+ -/
   | andLeft (ak : AndKind) (p : Proof) : Proof
   /--
   * `ak = .and`: `(p: A ∧ B) ⊢ B`
   * `ak = .iff`: `(p: A ↔ B) ⊢ B → A`
   * `ak = .eq`: `(p: A = B) ⊢ B → A`
-  -/
+ -/
   | andRight (ak : AndKind) (p : Proof) : Proof
   /--
   * `ak = .and`: `(p₁: A) (p₂: B) ⊢ A ∧ B`
   * `ak = .iff`: `(p₁: A → B) (p₁: B → A) ⊢ A ↔ B`
   * `ak = .eq`: `(p₁: A → B) (p₁: B → A) ⊢ A = B`
-  -/
+ -/
   | andIntro (ak : AndKind) (p₁ p₂ : Proof) : Proof
   /--
   * `ak = .and`: `(p: A ∧ B → C) ⊢ A → B → C`
   * `ak = .iff`: `(p: (A ↔ B) → C) ⊢ (A → B) → (B → A) → C`
   * `ak = .eq`: `(p: (A = B) → C) ⊢ (A → B) → (B → A) → C`
-  -/
+ -/
   | curry (ak : AndKind) (p : Proof) : Proof
   /-- This is a partial application of curry.
   * `ak = .and`: `(p: A ∧ B → C) (q : A) ⊢ B → C`
   * `ak = .iff`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
   * `ak = .eq`: `(p: (A ↔ B) → C) (q: A → B) ⊢ (B → A) → C`
-  -/
+ -/
   | curry₂ (ak : AndKind) (p q : Proof) : Proof
   /-- `(p: A → B) (q: A) ⊢ B` -/
   | app' : Proof → Proof → Proof
@@ -221,11 +221,11 @@ inductive Proof
   /--
   * `classical = false`: `(p: Decidable A) ⊢ A ∨ ¬A`
   * `classical = true`: `(p: Prop) ⊢ p ∨ ¬p`
-  -/
+ -/
   | em (classical : Bool) (p : Name) : Proof
   /-- The variable `x` here names the variable that will be used in the elaborated proof.
   * `(p: ((x:A) → B) → C) ⊢ B → C`
-  -/
+ -/
   | impImpSimp (x : Name) (p : Proof) : Proof
   deriving Lean.ToExpr
 

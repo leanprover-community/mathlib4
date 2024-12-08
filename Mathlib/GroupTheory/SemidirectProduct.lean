@@ -180,7 +180,7 @@ section lift
 variable (f₁ : N →* H) (f₂ : G →* H)
   (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁)
 
-/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
+/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H` -/
 def lift (f₁ : N →* H) (f₂ : G →* H)
     (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) :
     N ⋊[φ] G →* H where

@@ -111,7 +111,7 @@ theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
   · simp only [mfld_simps] at hy
     simp only [hy, mfld_simps]
   · simp only [mfld_simps]
-  -/
+ -/
   rw [contMDiffWithinAt_iff']
   refine ⟨continuousWithinAt_fst, contDiffWithinAt_fst.congr (fun y hy => ?_) ?_⟩
   · exact (extChartAt I p.1).right_inv ⟨hy.1.1.1, hy.1.2.1⟩
@@ -159,7 +159,7 @@ theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
   · simp only [mfld_simps] at hy
     simp only [hy, mfld_simps]
   · simp only [mfld_simps]
-  -/
+ -/
   rw [contMDiffWithinAt_iff']
   refine ⟨continuousWithinAt_snd, contDiffWithinAt_snd.congr (fun y hy => ?_) ?_⟩
   · exact (extChartAt J p.2).right_inv ⟨hy.1.1.2, hy.1.2.2⟩

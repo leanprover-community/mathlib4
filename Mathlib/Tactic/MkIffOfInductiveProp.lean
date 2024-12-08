@@ -122,12 +122,12 @@ structure Shape : Type where
        R a b → List.Chain R b l → List.Chain R a (b :: l)
   ```
   and the `a : α` gets eliminated, so `variablesKept = [false,true,true,true,true]`.
-   -/
+  -/
   variablesKept : List Bool
 
   /-- The number of equalities, or `none` in the case when we've reduced something
   of the form `p ∧ True` to just `p`.
-  -/
+ -/
   neqs : Option Nat
 
 /-- Converts an inductive constructor `c` into a `Shape` that will be used later in

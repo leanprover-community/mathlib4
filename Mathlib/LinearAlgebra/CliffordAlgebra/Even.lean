@@ -142,7 +142,7 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         (LinearMap.lcomp R _ (Algebra.lmul R A).to_linear_map.flip).comp <|
           (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
         ```
-        -/
+       -/
       (acc.2.val m,
         ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
     (fun m₁ m₂ a =>

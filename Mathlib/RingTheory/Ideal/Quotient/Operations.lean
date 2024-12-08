@@ -718,7 +718,7 @@ theorem quotQuotEquivComm_comp_quotQuotMk :
 theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
   /-  Porting note: this proof used to just be rfl but currently rfl opens up a bottomless pit
   of processor cycles. Synthesizing instances does not seem to be an issue.
-  -/
+ -/
   change (((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm ..))).trans
     (quotQuotEquivQuotSup J I).symm).symm =
       ((quotQuotEquivQuotSup J I).trans (quotEquivOfEq (sup_comm ..))).trans

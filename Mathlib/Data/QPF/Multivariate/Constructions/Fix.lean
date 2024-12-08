@@ -174,7 +174,7 @@ variable {α : TypeVec.{u} n}
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
   Quot.lift (recF g) (recF_eq_of_wEquiv α g)
 
-/-- Access W-type underlying `Fix F`  -/
+/-- Access W-type underlying `Fix F` -/
 def fixToW : Fix F α → q.P.W α :=
   Quotient.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
 

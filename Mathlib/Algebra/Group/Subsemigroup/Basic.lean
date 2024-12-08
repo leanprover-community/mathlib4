@@ -20,7 +20,7 @@ definition in the `AddSubsemigroup` namespace.
 
 * `Subsemigroup.copy` : copy of a subsemigroup with `carrier` replaced by a set that is equal but
   possibly not definitionally equal to the carrier of the original `Subsemigroup`.
-* `Subsemigroup.closure` :  semigroup closure of a set, i.e.,
+* `Subsemigroup.closure` : semigroup closure of a set, i.e.,
   the least subsemigroup that includes the set.
 * `Subsemigroup.gi` : `closure : Set M → Subsemigroup M` and coercion `coe : Subsemigroup M → Set M`
   form a `GaloisInsertion`;

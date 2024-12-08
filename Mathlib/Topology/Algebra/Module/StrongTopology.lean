@@ -336,7 +336,7 @@ namespace ContinuousLinearMap
 
 section BoundedSets
 
-/-! ### Topology of bounded convergence  -/
+/-! ### Topology of bounded convergence -/
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]

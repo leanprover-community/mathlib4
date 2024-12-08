@@ -42,7 +42,7 @@ where
   - `params` is the *new* list of parameters, as fvars that need to be abstracted at the end.
   - `args` is the list of arguments (fvars) to supply to `cthm.proof` before abstracting `params`.
   - `letArgs` records `(fvar, expr)` assignments for each `fvar` that was solved for by `prove`.
-  -/
+ -/
   process (cthm : CongrTheorem) (type : Expr) (argKinds : List CongrArgKind)
       (argKinds' : Array CongrArgKind) (params args : Array Expr)
       (letArgs : Array (Expr × Expr)) : MetaM CongrTheorem := do

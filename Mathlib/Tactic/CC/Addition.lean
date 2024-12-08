@@ -166,7 +166,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
         `hcongr : HEq f₁ f₂ → HEq a₁ a₂ → HEq (f₁ a₁) (f₂ a₂)`
       is not provable.
       Remark: it is also not provable in MLTT, Coq and Agda (even if we assume UIP).
-      -/
+     -/
       return false
 
 /-- Return the `CongruencesKey` associated with an expression of the form `f a`. -/
@@ -1466,7 +1466,7 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
       false when `i` or `i'` in `ra` & `rb` are not alpha-equivalent but def-eq.
       If `ra.int? != rb.int?`, we can prove `$ra ≠ $rb` (assuming that `i` & `i'` are not
       pathological instances).
-    -/
+   -/
     if ← isInterpretedValue ra <&&> isInterpretedValue rb <&&>
         pure (ra.int?.isNone || ra.int? != rb.int?) then
       raNeRb := some
@@ -1519,7 +1519,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 
     theorem cast_heq.{l₁} : ∀ {A B : Sort l₁} (H : A = B) (a : A), HEq (@cast.{l₁} A B H a) a
     ```
-    -/
+   -/
     let proof := mkApp4 (.const ``cast_heq [l₁]) A B H a
     pushHEq e a proof
 
@@ -1531,7 +1531,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
       (p : P a) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
-    -/
+   -/
     let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
@@ -1892,7 +1892,7 @@ def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit :
       Reason: we want constructors to be the representative of their equivalence classes.
     3- `r₁.size > r₂.size && !r₂.interpreted && !r₂.constructor`
       Reason: performance.
-  -/
+ -/
   if (r₁.interpreted && !r₂.interpreted) ||
       (r₁.constructor && !r₂.interpreted && !r₂.constructor) ||
       (decide (r₁.size > r₂.size) && !r₂.interpreted && !r₂.constructor) then
@@ -1924,7 +1924,7 @@ where
     `e₂ → ... → r₂`
     We want
     `r₁ → ... → e₁ → e₂ → ... → r₂`
-    -/
+   -/
     invertTrans e₁
     let newN₁ : Entry :=
       { n₁ with

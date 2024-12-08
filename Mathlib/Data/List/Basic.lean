@@ -1449,7 +1449,7 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
   | nil => simp [hsep]
   | cons hd tl ih => simp [h hd _, ih <| forall_mem_of_forall_mem_cons h]
 
-/-- `intercalate [x]` is the left inverse of `splitOn x`  -/
+/-- `intercalate [x]` is the left inverse of `splitOn x` -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
   simp only [intercalate, splitOn]
   induction' xs with hd tl ih; · simp [flatten]
@@ -1463,7 +1463,7 @@ theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.spli
   cases tl' <;> simpa [flatten, h'] using ih
 
 /-- `splitOn x` is the left inverse of `intercalate [x]`, on the domain
-  consisting of each nonempty list of lists `ls` whose elements do not contain `x`  -/
+  consisting of each nonempty list of lists `ls` whose elements do not contain `x` -/
 theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ l) (hls : ls ≠ []) :
     ([x].intercalate ls).splitOn x = ls := by
   simp only [intercalate]
@@ -1669,7 +1669,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     · simp
     cases' ha : f a with b <;> simp [ha, filterMap_cons]
     · intro h
-      simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
+      simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l
     · rintro rfl h
       exact ⟨rfl, ih h⟩

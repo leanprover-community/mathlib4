@@ -109,7 +109,7 @@ inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) �
   The field `index : ℕ` should be a unique number for each class,
   while `value : expr` contains a representative of this class.
   The function `resolve_atom` determines the appropriate atom for a given expression.
-  -/
+ -/
   | atom {sα} {e} (id : ℕ) : ExBase sα e
   /-- A sum of monomials. -/
   | sum {sα} {e} (_ : ExSum sα e) : ExBase sα e

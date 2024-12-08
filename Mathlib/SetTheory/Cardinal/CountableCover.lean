@@ -34,7 +34,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
   rcases lt_or_le a ℵ₀ with ha|ha
   /- case `a` finite. In this case, it suffices to show that any finite subset `s` of `t` has
   cardinality at most `a`. For this, we pick `i` such that `f i` contains all the points in `s`,
-  and apply the assumption that the cardinality of `f i` is at most `a`.   -/
+  and apply the assumption that the cardinality of `f i` is at most `a`.  -/
   · obtain ⟨n, rfl⟩ : ∃ (n : ℕ), a = n := lt_aleph0.1 ha
     apply mk_le_iff_forall_finset_subset_card_le.2 (fun s hs ↦ ?_)
     have A : ∀ x ∈ s, ∀ᶠ i in l, x ∈ f i := fun x hx ↦ ht x (hs hx)

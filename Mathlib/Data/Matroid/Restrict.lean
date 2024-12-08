@@ -222,7 +222,7 @@ scoped infix:50  " ≤r " => Restriction
 scoped infix:50  " <r " => StrictRestriction
 
 /-- A type synonym for matroids with the restriction order.
-  (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
+  (The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
   /-- The underlying `Matroid`.-/
   toMatroid : Matroid α

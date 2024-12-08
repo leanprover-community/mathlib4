@@ -143,7 +143,7 @@ section
   If you need to prove that a particular number is prime, in any case
   you should not use `by decide`, but rather `by norm_num`, which is
   much faster.
-  -/
+ -/
 @[local instance]
 def decidablePrime1 (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'

@@ -37,7 +37,7 @@ example {a b c d : ℕ} :
   case h1 ⊢ a = b
   case h2 ⊢ d = b
   case h3 ⊢ c + a.pred = c + d.pred
-  -/
+ -/
   sorry
   sorry
   sorry

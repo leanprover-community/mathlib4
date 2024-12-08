@@ -180,7 +180,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     then use continuity to see that `g x y` is close to `f` near both `x` and `y`,
     and finally using compactness to produce the desired function `h`
     as a maximum over finitely many `x` of a minimum over finitely many `y` of the `g x y`.
-    -/
+   -/
   dsimp only [Set.SeparatesPointsStrongly] at sep
   choose g hg w₁ w₂ using sep f
   -- For each `x y`, we define `U x y` to be `{z | f z - ε < g x y z}`,

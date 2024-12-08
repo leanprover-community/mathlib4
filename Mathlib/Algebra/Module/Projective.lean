@@ -100,7 +100,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     `(X →₀ R) →ₗ N`. Apply this to a (noncomputable) map `P → M` coming from the map
     `P →ₗ N` and a random splitting of the surjection `M →ₗ N`, and we get
     a map `φ : (P →₀ R) →ₗ M`.
-    -/
+  -/
   let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p => Function.surjInv hf (g p)
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
   cases' h.out with s hs

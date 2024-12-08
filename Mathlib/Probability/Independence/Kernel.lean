@@ -1076,7 +1076,7 @@ theorem iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f κ μ)
   have h_right : f k =
     (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘
     fun a (j : ({k} : Finset ι)) => f j a := rfl
-  have h_meas_right :  Measurable fun p : ∀ j : ({k} : Finset ι),
+  have h_meas_right : Measurable fun p : ∀ j : ({k} : Finset ι),
     β j => p ⟨k, Finset.mem_singleton_self k⟩ := measurable_pi_apply _
   let s : Finset ι := {i, j}
   have h_left : (fun ω => (f i ω, f j ω)) = (fun p : ∀ l : s, β l =>
