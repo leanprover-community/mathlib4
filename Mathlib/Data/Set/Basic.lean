@@ -2181,8 +2181,8 @@ protected def setSubtypeCongr {α : Type*} (p : α → Prop) :
   right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩
 
 @[simp]
-protected lemma setSubtypeCongr_apply_coe (p : α → Prop) (s : Set {a // p a}) :
-    (Equiv.setSubtypeCongr p) s = ⟨fun a ↦ ∃ h : p a, s ⟨a, h⟩, fun _ h ↦ h.1⟩ :=
+protected lemma setSubtypeCongr_apply (p : α → Prop) (s : Set {a // p a}) :
+    (Equiv.setSubtypeCongr p) s = ⟨fun a ↦ ∃ h : p a, ⟨a, h⟩ ∈ s, fun _ h ↦ h.1⟩ :=
   rfl
 
 @[simp]
