@@ -235,7 +235,7 @@ theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
   have := UniqueFactorizationMonoid.prod_normalizedFactors hr
   rwa [Multiset.eq_replicate_of_mem fun b => h, Multiset.prod_replicate] at this
 
-theorem prod_normalizedFactors_of_prime [Subsingleton αˣ] {m : Multiset α}
+theorem normalizedFactors_prod_of_prime [Subsingleton αˣ] {m : Multiset α}
     (h : ∀ p ∈ m, Prime p) : normalizedFactors m.prod = m := by
   cases subsingleton_or_nontrivial α
   · obtain rfl : m = 0 := by

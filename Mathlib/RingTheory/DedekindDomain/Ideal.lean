@@ -840,7 +840,7 @@ theorem factors_span_eq {p : K[X]} : factors (span {p}) = (factors p).map (fun q
     obtain ⟨r, hr, rfl⟩ := Multiset.mem_map.mp hq
     exact prime_span_singleton_iff.mpr <| prime_of_factor r hr
   rw [← span_singleton_eq_span_singleton.mpr (factors_prod hp), ← multiset_prod_span_singleton,
-    factors_eq_normalizedFactors, prod_normalizedFactors_of_prime this]
+    factors_eq_normalizedFactors, normalizedFactors_prod_of_prime this]
 
 end Ideal
 
@@ -868,7 +868,7 @@ theorem sup_eq_prod_inf_factors [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : J
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
   have H : normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
       normalizedFactors I ∩ normalizedFactors J := by
-    apply prod_normalizedFactors_of_prime
+    apply normalizedFactors_prod_of_prime
     intro p hp
     rw [mem_inter] at hp
     exact prime_of_normalized_factor p hp.left
@@ -882,7 +882,7 @@ theorem sup_eq_prod_inf_factors [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : J
     · rw [dvd_iff_normalizedFactors_le_normalizedFactors this hJ, H]
       exact inf_le_right
   · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors,
-      prod_normalizedFactors_of_prime, le_iff_count]
+      normalizedFactors_prod_of_prime, le_iff_count]
     · intro a
       rw [Multiset.count_inter]
       exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)
