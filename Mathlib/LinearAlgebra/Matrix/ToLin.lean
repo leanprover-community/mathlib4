@@ -9,6 +9,7 @@ import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.StdBasis
 import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
