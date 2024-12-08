@@ -2179,6 +2179,16 @@ theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset �
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
 
+@[to_additive (attr := simp)]
+lemma IsUnit.prod_iff [CommMonoid β] : IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha hs => rw [Finset.prod_cons, IsUnit.mul_iff, hs, Finset.forall_mem_cons]
+
+@[to_additive]
+lemma IsUnit.prod_univ_iff [Fintype α] [CommMonoid β] : IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by
+  simp
+
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with

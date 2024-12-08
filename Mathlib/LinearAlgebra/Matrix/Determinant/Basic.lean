@@ -10,6 +10,7 @@ import Mathlib.Data.Matrix.RowCol
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-!
 # Determinant of a matrix
@@ -61,6 +62,12 @@ theorem det_apply (M : Matrix n n R) : M.det = ∑ σ : Perm n, Equiv.Perm.sign 
 -- This is what the old definition was. We use it to avoid having to change the old proofs below
 theorem det_apply' (M : Matrix n n R) : M.det = ∑ σ : Perm n, ε σ * ∏ i, M (σ i) i := by
   simp [det_apply, Units.smul_def]
+
+theorem det_eq_detp_sub_detp (M : Matrix n n R) : M.det = M.detp 1 - M.detp (-1) := by
+  rw [det_apply, ← Equiv.sum_comp (Equiv.inv (Perm n)), ← ofSign_disjUnion, sum_disjUnion]
+  simp_rw [inv_apply, sign_inv, sub_eq_add_neg, detp, ← sum_neg_distrib]
+  refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (sum_congr rfl fun σ hσ ↦ ?_) <;>
+    rw [mem_ofSign.mp hσ, ← Equiv.prod_comp σ] <;> simp
 
 @[simp]
 theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
