@@ -353,6 +353,8 @@
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
   "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
+  "Mathlib.LinearAlgebra.SesquilinearForm":
+  ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
