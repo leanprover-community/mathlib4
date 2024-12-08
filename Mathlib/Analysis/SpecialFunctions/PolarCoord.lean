@@ -89,6 +89,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+theorem continuous_polarCoord_symm :
+    Continuous (polarCoord.symm) :=
+  Continuous.prod_mk (by fun_prop) (by fun_prop)
+
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
       (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
@@ -98,6 +102,14 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
+
+theorem FDerivAt_polarCoord_symm_det (p : ℝ × ℝ) :
+    (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
+      !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])).det = p.1 := by
+  conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
+  simp only [neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
+    Matrix.det_fin_two_of, sub_neg_eq_add]
+  ring
 
 -- Porting note: this instance is needed but not automatically synthesised
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
@@ -121,29 +133,37 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
 theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℝ × ℝ → E) :
     (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
-  set B : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ := fun p =>
-    LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
-      !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])
-  have A : ∀ p ∈ polarCoord.symm.source, HasFDerivAt polarCoord.symm (B p) p := fun p _ =>
-    hasFDerivAt_polarCoord_symm p
-  have B_det : ∀ p, (B p).det = p.1 := by
-    intro p
-    conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
-    simp only [B, neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
-      Matrix.det_fin_two_of, sub_neg_eq_add]
-    ring
   symm
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
       rw [← setIntegral_univ]
       apply setIntegral_congr_set
       exact polarCoord_source_ae_eq_univ.symm
-    _ = ∫ p in polarCoord.target, abs (B p).det • f (polarCoord.symm p) := by
-      apply integral_target_eq_integral_abs_det_fderiv_smul volume A
+    _ = ∫ p in polarCoord.target, |p.1| • f (polarCoord.symm p) := by
+      rw [← PartialHomeomorph.symm_target, integral_target_eq_integral_abs_det_fderiv_smul volume
+        (fun p _ ↦ hasFDerivAt_polarCoord_symm p), PartialHomeomorph.symm_source]
+      simp_rw [FDerivAt_polarCoord_symm_det]
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
       apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
-      rw [B_det, abs_of_pos]
+      rw [abs_of_pos]
       exact hx.1
+
+theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ENNReal) :
+    ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) =
+      ∫⁻ (p : ℝ × ℝ), f p := by
+  symm
+  calc
+    _ = ∫⁻ p in polarCoord.symm '' polarCoord.target, f p := by
+      rw [← setLIntegral_univ, setLIntegral_congr polarCoord_source_ae_eq_univ.symm,
+        polarCoord.symm_image_target_eq_source ]
+    _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, |p.1|.toNNReal • f (polarCoord.symm p) := by
+      rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
+        (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]
+      · simp_rw [FDerivAt_polarCoord_symm_det]; rfl
+      exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
+    _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) := by
+      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
+      filter_upwards with _ hx using by rw [abs_of_pos (by convert hx.1)]
 
 end Real
 
@@ -157,6 +177,10 @@ open scoped Real
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
+
+protected theorem continuous_polarCoord_symm :
+    Continuous (Complex.polarCoord.symm) :=
+  equivRealProdCLM.symm.continuous.comp continuous_polarCoord_symm
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
@@ -183,6 +207,12 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
   rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp
     measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
+  rfl
+
+protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ENNReal) (hf : Measurable f) :
+    (∫⁻ p in polarCoord.target, (p.1).toNNReal • f (Complex.polarCoord.symm p)) = ∫⁻ p, f p := by
+  rw [← (Complex.volume_preserving_equiv_real_prod.symm).lintegral_comp hf,
+    ← lintegral_comp_polarCoord_symm]
   rfl
 
 end Complex
