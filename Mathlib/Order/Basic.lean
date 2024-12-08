@@ -529,16 +529,19 @@ theorem PartialOrder.ext {A B : PartialOrder α}
   ext x y
   exact H x y
 
+theorem PartialOrder.ext_lt {A B : PartialOrder α}
+    (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) : A = B := by
+  ext x y
+  rw [le_iff_lt_or_eq, @le_iff_lt_or_eq _ A, H]
+
 theorem LinearOrder.ext {A B : LinearOrder α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y
   exact H x y
 
 theorem LinearOrder.ext_lt {A B : LinearOrder α}
-    (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) : A = B := by
-  ext x y
-  rw [← not_lt, ← @not_lt _ A, not_iff_not]
-  exact H y x
+    (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) : A = B :=
+  LinearOrder.toPartialOrder_injective (PartialOrder.ext_lt H)
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
 by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
@@ -695,6 +698,9 @@ instance (α : Type*) [LE α] : LE αᵒᵈ :=
 instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
+instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
+  compare := fun (a b : α) ↦ compare b a
+
 instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩
 
@@ -712,6 +718,7 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
+  __ := inferInstanceAs (Ord αᵒᵈ)
   le_total := fun a b : α ↦ le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
@@ -719,6 +726,10 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
+  decidableEq := (inferInstance : DecidableEq α)
+  compare_eq_compareOfLessAndEq a b := by
+    simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
+    rfl
 
 /-- The opposite linear order to a given linear order -/
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
@@ -726,16 +737,19 @@ def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
+theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
+  rfl
+
 theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
-  Preorder.ext fun _ _ ↦ Iff.rfl
+  rfl
 
 theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
     OrderDual.instPartialOrder αᵒᵈ = H :=
-  PartialOrder.ext fun _ _ ↦ Iff.rfl
+  rfl
 
 theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
     OrderDual.instLinearOrder αᵒᵈ = H :=
-  LinearOrder.ext fun _ _ ↦ Iff.rfl
+  rfl
 
 end OrderDual
 
@@ -767,6 +781,10 @@ theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·)
 theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
 theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
 theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+
+instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
+  convert eq_isEquiv α
+  simp [compl]
 
 /-! ### Order instances on the function space -/
 
