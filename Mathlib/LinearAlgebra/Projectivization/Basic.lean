@@ -227,84 +227,17 @@ section Cardinality
 
 section
 
-variable {α : Type*} (β : Type*) [Group α] [MulAction α β] (b : β)
-
-variable (α)
-
-/-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
-to the product of the quotient of `β` by `α` and `α`.
-See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
-noncomputable def MulAction.selfEquivOrbitsQuotientProd'
-    {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
-    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
-    β ≃ Quotient (MulAction.orbitRel α β) × α :=
-  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
-    (Equiv.sigmaCongrRight <| fun _ ↦
-      (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientBot).toEquiv).trans <|
-    Equiv.sigmaEquivProd _ _
-
-/-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
-to the product of the quotient of `β` by `α` and `α`. -/
-noncomputable def MulAction.selfEquivOrbitsQuotientProd
-    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
-    β ≃ Quotient (MulAction.orbitRel α β) × α :=
-  MulAction.selfEquivOrbitsQuotientProd' α β Quotient.out_eq' h
-
-end
-
-section
-
-variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-
-/-- The units of `R` act on the non-zero elements of `M`. -/
-instance : SMul Rˣ { x : M // x ≠ 0 } where
-  smul a v := ⟨a • v, by simpa [Units.smul_def] using v.property⟩
-
-@[simp]
-lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
-    (a • x).val = a • x.val :=
-  rfl
-
-instance : MulAction Rˣ { v : M // v ≠ 0 } where
-  one_smul v := by ext; simp
-  mul_smul a b x := by ext; simp [mul_smul]
-
-lemma orbitRel_iff (x y : { v : M // v ≠ 0 }) :
-    MulAction.orbitRel Rˣ { v // v ≠ 0 } x y ↔ MulAction.orbitRel Rˣ M x.val y.val :=
-  ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
-
-lemma comap_orbitRel_eq_orbitRel :
-    (MulAction.orbitRel Rˣ M).comap (↑) = MulAction.orbitRel Rˣ { v : M // v ≠ 0 } := by
-  ext x y
-  rw [Setoid.comap_rel, orbitRel_iff]
-
-end
-
-section
-
-variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-
-lemma stabilizer_eq_bot (x : { v : M // v ≠ 0 }) : MulAction.stabilizer Rˣ x = ⊥ := by
-  rw [eq_bot_iff]
-  intro g (hg : g • x = x)
-  ext
-  simp only [Subtype.ext_iff, ne_eq, smul_coe, Units.smul_def] at hg
-  rw [← sub_eq_zero, ← smul_eq_zero_iff_left x.property]
-  simp [sub_smul, hg]
-
-end
-
-section
-
 variable (k V : Type*) [DivisionRing k] [AddCommGroup V] [Module k V]
 
 /-- `ℙ k V` is equivalent to the quotient of the non-zero elements of `V` by `kˣ`. -/
 def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
-  Quotient.congr (Equiv.refl _) (fun x y ↦ (orbitRel_iff k V x y).symm)
+  Quotient.congr (Equiv.refl _) (fun x y ↦ (Units.orbitRel_nonZero_iff k V x y).symm)
 
 /-- The non-zero elements of `V` are equivalent to the product of `ℙ k V` with the units of `k`. -/
 noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } ≃ ℙ k V × kˣ :=
-  let e := MulAction.selfEquivOrbitsQuotientProd _ _ (stabilizer_eq_bot k V)
+  let e := MulAction.selfEquivOrbitsQuotientProd <| fun b ↦ by
+    rw [(Units.nonZeroSubMul k V).stabilizer_of_subMul,
+      stabilizer_units_eq_bot_of_ne_zero k b.property]
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))
 
 /-- If `V` is a finite `k`-module and `k` is finite, `ℙ k V` is finite. -/
@@ -349,15 +282,14 @@ lemma card'' [Finite k] [Finite V] :
 
 lemma card_of_finrank_two [Finite k] (h : Module.finrank k V = 2) :
     Nat.card (ℙ k V) = Nat.card k + 1 := by
-  have : 2 ≤ Nat.card k := FiniteField.two_le_card k
-  have h' : Nat.card k - 1 ≠ 0 := by omega
   have : Module.Finite k V := Module.finite_of_finrank_eq_succ h
   have : Finite V := Module.finite_of_finite k
   let e : V ≃ₗ[k] (Fin 2 → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
   have : Nat.card V = Nat.card k ^ 2 := by
     simp only [Nat.card_congr e.toEquiv, Nat.card_fun, Nat.card_eq_fintype_card, Fintype.card_fin]
   rw [card'', this, Nat.sq_sub_sq _ 1]
-  exact (Nat.eq_div_of_mul_eq_left h' rfl).symm
+  have : 2 ≤ Nat.card k := FiniteField.two_le_card k
+  exact (Nat.eq_div_of_mul_eq_left (by omega) rfl).symm
 
 end Cardinality
 

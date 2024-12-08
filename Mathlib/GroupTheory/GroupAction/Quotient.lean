@@ -432,6 +432,9 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
 /-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
+@[to_additive "If `α` acts freely on `β`, `β` is equivalent
+to the product of the quotient of `β` by `α` and `α`.
+See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`."]
 noncomputable def selfEquivOrbitsQuotientProd'
     {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
     (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
@@ -443,8 +446,9 @@ noncomputable def selfEquivOrbitsQuotientProd'
 
 /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
 `α`. -/
-noncomputable def selfEquivOrbitsQuotientProd
-    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+@[to_additive "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
+`α` and `α`."]
+noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
     β ≃ Quotient (MulAction.orbitRel α β) × α :=
   MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
 
