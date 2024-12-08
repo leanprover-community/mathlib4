@@ -75,6 +75,7 @@ lemma smul_coroot : B x x • coroot B hx = 2 • B x := by
 lemma coroot_apply_self : coroot B hx x = 2 :=
   hx.regular.left <| by simp [mul_comm _ (B x x)]
 
+attribute [local instance] starRingOfComm
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
@@ -82,7 +83,7 @@ lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
-  rw [sub_eq_iff_eq_add, ← hSB x y, RingHom.id_apply, mul_assoc _ _ (B x x), mul_comm _ (B x x),
+  rw [sub_eq_iff_eq_add, ← hSB x y, star_id_of_comm, mul_assoc _ _ (B x x), mul_comm _ (B x x),
     apply_self_mul_coroot_apply]
   ring
 
@@ -108,6 +109,7 @@ namespace RootPairing
 
 open LinearMap IsReflective
 
+attribute [local instance] starRingOfComm
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
@@ -136,7 +138,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
           rw [coroot_apply_self] at h2x
           specialize h2y x
           rw [coroot_apply_self] at h2y
-          rw [mul_comm, ← h2x, ← hSB, RingHom.id_apply, ← h2y, mul_comm]
+          rw [mul_comm, ← h2x, ← hSB, star_id_of_comm, ← h2y, mul_comm]
         rw [Subtype.ext_iff_val, ← sub_eq_zero]
         refine hNB.1 _ (fun z => ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
@@ -170,13 +172,13 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     simp only [mem_setOf_eq, PerfectPairing.flip_apply_apply, mul_sub,
       apply_self_mul_coroot_apply B y.2, ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
-      RingHom.id_apply, RingHom.id_apply, LinearEquiv.coe_coe, Module.reflection_apply, map_sub,
+      star_id_of_comm, star_id_of_comm, LinearEquiv.coe_coe, Module.reflection_apply, map_sub,
       mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
     refine x.2.1.1 ?_
     simp only [mem_setOf_eq, map_smul, smul_eq_mul]
     rw [← mul_assoc _ _ (B z x), ← mul_assoc _ _ (B z x), mul_left_comm,
       apply_self_mul_coroot_apply B x.2, mul_left_comm (B x x), apply_self_mul_coroot_apply B x.2,
-      ← hSB x y, RingHom.id_apply, ← hSB x z, RingHom.id_apply]
+      ← hSB x y, star_id_of_comm, ← hSB x z, star_id_of_comm]
     ring
 
 end RootPairing
