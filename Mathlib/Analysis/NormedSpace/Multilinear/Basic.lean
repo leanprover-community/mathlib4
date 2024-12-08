@@ -71,10 +71,6 @@ variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
 
--- example (a : 𝕜) : ∀ i, ∀ (v : E i),  ‖a • v‖ = ‖a‖ * ‖v‖ := by
---   intro i v
---   apply norm_smul a v
-
 instance ContinuousMultilinearMap.instContinuousEval :
     ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval := by
