@@ -181,12 +181,12 @@ section Zero
 variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
 variable {x : α}
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem bot_mul_eq_bot : ⊥ * x = ⊥ := by
   rw [← sSup_empty, sSup_mul_distrib]
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mul_bot_eq_bot : x * ⊥ = ⊥ := by
   rw [← sSup_empty, mul_sSup_distrib]
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
