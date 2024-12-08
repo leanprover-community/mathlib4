@@ -241,10 +241,28 @@ variable (Q : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂))
 
 -- #check TensorProduct.exists_finset
 
+-- #check span_tmul_eq_top
+
+-- #check Finsupp.mem_span_iff_linearCombination
+
+
 variable (S : Finset (M₁ × M₂)) --(hS ), x = ∑ i ∈ S, i.1 ⊗ₜ[R] i.2
 
 variable (hQ : ∀ a b, Q (a ⊗ₜ b) = Q₁ a ⊗ₜ Q₂ b)
 
+lemma tens1 (x : M₁ ⊗[R] M₂) : x ∈ Submodule.span R { t : M₁ ⊗[R] M₂ | ∃ m n, m ⊗ₜ n = t } := by
+  rw [span_tmul_eq_top]
+  trivial
+
+/- Every element of the tensor product occurs as a linear combination of basic tensors -/
+lemma tens2 (x : M₁ ⊗[R] M₂) :
+    let s := { t : M₁ ⊗[R] M₂ | ∃ m n, m ⊗ₜ n = t }
+    ∃ l : s →₀ R, Finsupp.linearCombination R (↑) l = x := by
+  let s := { t : M₁ ⊗[R] M₂ | ∃ m n, m ⊗ₜ n = t }
+  apply (Finsupp.mem_span_iff_linearCombination R s x).mp
+  exact tens1 x
+
+/- Alternatively, since `A` has a unit, we can also express each element as a sum of tensors. -/
 omit [Algebra R A] [IsScalarTower R A M₁] in
 lemma exists_finset_as_lin_comb :  ∑ i ∈ S, i.1 ⊗ₜ[R] i.2 =
     (Finsupp.linearCombination A (fun (i : (M₁ × M₂)) => i.1 ⊗ₜ[R] i.2)
