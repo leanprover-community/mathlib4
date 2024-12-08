@@ -27,7 +27,7 @@ assert_not_exists Multiset.powerset
 
 assert_not_exists CompleteLattice
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists Monoid
 
 open Multiset Subtype Function
 
@@ -134,17 +134,17 @@ theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
 
 theorem disjUnion_comm (s t : Finset α) (h : Disjoint s t) :
     disjUnion s t h = disjUnion t s h.symm :=
-  eq_of_veq <| add_comm _ _
+  eq_of_veq <| Multiset.add_comm _ _
 
 @[simp]
 theorem empty_disjUnion (t : Finset α) (h : Disjoint ∅ t := disjoint_bot_left) :
     disjUnion ∅ t h = t :=
-  eq_of_veq <| zero_add _
+  eq_of_veq <| Multiset.zero_add _
 
 @[simp]
 theorem disjUnion_empty (s : Finset α) (h : Disjoint s ∅ := disjoint_bot_right) :
     disjUnion s ∅ h = s :=
-  eq_of_veq <| add_zero _
+  eq_of_veq <| Multiset.add_zero _
 
 theorem singleton_disjUnion (a : α) (t : Finset α) (h : Disjoint {a} t) :
     disjUnion {a} t h = cons a t (disjoint_singleton_left.mp h) :=
