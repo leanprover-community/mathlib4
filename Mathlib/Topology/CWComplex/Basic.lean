@@ -87,8 +87,12 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   /-- The union of all closed cells equals `C`. Use `RelCWComplex.union` instead. -/
   union' : D ∪ ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
+
+/-- Characterizing when a subspace `C` of a topological space `X` is a CW complex. Note that this
+  requires `C` and `D` to be closed subspaces. If `C` is not closed choose `X` to be `C`. -/
 abbrev ClasCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComplex C ∅
 
+/-- A constructor for `ClasCWComplex`. -/
 def ClasCWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ)  → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = closedBall 0 1)
