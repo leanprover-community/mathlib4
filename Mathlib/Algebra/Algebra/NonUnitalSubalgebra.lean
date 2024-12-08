@@ -248,7 +248,7 @@ instance instIsScalarTower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTow
     IsScalarTower R' R S :=
   S.toSubmodule.isScalarTower
 
-instance [IsScalarTower R A A] : IsScalarTower R S S where
+instance (priority := 900) [IsScalarTower R A A] : IsScalarTower R S S where
   smul_assoc r x y := Subtype.ext <| smul_assoc r (x : A) (y : A)
 
 instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
