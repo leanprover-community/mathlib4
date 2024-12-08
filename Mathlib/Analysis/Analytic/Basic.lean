@@ -327,6 +327,39 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
 
+theorem radius_smul_ge {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
+  simp only [radius, smul_apply, ContinuousMultilinearMap.opNorm_smul_eq]
+  apply iSup_mono
+  intro r
+  apply iSup_mono'
+  intro C
+  use ‖c‖ * C
+  apply iSup_mono'
+  intro h
+  simp
+  intro n
+  rw [mul_assoc]
+  apply mul_le_mul_of_nonneg_left
+  · apply h
+  · simp
+
+theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜}
+    (hc : c ≠ 0) : (c • p).radius = p.radius := by
+  apply eq_of_le_of_le _ radius_smul_ge
+  simp only [radius, smul_apply, ContinuousMultilinearMap.opNorm_smul_eq]
+  apply iSup_mono
+  intro r
+  apply iSup_mono'
+  intro C
+  use C / ‖c‖
+  apply iSup_mono'
+  intro h
+  simp
+  intro n
+  rw [le_div_iff₀ (norm_pos_iff.mpr hc)]
+  convert h n using 1
+  ring
+
 protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (hx : x ∈ EMetric.ball (0 : E) p.radius) : HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
   (p.summable hx).hasSum
@@ -529,6 +562,15 @@ theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝
   exact ⟨min r₁ r₂,
     (h₁.mono (lt_min h₁.r_pos h₂pos) inf_le_left).congr
       fun y hy => h₂ (EMetric.ball_subset_ball inf_le_right hy)⟩
+
+theorem HasFPowerSeriesWithinOnBall.unique (hf : HasFPowerSeriesWithinOnBall f p s x r)
+    (hg : HasFPowerSeriesWithinOnBall g p s x r) :
+    (insert x s ∩ EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
+
+theorem HasFPowerSeriesOnBall.unique (hf : HasFPowerSeriesOnBall f p x r)
+    (hg : HasFPowerSeriesOnBall g p x r) : (EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
 
 protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=
