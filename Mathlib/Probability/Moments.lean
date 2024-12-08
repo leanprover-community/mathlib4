@@ -184,6 +184,9 @@ theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply
 
 theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 
+theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (t * α) := by
+    simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_assoc]
+
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
     IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
