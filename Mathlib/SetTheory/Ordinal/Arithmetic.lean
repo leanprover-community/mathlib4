@@ -2303,18 +2303,6 @@ end Ordinal
 
 /-! ### Properties of ω -/
 
-
-namespace Cardinal
-
-open Ordinal
-
-@[simp]
-theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
-  rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
-  rwa [← ord_aleph0, ord_le_ord]
-
-end Cardinal
-
 namespace Ordinal
 
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
@@ -2513,6 +2501,11 @@ end Ordinal
 namespace Cardinal
 
 open Ordinal
+
+@[simp]
+theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
+  rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
+  rwa [← ord_aleph0, ord_le_ord]
 
 theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
   rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
