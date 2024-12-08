@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+import Mathlib.Tactic.SuppressCompilation
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
@@ -17,6 +18,7 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 -/
 
+suppress_compilation
 
 noncomputable section
 
