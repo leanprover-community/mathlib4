@@ -340,7 +340,7 @@ instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
-instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] :
+instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
     SmoothManifoldWithCorners (𝓡∂ 1) (Icc x y) := by
   have M : ContDiff ℝ ∞ (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z i => -z i + (y - x)) :=
@@ -379,7 +379,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] :
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
-`IccChartedSpace` and `instIsManifoldIcc`. -/
+`IccChartedSpace` and `Icc_smoothManifoldWithCorners`. -/
 
 section
 
