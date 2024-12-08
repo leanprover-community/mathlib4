@@ -9,22 +9,22 @@ import Mathlib.Data.Real.StarOrdered
 import Mathlib.Order.CompletePartialOrder
 
 /-!
-# CW-complexes
+# CW complexes
 
-This file defines (relative) CW-complexes and proofs basic properties about them.
+This file defines (relative) CW complexes and proofs basic properties about them.
 
-A CW-complex is a topological space that is made by gluing closed disks of different dimensions
+A CW complex is a topological space that is made by gluing closed disks of different dimensions
 together.
 
 ## Main definitions
-* `RelCWComplex C D` : The class of CW-structures on a subspace `C` realtive to `D` of a topological
+* `RelCWComplex C D` : The class of CW structures on a subspace `C` realtive to `D` of a topological
   space `X`.
-* `ClasCWComplex C` : An abbreviation for `RelCWComplex C ∅`. The class of CW-structures on a
+* `ClasCWComplex C` : An abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
   subspace `C` of the topological space `X`.
 * `openCell n i` : An open cell of dimension `n`.
 * `closedCell n i` : A closed cell of dimension `n`.
 * `cellFrontier n i` : The edge of a cell of dimension `n`.
-* `level C n` : The `n`-th level of the (relative) CW-complex `C`.
+* `level C n` : The `n`-th level of the (relative) CW complex `C`.
 
 ## Main statements
 * `iUnion_openCell_eq_level` : The levels can also be seen as a union of open cells.
@@ -34,7 +34,7 @@ together.
 ## Implementation notes
 * This definition uses is the historical definition rather than the modern one to avoid working
   with a lot of different topological spaces.
-* We define what it means for a subspace to be a CW-complex instead of a topological space itself.
+* We define what it means for a subspace to be a CW complex instead of a topological space itself.
   This has the advantage that it makes a lot of constructions easier as you do not need to deal with
   different topologies. However, this approach requires the subspace to be closed. Should that
   not be the case you need to consider that subspace as a subspace of itself.
@@ -52,7 +52,7 @@ noncomputable section
 
 open Metric Set
 
-/-- Characterizing when a subspace `C` of a topological space `X` is a CW-complex relative to
+/-- Characterizing when a subspace `C` of a topological space `X` is a CW complex relative to
   another subspace `D`. Note that this requires `C` and `D` to be closed subspaces.
   If `C` is not closed choose `X` to be `C`. A lot of lemmas will require `[T2Space X]`.-/
 class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outParam (Set X)) where
@@ -80,7 +80,7 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
     Use `cellFrontier_subset_finite_closedCell` in the namespace `RelCWComplex` instead.-/
   mapsto (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
     MapsTo (map n i) (sphere 0 1) (D ∪ ⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
-  /-- A CW-complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
+  /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
     every closed cell and `D` is closed. Use `closed` in the namespace `RelCWComplex` instead.-/
   closed' (A : Set X) (asubc : A ⊆ C) :
     ((∀ n j, IsClosed (A ∩ map n j '' closedBall 0 1)) ∧ IsClosed (A ∩ D)) → IsClosed A
@@ -203,13 +203,13 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
-/-- A non-standard definition of the `n`-th level of a CW-complex for `n ∈ ℕ ∪ ∞` useful for
+/-- A non-standard definition of the `n`-th level of a CW complex for `n ∈ ℕ ∪ ∞` useful for
   induction. The standard `level` is defined in terms of levelaux. `levelaux` is preferred in
   statements. You should then derive the statement about `level`. -/
 def RelCWComplex.levelaux (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
   D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), closedCell m j
 
-/-- The `n`-th level of a CW-complex, for `n ∈ ℕ ∪ ∞`. For statements use `levelaux` instead
+/-- The `n`-th level of a CW complex, for `n ∈ ℕ ∪ ∞`. For statements use `levelaux` instead
   and then derive the statement about `level`.-/
 def RelCWComplex.level (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
   levelaux C (n + 1)
