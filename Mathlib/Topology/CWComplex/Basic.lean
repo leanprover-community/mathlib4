@@ -525,7 +525,7 @@ lemma RelCWComplex.level_inter_openCell_eq_empty [RelCWComplex C D] {n : ℕ∞}
     (nlem : n < m) : level C n ∩ openCell m j = ∅ :=
   levelaux_inter_openCell_eq_empty (Order.add_one_le_of_lt nlem)
 
-lemma RelCWComplex.base_inter_iUnion_openCell_eq_empty [T2Space X] [RelCWComplex C D] :
+lemma RelCWComplex.base_inter_iUnion_openCell_eq_empty [RelCWComplex C D] :
     D ∩ ⋃ (n : ℕ) (j : cell C n), openCell n j = ∅ := by
   simp_rw [inter_iUnion, iUnion_eq_empty]
   intro n i
