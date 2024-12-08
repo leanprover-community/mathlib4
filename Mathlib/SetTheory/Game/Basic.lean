@@ -20,6 +20,8 @@ imply `x * z ≈ y * z`. Hence, multiplication is not a well-defined operation o
 the abelian group structure on games allows us to simplify many proofs for pre-games.
 -/
 
+set_option linter.haveLet 0
+
 -- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
 noncomputable section
 
