@@ -191,11 +191,6 @@ theorem mul_bot : x * ⊥ = ⊥ := by
   rw [← sSup_empty, mul_sSup_distrib]
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
 
-instance : MulZeroClass α where
-  zero := ⊥
-  zero_mul _ := bot_mul
-  mul_zero _ := mul_bot
-
 end Zero
 
 end IsQuantale
