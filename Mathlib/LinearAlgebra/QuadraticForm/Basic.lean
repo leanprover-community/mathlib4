@@ -356,6 +356,13 @@ protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι
       ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
     abel_nf
 
+omit [AddCommGroup N] in
+lemma test {ι} (f g : ι  -> ι → N)
+    (h₁ : ∀ (a₁ a₂ : ι), f a₁ a₂ = f a₂ a₁)
+    (h₂ : ∀ (a₁ a₂ : ι), g a₁ a₂ = g a₂ a₁)
+    (h : f = g) : Sym2.lift ⟨f,h₁⟩ = Sym2.lift ⟨g,h₂⟩ := by
+  rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq, h]
+
 /--
 Lift the polar
 --/

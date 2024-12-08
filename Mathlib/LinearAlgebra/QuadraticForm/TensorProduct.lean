@@ -159,6 +159,17 @@ theorem tensor_map_finsupp_linearCombination1 {ι : Type*} [DecidableEq ι] [Inv
   simp_rw [← e1]
   simp_rw [tensor_map_finsupp_linearCombination]
 
+open Finsupp in
+theorem tensor_map_finsupp_linearCombination2 {ι : Type*} [DecidableEq ι] [Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
+    (Q₁.tmul Q₂) (linearCombination A g l) = (l.sum fun i r => (r * r) • (Q₁ (g₁ i) ⊗ₜ Q₂ (g₂ i))) +
+    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p := by
+  let g := fun i => g₁ i ⊗ₜ[R] g₂ i
+  have e1 (i j : ι) : (polarBilin (Q₁.tmul Q₂)) (g i) (g j) =
+    ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) (g i) (g j) := by exact?
+
 variable (A) in
 /-- The base change of a quadratic form. -/
 -- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
