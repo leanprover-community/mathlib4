@@ -34,7 +34,9 @@ variable {x y z : ZFSet.{u}}
 namespace ZFSet
 
 
-/-- A transitive set is one where every element is a subset. -/
+/-- A transitive set is one where every element is a subset.
+
+This is equivalent to being an infinite-open interval in the transitive closure of membership. -/
 def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
@@ -56,11 +58,13 @@ protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive)
   rw [mem_inter] at hz ⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 
+/-- The union of a transitive set is transitive. -/
 protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
 
+/-- The union of transitive sets is transitive. -/
 theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
