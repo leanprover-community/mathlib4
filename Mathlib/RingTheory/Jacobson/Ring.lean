@@ -548,7 +548,8 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     refine fun p hp =>
       polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
     simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
-  refine RingHom.IsIntegral.tower_bot _ _ (injective_quotient_le_comap_map P) ?_
+  refine RingHom.IsIntegral.tower_bot
+    (T := (R ⧸ comap C P)[X] ⧸ _) _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
   refine ((Ideal.Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective).trans _ _ ?_
   have : IsMaximal (Ideal.map (mapRingHom (Ideal.Quotient.mk (comap C P))) P) :=

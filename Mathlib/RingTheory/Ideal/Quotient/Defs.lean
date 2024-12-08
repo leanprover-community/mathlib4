@@ -31,20 +31,15 @@ namespace Ideal
 
 open Set
 
-variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
+variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
 variable {S : Type v}
 
--- Note that at present `Ideal` means a left-ideal,
--- so this quotient is only useful in a commutative ring.
--- We should develop quotients by two-sided ideals as well.
-/-- The quotient `R/I` of a ring `R` by an ideal `I`.
+/-- The quotient `R/I` of a ring `R` by an ideal `I`,
+defined to equal the quotient of `I` as an `R`-submodule of `R`. -/
+instance instHasQuotient : HasQuotient R (Ideal R) := Submodule.hasQuotient
 
-The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
-This definition uses `abbrev` so that typeclass instances can be shared between
-`Ideal.Quotient I` and `Submodule.Quotient I`.
--/
-@[instance] abbrev instHasQuotient : HasQuotient R (Ideal R) :=
-  Submodule.hasQuotient
+/-- Shortcut instance for commutative rings. -/
+instance {R} [CommRing R] : HasQuotient R (Ideal R) := inferInstance
 
 namespace Quotient
 
@@ -54,32 +49,35 @@ instance one (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
 
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
-protected def ringCon (I : Ideal R) : RingCon R :=
+protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
       rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
-      have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
-      have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
-        rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
-      rwa [← this] at F }
+      convert I.add_mem (I.mul_mem_left a₁ h₂) (mul_mem_right b₂ _ h₁) using 1
+      rw [mul_sub, sub_mul, sub_add_sub_cancel] }
 
--- This instance makes use of the existing AddCommGroup instance to boost performance.
-instance commRing (I : Ideal R) : CommRing (R ⧸ I) where
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
   __ : AddCommGroup (R ⧸ I) := inferInstance
-  __ : CommRing (Quotient.ringCon I).Quotient := inferInstance
+  __ : Ring (Quotient.ringCon I).Quotient := inferInstance
+
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
+  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
+
+variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (commRing I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
+example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
 
+variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
-def mk (I : Ideal R) : R →+* R ⧸ I where
+def mk : R →+* R ⧸ I where
   toFun a := Submodule.Quotient.mk a
   map_zero' := rfl
   map_one' := rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
-instance {I : Ideal R} : Coe R (R ⧸ I) :=
+instance : Coe R (R ⧸ I) :=
   ⟨Ideal.Quotient.mk I⟩
 
 /-- Two `RingHom`s from the quotient by an ideal are equal if their
@@ -91,7 +89,7 @@ theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp
     f = g :=
   RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
 
-instance inhabited : Inhabited (R ⧸ I) :=
+instance : Nonempty (R ⧸ I) :=
   ⟨mk I 37⟩
 
 protected theorem eq : mk I x = mk I y ↔ x - y ∈ I :=
@@ -100,7 +98,7 @@ protected theorem eq : mk I x = mk I y ↔ x - y ∈ I :=
 @[simp]
 theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 
-theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
+theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
   Submodule.Quotient.mk_eq_zero _
 
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
@@ -114,7 +112,7 @@ instance : RingHomSurjective (mk I) :=
 
 /-- If `I` is an ideal of a commutative ring `R`, if `q : R → R/I` is the quotient map, and if
 `s ⊆ R` is a subset, then `q⁻¹(q(s)) = ⋃ᵢ(i + s)`, the union running over all `i ∈ I`. -/
-theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
+theorem quotient_ring_saturate (s : Set R) :
     mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s := by
   ext x
   simp only [mem_preimage, mem_image, mem_iUnion, Ideal.Quotient.eq]
@@ -122,61 +120,65 @@ theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
     ⟨fun ⟨a, a_in, h⟩ => ⟨⟨_, I.neg_mem h⟩, a, a_in, by simp⟩, fun ⟨⟨i, hi⟩, a, ha, Eq⟩ =>
       ⟨a, ha, by rw [← Eq, sub_add_eq_sub_sub_swap, sub_self, zero_sub]; exact I.neg_mem hi⟩⟩
 
-variable [Semiring S]
+variable [Semiring S] (I)
 
 /-- Given a ring homomorphism `f : R →+* S` sending all elements of an ideal to zero,
 lift it to the quotient by this ideal. -/
-def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
+def lift (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
     map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
 
 @[simp]
-theorem lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
+theorem lift_mk (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :
     lift I f H (mk I a) = f a :=
   rfl
 
-theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
+theorem lift_surjective_of_surjective {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
     (hf : Function.Surjective f) : Function.Surjective (Ideal.Quotient.lift I f H) := by
   intro y
   obtain ⟨x, rfl⟩ := hf y
   use Ideal.Quotient.mk I x
   simp only [Ideal.Quotient.lift_mk]
 
+variable (S T : Ideal R) [S.IsTwoSided] [T.IsTwoSided]
+
 /-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
 
 This is the `Ideal.Quotient` version of `Quot.Factor` -/
-def factor (S T : Ideal R) (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
+def factor (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 
 @[simp]
-theorem factor_mk (S T : Ideal R) (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
+theorem factor_mk (H : S ≤ T) (x : R) : factor S T H (mk S x) = mk T x :=
   rfl
 
 @[simp]
-theorem factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
+theorem factor_comp_mk (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
   ext x
   rw [RingHom.comp_apply, factor_mk]
 
 end Quotient
 
+variable {I J} [I.IsTwoSided] [J.IsTwoSided]
+
 /-- Quotienting by equal ideals gives equivalent rings.
 
 See also `Submodule.quotEquivOfEq` and `Ideal.quotientEquivAlgOfEq`.
 -/
-def quotEquivOfEq {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
+def quotEquivOfEq (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
   { Submodule.quotEquivOfEq I J h with
     map_mul' := by
       rintro ⟨x⟩ ⟨y⟩
       rfl }
 
 @[simp]
-theorem quotEquivOfEq_mk {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) (x : R) :
+theorem quotEquivOfEq_mk (h : I = J) (x : R) :
     quotEquivOfEq h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
 
 @[simp]
-theorem quotEquivOfEq_symm {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) :
+theorem quotEquivOfEq_symm (h : I = J) :
     (Ideal.quotEquivOfEq h).symm = Ideal.quotEquivOfEq h.symm := by ext; rfl
 
 end Ideal
