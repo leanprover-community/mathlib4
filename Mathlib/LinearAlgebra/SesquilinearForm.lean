@@ -155,6 +155,8 @@ include H
 
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
+theorem eq_iff {x y} : B x y = 0 ↔ B y x = 0 := ⟨H x y, H y x⟩
+
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 
@@ -700,17 +702,46 @@ section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁] {I I' : R →+* R}
 
-theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
-    (hB' : B.SeparatingLeft) : B.Nondegenerate := by
-  refine ⟨hB', ?_⟩
+theorem IsRefl.nondegenerate_iff_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl) :
+    B.Nondegenerate ↔ B.SeparatingLeft := by
+  refine ⟨fun h ↦ h.1, fun hB' ↦ ⟨hB', ?_⟩⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 
-theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
-    (hB' : B.SeparatingRight) : B.Nondegenerate := by
-  refine ⟨?_, hB'⟩
+theorem IsRefl.nondegenerate_iff_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl) :
+    B.Nondegenerate ↔ B.SeparatingRight := by
+  refine ⟨fun h ↦ h.2, fun hB' ↦ ⟨?_, hB'⟩⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
+
+lemma disjoint_ker_of_nondegenerate_restrict {B : M →ₗ[R] M →ₗ[R] M₁} {W : Submodule R M}
+    (hW : (B.domRestrict₁₂ W W).Nondegenerate) :
+    Disjoint W (LinearMap.ker B) := by
+  refine Submodule.disjoint_def.mpr fun x hx hx' ↦ ?_
+  let x' : W := ⟨x, hx⟩
+  suffices x' = 0 by simpa [x']
+  apply hW.1 x'
+  simp_rw [Subtype.forall, domRestrict₁₂_apply]
+  intro y hy
+  rw [mem_ker] at hx'
+  simp [hx']
+
+lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsSymm)
+    {W : Submodule R M} (hW : IsCompl W (LinearMap.ker B)) :
+    (B.domRestrict₁₂ W W).Nondegenerate := by
+  have hB' : (B.domRestrict₁₂ W W).IsRefl := fun x y ↦ hB.isRefl (W.subtype x) (W.subtype y)
+  rw [LinearMap.IsRefl.nondegenerate_iff_separatingLeft hB']
+  intro ⟨x, hx⟩ hx'
+  simp only [Submodule.mk_eq_zero]
+  replace hx' : ∀ y ∈ W, B x y = 0 := by simpa [Subtype.forall] using hx'
+  replace hx' : x ∈ W ⊓ ker B := by
+    refine ⟨hx, ?_⟩
+    ext y
+    obtain ⟨u, hu, v, hv, rfl⟩ : ∃ u ∈ W, ∃ v ∈ ker B, u + v = y := by
+      rw [← Submodule.mem_sup, hW.sup_eq_top]; exact Submodule.mem_top
+    suffices B x u = 0 by rw [mem_ker] at hv; simpa [← hB.eq v, hv]
+    exact hx' u hu
+  simpa [hW.inf_eq_bot] using hx'
 
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
@@ -718,7 +749,7 @@ that is `Disjoint W (W.orthogonalBilin B)`. -/
 theorem nondegenerate_restrict_of_disjoint_orthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
-  refine (hB.domRestrict W).nondegenerate_of_separatingLeft ?_
+  rw [(hB.domRestrict W).nondegenerate_iff_separatingLeft]
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
   refine hW.le_bot ⟨hx, fun y hy ↦ ?_⟩
@@ -888,6 +919,42 @@ lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
   exact apply_mul_apply_lt_iff_linearIndependent B hp x y
+
+lemma apply_apply_same_eq_zero_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) {x : M} :
+    B x x = 0 ↔ x ∈ LinearMap.ker B := by
+  rw [LinearMap.mem_ker]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext y
+  have := B.apply_sq_le_of_symm hs hB x y
+  simp only [h, zero_mul] at this
+  exact pow_eq_zero <| le_antisymm this (sq_nonneg (B x y))
+
+lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
+    B.Nondegenerate ↔ ∀ x, B x x = 0 ↔ x = 0 := by
+  simp_rw [hB.isRefl.nondegenerate_iff_separatingLeft, separatingLeft_iff_ker_eq_bot,
+    Submodule.eq_bot_iff, B.apply_apply_same_eq_zero_iff hs hB, mem_ker]
+  exact forall_congr' fun x ↦ by aesop
+
+/-- A convenience variant of `LinearMap.BilinForm.nondegenerate_iff` characterising nondegeneracy as
+positive definiteness. -/
+lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
+    B.Nondegenerate ↔ ∀ x, x ≠ 0 → 0 < B x x := by
+  rw [B.nondegenerate_iff hs hB, ← not_iff_not]
+  push_neg
+  exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
+
+lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)
+    {W : Submodule R M} :
+    (B.domRestrict₁₂ W W).Nondegenerate ↔ Disjoint W (LinearMap.ker B) := by
+  refine ⟨disjoint_ker_of_nondegenerate_restrict, fun hW ↦ ?_⟩
+  have hB' : (B.domRestrict₁₂ W W).IsRefl := fun x y ↦ hB.isRefl (W.subtype x) (W.subtype y)
+  rw [IsRefl.nondegenerate_iff_separatingLeft hB']
+  intro ⟨x, hx⟩ h
+  simp_rw [Subtype.forall, domRestrict₁₂_apply] at h
+  specialize h x hx
+  rw [B.apply_apply_same_eq_zero_iff hs hB] at h
+  have key : x ∈ W ⊓ LinearMap.ker B := ⟨hx, h⟩
+  simpa [hW.eq_bot] using key
 
 end BilinForm
 
