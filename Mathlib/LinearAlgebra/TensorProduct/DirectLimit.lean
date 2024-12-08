@@ -23,11 +23,11 @@ as `R`-modules.
 open TensorProduct Module Module.DirectLimit
 
 variable {R : Type*} [CommSemiring R]
-variable {ι : Type*}
-variable [DecidableEq ι] [Preorder ι]
+variable {ι : Type*} [Nonempty ι]
+variable [Preorder ι] [IsDirected ι (· ≤ ·)]
 variable {G : ι → Type*}
 variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
-variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G (f · · ·)]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 
 -- alluding to the notation in `CategoryTheory.Monoidal`
@@ -35,6 +35,18 @@ local notation M " ◁ " f => fun i j h ↦ LinearMap.lTensor M (f _ _ h)
 local notation f " ▷ " N => fun i j h ↦ LinearMap.rTensor N (f _ _ h)
 
 namespace TensorProduct
+
+instance : DirectedSystem (G · ⊗[R] M) (f ▷ M) where
+  map_self' i x := by
+    convert LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self
+  map_map' _ _ _ _ _ x := by
+    convert ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map f
+
+instance : DirectedSystem (M ⊗[R] G ·) (M ◁ f) where
+  map_self' i x := by
+    convert LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self
+  map_map' _ _ _ h₁ h₂ x := by
+    convert ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map f
 
 /--
 the map `limᵢ (Gᵢ ⊗ M) → (limᵢ Gᵢ) ⊗ M` induced by the family of maps `Gᵢ ⊗ M → (limᵢ Gᵢ) ⊗ M`
@@ -67,8 +79,6 @@ variable {M} in
     (toDirectLimit f M <| (of _ _ G f i g) ⊗ₜ m) = (of _ _ _ _ i (g ⊗ₜ m)) := by
   rw [toDirectLimit, lift.tmul, lift_of]
   rfl
-
-variable [IsDirected ι (· ≤ ·)]
 
 /--
 `limᵢ (Gᵢ ⊗ M)` and `(limᵢ Gᵢ) ⊗ M` are isomorphic as modules
