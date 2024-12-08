@@ -8,10 +8,9 @@ import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Properties of group actions involving quotient groups
@@ -429,6 +428,25 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     convert one_mem H
     · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
         mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
+
+/-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
+to the product of the quotient of `β` by `α` and `α`.
+See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
+noncomputable def selfEquivOrbitsQuotientProd'
+    {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
+    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
+    (Equiv.sigmaCongrRight <| fun _ ↦
+      (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientBot).toEquiv).trans <|
+    Equiv.sigmaEquivProd _ _
+
+/-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
+`α`. -/
+noncomputable def selfEquivOrbitsQuotientProd
+    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+  MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
 
 end MulAction
 
