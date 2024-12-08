@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Division of univariate polynomials
@@ -15,7 +16,6 @@ The main defs are `divByMonic` and `modByMonic`.
 The compatibility between these is given by `modByMonic_add_div`.
 We also define `rootMultiplicity`.
 -/
-
 
 noncomputable section
 
@@ -53,8 +53,8 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
 
 variable {p q : R[X]}
 
-theorem multiplicity_finite_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degree p) (hmp : Monic p)
-    (hq : q ≠ 0) : multiplicity.Finite p q :=
+theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degree p) (hmp : Monic p)
+    (hq : q ≠ 0) : FiniteMultiplicity p q :=
   have zn0 : (0 : R) ≠ 1 :=
     haveI := Nontrivial.of_polynomial_ne hq
     zero_ne_one
@@ -75,6 +75,9 @@ theorem multiplicity_finite_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < deg
         (lt_add_of_le_of_pos (le_mul_of_one_le_right (Nat.zero_le _) hnp)
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity_finite_of_degree_pos_of_monic := finiteMultiplicity_of_degree_pos_of_monic
 
 end Semiring
 
@@ -349,7 +352,7 @@ theorem map_mod_divByMonic [Ring S] (f : R →+* S) (hq : Monic q) :
     div_modByMonic_unique ((p /ₘ q).map f) _ (hq.map f)
       ⟨Eq.symm <| by rw [← Polynomial.map_mul, ← Polynomial.map_add, modByMonic_add_div _ hq],
         calc
-          _ ≤ degree (p %ₘ q) := degree_map_le _ _
+          _ ≤ degree (p %ₘ q) := degree_map_le
           _ < degree q := degree_modByMonic_lt _ hq
           _ = _ :=
             Eq.symm <|
@@ -470,11 +473,14 @@ See `polynomial.modByMonic` for the algorithm that computes `%ₘ`.
 def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 
-theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite (X - C a) p := by
+theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by
   haveI := Nontrivial.of_polynomial_ne h0
-  refine multiplicity_finite_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
+  refine finiteMultiplicity_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
   rw [degree_X_sub_C]
   decide
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity_X_sub_C_finite := finiteMultiplicity_X_sub_C
 
 /- Porting note: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
@@ -488,7 +494,7 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
     let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)
-    Nat.find (multiplicity_X_sub_C_finite a h0)
+    Nat.find (finiteMultiplicity_X_sub_C a h0)
 
 /- Porting note: added the following due to diamond with decidableProp and
 decidableDvdMonic see also [Zulip]
@@ -497,7 +503,7 @@ theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 :
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)
-    rootMultiplicity a p = Nat.find (multiplicity_X_sub_C_finite a p0) := by
+    rootMultiplicity a p = Nat.find (finiteMultiplicity_X_sub_C a p0) := by
   dsimp [rootMultiplicity]
   cases Subsingleton.elim ‹DecidableEq R› (Classical.decEq R)
   rw [dif_neg p0]
@@ -510,7 +516,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   split
   · rfl
   rename_i h
-  simp only [multiplicity_X_sub_C_finite a h, ↓reduceDIte]
+  simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
   rw [← ENat.some_eq_coe, WithTop.untop'_coe]
   congr
 
@@ -548,7 +554,7 @@ theorem exists_eq_pow_rootMultiplicity_mul_and_not_dvd (p : R[X]) (hp : p ≠ 0)
     ∃ q : R[X], p = (X - C a) ^ p.rootMultiplicity a * q ∧ ¬ (X - C a) ∣ q := by
   classical
   rw [rootMultiplicity_eq_multiplicity, if_neg hp]
-  apply (multiplicity_X_sub_C_finite a hp).exists_eq_pow_mul_and_not_dvd
+  apply (finiteMultiplicity_X_sub_C a hp).exists_eq_pow_mul_and_not_dvd
 
 end multiplicity
 
@@ -592,16 +598,6 @@ theorem dvd_iff_isRoot : X - C a ∣ p ↔ IsRoot p a :=
 theorem X_sub_C_dvd_sub_C_eval : X - C a ∣ p - C (p.eval a) := by
   rw [dvd_iff_isRoot, IsRoot, eval_sub, eval_C, sub_self]
 
-theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]} :
-    P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
-  rw [Ideal.mem_span_pair]
-  constructor <;> intro h
-  · rcases h with ⟨_, _, rfl⟩
-    simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, add_zero, mul_zero, sub_self]
-  · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
-    rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩
-    exact ⟨C p, q, by rw [mul_comm, mul_comm q, eq_add_of_sub_eq' hq, hp, C_mul]⟩
-
 -- TODO: generalize this to Ring. In general, 0 can be replaced by any element in the center of R.
 theorem modByMonic_X (p : R[X]) : p %ₘ X = C (p.eval 0) := by
   rw [← modByMonic_X_sub_C_eq_C_eval, C_0, sub_zero]
@@ -614,10 +610,6 @@ theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b :=
   suffices X - C b ∣ p - C (p.eval b) by
     simpa only [coe_evalRingHom, eval_sub, eval_X, eval_C] using (evalRingHom a).map_dvd this
   simp [dvd_iff_isRoot]
-
-theorem ker_evalRingHom (x : R) : RingHom.ker (evalRingHom x) = Ideal.span {X - C x} := by
-  ext y
-  simp [Ideal.mem_span_singleton, dvd_iff_isRoot, RingHom.mem_ker]
 
 @[simp]
 theorem rootMultiplicity_eq_zero_iff {p : R[X]} {x : R} :
@@ -647,7 +639,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
   rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, if_neg hp] at this
   exact
-    (multiplicity_finite_of_degree_pos_of_monic
+    (finiteMultiplicity_of_degree_pos_of_monic
       (show (0 : WithBot ℕ) < degree (X - C a) by rw [degree_X_sub_C]; decide)
       (monic_X_sub_C _) hp).not_pow_dvd_of_multiplicity_lt
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)

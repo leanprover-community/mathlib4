@@ -246,6 +246,14 @@ namespace CategoryTheory.Functor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/6053
+we needed to increase the `maxHeartbeats` limit.
+
+This may indicate a configuration problem in Aesop.
+-/
+set_option maxHeartbeats 400000 in
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
