@@ -1684,6 +1684,7 @@ import Mathlib.CategoryTheory.ConnectedComponents
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.Countable
 import Mathlib.CategoryTheory.Dialectica.Basic
+import Mathlib.CategoryTheory.Dialectica.Closed
 import Mathlib.CategoryTheory.Dialectica.Monoidal
 import Mathlib.CategoryTheory.DifferentialObject
 import Mathlib.CategoryTheory.DiscreteCategory
