@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Theory of univariate polynomials
@@ -656,6 +657,19 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
       natDegree_mul_leadingCoeff_inv _ hp0]
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
+
+open UniqueFactorizationMonoid in
+/--
+The normalized factors of a polynomial over a field times its leading coefficient give
+the polynomial.
+-/
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
+    C a.leadingCoeff * (normalizedFactors a).prod = a := by
+  by_cases ha : a = 0
+  · simp [ha]
+  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
+    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
+  simp_all
 
 end Field
 
