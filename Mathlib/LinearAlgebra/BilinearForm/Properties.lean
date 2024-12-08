@@ -79,6 +79,7 @@ theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
 theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
   ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
 
+attribute [local instance] starRingOfComm
 /-- The proposition that a bilinear form is symmetric -/
 def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm B
 

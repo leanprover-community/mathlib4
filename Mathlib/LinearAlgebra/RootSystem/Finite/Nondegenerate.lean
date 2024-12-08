@@ -109,9 +109,11 @@ lemma rootForm_pos_of_nonzero {x : M} (hx : x ∈ P.rootSpan) (h : x ≠ 0) :
   contrapose! h
   exact eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero P hx h.symm
 
+attribute [local instance] starRingOfComm
 lemma rootForm_restrict_nondegenerate :
     (P.RootForm.restrict P.rootSpan).Nondegenerate :=
   LinearMap.IsRefl.nondegenerate_of_separatingLeft (LinearMap.IsSymm.isRefl fun x y => by
+    rw [star_id_of_comm, LinearMap.BilinForm.restrict_apply, LinearMap.BilinForm.restrict_apply]
     simp [rootForm_apply_apply, mul_comm]) fun x h => SetLike.coe_eq_coe.mp
     (P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero (Submodule.coe_mem x) (h x))
 

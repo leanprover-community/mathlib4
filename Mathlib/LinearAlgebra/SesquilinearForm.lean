@@ -5,6 +5,7 @@ Authors: Andreas Swerdlow
 -/
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.Algebra.Module.LinearMap.Star
 
 /-!
 # Sesquilinear maps
@@ -186,15 +187,15 @@ end Reflexive
 
 section Symmetric
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I : R →+* R} {B : M →ₛₗ[I] M →ₗ[R] R}
+variable [CommSemiring R] [StarRing R] [AddCommMonoid M] [Module R M] {B : M →ₗ⋆[R] M →ₗ[R] R}
 
 /-- The proposition that a sesquilinear form is symmetric -/
-def IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop :=
-  ∀ x y, I (B x y) = B y x
+def IsSymm (B : M →ₗ⋆[R] M →ₗ[R] R) : Prop :=
+  ∀ x y, star (B x y) = B y x
 
 namespace IsSymm
 
-protected theorem eq (H : B.IsSymm) (x y) : I (B x y) = B y x :=
+protected theorem eq (H : B.IsSymm) (x y) : star (B x y) = B y x :=
   H x y
 
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
@@ -212,12 +213,21 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+theorem isSymm_zero : (0 : M →ₗ⋆[R] M →ₗ[R] R).IsSymm := fun _ _ => by
+  simp_all only [zero_apply, star_zero]
 
+end Symmetric
+
+section Symmetric
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+attribute [local instance] starRingOfComm in
 theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
-    rw [← h, flip_apply, RingHom.id_apply]
+    rw [← h, flip_apply]
+    rfl
   intro x y
   conv_lhs => rw [h]
   rfl
@@ -474,6 +484,8 @@ variable {B f}
 lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
     LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
   ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
+
+attribute [local instance] starRingOfComm
 
 lemma isOrthogonal_of_forall_apply_same
     (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
@@ -829,10 +841,11 @@ lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
       · simpa [hx, hy, le_neg_iff_add_nonpos_left] using hs (x - y)
       · simpa [hx, hy] using hs (x + y)
 
+attribute [local instance] starRingOfComm
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite symmetric forms. -/
 lemma apply_sq_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 ≤ (B x x) * (B y y) := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB]; rfl]
   exact apply_mul_apply_le_of_forall_zero_le B hs x y
 
 /-- The equality case of **Cauchy-Schwarz**. -/
@@ -886,7 +899,7 @@ forms. -/
 lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
     (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB]; rfl]
   exact apply_mul_apply_lt_iff_linearIndependent B hp x y
 
 end BilinForm

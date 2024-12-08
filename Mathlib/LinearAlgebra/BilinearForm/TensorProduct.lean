@@ -108,6 +108,7 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
 protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap  R M₂ R) : BilinMap A (M₁ ⊗[R] M₂) A :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+attribute [local instance] starRingOfComm
 attribute [local ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
 lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}

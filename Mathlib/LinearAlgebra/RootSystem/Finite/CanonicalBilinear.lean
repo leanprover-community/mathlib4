@@ -126,9 +126,11 @@ lemma coPolarization_apply_eq_zero_iff (n : N) :
     P.CoPolarization n = 0 ↔ P.CorootForm n = 0 :=
   P.flip.polarization_apply_eq_zero_iff n
 
+attribute [local instance] starRingOfComm
 lemma rootForm_symmetric :
-    LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
+    LinearMap.IsSymm P.RootForm := fun x y => by
+  rw [star_id_of_comm, rootForm_apply_apply, rootForm_apply_apply]
+  simp_rw [mul_comm]
 
 @[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
