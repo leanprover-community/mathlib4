@@ -141,6 +141,9 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
   · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 
+@[deprecated (since := "2024-12-08")]
+alias SmoothFiberwiseLinear.locality_aux₁ := ContMDiffFiberwiseLinear.locality_aux₁
+
 /-- Let `e` be a partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set `U` in
 `B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x` such that `e` is equal
 on `u ×ˢ univ` to some bi-smooth fiberwise linear partial homeomorphism.  Then `e` itself
@@ -214,9 +217,9 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
   rw [hΦφ]
   apply hux
 
-variable (F B IB)
+@[deprecated (since := "2024-12-08")]
+alias SmoothFiberwiseLinear.locality_aux₂ := ContMDiffFiberwiseLinear.locality_aux₂
 
-variable {F B IB} in
 -- Having this private lemma speeds up `simp` calls below a lot.
 -- TODO: understand why and fix the underlying issue (relatedly, the `simp` calls
 -- in `contMDiffFiberwiseLinear` are quite slow, even with this change)
@@ -232,6 +235,8 @@ private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} {n : WithTop �
           e.EqOnSource
             (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
   simp only [mem_iUnion, mem_setOf_eq]
+
+variable (F B IB)
 
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
@@ -283,6 +288,8 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 
+@[deprecated (since := "2024-12-08")] alias smoothFiberwiseLinear := contMDiffFiberwiseLinear
+
 @[simp]
 theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeomorph (B × F) (B × F)) :
     e ∈ contMDiffFiberwiseLinear B F IB n ↔
@@ -291,3 +298,6 @@ theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeom
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x).symm : B → F →L[𝕜] F) U),
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux
+
+@[deprecated (since := "2024-12-08")]
+alias mem_smoothFiberwiseLinear_iff := mem_contMDiffFiberwiseLinear_iff
