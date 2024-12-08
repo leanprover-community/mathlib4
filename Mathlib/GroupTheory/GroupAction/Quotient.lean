@@ -8,9 +8,10 @@ import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Properties of group actions involving quotient groups
@@ -441,7 +442,7 @@ noncomputable def selfEquivOrbitsQuotientProd'
     β ≃ Quotient (MulAction.orbitRel α β) × α :=
   (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
     (Equiv.sigmaCongrRight <| fun _ ↦
-      (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientBot).toEquiv).trans <|
+      (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
     Equiv.sigmaEquivProd _ _
 
 /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
