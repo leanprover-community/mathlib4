@@ -348,6 +348,11 @@ lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
 
 alias natAbs_pow_two := natAbs_sq
 
+theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
+  | 0      => rfl
+  | Nat.succ _ => Int.one_mul _
+  | -[_+1] => (Int.neg_eq_neg_one_mul _).symm
+
 /-! ### `/`  -/
 
 @[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
