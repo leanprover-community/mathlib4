@@ -12,20 +12,18 @@ import Mathlib.RingTheory.LinearDisjoint
 # Linearly disjoint fields
 
 This file contains basics about the linearly disjoint fields.
-
-## Linear disjoint intermediate fields
-
 We adapt the definitions in <https://en.wikipedia.org/wiki/Linearly_disjoint>.
-See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
+See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean`
+and `Mathlib/RingTheory/LinearDisjoint.lean` for details.
 
-### Main definitions
+## Main definitions
 
 - `IntermediateField.LinearDisjoint`: an intermediate field `A` of `E / F`
   and an abstract field `L` between `E / F`
   (as a special case, two intermediate fields) are linearly disjoint over `F`,
   if they are linearly disjoint as subalgebras (`Subalgebra.LinearDisjoint`).
 
-### Implementation notes
+## Implementation notes
 
 The `Subalgebra.LinearDisjoint` is stated for two `Subalgebra`s. The original design of
 `IntermediateField.LinearDisjoint` is also stated for two `IntermediateField`s
@@ -36,9 +34,9 @@ This leads to the current design of `IntermediateField.LinearDisjoint`
 which is for one `IntermediateField` and one abstract field.
 It is not generalized to two abstract fields as this will break the dot notation.
 
-### Main results
+## Main results
 
-Equivalent characterization of linear disjointness:
+### Equivalent characterization of linear disjointness
 
 - `IntermediateField.LinearDisjoint.linearIndependent_left`:
   if `A` and `L` are linearly disjoint, then any `F`-linearly independent family on `A` remains
@@ -71,7 +69,35 @@ Equivalent characterization of linear disjointness:
   such that the family `{ a_i * b_j }` in `E` is `F`-linearly independent,
   then `A` and `L` are linearly disjoint.
 
-Other main results:
+### Equivalent characterization by `IsDomain` or `IsField` of tensor product
+
+The following results are related to the equivalent characterizations in
+<https://mathoverflow.net/questions/8324>.
+
+- `IntermediateField.LinearDisjoint.isDomain'`,
+  `IntermediateField.LinearDisjoint.exists_field_of_isDomain`:
+  if `A` and `B` are field extensions `F`, then `A ⊗[F] B`
+  is a domain if and only if there exists a field such that `A` and `B` map to it and their
+  images are linearly disjoint.
+
+- `IntermediateField.LinearDisjoint.isField_of_forall`,
+  `IntermediateField.LinearDisjoint.of_isField'`:
+  if `A` and `B` are field extensions `F`, then `A ⊗[F] B`
+  is a field if and only if for any field such that `A` and `B` map to it, their
+  images are linearly disjoint.
+
+- `Algebra.TensorProduct.isField_of_isAlgebraic`:
+  if `E` and `K` are field extensions of `F`, one of them is algebraic, such that
+  `E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field.
+  See `Algebra.TensorProduct.isAlgebraic_of_isField` for its converse (in an earlier file).
+
+- `IntermediateField.LinearDisjoint.isField_of_isAlgebraic`,
+  `IntermediateField.LinearDisjoint.isField_of_isAlgebraic'`:
+  if `A` and `B` are field extensions of `F`, one of them is algebraic, such that they are linearly
+  disjoint (more generally, if there exists a field such that they map to it and their images are
+  linearly disjoint), then `A ⊗[F] B` is a field.
+
+### Other main results
 
 - `IntermediateField.LinearDisjoint.symm`, `IntermediateField.linearDisjoint_comm`:
   linear disjointness is symmetric.
@@ -95,6 +121,9 @@ Other main results:
 
 - `IntermediateField.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, then they are disjoint.
+
+- `IntermediateField.LinearDisjoint.algEquiv_of_isAlgebraic`:
+  linear disjointness is preserved by isomorphisms, provided that one of the field is algebraic.
 
 ## Tags
 
@@ -402,8 +431,7 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
     (H : ∀ (K : Type (max v w)) [Field K] [Algebra F K],
       ∀ (fa : A →ₐ[F] K) (fb : B →ₐ[F] K), fa.fieldRange.LinearDisjoint fb.fieldRange) :
     IsField (A ⊗[F] B) := by
-  have := Algebra.TensorProduct.includeRight_injective (B := B) (algebraMap F A).injective
-    |>.nontrivial
+  have := Algebra.TensorProduct.nontrivial_of_field F A B
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (A ⊗[F] B)
   apply not_imp_not.1 (Ring.ne_bot_of_isMaximal_of_not_isField hM)
   let K : Type (max v w) := A ⊗[F] B ⧸ M
@@ -421,13 +449,13 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   change Function.Injective (Ideal.Quotient.mk M) at H
   rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 
-section
-
-variable (F E) (K : Type*) [Field K] [Algebra F K]
-
+-- This not only uses `Subalgebra.LinearDisjoint`,
+-- but also uses `IntermediateField.sup_toSubalgebra_of_isAlgebraic`
+variable (F E) in
 /-- If `E` and `K` are field extensions of `F`, one of them is algebraic, such that
 `E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field. -/
-theorem _root_.Algebra.TensorProduct.isField_of_isAlgebraic [IsDomain (E ⊗[F] K)]
+theorem _root_.Algebra.TensorProduct.isField_of_isAlgebraic
+    (K : Type*) [Field K] [Algebra F K] [IsDomain (E ⊗[F] K)]
     (halg : Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K) : IsField (E ⊗[F] K) :=
   have ⟨L, _, _, fa, fb, hfa, hfb, H⟩ :=
     Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective F E K
@@ -440,14 +468,6 @@ theorem _root_.Algebra.TensorProduct.isField_of_isAlgebraic [IsDomain (E ⊗[F] 
         rwa [(AlgEquiv.ofInjective fa hfa).isAlgebraic_iff,
           (AlgEquiv.ofInjective fb hfb).isAlgebraic_iff] at halg).symm)
   f.toMulEquiv.isField _ (Field.toIsField _)
-
--- theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
---     [Algebra.Transcendental F E] [Algebra.Transcendental F K] : ¬IsField (E ⊗[F] K) := by
---   intro H
---   letI := H.toField
---   sorry
-
-end
 
 /-- If `A` and `L` are linearly disjoint, one of them is algebraic, then `A ⊗[F] L` is a field. -/
 theorem isField_of_isAlgebraic (H : A.LinearDisjoint L)

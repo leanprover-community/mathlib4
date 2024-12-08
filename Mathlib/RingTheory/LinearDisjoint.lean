@@ -64,6 +64,8 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
   then `A` and `B` are linearly disjoint.
 
+### Equivalent characterization by `IsDomain` or `IsField` of tensor product
+
 The following results are related to the equivalent characterizations in
 <https://mathoverflow.net/questions/8324>.
 
@@ -73,8 +75,14 @@ The following results are related to the equivalent characterizations in
   is a domain if and only if there exists a field such that `A` and `B` inject into it and their
   images are linearly disjoint.
 
-- `Subalgebra.LinearDisjoint.of_isField`:
-  if `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint.
+- `Subalgebra.LinearDisjoint.of_isField`, `Subalgebra.LinearDisjoint.of_isField'`:
+  if `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint, moreover, for any
+  ring `S` and injections of `A` and `B` into `S`, their images are linearly disjoint.
+
+- `Algebra.TensorProduct.not_isField_of_transcendental`,
+  `Algebra.TensorProduct.isAlgebraic_of_isField`:
+  if `A` and `B` are flat `R`-algebras, both of them are transcendental, then `A ⊗[R] B` cannot
+  be a field, equivalently, if `A ⊗[R] B` is a field, then one of them is algebraic.
 
 ### Other main results
 
@@ -202,7 +210,7 @@ theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
 theorem linearDisjoint_comm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
-/-- Two subalgebras `A`, `B` in a commutative ring are linear disjoint if and only if
+/-- Two subalgebras `A`, `B` in a commutative ring are linearly disjoint if and only if
 `Subalgebra.mulMap A B` is injective. -/
 theorem linearDisjoint_iff_injective : A.LinearDisjoint B ↔ Function.Injective (A.mulMap B) := by
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
@@ -678,6 +686,18 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   have := lift_uzero.{u} _ ▸ (basisMonomials R).mk_eq_rank.symm
   simp only [this, mk_eq_aleph0, lift_aleph0, aleph0_le_lift] at key3
   exact (key3.trans key1).not_lt one_lt_aleph0
+
+variable (R) in
+/-- If `A` and `B` are flat `R`-algebras, such that `A ⊗[R] B` is a field, then one of `A` and `B`
+is algebraic over `R`. -/
+theorem _root_.Algebra.TensorProduct.isAlgebraic_of_isField
+    (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
+    [Module.Flat R A] [Module.Flat R B] (H : IsField (A ⊗[R] B)) :
+    Algebra.IsAlgebraic R A ∨ Algebra.IsAlgebraic R B := by
+  by_contra! h
+  simp_rw [← Algebra.transcendental_iff_not_isAlgebraic] at h
+  obtain ⟨_, _⟩ := h
+  exact Algebra.TensorProduct.not_isField_of_transcendental R A B H
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
