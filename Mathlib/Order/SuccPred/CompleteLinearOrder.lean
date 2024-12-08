@@ -11,7 +11,7 @@ import Mathlib.Order.SuccPred.Limit
 
 -/
 
-open Order
+open Order Set
 
 variable {ι α : Type*}
 
@@ -143,6 +143,23 @@ lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (Set.range f) x) (hx : ¬ I
 
 @[deprecated IsLUB.exists_of_not_isSuccPrelimit (since := "2024-09-05")]
 alias IsLUB.exists_of_not_isSuccLimit := IsLUB.exists_of_not_isSuccPrelimit
+
+theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
+  obtain rfl | hx := eq_bot_or_bot_lt x
+  · simp
+  · refine (csSup_le ⟨⊥, hx⟩ fun a ha ↦ ha.le).antisymm <| le_of_forall_lt fun a ha ↦ ?_
+    rw [lt_csSup_iff' bddAbove_Iio]
+    obtain ⟨b, hb', hb⟩ := (not_covBy_iff ha).1 (h a)
+    use b, hb
+
+theorem Order.IsSuccLimit.sSup_Iio (h : IsSuccLimit x) : sSup (Iio x) = x :=
+  h.isSuccPrelimit.sSup_Iio
+
+theorem sSup_Iio_eq_self_iff_isSuccPrelimit : sSup (Iio x) = x ↔ IsSuccPrelimit x := by
+  refine ⟨fun h ↦ ?_, IsSuccPrelimit.sSup_Iio⟩
+  by_contra hx
+  rw [← h] at hx
+  simpa [h] using csSup_mem_of_not_isSuccPrelimit' bddAbove_Iio hx
 
 end ConditionallyCompleteLinearOrderBot
 
