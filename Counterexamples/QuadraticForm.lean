@@ -42,6 +42,7 @@ theorem isAlt_B [CharP F 2] : (B F).IsAlt := fun x => by
 theorem B_ne_zero [Nontrivial F] : B F ≠ 0 := fun h => by
   simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
 
+attribute [local instance] starRingOfComm
 /-- `LinearMap.BilinForm.toQuadraticForm` is not injective on symmetric bilinear forms.
 
 This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
