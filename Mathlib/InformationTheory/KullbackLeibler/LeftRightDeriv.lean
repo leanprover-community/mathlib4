@@ -118,8 +118,7 @@ lemma rightDeriv_zero : rightDeriv 0 = 0 := by
 @[simp]
 lemma rightDeriv_const (c : ℝ) : rightDeriv (fun _ ↦ c) = 0 := by
   ext x
-  rw [rightDeriv_def, Pi.zero_apply]
-  exact derivWithin_const x _ c (uniqueDiffWithinAt_Ioi x)
+  rw [rightDeriv_def, Pi.zero_apply, derivWithin_const x _ c (uniqueDiffWithinAt_Ioi x)]
 
 @[simp]
 lemma leftDeriv_const (c : ℝ) : leftDeriv (fun _ ↦ c) = 0 := by
