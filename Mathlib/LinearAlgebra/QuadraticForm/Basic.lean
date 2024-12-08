@@ -898,7 +898,9 @@ theorem associated_apply (x y : M) :
 
 theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (associatedHom S Q).IsSymm := fun x y ↦ by
-  simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
+  simp only [RingHom.coe_addMonoidHom_id, associated_apply, sub_eq_add_neg, add_assoc, smul_add,
+    LinearMap.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul, smul_neg,
+    AddMonoidHom.id_apply, add_comm, add_left_comm]
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -1204,8 +1206,8 @@ theorem QuadraticMap.toMatrix'_smul (a : R) (Q : QuadraticMap R (n → R) R) :
 theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticMap R (n → R) R) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, LinearMap.toMatrix₂'_apply, LinearMap.toMatrix₂'_apply,
-    ← associated_isSymm, associated_apply, smul_eq_mul, RingHom.coe_addMonoidHom_id,
-    AddMonoidHom.id_apply]
+    ← associated_isSymm, associated_apply, RingHom.coe_addMonoidHom_id, LinearMap.smul_def,
+    half_moduleEnd_apply_eq_half_smul, smul_eq_mul, AddMonoidHom.id_apply]
 
 end
 
