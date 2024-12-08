@@ -3,8 +3,7 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -49,6 +48,21 @@ theorem AnalyticOn.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     AnalyticOn 𝕜 (eval · p) Set.univ := analyticOn_id.aeval_polynomial p
 
 end Polynomial
+
+section PolynomialModule
+open PolynomialModule
+
+variable [NormedCommRing B] [NormedAlgebra 𝕜 B] {f : E → B}
+
+theorem AnalyticOnNhd.eval_polynomialModule (p : PolynomialModule B B) :
+    AnalyticOnNhd 𝕜 (eval · p) Set.univ := by
+  simp_rw [← eval_equivPolynomial]
+  apply AnalyticOnNhd.eval_polynomial
+
+theorem AnalyticOn.eval_polynomialModule (p : PolynomialModule B B) :
+    AnalyticOn 𝕜 (eval · p) Set.univ := (AnalyticOnNhd.eval_polynomialModule p).analyticOn
+
+end PolynomialModule
 
 section MvPolynomial
 open MvPolynomial
