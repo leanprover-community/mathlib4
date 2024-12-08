@@ -227,10 +227,10 @@ include I in
 This is not an instance for technical reasons, see
 note [Design choices about smooth algebraic structures]. -/
 theorem hasContinuousInv₀_of_hasSmoothInv₀ : HasContinuousInv₀ G :=
-  { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ I hx).continuousAt }
+  { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) hx).continuousAt }
 
 theorem contMDiffOn_inv₀ : ContMDiffOn I I ⊤ (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
-  (contMDiffAt_inv₀ I hx).contMDiffWithinAt
+  (contMDiffAt_inv₀ hx).contMDiffWithinAt
 
 @[deprecated (since := "2024-11-21")] alias smoothOn_inv₀ := contMDiffOn_inv₀
 @[deprecated (since := "2024-11-21")] alias SmoothOn_inv₀ := contMDiffOn_inv₀
@@ -239,11 +239,11 @@ variable {s : Set M} {a : M}
 
 theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
     ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
-  ((contMDiffAt_inv₀ I ha).of_le le_top).comp_contMDiffWithinAt a hf
+  ((contMDiffAt_inv₀ ha).of_le le_top).comp_contMDiffWithinAt a hf
 
 theorem ContMDiffAt.inv₀ (hf : ContMDiffAt I' I n f a) (ha : f a ≠ 0) :
     ContMDiffAt I' I n (fun x ↦ (f x)⁻¹) a :=
-  ((contMDiffAt_inv₀ I ha).of_le le_top).comp a hf
+  ((contMDiffAt_inv₀ ha).of_le le_top).comp a hf
 
 theorem ContMDiff.inv₀ (hf : ContMDiff I' I n f) (h0 : ∀ x, f x ≠ 0) :
     ContMDiff I' I n (fun x ↦ (f x)⁻¹) :=
