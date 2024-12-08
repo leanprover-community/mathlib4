@@ -18,11 +18,11 @@ This file defines morphisms between (additive) quantales
 * `AddQuantaleHom`: Additive quantale homomorphisms
 * `QuantaleHom`: Quantale homomorphisms
 
-As isomorphism, `OrderMonoidIso` - denoted `α ≃*o` - works also for (additive) Quantales,
-so we do not need to add any theory for them here.
+As isomorphism, `OrderMonoidIso` as defined in `Mathlib.Algebra.Order.Hom.Monoid`
+works also for (additive) Quantales, so we do not need to add any theory for them here.
 
 We do add theorems for identity and composition of (additive) quantale homs, as well
-as a theorem showing that any function that maps everything to ⊥ is a quantale hom.
+as a theorem showing that any function that maps everything to `⊥` is a quantale hom.
 
 ## Notation
 
