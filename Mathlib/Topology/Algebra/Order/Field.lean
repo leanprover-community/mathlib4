@@ -116,8 +116,17 @@ lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
   (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
     (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
 
+@[simp]
+lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 := by
+  apply HasBasis.eq_of_same_basis
+  · apply (((atBot_basis_Iio' (0 : 𝕜)).map _).comp_surjective inv_surjective)
+  apply (nhdsWithin_Iio_basis _).congr (by simp) fun a ha ↦ by simp [inv_Iio₀ (inv_lt_zero.mpr ha)]
+
 @[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
   rw [← inv_atTop₀, inv_inv]
+
+@[simp] lemma inv_nhdsWithin_Iio_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
+  rw [← inv_atBot₀, inv_inv]
 
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
 theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
@@ -130,20 +139,46 @@ theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero'.mono_right inf_le_left
 
+/-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
+theorem tendsto_inv_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
+  inv_nhdsWithin_Iio_zero.le
+
+/-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
+theorem tendsto_inv_atBot_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
+  inv_atBot₀.le
+
+theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
+  tendsto_inv_atBot_zero'.mono_right inf_le_left
+
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
 
+theorem Filter.Tendsto.div_atBot {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atBot) :
+    Tendsto (fun x => f x / g x) l (𝓝 0) := by
+  simp only [div_eq_mul_inv]
+  exact mul_zero a ▸ h.mul (tendsto_inv_atBot_zero.comp hg)
+
 lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
     Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
   tendsto_const_nhds.div_atTop hg
 
+lemma Filter.Tendsto.const_div_atBot (hg : Tendsto g l atBot) (r : 𝕜)  :
+    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
+  tendsto_const_nhds.div_atBot hg
+
 theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 
-theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
+theorem Filter.Tendsto.inv_tendsto_atBot (h : Tendsto f l atBot) : Tendsto f⁻¹ l (𝓝 0) :=
+  tendsto_inv_atBot_zero.comp h
+
+theorem Filter.Tendsto.inv_tendsto_zero_right (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_zero_atTop.comp h
+
+theorem Filter.Tendsto.inv_tendsto_zero_left (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
+  tendsto_inv_zero_atBot.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/
