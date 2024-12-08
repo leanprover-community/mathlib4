@@ -211,7 +211,7 @@ instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] : SmoothInv₀ 𝓘(𝕜)
     exact contDiffAt_inv 𝕜 hx
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) {G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Inv G] [Zero G] [SmoothInv₀ I G] {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
@@ -235,7 +235,7 @@ theorem contMDiffOn_inv₀ : ContMDiffOn I I ⊤ (Inv.inv : G → G) {0}ᶜ := f
 @[deprecated (since := "2024-11-21")] alias smoothOn_inv₀ := contMDiffOn_inv₀
 @[deprecated (since := "2024-11-21")] alias SmoothOn_inv₀ := contMDiffOn_inv₀
 
-variable {I} {s : Set M} {a : M}
+variable {s : Set M} {a : M}
 
 theorem ContMDiffWithinAt.inv₀ (hf : ContMDiffWithinAt I' I n f s a) (ha : f a ≠ 0) :
     ContMDiffWithinAt I' I n (fun x => (f x)⁻¹) s a :=
