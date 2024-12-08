@@ -39,10 +39,6 @@ We do not require `Abelian` in the definition of `AB4` and `AB5` because these c
 individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, and similarly for
 `AB5`.
 
-## Projects
-
-- Add additional axioms, especially define Grothendieck categories.
-
 ## References
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
@@ -92,6 +88,38 @@ lemma hasExactColimitsOfShape_of_equiv {J J' : Type*} [Category J] [Category J']
   haveI : HasColimitsOfShape J' C := hasColimitsOfShape_of_equivalence e
   ⟨preservesFiniteLimits_of_natIso (Functor.Final.colimIso e.functor)⟩
 
+variable {C} in
+lemma hasExactColimitsOfShape_obj_of_equiv (J : Type*) {D : Type*} [Category J] [Category D]
+    (e : C ≌ D) [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
+    have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+    HasExactColimitsOfShape J D := by
+  have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+  refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
+  refine preservesLimit_of_natIso K (?_ : e.congrRight.inverse ⋙ colim ⋙ e.functor ≅ colim)
+  apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
+  exact isoWhiskerLeft (_ ⋙ colim) e.unitIso.symm ≪≫ (preservesColimitNatIso e.inverse).symm
+
+universe v₁ u₁ v₂ u₂ in
+theorem comp_const (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v₁} C]
+    (D : Type u₂) [Category.{v₂} D] (F : C ⥤ D) :
+    F ⋙ Functor.const J = Functor.const J ⋙ (whiskeringRight J C D).obj F := by
+  apply Functor.ext
+  · intro X Y f
+    simp only [Functor.comp_obj, Functor.comp_map, whiskeringRight_obj_obj,
+    whiskeringRight_obj_map]
+    apply NatTrans.ext
+    ext x
+    simp only [Functor.const_obj_obj, Functor.const_map_app, NatTrans.comp_app, Functor.comp_obj,
+      eqToHom_app, eqToHom_refl, whiskerRight_app, Category.comp_id, Category.id_comp]
+  · intro X
+    simp only [Functor.comp_obj, whiskeringRight_obj_obj]
+    apply Functor.ext
+    · intro A B g
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, eqToHom_refl,
+        Functor.comp_map, Functor.map_id, Category.comp_id]
+    · simp only [Functor.const_obj_obj, Functor.comp_obj]
+      intros ; trivial
+
 /--
 Transport a `HasExactLimitsOfShape` along an equivalence of the shape.
 
@@ -119,6 +147,7 @@ attribute [instance] AB4OfSize.ofShape
 A category `C` which has coproducts is said to have `AB4` provided that
 coproducts are exact.
 -/
+@[stacks 079B]
 abbrev AB4 [HasCoproducts C] := AB4OfSize.{v} C
 
 lemma AB4OfSize_shrink [HasCoproducts.{max w w'} C] [AB4OfSize.{max w w'} C] :
@@ -134,7 +163,7 @@ instance (priority := 100) [HasCoproducts.{w} C] [AB4OfSize.{w} C] :
 
 /-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
 provided that products are exact. -/
-@[pp_with_univ]
+@[pp_with_univ, stacks 079B]
 class AB4StarOfSize [HasProducts.{w} C] where
   ofShape (α : Type w) : HasExactLimitsOfShape (Discrete α) C
 
@@ -194,6 +223,7 @@ attribute [instance] AB5OfSize.ofShape
 A category `C` which has filtered colimits is said to have `AB5` provided that
 filtered colimits are exact.
 -/
+@[stacks 079B]
 abbrev AB5 [HasFilteredColimits C] := AB5OfSize.{v, v} C
 
 lemma AB5OfSize_of_univLE [HasFilteredColimitsOfSize.{w₂, w₂'} C] [UnivLE.{w, w₂}]
@@ -218,7 +248,7 @@ lemma AB5OfSize_shrink [HasFilteredColimitsOfSize.{max w w₂, max w' w₂'} C]
 A category `C` which has cofiltered limits is said to have `AB5Star` (in literature `AB5*`)
 provided that cofiltered limits are exact.
 -/
-@[pp_with_univ]
+@[pp_with_univ, stacks 079B]
 class AB5StarOfSize [HasCofilteredLimitsOfSize.{w, w'} C] where
   ofShape (J : Type w') [Category.{w} J] [IsCofiltered J] : HasExactLimitsOfShape J C
 

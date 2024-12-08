@@ -29,9 +29,11 @@ This file also proves the special adjoint functor theorem, in the form:
 * If `G : D ⥤ C` preserves limits and `D` is complete, well-powered and has a small coseparating
   set, then `G` has a left adjoint: `isRightAdjointOfPreservesLimitsOfIsCoseparating`
 
-Finally, we prove the following corollary of the special adjoint functor theorem:
+Finally, we prove the following corollaries of the special adjoint functor theorem:
 * If `C` is complete, well-powered and has a small coseparating set, then it is cocomplete:
-  `hasColimits_of_hasLimits_of_isCoseparating`
+  `hasColimits_of_hasLimits_of_isCoseparating`, `hasColimits_of_hasLimits_of_hasCoseparator`
+* If `C` is cocomplete, co-well-powered and has a small separating set, then it is complete:
+  `hasLimits_of_hasColimits_of_isSeparating`, `hasLimits_of_hasColimits_of_hasSeparator`
 
 -/
 
@@ -134,6 +136,18 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered C�
   { has_limits_of_shape := fun _ _ =>
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
         (isLeftAdjoint_of_preservesColimits_of_isSeparating h𝒢 _) }
+
+/-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
+    has a separator, then it is complete. -/
+theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
+    [WellPowered Cᵒᵖ] : HasLimits C :=
+  hasLimits_of_hasColimits_of_isSeparating <| isSeparator_separator C
+
+/-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
+    has a coseparator, then it is cocomplete. -/
+theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
+    [WellPowered C] : HasColimits C :=
+  hasColimits_of_hasLimits_of_isCoseparating <| isCoseparator_coseparator C
 
 end Limits
 
