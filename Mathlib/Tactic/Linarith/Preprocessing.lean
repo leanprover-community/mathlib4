@@ -311,21 +311,21 @@ def nlinarithExtras : GlobalPreprocessor where
     trace[linarith] "{s}"
     linarithTraceProofs "so we added proofs" new_es
     let with_comps ← (new_es ++ ls).filterMapM (fun e => do
-      let ⟨0, P, e⟩ ← inferTypeQ e | throwError "wat"
-      some <$> parseCompAndExprQ q($e))
+      let ⟨0, _P, e⟩ ← inferTypeQ e | throwError "nlinarith preprocessor got a non-prop"
+      observing? <| parseCompAndExprQ q($e))
     let products : List (Option <|
         (u : Level) × (α : Q(Type u)) ×  (inst : _) × IneqZeroResult α inst)
       ← with_comps.mapDiagM fun ⟨ua, αa, ia, ha⟩ ⟨ub, αb, ib, hb⟩ => do
       bif ua == ub then
         have hu : ub =QL ua := ⟨⟩
         withNewMCtxDepth do
-          let .defEq hα := ← isDefEqQ (u := ub.succ.succ) q($αb) q($αa) | pure none
-          let .defEq hi := ← isDefEqQ (u := ub.succ) q($ib) q($ia) | pure none
+          let .defEq _hα := ← isDefEqQ (u := ub.succ.succ) q($αb) q($αa) | pure none
+          let .defEq _hi := ← isDefEqQ (u := ub.succ) q($ib) q($ia) | pure none
           -- TODO: why don't `hα` and `hi` work here? Do we need `QuotedDefEq.cast`?
           return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu .unsafeIntro .unsafeIntro⟩
       else
         return none
-    return ls ++ new_es ++ products.reduceOption.map fun ⟨u, α, i, h⟩ => h.pf.raw
+    return ls ++ new_es ++ products.reduceOption.map fun ⟨_u, _α, _i, h⟩ => h.pf.raw
 
 end nlinarith
 

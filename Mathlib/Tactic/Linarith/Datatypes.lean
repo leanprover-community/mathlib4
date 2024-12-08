@@ -326,8 +326,7 @@ def parseCompAndExprQ  {p : Q(Prop)} (e : Q($p)) :
   else
     throwError "invalid comparison, rhs not zero: {r.b}"
 
--- set_option pp.explicit true
-
+set_option linter.unusedVariables.funArgs false in
 def Mathlib.IneqZeroResult.cast
     {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
     {inst₁ : Q(PartialOrder $α₁)}
