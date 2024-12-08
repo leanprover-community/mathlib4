@@ -367,6 +367,9 @@ def toComp (Q : Generators S T) (P : Generators R S) : Hom P (Q.comp P) where
   val i := X (.inr i)
   aeval_val i := by simp
 
+lemma toComp_toAlgHom (Q : Generators S T) (P : Generators R S) :
+    (Q.toComp P).toAlgHom = rename Sum.inr := rfl
+
 /-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
 there is a map of generators `R[X, Y] → S[X]`. -/
 @[simps]
@@ -374,6 +377,17 @@ noncomputable
 def ofComp (Q : Generators S T) (P : Generators R S) : Hom (Q.comp P) Q where
   val i := i.elim X (C ∘ P.val)
   aeval_val i := by cases i <;> simp
+
+lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S) (v₁ v₂ a) :
+    (Q.ofComp P).toAlgHom (monomial (Finsupp.sumElim v₁ v₂) a) =
+      monomial v₁ (aeval P.val (monomial v₂ a)) := by
+  erw [Hom.toAlgHom_monomial]
+  rw [monomial_eq]
+  simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
+  rw [Finsupp.prod_sumElim]
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsupp_prod,
+    C_mul, algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
+  nth_rw 2 [mul_comm]
 
 /-- Given families of generators `X ⊆ T`, there is a map `R[X] → S[X]`. -/
 @[simps]
