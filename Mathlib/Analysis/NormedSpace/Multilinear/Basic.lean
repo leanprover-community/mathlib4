@@ -7,7 +7,6 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Operator norm on the space of continuous multilinear maps
