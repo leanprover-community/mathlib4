@@ -644,6 +644,8 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   let fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
   have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
   have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
+  -- need this otherwise the following `isDomain` will complain
+  letI : Semiring (A ⊗[R] B) := Ring.toSemiring
   haveI := hfa.isDomain fa
   haveI := hfb.isDomain fb
   haveI := ha.isDomain _
