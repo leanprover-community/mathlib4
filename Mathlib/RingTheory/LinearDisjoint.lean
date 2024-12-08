@@ -10,9 +10,11 @@ import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -521,6 +523,161 @@ theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
   apply of_isField
   exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
     (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
+
+-- TODO: move to suitable place
+variable (R) in
+/-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `N`,
+and `M` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
+theorem _root_.TensorProduct.nontrivial_of_linearMap_injective_of_flat_left
+    (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (f : R →ₗ[R] N) (hf : Function.Injective f) [Module.Flat R M] [Nontrivial M] :
+    Nontrivial (M ⊗[R] N) :=
+  Module.Flat.lTensor_preserves_injective_linearMap (M := M) f hf |>.comp
+    (TensorProduct.rid R M).symm.injective |>.nontrivial
+
+-- TODO: move to suitable place
+variable (R) in
+/-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `M`,
+and `N` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
+theorem _root_.TensorProduct.nontrivial_of_linearMap_injective_of_flat_right
+    (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (f : R →ₗ[R] M) (hf : Function.Injective f) [Module.Flat R N] [Nontrivial N] :
+    Nontrivial (M ⊗[R] N) :=
+  Module.Flat.rTensor_preserves_injective_linearMap (M := N) f hf |>.comp
+    (TensorProduct.lid R N).symm.injective |>.nontrivial
+
+-- TODO: move to suitable place
+variable (R) in
+/-- If `A`, `B` are `R`-algebras, `R` injects into `B`,
+and `A` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/
+theorem _root_.Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left
+    (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+    (h : Function.Injective (algebraMap R B)) [Module.Flat R A] [Nontrivial A] :
+    Nontrivial (A ⊗[R] B) :=
+  TensorProduct.nontrivial_of_linearMap_injective_of_flat_left R A B (Algebra.linearMap R B) h
+
+-- TODO: move to suitable place
+variable (R) in
+/-- If `A`, `B` are `R`-algebras, `R` injects into `A`,
+and `B` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/
+theorem _root_.Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_right
+    (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+    (h : Function.Injective (algebraMap R A)) [Module.Flat R B] [Nontrivial B] :
+    Nontrivial (A ⊗[R] B) :=
+  TensorProduct.nontrivial_of_linearMap_injective_of_flat_right R A B (Algebra.linearMap R A) h
+
+-- TODO: move to suitable place
+/-- If `A`, `B` are nontrivial algebras over a field `F`, then `A ⊗[F] B` is nontrivial. -/
+theorem _root_.Algebra.TensorProduct.nontrivial_of_field
+    (F : Type*) [Field F] (A B : Type*) [CommRing A] [CommRing B] [Algebra F A] [Algebra F B]
+    [Nontrivial A] [Nontrivial B] :
+    Nontrivial (A ⊗[F] B) :=
+  Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left F A B (RingHom.injective _)
+
+section
+
+variable (R : Type*) [CommSemiring R] (A S T : Type*) [CommSemiring S] [CommSemiring T]
+  [Algebra R S] [Algebra R T] [CommSemiring A] [Algebra A S] [Algebra A T]
+  [SMulCommClass R A S] [TensorProduct.CompatibleSMul R A S T] (x : S ⊗[A] T)
+
+/-- TODO: remove once #19670 is merged -/
+def _root_.Algebra.TensorProduct.mapOfCompatibleSMul : S ⊗[A] T →ₐ[A] S ⊗[R] T where
+  __ := TensorProduct.mapOfCompatibleSMul R S T A
+  map_one' := rfl
+  map_mul' x y := by
+    dsimp
+    induction x with
+    | zero => simp
+    | tmul u v =>
+      induction y with
+      | zero => simp
+      | tmul w z => simp
+      | add w z hw hz => rw [left_distrib, map_add, hw, hz, map_add, left_distrib]
+    | add u v hu hv => rw [right_distrib, map_add, hu, hv, map_add, right_distrib]
+  map_zero' := rfl
+  commutes' _ := rfl
+
+/-- TODO: remove once #19670 is merged -/
+@[simp] theorem _root_.Algebra.TensorProduct.mapOfCompatibleSMul_tmul (m n) :
+    _root_.Algebra.TensorProduct.mapOfCompatibleSMul R A S T (m ⊗ₜ n) = m ⊗ₜ n :=
+  rfl
+
+end
+
+-- TODO: move to suitable place
+variable (R) in
+/-- If `A`, `B` are `R`-algebras, `R` injects into `A` and `B`,
+and all of them are domains, then `A ⊗[R] B` is nontrivial. -/
+theorem _root_.Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain
+    (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+    (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B))
+    [IsDomain R] [IsDomain A] [IsDomain B] :
+    Nontrivial (A ⊗[R] B) := by
+  let FR := FractionRing R
+  let FA := FractionRing A
+  let FB := FractionRing B
+  let fa : FR →ₐ[R] FA := IsFractionRing.liftAlgHom (g := Algebra.ofId R FA)
+    ((IsFractionRing.injective A FA).comp ha)
+  let fb : FR →ₐ[R] FB := IsFractionRing.liftAlgHom (g := Algebra.ofId R FB)
+    ((IsFractionRing.injective B FB).comp hb)
+  algebraize_only [fa.toRingHom, fb.toRingHom]
+  have := Algebra.TensorProduct.nontrivial_of_field FR FA FB
+  exact Algebra.TensorProduct.mapOfCompatibleSMul FR R FA FB |>.comp
+    (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R A FA) (IsScalarTower.toAlgHom R B FB))
+    |>.toRingHom.domain_nontrivial
+
+-- need to be in this file since it uses linearly disjoint
+open Cardinal Polynomial in
+variable (R) in
+/-- If `A` and `B` are flat `R`-algebras, both of them are transcendental, then `A ⊗[R] B` cannot
+be a field. -/
+theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
+    (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
+    [Module.Flat R A] [Module.Flat R B] [Algebra.Transcendental R A] [Algebra.Transcendental R B] :
+    ¬IsField (A ⊗[R] B) := fun H ↦ by
+  letI := H.toField
+  obtain ⟨a, hta⟩ := ‹Algebra.Transcendental R A›
+  obtain ⟨b, htb⟩ := ‹Algebra.Transcendental R B›
+  have ha : Function.Injective (algebraMap R A) := Algebra.injective_of_transcendental
+  have hb : Function.Injective (algebraMap R B) := Algebra.injective_of_transcendental
+  let fa : A →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeLeft
+  let fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
+  have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
+  have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
+  haveI := hfa.isDomain fa
+  haveI := hfb.isDomain fb
+  haveI := ha.isDomain _
+  haveI : Module.Flat R (toSubmodule fa.range) :=
+    .of_linearEquiv _ _ _ (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
+  have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
+    (include_range_of_injective R A B ha hb).rank_inf_le_one_of_flat_left
+  let ga : R[X] →ₐ[R] A := aeval a
+  let gb : R[X] →ₐ[R] B := aeval b
+  let gab := fa.comp ga
+  replace hta : Function.Injective ga := transcendental_iff_injective.1 hta
+  replace htb : Function.Injective gb := transcendental_iff_injective.1 htb
+  have htab : Function.Injective gab := hfa.comp hta
+  algebraize_only [ga.toRingHom, gb.toRingHom]
+  let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R A B
+  haveI := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
+  have hf : Function.Injective f := RingHom.injective _
+  have key2 : gab.range ≤ fa.range ⊓ fb.range := by
+    simp_rw [gab, ga, ← aeval_algHom]
+    rw [Algebra.TensorProduct.includeLeft_apply, ← Algebra.adjoin_singleton_eq_range_aeval]
+    simp_rw [Algebra.adjoin_le_iff, Set.singleton_subset_iff, Algebra.coe_inf, Set.mem_inter_iff,
+      AlgHom.coe_range, Set.mem_range]
+    refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
+    simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
+      Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
+    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+      (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
+  have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
+    |>.toLinearMap.lift_rank_le_of_injective
+      ((Subalgebra.inclusion_injective key2).comp (AlgEquiv.injective _))
+  -- FIXME: why `basisMonomials` is in `Mathlib.RingTheory.MvPolynomial.Basic` ???
+  have := lift_uzero.{u} _ ▸ (basisMonomials R).mk_eq_rank.symm
+  simp only [this, mk_eq_aleph0, lift_aleph0, aleph0_le_lift] at key3
+  exact (key3.trans key1).not_lt one_lt_aleph0
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
