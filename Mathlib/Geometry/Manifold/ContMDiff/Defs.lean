@@ -564,7 +564,7 @@ theorem ContMDiffWithinAt.of_succ (h : ContMDiffWithinAt I I' (n + 1) f s x) :
     ContMDiffWithinAt I I' n f s x :=
   h.of_le le_self_add
 
-theorem ContMDiffAt.of_succ(h : ContMDiffAt I I' (n + 1) f x) : ContMDiffAt I I' n f x :=
+theorem ContMDiffAt.of_succ (h : ContMDiffAt I I' (n + 1) f x) : ContMDiffAt I I' n f x :=
   ContMDiffWithinAt.of_succ h
 
 theorem ContMDiffOn.of_succ (h : ContMDiffOn I I' (n + 1) f s) : ContMDiffOn I I' n f s :=
@@ -601,18 +601,18 @@ theorem contMDiffWithinAt_infty :
 theorem contMDiffAt_infty : ContMDiffAt I I' ∞ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_infty
 
- @[deprecated (since := "2024-12-08")] alias contMDiffAt_top := contMDiffAt_infty
+@[deprecated (since := "2024-12-08")] alias contMDiffAt_top := contMDiffAt_infty
 
 theorem contMDiffOn_infty : ContMDiffOn I I' ∞ f s ↔ ∀ n : ℕ, ContMDiffOn I I' n f s :=
   ⟨fun h _ => h.of_le (mod_cast le_top),
     fun h x hx => contMDiffWithinAt_infty.2 fun n => h n x hx⟩
 
- @[deprecated (since := "2024-12-08")] alias contMDiffOn_top := contMDiffOn_infty
+@[deprecated (since := "2024-12-08")] alias contMDiffOn_top := contMDiffOn_infty
 
 theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
   ⟨fun h _ => h.of_le (mod_cast le_top), fun h x => contMDiffWithinAt_infty.2 fun n => h n x⟩
 
- @[deprecated (since := "2024-12-08")] alias contMDiff_top := contMDiff_infty
+@[deprecated (since := "2024-12-08")] alias contMDiff_top := contMDiff_infty
 
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by

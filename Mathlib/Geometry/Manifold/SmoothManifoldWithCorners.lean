@@ -817,12 +817,12 @@ theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).isManifold_singleton (by simp)
 
- @[deprecated (since := "2024-12-08")]
- alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
-   Topology.IsOpenEmbedding.isManifold_singleton
+@[deprecated (since := "2024-12-08")]
+alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
+  Topology.IsOpenEmbedding.isManifold_singleton
 
 @[deprecated (since := "2024-10-18")]
-alias Topology.OpenEmbedding.singleton_smoothManifoldWithCorners :=
+alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
   Topology.IsOpenEmbedding.isManifold_singleton
 
 namespace TopologicalSpace.Opens

@@ -697,6 +697,6 @@ theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
         Trivialization.coordChangeL_apply]
       exacts [rfl, hb] }
 
- @[deprecated (since := "2024-12-08")] alias smoothVectorBundle := contMDiffVectorBundle
+@[deprecated (since := "2024-12-08")] alias smoothVectorBundle := contMDiffVectorBundle
 
 end VectorPrebundle
