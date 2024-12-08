@@ -49,8 +49,12 @@ theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
   exact mem_mul.2 ⟨b, hb, b⁻¹ * a, mem_div.2 ⟨_, hc₂, _, hc₁, by simp⟩, by simp⟩
 
-@[to_additive (attr := deprecated (since := "2024-11-26"))]
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive]
 alias exists_subset_mul_div := ruzsa_covering_mul
+attribute [deprecated ruzsa_covering_mul (since := "2024-11-26")] exists_subset_mul_div
+attribute [deprecated ruzsa_covering_add (since := "2024-11-26")] exists_subset_add_sub
 
 end Finset
 
@@ -68,7 +72,11 @@ lemma ruzsa_covering_mul (hA : A.Finite) (hB : B.Finite) (hB₀ : B.Nonempty)
   obtain ⟨F, hFA, hF, hAF⟩ := Finset.ruzsa_covering_mul hB₀ (by simpa [← Finset.coe_mul] using hK)
   exact ⟨F, by norm_cast; simp [*]⟩
 
-@[to_additive (attr := deprecated (since := "2024-11-26"))]
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive]
 alias exists_subset_mul_div := ruzsa_covering_mul
+attribute [deprecated ruzsa_covering_mul (since := "2024-11-26")] exists_subset_mul_div
+attribute [deprecated ruzsa_covering_add (since := "2024-11-26")] exists_subset_add_sub
 
 end Set
