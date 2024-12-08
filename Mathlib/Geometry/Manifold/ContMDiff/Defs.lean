@@ -485,7 +485,7 @@ theorem contMDiffOn_zero_iff :
   rw [contMDiffOn_iff]
   refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
   intro x y
-  rw [contDiffOn_zero]
+  rw [show ((0 : ℕ∞) : WithTop ℕ∞) = 0 by rfl, contDiffOn_zero]
   apply ContinuousOn.comp (continuousOn_extChartAt _)
   · apply ContinuousOn.comp h
     · apply (continuousOn_extChartAt_symm _).mono inter_subset_left
