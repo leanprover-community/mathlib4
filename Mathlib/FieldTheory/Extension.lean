@@ -167,6 +167,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
 
 end Chain
 
+set_option synthInstance.maxHeartbeats 40000 in
 theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     (h : ∀ S : Finset E, ∃ σ : Lifts F E K, (S : Set E) ⊆ σ.carrier) :
     Nonempty (E →ₐ[F] K) := by
@@ -224,6 +225,7 @@ end Lifts
 
 section
 
+set_option synthInstance.maxHeartbeats 40000 in
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
