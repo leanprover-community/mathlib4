@@ -3,13 +3,9 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-<<<<<<< HEAD
 import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.GroupTheory.Perm.ClosureSwap
-import Mathlib.NumberTheory.NumberField.Discriminant
-=======
-import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
->>>>>>> master
+import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.Tactic.LinearCombination
 
