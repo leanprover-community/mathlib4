@@ -142,7 +142,7 @@ theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
 
 @[trans]
 theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈ J :=
-  @Set.mem_of_mem_of_subset P x I J
+  @Set.mem_of_mem_of_subset P I J x
 
 /-- A proper ideal is one that is not the whole set.
     Note that the whole set might not be an ideal. -/
