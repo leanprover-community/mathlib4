@@ -371,7 +371,7 @@ protected theorem secondCountableTopology [SecondCountableTopology E] (I : Model
   I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 include I in
-/-- Every charted space is a Fréchet space (T1 space) -- regardless of whether it is
+/-- Every manifold is a Fréchet space (T1 space) -- regardless of whether it is
 Hausdorff. -/
 protected theorem t1Space (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : T1Space M := by
   have : T2Space H := I.isClosedEmbedding.toIsEmbedding.t2Space
