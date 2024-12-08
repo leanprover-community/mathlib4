@@ -166,17 +166,13 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
 
 theorem HasFPowerSeriesWithinOnBall.smul_const (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r :=
-  { r_le := by
-      rw [pf.radius_smul]
-      exact hf.r_le,
+  { r_le := le_trans hf.r_le pf.radius_smul_ge,
     r_pos := hf.r_pos
     hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _ }
 
 theorem HasFPowerSeriesOnBall.smul_const (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (c • f) (c • pf) x r :=
-  { r_le := by
-      rw [pf.radius_smul]
-      exact hf.r_le,
+  { r_le := le_trans hf.r_le pf.radius_smul_ge,
     r_pos := hf.r_pos
     hasSum := fun hy => (hf.hasSum hy).const_smul _ }
 
