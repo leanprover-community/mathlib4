@@ -118,6 +118,74 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 
 end IsRightCancelMul
 
+/-- A mixin for common left multiples. -/
+class LeftCommonMul (G : Type u) [Mul G] where
+  /-- the factor for a -/
+  cl₁ : G → G → G
+  /-- the factor for b -/
+  cl₂ : G → G → G
+   /-- there is a common multiple for any two elements of G -/
+  cl_spec : ∀ (a b : G), cl₁ a b * a = cl₂ a b * b
+
+/-- A mixin for common right multiples. -/
+class RightCommonMul (G : Type u) [Mul G] where
+  /-- the factor for a -/
+  cr₁ : G → G → G
+  /-- the factor for b -/
+  cr₂ : G → G → G
+  /-- there is a common multiple for any two elements of G -/
+  cr_spec : ∀ (a b : G), a * cr₁ a b = b * cr₂ a b
+
+/-- A mixin for common multiples. -/
+class CommonMul (G : Type u) [Mul G] extends LeftCommonMul G, RightCommonMul G
+
+/-- A mixin for left common sums. -/
+class LeftCommonAdd (G : Type u) [Add G] where
+  /-- the addend for a -/
+  cl₁ : G → G → G
+  /-- the addend for b -/
+    cl₂ : G → G → G
+  /-- there is a common sum for any two elements of G -/
+  cl_spec : ∀ (a b : G), cl₁ a b + a = cl₂ a b + b
+
+attribute [to_additive] LeftCommonMul
+
+/-- A mixin for right common sums. -/
+class RightCommonAdd (G : Type u) [Add G] where
+  /-- the addend for a -/
+  cr₁ : G → G → G
+  /-- the addend for b -/
+  cr₂ : G → G → G
+  /-- there is a common sum for any two elements of G -/
+  cr_spec : ∀ (a b : G), a + cr₁ a b = b + cr₂ a b
+
+attribute [to_additive] RightCommonMul
+
+/-- A mixin for common sums. -/
+class CommonAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
+
+attribute [to_additive] CommonMul
+
+section LeftCommonMul
+
+variable [LeftCommonMul G] {a b : G}
+
+@[to_additive]
+theorem common_left_mul : LeftCommonMul.cl₁ a b * a = LeftCommonMul.cl₂ a b * b :=
+  LeftCommonMul.cl_spec a b
+
+end LeftCommonMul
+
+section RightCommonMul
+
+variable [RightCommonMul G] {a b c : G}
+
+@[to_additive]
+theorem common_right_mul :  a * RightCommonMul.cr₁ a b = b * RightCommonMul.cr₂ a b :=
+  RightCommonMul.cr_spec a b
+
+end RightCommonMul
+
 end Mul
 
 /-- A semigroup is a type with an associative `(*)`. -/
