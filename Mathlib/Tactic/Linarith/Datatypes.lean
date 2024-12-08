@@ -326,8 +326,22 @@ def parseCompAndExprQ  {p : Q(Prop)} (e : Q($p)) :
   else
     throwError "invalid comparison, rhs not zero: {r.b}"
 
+-- set_option pp.explicit true
 
-def Mathlib.IneqZeroResult.mul (u : Level) (α : Q(Type $u)) (inst : _)
+def Mathlib.IneqZeroResult.cast
+    {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
+    {inst₁ : Q(PartialOrder $α₁)}
+    {inst₂ : Q(PartialOrder $α₂)}
+    (hu : u₁ =QL u₂ := by first | exact .rfl | assumption)
+    (hα : $α₁ =Q $α₂ := by first | exact .rfl | assumption)
+    (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption)
+    (h : Mathlib.IneqZeroResult α₁ inst₁):
+    Mathlib.IneqZeroResult α₂ inst₂ :=
+  let ⟨ineq, x, h⟩ := h
+  -- TODO: why does `hinst` not work here?
+  { ineq, x, pf := h.cast hu hα (hinst := .unsafeIntro) (hb := .unsafeIntro) }
+
+def Mathlib.IneqZeroResult.mul {u : Level} {α : Q(Type $u)} {inst : _}
     (ha hb : Mathlib.IneqZeroResult α inst) :
     MetaM <| Mathlib.IneqZeroResult α inst := do
   let ⟨posa, a, ha⟩ := ha

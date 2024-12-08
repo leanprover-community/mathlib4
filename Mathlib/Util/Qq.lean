@@ -26,7 +26,8 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
   pure ⟨v, α, e⟩
 
-@[refl]
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
+
+theorem QuotedLevelDefEq.rfl {u : Level} : @QuotedLevelDefEq u u := ⟨⟩
 
 end Qq

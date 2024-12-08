@@ -23,7 +23,7 @@ def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matTyp
   let values : List (ℕ × ℕ × ℚ) := hyps.foldlIdx (init := []) fun idx cur comp =>
     cur ++ comp.coeffs.map fun (var, c) => (var, idx, c)
 
-  let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
+  let strictIndexes := hyps.findIdxs (·.str == .lt)
   (ofValues values, strictIndexes)
 
 /--

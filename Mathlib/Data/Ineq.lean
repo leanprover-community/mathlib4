@@ -104,12 +104,18 @@ set_option linter.unusedVariables.funArgs false in
 /-- Use this to deal with instance diamonds in the `inst` argument, after calling
 `(assert|assume)InstancesCommute`. -/
 def Mathlib.IneqQ.cast
-    {u : Level} {α : Q(Type u)} {inst₁ inst₂ : Q(PartialOrder $α)} {a₁ a₂ b₁ b₂ : Q($α)}
+    {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
+    {inst₁ : Q(PartialOrder $α₁)}
+    {inst₂ : Q(PartialOrder $α₂)}
+    {a₁ b₁ : Q($α₁)}
+    {a₂ b₂ : Q($α₂)}
     {ineq : Ineq}
     (h : Mathlib.IneqQ inst₁ a₁ b₁ ineq)
+    (hu : u₁ =QL u₂ := by first | exact .rfl | assumption)
+    (hα : $α₁ =Q $α₂ := by first | exact .rfl | assumption)
+    (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption)
     (ha : $a₁ =Q $a₂ := by first | exact .rfl | assumption)
-    (hb : $b₁ =Q $b₂ := by first | exact .rfl | assumption)
-    (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption) :
+    (hb : $b₁ =Q $b₂ := by first | exact .rfl | assumption) :
     Mathlib.IneqQ inst₂ a₂ b₂ ineq :=
   match h with
   | .le h => .le q($h)
@@ -125,12 +131,16 @@ structure Mathlib.IneqResult {u : Level} (α : Q(Type u)) (inst : Q(PartialOrder
 /-- Use this to deal with instance diamonds in the `inst` argument, after calling
 `(assert|assume)InstancesCommute`. -/
 def Mathlib.IneqResult.cast
-    {u : Level} {α : Q(Type u)} {inst₁ inst₂ : Q(PartialOrder $α)}
+    {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
+    {inst₁ : Q(PartialOrder $α₁)}
+    {inst₂ : Q(PartialOrder $α₂)}
+    (hu : u₁ =QL u₂ := by first | exact .rfl | assumption)
+    (hα : $α₁ =Q $α₂ := by first | exact .rfl | assumption)
     (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption)
-    (h : Mathlib.IneqResult α inst₁):
-    Mathlib.IneqResult α inst₂ :=
+    (h : Mathlib.IneqResult α₁ inst₁):
+    Mathlib.IneqResult α₂ inst₂ :=
   let ⟨ineq, a, b, h⟩ := h
-  { a := a, b := b, pf := h.cast }
+  { ineq, a, b, pf := h.cast }
 
 /-! ### Parsing inequalities -/
 

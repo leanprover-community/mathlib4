@@ -315,20 +315,17 @@ def nlinarithExtras : GlobalPreprocessor where
       some <$> parseCompAndExprQ q($e))
     let products : List (Option <|
         (u : Level) × (α : Q(Type u)) ×  (inst : _) × IneqZeroResult α inst)
-      ← with_comps.mapDiagM fun ⟨ua, αa, ia, ha⟩ ⟨ub, αb, ib, ha⟩ => do
+      ← with_comps.mapDiagM fun ⟨ua, αa, ia, ha⟩ ⟨ub, αb, ib, hb⟩ => do
       bif ua == ub then
-        have _ : ua =QL ub := ⟨⟩
+        have hu : ub =QL ua := ⟨⟩
         withNewMCtxDepth do
-          let .defEq h := ← isDefEqQ (u := ub.succ.succ) q($αa) q($αb) | pure none
-          let .defEq (h : _ =Q _) := ← isDefEqQ (u := ub.succ.succ) q($ia) q($ib) | pure none
-          -- return some ⟨ua, αa, ia, ha.mul hb⟩
-          return none
+          let .defEq hα := ← isDefEqQ (u := ub.succ.succ) q($αb) q($αa) | pure none
+          let .defEq hi := ← isDefEqQ (u := ub.succ) q($ib) q($ia) | pure none
+          -- TODO: why don't `hα` and `hi` work here? Do we need `QuotedDefEq.cast`?
+          return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu .unsafeIntro .unsafeIntro⟩
       else
         return none
-    -- return products.reduceOption.map fun ⟨u, α, i, h⟩ => h.pf.raw
-    return []
-
-#print nlinarithExtras
+    return ls ++ new_es ++ products.reduceOption.map fun ⟨u, α, i, h⟩ => h.pf.raw
 
 end nlinarith
 
