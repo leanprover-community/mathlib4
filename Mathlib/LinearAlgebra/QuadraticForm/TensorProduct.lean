@@ -139,12 +139,25 @@ instance [DecidableEq M₁] [DecidableEq M₂] : DecidableEq {t : M₁ ⊗[R] M�
 
 open Finsupp in
 theorem tensor_map_finsupp_linearCombination {ι : Type*} [DecidableEq ι] [Invertible (2 : A)]
-    (Q₁ : QuadraticForm A M₁)
-    (Q₂ : QuadraticForm R M₂) {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
     let g := fun i => g₁ i ⊗ₜ g₂ i
     (Q₁.tmul Q₂) (linearCombination A g l) = (l.sum fun i r => (r * r) • (Q₁.tmul Q₂) (g i)) +
     ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p :=
     map_finsupp_linearCombination (Q₁.tmul Q₂) l
+
+open Finsupp in
+theorem tensor_map_finsupp_linearCombination1 {ι : Type*} [DecidableEq ι] [Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
+    (Q₁.tmul Q₂) (linearCombination A g l) = (l.sum fun i r => (r * r) • (Q₁ (g₁ i) ⊗ₜ Q₂ (g₂ i))) +
+    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p := by
+  let g := fun i => g₁ i ⊗ₜ[R] g₂ i
+  have e1 (i : ι) : (Q₁.tmul Q₂) (g i) = Q₁ (g₁ i) ⊗ₜ Q₂ (g₂ i) := by
+    exact QuadraticMap.tensorDistrib_tmul Q₁ Q₂ (g₁ i) (g₂ i)
+  simp_rw [← e1]
+  simp_rw [tensor_map_finsupp_linearCombination]
 
 variable (A) in
 /-- The base change of a quadratic form. -/
