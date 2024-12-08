@@ -94,4 +94,12 @@ lemma not_even_iff_odd_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : 
   rw [even_iff_of_even hn, odd_iff_of_even hn]
   exact Nat.not_even_iff_odd
 
+lemma odd_add_one_iff_even {n : ℕ} [NeZero n] {k : Fin n} : Odd (k + 1) ↔ Even k := by
+  refine ⟨fun ⟨k, hk⟩ ↦ ?_, Even.add_one⟩
+  exact add_right_cancel hk ▸ even_two_mul k
+
+lemma even_add_one_iff_odd {n : ℕ} [NeZero n] {k : Fin n} : Even (k + 1) ↔ Odd k := by
+  refine ⟨fun ⟨k, hk⟩ ↦ ?_, Odd.add_one⟩
+  exact eq_sub_iff_add_eq.mpr hk ▸ (even_add_self k).sub_odd odd_one
+
 end Fin
