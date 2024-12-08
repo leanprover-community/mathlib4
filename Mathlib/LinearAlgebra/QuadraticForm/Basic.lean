@@ -356,6 +356,34 @@ protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι
       ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
     abel_nf
 
+/--
+Lift the polar
+--/
+def polar_lift {ι} (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) : Sym2 ι → N :=
+  Sym2.lift ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩
+
+open Finsupp in
+theorem map_finsupp_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) = (f.sum fun i r => Q (g i r)) +
+    ∑ p ∈ f.support.sym2 with ¬ p.IsDiag, polar_lift Q f g p := by
+  rw [sum, QuadraticMap.map_sum]
+  exact congrArg (HAdd.hAdd _) rfl
+
+/--
+Lift the polar (LC)
+--/
+def polar_lift_lc {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (g : ι → M) (l : ι →₀ R) :
+  Sym2 ι → N := Sym2.lift ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j =>
+  by simp only [polar_comm]; rw [smul_comm]⟩
+
+open Finsupp in
+theorem map_finsupp_linearCombination {ι} [DecidableEq ι] (Q : QuadraticMap R M N) {g : ι → M}
+    (l : ι →₀ R) :
+    Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
+    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, polar_lift_lc Q g l p := by
+  simp_rw [linearCombination_apply, map_finsupp_sum, polar_lift_lc, polar_lift,
+    polar_smul_left, polar_smul_right, map_smul]
+
 end CommRing
 
 section SemiringOperators
