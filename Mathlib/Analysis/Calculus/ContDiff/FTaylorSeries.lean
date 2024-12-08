@@ -98,10 +98,7 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 
 noncomputable section
 
-open scoped Classical
-open ENat NNReal Topology Filter
-
-local notation "∞" => (⊤ : ℕ∞)
+open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-
 Porting note: These lines are not required in Mathlib4.
@@ -109,7 +106,12 @@ attribute [local instance 1001]
   NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
 -/
 
-open Set Fin Filter Function
+/-- Smoothness exponent for analytic functions. -/
+scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
+/-- Smoothness exponent for infinitely differentiable functions. -/
+scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+
+open scoped ContDiff
 
 universe u uE uF
 
@@ -129,7 +131,7 @@ Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries
 structure HasFTaylorSeriesUpToOn
   (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).curry0 = f x
-  protected fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
+  protected fderivWithin : ∀ m : ℕ, m < n → ∀ x ∈ s,
     HasFDerivWithinAt (p · m) (p x m.succ).curryLeft s x
   cont : ∀ m : ℕ, m ≤ n → ContinuousOn (p · m) s
 
