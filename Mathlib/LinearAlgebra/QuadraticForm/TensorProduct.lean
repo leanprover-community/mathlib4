@@ -124,13 +124,27 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
 
+/-
+-- Worry about this later
+instance [DecidableEq M₁] [DecidableEq M₂] : DecidableEq {t : M₁ ⊗[R] M₂ | ∃ m n, m ⊗ₜ n = t } := by
+  rw [DecidableEq]
+  intro a b
+  obtain ⟨a', ha⟩ := a
+  simp at ha
+  obtain ⟨b', hb⟩ := b
+  simp at hb
+  simp
+  obtain ⟨m₁, n₁⟩  := ha
+-/
+
 open Finsupp in
 theorem tensor_map_finsupp_linearCombination {ι : Type*} [DecidableEq ι] [Invertible (2 : A)]
     (Q₁ : QuadraticForm A M₁)
-    (Q₂ : QuadraticForm R M₂) {g : ι → (M₁ ⊗[R] M₂)} (l : ι →₀ A) :
+    (Q₂ : QuadraticForm R M₂) {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
     (Q₁.tmul Q₂) (linearCombination A g l) = (l.sum fun i r => (r * r) • (Q₁.tmul Q₂) (g i)) +
     ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p :=
-  QuadraticMap.map_finsupp_linearCombination (Q₁.tmul Q₂) l
+    map_finsupp_linearCombination (Q₁.tmul Q₂) l
 
 variable (A) in
 /-- The base change of a quadratic form. -/
