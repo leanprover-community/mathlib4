@@ -87,6 +87,27 @@ theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
+theorem EuclideanHalfSpace.convex [NeZero n] :
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=
+  fun _ hx _ hy _ _ _ _ _ ↦ by dsimp at hx hy ⊢; positivity
+
+theorem EuclideanQuadrant.convex :
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i } :=
+  fun _ hx _ hy _ _ _ _ _ i ↦ by dsimp at hx hy ⊢; specialize hx i; specialize hy i; positivity
+
+instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
+    PathConnectedSpace (EuclideanHalfSpace n) :=
+  isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
+
+instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
+  isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
+
+instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
+  EuclideanHalfSpace.convex.locPathConnectedSpace
+
+instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
+  EuclideanQuadrant.convex.locPathConnectedSpace
+
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
