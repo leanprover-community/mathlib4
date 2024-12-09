@@ -408,8 +408,10 @@ def relIsoOfBijective : Ideal S ≃o Ideal R where
   toFun := comap f
   invFun := map f
   left_inv := map_comap_of_surjective _ hf.2
-  right_inv J := le_antisymm (fun _ h ↦
-    have ⟨y, hy, eq⟩ := (mem_map_iff_of_surjective _ hf.2).mp h; hf.1 eq ▸ hy) le_comap_map
+  right_inv J :=
+    le_antisymm
+      (fun _ h ↦ have ⟨y, hy, eq⟩ := (mem_map_iff_of_surjective _ hf.2).mp h; hf.1 eq ▸ hy)
+      le_comap_map
   map_rel_iff' {_ _} := by
     refine ⟨fun h ↦ ?_, comap_mono⟩
     have := map_mono (f := f) h
