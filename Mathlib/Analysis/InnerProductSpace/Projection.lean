@@ -461,7 +461,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
     simp only [one_mul, LinearMap.coe_mk]
-    refine le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) ?_
+    refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 
@@ -978,6 +978,36 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
 
 variable (K)
 
+section FiniteDimensional
+
+open Module
+
+variable [FiniteDimensional 𝕜 K]
+
+@[simp]
+theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
+  by_cases hK : FiniteDimensional 𝕜 Kᗮ
+  swap
+  · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
+    exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
+  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_completeSpace
+  let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
+  have : LinearMap.toMatrix b b (e.symm ∘ₗ (reflection K).toLinearMap ∘ₗ e.symm.symm) =
+      Matrix.fromBlocks 1 0 0 (-1) := by
+    ext (_ | _) (_ | _) <;>
+    simp [LinearMap.toMatrix_apply, b, Matrix.one_apply, Finsupp.single_apply, e, eq_comm,
+      reflection_mem_subspace_eq_self, reflection_mem_subspace_orthogonalComplement_eq_neg]
+  rw [← LinearMap.det_conj _ e.symm, ← LinearMap.det_toMatrix b, this, Matrix.det_fromBlocks_zero₂₁,
+    Matrix.det_one, one_mul, Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
+
+@[simp]
+theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 Kᗮ := by
+  ext
+  rw [LinearEquiv.coe_det, Units.val_pow_eq_pow_val]
+  exact det_reflection K
+
+end FiniteDimensional
+
 -- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
@@ -1188,7 +1218,7 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (hc : IsComplete (↑(iSup V) : Set E)) : DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ := by
   haveI : CompleteSpace (↥(iSup V)) := hc.completeSpace_coe
-  simp only [DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top, hV.independent,
+  simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, Submodule.orthogonal_eq_bot_iff]
 
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
@@ -1231,7 +1261,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- Porting note: was in the previous `simp_rw`, no longer works
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
@@ -1255,7 +1285,7 @@ abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → 
     dsimp only
     letI := fun i => Classical.decEq (V i)
     rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
       exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)

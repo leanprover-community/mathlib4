@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Constructions
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -302,7 +303,7 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 `TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
-Porting note (#11215): TODO: the previous paragraph describes the state of the art in Lean 3.
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the previous paragraph describes the state of the art in Lean 3.
 We can have instance cycles in Lean 4 but we might want to
 postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where
@@ -383,7 +384,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
       (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
     choose y hyt hyu using this
     lift y to ∀ i : I, t i using hyt
-    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self ⟨I, y⟩⟩
+    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self (f := f) ⟨I, y⟩⟩
     simp only [f, dif_pos hi]
     exact hyu ⟨i, _⟩
 
@@ -477,7 +478,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
     refine ⟨range g, countable_range g, fun f hf ↦ mem_closure_iff.2 fun o ho hfo ↦ ?_⟩
     rcases isOpen_pi_iff.1 ho f hfo with ⟨I, u, huo, hI⟩
     rsuffices ⟨f, hf⟩ : ∃ f : (i : I) → c i, g ⟨I, f⟩ ∈ Set.pi I u
-    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self ⟨I, f⟩⟩
+    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self (f := g) ⟨I, f⟩⟩
     suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
       choose f hfu hfc using H
       refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩

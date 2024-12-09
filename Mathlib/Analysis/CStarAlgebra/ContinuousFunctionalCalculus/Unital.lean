@@ -414,7 +414,7 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     (spectrum R a).EqOn f g := by
   rw [cfc_apply f a, cfc_apply g a] at h
-  have := (cfcHom_isClosedEmbedding (show p a from ha) (R := R)).inj h
+  have := (cfcHom_isClosedEmbedding (show p a from ha) (R := R)).injective h
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 

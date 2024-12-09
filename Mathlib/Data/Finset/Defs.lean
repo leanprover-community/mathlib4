@@ -124,7 +124,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -212,6 +212,8 @@ instance partialOrder : PartialOrder (Finset α) where
   le_refl _ _ := id
   le_trans _ _ _ hst htu _ ha := htu <| hst ha
   le_antisymm _ _ hst hts := ext fun _ => ⟨@hst _, @hts _⟩
+
+theorem subset_of_le : s ≤ t → s ⊆ t := id
 
 instance : IsRefl (Finset α) (· ⊆ ·) :=
   show IsRefl (Finset α) (· ≤ ·) by infer_instance

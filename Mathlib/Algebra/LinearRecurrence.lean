@@ -3,7 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
@@ -96,7 +96,6 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   rw [mkSol]
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  simp only
   rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
   congr with k
   have : n - E.order + k < n := by

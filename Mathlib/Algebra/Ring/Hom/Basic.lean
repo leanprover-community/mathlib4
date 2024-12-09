@@ -3,8 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.Set.Basic
@@ -41,9 +40,6 @@ end
 section Semiring
 
 variable [Semiring α] [Semiring β]
-
-theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
-  IsUnit.map f
 
 protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f

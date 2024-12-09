@@ -8,9 +8,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
@@ -501,27 +499,6 @@ theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T 
 
 end Ring
 
-section CommRing
-
-variable [CommRing R]
-
-section ModByMonic
-
-variable {q : R[X]}
-
-theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
-    p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
-  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
-
-@[simp]
-theorem ker_modByMonicHom (hq : q.Monic) :
-    LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
-
-end ModByMonic
-
-end CommRing
-
 end Polynomial
 
 namespace Ideal
@@ -600,9 +577,9 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
-    LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
+    RingHom.ker (Polynomial.mapRingHom f) = f.ker.map (C : R →+* R[X]) := by
   ext
-  simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
+  simp only [RingHom.mem_ker, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
   simp [RingHom.mem_ker]
 
@@ -774,6 +751,38 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLE_eq_span_X_pow.symm⟩) _
 
 end CommRing
+
+end Ideal
+
+section Ideal
+
+open Submodule Set
+
+variable [Semiring R] {f : R[X]} {I : Ideal R[X]}
+
+/-- If the coefficients of a polynomial belong to an ideal, then that ideal contains
+the ideal spanned by the coefficients of the polynomial. -/
+theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
+    Ideal.span { g | ∃ i, g = C (f.coeff i) } ≤ I := by
+  simp only [@eq_comm _ _ (C _)]
+  exact (Ideal.span_le.trans range_subset_iff).mpr cf
+
+theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
+  let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
+  nth_rw 2 [(sum_C_mul_X_pow_eq f).symm]
+  refine Submodule.sum_mem _ fun n _hn => ?_
+  dsimp
+  have : C (coeff f n) ∈ p := by
+    apply subset_span
+    rw [mem_setOf_eq]
+    use n
+  have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
+  convert this using 1
+  simp only [monomial_mul_C, one_mul, smul_eq_mul]
+  rw [← C_mul_X_pow_eq_monomial]
+
+theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
+  Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
 
 end Ideal
 
@@ -950,8 +959,6 @@ theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
   simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum,
     support, coeff, ofFinsupp_eq_zero]
   exact Iff.rfl
-
-attribute [-instance] Ring.toNonAssocRing
 
 theorem disjoint_ker_aeval_of_coprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     Disjoint (LinearMap.ker (aeval f p)) (LinearMap.ker (aeval f q)) := by
@@ -1154,7 +1161,6 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     apply Ideal.mem_map_of_mem _
     exact hf m
 
-attribute [-instance] Ring.toNonAssocRing in
 theorem ker_map (f : R →+* S) :
     RingHom.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S) =
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by

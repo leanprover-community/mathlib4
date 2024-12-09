@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Noetherian.Basic
+
 /-!
 
 # Finitely Presented Modules
@@ -152,7 +156,8 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨s, hs, hs'⟩ := h
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -168,7 +173,8 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -200,7 +206,8 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
     rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
@@ -218,7 +225,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Submodule.comap_mono (f := π) (bot_le (a := LinearMap.ker l))
   rw [← inf_eq_right.mpr this, ← Submodule.range_subtype (LinearMap.ker _),
     ← Submodule.map_comap_eq, ← LinearMap.ker_comp, e, LinearMap.ker_comp f,
-    LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype _), Submodule.comap_bot]
+    LinearMap.ker_eq_bot.mpr (Submodule.injective_subtype (LinearMap.ker l)), Submodule.comap_bot]
   exact (Module.FinitePresentation.fg_ker f hf).map (Submodule.subtype _)
 
 end Ring
@@ -228,6 +235,36 @@ section CommRing
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 
+open TensorProduct in
+instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
+    Module.FinitePresentation A (A ⊗[R] M) := by
+  classical
+  obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
+  apply Module.finitePresentation_of_surjective (f.baseChange A)
+    (LinearMap.lTensor_surjective A hf)
+  have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
+    lTensor_exact A f.exact_subtype_ker_map hf
+  rw [LinearMap.exact_iff] at this
+  rw [this, ← Submodule.map_top]
+  apply Submodule.FG.map
+  have : Module.Finite R (LinearMap.ker f) :=
+    ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
+  exact Module.Finite.out (R := A) (M := A ⊗[R] LinearMap.ker f)
+
+open TensorProduct in
+lemma FinitePresentation.of_isBaseChange
+    {A} [CommRing A] [Algebra R A] [Module A N] [IsScalarTower R A N]
+    (f : M →ₗ[R] N) (h : IsBaseChange A f) [Module.FinitePresentation R M] :
+    Module.FinitePresentation A N :=
+  Module.finitePresentation_of_surjective
+    h.equiv.toLinearMap h.equiv.surjective (by simpa using Submodule.fg_bot)
+
+open TensorProduct in
+instance (S : Submonoid R) [Module.FinitePresentation R M] :
+    Module.FinitePresentation (Localization S) (LocalizedModule S M) :=
+  FinitePresentation.of_isBaseChange (LocalizedModule.mkLinearMap S M)
+    ((isLocalizedModule_iff_isBaseChange S _ _).mp inferInstance)
 
 lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     [h : Module.FinitePresentation R M] (g : M →ₗ[R] N') :
@@ -235,7 +272,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   obtain ⟨σ, hσ, τ, hτ⟩ := h
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=

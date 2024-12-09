@@ -73,7 +73,8 @@ end
 /-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
 is also a topological `R`-algebra.
 
-NB: This could be an instance but the signature makes it very expensive in search. See #15339
+NB: This could be an instance but the signature makes it very expensive in search.
+See https://github.com/leanprover-community/mathlib4/pull/15339
 for the regressions caused by making this an instance. -/
 theorem DiscreteTopology.instContinuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
@@ -623,7 +624,7 @@ instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
 /-- The coercion from an elemental algebra to the full algebra is a `IsClosedEmbedding`. -/
 theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x → A) where
   eq_induced := rfl
-  inj := Subtype.coe_injective
+  injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
 
 end Algebra.elemental

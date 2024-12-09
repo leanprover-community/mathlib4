@@ -66,6 +66,13 @@ lemma overEquiv_symm_top {X : C} (Y : Over X) :
     (overEquiv Y).symm ⊤ = ⊤ :=
   (overEquiv Y).injective (by simp)
 
+lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
+    R₁.overEquiv Y ≤ R₂.overEquiv Y ↔ R₁ ≤ R₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Sieve.functorPushforward_monotone _ _ h⟩
+  replace h : (overEquiv Y).symm (R₁.overEquiv Y) ≤ (overEquiv Y).symm (R₂.overEquiv Y) :=
+    Sieve.functorPullback_monotone _ _ h
+  simpa using h
+
 lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂) :
     overEquiv _ (S.pullback f) = (overEquiv _ S).pullback f.left := by
   ext Z g

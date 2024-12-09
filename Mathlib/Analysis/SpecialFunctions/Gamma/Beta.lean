@@ -292,7 +292,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
     · apply Continuous.continuousOn
       exact RCLike.continuous_ofReal.comp -- Porting note: was `continuity`
-        ((continuous_const.sub (continuous_id'.div_const ↑n)).pow n)
+        ((continuous_const.sub (continuous_id'.div_const (n : ℝ))).pow n)
   -- pointwise limit of f
   have f_tends : ∀ x : ℝ, x ∈ Ioi (0 : ℝ) →
       Tendsto (fun n : ℕ => f n x) atTop (𝓝 <| ↑(Real.exp (-x)) * (x : ℂ) ^ (s - 1)) := by
@@ -522,7 +522,8 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
   | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]
     specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
-    exact differentiableAt_id.mul (ihn.comp s <| differentiableAt_id.add_const _)
+    exact differentiableAt_id.mul (ihn.comp s (f := fun s => s + 1) <|
+      differentiableAt_id.add_const (1 : ℂ))
 
 end Complex
 

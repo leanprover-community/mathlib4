@@ -81,6 +81,45 @@ instance (priority := 50) DiscreteTopology.topologicalRing [TopologicalSpace α]
 
 section
 
+namespace NonUnitalSubsemiring
+
+variable [TopologicalSpace α] [NonUnitalSemiring α] [TopologicalSemiring α]
+
+instance instTopologicalSemiring (S : NonUnitalSubsemiring α) : TopologicalSemiring S :=
+  { S.toSubsemigroup.continuousMul, S.toAddSubmonoid.continuousAdd with }
+
+/-- The (topological) closure of a non-unital subsemiring of a non-unital topological semiring is
+itself a non-unital subsemiring. -/
+def topologicalClosure (s : NonUnitalSubsemiring α) : NonUnitalSubsemiring α :=
+  { s.toSubsemigroup.topologicalClosure, s.toAddSubmonoid.topologicalClosure with
+    carrier := _root_.closure (s : Set α) }
+
+@[simp]
+theorem topologicalClosure_coe (s : NonUnitalSubsemiring α) :
+    (s.topologicalClosure : Set α) = _root_.closure (s : Set α) :=
+  rfl
+
+theorem le_topologicalClosure (s : NonUnitalSubsemiring α) : s ≤ s.topologicalClosure :=
+  _root_.subset_closure
+
+theorem isClosed_topologicalClosure (s : NonUnitalSubsemiring α) :
+    IsClosed (s.topologicalClosure : Set α) := isClosed_closure
+
+theorem topologicalClosure_minimal (s : NonUnitalSubsemiring α) {t : NonUnitalSubsemiring α}
+    (h : s ≤ t) (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
+  closure_minimal h ht
+
+/-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
+topological closure.
+
+See note [reducible non-instances] -/
+abbrev nonUnitalCommSemiringTopologicalClosure [T2Space α] (s : NonUnitalSubsemiring α)
+    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
+  { NonUnitalSubsemiringClass.toNonUnitalSemiring s.topologicalClosure,
+    s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+
+end NonUnitalSubsemiring
+
 variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 
 instance : TopologicalSemiring (ULift α) where
@@ -230,6 +269,39 @@ theorem mulRight_continuous (x : α) : Continuous (AddMonoidHom.mulRight x) :=
   continuous_id.mul continuous_const
 
 end
+
+namespace NonUnitalSubring
+
+variable [NonUnitalRing α] [TopologicalRing α]
+
+instance instTopologicalRing (S : NonUnitalSubring α) : TopologicalRing S :=
+  { S.toSubsemigroup.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
+
+/-- The (topological) closure of a non-unital subring of a non-unital topological ring is
+itself a non-unital subring. -/
+def topologicalClosure (S : NonUnitalSubring α) : NonUnitalSubring α :=
+  { S.toSubsemigroup.topologicalClosure, S.toAddSubgroup.topologicalClosure with
+    carrier := _root_.closure (S : Set α) }
+
+theorem le_topologicalClosure (s : NonUnitalSubring α) : s ≤ s.topologicalClosure :=
+  _root_.subset_closure
+
+theorem isClosed_topologicalClosure (s : NonUnitalSubring α) :
+    IsClosed (s.topologicalClosure : Set α) := isClosed_closure
+
+theorem topologicalClosure_minimal (s : NonUnitalSubring α) {t : NonUnitalSubring α} (h : s ≤ t)
+    (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
+  closure_minimal h ht
+
+/-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
+topological closure.
+
+See note [reducible non-instances] -/
+abbrev nonUnitalCommRingTopologicalClosure [T2Space α] (s : NonUnitalSubring α)
+    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
+  { s.topologicalClosure.toNonUnitalRing, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
+
+end NonUnitalSubring
 
 variable [Ring α] [TopologicalRing α]
 

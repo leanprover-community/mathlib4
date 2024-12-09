@@ -88,7 +88,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `RingTheory.Jacobson`.
+in the file `Mathlib.RingTheory.Jacobson.Polynomial`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
     ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp
@@ -338,7 +338,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
     isMaximal_comap_of_isIntegral_of_isMaximal (R := Rₚ) (S := Sₚ) Qₚ
   refine ⟨comap (algebraMap S Sₚ) Qₚ, ⟨comap_isPrime _ Qₚ, ?_⟩⟩
   convert Localization.AtPrime.comap_maximalIdeal (I := P)
-  rw [comap_comap, ← LocalRing.eq_maximalIdeal Qₚ_max,
+  rw [comap_comap, ← IsLocalRing.eq_maximalIdeal Qₚ_max,
     ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
     (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) ]

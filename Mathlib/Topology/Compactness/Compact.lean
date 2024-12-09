@@ -221,7 +221,7 @@ theorem IsCompact.disjoint_nhdsSet_right {l : Filter X} (hs : IsCompact s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
--- Porting note (#11215): TODO: reformulate using `Disjoint`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `Disjoint`
 /-- For every directed family of closed sets whose intersection avoids a compact set,
 there exists a single element of the family which itself avoids this compact set. -/
 theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : IsCompact s)
@@ -237,7 +237,7 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
     simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
       mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using ht⟩
 
--- Porting note (#11215): TODO: reformulate using `Disjoint`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `Disjoint`
 /-- For every family of closed sets whose intersection avoids a compact set,
 there exists a finite subfamily whose intersection avoids this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
@@ -336,7 +336,7 @@ theorem isCompact_of_finite_subcover
   rw [subset_compl_comm, compl_iInter₂]
   simpa only [compl_compl]
 
--- Porting note (#11215): TODO: reformulate using `Disjoint`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `Disjoint`
 /-- A set `s` is compact if for every family of closed sets whose intersection avoids `s`,
 there exists a finite subfamily whose intersection avoids `s`. -/
 theorem isCompact_of_finite_subfamily_closed
@@ -488,7 +488,7 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 
--- Porting note (#11215): TODO: reformulate using `𝓝ˢ`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
@@ -698,7 +698,7 @@ theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
     _ = 𝓝ˢ (s ×ˢ K)         := (hs.nhdsSet_prod_eq hK).symm
     _ ≤ 𝓝ˢ (s ×ˢ Set.univ)  := nhdsSet_mono (prod_mono_right le_top)
 
-theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
+theorem prod_nhdsSet_le_of_disjoint_cocompact {t : Set Y} {f : Filter X} (ht : IsCompact t)
     (hf : Disjoint f (Filter.cocompact X)) :
     f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (Set.univ ×ˢ t) := by
   obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
@@ -708,6 +708,16 @@ theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
     _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t       := Filter.prod_mono_left _ principal_le_nhdsSet
     _ = 𝓝ˢ (K ×ˢ t)         := (hK.nhdsSet_prod_eq ht).symm
     _ ≤ 𝓝ˢ (Set.univ ×ˢ t)  := nhdsSet_mono (prod_mono_left le_top)
+
+theorem nhds_prod_le_of_disjoint_cocompact {f : Filter Y} (x : X)
+    (hf : Disjoint f (Filter.cocompact Y)) :
+    𝓝 x ×ˢ f ≤ 𝓝ˢ ({x} ×ˢ Set.univ) := by
+  simpa using nhdsSet_prod_le_of_disjoint_cocompact isCompact_singleton hf
+
+theorem prod_nhds_le_of_disjoint_cocompact {f : Filter X} (y : Y)
+    (hf : Disjoint f (Filter.cocompact X)) :
+    f ×ˢ 𝓝 y ≤ 𝓝ˢ (Set.univ ×ˢ {y}) := by
+  simpa using prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton hf
 
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
@@ -734,9 +744,6 @@ theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
 theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot f] :
     ∃ x, ClusterPt x f := by
   simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
-
-@[deprecated (since := "2024-01-28")]
-alias cluster_point_of_compact := exists_clusterPt_of_compactSpace
 
 nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
   rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩
@@ -869,6 +876,16 @@ theorem Filter.comap_cocompact_le {f : X → Y} (hf : Continuous f) :
   intro t ht
   refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
+
+/-- If a filter is disjoint from the cocompact filter, so is its image under any continuous
+function. -/
+theorem disjoint_map_cocompact {g : X → Y} {f : Filter X} (hg : Continuous g)
+    (hf : Disjoint f (Filter.cocompact X)) : Disjoint (map g f) (Filter.cocompact Y) := by
+  rw [← Filter.disjoint_comap_iff_map, disjoint_iff_inf_le]
+  calc
+    f ⊓ (comap g (cocompact Y))
+    _ ≤ f ⊓ Filter.cocompact X := inf_le_inf_left f (Filter.comap_cocompact_le hg)
+    _ = ⊥ := disjoint_iff.mp hf
 
 theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsCompact (range f) := by
   rw [← image_univ]; exact isCompact_univ.image hf

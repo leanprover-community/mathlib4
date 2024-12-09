@@ -129,6 +129,7 @@ end SubfieldClass
 /-- `Subfield R` is the type of subfields of `R`. A subfield of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
+@[stacks 09FD "second part"]
 structure Subfield (K : Type u) [DivisionRing K] extends Subring K where
   /-- A subfield is closed under multiplicative inverses. -/
   inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier

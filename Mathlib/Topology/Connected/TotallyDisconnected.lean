@@ -143,7 +143,7 @@ theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf
 
 lemma Topology.IsEmbedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : IsEmbedding f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
-  isTotallyDisconnected_of_image hf.continuous.continuousOn hf.inj h
+  isTotallyDisconnected_of_image hf.continuous.continuousOn hf.injective h
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.isTotallyDisconnected := IsEmbedding.isTotallyDisconnected

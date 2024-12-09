@@ -3,14 +3,9 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Livingston
 -/
-
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
-
 /-!
 # The category of abelian groups satisfies Grothendieck's axiom AB5
 
@@ -27,7 +22,7 @@ variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
 noncomputable instance :
     (colim (J := J) (C := AddCommGrp.{u})).PreservesHomology :=
-  Functor.preservesHomologyOfMapExact _ (fun S hS ↦ by
+  Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by
     replace hS := fun j => hS.map ((evaluation _ _).obj j)
     simp only [ShortComplex.ab_exact_iff_ker_le_range] at hS ⊢
     intro x (hx : _ = _)
@@ -45,10 +40,10 @@ noncomputable instance :
 
 noncomputable instance :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
-  apply Functor.preservesFiniteLimitsOfPreservesHomology
+  apply Functor.preservesFiniteLimits_of_preservesHomology
 
 instance : HasFilteredColimits (AddCommGrp.{u}) where
   HasColimitsOfShape := inferInstance
 
 noncomputable instance : AB5 (AddCommGrp.{u}) where
-  preservesFiniteLimits := fun _ => inferInstance
+  ofShape _ := { preservesFiniteLimits := inferInstance }

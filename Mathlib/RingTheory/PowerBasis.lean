@@ -53,7 +53,7 @@ This is a structure, not a class, since the same algebra can have many power bas
 For the common case where `S` is defined by adjoining an integral element to `R`,
 the canonical power basis is given by `{Algebra,IntermediateField}.adjoin.powerBasis`.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure PowerBasis (R S : Type*) [CommRing R] [Ring S] [Algebra R S] where
   gen : S

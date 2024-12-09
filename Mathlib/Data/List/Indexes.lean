@@ -3,7 +3,6 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Basic
 
 /-!
@@ -36,16 +35,11 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
   · apply pq; simp only [reverse_nil, base]
   · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
 
-@[deprecated (since := "2024-10-15")] alias mapIdxGo_append := mapIdx_go_append
 @[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
 
-theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
-    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
-  intros f l e
-  unfold mapIdx
-  rw [mapIdx_go_append]
-  simp only [mapIdx.go, Array.size_toArray, mapIdx_go_length, length_nil, Nat.add_zero,
-    Array.push_toList, Array.toList_toArray]
+theorem mapIdx_append_one : ∀ {f : ℕ → α → β} {l : List α} {e : α},
+    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] :=
+  mapIdx_concat
 
 @[local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
@@ -89,7 +83,7 @@ theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
 section deprecated
 
 /-- Lean3 `map_with_index` helper function -/
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected def oldMapIdxCore (f : ℕ → α → β) : ℕ → List α → List β
   | _, []      => []
   | k, a :: as => f k a :: List.oldMapIdxCore f (k + 1) as
@@ -97,12 +91,12 @@ protected def oldMapIdxCore (f : ℕ → α → β) : ℕ → List α → List �
 set_option linter.deprecated false in
 /-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected def oldMapIdx (f : ℕ → α → β) (as : List α) : List β :=
   List.oldMapIdxCore f 0 as
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
     l.oldMapIdxCore f n = l.oldMapIdx fun i a ↦ f (i + n) a := by
   induction' l with hd tl hl generalizing f n
@@ -111,7 +105,7 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
     simp only [List.oldMapIdxCore, hl, Nat.add_left_comm, Nat.add_comm, Nat.add_zero]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
     List.oldMapIdxCore f n (l₁ ++ l₂) =
     List.oldMapIdxCore f n l₁ ++ List.oldMapIdxCore f (n + l₁.length) l₂ := by
@@ -139,7 +133,7 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
       rw [Nat.add_assoc]; simp only [Nat.add_comm]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     List.oldMapIdx f (l ++ [e]) = List.oldMapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -148,7 +142,7 @@ protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (
   simp only [Nat.zero_add]; rfl
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-15")]
 protected theorem new_def_eq_old_def :
     ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = List.oldMapIdx f l := by
   intro f

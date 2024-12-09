@@ -42,7 +42,7 @@ universe u
 open CategoryTheory
 open scoped Topology
 
--- This was a global instance prior to #13170. We may experiment with removing it.
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
 attribute [local instance] ConcreteCategory.instFunLike
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/

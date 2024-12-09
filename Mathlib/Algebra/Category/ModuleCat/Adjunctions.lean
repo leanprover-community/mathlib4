@@ -15,6 +15,8 @@ the forgetful functor from `R`-modules to types.
 -/
 
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open CategoryTheory
@@ -34,9 +36,9 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {_ _} f := Finsupp.lmapDomain _ _ f
-  map_id := by intros; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
+  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ f
+  map_id := by intros; ext : 1; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros; ext : 1; exact Finsupp.lmapDomain_comp _ _ _ _
 
 variable {R}
 
@@ -47,13 +49,13 @@ noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
     (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
     f = g :=
-  (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
+  ModuleCat.hom_ext (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
 
 /-- The morphism of modules `(free R).obj X ⟶ M` corresponding
 to a map `f : X ⟶ M`. -/
 noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
-  Finsupp.lift M R X f
+  ofHom <| Finsupp.lift M R X f
 
 @[simp]
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
@@ -107,12 +109,11 @@ namespace FreeMonoidal
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
 def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
-  hom := Finsupp.lsingle PUnit.unit
-  inv := Finsupp.lapply PUnit.unit
+  hom := ofHom <| Finsupp.lsingle PUnit.unit
+  inv := ofHom <| Finsupp.lapply PUnit.unit
   hom_inv_id := by
-    ext x
-    dsimp
-    erw [Finsupp.lapply_apply, Finsupp.lsingle_apply, Finsupp.single_eq_same]
+    ext
+    simp [free]
   inv_hom_id := by
     ext ⟨⟩
     dsimp [freeMk]
@@ -211,7 +212,7 @@ universe v u
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
--- Porting note(#5171): Removed has_nonempty_instance nolint; linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/5171): Removed has_nonempty_instance nolint; linter not ported yet
 @[nolint unusedArguments]
 def Free (_ : Type*) (C : Type u) :=
   C
@@ -288,7 +289,7 @@ def embedding : C ⥤ Free R C where
   map {_ _} f := Finsupp.single f 1
   map_id _ := rfl
   map_comp {X Y Z} f g := by
-    -- Porting note (#10959): simp used to be able to close this goal
+    -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
     dsimp only []
     rw [single_comp_single, one_mul]
 

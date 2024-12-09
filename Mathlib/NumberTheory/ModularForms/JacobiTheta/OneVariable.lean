@@ -108,15 +108,11 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
     (fun τ => jacobiTheta τ - 1) =O[comap im atTop] fun τ => rexp (-π * τ.im) := by
   simp_rw [IsBigO, IsBigOWith, Filter.eventually_comap, Filter.eventually_atTop]
-  refine ⟨2 / (1 - rexp (-π)), 1, fun y hy τ hτ =>
+  refine ⟨2 / (1 - rexp (-(π * 1))), 1, fun y hy τ hτ =>
     (norm_jacobiTheta_sub_one_le (hτ.symm ▸ zero_lt_one.trans_le hy : 0 < im τ)).trans ?_⟩
-  rw [Real.norm_eq_abs, Real.abs_exp]
-  refine mul_le_mul_of_nonneg_right ?_ (exp_pos _).le
-  rw [div_le_div_left (zero_lt_two' ℝ), sub_le_sub_iff_left, exp_le_exp, neg_mul, neg_le_neg_iff]
-  · exact le_mul_of_one_le_right pi_pos.le (hτ.symm ▸ hy)
-  · rw [sub_pos, exp_lt_one_iff, neg_mul, neg_lt_zero]
-    exact mul_pos pi_pos (hτ.symm ▸ zero_lt_one.trans_le hy)
-  · rw [sub_pos, exp_lt_one_iff, neg_lt_zero]; exact pi_pos
+  rw [Real.norm_eq_abs, Real.abs_exp, hτ, neg_mul]
+  gcongr
+  simp [pi_pos]
 
 theorem differentiableAt_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ jacobiTheta τ := by
