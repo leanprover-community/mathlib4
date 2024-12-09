@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.GroupTheory.Nilpotent
+import Mathlib.GroupTheory.Transfer
 
 /-!
 # Z-Groups
@@ -19,6 +20,72 @@ TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' 
 and `G/G'` are cyclic of coprime orders.
 
 -/
+
+-- @[to_additive]
+-- theorem Subgroup.relindex_map_of_injective {G G' : Type*} [Group G] [Group G'] (H : Subgroup G)
+--     {f : G →* G'} (hf : Function.Injective f) :
+--     (H.map f).relindex f.range = H.index := by
+--   rw [← f.ker_eq_bot_iff] at hf
+--   have key : (H.map f).subgroupOf f.range = H.map f.rangeRestrict := by
+--     simp [Subgroup.ext_iff, mem_subgroupOf, Subtype.ext_iff]
+--   rw [relindex, key, H.index_map_eq f.rangeRestrict_surjective]
+--   rw [f.ker_rangeRestrict, hf]
+--   exact bot_le
+
+-- @[to_additive]
+-- theorem Subgroup.relindex_map_subtype {G : Type*} [Group G] {H : Subgroup G} (K : Subgroup H) :
+--     (K.map H.subtype).relindex H = K.index := by
+--   rw [← relindex_map_of_injective K H.subtype_injective, H.range_subtype]
+
+@[to_additive]
+theorem Subgroup.map_lt_map_iff_of_injective {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
+    (hf : Function.Injective f) {H K : Subgroup G} : H.map f < K.map f ↔ H < K := by
+  simp_rw [lt_iff_le_not_le, map_le_map_iff_of_injective hf]
+
+@[to_additive (attr := simp)]
+theorem Subgroup.map_subtype_lt_map_subtype {G : Type*} [Group G] {G' : Subgroup G}
+    {H K : Subgroup G'} : H.map G'.subtype < K.map G'.subtype ↔ H < K :=
+  map_lt_map_iff_of_injective G'.subtype_injective -- also clean up map_subtype_le_map_subtype
+
+theorem IsSolvable.commutator_lt_top_of_nontrivial (G : Type*) [Group G] [hG : IsSolvable G]
+    [Nontrivial G] : commutator G < ⊤ := by
+  obtain ⟨n, hn⟩ := hG
+  contrapose! hn
+  refine ne_of_eq_of_ne ?_ top_ne_bot
+  induction' n with n h
+  · exact derivedSeries_zero G
+  · rwa [derivedSeries_succ, h, ← commutator_def, ← not_lt_top_iff]
+
+theorem IsSolvable.commutator_lt_of_ne_bot {G : Type*} [Group G] [IsSolvable G]
+    {H : Subgroup G} (hH : H ≠ ⊥) : ⁅H, H⁆ < H := by
+  rw [← Subgroup.nontrivial_iff_ne_bot] at hH
+  rw [← H.range_subtype, MonoidHom.range_eq_map, ← Subgroup.map_commutator,
+    Subgroup.map_subtype_lt_map_subtype]
+  exact commutator_lt_top_of_nontrivial H
+
+theorem isSolvable_iff_commutator_lt {G : Type*} [Group G] [WellFoundedLT (Subgroup G)] :
+    IsSolvable G ↔ ∀ H : Subgroup G, H ≠ ⊥ → ⁅H, H⁆ < H := by
+  refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
+  suffices h : IsSolvable (⊤ : Subgroup G) from
+    solvable_of_surjective (MonoidHom.range_eq_top.mp (Subgroup.range_subtype ⊤))
+  refine WellFoundedLT.induction (C := fun (H : Subgroup G) ↦ IsSolvable H) (⊤ : Subgroup G) ?_
+  intro H hH
+  rcases eq_or_ne H ⊥ with rfl | h'
+  · apply isSolvable_of_subsingleton
+  · specialize h H h'
+    specialize hH ⁅H, H⁆ h
+    obtain ⟨n, hn⟩ := hH
+    use n + 1
+    rw [← (Subgroup.map_injective H.subtype_injective).eq_iff]
+    rw [← (Subgroup.map_injective ⁅H, H⁆.subtype_injective).eq_iff] at hn
+    rw [Subgroup.map_bot] at hn ⊢
+    rw [← hn]
+    clear hn
+    induction' n with n ih
+    · simp_rw [derivedSeries_succ, derivedSeries_zero, Subgroup.map_commutator,
+        ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+    · rw [derivedSeries_succ, Subgroup.map_commutator, ih, derivedSeries_succ,
+        Subgroup.map_commutator]
 
 variable (G G' : Type*) [Group G] [Group G'] (f : G →* G')
 
@@ -62,6 +129,8 @@ theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) 
 instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H) :=
   of_surjective (QuotientGroup.mk'_surjective H)
 
+variable (G)
+
 theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card G := by
   refine dvd_antisymm Group.exponent_dvd_nat_card ?_
   rw [← Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' Monoid.exponent_ne_zero_of_finite]
@@ -80,6 +149,33 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   obtain ⟨ϕ⟩ := ((isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
-  exact IsCyclic.of_exponent_eq_card exponent_eq_card
+  exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
+
+theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
+  let p := (Nat.card G).minFac
+  have hp : p.Prime := Nat.minFac_prime Finite.one_lt_card.ne'
+  have := Fact.mk hp
+  let P : Sylow p G := default
+  have hP := isZGroup p hp P
+  let f := MonoidHom.transferSylow P hP.normalizer_le_centralizer
+  let K := f.ker
+  have key : f.ker.IsComplement' P := hP.isComplement'
+  have key1 : commutator G ≤ f.ker := by
+    let _ := hP.commGroup
+    exact Abelianization.commutator_subset_ker f
+  have key2 : f.ker < ⊤ := by
+    rw [lt_top_iff_ne_top]
+    intro h
+    rw [h, Subgroup.isComplement'_top_left] at key
+    exact P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd key
+  exact lt_of_le_of_lt key1 key2
+
+instance [Finite G] [IsZGroup G] : IsSolvable G := by
+  rw [isSolvable_iff_commutator_lt]
+  intro H h
+  rw [← H.nontrivial_iff_ne_bot] at h
+  rw [← H.range_subtype, MonoidHom.range_eq_map, ← Subgroup.map_commutator,
+    Subgroup.map_subtype_lt_map_subtype]
+  exact commutator_lt H
 
 end IsZGroup

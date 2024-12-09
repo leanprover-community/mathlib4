@@ -244,3 +244,56 @@ theorem ker_transferSylow_disjoint (Q : Subgroup G) (hQ : IsPGroup p Q) :
 end BurnsideTransfer
 
 end MonoidHom
+
+@[to_additive]
+theorem Subgroup.relindex_dvd_card {G : Type*} [Group G] (H K : Subgroup G) :
+    H.relindex K ∣ Nat.card G :=
+  (H.subgroupOf K).index_dvd_card.trans K.card_subgroup_dvd_card
+
+namespace IsCyclic
+
+open Subgroup
+
+variable {G : Type*} [Group G] [Finite G] {P : Sylow (Nat.card G).minFac G}
+
+theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centralizer (P : Set G) := by
+  by_cases hn : Nat.card G = 1
+  · have := (Nat.card_eq_one_iff_unique.mp hn).1
+    rw [Subsingleton.elim P.normalizer (centralizer P)]
+  have := Fact.mk (Nat.minFac_prime hn)
+  have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
+  rw [normalizerMonoidHom_ker, ← index, ← relindex] at key
+  refine relindex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
+  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  rcases eq_zero_or_pos k with h0 | h0
+  · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
+    apply Nat.coprime_one_right
+  rw [hP.card_mulAut, hk, Nat.totient_prime_pow Fact.out h0]
+  refine (Nat.Coprime.pow_right _ ?_).mul_right ?_
+  · replace key : P.IsCommutative := by
+      let h := hP.commGroup
+      exact ⟨⟨CommGroup.mul_comm⟩⟩
+    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_of_le_left P.normalizer P.le_centralizer)
+    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_index_of_le P.le_normalizer)
+    rw [Nat.coprime_comm, Nat.Prime.coprime_iff_not_dvd Fact.out]
+    exact P.not_dvd_index
+  · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_card (centralizer P) P.normalizer)
+    have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
+    have h2 := Nat.gcd_le_right (m := Nat.card G) ((Nat.card G).minFac - 1)
+      (tsub_pos_iff_lt.mpr (Nat.minFac_prime hn).one_lt)
+    contrapose! h2
+    refine Nat.sub_one_lt_of_le (Nat.card G).minFac_pos (Nat.minFac_le_of_dvd ?_ h1)
+    exact (Nat.two_le_iff _).mpr ⟨ne_zero_of_dvd_ne_zero Nat.card_pos.ne' h1, h2⟩
+
+/-- A cyclic Sylow subgroup for the smallest prime has a normal complement. -/
+theorem isComplement' (hP : IsCyclic P) :
+    (MonoidHom.transferSylow P hP.normalizer_le_centralizer).ker.IsComplement' P := by
+  by_cases hn : Nat.card G = 1
+  · have := (Nat.card_eq_one_iff_unique.mp hn).1
+    rw [Subsingleton.elim (MonoidHom.transferSylow P hP.normalizer_le_centralizer).ker ⊥,
+      Subsingleton.elim P.1 ⊤]
+    exact isComplement'_bot_top
+  have := Fact.mk (Nat.minFac_prime hn)
+  exact MonoidHom.ker_transferSylow_isComplement' P hP.normalizer_le_centralizer
+
+end IsCyclic
