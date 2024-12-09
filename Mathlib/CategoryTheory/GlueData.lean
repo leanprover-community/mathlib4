@@ -466,7 +466,8 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
     delta GlueData'.t''
     split_ifs
     · simp [*]
-    · subst i; simp [‹k ≠ j›, *]
+    · cases ‹i ≠ j› (‹i = k›.trans ‹j = k›.symm)
+    · simp [‹j ≠ k›.symm, *]
     · simp [*]
     · simp [*, reassoc_of% D.t_fac]
   cocycle i j k := by

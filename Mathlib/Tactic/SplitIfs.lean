@@ -71,21 +71,12 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
     then return some (mkConst `True.intro)
   return none
 
-/-
-#adaptation_note
-
-This is a hacky adaptation for https://github.com/leanprover/lean4/pull/6123.
-It has the side effect of `split_ifs` unfolding lets.
--/
 /-- Simplifies if-then-else expressions after cases have been split out.
 -/
-private def reduceIfsAt (loc : Location) : TacticM Unit := withMainContext do
+private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let ctx ← Simp.mkContext
-    (config := { ctx.config with zeta := true, zetaDelta := true, failIfUnchanged := false })
-    (simpTheorems := ctx.simpTheorems)
-    (congrTheorems := ctx.congrTheorems)
-  let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add ``reduceCtorEq true) discharge? loc
+  let ctx := ctx.setFailIfUnchanged false
+  let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add `reduceCtorEq false) discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
