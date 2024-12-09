@@ -112,12 +112,13 @@ noncomputable abbrev d (b : B) : KaehlerDifferential f := (D f).d b
 lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
     (h : ∀ (b : B), α (d b) = β (d b)) : α = β := by
   rw [← sub_eq_zero]
-  have : ⊤ ≤ LinearMap.ker (α - β) := by
+  have : ⊤ ≤ LinearMap.ker (α - β).hom := by
     rw [← KaehlerDifferential.span_range_derivation, Submodule.span_le]
     rintro _ ⟨y, rfl⟩
-    rw [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, sub_eq_zero]
+    rw [SetLike.mem_coe, LinearMap.mem_ker, ModuleCat.hom_sub, LinearMap.sub_apply, sub_eq_zero]
     apply h
   rw [top_le_iff, LinearMap.ker_eq_top] at this
+  ext : 1
   exact this
 
 /-- The map `KaehlerDifferential f ⟶ (ModuleCat.restrictScalars g').obj (KaehlerDifferential f')`
@@ -133,6 +134,9 @@ noncomputable def map :
   letI := (g ≫ f').toAlgebra
   have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
   have := IsScalarTower.of_algebraMap_eq' fac
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
+  ModuleCat.ofHom (Y := (ModuleCat.restrictScalars g').obj (KaehlerDifferential f'))
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
     map_add' := by simp
     map_smul' := by simp }
@@ -163,7 +167,7 @@ morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
 noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
   letI := f.toAlgebra
   letI := Module.compHom M f
-  D.liftKaehlerDifferential
+  ofHom D.liftKaehlerDifferential
 
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by

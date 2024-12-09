@@ -741,8 +741,6 @@ namespace Quaternion
 
 variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
-export QuaternionAlgebra (re imI imJ imK)
-
 /-- Coercion `R → ℍ[R]`. -/
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
 
@@ -1188,7 +1186,7 @@ theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 
 instance instNontrivial : Nontrivial ℍ[R] where
-  exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
+  exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩
 
 instance : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=

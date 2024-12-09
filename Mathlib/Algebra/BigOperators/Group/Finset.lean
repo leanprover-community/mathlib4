@@ -426,6 +426,13 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
     (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+@[to_additive]
+theorem prod_filter_xor (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q] :
+    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+      (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
+  rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
+  rfl
+
 section ToList
 
 @[to_additive (attr := simp)]
@@ -2080,6 +2087,10 @@ theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
 end List
 
 namespace Multiset
+
+@[simp]
+lemma card_sum (s : Finset ι) (f : ι → Multiset α) : card (∑ i ∈ s, f i) = ∑ i ∈ s, card (f i) :=
+  map_sum cardHom ..
 
 theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     Disjoint l.sum a ↔ ∀ b ∈ l, Disjoint b a := by

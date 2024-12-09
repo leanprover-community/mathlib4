@@ -83,7 +83,7 @@ Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'
 conditions are stated in a less categorical way.
 -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
-structure GlueData extends GlueData TopCat where
+structure GlueData extends CategoryTheory.GlueData TopCat where
   f_open : ∀ i j, IsOpenEmbedding (f i j)
   f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.injective
 
