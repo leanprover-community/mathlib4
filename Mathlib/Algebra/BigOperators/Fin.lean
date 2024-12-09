@@ -410,27 +410,19 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   unfold finSumFinEquiv
   simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.instTrans_trans,
     Equiv.trans_apply, finCongr_apply, Fin.coe_cast]
-  generalize_proofs
-  rename_i pf1 _
+  conv  =>
+    enter [1,1,3]
+    apply Equiv.sumCongr_apply
   by_cases him : iv < m
-  · have : (Sigma.mk (β := (fun a ↦ Fin (n (Sum.elim _ _ a)))) _
-        (pf1.rec (motive := fun x _ ↦ Fin (n x)) j) = ⟨.inl (@Fin.mk m iv him), j⟩) := by
-      simp [Fin.addCases, him]
-    conv =>
-      enter [1,1,3]
-      apply Equiv.sumCongr_apply
-    simpa [this] using ih _
+  · conv in Sigma.mk _ _ =>
+      equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
+    simpa using ih _
   · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
     subst him
-    obtain ⟨w, this⟩ : ∃ (w : Eq _ (Fin (n ((Sum.inr 0).elim _ _)))),
-        (Sigma.mk (β := (fun a ↦ Fin (n _))) _
-        (pf1.rec (motive := fun x _ ↦ Fin (n x)) j) = ⟨_, w.rec j⟩) := by
-      simp [Fin.addCases, Fin.natAdd]
-    conv =>
-      enter [1,1,3]
-      apply Equiv.sumCongr_apply
-    simp [this]
-    congr
+    conv in Sigma.mk _ _ =>
+      equals ⟨Sum.inr 0, j⟩ => simp [Fin.addCases, Fin.natAdd]
+    simp
+    rfl
 
 /-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f`-/
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
