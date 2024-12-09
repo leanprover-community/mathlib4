@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Finite dimensional vector spaces
@@ -17,6 +18,9 @@ Definitions and results that require fewer imports are in
 `Mathlib.LinearAlgebra.FiniteDimensional.Defs`.
 
 -/
+
+assert_not_exists Monoid.exponent
+assert_not_exists Module.IsTorsion
 
 
 universe u v v'
