@@ -216,11 +216,11 @@ theorem nhds_zero_eq_of_basis [TopologicalSpace F] [TopologicalAddGroup F] (𝔖
     𝓝 (0 : UniformConvergenceCLM σ F 𝔖) =
       ⨅ (s : Set E) (_ : s ∈ 𝔖) (i : ι) (_ : p i),
         𝓟 {f : UniformConvergenceCLM σ F 𝔖 | MapsTo f s (b i)} := by
-  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
+  letI _u : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   rw [(isEmbedding_coeFn σ F 𝔖).isInducing.nhds_eq_comap,
     UniformOnFun.nhds_eq_of_basis _ _ h.uniformity_of_nhds_zero]
-  simp +zetaDelta [MapsTo]
+  simp [_u, MapsTo]
 
 theorem nhds_zero_eq [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
     𝓝 (0 : UniformConvergenceCLM σ F 𝔖) =

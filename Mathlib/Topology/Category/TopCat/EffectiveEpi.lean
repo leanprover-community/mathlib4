@@ -70,7 +70,7 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
     `TopCat.coequalizer_isOpen_iff` which characterises the open sets in a coequalizer. -/
   · ext U
     have : π ≫ i.hom = colimit.ι F WalkingParallelPair.one := by
-      simp +zetaDelta [i, ← Iso.eq_comp_inv]
+      simp [F, i, ← Iso.eq_comp_inv]
     rw [isOpen_coinduced (f := (homeoOfIso i ∘ π)), coequalizer_isOpen_iff _ U, ← this]
     rfl
 
