@@ -107,7 +107,7 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
-open ContDiff
+open scoped ContDiff
 
 universe u uE uF uG uX
 

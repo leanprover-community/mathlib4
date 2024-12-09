@@ -494,12 +494,10 @@ theorem contMDiffOn_zero_iff :
   refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
   intro x y
   rw [contDiffOn_zero]
-  apply ContinuousOn.comp (continuousOn_extChartAt _)
-  · apply ContinuousOn.comp h
-    · apply (continuousOn_extChartAt_symm _).mono inter_subset_left
-    · intro z hz
-      simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
-      exact hz.2.1
+  apply (continuousOn_extChartAt _).comp
+  · apply h.comp ((continuousOn_extChartAt_symm _).mono inter_subset_left) (fun z hz ↦ ?_)
+    simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
+    exact hz.2.1
   · intro z hz
     simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
     exact hz.2.2
