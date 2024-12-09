@@ -85,17 +85,30 @@ theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : Parti
 variable [IsManifold I 1 M]  in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
 chart, in the vector space, also has the unique derivative property. -/
-theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
-    UniqueDiffOn 𝕜 ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) := by
+theorem UniqueMDiffOn.uniqueMDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
+    UniqueMDiffOn 𝓘(𝕜, E) ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) := by
   -- this is just a reformulation of `UniqueMDiffOn.uniqueMDiffOn_preimage`, using as `e`
   -- the local chart at `x`.
-  apply UniqueMDiffOn.uniqueDiffOn
   rw [← PartialEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
   exact (hs.inter (chartAt H x).open_source).image_denseRange'
     (fun y hy ↦ hasMFDerivWithinAt_extChartAt hy.2)
     fun y hy ↦ ((mdifferentiable_chart _).mfderiv_surjective hy.2).denseRange
 
-variable [IsManifold I 1 M]  in
+variable [IsManifold I 1 M] in
+/-- If a set in a manifold has the unique derivative property, then its pullback by any extended
+chart, in the vector space, also has the unique derivative property. -/
+theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
+    UniqueDiffOn 𝕜 ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) :=
+  (hs.uniqueMDiffOn_target_inter x).uniqueDiffOn
+
+variable [IsManifold I 1 M] in
+theorem UniqueMDiffOn.uniqueDiffWithinAt_range_inter (hs : UniqueMDiffOn I s) (x : M) (y : E)
+    (hy : y ∈ (extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) :
+    UniqueDiffWithinAt 𝕜 (range I ∩ (extChartAt I x).symm ⁻¹' s) y := by
+  apply (hs.uniqueDiffOn_target_inter x y hy).mono
+  apply inter_subset_inter_left _ (extChartAt_target_subset_range x)
+
+variable [IsManifold I 1 M] in
 /-- When considering functions between manifolds, this statement shows up often. It entails
 the unique differential of the pullback in extended charts of the set where the function can
 be read in the charts. -/
