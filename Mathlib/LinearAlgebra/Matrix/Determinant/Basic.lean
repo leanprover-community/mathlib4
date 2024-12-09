@@ -516,11 +516,8 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   · rwa [hM', updateRow_ne (Fin.succ_ne_zero _).symm]
   intro i j
   rw [Function.update_apply]
-  #adaptation_note /-- lean4#6123: `split_ifs` is doing too much zetaDelta, so we `show` -/
   split_ifs with hik
-  · show M' i.succ j = N i.succ j + 0 * M' i.castSucc j
-    rw [zero_mul, add_zero, hM', hik, updateRow_self]
-  show M' i.succ j = N i.succ j + (c i) * M' i.castSucc j
+  · rw [zero_mul, add_zero, hM', hik, updateRow_self]
   rw [hM', updateRow_ne ((Fin.succ_injective _).ne hik), hsucc]
   by_cases hik2 : k < i
   · simp [hc i (Fin.succ_lt_succ_iff.mpr hik2)]

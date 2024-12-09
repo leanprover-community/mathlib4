@@ -50,10 +50,8 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
   erw [hsum, smul_eq_mul]
-  #adaptation_note /-- lean4#6123: `split_ifs` is doing too much zetaDelta, so we `show` -/
   split_ifs with h
   · simp only [h, zero_smul, zero_mul]
-  show 1 * (v j * v j) = w' j • (v j • ↑(w j) ^ (-(1 / 2)) * v j • ↑(w j) ^ (-(1 / 2)))
   have hww' : w' j = w j := by simp only [w, dif_neg h, Units.val_mk0]
   simp (config := {zeta := false}) only [one_mul, Units.val_mk0, smul_eq_mul]
   rw [hww']
