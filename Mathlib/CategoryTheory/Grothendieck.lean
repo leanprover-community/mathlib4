@@ -158,6 +158,14 @@ theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
   dsimp
   simp
 
+@[simp]
+theorem base_eqToHom {X Y : Grothendieck F} (h : X = Y) :
+    (eqToHom h).base = eqToHom (congrArg Grothendieck.base h) := by subst h; rfl
+
+@[simp]
+theorem fiber_eqToHom {X Y : Grothendieck F} (h : X = Y) :
+    (eqToHom h).fiber = eqToHom (by subst h; simp) := by subst h; rfl
+
 lemma eqToHom_eq {X Y : Grothendieck F} (hF : X = Y) :
     eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
   subst hF
@@ -461,15 +469,16 @@ Given a functor `F : C ⥤ Cat` and an equivalence of categories `G : D ≌ C`, 
 `pre F G.functor` is an equivalence between `Grothendieck (G.functor ⋙ F)` and `Grothendieck F`.
 -/
 def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F := by
-  refine Equivalence.mk (pre F G.functor) (preInv F G) ?_ ?_
+  refine ⟨(pre F G.functor), (preInv F G), ?_, ?_, ?_⟩
   · simp only [preInv, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq]
     erw [← Functor.assoc, pre_comp_map, Functor.assoc]
     simp only [Functor.assoc, ← pre_comp]
+    refine ?_ ≪≫ (Grothendieck.preUnitIso F G |> isoWhiskerLeft _)
+    apply eqToIso
     calc
       _ = map (𝟙 _) := map_id_eq.symm
       _ = map _ := ?_
       _ = map _ ⋙ map _ := map_comp_eq _ _
-      _ ≅ _ := Grothendieck.preUnitIso F G |> isoWhiskerLeft _
     congr
     ext X
     simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, Functor.id_obj,
@@ -478,6 +487,10 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
   · simp only [preInv, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq, Functor.assoc,
     ← pre_comp]
     exact preNatIso F G.counitIso.symm |>.symm
+  · intro X
+    simp only [preInv, Grothendieck.preUnitIso, eq_mpr_eq_cast, cast_eq, pre_id, id_eq,
+      Iso.trans_hom, eqToIso.hom, eqToHom_app, eqToHom_refl, isoWhiskerLeft_hom, NatTrans.comp_app]
+    fapply Grothendieck.ext <;> simp [preNatIso, transportIso]
 
 variable {F} in
 /--
