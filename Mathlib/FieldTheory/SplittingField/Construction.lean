@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Splitting fields

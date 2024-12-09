@@ -6,6 +6,7 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 import Mathlib.Data.List.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Minimum and maximum of lists
@@ -427,7 +428,7 @@ theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
 theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
-  exact get_mem l i w
+  exact getElem_mem _
 
 theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l.minimum_of_length_pos h ≤ l[i] :=

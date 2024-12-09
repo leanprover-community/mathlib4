@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Logic.Function.Iterate
@@ -27,6 +27,8 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 - self-maps $f\colon S^1\to  S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
+
+assert_not_exists Finset
 
 open Function Set
 
@@ -431,7 +433,7 @@ variable {G : Type*} [AddMonoid G] {a : G}
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
 @[simps! (config := .asFn)]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
-  toFun c := Multiplicative.toAdd c +ᵥ .id
+  toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
   map_mul' _ _ := by ext; apply add_assoc
 

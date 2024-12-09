@@ -449,3 +449,13 @@ example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
 end mod
+
+section num_den
+
+example : (6 / 15 : ℚ).num = 2 := by norm_num1
+example : (6 / 15 : ℚ).den = 5 := by norm_num1
+
+example : (-6 / 15 : ℚ).num = -2 := by norm_num1
+example : (-6 / 15 : ℚ).den = 5 := by norm_num1
+
+end num_den

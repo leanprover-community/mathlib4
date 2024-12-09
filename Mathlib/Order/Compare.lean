@@ -137,8 +137,7 @@ theorem cmp_swap [Preorder α] [@DecidableRel α (· < ·)] (a b : α) : (cmp a 
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂
 
--- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
-@[simp, nolint simpNF]
+@[simp]
 theorem cmpLE_toDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) :
     cmpLE (toDual x) (toDual y) = cmpLE y x :=
   rfl
@@ -148,8 +147,7 @@ theorem cmpLE_ofDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : αᵒᵈ) :
     cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
   rfl
 
--- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
-@[simp, nolint simpNF]
+@[simp]
 theorem cmp_toDual [LT α] [@DecidableRel α (· < ·)] (x y : α) :
     cmp (toDual x) (toDual y) = cmp y x :=
   rfl

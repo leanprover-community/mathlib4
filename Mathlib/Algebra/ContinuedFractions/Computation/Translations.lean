@@ -37,6 +37,7 @@ of three sections:
   parts.
 -/
 
+assert_not_exists Finset
 
 namespace GenContFract
 

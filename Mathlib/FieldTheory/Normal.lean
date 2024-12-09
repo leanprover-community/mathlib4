@@ -290,6 +290,10 @@ theorem AlgEquiv.restrictNormal_trans [Normal F E] :
 def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃ₐ[F] E :=
   MonoidHom.mk' (fun χ => χ.restrictNormal E) fun ω χ => χ.restrictNormal_trans ω E
 
+lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F L]
+    (σ : (K₁ ≃ₐ[F] K₁)) (x : L) : restrictNormalHom L σ x = σ x :=
+  AlgEquiv.restrictNormal_commutes σ L x
+
 variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an

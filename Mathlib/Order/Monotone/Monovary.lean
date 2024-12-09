@@ -70,6 +70,12 @@ theorem monovaryOn_univ : MonovaryOn f g univ ↔ Monovary f g :=
 theorem antivaryOn_univ : AntivaryOn f g univ ↔ Antivary f g :=
   ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
 
+lemma monovaryOn_iff_monovary : MonovaryOn f g s ↔ Monovary (fun i : s ↦ f i) fun i ↦ g i := by
+  simp [Monovary, MonovaryOn]
+
+lemma antivaryOn_iff_antivary : AntivaryOn f g s ↔ Antivary (fun i : s ↦ f i) fun i ↦ g i := by
+  simp [Antivary, AntivaryOn]
+
 protected theorem MonovaryOn.subset (hst : s ⊆ t) (h : MonovaryOn f g t) : MonovaryOn f g s :=
   fun _ hi _ hj => h (hst hi) (hst hj)
 
@@ -243,6 +249,30 @@ theorem monovaryOn_id_iff : MonovaryOn f id s ↔ MonotoneOn f s :=
 @[simp]
 theorem antivaryOn_id_iff : AntivaryOn f id s ↔ AntitoneOn f s :=
   antitoneOn_iff_forall_lt.symm
+
+lemma StrictMono.trans_monovary (hf : StrictMono f) (h : Monovary g f) : Monotone g :=
+  monotone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictMono.trans_antivary (hf : StrictMono f) (h : Antivary g f) : Antitone g :=
+  antitone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictAnti.trans_monovary (hf : StrictAnti f) (h : Monovary g f) : Antitone g :=
+  antitone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictAnti.trans_antivary (hf : StrictAnti f) (h : Antivary g f) : Monotone g :=
+  monotone_iff_forall_lt.2 fun _a _b hab ↦ h <| hf hab
+
+lemma StrictMonoOn.trans_monovaryOn (hf : StrictMonoOn f s) (h : MonovaryOn g f s) :
+    MonotoneOn g s := monotoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h ha hb <| hf ha hb hab
+
+lemma StrictMonoOn.trans_antivaryOn (hf : StrictMonoOn f s) (h : AntivaryOn g f s) :
+    AntitoneOn g s := antitoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h ha hb <| hf ha hb hab
+
+lemma StrictAntiOn.trans_monovaryOn (hf : StrictAntiOn f s) (h : MonovaryOn g f s) :
+    AntitoneOn g s := antitoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h hb ha <| hf ha hb hab
+
+lemma StrictAntiOn.trans_antivaryOn (hf : StrictAntiOn f s) (h : AntivaryOn g f s) :
+    MonotoneOn g s := monotoneOn_iff_forall_lt.2 fun _a ha _b hb hab ↦ h hb ha <| hf ha hb hab
 
 end PartialOrder
 

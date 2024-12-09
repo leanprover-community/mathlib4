@@ -35,11 +35,11 @@ variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 /-- This is the affine target morphism property where the source is affine and
 the induced map of rings on global sections satisfies `P`. -/
 def affineAnd : AffineTargetMorphismProperty :=
-  fun X _ f ↦ IsAffine X ∧ Q (f.app ⊤)
+  fun X _ f ↦ IsAffine X ∧ Q (f.appTop)
 
 @[simp]
 lemma affineAnd_apply {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] :
-    affineAnd Q f ↔ IsAffine X ∧ Q (f.app ⊤) :=
+    affineAnd Q f ↔ IsAffine X ∧ Q (f.appTop) :=
   Iff.rfl
 
 attribute [local simp] AffineTargetMorphismProperty.toProperty_apply
@@ -64,28 +64,29 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     constructor
     · simp only [Scheme.preimage_basicOpen, Opens.map_top]
       exact (isAffineOpen_top X).basicOpen _
-    · dsimp only [Opens.map_top]
-      rw [morphismRestrict_app, hPi.cancel_right_isIso, Scheme.Opens.ι_image_top]
+    · dsimp only
+      rw [morphismRestrict_appTop, hPi.cancel_right_isIso, Scheme.Opens.ι_image_top]
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map f (isAffineOpen_top X),
-        hPi.cancel_right_isIso]
-      haveI := (isAffineOpen_top X).isLocalization_basicOpen (f.app ⊤ r)
+        hPi.cancel_right_isIso, ← Scheme.Hom.appTop]
+      dsimp only [Opens.map_top]
+      haveI := (isAffineOpen_top X).isLocalization_basicOpen (f.appTop r)
       apply hQl
       exact hf
   of_basicOpenCover {X Y _} f s hs hf := by
     dsimp [affineAnd] at hf
     haveI : IsAffine X := by
-      apply isAffine_of_isAffineOpen_basicOpen (f.app ⊤ '' s)
-      · apply_fun Ideal.map (f.app ⊤) at hs
+      apply isAffine_of_isAffineOpen_basicOpen (f.appTop '' s)
+      · apply_fun Ideal.map (f.appTop) at hs
         rwa [Ideal.map_span, Ideal.map_top] at hs
       · rintro - ⟨r, hr, rfl⟩
         simp_rw [Scheme.preimage_basicOpen] at hf
         exact (hf ⟨r, hr⟩).left
-    refine ⟨inferInstance, hQs.ofIsLocalization' hPi (f.app ⊤) s hs fun a ↦ ?_⟩
-    refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.app ⊤ a.val)), inferInstance,
+    refine ⟨inferInstance, hQs.ofIsLocalization' hPi (f.appTop) s hs fun a ↦ ?_⟩
+    refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.appTop a.val)), inferInstance,
       inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
-    · exact (isAffineOpen_top X).isLocalization_basicOpen (f.app ⊤ a.val)
+    · exact (isAffineOpen_top X).isLocalization_basicOpen (f.appTop a.val)
     · obtain ⟨_, hf⟩ := hf a
-      rw [morphismRestrict_app, hPi.cancel_right_isIso, Scheme.Opens.ι_image_top] at hf
+      rw [morphismRestrict_appTop, hPi.cancel_right_isIso, Scheme.Opens.ι_image_top] at hf
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map _ (isAffineOpen_top X)] at hf
       rwa [hPi.cancel_right_isIso] at hf
 
@@ -96,7 +97,7 @@ lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
   haveI : (affineAnd Q).toProperty.RespectsIso := affineAnd_respectsIso hQi
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨hY, hg⟩
-  exact ⟨inferInstance, hQb.pullback_fst_app_top _ hQi f _ hg⟩
+  exact ⟨inferInstance, hQb.pullback_fst_appTop _ hQi f _ hg⟩
 
 lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
@@ -133,7 +134,7 @@ lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLo
       intro U
       have : IsAffine (f ⁻¹ᵁ U) := hf.isAffine_preimage U U.2
       rw [HasRingHomProperty.iff_of_isAffine (P := affineLocally Q),
-        morphismRestrict_app, hQ.respectsIso.cancel_right_isIso]
+        morphismRestrict_appTop, hQ.respectsIso.cancel_right_isIso]
       apply h
       rw [Scheme.Opens.ι_image_top]
       exact U.2
