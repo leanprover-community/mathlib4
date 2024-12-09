@@ -306,7 +306,7 @@ noncomputable def mapPiLocalizationIsMaximal :
     PiLocalizationIsMaximal R →+* PiLocalizationIsMaximal S :=
   Pi.ringHom fun I ↦ haveI := I.2.isPrime
     (Localization.localRingHom _ _ f rfl).comp <|
-      Pi.evalRingHom _ (⟨_, Ideal.comap.isMaximal f hf I.2⟩ : setOf _)
+      Pi.evalRingHom _ (⟨_, I.2.comap_bijective f hf⟩ : setOf _)
 
 theorem mapPiLocalizationIsMaximal_naturality :
     (mapPiLocalizationIsMaximal f hf).comp (toLocalizationIsMaximal R) =
