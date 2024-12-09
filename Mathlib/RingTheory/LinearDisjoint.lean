@@ -540,36 +540,6 @@ theorem _root_.Algebra.TensorProduct.nontrivial_of_field
     Nontrivial (A ⊗[F] B) :=
   Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left F A B (RingHom.injective _)
 
-section
-
-variable (R : Type*) [CommSemiring R] (A S T : Type*) [CommSemiring S] [CommSemiring T]
-  [Algebra R S] [Algebra R T] [CommSemiring A] [Algebra A S] [Algebra A T]
-  [SMulCommClass R A S] [TensorProduct.CompatibleSMul R A S T] (x : S ⊗[A] T)
-
-/-- TODO: remove once #19670 is merged -/
-def _root_.Algebra.TensorProduct.mapOfCompatibleSMul : S ⊗[A] T →ₐ[A] S ⊗[R] T where
-  __ := TensorProduct.mapOfCompatibleSMul R S T A
-  map_one' := rfl
-  map_mul' x y := by
-    dsimp
-    induction x with
-    | zero => simp
-    | tmul u v =>
-      induction y with
-      | zero => simp
-      | tmul w z => simp
-      | add w z hw hz => rw [left_distrib, map_add, hw, hz, map_add, left_distrib]
-    | add u v hu hv => rw [right_distrib, map_add, hu, hv, map_add, right_distrib]
-  map_zero' := rfl
-  commutes' _ := rfl
-
-/-- TODO: remove once #19670 is merged -/
-@[simp] theorem _root_.Algebra.TensorProduct.mapOfCompatibleSMul_tmul (m n) :
-    _root_.Algebra.TensorProduct.mapOfCompatibleSMul R A S T (m ⊗ₜ n) = m ⊗ₜ n :=
-  rfl
-
-end
-
 -- TODO: move to suitable place
 variable (R) in
 /-- If `A`, `B` are `R`-algebras, `R` injects into `A` and `B`,
