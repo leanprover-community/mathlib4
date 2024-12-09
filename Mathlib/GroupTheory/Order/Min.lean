@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.GroupTheory.Torsion
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Minimum order of an element

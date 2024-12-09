@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Matrix and vector notation
