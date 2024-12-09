@@ -162,6 +162,9 @@ protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
 
 alias ⟨Finite.of_not_infinite, Finite.not_infinite⟩ := not_infinite_iff_finite
 
+instance Bool.instFinite : Finite Bool := .intro finTwoEquiv.symm
+instance Prop.instFinite : Finite Prop := .of_equiv _ Equiv.propEquivBool.symm
+
 section Set
 
 /-!

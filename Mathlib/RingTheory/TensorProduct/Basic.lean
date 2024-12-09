@@ -902,6 +902,15 @@ theorem map_comp [Algebra S C] [IsScalarTower R S C]
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
+lemma map_id_comp (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
+    map (AlgHom.id S A) (g₂.comp g₁) = (map (AlgHom.id S A) g₂).comp (map (AlgHom.id S A) g₁) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+lemma map_comp_id [Algebra S C] [IsScalarTower R S C]
+    (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) :
+    map (f₂.comp f₁) (AlgHom.id R E) = (map f₂ (AlgHom.id R E)).comp (map f₁ (AlgHom.id R E)) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
 @[simp]
 theorem map_comp_includeLeft (f : A →ₐ[S] B) (g : C →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=

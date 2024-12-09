@@ -213,6 +213,8 @@ instance partialOrder : PartialOrder (Finset α) where
   le_trans _ _ _ hst htu _ ha := htu <| hst ha
   le_antisymm _ _ hst hts := ext fun _ => ⟨@hst _, @hts _⟩
 
+theorem subset_of_le : s ≤ t → s ⊆ t := id
+
 instance : IsRefl (Finset α) (· ⊆ ·) :=
   show IsRefl (Finset α) (· ≤ ·) by infer_instance
 

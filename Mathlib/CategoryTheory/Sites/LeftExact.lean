@@ -44,55 +44,61 @@ def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type m
         dsimp [diagramNatTrans]
         simp only [Multiequalizer.lift_ι, Category.assoc] }
 
+/-- Auxiliary definition for `liftToDiagramLimitObj`. -/
+def liftToDiagramLimitObjAux {X : C} {K : Type max v u} [SmallCategory K] [HasLimitsOfShape K D]
+    {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
+    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W))
+    (i : (unop W).Arrow) :
+    E.pt ⟶ (limit F).obj (op i.Y) :=
+  (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) (limit.isLimit F)).lift
+        (coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation.{w, v, u} i E)
+
+@[reassoc (attr := simp)]
+lemma liftToDiagramLimitObjAux_fac {X : C} {K : Type max v u} [SmallCategory K]
+    [HasLimitsOfShape K D] {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
+    (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W))
+    (i : (unop W).Arrow) (k : K) :
+    liftToDiagramLimitObjAux F E i ≫ (limit.π F k).app (op i.Y) = E.π.app k ≫
+      Multiequalizer.ι ((unop W).index (F.obj k)) i :=
+  IsLimit.fac _ _ _
+
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
 abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLimitsOfShape K D]
     {W : (J.Cover X)ᵒᵖ} (F : K ⥤ Cᵒᵖ ⥤ D)
     (E : Cone (F ⋙ J.diagramFunctor D X ⋙ (evaluation (J.Cover X)ᵒᵖ D).obj W)) :
     E.pt ⟶ (J.diagram (limit F) X).obj W :=
-  Multiequalizer.lift ((unop W).index (limit F)) E.pt
-    (fun i => (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op i.Y)) (limit.isLimit F)).lift
-        (coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation.{w, v, u} i E))
+  Multiequalizer.lift ((unop W).index (limit F)) E.pt (liftToDiagramLimitObjAux F E)
     (by
       intro i
-      change (_ ≫ _) ≫ _ = (_ ≫ _) ≫ _
-      dsimp [evaluateCombinedCones]
-      erw [Category.comp_id, Category.comp_id, Category.assoc, Category.assoc, ←
-        (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← Category.assoc, ←
-        Category.assoc]
-      congr 1
-      refine limit.hom_ext (fun j => ?_)
-      erw [Category.assoc, Category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
-        limit.lift_π_assoc, Category.assoc, Category.assoc, Multiequalizer.condition]
+      dsimp
+      ext k
+      dsimp
+      simp only [Category.assoc, NatTrans.naturality, liftToDiagramLimitObjAux_fac_assoc]
+      erw [Multiequalizer.condition]
       rfl)
 
 instance preservesLimit_diagramFunctor
     (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
-  preservesLimitOfEvaluation _ _ fun W =>
-    preservesLimitOfPreservesLimitCone (limit.isLimit _)
+  preservesLimit_of_evaluation _ _ fun W =>
+    preservesLimit_of_preserves_limit_cone (limit.isLimit _)
       { lift := fun E => liftToDiagramLimitObj.{w, v, u} F E
         fac := by
           intro E k
           dsimp [diagramNatTrans]
           refine Multiequalizer.hom_ext _ _ _ (fun a => ?_)
-          simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc]
-          change (_ ≫ _) ≫ _ = _
-          dsimp [evaluateCombinedCones]
-          erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
-          rfl
+          simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc,
+            liftToDiagramLimitObjAux_fac]
         uniq := by
           intro E m hm
           refine Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => ?_))
-          delta liftToDiagramLimitObj
-          erw [Multiequalizer.lift_ι, Category.assoc]
-          change _ = (_ ≫ _) ≫ _
-          dsimp [evaluateCombinedCones]
-          erw [Category.comp_id, Category.assoc, ← NatTrans.comp_app, limit.lift_π, limit.lift_π]
+          dsimp [liftToDiagramLimitObj]
+          rw [Multiequalizer.lift_ι, Category.assoc, liftToDiagramLimitObjAux_fac, ← hm,
+            Category.assoc]
           dsimp
-          rw [← hm]
-          dsimp [diagramNatTrans]
-          simp }
+          rw [limit.lift_π]
+          dsimp }
 
 instance preservesLimitsOfShape_diagramFunctor
     (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] :
@@ -169,8 +175,8 @@ instance preservesLimitsOfShape_plusFunctor
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
     PreservesLimitsOfShape K (J.plusFunctor D) := by
-  constructor; intro F; apply preservesLimitOfEvaluation; intro X
-  apply preservesLimitOfPreservesLimitCone (limit.isLimit F)
+  constructor; intro F; apply preservesLimit_of_evaluation; intro X
+  apply preservesLimit_of_preserves_limit_cone (limit.isLimit F)
   refine ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, ?_, ?_⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
@@ -196,21 +202,21 @@ instance preservesLimitsOfShape_plusFunctor
 instance preserveFiniteLimits_plusFunctor
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.plusFunctor D) := by
-  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
+  apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{max v u}
   intro K _ _
-  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply preservesLimitsOfShape_plusFunctor.{w, v, u}
 
 instance preservesLimitsOfShape_sheafification
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
     PreservesLimitsOfShape K (J.sheafification D) :=
-  Limits.compPreservesLimitsOfShape _ _
+  Limits.comp_preservesLimitsOfShape _ _
 
 instance preservesFiniteLimits_sheafification
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.sheafification D) :=
-  Limits.compPreservesFiniteLimits _ _
+  Limits.comp_preservesFiniteLimits _ _
 
 end CategoryTheory.GrothendieckTopology
 
@@ -240,16 +246,16 @@ instance preservesLimitsOfShape_presheafToSheaf :
     · intro j j'
       show Fintype (ULift _)
       infer_instance
-  refine @preservesLimitsOfShapeOfEquiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
-  constructor; intro F; constructor; intro S hS
+  refine @preservesLimitsOfShape_of_equiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
+  constructor; intro F; constructor; intro S hS; constructor
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
-    reflectsLimitsOfShapeOfReflectsIsomorphisms
+    reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply isLimitOfPreserves (J.sheafification D) hS
 
 instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
-  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
+  apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{max v u}
   intros
   infer_instance
 

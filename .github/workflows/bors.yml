@@ -14,6 +14,14 @@ on:
 
 name: continuous integration (staging)
 
+env:
+  # Disable Lake's automatic fetching of cloud builds.
+  # Lake's cache is currently incompatible with Mathlib's `lake exe cache`.
+  # This is because Mathlib's Cache assumes all build aritfacts present in the build directory
+  # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
+  # not necessarily satisfy this property.
+  LAKE_NO_CACHE: true
+
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
@@ -129,15 +137,6 @@ jobs:
         run: |
           lake build cache
 
-      - name: prune ProofWidgets .lake
-        run: |
-          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
-          # but also `.oleans`, which may have been built with the wrong toolchain.
-          # This removes them.
-          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
-          rm -rf .lake/packages/proofwidgets/.lake/build/lib
-          rm -rf .lake/packages/proofwidgets/.lake/build/ir
-
       - name: get cache
         id: get
         run: |
@@ -165,6 +164,10 @@ jobs:
           linters: gcc
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+
+      - name: print the sizes of the oleans
+        run: |
+          du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -250,10 +253,20 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
-      - name: verify `lake exe graph` works
-        run: |
-          lake exe graph
-          rm import_graph.dot
+      - name: generate our import graph
+        run: lake exe graph
+
+      - name: upload the import graph
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-graph
+          path: import_graph.dot
+          ## the default is 90, but we build often, so unless there's a reason
+          ## to care about old copies in the future, just say 7 days for now
+          retention-days: 7
+
+      - name: clean up the import graph file
+        run: rm import_graph.dot
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
@@ -266,7 +279,7 @@ jobs:
         with:
           linters: gcc
           run:
-            lake test
+            lake --iofail test
 
       - name: check for unused imports
         id: shake

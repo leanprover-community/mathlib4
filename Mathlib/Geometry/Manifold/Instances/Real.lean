@@ -14,16 +14,18 @@ or with boundary or with corners. As a concrete example, we construct explicitly
 boundary structure on the real interval `[x, y]`.
 
 More specifically, we introduce
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
+* `modelWithCornersEuclideanHalfSpace n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `modelWithCornersEuclideanQuadrant n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 ## Notations
 
 In the locale `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
-* `𝓡∂ n` for `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)`.
+* `𝓡∂ n` for `modelWithCornersEuclideanHalfSpace n`.
 
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
@@ -42,7 +44,7 @@ noncomputable section
 
 open Set Function
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
@@ -98,6 +100,7 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
   rw [f.interior_preimage, interior_Ici]
   apply Function.surjective_eval
+
 @[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
 
 open ENNReal in
@@ -108,6 +111,7 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ici]
   apply Function.surjective_eval
+
 @[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
 open ENNReal in
@@ -118,6 +122,7 @@ theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) 
   change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ioi]
   apply Function.surjective_eval
+
 @[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
 
 open ENNReal in

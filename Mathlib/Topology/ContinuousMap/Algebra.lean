@@ -351,20 +351,20 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn, nhds_prod_eq]
+    rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
-        ((tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
-          (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
+        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+          (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     intro f
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn]
+    rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn]
     exact fun K hK =>
       uniformContinuous_inv.comp_tendstoUniformlyOn
-        (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
+        (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
 
 /-- If an infinite product of functions in `C(α, β)` converges to `g`
 (for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
