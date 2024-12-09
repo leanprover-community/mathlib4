@@ -44,10 +44,18 @@ jobs:
           LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
           echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_ENV"
 
+      - name: Set branch ref
+        run: |
+          if [ "${{ matrix.branch_type }}" == "master" ]; then
+            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> $GITHUB_ENV
+          fi
+
       - name: Checkout branch or tag
         uses: actions/checkout@v4
         with:
-          ref: ${{ matrix.branch_type == 'master' && env.DEFAULT_BRANCH || env.LATEST_TAG }}
+          ref: ${{ env.BRANCH_REF }}
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -90,12 +98,11 @@ jobs:
           lake env lean4checker/.lake/build/bin/lean4checker Batteries Mathlib
 
       - name: Run mathlib_test_executable
-        id: test_executable
+        id: mathlib-test
         run: |
           lake exe mathlib_test_executable
 
       - name: Post success message for lean4checker on Zulip
-        # Same success notification for lean4checker
         if: steps.lean4checker.outcome == 'success'
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -106,10 +113,10 @@ jobs:
           type: 'stream'
           topic: 'lean4checker'
           content: |
-            ✅ lean4checker [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ matrix.branch_type == 'master' && 'master' || env.LATEST_TAG }})
+            ✅ lean4checker [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
       - name: Post success message for mathlib_test_executable on Zulip
-        if: steps.test_executable.outcome == 'success'
+        if: steps.mathlib-test.outcome == 'success'
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -119,10 +126,9 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable'
           content: |
-            ✅ mathlib_test_executable [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ matrix.branch_type == 'master' && 'master' || env.LATEST_TAG }})
+            ✅ mathlib_test_executable [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
       - name: Post failure message for lean4checker on Zulip
-        # Same failure notification for lean4checker
         if: steps.lean4checker.outcome == 'failure'
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -133,11 +139,11 @@ jobs:
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
-            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ matrix.branch_type == 'master' && 'master' || env.LATEST_TAG }})
+            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
         continue-on-error: true
 
       - name: Post failure message for mathlib_test_executable on Zulip
-        if: steps.test_executable.outcome == 'failure'
+        if: steps.mathlib-test.outcome == 'failure'
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -147,5 +153,5 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
-            ❌ mathlib_test_executable [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ matrix.branch_type == 'master' && 'master' || env.LATEST_TAG }})
+            ❌ mathlib_test_executable [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
         continue-on-error: true
