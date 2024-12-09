@@ -335,14 +335,15 @@ set_option linter.unusedVariables.funArgs false in
 @[nolint unusedArguments]
 def Mathlib.IneqZeroResult.cast
     {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
-    {inst₁ : Q(PartialOrder $α₁)}
-    {inst₂ : Q(PartialOrder $α₂)}
+    {inst₁ : Q(StrictOrderedCommSemiring $α₁)}
+    {inst₂ : Q(StrictOrderedCommSemiring $α₂)}
     (hu : u₁ =QL u₂ := by first | exact .rfl | assumption)
     (hα : $α₁ =Q $α₂ := by first | exact .rfl | assumption)
     (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption)
-    (h : Mathlib.IneqZeroResult α₁ inst₁):
-    Mathlib.IneqZeroResult α₂ inst₂ :=
+    (h : Mathlib.IneqZeroResult α₁ q($inst₁)):
+    Mathlib.IneqZeroResult α₂ q($inst₂) :=
   let ⟨ineq, x, h⟩ := h
+  let _ := hinst
   -- TODO: why does `hinst` not work here?
   { ineq, x, pf := h.cast hu hα (hinst := .unsafeIntro) (hb := .unsafeIntro) }
 
