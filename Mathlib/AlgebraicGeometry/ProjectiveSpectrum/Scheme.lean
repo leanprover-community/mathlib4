@@ -603,6 +603,16 @@ lemma awayToSection_germ (f x hx) :
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
   apply Proj.stalkIso'_germ
 
+lemma awayToSection_apply (f : A) (x p) :
+    (((ProjectiveSpectrum.Proj.awayToSection 𝒜 f).1 x).val p).val =
+      IsLocalization.map (M := Submonoid.powers f) (T := p.1.1.toIdeal.primeCompl) _
+        (RingHom.id _) (Submonoid.powers_le.mpr p.2) x.val := by
+  obtain ⟨x, rfl⟩ := HomogeneousLocalization.mk_surjective x
+  show (HomogeneousLocalization.mapId 𝒜 _ _).val = _
+  dsimp [HomogeneousLocalization.mapId, HomogeneousLocalization.map]
+  rw [Localization.mk_eq_mk', Localization.mk_eq_mk', IsLocalization.map_mk']
+  rfl
+
 /--
 The ring map from `A⁰_ f` to the global sections of the structure sheaf of the projective spectrum
 of `A` restricted to the basic open set `D(f)`.

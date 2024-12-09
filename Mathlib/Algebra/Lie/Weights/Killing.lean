@@ -112,8 +112,8 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
     (mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
       mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L β γ hy
   classical
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpace K H L)
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (LieSubmodule.iSupIndep_iff_coe_toSubmodule.mp <| iSupIndep_genWeightSpace K H L)
     (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_genWeightSpace_eq_top K H L)
   exact LinearMap.trace_eq_zero_of_mapsTo_ne hds σ hσ hf
 

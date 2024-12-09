@@ -35,7 +35,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits Presieve
+open Category Limits Presieve
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C]
 variable (C)

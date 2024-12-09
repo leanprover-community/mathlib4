@@ -502,7 +502,7 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
 @[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
 instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr (NeZero.ne μ)
+  let ⟨K, hK, h2K⟩ := Regular.exists_isCompact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 /-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
@@ -510,7 +510,7 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regul
 instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
     [InnerRegular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr (NeZero.ne μ)
+  let ⟨K, hK, h2K⟩ := InnerRegular.exists_isCompact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 @[to_additive]
@@ -764,7 +764,12 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  isHaarMeasure_map μ e he e.surjective f.isClosedEmbedding.tendsto_cocompact
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/6024
+  we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
+  -/
+  isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map

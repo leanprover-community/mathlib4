@@ -603,7 +603,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
   ext v w
   constructor <;> simp +contextual
 
-@[mono]
+@[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
   simp +contextual only [fromEdgeSet_adj, Ne, not_false_iff,

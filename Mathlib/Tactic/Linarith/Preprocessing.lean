@@ -30,7 +30,7 @@ namespace Linarith
 
 /-! ### Preprocessing -/
 
-open Lean hiding Rat
+open Lean
 open Elab Tactic Meta
 open Qq
 open Mathlib
@@ -205,8 +205,8 @@ and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
   match ← (← inferType e).ineq? with
-  | (Ineq.le, _) => try? <| mkAppM ``sub_nonpos_of_le #[e]
-  | (Ineq.lt, _) => try? <| mkAppM ``sub_neg_of_lt #[e]
+  | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
+  | (Ineq.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
   | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
 
 /--
@@ -250,7 +250,8 @@ def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
-      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      guard <| lhs.containsConst <| fun n =>
+        n = ``HDiv.hDiv || n = ``Div.div || n = ``Inv.inv || n == ``OfScientific.ofScientific
       pure [← normalizeDenominatorsLHS pf lhs])
     <|> return [pf]
 end cancelDenoms
@@ -273,12 +274,12 @@ partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
   | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
     | some 2 => do
       let s ← findSquares s a
-      let ai ← AtomM.addAtom a
+      let (ai, _) ← AtomM.addAtom a
       return (s.insert (ai, true))
     | _ => e.foldlM findSquares s
   | (``HMul.hMul, #[_, _, _, _, a, b]) => do
-    let ai ← AtomM.addAtom a
-    let bi ← AtomM.addAtom b
+    let (ai, _) ← AtomM.addAtom a
+    let (bi, _) ← AtomM.addAtom b
     if ai = bi then do
       let s ← findSquares s a
       return (s.insert (ai, false))

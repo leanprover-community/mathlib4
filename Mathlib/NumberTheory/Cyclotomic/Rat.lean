@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-import Mathlib.RingTheory.Ideal.Norm
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields

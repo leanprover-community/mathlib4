@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.Module.PID
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Data.ZMod.Quotient
 
 /-!
