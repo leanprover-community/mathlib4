@@ -48,6 +48,8 @@ abbrev of (R : Type u) [Semiring R] : SemiRingCat :=
 lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
   rfl
 
+lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
+
 variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
@@ -185,6 +187,8 @@ abbrev of (R : Type u) [Ring R] : RingCat :=
 lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
   rfl
 
+lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
+
 variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
@@ -321,6 +325,8 @@ abbrev of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
 
 lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
   rfl
+
+lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 
 variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
@@ -461,6 +467,8 @@ abbrev of (R : Type u) [CommRing R] : CommRingCat :=
 
 lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
   rfl
+
+lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 
 variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/

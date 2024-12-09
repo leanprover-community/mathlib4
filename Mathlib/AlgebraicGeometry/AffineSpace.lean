@@ -165,8 +165,6 @@ def homOverEquiv : { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤))
     · rw [homOfVector_appTop_coord]
   right_inv v := by ext i; simp [-TopologicalSpace.Opens.map_top, homOfVector_appTop_coord]
 
-lemma CommRingCat.of_carrier {R : CommRingCat.{u}} : CommRingCat.of R = R := rfl
-
 variable (n) in
 /--
 The affine space over an affine base is isomorphic to the spectrum of the polynomial ring.
