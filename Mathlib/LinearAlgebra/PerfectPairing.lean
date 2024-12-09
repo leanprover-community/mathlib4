@@ -261,11 +261,11 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   suffices span K (Set.range v') = ⊤ by
     let e := (Module.Finite.finite_basis b).equivFin
     let b' : Basis _ K M' := Basis.mk hv' (by rw [this])
-    exact ⟨_, b.reindex e, b'.reindex e, fun i ↦ by simp +zetaDelta [b, b']⟩
+    exact ⟨_, b.reindex e, b'.reindex e, fun i ↦ by simp [b, b', v']⟩
   suffices span K v = M' by
     apply Submodule.map_injective_of_injective M'.injective_subtype
     rw [Submodule.map_span, ← Set.image_univ, Set.image_image]
-    simpa +zetaDelta
+    simpa [v']
   refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
   rw [hN] at hw₂

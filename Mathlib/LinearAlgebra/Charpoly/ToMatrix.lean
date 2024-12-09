@@ -69,7 +69,7 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     _ = det (scalar ι' X - C.mapMatrix (φ₁ P * φ₂ A' * φ₃ Q)) := by
       rw [reindexLinearEquiv_mul, reindexLinearEquiv_mul]
     _ = det (scalar ι' X - C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
-      simp +zetaDelta [φ₂]
+      simp [φ₁, φ₂, φ₃, ι']
     _ = det (scalar ι' X * C.mapMatrix (φ₁ P) * C.mapMatrix (φ₃ Q) -
           C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
       rw [Matrix.mul_assoc ((scalar ι') X), hPQ, Matrix.mul_one]
