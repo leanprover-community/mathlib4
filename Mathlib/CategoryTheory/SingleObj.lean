@@ -80,12 +80,12 @@ See <https://stacks.math.columbia.edu/tag/0019>.
 -/
 instance groupoid : Groupoid (SingleObj G) where
   inv x := x⁻¹
-  inv_comp := mul_right_inv
-  comp_inv := mul_left_inv
+  inv_comp := mul_inv_cancel
+  comp_inv := inv_mul_cancel
 
 theorem inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
   apply IsIso.inv_eq_of_hom_inv_id
-  rw [comp_as_mul, inv_mul_self, id_as_one]
+  rw [comp_as_mul, inv_mul_cancel, id_as_one]
 
 /-- Abbreviation that allows writing `CategoryTheory.SingleObj.star` rather than
 `Quiver.SingleObj.star`.
@@ -142,11 +142,11 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   map {x y} _ := f y * (f x)⁻¹
   map_id := by
     intro
-    simp only [SingleObj.id_as_one, mul_right_inv]
+    simp only [SingleObj.id_as_one, mul_inv_cancel]
   map_comp := by
     intros
     dsimp
-    rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_self, mul_one]
+    rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_cancel, mul_one]
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
 induces a functor `SingleObj M ⥤ C`. -/
@@ -242,7 +242,7 @@ def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
   map {x y} f := SingleObj.mapHom x y f
 
-instance toCat_full : toCat.Full  where
+instance toCat_full : toCat.Full where
   map_surjective := (SingleObj.mapHom _ _).surjective
 
 instance toCat_faithful : toCat.Faithful where

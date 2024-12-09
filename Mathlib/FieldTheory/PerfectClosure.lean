@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.FieldTheory.Perfect
 
 /-!
@@ -80,7 +81,7 @@ viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 
-theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
+theorem mk_surjective : Function.Surjective (mk K p) := Quot.mk_surjective
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
   Eq.symm <| Quot.sound (R.intro m x)
@@ -92,7 +93,6 @@ theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) 
 variable {K p}
 
 /-- Lift a function `ℕ × K → L` to a function on `PerfectClosure K p`. -/
--- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
 def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
   Quot.liftOn x f hf
@@ -224,12 +224,17 @@ instance instZero : Zero (PerfectClosure K p) :=
 theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
   rfl
 
+/-- Prior to https://github.com/leanprover-community/mathlib4/pull/15862, this lemma was called `mk_zero_zero`.
+See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 @[simp]
-theorem mk_zero_zero : mk K p (0, 0) = 0 :=
+theorem mk_zero : mk K p 0 = 0 :=
   rfl
 
+@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
+
 -- Porting note: improved proof structure
-theorem mk_zero (n : ℕ) : mk K p (n, 0) = 0 := by
+@[simp]
+theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih
   · rfl
   rw [← ih]
@@ -243,7 +248,7 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
   induction' m with m ih
-  · simp only [Nat.zero_eq, zero_add, iterate_zero_apply]
+  · simp only [zero_add, iterate_zero_apply]
   rw [ih, Nat.succ_add, iterate_succ']
   apply Quot.sound
   apply R.intro
@@ -267,10 +272,10 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
           simp only [iterate_map_zero, iterate_zero_apply, add_zero]
-    sub_eq_add_neg := fun a b => rfl
-    add_left_neg := fun e =>
+    sub_eq_add_neg := fun _ _ => rfl
+    neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
-        simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, add_left_neg, mk_zero]
+        simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
@@ -284,11 +289,11 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
     zero_mul := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero]
+      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero_right]
     mul_zero := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero]
+      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero_right]
     left_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
@@ -312,7 +317,7 @@ theorem mk_eq_iff (x y : ℕ × K) :
     mk K p x = mk K p y ↔ ∃ z, (frobenius K p)^[y.1 + z] x.2 = (frobenius K p)^[x.1 + z] y.2 := by
   constructor
   · intro H
-    replace H := Quot.exact _ H
+    replace H := Quot.eqvGen_exact H
     induction H with
     | rel x y H => cases' H with n x; exact ⟨0, rfl⟩
     | refl H => exact ⟨0, rfl⟩
@@ -399,7 +404,7 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
 instance instReduced : IsReduced (PerfectClosure K p) where
   eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
     replace h : mk K p x ^ p ^ n = 0 := by
-      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
+      rw [← Nat.sub_add_cancel ((n.lt_pow_self (Fact.out : p.Prime).one_lt).le),
         pow_add, h, mul_zero]
     simp only [zero_def, mk_pow, mk_eq_iff, zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
     obtain ⟨m, h⟩ := h
@@ -488,10 +493,12 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     rw [mk_inv, mk_mul_mk]
     refine (eq_iff K p _ _).2 ?_
     simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
-    rw [mul_inv_cancel this, iterate_map_one]
+    rw [mul_inv_cancel₀ this, iterate_map_one]
   inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
   nnqsmul := _
+  nnqsmul_def := fun _ _  => rfl
   qsmul := _
+  qsmul_def := fun _ _ => rfl
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),

@@ -3,8 +3,9 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
 
 /-!
 # Denominators of evaluation of polynomials at ratios
@@ -87,7 +88,7 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[
         rw [eq_intCast, one_div_mul_cancel]
         rw [Int.cast_ne_zero]
         exact b0.ne.symm)
-  obtain Fa := _root_.congr_arg abs hF
+  obtain Fa := congr_arg abs hF
   rw [eq_one_div_of_mul_eq_one_left bu, eq_intCast, eq_intCast, abs_mul] at Fa
   rw [abs_of_pos (pow_pos (Int.cast_pos.mpr b0) _ : 0 < (b : K) ^ _), one_div, eq_intCast] at Fa
   rw [div_eq_mul_inv, ← Fa, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]

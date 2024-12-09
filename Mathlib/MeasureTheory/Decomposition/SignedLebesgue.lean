@@ -6,7 +6,7 @@ Authors: Kexing Ying
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Decomposition.Jordan
-import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
 # Lebesgue decomposition
@@ -46,7 +46,7 @@ open scoped Classical MeasureTheory NNReal ENNReal
 
 open Set
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 
@@ -126,7 +126,7 @@ theorem singularPart_mutuallySingular (s : SignedMeasure α) (μ : Measure α) :
   · obtain ⟨i, hi, hpos, hneg⟩ := s.toJordanDecomposition.mutuallySingular
     rw [s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ] at hpos
     rw [s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ] at hneg
-    rw [add_apply, add_eq_zero_iff] at hpos hneg
+    rw [add_apply, add_eq_zero] at hpos hneg
     exact ⟨i, hi, hpos.1, hneg.1⟩
   · rw [not_haveLebesgueDecomposition_iff] at hl
     cases' hl with hp hn

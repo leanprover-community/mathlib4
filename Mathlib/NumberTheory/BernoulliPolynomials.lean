@@ -175,8 +175,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
-  have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by
-    norm_cast
+  have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by norm_cast
   apply (mul_right_inj' nz).1
   rw [← smul_eq_mul, ← eval_smul, bernoulli_eq_sub_sum, mul_add, ← smul_eq_mul, ← eval_smul,
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]

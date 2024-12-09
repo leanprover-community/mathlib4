@@ -65,7 +65,7 @@ noncomputable section
 
 open Set Inv Function TopologicalSpace MeasurableSpace
 
-open scoped NNReal Classical ENNReal Pointwise Topology
+open scoped NNReal ENNReal Pointwise Topology
 
 namespace MeasureTheory
 
@@ -82,10 +82,6 @@ variable {G : Type*} [Group G]
 
 
 namespace haar
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
 
 /-- The index or Haar covering number or ratio of `K` w.r.t. `V`, denoted `(K : V)`:
   it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
@@ -163,6 +159,7 @@ theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty)
 theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
     (hV : (interior V).Nonempty) :
     index (K : Set G) V ≤ index (K : Set G) K₀ * index (K₀ : Set G) V := by
+  classical
   obtain ⟨s, h1s, h2s⟩ := index_elim K.isCompact K₀.interior_nonempty
   obtain ⟨t, h1t, h2t⟩ := index_elim K₀.isCompact hV
   rw [← h2s, ← h2t, mul_comm]
@@ -176,7 +173,8 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
 @[to_additive addIndex_pos]
 theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonempty) :
     0 < index (K : Set G) V := by
-  unfold index; rw [Nat.sInf_def, Nat.find_pos, mem_image]
+  classical
+  rw [index, Nat.sInf_def, Nat.find_pos, mem_image]
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     show g ∈ (∅ : Set G)
@@ -193,6 +191,7 @@ theorem index_mono {K K' V : Set G} (hK' : IsCompact K') (h : K ⊆ K') (hV : (i
 @[to_additive addIndex_union_le]
 theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty) :
     index (K₁.1 ∪ K₂.1) V ≤ index K₁.1 V + index K₂.1 V := by
+  classical
   rcases index_elim K₁.2 hV with ⟨s, h1s, h2s⟩
   rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
@@ -200,12 +199,13 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
   apply union_subset <;> refine Subset.trans (by assumption) ?_ <;>
     apply biUnion_subset_biUnion_left <;> intro g hg <;> simp only [mem_def] at hg <;>
-    simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true_iff, true_or_iff]
+    simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true, true_or]
 
 @[to_additive addIndex_union_eq]
 theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty)
     (h : Disjoint (K₁.1 * V⁻¹) (K₂.1 * V⁻¹)) :
     index (K₁.1 ∪ K₂.1) V = index K₁.1 V + index K₂.1 V := by
+  classical
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have :
@@ -216,7 +216,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
-    · simp only [Finset.mem_filter, h1g₀, true_and_iff]; use g
+    · simp only [Finset.mem_filter, h1g₀, true_and]; use g
       simp only [hg, h2g₀, mem_inter_iff, mem_preimage, and_self_iff]
     exact h2g₀
   refine
@@ -265,7 +265,7 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
 @[to_additive add_prehaar_le_addIndex]
 theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G)
     (hU : (interior U).Nonempty) : prehaar (K₀ : Set G) U K ≤ index (K : Set G) K₀ := by
-  unfold prehaar; rw [div_le_iff] <;> norm_cast
+  unfold prehaar; rw [div_le_iff₀] <;> norm_cast
   · apply le_index_mul K₀ K hU
   · exact index_pos K₀ hU
 
@@ -280,7 +280,7 @@ theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).N
 theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.1) :
     prehaar (K₀ : Set G) U K₁ ≤ prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_le_div_right]
+  simp only [prehaar]; rw [div_le_div_iff_of_pos_right]
   · exact mod_cast index_mono K₂.2 h hU
   · exact mod_cast index_pos K₀ hU
 
@@ -293,7 +293,7 @@ theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).
 theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Compacts G)
     (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_add_div_same, div_le_div_right]
+  simp only [prehaar]; rw [div_add_div_same, div_le_div_iff_of_pos_right]
   · exact mod_cast index_union_le K₁ K₂ hU
   · exact mod_cast index_pos K₀ hU
 
@@ -340,11 +340,6 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
 /-!
 ### Lemmas about `chaar`
 -/
-
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
 
 /-- This is the "limit" of `prehaar K₀ U K` as `U` becomes a smaller and smaller open
   neighborhood of `(1 : G)`. More precisely, it is defined to be an arbitrary element
@@ -437,7 +432,7 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
     mem_of_subset_of_mem _
       (chaar_mem_clPrehaar K₀
         ⟨⟨V⁻¹, (h2V₁.inter h2V₂).preimage continuous_inv⟩, by
-          simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and_iff]⟩)
+          simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and]⟩)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨h1U, h2U, h3U⟩, rfl⟩
     simp only [eval, mem_preimage, sub_eq_zero, mem_singleton_iff]; rw [eq_comm]
@@ -462,10 +457,6 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
     simp only [eval, mem_singleton_iff, mem_preimage, sub_eq_zero]
     apply is_left_invariant_prehaar; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
 
 /-- The function `chaar` interpreted in `ℝ≥0`, as a content -/
 @[to_additive "additive version of `MeasureTheory.Measure.haar.haarContent`"]
@@ -518,12 +509,7 @@ open haar
 ### The Haar measure
 -/
 
-
 variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
-
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
 
 /-- The Haar measure on the locally compact group `G`, scaled so that `haarMeasure K₀ K₀ = 1`. -/
 @[to_additive
@@ -590,9 +576,9 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
   · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 
 /-- `haar` is some choice of a Haar measure, on a locally compact group. -/
-@[to_additive (attr := reducible)
+@[to_additive
 "`addHaar` is some choice of a Haar measure, on a locally compact additive group."]
-noncomputable def haar [LocallyCompactSpace G] : Measure G :=
+noncomputable abbrev haar [LocallyCompactSpace G] : Measure G :=
   haarMeasure <| Classical.arbitrary _
 
 /-! Steinhaus theorem: if `E` has positive measure, then `E / E` contains a neighborhood of zero.

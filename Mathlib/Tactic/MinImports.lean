@@ -3,6 +3,7 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Init
 import ImportGraph.Imports
 
 /-! # `#min_imports in` a command to find minimal imports
@@ -112,6 +113,56 @@ def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
       | .error .. => pure ()
   return new
 
+/-- `previousInstName nm` takes as input a name `nm`, assuming that it is the name of an
+auto-generated "nameless" `instance`.
+If `nm` ends in `..._n`, where `n` is a number, it returns the same name, but with `_n` replaced
+by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
+-/
+def previousInstName : Name → Name
+  | nm@(.str init tail) =>
+    let last := tail.takeRightWhile (· != '_')
+    let newTail := match last.toNat? with
+                    | some (n + 2) => s!"_{n + 1}"
+                    | _ => ""
+    let newTailPrefix := tail.dropRightWhile (· != '_')
+    if newTailPrefix.isEmpty then nm else
+    let newTail :=
+      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+    .str init newTail
+  | nm => nm
+
+/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+declaration names that are implied by
+* the `SyntaxNodeKinds`,
+* the attributes of `cmd` (if there are any),
+* the identifiers contained in `cmd`,
+* if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
+The argument `id` is expected to be an identifier.
+It is used either for the internally generated name of a "nameless" `instance` or when parsing
+an identifier representing the name of a declaration.
+
+Note that the return value does not contain dependencies of the dependencies;
+you can use `Lean.NameSet.transitivelyUsedConstants` to get those.
+-/
+def getAllDependencies (cmd id : Syntax) :
+    CommandElabM NameSet := do
+  let env ← getEnv
+  let id1 ← getId cmd
+  let ns ← getCurrNamespace
+  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
+  let nm ← liftCoreM do (
+    -- try the visible name or the current "nameless" `instance` name
+    realizeGlobalConstNoOverload id1 <|>
+    -- otherwise, guess what the previous "nameless" `instance` name was
+    realizeGlobalConstNoOverload id2 <|>
+    -- failing everything, use the current namespace followed by the visible name
+    return ns ++ id1.getId)
+  -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
+  return getVisited env nm
+              |>.append (getVisited env id.getId)
+              |>.append (getSyntaxNodeKinds cmd)
+              |>.append (getAttrs env cmd)
+
 /--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
@@ -125,26 +176,18 @@ an identifier representing the name of a declaration.
 def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     CommandElabM NameSet := do
   let env ← getEnv
-  let id1 ← getId cmd
-  let ns ← getCurrNamespace
-  let nm ← liftCoreM do (realizeGlobalConstNoOverload id1 <|> return ns ++ id1.getId)
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
-  let ts := getVisited env nm
-              |>.append (getVisited env id.getId)
-              |>.append (getSyntaxNodeKinds cmd)
-              |>.append (getAttrs env cmd)
+  let ts ← getAllDependencies cmd id
   if dbg? then dbg_trace "{ts.toArray.qsort Name.lt}"
-  let mut hm : HashMap Nat Name := {}
+  let mut hm : Std.HashMap Nat Name := {}
   for imp in env.header.moduleNames do
     hm := hm.insert ((env.getModuleIdx? imp).getD default) imp
   let mut fins : NameSet := {}
-  for t1 in ts do
-    let tns := t1::(← resolveGlobalName t1).map Prod.fst
-    for t in tns do
-      let new := match env.getModuleIdxFor? t with
-        | some t => (hm.find? t).get!
-        | none   => .anonymous -- instead of `getMainModule`, we omit the current module
-      if !fins.contains new then fins := fins.insert new
+  for t in ts do
+    let new := match env.getModuleIdxFor? t with
+      | some t => (hm.get? t).get!
+      | none   => .anonymous -- instead of `getMainModule`, we omit the current module
+    if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous
 
 /-- `getIrredundantImports env importNames` takes an `Environment` and a `NameSet` as inputs.
@@ -168,15 +211,14 @@ It is used to provide the internally generated name for "nameless" `instance`s.
 def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
     let tot := getIrredundantImports (← getEnv) (← getAllImports stx id)
     let fileNames := tot.toArray.qsort Name.lt
-    --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
-syntax (name := minImpsStx) "#min_imports in" command : command
+syntax (name := minImpsStx) "#min_imports" "in" command : command
 
 @[inherit_doc minImpsStx]
-syntax "#min_imports in" term : command
+syntax "#min_imports" "in" term : command
 
 elab_rules : command
   | `(#min_imports in $cmd:command) => do

@@ -38,13 +38,9 @@ scheme, cantor scheme, lusin scheme, approximation.
 
 -/
 
-
 namespace CantorScheme
 
-open List Function Filter Set PiNat
-
-open scoped Classical
-open Topology
+open List Function Filter Set PiNat Topology
 
 variable {β α : Type*} (A : List β → Set α)
 

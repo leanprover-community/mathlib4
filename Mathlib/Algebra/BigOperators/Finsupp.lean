@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Indicator
 
@@ -22,7 +22,7 @@ noncomputable section
 open Finset Function
 
 variable {α ι γ A B C : Type*} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
-variable {t : ι → A → C} (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y)
+variable {t : ι → A → C}
 variable {s : Finset α} {f : α → ι →₀ A} (i : ι)
 variable (g : ι →₀ A) (k : ι → A → γ → B) (x : γ)
 variable {β M M' N P G H R S : Type*}
@@ -61,7 +61,7 @@ theorem prod_single_index {a : α} {b : M} {h : α → M → N} (h_zero : h a 0 
     (single a b).prod h = h a b :=
   calc
     (single a b).prod h = ∏ x ∈ {a}, h x (single a b x) :=
-      prod_of_support_subset _ support_single_subset h fun x hx =>
+      prod_of_support_subset _ support_single_subset h fun _ hx =>
         (mem_singleton.1 hx).symm ▸ h_zero
     _ = h a b := by simp
 
@@ -86,22 +86,17 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq]
 
-/- Porting note: simpnf linter, added aux lemma below
-Left-hand side simplifies from
-  Finsupp.sum f fun x v => if a = x then v else 0
-to
-  if ↑f a = 0 then 0 else ↑f a
--/
--- @[simp]
 theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
   classical
     convert f.sum_ite_eq a fun _ => id
     simp [ite_eq_right_iff.2 Eq.symm]
 
--- Porting note: Added this thm to replace the simp in the previous one. Need to add [DecidableEq N]
+/--
+The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
+-/
 @[simp]
-theorem sum_ite_self_eq_aux [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
+theorem if_mem_support [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (if a ∈ f.support then f a else 0) = f a := by
   simp only [mem_support_iff, ne_eq, ite_eq_left_iff, not_not]
   exact fun h ↦ h.symm
@@ -113,8 +108,7 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq']
 
--- Porting note (#10618): simp can prove this
--- @[simp]
+/-- A restatement of `sum_ite_self_eq` with the equality test reversed. -/
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
@@ -133,7 +127,7 @@ result of `onFinset` is the same as multiplying it over the original `Finset`. -
       result of `onFinset` is the same as summing it over the original `Finset`."]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
-  Finset.prod_subset support_onFinset_subset <| by simp (config := { contextual := true }) [*]
+  Finset.prod_subset support_onFinset_subset <| by simp +contextual [*]
 
 /-- Taking a product over `f : α →₀ M` is the same as multiplying the value on a single element
 `y ∈ f.support` by the product over `erase y f`. -/
@@ -249,12 +243,12 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
   finset_sum_apply _ _ _
 
 -- Porting note: inserted ⇑ on the rhs
-theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
+@[simp, norm_cast] theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
 
 -- Porting note: inserted ⇑ on the rhs
-theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
+@[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
   coe_finset_sum _ _
 
@@ -268,9 +262,10 @@ theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
     (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
   rw [← Finset.sup_eq_biUnion]
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · rfl
-  · rw [Finset.sum_cons, Finset.sup_cons]
+  induction s using Finset.cons_induction_on with
+  | h₁ => rfl
+  | h₂ _ ih =>
+    rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
 @[simp]
@@ -345,9 +340,8 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
     ext
     simp [singleAddHom]
   right_inv F := by
-  -- Porting note: This was `ext` and used the wrong lemma
-    apply Finsupp.addHom_ext'
-    simp [singleAddHom, AddMonoidHom.comp, Function.comp]
+    ext
+    simp [singleAddHom, AddMonoidHom.comp, Function.comp_def]
   map_add' F G := by
     ext x
     exact sum_add
@@ -406,8 +400,6 @@ theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → 
   ext
   simp
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero
@@ -547,12 +539,13 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
   congr
 
 @[to_additive]
-lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
+lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
     {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
     (a : α) (ha : a ∈ f.support)
     (h : g a (f a) * n₁ = g a (f a) * n₂) :
-    f.prod g * n₁ = f.prod g * n₂ :=
-  Finset.prod_mul_eq_prod_mul_of_exists a ha h
+    f.prod g * n₁ = f.prod g * n₂ := by
+  classical
+  exact Finset.prod_mul_eq_prod_mul_of_exists a ha h
 
 end Finsupp
 
@@ -562,15 +555,11 @@ theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _
 
-section
-
-open scoped Classical
-
-theorem Finsupp.sum_sum_index' : (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t :=
-  Finset.induction_on s rfl fun a s has ih => by
+theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
+    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
+  classical
+  exact Finset.induction_on s rfl fun a s has ih => by
     simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
-
-end
 
 section
 

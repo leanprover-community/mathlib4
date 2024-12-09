@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
@@ -122,7 +122,7 @@ instance : Inhabited (ColimitType F) := by
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
-  mul := Quotient.map₂ mul fun x x' rx y y' ry =>
+  mul := Quotient.map₂ mul fun _ x' rx y _ ry =>
     Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
   one_mul := Quotient.ind fun _ => Quotient.sound <| Relation.one_mul _
   mul_one := Quotient.ind fun _ => Quotient.sound <| Relation.mul_one _
@@ -212,14 +212,17 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
-    induction' x using Quot.inductionOn with x
-    induction' x with j x x y hx hy
-    · change _ = s.ι.app j _
+    induction x using Quot.inductionOn with | h x => ?_
+    induction x with
+    | of j =>
+      change _ = s.ι.app j _
       rw [← w j]
       rfl
-    · rw [quot_one, map_one]
+    | one =>
+      rw [quot_one, map_one]
       rfl
-    · rw [quot_mul, map_mul, hx, hy]
+    | mul x y hx hy =>
+      rw [quot_mul, map_mul, hx, hy]
       dsimp [descMorphism, DFunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
 

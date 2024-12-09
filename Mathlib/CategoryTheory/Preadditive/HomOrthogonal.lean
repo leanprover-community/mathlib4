@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
@@ -130,7 +130,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
   split_ifs with h
   · cases h
     simp
-  · simp at h
+  · simp only [Subtype.mk.injEq] at h
     -- Porting note: used to be `convert comp_zero`, but that does not work anymore
     have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
       simpa using biproduct.ι_π_ne _ (Ne.symm h)

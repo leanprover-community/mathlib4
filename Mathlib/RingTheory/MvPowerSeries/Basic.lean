@@ -6,8 +6,10 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Linarith
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Formal (multivariate) power series
@@ -18,6 +20,34 @@ and develops the basic properties of these objects.
 A formal power series is to a polynomial like an infinite sum is to a finite sum.
 
 We provide the natural inclusion from multivariate polynomials to multivariate formal power series.
+
+## Main definitions
+
+- `MvPowerSeries.C`: constant power series
+
+- `MvPowerSeries.X`: the indeterminates
+
+- `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
+the coefficients of a `MvPowerSeries`, its constant coefficient
+
+- `MvPowerSeries.monomial`: the monomials
+
+- `MvPowerSeries.coeff_mul`: computes the coefficients of the product of two `MvPowerSeries`
+
+- `MvPowerSeries.coeff_prod` : computes the coefficients of products of `MvPowerSeries`
+
+- `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
+
+- `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
+of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
+
+- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom)
+
+- `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
+conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
+
+- `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
+
 
 ## Note
 
@@ -99,11 +129,14 @@ variable (R) [Semiring R]
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
-  LinearMap.stdBasis R (fun _ ↦ R) n
+  LinearMap.single R (fun _ ↦ R) n
 
 /-- The `n`th coefficient of a multivariate formal power series. -/
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
+
+theorem coeff_apply (f : MvPowerSeries σ R) (d : σ →₀ ℕ) : coeff R d f = f d :=
+  rfl
 
 variable {R}
 
@@ -113,33 +146,32 @@ theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : �
   funext h
 
 /-- Two multivariate formal power series are equal
- if and only if all their coefficients are equal. -/
-theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
-  Function.funext_iff
+if and only if all their coefficients are equal. -/
+add_decl_doc MvPowerSeries.ext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
-    (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
+    (monomial R n) = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  erw [LinearMap.single_apply, Pi.single_apply]
 
 @[simp]
 theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff R n (monomial R n a) = a := by
   classical
   rw [monomial_def]
-  exact LinearMap.stdBasis_same R (fun _ ↦ R) n a
+  exact Pi.single_eq_same _ _
 
 theorem coeff_monomial_ne {m n : σ →₀ ℕ} (h : m ≠ n) (a : R) : coeff R m (monomial R n a) = 0 := by
   classical
   rw [monomial_def]
-  exact LinearMap.stdBasis_ne R (fun _ ↦ R) _ _ h a
+  exact Pi.single_eq_of_ne h _
 
 theorem eq_of_coeff_monomial_ne_zero {m n : σ →₀ ℕ} {a : R} (h : coeff R m (monomial R n a) ≠ 0) :
     m = n :=
@@ -149,10 +181,17 @@ theorem eq_of_coeff_monomial_ne_zero {m n : σ →₀ ℕ} {a : R} (h : coeff R 
 theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n) = LinearMap.id :=
   LinearMap.ext <| coeff_monomial_same n
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
+
+theorem eq_zero_iff_forall_coeff_zero {f : MvPowerSeries σ R} :
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
+  MvPowerSeries.ext_iff
+
+theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
+    f ≠ 0 ↔ (∃ d : σ →₀ ℕ, coeff R d f ≠ 0) := by
+  simp only [MvPowerSeries.ext_iff, ne_eq, coeff_zero, not_forall]
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
@@ -225,7 +264,8 @@ theorem coeff_add_mul_monomial (a : R) :
 @[simp]
 theorem commute_monomial {a : R} {n} :
     Commute φ (monomial R n a) ↔ ∀ m, Commute (coeff R m φ) a := by
-  refine ext_iff.trans ⟨fun h m => ?_, fun h m => ?_⟩
+  rw [commute_iff_eq, MvPowerSeries.ext_iff]
+  refine ⟨fun h m => ?_, fun h m => ?_⟩
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]
@@ -354,9 +394,9 @@ theorem X_def (s : σ) : X s = monomial R (single s 1) 1 :=
   rfl
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 
 theorem coeff_X_pow [DecidableEq σ] (m : σ →₀ ℕ) (s : σ) (n : ℕ) :
     coeff R m ((X s : MvPowerSeries σ R) ^ n) = if m = single s n then 1 else 0 := by
@@ -405,13 +445,11 @@ theorem constantCoeff_C (a : R) : constantCoeff σ R (C σ R a) = a :=
 theorem constantCoeff_comp_C : (constantCoeff σ R).comp (C σ R) = RingHom.id R :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_zero : constantCoeff σ R 0 = 0 :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
   rfl
 
@@ -425,8 +463,7 @@ theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = a * coeff _ n f :=
   rfl
 
@@ -621,6 +658,55 @@ theorem coeff_prod [DecidableEq σ]
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 
+/-- The `d`th coefficient of a power of a multivariate power series
+is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients  -/
+theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
+    coeff R d (f ^ n) =
+      ∑ l in finsuppAntidiag (Finset.range n) d,
+        ∏ i in Finset.range n, coeff R (l i) f := by
+  suffices f ^ n = (Finset.range n).prod fun _ ↦ f by
+    rw [this, coeff_prod]
+  rw [Finset.prod_const, card_range]
+
+/-- Vanishing of coefficients of powers of multivariate power series
+when the constant coefficient is nilpotent
+[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
+theorem coeff_eq_zero_of_constantCoeff_nilpotent
+    {f : MvPowerSeries σ R} {m : ℕ} (hf : constantCoeff σ R f ^ m = 0)
+    {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) : coeff R d (f ^ n) = 0 := by
+  classical
+  rw [coeff_pow]
+  apply sum_eq_zero
+  intro k hk
+  rw [mem_finsuppAntidiag] at hk
+  set s := {i ∈ range n | k i = 0} with hs_def
+  have hs : s ⊆ range n := filter_subset _ _
+  have hs' (i : ℕ) (hi : i ∈ s) : coeff R (k i) f = constantCoeff σ R f := by
+    simp only [hs_def, mem_filter] at hi
+    rw [hi.2, coeff_zero_eq_constantCoeff]
+  have hs'' (i : ℕ) (hi : i ∈ s) : k i = 0 := by
+    simp only [hs_def, mem_filter] at hi
+    rw [hi.2]
+  rw [← prod_sdiff (s₁ := s) (filter_subset _ _)]
+  apply mul_eq_zero_of_right
+  rw [prod_congr rfl hs', prod_const]
+  suffices m ≤ #s by
+    obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
+    rw [hm', pow_add, hf, MulZeroClass.zero_mul]
+  rw [← Nat.add_le_add_iff_right, add_comm #s,
+    Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
+  apply le_trans _ hn
+  simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
+    ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
+  rw [← hs_def]
+  convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
+  · simp only [Algebra.id.smul_eq_mul, mul_one]
+  · simp only [degree_eq_weight_one, map_sum]
+  · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
+    intro i hi hi'
+    rw [← not_lt, Nat.lt_one_iff, degree_eq_zero_iff]
+    exact hi' hi
+
 end CommSemiring
 
 section Algebra
@@ -652,9 +738,9 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
       refine ⟨X default, ?_⟩
-      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
+      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top]
       intro x
-      rw [ext_iff, not_forall]
+      rw [MvPowerSeries.ext_iff, not_forall]
       refine ⟨Finsupp.single default 1, ?_⟩
       simp [algebraMap_apply, coeff_C]⟩⟩
 

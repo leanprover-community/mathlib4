@@ -38,16 +38,14 @@ assert_not_exists Pi.module
 
 open Function
 
-universe u u' v w x y z
-
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {k : Type*} {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*}
+variable {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {N₁ : Type*} {N₂ : Type*}
 
 section
 
 /-- A linear equivalence is an invertible linear map. -/
--- Porting note (#11215): TODO @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
@@ -133,7 +131,6 @@ namespace LinearEquiv
 
 section AddCommMonoid
 
-variable {M₄ : Type*}
 variable [Semiring R] [Semiring S]
 
 section
@@ -147,10 +144,10 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 /-- The equivalence of types underlying a linear equivalence. -/
-def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f => f.toAddEquiv.toEquiv
+def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f ↦ f.toAddEquiv.toEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂) :=
-  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ h =>
+  fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ h ↦
     (LinearEquiv.mk.injEq _ _ _ _ _ _ _ _).mpr
       ⟨LinearMap.ext (congr_fun (Equiv.mk.inj h).1), (Equiv.mk.inj h).2⟩
 
@@ -159,7 +156,7 @@ theorem toEquiv_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : e₁.toEquiv = e₂.toE
   toEquiv_injective.eq_iff
 
 theorem toLinearMap_injective : Injective (toLinearMap : (M ≃ₛₗ[σ] M₂) → M →ₛₗ[σ] M₂) :=
-  fun _ _ H => toEquiv_injective <| Equiv.ext <| LinearMap.congr_fun H
+  fun _ _ H ↦ toEquiv_injective <| Equiv.ext <| LinearMap.congr_fun H
 
 @[simp, norm_cast]
 theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛₗ[σ] M₂) = e₂ ↔ e₁ = e₂ :=
@@ -171,18 +168,9 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
 
-/-- Helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
-  coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
-
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
+  map_add := (·.map_add') --map_add' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
+  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -198,7 +186,7 @@ section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [AddCommMonoid M₃]
 variable [AddCommMonoid N₁] [AddCommMonoid N₂]
 variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
@@ -226,9 +214,6 @@ variable {e e'}
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
@@ -260,7 +245,7 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x => by dsimp only; rw [map_smulₛₗ] }
+    map_smul' := fun r x ↦ by dsimp only; rw [map_smulₛₗ] }
 
 -- Porting note: this is new
 /-- See Note [custom simps projection] -/
@@ -328,6 +313,9 @@ theorem coe_toAddEquiv : e.toAddEquiv = e :=
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
+  rfl
+
+lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm := by
   rfl
 
 @[simp]
@@ -407,6 +395,18 @@ theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ �
   · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
 
 @[simp]
+theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
+    e₁₂.toLinearMap.comp f = e₁₂.toLinearMap.comp g ↔ f = g := by
+  refine ⟨fun h => ?_, congrArg e₁₂.comp⟩
+  rw [← (toLinearMap_symm_comp_eq g (e₁₂.toLinearMap.comp f)).mpr h, eq_toLinearMap_symm_comp]
+
+@[simp]
+theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
+    f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
+  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
+
+@[simp]
 theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=
   rfl
 
@@ -431,7 +431,7 @@ theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M
 
 @[simp]
 theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M₂) = e :=
-  ext fun _ => rfl
+  ext fun _ ↦ rfl
 
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
   map_add e a b
@@ -452,9 +452,7 @@ theorem map_ne_zero_iff {x : M} : e x ≠ 0 ↔ x ≠ 0 :=
   e.toAddEquiv.map_ne_zero_iff
 
 @[simp]
-theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
-  cases e
-  rfl
+theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := rfl
 
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
@@ -463,9 +461,9 @@ theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [Rin
 @[simp]
 theorem mk_coe' (f h₁ h₂ h₃ h₄) :
     (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
-  symm_bijective.injective <| ext fun _ => rfl
+  symm_bijective.injective <| ext fun _ ↦ rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
 protected def symm_mk.aux (f h₁ h₂ h₃ h₄) := (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm
 
 @[simp]
@@ -511,8 +509,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
-variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [AddCommMonoid M]
 
 /-- An involutive linear map is a linear equivalence. -/
 def ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]

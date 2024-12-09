@@ -127,28 +127,30 @@ lemma max_bi_le {b : α → ℝ} (i : α) : b i ≤ b (max_bi b) :=
 
 end min_max
 
-variable {α : Type*} [Fintype α] [Nonempty α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
-  (R : AkraBazziRecurrence T g a b r)
-
-lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n / log n ^ 2 := by
-  rw [Filter.eventually_all]
-  intro i
-  simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
-
 lemma isLittleO_self_div_log_id :
     (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) := by
   calc (fun (n : ℕ) => (n : ℝ) / log n ^ 2) = fun (n : ℕ) => (n : ℝ) * ((log n) ^ 2)⁻¹ := by
                   simp_rw [div_eq_mul_inv]
-         _ =o[atTop] fun (n : ℕ) => (n : ℝ) * 1⁻¹   := by
+         _ =o[atTop] fun (n : ℕ) => (n : ℝ) * 1⁻¹ := by
                   refine IsBigO.mul_isLittleO (isBigO_refl _ _) ?_
                   refine IsLittleO.inv_rev ?main ?zero
                   case zero => simp
                   case main => calc
                     _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2))     := by simp
-                    _ =o[atTop] (fun (n : ℕ) => (log n)^2)  :=
+                    _ =o[atTop] (fun (n : ℕ) => (log n)^2) :=
                           IsLittleO.pow (IsLittleO.natCast_atTop
                             <| isLittleO_const_log_atTop) (by norm_num)
          _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
+
+variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
+variable [Nonempty α] (R : AkraBazziRecurrence T g a b r)
+section
+include R
+
+lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n / log n ^ 2 := by
+  rw [Filter.eventually_all]
+  intro i
+  simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
 
 lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n / log n ^ 2) ≤ r i n := by
   filter_upwards [R.dist_r_b'] with n hn
@@ -191,8 +193,8 @@ lemma eventually_bi_mul_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b (min_bi b) /
 
 lemma bi_min_div_two_lt_one : b (min_bi b) / 2 < 1 := by
   have gt_zero : 0 < b (min_bi b) := R.b_pos (min_bi b)
-  calc b (min_bi b) / 2 < b (min_bi b)      := by aesop (add safe apply div_two_lt_of_pos)
-                      _ < 1                  := R.b_lt_one _
+  calc b (min_bi b) / 2 < b (min_bi b) := by aesop (add safe apply div_two_lt_of_pos)
+                      _ < 1 := R.b_lt_one _
 
 lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by norm_num)
 
@@ -264,7 +266,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
   exact h.eventually_gt_atTop 0
 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     cases lt_or_le n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
@@ -276,6 +278,8 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
 
 @[aesop safe apply]
 lemma T_nonneg (n : ℕ) : 0 ≤ T n := le_of_lt <| R.T_pos n
+
+end
 
 /-!
 #### Smoothing function
@@ -349,6 +353,7 @@ lemma eventually_one_sub_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 - ε
 lemma eventually_one_sub_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1 - ε n := by
   filter_upwards [eventually_one_sub_smoothingFn_pos] with n hn; exact le_of_lt hn
 
+include R in
 lemma eventually_one_sub_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < 1 - ε (r i n) := by
   rw [Filter.eventually_all]
   exact fun i => (R.tendsto_atTop_r_real i).eventually eventually_one_sub_smoothingFn_pos_real
@@ -394,7 +399,7 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
               rw [isLittleO_one_left_iff]
               exact Tendsto.comp tendsto_norm_atTop_atTop
                 <| Tendsto.comp (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
-            · exact Filter.eventually_of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
+            · exact Filter.Eventually.of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
     _ = fun x => x⁻¹ := by simp
 
 lemma eventually_deriv_one_sub_smoothingFn :
@@ -434,6 +439,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   show 0 < 1 + 1 / log x
   positivity
 
+include R in
 lemma eventually_one_add_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < 1 + ε (r i n) := by
   rw [Filter.eventually_all]
   exact fun i => (R.tendsto_atTop_r i).eventually (f := r i) eventually_one_add_smoothingFn_pos
@@ -456,15 +462,18 @@ lemma strictMonoOn_one_sub_smoothingFn :
 lemma strictAntiOn_one_add_smoothingFn : StrictAntiOn (fun (x : ℝ) => (1 : ℝ) + ε x) (Set.Ioi 1) :=
   StrictAntiOn.const_add strictAntiOn_smoothingFn 1
 
+section
+include R
+
 lemma isEquivalent_smoothingFn_sub_self (i : α) :
     (fun (n : ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n)^2 := by
   calc (fun (n : ℕ) => 1 / log (b i * n) - 1 / log n)
-        =ᶠ[atTop] fun (n : ℕ) => (log n - log (b i * n)) / (log (b i * n) * log n)  := by
+        =ᶠ[atTop] fun (n : ℕ) => (log n - log (b i * n)) / (log (b i * n) * log n) := by
             filter_upwards [eventually_gt_atTop 1, R.eventually_log_b_mul_pos] with n hn hn'
             have h_log_pos : 0 < log n := Real.log_pos <| by aesop
             simp only [one_div]
             rw [inv_sub_inv (by have := hn' i; positivity) (by aesop)]
-      _ =ᶠ[atTop] (fun (n : ℕ) => (log n - log (b i) - log n) / ((log (b i) + log n) * log n))  := by
+      _ =ᶠ[atTop] (fun (n : ℕ) ↦ (log n - log (b i) - log n) / ((log (b i) + log n) * log n)) := by
             filter_upwards [eventually_ne_atTop 0] with n hn
             have : 0 < b i := R.b_pos i
             rw [log_mul (by positivity) (by aesop), sub_add_eq_sub_sub]
@@ -499,7 +508,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
-namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`.  -/
+namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -535,18 +544,21 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) 
 lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine mem_range_of_exists_le_of_exists_ge R.continuous_sumCoeffsExp ?le_one ?ge_one
   case le_one =>
-    exact Eventually.exists <| eventually_le_of_tendsto_lt zero_lt_one R.tendsto_zero_sumCoeffsExp
+    exact R.tendsto_zero_sumCoeffsExp.eventually_le_const zero_lt_one |>.exists
   case ge_one =>
-    exact Eventually.exists <| R.tendsto_atTop_sumCoeffsExp.eventually_ge_atTop _
+    exact R.tendsto_atTop_sumCoeffsExp.eventually_ge_atTop _ |>.exists
 
 /-- The function x ↦ ∑ a_i b_i^x is injective. This implies the uniqueness of `p`. -/
 lemma injective_sumCoeffsExp : Function.Injective (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) :=
     R.strictAnti_sumCoeffsExp.injective
 
+end
+
 variable (a b) in
 /-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
+include R in
 @[simp]
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
@@ -576,17 +588,21 @@ variable (g) (a) (b)
 `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 noncomputable def asympBound (n : ℕ) : ℝ := n ^ p a b + sumTransform (p a b) g 0 n
 
-lemma asympBound_def {n : ℕ} : asympBound g a b n = n ^ p a b + sumTransform (p a b) g 0 n := rfl
+lemma asympBound_def {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
+    asympBound g a b n = n ^ p a b + sumTransform (p a b) g 0 n := rfl
 
 variable {g} {a} {b}
 
-lemma asympBound_def' {n : ℕ} :
+lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
     asympBound g a b n = n ^ p a b * (1 + (∑ u ∈ range n, g u / u ^ (p a b + 1))) := by
   simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
 
+section
+include R
+
 lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
-  calc 0 < (n : ℝ) ^ p a b * (1 + 0)   := by aesop (add safe Real.rpow_pos_of_pos)
-       _ ≤ asympBound g a b n    := by
+  calc 0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)
+       _ ≤ asympBound g a b n := by
                     simp only [asympBound_def']
                     gcongr n^p a b * (1 + ?_)
                     have := R.g_nonneg
@@ -628,9 +644,9 @@ lemma eventually_atTop_sumTransform_le :
                           _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
                   gcongr with u hu; rw [Finset.mem_Ico] at hu; exact hu.1
-         _ ≤ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+         _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
                   gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
-         _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+         _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / r i n ^ (p a b + 1)) := by
                   rw [nsmul_eq_mul, mul_assoc]
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
                   congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -656,8 +672,8 @@ lemma eventually_atTop_sumTransform_le :
                 refine hn₂ u ?_
                 rw [Set.mem_Icc]
                 refine ⟨?_, by norm_cast; omega⟩
-                calc c₁ * n ≤ r i n      := by exact hn₁ i
-                          _ ≤ u          := by exact_mod_cast hu'.1
+                calc c₁ * n ≤ r i n := by exact hn₁ i
+                          _ ≤ u     := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
                 gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
                 rw [Finset.mem_Ico] at hu
@@ -666,9 +682,9 @@ lemma eventually_atTop_sumTransform_le :
                   _ ≤ u := by exact hu.1
                 exact rpow_le_rpow_of_exponent_nonpos (by positivity)
                   (by exact_mod_cast (le_of_lt hu.2)) (le_of_lt hp)
-         _ ≤ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
                   gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
-         _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / n ^ (p a b + 1)) := by
                   rw [nsmul_eq_mul, mul_assoc]
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / n ^ ((p a b) + 1)) := by
                   congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -695,7 +711,7 @@ lemma eventually_atTop_sumTransform_ge :
   cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ (p a b) + 1
     calc sumTransform (p a b) g (r i n) n
-           = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))     := by rfl
+           = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))    := rfl
          _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
                 gcongr with u hu
                 rw [Finset.mem_Ico] at hu
@@ -703,8 +719,8 @@ lemma eventually_atTop_sumTransform_ge :
                 refine hn₂ u ?_
                 rw [Set.mem_Icc]
                 refine ⟨?_, by norm_cast; omega⟩
-                calc c₁ * n ≤ r i n      := by exact hn₁ i
-                          _ ≤ u            := by exact_mod_cast hu'.1
+                calc c₁ * n ≤ r i n := by exact hn₁ i
+                          _ ≤ u     := by exact_mod_cast hu'.1
          _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
                 gcongr with u hu
                 · rw [Finset.mem_Ico] at hu
@@ -713,9 +729,9 @@ lemma eventually_atTop_sumTransform_ge :
                   positivity
                 · rw [Finset.mem_Ico] at hu
                   exact le_of_lt hu.2
-         _ ≥ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
                 gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
-         _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / n ^ (p a b + 1)) := by
                 rw [nsmul_eq_mul, mul_assoc]
          _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / n ^ ((p a b) + 1)) := by
                 congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -729,7 +745,7 @@ lemma eventually_atTop_sumTransform_ge :
                 gcongr; exact min_le_left _ _
   | inr hp => -- (p a b) + 1 < 0
     calc sumTransform (p a b) g (r i n) n
-        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u^((p a b) + 1))     := by rfl
+        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u^((p a b) + 1))        := by rfl
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
              gcongr with u hu
              rw [Finset.mem_Ico] at hu
@@ -748,12 +764,12 @@ lemma eventually_atTop_sumTransform_ge :
              · rw [Finset.mem_Ico] at hu
                exact rpow_le_rpow_of_exponent_nonpos (by positivity)
                  (by exact_mod_cast hu.1) (le_of_lt hp)
-      _ ≥ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+      _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
              gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
-      _ = n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+      _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / r i n ^ (p a b + 1)) := by
              rw [nsmul_eq_mul, mul_assoc]
-      _ ≥ n ^ (p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
-             gcongr n^(p a b) * (Finset.Ico (r i n) n).card * (c₂ * g n / ?_)
+      _ ≥ n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / (c₁ * n) ^ (p a b + 1)) := by
+             gcongr n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / ?_)
              exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hn₁ i) (le_of_lt hp)
       _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
              congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
@@ -769,45 +785,14 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁ ^ ((p a b) + 1)) * g n := by
              gcongr; exact min_le_right _ _
 
+end
+
 /-!
 #### Technical lemmas
 
 The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
 `rpow_p_mul_one_add_smoothingFn_ge`, which are key steps in the main proof.
 -/
-
-lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (Set.Ioi 1))
-    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α) :
-    (fun n => q (r i n) - q (b i * n)) =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
-  let b' := b (min_bi b) / 2
-  have hb_pos : 0 < b' := by have := R.b_pos (min_bi b); positivity
-  have hb_lt_one : b' < 1 := calc
-    b (min_bi b) / 2 < b (min_bi b) := by exact div_two_lt_of_pos (R.b_pos (min_bi b))
-                   _ < 1 := R.b_lt_one (min_bi b)
-  have hb : b' ∈ Set.Ioo 0 1 := ⟨hb_pos, hb_lt_one⟩
-  have hb' : ∀ i, b' ≤ b i := fun i => calc
-    b (min_bi b) / 2 ≤ b i / 2 := by gcongr; aesop
-               _ ≤ b i := by exact le_of_lt <| div_two_lt_of_pos (R.b_pos i)
-  obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
-  rw [isBigO_iff]
-  refine ⟨c₂, ?_⟩
-  have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=
-    Tendsto.const_mul_atTop hb_pos tendsto_id
-  filter_upwards [hq_poly.natCast_atTop, R.eventually_bi_mul_le_r, eventually_ge_atTop R.n₀,
-                  eventually_gt_atTop 0, (h_tendsto.eventually_gt_atTop 1).natCast_atTop] with
-    n hn h_bi_le_r h_ge_n₀ h_n_pos h_bn
-  rw [norm_mul, ← mul_assoc]
-  refine Convex.norm_image_sub_le_of_norm_deriv_le
-    (s := Set.Icc (b'*n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
-    (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
-  case diff =>
-    refine hq_diff.differentiableAt (Ioi_mem_nhds ?_)
-    calc 1 < b' * n := by exact h_bn
-         _ ≤ z := hz.1
-  case mem_Icc =>
-    refine ⟨by gcongr; exact hb' i, ?_⟩
-    calc b i * n ≤ 1 * n := by gcongr; exact le_of_lt <| R.b_lt_one i
-                 _ = n := by simp
 
 lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
     deriv (fun z => z ^ p * (1 - ε z))
@@ -858,7 +843,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => z ^ (p-1) / (log z ^ 2)) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe eventually_of_forall)))
+                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -882,7 +867,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => -(z ^ (p-1) / (log z ^ 2))) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [isLittleO_neg_left, div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe eventually_of_forall)))
+                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -952,6 +937,41 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
 
+include R
+
+lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (Set.Ioi 1))
+    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α) :
+    (fun n => q (r i n) - q (b i * n)) =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
+  let b' := b (min_bi b) / 2
+  have hb_pos : 0 < b' := by have := R.b_pos (min_bi b); positivity
+  have hb_lt_one : b' < 1 := calc
+    b (min_bi b) / 2 < b (min_bi b) := by exact div_two_lt_of_pos (R.b_pos (min_bi b))
+                   _ < 1 := R.b_lt_one (min_bi b)
+  have hb : b' ∈ Set.Ioo 0 1 := ⟨hb_pos, hb_lt_one⟩
+  have hb' : ∀ i, b' ≤ b i := fun i => calc
+    b (min_bi b) / 2 ≤ b i / 2 := by gcongr; aesop
+               _ ≤ b i := by exact le_of_lt <| div_two_lt_of_pos (R.b_pos i)
+  obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
+  rw [isBigO_iff]
+  refine ⟨c₂, ?_⟩
+  have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=
+    Tendsto.const_mul_atTop hb_pos tendsto_id
+  filter_upwards [hq_poly.natCast_atTop, R.eventually_bi_mul_le_r, eventually_ge_atTop R.n₀,
+                  eventually_gt_atTop 0, (h_tendsto.eventually_gt_atTop 1).natCast_atTop] with
+    n hn h_bi_le_r h_ge_n₀ h_n_pos h_bn
+  rw [norm_mul, ← mul_assoc]
+  refine Convex.norm_image_sub_le_of_norm_deriv_le
+    (s := Set.Icc (b'*n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
+    (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
+  case diff =>
+    refine hq_diff.differentiableAt (Ioi_mem_nhds ?_)
+    calc 1 < b' * n := by exact h_bn
+         _ ≤ z := hz.1
+  case mem_Icc =>
+    refine ⟨by gcongr; exact hb' i, ?_⟩
+    calc b i * n ≤ 1 * n := by gcongr; exact le_of_lt <| R.b_lt_one i
+                 _ = n := by simp
+
 lemma rpow_p_mul_one_sub_smoothingFn_le :
     ∀ᶠ (n : ℕ) in atTop, ∀ i, (r i n) ^ (p a b) * (1 - ε (r i n))
       ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n) := by
@@ -1004,9 +1024,9 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
               filter_upwards [eventually_ne_atTop 0] with n hn
               have hn' : (n : ℝ) ≠ 0 := by positivity
               simp [← mul_div_assoc, ← Real.rpow_add_one hn']
-        _ = fun (n : ℕ) => (n : ℝ) ^ (p a b) * (1 / (log n)^2)  := by
+        _ = fun (n : ℕ) => (n : ℝ) ^ (p a b) * (1 / (log n)^2) := by
               simp_rw [mul_div, mul_one]
-        _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n)^2)  := by
+        _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n)^2) := by
               refine IsTheta.symm ?_
               simp_rw [mul_assoc]
               refine IsTheta.const_mul_left ?_ (isTheta_refl _ _)
@@ -1017,7 +1037,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
   have h_main : (fun (n : ℕ) => q (r i n) - q (b i * n))
       ≤ᶠ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
     calc (fun (n : ℕ) => q (r i n) - q (b i * n))
-           ≤ᶠ[atTop] fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖   := by
+           ≤ᶠ[atTop] fun (n : ℕ) => ‖q (r i n) - q (b i * n)‖ := by
                 filter_upwards with _; exact le_norm_self _
          _ ≤ᶠ[atTop] fun (n : ℕ) => ‖(b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n)‖ :=
                 h_main_norm
@@ -1031,9 +1051,9 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                   case n_gt_one =>
                     rwa [Set.mem_Ioi, Nat.one_lt_cast]
                   case bn_gt_one =>
-                    calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel (by positivity)]
+                    calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel₀ (by positivity)]
                         _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
-                        _ < b i * n := by gcongr; rw [Nat.cast_lt]; exact hn
+                        _ < b i * n := by gcongr
                   case le => calc b i * n ≤ 1 * n := by have := R.b_lt_one i; gcongr
                                           _ = n := by rw [one_mul]
                 positivity
@@ -1099,7 +1119,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
             filter_upwards [eventually_ne_atTop 0] with n hn
             have hn' : (n : ℝ) ≠ 0 := by positivity
             simp [← mul_div_assoc, ← Real.rpow_add_one hn']
-        _ = fun (n : ℕ) => (n : ℝ) ^ (p a b) * (1 / (log n) ^ 2)  := by simp_rw [mul_div, mul_one]
+        _ = fun (n : ℕ) => (n : ℝ) ^ (p a b) * (1 / (log n) ^ 2) := by simp_rw [mul_div, mul_one]
         _ =Θ[atTop] fun (n : ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (1 / (log n) ^ 2) := by
             refine IsTheta.symm ?_
             simp_rw [mul_assoc]
@@ -1127,9 +1147,9 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                   rw [Nat.one_lt_cast]
                   exact hn'
                 case bn_gt_one =>
-                  calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel (by positivity)]
+                  calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel₀ (by positivity)]
                       _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
-                      _ < b i * n := by gcongr; rw [Nat.cast_lt]; exact hn
+                      _ < b i * n := by gcongr
                 case le => calc b i * n ≤ 1 * n := by have := R.b_lt_one i; gcongr
                                         _ = n := by rw [one_mul]
               positivity
@@ -1153,10 +1173,10 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
   let b' := b (min_bi b)
   have hb_pos : 0 < b' := R.b_pos _
   simp_rw [Finset.nonempty_Ico]
-  exact_mod_cast calc ⌊b' / 2 * n⌋₊ ≤ b' / 2 * n    := by exact Nat.floor_le (by positivity)
-                                 _ < 1 / 2 * n    := by gcongr; exact R.b_lt_one (min_bi b)
-                                 _ ≤ 1 * n        := by gcongr; norm_num
-                                 _ = n             := by simp
+  exact_mod_cast calc ⌊b' / 2 * n⌋₊ ≤ b' / 2 * n := by exact Nat.floor_le (by positivity)
+                                 _ < 1 / 2 * n   := by gcongr; exact R.b_lt_one (min_bi b)
+                                 _ ≤ 1 * n       := by gcongr; norm_num
+                                 _ = n           := by simp
 
 /-- The main proof of the upper bound part of the Akra-Bazzi theorem. The factor
 `1 - ε n` does not change the asymptotic order, but is needed for the induction step to go
@@ -1200,7 +1220,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
     rw [Finset.mem_Ico] at hn
     have htmp1 : 0 < 1 - ε n := h_smoothingFn_floor n hn.1
     have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.div_le_iff (by positivity)]
+    rw [← _root_.div_le_iff₀ (by positivity)]
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 - ε ↑n) * asympBound g a b n)
            ≤ (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
@@ -1211,12 +1231,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
-      exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀      := Nat.floor_le <| by positivity
-                                  _ ≤ b' * n        := by gcongr
-                                  _ ≤ r i n      := h_bi_le_r n hn i
+      exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
+                                  _ ≤ b' * n         := by gcongr
+                                  _ ≤ r i n          := h_bi_le_r n hn i
     have g_pos : 0 ≤ g n := R.g_nonneg n (by positivity)
     calc
       T n = (∑ i, a i * T (r i n)) + g n := by exact R.h_rec n <| n₀_ge_Rn₀.trans hn
@@ -1284,7 +1304,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             refine mul_nonpos_of_nonpos_of_nonneg ?_ g_pos
             rw [sub_nonpos]
             calc 1 ≤ 2 * (c₁⁻¹ * c₁) * (1/2) := by
-                    rw [inv_mul_cancel (by positivity : c₁ ≠ 0)]; norm_num
+                    rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
                  _ = (2 * c₁⁻¹) * c₁ * (1/2) := by ring
                  _ ≤ C * c₁ * (1 - ε n) := by gcongr
                                               · rw [hC]; exact le_max_left _ _
@@ -1349,7 +1369,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     rw [Finset.mem_Ico] at hn
     have htmp1 : 0 < 1 + ε n := h_smoothingFn_floor n hn.1
     have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.le_div_iff (by positivity)]
+    rw [← _root_.le_div_iff₀ (by positivity)]
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 + ε ↑n) * asympBound g a b n)
            ≥ (Finset.Ico (⌊b' * n₀⌋₊) n₀).inf' h_base_nonempty
@@ -1360,7 +1380,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   have h_one_sub_smoothingFn_pos' : 0 < 1 + ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
   -- We now prove all other cases by induction
-  induction n using Nat.strongInductionOn with
+  induction n using Nat.strongRecOn with
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * ↑n₀⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
@@ -1435,7 +1455,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                     _ = C * (2 * c₁) := by ring
                     _ ≤ (2 * c₁)⁻¹ * (2 * c₁) := by gcongr; exact min_le_left _ _
                     _ = c₁⁻¹ * c₁ := by ring
-                    _ = 1 := inv_mul_cancel (by positivity)
+                    _ = 1 := inv_mul_cancel₀ (by positivity)
         _ = C * ((1 + ε n) * asympBound g a b n) := by ring
 
 /-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
@@ -1452,7 +1472,7 @@ theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
 
 /-- The **Akra-Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
-  calc asympBound g a b = (fun n => 1 * asympBound g a b n)  := by simp
+  calc asympBound g a b = (fun n => 1 * asympBound g a b n) := by simp
                  _ ~[atTop] (fun n => (1 + ε n) * asympBound g a b n) := by
                             refine IsEquivalent.mul (IsEquivalent.symm ?_) IsEquivalent.refl
                             rw [Function.const_def, isEquivalent_const_iff_tendsto one_ne_zero,

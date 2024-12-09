@@ -237,7 +237,7 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
     rwa [hxy.1] at hxz
   rcases gcd_dvd x y with ⟨⟨r, hr⟩, ⟨s, hs⟩⟩
   suffices x * y ∣ z * gcd x y by
-    cases' this with p hp
+    obtain ⟨p, hp⟩ := this
     use p
     generalize gcd x y = g at hxy hs hp ⊢
     subst hs

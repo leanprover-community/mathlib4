@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Sigma.Lex
-import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Orders on a sigma type
@@ -106,7 +107,7 @@ instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
   { Sigma.preorder with
     le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
-      exact ext rfl (heq_of_eq <| hab.antisymm hba) }
+      exact congr_arg (Sigma.mk _ ·) <| hab.antisymm hba }
 
 instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σi, α i) where
   dense := by
@@ -140,7 +141,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 /-- The lexicographical preorder on a sigma type. -/
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
   { Sigma.Lex.LE, Sigma.Lex.LT with
-    le_refl := fun ⟨i, a⟩ => Lex.right a a le_rfl,
+    le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
     le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
     lt_iff_le_not_le := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩

@@ -3,8 +3,8 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Filter
 import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Filter
 
 /-!
 # Proper maps between topological spaces
@@ -19,8 +19,7 @@ the following equivalent conditions:
   of `ℱ`.
 
 We take 3 as the definition in `IsProperMap`, and we show the equivalence with 1, 2, and some
-other variations. We also show the usual characterization of proper maps to a locally compact
-Hausdorff space as continuous maps such that preimages of compact sets are compact.
+other variations.
 
 ## Main statements
 
@@ -29,10 +28,6 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 * `IsProperMap.pi_map`: any product of proper maps is proper.
 * `isProperMap_iff_isClosedMap_and_compact_fibers`: a map is proper if and only if it is
   continuous, closed, and has compact fibers
-* `isProperMap_iff_isCompact_preimage`: a map to a locally compact Hausdorff space is proper if
-  and only if it is continuous and preimages of compact sets are compact.
-* `isProperMap_iff_universally_closed`: a map is proper if and only if it is continuous and
-  universally closed, in the sense of condition 2. above.
 
 ## Implementation notes
 
@@ -164,12 +159,12 @@ lemma isProperMap_of_comp_of_t2 [T2Space Y] (hf : Continuous f) (hg : Continuous
   exact ⟨x, hx⟩
 
 /-- A binary product of proper maps is proper. -/
-lemma IsProperMap.prod_map {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g) :
+lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (Prod.map f g) := by
   simp_rw [isProperMap_iff_ultrafilter] at hf hg ⊢
   constructor
   -- Continuity is clear.
-  · exact hf.1.prod_map hg.1
+  · exact hf.1.prodMap hg.1
   -- Let `𝒰 : Ultrafilter (X × Z)`, and assume that `f × g` tends to some `(y, w) : Y × W`
   -- along `𝒰`.
   · intro 𝒰 ⟨y, w⟩ hyw
@@ -186,6 +181,8 @@ lemma IsProperMap.prod_map {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap 
     refine ⟨⟨x, z⟩, Prod.ext hxy hzw, ?_⟩
     rw [nhds_prod_eq, le_prod]
     exact ⟨hx, hz⟩
+
+@[deprecated (since := "2024-10-06")] alias IsProperMap.prod_map := IsProperMap.prodMap
 
 /-- Any product of proper maps is proper. -/
 lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
@@ -211,7 +208,7 @@ lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- The preimage of a compact set by a proper map is again compact. See also
 `isProperMap_iff_isCompact_preimage` which proves that this property completely characterizes
-proper map when the codomain is locally compact and Hausdorff. -/
+proper map when the codomain is compactly generated and Hausdorff. -/
 lemma IsProperMap.isCompact_preimage (h : IsProperMap f) {K : Set Y} (hK : IsCompact K) :
     IsCompact (f ⁻¹' K) := by
   rw [isCompact_iff_ultrafilter_le_nhds]
@@ -269,21 +266,32 @@ lemma isProperMap_of_isClosedMap_of_inj (f_cont : Continuous f) (f_inj : f.Injec
 @[simp] lemma Homeomorph.isProperMap (e : X ≃ₜ Y) : IsProperMap e :=
   isProperMap_of_isClosedMap_of_inj e.continuous e.injective e.isClosedMap
 
+protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :=
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
+
 /-- The identity is proper. -/
-@[simp] lemma isProperMap_id : IsProperMap (id : X → X) := (Homeomorph.refl X).isProperMap
+@[simp] lemma isProperMap_id : IsProperMap (id : X → X) := IsHomeomorph.id.isProperMap
 
 /-- A closed embedding is proper. -/
-lemma isProperMap_of_closedEmbedding (hf : ClosedEmbedding f) : IsProperMap f :=
-  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
+lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
+
+@[deprecated (since := "2024-10-20")]
+alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap
 
 /-- The coercion from a closed subset is proper. -/
-lemma isProperMap_subtype_val_of_closed {U : Set X} (hU : IsClosed U) : IsProperMap ((↑) : U → X) :=
-  isProperMap_of_closedEmbedding hU.closedEmbedding_subtype_val
+lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMap ((↑) : C → X) :=
+  hC.isClosedEmbedding_subtypeVal.isProperMap
+
+@[deprecated (since := "2024-10-20")]
+alias isProperMap_subtype_val_of_closed := IsClosed.isProperMap_subtypeVal
 
 /-- The restriction of a proper map to a closed subset is proper. -/
-lemma isProperMap_restr_of_proper_of_closed {U : Set X} (hf : IsProperMap f) (hU : IsClosed U) :
-    IsProperMap (fun x : U ↦ f x) :=
-  IsProperMap.comp (isProperMap_subtype_val_of_closed hU) hf
+lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
+    IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
+
+@[deprecated (since := "2024-10-20")]
+alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
@@ -307,37 +315,6 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
 theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
-/-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
-such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
-  constructor <;> intro H
-  -- The direct implication follows from the previous results
-  · exact ⟨H.continuous, fun K hK ↦ H.isCompact_preimage hK⟩
-  · rw [isProperMap_iff_ultrafilter_of_t2]
-    -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
-    refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-    -- Pick `K` some compact neighborhood of `y`, which exists by local compactness.
-    rcases exists_compact_mem_nhds y with ⟨K, hK, hKy⟩
-    -- Then `map f 𝒰 ≤ 𝓝 y ≤ 𝓟 K`, hence `𝒰 ≤ 𝓟 (f ⁻¹' K)`
-    have : 𝒰 ≤ 𝓟 (f ⁻¹' K) := by
-      simpa only [← comap_principal, ← tendsto_iff_comap] using
-        hy.mono_right (le_principal_iff.mpr hKy)
-    -- By compactness of `f ⁻¹' K`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
-    rcases (H.2 hK).ultrafilter_le_nhds _ this with ⟨x, -, hx⟩
-    exact ⟨x, hx⟩
-
-/-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
-lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
-  simp_rw [isProperMap_iff_isCompact_preimage, hasBasis_cocompact.tendsto_right_iff,
-    ← mem_preimage, eventually_mem_set, preimage_compl]
-  refine and_congr_right fun f_cont ↦
-    ⟨fun H K hK ↦ (H hK).compl_mem_cocompact, fun H K hK ↦ ?_⟩
-  rcases mem_cocompact.mp (H K hK) with ⟨K', hK', hK'y⟩
-  exact hK'.of_isClosed_subset (hK.isClosed.preimage f_cont)
-    (compl_le_compl_iff_le.mp hK'y)
-
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map
 `Prod.map f id : X × Z → Y × Z` is closed. We will prove in `isProperMap_iff_universally_closed`
 that proper maps are exactly continuous maps which have this property, but this result should be
@@ -345,7 +322,7 @@ easier to use because it allows `Z` to live in any universe. -/
 theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
-  (h.prod_map isProperMap_id).isClosedMap
+  (h.prodMap isProperMap_id).isClosedMap
 
 /-- A map `f : X → Y` is proper if and only if it is continuous and the map
 `(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than
@@ -373,7 +350,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- `𝒰`. Furthermore, each `(f, pure)(x) = (f × id)(x, pure x)` is clearly an element of
   -- the closed set `(f × id) '' F`, thus the limit `(y, 𝒰)` also belongs to that set.
       this.mem_of_tendsto (hy.prod_mk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
-        (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
+        (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
   -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends

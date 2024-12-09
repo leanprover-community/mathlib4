@@ -110,11 +110,11 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
       classical
-      simpa [f, hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
+      simpa [f, hs, hc, lt_top_iff_ne_top, SimpleFunc.coe_const,
         Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
         ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
-        or_false_iff, lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
-        SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, false_and_iff,
+        lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
+        SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
         restrict_apply] using h
     have : μ s < μ s + ε / c := by
       have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
@@ -297,9 +297,9 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
         _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
 
-    · apply Filter.eventually_of_forall fun x => _; simp
+    · apply Filter.Eventually.of_forall fun x => _; simp
     · exact fmeas.coe_nnreal_real.aestronglyMeasurable
-    · apply Filter.eventually_of_forall fun x => _; simp
+    · apply Filter.Eventually.of_forall fun x => _; simp
     · apply gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable
 
 /-! ### Upper semicontinuous lower bound for nonnegative functions -/
@@ -326,12 +326,12 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise, zero_le]
     have μs_lt_top : μ s < ∞ := by
       classical
-      simpa only [hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const, or_false_iff,
+      simpa only [hs, hc, lt_top_iff_ne_top, true_and, SimpleFunc.coe_const, or_false,
         lintegral_const, ENNReal.coe_indicator, Set.univ_inter, ENNReal.coe_ne_top,
         Measure.restrict_apply MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
         Function.const_apply, lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
         SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
-        false_and_iff] using int_f
+        false_and] using int_f
     have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
     obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F : _), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
       hs.exists_isClosed_lt_add μs_lt_top.ne this.ne'
@@ -421,16 +421,16 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
   refine ⟨g, gf, gcont, ?_, ?_⟩
   · refine
       Integrable.mono fint gcont.measurable.coe_nnreal_real.aemeasurable.aestronglyMeasurable ?_
-    exact Filter.eventually_of_forall fun x => by simp [gf x]
+    exact Filter.Eventually.of_forall fun x => by simp [gf x]
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
     · rw [sub_le_iff_le_add]
       convert ENNReal.toReal_mono _ gint
       · simp
       · rw [ENNReal.toReal_add Ig.ne ENNReal.coe_ne_top]; simp
       · simpa using Ig.ne
-    · apply Filter.eventually_of_forall; simp
+    · apply Filter.Eventually.of_forall; simp
     · exact gcont.measurable.coe_nnreal_real.aemeasurable.aestronglyMeasurable
-    · apply Filter.eventually_of_forall; simp
+    · apply Filter.Eventually.of_forall; simp
     · exact fint.aestronglyMeasurable
 
 /-! ### Vitali-Carathéodory theorem -/
@@ -527,7 +527,7 @@ theorem exists_upperSemicontinuous_lt_integral_gt [SigmaFinite μ] (f : α → �
   rcases exists_lt_lowerSemicontinuous_integral_lt (fun x => -f x) hf.neg εpos with
     ⟨g, g_lt_f, gcont, g_integrable, g_lt_top, gint⟩
   refine ⟨fun x => -g x, ?_, ?_, ?_, ?_, ?_⟩
-  · exact fun x => EReal.neg_lt_iff_neg_lt.1 (by simpa only [EReal.coe_neg] using g_lt_f x)
+  · exact fun x => EReal.neg_lt_comm.1 (by simpa only [EReal.coe_neg] using g_lt_f x)
   · exact
       continuous_neg.comp_lowerSemicontinuous_antitone gcont fun x y hxy =>
         EReal.neg_le_neg_iff.2 hxy

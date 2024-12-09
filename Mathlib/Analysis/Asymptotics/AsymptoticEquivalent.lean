@@ -171,7 +171,7 @@ open Asymptotics
 
 section NormedField
 
-variable {α β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α β : Type*} [NormedField β] {u v : α → β} {l : Filter α}
 
 theorem isEquivalent_iff_exists_eq_mul :
     u ~[l] v ↔ ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by
@@ -195,7 +195,7 @@ theorem isEquivalent_of_tendsto_one (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
 
 theorem isEquivalent_of_tendsto_one' (hz : ∀ x, v x = 0 → u x = 0) (huv : Tendsto (u / v) l (𝓝 1)) :
     u ~[l] v :=
-  isEquivalent_of_tendsto_one (eventually_of_forall hz) huv
+  isEquivalent_of_tendsto_one (Eventually.of_forall hz) huv
 
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by

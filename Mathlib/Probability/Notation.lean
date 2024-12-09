@@ -24,6 +24,9 @@ We note that the notation `∂P/∂Q` applies to three different cases, namely,
 `MeasureTheory.ComplexMeasure.rnDeriv`.
 
 - `ℙ` is a notation for `volume` on a measured space.
+
+To use these notations, you need to use `open scoped ProbabilityTheory`
+or `open ProbabilityTheory`.
 -/
 
 

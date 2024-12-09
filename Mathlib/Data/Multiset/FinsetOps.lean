@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Multiset.Dedup
+import Mathlib.Data.List.Infix
 
 /-!
 # Preparations for defining operations on `Finset`.
@@ -12,6 +13,10 @@ The operations here ignore multiplicities,
 and preparatory for defining the corresponding operations on `Finset`.
 -/
 
+
+-- Assert that we define `Finset` without the material on the set lattice.
+-- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
+assert_not_exists Set.sInter
 
 namespace Multiset
 
@@ -87,7 +92,7 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
   have eq :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
-    fun h => funext fun p => Subtype.eq rfl
+    fun _ => funext fun _ => Subtype.eq rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
       (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
@@ -103,12 +108,12 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
 @[simp]
 theorem disjoint_ndinsert_left {a : α} {s t : Multiset α} :
     Disjoint (ndinsert a s) t ↔ a ∉ t ∧ Disjoint s t :=
-  Iff.trans (by simp [Disjoint]) disjoint_cons_left
+  Iff.trans (by simp [disjoint_left]) disjoint_cons_left
 
 @[simp]
 theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
     Disjoint s (ndinsert a t) ↔ a ∉ s ∧ Disjoint s t := by
-  rw [disjoint_comm, disjoint_ndinsert_left]; tauto
+  rw [_root_.disjoint_comm, disjoint_ndinsert_left]; tauto
 
 /-! ### finset union -/
 
@@ -174,7 +179,7 @@ theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
 theorem Disjoint.ndunion_eq {s t : Multiset α} (h : Disjoint s t) :
     s.ndunion t = s.dedup + t := by
   induction s, t using Quot.induction_on₂
-  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.union_eq h
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.union_eq <| by simpa using h
 
 theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t = t := by
   induction s, t using Quot.induction_on₂
@@ -238,7 +243,7 @@ theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩
   le_antisymm (le_inter (ndinter_le_left _ _) (ndinter_le_right _ d)) (inter_le_ndinter _ _)
 
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
-  rw [← subset_zero]; simp [subset_iff, Disjoint]
+  rw [← subset_zero]; simp [subset_iff, disjoint_left]
 
 alias ⟨_, Disjoint.ndinter_eq_zero⟩ := ndinter_eq_zero_iff_disjoint
 
@@ -247,7 +252,3 @@ theorem Subset.ndinter_eq_left {s t : Multiset α} (h : s ⊆ t) : s.ndinter t =
   rw [quot_mk_to_coe'', quot_mk_to_coe'', coe_ndinter, List.Subset.inter_eq_left h]
 
 end Multiset
-
--- Assert that we define `Finset` without the material on the set lattice.
--- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
-assert_not_exists Set.sInter

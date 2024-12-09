@@ -65,8 +65,7 @@ end SMul
 
 section SMulZero
 
-variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMulZeroClass 𝕜 E]
-  {c : 𝕜} {s t : Set E} {x : E} {r : ℝ≥0∞}
+variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMulZeroClass 𝕜 E] {x : E}
 
 @[simp] lemma egauge_zero_left_eq_top : egauge 𝕜 0 x = ∞ ↔ x ≠ 0 := by
   simp [egauge_eq_top]
@@ -77,8 +76,8 @@ end SMulZero
 
 section Module
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {α E : Type*} [AddCommGroup E] [Module 𝕜 E]
-    {c : 𝕜} {s t : Set E} {x y : E} {r : ℝ≥0∞}
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+    {c : 𝕜} {s : Set E} {x : E}
 
 /-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `((‖c‖₊⁻¹ : ℝ≥0) : ℝ≥0∞).
 
@@ -100,6 +99,11 @@ lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x
   let ⟨c, hxc, hc⟩ := egauge_lt_iff.1 hx
   hs c (mod_cast hc.le) hxc
 
+lemma egauge_eq_zero_iff : egauge 𝕜 s x = 0 ↔ ∃ᶠ c : 𝕜 in 𝓝 0, x ∈ c • s := by
+  refine (iInf₂_eq_bot _).trans ?_
+  rw [(nhds_basis_uniformity uniformity_basis_edist).frequently_iff]
+  simp [and_comm]
+
 variable (𝕜)
 
 @[simp]
@@ -107,8 +111,7 @@ lemma egauge_zero_right (hs : s.Nonempty) : egauge 𝕜 s 0 = 0 := by
   have : 0 ∈ (0 : 𝕜) • s := by simp [zero_smul_set hs]
   simpa using egauge_le_of_mem_smul this
 
-@[simp]
-lemma egauge_zero_zero : egauge 𝕜 (0 : Set E) 0 = 0 := egauge_zero_right _ ⟨0, rfl⟩
+lemma egauge_zero_zero : egauge 𝕜 (0 : Set E) 0 = 0 := by simp
 
 lemma egauge_le_one (h : x ∈ s) : egauge 𝕜 s x ≤ 1 := by
   rw [← one_smul 𝕜 s] at h
@@ -159,8 +162,7 @@ end Module
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedField 𝕜] {α E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {c : 𝕜} {s t : Set E} {x y : E}
+variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖₊ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   rw [le_egauge_iff]
@@ -179,27 +181,28 @@ lemma div_le_egauge_ball (r : ℝ≥0) (x : E) : ‖x‖₊ / r ≤ egauge 𝕜 
 lemma le_egauge_ball_one (x : E) : ‖x‖₊ ≤ egauge 𝕜 (ball 0 1) x := by
   simpa using div_le_egauge_ball 𝕜 1 x
 
-end SeminormedAddCommGroup
+variable {𝕜}
+variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
-section SeminormedAddCommGroup
-
-variable {𝕜 : Type*} [NormedField 𝕜] {α E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {c : 𝕜} {s t : Set E} {x y : E} {r : ℝ≥0}
-
-lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ x ≠ 0) :
+lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖₊ * ‖x‖₊ / r := by
+  letI : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
   rcases (zero_le r).eq_or_lt with rfl | hr
   · rw [ENNReal.coe_zero, ENNReal.div_zero (mul_ne_zero _ _)]
     · apply le_top
     · simpa using one_pos.trans hc
-    · simpa using h₀
-  · rcases eq_or_ne x 0 with rfl | hx
-    · rw [egauge_zero_right] <;> simp [*]
-    rcases rescale_to_shell hc hr hx with ⟨a, ha₀, har, -, hainv⟩
-    calc
-      egauge 𝕜 (ball 0 r) x ≤ ↑(‖a‖₊⁻¹) := egauge_le_of_smul_mem_of_ne (mem_ball_zero_iff.2 har) ha₀
-      _ ≤ ↑(‖c‖₊ * ‖x‖₊ / r) := by rwa [ENNReal.coe_le_coe, div_eq_inv_mul, ← mul_assoc]
-      _ ≤ ‖c‖₊ * ‖x‖₊ / r := ENNReal.coe_div_le.trans <| by rw [ENNReal.coe_mul]
+    · simpa [← NNReal.coe_eq_zero] using h₀
+  · rcases eq_or_ne ‖x‖ 0 with hx | hx
+    · have hx' : ‖x‖₊ = 0 := by rwa [← coe_nnnorm, NNReal.coe_eq_zero] at hx
+      simp [egauge_eq_zero_iff, hx']
+      refine (frequently_iff_neBot.2 (inferInstance : NeBot (𝓝[≠] (0 : 𝕜)))).mono fun c hc ↦ ?_
+      simp [mem_smul_set_iff_inv_smul_mem₀ hc, norm_smul, hx, hr]
+    · rcases rescale_to_shell_semi_normed hc hr hx with ⟨a, ha₀, har, -, hainv⟩
+      calc
+        egauge 𝕜 (ball 0 r) x ≤ ↑(‖a‖₊⁻¹) :=
+          egauge_le_of_smul_mem_of_ne (mem_ball_zero_iff.2 har) ha₀
+        _ ≤ ↑(‖c‖₊ * ‖x‖₊ / r) := by rwa [ENNReal.coe_le_coe, div_eq_inv_mul, ← mul_assoc]
+        _ ≤ ‖c‖₊ * ‖x‖₊ / r := ENNReal.coe_div_le.trans <| by rw [ENNReal.coe_mul]
 
 lemma egauge_ball_one_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (ball 0 1) x ≤ ‖c‖₊ * ‖x‖₊ := by

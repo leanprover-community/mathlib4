@@ -7,6 +7,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
 import Batteries.Tactic.Congr
+import Batteries.Lean.Except
 
 /-!
 # Continuation Monad
@@ -49,7 +50,7 @@ namespace ContT
 
 export MonadCont (Label goto)
 
-variable {r : Type u} {m : Type u → Type v} {α β γ ω : Type w}
+variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
 def run : ContT r m α → (α → m r) → m r :=
   id
@@ -104,7 +105,10 @@ instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
 
 end ContT
 
-variable {m : Type u → Type v} [Monad m]
+variable {m : Type u → Type v}
+
+section
+variable [Monad m]
 
 def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (ExceptT ε m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
@@ -183,6 +187,8 @@ def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
   WriterT.mk <|
     MonadCont.callCC (WriterT.run ∘ f ∘ WriterT.mkLabel' : Label (α × ω) m β → m (α × ω))
 
+end
+
 instance (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC
 
@@ -202,7 +208,7 @@ nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
 instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
   callCC := StateT.callCC
 
-instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
+instance {σ} [Monad m] [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
   callCC_bind_right := by
     intros
     simp only [callCC, StateT.callCC, StateT.run_bind, callCC_bind_right]; ext; rfl
@@ -228,7 +234,7 @@ nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
 instance {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
   callCC := ReaderT.callCC
 
-instance {ρ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
+instance {ρ} [Monad m] [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
   callCC_bind_right := by intros; simp only [callCC, ReaderT.callCC, ReaderT.run_bind,
                                     callCC_bind_right]; ext; rfl
   callCC_bind_left := by

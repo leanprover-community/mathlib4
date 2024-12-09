@@ -33,7 +33,7 @@ integrate, integration, integrable, integrability
 -/
 
 
-open Real Nat Set Finset
+open Real Set Finset
 
 open scoped Real Interval
 
@@ -43,7 +43,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
 
 /-! ### Interval integrability -/
 
@@ -115,16 +115,16 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     IntervalIntegrable (fun x : ℝ => (x : ℂ) ^ r) μ a b := by
   by_cases h2 : (0 : ℝ) ∉ [[a, b]]
   · -- Easy case #1: 0 ∉ [a, b] -- use continuity.
-    refine (ContinuousAt.continuousOn fun x hx => ?_).intervalIntegrable
+    refine (continuousOn_of_forall_continuousAt fun x hx => ?_).intervalIntegrable
     exact Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_mem_of_not_mem hx h2)
-  rw [eq_false h2, or_false_iff] at h
+  rw [eq_false h2, or_false] at h
   rcases lt_or_eq_of_le h with (h' | h')
   · -- Easy case #2: 0 < re r -- again use continuity
     exact (Complex.continuous_ofReal_cpow_const h').intervalIntegrable _ _
   -- Now the hard case: re r = 0 and 0 is in the interval.
   refine (IntervalIntegrable.intervalIntegrable_norm_iff ?_).mp ?_
   · refine (measurable_of_continuousOn_compl_singleton (0 : ℝ) ?_).aestronglyMeasurable
-    exact ContinuousAt.continuousOn fun x hx =>
+    exact continuousOn_of_forall_continuousAt fun x hx =>
       Complex.continuousAt_ofReal_cpow_const x r (Or.inr hx)
   -- reduce to case of integral over `[0, c]`
   suffices ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x : ℂ) ^ r‖) μ 0 c from
@@ -175,7 +175,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
         rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_uIoc
-      refine ContinuousAt.continuousOn fun x hx => ?_
+      refine continuousOn_of_forall_continuousAt fun x hx => ?_
       rw [uIoc_of_le hc] at hx
       refine (continuousAt_cpow_const (Or.inl ?_)).comp Complex.continuous_ofReal.continuousAt
       rw [Complex.ofReal_re]
@@ -206,7 +206,6 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
 theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 
@@ -253,60 +252,61 @@ theorem intervalIntegrable_inv_one_add_sq :
   field_simp; exact mod_cast intervalIntegrable_one_div_one_add_sq
 
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
+section
 
-
--- Porting note (#10618): was @[simp];
--- simpNF says LHS does not simplify when applying lemma on itself
+@[simp]
 theorem mul_integral_comp_mul_right : (c * ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x :=
   smul_integral_comp_mul_right f c
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem mul_integral_comp_mul_left : (c * ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x :=
   smul_integral_comp_mul_left f c
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_mul_integral_comp_div : (c⁻¹ * ∫ x in a..b, f (x / c)) = ∫ x in a / c..b / c, f x :=
   inv_smul_integral_comp_div f c
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem mul_integral_comp_mul_add :
     (c * ∫ x in a..b, f (c * x + d)) = ∫ x in c * a + d..c * b + d, f x :=
   smul_integral_comp_mul_add f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem mul_integral_comp_add_mul :
     (c * ∫ x in a..b, f (d + c * x)) = ∫ x in d + c * a..d + c * b, f x :=
   smul_integral_comp_add_mul f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_mul_integral_comp_div_add :
     (c⁻¹ * ∫ x in a..b, f (x / c + d)) = ∫ x in a / c + d..b / c + d, f x :=
   inv_smul_integral_comp_div_add f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_mul_integral_comp_add_div :
     (c⁻¹ * ∫ x in a..b, f (d + x / c)) = ∫ x in d + a / c..d + b / c, f x :=
   inv_smul_integral_comp_add_div f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem mul_integral_comp_mul_sub :
     (c * ∫ x in a..b, f (c * x - d)) = ∫ x in c * a - d..c * b - d, f x :=
   smul_integral_comp_mul_sub f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem mul_integral_comp_sub_mul :
     (c * ∫ x in a..b, f (d - c * x)) = ∫ x in d - c * b..d - c * a, f x :=
   smul_integral_comp_sub_mul f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_mul_integral_comp_div_sub :
     (c⁻¹ * ∫ x in a..b, f (x / c - d)) = ∫ x in a / c - d..b / c - d, f x :=
   inv_smul_integral_comp_div_sub f c d
 
--- Porting note (#10618): was @[simp]
+@[simp]
 theorem inv_mul_integral_comp_sub_div :
     (c⁻¹ * ∫ x in a..b, f (d - x / c)) = ∫ x in d - b / c..d - a / c, f x :=
   inv_smul_integral_comp_sub_div f c d
+
+end
 
 end intervalIntegral
 
@@ -408,7 +408,6 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   norm_num at this
   exact this
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
   simp only [mul_one, smul_eq_mul, integral_const]
 
@@ -461,7 +460,7 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
 theorem integral_log (h : (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, log x = b * log b - a * log a - b + a := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
-  have heq := fun x hx => mul_inv_cancel (h' x hx)
+  have heq := fun x hx => mul_inv_cancel₀ (h' x hx)
   convert integral_mul_deriv_eq_deriv_mul (fun x hx => hasDerivAt_log (h' x hx))
     (fun x _ => hasDerivAt_id x) (continuousOn_inv₀.mono <|
       subset_compl_singleton_iff.mpr h).intervalIntegrable
@@ -502,7 +501,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   intro x _
   have a := Complex.hasDerivAt_sin (↑x * z)
   have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
-  have c : HasDerivAt (fun y : ℂ => Complex.sin (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
+  have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
   simp only [mul_comm] at d
   convert d using 1
@@ -579,8 +578,9 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
 
 end RpowCpow
 
-/-! ### Integral of `sin x ^ n` -/
+open Nat
 
+/-! ### Integral of `sin x ^ n` -/
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
@@ -767,17 +767,10 @@ theorem integral_sin_sq_mul_cos_sq :
   have h2 : Continuous fun x => cos (2 * x) ^ 2 := by fun_prop
   have h3 : ∀ x, cos x * sin x = sin (2 * x) / 2 := by intro; rw [sin_two_mul]; ring
   have h4 : ∀ d : ℝ, 2 * (2 * d) = 4 * d := fun d => by ring
-  -- Porting note: was
-  -- `simp [h1, h2.interval_integrable, integral_comp_mul_left fun x => cos x ^ 2, h3, h4]`
-  -- `ring`
-  simp only [pow_one, h1]
-  rw [integral_div, integral_sub, integral_one]
-  · simp [integral_comp_mul_left (fun x => cos x ^ 2), h3, h4]; ring
-  · exact intervalIntegrable_const
-  · exact h2.intervalIntegrable a b
+  simp [h1, h2.intervalIntegrable, integral_comp_mul_left fun x => cos x ^ 2, h3, h4]
+  ring
 
-/-! ### Integral of misc. functions -/
-
+/-! ### Integral of miscellaneous functions -/
 
 theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) = π / 2 :=
   calc
@@ -788,5 +781,5 @@ theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) 
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
           refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
           rw [uIoc_of_le (neg_le_self (le_of_lt (half_pos Real.pi_pos))), Set.mem_Ioc] at h
-          rw [ ← Real.cos_eq_sqrt_one_sub_sin_sq (le_of_lt h.1) h.2, pow_two]
+          rw [← Real.cos_eq_sqrt_one_sub_sin_sq (le_of_lt h.1) h.2, pow_two]
     _ = π / 2 := by simp

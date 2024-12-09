@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
@@ -222,7 +222,7 @@ open Finset
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (stdBasisMatrix i j <| monomial k x) = monomial k (stdBasisMatrix i j x) := by
-  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_std_basis]
+  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_stdBasisMatrix]
   apply (polyEquivTensor R (Matrix n n R)).injective
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
@@ -251,7 +251,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
   · intro p q hp hq
     simp [hp, hq]
   · intro i' j' x
-    erw [matPolyEquiv_coeff_apply_aux_2]
+    rw [matPolyEquiv_coeff_apply_aux_2]
     dsimp [stdBasisMatrix]
     split_ifs <;> rename_i h
     · rcases h with ⟨rfl, rfl⟩

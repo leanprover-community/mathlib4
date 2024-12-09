@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -63,13 +63,9 @@ theorem binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
 /-- We verify that the biproduct in `ModuleCat R` is isomorphic to
 the cartesian product of the underlying types:
 -/
-@[simps! hom_apply]
 noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
     (M ⊞ N : ModuleCat.{v} R) ≅ ModuleCat.of R (M × N) :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit M N) (binaryProductLimitCone M N).isLimit
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply
 
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
@@ -107,7 +103,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
-      fac := fun s j => rfl
+      fac := fun _ _ => rfl
       uniq := fun s m w => by
         ext x
         funext j
@@ -122,13 +118,9 @@ variable {J : Type} (f : J → ModuleCat.{v} R)
 /-- We verify that the biproduct we've just defined is isomorphic to the `ModuleCat R` structure
 on the dependent function type.
 -/
-@[simps! hom_apply]
 noncomputable def biproductIsoPi [Finite J] (f : J → ModuleCat.{v} R) :
     ((⨁ f) : ModuleCat.{v} R) ≅ ModuleCat.of R (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π [Finite J] (f : J → ModuleCat.{v} R) (j : J) :
@@ -152,8 +144,8 @@ of modules. -/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
-    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
-    (ModuleCat.ofHom g) exac) (asHom f) h
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.asHom j)
+    (ModuleCat.asHom g) exac) (asHom f) h
     (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _ ).symm.toLinearEquiv
 
@@ -162,8 +154,8 @@ of modules. -/
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _
-    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
-    (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) h
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.asHom j)
+    (ModuleCat.asHom g) exac) (ModuleCat.asHom f) h
     (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
 

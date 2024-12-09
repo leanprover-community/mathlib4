@@ -18,33 +18,11 @@ universe u
 
 variable {m n : ℕ}
 
-/-- Equivalence between `Fin 0` and `Empty`. -/
-def finZeroEquiv : Fin 0 ≃ Empty :=
-  Equiv.equivEmpty _
+/-!
+### Miscellaneous
 
-/-- Equivalence between `Fin 0` and `PEmpty`. -/
-def finZeroEquiv' : Fin 0 ≃ PEmpty.{u} :=
-  Equiv.equivPEmpty _
-
-/-- Equivalence between `Fin 1` and `Unit`. -/
-def finOneEquiv : Fin 1 ≃ Unit :=
-  Equiv.equivPUnit _
-
-/-- Equivalence between `Fin 2` and `Bool`. -/
-def finTwoEquiv : Fin 2 ≃ Bool where
-  toFun := ![false, true]
-  invFun b := b.casesOn 0 1
-  left_inv := Fin.forall_fin_two.2 <| by simp
-  right_inv := Bool.forall_bool.2 <| by simp
-
-/-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
-non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
-@[simps (config := .asFn)]
-def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
-  toFun f := (f 0, f 1)
-  invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
-  left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
-  right_inv := fun _ => rfl
+This is currently not very sorted. PRs welcome!
+-/
 
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
@@ -202,7 +180,7 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
   finSuccEquiv'_symm_none _
 
 /-- Equivalence between `Π j : Fin (n + 1), α j` and `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
-@[simps (config := .asFn)]
+@[simps (config := .asFn), deprecated Fin.insertNthEquiv (since := "2024-07-12")]
 def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
   toFun f := (f i, i.removeNth f)
@@ -211,9 +189,9 @@ def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
   right_inv f := by simp
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
-@[simps! (config := .asFn)]
+@[simps! (config := .asFn), deprecated Fin.consEquiv (since := "2024-07-12")]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  Equiv.piFinSuccAbove (fun _ => β) 0
+  (Fin.insertNthEquiv (fun _ => β) 0).symm
 
 /-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
 the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
@@ -236,9 +214,9 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
 element of the tuple. -/
-@[simps! (config := .asFn)]
+@[simps! (config := .asFn), deprecated Fin.snocEquiv (since := "2024-07-12")]
 def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  Equiv.piFinSuccAbove (fun _ => β) (.last _)
+  (Fin.insertNthEquiv (fun _ => β) (.last _)).symm
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
@@ -385,7 +363,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
           _ = y.1 := Nat.mod_eq_of_lt y.2
           )
-  right_inv x := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
+  right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 This is like `finProdFinEquiv.symm` but with `m` infinite.
@@ -395,7 +373,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, ↑a)
   invFun p := p.1 * n + ↑p.2
   -- TODO: is there a canonical order of `*` and `+` here?
-  left_inv a := Nat.div_add_mod' _ _
+  left_inv _ := Nat.div_add_mod' _ _
   right_inv p := by
     refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only
@@ -411,7 +389,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   toFun a := (a / n, ↑(a.natMod n))
   invFun p := p.1 * n + ↑p.2
   left_inv a := by
-    simp_rw [Fin.coe_ofNat_eq_mod, natCast_mod, natMod,
+    simp_rw [Fin.coe_natCast_eq_mod, natCast_mod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
       ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ => by
@@ -439,3 +417,12 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 /-- `Fin 1` is a subsingleton. -/
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
+
+/-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.-/
+@[simps]
+def Fin.appendEquiv {α : Type*} (m n : ℕ) :
+    (Fin m → α) × (Fin n → α) ≃ (Fin (m + n) → α) where
+  toFun fg := Fin.append fg.1 fg.2
+  invFun f := ⟨fun i ↦ f (Fin.castAdd n i), fun i ↦ f (Fin.natAdd m i)⟩
+  left_inv fg := by simp
+  right_inv f := by simp [Fin.append_castAdd_natAdd]

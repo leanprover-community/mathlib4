@@ -17,7 +17,7 @@ and hence has coefficients that are multivariate polynomials.
 It is universal in the sense that one obtains the characteristic polynomial of a matrix `M`
 by evaluating the coefficients of `univ` at the entries of `M`.
 
-We use it to show that the coeffients of the characteristic polynomial
+We use it to show that the coefficients of the characteristic polynomial
 of a matrix are homogeneous polynomials in the matrix entries.
 
 ## Main results
@@ -71,7 +71,6 @@ variable (R)
 
 lemma univ_monic : (univ R n).Monic := charpoly_monic (mvPolynomialX n n R)
 
--- Porting note (#10618): no @[simp], since simp can prove this
 lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
   charpoly_natDegree_eq_dim (mvPolynomialX n n R)
 

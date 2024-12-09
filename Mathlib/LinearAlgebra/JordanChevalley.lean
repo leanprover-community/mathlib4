@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Dynamics.Newton
 import Mathlib.LinearAlgebra.Semisimple
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Jordan-Chevalley-Dunford decomposition
@@ -37,7 +38,7 @@ open Algebra Polynomial
 
 namespace Module.End
 
-variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V] {f : End K V}
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
 
 theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :
@@ -63,6 +64,8 @@ theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : 
     simpa using hk
   · replace hss : aeval s P = 0 := by rwa [Subtype.ext_iff, coe_aeval_mk_apply] at hss
     exact isSemisimple_of_squarefree_aeval_eq_zero sep.squarefree hss
+
+variable [FiniteDimensional K V]
 
 /-- **Jordan-Chevalley-Dunford decomposition**: an endomorphism of a finite-dimensional vector space
 over a perfect field may be written as a sum of nilpotent and semisimple endomorphisms. Moreover

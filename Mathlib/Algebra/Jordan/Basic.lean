@@ -82,12 +82,12 @@ class IsJordan [Mul A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
   rmul_comm_rmul_rmul : ∀ a b : A, b * a * (a * a) = b * (a * a) * a
 
-/-- A commutative Jordan multipication -/
+/-- A commutative Jordan multiplication -/
 class IsCommJordan [CommMagma A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 
 -- see Note [lower instance priority]
-/-- A (commutative) Jordan multiplication is also a Jordan multipication -/
+/-- A (commutative) Jordan multiplication is also a Jordan multiplication -/
 instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
   lmul_lmul_comm_lmul a b := by
@@ -101,7 +101,7 @@ instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A
     rw [mul_comm b a, IsCommJordan.lmul_comm_rmul_rmul, mul_comm]
 
 -- see Note [lower instance priority]
-/-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms-/
+/-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms -/
 instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_assoc]
   lmul_lmul_comm_lmul a b := by rw [mul_assoc, mul_assoc]
@@ -148,15 +148,14 @@ theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
 
 end Commute
 
-variable {A} [NonUnitalNonAssocCommRing A] [IsCommJordan A]
+variable {A} [NonUnitalNonAssocCommRing A]
 
 /-!
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped
 with a Lie Bracket via `Ring.bracket`.
 -/
 
-
-theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
+theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add [IsCommJordan A] (a b : A) :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
@@ -190,6 +189,8 @@ private theorem aux1 {a b c : A} :
     ⁅L c, 2 • L (a * b)⁆ + ⁅L c, 2 • L (c * a)⁆ + ⁅L c, 2 • L (b * c)⁆) := by
   rw [add_lie, add_lie]
   iterate 15 rw [lie_add]
+
+variable [IsCommJordan A]
 
 private theorem aux2 {a b c : A} :
     ⁅L a, L (a * a)⁆ + ⁅L a, L (b * b)⁆ + ⁅L a, L (c * c)⁆ +

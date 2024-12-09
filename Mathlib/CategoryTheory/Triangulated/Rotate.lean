@@ -72,8 +72,8 @@ def Triangle.invRotate (T : Triangle C) : Triangle C :=
 end
 
 attribute [local simp] shift_shift_neg' shift_neg_shift'
-  shift_shiftFunctorCompIsoId_add_neg_self_inv_app
-  shift_shiftFunctorCompIsoId_add_neg_self_hom_app
+  shift_shiftFunctorCompIsoId_add_neg_cancel_inv_app
+  shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app
 
 variable (C)
 

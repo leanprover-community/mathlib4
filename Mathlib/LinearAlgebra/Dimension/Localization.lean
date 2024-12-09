@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Submodule.Localization
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.OreLocalization.OreSet
@@ -15,9 +15,9 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 
 - `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
-
 -/
-open Cardinal nonZeroDivisors
+
+open Cardinal Module nonZeroDivisors
 
 section CommRing
 
@@ -28,6 +28,12 @@ variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
+
+section
+include hp
+
+section
+include f
 
 variable {S} in
 lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearIndependent S v) :
@@ -48,15 +54,12 @@ lemma IsLocalizedModule.lift_rank_eq :
   cases' subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
   have := (IsLocalization.injective S hp).nontrivial
-  apply le_antisymm
-  · rw [Module.rank_def, lift_iSup (bddAbove_range.{v', v'} _)]
-    apply ciSup_le'
+  apply le_antisymm <;>
+    rw [Module.rank_def, lift_iSup (bddAbove_range _)] <;>
+    apply ciSup_le' <;>
     intro ⟨s, hs⟩
-    exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
-  · rw [Module.rank_def, lift_iSup (bddAbove_range.{v, v} _)]
-    apply ciSup_le'
-    intro ⟨s, hs⟩
-    choose sec hsec using IsLocalization.surj p (S := S)
+  · exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
+  · choose sec hsec using IsLocalization.surj p (S := S)
     refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) ?_
     rw [linearIndependent_iff'] at hs ⊢
     intro t g hg i hit
@@ -77,9 +80,13 @@ lemma IsLocalizedModule.lift_rank_eq :
     apply hp (c * u i).prop
     exact hs t _ hc _ hit
 
+end
+
 lemma IsLocalizedModule.rank_eq {N : Type v} [AddCommGroup N]
     [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[R] N) [IsLocalizedModule p f] :
     Module.rank S N = Module.rank R M := by simpa using IsLocalizedModule.lift_rank_eq S p f hp
+
+end
 
 variable (R M) in
 theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
@@ -110,7 +117,7 @@ end CommRing
 
 section Ring
 
-variable {R} [Ring R] [IsDomain R] (S : Submonoid R)
+variable {R} [Ring R] [IsDomain R]
 
 /-- A domain that is not (left) Ore is of infinite rank.
 See [cohn_1995] Proposition 1.3.6 -/

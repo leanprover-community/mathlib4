@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Induction
+import Mathlib.Algebra.Polynomial.Degree.Operations
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -163,11 +162,12 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
     (hadd : ∀ {p} {a}, 0 < degree p → P p → P (p + C a)) : P p :=
   recOnHorner p (fun h => by rw [degree_zero] at h; exact absurd h (by decide))
-    (fun p a _ _ ih h0 =>
-      have : 0 < degree p :=
-        lt_of_not_ge fun h =>
-          not_lt_of_ge degree_C_le <| by rwa [eq_C_of_degree_le_zero h, ← C_add] at h0
-      hadd this (ih this))
+    (fun p a heq0 _ ih h0 =>
+      (have : 0 < degree p :=
+        (lt_of_not_ge fun h =>
+          not_lt_of_ge (degree_C_le (a := a)) <|
+            by rwa [eq_C_of_degree_le_zero h, ← C_add,heq0,zero_add] at h0)
+      hadd this (ih this)))
     (fun p _ ih h0' =>
       if h0 : 0 < degree p then hX h0 (ih h0)
       else by

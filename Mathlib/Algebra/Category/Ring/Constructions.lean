@@ -3,11 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
+import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -26,7 +26,7 @@ suppress_compilation
 
 universe u u'
 
-open CategoryTheory CategoryTheory.Limits TensorProduct
+open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 
@@ -103,6 +103,16 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
 
+lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] :
+    IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
+      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeLeftRingHom)
+      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeRight.toRingHom) where
+  w := by
+    ext
+    simp
+  isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
+
 end Pushout
 
 section Terminal
@@ -111,7 +121,7 @@ section Terminal
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
   · rfl
-  · intros; simp; ext
+  · intros; simp only [coe_of, Pi.one_apply, self_eq_add_right]; ext
   · intros f; ext; rfl
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
@@ -133,6 +143,14 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 /-- `ℤ` is the initial object of `CommRingCat`. -/
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
   IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
+
+/-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
+def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨(Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
+    fun _ ↦ by
+      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (α := ℤ)).symm.toRingHom)
+        (hf := ULift.ringEquiv.symm.surjective)]
+      apply RingHom.ext_int⟩)
 
 end Terminal
 
@@ -160,7 +178,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [← eq1, ← eq2]
     rfl
 
@@ -183,7 +201,7 @@ The categorical product of rings is the cartesian product of rings.
 def piFanIsLimit : IsLimit (piFan R) where
   lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
   fac s i := by rfl
-  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
+  uniq _ _ h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
 
 /--
 The categorical product and the usual product agrees
@@ -224,7 +242,7 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   · intro m hm
     exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
 
-instance : IsLocalRingHom (equalizerFork f g).ι := by
+instance : IsLocalHom (equalizerFork f g).ι := by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
   have : y ∈ RingHom.eqLocus f g := by
@@ -234,8 +252,9 @@ instance : IsLocalRingHom (equalizerFork f g).ι := by
   rw [isUnit_iff_exists_inv]
   exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
 
-instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
-    IsLocalRingHom (limit.π F WalkingParallelPair.zero) := by
+@[instance]
+theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
+    IsLocalHom (limit.π F WalkingParallelPair.zero) := by
   have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
   rw [← IsIso.comp_inv_eq] at this
   rw [← this]
@@ -244,15 +263,18 @@ instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u
         equalizerForkIsLimit (F.map WalkingParallelPairHom.left)
           (F.map WalkingParallelPairHom.right)⟩
       WalkingParallelPair.zero]
-  change IsLocalRingHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
+  change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
   infer_instance
+
+@[deprecated (since := "2024-10-10")]
+alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
 
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
 instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
-    IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
+    IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
   have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
     (limit.isoLimitCone_inv_π
         ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩

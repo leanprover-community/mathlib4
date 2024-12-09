@@ -65,12 +65,12 @@ theorem pderiv_def [DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.sin
 theorem pderiv_monomial {i : σ} :
     pderiv i (monomial s a) = monomial (s - single i 1) (a * s i) := by
   classical
-    simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
-      ← (monomial _).map_smul]
-    refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
-    · simp [Pi.single_eq_of_ne hne]
-    · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
-    · simp
+  simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
+    ← (monomial _).map_smul]
+  refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
+  · simp [Pi.single_eq_of_ne hne]
+  · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
+  · simp
 
 theorem pderiv_C {i : σ} : pderiv i (C a) = 0 :=
   derivation_C _ _
@@ -79,7 +79,7 @@ theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 
 @[simp]
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
-    pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun j => _) i 1 j := by
+    pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun _ => _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
 
 @[simp]
@@ -104,7 +104,6 @@ theorem pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
     pderiv i (f ^ n) = n * f ^ (n - 1) * pderiv i f := by
   rw [(pderiv i).leibniz_pow f n, nsmul_eq_mul, smul_eq_mul, mul_assoc]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
 
@@ -114,6 +113,28 @@ theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R}
   obtain rfl | h := eq_or_ne j i
   · simp [eq]
   · simp [eq, h]
+
+lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
+    (x : σ) (p : MvPolynomial σ R) :
+    pderiv (f x) (rename f p) = rename f (pderiv x p) := by
+  classical
+  induction' p using MvPolynomial.induction_on with a p q hp hq p a h
+  · simp
+  · simp [hp, hq]
+  · simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
+      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
+    split_ifs <;> simp
+
+lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
+    (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (j : σ) :
+    aeval (Sum.elim X (C ∘ f)) ((pderiv (Sum.inl j)) p) =
+      (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
+  classical
+  induction' p using MvPolynomial.induction_on with a p q hp hq p q h
+  · simp
+  · simp [hp, hq]
+  · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
+    cases q <;> simp [Pi.single_apply]
 
 end PDeriv
 
