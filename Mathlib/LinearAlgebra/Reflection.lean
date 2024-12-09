@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Reflections in linear algebra
