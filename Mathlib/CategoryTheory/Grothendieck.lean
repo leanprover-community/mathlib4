@@ -177,6 +177,7 @@ section Transport
 If `F : C ⥤ Cat` is a functor and `t : c ⟶ d` is a morphism in `C`, then `transport` maps each
 `c`-based element of `Grothendieck F` to a `d`-based element.
 -/
+@[simp]
 def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : Grothendieck F :=
   ⟨c, (F.map t).obj x.fiber⟩
 
@@ -186,8 +187,9 @@ If `F : C ⥤ Cat` is a functor and `t : c ⟶ d` is a morphism in `C`, then `tr
 
 `transport_hom` is the morphism `x ⟶ x.transport t` induced by `t` and the identity on fibers.
 -/
-def transport_hom (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : x ⟶ x.transport t :=
-  ⟨t, CategoryStruct.id _⟩
+@[simps]
+def toTransport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : x ⟶ x.transport t :=
+  ⟨t, 𝟙 _⟩
 
 /--
 If `F : C ⥤ Cat` and `x : Grothendieck F`, then every `C`-isomorphism `α : x.base ≅ c` induces
@@ -195,14 +197,14 @@ an isomorphism between `x` and its transport along `α`
 -/
 @[simps]
 def transportIso (x : Grothendieck F) {c : C} (α : x.base ≅ c) :
-    x.transport α.hom ≅ x := by
-  refine ⟨?_, x.transport_hom α.hom, ?_, ?_⟩
-  · refine ⟨α.inv, eqToHom ?_⟩
-    simp only [transport]
-    rw [← Functor.comp_obj, ← Cat.comp_eq_comp]
-    simp
-  · apply Grothendieck.ext <;> simp [transport_hom]
-  · apply Grothendieck.ext <;> simp [transport_hom]
+    x.transport α.hom ≅ x where
+  hom := ⟨α.inv, eqToHom (by
+    dsimp
+    rw [← Functor.comp_obj, ← Cat.comp_eq_comp, ← F.map_comp, α.hom_inv_id, F.map_id,
+      Cat.id_obj])⟩
+  inv := x.toTransport α.hom
+  hom_inv_id := by apply Grothendieck.ext <;> simp
+  inv_hom_id := by apply Grothendieck.ext <;> simp
 
 end Transport
 section
@@ -434,18 +436,16 @@ morphism `pre F G` and `pre F H`, up to composition with
 `Grothendieck (G ⋙ F) ⥤ Grothendieck (H ⋙ F)`.
 -/
 def preNatIso {G H : D ⥤ C} (α : G ≅ H) :
-    pre F G ≅ (map (whiskerRight α.hom F)) ⋙ (pre F H) :=
+    pre F G ≅ map (whiskerRight α.hom F) ⋙ (pre F H) :=
   NatIso.ofComponents
     (fun X => (transportIso ⟨G.obj X.base, X.fiber⟩ (α.app X.base)).symm)
-    (fun f => by fapply Grothendieck.ext <;> simp [transport_hom])
+    (fun f => by fapply Grothendieck.ext <;> simp)
 
 /--
 Given an equivalence of categories `G`, `preInv _ G` is the (weak) inverse of the `pre _ G.functor`.
 -/
-def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) := by
-  refine map ?_ ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
-  rw [← Functor.assoc]
-  exact eqToHom (Functor.id_comp F) ≫ (whiskerRight G.counitInv F)
+def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) :=
+  map (whiskerRight G.counitInv F) ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
 
 variable {F} in
 lemma pre_comp_map (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
