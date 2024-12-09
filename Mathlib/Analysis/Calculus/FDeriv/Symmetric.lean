@@ -475,7 +475,8 @@ variable (𝕜) in
 /-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than `n` for which one can do
 serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise, this is `ω` as only
 analytic functions are well behaved on `ℚₚ`, say. -/
-noncomputable def minSmoothness (n : WithTop ℕ∞) := if IsRCLikeNormedField 𝕜 then n else ω
+noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
+  if IsRCLikeNormedField 𝕜 then n else ω
 
 @[simp] lemma minSmoothness_of_IsRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : WithTop ℕ∞} :
     minSmoothness 𝕜 n = n := by
@@ -520,7 +521,8 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
     simpa [hn] using hf
 
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
-of the set, then its second derivative there is symmetric. -/
+of the set, then its second derivative there is symmetric. Over a field
+different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
 theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
