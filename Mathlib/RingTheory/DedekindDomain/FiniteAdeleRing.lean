@@ -385,13 +385,12 @@ instance : CoeFun (FiniteAdeleRing R K)
 
 section Algebra
 
-variable (R' L : Type*) [CommRing R'] [Field L] [Algebra R L] [IsDedekindDomain R']
-  [Algebra R' L] [IsFractionRing R' L] [Algebra K (FiniteAdeleRing R' L)] [IsFractionRing R L]
-  [Algebra K L]  [IsScalarTower K L (FiniteAdeleRing R' L)]
+variable (L : Type*) [Field L] [Algebra L K] [Algebra L (FiniteAdeleRing R K)]
+  [IsScalarTower L K (FiniteAdeleRing R K)]
 
-theorem algebraMap_extension (r : K) :
-  algebraMap K (FiniteAdeleRing R' L) r = algebraMap L (FiniteAdeleRing R' L) (algebraMap K L r) :=
-  IsScalarTower.algebraMap_apply K L (FiniteAdeleRing R' L) r
+theorem algebraMap_extension (r : L) :
+  algebraMap L (FiniteAdeleRing R K) r = algebraMap K (FiniteAdeleRing R K) (algebraMap L K r) :=
+  IsScalarTower.algebraMap_apply L K (FiniteAdeleRing R K) r
 
 end Algebra
 
