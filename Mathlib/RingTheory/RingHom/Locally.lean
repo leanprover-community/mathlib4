@@ -324,10 +324,10 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
     convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
-    simp +zetaDelta [Algebra.algebraMapSubmonoid]
+    simp [rₐ, Sₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
-    simp +zetaDelta [Submonoid.powers_le]
+    simp [rₐ, Sₐ, Submonoid.powers_le]
   letI (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val)) (H a)).toAlgebra
   haveI (a : s) : IsScalarTower S S' (Sₐ a) :=
