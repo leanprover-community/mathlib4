@@ -340,8 +340,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | ⊤ => exact Iff.rfl
   | (⊤ : ℕ∞) => simp
   | (n : ℕ) =>
-    #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
-    norm_cast +zeta
+    norm_cast
     simp only [coe_ne_top, iff_false, ne_eq]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun

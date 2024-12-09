@@ -75,8 +75,7 @@ lemma cast_injective : Injective ((↑) : ℚ≥0 → α) := by
   rintro p q hpq
   rw [NNRat.cast_def, NNRat.cast_def, Commute.div_eq_div_iff] at hpq
   on_goal 1 => rw [← p.num_div_den, ← q.num_div_den, div_eq_div_iff]
-  · #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
-    norm_cast +zeta at hpq ⊢
+  · norm_cast at hpq ⊢
   any_goals norm_cast
   any_goals apply den_ne_zero
   exact Nat.cast_commute ..

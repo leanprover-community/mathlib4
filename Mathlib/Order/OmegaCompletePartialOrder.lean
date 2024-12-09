@@ -605,8 +605,7 @@ theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f)
   lift s to Set (α →o β) using fun f hf => (hc f hf).to_monotone
   simp only [Set.forall_mem_image, continuous'_coe] at hc
   rw [sSup_image]
-  #adaptation_note /-- Needs `+zeta +beta` after https://github.com/leanprover/lean4/pull/6123 -/
-  norm_cast +zeta +beta
+  norm_cast
   exact iSup_continuous fun f ↦ iSup_continuous fun hf ↦ hc hf
 
 set_option linter.deprecated false in

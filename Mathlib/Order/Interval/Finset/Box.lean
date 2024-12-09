@@ -84,8 +84,7 @@ attribute [norm_cast] toNat_ofNat
 lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | n + 1, _ => by
     simp_rw [Prod.card_box_succ, card_Icc, sub_neg_eq_add]
-    #adaptation_note /-- Needs `+zeta` after https://github.com/leanprover/lean4/pull/6123 -/
-    norm_cast +zeta
+    norm_cast
     refine tsub_eq_of_eq_add ?_
     zify
     ring
