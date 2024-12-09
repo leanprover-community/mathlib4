@@ -576,12 +576,6 @@ instance basicOpenSectionsToAffine_isIso :
   rw [hU.range_fromSpec]
   exact RingedSpace.basicOpen_le _ _
 
-/-- TODO: upstream me and repeat for the other `RingCat`s -/
-@[simp]
-lemma _root_.CategoryTheory.Iso.commRingCatIsoToRingEquiv_toRingHom
-    {R S : CommRingCat.{u}} (e : R ≅ S) :
-  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
-
 include hU in
 theorem isLocalization_basicOpen :
     IsLocalization.Away f Γ(X, X.basicOpen f) := by

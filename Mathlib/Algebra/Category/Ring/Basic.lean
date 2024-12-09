@@ -609,6 +609,18 @@ def commSemiRingCatIsoToRingEquiv {R S : CommSemiRingCat.{u}} (e : R ≅ S) : R 
 def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
   RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
+@[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
+  (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+
+@[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
+  (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+
+@[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
+  (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+
+@[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
+  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+
 end CategoryTheory.Iso
 
 -- Porting note: typemax hacks to fix universe complaints
