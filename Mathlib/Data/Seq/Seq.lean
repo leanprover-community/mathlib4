@@ -150,10 +150,8 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
   have : s.get? m ≠ none := mt (s.le_stable m_le_n) this
   Option.ne_none_iff_exists'.mp this
 
-@[simp]
 theorem not_mem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 
-@[simp]
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _
 
@@ -1057,7 +1055,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  -- porting note (#10745): was `simp [bind, map]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
