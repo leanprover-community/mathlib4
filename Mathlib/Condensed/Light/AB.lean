@@ -9,6 +9,9 @@ import Mathlib.Condensed.Light.Limits
 /-!
 
 # Grothendieck's AB axioms for light condensed modules
+
+The category of light condensed `R`-modules over a ring satisfies the countable version of
+Grothendieck's AB4* axiom
 -/
 universe u
 
