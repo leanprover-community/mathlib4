@@ -16,7 +16,7 @@ measures coincide. In other words: If a Subalgebra separates points, it separate
 
 open MeasureTheory Filter
 
-variable {E 𝕜: Type*} [RCLike 𝕜]
+variable {E 𝕜 : Type*} [RCLike 𝕜]
     [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E]
     [SecondCountableTopology E] {P P' : FiniteMeasure E}
 
