@@ -1,4 +1,7 @@
-name: lean4checker Workflow
+name: Daily CI Workflow
+# This workflow runs daily on `master` and the latest `nightly-testing-YYYY-MM-DD` tag,
+# running some expensive CI checks that we don't want to run on every PR.
+# It reports results via Zulip.
 
 on:
   schedule:
