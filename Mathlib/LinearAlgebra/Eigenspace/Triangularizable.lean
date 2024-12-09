@@ -134,7 +134,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
     -- span of all generalized eigenvectors is all of `V`.
     show ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
-    rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES (le_of_eq h_dim_add.symm) h_disjoint]
+    rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
     apply sup_le hER hES
 
 -- Lemma 8.21 of [axler2015]
