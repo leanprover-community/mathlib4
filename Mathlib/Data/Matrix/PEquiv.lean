@@ -156,4 +156,39 @@ theorem equiv_toPEquiv_toMatrix [DecidableEq n] [Zero α] [One α] (σ : Equiv n
     σ.toPEquiv.toMatrix i j = (1 : Matrix n n α) (σ i) j :=
   if_congr Option.some_inj rfl rfl
 
+@[simp]
+lemma map_toMatrix [DecidableEq n] {β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) (σ : m ≃. n) : σ.toMatrix.map f = σ.toMatrix := by
+  ext i j
+  simp
+
 end PEquiv
+
+namespace Equiv
+
+open Matrix
+
+variable {α m n : Type*} [DecidableEq m] [DecidableEq n]
+
+lemma toPEquiv_toMatrix_mulVec_single [Fintype n] [NonAssocSemiring α] (σ : m ≃ n) (i : n) (x : α) :
+    σ.toPEquiv.toMatrix *ᵥ Pi.single i x = Pi.single (σ.symm i) x := by
+  ext j
+  have : σ.toPEquiv j = some i ↔ j = σ.symm i := by
+    simp only [Equiv.toPEquiv, PEquiv.coe_mk, Function.comp_apply, Option.some.injEq]
+    exact Equiv.apply_eq_iff_eq_symm_apply σ
+  simp [Pi.single_apply, this]
+
+lemma single_vecMul_toPEquiv_toMatrix [Fintype m] [NonAssocSemiring α] (σ : m ≃ n) (i : m) (x : α) :
+    Pi.single i x ᵥ* σ.toPEquiv.toMatrix = Pi.single (σ i) x := by
+  ext j
+  simp only [single_vecMul, PEquiv.toMatrix_apply, Option.mem_def, Equiv.toPEquiv_eq_some_iff,
+    mul_ite, mul_one, mul_zero, Pi.single_apply]
+  simp_rw [eq_comm]
+
+@[simp]
+lemma toPEquiv_toMatrix_mul_symm_toPEquiv_toMatrix [Fintype m] [Semiring α] (σ : m ≃ m) :
+    σ.toPEquiv.toMatrix (α := α) * σ.symm.toPEquiv.toMatrix = 1 := by
+  rw [← PEquiv.toMatrix_trans, ← Equiv.toPEquiv_trans, Equiv.self_trans_symm, Equiv.toPEquiv_refl,
+    PEquiv.toMatrix_refl]
+
+end Equiv
