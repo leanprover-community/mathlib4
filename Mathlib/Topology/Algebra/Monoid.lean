@@ -407,7 +407,7 @@ variable {α β : Type*}
 variable [TopologicalSpace M] [MulZeroClass M] [ContinuousMul M]
 
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
-Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then the multiplication map
+Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
 `M × M → M` tends to zero on the filter product `𝓝 0 ×ˢ l`. -/
 theorem tendsto_mul_nhds_zero_prod_of_disjoint_cocompact {l : Filter M}
     (hl : Disjoint l (cocompact M)) :
@@ -421,7 +421,7 @@ theorem tendsto_mul_nhds_zero_prod_of_disjoint_cocompact {l : Filter M}
     simp_all
 
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
-Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then the multiplication map
+Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
 `M × M → M` tends to zero on the filter product `l ×ˢ 𝓝 0`. -/
 theorem tendsto_mul_prod_nhds_zero_of_disjoint_cocompact {l : Filter M}
     (hl : Disjoint l (cocompact M)) :
@@ -435,7 +435,7 @@ theorem tendsto_mul_prod_nhds_zero_of_disjoint_cocompact {l : Filter M}
     simp_all
 
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
-Let `l` be a filter on `M × M` which is disjoint from the cocompact filter. Then the multiplication
+Let `l` be a filter on `M × M` which is disjoint from the cocompact filter. Then, the multiplication
 map `M × M → M` tends to zero on `Filter.coprod (𝓝 0) (𝓝 0) ⊓ l`. -/
 theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M × M)}
     (hl : Disjoint l (cocompact (M × M))) :
@@ -454,8 +454,9 @@ theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M ×
     exact disjoint_map_cocompact continuous_fst hl
 
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
-Let `l` be a filter on `M × M` which is disjoint from the cocompact filter and less than or equal to
-`Filter.coprod (𝓝 0) (𝓝 0)`. Then the multiplication map `M × M → M` tends to zero on `l`. -/
+Let `l` be a filter on `M × M` which is both disjoint from the cocompact filter and less than or
+equal to `Filter.coprod (𝓝 0) (𝓝 0)`. Then the multiplication map `M × M → M` tends to zero on
+`l`. -/
 theorem tendsto_mul_nhds_zero_of_disjoint_cocompact {l : Filter (M × M)}
     (hl : Disjoint l (cocompact (M × M))) (h'l : l ≤ Filter.coprod (𝓝 0) (𝓝 0)) :
     Tendsto (fun (x : M × M) ↦ x.1 * x.2) l (𝓝 0) := by
