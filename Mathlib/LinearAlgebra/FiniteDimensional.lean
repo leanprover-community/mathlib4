@@ -73,7 +73,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   rw [h_finrank_inf]
   rfl
 
-theorem disjoint_iff_isCompl [FiniteDimensional K V] (s t : Submodule K V)
+theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :
     IsCompl s t ↔ Disjoint s t :=
   ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩

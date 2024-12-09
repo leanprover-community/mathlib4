@@ -147,7 +147,7 @@ lemma isCompl_rootSpan_ker_rootForm :
     IsCompl P.rootSpan (LinearMap.ker P.RootForm) := by
   have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
   have _iN : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  refine (Submodule.disjoint_iff_isCompl _ _ ?_).mpr P.disjoint_rootSpan_ker_rootForm
+  refine (Submodule.isCompl_iff_disjoint _ _ ?_).mpr P.disjoint_rootSpan_ker_rootForm
   have aux : finrank R M = finrank R P.rootSpan + finrank R P.corootSpan.dualAnnihilator := by
     rw [P.toPerfectPairing.finrank_eq, ← P.finrank_corootSpan_eq,
       Subspace.finrank_add_finrank_dualAnnihilator_eq P.corootSpan]
