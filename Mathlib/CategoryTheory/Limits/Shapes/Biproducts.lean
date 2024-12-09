@@ -288,7 +288,7 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
   Cocones.ext (Iso.refl _) (by aesop_cat)
 
 /-- Whiskering a bicone with an equivalence between types preserves being a bilimit bicone. -/
-def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
+noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).IsBilimit ≃ c.IsBilimit := by
   refine equivOfSubsingletonOfSubsingleton (fun hc => ⟨?_, ?_⟩) fun hc => ⟨?_, ?_⟩
   · let this := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
