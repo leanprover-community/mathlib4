@@ -199,70 +199,70 @@ instance forget₂AddCommGroup_reflectsLimitOfShape :
 instance forget₂AddCommGroup_reflectsLimitOfSize :
     ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrp) where
 
-section DirectLimit
+section Colimit
 
 open Module
 
 variable {ι : Type v}
-variable [dec_ι : DecidableEq ι] [Preorder ι]
+variable [DecidableEq ι] [Preorder ι]
 variable (G : ι → Type v)
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h => f i j h]
 
 /-- The diagram (in the sense of `CategoryTheory`)
- of an unbundled `directLimit` of modules. -/
+ of an unbundled `Colimit` of modules. -/
 @[simps]
-def directLimitDiagram : ι ⥤ ModuleCat R where
+def colimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)
   map hij := ofHom (f _ _ hij.le)
   map_id i := by
     ext
-    apply Module.DirectedSystem.map_self
+    apply DirectedSystem.map_self
   map_comp hij hjk := by
     ext
     symm
-    apply Module.DirectedSystem.map_map
+    apply DirectedSystem.map_map f
 
 variable [DecidableEq ι]
 
-/-- The `Cocone` on `directLimitDiagram` corresponding to
-the unbundled `directLimit` of modules.
+/-- The `Cocone` on `colimitDiagram` corresponding to
+the unbundled `Colimit` of modules.
 
-In `directLimitIsColimit` we show that it is a colimit cocone. -/
+In `colimitIsColimit` we show that it is a colimit cocone. -/
 @[simps]
-def directLimitCocone : Cocone (directLimitDiagram G f) where
-  pt := ModuleCat.of R <| DirectLimit G f
+def colimitCocone : Cocone (colimitDiagram G f) where
+  pt := ModuleCat.of R <| Colimit G f
   ι :=
-    { app := fun x => ofHom (Module.DirectLimit.of R ι G f x)
+    { app := fun x => ofHom (Module.Colimit.of R ι G f x)
       naturality := fun _ _ hij => by
         ext
-        exact DirectLimit.of_f }
+        exact Colimit.of_f }
 
-/-- The unbundled `directLimit` of modules is a colimit
+/-- The unbundled `Colimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
+def colimitIsColimit : IsColimit (colimitCocone G f) where
   desc s := ofHom <|
-    DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
+    Colimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
       simp only [Functor.const_obj_obj]
       rw [← s.w (homOfLE h)]
       rfl
   fac s i := by
     ext
-    dsimp only [directLimitCocone, CategoryStruct.comp]
+    dsimp only [colimitCocone, CategoryStruct.comp]
     rw [LinearMap.comp_apply]
-    apply DirectLimit.lift_of
+    apply Colimit.lift_of
   uniq s m h := by
     have :
       s.ι.app = fun i =>
-        (ofHom (DirectLimit.of R ι (fun i => G i) (fun i j H => f i j H) i)) ≫ m := by
+        (ofHom (Colimit.of R ι (fun i => G i) (fun i j H => f i j H) i)) ≫ m := by
       funext i
       rw [← h]
       rfl
     ext
     simp only [this]
-    apply Module.DirectLimit.lift_unique
+    apply Module.Colimit.lift_unique
 
-end DirectLimit
+end Colimit
 
 end ModuleCat

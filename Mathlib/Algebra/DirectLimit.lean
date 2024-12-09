@@ -278,7 +278,7 @@ instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
 instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Semiring (DirectLimit G f) where
   __ : NonAssocSemiring _ := inferInstance
-  mul_assoc := mul_assoc
+  __ : Monoid _ := inferInstance
 
 instance [∀ i, Ring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] : Ring (DirectLimit G f) where
   __ : Semiring _ := inferInstance
@@ -659,7 +659,7 @@ end AddCommMonoid
 
 end AddCommMonoid
 
-namespace Semiring
+namespace Ring
 
 variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] [Nonempty ι]
 
@@ -804,4 +804,171 @@ end functorial
 
 end DirectLimit
 
-end Semiring
+end Ring
+
+open Polynomial in
+nonrec theorem Ring.DirectLimit.Polynomial.exists_of
+    [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] [Nonempty ι]
+    (q : (DirectLimit G f)[X]) : ∃ i p, Polynomial.map (of G f i) p = q :=
+  Polynomial.induction_on q
+    (fun z ↦
+      let ⟨i, x, h⟩ := exists_of z
+      ⟨i, C x, by rw [map_C, h]⟩)
+    (fun q₁ q₂ ⟨i₁, p₁, ih₁⟩ ⟨i₂, p₂, ih₂⟩ =>
+      let ⟨i, h1, h2⟩ := exists_ge_ge i₁ i₂
+      ⟨i, p₁.map (f i₁ i h1) + p₂.map (f i₂ i h2), by
+        rw [Polynomial.map_add, map_map, map_map, ← ih₁, ← ih₂]
+        congr 2 <;> ext x <;> simp_rw [RingHom.comp_apply, RingHom.coe_coe, of_f]⟩)
+    fun n z _ =>
+    let ⟨i, x, h⟩ := exists_of z
+    ⟨i, C x * X ^ (n + 1), by rw [Polynomial.map_mul, map_C, h, Polynomial.map_pow, map_X]⟩
+
+namespace Module
+
+variable {R ι : Type*} [Semiring R] {ι : Type*} [Preorder ι] [DecidableEq ι] {G : ι → Type*}
+variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)] (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+
+/-- The relation on the direct sum that generates the additive congruence that defines the
+colimit as a quotient. -/
+inductive Colimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
+  | of_map {i j} (h : i ≤ j) (x : G i) :
+    Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
+
+variable (G)
+
+/-- The direct limit of a directed system is the modules glued together along the maps. -/
+def Colimit : Type _ :=
+  (addConGen <| Colimit.Eqv f).Quotient
+
+namespace Colimit
+
+instance addCommMonoid : AddCommMonoid (Colimit G f) :=
+  AddCon.addCommMonoid _
+
+instance module : Module R (Colimit G f) where
+  smul r := AddCon.lift _ ((AddCon.mk' _).comp <| smulAddHom R _ r) <|
+    AddCon.addConGen_le fun x y ⟨_, _⟩ ↦ (AddCon.eq _).mpr <| by
+      simpa only [smulAddHom_apply, ← map_smul] using .of _ _ (.of_map _ _)
+  one_smul := by rintro ⟨⟩; exact congr_arg _ (one_smul _ _)
+  mul_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (mul_smul _ _ _)
+  smul_zero _ := congr_arg _ (smul_zero _)
+  smul_add _ := by rintro ⟨⟩ ⟨⟩; exact congr_arg _ (smul_add _ _ _)
+  add_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (add_smul _ _ _)
+  zero_smul := by rintro ⟨⟩; exact congr_arg _ (zero_smul _ _)
+
+instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
+    (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (Colimit G f) :=
+  inferInstanceAs (AddCommGroup <| AddCon.Quotient _)
+
+variable (R ι)
+
+/-- The canonical map from a component to the direct limit. -/
+def of (i) : G i →ₗ[R] Colimit G f :=
+  .comp { __ := AddCon.mk' _, map_smul' := fun _ _ ↦ rfl } <| DirectSum.lof R ι G i
+
+variable {R ι G f}
+
+@[simp]
+theorem of_f {i j hij x} : of R ι G f j (f i j hij x) = of R ι G f i x :=
+  (AddCon.eq _).mpr <| .symm <| .of _ _ (.of_map _ _)
+
+variable {P : Type*} [AddCommMonoid P] [Module R P]
+
+variable (R ι G f) in
+/-- The universal property of the direct limit: maps from the components to another module
+that respect the directed system structure (i.e. make some diagram commute) give rise
+to a unique map out of the direct limit. -/
+def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    Colimit G f →ₗ[R] P where
+  __ := AddCon.lift _ (DirectSum.toModule R ι P g) <|
+    AddCon.addConGen_le fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
+  map_smul' r := by rintro ⟨x⟩; exact map_smul (DirectSum.toModule R ι P g) r x
+
+variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
+  DirectSum.toModule_lof R _ _
+
+theorem lift_unique (F : Colimit G f →ₗ[R] P) (x) :
+    F x =
+      lift R ι G f (fun i => F.comp <| of R ι G f i)
+        (fun i j hij x => by rw [LinearMap.comp_apply, of_f]; rfl) x := by
+  rcases x with ⟨x⟩
+  exact x.induction_on (by simp) (fun _ _ ↦ .symm <| lift_of ..) (by simp +contextual)
+
+section functorial
+
+variable {G' : ι → Type*} [∀ i, AddCommMonoid (G' i)] [∀ i, Module R (G' i)]
+variable {f' : ∀ i j, i ≤ j → G' i →ₗ[R] G' j}
+variable {G'' : ι → Type*} [∀ i, AddCommMonoid (G'' i)] [∀ i, Module R (G'' i)]
+variable {f'' : ∀ i j, i ≤ j → G'' i →ₗ[R] G'' j}
+
+/--
+Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
+family of linear maps `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` induces a linear map
+`lim G ⟶ lim G'`.
+-/
+def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i) :
+    Colimit G f →ₗ[R] Colimit G' f' :=
+  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
+    have eq1 := LinearMap.congr_fun (hg i j h) g
+    simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
+    rw [eq1, of_f]
+
+@[simp] lemma map_apply_of (g : (i : ι) → G i →ₗ[R] G' i)
+    (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i)
+    {i : ι} (x : G i) :
+    map g hg (of _ _ G f _ x) = of R ι G' f' i (g i x) :=
+  lift_of _ _ _
+
+@[simp] lemma map_id :
+    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := Colimit G f) :=
+  DFunLike.ext _ _ <| by
+    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ ↦ map_apply_of _ _) (by simp +contextual)
+
+lemma map_comp (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' i →ₗ[R] G'' i)
+    (hg₁ : ∀ i j h, g₁ j ∘ₗ f i j h = f' i j h ∘ₗ g₁ i)
+    (hg₂ : ∀ i j h, g₂ j ∘ₗ f' i j h = f'' i j h ∘ₗ g₂ i) :
+    (map g₂ hg₂ ∘ₗ map g₁ hg₁ :
+      Colimit G f →ₗ[R] Colimit G'' f'') =
+    (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
+        rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
+      Colimit G f →ₗ[R] Colimit G'' f'') :=
+  DFunLike.ext _ _ <| by
+    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
+    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _ _ _) = map _ _ (of _ _ _ _ _ _)
+    simp_rw [map_apply_of]; rfl
+
+open LinearEquiv LinearMap in
+/--
+Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
+family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
+`lim G ≅ lim G'`.
+-/
+def congr (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
+    Colimit G f ≃ₗ[R] Colimit G' f' :=
+  LinearEquiv.ofLinear (map (e ·) he)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ by
+      rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
+        refl_toLinearMap, comp_id])
+    (by simp [map_comp]) (by simp [map_comp])
+
+lemma congr_apply_of (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
+    {i : ι} (g : G i) :
+    congr e he (of _ _ G f i g) = of _ _ G' f' i (e i g) :=
+  map_apply_of _ he _
+
+open LinearEquiv LinearMap in
+lemma congr_symm_apply_of
+    (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
+    {i : ι} (g : G' i) :
+    (congr e he).symm (of _ _ G' f' i g) = of _ _ G f i ((e i).symm g) :=
+  map_apply_of _ (fun i j h ↦ by
+    rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
+      refl_toLinearMap, comp_id]) _
+
+end functorial
+
+end Colimit
+
+end Module

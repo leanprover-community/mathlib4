@@ -42,17 +42,6 @@ variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 
 namespace DirectedSystem
 
-/-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
-`fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
-  DirectedSystem.map_self (f := (f · · ·)) x
-
-/-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
-`fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
-    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
-
 variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G' n ↪[L] G' (n + 1))
 
 /-- Given a chain of embeddings of structures indexed by `ℕ`, defines a `DirectedSystem` by
@@ -444,8 +433,8 @@ variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
 variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
-  map_self _ _ := rfl
-  map_map _ _ _ _ _ _ := rfl
+  map_self' _ _ := rfl
+  map_map' _ _ _ _ _ _ := rfl
 
 namespace DirectLimit
 

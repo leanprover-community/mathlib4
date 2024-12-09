@@ -71,13 +71,13 @@ variable [∀ ⦃i j⦄ (h : i ≤ j), FunLike (T h) (F i) (F j)] [DirectedSyste
 
 /-- A copy of `DirectedSystem.map_self` specialized to FunLike, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem DirectedSystem.map_self (i x) : f i i le_rfl x = x :=
+nonrec theorem DirectedSystem.map_self ⦃i⦄ (x) : f i i le_rfl x = x :=
   DirectedSystem.map_self' (f := (f · · ·)) x
 
 /-- A copy of `DirectedSystem.map_map` specialized to FunLike, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem DirectedSystem.map_map {i j k} (hij hjk x) :
-    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
+nonrec theorem DirectedSystem.map_map ⦃i j k⦄ (hij hjk x) :
+    f j k hjk (f i j hij x) = f i k (hij.trans hjk) x :=
   DirectedSystem.map_map' (f := (f · · ·)) hij hjk x
 
 namespace DirectLimit
