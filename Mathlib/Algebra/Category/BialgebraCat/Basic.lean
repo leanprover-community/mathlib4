@@ -25,6 +25,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-bialgebras. -/
 structure BialgebraCat where
+  /-- The underlying type. -/
   carrier : Type v
   [instRing : Ring carrier]
   [instBialgebra : Bialgebra R carrier]

@@ -51,7 +51,7 @@ instance : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
 variable {R} in
-/-- The type of morphisms in `SemiRingCat`. -/
+/-- The type of morphisms in `BoolRing`. -/
 @[ext]
 structure Hom (R S : BoolRing) where
   private mk ::

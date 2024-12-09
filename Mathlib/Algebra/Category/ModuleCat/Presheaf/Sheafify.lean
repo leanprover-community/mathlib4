@@ -79,8 +79,8 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     φ.app _ (M₀.map g.op (r₀ • m₀)) = φ.app _ (r₀' • m₀') := by
   rw [← PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective α φ hA (R₀.map g.op r₀) r₀'
     (M₀.map g.op m₀) m₀', M₀.map_smul]
-  · rw [hr₀', R.map_comp, RingCat.comp_apply]
-    rw [← hr₀, ← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply]
+  · rw [hr₀', R.map_comp, RingCat.comp_apply, ← hr₀, ← RingCat.comp_apply, NatTrans.naturality,
+      RingCat.comp_apply]
   · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply]
 

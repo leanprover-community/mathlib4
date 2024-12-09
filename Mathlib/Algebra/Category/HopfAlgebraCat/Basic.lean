@@ -24,6 +24,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgebraCat where
+  /-- The underlying type. -/
   carrier : Type v
   [instRing : Ring carrier]
   [instHopfAlgebra : HopfAlgebra R carrier]
