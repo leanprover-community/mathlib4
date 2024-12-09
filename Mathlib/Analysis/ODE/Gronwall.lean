@@ -314,7 +314,6 @@ theorem ODE_solution_unique_of_mem_Ioo
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
     have hs : Ioc t' t₀ ⊆ Ioo a b := Ioc_subset_Icc_self.trans hss
-    -- have : ∀ t ∈ Ioc t' t₀, LipschitzOnWith K (v t) (s t) := by exact fun t a ↦ hv t (hs a)
     exact ODE_solution_unique_of_mem_Icc_left
       (fun t'' ht'' ↦ hv t'' ((Ioc_subset_Icc_self.trans hss) ht''))
       (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
