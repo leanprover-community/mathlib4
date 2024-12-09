@@ -410,7 +410,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
   haveI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq fun _ => rfl
   haveI : IsScalarTower S R L :=
-    IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
+    IsScalarTower.of_algebraMap_eq (by simp +zetaDelta [RingHom.algebraMap_toAlgebra])
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
   have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.extendScalars
     (show Function.Injective (algebraMap S R) from hSR.injective))

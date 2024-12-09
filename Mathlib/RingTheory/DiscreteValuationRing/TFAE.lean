@@ -230,7 +230,7 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLoca
     [IsDomain R] : finrank (ResidueField R) (CotangentSpace R) = 1 ↔ DiscreteValuationRing R := by
   by_cases hR : IsField R
   · letI := hR.toField
-    simp only [finrank_cotangentSpace_eq_zero, zero_ne_one, false_iff]
+    simp +zetaDelta only [finrank_cotangentSpace_eq_zero, zero_ne_one, false_iff]
     exact fun h ↦ h.3 maximalIdeal_eq_bot
   · exact (DiscreteValuationRing.TFAE R hR).out 5 0
 

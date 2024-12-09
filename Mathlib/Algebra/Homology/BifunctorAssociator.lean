@@ -341,8 +341,8 @@ lemma d_eq (j j' : ι₄) [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c
   by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
   · by_cases h₂ : ComplexShape.π c₁₂ c₃ c₄ (c₁₂.next i₁₂, i₃) = j'
     · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂]
-      simp +zetaDelta only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add, Preadditive.add_comp,
-        smul_add, Preadditive.comp_add, Linear.comp_units_smul]
+      simp +zetaDelta only [mapBifunctor.d_eq, Functor.map_add, NatTrans.app_add,
+        Preadditive.add_comp, smul_add, Preadditive.comp_add, Linear.comp_units_smul]
       congr 1
       · rw [← NatTrans.comp_app_assoc, ← Functor.map_comp,
           mapBifunctor.ι_D₁]

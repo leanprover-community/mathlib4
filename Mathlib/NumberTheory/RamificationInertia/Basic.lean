@@ -664,7 +664,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
     apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
-  simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
+  simp +zetaDelta only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
     mul_zero]
 
 end FactLeComap

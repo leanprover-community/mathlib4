@@ -319,6 +319,9 @@ lemma tensorKaehlerQuotKerSqEquiv_symm_tmul_D (s t) :
   apply (tensorKaehlerQuotKerSqEquiv R P S).injective
   simp
 
+#adaptation_note
+/-- Increased maxHeartbeats after https://github.com/leanprover/lean4/pulls/6123. -/
+set_option maxHeartbeats 400000 in
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with kernel `I`,
 there is a one-to-one correspondence between `P`-linear retractions of `I/I² →ₗ[P] S ⊗[P] Ω[P/R]`
@@ -347,7 +350,7 @@ def retractionKerCotangentToTensorEquivSection :
     fun ⟨l, hl⟩ ↦ ⟨e₁.symm.toLinearMap ∘ₗ l.restrictScalars P ∘ₗ e₂.symm.toLinearMap, ?_⟩, ?_, ?_⟩
   · rintro x y
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    simp only [← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul]
+    simp +zetaDelta only [← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul]
     exact (e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap).map_smul x y
   · ext1 x
     rw [H] at hl
