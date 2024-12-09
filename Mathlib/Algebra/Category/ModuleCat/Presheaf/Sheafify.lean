@@ -165,9 +165,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     refine (ha _ hg).trans (app_eq_of_isLocallyInjective α φ A.isSeparated _ _ _ _ ?_ ?_)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
-      dsimp
-      simp only [Functor.map_comp, FunctorToTypes.map_comp_apply]
-      rfl
+      simp [RingCat.forget_map]
     · erw [NatTrans.naturality_apply, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
