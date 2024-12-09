@@ -82,7 +82,7 @@ theorem add_den_dvd_lcm (q₁ q₂: ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q�
   · rw [← Int.natCast_dvd_natCast, Int.dvd_natAbs]
     apply Int.dvd_add
       <;> apply Dvd.dvd.mul_left <;> rw [Int.natCast_dvd_natCast]
-      <;> [exact Nat.gcd_dvd_right _ _ ; exact Nat.gcd_dvd_left _ _]
+      <;> [exact Nat.gcd_dvd_right _ _; exact Nat.gcd_dvd_left _ _]
   · exact dvd_mul_right _ _
 
 theorem mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.den := by
