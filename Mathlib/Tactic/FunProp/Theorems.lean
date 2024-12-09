@@ -236,7 +236,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
+  return candidates.toArray
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -258,7 +258,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
+  return candidates.toArray
 
 
 --------------------------------------------------------------------------------
