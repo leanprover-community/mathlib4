@@ -119,7 +119,6 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
       CommRingCat.hom_comp, h₁.cancel_right_isIso]
     exact H ⟨_, U.prop.image_of_isOpenImmersion e.hom⟩
   · introv H U
-    -- TODO: define a lemma combining `CommRingCat.hom_comp, h₁.cancel_left_isIso`?
     rw [Scheme.comp_appLE, CommRingCat.hom_comp, h₁.cancel_left_isIso]
     exact H U
 
