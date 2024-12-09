@@ -40,8 +40,8 @@ constant maps.
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
     obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
-    map := fun f ↦ comapₗ R f.unop }
-  map f := { app := fun S ↦ mapₗ R f }
+    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop) }
+  map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
 
 variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]
   (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
@@ -79,8 +79,8 @@ abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u+1} R) :
     M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) where
-  hom := constₗ R
-  inv := evalₗ R PUnit.unit
+  hom := ModuleCat.ofHom (constₗ R)
+  inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
@@ -186,8 +186,8 @@ abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u} R) :
     M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) where
-  hom := constₗ R
-  inv := evalₗ R PUnit.unit
+  hom := ModuleCat.ofHom (constₗ R)
+  inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
