@@ -533,48 +533,6 @@ theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
     (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
 
 -- TODO: move to suitable place
-variable (R) in
-/-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `N`,
-and `M` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
-theorem _root_.TensorProduct.nontrivial_of_linearMap_injective_of_flat_left
-    (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    (f : R →ₗ[R] N) (hf : Function.Injective f) [Module.Flat R M] [Nontrivial M] :
-    Nontrivial (M ⊗[R] N) :=
-  Module.Flat.lTensor_preserves_injective_linearMap (M := M) f hf |>.comp
-    (TensorProduct.rid R M).symm.injective |>.nontrivial
-
--- TODO: move to suitable place
-variable (R) in
-/-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `M`,
-and `N` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
-theorem _root_.TensorProduct.nontrivial_of_linearMap_injective_of_flat_right
-    (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    (f : R →ₗ[R] M) (hf : Function.Injective f) [Module.Flat R N] [Nontrivial N] :
-    Nontrivial (M ⊗[R] N) :=
-  Module.Flat.rTensor_preserves_injective_linearMap (M := N) f hf |>.comp
-    (TensorProduct.lid R N).symm.injective |>.nontrivial
-
--- TODO: move to suitable place
-variable (R) in
-/-- If `A`, `B` are `R`-algebras, `R` injects into `B`,
-and `A` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/
-theorem _root_.Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left
-    (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-    (h : Function.Injective (algebraMap R B)) [Module.Flat R A] [Nontrivial A] :
-    Nontrivial (A ⊗[R] B) :=
-  TensorProduct.nontrivial_of_linearMap_injective_of_flat_left R A B (Algebra.linearMap R B) h
-
--- TODO: move to suitable place
-variable (R) in
-/-- If `A`, `B` are `R`-algebras, `R` injects into `A`,
-and `B` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/
-theorem _root_.Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_right
-    (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-    (h : Function.Injective (algebraMap R A)) [Module.Flat R B] [Nontrivial B] :
-    Nontrivial (A ⊗[R] B) :=
-  TensorProduct.nontrivial_of_linearMap_injective_of_flat_right R A B (Algebra.linearMap R A) h
-
--- TODO: move to suitable place
 /-- If `A`, `B` are nontrivial algebras over a field `F`, then `A ⊗[F] B` is nontrivial. -/
 theorem _root_.Algebra.TensorProduct.nontrivial_of_field
     (F : Type*) [Field F] (A B : Type*) [CommRing A] [CommRing B] [Algebra F A] [Algebra F B]
