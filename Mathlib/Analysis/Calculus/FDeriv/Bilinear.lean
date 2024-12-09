@@ -61,7 +61,7 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
       refine (isBigO_refl _ _).mul_isLittleO ((isLittleO_one_iff _).2 ?_)
       -- TODO: `continuity` fails
       exact (continuous_snd.fst.prod_mk continuous_fst.snd).norm.tendsto' _ _ (by simp +zetaDelta)
-    _ = _ := by simp +zetaDelta [Function.comp_def]
+    _ = _ := by simp [T, Function.comp_def]
 
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :

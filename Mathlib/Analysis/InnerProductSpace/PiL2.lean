@@ -927,7 +927,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by
           simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
         _ = finrank 𝕜 V - finrank 𝕜 S := by
-          simp +zetaDelta only [LinearMap.finrank_range_of_inj L.injective]
+          simp only [LS, LinearMap.finrank_range_of_inj L.injective]
         _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
 
     exact

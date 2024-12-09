@@ -130,7 +130,7 @@ lemma grothendieckTopology_cover {X : Scheme.{u}} (𝒰 : Cover.{v} P X) :
     }
   refine ⟨_, pretopology_cover 𝒱, ?_⟩
   rintro _ _ ⟨y⟩
-  exact ⟨_, 𝟙 _, 𝒰.map (𝒰.f y), ⟨_⟩, by simp +zetaDelta⟩
+  exact ⟨_, 𝟙 _, 𝒰.map (𝒰.f y), ⟨_⟩, by simp [𝒱]⟩
 
 section
 
