@@ -176,6 +176,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
     exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
+  -- We claim that `i` is actually a bijection,
+  -- hence `v` induces an isomorphism `M ≃[R] Rᴵ` showing that `v` is a basis.
   let iequiv : (ι →₀ R) ≃ₗ[R] M := by
     refine LinearEquiv.ofBijective i ⟨?_, hi⟩
     -- By Nakayama's lemma, it suffices to show that `k ⊗ ker(i) = 0`.
