@@ -353,21 +353,20 @@ lemma pairing_reflection_perm_self_right (i j : ι) :
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
-def IsCrystallographic : Prop :=
-  ∀ i, MapsTo (P.root' i) (range P.coroot) (zmultiples (1 : R))
+class IsCrystallographic : Prop where
+  exists_int : ∀ i j, ∃ z : ℤ, z = P.pairing i j
+
+protected lemma exists_int [P.IsCrystallographic] (i j : ι) :
+    ∃ z : ℤ, z = P.pairing i j :=
+  IsCrystallographic.exists_int i j
 
 lemma isCrystallographic_iff :
-    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
-  rw [IsCrystallographic]
-  refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
-  · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
-  · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
+    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-variable {P} in
-lemma IsCrystallographic.flip (h : P.IsCrystallographic) :
-    P.flip.IsCrystallographic := by
+instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
   rw [isCrystallographic_iff, forall_comm]
-  exact P.isCrystallographic_iff.mp h
+  exact P.exists_int
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
@@ -389,6 +388,30 @@ abbrev rootSpan := span R (range P.root)
 
 /-- The linear span of coroots. -/
 abbrev corootSpan := span R (range P.coroot)
+
+lemma coe_rootSpan_dualAnnihilator_map :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
+  ext x
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
+  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
+  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  simp [Set.range_subset_iff]
+
+lemma coe_corootSpan_dualAnnihilator_map :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
+  P.flip.coe_rootSpan_dualAnnihilator_map
+
+lemma rootSpan_dualAnnihilator_map_eq :
+    P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
+      (span R (range P.root')).dualCoannihilator := by
+  apply SetLike.coe_injective
+  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
+  simp
+
+lemma corootSpan_dualAnnihilator_map_eq :
+    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
+      (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.rootSpan_dualAnnihilator_map_eq
 
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the weight space generated
 by reflections in roots. -/
@@ -540,6 +563,12 @@ def coxeterWeight : R := pairing P i j * pairing P j i
 
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
+
+lemma exists_int_eq_coxeterWeight [P.IsCrystallographic] (i j : ι) :
+    ∃ z : ℤ, P.coxeterWeight i j = z := by
+  obtain ⟨a, ha⟩ := P.exists_int i j
+  obtain ⟨b, hb⟩ := P.exists_int j i
+  exact ⟨a * b, by simp [coxeterWeight, ha, hb]⟩
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0

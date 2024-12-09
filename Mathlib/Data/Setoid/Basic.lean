@@ -133,7 +133,7 @@ equivalence relations. -/
 @[simps]
 def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
-  toFun := fun (x, y) ↦ Quotient.map₂' Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  toFun := fun (x, y) ↦ Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
   invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
     fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
   left_inv := fun q ↦ by
