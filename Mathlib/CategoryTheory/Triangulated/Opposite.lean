@@ -593,7 +593,7 @@ noncomputable def triangleOpEquivalence_functor_naturality :
       Functor.map_id, comp_id, assoc, id_comp]
     conv_rhs => congr; change F.op.map ((opShiftFunctorEquivalence C 1).counitIso.inv.app
                   (Opposite.op (Opposite.unop T).obj₁))
-                rw [map_opShiftFunctorEquivalence_inv_app]
+                rw [map_opShiftFunctorEquivalence_counit_inv_app]
     slice_rhs 3 4 => change (F.op.commShiftIso 1).inv.app _ ≫
                        (shiftFunctor Cᵒᵖ 1 ⋙ F.op).map (Opposite.unop T).mor₃.op
                      rw [← (F.op.commShiftIso (1 : ℤ)).inv.naturality]
