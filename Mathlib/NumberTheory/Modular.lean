@@ -480,7 +480,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 :=
     let d := g' 1 1
     have had : T ^ (-a) * g' = S * T ^ d := by
       rw [g_eq_of_c_eq_one hc]
-      dsimp +zetaDelta
+      dsimp [a, d]
       group
     let w := T ^ (-a) • g' • z
     have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
