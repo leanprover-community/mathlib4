@@ -128,7 +128,6 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
 
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
--- include hv in
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
@@ -301,35 +300,6 @@ theorem ODE_solution_unique_of_mem_Icc
       (fun _ ht' ↦ (hf' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hfs _ (hss ht')))
       (hg.mono <| Icc_subset_Icc_left <| le_of_lt ht.1)
       (fun _ ht' ↦ (hg' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hgs _ (hss ht'))) heq
-
--- theorem ODE_solution_unique_of_mem_Icc'
---     (hv : ∀ t ∈ Set.Ioo a b, LipschitzOnWith K (v t) (s t))
---     (ht : t₀ ∈ Set.Ioo a b)
---     (hf : ContinuousOn f (Set.Icc a b)) (hf' : ∀ t ∈ Set.Ioo a b, HasDerivAt f (v t (f t)) t)
---     (hfs : ∀ t ∈ Set.Ioo a b, f t ∈ s t) (hg : ContinuousOn g (Set.Icc a b))
---     (hg' : ∀ t ∈ Set.Ioo a b, HasDerivAt g (v t (g t)) t)
---     (hgs : ∀ t ∈ Set.Ioo a b, g t ∈ s t) (heq : f t₀ = g t₀) :
---     Set.EqOn f g (Set.Icc a b) := by
---   let v' : ℝ → E → E := fun t x ↦ if t ∈ Set.Ioo a b then v t x else 0
---   apply ODE_solution_unique_of_mem_Icc (v := v') (s := s) (t₀ := t₀) (K := K)
---   all_goals try assumption
---   · intro t
---     by_cases h : t ∈ Set.Ioo a b
---     · simp only [v', h]
---       simp
---       apply hv _ h
---     · simp only [v', h]
---       simp
---       apply LipschitzWith.lipschitzOnWith
---       apply LipschitzWith.const'
---   · intro t ht
---     simp only [v', ht]
---     simp
---     apply hf' _ ht
---   · intro t ht
---     simp only [v', ht]
---     simp
---     apply hg' _ ht
 
 /-- A version of `ODE_solution_unique_of_mem_Icc` for uniqueness in an open interval. -/
 theorem ODE_solution_unique_of_mem_Ioo
