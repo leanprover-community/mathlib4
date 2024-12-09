@@ -336,6 +336,7 @@ instance : Algebra R (FiniteAdeleRing R K) :=
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
+/-- Coercion `FiniteAdeleRing R K → K_hat R K`. -/
 @[coe]
 def coe (x : FiniteAdeleRing R K) : K_hat R K := x.1
 
