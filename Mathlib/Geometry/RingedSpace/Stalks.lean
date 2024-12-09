@@ -64,7 +64,7 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
   -- Typeclass resolution knows that the opposite of an initial functor is final. The result
   -- follows from the general fact that postcomposing with a final functor doesn't change colimits.
 
--- Porting note (#11119): removed `simp` attribute, for left hand side is not in simple normal form.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute, for left hand side is not in simple normal form.
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :

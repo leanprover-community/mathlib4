@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.NumberTheory.EulerProduct.Basic
 
 /-!
@@ -15,9 +16,6 @@ Euler product for `f`.
 -/
 
 open Complex
-
--- `local` attribute for now, see discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/fun_prop.20attribute.20for.20Complex.2Elog.20lemmas.3F/near/482347068)
-attribute [local fun_prop] DifferentiableAt.clog
 
 open Topology in
 /-- If `f : α → ℂ` is summable, then so is `n ↦ log (1 - f n)`. -/

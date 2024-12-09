@@ -278,14 +278,14 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
     HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed (μ : Measure Ω)
   have room₁ : (μ : Measure Ω) F < (μ : Measure Ω) F + ε / 2 :=
     ENNReal.lt_add_right (measure_lt_top (μ : Measure Ω) F).ne ε_pos'
-  obtain ⟨M, hM⟩ := eventually_atTop.mp <| eventually_lt_of_tendsto_lt room₁ key₁
+  obtain ⟨M, hM⟩ := eventually_atTop.mp <| key₁.eventually_lt_const room₁
   have key₂ := FiniteMeasure.tendsto_iff_forall_lintegral_tendsto.mp μs_lim (fs M)
   have room₂ :
     (lintegral (μ : Measure Ω) fun a ↦ fs M a) <
       (lintegral (μ : Measure Ω) fun a ↦ fs M a) + ε / 2 :=
     ENNReal.lt_add_right (ne_of_lt ((fs M).lintegral_lt_top_of_nnreal _)) ε_pos'
-  have ev_near := Eventually.mono (eventually_lt_of_tendsto_lt room₂ key₂) fun n ↦ le_of_lt
-  have ev_near' := Eventually.mono ev_near
+  have ev_near := key₂.eventually_le_const room₂
+  have ev_near' := ev_near.mono
     (fun n ↦ le_trans (HasOuterApproxClosed.measure_le_lintegral F_closed (μs n) M))
   apply (Filter.limsup_le_limsup ev_near').trans
   rw [limsup_const]
@@ -481,7 +481,7 @@ lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
             measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
 
 lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
-    {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
+    {μ : Measure Ω} {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     {f : Ω →ᵇ ℝ} (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
@@ -489,7 +489,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (Eventually.of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert (ENNReal.toReal_le_toReal ?_ ?_).mpr same
+  convert ENNReal.toReal_mono ?_ same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (Eventually.of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
@@ -497,7 +497,6 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
-  · exact (f.lintegral_of_real_lt_top μ).ne
   · apply ne_of_lt
     have obs := fun (i : ℕ) ↦ @BoundedContinuousFunction.lintegral_nnnorm_le Ω _ _ (μs i) ℝ _ f
     simp only [measure_univ, mul_one] at obs

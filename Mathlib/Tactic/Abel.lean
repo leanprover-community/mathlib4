@@ -247,11 +247,11 @@ theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = term
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
 def evalAtom (e : Expr) : M (NormalExpr × Expr) := do
   let { expr := e', proof?, .. } ← (← readThe AtomM.Context).evalAtom e
-  let i ← AtomM.addAtom e'
+  let (i, a) ← AtomM.addAtom e'
   let p ← match proof? with
   | none => iapp ``term_atom #[e]
-  | some p => iapp ``term_atom_pf #[e, e', p]
-  return (← term' (← intToExpr 1, 1) (i, e') (← zero'), p)
+  | some p => iapp ``term_atom_pf #[e, a, p]
+  return (← term' (← intToExpr 1, 1) (i, a) (← zero'), p)
 
 theorem unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a - b = c := by
   rw [sub_eq_add_neg, h]
@@ -436,14 +436,14 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx := {
-    simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
-    congrTheorems := ← getSimpCongrTheorems }
+  let ctx ← Simp.mkContext
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
+    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let rec

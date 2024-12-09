@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Support
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
@@ -316,7 +317,7 @@ theorem inseparable_eq_eq [T0Space X] : Inseparable = @Eq X :=
 
 theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
-  ⟨fun h _ hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
+  ⟨fun h _ hs ↦ inseparable_iff_forall_isOpen.1 h _ (hb.isOpen hs),
     fun h ↦ hb.nhds_hasBasis.eq_of_same_basis <| by
       convert hb.nhds_hasBasis using 2
       exact and_congr_right (h _)⟩
@@ -328,7 +329,7 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
 theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
-    inseparable_iff_forall_open, Pairwise]
+    inseparable_iff_forall_isOpen, Pairwise]
 
 theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) :=
@@ -739,7 +740,7 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
--- Porting note (#11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp

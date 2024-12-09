@@ -7,13 +7,14 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Sum of iterated derivatives
 
 This file introduces `Polynomial.sumIDeriv`, the sum of the iterated derivatives of a polynomial,
 as a linear map. This is used in particular in the proof of the Lindemann-Weierstrass theorem
-(see #6718).
+(see https://github.com/leanprover-community/mathlib4/pull/6718).
 
 ## Main results
 
@@ -216,14 +217,17 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
     rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
-    have h := natDegree_map_le (algebraMap R A) p
-    rw [congr_arg natDegree hp, natDegree_mul, natDegree_pow, natDegree_X_sub_C, mul_one,
-      ← Nat.sub_add_comm (Nat.one_le_of_lt hq), tsub_le_iff_right] at h
-    exact le_of_add_le_left h
-    · exact pow_ne_zero _ (X_sub_C_ne_zero r)
-    · rintro rfl
-      rw [mul_zero, Polynomial.map_eq_zero_iff inj_amap] at hp
-      exact p0 hp
+    rw [← tsub_le_iff_right]
+    calc
+      q - 1 ≤ q - 1 + p'.natDegree := le_self_add
+      _ = (p.map <| algebraMap R A).natDegree := by
+        rw [hp, natDegree_mul, natDegree_pow, natDegree_X_sub_C, mul_one,
+          ← Nat.sub_add_comm (Nat.one_le_of_lt hq)]
+        · exact pow_ne_zero _ (X_sub_C_ne_zero r)
+        · rintro rfl
+          rw [mul_zero, Polynomial.map_eq_zero_iff inj_amap] at hp
+          exact p0 hp
+      _ ≤ p.natDegree := natDegree_map_le
   rw [← zero_add ((q - 1)! • p'.eval r)]
   rw [sumIDeriv_apply, map_sum, map_sum, this]
   have : range q = range (q - 1 + 1) := by rw [tsub_add_cancel_of_le (Nat.one_le_of_lt hq)]

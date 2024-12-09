@@ -24,7 +24,7 @@ Homomorphisms between ordered (semi)rings that respect the ordering.
 ## Implementation notes
 
 This file used to define typeclasses for order-preserving ring homomorphisms and isomorphisms.
-In #10544, we migrated from assumptions like `[FunLike F R S] [OrderRingHomClass F R S]`
+In https://github.com/leanprover-community/mathlib4/pull/10544, we migrated from assumptions like `[FunLike F R S] [OrderRingHomClass F R S]`
 to assumptions like `[FunLike F R S] [OrderHomClass F R S] [RingHomClass F R S]`,
 making some typeclasses and instances irrelevant.
 
@@ -62,7 +62,7 @@ infixl:25 " →+*o " => OrderRingHom
 to
 `[Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β]`
 otherwise the [refl] attribute on `OrderRingIso.refl` complains.
-TODO: change back when `refl` attribute is fixed, github issue #2505 -/
+TODO: change back when `refl` attribute is fixed, github issue https://github.com/leanprover-community/mathlib4/issues/2505 -/
 
 /-- `OrderRingHom α β` is the type of order-preserving semiring isomorphisms between `α` and `β`.
 

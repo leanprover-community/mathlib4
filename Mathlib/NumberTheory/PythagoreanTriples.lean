@@ -465,7 +465,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by
-    -- Added to adapt to leanprover/lean4#2734.
+    -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
     -- Without `unfold`, `norm_cast` can't see the coercion.
     -- One might try `zeta := true` in `Tactic.NormCast.derive`,
     -- but that seems to break many other things.

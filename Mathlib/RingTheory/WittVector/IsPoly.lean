@@ -188,7 +188,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     simp only [coeff_mk]; rfl
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note (#10754): made this an instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
@@ -218,7 +218,7 @@ class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → �
 variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note (#10754): made this an instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
     IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
@@ -236,7 +236,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
   fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp_def]
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
--- Porting note (#10754): made this an instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
@@ -246,7 +246,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
--- Porting note (#10754): made this an instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
@@ -392,8 +392,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
 
 end IsPoly₂
 
-attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map_mul AlgHom.map_sub
-  AlgHom.map_neg AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
+attribute [ghost_simps] AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
   RingHom.map_add RingHom.map_sub RingHom.map_neg RingHom.id_apply mul_add add_mul add_zero zero_add
   mul_one one_mul mul_zero zero_mul Nat.succ_ne_zero add_tsub_cancel_right
   Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff

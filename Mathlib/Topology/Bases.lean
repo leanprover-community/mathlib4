@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Constructions
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -302,7 +303,7 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 `TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
-Porting note (#11215): TODO: the previous paragraph describes the state of the art in Lean 3.
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the previous paragraph describes the state of the art in Lean 3.
 We can have instance cycles in Lean 4 but we might want to
 postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where

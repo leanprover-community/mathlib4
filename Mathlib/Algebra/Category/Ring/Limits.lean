@@ -40,8 +40,7 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ SemiRingCat.{u})
 instance semiringObj (j) : Semiring ((F ⋙ forget SemiRingCat).obj j) :=
   inferInstanceAs <| Semiring (F.obj j)
 
-/-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections.
--/
+/-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections. -/
 def sectionsSubsemiring : Subsemiring (∀ j, F.obj j) :=
   -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
@@ -100,14 +99,16 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_mul]
-    erw [← map_mul (MulEquiv.symm Shrink.mulEquiv)]
+    simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
+          forget_map, map_mul]
+    rw [← equivShrink_mul]
     rfl
   · simp only [Functor.mapCone_π_app, forget_map, map_zero]
     rfl
   · intro x y
-    simp only [Functor.mapCone_π_app, forget_map, map_add]
-    erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
+    simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map, map_add]
+    rw [← equivShrink_add]
     rfl
 
 end HasLimits
@@ -138,16 +139,16 @@ def forget₂AddCommMonPreservesLimitsAux :
 
 /-- The forgetful functor from semirings to additive commutative monoids preserves all limits.
 -/
-instance forget₂AddCommMonPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂AddCommMon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ SemiRingCat AddCommMonCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommMonPreservesLimitsAux F) }
 
-instance forget₂AddCommMonPreservesLimits :
+instance forget₂AddCommMon_preservesLimits :
     PreservesLimits (forget₂ SemiRingCat AddCommMonCat.{u}) :=
-  SemiRingCat.forget₂AddCommMonPreservesLimitsOfSize.{u, u}
+  SemiRingCat.forget₂AddCommMon_preservesLimitsOfSize.{u, u}
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
@@ -159,27 +160,27 @@ def forget₂MonPreservesLimitsAux :
 
 /-- The forgetful functor from semirings to monoids preserves all limits.
 -/
-instance forget₂MonPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ SemiRingCat MonCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
           (forget₂MonPreservesLimitsAux.{v, u} F) }
 
-instance forget₂MonPreservesLimits : PreservesLimits (forget₂ SemiRingCat MonCat.{u}) :=
-  SemiRingCat.forget₂MonPreservesLimitsOfSize.{u, u}
+instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ SemiRingCat MonCat.{u}) :=
+  SemiRingCat.forget₂Mon_preservesLimitsOfSize.{u, u}
 
 /-- The forgetful functor from semirings to types preserves all limits.
 -/
-instance forgetPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
           (Types.Small.limitConeIsLimit.{v, u} (F ⋙ forget _)) }
 
-instance forgetPreservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
-  SemiRingCat.forgetPreservesLimitsOfSize.{u, u}
+instance forget_preservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
+  SemiRingCat.forget_preservesLimitsOfSize.{u, u}
 
 end SemiRingCat
 
@@ -264,29 +265,29 @@ instance hasLimits : HasLimits CommSemiRingCat.{u} :=
 
 /-- The forgetful functor from rings to semirings preserves all limits.
 -/
-instance forget₂SemiRingPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂SemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommSemiRingCat SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (SemiRingCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ _ SemiRingCat)) }
 
-instance forget₂SemiRingPreservesLimits :
+instance forget₂SemiRing_preservesLimits :
     PreservesLimits (forget₂ CommSemiRingCat SemiRingCat.{u}) :=
-  CommSemiRingCat.forget₂SemiRingPreservesLimitsOfSize.{u, u}
+  CommSemiRingCat.forget₂SemiRing_preservesLimitsOfSize.{u, u}
 
 /-- The forgetful functor from rings to types preserves all limits. (That is, the underlying
 types could have been computed instead as limits in the category of types.)
 -/
-instance forgetPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget CommSemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
-instance forgetPreservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :=
-  CommSemiRingCat.forgetPreservesLimitsOfSize.{u, u}
+instance forget_preservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :=
+  CommSemiRingCat.forget_preservesLimitsOfSize.{u, u}
 
 end CommSemiRingCat
 
@@ -373,15 +374,15 @@ instance hasLimits : HasLimits RingCat.{u} :=
 
 /-- The forgetful functor from rings to semirings preserves all limits.
 -/
-instance forget₂SemiRingPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂SemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ RingCat SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
       { preservesLimit := fun {F} =>
-          preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+          preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
             (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) }
 
-instance forget₂SemiRingPreservesLimits : PreservesLimits (forget₂ RingCat SemiRingCat.{u}) :=
-  RingCat.forget₂SemiRingPreservesLimitsOfSize.{u, u}
+instance forget₂SemiRing_preservesLimits : PreservesLimits (forget₂ RingCat SemiRingCat.{u}) :=
+  RingCat.forget₂SemiRing_preservesLimitsOfSize.{u, u}
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
@@ -395,29 +396,29 @@ def forget₂AddCommGroupPreservesLimitsAux :
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
-instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGrp.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommGroupPreservesLimitsAux F) }
 
-instance forget₂AddCommGroupPreservesLimits :
+instance forget₂AddCommGroup_preservesLimits :
     PreservesLimits (forget₂ RingCat AddCommGrp.{u}) :=
-  RingCat.forget₂AddCommGroupPreservesLimitsOfSize.{u, u}
+  RingCat.forget₂AddCommGroup_preservesLimitsOfSize.{u, u}
 
 /-- The forgetful functor from rings to types preserves all limits. (That is, the underlying
 types could have been computed instead as limits in the category of types.)
 -/
-instance forgetPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget RingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
-instance forgetPreservesLimits : PreservesLimits (forget RingCat.{u}) :=
-  RingCat.forgetPreservesLimitsOfSize.{u, u}
+instance forget_preservesLimits : PreservesLimits (forget RingCat.{u}) :=
+  RingCat.forget_preservesLimitsOfSize.{u, u}
 
 end RingCat
 
@@ -513,15 +514,15 @@ instance hasLimits : HasLimits CommRingCat.{u} :=
 /-- The forgetful functor from commutative rings to rings preserves all limits.
 (That is, the underlying rings could have been computed instead as limits in the category of rings.)
 -/
-instance forget₂RingPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommRingCat RingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone.{w, v} (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone.{w, v} (limitConeIsLimit.{v, u} F)
           (RingCat.limitConeIsLimit.{v, u} _) }
 
-instance forget₂RingPreservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
-  CommRingCat.forget₂RingPreservesLimitsOfSize.{u, u}
+instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
+  CommRingCat.forget₂Ring_preservesLimitsOfSize.{u, u}
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
@@ -535,28 +536,28 @@ def forget₂CommSemiRingPreservesLimitsAux :
 (That is, the underlying commutative semirings could have been computed instead as limits
 in the category of commutative semirings.)
 -/
-instance forget₂CommSemiRingPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget₂CommSemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommRingCat CommSemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂CommSemiRingPreservesLimitsAux.{v, u} F) }
 
-instance forget₂CommSemiRingPreservesLimits :
+instance forget₂CommSemiRing_preservesLimits :
     PreservesLimits (forget₂ CommRingCat CommSemiRingCat.{u}) :=
-  CommRingCat.forget₂CommSemiRingPreservesLimitsOfSize.{u, u}
+  CommRingCat.forget₂CommSemiRing_preservesLimitsOfSize.{u, u}
 
 /-- The forgetful functor from commutative rings to types preserves all limits.
 (That is, the underlying types could have been computed instead as limits in the category of types.)
 -/
-instance forgetPreservesLimitsOfSize [UnivLE.{v, u}] :
+instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget CommRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone.{w, v} (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preserves_limit_cone.{w, v} (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
-instance forgetPreservesLimits : PreservesLimits (forget CommRingCat.{u}) :=
-  CommRingCat.forgetPreservesLimitsOfSize.{u, u}
+instance forget_preservesLimits : PreservesLimits (forget CommRingCat.{u}) :=
+  CommRingCat.forget_preservesLimitsOfSize.{u, u}
 
 end CommRingCat

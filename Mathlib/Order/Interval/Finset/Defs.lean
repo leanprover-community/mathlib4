@@ -901,7 +901,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           top_le_iff, reduceCtorEq]
     | (a : α), (b : α), (x : α) => by
         simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
@@ -910,12 +910,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
           coe_lt_top, and_true]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
@@ -923,12 +923,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
@@ -936,13 +936,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
       -- This used to be in the above `simp` before
-      -- leanprover/lean4#2644
+      -- https://github.com/leanprover/lean4/pull/2644
       erw [aux]
 
 variable (a b : α)

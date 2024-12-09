@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
@@ -453,7 +453,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     intro s
     ext1 x
     simp
-    -- This used to be the end of the proof before leanprover/lean4#2644
+    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
     simp? says simp only [coe_sum, Finset.sum_apply]
     congr!

@@ -456,6 +456,19 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h
 
+theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
+  Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
+    Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
+
+theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
+  isometry_intCast.isClosedEmbedding
+
+lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
+  Complex.closedEmbedding_intCast.isClosed_range
+
+lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℂ))ᶜ :=
+  Complex.isClosed_range_intCast.isOpen_compl
+
 section ComplexOrder
 
 open ComplexOrder

@@ -66,11 +66,9 @@ variable {R : Type u} [CommRing R] {D : Type v} [SmallCategory D]
 determined by the functor `I`  -/
 def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
-  map w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
-  -- Porting note: was 'obviously'
-  map_comp f g := by apply Submodule.linearMap_qext; rfl
+  map w := ModuleCat.ofHom <| Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
 
--- Porting note (#11215): TODO:  Once this file is ported, move this instance to the right location.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO:  Once this file is ported, move this instance to the right location.
 instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 

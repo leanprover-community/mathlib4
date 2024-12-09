@@ -407,9 +407,9 @@ alias rootSystem_toLin_apply := rootSystem_toPerfectPairing_apply
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
-theorem isCrystallographic_rootSystem : (rootSystem H).IsCrystallographic := by
-  rintro α _ ⟨β, rfl⟩
-  exact ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
+instance : (rootSystem H).IsCrystallographic where
+  exists_int α β :=
+    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
   intro ⟨α, hα⟩ ⟨β, hβ⟩ e

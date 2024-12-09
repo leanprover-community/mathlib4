@@ -88,7 +88,7 @@ def toAntisymmetrization : α → Antisymmetrization α r :=
 
 /-- Get a representative from the antisymmetrization. -/
 noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
-  Quotient.out'
+  Quotient.out
 
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
   unfold Antisymmetrization; infer_instance
