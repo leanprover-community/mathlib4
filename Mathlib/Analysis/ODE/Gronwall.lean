@@ -313,7 +313,6 @@ theorem ODE_solution_unique_of_mem_Ioo
   rcases lt_or_le t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
-    have hs : Ioc t' t₀ ⊆ Ioo a b := Ioc_subset_Icc_self.trans hss
     exact ODE_solution_unique_of_mem_Icc_left
       (fun t'' ht'' ↦ hv t'' ((Ioc_subset_Icc_self.trans hss) ht''))
       (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
