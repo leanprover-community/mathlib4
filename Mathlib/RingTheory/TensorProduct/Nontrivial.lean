@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.FaithfullyFlat
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -18,12 +18,6 @@ This file contains some more results on nontriviality of tensor product of algeb
 open TensorProduct
 
 namespace Algebra.TensorProduct
-
-/-- If `A`, `B` are nontrivial algebras over a field `F`, then `A ⊗[F] B` is nontrivial. -/
-theorem nontrivial_of_field
-    (F A B : Type*) [Field F] [CommRing A] [CommRing B] [Algebra F A] [Algebra F B]
-    [Nontrivial A] [Nontrivial B] : Nontrivial (A ⊗[F] B) :=
-  nontrivial_of_algebraMap_injective_of_flat_left F A B (RingHom.injective _)
 
 /-- If `A`, `B` are `R`-algebras, `R` injects into `A` and `B`,
 and all of them are domains, then `A ⊗[R] B` is nontrivial. -/
@@ -39,7 +33,6 @@ theorem nontrivial_of_algebraMap_injective_of_isDomain
   let fb : FR →ₐ[R] FB := IsFractionRing.liftAlgHom (g := Algebra.ofId R FB)
     ((IsFractionRing.injective B FB).comp hb)
   algebraize_only [fa.toRingHom, fb.toRingHom]
-  have := nontrivial_of_field FR FA FB
   exact Algebra.TensorProduct.mapOfCompatibleSMul FR R FA FB |>.comp
     (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R A FA) (IsScalarTower.toAlgHom R B FB))
     |>.toRingHom.domain_nontrivial
