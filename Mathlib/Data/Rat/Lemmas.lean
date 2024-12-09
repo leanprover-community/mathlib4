@@ -68,6 +68,23 @@ theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.de
   apply Nat.div_dvd_of_dvd
   apply Nat.gcd_dvd_right
 
+theorem add_den_dvd_lcm (q₁ q₂: ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
+  rw [
+    Rat.add_def, Rat.normalize_eq,
+    Nat.div_dvd_iff_dvd_mul
+      (Nat.gcd_dvd_right _ _)
+      (Nat.gcd_ne_zero_right (mul_ne_zero (Rat.den_ne_zero _) (Rat.den_ne_zero _))),
+    ← Nat.gcd_mul_lcm _ _,
+    mul_dvd_mul_iff_right (Nat.lcm_ne_zero (Rat.den_ne_zero _) (Rat.den_ne_zero _)),
+    Nat.dvd_gcd_iff
+  ]
+  constructor
+  · rw [← Int.natCast_dvd_natCast, Int.dvd_natAbs]
+    apply Int.dvd_add
+      <;> apply Dvd.dvd.mul_left <;> rw [Int.natCast_dvd_natCast]
+      <;> [exact Nat.gcd_dvd_right _ _ ; exact Nat.gcd_dvd_left _ _]
+  · exact dvd_mul_right _ _
+
 theorem mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.den := by
   rw [mul_def, normalize_eq]
   apply Nat.div_dvd_of_dvd
