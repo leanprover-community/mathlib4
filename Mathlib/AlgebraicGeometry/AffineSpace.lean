@@ -94,9 +94,9 @@ def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
       TopologicalSpace.Opens.map_comp_obj, TopologicalSpace.Opens.map_top, Scheme.comp_app,
       Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
       CommRingCat.coe_of]
-    -- TODO: the line below should probably be its own lemma
-    rw [← CommRingCat.comp_apply, Iso.inv_hom_id, CommRingCat.id_apply,
-      coe_eval₂Hom, eval₂_X]
+    -- TODO: why does `simp` not apply this lemma?
+    rw [CommRingCat.hom_inv_apply]
+    simp
 
 lemma toSpecMvPolyIntEquiv_comp {X Y : Scheme} (f : X ⟶ Y) (g : Y ⟶ Spec ℤ[n]) (i) :
     toSpecMvPolyIntEquiv n (f ≫ g) i = f.appTop (toSpecMvPolyIntEquiv n g i) := rfl
@@ -190,8 +190,8 @@ def isoOfIsAffine [IsAffine S] :
             Scheme.toSpecΓ_appTop, Scheme.ΓSpecIso_naturality, CommRingCat.comp_apply,
             homOfVector_appTop_coord, Function.comp_apply, CommRingCat.coe_of, Scheme.id_app,
             CommRingCat.id_apply]
-          -- TODO: the line below should probably be its own lemma
-          rw [← CommRingCat.comp_apply, Iso.inv_hom_id, CommRingCat.id_apply]
+          -- TODO: why does `simp` not apply this?
+          rw [CommRingCat.hom_inv_apply]
           exact eval₂_X _ _ _
       inv_hom_id := by
         apply ext_of_isAffine
