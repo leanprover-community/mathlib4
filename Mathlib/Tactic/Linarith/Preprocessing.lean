@@ -389,7 +389,7 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) :=
+    MetaM (List Branch) := do
   withTraceNode `linarith (fun e => return m!"{exceptEmoji e} Running preprocessors") <|
     g.withContext <|
       pps.foldlM (init := [(g, l)]) fun ls pp => do

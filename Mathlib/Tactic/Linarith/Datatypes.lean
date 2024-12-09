@@ -32,7 +32,8 @@ A shorthand for tracing the types of a list of proof terms
 when the `trace.linarith` option is set to true.
 -/
 def linarithTraceProofs {α} [ToMessageData α] (s : α) (l : List Expr) : MetaM Unit := do
-  trace[linarith] "{s}{indentD (← linarithGetProofsMessage l)}"
+  if ← isTracingEnabledFor `linarith then
+    addRawTrace <| .trace { cls := `linarith } (toMessageData s) #[← linarithGetProofsMessage l]
 
 /-! ### Linear expressions -/
 

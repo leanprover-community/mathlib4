@@ -190,7 +190,7 @@ tactic, which is typically `ring`. We prove (2) by folding over the set of hypot
 def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
     (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
   | _, [] => throwError "no args to linarith"
-  | g, l@(h::_) => detailTrace "proveFalseByLinarith" do
+  | g, l@(h::_) => do
       Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
