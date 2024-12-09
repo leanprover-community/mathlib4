@@ -244,8 +244,8 @@ theorem ODE_solution_unique_of_mem_Icc_left
     (hgs : ∀ t ∈ Ioc a b, g t ∈ s t)
     (hb : f b = g b) :
     EqOn f g (Icc a b) := by
-  have hv' t : t ∈ Ico (-b) (-a) → LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
-    intro ht
+  have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
+    intro t ht
     replace ht : -t ∈ Ioc a b := by
       simp at ht ⊢
       constructor <;> linarith
