@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
 import Mathlib.Algebra.Divisibility.Hom
+import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.Set.Basic
 
@@ -48,10 +49,7 @@ end Semiring
 end RingHom
 
 /-- Pullback `IsDomain` instance along an injective function. -/
-protected theorem Function.Injective.isDomain [Semiring α] [IsDomain α] [Semiring β] (f : β →+* α)
-    (hf : Injective f) : IsDomain β where
-  mul_left_cancel_of_ne_zero {a b c} h h2 := hf <| mul_left_cancel₀ (f.map_zero ▸ hf.ne h) <| by
-    simpa only [map_mul] using congr(f $(h2))
-  mul_right_cancel_of_ne_zero {a b c} h h2 := hf <| mul_right_cancel₀ (f.map_zero ▸ hf.ne h) <| by
-    simpa only [map_mul] using congr(f $(h2))
-  exists_pair_ne := f.domain_nontrivial.exists_pair_ne
+protected theorem Function.Injective.isDomain [Semiring α] [IsDomain α] [Semiring β] {F}
+    [FunLike F β α] [MonoidWithZeroHomClass F β α] (f : F) (hf : Injective f) : IsDomain β where
+  __ := domain_nontrivial f (map_zero _) (map_one _)
+  __ := hf.isCancelMulZero f (map_zero _) (map_mul _)
