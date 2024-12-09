@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
 Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Erdős-Kaplansky theorem

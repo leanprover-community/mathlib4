@@ -9,7 +9,7 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Finite modules over local rings

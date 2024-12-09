@@ -11,7 +11,8 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.StacksAttribute
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Artinian rings and modules
