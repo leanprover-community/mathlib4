@@ -3,7 +3,6 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.PrimeSpectrum
 
@@ -70,23 +69,12 @@ theorem iInf_localization_eq_bot : (⨅ v : MaximalSpectrum R,
   constructor
   · contrapose
     intro hrange hlocal
-    let denom : Ideal R := (Submodule.span R {1} : Submodule R K).colon (Submodule.span R {x})
-    have hdenom : (1 : R) ∉ denom := by
-      intro hdenom
-      rcases Submodule.mem_span_singleton.mp
-        (Submodule.mem_colon.mp hdenom x <| Submodule.mem_span_singleton_self x) with ⟨y, hy⟩
-      exact hrange ⟨y, by rw [← mul_one <| algebraMap R K y, ← Algebra.smul_def, hy, one_smul]⟩
-    rcases denom.exists_le_maximal fun h => (h ▸ hdenom) Submodule.mem_top with ⟨max, hmax, hle⟩
+    let denom : Ideal R := (1 : Submodule R K).comap (LinearMap.toSpanSingleton R K x)
+    have hdenom : (1 : R) ∉ denom := by simpa [denom] using hrange
+    rcases denom.exists_le_maximal (denom.ne_top_iff_one.mpr hdenom) with ⟨max, hmax, hle⟩
     rcases hlocal ⟨max, hmax⟩ with ⟨n, d, hd, rfl⟩
-    apply hd (hle <| Submodule.mem_colon.mpr fun _ hy => _)
-    intro _ hy
-    rcases Submodule.mem_span_singleton.mp hy with ⟨y, rfl⟩
-    exact Submodule.mem_span_singleton.mpr ⟨y * n, by
-      rw [Algebra.smul_def, mul_one, map_mul, smul_comm, Algebra.smul_def, Algebra.smul_def,
-        mul_comm <| algebraMap R K d,
-        inv_mul_cancel_right₀ <|
-          (map_ne_zero_iff _ <| NoZeroSMulDivisors.algebraMap_injective R K).mpr fun h =>
-            (h ▸ hd) max.zero_mem]⟩
+    exact hd (hle ⟨n, by simp [denom, Algebra.smul_def, mul_left_comm, mul_inv_cancel₀ <|
+      (map_ne_zero_iff _ <| IsFractionRing.injective R K).mpr fun h ↦ hd (h ▸ max.zero_mem :)]⟩)
   · rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
 
@@ -101,13 +89,7 @@ variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 viewed as subalgebras of its field of fractions. -/
 theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
     Localization.subalgebra.ofField K _ (v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
-  ext x
-  rw [Algebra.mem_iInf]
-  constructor
-  · rw [← MaximalSpectrum.iInf_localization_eq_bot, Algebra.mem_iInf]
-    exact fun hx ⟨v, hv⟩ => hx ⟨v, hv.isPrime⟩
-  · rw [Algebra.mem_bot]
-    rintro ⟨y, rfl⟩ ⟨v, hv⟩
-    exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
+  refine bot_unique (.trans (fun _ ↦ ?_) (MaximalSpectrum.iInf_localization_eq_bot R K).le)
+  simpa only [Algebra.mem_iInf] using fun hx ⟨v, hv⟩ ↦ hx ⟨v, hv.isPrime⟩
 
 end PrimeSpectrum

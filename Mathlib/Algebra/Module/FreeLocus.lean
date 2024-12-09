@@ -10,6 +10,7 @@ import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Localization.Free
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 
