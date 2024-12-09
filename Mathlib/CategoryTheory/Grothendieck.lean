@@ -203,8 +203,8 @@ def transportIso (x : Grothendieck F) {c : C} (α : x.base ≅ c) :
     rw [← Functor.comp_obj, ← Cat.comp_eq_comp, ← F.map_comp, α.hom_inv_id, F.map_id,
       Cat.id_obj])⟩
   inv := x.toTransport α.hom
-  hom_inv_id := by apply Grothendieck.ext <;> simp
-  inv_hom_id := by apply Grothendieck.ext <;> simp
+  hom_inv_id := Grothendieck.ext _ _ (by simp) (by simp)
+  inv_hom_id := Grothendieck.ext _ _ (by simp) (by simp)
 
 end Transport
 section
