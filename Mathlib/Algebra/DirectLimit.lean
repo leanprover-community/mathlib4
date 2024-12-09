@@ -972,3 +972,168 @@ end functorial
 end Colimit
 
 end Module
+
+namespace Ring
+
+omit [IsDirected ι (· ≤ ·)]
+variable [∀ i, CommRing (G i)] (f : ∀ i j, i ≤ j → G i → G j) (G)
+
+open FreeCommRing
+
+/-- The direct limit of a directed system is the rings glued together along the maps. -/
+def Colimit : Type _ :=
+  FreeCommRing (Σ i, G i) ⧸
+    Ideal.span
+      { a |
+        (∃ i j H x, of (⟨j, f i j H x⟩ : Σi, G i) - of ⟨i, x⟩ = a) ∨
+          (∃ i, of (⟨i, 1⟩ : Σi, G i) - 1 = a) ∨
+            (∃ i x y, of (⟨i, x + y⟩ : Σi, G i) - (of ⟨i, x⟩ + of ⟨i, y⟩) = a) ∨
+              ∃ i x y, of (⟨i, x * y⟩ : Σi, G i) - of ⟨i, x⟩ * of ⟨i, y⟩ = a }
+
+namespace Colimit
+
+open Ideal
+
+instance commRing : CommRing (Colimit G f) :=
+  Ideal.Quotient.commRing _
+
+instance ring : Ring (Colimit G f) :=
+  CommRing.toRing
+
+-- Porting note: Added a `Zero` instance to get rid of `0` errors.
+instance zero : Zero (Colimit G f) :=
+  ⟨0⟩
+
+instance : Inhabited (Colimit G f) :=
+  ⟨0⟩
+
+/-- The canonical map from a component to the direct limit. -/
+nonrec def of (i) : G i →+* Colimit G f :=
+  RingHom.mk'
+    { toFun := fun x => Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σi, G i))
+      map_one' := Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inl ⟨i, rfl⟩
+      map_mul' := fun x y =>
+        Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inr <| Or.inr ⟨i, x, y, rfl⟩ }
+    fun x y => Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inr <| Or.inl ⟨i, x, y, rfl⟩
+
+variable {G f}
+
+@[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
+  Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
+
+variable (P : Type*) [CommRing P]
+
+open FreeCommRing
+
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another ring
+that respect the directed system structure (i.e. make some diagram commute) give rise
+to a unique map out of the direct limit.
+-/
+def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    Colimit G f →+* P :=
+  Ideal.Quotient.lift _ (FreeCommRing.lift fun x : Σi, G i => g x.1 x.2)
+    (by
+      suffices Ideal.span _ ≤
+          Ideal.comap (FreeCommRing.lift fun x : Σi : ι, G i => g x.fst x.snd) ⊥ by
+        intro x hx
+        exact mem_bot.1 (this hx)
+      rw [Ideal.span_le]
+      intro x hx
+      rw [SetLike.mem_coe, Ideal.mem_comap, mem_bot]
+      rcases hx with (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩) <;>
+        simp only [RingHom.map_sub, lift_of, Hg, RingHom.map_one, RingHom.map_add, RingHom.map_mul,
+          (g i).map_one, (g i).map_add, (g i).map_mul, sub_self])
+
+variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+-- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
+-- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
+  FreeCommRing.lift_of _ _
+
+theorem lift_uniqu (F : Colimit G f →+* P) (x) :
+    F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x := by
+  exact Colimit.induction_on x fun i x => by simp [lift_of]
+
+section functorial
+
+variable {f : ∀ i j, i ≤ j → G i →+* G j}
+variable {G' : ι → Type*} [∀ i, CommRing (G' i)]
+variable {f' : ∀ i j, i ≤ j → G' i →+* G' j}
+variable {G'' : ι → Type*} [∀ i, CommRing (G'' i)]
+variable {f'' : ∀ i j, i ≤ j → G'' i →+* G'' j}
+
+/--
+Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
+family of ring homomorphisms `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` induces a ring
+homomorphism `lim G ⟶ lim G'`.
+-/
+def map (g : (i : ι) → G i →+* G' i)
+    (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
+    Colimit G (fun _ _ h ↦ f _ _ h) →+* Colimit G' fun _ _ h ↦ f' _ _ h :=
+  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
+      have eq1 := DFunLike.congr_fun (hg i j h) g
+      simp only [RingHom.coe_comp, Function.comp_apply] at eq1 ⊢
+      rw [eq1, of_f]
+
+@[simp] lemma map_apply_of (g : (i : ι) → G i →+* G' i)
+    (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
+    {i : ι} (x : G i) :
+    map g hg (of G _ _ x) = of G' (fun _ _ h ↦ f' _ _ h) i (g i x) :=
+  lift_of _ _ _ _ _
+
+@[simp] lemma map_id :
+    map (fun _ ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
+    RingHom.id (Colimit G fun _ _ h ↦ f _ _ h) :=
+  DFunLike.ext _ _ <| by
+    rintro ⟨x⟩; refine x.induction_on ?_ ?_ ?_ ?_
+    change map _ _ (-1) = _
+    rw [map_neg, map_one]; rfl
+
+
+lemma map_comp (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i →+* G'' i)
+    (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
+    (hg₂ : ∀ i j h, (g₂ j).comp (f' i j h) = (f'' i j h).comp (g₂ i)) :
+    ((map g₂ hg₂).comp (map g₁ hg₁) :
+      Colimit G (fun _ _ h ↦ f _ _ h) →+* Colimit G'' fun _ _ h ↦ f'' _ _ h) =
+    (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
+      rw [RingHom.comp_assoc, hg₁ i, ← RingHom.comp_assoc, hg₂ i, RingHom.comp_assoc] :
+      Colimit G (fun _ _ h ↦ f _ _ h) →+* Colimit G'' fun _ _ h ↦ f'' _ _ h) :=
+  DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
+
+/--
+Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
+family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
+`lim G ⟶ lim G'`.
+-/
+def congr (e : (i : ι) → G i ≃+* G' i)
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i)) :
+    Colimit G (fun _ _ h ↦ f _ _ h) ≃+* Colimit G' fun _ _ h ↦ f' _ _ h :=
+  RingEquiv.ofHomInv
+    (map (e ·) he)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ DFunLike.ext _ _ fun x ↦ by
+      have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
+      simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+        RingEquiv.apply_symm_apply] at eq1 ⊢
+      simp [← eq1, of_f])
+    (DFunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
+    (DFunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
+
+lemma congr_apply_of (e : (i : ι) → G i ≃+* G' i)
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
+    {i : ι} (g : G i) :
+    congr e he (of G _ i g) = of G' (fun _ _ h ↦ f' _ _ h) i (e i g) :=
+  map_apply_of _ he _
+
+lemma congr_symm_apply_of (e : (i : ι) → G i ≃+* G' i)
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
+    {i : ι} (g : G' i) :
+    (congr e he).symm (of G' _ i g) = of G (fun _ _ h ↦ f _ _ h) i ((e i).symm g) := by
+  simp only [congr, RingEquiv.ofHomInv_symm_apply, map_apply_of, RingHom.coe_coe]
+
+end functorial
+
+end Colimit
+
+end Ring
