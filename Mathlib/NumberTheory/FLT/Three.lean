@@ -210,8 +210,8 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
-    multiplicity.Finite (hζ.toInteger - 1) S'.c :=
-  multiplicity.finite_of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
+    FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
+  .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
 
 section DecidableRel
 
@@ -328,14 +328,14 @@ lemma lambda_sq_dvd_or_dvd_or_dvd :
   by_contra! h
   rcases h with ⟨h1, h2, h3⟩
   rw [← emultiplicity_lt_iff_not_dvd] at h1 h2 h3
-  have h1' : multiplicity.Finite (hζ.toInteger - 1) (S'.a + S'.b) :=
-    finite_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)
-  have h2' : multiplicity.Finite (hζ.toInteger - 1) (S'.a + η * S'.b) := by
-    refine finite_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
+  have h1' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + S'.b) :=
+    finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)
+  have h2' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η * S'.b) := by
+    refine finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
     rw [coe_eta] at ht
     simp [ht] at h2
-  have h3' : multiplicity.Finite (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) := by
-    refine finite_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
+  have h3' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) := by
+    refine finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
     rw [coe_eta] at ht
     simp [ht] at h3
   rw [h1'.emultiplicity_eq_multiplicity, Nat.cast_lt] at h1
