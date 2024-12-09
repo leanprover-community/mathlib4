@@ -205,8 +205,10 @@ section Bot
 /-- `⊥` is the quantale homomorphism sending all elements to `⊥`. -/
 
 @[to_additive]
-instance [IsQuantale β] : Bot (α →ₙ*q β) :=
-  ⟨{ (⊥ : sSupHom α β) with map_mul' := by simp; rw [IsQuantale.bot_mul_eq_bot] }⟩
+instance [IsQuantale β] : Bot (α →ₙ*q β) := ⟨{ (⊥ : sSupHom α β) with
+  map_mul' := by
+    simp only [sSupHom.toFun_eq_coe, sSupHom.bot_apply, IsQuantale.mul_bot, implies_true]
+  }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_bot [IsQuantale β] : ⇑(⊥ : α →ₙ*q β) = ⊥ := rfl
