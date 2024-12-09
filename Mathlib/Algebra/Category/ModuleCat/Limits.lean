@@ -263,6 +263,10 @@ def colimitIsColimit : IsColimit (colimitCocone G f) where
     simp only [this]
     apply Module.Colimit.lift_unique
 
+@[deprecated (since := "2024-12-09")] alias directLimitDiagram := colimitDiagram
+@[deprecated (since := "2024-12-09")] noncomputable alias directLimitCocone := colimitCocone
+@[deprecated (since := "2024-12-09")] noncomputable alias directLimitIsColimit := colimitIsColimit
+
 end Colimit
 
 end ModuleCat
