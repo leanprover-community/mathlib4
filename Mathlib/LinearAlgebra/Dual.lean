@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 
 /-!
 # Dual vector spaces
@@ -1895,4 +1896,4 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 
 end TensorProduct
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100
