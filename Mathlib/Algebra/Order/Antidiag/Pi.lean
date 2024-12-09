@@ -256,7 +256,6 @@ lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
   · rintro ⟨rfl, hf⟩
     refine ⟨∑ a ∈ s, f a • {a}, ?_, ?_⟩
     · simp +contextual
-    · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0),
-        Multiset.card_nsmul] using hf
+    · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0)] using hf
 
 end Finset

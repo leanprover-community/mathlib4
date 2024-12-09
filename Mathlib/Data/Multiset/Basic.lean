@@ -682,13 +682,14 @@ theorem card_zero : @card α 0 = 0 :=
 @[simp] lemma card_add (s t : Multiset α) : card (s + t) = card s + card t :=
   Quotient.inductionOn₂ s t length_append
 
-/-- `Multiset.card` bundled as a group hom. -/
+/-- `Multiset.card` bundled as a monoid hom. -/
 @[simps]
 def cardHom : Multiset α →+ ℕ where
   toFun := card
   map_zero' := card_zero
   map_add' := card_add
 
+@[simp]
 lemma card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := cardHom.map_nsmul ..
 
 @[simp]
