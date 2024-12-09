@@ -92,18 +92,32 @@ lemma curry'_id (X : C) : curry' (𝟙 X) = id X := by
   rfl
 
 @[reassoc]
+lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} (f : X ⟶ Y) :
+    X ◁ curry' f ≫ (ihom.ev X).app Y = (ρ_ _).hom ≫ f := by
+  dsimp [curry']
+  simp only [whiskerLeft_curry_ihom_ev_app]
+
+@[reassoc]
 lemma curry'_whiskerRight_comp {X Y Z : C} (f : X ⟶ Y) :
-    curry' f ▷ _ ≫ comp X Y Z = (λ_ _).hom ≫ (pre f).app Z := sorry
+    curry' f ▷ _ ≫ comp X Y Z = (λ_ _).hom ≫ (pre f).app Z := by
+  rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id_assoc]
+  apply uncurry_injective
+  rw [uncurry_pre, comp_eq, ← curry_natural_left, ← curry_natural_left, uncurry_curry,
+    compTranspose_eq, associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc,
+    whiskerLeft_curry'_ihom_ev_app, comp_whiskerRight_assoc, triangle_assoc_comp_right_assoc,
+    whiskerLeft_inv_hom_assoc]
 
 @[reassoc]
 lemma whiskerLeft_curry'_comp {X Y Z : C} (f : Y ⟶ Z) :
     _ ◁ curry' f ≫ comp X Y Z = (ρ_ _).hom ≫ (ihom X).map f := by
-  rw [comp_eq, compTranspose_eq]
-  rw [curry']
+  rw [← cancel_epi (ρ_ _).inv, Iso.inv_hom_id_assoc]
+  apply uncurry_injective
+  rw [uncurry_ihom_map, comp_eq, ← curry_natural_left, ← curry_natural_left, uncurry_curry,
+    compTranspose_eq, associator_inv_naturality_right_assoc, whisker_exchange_assoc]
   dsimp
-  rw [← uncurry_id_eq_ev]
-  rw [← uncurry_id_eq_ev]
-  sorry
+  rw [whiskerLeft_curry'_ihom_ev_app, whiskerLeft_rightUnitor_inv,
+    MonoidalCategory.whiskerRight_id_assoc, Category.assoc,
+    Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc,]
 
 lemma curry'_ihom_map {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     curry' f ≫ (ihom X).map g = curry' (f ≫ g) := by

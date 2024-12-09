@@ -201,6 +201,11 @@ lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
     A ◁ curry g ≫ (ihom.ev A).app X = g := by
   simp [curry_eq]
 
+theorem uncurry_ihom_map (g : Y ⟶ Y') :
+    uncurry ((ihom A).map g) = (ihom.ev A).app Y ≫ g := by
+  apply curry_injective
+  rw [curry_uncurry, curry_natural_right, ← uncurry_id_eq_ev, curry_uncurry, id_comp]
+
 /-- The internal hom out of the unit is naturally isomorphic to the identity functor.-/
 def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
