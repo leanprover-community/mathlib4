@@ -229,6 +229,9 @@ theorem ground_nonempty (M : Matroid α) [M.Nonempty] : M.E.Nonempty :=
 theorem ground_nonempty_iff (M : Matroid α) : M.E.Nonempty ↔ M.Nonempty :=
   ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
 
+lemma nonempty_type (M : Matroid α) [h : M.Nonempty] : Nonempty α :=
+  ⟨M.ground_nonempty.some⟩
+
 theorem ground_finite (M : Matroid α) [M.Finite] : M.E.Finite :=
   Finite.ground_finite
 
@@ -239,7 +242,7 @@ instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   ⟨Set.toFinite _⟩
 
 /-- A `FiniteRk` matroid is one whose bases are finite -/
-class FiniteRk (M : Matroid α) : Prop where
+@[mk_iff] class FiniteRk (M : Matroid α) : Prop where
   /-- There is a finite base -/
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
@@ -247,7 +250,7 @@ instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   ⟨M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
 /-- An `InfiniteRk` matroid is one whose bases are infinite. -/
-class InfiniteRk (M : Matroid α) : Prop where
+@[mk_iff] class InfiniteRk (M : Matroid α) : Prop where
   /-- There is an infinite base -/
   exists_infinite_base : ∃ B, M.Base B ∧ B.Infinite
 
@@ -625,6 +628,14 @@ theorem Base.exchange_base_of_indep' (hB : M.Base B) (he : e ∈ B) (hf : f ∉ 
   have hfe : f ≠ e := by rintro rfl; exact hf he
   rw [← insert_diff_singleton_comm hfe] at *
   exact hB.exchange_base_of_indep hf hI
+
+lemma insert_base_of_insert_indep {M : Matroid α} {I : Set α} {e f : α}
+    (he : e ∉ I) (hf : f ∉ I) (heI : M.Base (insert e I)) (hfI : M.Indep (insert f I)) :
+    M.Base (insert f I) := by
+  obtain rfl | hef := eq_or_ne e f
+  · assumption
+  simpa [diff_singleton_eq_self he, hfI]
+    using heI.exchange_base_of_indep (e := e) (f := f) (by simp [hef.symm, hf])
 
 theorem Base.insert_dep (hB : M.Base B) (h : e ∈ M.E \ B) : M.Dep (insert e B) := by
   rw [← not_indep_iff (insert_subset h.1 hB.subset_ground)]
