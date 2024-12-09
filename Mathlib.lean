@@ -1072,6 +1072,7 @@ import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.Inverse
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Analytic.IteratedFDeriv
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Meromorphic
 import Mathlib.Analysis.Analytic.OfScalars
