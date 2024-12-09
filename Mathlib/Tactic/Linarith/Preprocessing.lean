@@ -375,7 +375,6 @@ so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
     MetaM (List Branch) :=
-  withTraceNode `linarith.preprocess (fun m => return "") <| g.withContext <|
   pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).flatten) [(g, l)]
 
 end Linarith
