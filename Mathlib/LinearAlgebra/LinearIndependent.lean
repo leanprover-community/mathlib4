@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -81,11 +82,12 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
 
-assert_not_exists Cardinal
 
 noncomputable section
 
 open Function Set Submodule
+
+open Cardinal
 
 universe u' u
 
@@ -400,6 +402,18 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
   obtain ⟨b, _hb, rfl⟩ := hy
   simp only [f, imp_self, Subtype.mk_eq_mk]
 
+/-- If every finite set of linearly independent vectors has cardinality at most `n`,
+then the same is true for arbitrary sets of linearly independent vectors.
+-/
+theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
+    (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
+    ∀ s : Set M, LinearIndependent R ((↑) : s → M) → #s ≤ n := by
+  intro s li
+  apply Cardinal.card_le_of
+  intro t
+  rw [← Finset.card_map (Embedding.subtype s)]
+  apply H
+  apply linearIndependent_finset_map_embedding_subtype _ li
 
 section Subtype
 
@@ -1356,6 +1370,23 @@ theorem exists_linearIndependent :
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩
+
+/-- Indexed version of `exists_linearIndependent`. -/
+lemma exists_linearIndependent' (v : ι → V) :
+    ∃ (κ : Type u') (a : κ → ι), Function.Injective a ∧
+      Submodule.span K (Set.range (v ∘ a)) = Submodule.span K (Set.range v) ∧
+      LinearIndependent K (v ∘ a) := by
+  obtain ⟨t, ht, hsp, hli⟩ := exists_linearIndependent K (Set.range v)
+  choose f hf using ht
+  let s : Set ι := Set.range (fun a : t ↦ f a.property)
+  have hs {i : ι} (hi : i ∈ s) : v i ∈ t := by obtain ⟨a, rfl⟩ := hi; simp [hf]
+  let f' (a : s) : t := ⟨v a.val, hs a.property⟩
+  refine ⟨s, Subtype.val, Subtype.val_injective, hsp.symm ▸ by congr; aesop, ?_⟩
+  · rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp]
+    apply hli.comp
+    rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
+    simp only [Subtype.ext_iff, hf] at hij
+    simp [hij]
 
 variable {K t}
 
