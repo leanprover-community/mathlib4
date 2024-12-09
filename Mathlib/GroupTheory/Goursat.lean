@@ -152,12 +152,12 @@ lemma goursat :
   · ext ⟨g, h⟩
     constructor
     · intro hgh
-      simpa +zetaDelta only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
+      simpa only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
         Prod.exists, MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply,
         MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
         MonoidHom.coe_fst]
         using ⟨⟨h, hgh⟩, ⟨g, hgh⟩, g, h, hgh, ⟨rfl, rfl⟩⟩
-    · simp +zetaDelta only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
+    · simp only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
         Prod.exists, MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply,
         MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
         MonoidHom.coe_fst, forall_exists_index, and_imp]
@@ -166,7 +166,7 @@ lemma goursat :
       rwa [← hP, ← hQ]
   · convert goursatFst_prod_goursatSnd_le (P.prod Q).range
     ext ⟨g, h⟩
-    simp_rw +zetaDelta [MonoidHom.mem_ker, MonoidHom.coe_prodMap, Prod.map_apply, Subgroup.mem_prod,
+    simp_rw [G', H', MonoidHom.mem_ker, MonoidHom.coe_prodMap, Prod.map_apply, Subgroup.mem_prod,
       Prod.one_eq_mk, Prod.ext_iff, ← MonoidHom.mem_ker, QuotientGroup.ker_mk']
 
 end Subgroup
