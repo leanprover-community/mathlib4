@@ -399,6 +399,45 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
       _ ≃ _ := finSumFinEquiv
       _ ≃ _ := finCongr (Fin.sum_univ_castSucc n).symm
 
+@[simp]
+theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
+    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
+  induction m
+  · exact k.fst.elim0
+  rename_i m ih
+  rcases k with ⟨⟨iv,hi⟩,j⟩
+  rw [finSigmaFinEquiv]
+  unfold finSumFinEquiv
+  simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.instTrans_trans,
+    Equiv.trans_apply, finCongr_apply, Fin.coe_cast]
+  generalize_proofs
+  rename_i pf1 _
+  by_cases him : iv < m
+  · have : (Sigma.mk (β := (fun a ↦ Fin (n (Sum.elim _ _ a)))) _
+        (pf1.rec (motive := fun x _ ↦ Fin (n x)) j) = ⟨.inl (@Fin.mk m iv him), j⟩) := by
+      simp [Fin.addCases, him]
+    conv =>
+      enter [1,1,3]
+      apply Equiv.sumCongr_apply
+    simpa [this] using ih _
+  · replace him := Nat.eq_of_lt_succ_of_not_lt hi him
+    subst him
+    obtain ⟨w, this⟩ : ∃ (w : Eq _ (Fin (n ((Sum.inr 0).elim _ _)))),
+        (Sigma.mk (β := (fun a ↦ Fin (n _))) _
+        (pf1.rec (motive := fun x _ ↦ Fin (n x)) j) = ⟨_, w.rec j⟩) := by
+      simp [Fin.addCases, Fin.natAdd]
+    conv =>
+      enter [1,1,3]
+      apply Equiv.sumCongr_apply
+    simp [this]
+    congr
+
+/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f`-/
+theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
+    (finSigmaFinEquiv ij : ℕ) = ij.2 := by
+  rw [finSigmaFinEquiv_apply, add_left_eq_self]
+  apply @Finset.sum_of_isEmpty _ _ _ _ (by simpa using Fin.isEmpty')
+
 namespace List
 
 section CommMonoid
