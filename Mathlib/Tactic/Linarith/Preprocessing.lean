@@ -319,10 +319,9 @@ def nlinarithExtras : GlobalPreprocessor where
       bif ua == ub then
         have hu : ub =QL ua := ⟨⟩
         withNewMCtxDepth do
-          let .defEq _hα := ← isDefEqQ (u := ub.succ.succ) q($αb) q($αa) | pure none
-          let .defEq _hi := ← isDefEqQ (u := ub.succ) q($ib) q($ia) | pure none
-          -- TODO: why don't `hα` and `hi` work here? Do we need `QuotedDefEq.cast`?
-          return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu .unsafeIntro .unsafeIntro⟩
+          let .defEq hα := ← isDefEqQ q($αb) q($αa) | pure none
+          let .defEq hi := ← isDefEqQ q($ib) q($ia) | pure none
+          return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu hα hi⟩
       else
         return none
     return ls ++ new_es ++ products.reduceOption.map fun ⟨_u, _α, _i, h⟩ => h.pf.raw
