@@ -16,6 +16,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.TensorProduct.Nontrivial
 
 /-!
 
@@ -531,36 +532,6 @@ theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
   apply of_isField
   exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
     (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
-
--- TODO: move to suitable place
-/-- If `A`, `B` are nontrivial algebras over a field `F`, then `A ⊗[F] B` is nontrivial. -/
-theorem _root_.Algebra.TensorProduct.nontrivial_of_field
-    (F : Type*) [Field F] (A B : Type*) [CommRing A] [CommRing B] [Algebra F A] [Algebra F B]
-    [Nontrivial A] [Nontrivial B] :
-    Nontrivial (A ⊗[F] B) :=
-  Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_flat_left F A B (RingHom.injective _)
-
--- TODO: move to suitable place
-variable (R) in
-/-- If `A`, `B` are `R`-algebras, `R` injects into `A` and `B`,
-and all of them are domains, then `A ⊗[R] B` is nontrivial. -/
-theorem _root_.Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain
-    (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-    (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B))
-    [IsDomain R] [IsDomain A] [IsDomain B] :
-    Nontrivial (A ⊗[R] B) := by
-  let FR := FractionRing R
-  let FA := FractionRing A
-  let FB := FractionRing B
-  let fa : FR →ₐ[R] FA := IsFractionRing.liftAlgHom (g := Algebra.ofId R FA)
-    ((IsFractionRing.injective A FA).comp ha)
-  let fb : FR →ₐ[R] FB := IsFractionRing.liftAlgHom (g := Algebra.ofId R FB)
-    ((IsFractionRing.injective B FB).comp hb)
-  algebraize_only [fa.toRingHom, fb.toRingHom]
-  have := Algebra.TensorProduct.nontrivial_of_field FR FA FB
-  exact Algebra.TensorProduct.mapOfCompatibleSMul FR R FA FB |>.comp
-    (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R A FA) (IsScalarTower.toAlgHom R B FB))
-    |>.toRingHom.domain_nontrivial
 
 -- need to be in this file since it uses linearly disjoint
 open Cardinal Polynomial in
