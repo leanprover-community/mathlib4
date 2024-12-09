@@ -5,8 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.Separation
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -26,7 +25,7 @@ variable {α β γ : Type*}
 /-- `toEquiv` is the "identity" function to the `Specialization` of a type. -/
 @[match_pattern] def toEquiv : α ≃ Specialization α := Equiv.refl _
 
-/-- `ofEquiv` is the identity function from the `Specialization` of a type.  -/
+/-- `ofEquiv` is the identity function from the `Specialization` of a type. -/
 @[match_pattern] def ofEquiv : Specialization α ≃ α := Equiv.refl _
 
 @[simp] lemma toEquiv_symm : (@toEquiv α).symm = ofEquiv := rfl
@@ -38,9 +37,11 @@ variable {α β γ : Type*}
 @[simp, nolint simpNF] lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
 Iff.rfl
 
-/-- A recursor for `Specialization`. Use as `induction x using Specialization.rec`. -/
-protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : α) : β a :=
-h (ofEquiv a)
+/-- A recursor for `Specialization`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : Specialization α) :
+    β a :=
+  h (ofEquiv a)
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -61,7 +62,7 @@ instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := spe
 orders. -/
 def map (f : C(α, β)) : Specialization α →o Specialization β where
   toFun := toEquiv ∘ f ∘ ofEquiv
-  monotone' := f.continuous.specialization_monotone
+  monotone' := (map_continuous f).specialization_monotone
 
 @[simp] lemma map_id : map (ContinuousMap.id α) = OrderHom.id := rfl
 @[simp] lemma map_comp (g : C(β, γ)) (f : C(α, β)) : map (g.comp f) = (map g).comp (map f) := rfl
