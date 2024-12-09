@@ -436,7 +436,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         apply mul_le_mul_of_nonneg_right _ (variance_nonneg _ _)
         convert sum_div_nat_floor_pow_sq_le_div_sq N (Nat.cast_pos.2 hj) c_one using 2
         · simp +zetaDelta only [Nat.cast_lt]
-        · simp +zetaDelta only [one_div]
+        · simp only [Y, S, u, C, one_div]
       _ = c ^ 5 * (c - 1)⁻¹ ^ 3 * ∑ j ∈ range (u (N - 1)), ((j : ℝ) ^ 2)⁻¹ * Var[Y j] := by
         simp_rw [mul_sum, div_eq_mul_inv, mul_assoc]
       _ ≤ c ^ 5 * (c - 1)⁻¹ ^ 3 * (2 * 𝔼[X 0]) := by
@@ -475,7 +475,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
       ENNReal.ofReal_lt_top
   filter_upwards [ae_eventually_not_mem I4.ne] with ω hω
   simp_rw [S, not_le, mul_comm, sum_apply] at hω
-  convert hω; simp +zetaDelta only [sum_apply]
+  convert hω; simp only [Y, S, u, C, sum_apply]
 
 include hint hindep hident hnonneg in
 /- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
@@ -684,7 +684,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       simp
     simp only [I, integral_smul_const]
     convert Tendsto.smul_const hω c using 1
-    simp +zetaDelta [Y, ← sum_smul, smul_smul]
+    simp [F, Y, ← sum_smul, smul_smul]
   · rintro φ ψ - hφ hψ
     filter_upwards [hφ, hψ] with ω hωφ hωψ
     convert hωφ.add hωψ using 1
