@@ -499,6 +499,9 @@ variable [PartialOrder α]
 theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
   rw [IsPredLimit, isMax_iff_eq_top]
 
+theorem IsPredLimit.lt_top [OrderTop α] (h : IsPredLimit a) : a < ⊤ :=
+  h.ne_top.lt_top
+
 variable [PredOrder α]
 
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
