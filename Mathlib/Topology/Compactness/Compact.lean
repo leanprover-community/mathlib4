@@ -881,7 +881,7 @@ theorem Filter.comap_cocompact_le {f : X → Y} (hf : Continuous f) :
 function. -/
 theorem disjoint_map_cocompact {g : X → Y} {f : Filter X} (hg : Continuous g)
     (hf : Disjoint f (Filter.cocompact X)) : Disjoint (map g f) (Filter.cocompact Y) := by
-  rw [← Filter.disjoint_comap_iff_map, disjoint_iff, ← le_bot_iff]
+  rw [← Filter.disjoint_comap_iff_map, disjoint_iff_inf_le]
   calc
     f ⊓ (comap g (cocompact Y))
     _ ≤ f ⊓ Filter.cocompact X := inf_le_inf_left f (Filter.comap_cocompact_le hg)
