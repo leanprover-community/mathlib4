@@ -211,7 +211,7 @@ def isoOfIsAffine [IsAffine S] :
           rw [← Scheme.comp_appTop_assoc, Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id]
           simp
         · intro i
-          erw [CommRingCat.comp_apply, coe_eval₂Hom]
+          rw [CommRingCat.comp_apply, coe_eval₂Hom]
           simp only [eval₂_X]
           exact homOfVector_appTop_coord _ _ _
 
@@ -249,8 +249,7 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
   simp only [SpecIso, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom,
     RingEquiv.toRingHom_eq_coe, Scheme.Spec_map, Quiver.Hom.unop_op, Scheme.comp_coeBase,
     TopologicalSpace.Opens.map_comp_obj, TopologicalSpace.Opens.map_top, Scheme.comp_app,
-    isoOfIsAffine_hom_appTop]
-  erw [Scheme.ΓSpecIso_naturality_assoc]
+    isoOfIsAffine_hom_appTop, Scheme.ΓSpecIso_naturality_assoc]
   congr 1
   ext : 1
   apply ringHom_ext'
@@ -264,9 +263,8 @@ lemma SpecIso_inv_appTop_coord (R : CommRingCat.{max u v}) (i) :
     mapEquiv_symm, RingEquiv.toRingHom_eq_coe, Scheme.Spec_map, Quiver.Hom.unop_op,
     Scheme.comp_coeBase, TopologicalSpace.Opens.map_comp_obj, TopologicalSpace.Opens.map_top,
     Scheme.comp_app, CommRingCat.comp_apply]
-  erw [isoOfIsAffine_inv_appTop_coord, ← CommRingCat.comp_apply]
-  rw [← Scheme.ΓSpecIso_inv_naturality]
-  erw [CommRingCat.comp_apply]
+  rw [isoOfIsAffine_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
+      CommRingCat.comp_apply]
   congr 1
   exact map_X _ _
 
@@ -321,9 +319,8 @@ lemma map_Spec_map {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
       TopologicalSpace.Opens.map_top, Scheme.comp_app, CommRingCat.comp_apply]
     conv_lhs => enter[2]; tactic => exact map_appTop_coord _ _
     conv_rhs => enter[2]; tactic => exact SpecIso_inv_appTop_coord _ _
-    erw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply]
-    rw [← Scheme.ΓSpecIso_inv_naturality]
-    erw [CommRingCat.comp_apply, map_X]
+    rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
+        CommRingCat.comp_apply, map_X]
 
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings.  -/

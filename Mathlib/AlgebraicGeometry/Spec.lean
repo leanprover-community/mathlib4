@@ -105,7 +105,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
     ext
     dsimp
-    erw [comap_id (by simp)]
+    rw [comap_id (by simp)]
     simp
     rfl
 
