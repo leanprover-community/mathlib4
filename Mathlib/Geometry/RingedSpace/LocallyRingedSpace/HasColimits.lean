@@ -228,11 +228,9 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   rintro a ha
   rcases TopCat.Presheaf.germ_exist (C := CommRingCat) _ _ a with ⟨U, hU, s, rfl⟩
   -- need `erw` to see through `ConcreteCategory.instFunLike`
-  erw [PresheafedSpace.stalkMap_germ_apply
+  rw [← CommRingCat.forget_map_apply, PresheafedSpace.stalkMap_germ_apply
     (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
-  show IsUnit (((coequalizer (Hom.toShHom f) (Hom.toShHom g)).presheaf.germ U
-      ((coequalizer.π (Hom.toShHom f) (Hom.toShHom g)).base x) hU)
-    s)
+  rw [CommRingCat.forget_map_apply]
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=
