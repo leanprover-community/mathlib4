@@ -736,7 +736,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   have B : ∀ᵐ x ∂μ.restrict s, t.indicator 1 x = (1 : ℝ≥0∞) := by
     refine ae_restrict_of_ae_restrict_of_subset (subset_toMeasurable μ s) ?_
     filter_upwards [ae_restrict_mem (measurableSet_toMeasurable μ s)] with _ hx
-    simp +zetaDelta only [hx, Pi.one_apply, indicator_of_mem]
+    simp only [t, hx, Pi.one_apply, indicator_of_mem]
   filter_upwards [A, B] with x hx h'x
   rw [h'x] at hx
   apply hx.congr' _
