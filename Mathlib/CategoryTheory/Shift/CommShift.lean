@@ -92,6 +92,7 @@ end CommShift
 /-- A functor `F` commutes with the shift by a monoid `A` if it is equipped with
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
+@[ext]
 class CommShift where
   iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
   zero : iso 0 = CommShift.isoZero F A := by aesop_cat

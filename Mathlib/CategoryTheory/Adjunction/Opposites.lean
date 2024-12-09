@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Thomas Read, Andrew Yang
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
-
+import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 # Opposite adjunctions
 
@@ -20,7 +20,7 @@ adjunction, opposite, uniqueness
 
 open CategoryTheory
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ u₁ u₂ u₃ v₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -90,6 +90,22 @@ def opAdjointOfUnopAdjoint (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop �
 def adjointOfUnopAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F.unop) : F ⊣ G :=
   (adjointOpOfAdjointUnop _ _ h).ofNatIsoRight G.opUnopIso
 
+variable {E : Type u₃} [Category.{v₃,u₃} E] {F : C ⥤ D} {G : D ⥤ C} {F' : D ⥤ E} {G' : E ⥤ D}
+(adj : F ⊣ G) (adj' : F' ⊣ G')
+/-- Composition of adjunctions is compatible with taking opposite adjunctions.
+-/
+lemma comp_op : (Adjunction.comp adj adj').opAdjointOpOfAdjoint =
+    Adjunction.comp adj'.opAdjointOpOfAdjoint adj.opAdjointOpOfAdjoint := by
+  ext _
+  · simp only [Functor.id_obj, Functor.comp_obj, Functor.op_obj, opAdjointOpOfAdjoint_unit_app,
+    Functor.comp_map, comp_counit_app, comp_unit_app, Functor.op_map]
+    rw [opEquiv_symm_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_apply]
+    simp
+  · simp only [Functor.comp_obj, Functor.op_obj, Functor.id_obj, opAdjointOpOfAdjoint_counit_app,
+    comp_unit_app, Functor.comp_map, Category.assoc, comp_counit_app, Functor.op_map]
+    rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_symm_apply]
+    simp
+
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
 We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.
@@ -121,5 +137,22 @@ def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (opAdjointOpOfAdjoint _ F' adj2)
     (opAdjointOpOfAdjoint _ _ adj1) (NatIso.op l))
+
+/-- If we have adjunctions `F ⊣ G` and `F' ⊣ G'` from `C` to `D`, then `conjugateIsoEquiv`
+gives an equivalence between `F' ≅ F` and `G ≅ G'`. This lemmas expresses the compatibility
+of this equivalence with taking opposites of functors, adjunctions and natural isomorphisms.
+-/
+lemma conjugateIsoEquiv_op (F F' : C ⥤ D) (G G' : D ⥤ C) (adj : F ⊣ G) (adj' : F' ⊣ G') :
+    (natIsoOpEquiv G G').trans
+    ((conjugateIsoEquiv adj.opAdjointOpOfAdjoint adj'.opAdjointOpOfAdjoint).trans
+    (natIsoOpEquiv F' F).symm) = (conjugateIsoEquiv adj adj').symm := by
+  ext _
+  simp only [natIsoOpEquiv, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk,
+    NatIso.removeOp_hom, conjugateIsoEquiv_apply_hom, NatIso.op_hom, NatTrans.removeOp_app,
+    Functor.op_obj, conjugateEquiv_apply_app, opAdjointOpOfAdjoint_unit_app, NatTrans.op_app,
+    Functor.op_map, Quiver.Hom.unop_op, opAdjointOpOfAdjoint_counit_app, unop_comp, Category.assoc,
+    conjugateIsoEquiv_symm_apply_hom, conjugateEquiv_symm_apply_app]
+  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply]
+  simp
 
 end CategoryTheory.Adjunction

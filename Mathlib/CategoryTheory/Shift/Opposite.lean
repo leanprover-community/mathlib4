@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # The (naive) shift on the opposite category
@@ -83,6 +84,8 @@ lemma oppositeShiftFunctorZero_hom_app (X : OppositeShift C A) :
     Iso.hom_inv_id_app, op_id]
   rfl
 
+section Add
+
 variable {C A}
 variable (X : OppositeShift C A) (a b c : A) (h : a + b = c)
 
@@ -109,5 +112,122 @@ lemma oppositeShiftFunctorAdd'_hom_app :
       ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
+
+end Add
+
+variable {C A}
+variable (X : OppositeShift C A) (a b : A) (h : a + b = 0)
+
+lemma oppositeShiftFunctorCompIsoId_hom_app :
+    (shiftFunctorCompIsoId (OppositeShift C A) a b h).hom.app X =
+    ((shiftFunctorCompIsoId C a b h).inv.app X.unop).op := by
+  simp [shiftFunctorCompIsoId, oppositeShiftFunctorAdd'_inv_app, oppositeShiftFunctorZero_hom_app]
+
+lemma oppositeShiftFunctorCompIsoId_inv_app :
+    (shiftFunctorCompIsoId (OppositeShift C A) a b h).inv.app X =
+    ((shiftFunctorCompIsoId C a b h).hom.app X.unop).op := by
+  simp [shiftFunctorCompIsoId, oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorAdd'_hom_app]
+
+namespace Functor.CommShift
+
+open Functor
+
+variable {D : Type*} [Category D] [HasShift D A] (F : C ⥤ D)
+
+noncomputable def op [CommShift F A] :
+    CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
+  iso a := (NatIso.op (F.commShiftIso a)).symm
+  zero := by
+    simp only
+    rw [commShiftIso_zero]
+    ext _
+    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
+      CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app, op_map]
+    erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
+    rfl
+  add a b := by
+    simp only
+    rw [commShiftIso_add]
+    ext _
+    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
+      CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app, op_map]
+    erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
+    rfl
+
+noncomputable def removeOp [CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A] :
+    CommShift F A where
+  iso a := NatIso.removeOp (F.op.commShiftIso (C := OppositeShift C A)
+    (D := OppositeShift D A) a).symm
+  zero := by
+    simp only
+    rw [commShiftIso_zero]
+    ext _
+    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+      CommShift.isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, CommShift.isoZero_hom_app]
+    erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
+    rfl
+  add a b := by
+    simp only
+    rw [commShiftIso_add]
+    ext _
+    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+      CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc,
+      CommShift.isoAdd_hom_app]
+    erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
+    rfl
+
+end Functor.CommShift
+
+end CategoryTheory
+
+namespace CategoryTheory
+
+variable (C : Type*) [Category C] (A : Type*) [AddGroup A] [HasShift C A]
+
+/--
+The opposite of `(shiftEquiv' C a a' _).toAdjunction` is
+`(shiftEquiv' (OppositeShift C A) a' a _).toAdjunction`.
+-/
+lemma shiftEquiv'_toAdjunction_op (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).toAdjunction.opAdjointOpOfAdjoint =
+    (shiftEquiv' (OppositeShift C A) a' a (by simp [eq_neg_of_add_eq_zero_left h])).toAdjunction :=
+    by
+  ext
+  · simp only [Functor.id_obj, shiftEquiv'_inverse, shiftEquiv'_functor, Functor.comp_obj,
+    Functor.op_obj, Adjunction.opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_counit,
+    Equivalence.toAdjunction_unit]
+    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_unit, shiftEquiv'_counit,
+    oppositeShiftFunctorCompIsoId_inv_app]
+    simp
+  · simp only [shiftEquiv'_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj,
+    Functor.id_obj, Adjunction.opAdjointOpOfAdjoint_counit_app, Equivalence.toAdjunction_unit,
+    Equivalence.toAdjunction_counit]
+    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_unit, shiftEquiv'_counit,
+    oppositeShiftFunctorCompIsoId_hom_app]
+    simp
+
+/--
+The opposite of `(shiftEquiv' C a a' _).symm.toAdjunction` is
+`(shiftEquiv' (OppositeShift C A) a' a _).symm.toAdjunction`.
+-/
+lemma shiftEquiv'_symm_toAdjunction_op (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.toAdjunction.opAdjointOpOfAdjoint =
+    (shiftEquiv' (OppositeShift C A) a' a
+    (by simp [eq_neg_of_add_eq_zero_left h])).symm.toAdjunction := by
+  ext
+  · simp only [Functor.id_obj, Equivalence.symm_inverse, shiftEquiv'_functor,
+    Equivalence.symm_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj,
+    Adjunction.opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_counit,
+    Equivalence.toAdjunction_unit]
+    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_symm_unit, shiftEquiv'_symm_counit,
+    oppositeShiftFunctorCompIsoId_inv_app]
+    simp
+  · simp only [Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
+    shiftEquiv'_functor, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
+    Adjunction.opAdjointOpOfAdjoint_counit_app, Equivalence.toAdjunction_unit,
+    Equivalence.toAdjunction_counit]
+    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_symm_unit, shiftEquiv'_symm_counit,
+    oppositeShiftFunctorCompIsoId_hom_app]
+    simp
 
 end CategoryTheory

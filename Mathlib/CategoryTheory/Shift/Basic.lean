@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Discrete
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Shift
@@ -181,6 +182,70 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
     shiftFunctorAdd' C i j (i+j) rfl = shiftFunctorAdd C i j := by
   ext1
   apply Category.id_comp
+
+variable {C}
+
+open Functor Category in
+lemma shiftFunctorAdd_symm_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
+    (shiftFunctorAdd C i j).symm = eqToIso (by rw [hi, hj]) ≪≫
+    (shiftFunctorAdd C i' j').symm ≪≫ eqToIso (by rw [hi, hj]) := by
+  ext X
+  simp only [Functor.comp_obj, Iso.symm_hom, Iso.trans_hom, eqToIso.hom, NatTrans.comp_app,
+    eqToHom_app]
+  have := Functor.LaxMonoidal.μ_natural_left (shiftMonoidalFunctor C A) (X := {as := i})
+    (Y := {as := i'}) (eqToHom (by rw [hi])) {as := j}
+  apply_fun (fun T ↦ T.app X) at this
+  simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
+    NatTrans.comp_app] at this
+  change _ ≫ (shiftFunctorAdd C i' j).inv.app X = (shiftFunctorAdd C i j).inv.app X ≫ _ at this
+  simp only [Functor.comp_obj, endofunctorMonoidalCategory_whiskerRight_app] at this
+  set f : ((shiftMonoidalFunctor C A).obj (MonoidalCategory.tensorObj { as := i' }
+    { as := j })).obj X ⟶ ((shiftMonoidalFunctor C A).obj
+    (MonoidalCategory.tensorObj { as := i } { as := j })).obj X := eqToHom (by rw [hi])
+  rw [← cancel_mono f] at this
+  simp only [eqToHom_map, eqToHom_app, assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
+  rw [← this]
+  have := Functor.LaxMonoidal.μ_natural_right (shiftMonoidalFunctor C A) (X := {as := j})
+    (Y := {as := j'}) {as := i'} (eqToHom (by rw [hj]))
+  apply_fun (fun T ↦ T.app X) at this
+  simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
+    NatTrans.comp_app] at this
+  change _ ≫ (shiftFunctorAdd C i' j').inv.app X = (shiftFunctorAdd C i' j).inv.app X ≫ _ at this
+  simp only [Functor.comp_obj, MonoidalCategory.whiskerLeft_eqToHom, eqToHom_app,
+    endofunctorMonoidalCategory_tensorObj_obj, eqToHom_map, eqToHom_app] at this
+  set f : ((shiftMonoidalFunctor C A).obj (MonoidalCategory.tensorObj { as := i' }
+    { as := j' })).obj X ⟶ ((shiftMonoidalFunctor C A).obj
+    (MonoidalCategory.tensorObj { as := i' } { as := j })).obj X := eqToHom (by rw [hj])
+  rw [← cancel_mono f] at this
+  simp only [assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
+  rw [← this]
+  simp
+
+lemma shiftFunctorAdd_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
+    shiftFunctorAdd C i j = eqToIso (by rw [hi, hj]) ≪≫
+    shiftFunctorAdd C i' j' ≪≫ eqToIso (by rw [hi, hj]) := by
+  conv_lhs => rw [← Iso.symm_symm_eq (shiftFunctorAdd C i j),
+                shiftFunctorAdd_symm_eqToIso i j i' j' hi hj]
+  aesop
+
+lemma shiftFunctorAdd'_symm_eqToIso (i j k i' j' k' : A) (h : i + j = k) (h' : i' + j' = k')
+    (hi : i = i') (hj : j = j') :
+    (shiftFunctorAdd' C i j k h).symm = eqToIso (by rw [hi, hj]) ≪≫
+    (shiftFunctorAdd' C i' j' k' h').symm ≪≫ eqToIso (by rw [← h, ← h', hi, hj])
+    := by
+  dsimp [shiftFunctorAdd']
+  rw [shiftFunctorAdd_symm_eqToIso i j i' j' hi hj]
+  aesop
+
+lemma shiftFunctorAdd'_eqToIso (i j k i' j' k' : A) (h : i + j = k) (h' : i' + j' = k')
+    (hi : i = i') (hj : j = j') :
+    shiftFunctorAdd' C i j k h = eqToIso (by rw [← h, ← h', hi, hj]) ≪≫
+    shiftFunctorAdd' C i' j' k' h' ≪≫ eqToIso (by rw [hi, hj]) := by
+  dsimp [shiftFunctorAdd']
+  rw [shiftFunctorAdd_eqToIso i j i' j' hi hj]
+  aesop
+
+variable (C)
 
 variable (A) in
 /-- Shifting by zero is the identity functor. -/
@@ -403,6 +468,34 @@ def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
         shiftFunctorAdd']
       simp only [Category.assoc, eqToHom_map]
       rfl
+
+lemma shiftEquiv'_unit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).unit = (shiftFunctorCompIsoId C a a' h).inv := by
+  ext _
+  change (shiftEquiv' C a a' h).unitIso.hom.app _ = _
+  rw [shiftEquiv'_unitIso]
+  rfl
+
+lemma shiftEquiv'_counit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).counit = (shiftFunctorCompIsoId C a' a
+    (by simp only [eq_neg_of_add_eq_zero_left h, add_neg_cancel])).hom := by
+  ext _
+  change (shiftEquiv' C a a' h).counitIso.hom.app _ = _
+  rw [shiftEquiv'_counitIso]
+
+lemma shiftEquiv'_symm_unit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.unit = (shiftFunctorCompIsoId C a' a
+    (by simp [eq_neg_of_add_eq_zero_left h])).inv := by
+  ext _
+  change (shiftEquiv' C a a' h).counitIso.inv.app _ = _
+  rw [shiftEquiv'_counitIso]
+
+lemma shiftEquiv'_symm_counit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.counit = (shiftFunctorCompIsoId C a a' h).hom := by
+  ext _
+  change (shiftEquiv' C a a' h).unitIso.inv.app _ = _
+  rw [shiftEquiv'_unitIso]
+  rfl
 
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
 abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)

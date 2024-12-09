@@ -465,6 +465,12 @@ protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) : G.unop ≅ F.uno
 
 end NatIso
 
+variable {D : Type u₂} [Category.{v₂} D]
+
+@[simp]
+def natIsoOpEquiv (F F' : C ⥤ D) : (F ≅ F') ≃ (F'.op ≅ F.op) :=
+  Equiv.mk NatIso.op NatIso.removeOp (fun _ ↦ by aesop) (fun _ ↦ by aesop)
+
 namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]
