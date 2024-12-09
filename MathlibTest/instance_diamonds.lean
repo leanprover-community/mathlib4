@@ -3,13 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/

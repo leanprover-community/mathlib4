@@ -105,7 +105,6 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hb₂ : MDifferentiableWithinAt IM IB₂ b₂ s m₀) :
     MDifferentiableWithinAt IM (IB₂.prod 𝓘(𝕜, F₂))
       (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) s m₀ := by
-  --rw [← mdifferentiableWithinAt_insert_self] at hϕ hv hb₂ ⊢
   rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (MDifferentiableWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_insert
