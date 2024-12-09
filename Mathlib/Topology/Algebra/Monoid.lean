@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
+Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
@@ -405,12 +405,99 @@ open Filter
 
 variable {α β : Type*}
 variable [TopologicalSpace M] [MulZeroClass M] [ContinuousMul M]
-variable {f : α → M} {g : β → M}
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
+`M × M → M` tends to zero on the filter product `𝓝 0 ×ˢ l`. -/
+theorem tendsto_mul_nhds_zero_prod_of_disjoint_cocompact {l : Filter M}
+    (hl : Disjoint l (cocompact M)) :
+    Tendsto (fun (x : M × M) ↦ x.1 * x.2) (𝓝 0 ×ˢ l) (𝓝 0) := calc
+  (𝓝 0 ×ˢ l).map fun (x : M × M) ↦ x.1 * x.2
+  _ ≤ (𝓝ˢ ({0} ×ˢ Set.univ)).map fun (x : M × M) ↦ x.1 * x.2 :=
+    Filter.map_mono <| nhds_prod_le_of_disjoint_cocompact 0 hl
+  _ ≤ 𝓝 0 := by
+    apply continuous_mul.tendsto_nhdsSet_nhds
+    rintro x ⟨_, _⟩
+    simp_all
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
+`M × M → M` tends to zero on the filter product `l ×ˢ 𝓝 0`. -/
+theorem tendsto_mul_prod_nhds_zero_of_disjoint_cocompact {l : Filter M}
+    (hl : Disjoint l (cocompact M)) :
+    Tendsto (fun (x : M × M) ↦ x.1 * x.2) (l ×ˢ 𝓝 0) (𝓝 0) := calc
+  (l ×ˢ 𝓝 0).map fun (x : M × M) ↦ x.1 * x.2
+  _ ≤ (𝓝ˢ (Set.univ ×ˢ {0})).map fun (x : M × M) ↦ x.1 * x.2 :=
+    Filter.map_mono <| prod_nhds_le_of_disjoint_cocompact 0 hl
+  _ ≤ 𝓝 0 := by
+    apply continuous_mul.tendsto_nhdsSet_nhds
+    rintro x ⟨_, _⟩
+    simp_all
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M × M` which is disjoint from the cocompact filter. Then, the multiplication
+map `M × M → M` tends to zero on `Filter.coprod (𝓝 0) (𝓝 0) ⊓ l`. -/
+theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M × M)}
+    (hl : Disjoint l (cocompact (M × M))) :
+    Tendsto (fun (x : M × M) ↦ x.1 * x.2) (Filter.coprod (𝓝 0) (𝓝 0) ⊓ l) (𝓝 0) := by
+  have := calc
+    Filter.coprod (𝓝 0) (𝓝 0) ⊓ l
+    _ ≤ Filter.coprod (𝓝 0) (𝓝 0) ⊓ l.map Prod.fst ×ˢ l.map Prod.snd      :=
+      inf_le_inf_left _ le_prod_map_fst_snd
+    _ ≤ 𝓝 0 ×ˢ l.map Prod.snd ⊔ l.map Prod.fst ×ˢ 𝓝 0                    :=
+      Filter.coprod_inf_prod_le _ _ _ _
+  apply Tendsto.mono_left (h := this)
+  apply Tendsto.sup
+  · apply tendsto_mul_nhds_zero_prod_of_disjoint_cocompact
+    exact disjoint_map_cocompact continuous_snd hl
+  · apply tendsto_mul_prod_nhds_zero_of_disjoint_cocompact
+    exact disjoint_map_cocompact continuous_fst hl
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M × M` which is both disjoint from the cocompact filter and less than or
+equal to `Filter.coprod (𝓝 0) (𝓝 0)`. Then the multiplication map `M × M → M` tends to zero on
+`l`. -/
+theorem tendsto_mul_nhds_zero_of_disjoint_cocompact {l : Filter (M × M)}
+    (hl : Disjoint l (cocompact (M × M))) (h'l : l ≤ Filter.coprod (𝓝 0) (𝓝 0)) :
+    Tendsto (fun (x : M × M) ↦ x.1 * x.2) l (𝓝 0) := by
+  simpa [inf_eq_right.mpr h'l] using tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact hl
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `f : α → M` and `g : α → M` be functions. If `f` tends to zero on a filter `l`
+and the image of `l` under `g` is disjoint from the cocompact filter on `M`, then
+`fun (x : α) ↦ f x * g x` also tends to zero on `l`.
+
+This is the same theorem as `Tendsto.tendsto_mul_zero_of_disjoint_cocompact'`, except the
+hypotheses on `f` and `g` are swapped. -/
+theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact {f g : α → M} {l : Filter α}
+    (hf : Tendsto f l (𝓝 0)) (hg : Disjoint (map g l) (cocompact M)) :
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) := calc
+  l.map (fun x ↦ f x * g x)
+  _ = (l.map (fun x ↦ (f x, g x))).map (fun (x : M × M) ↦ x.1 * x.2) := by rw [map_map]; rfl
+  _ ≤ (𝓝 0 ×ˢ map g l).map (fun (x : M × M) ↦ x.1 * x.2) :=
+    map_mono (hf.prod_mk Filter.tendsto_map)
+  _ ≤ 𝓝 0 := tendsto_mul_nhds_zero_prod_of_disjoint_cocompact hg
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `f : α → M` and `g : α → M` be functions. If `g` tends to zero on a filter `l`
+and the image of `l` under `f` is disjoint from the cocompact filter on `M`, then
+`fun (x : α) ↦ f x * g x` also tends to zero on `l`.
+
+This is the same theorem as `Tendsto.tendsto_mul_zero_of_disjoint_cocompact`, except the
+hypotheses on `f` and `g` are swapped. -/
+theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact' {f g : α → M} {l : Filter α}
+    (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) := calc
+  l.map (fun x ↦ f x * g x)
+  _ = (l.map (fun x ↦ (f x, g x))).map (fun (x : M × M) ↦ x.1 * x.2) := by rw [map_map]; rfl
+  _ ≤ (map f l ×ˢ 𝓝 0).map (fun (x : M × M) ↦ x.1 * x.2) :=
+    map_mono (Filter.tendsto_map.prod_mk hg)
+  _ ≤ 𝓝 0 := tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf
 
 /-- If `f : α → M` and `g : β → M` are continuous and both tend to zero on the cocompact filter,
 then `fun (i : α × β) ↦ (f i.1) * (g i.2)` also tends to zero on the cocompact filter. -/
 theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace β]
-    (f_cont : Continuous f) (g_cont : Continuous g)
+    {f : α → M} {g : β → M} (f_cont : Continuous f) (g_cont : Continuous g)
     (hf : Tendsto f (cocompact α) (𝓝 0)) (hg : Tendsto g (cocompact β) (𝓝 0)) :
     Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) (cocompact (α × β)) (𝓝 0) := by
   -- We use the notation `⊤` for `Set.univ` in this proof.
@@ -449,8 +536,8 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
 
 /-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
 `fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
-theorem tendsto_mul_cofinite_nhds_zero (hf : Tendsto f cofinite (𝓝 0))
-    (hg : Tendsto g cofinite (𝓝 0)) :
+theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
+    (hf : Tendsto f cofinite (𝓝 0)) (hg : Tendsto g cofinite (𝓝 0)) :
     Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) cofinite (𝓝 0) := by
   letI : TopologicalSpace α := ⊥
   haveI : DiscreteTopology α := discreteTopology_bot α
