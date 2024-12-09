@@ -147,6 +147,18 @@ lemma iteratedDeriv_sub (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ
       (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
 
+theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+    iteratedDeriv n (c • f) x = c • iteratedDeriv n f x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_const_smul (Set.mem_univ x) uniqueDiffOn_univ
+      c (contDiffOn_univ.mpr h)
+
+theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+    iteratedDeriv n (fun z => c * f z) x = c * iteratedDeriv n f x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_const_mul (Set.mem_univ x) uniqueDiffOn_univ
+      c (contDiffOn_univ.mpr h)
+
 theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
   funext x
@@ -154,15 +166,9 @@ theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff �
     iteratedDerivWithin_comp_const_smul (Set.mem_univ x) uniqueDiffOn_univ (contDiffOn_univ.mpr h)
       c (Set.mapsTo_univ _ _)
 
-@[deprecated (since := "2024-12-20")]
-alias iteratedDeriv_const_smul := iteratedDeriv_comp_const_smul
-
 theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
   simpa only [smul_eq_mul] using iteratedDeriv_comp_const_smul h c
-
-@[deprecated (since := "2024-12-20")]
-alias iteratedDeriv_const_mul := iteratedDeriv_comp_const_mul
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
