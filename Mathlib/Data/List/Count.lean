@@ -41,17 +41,11 @@ lemma countP_diff [DecidableEq α] {l₁ l₂ : List α} (hl : l₂ <+~ l₁) (p
   exact ((subperm_append_diff_self_of_count_le <| subperm_ext_iff.1 hl).symm.trans
     perm_append_comm).countP_eq _
 
-/-! ### count -/
-
-section Count
-
 @[simp]
 theorem count_map_of_injective {β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countP_map]
   unfold Function.comp
   simp only [hf.beq_eq]
-
-end Count
 
 end List
