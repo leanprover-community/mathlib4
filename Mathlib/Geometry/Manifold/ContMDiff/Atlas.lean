@@ -147,7 +147,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
     have he'' : ContMDiffOn I I ⊤ e _ := contMDiffOn_of_mem_contDiffGroupoid he
     have hc : ContMDiffOn I I ⊤ c _ := contMDiffOn_chart
     refine (hc'.comp' (he''.comp' hc)).mono ?_
-    dsimp +zetaDelta [s]
+    dsimp [s, c, c']
     mfld_set_tac
   have H₂ : EqOn f (c'.symm ∘ e ∘ c) s := by
     intro y hy
@@ -185,19 +185,19 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
         e ∈ contDiffGroupoid ∞ I ∧
           e.source ⊆ (c.symm ≫ₕ f ≫ₕ c').source ∧
             EqOn (c' ∘ f ∘ c.symm) e e.source ∧ c x ∈ e.source := by
-      have h1 : c' = chartAt H (f x) := by simp +zetaDelta only [f.right_inv hX]
+      have h1 : c' = chartAt H (f x) := by simp only [x, c', f.right_inv hX]
       have h2 : c' ∘ f ∘ c.symm = ⇑(c.symm ≫ₕ f ≫ₕ c') := rfl
       have hcx : c x ∈ c.symm ⁻¹' f.source := by simp only [c, hx, mfld_simps]
       rw [h2]
       rw [← h1, h2, PartialHomeomorph.isLocalStructomorphWithinAt_iff'] at hxf
       · exact hxf hcx
-      · dsimp +zetaDelta; mfld_set_tac
+      · dsimp [x, c]; mfld_set_tac
       · apply Or.inl
         simp only [c, hx, h1, mfld_simps]
     have h2X : c' X = e (c (f.symm X)) := by
       rw [← hef hex]
       dsimp only [Function.comp_def]
-      have hfX : f.symm X ∈ c.source := by simp +zetaDelta only [c, hX, mfld_simps]
+      have hfX : f.symm X ∈ c.source := by simp only [c, x, hX, mfld_simps]
       rw [c.left_inv hfX, f.right_inv hX]
     have h3e : EqOn (c ∘ f.symm ∘ c'.symm) e.symm (c'.symm ⁻¹' f.target ∩ e.target) := by
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
@@ -238,7 +238,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
       convert H.2.mono _
       · simp +zetaDelta only [hy, mfld_simps]
-      · dsimp +zetaDelta; mfld_set_tac
+      · dsimp [c, c']; mfld_set_tac
     · -- smoothness of the candidate local structomorphism in the reverse direction
       intro y hy
       simp only [mfld_simps] at hy
@@ -253,7 +253,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
       convert H.2.mono _
       · simp +zetaDelta only [hy, mfld_simps]
-      · dsimp +zetaDelta; mfld_set_tac
+      · dsimp [c, c']; mfld_set_tac
     -- now check the candidate local structomorphism agrees with `f` where it is supposed to
     · simp only [mfld_simps]; apply eqOn_refl
     · simp +zetaDelta only [c, c', hx', mfld_simps]
