@@ -188,8 +188,7 @@ lemma right_to_left_iso_eq (adj : F ⊣ G) (commG : CommShift G A) (a a' : A) (h
   simp only [id_obj, comp_obj, assoc]
   rfl
 
-/-- Doc string, why the prime?-/
-lemma comp_right_to_left_iso_hom_app' (adj : F ⊣ G) (commG : CommShift G A) (a a' : A)
+lemma comp_right_to_left_iso_hom_app (adj : F ⊣ G) (commG : CommShift G A) (a a' : A)
     (h : a + a' = 0) (X : C) (Y : D) (v : (F.obj X)⟦a⟧ ⟶ Y) :
     (right_to_left_iso adj commG a).hom.app X ≫ v = (adj.homEquiv _ _).symm
     (((shiftEquiv' C a' a (by simp [eq_neg_of_add_eq_zero_left h])).symm.toAdjunction.homEquiv
@@ -216,18 +215,19 @@ lemma comp_right_to_left_iso_hom_app' (adj : F ⊣ G) (commG : CommShift G A) (a
 lemma left_to_right_iso_zero (adj : F ⊣ G) (commF : CommShift F A) :
     left_to_right_iso adj commF 0 = CommShift.isoZero G A := by
   ext Y
-  rw [left_to_right_iso_hom_app]
-  conv_lhs => erw [shiftEquiv_homEquiv_zero'_symm_app D (0 : A) rfl _ Y]
+  rw [left_to_right_iso_hom_app _ _ 0 (-0) (by simp)]
+  conv_lhs => --erw [shiftEquiv_zero_homEquiv D]
+              erw [shiftEquiv_zero'_homEquiv_symm_app D (0 : A) rfl _ Y]
               erw [← homEquiv_naturality_right_symm]
   simp only [id_obj, shiftFunctorZero'_eq_shiftFunctorZero, id_comp, counit_naturality,
       comp_obj, map_comp]
   change ((shiftEquiv C (0 : A)).symm.toAdjunction.homEquiv _ (G.obj Y))
     ((adj.homEquiv ((shiftFunctor C (-0)).obj _) Y) ((F.commShiftIso (-0)).hom.app _ ≫ _)) = _
-  rw [F.commShiftIso_zero' (-0 : A) (by simp)]
+  rw [F.commShiftIso_zero' A (-0 : A) (by simp)]
   simp only [CommShift.isoZero'_hom_app, map_comp, assoc]
   rw [← assoc ((shiftFunctorZero' D (-0 : A) (by simp)).inv.app _),
       Iso.inv_hom_id_app, id_comp, ← homEquiv_naturality_left_symm, Equiv.apply_symm_apply,
-      shiftEquiv_homEquiv_zero]
+      shiftEquiv_zero_homEquiv]
   simp
 
 lemma left_to_right_iso_add (adj : F ⊣ G) (commF : CommShift F A) (a b : A) :

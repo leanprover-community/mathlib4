@@ -47,6 +47,14 @@ noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor 
   isoWhiskerRight (shiftFunctorZero C A) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero D A).symm
 
+/-- For any functor `F : C ⥤ D` and any `a` in `A` such that `a=0`,
+this is the obvious isomorphism `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` deduced from the
+isomorphisms `shiftFunctorZero'` on both categories `C` and `D`. -/
+@[simps!]
+noncomputable def isoZero' (a : A) (ha : a = 0) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
+  isoWhiskerRight (shiftFunctorZero' C a ha) F ≪≫ F.leftUnitor ≪≫
+     F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero' D a ha).symm
+
 variable {F A}
 
 /-- If a functor `F : C ⥤ D` is equipped with "commutation isomorphisms" with the
@@ -132,6 +140,16 @@ variable (A)
 lemma commShiftIso_zero :
     F.commShiftIso (0 : A) = CommShift.isoZero F A :=
   CommShift.zero
+
+set_option linter.docPrime false in
+lemma commShiftIso_zero' (a : A) (ha : a = 0) :
+    F.commShiftIso a = CommShift.isoZero' F A a ha := by
+  ext X
+  rw [← cancel_epi (F.mapIso (eqToIso (X := X⟦(0 : A)⟧) (Y := X⟦a⟧) (by rw [← ha]))).hom,
+    Functor.mapIso_hom, eqToIso.hom, eqToHom_map]
+  rw [← eqToHom_naturality (fun (a : A) ↦ (F.commShiftIso a).hom.app X) ha.symm]
+  rw [commShiftIso_zero, CommShift.isoZero']
+  simp [shiftFunctorZero', eqToHom_map]
 
 variable {A}
 

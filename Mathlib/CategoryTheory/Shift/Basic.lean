@@ -256,6 +256,13 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
 
+@[simp]
+lemma shiftFunctorZero'_eq_shiftFunctorZero :
+    shiftFunctorZero' C (0 : A) rfl = shiftFunctorZero C A := by
+  ext1
+  dsimp only [shiftFunctorZero']
+  simp
+
 end
 
 variable {C A}
@@ -499,6 +506,50 @@ lemma shiftEquiv'_symm_counit (a a' : A) (h : a + a' = 0) :
 
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
 abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)
+
+open Category in
+lemma shiftEquiv_zero'_homEquiv_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a⟧ ⟶ Y) :
+    (shiftEquiv C a).symm.toAdjunction.homEquiv X Y u =
+    (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫ u ≫
+    (shiftFunctorZero' C a ha).inv.app Y := by
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
+    shiftEquiv'_inverse, Adjunction.homEquiv_apply, Functor.comp_obj, Equivalence.toAdjunction_unit,
+    Functor.id_obj]
+  have : (shiftEquiv C a).symm.unit.app X = (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫
+      (shiftFunctorZero' C a ha).inv.app (X⟦-a⟧) := by
+    change (shiftEquiv C a).symm.unitIso.hom.app X = _
+    rw [Equivalence.symm_unitIso]
+    simp only [Functor.id_obj, Equivalence.symm_functor, shiftEquiv'_inverse,
+      Equivalence.symm_inverse, shiftEquiv'_functor, Functor.comp_obj, shiftEquiv'_counitIso,
+      Iso.symm_hom]
+    rw [shiftFunctorCompIsoId]
+    rw [shiftFunctorAdd'_eqToIso (-a) a 0 (-a) 0 (-a) (by simp) (by simp) rfl ha]
+    rw [shiftFunctorAdd'_add_zero, shiftFunctorZero', shiftFunctorZero']
+    simp
+  rw [this, assoc, ← (shiftFunctorZero' C a ha).inv.naturality u]
+  simp
+
+lemma shiftEquiv_zero'_homEquiv (a : A) (ha : a = 0) (X Y : C) :
+    (shiftEquiv C a).symm.toAdjunction.homEquiv X Y =
+    ((yoneda.obj Y).mapIso ((shiftFunctorZero' C (-a) (by simp [ha])).symm.app X).op ≪≫
+    (coyoneda.obj (Opposite.op X)).mapIso ((shiftFunctorZero' C a ha).symm.app Y)).toEquiv := by
+  ext u
+  rw [shiftEquiv_zero'_homEquiv_app C a ha]
+  simp
+
+lemma shiftEquiv_zero'_homEquiv_symm_app (a : A) (ha : a = 0) (X Y : C) (u : X ⟶ Y⟦a⟧) :
+    ((shiftEquiv C a).symm.toAdjunction.homEquiv X Y).symm u =
+    (shiftFunctorZero' C (-a) (by simp [ha])).hom.app X ≫ u ≫
+    (shiftFunctorZero' C a ha).hom.app Y := by
+  rw [shiftEquiv_zero'_homEquiv C a ha]
+  simp
+
+lemma shiftEquiv_zero_homEquiv (X Y : C) :
+    (shiftEquiv C (0 : A)).symm.toAdjunction.homEquiv X Y =
+    ((yoneda.obj Y).mapIso ((shiftFunctorZero' C (-0 : A) (by simp)).symm.app X).op ≪≫
+    (coyoneda.obj (Opposite.op X)).mapIso ((shiftFunctorZero C A).symm.app Y)).toEquiv := by
+  rw [shiftEquiv_zero'_homEquiv C (0 : A) rfl]
+  simp [shiftFunctorZero']
 
 variable (X Y : C) (f : X ⟶ Y)
 
