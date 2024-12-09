@@ -91,9 +91,9 @@ lemma hasExactColimitsOfShape_of_equiv {J J' : Type*} [Category J] [Category J']
 variable {C} in
 lemma hasExactColimitsOfShape_obj_of_equiv (J : Type*) {D : Type*} [Category J] [Category D]
     (e : C ≌ D) [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
-    have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+    haveI : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
     HasExactColimitsOfShape J D := by
-  have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+  haveI : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
   refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
   refine preservesLimit_of_natIso K (?_ : e.congrRight.inverse ⋙ colim ⋙ e.functor ≅ colim)
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
