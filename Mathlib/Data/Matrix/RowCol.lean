@@ -174,6 +174,8 @@ def updateRow [DecidableEq m] (M : Matrix m n α) (i : m) (b : n → α) : Matri
 def updateCol [DecidableEq n] (M : Matrix m n α) (j : n) (b : m → α) : Matrix m n α :=
   of fun i => Function.update (M i) j (b i)
 
+@[deprecated (since := "2024-12-09")] alias updateColumn := updateCol
+
 variable {M : Matrix m n α} {i : m} {j : n} {b : n → α} {c : m → α}
 
 @[simp]

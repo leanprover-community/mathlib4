@@ -43,6 +43,10 @@ def toCols₁ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₁ R := of fun i j =
 /-- Given a column partitioned matrix extract the second column -/
 def toCols₂ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₂ R := of fun i j => (A i (Sum.inr j))
 
+@[deprecated (since := "2024-12-09")] alias fromColumns := fromCols
+@[deprecated (since := "2024-12-09")] alias toColumns₁ := toCols₁
+@[deprecated (since := "2024-12-09")] alias toColumns₂ := toCols₂
+
 /-- Given a row partitioned matrix extract the first row -/
 def toRows₁ (A : Matrix (m₁ ⊕ m₂) n R) : Matrix m₁ n R := of fun i j => (A (Sum.inl i) j)
 
