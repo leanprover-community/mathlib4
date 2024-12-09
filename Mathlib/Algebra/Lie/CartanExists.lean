@@ -248,6 +248,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
     simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', mem_coe_submodule, mem_engel_iff,
       LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
+
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
     use n+1
@@ -320,7 +321,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [pow_zero, LinearMap.one_apply]
+    | zero => simp only [z', pow_zero, LinearMap.one_apply]
     | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.

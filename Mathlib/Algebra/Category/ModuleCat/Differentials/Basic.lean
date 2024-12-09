@@ -99,9 +99,9 @@ variable (f) in
 /-- The (universal) derivation in `(KaehlerDifferential f).Derivation f`
 when `f : A ⟶ B` is a morphism in the category `CommRingCat`. -/
 noncomputable def D : (KaehlerDifferential f).Derivation f :=
-  letI := f.toAlgebra
+  letI algebra := f.toAlgebra
   ModuleCat.Derivation.mk
-    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp) (by simp)
+    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp [algebra]) (by simp [algebra])
       (_root_.KaehlerDifferential.D A B).map_algebraMap
 
 /-- When `f : A ⟶ B` is a morphism in the category `CommRingCat`, this is the
@@ -138,8 +138,8 @@ noncomputable def map :
   -- This suggests `restrictScalars` needs to be redesigned.
   ModuleCat.ofHom (Y := (ModuleCat.restrictScalars g').obj (KaehlerDifferential f'))
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
-    map_add' := by simp
-    map_smul' := by simp }
+    map_add' := by simp +zetaDelta
+    map_smul' := by simp +zetaDelta }
 
 @[simp]
 lemma map_d (b : B) : map fac (d b) = d (g' b) := by
