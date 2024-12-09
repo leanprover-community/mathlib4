@@ -5,7 +5,6 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
@@ -564,91 +563,6 @@ theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocaliza
     ext1
     exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
 
-section Localizations
-
-variable (R)
-
-/-- The product of localizations at all prime ideals of a commutative semiring. -/
-abbrev PiLocalization : Type _ := Π p : PrimeSpectrum R, Localization p.asIdeal.primeCompl
-
-/-- The canonical ring homomorphism from a commutative semiring to the product of its
-localizations at all prime ideals. It is always injective. -/
-def toLocalization : R →+* PiLocalization R := algebraMap R _
-
-theorem toLocalization_injective : Function.Injective (toLocalization R) :=
-  fun _ _ eq ↦ toLocalizationIsMaximal_injective R <| funext fun I ↦ congr_fun eq ⟨I, I.2.isPrime⟩
-
-/-- The projection from the product of localizations at primes to the product of
-localizations at maximal ideals. -/
-def piLocalizationToIsMaximal : PiLocalization R →+* PiLocalizationIsMaximal R :=
-  Pi.ringHom fun I ↦ Pi.evalRingHom _ (⟨_, I.2.isPrime⟩ : PrimeSpectrum R)
-
-theorem piLocalizationToIsMaximal_surjective :
-    Function.Surjective (piLocalizationToIsMaximal R) :=
-  fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
-
-variable {R}
-
-/-- If R has Krull dimension ≤ 0, then `piLocalizationToIsMaximal R` is an isomorphism. -/
-def piLocalizationToIsMaximalEquiv (h : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) :
-    PiLocalization R ≃+* PiLocalizationIsMaximal R where
-  __ := piLocalizationToIsMaximal R
-  invFun := Pi.ringHom fun I ↦ Pi.evalRingHom _ (⟨_, h _ I.2⟩ : setOf _)
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-theorem piLocalizationToIsMaximal_bijective (h : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) :
-    Function.Bijective (piLocalizationToIsMaximal R) :=
-  (piLocalizationToIsMaximalEquiv h).bijective
-
-theorem piLocalizationToIsMaximal_comp_toLocalization :
-    (piLocalizationToIsMaximal R).comp (toLocalization R) = toLocalizationIsMaximal R := by
-  rfl
-
-variable {S}
-
-theorem isMaximal_of_toLocalization_surjective (surj : Function.Surjective (toLocalization R))
-    (I : PrimeSpectrum R) : I.1.IsMaximal := by
-  have ⟨J, max, le⟩ := I.1.exists_le_maximal I.2.ne_top
-  obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max.isPrime⟩ 1)
-  by_contra h
-  have hJ : algebraMap _ _ r = _ := (congr_fun hr _).trans (Function.update_same _ _ _)
-  have hI : algebraMap _ _ r = _ := congr_fun hr I
-  rw [← IsLocalization.lift_eq (M := J.primeCompl) (S := Localization J.primeCompl), hJ, map_one,
-    Function.update_noteq] at hI
-  · exact one_ne_zero hI
-  · intro eq; have : I.1 = J := congr_arg (·.1) eq; exact h (this ▸ max)
-  · exact fun ⟨s, hs⟩ ↦ IsLocalization.map_units (M := I.1.primeCompl) _ ⟨s, fun h ↦ hs (le h)⟩
-
-/-- A ring homomorphism induces a homomorphism between the products of localizations at primes. -/
-noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
-  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (f.specComap I))
-
-theorem mapPiLocalization_naturality :
-    (mapPiLocalization f).comp (toLocalization R) = (toLocalization S).comp f := by
-  ext r I
-  show Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
-  simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
-    ← IsLocalization.mk'_one (M := I.1.primeCompl), Submonoid.coe_one, map_one f]
-  rfl
-
-theorem mapPiLocalization_id : mapPiLocalization (.id R) = .id _ := by
-  ext; exact congr($(Localization.localRingHom_id _) _)
-
-theorem mapPiLocalization_comp (g : S →+* S') :
-    mapPiLocalization (g.comp f) = (mapPiLocalization g).comp (mapPiLocalization f) := by
-  ext; exact congr($(Localization.localRingHom_comp _ _ _ _ rfl _ rfl) _)
-
-theorem mapPiLocalization_bijective (hf : Function.Bijective f) :
-    Function.Bijective (mapPiLocalization f) := by
-  let f := RingEquiv.ofBijective f hf
-  let e := RingEquiv.ofRingHom (mapPiLocalization (f : R →+* S)) (mapPiLocalization f.symm) ?_ ?_
-  · exact e.bijective
-  · rw [← mapPiLocalization_comp, RingEquiv.comp_symm, mapPiLocalization_id]
-  · rw [← mapPiLocalization_comp, RingEquiv.symm_comp, mapPiLocalization_id]
-
-end Localizations
-
 section Pi
 
 variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
@@ -699,57 +613,6 @@ theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
 theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
   have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
   (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
-
-theorem _root_.RingHom.toLocalizationIsMaximal_not_surjective_of_infinite :
-    ¬ Function.Surjective (RingHom.toLocalizationIsMaximal (Π i, R i)) := fun surj ↦ by
-  have ⟨J, max, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
-  obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max⟩ 1)
-  have : r = 0 := funext fun i ↦ toLocalizationIsMaximal_injective _ <| funext fun I ↦ by
-    replace hr := congr_fun hr ⟨_, I.2.comap_piEvalRingHom⟩
-    dsimp only [toLocalizationIsMaximal_apply_apply, Subtype.coe_mk] at hr
-    simp_rw [toLocalizationIsMaximal_apply_apply,
-      ← Localization.AtPrime.mapPiEvalRingHom_algebraMap_apply, hr]
-    rw [Function.update_noteq]; · simp_rw [Pi.zero_apply, map_zero]
-    exact fun h ↦ nmem ⟨⟨i, I, I.2.isPrime⟩, PrimeSpectrum.ext congr($h.1)⟩
-  replace hr := congr_fun hr ⟨J, max⟩
-  rw [this, map_zero, Function.update_same] at hr
-  exact zero_ne_one hr
-
-theorem toLocalization_not_surjective_of_infinite :
-    ¬ Function.Surjective (toLocalization (Π i, R i)) :=
-  fun surj ↦ toLocalizationIsMaximal_not_surjective_of_infinite R <| by
-    rw [← piLocalizationToIsMaximal_comp_toLocalization]
-    exact (piLocalizationToIsMaximal_surjective _).comp surj
-
-omit [Infinite ι]
-variable {R S}
-
-theorem _root_.RingHom.finite_of_toLocalizationIsMaximal_surjective
-    (h : Function.Surjective (RingHom.toLocalizationIsMaximal (Π i, R i))) :
-    Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
-  exact toLocalizationIsMaximal_not_surjective_of_infinite _
-
-theorem finite_of_toLocalization_pi_surjective
-    (h : Function.Surjective (toLocalization (Π i, R i))) :
-    Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
-  exact toLocalization_not_surjective_of_infinite _
-
-theorem _root_.RingHom.finite_isMaximal_of_toLocalizationIsMaximal_surjective
-    (surj : Function.Surjective (toLocalizationIsMaximal S)) :
-    {I : Ideal S | I.IsMaximal}.Finite := by
-  replace surj := mapPiLocalizationIsMaximal_bijective _ ⟨toLocalizationIsMaximal_injective S, surj⟩
-    |>.2.comp surj
-  rw [← RingHom.coe_comp, mapPiLocalizationIsMaximal_naturality, RingHom.coe_comp] at surj
-  exact finite_of_toLocalizationIsMaximal_surjective surj.of_comp
-
-theorem finite_of_toLocalization_surjective
-    (surj : Function.Surjective (toLocalization S)) :
-    Finite (PrimeSpectrum S) := by
-  replace surj := (mapPiLocalization_bijective _ ⟨toLocalization_injective S, surj⟩).2.comp surj
-  rw [← RingHom.coe_comp, mapPiLocalization_naturality, RingHom.coe_comp] at surj
-  exact finite_of_toLocalization_pi_surjective surj.of_comp
 
 end Pi
 
