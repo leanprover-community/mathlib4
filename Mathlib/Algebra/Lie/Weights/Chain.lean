@@ -210,13 +210,13 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : genWeightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
-    simp_rw [genWeightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
+    simp_rw +zetaDelta [genWeightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
-  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
+  simp_rw +zetaDelta [LieSubmodule.toEnd_restrict_eq_toEnd]
   dsimp [N]
   convert_to _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })

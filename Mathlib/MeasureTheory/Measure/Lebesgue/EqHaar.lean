@@ -340,7 +340,8 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
     simp only [f, mul_one, LinearMap.det_smul, Ne, MonoidHom.map_one]
     intro h
     exact hr (pow_eq_zero h)
-  simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
+  simp +zetaDelta only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one,
+    LinearMap.det_smul, map_one]
 
 theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :
     QuasiMeasurePreserving (r • ·) μ μ := by

@@ -309,12 +309,13 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] 
         (fun π : Σ f : L →ₐ[K] A, _ => (π.2 : F → A) x) fun _ => rfl]
     suffices ∀ σ : L →ₐ[K] A,
         haveI := σ.toRingHom.toAlgebra
-        ∏ π : F →ₐ[L] A, π x = σ (norm L x)
-      by simp_rw [← Finset.univ_sigma_univ, Finset.prod_sigma, this, norm_eq_prod_embeddings]
+        ∏ π : F →ₐ[L] A, π x = σ (norm L x) by
+      simp_rw +zetaDelta [← Finset.univ_sigma_univ, Finset.prod_sigma, this,
+        norm_eq_prod_embeddings]
     intro σ
     letI : Algebra L A := σ.toRingHom.toAlgebra
     rw [← norm_eq_prod_embeddings L A (_ : F)]
-    simp [RingHom.algebraMap_toAlgebra]
+    simp +zetaDelta [RingHom.algebraMap_toAlgebra]
   · rw [norm_eq_one_of_not_module_finite hKF]
     by_cases hKL : FiniteDimensional K L
     · have hLF : ¬FiniteDimensional L F := by

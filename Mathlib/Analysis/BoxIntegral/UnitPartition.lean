@@ -73,13 +73,14 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   let C : ℕ := ⌈R⌉₊
   have hC := Nat.ceil_pos.mpr hR₁
   let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
-    (fun _ ↦ by simp only [neg_lt_self_iff, Nat.cast_pos, hC])
+    (fun _ ↦ by simp +zetaDelta [neg_lt_self_iff, Nat.cast_pos, hC])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
     le_trans hR₂ ?_⟩
   suffices Metric.ball (0 : ι → ℝ) C ≤ I from
     le_trans (Metric.ball_subset_ball (Nat.le_ceil R)) this
   intro x hx
-  simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC), Real.norm_eq_abs, abs_lt] at hx
+  simp_rw +zetaDelta [mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC),
+    Real.norm_eq_abs, abs_lt] at hx
   exact fun i ↦ ⟨(hx i).1, le_of_lt (hx i).2⟩
 
 end hasIntegralVertices

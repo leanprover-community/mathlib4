@@ -66,7 +66,7 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
     rw [norm_le _ (norm_nonneg (bound x))]
     exact fun z ↦ hbound x z.1 z.2
   have h_int_fc : (spectrum 𝕜 a).restrict (∫ x, f x · ∂μ) = ∫ x, fc x ∂μ := by
-    ext; simp [integral_apply fc_integrable, fc]
+    ext; simp +zetaDelta [integral_apply fc_integrable, fc]
   have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (spectrum 𝕜 a) := by
     rw [continuousOn_iff_continuous_restrict]
     convert map_continuous (∫ x, fc x ∂μ)
@@ -122,7 +122,7 @@ lemma cfcₙ_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     rw [ContinuousMap.norm_le _ (norm_nonneg (bound x))]
     exact fun z ↦ hbound x z.1 z.2
   have h_int_fc : (quasispectrum 𝕜 a).restrict (∫ x, f x · ∂μ) = ∫ x, fc x ∂μ := by
-    ext; simp [integral_apply fc_integrable, fc]
+    ext; simp +zetaDelta [integral_apply fc_integrable, fc]
   have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (quasispectrum 𝕜 a) := by
     rw [continuousOn_iff_continuous_restrict]
     convert map_continuous (∫ x, fc x ∂μ)

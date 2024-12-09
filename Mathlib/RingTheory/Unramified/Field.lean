@@ -179,15 +179,26 @@ theorem range_eq_top_of_isPurelyInseparable
   by_cases h' : LinearIndependent K ![1, x]
   · have h := h'.coe_range
     let S := h.extend (Set.subset_univ _)
-    let a : S := ⟨1, h.subset_extend _ (by simp)⟩; have ha : Basis.extend h a = 1 := by simp
-    let b : S := ⟨x, h.subset_extend _ (by simp)⟩; have hb : Basis.extend h b = x := by simp
+    let a : S := ⟨1, h.subset_extend _ (by simp)⟩
+    have ha : Basis.extend h a = 1 := by simp +zetaDelta
+    let b : S := ⟨x, h.subset_extend _ (by simp)⟩
+    have hb : Basis.extend h b = x := by simp +zetaDelta
     by_cases e : a = b
     · obtain rfl : 1 = x := congr_arg Subtype.val e
       exact ⟨1, map_one _⟩
     have := DFunLike.congr_fun
       (DFunLike.congr_arg ((Basis.extend h).tensorProduct (Basis.extend h)).repr H) (a, b)
-    simp only [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self, smul_eq_mul,
-      Finsupp.single_apply, e, Ne.symm e, ↓reduceIte, mul_one, mul_zero, one_ne_zero] at this
+    #adaptation_note
+    /--
+    This could have been a single `simp_rw` prior to https://github.com/leanprover-community/lean/pull/6123
+    ```
+      simp_rw [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self, smul_eq_mul,
+        Finsupp.single_apply, e, Ne.symm e, reduceIte, mul_one, mul_zero, one_ne_zero] at this
+    ```
+    -/
+    rw [Basis.tensorProduct_repr_tmul_apply, Basis.tensorProduct_repr_tmul_apply] at this
+    simp_rw [← ha, ← hb, Basis.repr_self, smul_eq_mul, Finsupp.single_apply] at this
+    simp_rw +zetaDelta [e, Ne.symm e, reduceIte, mul_one, mul_zero, one_ne_zero] at this
   · rw [LinearIndependent.pair_iff] at h'
     simp only [not_forall, not_and, exists_prop] at h'
     obtain ⟨a, b, e, hab⟩ := h'

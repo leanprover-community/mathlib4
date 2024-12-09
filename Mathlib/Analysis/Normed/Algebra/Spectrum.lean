@@ -360,7 +360,7 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
     ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
   suffices h : (r : ℝ≥0∞) ≤ p.radius by
     convert h
-    simp only [p, p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
+    simp +zetaDelta only [p, p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
     rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]

@@ -110,7 +110,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   let s := hf.toFinset
   haveI := Classical.decEq (Ideal R)
   have coprime : ∀ M ∈ s, ∀ M' ∈ s.erase M, M ⊔ M' = ⊤ := by
-    simp_rw [Finset.mem_erase, hf.mem_toFinset]
+    simp_rw +zetaDelta [Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
   have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>

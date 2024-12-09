@@ -346,7 +346,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     letI : Algebra K K[n√a] := inferInstance
     apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
-    simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    simp +zetaDelta only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
       rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
@@ -361,8 +361,9 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     letI : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
-    simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def]
+    simp +zetaDelta only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq,
+      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, AlgHom.coe_coe, autAdjoinRootXPowSubC_root,
+      Algebra.smul_def]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h

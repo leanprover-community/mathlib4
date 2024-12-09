@@ -511,8 +511,8 @@ def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.Par
   show _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
   convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
-  · dsimp; congr 1; simp [← cancel_mono (Opens.ι _)]
-  · dsimp; congr 1; simp [← cancel_mono (Opens.ι _)]
+  · dsimp; congr 1; simp +zetaDelta [← cancel_mono (Opens.ι _)]
+  · dsimp; congr 1; simp +zetaDelta [← cancel_mono (Opens.ι _)]
   · rw [← PartialMap.toRationalMap_eq_iff, hg₁, hg₁]
 
 lemma PartialMap.toPartialMap_toRationalMap_restrict [IsReduced X] [Y.IsSeparated]

@@ -91,7 +91,7 @@ lemma comap_freeLocus_le {A} [CommRing A] [Algebra R A] :
   letI : Algebra Rₚ Aₚ := (Localization.localRingHom
     (comap (algebraMap R A) p).asIdeal p.asIdeal (algebraMap R A) rfl).toAlgebra
   have : IsScalarTower R Rₚ Aₚ := IsScalarTower.of_algebraMap_eq'
-    (by simp [RingHom.algebraMap_toAlgebra, Localization.localRingHom,
+    (by simp +zetaDelta [RingHom.algebraMap_toAlgebra, Localization.localRingHom,
         ← IsScalarTower.algebraMap_eq])
   let e := AlgebraTensorModule.cancelBaseChange R Rₚ Aₚ Aₚ M ≪≫ₗ
     (AlgebraTensorModule.cancelBaseChange R A Aₚ Aₚ M).symm
@@ -124,7 +124,7 @@ lemma freeLocus_localization (S : Submonoid R) :
   letI : Module (Localization S) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
   have : IsScalarTower R (Localization S) Mₚ :=
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
-      simp [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
+      simp +zetaDelta [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
   have : IsScalarTower (Localization S) Rₚ Mₚ :=
     ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • r' • m by rw [← mul_smul, ← Algebra.smul_def]⟩
   let l := (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap S M)
@@ -201,7 +201,7 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   letI : Module (Localization.Away f) Mₚ := Module.compHom Mₚ (algebraMap _ Rₚ)
   have : IsScalarTower R (Localization.Away f) Mₚ :=
     ⟨fun r r' m ↦ show algebraMap _ Rₚ (r • r') • m = _ by
-      simp [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
+      simp +zetaDelta [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, mul_smul]; rfl⟩
   have : IsScalarTower (Localization.Away f) Rₚ Mₚ :=
     ⟨fun r r' m ↦ show _ = algebraMap _ Rₚ r • r' • m by rw [← mul_smul, ← Algebra.smul_def]⟩
   let l := (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap (.powers f) M)
@@ -216,7 +216,7 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   have : IsLocalizedModule (Algebra.algebraMapSubmonoid _ p.asIdeal.primeCompl) l :=
       IsLocalizedModule.of_restrictScalars p.asIdeal.primeCompl ..
   have := Module.finrank_of_isLocalizedModule_of_free Rₚ p' l
-  simp [rankAtStalk, this, hf'']
+  simp +zetaDelta [rankAtStalk, this, hf'']
 
 lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat R M] :
     IsLocallyConstant (rankAtStalk (R := R) M) := by

@@ -113,10 +113,12 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
     simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
     ext
-    · simp only [← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom, Iso.inv_hom_id]
+    · simp +zetaDelta only [← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom,
+        Iso.inv_hom_id]
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_fst_assoc]
       rfl
-    · simp only [← Scheme.comp_base_apply, pullback.lift_snd, Iso.symm_hom, Iso.inv_hom_id]
+    · simp +zetaDelta only [← Scheme.comp_base_apply, pullback.lift_snd, Iso.symm_hom,
+        Iso.inv_hom_id]
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover
@@ -174,11 +176,13 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         ((𝒲 i.1).map i.2.2 ≫ 𝒰.pullbackHom g i.1)
         ((𝒱 i.1).map i.2.1 ≫ (𝒰.pullbackCover f).map i.1)
         ((𝒲 i.1).map i.2.2 ≫ (𝒰.pullbackCover g).map i.1)
-        (𝒰.map i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
+        (𝒰.map i.1)
+        (by simp +zetaDelta [pullback.condition]) (by simp +zetaDelta [pullback.condition])
         inferInstance inferInstance inferInstance
     convert this using 6
     apply pullback.hom_ext <;>
-      simp [𝓤, ← pullback.condition, ← pullback.condition_assoc, Scheme.Cover.pullbackHom]
+      simp +zetaDelta [𝓤, ← pullback.condition, ← pullback.condition_assoc,
+        Scheme.Cover.pullbackHom]
 
 end SurjectiveOnStalks
 
