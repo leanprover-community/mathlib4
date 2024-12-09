@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.OreLocalization.Ring
 
@@ -68,6 +67,7 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+assert_not_exists Ideal
 
 open Function
 
@@ -81,15 +81,6 @@ namespace IsLocalization
 section IsLocalization
 
 variable [IsLocalization M S]
-
-theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
-  constructor <;> intro h
-  · rw [← mk'_spec S x y, mul_comm]
-    exact I.mul_mem_left ((algebraMap R S) y) h
-  · rw [← mk'_spec S x y] at h
-    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
-    have := I.mul_mem_left b h
-    rwa [mul_comm, mul_assoc, hb, mul_one] at this
 
 variable (M S) in
 include M in

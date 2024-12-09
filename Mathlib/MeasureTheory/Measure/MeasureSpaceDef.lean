@@ -296,8 +296,6 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
   HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
 
-  --(subset_toMeasurable _ _).EventuallyLE
-
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by

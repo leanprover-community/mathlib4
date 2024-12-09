@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Indicator
 
@@ -572,6 +572,9 @@ theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
     b * s.sum f = s.sum fun a c => b * f a c := by simp only [Finsupp.sum, Finset.mul_sum]
 
 end
+
+@[simp] lemma Multiset.card_finsuppSum [Zero M] (f : ι →₀ M) (g : ι → M → Multiset α) :
+    card (f.sum g) = f.sum fun i m ↦ card (g i m) := map_finsupp_sum cardHom ..
 
 namespace Nat
 

@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic

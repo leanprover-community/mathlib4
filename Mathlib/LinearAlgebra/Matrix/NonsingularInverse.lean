@@ -7,6 +7,7 @@ import Mathlib.Data.Matrix.Invertible
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Nonsingular inverses

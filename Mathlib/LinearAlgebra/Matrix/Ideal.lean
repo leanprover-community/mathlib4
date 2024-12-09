@@ -6,7 +6,7 @@ Authors: Jujian Zhang, Wojciech Nawrocki
 import Mathlib.Data.Matrix.Basis
 import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Ideals in a matrix ring
