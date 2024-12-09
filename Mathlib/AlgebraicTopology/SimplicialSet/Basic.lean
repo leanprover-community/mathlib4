@@ -61,6 +61,12 @@ instance hasColimits : HasColimits SSet := by
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
 
+-- Even though `NatTrans.comp_app` is a `@[simp]` lemma, `simp` is unable to prove this.
+-- Why is this?
+-- Do we want `SSet.comp_app` as a global `@[simp]` lemma?
+lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
+    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+
 /-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
