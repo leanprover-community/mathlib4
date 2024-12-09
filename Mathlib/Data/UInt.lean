@@ -22,6 +22,8 @@ version also interferes more with software-verification use-cases, which is reas
 cautious here.
 -/
 
+set_option linter.haveLet 0
+
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
 set_option hygiene false in

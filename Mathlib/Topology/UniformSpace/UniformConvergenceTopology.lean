@@ -131,6 +131,8 @@ connection API to do most of the work.
 uniform convergence
 -/
 
+set_option linter.haveLet 0
+
 noncomputable section
 
 open Filter Set Topology
