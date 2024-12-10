@@ -188,6 +188,8 @@ theorem updateCol_self [DecidableEq n] : updateCol M j c i j = c i :=
   -- Porting note: (implicit arg) added `(β := _)`
   Function.update_same (β := fun _ => α) j (c i) (M i)
 
+@[deprecated (since := "2024-12-09")] alias updateColumn_self := updateCol_self
+
 @[simp]
 theorem updateRow_ne [DecidableEq m] {i' : m} (i_ne : i' ≠ i) : updateRow M i b i' = M i' :=
   -- Porting note: (implicit arg) added `(β := _)`
@@ -198,6 +200,8 @@ theorem updateCol_ne [DecidableEq n] {j' : n} (j_ne : j' ≠ j) :
     updateCol M j c i j' = M i j' :=
   -- Porting note: (implicit arg) added `(β := _)`
   Function.update_noteq (β := fun _ => α) j_ne (c i) (M i)
+
+@[deprecated (since := "2024-12-09")] alias updateColumn_ne := updateCol_ne
 
 theorem updateRow_apply [DecidableEq m] {i' : m} :
     updateRow M i b i' j = if i' = i then b j else M i' j := by
@@ -211,11 +215,15 @@ theorem updateCol_apply [DecidableEq n] {j' : n} :
   · rw [h, updateCol_self, if_pos rfl]
   · rw [updateCol_ne h, if_neg h]
 
+@[deprecated (since := "2024-12-09")] alias updateColumn_apply := updateCol_apply
+
 @[simp]
 theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
     A.updateCol i b = (col (Fin 1) b).submatrix id (Function.const n 0) := by
   ext x y
   simp [updateCol_apply, Subsingleton.elim i y]
+
+@[deprecated (since := "2024-12-09")] alias updateColumn_subsingleton := updateCol_subsingleton
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
@@ -235,6 +243,8 @@ theorem map_updateCol [DecidableEq n] (f : α → β) :
   rw [updateCol_apply, map_apply, map_apply, updateCol_apply]
   exact apply_ite f _ _ _
 
+@[deprecated (since := "2024-12-09")] alias map_updateColumn := map_updateCol
+
 theorem updateRow_transpose [DecidableEq n] : updateRow Mᵀ j c = (updateCol M j c)ᵀ := by
   ext
   rw [transpose_apply, updateRow_apply, updateCol_apply]
@@ -244,6 +254,8 @@ theorem updateCol_transpose [DecidableEq m] : updateCol Mᵀ i b = (updateRow M 
   ext
   rw [transpose_apply, updateRow_apply, updateCol_apply]
   rfl
+
+@[deprecated (since := "2024-12-09")] alias updateColumn_transpose := updateCol_transpose
 
 theorem updateRow_conjTranspose [DecidableEq n] [Star α] :
     updateRow Mᴴ j (star c) = (updateCol M j c)ᴴ := by
@@ -257,6 +269,8 @@ theorem updateCol_conjTranspose [DecidableEq m] [Star α] :
     map_updateRow]
   rfl
 
+@[deprecated (since := "2024-12-09")] alias updateColumn_conjTranspose := updateCol_conjTranspose
+
 @[simp]
 theorem updateRow_eq_self [DecidableEq m] (A : Matrix m n α) (i : m) : A.updateRow i (A i) = A :=
   Function.update_eq_self i A
@@ -265,6 +279,8 @@ theorem updateRow_eq_self [DecidableEq m] (A : Matrix m n α) (i : m) : A.update
 theorem updateCol_eq_self [DecidableEq n] (A : Matrix m n α) (i : n) :
     (A.updateCol i fun j => A j i) = A :=
   funext fun j => Function.update_eq_self i (A j)
+
+@[deprecated (since := "2024-12-09")] alias updateColumn_eq_self := updateCol_eq_self
 
 theorem diagonal_updateCol_single [DecidableEq n] [Zero α] (v : n → α) (i : n) (x : α) :
     (diagonal v).updateCol i (Pi.single i x) = diagonal (Function.update v i x) := by
@@ -278,6 +294,9 @@ theorem diagonal_updateCol_single [DecidableEq n] [Zero α] (v : n → α) (i : 
     obtain rfl | hki := eq_or_ne k i
     · rw [updateCol_self, Pi.single_eq_of_ne hjk]
     · rw [updateCol_ne hki, diagonal_apply_ne _ hjk]
+
+@[deprecated (since := "2024-12-09")]
+alias diagonal_updateColumn_single := diagonal_updateCol_single
 
 theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : n) (x : α) :
     (diagonal v).updateRow i (Pi.single i x) = diagonal (Function.update v i x) := by
@@ -303,10 +322,16 @@ theorem updateCol_submatrix_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m 
   simpa only [← transpose_submatrix, updateRow_transpose] using
     congr_arg transpose (updateRow_submatrix_equiv Aᵀ j c f e)
 
+@[deprecated (since := "2024-12-09")]
+alias updateColumn_submatrix_equiv := updateCol_submatrix_equiv
+
 theorem submatrix_updateCol_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n)
     (c : m → α) (e : l ≃ m) (f : o ≃ n) : (A.updateCol j c).submatrix e f =
     updateCol (A.submatrix e f) (f.symm j) fun i => c (e i) :=
   Eq.trans (by simp_rw [Equiv.apply_symm_apply]) (updateCol_submatrix_equiv A _ _ e f).symm
+
+@[deprecated (since := "2024-12-09")]
+alias submatrix_updateColumn_equiv := submatrix_updateCol_equiv
 
 /-! `reindex` versions of the above `submatrix` lemmas for convenience. -/
 
@@ -326,9 +351,13 @@ theorem updateCol_reindex [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j
     updateCol (reindex e f A) j c = reindex e f (A.updateCol (f.symm j) fun i => c (e i)) :=
   updateCol_submatrix_equiv _ _ _ _ _
 
+@[deprecated (since := "2024-12-09")] alias updateColumn_reindex := updateCol_reindex
+
 theorem reindex_updateCol [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n) (c : m → α)
     (e : m ≃ l) (f : n ≃ o) :
     reindex e f (A.updateCol j c) = updateCol (reindex e f A) (f j) fun i => c (e.symm i) :=
   submatrix_updateCol_equiv _ _ _ _ _
+
+@[deprecated (since := "2024-12-09")] alias reindex_updateColumn := reindex_updateCol
 
 end Matrix

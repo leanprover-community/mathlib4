@@ -186,6 +186,9 @@ theorem Continuous.matrix_updateCol [DecidableEq n] (i : n) {A : X → Matrix m 
     (continuous_apply k).comp <|
       ((continuous_apply _).comp hA).update i ((continuous_apply _).comp hB)
 
+@[deprecated (since := "2024-12-09")]
+alias Continuous.matrix_updateColumn := Continuous.matrix_updateCol
+
 @[continuity]
 theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m n R} {B : X → n → R}
     (hA : Continuous A) (hB : Continuous B) : Continuous fun x => (A x).updateRow i (B x) :=

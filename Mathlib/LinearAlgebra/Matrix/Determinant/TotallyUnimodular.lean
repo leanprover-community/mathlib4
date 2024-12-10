@@ -163,10 +163,16 @@ lemma fromCols_one_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
   rw [←transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_one,
     fromRows_one_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
+@[deprecated (since := "2024-12-09")]
+alias fromColumns_one_isTotallyUnimodular_iff := fromCols_one_isTotallyUnimodular_iff
+
 lemma one_fromCols_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
     (fromCols (1 : Matrix m m R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [←transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_one,
     one_fromRows_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
+
+@[deprecated (since := "2024-12-09")]
+alias one_fromColumns_isTotallyUnimodular_iff := one_fromCols_isTotallyUnimodular_iff
 
 alias ⟨_, IsTotallyUnimodular.fromRows_one⟩ := fromRows_one_isTotallyUnimodular_iff
 alias ⟨_, IsTotallyUnimodular.one_fromRows⟩ := one_fromRows_isTotallyUnimodular_iff
@@ -186,5 +192,8 @@ lemma fromCols_col0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromCols A (col n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_col,
     fromRows_row0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
+
+@[deprecated (since := "2024-12-09")]
+alias fromColumns_col0_isTotallyUnimodular_iff := fromCols_col0_isTotallyUnimodular_iff
 
 end Matrix

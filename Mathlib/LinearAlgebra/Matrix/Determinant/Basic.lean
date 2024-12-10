@@ -345,6 +345,8 @@ theorem det_updateRow_eq_zero (h : i ≠ j) :
 theorem det_updateCol_eq_zero (h : i ≠ j) :
     (M.updateCol j (fun k ↦ M k i)).det = 0 := det_zero_of_column_eq h (by simp [h])
 
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_eq_zero := det_updateCol_eq_zero
+
 end DetZero
 
 theorem det_updateRow_add (M : Matrix n n R) (j : n) (u v : n → R) :
@@ -356,6 +358,8 @@ theorem det_updateCol_add (M : Matrix n n R) (j : n) (u v : n → R) :
   rw [← det_transpose, ← updateRow_transpose, det_updateRow_add]
   simp [updateRow_transpose, det_transpose]
 
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_add := det_updateCol_add
+
 theorem det_updateRow_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow M j <| s • u) = s * det (updateRow M j u) :=
   (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_smul M j s u
@@ -364,6 +368,8 @@ theorem det_updateCol_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateCol M j <| s • u) = s * det (updateCol M j u) := by
   rw [← det_transpose, ← updateRow_transpose, det_updateRow_smul]
   simp [updateRow_transpose, det_transpose]
+
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_smul := det_updateCol_smul
 
 theorem det_updateRow_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateRow M j u) :=
@@ -376,7 +382,8 @@ theorem det_updateCol_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R)
   rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul_left]
   simp [updateRow_transpose, det_transpose]
 
-@[deprecated (since := "2024-11-03")] alias det_updateCol_smul' := det_updateCol_smul_left
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul' := det_updateCol_smul_left
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul_left := det_updateCol_smul_left
 
 theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j ∉ s) (c : n → R)
     (a : R) :
@@ -403,6 +410,8 @@ theorem det_updateCol_sum (A : Matrix n n R) (j : n) (c : n → R) :
   rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
   convert det_updateRow_sum A.transpose j c
   simp only [smul_eq_mul, Finset.sum_apply, Pi.smul_apply, transpose_apply]
+
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_sum := det_updateCol_sum
 
 section DetEq
 
@@ -436,6 +445,8 @@ theorem det_updateCol_add_self (A : Matrix n n R) {i j : n} (hij : i ≠ j) :
   rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
   exact det_updateRow_add_self Aᵀ hij
 
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_add_self := det_updateCol_add_self
+
 theorem det_updateRow_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j) (c : R) :
     det (updateRow A i (A i + c • A j)) = det A := by
   simp [det_updateRow_add, det_updateRow_smul,
@@ -445,6 +456,9 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
     det (updateCol A i fun k => A k i + c • A k j) = det A := by
   rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
   exact det_updateRow_add_smul_self Aᵀ hij c
+
+@[deprecated (since := "2024-11-03")]
+alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
