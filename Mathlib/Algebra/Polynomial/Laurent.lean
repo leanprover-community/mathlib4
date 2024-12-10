@@ -74,7 +74,7 @@ open Polynomial Function AddMonoidAlgebra Finsupp
 
 noncomputable section
 
-variable {R : Type*}
+variable {R S : Type*}
 
 /-- The semiring of Laurent polynomials with coefficients in the semiring `R`.
 We denote it by `R[T;T⁻¹]`.
@@ -124,7 +124,6 @@ theorem single_zero_one_eq_one : (Finsupp.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T
   rfl
 
 /-!  ### The functions `C` and `T`. -/
-
 
 /-- The ring homomorphism `C`, including `R` into the ring of Laurent polynomials over `R` as
 the constant Laurent polynomials. -/
@@ -284,6 +283,14 @@ theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
 @[simp]
 theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
   (commute_T n f).eq
+
+theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add _ _ hp hq =>
+    rw [smul_add, mul_add, hp, hq]
+  | h_C_mul_T n s =>
+    rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
+      Finsupp.smul_single', single_eq_C]
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
@@ -543,5 +550,80 @@ lemma toLaurent_reverse (p : R[X]) :
   | MX _ hp => simpa [natDegree_mul_X hp]
 
 end Inversion
+
+section Smeval
+
+section SMulWithZero
+
+variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
+
+/-- Evaluate a Laurent polynomial at a unit, using scalar multiplication. -/
+def smeval : S := Finsupp.sum f fun n r => r • (x ^ n).val
+
+theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+
+theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro rfl rfl; rfl
+
+@[simp]
+theorem smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by
+  simp only [smeval_eq_sum, Finsupp.sum_zero_index]
+
+theorem smeval_single (n : ℤ) (r : R) : smeval (Finsupp.single n r) x = r • (x ^ n).val := by
+  simp only [smeval_eq_sum]
+  rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
+
+@[simp]
+theorem smeval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).smeval x = r • (x ^ n).val := by
+  rw [← single_eq_C_mul_T, smeval_single]
+
+@[simp]
+theorem smeval_C (r : R) : (C r).smeval x = r • 1 := by
+  rw [← single_eq_C, smeval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
+
+end SMulWithZero
+
+section MulActionWithZero
+
+variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
+  (x y : Sˣ)
+
+@[simp]
+theorem smeval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).smeval x = (x ^ n).val := by
+  rw [T, smeval_single, one_smul]
+
+@[simp]
+theorem smeval_one : (1 : R[T;T⁻¹]).smeval x = 1 := by
+  rw [← T_zero, smeval_T_pow 0 x, zpow_zero, Units.val_eq_one]
+
+end MulActionWithZero
+
+section Module
+
+variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
+
+@[simp]
+theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
+  simp only [smeval_eq_sum]
+  rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
+
+@[simp]
+theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add p q hp hq=>
+    rw [mul_add, smeval_add, smeval_add, smul_add, hp, hq]
+  | h_C_mul_T n s =>
+    rw [← mul_assoc, ← map_mul, smeval_C_mul_T_n, smeval_C_mul_T_n, mul_smul]
+
+variable (R) in
+/-- Evaluation as an `R`-linear map. -/
+@[simps]
+def leval : R[T;T⁻¹] →ₗ[R] S where
+  toFun f := f.smeval x
+  map_add' f g := smeval_add f g x
+  map_smul' r f := by simp [smul_eq_C_mul]
+
+end Module
+
+end Smeval
 
 end LaurentPolynomial
