@@ -157,9 +157,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by
         intro
         apply IH _ _ _ (Or.inr _) T
-        rw [a]
-        cases' S with f al
-        rfl
+        rw [a, Seq.get?_tail]
       induction' e : Seq.get? S 0 with o
       · have D : Seq.destruct S = none := by
           dsimp [Seq.destruct]
