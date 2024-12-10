@@ -257,8 +257,9 @@ inductive HoRel₂ {V : SSet.Truncated 2} :
     (X Y : Cat.FreeRefl (OneTruncation₂ V)) → (f g : X ⟶ Y) → Prop
   | mk (φ : V _[2]₂) :
     HoRel₂ _ _
-      (Quot.mk _ (.cons .nil (ev02₂ φ)))
-      (Quot.mk _ (.cons (.cons .nil (ev01₂ φ)) (ev12₂ φ)))
+      (Quot.mk _ (Quiver.Hom.toPath (ev02₂ φ)))
+      (Quot.mk _ ((Quiver.Hom.toPath (ev01₂ φ)).comp
+        (Quiver.Hom.toPath (ev12₂ φ))))
 
 theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
     (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
