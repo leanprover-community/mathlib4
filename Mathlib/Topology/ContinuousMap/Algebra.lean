@@ -617,6 +617,13 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
 
+/-- Evaluation at a point, as a continuous linear map. -/
+@[simps apply]
+protected def evalCLM (x : α) : C(α, M) →L[R] M where
+  toFun f := f x
+  map_add' _ _ := add_apply _ _ x
+  map_smul' _ _ := smul_apply _ _ x
+
 end ContinuousMap
 
 end ModuleStructure
