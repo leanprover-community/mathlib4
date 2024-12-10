@@ -12,16 +12,13 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 # Smooth sections
 
 In this file we define the type `ContMDiffSection` of `n` times continuously differentiable
-sections of a smooth vector bundle over a manifold `M` and prove that it's a module.
+sections of a vector bundle over a manifold `M` and prove that it's a module.
 -/
 
 
 open Bundle Filter Function
 
-open scoped Bundle Manifold
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
+open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
@@ -29,7 +26,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
-  (n : ℕ∞)
+  (n : WithTop ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   -- `V` vector bundle
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
@@ -193,7 +190,7 @@ protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
 
 protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
-  s.contMDiff.mdifferentiable le_top
+  s.contMDiff.mdifferentiable (mod_cast le_top)
 
 protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
