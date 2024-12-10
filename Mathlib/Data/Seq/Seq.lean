@@ -943,6 +943,15 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
       | some (a, s') => Sum.inr (a::l, s'))
     ([], s)
 
+@[simp]
+theorem drop_get? {α : Type u} {n m : ℕ} {li : Seq α} : (li.drop n).get? m = li.get? (n + m) := by
+  induction n generalizing m with
+  | zero => simp
+  | succ k ih =>
+    simp [Seq.get?_tail]
+    rw [show k + 1 + m = k + (m + 1) by omega]
+    apply ih
+
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
   | n + 1 => congr_arg tail (dropn_add s _ n)
@@ -954,6 +963,19 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
   rw [← get?_tail, ← dropn_tail]; apply IH
+
+theorem drop_succ_cons {α : Type u} {hd : α} {tl : Seq α} {n : ℕ} :
+    (cons hd tl).drop (n + 1) = tl.drop n := by
+  rw [← dropn_tail]
+  simp
+
+@[simp]
+theorem drop_nil {α : Type u} {n : ℕ} : (@nil α).drop n = nil := by
+  induction n with
+  | zero =>
+    simp
+  | succ m ih =>
+    simp [← dropn_tail, ih]
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
