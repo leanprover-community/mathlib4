@@ -25,6 +25,9 @@ converges (uniformly) to `f`, and this construction defines a Banach-space isomo
 
 For this, we follow the argument of Bojanić [bojanic74].
 
+The formalisation of Mahler's theorem presented here is based on code written by Giulio Caflisch
+for his bachelor's thesis at ETH Zürich.
+
 ## References
 
 * [R. Bojanić, *A simple proof of Mahler's theorem on approximation of continuous functions of a
