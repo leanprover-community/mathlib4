@@ -91,11 +91,48 @@ protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 
 protected theorem inv_mul_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a⁻¹ * a = 1 :=
   mul_comm a a⁻¹ ▸ ENNReal.mul_inv_cancel h0 ht
 
-protected theorem div_mul_cancel (h0 : a ≠ 0) (hI : a ≠ ∞) : b / a * a = b := by
-  rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0 hI, mul_one]
+protected lemma inv_mul_cancel_left (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
+    a⁻¹ * (a * b) = b := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp_all
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp_all
+  · simp [← mul_assoc, ENNReal.inv_mul_cancel, *]
 
-protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) = b := by
-  rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
+protected lemma mul_inv_cancel_left (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
+    a * (a⁻¹ * b) = b := by
+  obtain rfl | ha₀ := eq_or_ne a 0
+  · simp_all
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp_all
+  · simp [← mul_assoc, ENNReal.mul_inv_cancel, *]
+
+protected lemma mul_inv_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b * b⁻¹ = a := by
+  obtain rfl | hb₀ := eq_or_ne b 0
+  · simp_all
+  obtain rfl | hb := eq_or_ne b ⊤
+  · simp_all
+  · simp [mul_assoc, ENNReal.mul_inv_cancel, *]
+
+protected lemma inv_mul_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b⁻¹ * b = a := by
+  obtain rfl | hb₀ := eq_or_ne b 0
+  · simp_all
+  obtain rfl | hb := eq_or_ne b ⊤
+  · simp_all
+  · simp [mul_assoc, ENNReal.inv_mul_cancel, *]
+
+protected lemma mul_div_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b / b = a := ENNReal.mul_inv_cancel_right hb₀ hb
+
+protected theorem div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
+  ENNReal.inv_mul_cancel_right (by simp [ha₀]) (by simp [ha])
+
+protected theorem mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) = b := by
+  rw [mul_comm, ENNReal.div_mul_cancel ha₀ ha]
+
+@[deprecated (since := "2024-12-10")] protected alias mul_div_cancel' := ENNReal.mul_div_cancel
 
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
@@ -398,8 +435,8 @@ theorem mul_div_le : a * (b / a) ≤ b :=
   mul_le_of_le_div' le_rfl
 
 theorem eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) : b = c / a ↔ a * b = c :=
-  ⟨fun h => by rw [h, ENNReal.mul_div_cancel' ha ha'], fun h => by
-    rw [← h, mul_div_assoc, ENNReal.mul_div_cancel' ha ha']⟩
+  ⟨fun h => by rw [h, ENNReal.mul_div_cancel ha ha'], fun h => by
+    rw [← h, mul_div_assoc, ENNReal.mul_div_cancel ha ha']⟩
 
 protected theorem div_eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) (hb : b ≠ 0) (hb' : b ≠ ∞) :
     c / b = d / a ↔ a * c = b * d := by
