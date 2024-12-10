@@ -542,8 +542,9 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     ext w m
     have J : Integrable (fderiv ℝ (iteratedFDeriv ℝ n f)) μ := by
       specialize h'f (n + 1) hn
-      rw [iteratedFDeriv_succ_eq_comp_left] at h'f
-      exact (LinearIsometryEquiv.integrable_comp_iff _).1 h'f
+      rwa [iteratedFDeriv_succ_eq_comp_left, Function.comp_def,
+          LinearIsometryEquiv.integrable_comp_iff (𝕜 := ℝ) (φ := fderiv ℝ (iteratedFDeriv ℝ n f))]
+        at h'f
     suffices H : (fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ (iteratedFDeriv ℝ n f)) w)
           (m 0) (Fin.tail m) =
         (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
