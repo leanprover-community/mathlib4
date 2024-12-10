@@ -300,9 +300,9 @@ lemma rootForm_apply_root_self_ne_zero :
     norm_cast at hz
   simp [hzi]
 
-lemma corootForm_apply_coroot_self_ne_zero :
+lemma corootForm_apply_coroot_self_ne_zero : -- why doesn't `h.flip` work here anymore?
     P.CorootForm (P.coroot i) (P.coroot i) ≠ 0 :=
-  P.flip.rootForm_apply_root_self_ne_zero h.flip i
+  P.flip.rootForm_apply_root_self_ne_zero (by infer_instance) i
 
 end IsCrystallographic
 
