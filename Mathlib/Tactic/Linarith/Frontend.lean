@@ -280,7 +280,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     let pref : MetaM _ ← do
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
-        hyp_set := hyp_set.eraseIdx i
+        hyp_set := hyp_set.eraseIdxIfInBounds i
         pure <|
           withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") <|
             proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs

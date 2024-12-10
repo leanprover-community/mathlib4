@@ -314,7 +314,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by omega)
   have : 2 + p ≤ 2 * p := by omega
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
-  exact this.trans_lt (lt_pow_self b_ge_two _)
+  exact this.trans_lt (Nat.lt_pow_self b_ge_two)
 
 /-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
