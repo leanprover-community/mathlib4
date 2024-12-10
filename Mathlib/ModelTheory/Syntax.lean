@@ -300,6 +300,7 @@ def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
 theorem LEquiv.onTerm_symm (φ : L ≃ᴸ L') : (φ.onTerm.symm : L'.Term α ≃ L.Term α) = φ.symm.onTerm :=
   rfl
 
+/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
 @[deprecated LEquiv.onTerm (since := "2024-12-02")]
 def Lequiv.onTerm := @LEquiv.onTerm
 
@@ -889,6 +890,7 @@ def BoundedFormula.subst_definitions {k : ℕ} (f : L.BoundedFormula α k)
     let fullConds := (List.ofFn sideConds).flatten.foldr BoundedFormula.imp newRel
     BoundedFormula.relabel id fullConds.alls
 
+/-- See `BoundedFormula.subst_definitions`, but this is specialized to `Formula`. -/
 def Formula.subst_definitions (f : L.Formula α)
     (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
     (Rs : ∀ {n} (_ : L.Relations n), L'.Formula (Fin n))
