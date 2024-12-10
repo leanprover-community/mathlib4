@@ -3,8 +3,9 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Nakayama
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Nakayama's lemma

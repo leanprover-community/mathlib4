@@ -155,6 +155,8 @@ include H
 
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
+theorem eq_iff {x y} : B x y = 0 ↔ B y x = 0 := ⟨H x y, H y x⟩
+
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 
@@ -700,17 +702,46 @@ section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁] {I I' : R →+* R}
 
-theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
-    (hB' : B.SeparatingLeft) : B.Nondegenerate := by
-  refine ⟨hB', ?_⟩
+theorem IsRefl.nondegenerate_iff_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl) :
+    B.Nondegenerate ↔ B.SeparatingLeft := by
+  refine ⟨fun h ↦ h.1, fun hB' ↦ ⟨hB', ?_⟩⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 
-theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
-    (hB' : B.SeparatingRight) : B.Nondegenerate := by
-  refine ⟨?_, hB'⟩
+theorem IsRefl.nondegenerate_iff_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl) :
+    B.Nondegenerate ↔ B.SeparatingRight := by
+  refine ⟨fun h ↦ h.2, fun hB' ↦ ⟨?_, hB'⟩⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
+
+lemma disjoint_ker_of_nondegenerate_restrict {B : M →ₗ[R] M →ₗ[R] M₁} {W : Submodule R M}
+    (hW : (B.domRestrict₁₂ W W).Nondegenerate) :
+    Disjoint W (LinearMap.ker B) := by
+  refine Submodule.disjoint_def.mpr fun x hx hx' ↦ ?_
+  let x' : W := ⟨x, hx⟩
+  suffices x' = 0 by simpa [x']
+  apply hW.1 x'
+  simp_rw [Subtype.forall, domRestrict₁₂_apply]
+  intro y hy
+  rw [mem_ker] at hx'
+  simp [hx']
+
+lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsSymm)
+    {W : Submodule R M} (hW : IsCompl W (LinearMap.ker B)) :
+    (B.domRestrict₁₂ W W).Nondegenerate := by
+  have hB' : (B.domRestrict₁₂ W W).IsRefl := fun x y ↦ hB.isRefl (W.subtype x) (W.subtype y)
+  rw [LinearMap.IsRefl.nondegenerate_iff_separatingLeft hB']
+  intro ⟨x, hx⟩ hx'
+  simp only [Submodule.mk_eq_zero]
+  replace hx' : ∀ y ∈ W, B x y = 0 := by simpa [Subtype.forall] using hx'
+  replace hx' : x ∈ W ⊓ ker B := by
+    refine ⟨hx, ?_⟩
+    ext y
+    obtain ⟨u, hu, v, hv, rfl⟩ : ∃ u ∈ W, ∃ v ∈ ker B, u + v = y := by
+      rw [← Submodule.mem_sup, hW.sup_eq_top]; exact Submodule.mem_top
+    suffices B x u = 0 by rw [mem_ker] at hv; simpa [← hB.eq v, hv]
+    exact hx' u hu
+  simpa [hW.inf_eq_bot] using hx'
 
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
@@ -718,7 +749,7 @@ that is `Disjoint W (W.orthogonalBilin B)`. -/
 theorem nondegenerate_restrict_of_disjoint_orthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
-  refine (hB.domRestrict W).nondegenerate_of_separatingLeft ?_
+  rw [(hB.domRestrict W).nondegenerate_iff_separatingLeft]
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
   refine hW.le_bot ⟨hx, fun y hy ↦ ?_⟩
@@ -797,5 +828,134 @@ theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroSMulDivisors R
 end CommRing
 
 end Nondegenerate
+
+namespace BilinForm
+
+lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (x y : M) :
+    B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
+      (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
+  simp only [map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul, mul_sub,
+    mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
+  abel
+
+variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
+
+/-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
+lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
+    (B x y) * (B y x) ≤ (B x x) * (B y y) := by
+  have aux (x y : M) : 0 ≤ (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
+    rw [← apply_smul_sub_smul_sub_eq B x y]
+    exact hs (B x y • x - B x x • y)
+  rcases lt_or_le 0 (B x x) with hx | hx
+  · exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux x y) hx
+  · replace hx : B x x = 0 := le_antisymm hx (hs x)
+    rcases lt_or_le 0 (B y y) with hy | hy
+    · rw [mul_comm (B x y), mul_comm (B x x)]
+      exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux y x) hy
+    · replace hy : B y y = 0 := le_antisymm hy (hs y)
+      suffices B x y = - B y x by simpa [this, hx, hy] using mul_self_nonneg (B y x)
+      rw [eq_neg_iff_add_eq_zero]
+      apply le_antisymm
+      · simpa [hx, hy, le_neg_iff_add_nonpos_left] using hs (x - y)
+      · simpa [hx, hy] using hs (x + y)
+
+/-- The **Cauchy-Schwarz inequality** for positive semidefinite symmetric forms. -/
+lemma apply_sq_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
+    (B x y) ^ 2 ≤ (B x x) * (B y y) := by
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  exact apply_mul_apply_le_of_forall_zero_le B hs x y
+
+/-- The equality case of **Cauchy-Schwarz**. -/
+lemma not_linearIndependent_of_apply_mul_apply_eq (hp : ∀ x, x ≠ 0 → 0 < B x x)
+    (x y : M) (he : (B x y) * (B y x) = (B x x) * (B y y)) :
+    ¬ LinearIndependent R ![x, y] := by
+  have hz : (B x y) • x - (B x x) • y = 0 := by
+    by_contra hc
+    exact (ne_of_lt (hp ((B x) y • x - (B x) x • y) hc)).symm <|
+      (apply_smul_sub_smul_sub_eq B x y).symm ▸ (mul_eq_zero_of_right ((B x) x)
+      (sub_eq_zero_of_eq he.symm))
+  by_contra hL
+  by_cases hx : x = 0
+  · simpa [hx] using LinearIndependent.ne_zero 0 hL
+  · have h := sub_eq_zero.mpr (sub_eq_zero.mp hz).symm
+    rw [sub_eq_add_neg, ← neg_smul, add_comm] at h
+    exact (Ne.symm (ne_of_lt (hp x hx))) (LinearIndependent.eq_zero_of_pair hL h).2
+
+/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite forms. -/
+lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
+    (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
+    (B x y) * (B y x) < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
+  have hle : ∀ z, 0 ≤ B z z := by
+    intro z
+    by_cases hz : z = 0; simp [hz]
+    exact le_of_lt (hp z hz)
+  constructor
+  · contrapose!
+    intro h
+    rw [LinearIndependent.pair_iff] at h
+    push_neg at h
+    obtain ⟨r, s, hl, h0⟩ := h
+    by_cases hr : r = 0; · simp_all
+    by_cases hs : s = 0; · simp_all
+    suffices
+        (B (r • x) (r • x)) * (B (s • y) (s • y)) = (B (r • x) (s • y)) * (B (s • y) (r • x)) by
+      simp only [map_smul, smul_apply, smul_eq_mul] at this
+      rw [show r * (r * (B x) x) * (s * (s * (B y) y)) = (r * r * s * s) * ((B x) x * (B y) y) by
+        ring, show s * (r * (B x) y) * (r * (s * (B y) x)) = (r * r * s * s) * ((B x) y * (B y) x)
+        by ring] at this
+      have hrs : r * r * s * s ≠ 0 := by simp [hr, hs]
+      exact le_of_eq <| mul_right_injective₀ hrs this
+    simp [show s • y = - r • x by rwa [neg_smul, ← add_eq_zero_iff_eq_neg']]
+  · contrapose!
+    intro h
+    refine not_linearIndependent_of_apply_mul_apply_eq B hp x y (le_antisymm
+      (apply_mul_apply_le_of_forall_zero_le B hle x y) h)
+
+/-- Strict **Cauchy-Schwarz** is equivalent to linear independence for positive definite symmetric
+forms. -/
+lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
+    (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
+    (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  exact apply_mul_apply_lt_iff_linearIndependent B hp x y
+
+lemma apply_apply_same_eq_zero_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) {x : M} :
+    B x x = 0 ↔ x ∈ LinearMap.ker B := by
+  rw [LinearMap.mem_ker]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext y
+  have := B.apply_sq_le_of_symm hs hB x y
+  simp only [h, zero_mul] at this
+  exact pow_eq_zero <| le_antisymm this (sq_nonneg (B x y))
+
+lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
+    B.Nondegenerate ↔ ∀ x, B x x = 0 ↔ x = 0 := by
+  simp_rw [hB.isRefl.nondegenerate_iff_separatingLeft, separatingLeft_iff_ker_eq_bot,
+    Submodule.eq_bot_iff, B.apply_apply_same_eq_zero_iff hs hB, mem_ker]
+  exact forall_congr' fun x ↦ by aesop
+
+/-- A convenience variant of `LinearMap.BilinForm.nondegenerate_iff` characterising nondegeneracy as
+positive definiteness. -/
+lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
+    B.Nondegenerate ↔ ∀ x, x ≠ 0 → 0 < B x x := by
+  rw [B.nondegenerate_iff hs hB, ← not_iff_not]
+  push_neg
+  exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
+
+lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)
+    {W : Submodule R M} :
+    (B.domRestrict₁₂ W W).Nondegenerate ↔ Disjoint W (LinearMap.ker B) := by
+  refine ⟨disjoint_ker_of_nondegenerate_restrict, fun hW ↦ ?_⟩
+  have hB' : (B.domRestrict₁₂ W W).IsRefl := fun x y ↦ hB.isRefl (W.subtype x) (W.subtype y)
+  rw [IsRefl.nondegenerate_iff_separatingLeft hB']
+  intro ⟨x, hx⟩ h
+  simp_rw [Subtype.forall, domRestrict₁₂_apply] at h
+  specialize h x hx
+  rw [B.apply_apply_same_eq_zero_iff hs hB] at h
+  have key : x ∈ W ⊓ LinearMap.ker B := ⟨hx, h⟩
+  simpa [hW.eq_bot] using key
+
+end BilinForm
 
 end LinearMap

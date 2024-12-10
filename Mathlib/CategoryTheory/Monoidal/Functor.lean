@@ -25,9 +25,9 @@ inverse isomorphisms.
 
 We show that the composition of (lax) monoidal functors gives a (lax) monoidal functor.
 
-See `CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
+See `Mathlib.CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
 
-We show in `CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
+We show in `Mathlib.CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
 to monoid objects.
 
 ## References
@@ -972,7 +972,7 @@ instance [e.functor.Monoidal] : e.symm.inverse.Monoidal := inferInstanceAs (e.fu
 noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := by
   letI := e.toAdjunction.rightAdjointLaxMonoidal
   have : IsIso (LaxMonoidal.ε e.inverse) := by
-    simp only [Adjunction.rightAdjointLaxMonoidal_ε, Adjunction.homEquiv_unit]
+    simp only [this, Adjunction.rightAdjointLaxMonoidal_ε, Adjunction.homEquiv_unit]
     infer_instance
   have : ∀ (X Y : D), IsIso (LaxMonoidal.μ e.inverse X Y) := fun X Y ↦ by
     simp only [Adjunction.rightAdjointLaxMonoidal_μ, Adjunction.homEquiv_unit]
