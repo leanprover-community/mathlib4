@@ -58,7 +58,7 @@ measure. We follow McQuillan's answer at https://mathoverflow.net/questions/4566
 On second-countable groups, one can arrive to slightly different uniqueness results by using that
 the operations are measurable. In particular, one can get uniqueness assuming σ-finiteness of
 the measures but discarding the assumption that they are finite on compact sets. See
-`haarMeasure_unique` in the file `MeasureTheory.Measure.Haar.Basic`.
+`haarMeasure_unique` in the file `Mathlib/MeasureTheory/Measure/Haar/Basic.lean`.
 
 ## References
 
