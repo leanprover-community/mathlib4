@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Basic
 
 /-!
 # Topological group with zero
