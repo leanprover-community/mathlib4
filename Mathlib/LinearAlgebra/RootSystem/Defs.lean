@@ -500,8 +500,11 @@ lemma exists_int_eq_coxeterWeight [P.IsCrystallographic] (i j : ι) :
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
-lemma isOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
+lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
+
+lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i :=
+  ⟨h.2, h.1⟩
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]

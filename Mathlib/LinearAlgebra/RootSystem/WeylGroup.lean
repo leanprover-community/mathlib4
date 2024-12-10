@@ -101,13 +101,7 @@ lemma range_weylGroup_coweightHom :
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
 /-- The permutation representation of the Weyl group induced by `reflection_perm`. -/
-abbrev weylGroupToPerm := ((Equiv.indexHom P).restrict P.weylGroup)
-
-@[simp]
-lemma weylGroupToPerm_apply_reflection : --deprecate?
-    P.weylGroupToPerm ⟨Equiv.reflection P i, reflection_mem_weylGroup P i⟩ =
-      P.reflection_perm i :=
-  rfl
+abbrev weylGroupToPerm := (Equiv.indexHom P).restrict P.weylGroup
 
 lemma range_weylGroupToPerm :
     P.weylGroupToPerm.range = Subgroup.closure (range P.reflection_perm) := by
@@ -133,9 +127,5 @@ lemma range_weylGroupToPerm :
       simpa only [reflection_mem_weylGroup] using Subgroup.subset_closure (mem_range_self i)
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
-
-lemma exists_root_eq_smul_of_mem_weylGroup {w : Aut P} (i : ι) : -- deprecate?
-    ∃ j, P.root j = w • (P.root i) :=
-  Exists.intro (w • i) (Hom.root_weightMap_apply P P i w.toHom).symm
 
 end RootPairing

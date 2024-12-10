@@ -534,12 +534,12 @@ def weightHom (P : RootPairing ι R M N) : Aut P →* (M ≃ₗ[R] M) where
   map_mul' x y := by ext; simp
 
 lemma weightHom_toLinearMap {P : RootPairing ι R M N} (g : Aut P) :
-    ((weightHom P) g).toLinearMap = (Hom.weightHom P) g.toHom :=
+    (weightHom P g).toLinearMap = Hom.weightHom P g.toHom :=
   rfl
 
 lemma weightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.weightHom P) := by
   refine Injective.of_comp (f := LinearEquiv.toLinearMap) fun g g' hgg' => ?_
-  let h : ((weightHom P) g).toLinearMap = ((weightHom P) g').toLinearMap := hgg' --`have` gets lint
+  let h : (weightHom P g).toLinearMap = (weightHom P g').toLinearMap := hgg' --`have` gets lint
   rw [weightHom_toLinearMap, weightHom_toLinearMap] at h
   suffices h' : g.toHom = g'.toHom by
     exact Equiv.ext hgg' (congrArg Hom.coweightMap h') (congrArg Hom.indexEquiv h')
@@ -547,13 +547,13 @@ lemma weightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.weightHo
 
 @[simp]
 lemma weightEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
-    ((weightEquiv P P) g⁻¹) = ((weightEquiv P P) g)⁻¹ :=
+    weightEquiv P P g⁻¹ = (weightEquiv P P g)⁻¹ :=
   LinearEquiv.toLinearMap_inj.mp rfl
 
 /-- The coweight space representation of automorphisms -/
 @[simps]
 def coweightHom (P : RootPairing ι R M N) : Aut P →* (N ≃ₗ[R] N)ᵐᵒᵖ where
-  toFun g := MulOpposite.op ((coweightEquiv P P) g)
+  toFun g := MulOpposite.op (coweightEquiv P P g)
   map_one' := by
     simp only [MulOpposite.op_eq_one_iff]
     exact LinearEquiv.toLinearMap_inj.mp rfl
@@ -562,14 +562,14 @@ def coweightHom (P : RootPairing ι R M N) : Aut P →* (N ≃ₗ[R] N)ᵐᵒᵖ
     exact fun x y ↦ rfl
 
 lemma coweightHom_toLinearMap {P : RootPairing ι R M N} (g : Aut P) :
-    (MulOpposite.unop ((coweightHom P) g)).toLinearMap =
-      MulOpposite.unop ((Hom.coweightHom P) g.toHom) :=
+    (MulOpposite.unop (coweightHom P g)).toLinearMap =
+      MulOpposite.unop (Hom.coweightHom P g.toHom) :=
   rfl
 
 lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.coweightHom P) := by
   refine Injective.of_comp (f := fun a => MulOpposite.op a) fun g g' hgg' => ?_
-  have h : (MulOpposite.unop ((coweightHom P) g)).toLinearMap =
-      (MulOpposite.unop ((coweightHom P) g')).toLinearMap := by
+  have h : (MulOpposite.unop (coweightHom P g)).toLinearMap =
+      (MulOpposite.unop (coweightHom P g')).toLinearMap := by
     simp_all
   rw [coweightHom_toLinearMap, coweightHom_toLinearMap] at h
   suffices h' : g.toHom = g'.toHom by
@@ -583,19 +583,19 @@ lemma coweightHom_op {P : RootPairing ι R M N} (g : Aut P) :
 
 @[simp]
 lemma coweightEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
-    (coweightEquiv P P) g⁻¹ = ((coweightEquiv P P) g)⁻¹ :=
+    coweightEquiv P P g⁻¹ = (coweightEquiv P P g)⁻¹ :=
   LinearEquiv.toLinearMap_inj.mp rfl
 
 /-- The permutation representation of the automorphism group on the root index set -/
 @[simps]
 def indexHom (P : RootPairing ι R M N) : Aut P →* (ι ≃ ι) where
-  toFun g := Hom.indexEquiv g.toHom
+  toFun g := g.toHom.indexEquiv
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
 
 @[simp]
 lemma indexEquiv_inv {P : RootPairing ι R M N} (g : Aut P) :
-    Hom.indexEquiv (g⁻¹).toHom = ((indexHom P) g)⁻¹ :=
+    (g⁻¹).toHom.indexEquiv = (indexHom P g)⁻¹ :=
   rfl
 
 /-- The automorphism of a root pairing given by a reflection. -/
@@ -633,7 +633,7 @@ lemma reflection_coweightEquiv (P : RootPairing ι R M N) (i : ι) :
 
 @[simp]
 lemma reflection_indexEquiv (P : RootPairing ι R M N) (i : ι) :
-  (reflection P i).indexEquiv = P.reflection_perm i :=
+    (reflection P i).indexEquiv = P.reflection_perm i :=
   rfl
 
 @[simp]
