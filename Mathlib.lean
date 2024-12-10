@@ -3469,6 +3469,7 @@ import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.OfBilinear
 import Mathlib.LinearAlgebra.RootSystem.RootPairingCat
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
+import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.Semisimple
 import Mathlib.LinearAlgebra.SesquilinearForm
@@ -4571,6 +4572,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.RingTheory.TensorProduct.Nontrivial
 import Mathlib.RingTheory.TensorProduct.Pi
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Trace.Defs
@@ -5413,5 +5415,6 @@ import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta
+import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
