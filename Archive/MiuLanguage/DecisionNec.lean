@@ -154,7 +154,7 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++
     exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
-    simp_rw [cons_append _] at nmtail ⊢
+    simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
 
 /-!
@@ -172,7 +172,7 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs
     exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
-    simp_rw [cons_append _] at nmtail ⊢
+    simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
 
 /-- Any derivable string must begin with `M` and have no `M` in its tail.

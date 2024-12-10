@@ -148,6 +148,7 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
   coe_injective.eq_iff
 
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
@@ -168,6 +169,7 @@ instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 section One
 variable [One R]
 
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : One ℍ[R,c₁,c₂] := ⟨⟨1, 0, 0, 0⟩⟩
 
 @[simp] theorem one_re : (1 : ℍ[R,c₁,c₂]).re = 1 := rfl
@@ -188,6 +190,7 @@ end Zero
 section Add
 variable [Add R]
 
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Add ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
 
@@ -220,6 +223,7 @@ end AddZeroClass
 section Neg
 variable [Neg R]
 
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp] theorem neg_re : (-a).re = -a.re := rfl

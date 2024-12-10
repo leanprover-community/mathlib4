@@ -405,7 +405,7 @@ def map' {M M' : ModuleCat R} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
   ofHom
   { toFun := fun h => g.hom.comp h
     map_add' := fun _ _ => LinearMap.comp_add _ _ _
-    map_smul' := fun s h => by ext; simp? }
+    map_smul' := fun s h => by ext; simp }
 
 end CoextendScalars
 
