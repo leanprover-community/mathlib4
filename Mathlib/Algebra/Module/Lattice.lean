@@ -6,7 +6,6 @@ Authors: Judith Ludwig, Christian Merten
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 
 /-!
 # Lattices
@@ -26,22 +25,20 @@ one obtains the vertices of what is called the Bruhat-Tits tree of `GL 2 K` when
 - `Submodule.IsLattice`: An `R`-submodule `M` of `V` is a lattice, if it is finitely generated
   and its `A`-span is `V`.
 
+## Main properties
+
+Let `R` be a PID and `A = K` its field of fractions.
+
+- `Submodule.IsLattice.free`: Every lattice in `V` is `R`-free.
+- `Basis.extendOfIsLattice`: Any `R`-basis of a lattice `M` in `V` defines a `K`-basis of `V`.
+- `Submodule.IsLattice.rank`: The `R`-rank of a lattice in `V` equals to the `K`-rank of `V`.
+- `Submodule.IsLattice.inf`: The intersection of two lattices is a lattice.
+
 -/
 
-/-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-lemma NoZeroSMulDivisors.of_algebraMap_injective' {R A M : Type*} [CommSemiring R] [Semiring A]
-    [Algebra R A] [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-    [NoZeroSMulDivisors A M]
-    (h : Function.Injective (algebraMap R A)) :
-    NoZeroSMulDivisors R M where
-  eq_zero_or_eq_zero_of_smul_eq_zero hx := by
-    rw [← algebraMap_smul (A := A)] at hx
-    obtain (hc|hx) := eq_zero_or_eq_zero_of_smul_eq_zero hx
-    · exact Or.inl <| (map_eq_zero_iff _ h).mp hc
-    · exact Or.inr hx
+universe u
 
 variable {R : Type*} [CommRing R]
---variable {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
 
 open Pointwise
 
@@ -86,44 +83,76 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     rw [show x = a • a⁻¹ • x by simp]
     exact Submodule.smul_mem_pointwise_smul _ _ _ (by trivial)
 
-lemma span_basis_eq_top {κ : Type*} [Fintype κ]
-    {M : Submodule R V} (b : Basis κ R M)
-    [IsLattice A M] : Submodule.span A (Set.range fun i ↦ (b i).val) = ⊤ := by
-  rw [eq_top_iff]
-  rintro x -
-  have hx : x ∈ Submodule.span A (M : Set V) := by
-    rw [IsLattice.span_eq_top]
-    trivial
-  induction' hx using Submodule.span_induction with x hx x y _ _ hx hy a x _ hx
-  · have hv : ⟨x, hx⟩ ∈ Submodule.span R (Set.range b) := Basis.mem_span b ⟨x, hx⟩
-    obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun _).mp hv
-    simp only [Subtype.ext_iff, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul] at hc
-    rw [← hc]
-    refine Submodule.sum_mem _ (fun i _ ↦ ?_)
-    rw [← algebraMap_smul (A := A)]
-    exact Submodule.smul_mem _ _ <| Submodule.subset_span (Set.mem_range_self i)
-  · simp
-  · exact Submodule.add_mem _ hx hy
-  · exact Submodule.smul_mem _ _ hx
-
-
 end
 
-section
+section Field
 
-/-!
-## Lattices are free
+variable {K : Type*} [Field K] [Algebra R K]
 
-In this section we prove that every lattice is a free `R`-module of rank `2` and
-every such `R`-module is a lattice.
--/
+lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank {M N : Type u} [IsDomain R]
+    [IsFractionRing R K] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
+    {f : M →ₗ[R] N} (hf : Function.Injective f)
+    (h : Module.rank R M = Module.rank K N) :
+    Submodule.span K (LinearMap.range f : Set N) = ⊤ := by
+  obtain ⟨s, hs, hli⟩ := exists_set_linearIndependent R M
+  replace hli := hli.map' f (LinearMap.ker_eq_bot.mpr hf)
+  rw [LinearIndependent.iff_fractionRing (R := R) (K := K)] at hli
+  rw [h, ← Module.finrank_eq_rank, Cardinal.mk_eq_nat_iff_fintype] at hs
+  obtain ⟨hfin, hcard⟩ := hs
+  have hsubset : Set.range (fun x : s ↦ f x.val) ⊆ (LinearMap.range f : Set N) := by
+    rintro x ⟨a, rfl⟩
+    simp
+  have hcard : Fintype.card ↑s = Module.finrank K N := by simpa
+  rw [eq_top_iff, ← LinearIndependent.span_eq_top_of_card_eq_finrank' hli hcard]
+  exact Submodule.span_mono hsubset
 
-variable (K : Type*) [Field K] [Algebra R K]
-variable [IsDomain R] [IsPrincipalIdealRing R] [NoZeroSMulDivisors R K]
-variable {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
+variable (K) {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
 
-/-- Any lattice over a PID is a free `R`-module. -/
-instance free (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
+/-- Any basis of an `R`-lattice in `V` defines a `K`-basis of `V`. -/
+noncomputable def _root_.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
+    {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) :
+    Basis κ K V :=
+  have hli : LinearIndependent K (fun i ↦ (b i).val) := by
+    rw [← LinearIndependent.iff_fractionRing (R := R), linearIndependent_iff']
+    intro s g hs
+    simp_rw [← Submodule.coe_smul_of_tower, ← Submodule.coe_sum, Submodule.coe_eq_zero] at hs
+    exact linearIndependent_iff'.mp b.linearIndependent s g hs
+  have hsp : ⊤ ≤ span K (Set.range fun i ↦ (M.subtype ∘ b) i) := by
+    rw [← Submodule.span_span_of_tower R, Set.range_comp, ← Submodule.map_span]
+    simp [b.span_eq, Submodule.map_top, span_eq_top]
+  Basis.mk hli hsp
+
+@[simp]
+lemma _root_.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
+    {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) (k : κ) :
+    b.extendOfIsLattice K k = (b k).val := by
+  simp [Basis.extendOfIsLattice]
+
+variable [IsDomain R]
+
+/-- A finitely-generated `R`-submodule of `V` that has rank the `K`-rank of `V` is
+a lattice. -/
+lemma of_rank [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
+    (hfg : M.FG) (hr : Module.rank R M = Module.rank K V) : IsLattice K M where
+  fg := hfg
+  span_eq_top := by
+    simpa using Submodule.span_range_eq_top_of_injective_of_rank M.injective_subtype hr
+
+/-- The supremum of two lattices is a lattice. -/
+instance sup (M N : Submodule R V) [IsLattice K M] [IsLattice K N] :
+    IsLattice K (M ⊔ N) where
+  fg := Submodule.FG.sup IsLattice.fg IsLattice.fg
+  span_eq_top := by
+    rw [eq_top_iff]
+    exact le_trans (b := span K M) (by rw [IsLattice.span_eq_top]) (Submodule.span_mono (by simp))
+
+variable [IsPrincipalIdealRing R]
+
+/-- Any lattice over a PID is a free `R`-module.
+Note that under our conditions, `NoZeroSMulDivisors R K` simply says that `algebraMap R K` is
+injective. -/
+instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
   haveI : NoZeroSMulDivisors R V := by
     apply NoZeroSMulDivisors.of_algebraMap_injective' (A := K)
     exact NoZeroSMulDivisors.algebraMap_injective R K
@@ -131,87 +160,37 @@ instance free (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
   infer_instance
 
 /-- Any lattice has `R`-rank equal to the `K`-rank of `V`. -/
-theorem rank' [IsFractionRing R K] (M : Submodule R V) [IsLattice K M] :
+lemma rank' [IsFractionRing R K] (M : Submodule R V) [IsLattice K M] :
     Module.rank R M = Module.rank K V := by
   let b := Module.Free.chooseBasis R M
-  have hli : LinearIndependent K (fun i ↦ (b i).val) := by
-    rw [← LinearIndependent.iff_fractionRing (R := R), linearIndependent_iff']
-    intro s g hs
-    simp_rw [← Submodule.coe_smul_of_tower, ← Submodule.coe_sum, Submodule.coe_eq_zero] at hs
-    exact linearIndependent_iff'.mp b.linearIndependent s g hs
-  have hsp : ⊤ ≤ Submodule.span K (Set.range <| fun i ↦ (b i).val) := by
-    rw [span_basis_eq_top]
-  let b' := Basis.mk hli hsp
-  rw [rank_eq_card_basis b, ← rank_eq_card_basis b']
+  rw [rank_eq_card_basis b, ← rank_eq_card_basis (b.extendOfIsLattice K)]
 
-/-- Any `R`-lattice has rank `k` as an `R`-module. -/
-lemma rank [IsFractionRing R K] {k : ℕ} (M : Submodule R (Fin k → K)) [IsLattice K M] :
-    Module.rank R M = k := by
+/-- Any `R`-lattice in `ι → K` has `#ι` as `R`-rank. -/
+lemma rank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodule R (ι → K))
+    [IsLattice K M] : Module.rank R M = Fintype.card ι := by
   rw [IsLattice.rank' K M]
   simp
 
 /-- `Module.finrank` version of `IsLattice.rank`. -/
-lemma finrank [IsFractionRing R K] {k : ℕ} (M : Submodule R (Fin k → K)) [IsLattice K M] :
-    Module.finrank R M = k :=
-  Module.finrank_eq_of_rank_eq (IsLattice.rank K M)
-
-/-- The supremum of two lattices is a lattice. -/
-instance sup (M N : Submodule R V) [IsLattice K M] [IsLattice K N] :
-    IsLattice K (M ⊔ N) where
-  fg := Submodule.FG.sup IsLattice.fg IsLattice.fg
-  span_eq_top := by
-    rw [_root_.eq_top_iff]
-    trans
-    · show ⊤ ≤ Submodule.span K M
-      rw [IsLattice.span_eq_top (M := M)]
-    · apply Submodule.span_mono
-      simp
-
-omit [IsPrincipalIdealRing R] [NoZeroSMulDivisors R K] in
-lemma span_eq_top_of_rank [Module.Finite K V] [IsFractionRing R K]
-    {M : Submodule R V} (h : Module.rank R M = Module.rank K V) :
-    Submodule.span K (M : Set V) = ⊤ := by
-  obtain ⟨s, hs, hli⟩ := exists_set_linearIndependent R M
-  replace hli := hli.map' M.subtype (Submodule.ker_subtype M)
-  rw [LinearIndependent.iff_fractionRing (R := R) (K := K)] at hli
-  rw [h, ← Module.finrank_eq_rank, Cardinal.mk_eq_nat_iff_fintype] at hs
-  obtain ⟨hfin, hcard⟩ := hs
-  have hsubset : Set.range (fun x : s ↦ x.val.val) ⊆ M := by
-    rintro x ⟨a, rfl⟩
-    simp
-  have hcard : Fintype.card ↑s = Module.finrank K V := by simpa
-  rw [_root_.eq_top_iff]
-  rw [← LinearIndependent.span_eq_top_of_card_eq_finrank' hli hcard]
-  exact Submodule.span_mono hsubset
-
-omit [IsPrincipalIdealRing R] [NoZeroSMulDivisors R K] in
-/-- A finitely-generated `R`-submodule of `V` that has rank the `K`-rank of `V` is
-a lattice. -/
-lemma of_rank [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
-    (hfg : M.FG) (hr : Module.rank R M = Module.rank K V) : IsLattice K M where
-  fg := hfg
-  span_eq_top := span_eq_top_of_rank K hr
+lemma finrank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodule R (ι → K))
+    [IsLattice K M] : Module.finrank R M = Fintype.card ι :=
+  Module.finrank_eq_of_rank_eq (IsLattice.rank_of_pi K M)
 
 /-- The intersection of two lattices is a lattice. -/
-theorem inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
-    [IsLattice K M] [IsLattice K N] :
-    IsLattice K (M ⊓ N) where
+instance inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
+    [IsLattice K M] [IsLattice K N] : IsLattice K (M ⊓ N) where
   fg := by
-    have aux : M.FG := IsLattice.fg
-    have : IsNoetherian R M := isNoetherian_of_fg_of_noetherian M aux
-    have g : (M ⊓ N) ≤ M := inf_le_left
-    have : IsNoetherian R ↥(M ⊓ N) := isNoetherian_of_le g
-    have h : Module.Finite R ↥(M ⊓ N):= Module.IsNoetherian.finite R ↥(M ⊓ N)
-    apply Module.Finite.iff_fg.mp
-    exact h
+    have : IsNoetherian R ↥(M ⊓ N) := isNoetherian_of_le inf_le_left
+    rw [← Module.Finite.iff_fg]
+    infer_instance
   span_eq_top := by
-    apply span_eq_top_of_rank
+    rw [← range_subtype (M ⊓ N)]
+    apply Submodule.span_range_eq_top_of_injective_of_rank (M ⊓ N).injective_subtype
     have h := Submodule.rank_sup_add_rank_inf_eq M N
     rw [IsLattice.rank' K M, IsLattice.rank' K N, IsLattice.rank'] at h
-    apply Cardinal.eq_of_add_eq_add_left h
-    exact Module.rank_lt_aleph0 K V
+    exact Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)
 
-end
+end Field
 
 end IsLattice
 
