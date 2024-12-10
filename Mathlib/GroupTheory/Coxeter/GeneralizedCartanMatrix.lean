@@ -156,8 +156,9 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       rw [hθ]
       ring
     simp_rw [eq_two_mul_cos_theta] at h₁ h₂ h₃ h₄
-    /- Now we split into cases based on whether `M i i'` is equal to or greater than `1`. -/
-    obtain M_eq_one | M_gt_one := Nat.eq_or_lt_of_le (Nat.one_le_iff_ne_zero.mpr hii')
+    /- Now we split into cases based on whether `M i i'` is equal to `1`, equal to `2`, or greater
+    than or equal to `3`. -/
+    obtain M_eq_one | M_eq_two | M_gt_two := show M i i' = 1 ∨ M i i' = 2 ∨ 3 ≤ M i i' by omega
     · /- If `M i i' = 1`, then `i = i'` by the definition of a Coxeter matrix, so
       `k i i' = k i' i = k i i = 2`, and we are done. -/
       have := M.off_diagonal i i'
@@ -165,6 +166,8 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       simp only [← this, h.diagonal, diagonal, Nat.cast_one, div_one, cos_pi, even_two,
         Even.neg_pow, one_pow, mul_one]
       norm_num
+    · -- If `M i i' = 2`, then we use `h.eq_zero_iff`.
+      simp [M_eq_two, (h.eq_zero_iff i i').mpr M_eq_two]
     · -- If `M i i' > 1`, then we first claim that `cos θ` cannot be `1` or `-1`.
       have cos_θ_ne_one : Complex.cos θ ≠ 1 := by
         intro cos_θ_eq_one
@@ -224,7 +227,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
             contradiction
       obtain ⟨ℓ, hℓ⟩ := θ_mul_Mii'_eq
       /- We get `θ = ℓ * (2 * π) / M i i'` for some integer `ℓ`. We may replace `ℓ` in this equation
-      with a natural number `ℓ'` satisfying `2 * ℓ' ≤ M i i'`, without changing the value of
+      with a natural number `ℓ' = Int.natAbs (Int.bmod ℓ (M i i'))` without changing the value of
       `cos θ`.-/
       apply eq_div_of_mul_eq (mod_cast hii') at hℓ
       let ℓ' := Int.natAbs (Int.bmod ℓ (M i i'))
@@ -242,20 +245,72 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
         · push_cast
           rw [sub_mul, sub_mul, mul_comm (M i i' : ℝ), mul_assoc, mul_div_cancel₀ _ (mod_cast hii'),
             cos_sub_two_pi, cos_sub_int_mul_two_pi, ← mul_div_assoc]
-      have two_mul_ℓ'_le_Mii' : 2 * ℓ' ≤ M i i' := by
+      -- Now write all the hypotheses in terms of `θ'` instead of `θ`.
+      simp_rw [← cos_θ'_eq_cos_θ] at h₁ h₂ h₃ h₄ eq_two_mul_cos_theta cos_θ_ne_one cos_θ_ne_neg_one
+      norm_cast at h₁ h₂ h₃ h₄ eq_two_mul_cos_theta cos_θ_ne_one cos_θ_ne_neg_one
+      -- Now, we will put bounds on `ℓ'`. Namely, we will prove that it is less than `M i i' / 2`.
+      have two_mul_ℓ'_ne_Mii' : 2 * ℓ' ≠ M i i' := by
+        intro two_mul_ℓ'_eq_Mii'
+        unfold θ' at cos_θ_ne_neg_one
+        rw_mod_cast [← mul_assoc, mul_comm _ 2, two_mul_ℓ'_eq_Mii',
+          mul_div_cancel_left₀ _ (mod_cast hii')] at cos_θ_ne_neg_one
+        simp at cos_θ_ne_neg_one
+      have two_mul_ℓ'_lt_Mii' : 2 * ℓ' < M i i' := by
         unfold ℓ'
         have := Int.bmod_le (x := ℓ) (Nat.zero_lt_of_ne_zero hii')
         have := Int.le_bmod (x := ℓ) (Nat.zero_lt_of_ne_zero hii')
         omega
-      -- Now write all the hypotheses in terms of `θ'` instead of `θ`.
-      simp_rw [← cos_θ'_eq_cos_θ] at h₁ h₂ h₃ h₄ cos_θ_ne_one cos_θ_ne_neg_one
-      norm_cast at h₁ h₂ h₃ h₄ cos_θ_ne_one cos_θ_ne_neg_one
-      -- We claim that `ℓ'` is positive.
+      -- We claim that `ℓ'` is positive,
       have ℓ'_pos : 0 < ℓ' := by
         apply (Nat.eq_zero_or_pos ℓ').resolve_left
         intro ℓ'_eq_zero
         unfold θ' at cos_θ_ne_one
         simp [ℓ'_eq_zero] at cos_θ_ne_one
+      -- This implies that `sin θ'` is positive.
+      have sin_θ'_pos : 0 < sin θ' := by
+        unfold θ'
+        apply sin_pos_of_pos_of_lt_pi
+        · positivity
+        · rw [div_lt_iff₀ (by positivity), ← mul_assoc, mul_comm π, mul_comm _ 2]
+          apply mul_lt_mul_of_pos_right
+          · exact_mod_cast two_mul_ℓ'_lt_Mii'
+          · exact pi_pos
+      -- If `ℓ' = 1`, we are done, so assume that `ℓ' ≠ 1`. This implies that `ℓ` is at least `2`.
+      suffices ℓ' = 1 by
+        simp only [eq_add_of_sub_eq eq_two_mul_cos_theta, this, Nat.cast_one, one_mul, θ',
+          mul_div_assoc, cos_two_mul]
+        ring
+      by_contra ℓ'_ne_one
+      have ℓ'_ge_two : 2 ≤ ℓ' := by omega
+      -- Now we claim that we get a contradiction from `h₃` (i.e. `s_eval_nonneg`)
+      exfalso
+      let j := M i i' / (2 * ℓ')
+      have h₂j : 2 * j + 2 ≤ M i i' := by
+        unfold j
+        calc
+          2 * (M i i' / (2 * ℓ')) + 2
+          _ = 2 * (M i i' / (ℓ' * 2)) + 2 := by rw [mul_comm 2 ℓ']
+          _ = 2 * (M i i' / ℓ' / 2) + 2   := by rw [Nat.div_div_eq_div_mul]
+          _ ≤ M i i' / ℓ' + 2             := add_le_add_right (Nat.mul_div_le _ _) _
+          _ = (M i i' + 2 * ℓ') / ℓ'      := by rw [Nat.add_mul_div_right]; exact ℓ'_pos
+          _ ≤ M i i'                      := by
+            rw [Nat.div_le_iff_le_mul_add_pred ℓ'_pos]
+            zify
+            rw [Int.natCast_sub ℓ'_pos]
+            push_cast
+            have hm : 0 ≤ (M i i' - 3 : ℤ) := sub_nonneg_of_le M_gt_two
+
+
+
+      have h₃j : M i i' < (j + 1) * (2 * ℓ') := by
+        unfold j
+        rw [Nat.sub_add_cancel h₁j]
+        apply Nat.succ_le_iff.mp
+
+
+      have := h₃ j h₂j
+
+
 
 
 
