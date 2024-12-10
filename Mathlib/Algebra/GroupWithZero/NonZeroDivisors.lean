@@ -251,7 +251,7 @@ end MonoidWithZero
 section GroupWithZero
 variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
 
-/-- Canonical isomorphism between the non-divisors and units of a group with zero. -/
+/-- Canonical isomorphism between the non-zero-divisors and units of a group with zero. -/
 @[simps]
 noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
   toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.2
