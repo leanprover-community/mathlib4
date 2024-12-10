@@ -167,6 +167,7 @@ lemma rootForm_restrict_nondegenerate_of_isAnisotropic :
     LinearMap.Nondegenerate (P.RootForm.restrict P.rootSpan) :=
   P.rootForm_symmetric.nondegenerate_restrict_of_isCompl_ker P.isCompl_rootSpan_ker_rootForm
 
+attribute [local instance] starRingOfComm
 @[simp]
 lemma orthogonal_rootSpan_eq :
     P.RootForm.orthogonal P.rootSpan = LinearMap.ker P.RootForm := by
