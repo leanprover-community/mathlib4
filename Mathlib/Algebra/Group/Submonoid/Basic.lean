@@ -24,11 +24,11 @@ definition in the `AddSubmonoid` namespace.
 
 * `Submonoid.copy` : copy of a submonoid with `carrier` replaced by a set that is equal but possibly
   not definitionally equal to the carrier of the original `Submonoid`.
-* `Submonoid.closure` :  monoid closure of a set, i.e., the least submonoid that includes the set.
+* `Submonoid.closure` : monoid closure of a set, i.e., the least submonoid that includes the set.
 * `Submonoid.gi` : `closure : Set M → Submonoid M` and coercion `coe : Submonoid M → Set M`
   form a `GaloisInsertion`;
 * `MonoidHom.eqLocus`: the submonoid of elements `x : M` such that `f x = g x`;
-* `MonoidHom.ofClosureEqTopRight`:  if a map `f : M → N` between two monoids satisfies
+* `MonoidHom.ofClosureEqTopRight`: if a map `f : M → N` between two monoids satisfies
   `f 1 = 1` and `f (x * y) = f x * f y` for `y` from some dense set `s`, then `f` is a monoid
   homomorphism. E.g., if `f : ℕ → M` satisfies `f 0 = 0` and `f (x + 1) = f x + f 1`, then `f` is
   an additive monoid homomorphism.

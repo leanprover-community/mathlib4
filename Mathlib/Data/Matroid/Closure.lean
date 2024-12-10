@@ -83,7 +83,7 @@ variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section Flat
 
-/-- A flat is a maximal set having a given basis  -/
+/-- A flat is a maximal set having a given basis -/
 @[mk_iff]
 structure Flat (M : Matroid α) (F : Set α) : Prop where
   subset_of_basis_of_basis : ∀ ⦃I X⦄, M.Basis I F → M.Basis I X → X ⊆ F
@@ -463,7 +463,7 @@ lemma closure_iInter_eq_iInter_closure_of_iUnion_indep [hι : Nonempty ι] (Is :
   simp
 
 lemma closure_sInter_eq_biInter_closure_of_sUnion_indep (Is : Set (Set α)) (hIs : Is.Nonempty)
-    (h : M.Indep (⋃₀ Is)) :  M.closure (⋂₀ Is) = (⋂ I ∈ Is, M.closure I) :=
+    (h : M.Indep (⋃₀ Is)) : M.closure (⋂₀ Is) = (⋂ I ∈ Is, M.closure I) :=
   h.closure_sInter_eq_biInter_closure_of_forall_subset hIs (fun _ ↦ subset_sUnion_of_mem)
 
 lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set ι} (hA : A.Nonempty)

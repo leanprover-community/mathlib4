@@ -228,7 +228,7 @@ partial def abstractProofs (e : Expr) (ty? : Option Expr) : MAbs Expr := do
 where
   /--
   Core implementation of `abstractProofs`.
-  -/
+ -/
   visit (e : Expr) (ty? : Option Expr) : MAbs Expr := do
     trace[Tactic.generalize_proofs] "visit (fvars := {(← read).fvars}) e is {e}"
     if (← read).config.debug then
@@ -274,7 +274,7 @@ where
           | _           => unreachable!
   /--
   Core implementation of abstracting a proof.
-  -/
+ -/
   visitProof (e : Expr) (ty? : Option Expr) : MAbs Expr := do
     let eOrig := e
     let fvars := (← read).fvars

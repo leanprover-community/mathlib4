@@ -394,7 +394,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
     points `x` and `y`. Their images are different by the disjointness assumption, hence contained
     in two disjoint open sets by the T2 property. By continuity, long enough cylinders around `x`
     and `y` have images which are separated by these two disjoint open sets, a contradiction.
-    -/
+   -/
   by_contra hfg
   have I : ∀ n x y, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) →
       ∃ x' y', x' ∈ cylinder x n ∧ y' ∈ cylinder y n ∧

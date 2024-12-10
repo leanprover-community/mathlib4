@@ -14,9 +14,9 @@ This file defines a typeclass to state that a type is finite.
 
 ## Main declarations
 
-* `Fintype α`:  Typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
+* `Fintype α`: typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
   that all terms of type `α` are in it.
-* `Finset.univ`: The finset of all elements of a fintype.
+* `Finset.univ`: the finset of all elements of a fintype
 
 See `Data.Fintype.Card` for the cardinality of a fintype,
 the equivalence with `Fin (Fintype.card α)`, and pigeonhole principles.

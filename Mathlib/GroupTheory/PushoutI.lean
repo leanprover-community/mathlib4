@@ -216,7 +216,7 @@ by induction on the word using `consRecOn`.
 variable (φ)
 
 /-- The data we need to pick a normal form for words in the pushout. We need to pick a
-canonical element of each coset. We also need all the maps in the diagram to be injective  -/
+canonical element of each coset. We also need all the maps in the diagram to be injective -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
   injective : ∀ i, Injective (φ i)

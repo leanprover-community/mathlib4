@@ -232,7 +232,7 @@ theorem mem_chart_target_iff (p : H × E) (q : TM) :
   /- porting note: was
   simp +contextual only [FiberBundle.chartedSpace_chartAt,
     and_iff_left_iff_imp, mfld_simps]
-  -/
+ -/
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
   rw [PartialEquiv.prod_symm]
   simp +contextual only [and_iff_left_iff_imp, mfld_simps]

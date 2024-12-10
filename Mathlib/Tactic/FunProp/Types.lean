@@ -76,7 +76,7 @@ structure Config where
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
   useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
   `simp`.
-  -/
+ -/
   maxTransitionDepth := 1
   /-- Maximum number of steps `fun_prop` can take. -/
   maxSteps := 100000

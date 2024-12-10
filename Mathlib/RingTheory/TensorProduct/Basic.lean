@@ -640,7 +640,7 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
   /--
   After https://github.com/leanprover/lean4/pull/4119 we either need to specify
   the `(R := S) (A := A ⊗[R] B)` arguments, or use `set_option maxSynthPendingDepth 2 in`.
-  -/
+ -/
   AlgHom.ofLinearMap f h_one <| (f.map_mul_iff (R := S) (A := A ⊗[R] B)).2 <| by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
     letI : Algebra R C := RestrictScalars.algebra R S C

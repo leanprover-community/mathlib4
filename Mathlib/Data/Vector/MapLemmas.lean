@@ -202,7 +202,7 @@ theorem mapAccumr_bisim_tail {f₁ : α → σ₁ → σ₁ × β} {f₂ : α �
 theorem mapAccumr₂_bisim {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
     {f₂ : α → β → σ₂ → σ₂ × γ} {s₁ : σ₁} {s₂ : σ₂}
     (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
-    (hR :  ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
+    (hR : ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
     R (mapAccumr₂ f₁ xs ys s₁).1 (mapAccumr₂ f₂ xs ys s₂).1
     ∧ (mapAccumr₂ f₁ xs ys s₁).2 = (mapAccumr₂ f₂ xs ys s₂).2 := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂
@@ -310,7 +310,7 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
-  -/
+ -/
 @[simp]
 theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
     (h : ∀ x s, (f x (s, s)).fst.fst = (f x (s, s)).fst.snd) :
@@ -323,7 +323,7 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
-  -/
+ -/
 @[simp]
 theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ) × γ)
     (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd) :
@@ -392,11 +392,11 @@ variable (xs : Vector α n) (ys : Vector β n)
 
 theorem map₂_flip (f : α → β → γ) :
     map₂ f xs ys = map₂ (flip f) ys xs := by
-  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all [flip]
 
 theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
     mapAccumr₂ f xs ys s = mapAccumr₂ (flip f) ys xs s := by
-  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all [flip]
 
 end Flip
 

@@ -88,7 +88,7 @@ protected def directSum :
     first
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
       |rw [map_tmul]|rw [lift.tmul]|rw [flip_apply]|rw [curry_apply]
-  -/
+ -/
 
 /- alternative with explicit types:
   refine'
