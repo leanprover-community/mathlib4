@@ -386,10 +386,6 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 
-theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
-
-theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
-
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
   ⟨le_rfl⟩
@@ -482,6 +478,15 @@ lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) ≠ �
 lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) < ∞ := natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
+
+@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
+  ofNat_ne_top.symm
+
+@[deprecated ofNat_ne_top (since := "2024-07-07")]
+theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
+
+@[deprecated ofNat_lt_top (since := "2024-07-07")]
+theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
