@@ -324,7 +324,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; linarith
+  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; linear_combination had
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use g 0 1
     suffices g = T ^ g 0 1 by intro z; conv_lhs => rw [this]
@@ -338,7 +338,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
 theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
+  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; linear_combination hg
   refine Subtype.ext ?_
   conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
   simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
@@ -392,7 +392,7 @@ theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
   have hzn := Int.nneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
-  have : 1 < (z.re + ↑n) * (z.re + ↑n) + z.im * z.im := by linarith
+  have : 1 < (z.re + ↑n) * (z.re + ↑n) + z.im * z.im := by linear_combination hz₁ + hzn
   simpa [coe_T_zpow, normSq, num, denom, -map_zpow]
 
 theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg : T ^ n • z ∈ 𝒟ᵒ) :
@@ -454,8 +454,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     rcases eq_or_ne c 0 with (hc | hc)
     · rw [hc]; norm_num
     · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
-      specialize this hc
-      linarith
+      linear_combination this hc
   intro hc
   have h₁ : 3 * 3 * c ^ 4 < 4 * (g • z).im ^ 2 * (4 * z.im ^ 2) * c ^ 4 := by
     gcongr <;> apply three_lt_four_mul_im_sq_of_mem_fdo <;> assumption
@@ -465,11 +464,11 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
       (sq_nonneg _)
   let nsq := normSq (denom g z)
   calc
-    9 * c ^ 4 < c ^ 4 * z.im ^ 2 * (g • z).im ^ 2 * 16 := by linarith
+    9 * c ^ 4 < c ^ 4 * z.im ^ 2 * (g • z).im ^ 2 * 16 := by linear_combination h₁
     _ = c ^ 4 * z.im ^ 4 / nsq ^ 2 * 16 := by
-      rw [im_smul_eq_div_normSq, div_pow]
+      rw [im_smul_eq_div_normSq]
       ring
-    _ ≤ 16 := by rw [← mul_pow]; linarith
+    _ ≤ 16 := by rw [← mul_pow]; linear_combination 16 * h₂
 
 /-- An auxiliary result en route to `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. -/
 theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by

@@ -38,15 +38,15 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
   apply strictConvexOn_of_slope_strict_mono_adjacent convex_univ
   rintro x y z - - hxy hyz
   trans exp y
-  · have h1 : 0 < y - x := by linarith
-    have h2 : x - y < 0 := by linarith
+  · have h1 : 0 < y - x := by linear_combination hxy
+    have h2 : x - y < 0 := by linear_combination hxy
     rw [div_lt_iff₀ h1]
     calc
       exp y - exp x = exp y - exp y * exp (x - y) := by rw [← exp_add]; ring_nf
       _ = exp y * (1 - exp (x - y)) := by ring
       _ < exp y * -(x - y) := by gcongr; linarith [add_one_lt_exp h2.ne]
       _ = exp y * (y - x) := by ring
-  · have h1 : 0 < z - y := by linarith
+  · have h1 : 0 < z - y := by linear_combination hyz
     rw [lt_div_iff₀ h1]
     calc
       exp y * (z - y) < exp y * (exp (z - y) - 1) := by
@@ -65,7 +65,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
   intro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
   have hy : 0 < y := hx.trans hxy
   trans y⁻¹
-  · have h : 0 < z - y := by linarith
+  · have h : 0 < z - y := by linear_combination hyz
     rw [div_lt_iff₀ h]
     have hyz' : 0 < z / y := by positivity
     have hyz'' : z / y ≠ 1 := by
@@ -76,7 +76,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       log z - log y = log (z / y) := by rw [← log_div hz.ne' hy.ne']
       _ < z / y - 1 := log_lt_sub_one_of_pos hyz' hyz''
       _ = y⁻¹ * (z - y) := by field_simp
-  · have h : 0 < y - x := by linarith
+  · have h : 0 < y - x := by linear_combination hxy
     rw [lt_div_iff₀ h]
     have hxy' : 0 < x / y := by positivity
     have hxy'' : x / y ≠ 1 := by
@@ -204,9 +204,9 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine ⟨convex_Iio _, ?_⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
-  have hx' : 0 < -x := by linarith
-  have hy' : 0 < -y := by linarith
-  have hxy' : -x ≠ -y := by contrapose! hxy; linarith
+  have hx' : 0 < -x := by linear_combination hx
+  have hy' : 0 < -y := by linear_combination hy
+  have hxy' : -x ≠ -y := by contrapose! hxy; linear_combination -hxy
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
     _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
