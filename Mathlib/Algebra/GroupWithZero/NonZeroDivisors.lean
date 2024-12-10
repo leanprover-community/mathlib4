@@ -249,7 +249,7 @@ lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
 end MonoidWithZero
 
 section GroupWithZero
-variable{G₀ : Type*} [GroupWithZero G₀] {x : G₀}
+variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
 
 /-- Canonical isomorphism between the non-divisors and units of a group with zero. -/
 @[simps]
