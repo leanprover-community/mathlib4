@@ -117,10 +117,9 @@ lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
     (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
 
 @[simp]
-lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 := by
-  apply HasBasis.eq_of_same_basis
-  · apply (((atBot_basis_Iio' (0 : 𝕜)).map _).comp_surjective inv_surjective)
-  apply (nhdsWithin_Iio_basis _).congr (by simp) fun a ha ↦ by simp [inv_Iio₀ (inv_lt_zero.mpr ha)]
+lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 :=
+  (((atBot_basis_Iio' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
+    (nhdsWithin_Iio_basis _).congr (by simp) fun a ha ↦ by simp [inv_Iio₀ (inv_neg''.2 ha)]
 
 @[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
   rw [← inv_atTop₀, inv_inv]
