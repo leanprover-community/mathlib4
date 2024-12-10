@@ -103,7 +103,8 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
-private lemma sup_aux [DecidableRel (α := α) (· ≤ ·)] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
+private lemma sup_aux [DecidableRel (α := α) (· ≤ ·)] :
+    a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma lower_aux [DecidableEq α] :
@@ -176,7 +177,8 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
   [BoundedOrder β] [DecidableRel (α := β) (· ≤ ·)] {s t : Finset α} {a : α}
 
-private lemma inf_aux [DecidableRel (α := α) (· ≤ ·)]: a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
+private lemma inf_aux [DecidableRel (α := α) (· ≤ ·)] :
+    a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma upper_aux [DecidableEq α] :

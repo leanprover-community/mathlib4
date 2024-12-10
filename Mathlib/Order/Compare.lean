@@ -132,7 +132,8 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
   (cmp_compares a b).inj h
 
 @[simp]
-theorem cmp_swap [Preorder α] [DecidableRel (α := α) (· < ·)] (a b : α) : (cmp a b).swap = cmp b a := by
+theorem cmp_swap [Preorder α] [DecidableRel (α := α) (· < ·)] (a b : α) :
+    (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
   by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂

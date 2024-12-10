@@ -265,7 +265,8 @@ instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStri
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
 basic `Nat` lemmas. -/
-abbrev StrictOrderedSemiring.toOrderedSemiring' [DecidableRel (α := α) (· ≤ ·)] : OrderedSemiring α :=
+abbrev StrictOrderedSemiring.toOrderedSemiring' [DecidableRel (α := α) (· ≤ ·)] :
+    OrderedSemiring α :=
   { ‹StrictOrderedSemiring α› with
     mul_le_mul_of_nonneg_left := fun a b c hab hc => by
       obtain rfl | hab := Decidable.eq_or_lt_of_le hab
@@ -357,7 +358,8 @@ variable [StrictOrderedCommRing α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommRing.toOrderedCommRing` to avoid using
 choice in basic `Int` lemmas. -/
-abbrev StrictOrderedCommRing.toOrderedCommRing' [DecidableRel (α := α) (· ≤ ·)] : OrderedCommRing α :=
+abbrev StrictOrderedCommRing.toOrderedCommRing' [DecidableRel (α := α) (· ≤ ·)] :
+    OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing' with }
 
 -- See note [lower instance priority]

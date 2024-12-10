@@ -289,7 +289,8 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 -- See Note [decidable namespace]
-protected theorem Decidable.le_iff_eq_or_lt [DecidableRel (α := α) (· ≤ ·)] : a ≤ b ↔ a = b ∨ a < b :=
+protected theorem Decidable.le_iff_eq_or_lt [DecidableRel (α := α) (· ≤ ·)] :
+    a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm

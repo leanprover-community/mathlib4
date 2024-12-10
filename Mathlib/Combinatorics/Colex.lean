@@ -220,8 +220,8 @@ variable [DecidableEq α]
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
-instance instDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· ≤ ·) := fun s t ↦
-  decidable_of_iff'
+instance instDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· ≤ ·) :=
+  fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
 instance instDecidableLT [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· < ·) :=

@@ -1366,8 +1366,8 @@ theorem insert'_eq_insertWith [DecidableRel (α := α) (· ≤ ·)] (x : α) :
   | node _ l y r => by
     unfold insert' insertWith; cases cmpLE x y <;> simp [insert'_eq_insertWith]
 
-theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x : α) {t} (h : Valid t) :
-    Valid (insert' x t) := by
+theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)]
+    (x : α) {t} (h : Valid t) : Valid (insert' x t) := by
   rw [insert'_eq_insertWith]; exact insertWith.valid _ _ (fun _ => id) h
 
 theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : StrictMono f) {t a₁ a₂}

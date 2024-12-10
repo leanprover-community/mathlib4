@@ -388,7 +388,8 @@ end Finset
 section DisjSups
 
 variable [DecidableEq α]
-variable [SemilatticeSup α] [OrderBot α] [DecidableRel (α := α) Disjoint] (s s₁ s₂ t t₁ t₂ u : Finset α)
+variable [SemilatticeSup α] [OrderBot α] [DecidableRel (α := α) Disjoint]
+  (s s₁ s₂ t t₁ t₂ u : Finset α)
 
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
 -/
