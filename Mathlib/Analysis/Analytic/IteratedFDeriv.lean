@@ -14,6 +14,9 @@ If a function is analytic, written as `f (x + y) = ∑ pₙ (y, ..., y)` then it
 derivative at `x` is given by `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum
 is over all permutations of `{1, ..., n}`. In particular, it is symmetric.
 
+This generalizes the result of `HasFPowerSeriesOnBall.factorial_smul` giving
+`D^n f (v, ..., v) = n! * pₙ (v, ..., v)`.
+
 ## Main result
 
 * `HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum` shows that
