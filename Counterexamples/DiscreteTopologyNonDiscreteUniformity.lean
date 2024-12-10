@@ -18,6 +18,11 @@ topology on a space. In this file we are concerned in particular with the *discr
 formalised using the class `DiscreteTopology`, and the *discrete uniformity*, that is the bottom
 element of the lattice of uniformities on a type (see `bot_uniformity`).
 
+We begin by defining a metric on `ℕ` (see `dist_def`) that
+1. Induces the discrete topology, as proven in `TopIsDiscrete`;
+1. Is not the discrete metric, in particular because the identity is a Cauchy sequence, as proven
+in `idIsCauchy`
+
 The theorem `discreteTopology_of_discrete_uniformity` shows that the topology induced by the
 discrete uniformity is the discrete one, but it is well-known that the converse might not hold in
 general, along the lines of the above discussion.
@@ -91,36 +96,45 @@ noncomputable local instance : PseudoMetricSpace ℕ where
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
-lemma eq_of_pow_sub_le {m n : ℕ}
-  (h : |(2 : ℝ)^(-m : ℤ) - 2 ^ (-n : ℤ)| < 2 ^ (-n - 1 : ℤ)) : m = n := by
-  replace h : |(1 : ℝ) - 2 ^ ((n : ℤ) - m)| < 2⁻¹ := by
-    rw [← mul_lt_mul_iff_of_pos_left (a := (2 : ℝ) ^ (-n : ℤ)) (zpow_pos two_pos _),
-      ← abs_of_nonneg (a := (2 : ℝ) ^ (-n : ℤ)) (le_of_lt <| zpow_pos two_pos _), ← abs_mul,
-      mul_sub, mul_one, ← zpow_add₀ two_ne_zero, sub_eq_add_neg (b := (m : ℤ)), neg_add_cancel_left,
-      ← abs_neg, neg_sub, abs_of_nonneg (a := (2 : ℝ) ^ (-n : ℤ)) (le_of_lt <| zpow_pos two_pos _),
-      ← zpow_neg_one, ← zpow_add₀ two_ne_zero, ← sub_eq_add_neg]
+lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
+  (h : |(d : ℝ) ^ (-m) - d ^ (-n)| < d ^ (-n - 1)) : m = n := by
+  have hd0 : 0 < d := one_pos.trans hd1
+  replace h : |(1 : ℝ) - d ^ (n - m)| < (d : ℝ)⁻¹ := by
+    rw [← mul_lt_mul_iff_of_pos_left (a := (d : ℝ) ^ (-n)) (zpow_pos _ _),
+      ← abs_of_nonneg (a := (d : ℝ) ^ (-n)) (le_of_lt <| zpow_pos _ _), ← abs_mul, mul_sub, mul_one,
+      ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0), sub_eq_add_neg (b := m),
+      neg_add_cancel_left, ← abs_neg, neg_sub,
+      abs_of_nonneg (a := (d : ℝ) ^ (-n)) (le_of_lt <| zpow_pos _ _), ← zpow_neg_one,
+      ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0), ← sub_eq_add_neg]
     exact h
+    all_goals exact Nat.cast_pos'.mpr hd0
   by_cases H : (m : ℤ) ≤ n
   · obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le (sub_nonneg.mpr H)
-    rw [ha, ← mul_lt_mul_iff_of_pos_left (a := 2) two_pos, mul_inv_cancel₀ two_ne_zero,
-      ← abs_of_nonneg (a := (2 : ℝ)) zero_le_two, ← abs_mul,
-      show |(2 : ℝ) * (1 - |2| ^ (a : ℤ))| = |(2 : ℤ) * (1 - |2| ^ a)| by norm_cast,
-      ← Int.cast_one (R := ℝ), Int.cast_lt, Int.abs_lt_one_iff, Int.mul_eq_zero, sub_eq_zero,
-      Nat.abs_ofNat, eq_comm (a := 1), pow_eq_one_iff_cases] at h
-    simp only [OfNat.ofNat_ne_zero, OfNat.ofNat_ne_one, Int.reduceNeg, reduceCtorEq, false_and,
-      or_self, or_false, false_or] at h
-    rwa [h, Nat.cast_zero, sub_eq_zero, eq_comm, Nat.cast_inj] at ha
-  · have h1 : (2 : ℝ) ^ ((n : ℤ) - m) ≤ 1 - 2⁻¹ := by
-      rw [inv_eq_one_div, sub_half, ← inv_eq_one_div, ← zpow_neg_one,
-        zpow_le_zpow_iff_right₀ one_lt_two]
-      linarith
-    linarith [sub_lt_of_abs_sub_lt_right (a := (1 : ℝ)) (b := 2 ^ ((n : ℤ) - m)) (c := 2⁻¹) h]
-
+    rw [ha, ← mul_lt_mul_iff_of_pos_left (a := (d : ℝ)) <| Nat.cast_pos'.mpr hd0,
+      mul_inv_cancel₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0),
+      ← abs_of_nonneg (a := (d : ℝ)) <| Nat.cast_nonneg' d, ← abs_mul,
+      show |(d : ℝ) * (1 - |(d : ℝ)| ^ (a : ℤ))| = |(d : ℤ) * (1 - |(d : ℤ)| ^ a)| by
+      norm_cast, ← Int.cast_one (R := ℝ), Int.cast_lt, Int.abs_lt_one_iff, Int.mul_eq_zero,
+      sub_eq_zero, eq_comm (a := 1), pow_eq_one_iff_cases] at h
+    simp only [Nat.cast_eq_zero, ne_of_gt hd0, Nat.abs_cast, Nat.cast_eq_one, ne_of_gt hd1,
+      Int.reduceNeg, reduceCtorEq, false_and, or_self, or_false, false_or] at h
+    rwa [h, Nat.cast_zero, sub_eq_zero, eq_comm] at ha
+  · have h1 : (d : ℝ) ^ (n - m) ≤ 1 - (d : ℝ)⁻¹ := by
+      calc (d : ℝ) ^ (n - m) ≤ (d : ℝ)⁻¹ := by
+            rw [← zpow_neg_one]
+            apply zpow_right_mono₀ <| Nat.one_le_cast.mpr hd0
+            linarith
+      _ ≤ 1 - (d : ℝ)⁻¹ := by
+        rw [inv_eq_one_div, one_sub_div <| Nat.cast_ne_zero.mpr (ne_of_gt hd0),
+          div_le_div_iff_of_pos_right <| Nat.cast_pos'.mpr hd0, le_sub_iff_add_le]
+        norm_cast
+    linarith [sub_lt_of_abs_sub_lt_right (a := (1 : ℝ)) (b := d ^ (n - m)) (c := d⁻¹) h]
 
 lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n - 1 : ℤ)) = {n} := by
   ext m
   constructor
-  · simpa only [zpow_natCast, mem_ball, dist_def, mem_singleton_iff] using eq_of_pow_sub_le
+  · zify [zpow_natCast, mem_ball, dist_def, mem_singleton_iff]
+    apply Int.eq_of_pow_sub_le one_lt_two
   · intro H
     rw [H, mem_ball, dist_self]
     apply zpow_pos two_pos
@@ -130,8 +144,6 @@ theorem TopIsDiscrete : DiscreteTopology ℕ := by
   apply singletons_open_iff_discrete.mp
   intro
   simpa only [← ball_eq_singleton] using isOpen_ball
-
-
 
 lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
   rw [Metric.cauchySeq_iff]
