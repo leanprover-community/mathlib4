@@ -171,9 +171,7 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
   ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons; exact mem_cons_of_mem _ m]⟩
 
 @[simp]
-theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := by
-  simp [Membership.mem, Seq.Mem, Any]
-  exact ⟨n, h.symm⟩
+theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := ⟨n, h.symm⟩
 
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
   `some (a, s)` (for `cons a s`). -/
@@ -258,9 +256,7 @@ theorem noConfusion {x : α} {s : Seq α} : (cons x s) ≠ .nil := by
   simp at h
 
 @[simp]
-theorem noConfusion_symm {x : α} {s : Seq α} : .nil ≠ (cons x s) := by
-  symm
-  simp
+theorem noConfusion_symm {x : α} {s : Seq α} : .nil ≠ (cons x s) := noConfusion.symm
 
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
@@ -271,7 +267,7 @@ theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
       simpa using h
     · apply_fun tail at h
       simpa using h
-  · rintro ⟨hx, hs⟩
+  · intro ⟨hx, hs⟩
     congr
 
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
@@ -681,8 +677,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
   induction m generalizing n s with
   | zero =>
     obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
-    rw [← hl]
-    rw [take, head_eq_some h_get]
+    rw [← hl, take, head_eq_some h_get]
     simp
   | succ k ih =>
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
@@ -793,8 +788,7 @@ theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
     | none => simp
     | some v =>
       obtain ⟨x, r⟩ := v
-      simp
-      apply ih
+      simpa using ih
 
 theorem length_take_of_le_length {s : Seq α} {n : ℕ}
     (hle : ∀ h : s.Terminates, n ≤ s.length h) : (s.take n).length = n := by
@@ -1022,8 +1016,8 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | zero => simp [drop]
   | succ k ih =>
     simp [Seq.get?_tail, drop]
-    rw [show k + 1 + m = k + (m + 1) by omega]
-    apply ih
+    convert ih using 2
+    omega
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
@@ -1114,7 +1108,7 @@ theorem fold_nil (init : β) (f : β → α → β) :
 theorem fold_cons (init : β) (f : β → α → β) (x : α) (s : Seq α) :
     (cons x s).fold init f = cons init (s.fold (f init x) f) := by
   unfold fold
-  simp only
+  dsimp only
   congr
   rw [corec_cons]
   simp
