@@ -12,6 +12,9 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file characterises sets with no doubling (finsets `A` such that `#(A ^ 2) = #A`) as the sets
 which are either empty or translates of a subgroup.
 
+For the converse, use the existing facts from the pointwise API: `∅ ^ 2 = ∅` (`Finset.empty_pow`),
+`(a • H) ^ 2 = a ^ 2 • H ^ 2 = a ^ 2 • H` (`smul_pow`, `coe_set_pow`)
+
 ## TODO
 
 * Do we need a version stated using the doubling constant (`Finset.mulConst`)?
