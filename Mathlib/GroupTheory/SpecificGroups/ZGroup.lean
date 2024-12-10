@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.Transfer
+import Mathlib.GroupTheory.SchurZassenhaus
 
 /-!
 # Z-Groups
@@ -129,27 +129,9 @@ theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) 
 instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H) :=
   of_surjective (QuotientGroup.mk'_surjective H)
 
+section Solvable
+
 variable (G)
-
-theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card G := by
-  refine dvd_antisymm Group.exponent_dvd_nat_card ?_
-  rw [← Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' Monoid.exponent_ne_zero_of_finite]
-  intro p hp
-  have := Fact.mk hp
-  let P : Sylow p G := default
-  rw [← hp.pow_dvd_iff_le_factorization Monoid.exponent_ne_zero_of_finite,
-      ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
-  exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
-
-instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
-  have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
-    ⟨Nat.prime_of_mem_primeFactors p.2⟩
-  let h (p : { x // x ∈ (Nat.card G).primeFactors }) (P : Sylow p G) : CommGroup P :=
-    IsCyclic.commGroup
-  obtain ⟨ϕ⟩ := ((isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
-  let _ : CommGroup G :=
-    ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
-  exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
 
 theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
   let p := (Nat.card G).minFac
@@ -177,5 +159,65 @@ instance [Finite G] [IsZGroup G] : IsSolvable G := by
   rw [← H.range_subtype, MonoidHom.range_eq_map, ← Subgroup.map_commutator,
     Subgroup.map_subtype_lt_map_subtype]
   exact commutator_lt H
+
+end Solvable
+
+section Nilpotent
+
+variable (G)
+
+theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card G := by
+  refine dvd_antisymm Group.exponent_dvd_nat_card ?_
+  rw [← Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' Monoid.exponent_ne_zero_of_finite]
+  intro p hp
+  have := Fact.mk hp
+  let P : Sylow p G := default
+  rw [← hp.pow_dvd_iff_le_factorization Monoid.exponent_ne_zero_of_finite,
+      ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
+  exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
+
+instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
+  have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
+    ⟨Nat.prime_of_mem_primeFactors p.2⟩
+  let h (p : { x // x ∈ (Nat.card G).primeFactors }) (P : Sylow p G) : CommGroup P :=
+    IsCyclic.commGroup
+  obtain ⟨ϕ⟩ := ((isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
+  let _ : CommGroup G :=
+    ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
+  exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
+
+end Nilpotent
+
+section Hall
+
+theorem _root_.IsCyclic.normalizer_le_centralizer_or_le_commutator {p : ℕ} [Fact p.Prime]
+    (P : Sylow p G) [IsCyclic P] :
+    P.normalizer ≤ Subgroup.centralizer P ∨ P ≤ commutator G := by
+
+  sorry
+
+theorem _root_.IsCyclic.not_dvd_card_commutator_or_not_dvd_index_commutator [Finite G]
+    {p : ℕ} [Fact p.Prime] (P : Sylow p G) [IsCyclic P] :
+    ¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index := by
+  refine (IsCyclic.normalizer_le_centralizer_or_le_commutator P).imp ?_ ?_ <;>
+      refine fun hP h ↦ P.not_dvd_index (h.trans ?_)
+  · let _ : CommGroup P := IsCyclic.commGroup
+    rw [(MonoidHom.ker_transferSylow_isComplement' P hP).index_eq_card]
+    exact Subgroup.card_dvd_of_le (Abelianization.commutator_subset_ker _)
+  · exact Subgroup.index_dvd_of_le hP
+
+variable (G)
+
+theorem coprime_commutator_index [Finite G] [IsZGroup G] :
+    (Nat.card (commutator G)).Coprime (commutator G).index := by
+  suffices h : ∀ p, p.Prime → (¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index) by
+    contrapose! h
+    exact Nat.Prime.not_coprime_iff_dvd.mp h
+  intro p hp
+  let P : Sylow p G := default
+  have := Fact.mk hp
+  exact IsCyclic.not_dvd_card_commutator_or_not_dvd_index_commutator P
+
+end Hall
 
 end IsZGroup
