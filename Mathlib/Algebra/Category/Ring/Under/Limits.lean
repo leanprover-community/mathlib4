@@ -82,6 +82,7 @@ def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
   (IsLimit.equivIsoLimit (tensorProductFanIso P)).symm (Under.piFanIsLimit _)
 
 /-- `tensorProd R S` preserves the limit of the canonical fan on `P`. -/
+noncomputable -- marked noncomputable for performance (only)
 def piFanTensorProductIsLimit [Finite ι] : IsLimit ((tensorProd R S).mapCone (Under.piFan P)) :=
   (isLimitMapConeFanMkEquiv (tensorProd R S) P _).symm <| tensorProductFanIsLimit P
 
@@ -135,7 +136,8 @@ lemma equalizerFork'_ι {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [
     (Under.equalizerFork' f g).ι = (AlgHom.equalizer f g).val.toUnder := rfl
 
 /-- The canonical fork on `f g : A ⟶ B` is limiting. -/
-def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
+-- marked noncomputable for performance (only)
+noncomputable def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
     IsLimit (Under.equalizerFork f g) :=
   isLimitOfReflects (Under.forget R) <|
     (isLimitMapConeForkEquiv (Under.forget R) (equalizer_comp f g)).invFun <|
@@ -161,7 +163,8 @@ lemma tensorProdEqualizer_ι {A B : Under R} (f g : A ⟶ B) :
   rfl
 
 /-- If `S` is `R`-flat, `S ⊗[R] eq(f, g)` is isomorphic to `eq(𝟙 ⊗[R] f, 𝟙 ⊗[R] g)`. -/
-def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
+-- marked noncomputable for performance (only)
+noncomputable def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
     tensorProdEqualizer f g ≅ Under.equalizerFork'
         (Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f))
         (Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom g)) :=
@@ -170,6 +173,7 @@ def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B)
     apply AlgHom.coe_tensorEqualizer
 
 /-- If `S` is `R`-flat, `tensorProd R S` preserves the equalizer of `f` and `g`. -/
+noncomputable -- marked noncomputable for performance (only)
 def tensorProdMapEqualizerForkIsLimit [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
     IsLimit ((tensorProd R S).mapCone <| Under.equalizerFork f g) :=
   (isLimitMapConeForkEquiv (tensorProd R S) _).symm <|
