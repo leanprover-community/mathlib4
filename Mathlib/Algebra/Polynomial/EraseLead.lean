@@ -502,5 +502,3 @@ theorem card_support_eq_three :
     exact card_support_trinomial hkm hmn hx hy hz
 
 end Polynomial
-
-#min_imports
