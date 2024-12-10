@@ -28,8 +28,9 @@ theorem of_isUnit_or_isUnit_of_isUnit_add [Nontrivial R]
 
 /-- A semiring is local if it is nontrivial and the set of nonunits is closed under the addition. -/
 theorem of_nonunits_add [Nontrivial R]
-    (h : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R) : IsLocalRing R :=
-  ⟨fun {a b} hab => or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one
+    (h : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R) : IsLocalRing R where
+  isUnit_or_isUnit_of_add_one {a b} hab :=
+    or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one
 
 end Semiring
 
@@ -70,8 +71,6 @@ theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a
 
 theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
   fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
-
-end IsLocalRing
 
 @[deprecated (since := "2024-11-11")]
 alias LocalRing.of_isUnit_or_isUnit_of_isUnit_add := IsLocalRing.of_isUnit_or_isUnit_of_isUnit_add
@@ -144,7 +143,7 @@ alias LocalRing.of_surjective' := IsLocalRing.of_surjective'
 
 end CommRing
 
-end LocalRing
+end IsLocalRing
 
 namespace Field
 
