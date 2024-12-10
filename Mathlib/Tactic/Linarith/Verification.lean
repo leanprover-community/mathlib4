@@ -235,6 +235,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
         let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
         mkAppM ``Linarith.lt_irrefl #[pf']
 where
+  /-- Log `f` under `linarith.detail`, with exception emojis and the provided name. -/
   detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
     withTraceNode `linarith.detail (return m!"{exceptEmoji ·} {s}") f
 
