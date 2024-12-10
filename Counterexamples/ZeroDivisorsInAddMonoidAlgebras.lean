@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Lemmas
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 

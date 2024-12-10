@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Polynomial.Algebra
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Coprime.Basic

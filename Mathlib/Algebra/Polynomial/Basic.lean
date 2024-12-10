@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.MonoidAlgebra.Algebra
+import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Monomial
 
 /-!

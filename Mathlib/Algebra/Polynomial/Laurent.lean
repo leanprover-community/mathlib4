@@ -3,8 +3,8 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.Polynomial.Algebra
+import Mathlib.Algebra.MonoidAlgebra.Lemmas
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.RingTheory.Localization.Defs

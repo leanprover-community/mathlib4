@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Algebra
+import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
