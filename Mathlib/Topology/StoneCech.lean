@@ -6,14 +6,30 @@ Authors: Reid Barton
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
 
-#align_import topology.stone_cech from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
-
 /-! # Stone-Čech compactification
 
 Construction of the Stone-Čech compactification using ultrafilters.
 
-Parts of the formalization are based on "Ultrafilters and Topology"
-by Marius Stekelenburg, particularly section 5.
+For any topological space `α`, we build a compact Hausdorff space `StoneCech α` and a continuous
+map `stoneCechUnit : α → StoneCech α` which is minimal in the sense of the following universal
+property: for any compact Hausdorff space `β` and every map `f : α → β` such that
+`hf : Continuous f`, there is a unique map `stoneCechExtend hf : StoneCech α → β` such that
+`stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f`.
+Continuity of this extension is asserted by `continuous_stoneCechExtend` and uniqueness by
+`stoneCech_hom_ext`.
+
+Beware that the terminology “extend” is slightly misleading since `stoneCechUnit` is not always
+injective, so one cannot always think of `α` as being “inside” its compactification `StoneCech α`.
+
+## Implementation notes
+
+Parts of the formalization are based on “Ultrafilters and Topology”
+by Marius Stekelenburg, particularly section 5. However the construction in the general
+case is different because the equivalence relation on spaces of ultrafilters described
+by Stekelenburg causes issues with universes since it involves a condition
+on all compact Hausdorff spaces. We replace it by a two steps construction.
+The first step called `PreStoneCech` guarantees the expected universal property but
+not the Hausdorff condition. We then define `StoneCech α` as `t2Quotient (PreStoneCech α)`.
 -/
 
 
@@ -31,28 +47,24 @@ section Ultrafilter
   it the Stone-Čech compactification of α (viewed as a discrete space). -/
 /-- Basis for the topology on `Ultrafilter α`. -/
 def ultrafilterBasis (α : Type u) : Set (Set (Ultrafilter α)) :=
-  range fun s : Set α => { u | s ∈ u }
-#align ultrafilter_basis ultrafilterBasis
+  range fun s : Set α ↦ { u | s ∈ u }
 
 variable {α : Type u}
 
 instance Ultrafilter.topologicalSpace : TopologicalSpace (Ultrafilter α) :=
   TopologicalSpace.generateFrom (ultrafilterBasis α)
-#align ultrafilter.topological_space Ultrafilter.topologicalSpace
 
 theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafilterBasis α) :=
   ⟨by
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
-    refine' ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv => ⟨_, _⟩⟩ <;> apply mem_of_superset hv <;>
-      simp [inter_subset_right a b],
-    eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun u => univ_mem⟩,
+    refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv ↦ ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
+      simp [inter_subset_right],
+    eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
     rfl⟩
-#align ultrafilter_basis_is_basis ultrafilterBasis_is_basis
 
 /-- The basic open sets for the topology on ultrafilters are open. -/
 theorem ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s ∈ u } :=
   ultrafilterBasis_is_basis.isOpen ⟨s, rfl⟩
-#align ultrafilter_is_open_basic ultrafilter_isOpen_basic
 
 /-- The basic open sets for the topology on ultrafilters are also closed. -/
 theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
@@ -60,7 +72,6 @@ theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α 
   convert ultrafilter_isOpen_basic sᶜ using 1
   ext u
   exact Ultrafilter.compl_mem_iff_not_mem.symm
-#align ultrafilter_is_closed_basic ultrafilter_isClosed_basic
 
 /-- Every ultrafilter `u` on `Ultrafilter α` converges to a unique
   point of `Ultrafilter α`, namely `joinM u`. -/
@@ -75,30 +86,27 @@ theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultraf
     exact h _ ⟨ha, a, rfl⟩
   · rintro h a ⟨xi, a, rfl⟩
     exact h _ xi
-#align ultrafilter_converges_iff ultrafilter_converges_iff
 
 instance ultrafilter_compact : CompactSpace (Ultrafilter α) :=
-  ⟨isCompact_iff_ultrafilter_le_nhds.mpr fun f _ =>
+  ⟨isCompact_iff_ultrafilter_le_nhds.mpr fun f _ ↦
       ⟨joinM f, trivial, ultrafilter_converges_iff.mpr rfl⟩⟩
-#align ultrafilter_compact ultrafilter_compact
 
 instance Ultrafilter.t2Space : T2Space (Ultrafilter α) :=
-  t2_iff_ultrafilter.mpr @fun x y f fx fy =>
+  t2_iff_ultrafilter.mpr fun {x y} f fx fy ↦
     have hx : x = joinM f := ultrafilter_converges_iff.mp fx
     have hy : y = joinM f := ultrafilter_converges_iff.mp fy
     hx.trans hy.symm
-#align ultrafilter.t2_space Ultrafilter.t2Space
 
 instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   intro A
-  simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and_iff]
+  simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and]
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs
   rw [connectedComponent_eq_iInter_isClopen, Set.mem_iInter] at hB
   let Z := { F : Ultrafilter α | s ∈ F }
-  have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
+  have hZ : IsClopen Z := ⟨ultrafilter_isClosed_basic s, ultrafilter_isOpen_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
 @[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
@@ -112,10 +120,9 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
   simp only [comap_iInf, comap_principal]
   intro s hs
   rw [← le_principal_iff]
-  refine' iInf_le_of_le { u | s ∈ u } _
-  refine' iInf_le_of_le ⟨hs, ⟨s, rfl⟩⟩ _
-  exact principal_mono.2 fun a => id
-#align ultrafilter_comap_pure_nhds ultrafilter_comap_pure_nhds
+  refine iInf_le_of_le { u | s ∈ u } ?_
+  refine iInf_le_of_le ⟨hs, ⟨s, rfl⟩⟩ ?_
+  exact principal_mono.2 fun _ ↦ id
 
 section Embedding
 
@@ -124,15 +131,13 @@ theorem ultrafilter_pure_injective : Function.Injective (pure : α → Ultrafilt
   have : {x} ∈ (pure x : Ultrafilter α) := singleton_mem_pure
   rw [h] at this
   exact (mem_singleton_iff.mp (mem_pure.mp this)).symm
-#align ultrafilter_pure_injective ultrafilter_pure_injective
 
 open TopologicalSpace
 
 /-- The range of `pure : α → Ultrafilter α` is dense in `Ultrafilter α`. -/
-theorem denseRange_pure : DenseRange (pure : α → Ultrafilter α) := fun x =>
-  mem_closure_iff_ultrafilter.mpr
+theorem denseRange_pure : DenseRange (pure : α → Ultrafilter α) :=
+  fun x ↦ mem_closure_iff_ultrafilter.mpr
     ⟨x.map pure, range_mem_map, ultrafilter_converges_iff.mpr (bind_pure x).symm⟩
-#align dense_range_pure denseRange_pure
 
 /-- The map `pure : α → Ultrafilter α` induces on `α` the discrete topology. -/
 theorem induced_topology_pure :
@@ -141,20 +146,20 @@ theorem induced_topology_pure :
   intro x
   use { u : Ultrafilter α | {x} ∈ u }, ultrafilter_isOpen_basic _
   simp
-#align induced_topology_pure induced_topology_pure
 
 /-- `pure : α → Ultrafilter α` defines a dense inducing of `α` in `Ultrafilter α`. -/
-theorem denseInducing_pure : @DenseInducing _ _ ⊥ _ (pure : α → Ultrafilter α) :=
+theorem isDenseInducing_pure : @IsDenseInducing _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
   ⟨⟨induced_topology_pure.symm⟩, denseRange_pure⟩
-#align dense_inducing_pure denseInducing_pure
 
 -- The following refined version will never be used
 /-- `pure : α → Ultrafilter α` defines a dense embedding of `α` in `Ultrafilter α`. -/
-theorem denseEmbedding_pure : @DenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
+theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
-  { denseInducing_pure with inj := ultrafilter_pure_injective }
-#align dense_embedding_pure denseEmbedding_pure
+  { isDenseInducing_pure with injective := ultrafilter_pure_injective }
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_pure := isDenseEmbedding_pure
 
 end Embedding
 
@@ -164,171 +169,212 @@ section Extension
   unique extension to a continuous function `Ultrafilter α → γ`. We
   already know it must be unique because `α → Ultrafilter α` is a
   dense embedding and `γ` is Hausdorff. For existence, we will invoke
-  `DenseInducing.continuous_extend`. -/
+  `IsDenseInducing.continuous_extend`. -/
 variable {γ : Type*} [TopologicalSpace γ]
 
 /-- The extension of a function `α → γ` to a function `Ultrafilter α → γ`.
   When `γ` is a compact Hausdorff space it will be continuous. -/
 def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
   letI : TopologicalSpace α := ⊥
-  denseInducing_pure.extend f
-#align ultrafilter.extend Ultrafilter.extend
+  isDenseInducing_pure.extend f
 
 variable [T2Space γ]
 
 theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
   letI : TopologicalSpace α := ⊥
   haveI : DiscreteTopology α := ⟨rfl⟩
-  exact funext (denseInducing_pure.extend_eq continuous_of_discreteTopology)
-#align ultrafilter_extend_extends ultrafilter_extend_extends
+  exact funext (isDenseInducing_pure.extend_eq continuous_of_discreteTopology)
 
 variable [CompactSpace γ]
 
 theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
-  have h : ∀ b : Ultrafilter α, ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) := fun b =>
+  have h (b : Ultrafilter α) : ∃ c, Tendsto f (comap pure (𝓝 b)) (𝓝 c) :=
     -- b.map f is an ultrafilter on γ, which is compact, so it converges to some c in γ.
     let ⟨c, _, h'⟩ :=
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
     ⟨c, le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h'⟩
-  letI : TopologicalSpace α := ⊥
-  exact denseInducing_pure.continuous_extend h
-#align continuous_ultrafilter_extend continuous_ultrafilter_extend
+  let _ : TopologicalSpace α := ⊥
+  exact isDenseInducing_pure.continuous_extend h
 
 /-- The value of `Ultrafilter.extend f` on an ultrafilter `b` is the
   unique limit of the ultrafilter `b.map f` in `γ`. -/
 theorem ultrafilter_extend_eq_iff {f : α → γ} {b : Ultrafilter α} {c : γ} :
     Ultrafilter.extend f b = c ↔ ↑(b.map f) ≤ 𝓝 c :=
-  ⟨fun h => by
-    -- Write b as an ultrafilter limit of pure ultrafilters, and use
-    -- the facts that ultrafilter.extend is a continuous extension of f.
-    let b' : Ultrafilter (Ultrafilter α) := b.map pure
-    have t : ↑b' ≤ 𝓝 b := ultrafilter_converges_iff.mpr (bind_pure _).symm
-    rw [← h]
-    have := (continuous_ultrafilter_extend f).tendsto b
-    refine' le_trans _ (le_trans (map_mono t) this)
-    change _ ≤ map (Ultrafilter.extend f ∘ pure) ↑b
-    rw [ultrafilter_extend_extends]
-    exact le_rfl, fun h =>
-    letI : TopologicalSpace α := ⊥
-    denseInducing_pure.extend_eq_of_tendsto
+  ⟨fun h ↦ by
+     -- Write b as an ultrafilter limit of pure ultrafilters, and use
+     -- the facts that ultrafilter.extend is a continuous extension of f.
+     let b' : Ultrafilter (Ultrafilter α) := b.map pure
+     have t : ↑b' ≤ 𝓝 b := ultrafilter_converges_iff.mpr (bind_pure _).symm
+     rw [← h]
+     have := (continuous_ultrafilter_extend f).tendsto b
+     refine le_trans ?_ (le_trans (map_mono t) this)
+     change _ ≤ map (Ultrafilter.extend f ∘ pure) ↑b
+     rw [ultrafilter_extend_extends]
+     exact le_rfl,
+   fun h ↦
+    let _ : TopologicalSpace α := ⊥
+    isDenseInducing_pure.extend_eq_of_tendsto
       (le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h)⟩
-#align ultrafilter_extend_eq_iff ultrafilter_extend_eq_iff
 
 end Extension
 
 end Ultrafilter
 
-section StoneCech
+section PreStoneCech
 
-/- Now, we start with a (not necessarily discrete) topological space α
-  and we want to construct its Stone-Čech compactification. We can
-  build it as a quotient of `Ultrafilter α` by the relation which
-  identifies two points if the extension of every continuous function
-  α → γ to a compact Hausdorff space sends the two points to the same
-  point of γ. -/
 variable (α : Type u) [TopologicalSpace α]
 
-instance stoneCechSetoid : Setoid (Ultrafilter α)
-    where
-  r x y :=
-    ∀ (γ : Type u) [TopologicalSpace γ],
-      ∀ [T2Space γ] [CompactSpace γ] (f : α → γ) (_ : Continuous f),
-        Ultrafilter.extend f x = Ultrafilter.extend f y
-  iseqv :=
-    ⟨fun _ _ _ _ _ _ _ => rfl, @fun _ _ xy γ _ _ _ f hf => (xy γ f hf).symm,
-      @fun _ _ _ xy yz γ _ _ _ f hf => (xy γ f hf).trans (yz γ f hf)⟩
-#align stone_cech_setoid stoneCechSetoid
-
-/-- The Stone-Čech compactification of a topological space. -/
-def StoneCech : Type u :=
-  Quotient (stoneCechSetoid α)
-#align stone_cech StoneCech
+/-- Auxiliary construction towards the Stone-Čech compactification of a topological space.
+It should not be used after the Stone-Čech compactification is constructed. -/
+def PreStoneCech : Type u :=
+  Quot fun F G : Ultrafilter α ↦ ∃ x, (F : Filter α) ≤ 𝓝 x ∧ (G : Filter α) ≤ 𝓝 x
 
 variable {α}
 
-instance : TopologicalSpace (StoneCech α) := by unfold StoneCech; infer_instance
+instance : TopologicalSpace (PreStoneCech α) :=
+  inferInstanceAs (TopologicalSpace <| Quot _)
 
-instance [Inhabited α] : Inhabited (StoneCech α) := by unfold StoneCech; infer_instance
+instance : CompactSpace (PreStoneCech α) :=
+  Quot.compactSpace
 
-/-- The natural map from α to its Stone-Čech compactification. -/
-def stoneCechUnit (x : α) : StoneCech α :=
-  ⟦pure x⟧
-#align stone_cech_unit stoneCechUnit
+instance [Inhabited α] : Inhabited (PreStoneCech α) :=
+  inferInstanceAs (Inhabited <| Quot _)
 
-/-- The image of stone_cech_unit is dense. (But stone_cech_unit need
-  not be an embedding, for example if α is not Hausdorff.) -/
-theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) :=
-  denseRange_pure.quotient
-#align dense_range_stone_cech_unit denseRange_stoneCechUnit
+/-- The natural map from α to its pre-Stone-Čech compactification. -/
+def preStoneCechUnit (x : α) : PreStoneCech α :=
+  Quot.mk _ (pure x : Ultrafilter α)
+
+theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreStoneCech α) :=
+  continuous_iff_ultrafilter.mpr fun x g gx ↦ by
+    have : (g.map pure).toFilter ≤ 𝓝 g := by
+      rw [ultrafilter_converges_iff, ← bind_pure g]
+      rfl
+    have : (map preStoneCechUnit g : Filter (PreStoneCech α)) ≤ 𝓝 (Quot.mk _ g) :=
+      (map_mono this).trans (continuous_quot_mk.tendsto _)
+    convert this
+    exact Quot.sound ⟨x, pure_le_nhds x, gx⟩
+
+theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
+  Quot.mk_surjective.denseRange.comp denseRange_pure continuous_coinduced_rng
+
 
 section Extension
+variable {β : Type v} [TopologicalSpace β] [T2Space β]
 
-variable {γ : Type u} [TopologicalSpace γ] [T2Space γ] [CompactSpace γ]
-
-variable {γ' : Type u} [TopologicalSpace γ'] [T2Space γ']
-
-variable {f : α → γ} (hf : Continuous f)
-
--- Porting note: missing attribute
---attribute [local elab_with_expected_type] Quotient.lift
-
-/-- The extension of a continuous function from α to a compact
-  Hausdorff space γ to the Stone-Čech compactification of α. -/
-def stoneCechExtend : StoneCech α → γ :=
-  Quotient.lift (Ultrafilter.extend f) fun _ _ xy => xy γ f hf
-#align stone_cech_extend stoneCechExtend
-
-theorem stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f :=
-  ultrafilter_extend_extends f
-#align stone_cech_extend_extends stoneCechExtend_extends
-
-theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hf) :=
-  continuous_quot_lift _ (continuous_ultrafilter_extend f)
-#align continuous_stone_cech_extend continuous_stoneCechExtend
-
-theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → γ'} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
-    (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
-  apply Continuous.ext_on denseRange_stoneCechUnit h₁ h₂
+theorem preStoneCech_hom_ext {g₁ g₂ : PreStoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (h : g₁ ∘ preStoneCechUnit = g₂ ∘ preStoneCechUnit) : g₁ = g₂ := by
+  apply Continuous.ext_on denseRange_preStoneCechUnit h₁ h₂
   rintro x ⟨x, rfl⟩
   apply congr_fun h x
-#align stone_cech_hom_ext stoneCech_hom_ext
+
+variable [CompactSpace β]
+variable {g : α → β} (hg : Continuous g)
+include hg
+
+lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) (hG : ↑G ≤ 𝓝 x) :
+    Ultrafilter.extend g F = Ultrafilter.extend g G := by
+  replace hF := (map_mono hF).trans hg.continuousAt
+  replace hG := (map_mono hG).trans hg.continuousAt
+  rwa [show Ultrafilter.extend g G = g x by rwa [ultrafilter_extend_eq_iff, G.coe_map],
+       ultrafilter_extend_eq_iff, F.coe_map]
+
+/-- The extension of a continuous function from `α` to a compact
+  Hausdorff space `β` to the pre-Stone-Čech compactification of `α`. -/
+def preStoneCechExtend : PreStoneCech α → β :=
+  Quot.lift (Ultrafilter.extend g) fun _ _ ⟨_, hF, hG⟩ ↦ preStoneCechCompat hg hF hG
+
+theorem preStoneCechExtend_extends : preStoneCechExtend hg ∘ preStoneCechUnit = g :=
+  ultrafilter_extend_extends g
+
+lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
+    g a = g b := by
+  have e := ultrafilter_extend_extends g
+  rw [← congrFun e a, ← congrFun e b, Function.comp_apply, Function.comp_apply]
+  rw [preStoneCechUnit, preStoneCechUnit, Quot.eq] at h
+  generalize (pure a : Ultrafilter α) = F at h
+  generalize (pure b : Ultrafilter α) = G at h
+  induction h with
+  | rel x y a => exact let ⟨a, hx, hy⟩ := a; preStoneCechCompat hg hx hy
+  | refl x => rfl
+  | symm x y _ h => rw [h]
+  | trans x y z _ _ h h' => exact h.trans h'
+
+theorem continuous_preStoneCechExtend : Continuous (preStoneCechExtend hg) :=
+  continuous_quot_lift _ (continuous_ultrafilter_extend g)
 
 end Extension
 
-theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
-  fun γ tγ h₁ h₂ f hf => by
-  skip
-  trans f x; swap; symm
-  all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
-  · apply pure_le_nhds
-  · exact ux
-#align convergent_eqv_pure convergent_eqv_pure
+end PreStoneCech
+
+section StoneCech
+
+variable (α : Type u) [TopologicalSpace α]
+
+/-- The Stone-Čech compactification of a topological space. -/
+def StoneCech : Type u :=
+  t2Quotient (PreStoneCech α)
+
+variable {α}
+
+instance : TopologicalSpace (StoneCech α) :=
+  inferInstanceAs <| TopologicalSpace <| t2Quotient _
+
+instance : T2Space (StoneCech α) :=
+  inferInstanceAs <| T2Space <| t2Quotient _
+
+instance : CompactSpace (StoneCech α) :=
+  Quot.compactSpace
+
+instance [Inhabited α] : Inhabited (StoneCech α) :=
+  inferInstanceAs <| Inhabited <| Quotient _
+
+/-- The natural map from α to its Stone-Čech compactification. -/
+def stoneCechUnit (x : α) : StoneCech α :=
+  t2Quotient.mk (preStoneCechUnit x)
 
 theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech α) :=
-  continuous_iff_ultrafilter.mpr fun x g gx => by
-    have : (g.map pure).toFilter ≤ 𝓝 g := by
-      rw [ultrafilter_converges_iff]
-      exact (bind_pure _).symm
-    have : (g.map stoneCechUnit : Filter (StoneCech α)) ≤ 𝓝 ⟦g⟧ :=
-      continuousAt_iff_ultrafilter.mp (continuous_quotient_mk'.tendsto g) _ this
-    rwa [show ⟦g⟧ = ⟦pure x⟧ from Quotient.sound <| convergent_eqv_pure gx] at this
-#align continuous_stone_cech_unit continuous_stoneCechUnit
+  (t2Quotient.continuous_mk _).comp continuous_preStoneCechUnit
 
-instance StoneCech.t2Space : T2Space (StoneCech α) := by
-  rw [t2_iff_ultrafilter]
-  rintro ⟨x⟩ ⟨y⟩ g gx gy
-  apply Quotient.sound
-  intro γ tγ h₁ h₂ f hf
-  skip
-  let ff := stoneCechExtend hf
-  change ff ⟦x⟧ = ff ⟦y⟧
-  have lim := fun (z : Ultrafilter α) (gz : (g : Filter (StoneCech α)) ≤ 𝓝 ⟦z⟧) =>
-    ((continuous_stoneCechExtend hf).tendsto _).mono_left gz
-  exact tendsto_nhds_unique (lim x gx) (lim y gy)
-#align stone_cech.t2_space StoneCech.t2Space
+/-- The image of `stoneCechUnit` is dense. (But `stoneCechUnit` need
+  not be an embedding, for example if the original space is not Hausdorff.) -/
+theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
+  unfold stoneCechUnit t2Quotient.mk
+  have : Function.Surjective (t2Quotient.mk : PreStoneCech α → StoneCech α) := by
+    exact Quot.mk_surjective
+  exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
-instance StoneCech.compactSpace : CompactSpace (StoneCech α) :=
-  Quotient.compactSpace
-#align stone_cech.compact_space StoneCech.compactSpace
+section Extension
+
+variable {β : Type v} [TopologicalSpace β] [T2Space β]
+variable {g : α → β} (hg : Continuous g)
+
+theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+    (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
+  apply h₁.ext_on denseRange_stoneCechUnit h₂
+  rintro _ ⟨x, rfl⟩
+  exact congr_fun h x
+
+variable [CompactSpace β]
+
+/-- The extension of a continuous function from `α` to a compact
+  Hausdorff space `β` to the Stone-Čech compactification of `α`.
+  This extension implements the universal property of this compactification. -/
+def stoneCechExtend : StoneCech α → β :=
+  t2Quotient.lift (continuous_preStoneCechExtend hg)
+
+theorem stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
+  ext x
+  rw [stoneCechExtend, Function.comp_apply, stoneCechUnit, t2Quotient.lift_mk]
+  apply congrFun (preStoneCechExtend_extends hg)
+
+theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
+  continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)
+
+lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → β} (hcf : Continuous f)
+    (h : stoneCechUnit a = stoneCechUnit b) : f a = f b := by
+  rw [← congrFun (stoneCechExtend_extends hcf), ← congrFun (stoneCechExtend_extends hcf)]
+  exact congrArg (stoneCechExtend hcf) h
+
+end Extension
 
 end StoneCech

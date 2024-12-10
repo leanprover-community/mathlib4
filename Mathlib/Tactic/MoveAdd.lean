@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Init.Order.LinearOrder
+import Mathlib.Lean.Meta
 
 /-!
 
@@ -81,9 +81,11 @@ associative, commutative operation and a list of "operand atoms" and rearranges 
 To work with a general associative, commutative binary operation, `move_oper`
 needs to have inbuilt the lemmas asserting the analogues of
 `add_comm, add_assoc, add_left_comm` for the new operation.
-Currently, `move_oper` supports `HAdd.hAdd`, `HAdd.hAdd`, `and`, `or`, `max`, `min`.
+Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`, `Min.min`.
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
+
+See `test/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 
@@ -146,8 +148,6 @@ def uniquify : List α → List (α × ℕ)
   | m::ms =>
     let lms := uniquify ms
     (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
-
-variable [Inhabited α]
 
 /-- Return a sorting key so that all `(a, true)`s are in the list's order
 and sorted before all `(a, false)`s, which are also in the list's order.
@@ -358,7 +358,7 @@ operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
   `op`-analogues of `add_comm, add_assoc, add_left_comm`.
 -/
 def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
-    MetaM (List MVarId) := do
+    MetaM (List MVarId) := mv.withContext do
   let permExpr ← permuteExpr op (← mv.getType'') instr
   -- generate the implication `permutedMv → mv = permutedMv → mv`
   let eqmpr ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
@@ -388,8 +388,9 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
   -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
   let (instr, neverMatched) ← pairUp data.toList atoms
-  let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-    data.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+  let dbgMsg := #[m!"Matching of input variables:\n\
+    * pre-match:  {data.map (Prod.snd ∘ Prod.snd)}\n\
+    * post-match: {instr}",
     m!"\nMaximum number of iterations: {ops.size}"]
   -- if there are `neverMatched` terms, return the parsed terms and the syntax
   let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)
@@ -432,7 +433,7 @@ In this case the syntax requires providing first a term whose head symbol is the
 E.g. `move_oper HAdd.hAdd [...]` is the same as `move_add`, while `move_oper Max.max [...]`
 rearranges `max`s.
 -/
-elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => do
+elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMainContext do
   -- parse the operation
   let op := id.getId
   -- parse the list of terms
@@ -456,3 +457,7 @@ elab "move_mul" rws:rwRuleSeq : tactic => do
   evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
+
+end MoveAdd
+
+end Mathlib

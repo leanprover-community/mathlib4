@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-set -exo pipefail
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
+set -x
 
 sudo apt install -y git curl
 
@@ -12,7 +17,7 @@ rm elan-init.sh
 
 # The following test is needed in case VScode or VSCodium was installed by other
 # means (e.g. using Ubuntu snap)
-vsc="$(which code 2>/dev/null || which codium 2>/dev/null)"
+vsc="$(which code 2>/dev/null || which codium 2>/dev/null || true)"
 if [ -z "$vsc" ]; then
   wget -O code.deb https://go.microsoft.com/fwlink/?LinkID=760868
   sudo apt install -y ./code.deb
