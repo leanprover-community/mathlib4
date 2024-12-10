@@ -302,7 +302,12 @@ private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
   linarithTraceProofs "so we added proofs" new_es
   return new_es
 
-/-- Get proofs for products of inequalities from `ls`. -/
+/--
+Get proofs for products of inequalities from `ls`.
+
+Note that the length of the resulting list is proportional to `ls.length^2`, which can make a large
+amount of work for the linarith oracle.
+-/
 private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) := do
   let with_comps ← ls.mapM (fun e => do
     let tp ← inferType e
