@@ -14,7 +14,8 @@ which are either empty or translates of a subgroup.
 
 ## TODO
 
-Do we need a version stated using the doubling constant (`Finset.mulConst`)?
+* Do we need a version stated using the doubling constant (`Finset.mulConst`)?
+* Add characterisation for sets with doubling < 3/2
 -/
 
 open MulOpposite MulAction
