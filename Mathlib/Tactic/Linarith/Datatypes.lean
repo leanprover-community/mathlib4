@@ -279,6 +279,103 @@ def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
   let (rel, _, e, z) ← e.ineq?
   if z.zero? then return (rel, e) else throwError "invalid comparison, rhs not zero: {z}"
 
+
+/--
+`Mathlib.IneqZeroResult α i2 i2` is a comparison of the form
+`x < 0`, `x ≤ 0`, or `x = 0` for `x : α`.
+-/
+structure Mathlib.IneqZeroResult
+    {u : Level} (α : Q(Type u)) (inst : Q(StrictOrderedCommSemiring $α)) :
+    Type where
+  /-- The inequality. -/
+  ineq : Ineq
+  /-- The term. -/
+  x : Q($α)
+  /-- The proof. -/
+  pf : IneqQ q(delta% inferInstance) q($x) q(0) ineq
+
+/-- Comparisons with zero can be viewed as general comparisons. -/
+def Mathlib.IneqZeroResult.toIneqResult
+    {u : Level} {α : Q(Type u)} {inst : Q(StrictOrderedCommSemiring $α)}
+    (h : IneqZeroResult α inst) :
+    IneqResult α q(delta% inferInstance) where
+  ineq := h.ineq
+  a := q($(h.x))
+  b := q(0)
+  pf := h.pf
+
+/-- Verify that the RHS is zero in an equality, promoting the result. -/
+def _root_.Mathlib.IneqResult.toIneqZeroResult?
+    {u : Level} {α : Q(Type u)} {inst : Q(StrictOrderedCommSemiring $α)}
+    (h : IneqResult α q(delta% inferInstance)) :
+    MetaM <| Option <| Mathlib.IneqZeroResult α q($inst) := do
+  let ⟨ineq, a, b, pf⟩ := h
+  if let ~q(0) := b then
+    return .some {
+      ineq := ineq
+      x := q($a)
+      pf := pf.cast }
+  else
+    return none
+
+/-- The Qq version of `parseCompAndExpr`. -/
+def parseCompAndExprQ  {p : Q(Prop)} (e : Q($p)) :
+    MetaM <| ((u : Level) × (α : Q(Type $u)) × (inst : _) × Mathlib.IneqZeroResult α inst) := do
+  let ⟨u, α, _, r⟩ ← Lean.Expr.ineqQ? e
+  let inst' ← synthInstanceQ q(StrictOrderedCommSemiring $α)
+  assertInstancesCommute
+  have r : IneqResult α q(StrictOrderedSemiring.toPartialOrder) := r.cast
+  if let .some r0 ← r.toIneqZeroResult? then
+    return ⟨u, α, inst', r0⟩
+  else
+    throwError "invalid comparison, rhs not zero: {r.b}"
+
+set_option linter.unusedVariables.funArgs false in
+/-- Cast the type parameters of IneqZeroResult through Qq's defeq machinery. -/
+@[nolint unusedArguments]
+def Mathlib.IneqZeroResult.cast
+    {u₁ u₂ : Level} {α₁ : Q(Type u₁)} {α₂ : Q(Type u₂)}
+    {inst₁ : Q(StrictOrderedCommSemiring $α₁)}
+    {inst₂ : Q(StrictOrderedCommSemiring $α₂)}
+    (hu : u₁ =QL u₂ := by first | exact .rfl | assumption)
+    (hα : $α₁ =Q $α₂ := by first | exact .rfl | assumption)
+    (hinst : $inst₁ =Q $inst₂ := by first | exact .rfl | assumption)
+    (h : Mathlib.IneqZeroResult α₁ q($inst₁)):
+    Mathlib.IneqZeroResult α₂ q($inst₂) :=
+  let ⟨ineq, x, h⟩ := h
+  let _ := hinst
+  -- TODO: why does `hinst` not work here?
+  { ineq, x, pf := h.cast hu hα (hinst := .unsafeIntro) (hb := .unsafeIntro) }
+
+/-- Prove that `-(a * b) R 0` from `a R 0` and `b R 0`. -/
+def Mathlib.IneqZeroResult.mul {u : Level} {α : Q(Type $u)} {inst : _}
+    (ha hb : Mathlib.IneqZeroResult α inst) :
+    MetaM <| Mathlib.IneqZeroResult α inst := do
+  let ⟨posa, a, ha⟩ := ha
+  let ⟨posb, b, hb⟩ := hb
+  match ha, hb with
+    | .eq ha, _ => return { x := q($a * $b), pf := .eq q($(ha).symm ▸ zero_mul _) }
+    | _, .eq hb => return { x := q($a * $b), pf := .eq q($(hb).symm ▸ mul_zero _) }
+    | .lt ha, .lt hb =>
+      have _ := ← synthInstanceQ q(StrictOrderedCommRing $α)
+      assertInstancesCommute
+      return { x := q(-($a * $b)), pf := .lt q(neg_lt_zero.mpr <| mul_pos_of_neg_of_neg $ha $hb) }
+    | .lt ha, .le hb =>
+      have _ := ← synthInstanceQ q(StrictOrderedCommRing $α)
+      assertInstancesCommute
+      return { x := q(-($a * $b)),
+               pf := .le q(neg_nonpos.mpr <| mul_nonneg_of_nonpos_of_nonpos ($ha).le $hb) }
+    | .le ha, .lt hb =>
+      have _ := ← synthInstanceQ q(StrictOrderedCommRing $α)
+      assertInstancesCommute
+      return { x := q(-($a * $b)),
+               pf := .le q(neg_nonpos.mpr <| mul_nonneg_of_nonpos_of_nonpos $ha ($hb).le) }
+    | .le ha, .le hb =>
+      have _ := ← synthInstanceQ q(StrictOrderedCommRing $α)
+      assertInstancesCommute
+      return { x := q(-($a * $b)),
+               pf := .le q(neg_nonpos.mpr <| mul_nonneg_of_nonpos_of_nonpos $ha $hb) }
+
 /--
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.
 It produces a pair `(R', h')`, where `h'` is a proof of `c*t R' 0`.
