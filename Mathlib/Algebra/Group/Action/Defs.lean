@@ -60,11 +60,12 @@ instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(
 @[to_additive (attr := simp)]
 lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
 
-/-- -/
+/-- Type class for actions by additive semigroups. -/
 class AddSemigroupAction (G P : Type*) [AddSemigroup G] extends VAdd G P where
-  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
+  /-- Associativity of `+ᵥ` and `+` -/
+  add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
-/-- -/
+/-- Type class for actions by semigroups. -/
 @[to_additive (attr := ext)]
 class SemigroupAction (α β : Type*) [Semigroup α] extends SMul α β where
   /-- Associativity of `•` and `*` -/
