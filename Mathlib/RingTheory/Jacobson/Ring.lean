@@ -492,7 +492,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = Ideal.map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
   let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
-  refine map.isMaximal (algebraMap (R[X] ⧸ P) (Localization M')) ?_ bot_maximal
+  refine bot_maximal.map_bijective (algebraMap (R[X] ⧸ P) (Localization M')) ?_
   apply IsField.localization_map_bijective hM'
   rwa [← Quotient.maximal_ideal_iff_isField_quotient, ← bot_quotient_isMaximal_iff]
 

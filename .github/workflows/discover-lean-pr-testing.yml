@@ -133,8 +133,10 @@ jobs:
         organization-url: 'https://leanprover.zulipchat.com'
         to: 'nightly-testing'
         type: 'stream'
-        topic: 'Mathlib status updates'
+        topic: 'Mergeable lean testing PRs'
         content: |
           We will need to merge the following branches into `nightly-testing`:
 
           ${{ steps.find-branches.outputs.branches }}
+
+          This can be done using the script `scripts/merge-lean-testing-pr.sh`, which takes 1 lean-PR number as argument.

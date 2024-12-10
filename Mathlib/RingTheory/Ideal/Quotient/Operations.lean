@@ -611,17 +611,22 @@ def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
 
 end
 
-instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsTwoSided]
-    [Algebra R A] : Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) where
-  toRingHom := quotientMap I (algebraMap R A) le_rfl
+/-- If `P` lies over `p`, then `R / p` has a canonical map to `A / P`. -/
+abbrev Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ideal R}
+    {P : Ideal A} [P.IsTwoSided] (h : p ≤ comap (algebraMap R A) P) : 
+    Algebra (R ⧸ p) (A ⧸ P) where
+  toRingHom := quotientMap P (algebraMap R A) h
   smul := Quotient.lift₂ (⟦· • ·⟧) fun r₁ a₁ r₂ a₂ hr ha ↦ Quotient.sound <| by
-    apply (Submodule.quotientRel_def _).mp at hr
-    apply (Submodule.quotientRel_def _).mp at ha
-    rw [mem_comap, map_sub] at hr
-    simp_rw [Algebra.smul_def]
-    exact (Submodule.quotientRel_def _).mpr (I.mul_sub_mul_mem hr ha)
+    have := h (p.quotientRel_def.mp hr)
+    rw [mem_comap, map_sub] at this
+    simpa only [Algebra.smul_def] using P.quotientRel_def.mpr
+      (P.mul_sub_mul_mem this <| P.quotientRel_def.mp ha)
   smul_def' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.smul_def _ _)
   commutes' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.commutes _ _)
+
+instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsTwoSided]
+    [Algebra R A] : Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
+  Quotient.algebraQuotientOfLEComap le_rfl
 
 instance (R) {A} [CommRing R] [CommRing A] (I : Ideal A) [Algebra R A] :
     Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) := inferInstance
