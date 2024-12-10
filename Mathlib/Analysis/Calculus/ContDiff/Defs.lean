@@ -107,12 +107,7 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
-/-- Smoothness exponent for analytic functions. -/
-scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
-/-- Smoothness exponent for infinitely differentiable functions. -/
-scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
-
-open ContDiff
+open scoped ContDiff
 
 universe u uE uF uG uX
 
@@ -1168,8 +1163,8 @@ theorem contDiff_omega_iff_analyticOnNhd :
 
 /-! ### Iterated derivative -/
 
-/-- When a function is `C^n`, it admits
-`ftaylorSeries 𝕜 f` as a Taylor series up to order `n` in `s`. -/
+/-- When a function is `C^n`, it admits `ftaylorSeries 𝕜 f` as a Taylor series up
+to order `n` in `s`. -/
 theorem ContDiff.ftaylorSeries (hf : ContDiff 𝕜 n f) :
     HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
   simp only [← contDiffOn_univ, ← hasFTaylorSeriesUpToOn_univ_iff, ← ftaylorSeriesWithin_univ]
@@ -1182,8 +1177,8 @@ theorem contDiff_iff_ftaylorSeries {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
   constructor
   · rw [← contDiffOn_univ, ← hasFTaylorSeriesUpToOn_univ_iff, ← ftaylorSeriesWithin_univ]
-    exact fun h => ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
-  · intro h; exact ⟨ftaylorSeries 𝕜 f, h⟩
+    exact fun h ↦ ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
+  · exact fun h ↦ ⟨ftaylorSeries 𝕜 f, h⟩
 
 theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
