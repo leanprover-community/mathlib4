@@ -90,7 +90,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
         mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
-      simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -139,7 +139,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [mul_assoc, mul_assoc]
       refine mul_eq_zero_of_left ?_ _
       refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
-      simp [mem_span_singleton]
+      simp [s, mem_span_singleton]
 
 section IntegralDomain
 

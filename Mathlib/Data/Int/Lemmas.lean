@@ -133,4 +133,16 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
 @[deprecated (since := "2024-04-02")] alias abs_coe_nat := abs_natCast
 @[deprecated (since := "2024-04-02")] alias coe_nat_nonpos_iff := natCast_nonpos_iff
 
+/-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
+theorem ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
+    a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
+  constructor
+  · intro ⟨rfl, rfl⟩
+    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt _ h⟩
+  · intro ⟨rfl, hz, hb⟩
+    constructor
+    · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
+      simp [Int.zero_add]
+    · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
+
 end Int
