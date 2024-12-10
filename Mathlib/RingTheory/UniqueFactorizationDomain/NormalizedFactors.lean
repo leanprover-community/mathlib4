@@ -222,7 +222,7 @@ theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) 
 
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
-  use Multiset.card.toFun (normalizedFactors r)
+  use (normalizedFactors r).card
   have := UniqueFactorizationMonoid.normalizedFactors_prod hr
   rwa [Multiset.eq_replicate_of_mem fun b => h, Multiset.prod_replicate] at this
 

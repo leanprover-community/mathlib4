@@ -14,16 +14,18 @@ or with boundary or with corners. As a concrete example, we construct explicitly
 boundary structure on the real interval `[x, y]`.
 
 More specifically, we introduce
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
+* `modelWithCornersEuclideanHalfSpace n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `modelWithCornersEuclideanQuadrant n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 ## Notations
 
 In the locale `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
-* `𝓡∂ n` for `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)`.
+* `𝓡∂ n` for `modelWithCornersEuclideanHalfSpace n`.
 
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
@@ -84,6 +86,27 @@ theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = 
 theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
+
+theorem EuclideanHalfSpace.convex [NeZero n] :
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=
+  fun _ hx _ hy _ _ _ _ _ ↦ by dsimp at hx hy ⊢; positivity
+
+theorem EuclideanQuadrant.convex :
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i } :=
+  fun _ hx _ hy _ _ _ _ _ i ↦ by dsimp at hx hy ⊢; specialize hx i; specialize hy i; positivity
+
+instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
+    PathConnectedSpace (EuclideanHalfSpace n) :=
+  isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
+
+instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
+  isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
+
+instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
+  EuclideanHalfSpace.convex.locPathConnectedSpace
+
+instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
+  EuclideanQuadrant.convex.locPathConnectedSpace
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
