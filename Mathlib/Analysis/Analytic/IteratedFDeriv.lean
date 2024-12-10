@@ -14,6 +14,9 @@ If a function is analytic, written as `f (x + y) = ∑ pₙ (y, ..., y)` then it
 derivative at `x` is given by `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum
 is over all permutations of `{1, ..., n}`. In particular, it is symmetric.
 
+This generalizes the result of `HasFPowerSeriesOnBall.factorial_smul` giving
+`D^n f (v, ..., v) = n! * pₙ (v, ..., v)`.
+
 ## Main result
 
 * `HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum` shows that
@@ -27,7 +30,7 @@ Versions within sets are also given.
 
 ## Implementation
 
-To prove the formula for the iterated derivative, se decompose an analytic function as
+To prove the formula for the iterated derivative, we decompose an analytic function as
 the sum of `fun y ↦ pₙ (y, ..., y)` and the rest. For the former, its iterated derivative follows
 from the formula for iterated derivatives of multilinear maps
 (see `ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal`). For the latter, we show by
@@ -50,7 +53,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
 
 /-- Formal multilinear series associated to the iterated derivative, defined by iterating
-`p ↦ p.derivSeries` and currying suitably. It is defined so that, if a function has `p` has a power
+`p ↦ p.derivSeries` and currying suitably. It is defined so that, if a function has `p` as a power
 series, then its iterated derivative of order `k` has `p.iteratedFDerivSeries k` as a power
 series. -/
 noncomputable def FormalMultilinearSeries.iteratedFDerivSeries
@@ -99,7 +102,7 @@ lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
       apply p.congr_zero (by abel) h
 
 /-- If the `n`-th term in a power series is zero, then the `n`-th derivative of the corresponding
-function vanished. -/
+function vanishes. -/
 lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_zero
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (hn : p n = 0) :
