@@ -27,8 +27,13 @@ variable (F : C ⥤ D)
 
 instance [h : RepresentablyFlat F] : F.Final := ⟨inferInstance⟩
 
-lemma isFiltered_of_preservesFiniteLimits [IsFiltered C] [RepresentablyFlat F] : IsFiltered D :=
+lemma isFiltered_of_representablyFlat [IsFiltered C] [RepresentablyFlat F] : IsFiltered D :=
   haveI : PreservesFiniteLimits F := preservesFiniteLimits_of_flat F
   isFiltered_of_isFiltered_costructuredArrow (𝟭 _) F
+
+lemma isCofiltered_of_representablyCoflat [IsCofiltered C] [RepresentablyCoflat F] :
+    IsCofiltered D := by
+  have := isFiltered_of_representablyFlat F.op
+  exact isCofiltered_of_isFiltered_op D
 
 end CategoryTheory
