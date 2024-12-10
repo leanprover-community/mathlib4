@@ -66,7 +66,7 @@ def get? : Seq α → ℕ → Option α :=
   Subtype.val
 
 @[simp]
-theorem val_eq_get {α : Type u} (li : Seq α) (n : ℕ) : li.val n = li.get? n := by
+theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n := by
   rfl
 
 @[simp]
@@ -171,7 +171,7 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
   ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons; exact mem_cons_of_mem _ m]⟩
 
 @[simp]
-theorem get?_mem {α : Type u} {li : Seq α} {n : ℕ} {x : α} (h : li.get? n = .some x) : x ∈ li := by
+theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := by
   simp [Membership.mem, Seq.Mem, Any]
   exact ⟨n, h.symm⟩
 
@@ -252,18 +252,18 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     apply cons
 
 @[simp]
-theorem noConfusion {α : Type u} {hd : α} {tl : Seq α} : (cons hd tl) ≠ .nil := by
+theorem noConfusion {x : α} {s : Seq α} : (cons x s) ≠ .nil := by
   intro h
   apply_fun head at h
   simp at h
 
 @[simp]
-theorem noConfusion_symm {α : Type u} {hd : α} {tl : Seq α} : .nil ≠ (cons hd tl) := by
+theorem noConfusion_symm {x : α} {s : Seq α} : .nil ≠ (cons x s) := by
   symm
   simp
 
-theorem cons_eq_cons {α : Type u} {hd hd' : α} {tl tl' : Seq α} :
-    (cons hd tl = cons hd' tl') ↔ (hd = hd' ∧ tl = tl') := by
+theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
+    (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
   constructor
   · intro h
     constructor
@@ -271,21 +271,21 @@ theorem cons_eq_cons {α : Type u} {hd hd' : α} {tl tl' : Seq α} :
       simpa using h
     · apply_fun tail at h
       simpa using h
-  · rintro ⟨h_hd, h_tl⟩
+  · rintro ⟨hx, hs⟩
     congr
 
-theorem head_eq_some {α : Type u} {li : Seq α} {hd : α} (h : li.head = some hd) :
-    li = cons hd li.tail := by
-  cases' li with hd' tl <;> simp at h
+theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
+    s = cons x s.tail := by
+  cases' s with x' tl <;> simp at h
   simpa [cons_eq_cons]
 
-theorem head_eq_none {α : Type u} {li : Seq α} (h : li.head = none) : li = nil := by
-  cases' li with hd tl
+theorem head_eq_none {s : Seq α} (h : s.head = none) : s = nil := by
+  cases' s with x tl
   · rfl
   · simp at h
 
 @[simp]
-theorem head_eq_none_iff {α : Type u} {li : Seq α} : li.head = none ↔ li = nil := by
+theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil := by
   constructor
   · apply head_eq_none
   · intro h
@@ -353,13 +353,13 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
 
-theorem corec_nil {α : Type u} {β : Type u} (g : β → Option (α × β)) (b : β)
-    (h : g b = .none) : corec g b = nil := by
+theorem corec_nil (f : β → Option (α × β)) (b : β)
+    (h : f b = .none) : corec f b = nil := by
   apply destruct_eq_nil
   simp [h]
 
-theorem corec_cons {α : Type u} {β : Type u} {g : β → Option (α × β)} {b : β} {hd : α} {tl : β}
-    (h : g b = .some (hd, tl)) : corec g b = cons hd (corec g tl) := by
+theorem corec_cons {f : β → Option (α × β)} {b : β} {x : α} {s : β}
+    (h : f b = .some (x, s)) : corec f b = cons x (corec f s) := by
   apply destruct_eq_cons
   simp [h]
 
@@ -571,13 +571,13 @@ def splitAt : ℕ → Seq α → List α × Seq α
       (List.cons x l, r)
 
 /-- Folds a sequence using `f`, producing sequence of intermedieate values, i.e.
-`[init, f init li.head, f (f init li.head) li.tail.head, ...]`. -/
-def fold {α : Type u} {β : Type v} (li : Seq α) (init : β) (f : β → α → β) : Seq β :=
-  let g : β × Seq α → Option (β × (β × Seq α)) := fun (acc, x) =>
+`[init, f init s.head, f (f init s.head) s.tail.head, ...]`. -/
+def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
+  let f : β × Seq α → Option (β × (β × Seq α)) := fun (acc, x) =>
     match destruct x with
     | none => .none
-    | some (hd, tl) => .some (f acc hd, f acc hd, tl)
-  cons init <| corec g (init, li)
+    | some (x, s) => .some (f acc x, f acc x, s)
+  cons init <| corec f (init, s)
 
 section ZipWith
 
@@ -647,16 +647,16 @@ theorem nil_append (s : Seq α) : append nil s = s := by
     exact ⟨rfl, s, rfl, rfl⟩
 
 @[simp]
-theorem take_nil {α : Type u} {n : ℕ} : (nil (α := α)).take n = List.nil := by
+theorem take_nil {n : ℕ} : (nil (α := α)).take n = List.nil := by
   cases n <;> rfl
 
 @[simp]
-theorem take_zero {α : Type u} {li : Seq α} : li.take 0 = [] := by
-  cases li <;> rfl
+theorem take_zero {s : Seq α} : s.take 0 = [] := by
+  cases s <;> rfl
 
 @[simp]
-theorem take_succ_cons {α : Type u} {n : ℕ} {hd : α} {tl : Seq α} :
-    (cons hd tl).take (n + 1) = hd :: tl.take n := by
+theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
+    (cons x s).take (n + 1) = x :: s.take n := by
   rfl
 
 @[simp]
@@ -676,9 +676,9 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         | 0 => simp
         | n+1 => simp [List.get?_cons_succ, Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
 
-theorem get?_mem_take {α : Type u} {li : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
-    (h_get : li.get? m = .some x) : x ∈ li.take n := by
-  induction m generalizing n li with
+theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
+    (h_get : s.get? m = .some x) : x ∈ s.take n := by
+  induction m generalizing n s with
   | zero =>
     obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
     rw [← hl]
@@ -687,7 +687,7 @@ theorem get?_mem_take {α : Type u} {li : Seq α} {m n : ℕ} (h_mn : m < n) {x 
   | succ k ih =>
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
     subst hl
-    have : ∃ y, li.get? 0 = .some y := by
+    have : ∃ y, s.get? 0 = .some y := by
       apply ge_stable _ _ h_get
       simp
     obtain ⟨y, hy⟩ := this
@@ -708,21 +708,21 @@ theorem terminates_ofList (l : List α) : (ofList l).Terminates :=
 theorem terminatedAt_nil {n : ℕ} : TerminatedAt (nil : Seq α) n := rfl
 
 @[simp]
-theorem cons_not_terminatedAt_zero {α : Type u} {hd : α} {tl : Seq α} :
-    ¬(cons hd tl).TerminatedAt 0 := by
+theorem cons_not_terminatedAt_zero {x : α} {s : Seq α} :
+    ¬(cons x s).TerminatedAt 0 := by
   simp [TerminatedAt]
 
 @[simp]
-theorem cons_terminatedAt_succ_iff {α : Type u} {hd : α} {tl : Seq α} {n : ℕ} :
-    (cons hd tl).TerminatedAt (n + 1) ↔ tl.TerminatedAt n := by
+theorem cons_terminatedAt_succ_iff {x : α} {s : Seq α} {n : ℕ} :
+    (cons x s).TerminatedAt (n + 1) ↔ s.TerminatedAt n := by
   simp [TerminatedAt]
 
 @[simp]
 theorem terminates_nil : Terminates (nil : Seq α) := ⟨0, rfl⟩
 
 @[simp]
-theorem terminates_cons_iff {hd : α} {tl : Seq α} :
-    (cons hd tl).Terminates ↔ tl.Terminates := by
+theorem terminates_cons_iff {x : α} {s : Seq α} :
+    (cons x s).Terminates ↔ s.Terminates := by
   constructor <;> intro ⟨n, h⟩
   · exact ⟨n, cons_terminatedAt_succ_iff.mp (terminated_stable _ (Nat.le_succ _) h)⟩
   · exact ⟨n + 1, cons_terminatedAt_succ_iff.mpr h⟩
@@ -784,12 +784,12 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
 
-theorem length_take_le {α : Type u} {li : Seq α} {n : ℕ} : (li.take n).length ≤ n := by
-  induction n generalizing li with
+theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
+  induction n generalizing s with
   | zero => simp
   | succ m ih =>
     rw [take]
-    cases li.destruct with
+    cases s.destruct with
     | none => simp
     | some v =>
       obtain ⟨x, r⟩ := v
@@ -1017,7 +1017,7 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
     ([], s)
 
 @[simp]
-theorem drop_get? {α : Type u} {n m : ℕ} {li : Seq α} : (li.drop n).get? m = li.get? (n + m) := by
+theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) := by
   induction n generalizing m with
   | zero => simp
   | succ k ih =>
@@ -1038,25 +1038,25 @@ theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   rw [← get?_tail, ← dropn_tail]; apply IH
 
 @[simp]
-theorem drop_succ_cons {α : Type u} {hd : α} {tl : Seq α} {n : ℕ} :
-    (cons hd tl).drop (n + 1) = tl.drop n := by
+theorem drop_succ_cons {x : α} {s : Seq α} {n : ℕ} :
+    (cons x s).drop (n + 1) = s.drop n := by
   rw [← dropn_tail]
   simp
 
 @[simp]
-theorem drop_nil {α : Type u} {n : ℕ} : (@nil α).drop n = nil := by
+theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   induction n with
   | zero =>
     simp
   | succ m ih =>
     simp [← dropn_tail, ih]
 
-theorem take_drop {α : Type u} {li : Seq α} {n m : ℕ} :
-    (li.take n).drop m = (li.drop m).take (n - m) := by
-  induction m generalizing n li with
+theorem take_drop {s : Seq α} {n m : ℕ} :
+    (s.take n).drop m = (s.drop m).take (n - m) := by
+  induction m generalizing n s with
   | zero => simp
   | succ k ih =>
-    cases' li with hd tl
+    cases' s with x tl
     · simp
     cases n with
     | zero => simp
@@ -1108,14 +1108,14 @@ theorem enum_cons (s : Seq α) (x : α) :
     congr
 
 @[simp]
-theorem fold_nil {α : Type u} {β : Type u} (init : β) (f : β → α → β) :
+theorem fold_nil (init : β) (f : β → α → β) :
     nil.fold init f = cons init nil := by
   unfold fold
   simp [corec_nil]
 
 @[simp]
-theorem fold_cons {α : Type u} {β : Type u} (init : β) (f : β → α → β) (hd : α) (tl : Seq α) :
-    (cons hd tl).fold init f = cons init (tl.fold (f init hd) f) := by
+theorem fold_cons (init : β) (f : β → α → β) (x : α) (s : Seq α) :
+    (cons x s).fold init f = cons init (s.fold (f init x) f) := by
   unfold fold
   simp only
   congr
@@ -1123,8 +1123,8 @@ theorem fold_cons {α : Type u} {β : Type u} (init : β) (f : β → α → β)
   simp
 
 @[simp]
-theorem fold_head {α : Type u} {β : Type u} (init : β) (f : β → α → β) (li : Seq α) :
-    (li.fold init f).head = init := by
+theorem fold_head (init : β) (f : β → α → β) (s : Seq α) :
+    (s.fold init f).head = init := by
   simp [fold]
 
 end Seq
