@@ -101,7 +101,7 @@ when `f : A ⟶ B` is a morphism in the category `CommRingCat`. -/
 noncomputable def D : (KaehlerDifferential f).Derivation f :=
   letI := f.hom.toAlgebra
   ModuleCat.Derivation.mk
-    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp [algebra]) (by simp [algebra])
+    (fun b ↦ _root_.KaehlerDifferential.D A B b) (by simp) (by simp)
       (_root_.KaehlerDifferential.D A B).map_algebraMap
 
 /-- When `f : A ⟶ B` is a morphism in the category `CommRingCat`, this is the
