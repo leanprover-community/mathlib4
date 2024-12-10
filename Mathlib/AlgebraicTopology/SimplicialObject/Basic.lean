@@ -484,10 +484,9 @@ instance : Category (CosimplicialObject C) := by
 
 namespace CosimplicialObject
 
-set_option quotPrecheck false in
 /-- `X _[n]` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
-  notation:1000 (priority := high) X " _[" n "]" =>
+  notation3:1000 X " _[" n "]" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :

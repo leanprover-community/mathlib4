@@ -252,7 +252,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
     (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
   apply limit.hom_ext
   rintro ⟨j⟩
-  simp
+  simp [φ]
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
