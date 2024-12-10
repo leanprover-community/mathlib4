@@ -570,6 +570,15 @@ def splitAt : ℕ → Seq α → List α × Seq α
       let (l, r) := splitAt n s'
       (List.cons x l, r)
 
+/-- Folds a sequence using `f`, producing sequence of intermedieate values, i.e.
+`[init, f init li.head, f (f init li.head) li.tail.head, ...]`. -/
+def fold {α : Type u} {β : Type v} (li : Seq α) (init : β) (f : β → α → β) : Seq β :=
+  let g : β × Seq α → Option (β × (β × Seq α)) := fun (acc, x) =>
+    match destruct x with
+    | none => .none
+    | some (hd, tl) => .some (f acc hd, f acc hd, tl)
+  cons init <| corec g (init, li)
+
 section ZipWith
 
 /-- Combine two sequences with a function -/
@@ -1097,6 +1106,26 @@ theorem enum_cons (s : Seq α) (x : α) :
   · simp
   · simp only [get?_enum, get?_cons_succ, map_get?, Option.map_map]
     congr
+
+@[simp]
+theorem fold_nil {α : Type u} {β : Type u} (init : β) (f : β → α → β) :
+    nil.fold init f = cons init nil := by
+  unfold fold
+  simp [corec_nil]
+
+@[simp]
+theorem fold_cons {α : Type u} {β : Type u} (init : β) (f : β → α → β) (hd : α) (tl : Seq α) :
+    (cons hd tl).fold init f = cons init (tl.fold (f init hd) f) := by
+  unfold fold
+  simp only
+  congr
+  rw [corec_cons]
+  simp
+
+@[simp]
+theorem fold_head {α : Type u} {β : Type u} (init : β) (f : β → α → β) (li : Seq α) :
+    (li.fold init f).head = init := by
+  simp [fold]
 
 end Seq
 
