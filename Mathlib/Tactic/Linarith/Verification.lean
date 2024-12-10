@@ -136,8 +136,9 @@ def typeOfIneqProof (prf : Expr) : MetaM Expr := do
 where the numerals are natively of type `tp`.
 -/
 def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none]
-  mkAppM `neg_neg_of_pos #[zero_lt_one]
+  let ⟨.succ u, ~q(Type u), ~q($α)⟩ ← inferTypeQ' tp | throwError m!"{tp} is not a type"
+  letI := ← synthInstanceQ q(StrictOrderedRing $α)
+  return q(neg_neg_of_pos <| Linarith.zero_lt_one (α := $α))
 
 /--
 `addNegEqProofs l` inspects the list of proofs `l` for proofs of the form `t = 0`. For each such
@@ -223,9 +224,11 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       -- we also prove that `sm < 0`
       let sm_lt_zero ← mkLTZeroProof zip
       -- this is a contradiction.
-      let pftp ← inferType sm_lt_zero
-      let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
-      let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
-      mkAppM ``Linarith.lt_irrefl #[pf']
+      let ⟨u, α, smq⟩ ← inferTypeQ' sm
+      haveI : Q(StrictOrderedCommRing $α) := ← synthInstanceQ q(StrictOrderedCommRing $α)
+      have h1 : Q($smq = 0) := sm_eq_zero
+      have h2 : Q($smq < 0) := sm_lt_zero
+      have : Q(False) := q(Linarith.lt_irrefl (($h1).symm.trans_lt $h2))
+      return this
 
 end Linarith
