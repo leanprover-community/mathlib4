@@ -4,15 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
 import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
 
 Let `G` be a complete nonarchimedean abelian group and let `f : α → G` be a function. We prove that
-`f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`.
-We also prove the analogous result in the multiplicative setting.
+`f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`
+(`NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero`). We also prove the analogous result in
+the multiplicative setting (`NonarchimedeanGroup.multipliable_iff_tendsto_cofinite_one`).
+
+We also prove that multiplication distributes over arbitrarily indexed sums in a nonarchimedean
+ring. That is, let `R` be a nonarchimedean ring, let `f : α → R` be a function that sums to `a : R`,
+and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × β) ↦ (f i.1) * (g i.2)`
+sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
 
@@ -67,3 +74,46 @@ theorem multipliable_iff_tendsto_cofinite_one [CompleteSpace G] (f : α → G) :
   ⟨Multipliable.tendsto_cofinite_one, multipliable_of_tendsto_cofinite_one⟩
 
 end NonarchimedeanGroup
+
+section NonarchimedeanRing
+
+variable {α β R : Type*}
+variable [Ring R] [UniformSpace R] [UniformAddGroup R] [NonarchimedeanRing R]
+
+/- Let `R` be a complete nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable,
+then so is `fun (i : α × β) ↦ (f i.1) * (g i.2)`. We will prove later that the assumption that `R`
+is complete is not necessary. -/
+private theorem Summable.mul_of_complete_nonarchimedean [CompleteSpace R] {f : α → R} {g : β → R}
+    (hf : Summable f) (hg : Summable g) : Summable (fun (i : α × β) ↦ (f i.1) * (g i.2)) := by
+  rw [NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero] at *
+  exact tendsto_mul_cofinite_nhds_zero hf hg
+
+/- Let `R` be a complete T3 nonarchimedean ring, let `f : α → R` be a function that sums to `a : R`,
+and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × β) ↦ (f i.1) * (g i.2)`
+sums to `a * b`. We will prove later that the assumption that `R` is complete and T3 is not
+necessary. -/
+private theorem HasSum.mul_of_complete_nonarchimedean [CompleteSpace R] [T3Space R]
+    {f : α → R} {g : β → R} {a b : R} (hf : HasSum f a) (hg : HasSum g b) :
+    HasSum (fun (i : α × β) ↦ (f i.1) * (g i.2)) (a * b) :=
+  hf.mul hg (hf.summable.mul_of_complete_nonarchimedean hg.summable)
+
+/-- Let `R` be a nonarchimedean ring, let `f : α → R` be a function that sums to `a : R`,
+and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × β) ↦ (f i.1) * (g i.2)`
+sums to `a * b`. -/
+theorem HasSum.mul_of_nonarchimedean {f : α → R} {g : β → R} {a b : R} (hf : HasSum f a)
+    (hg : HasSum g b) : HasSum (fun (i : α × β) ↦ (f i.1) * (g i.2)) (a * b) := by
+  rw [← hasSum_iff_hasSum_compl] at *
+  convert hf.mul_of_complete_nonarchimedean hg <;>
+  exact UniformSpace.Completion.coe_mul _ _
+
+/-- Let `R` be a nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable, then
+so is `fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
+theorem Summable.mul_of_nonarchimedean {f : α → R} {g : β → R} (hf : Summable f)
+    (hg : Summable g) : Summable (fun (i : α × β) ↦ (f i.1) * (g i.2)) :=
+  (hf.hasSum.mul_of_nonarchimedean hg.hasSum).summable
+
+theorem tsum_mul_tsum_of_nonarchimedean [T0Space R] {f : α → R} {g : β → R} (hf : Summable f)
+    (hg : Summable g) : ∑' (i : α × β), (f i.1) * (g i.2) = (∑' i, f i) * ∑' i, g i :=
+  (hf.hasSum.mul_of_nonarchimedean hg.hasSum).tsum_eq
+
+end NonarchimedeanRing
