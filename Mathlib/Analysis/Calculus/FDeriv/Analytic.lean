@@ -762,6 +762,10 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
 variable [CompleteSpace F]
 include h
 
+/-- The iterated derivative of an analytic function, on vectors `(y, ..., y)`, is given by `n!`
+times the `n`-th term in the power series. For a more general result giving the full iterated
+derivative as a sum over the permutations of `Fin n`, see
+`HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum`. -/
 theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
