@@ -259,6 +259,10 @@ theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconn
 theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
   isConnected_of_equivalent (opOpEquivalence J)
 
+variable (J) in
+theorem isConnected_iff_isConnected_op : IsConnected J ↔ IsConnected Jᵒᵖ :=
+  ⟨fun _ => isConnected_op, fun _ => isConnected_of_isConnected_op⟩
+
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
 def Zag (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
