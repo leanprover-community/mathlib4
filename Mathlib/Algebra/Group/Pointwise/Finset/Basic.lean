@@ -740,11 +740,11 @@ theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image₂_subset_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image₂_subset_right
 
@@ -1471,6 +1471,8 @@ end SMul
 section Mul
 
 variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
+
+@[to_additive] lemma smul_finset_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image₂_right
 
 @[to_additive]
 theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
