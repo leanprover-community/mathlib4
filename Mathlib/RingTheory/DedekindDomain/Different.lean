@@ -188,7 +188,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   rw [cramer_apply]
   apply IsIntegral.det
   intros j k
-  rw [updateColumn_apply]
+  rw [updateCol_apply]
   split
   · rw [mul_assoc]
     rw [mem_traceDual_iff_isIntegral] at hx
