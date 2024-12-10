@@ -9,9 +9,14 @@ import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.MetricSpace.Polish
 
 /-!
-# Inner regularity of Measures wrt compact sets
-In this file we show that a `FiniteMeasure P`  on a `PseudoEMetricSpace E` is inner regular with
-respect to compact sets: `theorem inner_regularWRT_isCompact_of_complete_countable`.
+# Inner regularity of finite measures
+
+The main result of this file is `theorem inner_regularWRT_isCompact_of_complete_countable`: 
+A `FiniteMeasure P` on a `PseudoEMetricSpace E` and `CompleteSpace E` with 
+`SecondCountableTopology E` is inner regular with respect to compact sets.
+
+Finite measures on Polish spaces are an important special case, which makes the result 
+`theorem PolishSpace.innerRegular_isCompact_measurableSet` an important result in probability.
 -/
 
 open Set MeasureTheory
