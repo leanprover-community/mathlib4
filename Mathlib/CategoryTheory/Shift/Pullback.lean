@@ -124,10 +124,11 @@ variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 
 abbrev Functor.pullbackShift : PullbackShift C φ ⥤ PullbackShift D φ := F
 
+open Functor in
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then it also commutes with
 their pullbacks by an additive map. Scoped instance between we might not want it to be global.
 -/
-noncomputable scoped instance Functor.pullbackCommShift : Functor.CommShift (F.pullbackShift φ) A
+noncomputable scoped instance Pullback.CommShift : CommShift (F.pullbackShift φ) A
     where
   iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) (pullbackShift φ F) ≪≫
     CommShift.iso (F := F) (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
@@ -155,26 +156,26 @@ noncomputable scoped instance Functor.pullbackCommShift : Functor.CommShift (F.p
     erw [id_comp]
     slice_rhs 6 7 => erw [← (CommShift.iso (φ b)).hom.naturality]
     slice_rhs 4 5 => rw [← map_comp, (pullbackShiftIso C φ b (φ b) rfl).hom.naturality, map_comp]
-    simp only [comp_obj, comp_map, assoc]
+    simp only [comp_obj, Functor.comp_map, assoc]
     slice_rhs 3 4 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
     slice_rhs 4 5 => rw [← map_comp]; erw [← map_comp]; rw [Iso.inv_hom_id_app, map_id, map_id]
     rw [id_comp, id_comp, assoc, assoc]; rfl
 
-open Functor
+open Pullback
 
 lemma pullbackCommShift_iso_hom_app (a : A) (X : C) :
-    (CommShift.iso (F := (F.pullbackShift φ)) a).hom.app X =
+    (Functor.commShiftIso (F := (F.pullbackShift φ)) a).hom.app X =
     F.map ((pullbackShiftIso C φ a (φ a) rfl).hom.app X) ≫ (F.commShiftIso (φ a)).hom.app X ≫
     (pullbackShiftIso D φ a (φ a) rfl).inv.app (F.obj X) := by
-  simp [Functor.CommShift.iso, Functor.pullbackCommShift]; rfl
+  simp [Functor.CommShift.iso, Pullback.CommShift]; rfl
 
 lemma pullbackCommShift_iso_inv_app (a : A) (X : C) :
-    (CommShift.iso (F := F.pullbackShift φ) a).inv.app X =
+    (Functor.commShiftIso (F := F.pullbackShift φ) a).inv.app X =
     ((pullbackShiftIso D φ a (φ a) rfl).hom.app (F.obj X)) ≫ (F.commShiftIso (φ a)).inv.app X ≫
     F.map ((pullbackShiftIso C φ a (φ a) rfl).inv.app X) := by
-  rw [← cancel_mono ((CommShift.iso (F := F.pullbackShift φ) a).hom.app X), Iso.inv_hom_id_app,
-    pullbackCommShift_iso_hom_app]
-  slice_rhs 3 4 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+  rw [← cancel_mono ((Functor.commShiftIso (F := F.pullbackShift φ) a).hom.app X),
+  Iso.inv_hom_id_app, pullbackCommShift_iso_hom_app]
+  slice_rhs 3 4 => rw [← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id]
   simp
 
 end CommShift

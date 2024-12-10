@@ -95,7 +95,7 @@ def compatCommShift_op (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adj.comp
 
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F`
-and `G`, then we a have a shift-twisted adjunction right triangle.
+and `G`, then we a have a shift-twisted adjunction left triangle.
 -/
 lemma compatCommShift_right_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A]
     [adj.compatCommShift A] (a : A) (Y : D) :
@@ -139,33 +139,22 @@ lemma compatCpmmShift_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G
   simp only [assoc] at this
   exact this
 
-noncomputable def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
-    @adjunction_compat C D _ _ F G A _ _ _ adj inferInstance
-    ((left_right_equiv adj).toFun inferInstance) := by
-  apply @adjunction_compat.mk C D _ _ F G A _ _ _ adj _ ((left_right_equiv adj).toFun inferInstance)
-  intro a a' h X Y u
-  exact left_to_right_compat adj inferInstance a a' h X Y u
-
-def left_right_equiv_compat_backward (adj : F ⊣ G) [CommShift G A] :
-    @adjunction_compat C D _ _ F G A _ _ _ adj ((left_right_equiv adj).invFun inferInstance)
-    inferInstance := by
-  apply @adjunction_compat.mk C D _ _ F G A _ _ _ adj
-    ((left_right_equiv adj).invFun inferInstance) _
-  intro a a' h X Y u
-  exact right_to_left_compat adj inferInstance a a' h X Y u
-
 section Pullback
 
 open Adjunction CommShift
 
 variable {B : Type*} [AddGroup B] (φ : B →+ A)
 
-def adjunction_compat_pullback (adj : F ⊣ G) [CommShift F A] [CommShift G A]
-    [CommShift.adjunction_compat A adj] :
-    @CommShift.adjunction_compat (PullbackShift C φ) (PullbackShift D φ) _ _ F G B _ _ _
-    adj (F.pullbackCommShift φ) (G.pullbackCommShift φ) := by
-  refine @CommShift.adjunction_compat.mk (PullbackShift C φ) (PullbackShift D φ) _ _ F G B _ _ _
-    adj (F.pullbackCommShift φ) (G.pullbackCommShift φ) ?_
+open scoped Pullback in
+/--
+If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F`
+and `G`, then it is also compatible with their pullbacks by a morphism of additive
+groups (given by `CategoryTheory.Functor.pullbackCommShift`).
+-/
+def compat_pullbackCommShift (adj : F ⊣ G) [CommShift F A] [CommShift G A]
+    [adj.compatCommShift A] :
+    adj.compatCommShift (C := PullbackShift C φ) (D := PullbackShift D φ) B := by
+  refine compatCommShift.mk ?_
   intro b b' h X Y u
   have h' : b' + b = 0 := by simp [eq_neg_of_add_eq_zero_left h]
   rw [← cancel_mono ((pullbackShiftIso C φ b (φ b) rfl).hom.app (G.obj Y)), homEquiv_apply,
@@ -543,8 +532,21 @@ noncomputable def left_right_equiv (adj : F ⊣ G) : CommShift F A ≃ CommShift
     rw [id_comp] at this
     exact this.symm
 
+-- compatibility of this equiv
+noncomputable def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
+    @compatCommShift C D _ _ F G A _ _ _ adj inferInstance
+    ((left_right_equiv adj).toFun inferInstance) := by
+  apply @compatCommShift.mk C D _ _ F G A _ _ _ adj _ ((left_right_equiv adj).toFun inferInstance)
+  intro a a' h X Y u
+  exact left_to_right_compat adj inferInstance a a' h X Y u
 
-
+def left_right_equiv_compat_backward (adj : F ⊣ G) [CommShift G A] :
+    @compatCommShift C D _ _ F G A _ _ _ adj ((left_right_equiv adj).invFun inferInstance)
+    inferInstance := by
+  apply @compatCommShift.mk C D _ _ F G A _ _ _ adj
+    ((left_right_equiv adj).invFun inferInstance) _
+  intro a a' h X Y u
+  exact right_to_left_compat adj inferInstance a a' h X Y u
 
 end Adjunction
 
