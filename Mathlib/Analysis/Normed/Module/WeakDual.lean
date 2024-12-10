@@ -187,6 +187,12 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
+theorem polar_union {s t : Set E} : polar 𝕜 (s ∪ t) = polar 𝕜 s ∩ polar 𝕜 t :=
+  NormedSpace.polar_union _
+
+theorem polar_iUnion {ι} {s : ι → Set E} : polar 𝕜 (⋃ i, s i) = ⋂ i, polar 𝕜 (s i) :=
+  NormedSpace.polar_iUnion _
+
 variable {𝕜}
 
 /-- While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
@@ -229,5 +235,313 @@ the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : Dual 𝕜 E) (r : ℝ) :
     IsCompact (toNormedDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
+
+/-- More generally could consider a decreasing sequence of fundamental neighbourhoods of 0 -/
+def U : ℕ → Set E
+  | 0 => univ
+  | n => ball 0 n⁻¹
+
+/- Lean would interpret `ball 0 n⁻¹` as ∅, so we set it to univ above -/
+lemma U0 : ball (0 : E) 0⁻¹ = ∅ := by
+  simp only [U, CharP.cast_eq_zero, inv_zero, ball_zero]
+
+lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
+  -- Should we be able to use Metric.closedBall_zero here?
+  rw [closedBall_zero', closure_singleton, U, polar]
+  simp only [polar_univ]
+  rfl
+
+lemma test : U (E := E) 0 = univ := rfl
+
+instance (n : ℕ) : Nonempty (U (E := E) n) := by
+  use 0
+  cases n
+  · rw [U]
+    trivial
+  · simp only [U, Nat.cast_add, Nat.cast_one, mem_ball, dist_self, inv_pos]
+    exact Nat.cast_add_one_pos _
+
+lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E := E) n)) := by
+  apply isCompact_polar
+  cases' n with m
+  · simp only [U, univ_mem]
+  · simp only [U, Nat.cast_add, Nat.cast_one]
+    rw [Metric.mem_nhds_iff]
+    use (↑m + 1)⁻¹
+    simp only [gt_iff_lt, inv_pos, subset_refl, and_true]
+    exact Nat.cast_add_one_pos m
+
+universe u
+
+variable {𝕜₁ : Type u} [RCLike 𝕜₁]
+variable {E₁ : Type u} [NormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
+
+/- The closed set, not containing the origin -/
+variable (C : Set (WeakDual 𝕜₁ E₁))
+
+/- Placeholder for union Fⱼ 0 ≤ j ≤ m-/
+variable (s : Set E₁)
+
+/- Placeholder for inductive step -/
+variable (n : ℕ)
+
+/-- For all x, let K x be the intersection of 4 sets-/
+def K : E₁ → Set (WeakDual 𝕜₁ E₁) :=
+  fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {x} ∩ C ∩ polar 𝕜₁ (U (n+2))
+
+lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) : IsClosed (K C s n x) :=
+  IsClosed.inter (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar 𝕜₁ _)) hC₁)
+    (isClosed_polar 𝕜₁ (U (n + 2)))
+
+lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+    ⋂ (x : (U (E := E₁) (n + 1))), K C s n x = ∅ := by
+  simp_rw [K]
+  rw [← iInter_inter, ← iInter_inter, ← inter_iInter, iInter_coe_set]
+  have e1 : ⋂ i ∈ U (n + 1), polar 𝕜₁ {i} = polar 𝕜₁ (U (E := E₁) (n+1)) := by
+    simp_rw [polar, NormedSpace.polar]
+    rw [← (dualPairing 𝕜₁ E₁).flip.iInter_polar_singleton_eq_polar]
+    rfl
+  rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
+
+lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i.val = univ := by
+  simp_all only [Finset.not_mem_empty, iInter_of_empty, iInter_univ]
+
+lemma ss2 (x : U (E := E₁) (n + 1)) : (polar 𝕜₁ (U (n+2)) ∩ K C s n x ) = K C s n x := by
+  rw [K, inter_comm, inter_assoc, inter_self]
+
+lemma more_confusion (u : Finset (U (n + 1))) (h : Nonempty u) :
+    ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) =
+      ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i ∈ u), (K C s n i.val))) := by
+  aesop
+
+lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
+    ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) = ⋂ (i ∈ u), (K C s n i.val) := by
+  rw [inter_iInter]
+  simp_rw [ss2]
+  exact Eq.symm (biInter_eq_iInter (fun x ↦ x ∈ u.val) fun x _ ↦ K C s n x)
+
+lemma lala2 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
+    (polar 𝕜₁ s ∩ ⋂ i ∈ u, polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
+    (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
+  aesop
+
+lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
+    (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+    ∃ F, F.Finite ∧ F ⊆ (U (E := E₁) (n + 1)) ∧
+      polar 𝕜₁ (s ∪ F) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
+  obtain ⟨u,hu⟩ := isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2)) _
+    (fun i => isClosedK _ _ _ i hC₁) (by
+      rw [inter_empty _ _ _ h]
+      exact Set.inter_empty _
+    )
+  let F := (u.toSet : Set E₁)
+  use F
+  exact ⟨toFinite _, ⟨Subtype.coe_image_subset _ _, by
+    rw [polar_union]
+    have e1: (⋂ i ∈ u, polar 𝕜₁ ({↑i} : Set E₁)) = polar 𝕜₁ (u.toSet : Set E₁) := by
+      rw [image_eq_iUnion]
+      simp [polar_iUnion]
+    rw [← e1]
+    have eu : Nonempty u := by
+      by_contra he
+      have e2 : u = ∅ := by
+        aesop
+      rw [e2, iInter_of_empty_univ, inter_univ] at hu
+      haveI : Set.Nonempty (polar 𝕜₁ (E:=E₁) (U (n + 2))) :=
+        LinearMap.polar_nonempty (dualPairing 𝕜₁ E₁).flip (U (n + 2))
+      subst e2
+      simp_all only [Set.not_nonempty_empty]
+    letI : Nonempty u := eu
+    rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
+    calc
+      _ = (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
+        rw [lala2 _ _ _ _ eu]
+      _ = (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
+        rw [inter_iInter, iInter_inter, iInter_inter]
+      _ = ⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
+          simp_all only [nonempty_subtype, Subtype.exists, iInter_coe_set]
+          ext1 x
+          simp_all only [mem_iInter, mem_inter_iff, Subtype.forall]
+      _ = ∅ := hu
+    ⟩⟩
+
+-- The topology of uniform convergence on compact subsets of E₁, a topology on the dual of E₁
+-- (i.e. linear maps from E₁ to 𝕜₁)
+--#check UniformConvergenceCLM (RingHom.id _) 𝕜₁ {(C : Set E₁) | IsCompact C}
+
+-- I think Bourbaki uses the term "precompact" for "TotallyBounded"?
+--#check UniformConvergenceCLM (RingHom.id _) 𝕜₁ {(C : Set E₁) | TotallyBounded C}
+
+-- TVS.24 Theorem 1 Banach-Dieudonné
+-- b) (the topology of uniform convergence on compact subsets) is coarser than c) (the topology of
+-- uniform convergence on compact subsets)
+open RingHom in
+lemma uc1 :
+    (UniformConvergenceCLM.instTopologicalSpace (id _) 𝕜₁ {(C : Set E₁) | TotallyBounded C}) ≤
+    (UniformConvergenceCLM.instTopologicalSpace (id 𝕜₁) 𝕜₁ {(C : Set E₁) | IsCompact C}) :=
+  UniformConvergenceCLM.topologicalSpace_mono _ _ (fun _ hC => IsCompact.totallyBounded hC)
+
+/-
+
+- Definitions and basic properties of absolutely convex hulls
+  https://github.com/leanprover-community/mathlib4/pull/17029
+- Definitions and basic properties of closed convex and closed absolutely convex hulls
+  https://github.com/leanprover-community/mathlib4/pull/17983 -  TVS II.13
+- The absolutely convex hull of a totally bounded (precompact) set is totally bounded (precompact)
+  https://github.com/leanprover-community/mathlib4/pull/17204 - Proposition 3 TVS II.25
+
+N.B. absolutely convex = convex and balanced.
+
+III.3 Prop 2 - In a locally convex space , every precompact (TotallyBounded) set is bounded
+I think we have this as `TotallyBounded.isVonNBounded`
+
+III.8 Def 6 An LCS is stb quasi-complete if every closed and bounded subset is complete.
+A complete LCS is quasi-complete. https://en.wikipedia.org/wiki/Quasi-complete_space
+
+The totally bounded sets form a Bornology `totallyBoundedBornology`
+
+In a Hausdorff quasi-complete space, the closure and the closed convex balanced envelope of a
+precompact (TotallyBounded) subset are compact, in fact they are precompact (II, p25, prop3) and
+complete being closed and (von Neumann) bounded. We have given this for complete spaces as
+`isCompact_closedAbsConvexHull_of_totallyBounded`.
+
+(Let S be precompact. closure S is precompact (`TotallyBounded.closure`) and VN Bounded
+(`TotallyBounded.isVonNBounded`) and closed. Hence complete by the defining property of quasi-
+complete. By `isCompact_iff_totallyBounded_isComplete` it is compact.)
+
+From TVS IV.3 Example - when E is complete the T of compact convergence coincides with compact
+convex convergence (III p8). The topology of compact convex convergence is compatible with the
+duality. This is used in corollary 2 of the BD theorem
+
+The topology of compact convex convergence is defined in TVS III.14 and is denoted `ℒ_cc(E;F)`
+
+I think the key point is III.15 Prop 2 1) ?
+
+III p8 In a Hausdorff quasi-complete space the closed convex balanced envelope of a totally bounded
+subset is compact. In particular this is true for compact subsets.
+
+So I'm guessing a sequence of linear functions converges uniformly on a compact set iff it converges
+uniformly on the closed convex balanced envelope?
+
+Terminology: A set is stb "absolutely convex" or "disked" if it is convex and balanced
+Mathlib considers absolutely convex in `Analysis/LocallyConvex/AbsConvex`
+
+-/
+
+
+/-
+theorem exists_seq_finite_subsets (hC₁ : IsClosed C) (hC₂ : 0 ∉ C): ∃ F : ℕ → Set E₁, ∀ n : ℕ,
+    (F n).Finite ∧ F n ⊆ (U n) ∧ polar 𝕜₁ (⋃₀ {F k | k < n }) ∩ polar 𝕜₁ (U n) ∩ C = ∅ := by
+  use (fun n => Nat.recOn n {(0 : E₁)} (fun n v => {(0 : E₁)}))
+  intro n
+  constructor
+  · simp only
+    cases n
+    · simp only [Nat.rec_zero, finite_singleton]
+    · simp only [finite_singleton]
+  · cases n
+    sorry
+    sorry
+-/
+
+    /-
+    · constructor
+      · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
+        singleton_ne_empty]
+    -/
+
+/-
+lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
+    (C ∩ ⋂ i ∈ u, K 𝕜 C s n i) = ∅ := by
+  apply isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
+    (polarUcompact 𝕜 (E := E) (n+2)) (K 𝕜 _ s n)
+-/
+
+--#check polarUcompact 𝕜 (n+2)
+
+--#check Set.domain
+
+--#check ↥
+
+/-
+lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
+    (h : (polar 𝕜 s) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅) :
+    ∃ (F : Set E), Finite F ∧ F ⊆ (U (n+1))∧ (polar 𝕜 (s ∪ F)) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅ :=
+  sorry
+-/
+
+variable (g : ℕ → Set ℕ) (m : ℕ)
+
+--#check ⋃₀ {g k | k < m}
+/-
+theorem iInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
+    ⋂ i ∈ closedBall (0 : E) r⁻¹, (polar 𝕜 { i }) = closedBall 0 r := by
+  conv_rhs => rw [← inv_inv r]
+  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
+    (dualPairing 𝕜 E).flip.iInter_polar_singleton_eq_polar (closedBall (0 : E) r⁻¹)]
+-/
+
+/-
+theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
+  intro n
+  cases n
+  · simp only [Nat.rec_zero, finite_singleton]
+  · simp only [finite_singleton]
+-/
+
+--#check (⊥ : Set E)
+/-- Just demo we can do this sort of thing. -/
+def myF : ℕ → Set ℕ
+  | 0 => {0}
+  | n =>  ⋃₀ {myF j | j : { j // j < n } }
+  termination_by n => n
+  decreasing_by
+    exact j.2
+
+--lemma polar_myF :
+
+
+/-
+theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (fun m =>
+    | 0 => {0}
+    | n =>  ⋃₀ {myF2 j | j : { j // j < n } }
+    termination_by n => n
+    decreasing_by
+      exact j.2
+  )
+-/
+
+/-
+decreasing_by
+  simp only [Nat.succ_eq_add_one]-/
+
+/-
+inductive F : ℕ → Set E
+  | F 0 : (⊥ : Set E)
+  | Fn : ∀ n : ℕ, F (n+1) = F n
+-/
+--def F (n : ℕ) : (F n).Finite :=
+
+/-
+theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (induction n with
+        | zero => sorry
+  )
+  intro n
+  cases n
+  · simp only [Nat.rec_zero, finite_singleton]
+  · simp only [finite_singleton]
+-/
+
+
+
+
+
+  --apply Exists.intro
+  --induction n using by exact 𝕜
+  --intro n
 
 end WeakDual
