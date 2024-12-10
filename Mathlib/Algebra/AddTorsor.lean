@@ -87,7 +87,6 @@ theorem vadd_vsub (g : G) (p : P) : (g +ᵥ p) -ᵥ p = g :=
 /-- If the same point added to two group elements produces equal
 results, those group elements are equal. -/
 theorem vadd_right_cancel {g₁ g₂ : G} (p : P) (h : g₁ +ᵥ p = g₂ +ᵥ p) : g₁ = g₂ := by
--- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
   rw [← vadd_vsub g₁ p, h, vadd_vsub]
 
 @[simp]
@@ -364,8 +363,6 @@ def constVAddHom : Multiplicative G →* Equiv.Perm P where
 
 variable {P}
 
--- Porting note: Previous code was:
--- open _Root_.Function
 open Function
 
 /-- Point reflection in `x` as a permutation. -/
@@ -412,7 +409,6 @@ theorem pointReflection_fixed_iff_of_injective_two_nsmul {x y : P} (h : Injectiv
 @[deprecated (since := "2024-11-18")] alias pointReflection_fixed_iff_of_injective_bit0 :=
 pointReflection_fixed_iff_of_injective_two_nsmul
 
--- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_two_nsmul {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (2 • · : G → G)) (y : P) :
     Injective fun x : P => pointReflection x y :=
