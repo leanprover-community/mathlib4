@@ -48,38 +48,46 @@ theorem flat_iff_of_isLocalization : Flat S M ↔ Flat R M :=
   have := IsLocalization.flat S p
   ⟨fun _ ↦ .trans R S M, fun _ ↦ .of_isLocalizedModule S p .id⟩
 
-private lemma aux (I : Ideal R) (s : Submonoid R) :
-    have hM := isBaseChange s (Localization s) (mkLinearMap s M)
-    have hIM := isBaseChange s (Localization s) (mkLinearMap s (I ⊗[R] M))
-    let e := (hIM.equiv.restrictScalars R).symm ≪≫ₗ
-      leftComm _ _ _ _ ≪≫ₗ (hM.equiv.restrictScalars R).lTensor I
-    LocalizedModule.map s (TensorProduct.lift <| lsmul R M ∘ₗ I.subtype) =
-      TensorProduct.lift (lsmul R (LocalizedModule s M) ∘ₗ I.subtype) ∘ₗ e.toLinearMap := by
-  refine linearMap_ext s (mkLinearMap s _) (mkLinearMap s _) ?_
-  ext m i
-  rw [AlgebraTensorModule.curry_apply, curry_apply, restrictScalars_apply, LinearMap.comp_apply,
-    restrictScalars_apply, mkLinearMap_apply, AlgebraTensorModule.curry_apply, curry_apply,
-    restrictScalars_apply]
-  simpa [-mkLinearMap_apply, IsBaseChange.equiv_symm_apply, IsBaseChange.equiv_tmul] using
-    (mkLinearMap_apply _ _ _).symm.trans (map_smul (mkLinearMap s M) _ _)
+noncomputable section
 
-variable (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommGroup (Mₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
-  (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+variable {S} {I : Ideal R} {s : Submonoid S}
+variable {Mₛ : Type*} [AddCommGroup Mₛ] [Module R Mₛ] [Module S Mₛ] [IsScalarTower R S Mₛ]
+variable (f : M →ₗ[S] Mₛ) [IsLocalizedModule s f]
+local notation "mI" => AlgebraTensorModule.map f (LinearMap.id (R := R) (M := I))
+local notation "mR" => AlgebraTensorModule.map f (LinearMap.id (R := R) (M := R))
 
-theorem flat_of_localized_maximal
-    (h : ∀ (J : Ideal R) [J.IsMaximal], Flat R (LocalizedModule J.primeCompl M)) :
-    Flat R M :=
-  (flat_iff _ _).mpr fun I fg ↦ injective_of_localized_maximal _ fun J hJ ↦ by
-    rw [← LinearMap.coe_restrictScalars R, aux]
-    simpa using (flat_iff _ _).mp (h J) fg
+private lemma aux :
+    ⇑(LocalizedModule.map s <| AlgebraTensorModule.lTensor S M I.subtype) =
+      (iso s mR).symm ∘ₗ AlgebraTensorModule.lTensor S Mₛ I.subtype ∘ₗ iso s mI := by
+  rw [← LinearMap.coe_restrictScalars S]
+  apply congr_arg
+  rw [LinearEquiv.eq_toLinearMap_symm_comp, ← LinearEquiv.comp_toLinearMap_symm_eq]
+  refine linearMap_ext s mI mR ?_
+  rw [LinearMap.comp_assoc, iso_symm_comp]
+  ext; simp
+
+end
+
+variable (Mₚ : ∀ (P : Ideal S) [P.IsMaximal], Type*)
+  [∀ (P : Ideal S) [P.IsMaximal], AddCommGroup (Mₚ P)]
+  [∀ (P : Ideal S) [P.IsMaximal], Module R (Mₚ P)]
+  [∀ (P : Ideal S) [P.IsMaximal], Module S (Mₚ P)]
+  [∀ (P : Ideal S) [P.IsMaximal], IsScalarTower R S (Mₚ P)]
+  (f : ∀ (P : Ideal S) [P.IsMaximal], M →ₗ[S] Mₚ P)
+  [∀ (P : Ideal S) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
 include f in
-theorem flat_of_isLocalized_maximal (H : ∀ (P : Ideal R) [P.IsMaximal], Flat R (Mₚ P)) :
-    Module.Flat R M :=
-  flat_of_localized_maximal M fun P _ ↦ .of_linearEquiv _ _ _ (iso _ (f P))
+theorem flat_of_isLocalized_maximal (H : ∀ (P : Ideal S) [P.IsMaximal], Flat R (Mₚ P)) :
+    Module.Flat R M := by
+  refine (Flat.iff_lTensor_injective' _ _).mpr fun I ↦ ?_
+  rw [← AlgebraTensorModule.coe_lTensor (A := S)]
+  refine injective_of_localized_maximal _ fun P hP ↦ ?_
+  simpa [aux _ (f P)] using (Flat.iff_lTensor_injective' _ _).mp (H P) I
+
+theorem flat_of_localized_maximal
+    (h : ∀ (P : Ideal R) [P.IsMaximal], Flat R (LocalizedModule P.primeCompl M)) :
+    Flat R M :=
+  flat_of_isLocalized_maximal _ _ _ (fun _ _ ↦ mkLinearMap _ _) h
 
 variable (s : Set S) (spn : Ideal.span s = ⊤)
   (Mₛ : ∀ _ : s, Type*)
@@ -91,36 +99,17 @@ variable (s : Set S) (spn : Ideal.span s = ⊤)
   [∀ r : s, IsLocalizedModule (.powers r.1) (g r)]
 include spn
 
-theorem flat_of_localized_span
-    (h : ∀ r : s, Flat S (LocalizedModule (.powers r.1) M)) :
-    Flat S M :=
-  (Module.flat_iff _ _).mpr fun I fg ↦ injective_of_localized_span s spn _ fun r ↦ by
-    rw [← LinearMap.coe_restrictScalars S, aux]
-    simpa using (Module.flat_iff _ _).mp (h r) fg
-
 include g in
 theorem flat_of_isLocalized_span (h : ∀ r : s, Module.Flat R (Mₛ r)) :
     Module.Flat R M := by
-  rw [Module.Flat.iff_lTensor_injective]
-  intro I fg
-  let F : M ⊗[R] I →ₗ[S] M ⊗[R] R := AlgebraTensorModule.lTensor S M (Submodule.subtype I)
-  let g' (r : s) : M ⊗[R] I →ₗ[S] Mₛ r ⊗[R] I := AlgebraTensorModule.map (g r) LinearMap.id
-  haveI (r : s) : IsLocalizedModule (Submonoid.powers r.val) (g' r) :=
-    isLocalizedModule_tensorProduct_map _ _ _
-  let g'' (r : s) : M ⊗[R] R →ₗ[S] Mₛ r ⊗[R] R := AlgebraTensorModule.map (g r) LinearMap.id
-  haveI (r : s) : IsLocalizedModule (Submonoid.powers r.val) (g'' r) :=
-    isLocalizedModule_tensorProduct_map _ _ _
-  apply injective_of_isLocalized_span s spn _ g' _ g'' F
-  have (r : s) : (IsLocalizedModule.map (Submonoid.powers r.val) (g' r) (g'' r)) F =
-      AlgebraTensorModule.lTensor S (Mₛ r) (Submodule.subtype I) := by
-    apply IsLocalizedModule.ext (Submonoid.powers r.val) (g' r) (map_units (g'' r))
-    ext x y
-    simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_comp,
-      coe_restrictScalars, Function.comp_apply, map_apply]
-    simp [g', g'', F]
-  intro r
-  rw [this]
-  apply Module.Flat.lTensor_preserves_injective_linearMap
-  exact Submodule.injective_subtype I
+  refine (Flat.iff_lTensor_injective' _ _).mpr fun I ↦ ?_
+  rw [← AlgebraTensorModule.coe_lTensor (A := S)]
+  refine injective_of_localized_span s spn _ fun r ↦ ?_
+  simpa [aux _ (g r)] using (Flat.iff_lTensor_injective' _ _).mp (h r) I
+
+theorem flat_of_localized_span
+    (h : ∀ r : s, Flat S (LocalizedModule (.powers r.1) M)) :
+    Flat S M :=
+  flat_of_isLocalized_span _ _ _ spn _ (fun _ ↦ mkLinearMap _ _) h
 
 end Module

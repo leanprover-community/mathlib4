@@ -141,15 +141,14 @@ variable [Module A M] [IsScalarTower R A M]
 open TensorProduct
 
 /-- `S⁻¹M ⊗[R] N = S⁻¹(M ⊗[R] N)`. -/
-lemma isLocalizedModule_tensorProduct_map (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+instance isLocalizedModule_tensorProduct_map (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
     IsLocalizedModule S (AlgebraTensorModule.map g (LinearMap.id (R := R) (M := N))) := by
   let Aₚ := Localization S
   letI : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
   haveI : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
   haveI : IsScalarTower R Aₚ M' :=
     IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
-  rw [isLocalizedModule_iff_isBaseChange (R := A) (S := S) (A := Aₚ)] at h
-  rw [isLocalizedModule_iff_isBaseChange (R := A) (S := S) (A := Aₚ)]
+  rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
   exact isBaseChange_tensorProduct_map _ h
 
 end
