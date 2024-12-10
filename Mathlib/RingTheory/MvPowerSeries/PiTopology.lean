@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
-import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Basic
@@ -127,6 +127,19 @@ theorem continuous_C [Semiring R] :
   split_ifs
   · exact tendsto_id
   · exact tendsto_const_nhds
+
+/-- Scalar multiplication on `MvPowerSeries` is continous -/
+instance [Ring R] [TopologicalRing R] :
+    ContinuousSMul R (MvPowerSeries σ R) := by
+  suffices (fun (u : R × MvPowerSeries σ R) ↦ (u.1 • u.2 : MvPowerSeries σ R)) =
+    (fun u : MvPowerSeries σ R × MvPowerSeries σ R ↦ u.1 * u.2) ∘ (fun u ↦ ⟨C σ R u.1, u.2⟩) by
+    apply ContinuousSMul.mk
+    rw [this]
+    apply Continuous.comp
+    · exact Continuous.mul continuous_fst continuous_snd
+    · simp only [continuous_prod_mk]
+      exact ⟨Continuous.comp continuous_C continuous_fst, continuous_snd⟩
+  ext; simp
 
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
