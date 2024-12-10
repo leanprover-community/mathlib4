@@ -11,8 +11,8 @@ import Mathlib.Topology.MetricSpace.Polish
 /-!
 # Inner regularity of finite measures
 
-The main result of this file is `theorem inner_regularWRT_isCompact_of_complete_countable`: 
-A `FiniteMeasure P` on a `PseudoEMetricSpace E` and `CompleteSpace E` with 
+The main result of this file is `theorem inner_regularWRT_isCompact_of_complete_countable`:
+A `FiniteMeasure P` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
 `SecondCountableTopology E` is inner regular with respect to compact sets.
 
 Finite measures on Polish spaces are an important special case, which makes the result 
