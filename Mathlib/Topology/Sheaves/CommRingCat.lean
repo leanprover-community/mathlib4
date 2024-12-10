@@ -47,6 +47,37 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
     F.IsSheaf :=
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
+/--
+Specialize `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat` isn't reliable.
+Instead of unfolding the definition, rewrite with `restrictOpenCommRingCat_apply` to ensure the
+correct coercion to functions is taken.
+
+(The correct fix in the longer term is to redesign concrete categories so we don't use `forget`
+everywhere, but the correct `FunLike` instance for the morphisms of those categories.)
+-/
+abbrev restrictOpenCommRingCat {X : TopCat}
+    {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
+    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
+    CommRingCat.carrier (F.obj (op U)) :=
+  TopCat.Presheaf.restrictOpen (C := CommRingCat) f U e
+
+scoped[AlgebraicGeometry] infixl:80 " |_ᵣ " => TopCat.Presheaf.restrictOpenCommRingCat
+
+open AlgebraicGeometry in
+lemma restrictOpenCommRingCat_apply {X : TopCat}
+    {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
+    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
+    f |_ᵣ U = F.map (homOfLE e).op f :=
+  rfl
+
+open AlgebraicGeometry in
+lemma _root_.CommRingCat.presheaf_restrict_restrict (X : TopCat)
+    {F : TopCat.Presheaf CommRingCat X}
+    {U V W : Opens ↑X} (e₁ : U ≤ V := by restrict_tac) (e₂ : V ≤ W := by restrict_tac)
+    (f : CommRingCat.carrier (F.obj (op W))) :
+    f |_ᵣ V |_ᵣ U = f |_ᵣ U :=
+  TopCat.Presheaf.restrict_restrict (C := CommRingCat) e₁ e₂ f
+
 section SubmonoidPresheaf
 
 open scoped nonZeroDivisors

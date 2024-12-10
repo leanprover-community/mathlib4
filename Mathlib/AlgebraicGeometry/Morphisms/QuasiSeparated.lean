@@ -183,26 +183,6 @@ theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [Qua
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
   · exact inferInstance
 
-/--
-Specialize `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat` isn't reliable.
-
-Instead of unfolding the definition, rewrite with `restrictOpenCommRingCat_apply` to ensure the
-correct coercion to functions is taken.
--/
-abbrev _root_.TopCat.Presheaf.restrictOpenCommRingCat {X : TopCat}
-    {F : TopCat.Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
-    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
-    CommRingCat.carrier (F.obj (op U)) :=
-  TopCat.Presheaf.restrictOpen (C := CommRingCat) f U e
-
-local infixl:80 " |_ᵣ " => TopCat.Presheaf.restrictOpenCommRingCat
-
-lemma _root_.TopCat.Presheaf.restrictOpenCommRingCat_apply {X : TopCat}
-    {F : TopCat.Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
-    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
-    f |_ᵣ U = F.map (homOfLE e).op f :=
-  rfl
-
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ᵣ X.basicOpen f = (f |_ᵣ X.basicOpen f) ^ n * x := by
