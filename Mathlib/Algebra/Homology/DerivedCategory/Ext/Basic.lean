@@ -247,7 +247,7 @@ lemma comp_mk₀_id (α : Ext X Y n) :
 variable (X Y) in
 @[simp]
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
-  letI := HasDerivedCategory.standard C; ext; simp [this,zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
 section
 
