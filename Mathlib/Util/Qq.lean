@@ -28,4 +28,6 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
 
+theorem QuotedLevelDefEq.rfl {u : Level} : @QuotedLevelDefEq u u := ⟨⟩
+
 end Qq
