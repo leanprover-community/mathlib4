@@ -254,14 +254,13 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
 
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
-  nsmul_right_injective hn r s hrs := by
-    rename_i n
+  nsmul_right_injective {n} hn r s hrs := by
     rw [← one_smul ℚ≥0 r, ← one_smul ℚ≥0 s, show 1 = (n : ℚ≥0)⁻¹ • (n : ℚ≥0) by simp_all]
     simp_all only [smul_assoc, Nat.cast_smul_eq_nsmul]
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
-    rw [← smul_assoc, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
-      (Nat.factorial_ne_zero n)), one_smul]
+    rw [← smul_assoc, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr n.factorial_ne_zero),
+      one_smul]
 
 end Basic_Instances
 
