@@ -918,7 +918,7 @@ lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
     {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ} (hg : Measurable g) :
     MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
   letI := TopologicalSpace.pseudoMetrizableSpacePseudoMetric γ
-  simp_rw +zetaDelta [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
+  simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
   exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
