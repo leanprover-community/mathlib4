@@ -334,7 +334,7 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
   let q : O →ₗ[T] Q := hc.lift r'
   refine ⟨q, ?_, ?_⟩
   · apply hf.algHom_ext'
-    simp [LinearMap.comp_assoc, hc.lift_comp]
+    simp [r', q, LinearMap.comp_assoc, hc.lift_comp]
   · intro q' hq'
     apply hc.algHom_ext'
     apply_fun LinearMap.restrictScalars R at hq'
@@ -390,7 +390,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     (toAlgHom R S S').toLinearMap =
       (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
     ext
-    simp [h.1.equiv_tmul, Algebra.smul_def]
+    simp [e, h.1.equiv_tmul, Algebra.smul_def]
   constructor
   rw [this]
   exact (TensorProduct.isBaseChange R S R').comp (IsBaseChange.ofEquiv e)

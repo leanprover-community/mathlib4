@@ -124,7 +124,7 @@ theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s
       le_of_eq <| tsum_eq_single 0 <| by
         rintro (_ | i)
         · simp
-        · simp [m_empty]
+        · simp [f, m_empty]
 
 theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m s ≤ m t)
     (m_subadd : ∀ s : ℕ → Set α, m (⋃ i, s i) ≤ ∑' i, m (s i)) :

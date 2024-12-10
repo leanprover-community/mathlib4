@@ -544,7 +544,6 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     γ.continuous_extend.comp ((continuous_subtype_val.max continuous_const).min continuous_const)
   source' := by
     simp only [min_def, max_def']
-    norm_cast
     split_ifs with h₁ h₂ h₃ h₄
     · simp [γ.extend_of_le_zero h₁]
     · congr
@@ -554,7 +553,6 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     all_goals rfl
   target' := by
     simp only [min_def, max_def']
-    norm_cast
     split_ifs with h₁ h₂ h₃
     · simp [γ.extend_of_one_le h₂]
     · rfl

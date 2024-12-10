@@ -519,10 +519,10 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
       tensorObj _ _ ⟶ tensorObj _ _ :=
     { hom := f.hom ⊗ g.hom
       one_hom := by
-        dsimp
+        dsimp [tensorObj]
         slice_lhs 2 3 => rw [← tensor_comp, Hom.one_hom f, Hom.one_hom g]
       mul_hom := by
-        dsimp
+        dsimp [tensorObj]
         slice_rhs 1 2 => rw [tensorμ_natural]
         slice_lhs 2 3 => rw [← tensor_comp, Hom.mul_hom f, Hom.mul_hom g, tensor_comp]
         simp only [Category.assoc] }

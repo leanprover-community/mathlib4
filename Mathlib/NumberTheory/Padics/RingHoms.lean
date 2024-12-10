@@ -119,7 +119,8 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
   rw [norm_lt_one_iff_dvd, ← (isUnit_den r h).dvd_mul_right]
   suffices ↑p ∣ r.num - n * r.den by
     convert (Int.castRingHom ℤ_[p]).map_dvd this
-    simp only [sub_mul, Int.cast_natCast, eq_intCast, Int.cast_mul, sub_left_inj, Int.cast_sub]
+    simp only [n, sub_mul, Int.cast_natCast, eq_intCast, Int.cast_mul, sub_left_inj,
+      Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, Subtype.coe_mk, coe_natCast]
     rw_mod_cast [@Rat.mul_den_eq_num r]
