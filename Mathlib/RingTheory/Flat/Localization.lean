@@ -113,7 +113,7 @@ theorem flat_of_isLocalized_span (h : ∀ r : s, Module.Flat R (Mₛ r)) :
   apply injective_of_isLocalized_span s spn _ g' _ g'' F
   have (r : s) : (IsLocalizedModule.map (Submonoid.powers r.val) (g' r) (g'' r)) F =
       AlgebraTensorModule.lTensor S (Mₛ r) (Submodule.subtype I) := by
-    apply IsLocalizedModule.ringHom_ext (Submonoid.powers r.val) (g' r) (map_units (g'' r))
+    apply IsLocalizedModule.ext (Submonoid.powers r.val) (g' r) (map_units (g'' r))
     ext x y
     simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_comp,
       coe_restrictScalars, Function.comp_apply, map_apply]

@@ -607,7 +607,7 @@ variable [AddCommMonoid α] [AddCommMonoid β] [Module A β]
 /-- Transport a module instance via an isomorphism of the underlying abelian groups.
 This has better definitional properties than `Equiv.module` since here
 the abelian group structure remains unmodified. -/
-def _root_.AddEquiv.module (e : α ≃+ β) :
+abbrev _root_.AddEquiv.module (e : α ≃+ β) :
     Module A α where
   toSMul := e.toEquiv.smul A
   one_smul := by simp [Equiv.smul_def]
