@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Finality of Projections in Comma Categories
 
 We show that `fst L R` is final if `R` is and that `snd L R` is initial if `L` is.
+As a corollary, we show that `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is
+final and `A` is connected.
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -71,6 +73,11 @@ instance initial_snd [L.Initial] : (snd L R).Initial := by
     final_equivalence_comp (opEquiv L R).functor.leftOp (fst R.op L.op)
   haveI : (snd L R).op.Final := final_of_natIso (opFunctorCompFst _ _)
   apply initial_of_final_op
+
+/-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is final and `A` is
+connected.-/
+instance isConnected_comma_of_final [IsConnected A] [R.Final] : IsConnected (Comma L R) := by
+  rwa [Types.isConnected_iff_of_final (fst L R)]
 
 end Comma
 
