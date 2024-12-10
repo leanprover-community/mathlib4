@@ -413,14 +413,6 @@ lemma corootSpan_dualAnnihilator_map_eq :
       (span R (range P.coroot')).dualCoannihilator :=
   P.flip.rootSpan_dualAnnihilator_map_eq
 
-/-- The `Weyl group` of a root pairing is the group of automorphisms of the weight space generated
-by reflections in roots. -/
-def weylGroup : Subgroup (M ≃ₗ[R] M) :=
-  Subgroup.closure (range P.reflection)
-
-lemma reflection_mem_weylGroup : P.reflection i ∈ P.weylGroup :=
-  Subgroup.subset_closure <| mem_range_self i
-
 lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
     {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
     r • α ∈ range P.root := by
@@ -434,71 +426,6 @@ lemma mem_range_coroot_of_mem_range_coreflection_of_mem_range_coroot
   obtain ⟨i, rfl⟩ := hr
   obtain ⟨j, rfl⟩ := hα
   exact ⟨P.reflection_perm i j, P.coroot_reflection_perm i j⟩
-
-lemma exists_root_eq_smul_of_mem_weylGroup {w : M ≃ₗ[R] M} (hw : w ∈ P.weylGroup) (i : ι) :
-    ∃ j, P.root j = w • P.root i :=
-  Subgroup.smul_mem_of_mem_closure_of_mem (by simp)
-    (fun _ h _ ↦ P.mem_range_root_of_mem_range_reflection_of_mem_range_root h) hw (mem_range_self i)
-
-/-- The permutation representation of the Weyl group induced by `reflection_perm`. -/
-def weylGroupToPerm : P.weylGroup →* Equiv.Perm ι where
-  toFun w :=
-  { toFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w.2 i).choose
-    invFun := fun i => (P.exists_root_eq_smul_of_mem_weylGroup w⁻¹.2 i).choose
-    left_inv := fun i => by
-      obtain ⟨w, hw⟩ := w
-      apply P.root.injective
-      rw [(P.exists_root_eq_smul_of_mem_weylGroup ((Subgroup.inv_mem_iff P.weylGroup).mpr hw)
-          ((P.exists_root_eq_smul_of_mem_weylGroup hw i).choose)).choose_spec,
-        (P.exists_root_eq_smul_of_mem_weylGroup hw i).choose_spec, inv_smul_smul]
-    right_inv := fun i => by
-      obtain ⟨w, hw⟩ := w
-      have hw' : w⁻¹ ∈ P.weylGroup := (Subgroup.inv_mem_iff P.weylGroup).mpr hw
-      apply P.root.injective
-      rw [(P.exists_root_eq_smul_of_mem_weylGroup hw
-          ((P.exists_root_eq_smul_of_mem_weylGroup hw' i).choose)).choose_spec,
-        (P.exists_root_eq_smul_of_mem_weylGroup hw' i).choose_spec, smul_inv_smul] }
-  map_one' := by ext; simp
-  map_mul' x y := by
-    obtain ⟨x, hx⟩ := x
-    obtain ⟨y, hy⟩ := y
-    ext i
-    apply P.root.injective
-    simp only [Equiv.coe_fn_mk, Equiv.Perm.coe_mul, comp_apply]
-    rw [(P.exists_root_eq_smul_of_mem_weylGroup (mul_mem hx hy) i).choose_spec,
-      (P.exists_root_eq_smul_of_mem_weylGroup hx
-        ((P.exists_root_eq_smul_of_mem_weylGroup hy i).choose)).choose_spec,
-      (P.exists_root_eq_smul_of_mem_weylGroup hy i).choose_spec, mul_smul]
-
-@[simp]
-lemma weylGroupToPerm_apply_reflection :
-    P.weylGroupToPerm ⟨P.reflection i, P.reflection_mem_weylGroup i⟩ = P.reflection_perm i := by
-  ext j
-  apply P.root.injective
-  rw [weylGroupToPerm, MonoidHom.coe_mk, OneHom.coe_mk, Equiv.coe_fn_mk, root_reflection_perm,
-    (P.exists_root_eq_smul_of_mem_weylGroup (P.reflection_mem_weylGroup i) j).choose_spec,
-    LinearEquiv.smul_def]
-
-@[simp]
-lemma range_weylGroupToPerm :
-    P.weylGroupToPerm.range = Subgroup.closure (range P.reflection_perm) := by
-  refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
-  · rintro - ⟨i, rfl⟩
-    simpa only [← weylGroupToPerm_apply_reflection] using mem_range_self _
-  · rintro - ⟨⟨w, hw⟩, rfl⟩
-    induction hw using Subgroup.closure_induction'' with
-    | one =>
-      change P.weylGroupToPerm 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
-    | mem w' hw' =>
-      obtain ⟨i, rfl⟩ := hw'
-      simpa only [weylGroupToPerm_apply_reflection] using Subgroup.subset_closure (mem_range_self i)
-    | inv_mem w' hw' =>
-      obtain ⟨i, rfl⟩ := hw'
-      simpa only [reflection_inv, weylGroupToPerm_apply_reflection] using
-        Subgroup.subset_closure (mem_range_self i)
-    | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
-      simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
 lemma pairing_smul_root_eq (k : ι) (hij : P.reflection_perm i = P.reflection_perm j) :
     P.pairing k i • P.root i = P.pairing k j • P.root j := by
@@ -573,8 +500,11 @@ lemma exists_int_eq_coxeterWeight [P.IsCrystallographic] (i j : ι) :
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
-lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
+lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
+
+lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i :=
+  ⟨h.2, h.1⟩
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
