@@ -91,43 +91,36 @@ noncomputable local instance : PseudoMetricSpace ℕ where
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
-lemma aux {m n : ℕ} (h : |(2 : ℝ)^(-m : ℤ) - 2 ^ (-n : ℤ)| < 2 ^ (-n - 1 : ℤ)) : m = n := by
-  have h1 : |(2 : ℝ) ^ (-n : ℤ) - 2 ^ (-m : ℤ)| = (2 : ℝ) ^ (-n : ℤ) * |(1 : ℝ) - 2 ^ (n - m : ℤ)| := by
-      nth_rw 2 [← abs_of_pos (a := (2 : ℝ) ^ (-n : ℤ)) (zpow_pos zero_lt_two _)]
-      rw [← abs_mul, mul_sub, mul_one, ← zpow_add₀ (two_ne_zero), neg_add_eq_sub,
-        sub_sub_cancel_left]
-  rw [← abs_neg, neg_sub, h1, zpow_sub₀ (n := 1) two_ne_zero, div_eq_mul_inv,
-    mul_lt_mul_left <| zpow_pos (G₀ := ℝ) (two_pos) _, zpow_one] at h
-  zify
+lemma eq_of_pow_sub_le {m n : ℕ}
+  (h : |(2 : ℝ)^(-m : ℤ) - 2 ^ (-n : ℤ)| < 2 ^ (-n - 1 : ℤ)) : m = n := by
+  replace h : |(1 : ℝ) - 2 ^ ((n : ℤ) - m)| < 2⁻¹ := by
+    rw [← mul_lt_mul_iff_of_pos_left (a := (2 : ℝ) ^ (-n : ℤ)) (zpow_pos two_pos _),
+      ← abs_of_nonneg (a := (2 : ℝ) ^ (-n : ℤ)) (le_of_lt <| zpow_pos two_pos _), ← abs_mul,
+      mul_sub, mul_one, ← zpow_add₀ two_ne_zero, sub_eq_add_neg (b := (m : ℤ)), neg_add_cancel_left,
+      ← abs_neg, neg_sub, abs_of_nonneg (a := (2 : ℝ) ^ (-n : ℤ)) (le_of_lt <| zpow_pos two_pos _),
+      ← zpow_neg_one, ← zpow_add₀ two_ne_zero, ← sub_eq_add_neg]
+    exact h
   by_cases H : (m : ℤ) ≤ n
-  · by_contra! h2
-    obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le <| le_of_lt <| sub_pos.mpr <| lt_of_le_of_ne H h2
-    replace h2 : 1 - (2 : ℤ) ^ a ≠ 0 := by
-      rw [← pow_zero (a := (2 : ℤ)), sub_ne_zero]
-      apply Injective.ne <| Int.pow_right_injective (one_lt_two)
-      zify
-      rwa [← ha, ne_comm, sub_ne_zero, ne_comm]
-    replace h2 : (1 : ℝ) ≤ |1 - (2 : ℝ) ^ a| := by
-      exact_mod_cast Int.cast_one (R := ℝ) ▸ ((Int.cast_le (R := ℝ)).mpr <| Int.one_le_abs h2)
-    linarith [lt_of_le_of_lt h2 (ha ▸ h)]
-  · rw [not_le, ← Int.le_sub_one_iff, sub_eq_add_neg, ← sub_le_iff_le_add'] at H
-    replace h : 1 - (2 : ℝ) ^ ((n : ℤ) - m) < 2⁻¹ := by
-      rwa [abs_of_nonneg] at h
-      rw [le_sub_comm, sub_zero]
-      apply zpow_le_one_of_nonpos₀ (one_le_two)
+  · obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le (sub_nonneg.mpr H)
+    rw [ha, ← mul_lt_mul_iff_of_pos_left (a := 2) two_pos, mul_inv_cancel₀ two_ne_zero,
+      ← abs_of_nonneg (a := (2 : ℝ)) zero_le_two, ← abs_mul,
+      show |(2 : ℝ) * (1 - |2| ^ (a : ℤ))| = |(2 : ℤ) * (1 - |2| ^ a)| by norm_cast,
+      ← Int.cast_one (R := ℝ), Int.cast_lt, Int.abs_lt_one_iff, Int.mul_eq_zero, sub_eq_zero,
+      Nat.abs_ofNat, eq_comm (a := 1), pow_eq_one_iff_cases] at h
+    simp only [OfNat.ofNat_ne_zero, OfNat.ofNat_ne_one, Int.reduceNeg, reduceCtorEq, false_and,
+      or_self, or_false, false_or] at h
+    rwa [h, Nat.cast_zero, sub_eq_zero, eq_comm, Nat.cast_inj] at ha
+  · have h1 : (2 : ℝ) ^ ((n : ℤ) - m) ≤ 1 - 2⁻¹ := by
+      rw [inv_eq_one_div, sub_half, ← inv_eq_one_div, ← zpow_neg_one,
+        zpow_le_zpow_iff_right₀ one_lt_two]
       linarith
-    have h1 : (2 : ℝ) ^ ((n : ℤ) - m) ≤ 2⁻¹ := by
-      rwa [← zpow_neg_one, zpow_le_zpow_iff_right₀ (one_lt_two)]
-    replace h1 : 2⁻¹ ≤ 1 - (2 : ℝ) ^ ((n : ℤ) - m) := by
-      rw [← add_le_add_iff_left (a := 2⁻¹)]
-      linarith
-    linarith
+    linarith [sub_lt_of_abs_sub_lt_right (a := (1 : ℝ)) (b := 2 ^ ((n : ℤ) - m)) (c := 2⁻¹) h]
 
 
 lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n - 1 : ℤ)) = {n} := by
   ext m
   constructor
-  · simpa only [zpow_natCast, mem_ball, dist_def, mem_singleton_iff] using aux
+  · simpa only [zpow_natCast, mem_ball, dist_def, mem_singleton_iff] using eq_of_pow_sub_le
   · intro H
     rw [H, mem_ball, dist_self]
     apply zpow_pos two_pos
