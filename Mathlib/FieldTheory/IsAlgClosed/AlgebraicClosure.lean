@@ -255,7 +255,7 @@ the algebraic closure of a field, it is redefined at `AlgebraicClosure` in order
 certain instance diamonds commute by definition.
 -/
 def AlgebraicClosureAux [Field k] : Type u :=
-  Ring.DirectLimit (AlgebraicClosure.Step k) fun i j h => AlgebraicClosure.toStepOfLE k i j h
+  DirectLimit (AlgebraicClosure.Step k) (AlgebraicClosure.toStepOfLE k)
 
 namespace AlgebraicClosureAux
 
@@ -263,7 +263,7 @@ open AlgebraicClosure
 
 /-- `AlgebraicClosureAux k` is a `Field` -/
 local instance field : Field (AlgebraicClosureAux k) :=
-  Field.DirectLimit.field _ _
+  inferInstanceAs (Field <| DirectLimit _ _)
 
 instance : Inhabited (AlgebraicClosureAux k) :=
   ⟨37⟩
@@ -274,13 +274,13 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
-  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x := Nat.leRecOn_succ' x
+  have hx : toStepOfLE k n (n+1) n.le_succ x = toStepSucc k n x := Nat.leRecOn_succ' x
   unfold ofStep
   rw [RingHom.comp_apply]
   dsimp [toStepOfLE]
   rw [← hx]
-  change Ring.DirectLimit.of (Step k) (toStepOfLE' k) (n + 1) (_) =
-      Ring.DirectLimit.of (Step k) (toStepOfLE' k) n x
+  change Ring.DirectLimit.of (Step k) (toStepOfLE k) (n + 1) (_) =
+      Ring.DirectLimit.of (Step k) (toStepOfLE k) n x
   convert Ring.DirectLimit.of_f n.le_succ x
   -- Porting Note: Original proof timed out at 2 mil. Heartbeats. The problem was likely
   -- in comparing `toStepOfLE'` with `toStepSucc`. In the above, I made some things more explicit
@@ -294,8 +294,7 @@ theorem exists_ofStep (z : AlgebraicClosureAux k) : ∃ n x, ofStep k n x = z :=
 
 theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
     (hfm : f.Monic) (hfi : Irreducible f) : ∃ x : AlgebraicClosureAux k, f.eval x = 0 := by
-  have : ∃ n p, Polynomial.map (ofStep k n) p = f := by
-    convert Ring.DirectLimit.Polynomial.exists_of f
+  have : ∃ n p, Polynomial.map (ofStep k n) p = f := Ring.DirectLimit.Polynomial.exists_of f
   obtain ⟨n, p, rfl⟩ := this
   rw [monic_map_iff] at hfm
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
@@ -311,16 +310,9 @@ local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
   (ofStep k 0).toAlgebra
 
 /-- Canonical algebra embedding from the `n`th step to the algebraic closure. -/
-def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
-  { ofStep k n with
-    commutes' := by
-    -- Porting note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
-    -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
-      intro x
-      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-          MonoidHom.coe_coe]
-      convert @Ring.DirectLimit.of_f ℕ _ (Step k) _ (fun m n h => (toStepOfLE k m n h : _ → _))
-          0 n n.zero_le x }
+def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k where
+  __ := ofStep k n
+  commutes' _ := Ring.DirectLimit.of_f _ _
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) :=
   ⟨fun z =>
