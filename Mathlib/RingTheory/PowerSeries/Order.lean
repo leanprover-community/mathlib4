@@ -329,7 +329,7 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       divided_by_X_pow_order (mul_ne_zero hf hg) := by
   set df := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   set dg := g.order.lift (order_finite_iff_ne_zero.mpr hg)
-  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
+  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg))
   have H_add_d : df + dg = dfg := by
     simp_all [df, dg, dfg, order_mul f g]
   have H := self_eq_X_pow_order_mul_divided_by_X_pow_order (mul_ne_zero hf hg)
