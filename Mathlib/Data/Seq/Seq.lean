@@ -549,7 +549,7 @@ def drop (s : Seq α) : ℕ → Seq α
   | 0 => s
   | n + 1 => tail (drop s n)
 
-attribute [simp] drop
+-- attribute [simp] drop
 
 /-- Take the first `n` elements of the sequence (producing a list) -/
 def take : ℕ → Seq α → List α
@@ -1019,9 +1019,9 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
 @[simp]
 theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) := by
   induction n generalizing m with
-  | zero => simp
+  | zero => simp [drop]
   | succ k ih =>
-    simp [Seq.get?_tail]
+    simp [Seq.get?_tail, drop]
     rw [show k + 1 + m = k + (m + 1) by omega]
     apply ih
 
@@ -1040,21 +1040,18 @@ theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
 @[simp]
 theorem drop_succ_cons {x : α} {s : Seq α} {n : ℕ} :
     (cons x s).drop (n + 1) = s.drop n := by
-  rw [← dropn_tail]
-  simp
+  simp [← dropn_tail]
 
 @[simp]
 theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   induction n with
-  | zero =>
-    simp
-  | succ m ih =>
-    simp [← dropn_tail, ih]
+  | zero => simp [drop]
+  | succ m ih => simp [← dropn_tail, ih]
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
   induction m generalizing n s with
-  | zero => simp
+  | zero => simp [drop]
   | succ k ih =>
     cases' s with x tl
     · simp
