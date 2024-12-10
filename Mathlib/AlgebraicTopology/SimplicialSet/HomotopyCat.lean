@@ -254,7 +254,7 @@ open Truncated
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`. -/
 inductive HoRel₂ {V : SSet.Truncated 2} :
-    (X Y : Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V))) → (f g : X ⟶ Y) → Prop
+    (X Y : Cat.FreeRefl (OneTruncation₂ V)) → (f g : X ⟶ Y) → Prop
   | mk (φ : V _[2]₂) :
     HoRel₂ _ _
       (Quot.mk _ (.cons .nil (ev02₂ φ)))
