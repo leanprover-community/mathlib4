@@ -638,6 +638,19 @@ theorem nil_append (s : Seq α) : append nil s = s := by
     exact ⟨rfl, s, rfl, rfl⟩
 
 @[simp]
+theorem take_nil {α : Type u} {n : ℕ} : (nil (α := α)).take n = List.nil := by
+  cases n <;> rfl
+
+@[simp]
+theorem take_zero {α : Type u} {li : Seq α} : li.take 0 = [] := by
+  cases li <;> rfl
+
+@[simp]
+theorem take_succ_cons {α : Type u} {n : ℕ} {hd : α} {tl : Seq α} :
+    (cons hd tl).take (n + 1) = hd :: tl.take n := by
+  rfl
+
+@[simp]
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     (s.take k)[n]? = if n < k then s.get? n else none
   | n, 0, s => by simp [take]
@@ -653,6 +666,27 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         match n with
         | 0 => simp
         | n+1 => simp [List.get?_cons_succ, Nat.add_lt_add_iff_right, get?_cons_succ, getElem?_take]
+
+theorem get?_mem_take {α : Type u} {li : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
+    (h_get : li.get? m = .some x) : x ∈ li.take n := by
+  induction m generalizing n li with
+  | zero =>
+    obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
+    rw [← hl]
+    rw [take, head_eq_some h_get]
+    simp
+  | succ k ih =>
+    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
+    subst hl
+    have : ∃ y, li.get? 0 = .some y := by
+      apply ge_stable _ _ h_get
+      simp
+    obtain ⟨y, hy⟩ := this
+    rw [take, head_eq_some hy]
+    simp
+    right
+    apply ih (by omega)
+    rwa [get?_tail]
 
 theorem terminatedAt_ofList (l : List α) :
     (ofList l).TerminatedAt l.length := by
@@ -740,6 +774,18 @@ statement of the where the sequence is not known to terminate see `length_le_iff
 theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
+
+theorem length_take_le {α : Type u} {li : Seq α} {n : ℕ} : (li.take n).length ≤ n := by
+  induction n generalizing li with
+  | zero => simp
+  | succ m ih =>
+    rw [take]
+    cases li.destruct with
+    | none => simp
+    | some v =>
+      obtain ⟨x, r⟩ := v
+      simp
+      apply ih
 
 theorem length_take_of_le_length {s : Seq α} {n : ℕ}
     (hle : ∀ h : s.Terminates, n ≤ s.length h) : (s.take n).length = n := by
@@ -982,6 +1028,7 @@ theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
   rw [← get?_tail, ← dropn_tail]; apply IH
 
+@[simp]
 theorem drop_succ_cons {α : Type u} {hd : α} {tl : Seq α} {n : ℕ} :
     (cons hd tl).drop (n + 1) = tl.drop n := by
   rw [← dropn_tail]
@@ -994,6 +1041,21 @@ theorem drop_nil {α : Type u} {n : ℕ} : (@nil α).drop n = nil := by
     simp
   | succ m ih =>
     simp [← dropn_tail, ih]
+
+theorem take_drop {α : Type u} {li : Seq α} {n m : ℕ} :
+    (li.take n).drop m = (li.drop m).take (n - m) := by
+  induction m generalizing n li with
+  | zero => simp
+  | succ k ih =>
+    cases' li with hd tl
+    · simp
+    cases n with
+    | zero => simp
+    | succ l =>
+      simp only [take, destruct_cons, List.drop_succ_cons, Nat.reduceSubDiff]
+      rw [ih]
+      congr 1
+      rw [drop_succ_cons]
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
