@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -384,10 +384,10 @@ protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.sk n
+abbrev sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.cosk n
+abbrev cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
 
 end
 

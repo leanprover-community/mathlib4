@@ -295,9 +295,7 @@ lemma map_comp {S S' S'' : Scheme} (f : S ⟶ S') (g : S' ⟶ S'') :
     map n (f ≫ g) = map n f ≫ map n g := by
   ext1
   · simp
-  · simp only [TopologicalSpace.Opens.map_top, Scheme.comp_coeBase,
-      TopologicalSpace.Opens.map_comp_obj, Scheme.comp_app, CommRingCat.comp_apply]
-    erw [map_appTop_coord, map_appTop_coord, map_appTop_coord]
+  · simp
 
 lemma map_Spec_map {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     map n (Spec.map φ) =

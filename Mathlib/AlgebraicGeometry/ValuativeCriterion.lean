@@ -242,9 +242,9 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     let S' : ValuativeCommSq f := ⟨S.R, S.K, S.i₁, S.i₂ ≫ pullback.fst f f ≫ f, hc⟩
     have : Subsingleton S'.commSq.LiftStruct := hf S'
     let S'l₁ : S'.commSq.LiftStruct := ⟨S.i₂ ≫ pullback.fst f f,
-      by simp [← S.commSq.w_assoc], by simp⟩
+      by simp [S', ← S.commSq.w_assoc], by simp [S']⟩
     let S'l₂ : S'.commSq.LiftStruct := ⟨S.i₂ ≫ pullback.snd f f,
-      by simp [← S.commSq.w_assoc], by simp [pullback.condition]⟩
+      by simp [S', ← S.commSq.w_assoc], by simp [S', pullback.condition]⟩
     have h₁₂ : S'l₁ = S'l₂ := Subsingleton.elim _ _
     constructor
     constructor

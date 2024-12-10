@@ -534,7 +534,7 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
 
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
-  (Nat.lt_pow_self hn a).trans_le <| single_le_sum (by simp) hi
+  (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
 
 @[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
     (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by
