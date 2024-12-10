@@ -89,8 +89,8 @@ theorem ncoeff_smul_left_eq (r : R) (a b : V) (n : ℤ) :
     ncoeff (Y (r • a)) n b = r • ncoeff (Y a) n b := by
   rw [Y_ncoeff_smul_left_eq, LinearMap.smul_apply]
 
-/-- The order is the smallest integer `n` such that `a ⁅-n-1⁆ b ≠ 0` if `Y a b` is nonzero, and zero
-otherwise.  In particular, `a ⁅n⁆ b = 0` for `n ≥ -order a b`. -/
+/-- The order is the smallest integer `n` such that `a [[-n-1]] b ≠ 0` if `Y a b` is nonzero, and
+zero otherwise.  In particular, `a ⁅n⁆ b = 0` for `n ≥ -order a b`. -/
 noncomputable def order (a b : V) : ℤ := HahnSeries.order ((HahnModule.of R).symm (Y a b))
 
 theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h: n < order Y a b) :

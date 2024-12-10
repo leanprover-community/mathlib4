@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Polynomial.Smeval
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Binomial rings
@@ -263,8 +262,8 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
     simp_all only [smul_assoc, Nat.cast_smul_eq_nsmul]
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
-    simp only [← smul_assoc]
-    field_simp
+    rw [← smul_assoc, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr
+      (Nat.factorial_ne_zero n)), one_smul]
 
 end Basic_Instances
 
@@ -541,6 +540,22 @@ theorem choose_mul_choose [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k �
   rw [choose_smul_choose r (by simp only [mem_range] at hi; omega),
     show n + k - i - k = n - i by omega, nsmul_eq_mul, nsmul_eq_mul, ← mul_assoc, ← Nat.cast_comm,
     mul_assoc]
+
+theorem choose_mul_choose_multinomial [Ring R] [BinomialRing R] (r : R) {n k : ℕ} (h : k ≤ n) :
+    choose r k * choose r n = ∑ m in range (k+1),
+      Nat.multinomial Finset.univ ![n - m, k - m, m] • choose r (n + k - m) := by
+  rw [choose_mul_choose r h]
+  refine sum_congr rfl fun i hi => ?_
+  rw [← smul_assoc]
+  congr 1
+  simp only [mem_range] at hi
+  rw [Nat.multinomial_univ_three, show n - i + (k - i) + i = n + k - i by omega, nsmul_eq_mul]
+  refine Nat.eq_div_of_mul_eq_right (Nat.mul_ne_zero (Nat.mul_ne_zero (Nat.factorial_ne_zero
+    (n - i)) (Nat.factorial_ne_zero (k - i))) (Nat.factorial_ne_zero i)) ?_
+  norm_cast
+  rw [← Nat.choose_mul_factorial_mul_factorial (show k ≤ n + k - i by omega), show
+    n + k - i - k = n - i by omega, ← Nat.choose_mul_factorial_mul_factorial (show i ≤ k by omega)]
+  ring
 
 /-!
 
