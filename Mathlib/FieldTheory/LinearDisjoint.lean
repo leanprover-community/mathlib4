@@ -431,7 +431,6 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
     (H : ∀ (K : Type (max v w)) [Field K] [Algebra F K],
       ∀ (fa : A →ₐ[F] K) (fb : B →ₐ[F] K), fa.fieldRange.LinearDisjoint fb.fieldRange) :
     IsField (A ⊗[F] B) := by
-  have := Algebra.TensorProduct.nontrivial_of_field F A B
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (A ⊗[F] B)
   apply not_imp_not.1 (Ring.ne_bot_of_isMaximal_of_not_isField hM)
   let K : Type (max v w) := A ⊗[F] B ⧸ M
