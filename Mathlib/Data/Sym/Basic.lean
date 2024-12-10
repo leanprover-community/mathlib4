@@ -385,7 +385,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach]); rfl⟩
+  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach])⟩
 
 @[simp]
 theorem attach_mk {m : Multiset α} {hc : Multiset.card m = n} :
@@ -441,7 +441,7 @@ theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
 
 /-- Append a pair of `Sym` terms. -/
 def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
-  ⟨s.1 + s'.1, by rw [map_add, s.2, s'.2]⟩
+  ⟨s.1 + s'.1, by rw [Multiset.card_add, s.2, s'.2]⟩
 
 @[simp]
 theorem append_inj_right (s : Sym α n) {t t' : Sym α n'} : s.append t = s.append t' ↔ t = t' :=
