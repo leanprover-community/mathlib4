@@ -196,6 +196,16 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 
+@[reassoc (attr := simp)]
+lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
+    A ◁ curry g ≫ (ihom.ev A).app X = g := by
+  simp [curry_eq]
+
+theorem uncurry_ihom_map (g : Y ⟶ Y') :
+    uncurry ((ihom A).map g) = (ihom.ev A).app Y ≫ g := by
+  apply curry_injective
+  rw [curry_uncurry, curry_natural_right, ← uncurry_id_eq_ev, curry_uncurry, id_comp]
+
 /-- The internal hom out of the unit is naturally isomorphic to the identity functor.-/
 def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
@@ -219,10 +229,20 @@ theorem uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 
+def curry_pre_app (f : B ⟶ A) {X Y : C} (g : A ⊗ Y ⟶ X) :
+    curry g ≫ (pre f).app X = curry (f ▷ _ ≫ g) := uncurry_injective (by
+  rw [uncurry_curry, uncurry_eq, MonoidalCategory.whiskerLeft_comp, assoc,
+    id_tensor_pre_app_comp_ev, whisker_exchange_assoc, whiskerLeft_curry_ihom_ev_app])
+
 @[reassoc (attr := simp)]
 theorem coev_app_comp_pre_app (f : B ⟶ A) :
     (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ▷ _) :=
   unit_conjugateEquiv _ _ ((tensoringLeft C).map f) X
+
+@[reassoc]
+lemma uncurry_pre_app (f : Y ⟶ A ⟶[C] X) (g : B ⟶ A) :
+    uncurry (f ≫ (pre g).app X) = g ▷ _ ≫ uncurry f := curry_injective (by
+  rw [curry_uncurry, ← curry_pre_app, curry_uncurry])
 
 @[simp]
 theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
