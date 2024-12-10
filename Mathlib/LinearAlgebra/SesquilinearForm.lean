@@ -15,8 +15,8 @@ form `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`, where `I₁ : R₁ →+* R` 
 Sesquilinear forms are the special case that `M₁ = M₂`, `M = R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
 Taking additionally `I₂ = RingHom.id R`, then one obtains bilinear forms.
 
-These forms are a special case of the bilinear maps defined in `BilinearMap.lean` and all basic
-lemmas about construction and elementary calculations are found there.
+Sesquilinear maps are a special case of the bilinear maps defined in `BilinearMap.lean` and all
+basic lemmas about construction and elementary calculations are found there.
 
 ## Main declarations
 
