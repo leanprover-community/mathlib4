@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
 import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.Polynomial.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
@@ -52,8 +51,6 @@ namespace Ideal
 
 variable {R : Type u} {S : Type v}
 
-open Polynomial
-
 section Jacobson
 
 section Ring
@@ -99,8 +96,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
         let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 hxy)
         let ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
-          -- Porting note: supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel_right]
+          rw [mul_assoc, ← mul_add_one, hr, ← hpq, ← neg_sub, add_sub_cancel_right]
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
@@ -111,8 +107,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
       let ⟨z, hz⟩ := hx (-y)
       hm.1.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
         M.sub_mem (by
-          -- Porting note: supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one z, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
+          rw [mul_assoc, ← mul_add_one, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
             sub_add_cancel]
           exact M.mul_mem_left _ hi) <| him hz⟩
 
@@ -160,15 +155,15 @@ theorem eq_jacobson_iff_sInf_maximal' :
 /-- An ideal `I` equals its Jacobson radical if and only if every element outside `I`
 also lies outside of a maximal ideal containing `I`. -/
 theorem eq_jacobson_iff_not_mem :
-    I.jacobson = I ↔ ∀ (x) (_ : x ∉ I), ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M := by
+    I.jacobson = I ↔ ∀ x ∉ I, ∃ M : Ideal R, (I ≤ M ∧ M.IsMaximal) ∧ x ∉ M := by
   constructor
   · intro h x hx
-    erw [← h, mem_sInf] at hx
+    rw [← h, Ideal.jacobson, mem_sInf] at hx
     push_neg at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
-    erw [mem_sInf]
+    rw [Ideal.jacobson, mem_sInf]
     push_neg
     exact h x hx
 
@@ -337,45 +332,6 @@ theorem jacobson_radical_eq_jacobson : I.radical.jacobson = I.jacobson :=
 end CommRing
 
 end Jacobson
-
-section Polynomial
-
-open Polynomial
-
-variable [CommRing R]
-
-theorem jacobson_bot_polynomial_le_sInf_map_maximal :
-    jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) := by
-  refine le_sInf fun J => exists_imp.2 fun j hj => ?_
-  haveI : j.IsMaximal := hj.1
-  refine Trans.trans (jacobson_mono bot_le) (le_of_eq ?_ : J.jacobson ≤ J)
-  suffices t : (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥ by
-    rw [← hj.2, jacobson_eq_iff_jacobson_quotient_eq_bot]
-    replace t := congr_arg (map (polynomialQuotientEquivQuotientPolynomial j).toRingHom) t
-    rwa [map_jacobson_of_bijective _, map_bot] at t
-    exact RingEquiv.bijective (polynomialQuotientEquivQuotientPolynomial j)
-  refine eq_bot_iff.2 fun f hf => ?_
-  have r1 : (X : (R ⧸ j)[X]) ≠ 0 := fun hX => by
-    replace hX := congr_arg (fun f => coeff f 1) hX
-    simp only [coeff_X_one, coeff_zero] at hX
-    exact zero_ne_one hX.symm
-  have r2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit ((mem_jacobson_bot.1 hf) X))
-  simp only [coeff_add, mul_coeff_zero, coeff_X_zero, mul_zero, coeff_one_zero, zero_add] at r2
-  erw [add_left_eq_self] at r2
-  simpa using (mul_eq_zero.mp r2).resolve_right r1
-  -- Porting note: this is golfed to much
-  -- simpa [(fun hX => by simpa using congr_arg (fun f => coeff f 1) hX : (X : (R ⧸ j)[X]) ≠ 0)]
-  --   using eq_C_of_degree_eq_zero (degree_eq_zero_of_is_unit ((mem_jacobson_bot.1 hf) X))
-
-theorem jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
-    jacobson (⊥ : Ideal R[X]) = ⊥ := by
-  refine eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal ?_)
-  refine fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
-    Trans.trans (?_ : coeff f n = 0) (coeff_zero n).symm
-  suffices f.coeff n ∈ Ideal.jacobson ⊥ by rwa [h, Submodule.mem_bot] at this
-  exact mem_sInf.2 fun j hj => (mem_map_C_iff.1 ((mem_sInf.1 hf) ⟨j, ⟨hj.2, rfl⟩⟩)) n
-
-end Polynomial
 
 section IsLocal
 

@@ -98,10 +98,7 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 
 noncomputable section
 
-open scoped Classical
-open ENat NNReal Topology Filter
-
-local notation "∞" => (⊤ : ℕ∞)
+open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-
 Porting note: These lines are not required in Mathlib4.
@@ -109,7 +106,12 @@ attribute [local instance 1001]
   NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
 -/
 
-open Set Fin Filter Function
+/-- Smoothness exponent for analytic functions. -/
+scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
+/-- Smoothness exponent for infinitely differentiable functions. -/
+scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+
+open scoped ContDiff
 
 universe u uE uF
 
@@ -129,7 +131,7 @@ Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries
 structure HasFTaylorSeriesUpToOn
   (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) (s : Set E) : Prop where
   zero_eq : ∀ x ∈ s, (p x 0).curry0 = f x
-  protected fderivWithin : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x ∈ s,
+  protected fderivWithin : ∀ m : ℕ, m < n → ∀ x ∈ s,
     HasFDerivWithinAt (p · m) (p x m.succ).curryLeft s x
   cont : ∀ m : ℕ, m ≤ n → ContinuousOn (p · m) s
 
@@ -145,6 +147,16 @@ theorem HasFTaylorSeriesUpToOn.congr (h : HasFTaylorSeriesUpToOn n f p s)
   refine ⟨fun x hx => ?_, h.fderivWithin, h.cont⟩
   rw [h₁ x hx]
   exact h.zero_eq x hx
+
+theorem HasFTaylorSeriesUpToOn.congr_series {q} (hp : HasFTaylorSeriesUpToOn n f p s)
+    (hpq : ∀ m : ℕ, m ≤ n → EqOn (p · m) (q · m) s) :
+    HasFTaylorSeriesUpToOn n f q s where
+  zero_eq x hx := by simp only [← (hpq 0 (zero_le n) hx), hp.zero_eq x hx]
+  fderivWithin m hm x hx := by
+    refine ((hp.fderivWithin m hm x hx).congr' (hpq m hm.le).symm hx).congr_fderiv ?_
+    refine congrArg _ (hpq (m + 1) ?_ hx)
+    exact ENat.add_one_natCast_le_withTop_of_lt hm
+  cont m hm := (hp.cont m hm).congr (hpq m hm).symm
 
 theorem HasFTaylorSeriesUpToOn.mono (h : HasFTaylorSeriesUpToOn n f p s) {t : Set E} (hst : t ⊆ s) :
     HasFTaylorSeriesUpToOn n f p t :=
@@ -549,9 +561,30 @@ theorem iteratedFDerivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) (n : �
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t :=
   iteratedFDerivWithin_eventually_congr_set' x (h.filter_mono inf_le_left) n
 
+/-- If two sets coincide in a punctured neighborhood of `x`,
+then the corresponding iterated derivatives are equal.
+
+Note that we also allow to puncture the neighborhood of `x` at `y`.
+If `y ≠ x`, then this is a no-op. -/
+theorem iteratedFDerivWithin_congr_set' {y} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
+  (iteratedFDerivWithin_eventually_congr_set' y h n).self_of_nhds
+
+@[simp]
+theorem iteratedFDerivWithin_insert {n y} :
+    iteratedFDerivWithin 𝕜 n f (insert x s) y = iteratedFDerivWithin 𝕜 n f s y :=
+  iteratedFDerivWithin_congr_set' (y := x)
+    (eventually_mem_nhdsWithin.mono <| by intros; simp_all).set_eq _
+
 theorem iteratedFDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (iteratedFDerivWithin_eventually_congr_set h n).self_of_nhds
+
+@[simp]
+theorem ftaylorSeriesWithin_insert :
+    ftaylorSeriesWithin 𝕜 f (insert x s) = ftaylorSeriesWithin 𝕜 f s := by
+  ext y n : 2
+  apply iteratedFDerivWithin_insert
 
 /-- The iterated differential within a set `s` at a point `x` is not modified if one intersects
 `s` with a neighborhood of `x` within `s`. -/
@@ -578,7 +611,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
   · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
-  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
+  · have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=
@@ -776,7 +809,7 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
-    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (x : E) :
+    (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :
     p x m = iteratedFDeriv 𝕜 m f x := by
   rw [← iteratedFDerivWithin_univ]
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h

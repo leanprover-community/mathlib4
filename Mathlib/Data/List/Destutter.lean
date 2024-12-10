@@ -25,8 +25,9 @@ Note that we make no guarantees of being the longest sublist with this property;
 adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
 
+open Function
 
-variable {α β : Type*} (l l₂ : List α) (R : α → α → Prop) [DecidableRel R] {a b : α}
+variable {α β : Type*} (l l₁ l₂ : List α) (R : α → α → Prop) [DecidableRel R] {a b : α}
 
 variable {R₂ : β → β → Prop} [DecidableRel R₂]
 
@@ -55,15 +56,6 @@ variable (R)
 @[simp]
 theorem destutter'_singleton : [b].destutter' R a = if R a b then [a, b] else [a] := by
   split_ifs with h <;> simp! [h]
-
-/-- Destutter' always has length at least 1. -/
-theorem destutter'_length_pos : 0 < (destutter' R a l).length := by
-  induction l with
-  | nil => exact length_singleton _ ▸ Nat.one_pos
-  | cons b bs ih =>
-    by_cases hR : R a b
-    · simp [hR]
-    · simpa [hR]
 
 theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
   induction' l with b l hl generalizing a
@@ -159,185 +151,116 @@ theorem destutter_eq_nil : ∀ {l : List α}, destutter R l = [] ↔ l = []
   | [] => Iff.rfl
   | _ :: l => ⟨fun h => absurd h <| l.destutter'_ne_nil R, fun h => nomatch h⟩
 
-/--Destutter of a map is the same as the map of the destutter, as long as the map preserves the
-   relation. -/
-theorem destutter_map_iff (f : α → β) (h : ∀ a b, R a b ↔ R₂ (f a) (f b)) :
-    (l.destutter R).map f = (l.map f).destutter R₂ := by
-  cases h2 : l with
-  | nil => simp -- l = []
-  | cons a as =>
-    clear h2
-    induction as generalizing a with
-    | nil => simp -- l = a :: []
-    | cons a2 bs ih => -- l = a :: a2 :: bs
-      repeat rw [map_cons, destutter_cons_cons]
-      simp_rw [← h a a2]
-      by_cases hr : (R a a2) <;>
-        simp [hr, ← destutter_cons', ih]
+variable {R}
 
-/-- Destutter' on a relation like ≠, whose negation is an equivalence, gives the same length if
-    the first elements are not related (¬Rα a b). --/
-theorem length_destutter'_eq [IsCoequiv α R] (hab : ¬R a b) :
-    (List.destutter' R a l).length = (List.destutter' R b l).length := by
-  induction l with
-  | nil => simp
-  | cons c cs ih =>
-    by_cases hac : (R a c)
-    case pos =>
-      have hbc : R b c := cotrans_of_neg_pos hab hac
-      simp [destutter', if_pos hac, if_pos hbc]
-    case neg =>
-      have hbc : ¬R b c := coequiv_neg_of_neg_neg hab hac
-      simpa [destutter', if_neg hac, if_neg hbc]
+/-- For a relation-preserving map, `destutter` commutes with `map`. -/
+theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b ∈ l, R a b ↔ R₂ (f a) (f b)) →
+    (l.destutter R).map f = (l.map f).destutter R₂
+  | [], hl => by simp
+  | [a], hl => by simp
+  | a :: b :: l, hl => by
+    have := hl a (by simp) b (by simp)
+    simp_rw [map_cons, destutter_cons_cons, ← this]
+    by_cases hr : R a b <;>
+      simp [hr, ← destutter_cons', map_destutter fun c hc d hd ↦ hl _ (cons_subset_cons _
+        (subset_cons_self _ _) hc) _ (cons_subset_cons _ (subset_cons_self _ _) hd),
+        map_destutter fun c hc d hd ↦ hl _ (subset_cons_self _ _ hc) _ (subset_cons_self _ _ hd)]
 
-/-- Destutter' on a relation like ≠, whose negation is an equivalence, has length
-    monotonic under List.cons --/
-theorem length_destutter'_ge_length_destutter'_cons [IsCoequiv α R] :
-    (List.destutter' R a (b::l)).length ≥ (List.destutter' R b l).length := by
-  cases l with
-  | nil => by_cases hab : (R a b) <;> simp_all [Nat.le_succ]
-  | cons c cs =>
-    by_cases hab : (R a b)
-    case pos => simp [destutter', if_pos hab, Nat.le_succ]
-    by_cases hac : (R a c)
-    case pos =>
-      have hbc : R b c := cotrans_of_neg_pos hab hac
-      simp [destutter', if_pos hbc, if_pos hac, if_neg hab]
-    case neg =>
-      have hbc : ¬R b c := coequiv_neg_of_neg_neg hab hac
-      apply le_of_eq;
-      simp only [destutter', if_neg hbc, if_neg hac, if_neg hab]
-      exact (length_destutter'_eq cs R hab).symm
+/-- For a injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
+theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [DecidableEq β] :
+    (l.destutter (·≠·)).map f = (l.map f).destutter (·≠·) :=
+  map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
-/-- Destutter on a relation like ≠, whose negation is an equivalence, has length
-    monotonic under List.cons --/
-theorem length_destutter_cons_ge_length_destutter [IsCoequiv α R] :
-    ((a::l).destutter R).length ≥ (l.destutter R).length := by
-  cases l
-  · simp [destutter]
-  · exact length_destutter'_ge_length_destutter'_cons _ R
-
-/-- `destutter ≠` has length monotonic under List.cons --/
-theorem length_destutter_ne_cons_ge_length_destutter [DecidableEq α]:
-    ((a::l).destutter (·≠·)).length ≥ (l.destutter (·≠·)).length :=
-  length_destutter_cons_ge_length_destutter l (·≠·)
-
-/-- Destutter' on a relation like ≠ or <, whose negation is transitive, has length monotonic
-    under a ¬R changing of the first element. -/
-theorem length_destutter'_cotrans_ge [IsCotrans α R] (hab : ¬R b a) :
-    (List.destutter' R a l).length ≥ (List.destutter' R b l).length := by
-  induction l generalizing a with
-  | nil => simp
-  | cons c cs ih =>
+/-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone
+under a `¬R` changing of the first element. -/
+theorem length_destutter'_cotrans_ge [i : IsTrans α Rᶜ] :
+    ∀ {a} {l : List α}, ¬R b a → (l.destutter' R b).length ≤ (l.destutter' R a).length
+  | a, [], hba => by simp
+  | a, c :: l, hba => by
     by_cases hbc : R b c
     case pos =>
-      simp_rw [destutter', if_pos (cotrans_of_neg_pos hab hbc), if_pos hbc, length_cons, le_refl]
+      have hac : ¬Rᶜ a c := (mt (_root_.trans hba)) (not_not.2 hbc)
+      simp_rw [destutter', if_pos (not_not.1 hac), if_pos hbc, length_cons, le_refl]
     case neg =>
       simp only [destutter', if_neg hbc]
       by_cases hac : R a c
       case pos =>
         simp only [if_pos hac, length_cons]
-        exact Nat.le_succ_of_le (ih hbc)
+        exact Nat.le_succ_of_le (length_destutter'_cotrans_ge hbc)
       case neg =>
         simp only [if_neg hac]
-        exact ih hab
+        exact length_destutter'_cotrans_ge hba
 
-/-- Destuttering ≠, whose negation is a transitive property,
-    gives a list of maximal length over any chain.
-    In other words: (l.destutter R) is an R-chain sublist of l;
-    it is at least as long as any other R-chain sublist.
+/-- `List.destutter'` on a relation like `≠`, whose negation is an equivalence, gives the same
+length if the first elements are not related. -/
+theorem length_destutter'_congr [IsEquiv α Rᶜ] (hab : ¬R a b) :
+    (l.destutter' R a).length = (l.destutter' R b).length :=
+  (length_destutter'_cotrans_ge hab).antisymm <| length_destutter'_cotrans_ge (symm hab : Rᶜ b a)
 
-Proof sketch:
- * Do induction on the length of l. The case of zero length is easy.
- * l.dedup always starts with the first element of l.
- * If l₂ doesn't start with the first element,
-  * Write l = a::as. Then l.dedup.length ≥ as.dedup.length ≥ l₂.length, by monotonicity of destutter
-    length and induction respectively.
- * If l₂ does start with the first element, write l₂ = a::os.
-  * Write l = a::as = a::b::bs. If a≠b, then l.dedup starts with [a,b...] and we can write
-    l.dedup.length = 1 + as.dedup.length ≥ l2.length, where ≥ is the inductive hypothesis.
-  * If a=b, then l.dedup does not contain b, and l₂ doesn't either. So we can define l₃ = a::bs, we
-    know that l.dedup = l₃.dedup, and l₂ is a chain sublist of l₃ just like l. So we can apply the
-    inductive hypothesis.
+/-- `List.destutter'` on a relation like ≠, whose negation is an equivalence, has length
+    monotonic under List.cons -/
+/-
+TODO: Replace this lemma by the more general version:
+theorem Sublist.length_destutter'_mono [IsEquiv α Rᶜ] (h : a :: l₁ <+ b :: l₂) :
+    (List.destutter' R a l₁).length ≤ (List.destutter' R b l₂).length
 -/
-theorem length_destutter_coequiv_maximal_chain_neg_trans [IsCoequiv α R] [DecidableEq α]
-    (h₁ : l₂ <+ l) (h₂ : l₂.Chain' R) :
-    (l.destutter R).length ≥ l₂.length := by
-  set n := l.length with hn
-  revert hn
-  induction n generalizing l l₂ with
-  | zero => -- if l is length zero, l₂ is too, done.
-    intro hn
-    rw [Nat.zero_eq] at hn
-    rw [length_eq_zero.mp hn.symm] at h₁ ⊢
-    simp [sublist_nil.mp h₁]
-  | succ n ih => -- otherwise induction on lists l of length at most n1...
-    intro hn
-    cases hl₂ : l₂ with
-    | nil => simp only [length_nil, zero_le] -- if l2 is length zero, done.
-    | cons o os => -- otherwise write l₂ = o::os
-      cases l with -- deconstruct l = a::as
-      | nil => simp at hn -- l can't be [], contradiction with 'succ n1 ih', a nonzero length
-      | cons a as =>
-        by_cases hao : (o=a) --split on whether l₂ starts with a or not
-        case neg =>
-          rw [← hl₂]
-          calc length ((a :: as).destutter R)
-            _ ≥ length (as.destutter R) := length_destutter_cons_ge_length_destutter as R
-            _ ≥ length l₂ := by
-              apply ih as l₂
-              · rw [hl₂, ← isSublist_iff_sublist] at h₁ ⊢
-                rwa [isSublist, if_neg hao] at h₁
-              · assumption
-              · rwa [length_cons, Nat.succ.injEq] at hn
-        case pos =>
-          rw [hao] at hl₂ ⊢
-          have hlos : l₂.length = Nat.succ os.length :=
-            hl₂ ▸ length_cons o os
-          cases as with -- deconstruct as = b::bs
-          | nil => -- when l₂ = [a]
-            have hlen2 : l₂.length ≤ [a].length := Sublist.length_le h₁
-            rw [length_singleton] at hlen2
-            simp only [destutter_singleton, length_singleton, length_cons]
-            exact le_of_eq_of_le hlos.symm hlen2
-          | cons b bs => -- Okay! l₂ = a::os, l = a::b::bs.
-            cases hos : os with -- deconstruct os=p::ps
-            | nil =>
-              simp only [destutter, length_singleton]
-              exact destutter'_length_pos _ _
-            | cons p ps =>
-              rw [hos] at hl₂
-              -- One more split needed: does a=b or not?
-              by_cases hab : R a b
-              case neg =>
-                simp only [destutter, destutter', ite_not, length_cons,
-                    ge_iff_le, hab, not_true_eq_false, ite_false]
-                have hlp := hos.symm ▸ (length_cons p ps)
-                rw [← hlp, ← hlos]
-                apply ih (a::bs) l₂
-                · rw [hl₂] at h₁ ⊢
-                  apply cons_sublist_cons.mpr
-                  apply sublist_cons_neq _ (cons_sublist_cons.mp h₁)
-                  by_contra hpb
-                  exact hab (hpb ▸ (rel_of_chain_cons (hl₂ ▸ h₂)))
-                · assumption
-                · rwa [length_cons, Nat.succ.injEq] at hn
-              case pos =>
-                rw [← hl₂]
-                calc length ((a::b::bs).destutter R)
-                  _ = length ((b::bs).destutter R) + 1 := ?_
-                  _ ≥ length os + 1 := ?_
-                  _ = length l₂ := by simp [hl₂, hos];
-                · dsimp [destutter, destutter']
-                  rw [if_pos hab, length_cons]
-                · rw [ge_iff_le, add_le_add_iff_right]
-                  apply ih (b::bs) os
-                  · exact hos ▸ sublist_of_cons_sublist_cons (hl₂ ▸ h₁)
-                  · simp_all
-                  · rwa [length_cons, Nat.succ.injEq] at hn
+theorem le_length_destutter'_cons [IsEquiv α Rᶜ] :
+    ∀ {l : List α}, (l.destutter' R b).length ≤ ((b :: l).destutter' R a).length
+  | [] => by by_cases hab : (R a b) <;> simp_all [Nat.le_succ]
+  | c :: cs => by
+    by_cases hab : R a b
+    case pos => simp [destutter', if_pos hab, Nat.le_succ]
+    obtain hac | hac : R a c ∨ Rᶜ a c := em _
+    · have hbc : ¬Rᶜ b c := mt (_root_.trans hab) (not_not.2 hac)
+      simp [destutter', if_pos hac, if_pos (not_not.1 hbc), if_neg hab]
+    · have hbc : ¬R b c := trans (symm hab) hac
+      simp only [destutter', if_neg hbc, if_neg hac, if_neg hab]
+      exact (length_destutter'_congr cs hab).ge
 
-theorem length_destutter_maximal_chain_neg_trans [DecidableEq α] (h₁ : l₂ <+ l)
-    (h₂ : l₂.Chain' (·≠·)) : (l.destutter (·≠·)).length ≥ l₂.length := by
-  apply length_destutter_coequiv_maximal_chain_neg_trans l l₂ (·≠·) h₁ h₂
+/-- `List.destutter` on a relation like ≠, whose negation is an equivalence, has length
+monotone under List.cons -/
+theorem length_destutter_le_length_destutter_cons [IsEquiv α Rᶜ] :
+    ∀ {l : List α}, (l.destutter R).length ≤ ((a :: l).destutter R).length
+  | [] => by simp [destutter]
+  | b :: l => le_length_destutter'_cons
+
+variable {l l₁ l₂}
+
+/-- `destutter ≠` has length monotone under `List.cons`. -/
+theorem length_destutter_ne_le_length_destutter_cons [DecidableEq α] :
+    (l.destutter (· ≠ ·)).length ≤ ((a :: l).destutter (· ≠ ·)).length :=
+  length_destutter_le_length_destutter_cons
+
+/-- `destutter` of relations like `≠`, whose negation is an equivalence relation,
+gives a list of maximal length over any chain.
+
+In other words, `l.destutter R` is an `R`-chain sublist of `l`, and is at least as long as any other
+`R`-chain sublist. -/
+lemma Chain'.length_le_length_destutter [IsEquiv α Rᶜ] :
+    ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → l₁.Chain' R → l₁.length ≤ (l₂.destutter R).length
+  -- `l₁ := []`, `l₂ := []`
+  | [], [], _, _ => by simp
+  -- `l₁ := l₁`, `l₂ := a :: l₂`
+  | l₁, _, .cons (l₂ := l₂) a hl, hl₁ =>
+    (hl₁.length_le_length_destutter hl).trans length_destutter_le_length_destutter_cons
+  -- `l₁ := [a]`, `l₂ := a :: l₂`
+  | _, _, .cons₂ (l₁ := []) (l₂ := l₁) a hl, hl₁ => by simp [Nat.one_le_iff_ne_zero]
+  -- `l₁ := a :: l₁`, `l₂ := a :: b :: l₂`
+  | _, _, .cons₂ a <| .cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
+    by_cases hab : R a b
+    · simpa [destutter_cons_cons, hab] using hl₁.tail.length_le_length_destutter (hl.cons _)
+    · simpa [destutter_cons_cons, hab] using hl₁.length_le_length_destutter (hl.cons₂ _)
+  -- `l₁ := a :: b :: l₁`, `l₂ := a :: b :: l₂`
+  | _, _, .cons₂ a <| .cons₂ (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
+    simpa [destutter_cons_cons, rel_of_chain_cons hl₁]
+      using hl₁.tail.length_le_length_destutter (hl.cons₂ _)
+
+/-- `destutter` of `≠` gives a list of maximal length over any chain.
+
+In other words, `l.destutter (· ≠ ·)` is a `≠`-chain sublist of `l`, and is at least as long as any
+other `≠`-chain sublist. -/
+lemma Chain'.length_le_length_destutter_ne [DecidableEq α] (hl : l₁ <+ l₂)
+    (hl₁ : l₁.Chain' (· ≠ ·)) : l₁.length ≤ (l₂.destutter (· ≠ ·)).length :=
+  hl₁.length_le_length_destutter hl
 
 end List

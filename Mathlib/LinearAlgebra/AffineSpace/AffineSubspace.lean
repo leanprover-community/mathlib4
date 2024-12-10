@@ -1250,7 +1250,7 @@ theorem affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[
 variable (k)
 
 /-- `affineSpan` is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
   spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 

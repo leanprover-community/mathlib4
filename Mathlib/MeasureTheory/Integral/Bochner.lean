@@ -1334,7 +1334,7 @@ theorem integral_mono_ae {f g : α → ℝ} (hf : Integrable f μ) (hg : Integra
   exact setToFun_mono (dominatedFinMeasAdditive_weightedSMul μ)
     (fun s _ _ => weightedSMul_nonneg s) hf hg h
 
-@[mono]
+@[gcongr, mono]
 theorem integral_mono {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (h : f ≤ g) :
     ∫ a, f a ∂μ ≤ ∫ a, g a ∂μ :=
   integral_mono_ae hf hg <| Eventually.of_forall h
