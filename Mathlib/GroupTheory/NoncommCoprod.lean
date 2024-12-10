@@ -88,8 +88,7 @@ def noncommCoprod : M × N →* P where
 @[to_additive
   /-- Variant of `AddMonoidHom.noncomCoprod_apply` with the sum written in the other direction -/]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :
-    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
-  rw [← comm, MonoidHom.noncommCoprod_apply]
+    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by simp [(comm _ _).eq]
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=

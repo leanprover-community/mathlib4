@@ -34,7 +34,7 @@ instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
 section
 
 /-- `WithOne.coe` as a bundled morphism -/
-@[to_additive (attr := simps apply) /-- `WithZero.coe` as a bundled morphism -/]
+@[to_additive (attr := simps) /-- `WithZero.coe` as a bundled morphism -/]
 def coeMulHom [Mul α] : α →ₙ* WithOne α where
   toFun := coe
   map_mul' _ _ := rfl
