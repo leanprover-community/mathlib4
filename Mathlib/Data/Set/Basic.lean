@@ -2171,23 +2171,22 @@ end Disjoint
 namespace Equiv
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
-  `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`.
-  -/
+  `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
 protected def setSubtypeCongr {α : Type*} (p : α → Prop) :
     Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
-  toFun s := ⟨fun a ↦ ∃ h : p a, s ⟨a, h⟩, fun _ h ↦ h.1⟩
-  invFun s a := s.val a
+  toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩
+  invFun s := {a | a.val ∈ s.val}
   left_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
   right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩
 
 @[simp]
 protected lemma setSubtypeCongr_apply (p : α → Prop) (s : Set {a // p a}) :
-    (Equiv.setSubtypeCongr p) s = ⟨fun a ↦ ∃ h : p a, ⟨a, h⟩ ∈ s, fun _ h ↦ h.1⟩ :=
+    (Equiv.setSubtypeCongr p) s = ⟨{a | ∃ h : p a, ⟨a, h⟩ ∈ s}, fun _ h ↦ h.1⟩ :=
   rfl
 
 @[simp]
 protected lemma setSubtypeCongr_symm_apply (p : α → Prop) (s : {s // ∀ a ∈ s, p a}) :
-    (Equiv.setSubtypeCongr p).symm s = {a | s.val a.val} :=
+    (Equiv.setSubtypeCongr p).symm s = {a | a.val ∈ s.val} :=
   rfl
 
 end Equiv
