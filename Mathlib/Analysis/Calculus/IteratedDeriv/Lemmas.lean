@@ -52,7 +52,7 @@ theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
   intro y hy
   exact derivWithin_const_add (h.uniqueDiffWithinAt hy) _
 
-theorem iteratedDerivWithin_const_neg (hn : 0 < n) (c : F) :
+theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ' h hx, iteratedDerivWithin_succ' h hx]
@@ -61,6 +61,9 @@ theorem iteratedDerivWithin_const_neg (hn : 0 < n) (c : F) :
   have : UniqueDiffWithinAt 𝕜 s y := h.uniqueDiffWithinAt hy
   rw [derivWithin.neg this]
   exact derivWithin_const_sub this _
+
+@[deprecated (since := "2024-12-10")]
+alias iteratedDerivWithin_const_neg := iteratedDerivWithin_const_sub
 
 /-- Note: this is unrelated to `iteratedDeriv_const_smul`, where the scalar multiplication works on
 the domain. -/
@@ -106,10 +109,10 @@ theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_const_add (Set.mem_univ _) uniqueDiffOn_univ hn c
 
-theorem iteratedDeriv_const_neg (hn : 0 < n) (c : F) :
+theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_const_neg (Set.mem_univ _) uniqueDiffOn_univ hn c
+    iteratedDerivWithin_const_sub (Set.mem_univ _) uniqueDiffOn_univ hn c
 
 lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
