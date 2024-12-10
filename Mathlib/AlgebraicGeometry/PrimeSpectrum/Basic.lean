@@ -565,13 +565,13 @@ theorem toPiLocalization_surjective_of_discreteTopology :
   let e := Equiv.ofInjective f fun p q eq ↦ Set.singleton_injective (hf p ▸ eq ▸ hf q)
   have loc a : IsLocalization.AtPrime (Localization.Away a.1) (e.symm a).1 :=
     (isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton <| hf _).mp <| by
-      simp_rw [Equiv.apply_ofInjective_symm]; infer_instance
+      simp_rw [e, Equiv.apply_ofInjective_symm]; infer_instance
   let algE a := IsLocalization.algEquiv (e.symm a).1.primeCompl
     (Localization.AtPrime (e.symm a).1) (Localization.Away a.1)
   have span_eq : Ideal.span (Set.range f) = ⊤ := iSup_basicOpen_eq_top_iff.mp <| top_unique
     fun p _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨p, (hf p).ge rfl⟩
   replace hf a : (basicOpen a.1 : Set _) = {e.symm a} := by
-    simp_rw [← hf, Equiv.apply_ofInjective_symm]
+    simp_rw [e, ← hf, Equiv.apply_ofInjective_symm]
   obtain ⟨r, eq, -⟩ := Localization.existsUnique_algebraMap_eq_of_span_eq_top _ span_eq
     (fun a ↦ algE a (x _)) fun a b ↦ by
       obtain rfl | ne := eq_or_ne a b; · rfl
