@@ -166,7 +166,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt
   ext i
   fin_cases i <;> rfl
 
-/-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
+/-- If a function is analytic t a point, then its second derivative is symmetric. -/
 theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
     IsSymmSndFDerivAt 𝕜 f x := by
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at hf ⊢
