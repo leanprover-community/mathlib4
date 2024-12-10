@@ -613,7 +613,7 @@ end
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `A / P`. -/
 abbrev Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ideal R}
-    {P : Ideal A} [P.IsTwoSided] (h : p ≤ comap (algebraMap R A) P) : 
+    {P : Ideal A} [P.IsTwoSided] (h : p ≤ comap (algebraMap R A) P) :
     Algebra (R ⧸ p) (A ⧸ P) where
   toRingHom := quotientMap P (algebraMap R A) h
   smul := Quotient.lift₂ (⟦· • ·⟧) fun r₁ a₁ r₂ a₂ hr ha ↦ Quotient.sound <| by
