@@ -63,17 +63,12 @@ theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gc
     simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
       if_neg (Nat.cast_add_one_ne_zero _), this]
 
-theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
-  rw [add_def, normalize_eq]
-  apply Nat.div_dvd_of_dvd
-  apply Nat.gcd_dvd_right
-
 theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
   rw [Rat.add_def, Rat.normalize_eq,
     Nat.div_dvd_iff_dvd_mul
       (Nat.gcd_dvd_right _ _)
       (Nat.gcd_ne_zero_right (mul_ne_zero (Rat.den_ne_zero _) (Rat.den_ne_zero _))),
-    ← Nat.gcd_mul_lcm _ _,
+    ← Nat.gcd_mul_lcm,
     mul_dvd_mul_iff_right (Nat.lcm_ne_zero (Rat.den_ne_zero _) (Rat.den_ne_zero _)),
     Nat.dvd_gcd_iff]
   constructor
@@ -82,6 +77,11 @@ theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q
       <;> apply dvd_mul_of_dvd_right <;> rw [Int.natCast_dvd_natCast]
       <;> [exact Nat.gcd_dvd_right _ _; exact Nat.gcd_dvd_left _ _]
   · exact dvd_mul_right _ _
+
+theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
+  rw [add_def, normalize_eq]
+  apply Nat.div_dvd_of_dvd
+  apply Nat.gcd_dvd_right
 
 theorem mul_den_dvd (q₁ q₂ : ℚ) : (q₁ * q₂).den ∣ q₁.den * q₂.den := by
   rw [mul_def, normalize_eq]
