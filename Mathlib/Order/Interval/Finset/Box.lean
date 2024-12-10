@@ -62,7 +62,7 @@ open Finset
 
 namespace Prod
 variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [@DecidableRel (α × β) (· ≤ ·)]
+  [DecidableEq α] [DecidableEq β] [DecidableRel (α := α × β) (· ≤ ·)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
     #(box (n + 1) : Finset (α × β)) =
