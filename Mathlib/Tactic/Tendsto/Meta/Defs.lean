@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.Main
+import Mathlib.Tactic.Tendsto.Multiseries
 
 namespace TendstoTactic.PreMS
 

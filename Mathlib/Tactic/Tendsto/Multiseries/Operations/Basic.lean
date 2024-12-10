@@ -102,7 +102,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
 /-- If `ms` approximates `F`, then `ms.mulConst c` approximates `F * c`. -/
 theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : ℝ → ℝ}
     (h_approx : ms.Approximates F) :
-    (ms.mulConst c).Approximates (fun x ↦ F x * c) := by
+    (ms.mulConst c).Approximates (fun t ↦ F t * c) := by
   cases basis with
   | nil =>
     simp [Approximates, mulConst] at *
@@ -110,15 +110,15 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
     rfl
   | cons basis_hd basis_tl =>
     let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun f ms' =>
-      ∃ (X : PreMS (basis_hd :: basis_tl)) (fX : ℝ → ℝ),
-        ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun x ↦ fX x * c) ∧
-        X.Approximates fX
+      ∃ (X : PreMS (basis_hd :: basis_tl)) (FX : ℝ → ℝ),
+        ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun t ↦ FX t * c) ∧
+        X.Approximates FX
     apply Approximates.coind motive
     · simp only [motive]
       use ms, F
     · intro f ms ih
       simp only [motive] at ih
-      obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
+      obtain ⟨X, FX, h_ms_eq, hf_eq, hX_approx⟩ := ih
       cases' X with X_exp X_coef X_tl
       · left
         apply Approximates_nil at hX_approx
@@ -129,7 +129,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         · exact hf_eq
         conv =>
           rhs
-          ext x
+          ext
           simp
           rw [← zero_mul c]
         apply EventuallyEq.mul hX_approx
@@ -137,7 +137,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
       · obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
         simp [mulConst] at h_ms_eq
-        use ?_, ?_, ?_, fun x ↦ XC x * c
+        use ?_, ?_, ?_, fun t ↦ XC t * c
         constructor
         · exact h_ms_eq
         constructor
@@ -146,7 +146,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         · apply majorated_of_EventuallyEq hf_eq
           exact mul_const_majorated hX_maj
         simp only [motive]
-        use X_tl, fun x ↦ fX x - basis_hd x ^ X_exp * XC x
+        use X_tl, fun t ↦ FX t - basis_hd t ^ X_exp * XC t
         constructor
         · rfl
         constructor

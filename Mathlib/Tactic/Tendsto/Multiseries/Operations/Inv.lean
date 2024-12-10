@@ -23,115 +23,97 @@ namespace PreMS
 open LazySeries Stream' Seq
 
 -- 1/(1-t), i.e. ones
-def invSeries' : LazySeries :=
+def invSeries : LazySeries :=
   let g : Unit → Option (ℝ × Unit) := fun () => some (1, ())
   Seq.corec g ()
 
--- 1/(1+t), i.e. [1, -1, 1, -1, ...]
-def invSeries : LazySeries :=
-  let g : Bool → Option (ℝ × Bool) := fun b => some ((b.casesOn 1 (-1)), !b)
-  Seq.corec g false
-
-theorem invSeries'_eq_cons_self : invSeries' = .cons 1 invSeries' := by
-  simp [invSeries']
+theorem invSeries_eq_cons_self : invSeries = .cons 1 invSeries := by
+  simp [invSeries]
   conv =>
     lhs
     rw [Seq.corec_cons (by rfl)]
 
-theorem invSeries'_get_eq_one {n : ℕ} : invSeries'.get? n = .some 1 := by
+theorem invSeries_get_eq_one {n : ℕ} : invSeries.get? n = .some 1 := by
   induction n with
   | zero =>
-    rw [invSeries'_eq_cons_self]
+    rw [invSeries_eq_cons_self]
     simp
   | succ m ih =>
-    rw [invSeries'_eq_cons_self]
+    rw [invSeries_eq_cons_self]
     simpa using ih
 
-theorem invSeries'_eq_geom :
-    invSeries'.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
+theorem invSeries_eq_geom :
+    invSeries.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
   ext n f
   simp only [formalMultilinearSeries_geometric, FormalMultilinearSeries.apply_eq_prod_smul_coeff,
-    toFormalMultilinearSeries_coeff, invSeries'_get_eq_one, smul_eq_mul, Option.getD_some, mul_one,
+    toFormalMultilinearSeries_coeff, invSeries_get_eq_one, smul_eq_mul, Option.getD_some, mul_one,
     ContinuousMultilinearMap.mkPiAlgebraFin_apply]
   exact Eq.symm List.prod_ofFn
 
-theorem invSeries'_analytic : analytic invSeries' := by
-  simp [analytic, invSeries'_eq_geom, formalMultilinearSeries_geometric_radius]
+theorem invSeries_analytic : analytic invSeries := by
+  simp [analytic, invSeries_eq_geom, formalMultilinearSeries_geometric_radius]
 
 -- TODO: rewrite
-theorem invSeries'_toFun_eq {x : ℝ} (hx : |x| < 1) : invSeries'.toFun x = (1 - x)⁻¹ := by
-  simp [toFun, invSeries'_eq_geom]
+theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 - t)⁻¹ := by
+  simp [toFun, invSeries_eq_geom]
   have := hasFPowerSeriesOnBall_inv_one_sub ℝ ℝ
-  have := HasFPowerSeriesOnBall.sum this (y := x)
-    (by simpa [edist, PseudoMetricSpace.edist] using hx)
+  have := HasFPowerSeriesOnBall.sum this (y := t)
+    (by simpa [edist, PseudoMetricSpace.edist] using ht)
   simp at this
   exact this.symm
 
--- noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
---   match basis with
---   | [] => ms⁻¹
---   | basis_hd :: basis_tl =>
---     ms.casesOn'
---     (nil := .nil)
---     (cons := fun (exp, coef) tl =>
---       mulMonomial (invSeries.apply (mulMonomial tl coef.inv (-exp))) coef.inv (-exp)
---     )
-
--- Variant with true geometric series (not alternating one) but with neg.
--- Generaly it's easier to use `inv`, but there is no API for `[1, -1, 1, ...]`,
--- while enough for `[1, 1, 1, ...]`.
-noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
+noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => ms⁻¹
   | List.cons _ _ =>
     match destruct ms with
     | none => .nil
     | some ((exp, coef), tl) => mulMonomial
-      (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-exp))) coef.inv' (-exp)
+      (invSeries.apply (mulMonomial (neg tl) coef.inv (-exp))) coef.inv (-exp)
 
-noncomputable def div {basis : Basis} (x y : PreMS basis) : PreMS basis :=
-  x.mul (y.inv')
+noncomputable def div {basis : Basis} (X Y : PreMS basis) : PreMS basis :=
+  X.mul (Y.inv)
 
-theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered) : ms.inv'.WellOrdered := by
+theorem inv_WellOrdered {basis : Basis} {ms : PreMS basis}
+    (h_wo : ms.WellOrdered) : ms.inv.WellOrdered := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
-    · simp [inv']
+    · simp [inv]
       apply WellOrdered.nil
     · obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
-      simp [inv']
+      simp [inv]
       apply mulMonomial_WellOrdered
       · apply apply_WellOrdered
         · apply mulMonomial_WellOrdered
           · apply neg_WellOrdered h_tl
-          · apply inv'_WellOrdered
+          · apply inv_WellOrdered
             exact h_coef
         · simp
-          generalize leadingExp tl = t at *
-          cases t with
+          generalize leadingExp tl = w at *
+          cases w with
           | bot => simp [Ne.bot_lt']
           | coe => simpa [← WithBot.coe_add] using h_comp
-      · apply inv'_WellOrdered
+      · apply inv_WellOrdered
         exact h_coef
 
-theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
+theorem inv_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
     (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates F)
-    (h_trimmed : ms.Trimmed) : ms.inv'.Approximates (F⁻¹) := by
+    (h_trimmed : ms.Trimmed) : ms.inv.Approximates (F⁻¹) := by
   cases basis with
   | nil =>
-    unfold inv'
+    unfold inv
     simp only [Approximates] at *
     apply EventuallyEq.inv h_approx
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
-      simp [inv']
+      simp [inv]
       apply Approximates.nil
       conv =>
         rhs
-        ext x
+        ext
         simp
         rw [← inv_zero]
       apply EventuallyEq.inv h_approx
@@ -139,63 +121,63 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
       obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
-      have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 :=
+      have hC_ne_zero : ∀ᶠ t in atTop, C t ≠ 0 :=
         eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
           (h_basis.tail)
-      have h_basis_hd_pos : ∀ᶠ x in atTop, 0 < basis_hd x :=
+      have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
         basis_head_eventually_pos h_basis
-      simp [inv']
-      apply Approximates_of_EventuallyEq (F := fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) *
-        (C x * (basis_hd x)^(exp) * F⁻¹ x))
+      simp [inv]
+      apply Approximates_of_EventuallyEq (F := fun t ↦ C⁻¹ t * (basis_hd t)^(-exp) *
+        (C t * (basis_hd t)^(exp) * F⁻¹ t))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-        intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
+        intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
         simp
         ring_nf
         simp [mul_inv_cancel₀ hC_ne_zero]
         simp [← Real.rpow_add h_basis_hd_pos]
       apply mulMonomial_Approximates h_basis
       swap
-      · exact inv'_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
-      have : ((neg tl).mulMonomial coef.inv' (-exp)).Approximates (fun x ↦ C⁻¹ x *
-          (basis_hd x)^(-exp) * -(F x - basis_hd x ^ exp * C x))
+      · exact inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
+      have : ((neg tl).mulMonomial coef.inv (-exp)).Approximates (fun t ↦ C⁻¹ t *
+          (basis_hd t)^(-exp) * -(F t - basis_hd t ^ exp * C t))
           (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
-        · exact inv'_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
+        · exact inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       apply Approximates_of_EventuallyEq
-        (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x)) at this
+        (F' := (fun t ↦ 1 - C⁻¹ t * basis_hd t ^ (-exp) * F t)) at this
       swap
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-        intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
+        intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
         simp
         ring_nf
         simp [mul_inv_cancel₀ hC_ne_zero]
         simp [← Real.rpow_add h_basis_hd_pos]
       apply Approximates_of_EventuallyEq
-        (F := (fun x ↦ (1 - x)⁻¹) ∘ (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
+        (F := (fun t ↦ (1 - t)⁻¹) ∘ (fun t ↦ 1 - C⁻¹ t * basis_hd t ^ (-exp) * F t))
       · simp only [EventuallyEq]
         apply Eventually.mono h_basis_hd_pos
-        intro x h_basis_hd_pos
+        intro t h_basis_hd_pos
         simp [Real.rpow_neg h_basis_hd_pos.le]
         ring
-      apply Approximates_of_EventuallyEq (F := invSeries'.toFun ∘
-          (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x))
-      · have : Tendsto (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x) atTop (nhds 0) := by
+      apply Approximates_of_EventuallyEq (F := invSeries.toFun ∘
+          (fun t ↦ 1 - C⁻¹ t * basis_hd t ^ (-exp) * F t))
+      · have : Tendsto (fun t ↦ 1 - C⁻¹ t * basis_hd t ^ (-exp) * F t) atTop (nhds 0) := by
           rw [show (0 : ℝ) = 1 - 1 by simp]
           apply Tendsto.const_sub
           apply Tendsto.congr' (f₁ := F / (fun k ↦ C k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
             apply Eventually.mono h_basis_hd_pos
-            intro x h_basis_hd_pos
+            intro t h_basis_hd_pos
             simp [Real.rpow_neg h_basis_hd_pos.le]
             ring
           rw [← isEquivalent_iff_tendsto_one]
-          conv => rhs; ext x; rw [mul_comm]
+          conv => rhs; ext t; rw [mul_comm]
           apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
           apply Eventually.mono <| hC_ne_zero.and h_basis_hd_pos
-          intro x ⟨hC_ne_zero, h_basis_hd_pos⟩
+          intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
           simp
           constructor
           · exact hC_ne_zero
@@ -204,51 +186,43 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
               intro h
               simp [h] at h_basis_hd_pos
             · exact h_basis_hd_pos.le
-        have : ∀ᶠ x in atTop, ‖1 - C⁻¹ x * basis_hd x ^ (-exp) * F x‖ < 1 := by
+        have : ∀ᶠ t in atTop, ‖1 - C⁻¹ t * basis_hd t ^ (-exp) * F t‖ < 1 := by
           apply NormedAddCommGroup.tendsto_nhds_zero.mp this
           simp
         simp only [EventuallyEq]
         apply Eventually.mono this
-        intro x this
+        intro t this
         simp
-        rw [invSeries'_toFun_eq]
+        rw [invSeries_toFun_eq]
         · simp
         · simpa using this
-      apply apply_Approximates invSeries'_analytic h_basis
+      apply apply_Approximates invSeries_analytic h_basis
       · apply mulMonomial_WellOrdered
         · exact neg_WellOrdered h_tl_wo
-        · exact inv'_WellOrdered h_coef_wo
+        · exact inv_WellOrdered h_coef_wo
       · simp
-        generalize leadingExp tl = t at h_comp
-        cases t with
+        generalize leadingExp tl = w at h_comp
+        cases w with
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp
       · exact this
 
-theorem div_WellOrdered {basis : Basis} {x y : PreMS basis}
-    (hx_wo : x.WellOrdered) (hy_wo : y.WellOrdered) : (x.div y).WellOrdered := by
+theorem div_WellOrdered {basis : Basis} {X Y : PreMS basis}
+    (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) : (X.div Y).WellOrdered := by
   unfold div
-  apply mul_WellOrdered hx_wo
-  exact inv'_WellOrdered hy_wo
+  apply mul_WellOrdered hX_wo
+  exact inv_WellOrdered hY_wo
 
-theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
+theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {FX FY : ℝ → ℝ}
     (h_basis : WellFormedBasis basis)
     (hY_wo : Y.WellOrdered)
     (hY_trimmed : Y.Trimmed)
-    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY)
-    : (X.div Y).Approximates (fX / fY) := by
+    (hX_approx : X.Approximates FX) (hY_approx : Y.Approximates FY)
+    : (X.div Y).Approximates (FX / FY) := by
   unfold div
   apply mul_Approximates h_basis hX_approx
-  exact inv'_Approximates h_basis hY_wo hY_approx hY_trimmed
+  exact inv_Approximates h_basis hY_wo hY_approx hY_trimmed
 
 end PreMS
-
--- noncomputable def inv (x : MS) (h_basis : WellFormedBasis x.basis) (h_trimmed : x.Trimmed) :
---     MS where
---   basis := x.basis
---   val := x.val.inv'
---   F := x.F⁻¹
---   h_wo := PreMS.inv'_WellOrdered x.h_wo
---   h_approx := PreMS.inv'_Approximates h_basis x.h_wo h_trimmed x.h_approx
 
 end TendstoTactic

@@ -110,30 +110,30 @@ theorem maxExp_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS (bas
 
 theorem maxExp_ge {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {li : List (PreMS (basis_hd :: basis_tl))}
-    {x : PreMS (basis_hd :: basis_tl)} (hx : x ∈ li) :
-    x.leadingExp ≤ maxExp li := by
+    {X : PreMS (basis_hd :: basis_tl)} (hX : X ∈ li) :
+    X.leadingExp ≤ maxExp li := by
   simp [maxExp]
-  have := List.le_maximum_of_mem' (List.mem_map_of_mem leadingExp hx)
+  have := List.le_maximum_of_mem' (List.mem_map_of_mem leadingExp hX)
   generalize (List.map leadingExp li).maximum = a at this
   cases a <;> simpa [Option.bind]
 
 -- Ugly
 theorem maxExp_eq_bot_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {li : List (PreMS (basis_hd :: basis_tl))} :
-    maxExp li = ⊥ ↔ ∀ x ∈ li, x = .nil := by
+    maxExp li = ⊥ ↔ ∀ X ∈ li, X = .nil := by
   constructor
-  · intro h x
-    cases' x with exp coef tl
+  · intro h X
+    cases' X with exp coef tl
     · simp
-    · intro hx
+    · intro hX
       simp [maxExp] at h
-      have := List.mem_map_of_mem leadingExp hx
+      have := List.mem_map_of_mem leadingExp hX
       simp only [leadingExp_cons] at this
       have := List.le_maximum_of_mem' this
       generalize (List.map leadingExp li).maximum = t at *
       cases ht : t with
       | bot => simp [ht] at this
-      | coe x =>
+      | coe X =>
         simp [ht, Option.bind] at h
         rw [h] at ht
         rw [ht] at this
@@ -153,10 +153,10 @@ theorem maxExp_eq_bot_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp [Option.bind]
     · have : li = [] := by
         apply List.eq_nil_iff_forall_not_mem.mpr
-        intro x hx
-        specialize h x hx
-        rw [h] at hx
-        exact h_mem hx
+        intro X hX
+        specialize h X hX
+        rw [h] at hX
+        exact h_mem hX
       rw [this]
       simp [Option.bind]
       rfl
@@ -195,15 +195,15 @@ theorem merge_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 scoped instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     Preorder (PreMS (basis_hd :: basis_tl)) where
-  le := fun x y ↦ x.leadingExp ≤ y.leadingExp
+  le := fun X Y ↦ X.leadingExp ≤ Y.leadingExp
   le_refl := by simp
   le_trans := by
     simp
-    intro x y z hxy hyz
-    apply le_trans hxy hyz
+    intro X Y Z hXY hYZ
+    apply le_trans hXY hYZ
 
-theorem lt_iff_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (basis_hd :: basis_tl)} :
-    (x < y) ↔ (x.leadingExp < y.leadingExp) := by
+theorem lt_iff_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
+    (X < Y) ↔ (X.leadingExp < Y.leadingExp) := by
   constructor
   · intro h
     rw [lt_iff_le_not_le] at h ⊢
@@ -212,9 +212,9 @@ theorem lt_iff_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (basi
     rw [lt_iff_le_not_le] at h ⊢
     exact h
 
-theorem eq_nil_of_le_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x : PreMS (basis_hd :: basis_tl)}
-    (h : x ≤ .nil) : x = .nil := by
-  cases x <;> simp [LE.le] at h ⊢
+theorem eq_nil_of_le_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)}
+    (h : X ≤ .nil) : X = .nil := by
+  cases X <;> simp [LE.le] at h ⊢
 
 theorem tail_eq_nil_of_nil_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {tl : Seq (PreMS (basis_hd :: basis_tl))}
@@ -237,16 +237,16 @@ theorem merge1_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
 @[simp]
 theorem merge1_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : PreMS (basis_hd :: basis_tl)} :
     merge1 (basis_hd := basis_hd) (basis_tl := basis_tl) (.cons hd .nil) = hd := by
-  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
-    ∃ m, x = merge m (.cons y .nil)
+  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
+    ∃ m, X = merge m (.cons Y .nil)
   apply Seq.Eq.coind motive
   · simp only [motive, merge1]
     use 0
-  · intro x y ih
+  · intro X Y ih
     simp only [motive] at ih
     obtain ⟨m, ih⟩ := ih
     subst ih
-    cases' y with hd tl
+    cases' Y with hd tl
     · right
       simp
       rw [merge]
@@ -385,7 +385,7 @@ theorem merge_aux_liNew_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {s_hd_exp : ℝ} {s_hd_coef : PreMS basis_tl} {s_hd_tl : PreMS (basis_hd :: basis_tl)}
     {s_tl : Seq (PreMS (basis_hd :: basis_tl))}
     {firsts_tl : List (PreMS (basis_hd :: basis_tl))}
-    (h_lt : ∀ x ∈ firsts_tl, x.leadingExp < s_hd_exp) :
+    (h_lt : ∀ X ∈ firsts_tl, X.leadingExp < s_hd_exp) :
     merge_aux_liNew (Seq.cons (s_hd_exp, s_hd_coef) s_hd_tl :: firsts_tl) s_hd_exp
     (Seq.cons (Seq.cons (s_hd_exp, s_hd_coef) s_hd_tl) s_tl) =
     Seq.cons s_hd_tl s_tl := by
@@ -412,7 +412,7 @@ theorem merge_aux_liNew_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
     (hs : s.All WellOrdered) :
     (merge_aux_liNew (s.take m) exp s).All WellOrdered := by
   simp [merge_aux_liNew]
-  have h_firsts : ∀ x ∈ s.take m, x.WellOrdered := Seq.take_all hs
+  have h_firsts : ∀ X ∈ s.take m, X.WellOrdered := Seq.take_all hs
   generalize s.take m = firsts at h_firsts
   generalize 0 = offset
   induction firsts generalizing offset s with
@@ -471,8 +471,8 @@ theorem merge_aux_tail_stable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp :
             simp [h_hd, Seq.take_drop] at h_offset
             simp [← head_dropn]
             revert h_offset
-            generalize (s.drop m) = t
-            cases t <;> simp
+            generalize (s.drop m) = s'
+            cases s' <;> simp
             exact Eq.symm
           simp [merge_aux_kNew, h_get, h_exp]
           rw [← Seq.drop.eq_2]
@@ -507,7 +507,7 @@ theorem merge_aux_liNew_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
     {s_hd : PreMS (basis_hd :: basis_tl)}
     {s_tl : Seq (PreMS (basis_hd :: basis_tl))}
     (h : ((Seq.cons s_hd s_tl).drop (m + 1)).Sorted
-      (fun (x y : PreMS (basis_hd :: basis_tl)) ↦ x > y)) :
+      (fun (X Y : PreMS (basis_hd :: basis_tl)) ↦ X > Y)) :
     ((merge_aux_liNew (Seq.take (m + 1) s_tl) exp s_tl).drop
       (merge_aux_kNew exp m s_tl)).Sorted (· > ·) := by
   rw [← Seq.dropn_tail, Seq.tail_cons] at h
@@ -523,7 +523,7 @@ theorem merge_aux_liNew_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
 
 theorem merge_aux_coef_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    {li : List (PreMS (basis_hd :: basis_tl))} (h_li : ∀ x ∈ li, x.leadingExp < exp) :
+    {li : List (PreMS (basis_hd :: basis_tl))} (h_li : ∀ X ∈ li, X.leadingExp < exp) :
     merge_aux_coef (Seq.cons (exp, coef) tl :: li) exp = coef := by
   simp [merge_aux_coef]
   induction li with
@@ -544,32 +544,32 @@ theorem merge_aux_coef_cons_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
 theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreMS (basis_hd :: basis_tl)}
     {s_tl : Seq (PreMS (basis_hd :: basis_tl))} {m : ℕ} :
     merge (m + 1) (Seq.cons s_hd s_tl) = s_hd + (merge m s_tl) := by
-  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
+  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
     ∃ m s_hd s_tl,
-      x = merge (m + 1) (Seq.cons s_hd s_tl) ∧
-      y = s_hd + (merge m s_tl)
+      X = merge (m + 1) (Seq.cons s_hd s_tl) ∧
+      Y = s_hd + (merge m s_tl)
   apply Seq.Eq.coind motive
   · simp only [motive]
     use m, s_hd, s_tl
-  · intro x y ih
+  · intro X Y ih
     simp only [motive] at ih
-    obtain ⟨m, s_hd, s_tl, hx_eq, hy_eq⟩ := ih
-    rw [merge_unfold] at hx_eq hy_eq
-    simp [merge'] at hx_eq hy_eq
+    obtain ⟨m, s_hd, s_tl, hX_eq, hY_eq⟩ := ih
+    rw [merge_unfold] at hX_eq hY_eq
+    simp [merge'] at hX_eq hY_eq
     cases' s_hd with s_hd_exp s_hd_coef s_hd_tl
     · cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
       | bot =>
         right
-        simp [h_maxExp] at hx_eq hy_eq
-        exact ⟨hx_eq, hy_eq⟩
+        simp [h_maxExp] at hX_eq hY_eq
+        exact ⟨hX_eq, hY_eq⟩
       | coe right_exp =>
         left
-        simp [h_maxExp] at hx_eq hy_eq
+        simp [h_maxExp] at hX_eq hY_eq
         use ?_, ?_, ?_
         constructor
-        · exact hx_eq
+        · exact hX_eq
         constructor
-        · exact hy_eq
+        · exact hY_eq
         simp [motive]
         use ?_, .nil, ?_
         constructor
@@ -580,17 +580,17 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
     · left
       cases h_maxExp : maxExp (Seq.take (m + 1) s_tl) with
       | bot =>
-        simp [h_maxExp] at hx_eq hy_eq
+        simp [h_maxExp] at hX_eq hY_eq
         use ?_, ?_, ?_
         constructor
-        · exact hx_eq
+        · exact hX_eq
         constructor
-        · rw [hy_eq]
+        · rw [hY_eq]
           congr
           · rw [merge_aux_coef_cons_lt]
-            intro x hx
+            intro X hX
             rw [maxExp_eq_bot_iff] at h_maxExp
-            simp [h_maxExp x hx]
+            simp [h_maxExp X hX]
           · exact Eq.refl _
         simp only [motive]
         use ?_, s_hd_tl, s_tl
@@ -599,8 +599,8 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
           · exact Eq.refl _
           · rw [merge_aux_liNew_cons_lt]
             rw [maxExp_eq_bot_iff] at h_maxExp
-            intro x hx
-            simp [h_maxExp x hx]
+            intro X hX
+            simp [h_maxExp X hX]
         · symm
           convert add_nil
           rw [merge_unfold, merge']
@@ -617,21 +617,21 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
             rw [this]
             simpa
       | coe right_exp =>
-        simp [h_maxExp] at hx_eq hy_eq
-        rw [add_cons_cons] at hy_eq
-        split_ifs at hy_eq with h1 h2
-        · rw [sup_of_le_left h1.le] at hx_eq
+        simp [h_maxExp] at hX_eq hY_eq
+        rw [add_cons_cons] at hY_eq
+        split_ifs at hY_eq with h1 h2
+        · rw [sup_of_le_left h1.le] at hX_eq
           use ?_, ?_, ?_
           constructor
-          · exact hx_eq
+          · exact hX_eq
           constructor
-          · rw [hy_eq]
+          · rw [hY_eq]
             congr
             · rw [merge_aux_coef_cons_lt]
-              intro x hx
+              intro X hX
               apply lt_of_le_of_lt (b := ↑right_exp)
               · rw [← h_maxExp]
-                apply maxExp_ge hx
+                apply maxExp_ge hX
               · simpa
             · exact Eq.refl _
           simp only [motive]
@@ -641,10 +641,10 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
             · exact Eq.refl _
             · rw [merge_aux_liNew_cons_lt]
               · exact Eq.refl _
-              intro x hx
+              intro X hX
               apply lt_of_le_of_lt (b := ↑right_exp)
               · rw [← h_maxExp]
-                apply maxExp_ge hx
+                apply maxExp_ge hX
               · simpa
           · congr
             have : merge_aux_kNew s_hd_exp m s_tl = m := by
@@ -662,12 +662,12 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
                 linarith
             rw [this]
             conv => rhs; rw [merge_unfold, merge', h_maxExp]; simp
-        · rw [sup_of_le_right h2.le] at hx_eq
+        · rw [sup_of_le_right h2.le] at hX_eq
           use ?_, ?_, ?_
           constructor
-          · exact hx_eq
+          · exact hX_eq
           constructor
-          · rw [hy_eq]
+          · rw [hY_eq]
             congr 2
             · conv => rhs; rw [merge_aux_coef_cons]
               split_ifs with h
@@ -692,12 +692,12 @@ theorem merge_succ_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {s_hd : PreM
         · have : s_hd_exp = right_exp := by linarith
           subst this
           clear h1 h2
-          simp at hx_eq hy_eq
+          simp at hX_eq hY_eq
           use ?_, ?_, ?_
           constructor
-          · exact hx_eq
+          · exact hX_eq
           constructor
-          · rw [hy_eq]
+          · rw [hY_eq]
             congr
             · conv => rhs; simp [merge_aux_coef_cons]
             · exact Eq.refl _

@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.Main
+import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
@@ -7,7 +7,7 @@ open Lean Meta Elab Tactic Qq
 
 namespace TendstoTactic
 
-/-- Given `ms`, computes its leading term `t`. -/
+/-- Given `ms`, computes its leading term. -/
 partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(Term) := do
   match basis with
   | ~q(List.nil) =>
@@ -61,9 +61,9 @@ partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
     | .pos h_hd => return .pos q(Term.FirstIsPos_of_head $tl $h_hd)
     | .neg h_hd => return .neg q(Term.FirstIsNeg_of_head $tl $h_hd)
     | .zero h_hd =>
-      return match ← getFirstIs tl with
-      | .zero h_tl => .zero q(Term.AllZero_of_tail $h_hd $h_tl)
-      | .pos h_tl => .pos q(Term.FirstIsPos_of_tail $h_hd $h_tl)
-      | .neg h_tl => .neg q(Term.FirstIsNeg_of_tail $h_hd $h_tl)
+      match ← getFirstIs tl with
+      | .zero h_tl => return .zero q(Term.AllZero_of_tail $h_hd $h_tl)
+      | .pos h_tl => return .pos q(Term.FirstIsPos_of_tail $h_hd $h_tl)
+      | .neg h_tl => return .neg q(Term.FirstIsNeg_of_tail $h_hd $h_tl)
 
 end TendstoTactic

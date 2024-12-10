@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.Main
+import Mathlib.Tactic.Tendsto.Multiseries
 
 open Lean Qq TendstoTactic
 
@@ -65,18 +65,27 @@ def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
 
 def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
-  val := q(PreMS.inv' $x.val)
+  val := q(PreMS.inv $x.val)
   F := q($x.F⁻¹)
-  h_wo := q(PreMS.inv'_WellOrdered $x.h_wo)
-  h_approx := q(PreMS.inv'_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_wo := q(PreMS.inv_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.inv_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
 
 def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
-  val := q(PreMS.mul $x.val (PreMS.inv' $y.val))
+  val := q(PreMS.mul $x.val (PreMS.inv $y.val))
   F := q($x.F / $y.F)
   h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
+  h_basis := x.h_basis
+
+
+def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
+  basis := x.basis
+  val := q(PreMS.npow $x.val $a)
+  F := q($x.F ^ $a)
+  h_wo := q(PreMS.npow_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.npow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
 
 def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where

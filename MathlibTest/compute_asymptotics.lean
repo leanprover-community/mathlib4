@@ -110,16 +110,16 @@ example :
   elim_destruct
   sorry -- OK
 
-example : destruct (PreMS.invSeries'.apply ms_nil) = .none := by
+example : destruct (PreMS.invSeries.apply ms_nil) = .none := by
   unfold ms_nil
   elim_destruct
   sorry -- OK
 
-example : destruct (ms_nil.inv') = .none := by
+example : destruct (ms_nil.inv) = .none := by
   unfold ms_nil
   simp only [elimDestruct]
 
-example : destruct (ms_cons.inv') = .none := by
+example : destruct (ms_cons.inv) = .none := by
   unfold ms_cons
   elim_destruct
   sorry -- OK
@@ -284,6 +284,31 @@ example :
   compute_asymptotics
 
 example :
+  let f := fun (x : ℝ) ↦ x^(-1 : ℝ) - 1/x;
+  Tendsto f (𝓝[>] 0) (𝓝 0) := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ x^1 - (1/x)⁻¹;
+  Tendsto f (𝓝[>] 0) (𝓝 0) := by
+  simp only
+  compute_asymptotics
+
+-- example :
+--   let f := fun (x : ℝ) ↦ x^(-1 : ℤ) - 1/x;
+--   Tendsto f (𝓝[>] 0) (𝓝 0) := by
+--   simp only
+--   compute_asymptotics
+
+-- TODO: add guard_msg
+-- example :
+--   let f := fun (x : ℝ) ↦ x^(-1 : ℝ) - 1/x;
+--   Tendsto f (𝓝[>] 0) atTop := by
+--   simp only
+--   compute_asymptotics
+
+example :
   let f := fun (x : ℝ) ↦ (1 + x)^(Real.pi) / (3 + 2*x^(314/100 : ℝ))
   Tendsto f atTop atTop := by
   simp only
@@ -326,6 +351,12 @@ example :
   compute_asymptotics
   rfl
 
+example (a b : ℝ) (h : a < b) :
+  let f := fun (x : ℝ) ↦ (x + 3)^a / x^b;
+  Tendsto f atTop (nhds 0) := by
+  simp only
+  compute_asymptotics
+
 end Variables
 
 section DifferentFilters
@@ -353,7 +384,5 @@ lemma lol :
   Tendsto f (𝓝[≠] 0) atTop := by
   simp only
   compute_asymptotics
-
-#print axioms lol
 
 end DifferentFilters

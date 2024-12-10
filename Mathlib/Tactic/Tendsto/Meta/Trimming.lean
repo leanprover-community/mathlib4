@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.Main
+import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal

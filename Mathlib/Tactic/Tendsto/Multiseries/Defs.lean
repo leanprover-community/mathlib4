@@ -105,7 +105,7 @@ section WellOrdered
 
 /-- Auxilary instance for order on pairs `(exp, coef)` used below to define `WellOrdered` in terms
 of `Stream'.Seq.Sorted`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
-scoped instance {basis : _} : Preorder (ℝ × PreMS basis) where
+scoped instance {basis} : Preorder (ℝ × PreMS basis) where
   le := fun x y ↦ x.1 ≤ y.1
   le_refl := by simp
   le_trans := by
@@ -114,7 +114,7 @@ scoped instance {basis : _} : Preorder (ℝ × PreMS basis) where
     trans y.1 <;> assumption
 
 -- TODO: can be simpler??
-private theorem lt_iff_lt {basis : _} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} :
+private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} :
     (exp1, coef1) < (exp2, coef2) ↔ exp1 < exp2 := by
   constructor
   · intro h
@@ -127,7 +127,7 @@ private theorem lt_iff_lt {basis : _} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS bas
 /-- Multiseries `ms` is `WellOrdered` when at each its level exponents are sorted by TODO. -/
 inductive WellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : WellOrdered ms
-| colist {hd : _} {tl : _} (ms : PreMS (hd :: tl))
+| colist {hd} {tl} (ms : PreMS (hd :: tl))
     (h_coef : ∀ i x, ms.get? i = .some x → x.2.WellOrdered)
     (h_sorted : Seq.Sorted (· > ·) ms) : ms.WellOrdered
 

@@ -75,8 +75,6 @@ theorem binomialCoef_zero {a : ℝ} : binomialCoef a 0 = 1 := by
 theorem binomialCoef_one {a : ℝ} : binomialCoef a 1 = a := by
   simp [binomialCoef, decreasing_factorial]
 
-/-- `expSeries 𝕂 𝔸` is the `FormalMultilinearSeries` whose `n`-th term is the map
-`(xᵢ) : 𝔸ⁿ ↦ (1/n! : 𝕂) • ∏ xᵢ`. Its sum is the exponential map `exp 𝕂 : 𝔸 → 𝔸`. -/
 noncomputable def binomialSeries (a : ℝ) : FormalMultilinearSeries ℝ ℝ ℝ := fun n =>
   (binomialCoef a n) • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
 
@@ -242,8 +240,6 @@ theorem HasFPowerSeriesOnBall.unique {𝕜 : Type u} {E : Type v} {F : Type w} [
   have hf_sum := hf.hasSum_sub hy
   have hg_sum := hg.hasSum_sub hy
   apply HasSum.unique hf_sum hg_sum
-
--- #check HasFPowerSeriesOnBall.add
 
 -- TODO: move
 theorem HasFPowerSeriesOnBall.smul {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}

@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.Main
+import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Lemmas
 import Mathlib.Tactic.Tendsto.Meta.Trimming
 import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
@@ -15,17 +15,15 @@ def basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] := by
   simp [WellFormedBasis]
   exact fun ⦃U⦄ a ↦ a
 
+#check fun (x : ℝ) ↦ x^(1 : ℝ)
+
 partial def createMS (body : Expr) : TacticM MS := do
   let basis : Q(Basis) := q([fun (x : ℝ) ↦ x])
   let basis_wo : Q(WellFormedBasis $basis) := q(basis_wo)
-  let zero_aux : Q(0 < List.length $basis) := q(by decide)
-  match body.nat? with -- TODO: other numerals
-  | .some n =>
-    return MS.const basis body basis_wo
-  | none =>
   if body.isBVar then
     if body.bvarIdx! != 0 then
       throwError "Unexpected bvarIdx in createMS: expected 0"
+    let zero_aux : Q(0 < List.length $basis) := q(by decide)
     let ms : MS := MS.monomial basis 0 zero_aux basis_wo
     return ms
   match body.getAppFnArgs with
@@ -53,11 +51,19 @@ partial def createMS (body : Expr) : TacticM MS := do
     let ⟨ms2, h_trimmed⟩ ← trimMS (← createMS arg2)
     -- if h_basis_eq : ms1.basis =Q ms2.basis then
     return MS.div ms1 ms2 h_trimmed ⟨⟩
-  | (``HPow.hPow, #[ℝ, ℝ, ℝ, _, arg, exp]) =>
-    let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
-    let .some h_pos ← getLeadingTermCoefPos ms.val
-      | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
-    return MS.rpow ms exp h_trimmed h_pos
+  | (``HPow.hPow, #[_, t, _, _, arg, exp]) =>
+    if t == q(ℕ) then
+      let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
+      return MS.npow ms exp h_trimmed
+    else if t == q(ℤ) then
+      throwError "integer powers are not implemented"
+    else if t == q(ℝ) then
+      let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
+      let .some h_pos ← getLeadingTermCoefPos ms.val
+        | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
+      return MS.rpow ms exp h_trimmed h_pos
+    else
+      throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℕ, ℤ and ℝ are supported."
   | _ =>
     if body.hasLooseBVars then
       throwError f!"Unsupported body in createMS: {body}"
@@ -105,16 +111,12 @@ def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(
 
 def convertFilter (f : Q(ℝ → ℝ)) (limit : Q(Filter ℝ)) : MetaM (Option Name × List (Q(ℝ → ℝ))) := do
   match limit with
-  | ~q(atTop) =>
-    return (.none, [f])
-  | ~q(atBot) =>
-    return (.some ``tendsto_bot_of_tendsto_top, [q(fun x ↦ $f (-x))])
-  | ~q(𝓝[>] $c) =>
-    return (.some ``tendsto_nhds_right_of_tendsto_top, [q(fun x ↦ $f ($c + x⁻¹))])
-  | ~q(𝓝[<] $c) =>
-    return (.some ``tendsto_nhds_left_of_tendsto_top, [q(fun x ↦ $f ($c - x⁻¹))])
-  | ~q(𝓝[≠] $c) =>
-    return (.some ``tendsto_nhds_punctured_of_tendsto_top, [q(fun x ↦ $f ($c - x⁻¹)), q(fun x ↦ $f ($c + x⁻¹))])
+  | ~q(atTop) => return (.none, [f])
+  | ~q(atBot) => return (.some ``tendsto_bot_of_tendsto_top, [q(fun x ↦ $f (-x))])
+  | ~q(𝓝[>] $c) => return (.some ``tendsto_nhds_right_of_tendsto_top, [q(fun x ↦ $f ($c + x⁻¹))])
+  | ~q(𝓝[<] $c) => return (.some ``tendsto_nhds_left_of_tendsto_top, [q(fun x ↦ $f ($c - x⁻¹))])
+  | ~q(𝓝[≠] $c) => return (.some ``tendsto_nhds_punctured_of_tendsto_top,
+    [q(fun x ↦ $f ($c - x⁻¹)), q(fun x ↦ $f ($c + x⁻¹))])
   | _ => throwError f!"Unexpected source filter: {← ppExpr limit}"
 
 elab "compute_asymptotics" : tactic =>
@@ -132,16 +134,15 @@ elab "compute_asymptotics" : tactic =>
           let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
           let extraGoals ← evalTacticAt (← `(tactic| try norm_num)) h_eq.mvarId!
           appendGoals extraGoals
-          -- if !extraGoals.isEmpty && (← extraGoals[0]!.getType).isFalse then
-          --   logInfo m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
           pure q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
         | _ =>
-          throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
+          throwError m!"The tactic proved that the function tends to {← ppExpr limit}, not {← ppExpr targetLimit}."
       else
         pure h_tendsto
-    match convertLemma? with
-    | .none => (← getMainGoal).assign proofs[0]!
-    | .some convertLemma =>
-      (← getMainGoal).assign <| ← mkAppM convertLemma (f :: proofs).toArray
+    let pf ← match convertLemma? with
+    | .none => pure proofs[0]!
+    | .some convertLemma => mkAppM convertLemma (f :: proofs).toArray
+
+    (← getMainGoal).assign pf
 
 end TendstoTactic

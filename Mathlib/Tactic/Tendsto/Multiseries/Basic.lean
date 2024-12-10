@@ -99,7 +99,7 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
 
 -- TODO : move it
 /-- `zero` approximates zero functions. -/
-theorem zero_Approximates_zero {basis : Basis} :
+theorem zero_Approximates {basis : Basis} :
     (zero basis).Approximates (fun _ ↦ 0) := by
   cases basis with
   | nil => simp [Approximates, zero]
@@ -108,7 +108,7 @@ theorem zero_Approximates_zero {basis : Basis} :
     exact Approximates.nil (by rfl)
 
 /-- `one` approximates unit function. -/
-theorem one_Approximates_one {basis : Basis} (h_wo : WellFormedBasis basis) :
+theorem one_Approximates {basis : Basis} (h_wo : WellFormedBasis basis) :
     (one basis).Approximates (fun _ ↦ 1) :=
   const_Approximates h_wo
 
@@ -149,7 +149,7 @@ theorem monomial_Approximates {basis : Basis} {n : ℕ} (h : n < basis.length)
     | zero =>
       simp [monomial]
       apply Approximates.cons (fun _ ↦ 1)
-      · exact one_Approximates_one h_basis.tail
+      · exact one_Approximates h_basis.tail
       · nth_rw 1 [show basis_hd = fun x ↦ (basis_hd x)^(1 : ℝ) by ext x; simp]
         apply PreMS.majorated_self
         apply basis_tendsto_top h_basis
