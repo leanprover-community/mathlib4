@@ -87,6 +87,10 @@ theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Pro
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
 
+theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} {g : α → β} {s : Set α}
+    (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : DirectedOn r s) : DirectedOn rb (g '' s) :=
+  directedOn_image.mpr (hf.mono hg)
+
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb =>
@@ -331,11 +335,8 @@ namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)]
 
 lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
-    DirectedOn (· ≤ ·) ((fun a => a i) '' d) := by
-  intro p ⟨a, ha⟩ q ⟨b, hb⟩
-  obtain ⟨z,hz⟩ := hd a ha.1 b hb.1
-  use z i
-  aesop
+    DirectedOn (· ≤ ·) ((fun a => a i) '' d) :=
+  DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
 
 lemma prodMk {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (· ≤ ·) (d i)) :
     DirectedOn (· ≤ ·) (Set.pi  Set.univ d) := by
