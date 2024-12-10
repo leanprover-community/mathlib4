@@ -809,7 +809,7 @@ theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (
   refine eq_of_forall_ge_iff fun c => ?_
   rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
       (hs₀.image2 ht₀),
-    forall_image2_iff, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
+    forall_mem_image2, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
   simp_rw [← (h₂ _).le_iff_le, (h₁ _).le_iff_le, csSup_le_iff hs₁ hs₀]
 
 theorem csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
