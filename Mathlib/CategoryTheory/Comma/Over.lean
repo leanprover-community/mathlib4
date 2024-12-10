@@ -23,7 +23,7 @@ Comma, Slice, Coslice, Over, Under
 
 namespace CategoryTheory
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {T : Type u₁} [Category.{v₁} T]
@@ -924,6 +924,33 @@ def ofDiagEquivalence' (X : T × T) :
   (ofDiagEquivalence X).trans <|
     (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
     CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
+
+section CommaFst
+
+variable {C : Type u₃} [Category.{v₃} C]
+variable (F : C ⥤ T) (G : D ⥤ T)
+
+@[simps]
+def ofCommaFstEquivalenceFunctor (c : C) :
+    CostructuredArrow (Comma.fst F G) c ⥤ Comma (Over.forget c ⋙ F) G where
+  obj X := ⟨Over.mk X.hom, X.left.right, X.left.hom⟩
+  map f := ⟨Over.homMk f.left.left (by simpa using f.w), f.left.right, by simp⟩
+
+@[simps!]
+def ofCommaFstEquivalenceInverse (c : C) :
+    Comma (Over.forget c ⋙ F) G ⥤ CostructuredArrow (Comma.fst F G) c :=
+  Functor.toCostructuredArrow (Comma.preLeft (Over.forget c) F G) _ _
+    (fun Y => Y.left.hom) (fun g => by simp)
+
+@[simps]
+def ofCommaFstEquivalence (c : C) :
+    CostructuredArrow (Comma.fst F G) c ≌ Comma (Over.forget c ⋙ F) G where
+  functor := ofCommaFstEquivalenceFunctor F G c
+  inverse := ofCommaFstEquivalenceInverse F G c
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+
+end CommaFst
 
 end CostructuredArrow
 
