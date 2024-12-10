@@ -964,6 +964,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [PresheafedSpace.stalkMap.comp, PresheafedSpace.stalkMap.comp] at this
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
+    dsimp
     infer_instance
   · exact LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
@@ -1206,7 +1207,7 @@ theorem invApp_app (U : Opens X) :
       (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f.1 U
 
-attribute [elementwise] invApp_app
+attribute [elementwise nosimp] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :

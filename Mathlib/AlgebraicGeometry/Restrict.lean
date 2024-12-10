@@ -175,15 +175,15 @@ def opensRestrict :
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra (Γ(X, ⊤)) Γ(U, ⊤) :=
-  U.ι.appTop.toAlgebra
+  U.ι.appTop.hom.toAlgebra
 
 lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen
       (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op r) := by
   refine (Scheme.image_basicOpen (X.ofRestrict U.isOpenEmbedding) r).trans ?_
   rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.isOpenEmbedding_obj_top).op]
-  rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
-    op_id, CategoryTheory.Functor.map_id]
+  rw [← CommRingCat.comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans,
+    eqToHom_refl, op_id, CategoryTheory.Functor.map_id]
   congr
   exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
 
@@ -617,7 +617,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   have e := Scheme.preimage_basicOpen U.ι r
   rw [Scheme.Opens.ι_app] at e
   rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
-  erw [← comp_apply]
+  erw [← CommRingCat.comp_apply]
   erw [← Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]

@@ -59,7 +59,7 @@ instance : IsLocalAtTarget @IsPreimmersion :=
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where
   base_embedding := f.isOpenEmbedding.isEmbedding
-  surj_on_stalks _ := (ConcreteCategory.bijective_of_isIso _).2
+  surj_on_stalks _ := (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 
 instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   id_mem _ := inferInstance
@@ -91,7 +91,8 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
 lemma Spec_map_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    IsPreimmersion (Spec.map f) ↔ IsEmbedding (PrimeSpectrum.comap f) ∧ f.SurjectiveOnStalks := by
+    IsPreimmersion (Spec.map f) ↔ IsEmbedding (PrimeSpectrum.comap f.hom) ∧
+      f.hom.SurjectiveOnStalks := by
   haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
     rw [← RingHom.toMorphismProperty_respectsIso_iff]
     exact RingHom.surjective_respectsIso
@@ -99,7 +100,7 @@ lemma Spec_map_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
   rfl
 
 lemma mk_Spec_map {R S : CommRingCat.{u}} {f : R ⟶ S}
-    (h₁ : IsEmbedding (PrimeSpectrum.comap f)) (h₂ : f.SurjectiveOnStalks) :
+    (h₁ : IsEmbedding (PrimeSpectrum.comap f.hom)) (h₂ : f.hom.SurjectiveOnStalks) :
     IsPreimmersion (Spec.map f) :=
   (Spec_map_iff f).mpr ⟨h₁, h₂⟩
 
