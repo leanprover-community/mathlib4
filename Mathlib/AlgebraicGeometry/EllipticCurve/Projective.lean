@@ -15,7 +15,8 @@ import Mathlib.Tactic.LinearCombination'
 This file defines the type of points on a Weierstrass curve as a tuple, consisting of an equivalence
 class of triples up to scaling by a unit, satisfying a Weierstrass equation with a nonsingular
 condition. This file also defines the negation and addition operations of the group law for this
-type, and proves that they respect the Weierstrass equation and the nonsingular condition.
+type, and proves that they respect the Weierstrass equation and the nonsingular condition. The fact
+that they form an abelian group is proven in `Mathlib.AlgebraicGeometry.EllipticCurve.Group`.
 
 ## Mathematical background
 
