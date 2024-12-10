@@ -929,21 +929,25 @@ noncomputable def ofDiagEquivalence' (X : T × T) :
 
 section CommaFst
 
-variable {C : Type u₃} [Category.{v₃} C]
-variable (F : C ⥤ T) (G : D ⥤ T)
+variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
 
+/-- The functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps]
 def ofCommaFstEquivalenceFunctor (c : C) :
     CostructuredArrow (Comma.fst F G) c ⥤ Comma (Over.forget c ⋙ F) G where
   obj X := ⟨Over.mk X.hom, X.left.right, X.left.hom⟩
   map f := ⟨Over.homMk f.left.left (by simpa using f.w), f.left.right, by simp⟩
 
+/-- The inverse functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps!]
 def ofCommaFstEquivalenceInverse (c : C) :
     Comma (Over.forget c ⋙ F) G ⥤ CostructuredArrow (Comma.fst F G) c :=
   Functor.toCostructuredArrow (Comma.preLeft (Over.forget c) F G) _ _
     (fun Y => Y.left.hom) (fun g => by simp)
 
+/-- There is a canonical equivalence between the costructured arrow category with codomain `c` on
+the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
+`Over.forget c ⋙ F : Over c ⥤ T` and `G`. -/
 @[simps]
 def ofCommaFstEquivalence (c : C) :
     CostructuredArrow (Comma.fst F G) c ≌ Comma (Over.forget c ⋙ F) G where
