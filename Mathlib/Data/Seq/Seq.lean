@@ -661,10 +661,28 @@ theorem terminatedAt_ofList (l : List α) :
 theorem terminates_ofList (l : List α) : (ofList l).Terminates :=
   ⟨_, terminatedAt_ofList l⟩
 
-theorem terminatedAt_nil : TerminatedAt (nil : Seq α) 0 := rfl
+@[simp]
+theorem terminatedAt_nil {n : ℕ} : TerminatedAt (nil : Seq α) n := rfl
+
+@[simp]
+theorem cons_not_terminatedAt_zero {α : Type u} {hd : α} {tl : Seq α} :
+    ¬(cons hd tl).TerminatedAt 0 := by
+  simp [TerminatedAt]
+
+@[simp]
+theorem cons_terminatedAt_succ_iff {α : Type u} {hd : α} {tl : Seq α} {n : ℕ} :
+    (cons hd tl).TerminatedAt (n + 1) ↔ tl.TerminatedAt n := by
+  simp [TerminatedAt]
 
 @[simp]
 theorem terminates_nil : Terminates (nil : Seq α) := ⟨0, rfl⟩
+
+@[simp]
+theorem terminates_cons_iff {hd : α} {tl : Seq α} :
+    (cons hd tl).Terminates ↔ tl.Terminates := by
+  constructor <;> intro ⟨n, h⟩
+  · exact ⟨n, cons_terminatedAt_succ_iff.mp (terminated_stable _ (Nat.le_succ _) h)⟩
+  · exact ⟨n + 1, cons_terminatedAt_succ_iff.mpr h⟩
 
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
