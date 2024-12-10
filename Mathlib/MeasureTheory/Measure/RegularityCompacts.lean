@@ -15,7 +15,7 @@ The main result of this file is `theorem inner_regularWRT_isCompact_of_complete_
 A `FiniteMeasure P` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
 `SecondCountableTopology E` is inner regular with respect to compact sets.
 
-Finite measures on Polish spaces are an important special case, which makes the result 
+Finite measures on Polish spaces are an important special case, which makes the result
 `theorem PolishSpace.innerRegular_isCompact_measurableSet` an important result in probability.
 -/
 
