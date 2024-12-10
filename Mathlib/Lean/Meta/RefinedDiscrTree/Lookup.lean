@@ -139,6 +139,9 @@ partial def appendResults (mr : MatchResult α) (a : Array β) (f : Nat → α �
     let b := aa[j]
     b.foldl (init := r) (· ++ ·.map (f j))
 
+/--
+Convert a `MatchResult` into a `Array`, with better matches at the start of the array.
+-/
 def toArray (mr : MatchResult α) : Array α :=
   mr.elts.foldr (init := #[]) fun a r => a.foldl (init := r) (· ++ ·)
 
