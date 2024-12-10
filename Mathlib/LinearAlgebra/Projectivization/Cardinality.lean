@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
 import Mathlib.LinearAlgebra.Projectivization.Basic
-import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Cardinality of projective spaces
@@ -68,7 +67,7 @@ lemma card'' [Finite k] [Finite V] :
     Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 1) := by
   haveI : Fintype k := Fintype.ofFinite k
   rw [card k]
-  have : 2 ≤ Nat.card k := FiniteField.two_le_card k
+  have : 1 < Nat.card k := Finite.one_lt_card
   have h : 0 ≠ (Nat.card k - 1) := by omega
   exact Nat.eq_div_of_mul_eq_left (Ne.symm h) rfl
 
@@ -80,7 +79,7 @@ lemma card_of_finrank_two [Finite k] (h : Module.finrank k V = 2) :
   have : Nat.card V = Nat.card k ^ 2 := by
     simp only [Nat.card_congr e.toEquiv, Nat.card_fun, Nat.card_eq_fintype_card, Fintype.card_fin]
   rw [card'', this, Nat.sq_sub_sq _ 1]
-  have : 2 ≤ Nat.card k := FiniteField.two_le_card k
+  have : 1 < Nat.card k := Finite.one_lt_card
   exact (Nat.eq_div_of_mul_eq_left (by omega) rfl).symm
 
 end Projectivization

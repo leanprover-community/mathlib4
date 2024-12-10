@@ -249,15 +249,6 @@ theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (
   let ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
 
-omit [Fintype K] in
-lemma two_le_card [Finite K] : 2 ≤ Nat.card K := by
-  haveI : Fintype K := Fintype.ofFinite K
-  obtain ⟨p, n, h⟩ := FiniteField.card' K
-  rw [← Fintype.card_eq_nat_card, h.right, ← pow_one 2]
-  exact le_trans
-    (Nat.pow_le_pow_of_le (by simp only [Nat.one_lt_ofNat]) NeZero.one_le)
-    (Nat.pow_le_pow_of_le_left (Nat.Prime.two_le h.left) n)
-
 -- Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
