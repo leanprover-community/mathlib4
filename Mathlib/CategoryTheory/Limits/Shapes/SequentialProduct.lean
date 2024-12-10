@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 /-!
 
 # ℕ-indexed products as sequential limits
