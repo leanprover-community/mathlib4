@@ -196,7 +196,7 @@ lemma fromRows_fromCols_eq_fromBlocks (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : 
   ext (_ | _) (_ | _) <;> simp
 
 @[deprecated (since := "2024-12-09")]
-alias fromRows_fromColumns_eq_fromBlocks := fromRows_fromCols_eq_fromBlocks
+alias fromRows_fromColumn_eq_fromBlocks := fromRows_fromCols_eq_fromBlocks
 
 section Semiring
 
