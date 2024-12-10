@@ -288,7 +288,8 @@ partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
   | _ => e.foldlM findSquares s
 
 /-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
-private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
+private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
     let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
@@ -297,13 +298,13 @@ private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
   let new_es ← s.filterMapM fun (e, is_sq) =>
     observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
   let new_es ← compWithZero.globalize.transform new_es
-  trace[linarith] "nlinarith preprocessing found squares"
-  trace[linarith] "{s}"
+  trace[linarith] "found:{indentD <| toMessageData s}"
   linarithTraceProofs "so we added proofs" new_es
   return new_es
 
 /-- Get proofs for products of inequalities from `ls`. -/
-private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) := do
+private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} adding product terms") do
   let with_comps ← ls.mapM (fun e => do
     let tp ← inferType e
     try

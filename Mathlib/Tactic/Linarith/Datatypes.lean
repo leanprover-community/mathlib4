@@ -23,7 +23,7 @@ initialize registerTraceClass `linarith.detail
 
 namespace Linarith
 
-
+/-- A shorthand for getting the types of a list of proofs terms, to trace. -/
 def linarithGetProofsMessage (l : List Expr) : MetaM MessageData := do
   return m!"{← l.mapM fun e => do instantiateMVars (← inferType e)}"
 
@@ -171,11 +171,11 @@ instance Comp.ToFormat : ToFormat Comp :=
 
 /-! ### Control -/
 
+/-- Metadata about preprocessors, for trace output. -/
 structure PreprocessorBase : Type where
-  /-- The name of the preprocessor, used in trace output. It will have `linarith` prepended when
-  used, to ensure `trace.linarith` control it. -/
+  /-- The name of the preprocessor, populated automatically, to create linkable trace messages. -/
   name : Name := by exact decl_name%
-  /-- The description of the preprocessor, used in trace output. -/
+  /-- The description of the preprocessor. -/
   description : String
 
 /--
