@@ -89,13 +89,11 @@ open Function
 
 variable {M₀ G₀ : Type*} (α : Type*)
 
-set_option quotPrecheck false in
-/-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
-notation "α≥0" => { x : α // 0 ≤ x }
+/-- Local notation for the nonnegative elements of a type `α`. -/
+local notation3 "α≥0" => { x : α // 0 ≤ x }
 
-set_option quotPrecheck false in
-/-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
-notation "α>0" => { x : α // 0 < x }
+/-- Local notation for the positive elements of a type `α`. -/
+local notation3 "α>0" => { x : α // 0 < x }
 
 section Abbreviations
 
