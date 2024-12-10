@@ -61,6 +61,7 @@ abbrev restrictOpenCommRingCat {X : TopCat}
     CommRingCat.carrier (F.obj (op U)) :=
   TopCat.Presheaf.restrictOpen (C := CommRingCat) f U e
 
+/-- Notation for `TopCat.Presheaf.restrictOpenCommRingCat`. -/
 scoped[AlgebraicGeometry] infixl:80 " |_ᵣ " => TopCat.Presheaf.restrictOpenCommRingCat
 
 open AlgebraicGeometry in
