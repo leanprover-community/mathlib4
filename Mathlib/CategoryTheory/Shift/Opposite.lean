@@ -128,13 +128,15 @@ lemma oppositeShiftFunctorCompIsoId_inv_app :
     ((shiftFunctorCompIsoId C a b h).hom.app X.unop).op := by
   simp [shiftFunctorCompIsoId, oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorAdd'_hom_app]
 
-namespace Functor.CommShift
+section CommShift
 
 open Functor
 
 variable {D : Type*} [Category D] [HasShift D A] (F : C ⥤ D)
 
-noncomputable def op [CommShift F A] :
+namespace Opposite
+
+noncomputable scoped instance commShiftOp [CommShift F A] :
     CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
   iso a := (NatIso.op (F.commShiftIso a)).symm
   zero := by
@@ -154,8 +156,8 @@ noncomputable def op [CommShift F A] :
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
-noncomputable def removeOp [CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A] :
-    CommShift F A where
+noncomputable def commShiftRemoveOp
+    [CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A] : CommShift F A where
   iso a := NatIso.removeOp (F.op.commShiftIso (C := OppositeShift C A)
     (D := OppositeShift D A) a).symm
   zero := by
@@ -176,7 +178,19 @@ noncomputable def removeOp [CommShift (C := OppositeShift C A) (D := OppositeShi
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
     rfl
 
-end Functor.CommShift
+end Opposite
+
+namespace Functor
+
+open scoped Opposite
+
+lemma commShiftOpIso [CommShift F A] (a : A) :
+    F.op.commShiftIso a (C := OppositeShift C A) (D := OppositeShift D A) =
+    (NatIso.op (F.commShiftIso a)).symm := rfl
+
+end Functor
+
+end CommShift
 
 end CategoryTheory
 

@@ -78,6 +78,10 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
       intros
       simp [opEquiv] }
 
+lemma opAdjointOpOfAdjoint_homEquiv (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) (X : Cᵒᵖ) (Y : Dᵒᵖ) :
+    (h.opAdjointOpOfAdjoint F G).homEquiv X Y = (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans
+    (opEquiv X (Opposite.op _)).symm) := by simp [opAdjointOpOfAdjoint]
+
 /-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
 def adjointOpOfAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G ⊣ F.unop) : F ⊣ G.op :=
   (opAdjointOpOfAdjoint F.unop _ h).ofNatIsoLeft F.opUnopIso
@@ -105,6 +109,17 @@ lemma comp_op : (Adjunction.comp adj adj').opAdjointOpOfAdjoint =
     comp_unit_app, Functor.comp_map, Category.assoc, comp_counit_app, Functor.op_map]
     rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_symm_apply]
     simp
+
+end Adjunction
+
+/-- If `e : C ≌ D` is an equivalence of categories, then the adjunction induced by
+`e.op : Cᵒᵖ ≌ Dᵒᵖ` is the opposite of `e.symm.toAdjunction`.-/
+lemma Equivalence.op_toAdjunction (e : C ≌ D) :
+    e.op.toAdjunction = e.symm.toAdjunction.opAdjointOpOfAdjoint := sorry
+
+namespace Adjunction
+
+attribute [local simp] homEquiv_unit homEquiv_counit
 
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
