@@ -63,6 +63,12 @@ abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
     (⟨[n+1], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n], hn'⟩ := SimplexCategory.σ i
 
+@[reassoc (attr := simp)]
+lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ
+
+@[reassoc (attr := simp)]
+lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+
 /-- The source vertex of `f : S _[1]₂` for use in defining the underlying refl quiver. -/
 def OneTruncation₂.src {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
   S.map (δ₂ (n := 0) 1).op f
