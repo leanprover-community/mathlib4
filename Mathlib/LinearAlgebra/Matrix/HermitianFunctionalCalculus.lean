@@ -10,6 +10,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousMap.Units
 import Mathlib.Analysis.Matrix
 import Mathlib.Topology.UniformSpace.Matrix
+import Mathlib.Data.Real.StarOrdered
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
