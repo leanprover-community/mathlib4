@@ -58,10 +58,7 @@ noncomputable def functorMap : ∀ n,
   intro n
   refine Limits.Pi.map fun m ↦ if h : m < n then eqToHom ?_ else
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
-  · split_ifs
-    · rfl
-    · omega
-  all_goals split_ifs; rfl
+  all_goals split_ifs; try rfl; try omega
 
 lemma functorMap_commSq_succ (n : ℕ) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n+1)).op ≫ Pi.π _ n ≫
@@ -129,11 +126,10 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
       Functor.const_obj_map, Category.id_comp, limMap_π, Discrete.functor_obj_eq_as,
       Discrete.natTrans_app, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
       limMap_π_assoc]
-    split_ifs
+    split
     · simp [dif_pos (by omega : m < n + 1)]
-    · by_cases h' : m < n + 1
-      · simp [dif_pos h']
-      · simp [dif_neg h']
+    · split
+      all_goals simp
 
 lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
   Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
@@ -217,30 +213,18 @@ attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 lemma functorMap_epi (n : ℕ) : Epi (functorMap f n) := by
   rw [functorMap, Pi.map_eq_prod_map (P := fun m : ℕ ↦ m < n + 1)]
-  refine @epi_comp _ _ _ _ _ _ _ _ (@epi_comp _ _ _ _ _ _ ?_ _ _)
+  apply (config := { allowSynthFailures := true }) epi_comp
+  apply (config := { allowSynthFailures := true }) epi_comp
   apply (config := { allowSynthFailures := true }) prod.map_epi
-  · have : Finite {i // i < n + 1} := instFiniteSubtypeLtOfLocallyFiniteOrderBot
-    apply (config := { allowSynthFailures := true }) Pi.map_epi
-    intro ⟨j, _⟩
-    split_ifs with hh
-    · by_cases j < n
-      · split_ifs
-        infer_instance
-      · split_ifs
-        infer_instance
-    · dsimp at hh
-      omega
+  · apply (config := { allowSynthFailures := true }) Pi.map_epi
+    intro ⟨_, _⟩
+    split
+    all_goals infer_instance
   · apply (config := { allowSynthFailures := true }) IsIso.epi_of_iso
     apply (config := { allowSynthFailures := true }) Pi.map_isIso
-    intro ⟨j, _⟩
-    split_ifs with hh
-    · dsimp at hh
-      omega
-    · by_cases j < n
-      · omega
-      · split_ifs
-        infer_instance
-
+    intro ⟨_, _⟩
+    split
+    all_goals infer_instance
 end
 
 end CategoryTheory.Limits.SequentialProduct
