@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Possibly infinite lists
@@ -63,6 +64,10 @@ theorem val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
 /-- Get the nth element of a sequence (if it exists) -/
 def get? : Seq α → ℕ → Option α :=
   Subtype.val
+
+@[simp]
+theorem val_eq_get {α : Type u} (li : Seq α) (n : ℕ) : li.val n = li.get? n := by
+  rfl
 
 @[simp]
 theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
@@ -165,6 +170,11 @@ theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → 
 theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
   ⟨eq_or_mem_of_mem_cons, by rintro (rfl | m) <;> [apply mem_cons; exact mem_cons_of_mem _ m]⟩
 
+@[simp]
+theorem get?_mem {α : Type u} {li : Seq α} {n : ℕ} {x : α} (h : li.get? n = .some x) : x ∈ li := by
+  simp [Membership.mem, Seq.Mem, Any]
+  exact ⟨n, h.symm⟩
+
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
   `some (a, s)` (for `cons a s`). -/
 def destruct (s : Seq α) : Option (Seq1 α) :=
@@ -241,6 +251,46 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     rw [destruct_eq_cons H]
     apply cons
 
+@[simp]
+theorem noConfusion {α : Type u} {hd : α} {tl : Seq α} : (cons hd tl) ≠ .nil := by
+  intro h
+  apply_fun head at h
+  simp at h
+
+@[simp]
+theorem noConfusion_symm {α : Type u} {hd : α} {tl : Seq α} : .nil ≠ (cons hd tl) := by
+  symm
+  simp
+
+theorem cons_eq_cons {α : Type u} {hd hd' : α} {tl tl' : Seq α} :
+    (cons hd tl = cons hd' tl') ↔ (hd = hd' ∧ tl = tl') := by
+  constructor
+  · intro h
+    constructor
+    · apply_fun head at h
+      simpa using h
+    · apply_fun tail at h
+      simpa using h
+  · rintro ⟨h_hd, h_tl⟩
+    congr
+
+theorem head_eq_some {α : Type u} {li : Seq α} {hd : α} (h : li.head = some hd) :
+    li = cons hd li.tail := by
+  cases' li with hd' tl <;> simp at h
+  simpa [cons_eq_cons]
+
+theorem head_eq_none {α : Type u} {li : Seq α} (h : li.head = none) : li = nil := by
+  cases' li with hd tl
+  · rfl
+  · simp at h
+
+@[simp]
+theorem head_eq_none_iff {α : Type u} {li : Seq α} : li.head = none ↔ li = nil := by
+  constructor
+  · apply head_eq_none
+  · intro h
+    simp [h]
+
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
   cases' M with k e; unfold Stream'.get at e
@@ -302,6 +352,16 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   dsimp [corec, tail]
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
+
+theorem corec_nil {α : Type u} {β : Type u} (g : β → Option (α × β)) (b : β)
+    (h : g b = .none) : corec g b = nil := by
+  apply destruct_eq_nil
+  simp [h]
+
+theorem corec_cons {α : Type u} {β : Type u} {g : β → Option (α × β)} {b : β} {hd : α} {tl : β}
+    (h : g b = .some (hd, tl)) : corec g b = cons hd (corec g tl) := by
+  apply destruct_eq_cons
+  simp [h]
 
 section Bisim
 
