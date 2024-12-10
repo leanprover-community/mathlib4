@@ -502,68 +502,95 @@ section Coes
 
 /-! Bundled morphisms can be down-cast to weaker bundlings -/
 
+namespace OneHom
+variable [One M] [One N]
+
+/-- See Note [custom simps projection]. We want to generate
+`coe_concreteHom : ⇑concreteHom = unbundledFun` rather than
+`concreteHom_apply a : ⇑concreteHom a = unbundledFun a`. -/
+@[to_additive
+/-- See Note [custom simps projection]. We want to generate
+`coe_concreteHom : ⇑concreteHom = unbundledFun` rather than
+`concreteHom_apply a : ⇑concreteHom a = unbundledFun a`. -/]
+def Simps.coe (f : OneHom M N) : M → N := f
+
+initialize_simps_projections OneHom (toFun → coe, as_prefix coe)
+initialize_simps_projections ZeroHom (toFun → coe, as_prefix coe)
+
+@[to_additive (attr := simp)] lemma toFun_eq_coe (f : OneHom M N) : f.toFun = f := rfl
+@[to_additive (attr := simp)] lemma coe_mk (f : M → N) (hone) : (mk f hone : M → N) = f := rfl
+@[to_additive (attr := simp)] lemma mk_coe (f : OneHom M N) : mk f f.map_one' = f := rfl
+
+@[to_additive (attr := ext)]
+lemma ext ⦃f g : OneHom M N⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
+
+end OneHom
+
+namespace MulHom
+variable [Mul M] [Mul N]
+
+/-- See Note [custom simps projection]. We want to generate
+`coe_concreteHom : ⇑concreteHom = unbundledFun` rather than
+`concreteHom_apply a : ⇑concreteHom a = unbundledFun a`. -/
+@[to_additive
+/-- See Note [custom simps projection]. We want to generate
+`coe_concreteHom : ⇑concreteHom = unbundledFun` rather than
+`concreteHom_apply a : ⇑concreteHom a = unbundledFun a`. -/]
+def Simps.coe (f : M →ₙ* N) : M → N := f
+
+initialize_simps_projections MulHom (toFun → coe, as_prefix coe)
+initialize_simps_projections AddHom (toFun → coe, as_prefix coe)
+
+@[to_additive (attr := simp)] lemma toFun_eq_coe (f : M →ₙ* N) : f.toFun = f := rfl
+@[to_additive (attr := simp)] lemma coe_mk (f : M → N) (hmul) : (mk f hmul : M → N) = f := rfl
+@[to_additive (attr := simp)] lemma mk_coe (f : M →ₙ* N) : mk f f.map_mul' = f := rfl
+
+@[to_additive (attr := ext)]
+lemma ext ⦃f g : M →ₙ* N⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
+
+end MulHom
+
+namespace MonoidHom
+variable [MulOneClass M] [MulOneClass N]
+
 attribute [coe] MonoidHom.toOneHom
 attribute [coe] AddMonoidHom.toZeroHom
-
-/-- `MonoidHom` down-cast to a `OneHom`, forgetting the multiplicative property. -/
-@[to_additive /-- `AddMonoidHom` down-cast to a `ZeroHom`, forgetting the additive property -/]
-instance MonoidHom.coeToOneHom [MulOneClass M] [MulOneClass N] : Coe (M →* N) (OneHom M N) :=
-  ⟨MonoidHom.toOneHom⟩
-
 attribute [coe] MonoidHom.toMulHom
 attribute [coe] AddMonoidHom.toAddHom
 
+/-- `MonoidHom` down-cast to a `OneHom`, forgetting the multiplicative property. -/
+@[to_additive "`AddMonoidHom` down-cast to a `ZeroHom`, forgetting the additive property"]
+instance coeToOneHom : Coe (M →* N) (OneHom M N) := ⟨MonoidHom.toOneHom⟩
+
 /-- `MonoidHom` down-cast to a `MulHom`, forgetting the 1-preserving property. -/
-@[to_additive /-- `AddMonoidHom` down-cast to an `AddHom`, forgetting the 0-preserving property. -/]
-instance MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] : Coe (M →* N) (M →ₙ* N) :=
+@[to_additive "`AddMonoidHom` down-cast to an `AddHom`, forgetting the 0-preserving property."]
+instance coeToMulHom [MulOneClass M] [MulOneClass N] : Coe (M →* N) (M →ₙ* N) :=
   ⟨MonoidHom.toMulHom⟩
 
--- these must come after the coe_toFun definitions
-initialize_simps_projections ZeroHom (toFun → apply)
-initialize_simps_projections AddHom (toFun → apply)
-initialize_simps_projections AddMonoidHom (toFun → apply)
-initialize_simps_projections OneHom (toFun → apply)
-initialize_simps_projections MulHom (toFun → apply)
-initialize_simps_projections MonoidHom (toFun → apply)
+/-- See Note [custom simps projection]. We want to generate
+`coe_concreteHom : ⇑concreteHom = unbundledFun` rather than
+`concreteHom_apply a : ⇑concreteHom a = unbundledFun a`. -/
+@[to_additive
+"/-- See Note [custom simps projection]. We want to generate
+`coe_concreteHom : ⇑concreteHom = unbundledFun` rather than
+`concreteHom_apply a : ⇑concreteHom a = unbundledFun a`. -/"]
+def Simps.coe (f : M →* N) : M → N := f
 
-@[to_additive (attr := simp)]
-theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M → N) = f := rfl
+initialize_simps_projections MonoidHom (toFun → coe, as_prefix coe)
+initialize_simps_projections AddMonoidHom (toFun → coe, as_prefix coe)
 
-@[to_additive (attr := simp)]
-theorem OneHom.toFun_eq_coe [One M] [One N] (f : OneHom M N) : f.toFun = f := rfl
+@[to_additive (attr := simp)] lemma coe_toOneHom (f : M →* N) : f.toOneHom = f := rfl
+@[to_additive (attr := simp)] lemma coe_toMulHom (f : M →* N) : f.toMulHom = f := rfl
+@[to_additive (attr := simp)] lemma coe_mk (f hmul) : (mk f hmul : M → N) = f := rfl
+@[to_additive (attr := simp)] lemma mk_coe (f : M →* N) : mk f f.map_mul' = f := rfl
 
-@[to_additive (attr := simp)]
-theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul : M → N) = f := rfl
-
-@[to_additive (attr := simp)]
-theorem MulHom.toFun_eq_coe [Mul M] [Mul N] (f : M →ₙ* N) : f.toFun = f := rfl
-
-@[to_additive (attr := simp)]
-theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f hmul) :
-    (MonoidHom.mk f hmul : M → N) = f := rfl
-
-@[to_additive (attr := simp)]
-theorem MonoidHom.toOneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
-    (f.toOneHom : M → N) = f := rfl
-
-@[to_additive (attr := simp)]
-theorem MonoidHom.toMulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
-    f.toMulHom.toFun = f := rfl
-
-@[to_additive]
-theorem MonoidHom.toFun_eq_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : f.toFun = f := rfl
+@[to_additive] lemma toFun_eq_coe (f : M →* N) : f.toFun = f := rfl
 
 @[to_additive (attr := ext)]
-theorem OneHom.ext [One M] [One N] ⦃f g : OneHom M N⦄ (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext _ _ h
+lemma ext ⦃f g : M →* N⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 
-@[to_additive (attr := ext)]
-theorem MulHom.ext [Mul M] [Mul N] ⦃f g : M →ₙ* N⦄ (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext _ _ h
-
-@[to_additive (attr := ext)]
-theorem MonoidHom.ext [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext _ _ h
+end MonoidHom
+end Coes
 
 namespace MonoidHom
 
@@ -580,34 +607,15 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
 
 end MonoidHom
 
-@[to_additive (attr := simp)]
-theorem OneHom.mk_coe [One M] [One N] (f : OneHom M N) (h1) : OneHom.mk f h1 = f :=
-  OneHom.ext fun _ => rfl
-
-@[to_additive (attr := simp)]
-theorem MulHom.mk_coe [Mul M] [Mul N] (f : M →ₙ* N) (hmul) : MulHom.mk f hmul = f :=
-  MulHom.ext fun _ => rfl
-
-@[to_additive (attr := simp)]
-theorem MonoidHom.mk_coe [MulOneClass M] [MulOneClass N] (f : M →* N) (hmul) :
-    MonoidHom.mk f hmul = f := MonoidHom.ext fun _ => rfl
-
-end Coes
-
 /-- Copy of a `OneHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive
+@[to_additive (attr := simps (config := .asFn))
   /-- Copy of a `ZeroHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities. -/]
 protected def OneHom.copy [One M] [One N] (f : OneHom M N) (f' : M → N) (h : f' = f) :
     OneHom M N where
   toFun := f'
   map_one' := h.symm ▸ f.map_one'
-
-@[to_additive (attr := simp)]
-theorem OneHom.coe_copy {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
-    (f.copy f' h) = f' :=
-  rfl
 
 @[to_additive]
 theorem OneHom.coe_copy_eq {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
@@ -616,18 +624,13 @@ theorem OneHom.coe_copy_eq {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → 
 
 /-- Copy of a `MulHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive
+@[to_additive (attr := simps (config := .asFn))
   /-- Copy of an `AddHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities. -/]
 protected def MulHom.copy [Mul M] [Mul N] (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
     M →ₙ* N where
   toFun := f'
   map_mul' := h.symm ▸ f.map_mul'
-
-@[to_additive (attr := simp)]
-theorem MulHom.coe_copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
-    (f.copy f' h) = f' :=
-  rfl
 
 @[to_additive]
 theorem MulHom.coe_copy_eq {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
@@ -636,17 +639,12 @@ theorem MulHom.coe_copy_eq {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M →
 
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-@[to_additive
+@[to_additive (attr := simps! (config := .asFn))
   /-- Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities. -/]
 protected def MonoidHom.copy [MulOneClass M] [MulOneClass N] (f : M →* N) (f' : M → N)
     (h : f' = f) : M →* N :=
   { f.toOneHom.copy f' h, f.toMulHom.copy f' h with }
-
-@[to_additive (attr := simp)]
-theorem MonoidHom.coe_copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
-    (h : f' = f) : (f.copy f' h) = f' :=
-  rfl
 
 @[to_additive]
 theorem MonoidHom.copy_eq {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
@@ -697,19 +695,22 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with zero to itself. -/]
+@[to_additive (attr := simps (config := .asFn))
+/-- The identity map from a type with zero to itself. -/]
 def OneHom.id (M : Type*) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with addition to itself. -/]
+@[to_additive (attr := simps (config := .asFn))
+/-- The identity map from a type with addition to itself. -/]
 def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps) /-- The identity map from an additive monoid to itself. -/]
+@[to_additive (attr := simps (config := .asFn))
+/-- The identity map from an additive monoid to itself. -/]
 def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
   toFun x := x
   map_one' := rfl
@@ -725,36 +726,27 @@ lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id :=
 lemma MonoidHom.coe_id {M : Type*} [MulOneClass M] : (MonoidHom.id M : M → M) = _root_.id := rfl
 
 /-- Composition of `OneHom`s as a `OneHom`. -/
-@[to_additive /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
+@[to_additive (attr := simps (config := .asFn))
+/-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
   toFun := hnp ∘ hmn
   map_one' := by simp
 
 /-- Composition of `MulHom`s as a `MulHom`. -/
-@[to_additive /-- Composition of `AddHom`s as an `AddHom`. -/]
+@[to_additive (attr := simps (config := .asFn))
+/-- Composition of `AddHom`s as an `AddHom`. -/]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
   toFun := hnp ∘ hmn
   map_mul' x y := by simp
 
 /-- Composition of monoid morphisms as a monoid morphism. -/
-@[to_additive /-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
+@[to_additive (attr := simps (config := .asFn))
+/-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
 def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →* P) (hmn : M →* N) :
     M →* P where
   toFun := hnp ∘ hmn
   map_one' := by simp
   map_mul' := by simp
-
-@[to_additive (attr := simp)]
-theorem OneHom.coe_comp [One M] [One N] [One P] (g : OneHom N P) (f : OneHom M N) :
-    ↑(g.comp f) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-theorem MulHom.coe_comp [Mul M] [Mul N] [Mul P] (g : N →ₙ* P) (f : M →ₙ* N) :
-    ↑(g.comp f) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-theorem MonoidHom.coe_comp [MulOneClass M] [MulOneClass N] [MulOneClass P]
-    (g : N →* P) (f : M →* N) : ↑(g.comp f) = g ∘ f := rfl
 
 @[to_additive]
 theorem OneHom.comp_apply [One M] [One N] [One P] (g : OneHom N P) (f : OneHom M N) (x : M) :
@@ -865,15 +857,15 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps (config := .asFn))
 /-- Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom` -/]
 def OneHom.inverse [One M] [One N] (f : OneHom M N) (g : N → M) (h₁ : Function.LeftInverse g f) :
-    OneHom N M :=
-  { toFun := g,
-    map_one' := by rw [← f.map_one, h₁] }
+    OneHom N M where
+  toFun := g
+  map_one' := by rw [← f.map_one, h₁]
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps (config := .asFn))
   /-- Makes an additive inverse from a bijection which preserves addition. -/]
 def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
     (h₁ : Function.LeftInverse g f)
@@ -900,7 +892,7 @@ theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
     rw [is_comm.comm]
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps (config := .asFn))
   /-- The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`. -/]
 def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
