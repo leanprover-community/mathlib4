@@ -417,4 +417,82 @@ theorem coprime_commutator_index [Finite G] [IsZGroup G] :
 
 end Hall
 
+section Cyclic
+
+variable (G)
+
+theorem _root_.Abelianization.ker_of (G : Type*) [Group G] :
+    (Abelianization.of : G →* Abelianization G).ker = commutator G :=
+  QuotientGroup.ker_mk' (commutator G)
+
+theorem _root_.Subgroup.le_center_iff_map_subtype_le_centralizer
+    {G : Type*} [Group G] {H : Subgroup G} {K : Subgroup H} :
+    K ≤ Subgroup.center H ↔ K.map H.subtype ≤ Subgroup.centralizer H := sorry
+
+theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
+  refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
+  intro H hH
+  rcases eq_or_ne H ⊥ with rfl | h
+  · rw [Subgroup.commutator_bot_left]
+    infer_instance
+  · specialize hH ⁅H, H⁆ (IsSolvable.commutator_lt_of_ne_bot h)
+    replace hH : IsCyclic (⁅commutator H, commutator H⁆ : Subgroup H) := by
+      let f := Subgroup.equivMapOfInjective ⁅commutator H, commutator H⁆ _ H.subtype_injective
+      rw [commutator_def, Subgroup.map_commutator, Subgroup.map_commutator,
+        ← MonoidHom.range_eq_map, H.range_subtype, ← commutator_def] at f
+      exact isCyclic_of_surjective f.symm f.symm.surjective
+    suffices IsCyclic (commutator H) by
+      let f := Subgroup.equivMapOfInjective (commutator H) H.subtype H.subtype_injective
+      rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map, H.range_subtype,
+        ← commutator_def] at f
+      exact isCyclic_of_surjective f f.surjective
+    suffices h : commutator (commutator H) ≤ Subgroup.center (commutator H) by
+      conv_lhs at h => rw [← Abelianization.ker_of]
+      let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
+      infer_instance
+    rw [Subgroup.le_center_iff_map_subtype_le_centralizer, commutator_def (commutator H),
+      Subgroup.map_commutator, ← MonoidHom.range_eq_map, Subgroup.range_subtype,
+      Subgroup.le_centralizer_iff]
+    have : commutator H ≤ Subgroup.centralizer (⁅commutator H, commutator H⁆ : Subgroup H) := by
+      -- use the inductive assumption here!
+      let _ : CommGroup (MulAut (⁅commutator H, commutator H⁆ : Subgroup H)) :=
+        ⟨fun g h ↦ sorry⟩
+      have key' : ⁅commutator H, commutator H⁆.normalizer = ⊤ :=
+        Subgroup.normalizer_eq_top.mpr inferInstance
+      -- can we use key' to clean up earlier?
+      let f := Subgroup.normalizerMonoidHom ⁅commutator H, commutator H⁆
+      have key := Abelianization.commutator_subset_ker f
+      rw [Subgroup.normalizerMonoidHom_ker] at key
+      have key := Subgroup.map_mono (f := Subgroup.subtype _) key
+      simp_rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map,
+        Subgroup.range_subtype, ← commutator_def, key', ← commutator_def] at key
+      rw [Subgroup.subgroupOf, Subgroup.map_comap_eq_self] at key
+      exact key
+
+theorem isSolvable_iff_commutator_lt {G : Type*} [Group G] [WellFoundedLT (Subgroup G)] :
+    IsSolvable G ↔ ∀ H : Subgroup G, H ≠ ⊥ → ⁅H, H⁆ < H := by
+  refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
+  suffices h : IsSolvable (⊤ : Subgroup G) from
+    solvable_of_surjective (MonoidHom.range_eq_top.mp (Subgroup.range_subtype ⊤))
+  refine WellFoundedLT.induction (C := fun (H : Subgroup G) ↦ IsSolvable H) (⊤ : Subgroup G) ?_
+  intro H hH
+  rcases eq_or_ne H ⊥ with rfl | h'
+  · apply isSolvable_of_subsingleton
+  · specialize h H h'
+    specialize hH ⁅H, H⁆ h
+    obtain ⟨n, hn⟩ := hH
+    use n + 1
+    rw [← (Subgroup.map_injective H.subtype_injective).eq_iff]
+    rw [← (Subgroup.map_injective ⁅H, H⁆.subtype_injective).eq_iff] at hn
+    rw [Subgroup.map_bot] at hn ⊢
+    rw [← hn]
+    clear hn
+    induction' n with n ih
+    · simp_rw [derivedSeries_succ, derivedSeries_zero, Subgroup.map_commutator,
+        ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+    · rw [derivedSeries_succ, Subgroup.map_commutator, ih, derivedSeries_succ,
+        Subgroup.map_commutator]
+
+end Cyclic
+
 end IsZGroup
