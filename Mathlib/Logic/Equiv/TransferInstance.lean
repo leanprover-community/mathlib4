@@ -186,7 +186,7 @@ theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves ring structure. -/
-noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Ring α] : Shrink.{v} α ≃+* α :=
+noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Add α] [Mul α] : Shrink.{v} α ≃+* α :=
   (equivShrink α).symm.ringEquiv
 
 /-- Transfer `Semigroup` across an `Equiv` -/
@@ -471,10 +471,10 @@ noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} �
   (equivShrink α).symm.nontrivial
 
 /-- Transfer `IsDomain` across an `Equiv` -/
-protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
+protected theorem isDomain [Semiring α] [Semiring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
   Function.Injective.isDomain e.toRingHom e.injective
 
-noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Semiring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain (Shrink.ringEquiv α)
 
 /-- Transfer `NNRatCast` across an `Equiv` -/
@@ -621,10 +621,9 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
     simp only [apply_symm_apply, Algebra.mul_smul_comm]
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
-    let _ := Equiv.semiring e
-    let _ := Equiv.algebra R e
-    (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
-  intros
+    (@algebraMap R α _ (Equiv.semiring e) (Equiv.algebra R e)) r = e.symm ((algebraMap R β) r) := by
+  let _ := Equiv.semiring e
+  let _ := Equiv.algebra R e
   simp only [Algebra.algebraMap_eq_smul_one]
   show e.symm (r • e 1) = e.symm (r • 1)
   simp only [Equiv.one_def, apply_symm_apply]

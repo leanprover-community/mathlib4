@@ -128,7 +128,7 @@ theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 
-@[simp] -- Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+@[simp]
 theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
     (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 

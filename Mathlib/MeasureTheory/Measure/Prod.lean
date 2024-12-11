@@ -194,7 +194,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
       _ = μ S * ν T := by
         rw [prod_apply hSTm]
-        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
@@ -874,6 +874,17 @@ theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
 
+@[simp]
+lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, fst_apply hs, coe_add, Pi.add_apply]
+
+lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
+  ext s hs
+  rw [fst_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [fst_apply hs]
+  · exact measurable_fst hs
+
 @[gcongr]
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
 
@@ -920,6 +931,17 @@ theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX
 theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
+
+@[simp]
+lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, snd_apply hs, coe_add, Pi.add_apply]
+
+lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
+  ext s hs
+  rw [snd_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [snd_apply hs]
+  · exact measurable_snd hs
 
 @[gcongr]
 theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd

@@ -567,7 +567,7 @@ instance isFiniteMeasure_sfiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
   h.1.choose_spec.1 n
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
 instance isFiniteMeasure_sFiniteSeq [SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
   isFiniteMeasure_sfiniteSeq n
 

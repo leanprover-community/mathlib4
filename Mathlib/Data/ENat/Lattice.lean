@@ -106,7 +106,7 @@ lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
   exact sSup_eq_top_of_infinite h
 
 lemma sSup_mem_of_nonempty_of_lt_top [Nonempty s] (hs' : sSup s < ⊤) : sSup s ∈ s :=
-  Nonempty.csSup_mem nonempty_of_nonempty_subtype (finite_of_sSup_lt_top hs')
+  Nonempty.csSup_mem .of_subtype (finite_of_sSup_lt_top hs')
 
 lemma exists_eq_iSup_of_lt_top [Nonempty ι] (h : ⨆ i, f i < ⊤) :
     ∃ i, f i = ⨆ i, f i :=

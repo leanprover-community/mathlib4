@@ -362,7 +362,7 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     change IsLimit ((F ⋙ (evaluation K C).obj X).mapCone c)
     exact isLimitOfPreserves _ hc⟩⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     (H : ∀ k : K, PreservesLimit G (F ⋙ (evaluation K C).obj k : D ⥤ C)) :
     PreservesLimit G F :=
@@ -374,7 +374,7 @@ lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Cate
     PreservesLimitsOfShape J F :=
   ⟨fun {G} => preservesLimit_of_evaluation F G fun _ => PreservesLimitsOfShape.preservesLimit⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitsOfShapeOfEvaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
     (H : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfShape J F :=
@@ -387,7 +387,7 @@ lemma preservesLimits_of_evaluation (F : D ⥤ K ⥤ C)
   ⟨fun {L} _ =>
     preservesLimitsOfShape_of_evaluation F L fun _ => PreservesLimitsOfSize.preservesLimitsOfShape⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitsOfEvaluation (F : D ⥤ K ⥤ C)
     (H : ∀ k : K, PreservesLimitsOfSize.{w', w} (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfSize.{w', w} F :=
@@ -412,7 +412,7 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     change IsColimit ((F ⋙ (evaluation K C).obj X).mapCocone c)
     exact isColimitOfPreserves _ hc⟩⟩
 
-@[deprecated  (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided."  (since := "2024-11-19")]
 lemma preservesColimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     (H : ∀ k, PreservesColimit G (F ⋙ (evaluation K C).obj k)) : PreservesColimit G F :=
   preservesColimit_of_evaluation _ _ H

@@ -155,6 +155,10 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     · apply h
     rfl
 
+@[simp]
+theorem forall_coeff_eq_zero (φ : R⟦X⟧) : (∀ n, coeff R n φ = 0) ↔ φ = 0 :=
+  ⟨fun h => ext h, fun h => by simp [h]⟩
+
 /-- Two formal power series are equal if all their coefficients are equal. -/
 add_decl_doc PowerSeries.ext_iff
 

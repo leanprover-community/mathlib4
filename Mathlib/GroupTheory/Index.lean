@@ -42,16 +42,16 @@ open Cardinal
 
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
-/-- The index of a subgroup as a natural number, and returns 0 if the index is infinite. -/
-@[to_additive "The index of a subgroup as a natural number,
-and returns 0 if the index is infinite."]
+/-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
+@[to_additive "The index of an additive subgroup as a natural number.
+Returns 0 if the index is infinite."]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 
-/-- The relative index of a subgroup as a natural number,
-  and returns 0 if the relative index is infinite. -/
-@[to_additive "The relative index of a subgroup as a natural number,
-and returns 0 if the relative index is infinite."]
+/-- If `H` and `K` are subgroups of a group `G`, then `relindex H K : ℕ` is the index
+of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/
+@[to_additive "If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
+is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite."]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 
@@ -80,7 +80,7 @@ theorem index_comap (f : G' →* G) :
 @[to_additive]
 theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
-  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.subtype_range]
+  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
 variable {H K L}
 
@@ -262,7 +262,7 @@ theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
     (K.map H.subtype).index = K.index * H.index := by
-  rw [K.index_map_of_injective H.subtype_injective, H.subtype_range]
+  rw [K.index_map_of_injective H.subtype_injective, H.range_subtype]
 
 @[to_additive]
 theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
@@ -553,6 +553,17 @@ variable {H K}
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.finiteIndex (index_dvd_of_le h)⟩
+
+@[to_additive (attr := gcongr)]
+lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
+  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.finiteIndex) (index_dvd_of_le h)
+
+@[to_additive (attr := gcongr)]
+lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
+  have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).finiteIndex
+  apply lt_of_le_of_ne (index_antitone h.le)
+  rw [← relindex_mul_index h.le, Ne, eq_comm, mul_eq_right₀ h0, relindex_eq_one]
+  exact h.not_le
 
 variable (H K)
 

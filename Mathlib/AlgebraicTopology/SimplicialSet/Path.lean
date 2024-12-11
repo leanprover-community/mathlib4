@@ -64,6 +64,13 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [SimplexCategory.δ_zero_mkOfSucc]
 
+lemma spine_map_vertex {n : ℕ} (x : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
+    (i : Fin (m + 1)) :
+    (spine X m (X.map φ.op x)).vertex i = (spine X n x).vertex (φ.toOrderHom i) := by
+  dsimp [spine]
+  rw [← FunctorToTypes.map_comp_apply]
+  rfl
+
 lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[n]) :
     X.spine l (X.map (subinterval j l (by omega)).op Δ) =
       (X.spine n Δ).interval j l (by omega) := by
@@ -84,5 +91,55 @@ lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
     · simp only [hl, ← Fin.succ_last]
       rw [← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
   · exact h j
+
+/-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
+@[simps]
+def Path.map {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y) : Y.Path n where
+  vertex i := σ.app (Opposite.op [0]) (f.vertex i)
+  arrow i := σ.app (Opposite.op [1]) (f.arrow i)
+  arrow_src i := by
+    simp only [← f.arrow_src i]
+    exact congr (σ.naturality (δ 1).op) rfl |>.symm
+  arrow_tgt i := by
+    simp only [← f.arrow_tgt i]
+    exact congr (σ.naturality (δ 0).op) rfl |>.symm
+
+/-- `Path.map` respects subintervals of paths.-/
+lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
+    (j l : ℕ) (hjl : j + l ≤ n) :
+    (f.map σ).interval j l hjl = (f.interval j l hjl).map σ := rfl
+
+/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
+def standardSimplex.spineId (n : ℕ) : Path Δ[n] n :=
+  spine Δ[n] n (standardSimplex.id n)
+
+/-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
+in `Δ[n]`.-/
+@[simps]
+def horn.spineId {n : ℕ} (i : Fin (n + 3))
+    (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
+    Path Λ[n + 2, i] (n + 2) where
+  vertex j := ⟨standardSimplex.spineId _ |>.vertex j, (horn.const n i j _).property⟩
+  arrow j := ⟨standardSimplex.spineId _ |>.arrow j, by
+    let edge := horn.primitiveEdge h₀ hₙ j
+    have ha : (standardSimplex.spineId _).arrow j = edge.val := by
+      dsimp only [edge, standardSimplex.spineId, standardSimplex.id, spine_arrow,
+        mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge,
+        standardSimplex.map_apply]
+      aesop
+    rw [ha]
+    exact edge.property⟩
+  arrow_src := by
+    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    exact standardSimplex.spineId _ |>.arrow_src
+  arrow_tgt := by
+    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    exact standardSimplex.spineId _ |>.arrow_tgt
+
+@[simp]
+lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
+    (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
+    Path.map (horn.spineId i h₀ hₙ) (hornInclusion (n + 2) i) =
+      standardSimplex.spineId (n + 2) := rfl
 
 end SSet
