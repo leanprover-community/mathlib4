@@ -799,4 +799,8 @@ end
 
 end Reindex
 
+def isProductEquiv (F : Discrete α ⥤ C) (c : Cone F) :
+    IsLimit (Fan.mk c.pt (fun a ↦ c.π.app ⟨a⟩)) ≃ IsLimit c :=
+  IsLimit.equivOfNatIsoOfIso Discrete.natIsoFunctor.symm _ _ (Cones.ext (Iso.refl _))
+
 end CategoryTheory.Limits

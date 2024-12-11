@@ -253,8 +253,8 @@ lemma hasExactColimitsOfShape_of_final [HasFiniteLimits C] {J J' : Type*} [Categ
     (F : J ⥤ J') [F.Final] [HasColimitsOfShape J' C] [HasColimitsOfShape J C]
     [HasExactColimitsOfShape J C] : HasExactColimitsOfShape J' C where
   preservesFiniteLimits :=
-    letI : PreservesFiniteLimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
-    letI := comp_preservesFiniteLimits ((whiskeringLeft J J' C).obj F) colim
+    have : PreservesFiniteLimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
+    have := comp_preservesFiniteLimits ((whiskeringLeft J J' C).obj F) colim
     preservesFiniteLimits_of_natIso (Functor.Final.colimIso F)
 
 /-- `HasExactLimitsOfShape` can be "pushed forward" along initial functors -/
@@ -262,8 +262,8 @@ lemma hasExactLimitsOfShape_of_initial [HasFiniteColimits C] {J J' : Type*} [Cat
     [Category J'] (F : J ⥤ J') [F.Initial]  [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] : HasExactLimitsOfShape J' C where
   preservesFiniteColimits :=
-    letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
-    letI := comp_preservesFiniteColimits ((whiskeringLeft J J' C).obj F) lim
+    have : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
+    have := comp_preservesFiniteColimits ((whiskeringLeft J J' C).obj F) lim
     preservesFiniteColimits_of_natIso (Functor.Initial.limIso F)
 
 section AB4OfAB5
@@ -274,12 +274,12 @@ open CoproductsFromFiniteFiltered
 
 instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
   preservesFiniteLimits_of_evaluation _ fun I =>
-    letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
+    have : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
       preservesFiniteLimits_of_natIso HasBiproductsOfShape.colimIsoLim.symm
-    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+    have : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) :=
       ⟨fun J _ _ => whiskeringLeft_preservesLimitsOfShape J _⟩
-    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+    have : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ colim) :=
       comp_preservesFiniteLimits _ _
     preservesFiniteLimits_of_natIso (liftToFinsetEvaluationIso I).symm
@@ -293,7 +293,7 @@ lemma hasExactColimitsOfShape_discrete_of_hasExactColimitsOfShape_finset_discret
     [HasColimitsOfShape (Discrete J) C] [HasColimitsOfShape (Finset (Discrete J)) C]
     [HasExactColimitsOfShape (Finset (Discrete J)) C] : HasExactColimitsOfShape (Discrete J) C where
   preservesFiniteLimits :=
-    letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
+    have : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       comp_preservesFiniteLimits _ _
     preservesFiniteLimits_of_natIso (liftToFinsetColimIso)
 
@@ -326,11 +326,11 @@ open ProductsFromFiniteCofiltered
 
 instance preservesFiniteColimits_liftToFinset : PreservesFiniteColimits (liftToFinset C α) :=
   preservesFiniteColimits_of_evaluation _ fun ⟨I⟩ =>
-    letI : PreservesFiniteColimits (lim (J := Discrete I) (C := C)) :=
+    have : PreservesFiniteColimits (lim (J := Discrete I) (C := C)) :=
       preservesFiniteColimits_of_natIso HasBiproductsOfShape.colimIsoLim
-    letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+    have : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) := ⟨fun _ _ _ => inferInstance⟩
-    letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+    have : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ lim) :=
       comp_preservesFiniteColimits _ _
     preservesFiniteColimits_of_natIso (liftToFinsetEvaluationIso _ _ I).symm
@@ -345,7 +345,7 @@ lemma hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op
     [HasExactLimitsOfShape (Finset (Discrete J))ᵒᵖ C] :
     HasExactLimitsOfShape (Discrete J) C where
   preservesFiniteColimits :=
-    letI : PreservesFiniteColimits (ProductsFromFiniteCofiltered.liftToFinset C J ⋙ lim) :=
+    have : PreservesFiniteColimits (ProductsFromFiniteCofiltered.liftToFinset C J ⋙ lim) :=
       comp_preservesFiniteColimits _ _
     preservesFiniteColimits_of_natIso (ProductsFromFiniteCofiltered.liftToFinsetLimIso _ _)
 
