@@ -21,7 +21,7 @@ and includes many more features.
   `∃ a : α, p`, which is `@Exists α fun a : α => p`, we don't want to index the domain `α` twice.
   In a forall expression we should index the domain, because in an implication `p → q`
   we need to index both `p` and `q`. `Key.bvar` works the same as `Key.fvar`, but stores the
-  De Bruijn index to identify it.
+  De Bruijn index to identify the variable.
 
   For example, this allows for more specific matching with the left hand side of
   `∑ i in range n, i = n * (n - 1) / 2`, which is indexed by
@@ -29,39 +29,38 @@ and includes many more features.
 
 - The key `Key.star` takes a `Nat` identifier as an argument. For example,
   the library pattern `?a + ?a` is encoded as `@HAdd.hAdd *0 *0 *1 *2 *3 *3`.
-  `*0` corresponds to the type of `a`, `*1` to the outParam of `HAdd.hAdd`,
+  `*0` corresponds to the type of `?a`, `*1` to the outParam of `HAdd.hAdd`,
   `*2` to the `HAdd` instance, and `*3` to `a`. This means that it will only match an expression
-  `x + y` if `x` is indexed the same as `y`. The matching algorithm requires
-  that the same stars from the discrimination tree match with the same patterns
-  in the lookup expression, and similarly requires that the same metavariables
-  form the lookup expression match with the same pattern in the discrimination tree.
+  `x + y` if `x` is indexed the same as `y`. The matching algorithm ensures that both
+  instances of `*3` match with the same pattern in the lookup expression.
 
 - We evaluate the matching score of a unification.
   This score represents the number of keys that had to be the same for the unification to succeed.
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 2,
   since the pattern of `add_comm` is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
   gives 1 point, and matching `*0` again after its first appearence gives another point.
-  Similarly, matching it with `add_assoc` gives a score of 5.
+  Similarly, matching it with `Nat.add_comm` gives a score of 3, and `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
   possible reduced key sequences. This is for terms of the form `fun x => f (?m x₁ .. xₙ)`, where
-  `?m` is a metavariable, and one of `x₁, .., xₙ` is `x` (and `f` is not a metavariable).
+  `?m` is a metavariable, one of `x₁, .., xₙ` is `x`, and `f` is not a metavariable.
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `@Continuous *0 ℝ *1 *2 (λ, Real.exp *3)`
-  and  `@Continuous *0 ℝ *1 *2 Real.exp`
-  so that it also comes up if you search with `Continuous Real.exp`.
+  and  `@Continuous *0 ℝ *1 *2 Real.exp`,
+  so that it also comes up if you look up `Continuous Real.exp`.
 
 - For sub-expressions not at the root of the original expression we have some additional reductions:
   - Any combination of `ofNat`, `Nat.zero`, `Nat.succ` and number literals
-    is stored as just a number literal.
-    When issue lean4#2867 gets resolved, this behaviour should be updated.
+    is stored as just a number literal. When issue https://github.com/leanprover/lean4/issues/2867
+    gets resolved, this behaviour should be updated.
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
   - Lambdas in front of number literals are removed. This is because usually `n : α → β` is
     defined to be `fun _ : α => n` for a number literal `n`. So instead of `λ, n` we store `n`.
   - Any expression with head constant `+`, `*`, `-`, `/`, `⁻¹`, `+ᵥ`, `•` or `^` is normalized to
-    not have a lambda in front and to always have the default amount of arguments.
+    not have a lambda in front of it and to have the default amount of arguments
+    (if the instance allows this replacement).
     e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
     - This makes lemmas such as `MeasureTheory.integral_integral_add'` redundant, which is the
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
@@ -73,15 +72,14 @@ and includes many more features.
       which matches with `Continuous (f + g)` from `Continuous.add`.
 
 - The key `Key.opaque` only matches with a `Key.star` key.
-  With the `WhnfCoreConfig` argument, we can disable β-reduction and ζ-reduction.
-  As a result, we may get a lambda expression applied to an argument or a let-expression.
-  Since there is no other support for indexing these, they will be indexed by `Key.opaque`.
+  Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
+  applied lambda expressions or let-expressions are indexed by `Key.opaque`.
 
 
 ## Lazy computation
 
-We encode an `Expr` as a sequence of `Key`. This is implemented with a lazy computation:
-we start with a `LazyEntry` and we have a incremental evaluation function of type
+To encode an `Expr` as a sequence of `Key`s, we start with a `LazyEntry` and
+we have a incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 

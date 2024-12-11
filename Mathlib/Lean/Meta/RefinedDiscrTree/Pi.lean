@@ -41,41 +41,32 @@ the bound variable. In this case we never want to distribute the function.
 namespace Lean.Meta.RefinedDiscrTree
 
 /-- Reduce the Pi type instance to whnf, reducing inside of `numArgs` lambda binders. -/
-private def unfoldPiInst (inst : Expr) (numArgs : Nat) : MetaM Expr := do
+private def unfoldPiInst (inst : Expr) (numInstArgs : Nat) : MetaM Expr := do
   let some e ← project? inst 0 | throwError "unable to project to field 1 in {inst}"
-  forallBoundedTelescope (← inferType e) numArgs fun fvars _ => do
+  forallBoundedTelescope (← inferType e) numInstArgs fun fvars _ => do
     let e ← whnf (mkAppN e fvars)
     mkLambdaFVars fvars e
 
-@[specialize] private def absorbArgsUnOp (args : Array Expr) (idx : Nat) (type inst arg : Expr)
-    (matchPiInst : Expr → Option Expr) (numArgs : Nat) : MetaM (Expr × Expr × Option Nat) := do
-  if h : idx < args.size then
-    let some inst := matchPiInst (← unfoldPiInst inst numArgs) | return (type, arg, some idx)
-    let extraArg := args[idx]
+/--
+Reduce an over-application, by distributing it over 1 argument.
+- `(- f) xs` => `- (f xs)`
+- `(f ^ n) xs` => `(f xs) ^ n`
+- `(f + g) xs` => `f xs + g xs`
+-/
+@[specialize] private def absorbArgs (allArgs : Array Expr) (idx : Nat)
+    (type inst : Expr) (args : List Expr) (matchPiInst : Expr → Option Expr) (numInstArgs : Nat) :
+    MetaM (Expr × List Expr × Option Nat) := do
+  if h : idx < allArgs.size then
+    let some inst := matchPiInst (← unfoldPiInst inst numInstArgs) | return (type, args, some idx)
+    let extraArg := allArgs[idx]
     let .forallE _ _ body _ ← whnf type | throwFunctionExpected type
     let type := body.instantiate1 extraArg
     let inst := .app inst extraArg
-    let arg  := .app arg extraArg
-    absorbArgsUnOp args (idx+1) type inst arg matchPiInst numArgs
+    let args := args.map (Expr.app · extraArg)
+    absorbArgs allArgs (idx+1) type inst args matchPiInst numInstArgs
   else
-    return (type, arg, none)
-termination_by args.size - idx
-
-@[specialize] private def absorbArgsBinOp (args : Array Expr) (idx : Nat) (type inst lhs rhs : Expr)
-    (matchPiInst : Expr → Option Expr) (numArgs : Nat) :
-    MetaM (Expr × Expr × Expr × Option Nat) := do
-  if h : idx < args.size then
-    let some inst := matchPiInst (← unfoldPiInst inst numArgs) | return (type, lhs, rhs, some idx)
-    let extraArg := args[idx]
-    let .forallE _ _ body _ ← whnf type | throwFunctionExpected type
-    let type := body.instantiate1 extraArg
-    let inst := .app inst extraArg
-    let lhs  := .app lhs extraArg
-    let rhs  := .app rhs extraArg
-    absorbArgsBinOp args (idx+1) type inst lhs rhs matchPiInst numArgs
-  else
-    return (type, lhs, rhs, none)
-termination_by args.size - idx
+    return (type, args, none)
+termination_by allArgs.size - idx
 
 /-- Return true iff `e` must cointain a free variable which satisfies `p`,
 no matter the instantiation of the metavariables. -/
@@ -96,69 +87,56 @@ no matter the instantiation of the metavariables. -/
 private def mustContainFVar (fvarId : FVarId) (e : Expr) : Bool :=
   mustHaveAnyFVar e (· == fvarId)
 
+/--
+Change a lambda expression by distributing it over `args`.
+- `fun xs => - a` => `- (fun xs => a)`
+- `fun xs => a ^ n` => `(fun xs => a) ^ n`
+- `fun xs => a + b` => `(fun xs => a) + (fun xs => b)`
 
-private def absorbLambdasUnOp (lambdas : List FVarId) (type arg : Expr)
-    (otherArgs : Array Expr) : MetaM (List (Expr × Expr × List FVarId)) := do
+Note: we return a `List` since this can have multiple results.
+-/
+private def absorbLambdas (lambdas : List FVarId) (type : Expr) (args : List Expr)
+    (otherArgs : Array Expr) : MetaM (List (Expr × List Expr × List FVarId)) := do
   match lambdas with
-  | [] => return [(type, arg, [])]
+  | [] => return [(type, args, [])]
   | fvarId :: lambdas' =>
+    /-
+    When `otherArgs` contains `fvarId`, then distributing the lambda would cause
+    `fvarId` to be outside the lambda scope.
+
+    But for the benefit of the doubt, we still allow the lambda to be distributed if
+    under some metavariable assignment `fvarId` can disappear.
+    -/
     let cannotAbsorb := otherArgs.any (·.containsFVar fvarId)
     let canNeverAbsorb := cannotAbsorb && otherArgs.any (mustContainFVar fvarId)
     if canNeverAbsorb then
-      return [(type, arg, lambdas)]
+      return [(type, args, lambdas)]
     let decl ← fvarId.getDecl
     let mkLam e := .lam decl.userName decl.type (e.abstract #[.fvar fvarId]) decl.binderInfo
-    let arg  := mkLam arg
+    let args  := args.map mkLam
     let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
     if cannotAbsorb then
-      return (type, arg, lambdas) :: (← absorbLambdasUnOp lambdas' type arg otherArgs)
+      return (type, args, lambdas) :: (← absorbLambdas lambdas' type args otherArgs)
     else
-      absorbLambdasUnOp lambdas' type arg otherArgs
+      absorbLambdas lambdas' type args otherArgs
 
-private def absorbLambdasBinOp (lambdas : List FVarId) (type lhs rhs : Expr)
-    (otherArgs : Array Expr) : MetaM (List (Expr × Expr × Expr × List FVarId)) := do
-  match lambdas with
-  | [] => return [(type, lhs, rhs, [])]
-  | fvarId :: lambdas' =>
-    let cannotAbsorb := otherArgs.any (·.containsFVar fvarId)
-    let canNeverAbsorb := cannotAbsorb && otherArgs.any (mustContainFVar fvarId)
-    if canNeverAbsorb then
-      return [(type, lhs, rhs, lambdas)]
-    let decl ← fvarId.getDecl
-    let mkLam e := .lam decl.userName decl.type (e.abstract #[.fvar fvarId]) decl.binderInfo
-    let lhs  := mkLam lhs
-    let rhs  := mkLam rhs
-    let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
-    if cannotAbsorb then
-      return (type, lhs, rhs, lambdas) :: (← absorbLambdasBinOp lambdas' type lhs rhs otherArgs)
-    else
-      absorbLambdasBinOp lambdas' type lhs rhs otherArgs
+/--
+Normalize an application of a constant with a Pi-type instance which distributes,
+by distributing over-applied arguments and/or distributing all lambdas.
 
-/-- Normalize an application of a constant with a Pi-type instance which distributes over
-one argument. -/
-@[specialize] private def reduceUnOpAux (type inst arg : Expr) (lambdas : List FVarId)
-    (args : Array Expr) (otherArgs : Array Expr) (arity : Nat) (matchPiInst : Expr → Option Expr)
-    (numArgs : Nat) (mk : Expr → Expr → Array (Option Expr)) :
+Note: we return a `List` since this can have multiple results.
+-/
+@[specialize] private def reduceAux (type inst : Expr) (args : List Expr) (lambdas : List FVarId)
+    (allArgs : Array Expr) (otherArgs : Array Expr) (arity numInstArgs : Nat)
+    (matchPiInst : Expr → Option Expr) (mk : Expr → List Expr → Array (Option Expr)) :
     MetaM (List (Array (Option Expr) × List FVarId)) := do
-  let (type, arg, idx) ← absorbArgsUnOp args arity type inst arg matchPiInst numArgs
+  let (type, args, idx) ← absorbArgs allArgs arity type inst args matchPiInst numInstArgs
   match idx with
-  | some idx => return [(mk type arg ++ args[idx:].toArray.map some, lambdas)]
+  | some idx => return [(mk type args ++ allArgs[idx:].toArray.map some, lambdas)]
   | none =>
-    (← absorbLambdasUnOp lambdas type arg otherArgs).mapM fun (type, arg, lambdas) =>
-      return (mk type arg, lambdas)
+    (← absorbLambdas lambdas type args otherArgs).mapM fun (type, args, lambdas) =>
+      return (mk type args, lambdas)
 
-/-- Normalize an application of a constant with a Pi-type instance which distributes over
-two arguments that have the same type. -/
-@[specialize] private def reduceBinOpAux (type inst lhs rhs : Expr) (lambdas : List FVarId)
-    (args : Array Expr) (otherArgs : Array Expr) (arity : Nat) (matchPiInst : Expr → Option Expr)
-    (numArgs : Nat) (mk : Expr → Expr → Expr → Array (Option Expr)) :
-    MetaM (List (Array (Option Expr) × List FVarId)) := do
-  let (type, lhs, rhs, idx) ← absorbArgsBinOp args arity type inst lhs rhs matchPiInst numArgs
-  match idx with
-  | some idx => return [(mk type lhs rhs ++ args[idx:].toArray.map some, lambdas)]
-  | none =>
-    (← absorbLambdasBinOp lambdas type lhs rhs otherArgs).mapM fun (type, lhs, rhs, lambdas) =>
-      return (mk type lhs rhs, lambdas)
 
 /-- Introduce new lambdas by η-expansion to reach the required number of arguments. -/
 @[specialize]
@@ -169,6 +147,7 @@ private def etaExpand {α} (args : Array Expr) (type : Expr) (lambdas : List FVa
       etaExpand (args.push fvar) type (fvar.fvarId! :: lambdas) arity k
   else
     k args lambdas (by omega)
+termination_by arity - args.size
 
 @[inline] private def app6? (fName : Name) (e : Expr) : Option (Expr × Expr × Expr) :=
   if e.isAppOfArity fName 6 then
@@ -190,11 +169,13 @@ private def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   let inst := args[1]
   etaExpand args type lambdas 3 fun args lambdas _ => do
     let arg := args[2]
-    reduceUnOpAux type inst arg lambdas args #[inst] 3
+    reduceAux type inst [arg] lambdas args #[inst] 3 1
       (lambdaBody? 2 >=> (·.app3? n) >=> fun (_, inst, a) =>
-        -- require `fun a x => -a x` or `fun a x => (a x)⁻¹`
-        if (a == .app (.bvar 1) (.bvar 0)) then inst else none) 1
-      (fun type arg => #[type, none, arg])
+        -- check for `fun a x => -a x` or `fun a x => (a x)⁻¹`
+        if (a == .app (.bvar 1) (.bvar 0)) then inst else none)
+      (fun
+        | type, [arg] => #[type, none, arg]
+        | _, _ => unreachable! )
 
 /-- Normalize an application if the head is `•` or `+ᵥ`. -/
 private def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
@@ -208,24 +189,28 @@ private def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) 
   etaExpand args type lambdas 6 fun args lambdas _ => do
     let a := args[4]
     let arg := args[5]
-    reduceUnOpAux type inst arg lambdas args #[inst, a] 6
+    reduceAux type inst [arg] lambdas args #[inst, a] 6 2
       (lambdaBody? 3 >=> app6? n >=> fun (inst, a, b) =>
-        -- require `fun a b x => a • b x` or `fun a b x => a +ᵥ b x`
-        if (a == .bvar 2) && b == .app (.bvar 1) (.bvar 0) then inst else none) 2
-      (fun type arg => #[α, type, none, none, a, arg])
+        -- check for `fun a b x => a • b x` or `fun a b x => a +ᵥ b x`
+        if (a == .bvar 2) && b == .app (.bvar 1) (.bvar 0) then inst else none)
+      (fun
+        | type, [arg] => #[α, type, none, none, a, arg]
+        | _, _ => unreachable!)
 
-/-- Normalize an app lication if the head is `^`. -/
+/-- Normalize an application if the head is `^`. -/
 private def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 6 then return none else
   let some (type, β, inst) := args[3].app3? ``instHPow | return none
   let arg := args[4]
   let exp := args[5]
-  reduceUnOpAux type inst arg lambdas args #[inst, exp] 6
+  reduceAux type inst [arg] lambdas args #[inst, exp] 6 2
       (lambdaBody? 3 >=> app6? ``HPow.hPow >=> fun (inst, a, b) =>
-        -- require `fun a b x => a x ^ b`
-        if (a == .app (.bvar 2) (.bvar 0) && b == .bvar 1) then inst else none) 2
-    (fun type arg => #[type, β, none, none, arg, exp])
+        -- check for `fun a b x => a x ^ b`
+        if (a == .app (.bvar 2) (.bvar 0) && b == .bvar 1) then inst else none)
+    (fun
+      | type, [arg] => #[type, β, none, none, arg, exp]
+      | _, _ => unreachable!)
 
 
 /-- Normalize an application if the head is `+`, `*`, `-` or `/`. -/
@@ -242,11 +227,13 @@ private def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId):
   etaExpand args type lambdas 6 fun args lambdas _ => do
     let lhs := args[4]
     let rhs := args[5]
-    reduceBinOpAux type inst lhs rhs lambdas args #[inst] 6
-      (lambdaBody? 3 >=> app6? n >=> fun (inst, a, b) =>
-        -- require `fun a b x => a x + b x`, or that with `*`, `-`, `/`
-        if (a == .app (.bvar 2) (.bvar 0) && b == .app (.bvar 1) (.bvar 0)) then inst else none) 2
-      (fun type lhs rhs => #[type, type, none, none, lhs, rhs])
+    reduceAux type inst [lhs, rhs] lambdas args #[inst] 6 2
+      (lambdaBody? 3 >=> app6? n >=> fun (inst, l, r) =>
+        -- check for the form `fun a b x => a x + b x`
+        if (l == .app (.bvar 2) (.bvar 0) && r == .app (.bvar 1) (.bvar 0)) then inst else none)
+      (fun
+        | type, [lhs, rhs] => #[type, type, none, none, lhs, rhs]
+        | _, _ => unreachable!)
 
 /--
 Normalize an application if the head is any of `+`, `-`, `*`, `/`, `⁻¹`, `+ᵥ`, `•`, `^`.
