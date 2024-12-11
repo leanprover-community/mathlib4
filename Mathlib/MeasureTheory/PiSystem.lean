@@ -681,7 +681,7 @@ theorem induction_on_inter {m : MeasurableSpace α} {C : ∀ s : Set α, Measura
     (compl : ∀ t (htm : MeasurableSet t), C t htm → C tᶜ htm.compl)
     (iUnion : ∀ (f : ℕ → Set α), Pairwise (Disjoint on f) → ∀ (hfm : ∀ i, MeasurableSet (f i)),
       (∀ i, C (f i) (hfm i)) → C (⋃ i, f i) (.iUnion hfm)) :
-    ∀ ⦃t⦄ (ht : MeasurableSet t), C t ht := by
+    ∀ t (ht : MeasurableSet t), C t ht := by
   have eq : MeasurableSet = DynkinSystem.GenerateHas s := by
     rw [h_eq, DynkinSystem.generateFrom_eq h_inter]
     rfl

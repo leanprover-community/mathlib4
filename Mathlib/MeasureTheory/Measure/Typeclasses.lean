@@ -1331,7 +1331,7 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
-  induction hs using induction_on_inter hA hC with
+  induction s, hs using induction_on_inter hA hC with
   | empty => simp
   | basic t ht => exact hμν t ht
   | compl t htm iht =>

@@ -40,13 +40,11 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
     (hκs : ∀ a, IsFiniteMeasure (κ a)) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   -- `t` is a measurable set in the product `α × β`: we use that the product σ-algebra is generated
   -- by boxes to prove the result by induction.
-  -- Porting note: added motive
-  refine MeasurableSpace.induction_on_inter
-    (C := fun t => Measurable fun a => κ a (Prod.mk a ⁻¹' t))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ ht
-  ·-- case `t = ∅`
+  induction t, ht
+    using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  | empty =>
     simp only [preimage_empty, measure_empty, measurable_const]
-  · -- case of a box: `t = t₁ ×ˢ t₂` for measurable sets `t₁` and `t₂`
+  | basic t ht =>
     intro t' ht'
     simp only [Set.mem_image2, Set.mem_setOf_eq, exists_and_left] at ht'
     obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht'

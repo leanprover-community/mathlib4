@@ -414,7 +414,7 @@ lemma IsMeasurableRatCDF.measurable_measure_stieltjesFunction :
     Measurable fun a ↦ (hf.stieltjesFunction a).measure := by
   rw [Measure.measurable_measure]
   intro s hs
-  induction hs
+  induction s, hs
     using MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic with
   | empty => simp only [measure_empty, measurable_const]
   | basic t ht =>

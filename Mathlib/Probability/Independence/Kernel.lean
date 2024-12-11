@@ -479,7 +479,7 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
     ∀ᵐ a ∂μ, κ a (t1 ∩ t2) = κ a t1 * κ a t2 := by
   rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp
-  induction ht2m using induction_on_inter hpm2 hp2 with
+  induction t2, ht2m using induction_on_inter hpm2 hp2 with
   | empty => simp
   | basic u hu => exact hyp t1 u ht1 hu
   | compl u hu ihu =>

@@ -603,7 +603,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 @[to_additive]
 lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
     s * (closure {1} : Set G) = s := by
-  induction hs using MeasurableSet.induction_on_open with
+  induction s, hs using MeasurableSet.induction_on_open with
   | isOpen U hU => exact hU.mul_closure_one_eq
   | compl t _ iht => exact compl_mul_closure_one_eq_iff.2 iht
   | iUnion f _ _ ihf => simp_rw [iUnion_mul f, ihf]

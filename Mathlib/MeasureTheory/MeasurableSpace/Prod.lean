@@ -77,16 +77,16 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
   · exact (hg.measurable.comp measurable_fst).prod_mk (hf.measurable.comp measurable_snd)
   · intro s hs
     -- Induction using the π-system of rectangles
-    induction hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+    induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
     | empty =>
       simp only [Set.image_empty, MeasurableSet.empty]
-    | basic t ht =>
-      obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht
+    | basic s hs =>
+      obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := hs
       simp_rw [Prod.map, ← prod_image_image_eq]
       exact (hg.measurableSet_image.mpr ht₁).prod (hf.measurableSet_image.mpr ht₂)
-    | compl t ht iht =>
+    | compl s _ ihs =>
       rw [← range_diff_image (hg.injective.prodMap hf.injective), range_prod_map]
-      exact .diff (.prod hg.measurableSet_range hf.measurableSet_range) iht
+      exact .diff (.prod hg.measurableSet_range hf.measurableSet_range) ihs
     | iUnion f _ _ ihf =>
       simpa only [image_iUnion] using .iUnion ihf
 

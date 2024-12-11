@@ -228,9 +228,9 @@ theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s →
     (compl : ∀ t (ht : MeasurableSet t), C t ht → C tᶜ ht.compl)
     (iUnion : ∀ f : ℕ → Set γ, Pairwise (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
       (∀ i, C (f i) (hf i)) → C (⋃ i, f i) (.iUnion hf)) :
-    ∀ ⦃t⦄ (ht : MeasurableSet t), C t ht := fun _t ht ↦
+    ∀ ⦃t⦄ (ht : MeasurableSet t), C t ht := fun t ht ↦
   MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
-    (isOpen _ isOpen_empty) isOpen compl iUnion ht
+    (isOpen _ isOpen_empty) isOpen compl iUnion t ht
 
 instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
     CountablySeparated s := by

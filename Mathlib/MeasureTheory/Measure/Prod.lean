@@ -70,7 +70,7 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
-  induction hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
   | empty => simp
   | basic s hs =>
     obtain ⟨s, hs, t, -, rfl⟩ := hs
