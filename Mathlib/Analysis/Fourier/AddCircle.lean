@@ -84,7 +84,7 @@ def haarAddCircle : Measure (AddCircle T) :=
 instance : IsAddHaarMeasure (@haarAddCircle T _) :=
   Measure.isAddHaarMeasure_addHaarMeasure ⊤
 
-instance : IsProbabilityMeasure (@haarAddCircle T _) :=
+instance isProbabilityMeasure : IsProbabilityMeasure (@haarAddCircle T _) :=
   IsProbabilityMeasure.mk addHaarMeasure_self
 
 theorem volume_eq_smul_haarAddCircle :
