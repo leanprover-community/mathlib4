@@ -277,6 +277,11 @@ theorem isVonNBounded_insert (x : E) {s : Set E} :
 
 protected alias ⟨_, IsVonNBounded.insert⟩ := isVonNBounded_insert
 
+/-- Finite sets are bounded. -/
+theorem _root_.Set.Finite.isVonNBounded {s : Set E} (hs : s.Finite) :
+    IsVonNBounded 𝕜 s := fun _ hV ↦
+  (absorbent_nhds_zero hV).absorbs_finite hs
+
 section ContinuousAdd
 
 variable [ContinuousAdd E] {s t : Set E}
