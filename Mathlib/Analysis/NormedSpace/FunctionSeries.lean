@@ -72,6 +72,16 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   have : ¬ i ∈ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   aesop
 
+theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] {f : ℕ → α → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set α}
+    (hfu : ∀ᶠ n in atTop, ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
+    TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x)
+    (fun x => ∑' n, f n x) atTop s:= by
+  intro v hv
+  apply tendsto_finset_range.eventually (tendstoUniformlyOn_tsum_of_cofinite_eventually hu ?_ v hv)
+  rw [Nat.cofinite_eq_atTop]
+  apply hfu
+
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version with general index set. -/
 theorem tendstoUniformly_tsum {f : α → β → F} (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) :
