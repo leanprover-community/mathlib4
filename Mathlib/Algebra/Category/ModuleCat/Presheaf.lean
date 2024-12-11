@@ -40,12 +40,15 @@ structure PresheafOfModules where
   /-- a family of modules over `R.obj X` for all `X` -/
   obj (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X)
   /-- the restriction maps of a presheaf of modules -/
-  map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f)).obj (obj Y)
+  map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (obj Y)
   map_id (X : Cᵒᵖ) :
-    map (𝟙 X) = (ModuleCat.restrictScalarsId' _ (R.map_id X)).inv.app _ := by aesop_cat
+    map (𝟙 X) =
+      (ModuleCat.restrictScalarsId' _ (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
+        aesop_cat
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
-      (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app _ := by aesop_cat
+      (ModuleCat.restrictScalarsComp' _ _ _
+        (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by aesop_cat
 
 namespace PresheafOfModules
 
@@ -67,7 +70,7 @@ structure Hom where
   /-- a family of linear maps `M₁.obj X ⟶ M₂.obj X` for all `X`. -/
   app (X : Cᵒᵖ) : M₁.obj X ⟶ M₂.obj X
   naturality {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-      M₁.map f ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
+      M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y) =
         app X ≫ M₂.map f := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.naturality
@@ -100,7 +103,7 @@ lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M�
 @[simps!]
 def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
-      M₁.map f ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y).hom =
+      M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y).hom =
         (app X).hom ≫ M₂.map f := by aesop_cat) : M₁ ≅ M₂ where
   hom := { app := fun X ↦ (app X).hom }
   inv :=
@@ -164,7 +167,7 @@ def ofPresheaf : PresheafOfModules.{v} R where
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   map {X Y} f := ModuleCat.ofHom
-      (Y := (ModuleCat.restrictScalars (R.map f)).obj (ModuleCat.of _ (M.obj Y)))
+      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj (ModuleCat.of _ (M.obj Y)))
     { toFun := fun x ↦ M.map f x
       map_add' := by simp
       map_smul' := fun r m ↦ map_smul f r m }
@@ -255,7 +258,7 @@ instance (X : Cᵒᵖ) : (evaluation.{v} R X).Additive where
 to restriction of scalars. -/
 @[simps]
 noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
+    evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f).hom where
   app M := M.map f
 
 /-- The obvious free presheaf of modules of rank `1`. -/
@@ -264,13 +267,13 @@ def unit : PresheafOfModules R where
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   map {X Y} f := ModuleCat.ofHom
-      (Y := (ModuleCat.restrictScalars (R.map f)).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
+      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
     { toFun := fun x ↦ R.map f x
       map_add' := by simp
       map_smul' := by aesop_cat }
 
 lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) = (1 : R.obj Y) :=
-  (R.map f).map_one
+  (R.map f).hom.map_one
 
 variable {R}
 
@@ -349,7 +352,7 @@ variable (M : PresheafOfModules.{v} R)
 
 /-- Auxiliary definition for `forgetToPresheafModuleCatObj`. -/
 noncomputable abbrev forgetToPresheafModuleCatObjObj (Y : Cᵒᵖ) : ModuleCat (R.obj X) :=
-  (ModuleCat.restrictScalars (R.map (hX.to Y))).obj (M.obj Y)
+  (ModuleCat.restrictScalars (R.map (hX.to Y)).hom).obj (M.obj Y)
 
 -- This should not be a `simp` lemma because `M.obj Y` is missing the `Module (R.obj X)` instance,
 -- so `simp`ing breaks downstream proofs.
@@ -367,7 +370,7 @@ def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
     map_smul' := fun r x => by
       simp only [ModuleCat.restrictScalars.smul_def, AddHom.toFun_eq_coe, AddHom.coe_mk,
         RingHom.id_apply, M.map_smul]
-      rw [← CategoryTheory.comp_apply, ← R.map_comp]
+      rw [← RingCat.comp_apply, ← R.map_comp]
       congr
       apply hX.hom_ext }
 

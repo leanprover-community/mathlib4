@@ -23,10 +23,13 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
-structure HopfAlgebraCat extends Bundled Ring.{v} where
-  [instHopfAlgebra : HopfAlgebra R α]
+structure HopfAlgebraCat where
+  /-- The underlying type. -/
+  carrier : Type v
+  [instRing : Ring carrier]
+  [instHopfAlgebra : HopfAlgebra R carrier]
 
-attribute [instance] HopfAlgebraCat.instHopfAlgebra
+attribute [instance] HopfAlgebraCat.instHopfAlgebra HopfAlgebraCat.instRing
 
 variable {R}
 
@@ -35,7 +38,7 @@ namespace HopfAlgebraCat
 open HopfAlgebra
 
 instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
-  ⟨(·.α)⟩
+  ⟨(·.carrier)⟩
 
 variable (R)
 
@@ -43,8 +46,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
-  α := X
-  instHopfAlgebra := (inferInstance : HopfAlgebra R X)
+  carrier := X
 
 variable {R}
 

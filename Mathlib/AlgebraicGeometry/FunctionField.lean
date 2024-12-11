@@ -42,12 +42,12 @@ noncomputable abbrev Scheme.germToFunctionField [IrreducibleSpace X] (U : X.Open
 
 noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
     Algebra Γ(X, U) X.functionField :=
-  (X.germToFunctionField U).toAlgebra
+  (X.germToFunctionField U).hom.toAlgebra
 
 noncomputable instance [IsIntegral X] : Field X.functionField := by
   refine .ofIsUnitOrEqZero fun a ↦ ?_
-  obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
-  rw [or_iff_not_imp_right, ← (X.presheaf.germ _ _ m).map_zero]
+  obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist (C := CommRingCat) _ _ a
+  rw [or_iff_not_imp_right, ← (X.presheaf.germ _ _ m).hom.map_zero]
   intro ha
   replace ha := ne_of_apply_ne _ ha
   have hs : genericPoint X ∈ RingedSpace.basicOpen _ s := by
@@ -56,14 +56,14 @@ noncomputable instance [IsIntegral X] : Field X.functionField := by
     · erw [basicOpen_eq_bot_iff]
       exact ha
     · exact (RingedSpace.basicOpen _ _).isOpen
-  have := (X.presheaf.germ _ _ hs).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
-  rwa [TopCat.Presheaf.germ_res_apply] at this
+  have := (X.presheaf.germ _ _ hs).hom.isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
+  rwa [CommRingCat.germ_res_apply] at this
 
 theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : x ∈ U) :
     Function.Injective (X.presheaf.germ U x hx) := by
   rw [injective_iff_map_eq_zero]
   intro y hy
-  rw [← (X.presheaf.germ U x hx).map_zero] at hy
+  rw [← (X.presheaf.germ U x hx).hom.map_zero] at hy
   obtain ⟨W, hW, iU, iV, e⟩ := X.presheaf.germ_eq _ hx hx _ _ hy
   cases Subsingleton.elim iU iV
   haveI : Nonempty W := ⟨⟨_, hW⟩⟩
@@ -87,19 +87,21 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X] (x : X) :
     Algebra (X.presheaf.stalk x) X.functionField := by
+  -- TODO: can we write this normally after the refactor finishes?
   apply RingHom.toAlgebra
-  exact X.presheaf.stalkSpecializes ((genericPoint_spec X).specializes trivial)
+  exact (X.presheaf.stalkSpecializes ((genericPoint_spec X).specializes trivial)).hom
 
 instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
   apply IsScalarTower.of_algebraMap_eq'
   simp_rw [RingHom.algebraMap_toAlgebra]
-  change _ = X.presheaf.germ U x x.2 ≫ _
+  change _ = (X.presheaf.germ U x x.2 ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
-  RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
+  -- TODO: can we write this normally after the refactor finishes?
+  RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
 
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
