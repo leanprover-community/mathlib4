@@ -5,7 +5,7 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 -/
 import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 /-!
 # The category of abelian groups satisfies Grothendieck's axiom AB5
 
@@ -47,3 +47,14 @@ instance : HasFilteredColimits (AddCommGrp.{u}) where
 
 noncomputable instance : AB5 (AddCommGrp.{u}) where
   ofShape _ := { preservesFiniteLimits := inferInstance }
+
+attribute [local instance] Abelian.hasFiniteBiproducts
+
+instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
+
+instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
+  apply ( config := {allowSynthFailures := true} )  hasExactLimitsOfShape_of_preservesEpi
+  sorry
+
+instance : AB4Star AddCommGrp.{u} where
+  ofShape _ := inferInstance
