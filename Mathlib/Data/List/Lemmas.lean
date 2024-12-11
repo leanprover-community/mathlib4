@@ -17,6 +17,18 @@ variable {α β γ : Type*}
 
 namespace List
 
+@[simp]
+theorem length_flatMap (l : List α) (f : α → List β) :
+    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
+  rw [List.flatMap, length_flatten, map_map]
+
+lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
+  rw [List.flatMap, countP_flatten, map_map]
+
+lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
+
 @[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
 
 theorem tail_reverse_eq_reverse_dropLast (l : List α) :

@@ -8,6 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Calculus.LagrangeMultipliers
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # The Rayleigh quotient

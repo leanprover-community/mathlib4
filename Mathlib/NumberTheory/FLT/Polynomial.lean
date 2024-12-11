@@ -124,9 +124,9 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
       (mul_ne_zero hCu hap) (mul_ne_zero hCv hbq) (mul_ne_zero hCw hcr)
       habp heq with nd_lt | dr0
   · simp_rw [radical_mul habcp, radical_mul habp,
-        radical_isUnit_mul_left hu.isUnit_C,
-        radical_isUnit_mul_left hv.isUnit_C,
-        radical_isUnit_mul_left hw.isUnit_C,
+        radical_mul_of_isUnit_left hu.isUnit_C,
+        radical_mul_of_isUnit_left hv.isUnit_C,
+        radical_mul_of_isUnit_left hw.isUnit_C,
         radical_pow a hp, radical_pow b hq, radical_pow c hr,
         natDegree_mul hCu hap,
         natDegree_mul hCv hbq,
