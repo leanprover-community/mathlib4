@@ -51,6 +51,8 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+attribute [instance 10] NonUnitalSeminormedRing.toNonUnitalRing
+
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
@@ -58,6 +60,8 @@ class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
+
+attribute [instance 10] SeminormedRing.toRing
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a non-unital seminormed ring. -/
@@ -73,6 +77,8 @@ class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, Metric
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+attribute [instance 10] NonUnitalNormedRing.toNonUnitalRing
+
 -- see Note [lower instance priority]
 /-- A non-unital normed ring is a non-unital seminormed ring. -/
 instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
@@ -86,6 +92,8 @@ class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+attribute [instance 10] NormedRing.toRing
+
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
 class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSpace α where
@@ -93,6 +101,8 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
+
+attribute [instance 10] NormedDivisionRing.toDivisionRing
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
@@ -775,6 +785,8 @@ class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
+
+attribute [instance 10] NormedField.toField
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
