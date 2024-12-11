@@ -67,15 +67,10 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         erw [precompEnrichedHom_π_assoc]
         congr 1
         dsimp
+        rw [← enrichedOrdinaryCategorySelf_eHomWhiskerRight,
+          ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
         let α : Under.mk (𝟙 j) ⟶ (Under.map φ).obj (Under.mk (𝟙 j')) := Under.homMk φ
-        convert (enrichedHom_condition C (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₃) α).symm
-            using 1
-        · dsimp
-          congr 1
-          erw [enrichedOrdinaryCategorySelf_homEquiv]
-          dsimp [comp, α]
-          sorry
-        · sorry }
+        exact (enrichedHom_condition C (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₃) α).symm }
   left_inv f := by
     dsimp
     ext j
@@ -103,7 +98,6 @@ lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functo
   congr 1
   simp only [Category.assoc]
 
-
 lemma homEquiv_naturality_three [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
     (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
     homEquiv (f ≫ f₃) = homEquiv f ≫ (ρ_ _).inv ≫ _ ◁ functorHomEquiv _ f₃ ≫
@@ -112,10 +106,15 @@ lemma homEquiv_naturality_three [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F�
   ext j
   dsimp
   ext k
+  rw [Category.assoc, Category.assoc, Category.assoc, end_.lift_π, enrichedComp_π,
+    tensorHom_def, Category.assoc, whisker_exchange_assoc,
+    MonoidalCategory.whiskerRight_id_assoc, Iso.inv_hom_id_assoc, end_.lift_π_assoc,
+    Category.assoc]
   dsimp
-  rw [Category.assoc, Category.assoc, Category.assoc, end_.lift_π, enrichedComp_π]
-  dsimp
-  sorry
+  rw [← MonoidalCategory.whiskerLeft_comp_assoc, functorHomEquiv_app_π, curry_natural_right]
+  congr 2
+  symm
+  apply enrichedOrdinaryCategorySelf_eHomWhiskerLeft
 
 end
 

@@ -408,12 +408,22 @@ def _root_.CategoryTheory.Limits.IsLimit.homEquiv {F : J ⥤ C} {c : Cone F} (h 
 section
 
 variable {F₁ F₂} in
-
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
 this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂)`. -/
 noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂] :
     (F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂) :=
   (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
+
+variable {F₁ F₂} in
+@[reassoc]
+lemma functorHomEquiv_app_π [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
+    (f : F₁ ⟶ F₂) {j : J} (k : Under j) :
+      (functorHomEquiv V f).app j ≫
+        enrichedHomπ V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂) k =
+      eHomEquiv V (f.app k.right) := by
+  change (homEquiv V f ≫ precompEnrichedHom V F₁ F₂ (Under.forget j)) ≫
+    enrichedHomπ V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂) k = _
+  simp only [assoc, precompEnrichedHom_π, homEquiv_apply_π, Under.forget_obj]
 
 lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
     (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by
