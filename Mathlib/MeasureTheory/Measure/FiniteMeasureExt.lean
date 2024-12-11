@@ -18,7 +18,7 @@ open MeasureTheory Filter
 
 variable {E 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace E]
 
-theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetricSpace
     [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
     {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
@@ -65,7 +65,7 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
       (integral_mulExpNegMulSq_tendsto P' f))
   apply eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
 
-theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_polishSpace [TopologicalSpace E] [PolishSpace E]
     [BorelSpace E] {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
