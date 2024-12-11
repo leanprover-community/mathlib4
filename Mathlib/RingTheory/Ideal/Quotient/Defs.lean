@@ -63,6 +63,10 @@ instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
 instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
   mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
+instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := inferInstance
+instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) := inferInstance
+instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := inferInstance
+
 variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
