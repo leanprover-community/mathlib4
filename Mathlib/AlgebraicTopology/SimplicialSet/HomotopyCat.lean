@@ -127,7 +127,6 @@ def OneTruncation₂.nerveEquiv :
   right_inv _ := ComposableArrows.ext₀ rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.toFun`. -/
-@[simps]
 def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
   toFun f :=
     { edge := ComposableArrows.mk₁ f
@@ -142,7 +141,6 @@ def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ n
       (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.invFun`. -/
-@[simps]
 def OneTruncation₂.nerveHomEquivInv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
   (X ⟶ Y) ≃ (nerveEquiv.invFun X ⟶ nerveEquiv.invFun Y) where
   toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫

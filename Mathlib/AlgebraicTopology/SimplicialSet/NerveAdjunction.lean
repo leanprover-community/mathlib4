@@ -505,10 +505,11 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
     conv => lhs; rhs; rw [← assoc]
     show _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
     rw [← ReflQuiv.forget.map_comp]
-    show _ ≫ ReflQuiv.forget.map
-      ((SSet.Truncated.HomotopyCategory.quotientFunctor (nerveFunctor₂.obj ↑C))
-        ⋙ nerve₂Adj.counit.component C) ≫ _ = _
-    rw [nerve₂Adj.counit, nerve₂Adj.counit.component_eq]
+    rw [nerve₂Adj.counit]
+    simp only [oneTruncation₂_obj, ReflQuiv.forget_obj, Cat.freeRefl_obj_α, ReflQuiv.of_val]
+    have := nerve₂Adj.counit.component_eq C
+    conv => lhs; rhs; lhs; rw [Cat.comp_eq_comp]
+    rw [nerve₂Adj.counit.component_eq]
     simp only [ReflQuiv.forget_obj, Cat.freeRefl_obj_α, ReflQuiv.of_val, NatTrans.comp_app,
       comp_obj, id_obj, whiskerRight_app]
     rw [ReflQuiv.forget.map_comp, ← Functor.comp_map, ← assoc, ← assoc]
