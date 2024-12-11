@@ -168,7 +168,7 @@ theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f :
     (by
       have hi : Function.Injective (alternatingGroup α).subtype := Subtype.coe_injective
       refine eq_top_iff.1 (map_injective hi (le_antisymm (map_mono le_top) ?_))
-      rw [← MonoidHom.range_eq_map, subtype_range, normalClosure, MonoidHom.map_closure]
+      rw [← MonoidHom.range_eq_map, range_subtype, normalClosure, MonoidHom.map_closure]
       refine (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono ?_)
       intro g h
       obtain ⟨c, rfl⟩ := isConj_iff.1 (isConj_iff_cycleType_eq.2 (hf.trans h.symm))

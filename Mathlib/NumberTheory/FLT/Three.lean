@@ -85,7 +85,7 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     rw [add_comm (a ^ 3), add_assoc, add_comm (a ^ 3), ← add_assoc] at HF
     refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
     convert Hgcd using 2
-    rw [Finset.pair_comm, Finset.Insert.comm]
+    rw [Finset.pair_comm, Finset.insert_comm]
   by_contra! h3b
   by_cases h3c : 3 ∣ c
   · apply h3b
@@ -132,15 +132,15 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with (h3a | h3b) | h3c
   · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a ?_ H hF
-    simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+    simp only [← Hgcd, insert_comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
   · rw [add_comm (a ^ 3)] at hF
     refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 hb h3b ?_ H hF
-    simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+    simp only [← Hgcd, insert_comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
   · rw [add_comm _ ((-c) ^ 3), ← add_assoc] at hF
     refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 (neg_ne_zero.2 hc) (by simp [h3c])
       ?_ H hF
-    rw [Finset.Insert.comm (-c), Finset.pair_comm (-c) b]
-    simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+    rw [Finset.insert_comm (-c), Finset.pair_comm (-c) b]
+    simp only [← Hgcd, insert_comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
 
 section eisenstein
 
@@ -210,8 +210,8 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
-    multiplicity.Finite (hζ.toInteger - 1) S'.c :=
-  multiplicity.finite_of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
+    FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
+  .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
 
 section DecidableRel
 
@@ -321,7 +321,6 @@ section DecidableRel
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K] [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b]
 
-open PartENat in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
@@ -329,14 +328,14 @@ lemma lambda_sq_dvd_or_dvd_or_dvd :
   by_contra! h
   rcases h with ⟨h1, h2, h3⟩
   rw [← emultiplicity_lt_iff_not_dvd] at h1 h2 h3
-  have h1' : multiplicity.Finite (hζ.toInteger - 1) (S'.a + S'.b) :=
-    finite_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)
-  have h2' : multiplicity.Finite (hζ.toInteger - 1) (S'.a + η * S'.b) := by
-    refine finite_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
+  have h1' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + S'.b) :=
+    finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)
+  have h2' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η * S'.b) := by
+    refine finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
     rw [coe_eta] at ht
     simp [ht] at h2
-  have h3' : multiplicity.Finite (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) := by
-    refine finite_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
+  have h3' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + η ^ 2 * S'.b) := by
+    refine finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ ?_)
     rw [coe_eta] at ht
     simp [ht] at h3
   rw [h1'.emultiplicity_eq_multiplicity, Nat.cast_lt] at h1

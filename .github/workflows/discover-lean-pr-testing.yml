@@ -100,8 +100,13 @@ jobs:
             
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
-                # If it does, add the branch to RELEVANT_BRANCHES
-                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$BRANCH"
+                # Extract the PR number and actual branch name
+                PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+                ACTUAL_BRANCH=${BRANCH#origin/}
+                GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...$ACTUAL_BRANCH"
+                
+                # Append the branch details to RELEVANT_BRANCHES
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$ACTUAL_BRANCH (lean4#$PR_NUMBER) ([diff with \`nightly-testing\`]($GITHUB_DIFF))"
             fi
         done
 
@@ -119,6 +124,22 @@ jobs:
           echo "branches_exist=true" >> "$GITHUB_ENV"
         fi
 
+    - name: Prepare Zulip message
+      id: zulip-message
+      run: |
+        BRANCHES="${{ steps.find-branches.outputs.branches }}"
+        {
+          printf "msg<<EOF\n"
+          printf "We will need to merge the following branches into \`nightly-testing\`:\n"
+          printf "\`\`\`bash\n"
+          for BRANCH in $BRANCHES; do
+            PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+            printf "scripts/merge-lean-testing-pr.sh %s   # %s\n" "$PR_NUMBER" "$BRANCH"
+          done
+          printf "\`\`\`\n"
+          printf "EOF"
+        } >> "$GITHUB_OUTPUT"
+
     - name: Send message on Zulip
       if: env.branches_exist == 'true'
       uses: zulip/github-actions-zulip/send-message@v1
@@ -128,8 +149,6 @@ jobs:
         organization-url: 'https://leanprover.zulipchat.com'
         to: 'nightly-testing'
         type: 'stream'
-        topic: 'Mathlib status updates'
+        topic: 'Mergeable lean testing PRs'
         content: |
-          We will need to merge the following branches into `nightly-testing`:
-
-          ${{ steps.find-branches.outputs.branches }}
+          ${{ steps.zulip-message.outputs.msg }}

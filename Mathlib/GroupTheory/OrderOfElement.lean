@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Tactic.Positivity
 
 /-!
 # Order of an element
@@ -1044,7 +1045,7 @@ def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonemp
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS
     rw [← pow_card_eq_one]
-    exact Set.pow_mem_pow ha (Fintype.card G)
+    exact Set.pow_mem_pow ha
   subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ <| by
     classical
     apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm

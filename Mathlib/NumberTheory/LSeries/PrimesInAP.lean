@@ -27,14 +27,14 @@ The main steps of the proof are as follows.
    agrees (on `re s > 1`) with the corresponding linear combination of negative logarithmic
    derivatives of Dirichlet L-functions.
    See `ArithmeticFunction.vonMangoldt.LSeries_residueClass_eq`.
-4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.LfunctionResidueClassAux a` that is
+4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux a` that is
    this linear combination of negative logarithmic derivatives of L-functions minus
    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
-   See `ArithmeticFunction.vonMangoldt.eqOn_LfunctionResidueClassAux` for the statement
+   See `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux` for the statement
    that the auxiliary function agrees with the L-series of
    `ArithmeticFunction.vonMangoldt.residueClass` up to the term `(q.totient)⁻¹/(s-1)`.
 5. Show that the auxiliary function is continuous on `re s ≥ 1`;
-   see `ArithmeticFunction.vonMangoldt.continuousOn_LfunctionResidueClassAux`.
+   see `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux`.
    This relies heavily on the non-vanishing of Dirichlet L-functions on the *closed*
    half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
    in turn can only be stated since we know that the L-series of a Dirichlet character
@@ -51,7 +51,7 @@ The main steps of the proof are as follows.
 ## Definitions
 
 * `ArithmeticFunction.vonMangoldt.residueClass a` (see above).
-* `ArithmeticFunction.vonMangoldt.continuousOn_LfunctionResidueClassAux` (see above).
+* `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux` (see above).
 
 ## Main Result
 
@@ -298,19 +298,19 @@ open Classical in
 Dirichlet's Theorem. On `re s > 1`, it agrees with the L-series of the von Mangoldt
 function restricted to the residue class `a : ZMod q` minus the principal part
 `(q.totient)⁻¹/(s-1)` of the pole at `s = 1`;
-see `ArithmeticFunction.vonMangoldt.eqOn_LfunctionResidueClassAux`. -/
+see `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux`. -/
 noncomputable
-abbrev LfunctionResidueClassAux (s : ℂ) : ℂ :=
+abbrev LFunctionResidueClassAux (s : ℂ) : ℂ :=
   (q.totient : ℂ)⁻¹ * (-deriv (LFunctionTrivChar₁ q) s / LFunctionTrivChar₁ q s -
     ∑ χ ∈ ({1}ᶜ : Finset (DirichletCharacter ℂ q)), χ a⁻¹ * deriv (LFunction χ) s / LFunction χ s)
 
 /-- The auxiliary function is continuous away from the zeros of the L-functions of the Dirichlet
 characters mod `q` (including at `s = 1`). -/
-lemma continuousOn_LfunctionResidueClassAux' :
-    ContinuousOn (LfunctionResidueClassAux a)
+lemma continuousOn_LFunctionResidueClassAux' :
+    ContinuousOn (LFunctionResidueClassAux a)
       {s | s = 1 ∨ ∀ χ : DirichletCharacter ℂ q, LFunction χ s ≠ 0} := by
-  rw [show LfunctionResidueClassAux a = fun s ↦ _ from rfl]
-  simp only [LfunctionResidueClassAux, sub_eq_add_neg]
+  rw [show LFunctionResidueClassAux a = fun s ↦ _ from rfl]
+  simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
     have := LFunction_ne_zero_of_one_le_re (1 : DirichletCharacter ℂ q) (s := s)
@@ -328,11 +328,11 @@ lemma continuousOn_LfunctionResidueClassAux' :
 
 /-- The L-series of the von Mangoldt function restricted to the prime residue class `a` mod `q`
 is continuous on `re s ≥ 1` except for a simple pole at `s = 1` with residue `(q.totient)⁻¹`.
-The statement as given here in terms of `ArithmeticFunction.vonMangoldt.LfunctionResidueClassAux`
+The statement as given here in terms of `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux`
 is equivalent. -/
-lemma continuousOn_LfunctionResidueClassAux :
-    ContinuousOn (LfunctionResidueClassAux a) {s | 1 ≤ s.re} := by
-  refine (continuousOn_LfunctionResidueClassAux' a).mono fun s hs ↦ ?_
+lemma continuousOn_LFunctionResidueClassAux :
+    ContinuousOn (LFunctionResidueClassAux a) {s | 1 ≤ s.re} := by
+  refine (continuousOn_LFunctionResidueClassAux' a).mono fun s hs ↦ ?_
   rcases eq_or_ne s 1 with rfl | hs₁
   · simp only [ne_eq, Set.mem_setOf_eq, true_or]
   · simp only [ne_eq, Set.mem_setOf_eq, hs₁, false_or]
@@ -345,13 +345,13 @@ open scoped LSeries.notation
 /-- The auxiliary function agrees on `re s > 1` with the L-series of the von Mangoldt function
 restricted to the residue class `a : ZMod q` minus the principal part `(q.totient)⁻¹/(s-1)`
 of its pole at `s = 1`. -/
-lemma eqOn_LfunctionResidueClassAux (ha : IsUnit a) :
-    Set.EqOn (LfunctionResidueClassAux a)
+lemma eqOn_LFunctionResidueClassAux (ha : IsUnit a) :
+    Set.EqOn (LFunctionResidueClassAux a)
       (fun s ↦ L ↗(residueClass a) s - (q.totient : ℂ)⁻¹ / (s - 1))
       {s | 1 < s.re} := by
   intro s hs
   replace hs := Set.mem_setOf.mp hs
-  simp only [LSeries_residueClass_eq ha hs, LfunctionResidueClassAux]
+  simp only [LSeries_residueClass_eq ha hs, LFunctionResidueClassAux]
   rw [neg_div, ← neg_add', mul_neg, ← neg_mul, div_eq_mul_one_div (q.totient : ℂ)⁻¹,
     sub_eq_add_neg, ← neg_mul, ← mul_add]
   congrm (_ * ?_)
@@ -369,9 +369,9 @@ lemma eqOn_LfunctionResidueClassAux (ha : IsUnit a) :
   rw [mul_comm _ 1, mul_div_mul_right _ _ <| LFunction_ne_zero_of_one_le_re 1 (.inr hs₁) hs.le]
 
 /-- The auxiliary function takes real values for real arguments `x > 1`. -/
-lemma LfunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
-    LfunctionResidueClassAux a x = (LfunctionResidueClassAux a x).re := by
-  rw [eqOn_LfunctionResidueClassAux ha hx]
+lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
+    LFunctionResidueClassAux a x = (LFunctionResidueClassAux a x).re := by
+  rw [eqOn_LFunctionResidueClassAux ha hx]
   simp only [sub_re, ofReal_sub]
   congr 1
   · rw [LSeries, re_tsum <| LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
@@ -394,25 +394,25 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
       (q.totient : ℝ)⁻¹ / (x - 1) - C ≤ ∑' n, residueClass a n / (n : ℝ) ^ x := by
   have H {x : ℝ} (hx : 1 < x) :
       ∑' n, residueClass a n / (n : ℝ) ^ x =
-        (LfunctionResidueClassAux a x).re + (q.totient : ℝ)⁻¹ / (x - 1) := by
+        (LFunctionResidueClassAux a x).re + (q.totient : ℝ)⁻¹ / (x - 1) := by
     refine ofReal_injective ?_
     simp only [ofReal_tsum, ofReal_div, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast,
       ofReal_add, ofReal_inv, ofReal_sub, ofReal_one]
-    simp_rw [← LfunctionResidueClassAux_real ha hx,
-      eqOn_LfunctionResidueClassAux ha <| Set.mem_setOf.mpr (ofReal_re x ▸ hx), sub_add_cancel,
+    simp_rw [← LFunctionResidueClassAux_real ha hx,
+      eqOn_LFunctionResidueClassAux ha <| Set.mem_setOf.mpr (ofReal_re x ▸ hx), sub_add_cancel,
       LSeries, term]
     refine tsum_congr fun n ↦ ?_
     split_ifs with hn
     · simp only [hn, residueClass_apply_zero, ofReal_zero, zero_div]
     · rfl
-  have : ContinuousOn (fun x : ℝ ↦ (LfunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
-    continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LfunctionResidueClassAux a)
+  have : ContinuousOn (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
+    continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LFunctionResidueClassAux a)
       (fun ⦃x⦄ a ↦ trivial) |>.comp continuous_ofReal.continuousOn fun x hx ↦ by
         simpa only [Set.mem_setOf_eq, ofReal_re] using hx.1
   obtain ⟨C, hC⟩ := bddBelow_def.mp <| IsCompact.bddBelow_image isCompact_Icc this
-  replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LfunctionResidueClassAux a x).re :=
-    hC (LfunctionResidueClassAux a x).re <|
-      Set.mem_image_of_mem (fun x : ℝ ↦ (LfunctionResidueClassAux a x).re) hx
+  replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LFunctionResidueClassAux a x).re :=
+    hC (LFunctionResidueClassAux a x).re <|
+      Set.mem_image_of_mem (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) hx
   refine ⟨-C, fun {x} hx ↦ ?_⟩
   rw [H hx.1, add_comm, sub_neg_eq_add, add_le_add_iff_left]
   exact hC <| Set.mem_Icc_of_Ioc hx

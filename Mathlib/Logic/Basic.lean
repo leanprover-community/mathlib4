@@ -6,11 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Batteries.Logic
+import Batteries.Tactic.Trans
 import Batteries.Util.LibraryNote
-import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
-import Mathlib.Order.Defs
 
 /-!
 # Basic logic properties
@@ -132,10 +131,6 @@ open Function
 section Propositional
 
 /-! ### Declarations about `implies` -/
-
-instance : IsRefl Prop Iff := ⟨Iff.refl⟩
-
-instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
 alias Iff.imp := imp_congr
 
@@ -357,6 +352,10 @@ theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
+
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+    and_or_left, and_not_self_iff, or_false]
 
 end Propositional
 

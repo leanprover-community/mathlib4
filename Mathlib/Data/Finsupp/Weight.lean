@@ -123,6 +123,13 @@ theorem NonTorsionWeight.ne_zero [NonTorsionWeight w] (s : σ) :
   apply Nat.zero_ne_one.symm
   exact NonTorsionWeight.eq_zero_of_smul_eq_zero h
 
+variable {w} in
+lemma weight_sub_single_add {f : σ →₀ ℕ} {i : σ} (hi : f i ≠ 0) :
+    (f - single i 1).weight w + w i = f.weight w := by
+  conv_rhs => rw [← sub_add_single_one_cancel hi, weight_apply]
+  rw [sum_add_index', sum_single_index, one_smul, weight_apply]
+  exacts [zero_smul .., fun _ ↦ zero_smul .., fun _ _ _ ↦ add_smul ..]
+
 end AddCommMonoid
 
 section OrderedAddCommMonoid
