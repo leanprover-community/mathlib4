@@ -504,6 +504,12 @@ lemma shiftEquiv'_symm_counit (a a' : A) (h : a + a' = 0) :
   rw [shiftEquiv'_unitIso]
   rfl
 
+lemma shiftEquiv'_symm_homEquiv (a a' : A) (h : a + a' = 0) (X Y : C) :
+    (shiftEquiv' C a a' h).symm.toAdjunction.homEquiv X Y =
+    (shiftEquiv' C a' a (by simp [eq_neg_of_add_eq_zero_left h])).toAdjunction.homEquiv X Y := by
+  ext _
+  simp [Adjunction.homEquiv_apply, shiftEquiv'_symm_unit, shiftEquiv'_unit]
+
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
 abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)
 
