@@ -166,6 +166,33 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     rwa [Nat.add_sub_cancel_right]
   · exact hb
 
+variable {n m : ℕ}
+
+lemma Iio_eq_Iic_sub_one (hn : n ≠ 0) :
+    Iio n = Iic (n - 1) := by
+  ext k; simp [Nat.le_sub_one_iff_lt (zero_lt_of_ne_zero hn)]
+
+lemma Ico_eq_Icc_sub_one (h : n < m) : Ico n m = Icc n (m - 1) := by
+  ext k
+  exact ⟨fun ⟨n_le_k, k_lt_m⟩ ↦ ⟨n_le_k, le_sub_one_of_lt k_lt_m⟩,
+         fun ⟨n_le_k, k_le⟩ ↦ ⟨n_le_k, (Nat.le_sub_one_iff_lt (zero_lt_of_lt h)).mp k_le⟩⟩
+
+lemma sSup_Iic (n : ℕ) : sSup (Iic n) = n := csSup_Iic
+
+lemma sSup_Icc (h : n ≤ m) : sSup (Icc n m) = m := csSup_Icc h
+
+lemma sSup_Ioc (h : n < m) : sSup (Ioc n m) = m := csSup_Ioc h
+
+@[simp] lemma sSup_Iio (n : ℕ) :
+    sSup (Iio n) = n - 1 := by
+  by_cases n_zero : n = 0
+  · simp [n_zero, show Iio 0 = ∅ by aesop]
+  rw [Iio_eq_Iic_sub_one n_zero, sSup_Iic]
+
+@[simp] lemma sSup_Ico (h : n < m) :
+    sSup (Ico n m) = m - 1 := by
+  rw [Ico_eq_Icc_sub_one h, sSup_Icc (le_sub_one_of_lt h)]
+
 section
 
 variable {α : Type*} [CompleteLattice α]
