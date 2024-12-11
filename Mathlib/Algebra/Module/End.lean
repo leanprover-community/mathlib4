@@ -81,6 +81,7 @@ section
 variable (R)
 
 /-- `zsmul` is equal to any other module structure via a cast. -/
+@[norm_cast]
 lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
   have : ((smulAddHom R M).flip b).comp (Int.castAddHom R) = (smulAddHom ℤ M).flip b := by
     apply AddMonoidHom.ext_int
