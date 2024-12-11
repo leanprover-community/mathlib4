@@ -287,7 +287,8 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
-theorem mgf_ident_distrib (X Y : Ω → ℝ) (hident : IdentDistrib X Y μ μ) : mgf X μ t = mgf Y μ t := by
+theorem mgf_ident_distrib (X Y : Ω → ℝ) (hident : IdentDistrib X Y μ μ) :
+  mgf X μ t = mgf Y μ t := by
     rw [mgf, mgf]
     apply IdentDistrib.integral_eq
     let u := fun x => Real.exp (t * x)
