@@ -25,6 +25,9 @@ converges (uniformly) to `f`, and this construction defines a Banach-space isomo
 
 For this, we follow the argument of Bojanić [bojanic74].
 
+The formalisation of Mahler's theorem presented here is based on code written by Giulio Caflisch
+for his bachelor's thesis at ETH Zürich.
+
 ## References
 
 * [R. Bojanić, *A simple proof of Mahler's theorem on approximation of continuous functions of a
@@ -65,7 +68,7 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
 
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
-  nsmul_right_injective n hn := smul_right_injective ℤ_[p] hn
+  nsmul_right_injective hn := smul_right_injective ℤ_[p] hn
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
   multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]

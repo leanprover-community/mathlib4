@@ -57,6 +57,7 @@ open Function (OfArity)
   is a family of pre-sets indexed by a type in `Type u`.
   The ZFC universe is defined as a quotient of this
   to ensure extensionality. -/
+@[pp_with_univ]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet
 
@@ -515,6 +516,7 @@ end PSet
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
   quotiented by extensional equivalence. -/
+@[pp_with_univ]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
@@ -1346,6 +1348,7 @@ end ZFSet
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
+@[pp_with_univ]
 def Class :=
   Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
 
