@@ -70,4 +70,4 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_polishSpace [TopologicalSpac
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
   letI := upgradePolishSpace E
-  exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq
+  exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetricSpace hA hbound heq
