@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.Pi
+import Mathlib.Data.Finset.Union
 
 /-!
 # The cartesian product of finsets

@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.List.GetD
+import Mathlib.Algebra.Group.Embedding
 
 /-!
 

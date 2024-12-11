@@ -6,6 +6,10 @@ Authors: Hanting Zhang, Johan Commelin
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Finset.SymmDiff
+import Mathlib.Data.Finset.Union
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials

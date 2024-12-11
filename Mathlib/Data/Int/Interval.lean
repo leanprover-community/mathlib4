@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Group.Embedding
 
 /-!
 # Finite intervals of integers
