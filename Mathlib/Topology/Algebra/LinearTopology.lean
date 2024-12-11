@@ -12,41 +12,16 @@ Following Bourbaki, *Algebra II*, chapter 4, §2, n° 3, a topology on a ring `R
 it is invariant by translation and there admits a basis of neighborhoods of 0 consisting of
 two-sided ideals.
 
-Reflecting the discrepancy between `Filter.IsBasis` and `RingFilterBasis`, there are two ways to get
-this basis of neighborhoods, either via a `Set (Ideal R)`, or via a function `ι → Ideal R`.
-
-- `IdealBasis R` is a structure that records a `Set (Ideal R)` and asserts that
-it defines a basis of neighborhoods of `0` for *some* topology.
-
-- `Ideal.IsBasis B`, for `B : ι → Ideal R`, is the structure that records
-that the range of `B` defines a basis of neighborhoods of `0` for *some* topology on `R`.
-
-- `Ideal.IsBasis.toRingFilterBasis` converts an `Ideal.IsBasis` to a `RingFilterBasis`.
-
-- `Ideal.IsBasis.topology` defines the associated topology.
-
-- `Ideal.IsBasis.topologicalRing`: an `Ideal.IsBasis` defines a topological ring.
-
-- `Ideal.IsBasis.toIdealBasis` and `IdealBasis.toIsBasis` convert one structure to another.
-
-- `IdealBasis.toIsBasis.IdealBasis.toIsBasis.toIdealBasis_eq` proves the identity
-`B.toIsBasis.toIdealBasis = B`.
-
-- `Ideal.IsBasis.ofIdealBasis_topology_eq` proves that the topologies coincide.
-
-- For `Ring R` and `TopologicalSpace R`, the type class `LinearTopology R` asserts that the
-topology on `R` is linear.
-
-- `LinearTopology.topologicalRing`: instance showing that then the ring is a topological ring.
-
 - `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R` such that `f i` converges to `0`,
 `f i * g i` converges to `0`.
+
+TODO. For the moment, only commutative rings are considered.
 
 -/
 
 section Definition
 
-variable (α : Type*) [Ring α]
+variable (α : Type*) [CommRing α]
 
 /-- A topology on a ring is linear if its topology is defined by a family of ideals. -/
 class LinearTopology [TopologicalSpace α] [TopologicalRing α] where
@@ -57,7 +32,7 @@ end Definition
 
 namespace LinearTopology
 
-variable {α : Type*} [Ring α] [TopologicalSpace α] [TopologicalRing α] [LinearTopology α]
+variable {α : Type*} [CommRing α] [TopologicalSpace α] [TopologicalRing α] [LinearTopology α]
 
 theorem mem_nhds_zero_iff (s : Set α) :
     (s ∈ nhds 0) ↔
