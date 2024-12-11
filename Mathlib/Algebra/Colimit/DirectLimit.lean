@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Polynomial.Eval.Coeff
 import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Order.DirectedInverseSystem
 import Mathlib.Tactic.SuppressCompilation
