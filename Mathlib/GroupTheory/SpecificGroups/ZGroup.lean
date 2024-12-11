@@ -18,6 +18,13 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 * `IsZGroup G`: A predicate stating that all Sylow subgroups of `G` are cyclic.
 
+## Main results
+
+* `commutator G` is cyclic
+* `commutator G` is a Hall subgroup (and thus has a complement by Schur-Zassenhaus)
+* `abelianization G` is cyclic
+* `G` is a semidirect product of two cyclic groups (probably should right this explicitly)
+
 TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
 and `G/G'` are cyclic of coprime orders.
 
@@ -193,14 +200,6 @@ end Nilpotent
 
 section Hall
 
--- key: any element of K has order coprime to p
--- so the conjugation action on P satisfies k^(p-1) = 1
--- either k = 1 or k - 1 is indivisible by p (still an automorphism)
--- we have k -> zmod (actually maps to units, of course)
--- key is that if k has order indivisible by p, then k - 1 = 0 or is a unit
-
--- ok, so a monoid action on a cyclic group induces a canonical map to zmod
-
 noncomputable def IsCyclic.toMonoidHom
     (M G : Type*) [Monoid M] [Group G] [IsCyclic G] [MulDistribMulAction M G] :
     M →* ZMod (Nat.card G) where
@@ -218,55 +217,6 @@ noncomputable def IsCyclic.toMonoidHom
       ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G (m * n))).choose_spec,
       MulDistribMulAction.toMonoidHom_apply, MulDistribMulAction.toMonoidHom_apply,
       MulDistribMulAction.toMonoidHom_apply, mul_smul]
-
--- instance (M A : Type*) [Monoid M] [AddMonoid A] [DistribMulAction M A] :
---     MulDistribMulAction M (Multiplicative A) where
---   smul m a := m • a.toAdd
---   one_smul a := one_smul M a.toAdd
---   mul_smul m n a := mul_smul m n a.toAdd
---   smul_mul m a b := smul_add m a.toAdd b.toAdd
---   smul_one m := smul_zero (A := A) m
-
--- instance (M A : Type*) [Monoid M] [Monoid A] [MulDistribMulAction M A] :
---     DistribMulAction M (Additive A) where
---   smul m a := m • a.toMul
---   one_smul a := one_smul M a.toMul
---   mul_smul m n a := mul_smul m n a.toMul
---   smul_add m a b := smul_mul' m a.toMul b.toMul
---   smul_zero m := smul_one (A := A) m
-
--- instance (M A : Type*) [Monoid M] [Monoid A] [DistribMulAction M (Additive A)] :
---     MulDistribMulAction M A where
---   smul m a := m • Additive.ofMul a
---   one_smul a := one_smul M (Additive.ofMul a)
---   mul_smul m n a := mul_smul m n (Additive.ofMul a)
---   smul_mul m a b := smul_add m (Additive.ofMul a) (Additive.ofMul b)
---   smul_one m := smul_zero (A := Additive A) m
-
--- instance (M A : Type*) [Monoid M] [AddMonoid A] [MulDistribMulAction M (Multiplicative A)] :
---     DistribMulAction M A where
---   smul m a := m • Multiplicative.ofAdd a
---   one_smul a := one_smul M (Multiplicative.ofAdd a)
---   mul_smul m n a := mul_smul m n (Multiplicative.ofAdd a)
---   smul_add m a b := smul_mul' m (Multiplicative.ofAdd a) (Multiplicative.ofAdd b)
---   smul_zero m := smul_one (A := Multiplicative A) m
-
--- noncomputable instance tada1 (G : Type*) [AddCommGroup G] :
---     DistribMulAction (ZMod (AddMonoid.exponent G)) G :=
---   (AddCommGroup.zmodModule AddMonoid.exponent_nsmul_eq_zero).toDistribMulAction
-
--- theorem tada2_coe_smul (G : Type*) [AddCommGroup G] (k : ℤ) (g : G) :
---     (k : ZMod (AddMonoid.exponent G)) • g = k • g := by
-
---   sorry
-
--- noncomputable instance tada2 (G : Type*) [CommGroup G] :
---     MulDistribMulAction (ZMod (Monoid.exponent G)) G :=
---   inferInstanceAs (MulDistribMulAction (ZMod (AddMonoid.exponent (Additive G))) G)
-
--- theorem tada2_coe_smul (G : Type*) [CommGroup G] (k : ℤ) (g : G) :
---     (k : ZMod (Monoid.exponent G)) • g = g ^ k := by
---   sorry
 
 noncomputable def _root_.CommGroup.zmodModule
     {G : Type*} [CommGroup G] {n : ℕ} (h : ∀ (g : G), g ^ n = 1) :
