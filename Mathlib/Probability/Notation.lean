@@ -40,7 +40,7 @@ scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
 
 -- Note(kmill): this notation tends to lead to ambiguity with GetElem notation.
 set_option quotPrecheck false in
-scoped[ProbabilityTheory] notation P "[" X "]" => ∫ x, ↑(X x) ∂P
+scoped[ProbabilityTheory] notation:max P noWs "[" X "]" => ∫ x, ↑(X x) ∂P
 
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 
