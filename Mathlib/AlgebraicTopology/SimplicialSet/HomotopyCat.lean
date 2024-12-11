@@ -69,20 +69,16 @@ lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := Sim
 @[reassoc (attr := simp)]
 lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
 
-/-- The source vertex of `f : S _[1]₂` for use in defining the underlying refl quiver. -/
-def OneTruncation₂.src {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
-  S.map (δ₂ 1).op f
-
-/-- The target vertex of `f : S _[1]₂` for use in defining the underlying refl quiver. -/
-def OneTruncation₂.tgt {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
-  S.map (δ₂ 0).op f
-
-/-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]₂`. -/
+/-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _[1]₂`
+together with source and target equalities. -/
 @[ext]
 structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) where
+  /-- An arrow in `OneTruncation₂.Hom X Y` includes the data of a 1-simplex. -/
   edge : S _[1]₂
-  src_eq : OneTruncation₂.src edge = X
-  tgt_eq : OneTruncation₂.tgt edge = Y
+  /-- An arrow in `OneTruncation₂.Hom X Y` includes a source equality. -/
+  src_eq : S.map (δ₂ 1).op edge = X
+  /-- An arrow in `OneTruncation₂.Hom X Y` includes a target equality. -/
+  tgt_eq : S.map (δ₂ 0).op edge = Y
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
