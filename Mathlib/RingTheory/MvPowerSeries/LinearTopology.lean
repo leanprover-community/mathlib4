@@ -23,7 +23,7 @@ namespace MvPowerSeries
 
 open Set SetLike
 
-variable (σ : Type*) (α : Type*) [Ring α]
+variable (σ : Type*) (α : Type*) [CommRing α]
 
 section Ideal.IsBasis
 
