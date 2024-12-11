@@ -348,7 +348,7 @@ theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2)
     {D} [Category D] (F₁ F₂ : V.HomotopyCategory ⥤ D)
     (h : SSet.Truncated.HomotopyCategory.quotientFunctor V ⋙ F₁ =
       SSet.Truncated.HomotopyCategory.quotientFunctor V ⋙ F₂) : F₁ = F₂ :=
-  Quotient.lift_unique' (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V)))
+  Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V))
     (HoRel₂ (V := V)) _ _ h
 
 /-- A map of 2-truncated simplicial sets induces a functor between homotopy categories. -/
