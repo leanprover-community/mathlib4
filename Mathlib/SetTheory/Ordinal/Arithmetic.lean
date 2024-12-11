@@ -78,8 +78,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rw [← add_one_eq_succ, lift_add, lift_one]
   rfl
 
-instance instAddLeftReflectLE :
-    AddLeftReflectLE Ordinal.{u} where
+instance : AddLeftReflectLE Ordinal.{u} where
   elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
     have H₁ a : f (Sum.inl a) = Sum.inl a := by
@@ -94,19 +93,23 @@ instance instAddLeftReflectLE :
     refine (RelEmbedding.ofMonotone g fun _ _ h ↦ ?_).ordinal_type_le
     rwa [← @Sum.lex_inr_inr _ t _ s, ← hg, ← hg, f.map_rel_iff, Sum.lex_inr_inr]
 
-theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
-  simp only [le_antisymm_iff, add_le_add_iff_left]
+instance : IsLeftCancelAdd Ordinal where
+  add_left_cancel a b c h := by simpa only [le_antisymm_iff, add_le_add_iff_left] using h
+
+@[deprecated add_left_cancel_iff (since := "2024-12-11")]
+theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c :=
+  add_left_cancel_iff
 
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
-instance instAddLeftStrictMono : AddLeftStrictMono Ordinal.{u} :=
+instance : AddLeftStrictMono Ordinal.{u} :=
   ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).2⟩
 
-instance instAddLeftReflectLT : AddLeftReflectLT Ordinal.{u} :=
+instance : AddLeftReflectLT Ordinal.{u} :=
   ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
-instance instAddRightReflectLT : AddRightReflectLT Ordinal.{u} :=
+instance : AddRightReflectLT Ordinal.{u} :=
   ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
