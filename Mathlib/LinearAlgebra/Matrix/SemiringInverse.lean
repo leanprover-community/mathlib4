@@ -136,7 +136,7 @@ theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A +
 
 variable {A B}
 
-theorem isAddUnit_mul (hAB : IsDiag (A * B)) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
+theorem isAddUnit_mul (hAB : A * B = 1) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
   revert k
   rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, one_apply_ne hij]
   exact isAddUnit_zero
