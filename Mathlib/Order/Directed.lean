@@ -123,6 +123,12 @@ class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _
 
+theorem directed_of₃ (r : α → α → Prop) [IsDirected α r] [IsTrans α r] (a b c : α) :
+    ∃ d, r a d ∧ r b d ∧ r c d :=
+  have ⟨e, hae, hbe⟩ := directed_of r a b
+  have ⟨f, hef, hcf⟩ := directed_of r e c
+  ⟨f, Trans.trans hae hef, Trans.trans hbe hef, hcf⟩
+
 theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
