@@ -456,73 +456,21 @@ lemma left_to_right_compat (adj : F ⊣ G) (commF : CommShift F A) (a b : A) (h 
 
 lemma left_to_right_iso_zero (adj : F ⊣ G) (commF : CommShift F A) :
     left_to_right_iso adj commF 0 = CommShift.isoZero G A := by
-  ext Y
-  rw [left_to_right_iso_hom_app _ _ 0 0 (by simp)]
-  change ((shiftEquiv' C 0 0 (by simp)).symm.toAdjunction.homEquiv
-    (G.obj ((shiftFunctor D 0).obj Y)) (G.obj Y))
-    ((adj.homEquiv ((shiftFunctor C 0).obj (G.obj ((shiftFunctor D 0).obj Y))) Y)
-    ((F.commShiftIso 0).hom.app (G.obj ((shiftFunctor D 0).obj Y)) ≫ _)) = _
-  rw [F.commShiftIso_zero]
-  rw [shiftEquiv'_symm_homEquiv, shiftEquiv'_symm_homEquiv]
-  erw [shiftEquiv'_zero_homEquiv C 0 0 rfl rfl, shiftEquiv'_zero_homEquiv_symm D 0 0 rfl rfl]
-  simp
-  rw [adj.homEquiv_naturality_left, adj.homEquiv_naturality_right, Equiv.apply_symm_apply]
-  simp
+  apply CommShift.compat_left_right_unique_right adj 0 0 (by simp) (CommShift.isoZero F A)
+  · rw [← F.commShiftIso_zero]; exact left_to_right_compat adj commF 0 0 (by simp)
+  · exact CommShift.compat_left_right_isoZero adj
 
 lemma left_to_right_iso_add (adj : F ⊣ G) (commF : CommShift F A) (a b : A) :
     left_to_right_iso adj commF (a + b) = CommShift.isoAdd (left_to_right_iso adj commF a)
-    (left_to_right_iso adj commF b) := by sorry
-/-  have hadd : -b + -a = -(a + b) := by simp
-  ext Y
-  conv_lhs => rw [left_to_right_iso_hom_app]
-  have := F.commShiftIso_add' hadd
-  simp [Functor.commShiftIso] at this
-  rw [this, CommShift.isoAdd']
-  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, Equivalence.symm_functor,
-      shiftEquiv'_inverse, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-      NatTrans.comp_app, whiskerRight_app, associator_hom_app, whiskerLeft_app, associator_inv_app,
-      id_comp, map_id, assoc, map_comp, unit_naturality_assoc, CommShift.isoAdd_hom_app]
-  have heq : ∀ (u : (G.obj (Y⟦a + b⟧))⟦- (a + b)⟧ ⟶ G.obj Y),
-        (shiftEquiv C (a + b)).symm.toAdjunction.homEquiv (G.obj (Y⟦a + b⟧)) (G.obj Y) u =
-        ((shiftEquiv C b).symm.toAdjunction.homEquiv _ ((shiftFunctor C a).obj (G.obj Y)))
-        (((shiftEquiv C a).symm.toAdjunction.homEquiv
-        ((shiftFunctor C (-b)).obj _) (G.obj Y)) ((shiftFunctorAdd' C (-b) (-a) (-(a + b))
-        hadd).inv.app _ ≫ u)) ≫
-        (shiftFunctorAdd C a b).inv.app (G.obj Y) := by
-    intro u
-    dsimp only [shiftEquiv]
-    have : u = (shiftFunctorAdd' C (-b) (-a) (-(a + b)) hadd).hom.app _ ≫
-          ((shiftFunctorAdd' C (-b) (-a) (-(a + b)) hadd).inv.app (G.obj ((shiftFunctor D
-          (a + b)).obj Y)) ≫ u) := by simp
-    conv_lhs => rw [this]
-    erw [← shiftEquiv'_add_symm_homEquiv C a (-a) b (-b) (a + b) (-(a + b)) (add_neg_cancel a)
-        (add_neg_cancel b) (add_neg_cancel (a + b)) rfl]
-    simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
-        shiftEquiv'_inverse, comp_obj, homEquiv_apply, Equivalence.toAdjunction_unit, map_comp,
-        assoc, NatIso.cancel_natIso_hom_left]
-    rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
-  erw [heq]
-  conv_rhs => rw [← assoc, ← assoc]
-  congr 1
-  rw [adj.homEquiv_naturality_left, Iso.inv_hom_id_app_assoc]
-  have heq' : ∀ (X : D) (u : X ⟶ Y⟦a + b⟧),
-        (shiftFunctorAdd' D (-b) (-a) (-(a + b)) hadd).inv.app X ≫
-        ((shiftEquiv D (a + b)).symm.toAdjunction.homEquiv X Y).symm u =
-        ((shiftEquiv D a).symm.toAdjunction.homEquiv _ _).symm
-        (((shiftEquiv D b).symm.toAdjunction.homEquiv _ _).symm
-        (u ≫ (shiftFunctorAdd D a b).hom.app Y)) := by
-    intro X u
-    erw [← shiftEquiv_add_symm_homEquiv D a (-a) b (-b) (a + b) (-(a + b)) (add_neg_cancel a)
-        (add_neg_cancel b) (add_neg_cancel (a + b)) rfl]
-    simp [shiftFunctorAdd'_eq_shiftFunctorAdd]
-  erw [heq']
-  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, Equivalence.symm_functor,
-      shiftEquiv'_inverse]
-  erw [← (shiftEquiv D a).symm.toAdjunction.homEquiv_naturality_left_symm]
-  conv_rhs => rw [comp_left_to_right_iso_hom_app']
-              erw [← (shiftEquiv C b).symm.toAdjunction.homEquiv_naturality_right]
-              rw [comp_left_to_right_iso_hom_app']
-  simp [homEquiv_apply, homEquiv_symm_apply]-/
+    (left_to_right_iso adj commF b) := by
+  have h : (-b + (-a)) + (a + b) = 0 := by rw [add_assoc, ← add_assoc (-a)]; simp
+  apply CommShift.compat_left_right_unique_right adj (-b + (-a)) (a + b) h
+    (F.commShiftIso (-b + (-a)))
+  · exact left_to_right_compat adj commF (-b + (-a)) (a + b) h
+  · rw [F.commShiftIso_add]
+    exact CommShift.compat_left_right_isoAdd adj (-b) (-a) b a (by simp) (by simp) _ _ _ _
+      (left_to_right_compat adj commF (-b) b (by simp))
+      (left_to_right_compat adj commF (-a) a (by simp))
 
 noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     CommShift G A where
@@ -549,9 +497,6 @@ lemma left_to_right_compatCommShift (adj : F ⊣ G) (commF : CommShift F A) :
   rw [shiftEquiv'_symm_homEquiv, shiftEquiv'_symm_homEquiv, Equiv.symm_apply_apply, ← assoc]
   erw [Iso.hom_inv_id_app]
   simp
-
-#exit
-
 
 /-- Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this defines commutation
 isomorphisms `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a`.
