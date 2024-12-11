@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Variance
 import Mathlib.Probability.IdentDistrib
-import Mathlib.Probability.Distributions.Gaussian
 
 /-!
 # Moments and moment generating function
@@ -287,26 +286,27 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
-theorem mgf_ident_distrib (X Y : Ω → ℝ) (hident : IdentDistrib X Y μ μ) :
-  mgf X μ t = mgf Y μ t := by
-    rw [mgf, mgf]
-    apply IdentDistrib.integral_eq
-    let u := fun x => Real.exp (t * x)
-    have compX : (fun ω ↦ Real.exp (t * X ω)) = u ∘ X := rfl
-    have compY : (fun ω ↦ Real.exp (t * Y ω)) = u ∘ Y := rfl
-    rw [compX, compY]
-    exact IdentDistrib.comp hident (Measurable.exp (measurable_const_mul t))
+theorem mgf_ident_distrib
+    (X : Ω → ℝ) {Ω' : Type u_1} {m' : MeasurableSpace Ω'} {μ' : Measure Ω'} (X' : Ω' → ℝ)
+    (hident : IdentDistrib X X' μ μ') (t : ℝ) :
+    mgf X μ t = mgf X' μ' t := by
+  rw [mgf, mgf]
+  apply IdentDistrib.integral_eq
+  let u := fun x => Real.exp (t * x)
+  have compX : (fun ω ↦ Real.exp (t * X ω)) = u ∘ X := rfl
+  have compX' : (fun ω ↦ Real.exp (t * X' ω)) = u ∘ X' := rfl
+  rw [compX, compX']
+  exact IdentDistrib.comp hident (Measurable.exp (measurable_const_mul t))
 
 theorem mgf_sum_iid
-{X : ι → Ω → ℝ}
-(h_meas : ∀ (i : ι), Measurable (X i))
-(h_indep : ProbabilityTheory.iIndepFun (fun _ => inferInstance) X μ)
-(hident : ∀ (i j : ι), ProbabilityTheory.IdentDistrib (X i) (X j) μ μ)
-(s : Finset ι) (j : ι)
-: ∀ t : ℝ, mgf (∑ i ∈ s, X i) μ t = (mgf (X j) μ (t)) ^ s.card := by
-    intro t
-    rw [iIndepFun.mgf_sum h_indep h_meas]
-    exact Finset.prod_eq_pow_card (fun i si => mgf_ident_distrib (X i) (X j) (hident i j))
+    {X : ι → Ω → ℝ}
+    (h_meas : ∀ (i : ι), Measurable (X i))
+    (h_indep : ProbabilityTheory.iIndepFun (fun _ => inferInstance) X μ)
+    (hident : ∀ (i j : ι), ProbabilityTheory.IdentDistrib (X i) (X j) μ μ)
+    (s : Finset ι) (j : ι) : ∀ t : ℝ, mgf (∑ i ∈ s, X i) μ t = (mgf (X j) μ (t)) ^ s.card := by
+  intro t
+  rw [iIndepFun.mgf_sum h_indep h_meas]
+  exact Finset.prod_eq_pow_card (fun i si => mgf_ident_distrib (X i) (X j) (hident i j) t)
 
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
@@ -356,39 +356,6 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
   refine (measure_le_le_exp_mul_mgf ε ht h_int).trans ?_
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
-
-open Measurable
-
-theorem mgf_gaussian
-(X: Ω → ℝ) (hXm: Measurable X) (hX: (Measure.map X μ) = (gaussianReal 0 1)) (t : ℝ) :
-  mgf X μ t = exp (t ^ 2 / 2) :=
-    calc
-      mgf X μ t = (Measure.map X μ)[fun x => exp (t * x)] := by
-        have : AEStronglyMeasurable (fun x ↦ exp (t * x)) (Measure.map X μ) :=
-          AEMeasurable.aestronglyMeasurable (aemeasurable
-          (measurable_exp.comp (Continuous.measurable (continuous_const.mul continuous_id))))
-        rw [mgf, MeasureTheory.integral_map (aemeasurable hXm) this]
-      _ = ∫ (x : ℝ), exp (t * x) * (gaussianPDFReal 0 1 x) := by
-        rw [hX, gaussianReal_of_var_ne_zero 0 one_ne_zero, gaussianPDF_def]
-        simp only [ENNReal.ofReal]
-        rw [integral_withDensity_eq_integral_smul
-        (real_toNNReal (measurable_gaussianPDFReal 0 1))]
-        apply congrArg (integral ℙ)
-        ext x
-        rw [NNReal.smul_def, coe_toNNReal _ (gaussianPDFReal_nonneg 0 1 x), smul_eq_mul, mul_comm]
-      _ = exp (t ^ 2 / 2) * ∫ x, (√(2 * π))⁻¹ * exp (-(x - t) ^ 2 / 2) := by
-        simp only [gaussianPDFReal, NNReal.coe_one, mul_one, Nat.ofNat_nonneg, sqrt_mul,
-          mul_inv_rev, sub_zero]
-        rw [← integral_mul_left]
-        apply congrArg (integral ℙ)
-        ext x
-        field_simp only [mul_sub, sub_eq_zero, mul_assoc, mul_comm, mul_left_comm,
-          ← exp_sub, ← exp_add]
-        ring_nf
-      _ = exp (t ^ 2 / 2) * ∫ (x : ℝ), (gaussianPDFReal t 1 x) := by
-        field_simp [gaussianPDFReal_def]
-      _ = exp (t ^ 2 / 2) := by
-        rw [integral_gaussianPDFReal_eq_one t one_ne_zero, mul_one]
 
 end MomentGeneratingFunction
 
