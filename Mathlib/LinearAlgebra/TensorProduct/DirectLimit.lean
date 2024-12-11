@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Algebra.DirectLimit
+import Mathlib.Algebra.Colimit.ModuleRing
 
 /-!
 # Tensor product and direct limits commute with each other.
