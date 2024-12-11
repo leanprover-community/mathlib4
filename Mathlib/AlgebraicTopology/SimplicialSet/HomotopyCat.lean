@@ -127,6 +127,7 @@ def OneTruncation₂.nerveEquiv :
   right_inv _ := ComposableArrows.ext₀ rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.toFun`. -/
+@[simps]
 def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
   toFun f :=
     { edge := ComposableArrows.mk₁ f
@@ -141,6 +142,7 @@ def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ n
       (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.invFun`. -/
+@[simps]
 def OneTruncation₂.nerveHomEquivInv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
   (X ⟶ Y) ≃ (nerveEquiv.invFun X ⟶ nerveEquiv.invFun Y) where
   toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
@@ -162,7 +164,7 @@ def OneTruncation₂.ofNerve₂.hom : OneTruncation₂ ((SSet.truncation 2).obj 
   map := nerveHomEquivInv
   map_id := fun X : ComposableArrows _ 0 => by
     obtain ⟨x, rfl⟩ := X.mk₀_surjective
-    simp [map, nerveHomEquivInv]; rfl
+    simp [nerveHomEquivInv]; rfl
 
 /-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
 a nerve. -/
@@ -229,8 +231,6 @@ private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ 
 
 variable {V : SSet}
 
-open SSet
-
 namespace Truncated
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
@@ -293,6 +293,8 @@ inductive HoRel₂ {V : SSet.Truncated 2} :
       (Quot.mk _ ((Quiver.Hom.toPath (ev01₂ φ)).comp
         (Quiver.Hom.toPath (ev12₂ φ))))
 
+/-- A 2-simplex whose faces are identified with certain arrows in `OneTruncation₂ V` defines
+a term of type `HoRel₂` between those arrows. -/
 theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _[2]₂) {X₀ X₁ X₂ : OneTruncation₂ V}
     (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₂ : X₀ ⟶ X₂)
     (h₀₁ : f₀₁.edge = V.map (δ₂ 2).op φ) (h₁₂ : f₁₂.edge = V.map (δ₂ 0).op φ)
