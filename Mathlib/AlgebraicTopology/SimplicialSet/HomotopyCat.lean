@@ -315,22 +315,6 @@ theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _[2]₂) {X₀ X₁ X₂ : O
   obtain rfl : f₀₂ = ev02₂ φ := by ext; assumption
   constructor
 
-theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
-    (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
-    (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.edge = f'.edge)
-    (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.edge = g'.edge)
-    (h : Y ⟶ Z) (h' : Y' ⟶ Z') (hh : h.edge = h'.edge) :
-    HoRel₂ _ _
-      ((Quotient.functor _).map (.cons .nil f))
-      ((Quotient.functor _).map (.cons (.cons .nil g) h)) ↔
-    HoRel₂ _ _
-      ((Quotient.functor _).map (.cons .nil f'))
-      ((Quotient.functor _).map (.cons (.cons .nil g') h')) := by
-  cases hX
-  cases hY
-  cases hZ
-  congr! <;> apply OneTruncation₂.Hom.ext <;> assumption
-
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
 def _root_.SSet.Truncated.HomotopyCategory (V : SSet.Truncated.{u} 2) : Type u :=
   Quotient (HoRel₂ (V := V))
