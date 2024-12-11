@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Emily Riehl
+Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
@@ -115,6 +115,9 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
 
 section
 variable {C : Type u} [Category.{v} C]
+
+/-- An equivalence between the type of objects underlying a category and the type of 0-simplices in
+the 2-truncated nerve. -/
 @[simps]
 def OneTruncation₂.nerveEquiv :
     C ≃ OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) where
@@ -123,6 +126,7 @@ def OneTruncation₂.nerveEquiv :
   left_inv _ := rfl
   right_inv _ := ComposableArrows.ext₀ rfl
 
+/-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.toFun`. -/
 def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
   toFun f :=
     { edge := ComposableArrows.mk₁ f
@@ -135,19 +139,30 @@ def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ n
     ext
     exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
       (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
-/-- An arrow `f : X ⟶ Y` in the refl quiver of a nerve induces an arrow in the category `C`. -/
-def OneTruncation₂.ofNerve₂.map {X Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
-    (f : X ⟶ Y) : X.left ⟶ Y.left :=
-  eqToHom (congrArg (·.left) f.src_eq.symm) ≫ f.edge.hom ≫ eqToHom (congrArg (·.left) f.tgt_eq)
+
+/-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.invFun`. -/
+def OneTruncation₂.nerveHomEquivInv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
+  (X ⟶ Y) ≃ (nerveEquiv.invFun X ⟶ nerveEquiv.invFun Y) where
+  toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
+      eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
+  invFun f :=
+    { edge := ComposableArrows.mk₁ f
+      src_eq := ComposableArrows.ext₀ rfl
+      tgt_eq := ComposableArrows.ext₀ rfl }
+  left_inv φ := by
+    ext
+    exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
+      (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
+  right_inv f := by dsimp; simp only [comp_id, id_comp]; rfl
 
 /-- The refl prefunctor from the refl quiver underlying a nerve to the refl quiver underlying a
 category. -/
-def OneTruncation₂.ofNerve₂.hom : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C)) ⥤rq C where
-  obj := (·.left)
-  map := OneTruncation₂.ofNerve₂.map
+def OneTruncation₂.ofNerve₂.hom : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ⥤rq C where
+  obj := nerveEquiv.invFun
+  map := nerveHomEquivInv
   map_id := fun X : ComposableArrows _ 0 => by
     obtain ⟨x, rfl⟩ := X.mk₀_surjective
-    simp [map]; rfl
+    simp [map, nerveHomEquivInv]; rfl
 
 /-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
 a nerve. -/
@@ -179,11 +194,11 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
       refine ((H2 _ _).trans ((H1 _ _).trans (ComposableArrows.ext₁ ?_ ?_ ?_))).symm
       · rfl
       · rfl
-      · simp [ofNerve₂.inv, ofNerve₂.hom, ofNerve₂.map]; rfl
+      · simp [ofNerve₂.inv, ofNerve₂.hom, nerveHomEquivInv]; rfl
   · fapply ReflPrefunctor.ext <;> simp
     · exact fun _ ↦ rfl
     · intro X Y f
-      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve₂.inv, ofNerve₂.hom, ofNerve₂.map,
+      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve₂.inv, ofNerve₂.hom, nerveHomEquivInv,
         SimplexCategory.Truncated.inclusion]
 
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
@@ -199,7 +214,7 @@ def OneTruncation₂.ofNerve₂.natIso :
       obtain ⟨f, rfl, rfl⟩ := f
       unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
         nerveFunctor mapComposableArrows toReflPrefunctor
-      simp [ReflQuiv.comp_eq_comp, ofNerve₂, ofNerve₂.hom, ofNerve₂.map]
+      simp [ReflQuiv.comp_eq_comp, ofNerve₂, ofNerve₂.hom, nerveHomEquivInv]
 
 end
 
