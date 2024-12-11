@@ -215,7 +215,7 @@ theorem substDomain_mul (b : σ → MvPowerSeries τ S)
   { const_coeff := fun s ↦ by
       simp only [Pi.mul_apply, map_mul]
       exact Commute.isNilpotent_mul_right (Commute.all _ _) (ha.const_coeff _)
-    tendsto_zero := LinearTopology.tendsto_zero_mul _ b a ha.tendsto_zero }
+    tendsto_zero := LinearTopology.tendsto_zero_mul b a ha.tendsto_zero }
 
 theorem substDomain_smul (r : MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : SubstDomain a) :
     SubstDomain (r • a) := by convert substDomain_mul _ ha
