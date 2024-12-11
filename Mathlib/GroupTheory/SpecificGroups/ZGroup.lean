@@ -68,8 +68,7 @@ instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H
 
 section Nilpotent
 
-variable (G)
-
+variable (G) in
 theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card G := by
   refine dvd_antisymm Group.exponent_dvd_nat_card ?_
   rw [← Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' Monoid.exponent_ne_zero_of_finite]
