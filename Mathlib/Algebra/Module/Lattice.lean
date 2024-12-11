@@ -13,12 +13,13 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 Let `A` be an `R`-algebra and `V` an `A`-module. Then an `R`-submodule `M` of `V` is a lattice,
 if `M` is finitely generated and spans `V` as an `A`-module.
 
-The typical use case is `A = K` is the fraction field of `R` and `V = ι → K` for some finite `ι`.
-In this case there is a natural action of `GL ι K` on the type of lattices, whose stabilizer
-at the standard lattice is `GL ι R`.
+The typical use case is `A = K` is the fraction field of an integral domain `R` and `V = ι → K`
+for some finite `ι`. The scalar multiple a lattice by a unit in `K` is again a lattice. This gives
+rise to a homothety relation.
 
-By taking the quotient of the type of `R`-lattices in `ι → K` by the homothety relation,
-one obtains the vertices of what is called the Bruhat-Tits tree of `GL 2 K` when `ι = Fin 2`.
+When `R` is a DVR and `ι = Fin 2`, then by taking the quotient of the type of `R`-lattices in
+`ι → K` by the homothety relation, one obtains the vertices of what is called the Bruhat-Tits tree
+of `GL 2 K`.
 
 ## Main definitions
 
@@ -31,7 +32,7 @@ Let `R` be a PID and `A = K` its field of fractions.
 
 - `Submodule.IsLattice.free`: Every lattice in `V` is `R`-free.
 - `Basis.extendOfIsLattice`: Any `R`-basis of a lattice `M` in `V` defines a `K`-basis of `V`.
-- `Submodule.IsLattice.rank`: The `R`-rank of a lattice in `V` equals to the `K`-rank of `V`.
+- `Submodule.IsLattice.rank`: The `R`-rank of a lattice in `V` is equal to the `K`-rank of `V`.
 - `Submodule.IsLattice.inf`: The intersection of two lattices is a lattice.
 
 -/
