@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-! # Linear topologies on rings
 
@@ -15,7 +16,9 @@ two-sided ideals.
 - `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R` such that `f i` converges to `0`,
 `f i * g i` converges to `0`.
 
-TODO. For the moment, it is only done on commutative rings.
+TODO. For the moment, only commutative rings are considered. The general case
+requires to use two-sided ideals, and it is not clear whether I wish to use `TwoSidedIdeal α`
+or a predicate on `Ideal α`.
 
 -/
 

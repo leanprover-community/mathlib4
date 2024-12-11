@@ -18,12 +18,16 @@ all coefficients the exponent of which is smaller than some bound vanish.
 
 - `MvPowerSeries.linearTopology`.
 
+TODO. For the moment, this is restricted to commutative rings because of the similar
+restriction for linear topologies. However, the definition below is already correct
+in the general case, the issue is solely about the definition of a linear topology.
+
 -/
 namespace MvPowerSeries
 
 open Set SetLike
 
-variable (σ : Type*) (α : Type*) [Ring α]
+variable (σ : Type*) (α : Type*) [CommRing α]
 
 section Ideal.IsBasis
 
