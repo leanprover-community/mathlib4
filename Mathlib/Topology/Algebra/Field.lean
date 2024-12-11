@@ -170,3 +170,13 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
       (iff_of_eq (iff_false _)).2 (hg_ne _)] at hy' ⊢ <;> assumption
 
 end Preconnected
+
+section ContinuousSMul
+
+variable {F : Type*} [DivisionRing F] [TopologicalSpace F] [TopologicalRing F]
+    (X : Type*) [TopologicalSpace X] [MulAction F X] [ContinuousSMul F X]
+
+instance Subfield.continuousSMul (M : Subfield F) : ContinuousSMul M X :=
+  Subring.continuousSMul M.toSubring X
+
+end ContinuousSMul
