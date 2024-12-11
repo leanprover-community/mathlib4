@@ -40,6 +40,54 @@ abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n 
   | 0 => AddCommGroup.toIntModule G
   | _ + 1 => AddCommMonoid.zmodModule h
 
+@[simp]
+theorem AddCommGroup.zmodModule.coe_smul {G : Type*} [AddCommGroup G] (h : ∀ (g : G), n • g = 0)
+    (k : ℤ) (g : G) : let _ := AddCommGroup.zmodModule h; (k : ZMod n) • g = k • g :=
+  match n with
+  | 0 => rfl
+  | m + 1 => by
+    have H := (k.mod_modEq (m + 1 : ℕ)).of_dvd
+      (Int.natCast_dvd_natCast.mpr (addOrderOf_dvd_iff_nsmul_eq_zero.mpr (h g)))
+    rwa [← zsmul_eq_zsmul_iff_modEq, ← ZMod.val_intCast, Nat.cast_smul_eq_nsmul] at H
+
+abbrev CommGroup.zmodModule {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1) :
+    MulDistribMulAction (ZMod n) G :=
+  let _ := (AddCommGroup.zmodModule (G := Additive G) h).toDistribMulAction
+  { smul m a := m • Additive.ofMul a
+    one_smul a := one_smul (ZMod n) (Additive.ofMul a)
+    mul_smul m n a := mul_smul m n (Additive.ofMul a)
+    smul_mul m a b := smul_add m (Additive.ofMul a) (Additive.ofMul b)
+    smul_one m := smul_zero (A := Additive G) m }
+
+@[simp]
+theorem CommGroup.zmodModule.coe_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
+    (k : ℤ) (g : G) : let _ := CommGroup.zmodModule h; (k : ZMod n) • g = g ^ k :=
+  AddCommGroup.zmodModule.coe_smul (G := Additive G) h k g
+
+@[simp]
+theorem CommGroup.zmodModule.zero_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
+    (g : G) : let _ := CommGroup.zmodModule h; (0 : ZMod n) • g = 1 :=
+  let _ := AddCommGroup.zmodModule (G := Additive G) h
+  _root_.zero_smul (M := Additive G) (ZMod n) g
+
+@[simp]
+theorem CommGroup.zmodModule.neg_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
+    (k : ZMod n) (g : G) : let _ := CommGroup.zmodModule h; -k • g = (k • g)⁻¹ :=
+  let _ := AddCommGroup.zmodModule (G := Additive G) h
+  _root_.neg_smul (M := Additive G) k g
+
+@[simp]
+theorem CommGroup.zmodModule.add_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
+    (k m : ZMod n) (g : G) : let _ := CommGroup.zmodModule h; (k + m) • g = k • g * m • g :=
+  let _ := AddCommGroup.zmodModule (G := Additive G) h
+  _root_.add_smul (M := Additive G) k m g
+
+@[simp]
+theorem CommGroup.zmodModule.sub_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
+    (k m : ZMod n) (g : G) : let _ := CommGroup.zmodModule h; (k - m) • g = k • g / m • g :=
+  let _ := AddCommGroup.zmodModule (G := Additive G) h
+  _root_.sub_smul (M := Additive G) k m g
+
 /-- The quotient of an abelian group by a subgroup containing all multiples of `n` is a
 `n`-torsion group. -/
 -- See note [reducible non-instances]
