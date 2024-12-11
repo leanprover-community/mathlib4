@@ -30,22 +30,6 @@ and `G/G'` are cyclic of coprime orders.
 
 -/
 
--- @[to_additive]
--- theorem Subgroup.relindex_map_of_injective {G G' : Type*} [Group G] [Group G'] (H : Subgroup G)
---     {f : G →* G'} (hf : Function.Injective f) :
---     (H.map f).relindex f.range = H.index := by
---   rw [← f.ker_eq_bot_iff] at hf
---   have key : (H.map f).subgroupOf f.range = H.map f.rangeRestrict := by
---     simp [Subgroup.ext_iff, mem_subgroupOf, Subtype.ext_iff]
---   rw [relindex, key, H.index_map_eq f.rangeRestrict_surjective]
---   rw [f.ker_rangeRestrict, hf]
---   exact bot_le
-
--- @[to_additive]
--- theorem Subgroup.relindex_map_subtype {G : Type*} [Group G] {H : Subgroup G} (K : Subgroup H) :
---     (K.map H.subtype).relindex H = K.index := by
---   rw [← relindex_map_of_injective K H.subtype_injective, H.range_subtype]
-
 @[to_additive]
 theorem Subgroup.map_lt_map_iff_of_injective {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
     (hf : Function.Injective f) {H K : Subgroup G} : H.map f < K.map f ↔ H < K := by
@@ -195,6 +179,10 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
+
+instance [Finite G] [IsZGroup G] : IsCyclic (Abelianization G) :=
+  let _ : IsZGroup (Abelianization G) := inferInstanceAs (IsZGroup (G ⧸ commutator G))
+  inferInstance
 
 end Nilpotent
 
