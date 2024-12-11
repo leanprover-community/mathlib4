@@ -323,9 +323,9 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : EvalDomain a)
   exact (MvPolynomial.coeToMvPowerSeries_denseInducing.extend_unique h hε).symm
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)
-    {T : Type*} [UniformSpace T] [CompleteSpace T]
-    [CommRing T] [TopologicalRing T] [LinearTopology T] [CompleteSpace T]
-    [T2Space T] [UniformAddGroup T] [TopologicalRing T] {ε : S →+* T} (hε : Continuous ε) :
+    {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
+    [CommRing T] [TopologicalRing T] [LinearTopology T] [UniformAddGroup T]
+    {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← coe_comp]
   apply eval₂_unique _ (ha.comp hε)
@@ -390,9 +390,8 @@ theorem aeval_eq_sum (ha : EvalDomain a) (f : MvPowerSeries σ R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : EvalDomain a)
-    {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
-    [TopologicalRing T] [LinearTopology T]
-    [T2Space T] [TopologicalRing T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
+    {T : Type*} [CommRing T] [UniformSpace T] [CompleteSpace T] [UniformAddGroup T] [T2Space T]
+    [TopologicalRing T] [LinearTopology T] [Algebra R T] [ContinuousSMul R T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
   apply DFunLike.coe_injective
