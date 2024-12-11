@@ -16,7 +16,7 @@ open scoped BigOperators ArithmeticFunction
 
 open Finset Real Nat Aux
 
-class Sieve where mk ::
+class SelbergSieve where mk ::
   support : Finset ℕ
   prodPrimes : ℕ
   prodPrimes_squarefree : Squarefree prodPrimes
@@ -27,30 +27,32 @@ class Sieve where mk ::
   nu_mult : nu.IsMultiplicative
   nu_pos_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → 0 < nu p
   nu_lt_one_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → nu p < 1
+  level : ℝ
+  one_le_level : 1 ≤ level
 
-attribute [arith_mult] Sieve.nu_mult
+attribute [arith_mult] SelbergSieve.nu_mult
 
-namespace Sieve
+namespace SelbergSieve
 
-variable [s : Sieve]
-scoped notation3 "ν" => Sieve.nu
-scoped notation3 "P" => Sieve.prodPrimes
-scoped notation3 "a" => Sieve.weights
-scoped notation3 "X" => Sieve.totalMass
-scoped notation3 "A" => Sieve.support
+variable [s : SelbergSieve]
+scoped notation3 "ν" => nu
+scoped notation3 "P" => prodPrimes
+scoped notation3 "a" => weights
+scoped notation3 "X" => totalMass
+scoped notation3 "A" => support
 
 @[simp]
 def multSum (d : ℕ) : ℝ :=
   ∑ n in A, if d ∣ n then a n else 0
 
-scoped notation3 "𝒜" => Sieve.multSum
+scoped notation3 "𝒜" => multSum
 
 -- A_d = ν (d)/d X + R_d
 @[simp]
 def rem (d : ℕ) : ℝ :=
   𝒜 d - ν d * X
 
-scoped notation3 "R" => Sieve.rem
+scoped notation3 "R" => rem
 
 def siftedSum : ℝ :=
   ∑ d in A, if Coprime P d then a d else 0
@@ -60,7 +62,7 @@ def siftedSum : ℝ :=
 def selbergTerms : ArithmeticFunction ℝ :=
   nu.pmul (.prodPrimeFactors fun p =>  1 / (1 - ν p))
 
-scoped notation3 "g" => Sieve.selbergTerms
+scoped notation3 "g" => selbergTerms
 
 theorem selbergTerms_apply (d : ℕ) :
     g d = ν d * ∏ p in d.primeFactors, 1/(1 - ν p) := by
@@ -384,4 +386,4 @@ theorem lambdaSquared_mainSum_eq_diag_quad_form  (w : ℕ → ℝ) :
 
 end LambdaSquared
 
-end Sieve
+end SelbergSieve

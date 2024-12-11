@@ -17,18 +17,14 @@ noncomputable section
 
 open scoped BigOperators Classical
 
-open Finset Real Nat Sieve.UpperBoundSieve ArithmeticFunction Sieve
-
-class SelbergSieve extends Sieve where mk ::
-  level : ℝ
-  one_le_level : 1 ≤ level
+open Finset Real Nat SelbergSieve.UpperBoundSieve ArithmeticFunction
 
 namespace SelbergSieve
 
 variable [s : SelbergSieve]
 
-scoped notation3 "y" => SelbergSieve.level
-scoped notation3 "hy" => SelbergSieve.one_le_level
+scoped notation3 "y" => level
+scoped notation3 "hy" => one_le_level
 
 @[simp]
 def selbergBoundingSum : ℝ :=
@@ -226,7 +222,7 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       intro h; rw[h.1]; ring
 
 def selbergMuPlus : ℕ → ℝ :=
-  Sieve.lambdaSquared γ
+  lambdaSquared γ
 
 scoped notation3 "μ⁺" => SelbergSieve.selbergMuPlus
 
@@ -241,11 +237,11 @@ theorem weight_one_of_selberg : γ 1 = 1 := by
 
 theorem selbergμPlus_eq_zero (d : ℕ) (hd : ¬d ≤ y) : μ⁺ d = 0 :=
   by
-  apply Sieve.lambdaSquared_eq_zero_of_support _ y _ d hd
-  apply s.selbergWeights_eq_zero
+  apply lambdaSquared_eq_zero_of_support _ y _ d hd
+  apply selbergWeights_eq_zero
 
 def selbergUbSieve : UpperBoundSieve :=
-  ⟨μ⁺, Sieve.upperMoebius_of_lambda_sq γ (s.weight_one_of_selberg)⟩
+  ⟨μ⁺, upperMoebius_of_lambda_sq γ (s.weight_one_of_selberg)⟩
 
 -- proved for general lambda squared sieves
 theorem mainSum_eq_diag_quad_form :
