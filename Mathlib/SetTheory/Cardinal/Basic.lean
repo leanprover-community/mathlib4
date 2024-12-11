@@ -246,6 +246,11 @@ we provide this statement separately so you don't have to solve the specializati
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
   lift_mk_eq.{u, v, 0}
 
+theorem mk_congr_lift {α : Type u} {β : Type v} (e : α ≃ β) : lift.{v} #α = lift.{u} #β :=
+  lift_mk_eq'.2 ⟨e⟩
+
+alias _root_.Equiv.lift_cardinal_eq := mk_congr_lift
+
 -- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
@@ -2035,6 +2040,17 @@ theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h
     (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
   convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
 
+@[simp]
+theorem mk_preimage_equiv_lift {β : Type v} (f : α ≃ β) (s : Set β) :
+    lift.{v} #(f ⁻¹' s) = lift.{u} #s := by
+  apply mk_preimage_of_injective_of_subset_range_lift _ _ f.injective
+  rw [f.range_eq_univ]
+  exact fun _ _ ↦ ⟨⟩
+
+@[simp]
+theorem mk_preimage_equiv (f : α ≃ β) (s : Set β) : #(f ⁻¹' s) = #s := by
+  simpa using mk_preimage_equiv_lift f s
+
 theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
     #(f ⁻¹' s) ≤ #s := by
   rw [← lift_id #(↑(f ⁻¹' s)), ← lift_id #(↑s)]
@@ -2063,6 +2079,14 @@ theorem le_mk_iff_exists_subset {c : Cardinal} {α : Type u} {s : Set α} :
     c ≤ #s ↔ ∃ p : Set α, p ⊆ s ∧ #p = c := by
   rw [le_mk_iff_exists_set, ← Subtype.exists_set_subtype]
   apply exists_congr; intro t; rw [mk_image_eq]; apply Subtype.val_injective
+
+@[simp]
+theorem mk_range_inl {α : Type u} {β : Type v} : #(range (@Sum.inl α β)) = lift.{v} #α := by
+  rw [← lift_id'.{u, v} #_, (Equiv.Set.rangeInl α β).lift_cardinal_eq, lift_umax.{u, v}]
+
+@[simp]
+theorem mk_range_inr {α : Type u} {β : Type v} : #(range (@Sum.inr α β)) = lift.{u} #β := by
+  rw [← lift_id'.{v, u} #_, (Equiv.Set.rangeInr α β).lift_cardinal_eq, lift_umax.{v, u}]
 
 theorem two_le_iff : (2 : Cardinal) ≤ #α ↔ ∃ x y : α, x ≠ y := by
   rw [← Nat.cast_two, nat_succ, succ_le_iff, Nat.cast_one, one_lt_iff_nontrivial, nontrivial_iff]
