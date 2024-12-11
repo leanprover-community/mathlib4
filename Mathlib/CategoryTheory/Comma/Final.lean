@@ -77,12 +77,12 @@ instance initial_snd [L.Initial] : (snd L R).Initial := by
 /-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is final and `A` is
 connected.-/
 instance isConnected_comma_of_final [IsConnected A] [R.Final] : IsConnected (Comma L R) := by
-  rwa [Types.isConnected_iff_of_final (fst L R)]
+  rwa [isConnected_iff_of_final (fst L R)]
 
 /-- `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `L` is initial and `B` is
 connected.-/
 instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
-  rwa [Types.isConnected_iff_of_initial (snd L R)]
+  rwa [isConnected_iff_of_initial (snd L R)]
 
 end Comma
 
