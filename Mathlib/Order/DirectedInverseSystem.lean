@@ -114,12 +114,14 @@ theorem eq_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) :
     (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F f) : C x :=
   Quotient.ind (fun _ ↦ ih _ _) x
 
-theorem exists_eq₂ (z w : DirectLimit F f) : ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
+theorem exists_eq_mk (z : DirectLimit F f) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
+
+theorem exists_eq_mk₂ (z w : DirectLimit F f) : ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
   z.inductionOn₂ w fun x y ↦
     have ⟨i, hxi, hyi⟩ := exists_ge_ge x.1 y.1
     ⟨i, _, _, eq_of_le x i hxi, eq_of_le y i hyi⟩
 
-theorem exists_eq₃ (w u v : DirectLimit F f) :
+theorem exists_eq_mk₃ (w u v : DirectLimit F f) :
     ∃ i x y z, w = ⟦⟨i, x⟩⟧ ∧ u = ⟦⟨i, y⟩⟧ ∧ v = ⟦⟨i, z⟩⟧ :=
   w.inductionOn₃ u v fun x y z ↦
     have ⟨i, hxi, hyi, hzi⟩ := directed_of₃ (· ≤ ·) x.1 y.1 z.1
@@ -127,65 +129,71 @@ theorem exists_eq₃ (w u v : DirectLimit F f) :
 
 @[elab_as_elim] protected theorem induction₂ {C : DirectLimit F f → DirectLimit F f → Prop}
     (ih : ∀ i x y, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧) (x y : DirectLimit F f) : C x y := by
-  obtain ⟨_, _, _, rfl, rfl⟩ := exists_eq₂ f x y; apply ih
+  obtain ⟨_, _, _, rfl, rfl⟩ := exists_eq_mk₂ f x y; apply ih
 
 @[elab_as_elim] protected theorem induction₃
     {C : DirectLimit F f → DirectLimit F f → DirectLimit F f → Prop}
     (ih : ∀ i x y z, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ ⟦⟨i, z⟩⟧) (x y z : DirectLimit F f) : C x y z := by
-  obtain ⟨_, _, _, _, rfl, rfl, rfl⟩ := exists_eq₃ f x y z; apply ih
+  obtain ⟨_, _, _, _, rfl, rfl, rfl⟩ := exists_eq_mk₃ f x y z; apply ih
 
-section fullRec₀
+theorem mk_injective (h : ∀ i j hij, Function.Injective (f i j hij)) (i) :
+    Function.Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F f) :=
+  fun _ _ eq ↦ have ⟨_, _, _, eq⟩ := Quotient.eq.mp eq; h _ _ _ eq
+
+section map₀
 
 open Classical (arbitrary)
 
-variable [Nonempty ι] (ih : ∀ i, F i) (compat : ∀ i j h, f i j h (ih i) = ih j)
+variable [Nonempty ι] (ih : ∀ i, F i)
 
-/-- "Full recursion" with domain and codomain both being `DirectLimit`s.
-For the nullary full recursion, there is no domain. -/
-noncomputable def fullRec₀ : DirectLimit F f := ⟦⟨arbitrary ι, ih _⟩⟧
+/-- "Nullary map" to construct an element in the direct limit. -/
+noncomputable def map₀ : DirectLimit F f := ⟦⟨arbitrary ι, ih _⟩⟧
 
-include compat
-theorem fullRec₀_spec (i) : fullRec₀ f ih = ⟦⟨i, ih i⟩⟧ :=
+theorem map₀_def (compat : ∀ i j h, f i j h (ih i) = ih j) (i) : map₀ f ih = ⟦⟨i, ih i⟩⟧ :=
   have ⟨j, hcj, hij⟩ := exists_ge_ge (arbitrary ι) i
   Quotient.sound ⟨j, hcj, hij, (compat ..).trans (compat ..).symm⟩
 
-end fullRec₀
+end map₀
 
-section rec
+section lift
 
 variable {C : Sort*} (ih : ∀ i, F i → C) (compat : ∀ i j h x, ih i x = ih j (f i j h x))
 
 /-- To define a function from the direct limit, it suffices to provide one function from each
 component subject to a compatibility condition. -/
-protected def rec (z : DirectLimit F f) : C :=
+protected def lift (z : DirectLimit F f) : C :=
   z.recOn (fun x ↦ ih x.1 x.2) fun x y ⟨k, hxk, hyk, eq⟩ ↦ by
     simp_rw [eq_rec_constant, compat _ _ hxk, compat _ _ hyk, eq]
 
-theorem rec_spec (x) : DirectLimit.rec f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
+theorem lift_def (x) : DirectLimit.lift f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
 
-end rec
+theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
+    Function.Injective (DirectLimit.lift f ih compat) :=
+  DirectLimit.induction₂ _ fun i x y eq ↦ by simp_rw [lift_def] at eq; rw [h i eq]
 
-section fullRec
+end lift
+
+section map
 
 variable (ih : ∀ i, F₁ i → F₂ i) (compat : ∀ i j h x, f₂ i j h (ih i x) = ih j (f₁ i j h x))
 
 /-- To define a function from the direct limit, it suffices to provide one function from each
 component subject to a compatibility condition. -/
-def fullRec (z : DirectLimit F₁ f₁) : DirectLimit F₂ f₂ :=
-  z.rec _ (fun i x ↦ ⟦⟨i, ih i x⟩⟧) fun j k h x ↦ Quotient.sound <|
+def map (z : DirectLimit F₁ f₁) : DirectLimit F₂ f₂ :=
+  z.lift _ (fun i x ↦ ⟦⟨i, ih i x⟩⟧) fun j k h x ↦ Quotient.sound <|
     have ⟨i, hji, hki⟩ := exists_ge_ge j k
     ⟨i, hji, hki, by simp_rw [compat, map_map']⟩
 
-theorem fullRec_spec (x) : fullRec f₁ f₂ ih compat ⟦x⟧ = ⟦⟨x.1, ih x.1 x.2⟩⟧ := rfl
+theorem map_def (x) : map f₁ f₂ ih compat ⟦x⟧ = ⟦⟨x.1, ih x.1 x.2⟩⟧ := rfl
 
-end fullRec
+end map
 
-section rec₂
+section lift₂
 
 variable {C : Sort*} (ih : ∀ i, F₁ i → F₂ i → C)
   (compat : ∀ i j h x y, ih i x y = ih j (f₁ i j h x) (f₂ i j h y))
 
-private noncomputable def rec₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
+private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
     {x : C // ∀ i (hzi : z.1 ≤ i) (hwi : w.1 ≤ i), x = ih i (f₁ _ _ hzi z.2) (f₂ _ _ hwi w.2)} := by
   choose j hzj hwj using exists_ge_ge z.1 w.1
   refine ⟨ih j (f₁ _ _ hzj z.2) (f₂ _ _ hwj w.2), fun k hzk hwk ↦ ?_⟩
@@ -194,43 +202,43 @@ private noncomputable def rec₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
 
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
-protected noncomputable def rec₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
-  z.hrecOn₂ w (φ := fun _ _ ↦ C) (rec₂Aux f₁ f₂ ih compat · ·)
+protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
+  z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
     fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
       have ⟨i, hji, hki⟩ := exists_ge_ge j k
-      simp_rw [(rec₂Aux ..).2 _ (hx.trans hji) (hyk.trans hki),
-        (rec₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
+      simp_rw [(lift₂Aux ..).2 _ (hx.trans hji) (hyk.trans hki),
+        (lift₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
         ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
 
-theorem rec₂_spec₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
-    DirectLimit.rec₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
-  (rec₂Aux _ _ _ compat _ _).2 ..
+theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
+    DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
+  (lift₂Aux _ _ _ compat _ _).2 ..
 
-theorem rec₂_spec (i x y) : DirectLimit.rec₂ f₁ f₂ ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ih i x y := by
-  rw [rec₂_spec₂ _ _ _ _ _ _ i le_rfl le_rfl, map_self', map_self']
+theorem lift₂_def (i x y) : DirectLimit.lift₂ f₁ f₂ ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ih i x y := by
+  rw [lift₂_def₂ _ _ _ _ _ _ i le_rfl le_rfl, map_self', map_self']
 
-end rec₂
+end lift₂
 
-section fullRec₂
+section map₂
 
 variable (ih : ∀ i, F₁ i → F₂ i → F i)
   (compat : ∀ i j h x y, f i j h (ih i x y) = ih j (f₁ i j h x) (f₂ i j h y))
 
 /-- To define a function from the direct limit, it suffices to provide one function from each
 component subject to a compatibility condition. -/
-noncomputable def fullRec₂ : DirectLimit F₁ f₁ → DirectLimit F₂ f₂ → DirectLimit F f :=
-  DirectLimit.rec₂ f₁ f₂ (fun i x y ↦ ⟦⟨i, ih i x y⟩⟧) fun j k h x y ↦ Quotient.sound <|
+noncomputable def map₂ : DirectLimit F₁ f₁ → DirectLimit F₂ f₂ → DirectLimit F f :=
+  DirectLimit.lift₂ f₁ f₂ (fun i x y ↦ ⟦⟨i, ih i x y⟩⟧) fun j k h x y ↦ Quotient.sound <|
     have ⟨i, hji, hki⟩ := exists_ge_ge j k
     ⟨i, hji, hki, by simp_rw [compat, map_map']⟩
 
-theorem fullRec₂_spec₂ (x y) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
-    fullRec₂ f₁ f₂ f ih compat ⟦x⟧ ⟦y⟧ = ⟦⟨i, ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2)⟩⟧ :=
-  rec₂_spec₂ ..
+theorem map₂_def₂ (x y) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
+    map₂ f₁ f₂ f ih compat ⟦x⟧ ⟦y⟧ = ⟦⟨i, ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2)⟩⟧ :=
+  lift₂_def₂ ..
 
-theorem fullRec₂_spec (i x y) : fullRec₂ f₁ f₂ f ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ⟦⟨i, ih i x y⟩⟧ :=
-  rec₂_spec ..
+theorem map₂_def (i x y) : map₂ f₁ f₂ f ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ⟦⟨i, ih i x y⟩⟧ :=
+  lift₂_def ..
 
-end fullRec₂
+end map₂
 
 end DirectLimit
 
