@@ -99,7 +99,8 @@ theorem moebius_inv_dvd_lower_bound (l m : ℕ) (hm : Squarefree m) :
     rw [if_neg, smul_zero]
     by_contra h; rw [←h] at hd; exact hl (dvd_of_mem_divisors hd)
 
-
+/-- Same as `moebius_inv_dvd_lower_bound` except we're summing over divisors of some
+`P` divisible by `m` -/
 theorem moebius_inv_dvd_lower_bound' {P : ℕ} (hP : Squarefree P) (l m : ℕ) (hm : m ∣ P) :
     (∑ d in P.divisors, if l ∣ d ∧ d ∣ m then μ d else 0) = if l = m then μ l else 0 := by
   rw [←moebius_inv_dvd_lower_bound _ _ (Squarefree.squarefree_of_dvd hm hP),
@@ -126,7 +127,7 @@ theorem multiplicative_zero_of_zero_dvd (f : ArithmeticFunction ℝ) (h_mult : I
 
 theorem primeDivisors_nonempty (n : ℕ) (hn : 2 ≤ n) : n.primeFactors.Nonempty := by
   unfold Finset.Nonempty
-  simp_rw[Nat.mem_primeFactors_of_ne_zero (by positivity)]
+  simp_rw [Nat.mem_primeFactors_of_ne_zero (by positivity)]
   apply Nat.exists_prime_and_dvd (by linarith)
 
 theorem div_mult_of_dvd_squarefree (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
