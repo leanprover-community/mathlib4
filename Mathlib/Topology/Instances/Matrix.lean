@@ -186,7 +186,7 @@ theorem Continuous.matrix_updateCol [DecidableEq n] (i : n) {A : X → Matrix m 
     (continuous_apply k).comp <|
       ((continuous_apply _).comp hA).update i ((continuous_apply _).comp hB)
 
-@[deprecated (since := "2024-12-09")]
+@[deprecated (since := "2024-12-11")]
 alias Continuous.matrix_updateColumn := Continuous.matrix_updateCol
 
 @[continuity]
