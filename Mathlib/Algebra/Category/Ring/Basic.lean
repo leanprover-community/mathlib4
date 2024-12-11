@@ -52,7 +52,7 @@ instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -98,6 +98,14 @@ theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
   rfl
 
+/-- Variant of `SemiRingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : SemiRingCat.{u}}
+    [Semiring X] [Semiring Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
+  rfl
+
 -- Sometimes neither the `ext` lemma for `SemiRingCat` nor for `RingHom` is applicable,
 -- because of incomplete unfolding of `SemiRingCat.of X ⟶ SemiRingCat.of Y := X →+* Y`,
 -- but this one will fire.
@@ -139,6 +147,11 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
     ofHom f x = f x :=
   rfl
 
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
+
 /--
 Ring equivalence are isomorphisms in category of semirings
 -/
@@ -178,7 +191,7 @@ instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -199,10 +212,9 @@ def of (R : Type u) [Ring R] : RingCat :=
 def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   f
 
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
---   rfl
+theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
+  rfl
+
 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
@@ -213,6 +225,11 @@ instance (R : RingCat) : Ring R :=
 @[simp]
 theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
   rfl
+
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) :
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 -- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
 @[simp] theorem coe_ringHom_id {X : RingCat} :
@@ -236,6 +253,13 @@ theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
       (CategoryStruct.comp (X := RingCat.of X) (Y := RingCat.of Y) (Z := RingCat.of Z)
         f g) =
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+/-- Variant of `RingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : RingCat.{u}} [Ring X] [Ring Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
   rfl
 
 -- Sometimes neither the `ext` lemma for `RingCat` nor for `RingHom` is applicable,
@@ -295,7 +319,7 @@ instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -324,11 +348,14 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X �
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
---     ofHom f x = f x :=
---   rfl
+theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
+    ofHom f x = f x :=
+  rfl
+
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
@@ -362,6 +389,14 @@ theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) =
       (CategoryStruct.comp (X := CommSemiRingCat.of X) (Y := CommSemiRingCat.of Y)
         (Z := CommSemiRingCat.of Z) f g) =
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+/-- Variant of `CommSemiRingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : CommSemiRingCat.{u}}
+    [CommSemiring X] [CommSemiring Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
   rfl
 
 -- Sometimes neither the `ext` lemma for `CommSemiRingCat` nor for `RingHom` is applicable,
@@ -420,7 +455,7 @@ instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -472,11 +507,14 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) 
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
--- Porting note: I think this is now redundant.
--- @[simp]
--- theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
---     ofHom f x = f x :=
---   rfl
+theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
+    ofHom f x = f x :=
+  rfl
+
+/-- A variant of `ofHom_apply` that makes `simpNF` happy -/
+@[simp]
+theorem ofHom_apply' {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
+    @DFunLike.coe no_index _ R (fun _ ↦ S) _ (ofHom f) x = f x := rfl
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
@@ -510,6 +548,13 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
       (CategoryStruct.comp (X := CommRingCat.of X) (Y := CommRingCat.of Y) (Z := CommRingCat.of Z)
         f g) =
     @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) :=
+  rfl
+
+/-- Variant of `CommRingCat.coe_comp_of` for morphisms. -/
+@[simp] theorem coe_comp_of' {X Z : Type u} {Y : CommRingCat.{u}} [CommRing X] [CommRing Z]
+    (f : of X ⟶ Y) (g : Y ⟶ of Z) :
+    @DFunLike.coe no_index (of X ⟶ of Z) X (fun _ ↦ Z) _ (f ≫ g) =
+      @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (g.comp f) := by
   rfl
 
 -- Sometimes neither the `ext` lemma for `CommRingCat` nor for `RingHom` is applicable,

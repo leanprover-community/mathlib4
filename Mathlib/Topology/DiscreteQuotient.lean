@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.Separation
 import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
@@ -61,7 +60,7 @@ of finite discrete spaces.
 -/
 
 
-open Set Function TopologicalSpace
+open Set Function TopologicalSpace Topology
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -105,17 +104,20 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
-theorem proj_quotientMap : QuotientMap S.proj :=
-  quotientMap_quot_mk
+theorem proj_isQuotientMap : IsQuotientMap S.proj :=
+  isQuotientMap_quot_mk
+
+@[deprecated (since := "2024-10-22")]
+alias proj_quotientMap := proj_isQuotientMap
 
 theorem proj_continuous : Continuous S.proj :=
-  S.proj_quotientMap.continuous
+  S.proj_isQuotientMap.continuous
 
 instance : DiscreteTopology S :=
   singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
-    rw [← S.proj_quotientMap.isOpen_preimage, fiber_eq]
+    rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
 theorem proj_isLocallyConstant : IsLocallyConstant S.proj :=
@@ -134,7 +136,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   rw [← fiber_eq]
   apply isClopen_preimage
 
-instance : Inf (DiscreteQuotient X) :=
+instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
@@ -148,7 +150,7 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 
--- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
@@ -280,7 +282,8 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 @[simp]
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 
--- Porting note (#11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- See https://github.com/leanprover-community/batteries/issues/365
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩

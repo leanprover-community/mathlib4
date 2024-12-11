@@ -450,18 +450,18 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 multilinear map. -/
 nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
   toFun v := det (e.toMatrix v)
-  map_add' := by
+  map_update_add' := by
     intro inst v i x y
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add]
     -- Porting note: was `exact det_update_column_add _ _ _ _`
-    convert det_updateColumn_add (e.toMatrix v) i (e.repr x) (e.repr y)
-  map_smul' := by
+    convert det_updateCol_add (e.toMatrix v) i (e.repr x) (e.repr y)
+  map_update_smul' := by
     intro inst u i c x
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
     -- Porting note: was `apply det_update_column_smul`
-    convert det_updateColumn_smul (e.toMatrix u) i c (e.repr x)
+    convert det_updateCol_smul (e.toMatrix u) i c (e.repr x)
   map_eq_zero_of_eq' := by
     intro v i j h hij
     -- Porting note: added

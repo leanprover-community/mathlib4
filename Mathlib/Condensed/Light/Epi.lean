@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
 import Mathlib.Condensed.Light.Module
 /-!
 
@@ -63,4 +63,33 @@ lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
   rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
+instance : (LightCondensed.forget R).ReflectsEpimorphisms where
+  reflects f hf := by
+    rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
+    exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mpr hf
+
+instance : (LightCondensed.forget R).PreservesEpimorphisms where
+  preserves f hf := by
+    rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
+    exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mp hf
+
 end LightCondMod
+
+namespace LightCondensed
+
+variable (R : Type*) [Ring R]
+variable {F : ℕᵒᵖ ⥤ LightCondMod R} {c : Cone F} (hc : IsLimit c)
+  (hF : ∀ n, Epi (F.map (homOfLE (Nat.le_succ n)).op))
+
+include hc hF in
+lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
+  apply Functor.epi_of_epi_map (forget R)
+  change Epi (((forget R).mapCone c).π.app ⟨0⟩)
+  apply coherentTopology.epi_π_app_zero_of_epi
+  · simp only [LightProfinite.effectiveEpi_iff_surjective]
+    exact fun _ h ↦ Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit _) h
+  · have := (freeForgetAdjunction R).isRightAdjoint
+    exact isLimitOfPreserves _ hc
+  · exact fun _ ↦ (forget R).map_epi _
+
+end LightCondensed

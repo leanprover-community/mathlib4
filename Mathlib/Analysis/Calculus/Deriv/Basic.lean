@@ -68,7 +68,7 @@ and they more frequently lead to the desired result.
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
 ```lean
 example (x : ℝ) :
-    deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) := by
+    deriv (fun x ↦ cos (sin x) * exp x) x = (cos (sin x) - sin (sin x) * cos x) * exp x := by
   simp; ring
 ```
 
@@ -316,9 +316,12 @@ theorem HasDerivWithinAt.mono (h : HasDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono h hst
 
-theorem HasDerivWithinAt.mono_of_mem (h : HasDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
+theorem HasDerivWithinAt.mono_of_mem_nhdsWithin (h : HasDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
     HasDerivWithinAt f f' s x :=
-  HasFDerivWithinAt.mono_of_mem h hst
+  HasFDerivWithinAt.mono_of_mem_nhdsWithin h hst
+
+@[deprecated (since := "2024-10-31")]
+alias HasDerivWithinAt.mono_of_mem := HasDerivWithinAt.mono_of_mem_nhdsWithin
 
 theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x) :
     HasDerivAtFilter f f' x L :=
@@ -423,9 +426,11 @@ theorem HasDerivWithinAt.deriv_eq_zero (hd : HasDerivWithinAt f 0 s x)
   (em' (DifferentiableAt 𝕜 f x)).elim deriv_zero_of_not_differentiableAt fun h =>
     H.eq_deriv _ h.hasDerivAt.hasDerivWithinAt hd
 
-theorem derivWithin_of_mem (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
+theorem derivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=
-  ((DifferentiableWithinAt.hasDerivWithinAt h).mono_of_mem st).derivWithin ht
+  ((DifferentiableWithinAt.hasDerivWithinAt h).mono_of_mem_nhdsWithin st).derivWithin ht
+
+@[deprecated (since := "2024-10-31")] alias derivWithin_of_mem := derivWithin_of_mem_nhdsWithin
 
 theorem derivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=

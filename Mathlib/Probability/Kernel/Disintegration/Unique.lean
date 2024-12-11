@@ -134,7 +134,7 @@ lemma Kernel.apply_eq_measure_condKernel_of_compProd_eq
   have : ρ a = (ρ a).fst ⊗ₘ Kernel.comap κ (fun b ↦ (a, b)) measurable_prod_mk_left := by
     ext s hs
     conv_lhs => rw [← hκ]
-    rw [Measure.compProd_apply hs, Kernel.compProd_apply _ _ _ hs]
+    rw [Measure.compProd_apply hs, Kernel.compProd_apply hs]
     rfl
   have h := eq_condKernel_of_measure_eq_compProd _ this
   rw [Kernel.fst_apply]

@@ -548,14 +548,14 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   obtain rfl := c.next_eq' w
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
-@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc, elementwise]
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
 attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
-@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc, elementwise]
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 

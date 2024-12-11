@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic

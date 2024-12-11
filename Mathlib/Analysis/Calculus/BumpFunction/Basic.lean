@@ -49,7 +49,7 @@ smooth function, smooth bump function
 noncomputable section
 
 open Function Set Filter
-open scoped Topology Filter
+open scoped Topology Filter ContDiff
 
 variable {E X : Type*}
 
@@ -74,13 +74,13 @@ add more properties if they are useful and satisfied in the examples of inner pr
 and finite dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
--- Porting note(#5171): linter not yet ported; was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; was @[nolint has_nonempty_instance]
 structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   /-- The function underlying this family of bump functions -/
   toFun : ℝ → E → ℝ
   mem_Icc : ∀ (R : ℝ) (x : E), toFun R x ∈ Icc (0 : ℝ) 1
   symmetric : ∀ (R : ℝ) (x : E), toFun R (-x) = toFun R x
-  smooth : ContDiffOn ℝ ⊤ (uncurry toFun) (Ioi (1 : ℝ) ×ˢ (univ : Set E))
+  smooth : ContDiffOn ℝ ∞ (uncurry toFun) (Ioi (1 : ℝ) ×ˢ (univ : Set E))
   eq_one : ∀ R : ℝ, 1 < R → ∀ x : E, ‖x‖ ≤ 1 → toFun R x = 1
   support : ∀ R : ℝ, 1 < R → Function.support (toFun R) = Metric.ball (0 : E) R
 
@@ -149,7 +149,7 @@ theorem support_eq : Function.support f = Metric.ball c f.rOut := by
   simp only [toFun, support_comp_eq_preimage, ContDiffBumpBase.support _ _ f.one_lt_rOut_div_rIn]
   ext x
   simp only [mem_ball_iff_norm, sub_zero, norm_smul, mem_preimage, Real.norm_eq_abs, abs_inv,
-    abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_right f.rIn_pos]
+    abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_iff_of_pos_right f.rIn_pos]
 
 theorem tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']
@@ -178,7 +178,8 @@ protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set 
     ContDiffWithinAt ℝ n (fun x => f x (g x)) s x := by
   change ContDiffWithinAt ℝ n (uncurry (someContDiffBumpBase E).toFun ∘ fun x : X =>
     ((f x).rOut / (f x).rIn, (f x).rIn⁻¹ • (g x - c x))) s x
-  refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le le_top).comp_contDiffWithinAt x ?_
+  refine (((someContDiffBumpBase E).smooth.contDiffAt ?_).of_le
+    (mod_cast le_top)).comp_contDiffWithinAt x ?_
   · exact prod_mem_nhds (Ioi_mem_nhds (f x).one_lt_rOut_div_rIn) univ_mem
   · exact (hR.div hr (f x).rIn_pos.ne').prod ((hr.inv (f x).rIn_pos.ne').smul (hg.sub hc))
 

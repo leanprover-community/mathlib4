@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
-import Batteries.Tactic.Classical
 
 /-!
 # Instances and theorems on pi types
@@ -51,12 +49,7 @@ namespace Pi
 instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 

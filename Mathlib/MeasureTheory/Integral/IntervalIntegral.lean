@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Integral over an interval
@@ -85,6 +86,11 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
 
+theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
+    (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    IntervalIntegrable g μ a b := by
+  rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
+
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
   rw [intervalIntegrable_iff, uIoc_of_le hab]
@@ -120,7 +126,7 @@ theorem intervalIntegrable_const_iff {c : E} :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
   simp only [intervalIntegrable_iff, integrableOn_const]
 
-@[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
     IntervalIntegrable (fun _ => c) μ a b :=
   intervalIntegrable_const_iff.2 <| Or.inr measure_Ioc_lt_top
@@ -271,7 +277,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   rcases eq_or_ne c 0 with (hc | hc); · rw [hc]; simp
   rw [intervalIntegrable_iff'] at hf ⊢
   have A : MeasurableEmbedding fun x => x * c⁻¹ :=
-    (Homeomorph.mulRight₀ _ (inv_ne_zero hc)).closedEmbedding.measurableEmbedding
+    (Homeomorph.mulRight₀ _ (inv_ne_zero hc)).isClosedEmbedding.measurableEmbedding
   rw [← Real.smul_map_volume_mul_right (inv_ne_zero hc), IntegrableOn, Measure.restrict_smul,
     integrable_smul_measure (by simpa : ENNReal.ofReal |c⁻¹| ≠ 0) ENNReal.ofReal_ne_top,
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
@@ -294,7 +300,7 @@ theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   · exact IntervalIntegrable.symm (this hf.symm (le_of_not_le h))
   rw [intervalIntegrable_iff'] at hf ⊢
   have A : MeasurableEmbedding fun x => x + c :=
-    (Homeomorph.addRight c).closedEmbedding.measurableEmbedding
+    (Homeomorph.addRight c).isClosedEmbedding.measurableEmbedding
   rw [← map_add_right_eq_self volume c] at hf
   convert (MeasurableEmbedding.integrableOn_map_iff A).mp hf using 1
   rw [preimage_add_const_uIcc]
@@ -580,7 +586,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 
 end Basic
 
--- Porting note (#11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
@@ -624,7 +630,7 @@ variable {a b c d : ℝ} (f : ℝ → E)
 theorem integral_comp_mul_right (hc : c ≠ 0) :
     (∫ x in a..b, f (x * c)) = c⁻¹ • ∫ x in a * c..b * c, f x := by
   have A : MeasurableEmbedding fun x => x * c :=
-    (Homeomorph.mulRight₀ c hc).closedEmbedding.measurableEmbedding
+    (Homeomorph.mulRight₀ c hc).isClosedEmbedding.measurableEmbedding
   conv_rhs => rw [← Real.smul_map_volume_mul_right hc]
   simp_rw [integral_smul_measure, intervalIntegral, A.setIntegral_map,
     ENNReal.toReal_ofReal (abs_nonneg c)]
@@ -661,7 +667,7 @@ theorem inv_smul_integral_comp_div (c) :
 @[simp]
 theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + d..b + d, f x :=
   have A : MeasurableEmbedding fun x => x + d :=
-    (Homeomorph.addRight d).closedEmbedding.measurableEmbedding
+    (Homeomorph.addRight d).isClosedEmbedding.measurableEmbedding
   calc
     (∫ x in a..b, f (x + d)) = ∫ x in a + d..b + d, f x ∂Measure.map (fun x => x + d) volume := by
       simp [intervalIntegral, A.setIntegral_map]

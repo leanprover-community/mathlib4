@@ -103,7 +103,7 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 
 open Set Function Set.Notation
 namespace Matroid
-variable {α β : Type*} {f : α → β} {E I s : Set α} {M : Matroid α} {N : Matroid β}
+variable {α β : Type*} {f : α → β} {E I : Set α} {M : Matroid α} {N : Matroid β}
 
 section comap
 

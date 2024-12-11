@@ -7,6 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 ## Polynomials over finite fields
@@ -173,17 +174,11 @@ noncomputable instance [CommRing K] : Inhabited (R σ K) :=
 def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
-section CommRing
-
-variable [CommRing K]
-
 -- TODO: would be nice to replace this by suitable decidability assumptions
 open Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
   simp only [Set.mem_setOf_eq]; infer_instance
-
-end CommRing
 
 variable [Field K]
 

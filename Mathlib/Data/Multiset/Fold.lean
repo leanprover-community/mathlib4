@@ -86,7 +86,7 @@ theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
 theorem fold_hom {op' : β → β → β} [Std.Commutative op'] [Std.Associative op'] {m : α → β}
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) (b : α) (s : Multiset α) :
     (s.map m).fold op' (m b) = m (s.fold op b) :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [hm])
+  Multiset.induction_on s (by simp) (by simp +contextual [hm])
 
 theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ : α) :
     ((s₁ ∪ s₂).fold op b₁ * (s₁ ∩ s₂).fold op b₂) = s₁.fold op b₁ * s₂.fold op b₂ := by

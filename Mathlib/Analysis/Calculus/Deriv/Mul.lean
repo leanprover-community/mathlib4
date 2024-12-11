@@ -34,11 +34,11 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {s : Set 𝕜}
+variable {L : Filter 𝕜}
 
 /-! ### Derivative of bilinear maps -/
 
@@ -321,7 +321,7 @@ theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
 end HasDeriv
 
 variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
-  {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
+  {u : Finset ι} {f : ι → 𝕜 → 𝔸'}
 
 @[fun_prop]
 theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
@@ -351,7 +351,7 @@ end Prod
 
 section Div
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 theorem HasDerivAt.div_const (hc : HasDerivAt c c' x) (d : 𝕜') :
     HasDerivAt (fun x => c x / d) (c' / d) x := by

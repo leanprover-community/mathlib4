@@ -280,7 +280,7 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
   show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
-  exact measurable_liminf fun n => hf (x n)
+  exact .liminf fun n => hf (x n)
 
 @[deprecated (since := "2024-03-09")] alias
 _root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
@@ -308,7 +308,7 @@ lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
   refine ⟨aeSeqLim, measurable_of_tendsto' atTop (aeSeq.measurable h'f p)
     (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
-  · unfold_let aeSeqLim
+  · unfold aeSeqLim
     simp_rw [aeSeq]
     split_ifs with hx
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
@@ -360,8 +360,7 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply measurable_iSup
-  exact fun s => s.measurable_sum fun i _ => h i
+  exact .iSup fun s ↦ s.measurable_sum fun i _ => h i
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
@@ -379,8 +378,7 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply aemeasurable_iSup
-  exact fun s => Finset.aemeasurable_sum s fun i _ => h i
+  exact .iSup fun s ↦ Finset.aemeasurable_sum s fun i _ => h i
 
 @[measurability, fun_prop]
 theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
