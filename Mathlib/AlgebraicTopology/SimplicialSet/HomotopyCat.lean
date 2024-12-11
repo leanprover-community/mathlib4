@@ -231,8 +231,6 @@ private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ 
 
 variable {V : SSet}
 
-open SSet
-
 namespace Truncated
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
