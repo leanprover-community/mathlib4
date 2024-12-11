@@ -86,10 +86,10 @@ theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = ra
 theorem radical_of_isUnit {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
 
-theorem radical_isUnit_mul_left {a u : M} (h : IsUnit u) : radical (u * a) = radical a :=
+theorem radical_mul_of_isUnit_left {a u : M} (h : IsUnit u) : radical (u * a) = radical a :=
   radical_eq_of_associated (associated_unit_mul_left _ _ h)
 
-theorem radical_isUnit_mul_right {a u : M} (h : IsUnit u) : radical (a * u) = radical a :=
+theorem radical_mul_of_isUnit_right {a u : M} (h : IsUnit u) : radical (a * u) = radical a :=
   radical_eq_of_associated (associated_mul_unit_left _ _ h)
 
 theorem primeFactors_pow (a : M) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
