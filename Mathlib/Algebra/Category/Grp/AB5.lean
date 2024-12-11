@@ -47,3 +47,14 @@ instance : HasFilteredColimits (AddCommGrp.{u}) where
 
 noncomputable instance : AB5 (AddCommGrp.{u}) where
   ofShape _ := { preservesFiniteLimits := inferInstance }
+
+attribute [local instance] Abelian.hasFiniteBiproducts
+
+instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
+
+instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
+  apply ( config := {allowSynthFailures := true} )  hasExactLimitsOfShape_of_preservesEpi
+  sorry
+
+instance : AB4Star AddCommGrp.{u} where
+  ofShape _ := inferInstance

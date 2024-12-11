@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
+Authors: Dagur Asgeirsson, Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
