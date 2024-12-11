@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
 
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-! # Block Matrices from Rows and Columns
 
