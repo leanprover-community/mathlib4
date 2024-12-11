@@ -35,7 +35,7 @@ variable {x : ℕ → ℝ} {n : ℕ} (hn : n ≠ 0) (hx : Antitone x)
 namespace Imo1982Q3
 include hn hx
 
-/-- `x (n + 1)` is at most the average of `x 1`, `x 2`, ..., `x n`. -/
+/-- `x n` is at most the average of all previous terms in the sequence. -/
 lemma le_avg : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 + 1 / n) := by
   rw [sum_range_succ, mul_one_add, add_le_add_iff_left, mul_one_div,
     le_div_iff₀ (mod_cast hn.bot_lt), mul_comm, ← nsmul_eq_mul]
@@ -56,7 +56,7 @@ lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     -- We move the fraction into the denominator.
     _ = (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / ((∑ k ∈ range n, x (k + 1)) * (1 + 1 / n)) := by
       field_simp
-    -- We use that `x (n + 1)` is at most the average of `x 1`, `x 2`, ..., `x n`.
+    -- We make use of the `le_avg` lemma.
     _ ≤ (∑ k ∈ range (n + 1), x k) ^ 2 / ∑ k ∈ range (n + 1), x (k + 1) := by
       gcongr
       · exact sum_pos (fun k _ ↦ hp _) nonempty_range_succ
