@@ -42,8 +42,8 @@ variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 
 namespace DirectedSystem
 
-alias DirectedSystem.map_self := DirectedSystem.map_self'
-alias DirectedSystem.map_map := DirectedSystem.map_map'
+alias map_self := DirectedSystem.map_self'
+alias map_map := DirectedSystem.map_map'
 
 variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G' n ↪[L] G' (n + 1))
 
