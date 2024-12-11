@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Noetherian.Orzech

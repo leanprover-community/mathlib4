@@ -47,7 +47,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   have bq0 : (0 : ℝ) < b * q := mul_pos (Nat.cast_pos.mpr bN0.bot_lt) qR0
   -- At a1, clear denominators...
   replace a1 : |a * q - b * p| * q ^ (b + 1) < b * q := by
-    rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
+    rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff₀ (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
       abs_of_pos bq0, one_mul] at a1
     exact mod_cast a1
   -- At a0, clear denominators...

@@ -26,7 +26,7 @@ uniform space, uniform continuity, compact space
 
 open Uniformity Topology Filter UniformSpace Set
 
-variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
+variable {γ : Type*}
 
 /-!
 ### Uniformity on compact spaces
