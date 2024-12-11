@@ -460,16 +460,15 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
     apply HomotopyCategory.lift_unique'
     simp only [id_obj, Cat.freeRefl_obj_α, ReflQuiv.of_val, comp_obj, NatTrans.comp_app,
       whiskerRight_app, associator_hom_app, whiskerLeft_app, id_comp, NatTrans.id_app']
-    rw [← Cat.comp_eq_comp
-        (SSet.Truncated.HomotopyCategory.quotientFunctor X) (𝟙 (hoFunctor₂.obj X))]
-    rw [comp_id, Cat.comp_eq_comp, ← Functor.assoc]
+    show _ = _ ⋙ (𝟭 X.HomotopyCategory)
+    rw [Functor.comp_id, Cat.comp_eq_comp, ← Functor.assoc]
     conv =>
-      lhs; lhs; apply (SSet.hoFunctor₂_naturality (nerve₂Adj.unit.component X)).symm
+      lhs; lhs; apply (hoFunctor₂_naturality (nerve₂Adj.unit.component X)).symm
     simp only [comp_obj, Cat.freeRefl_obj_α, Functor.comp_map]
     rw [nerve₂Adj.unit.component_eq X, Functor.assoc]
     conv =>
       lhs; rhs
-      apply (nerve₂Adj.counit.component_eq (SSet.hoFunctor₂.obj X))
+      apply (nerve₂Adj.counit.component_eq (hoFunctor₂.obj X))
     simp only [comp_obj, ReflQuiv.forget_obj, Cat.freeRefl_obj_α, ReflQuiv.of_val,
       ReflPrefunctor.comp_assoc, NatTrans.comp_app, id_obj, whiskerRight_app]
     rw [← Cat.comp_eq_comp, ← assoc, ← Cat.freeRefl.map_comp, ReflQuiv.comp_eq_comp,
@@ -479,15 +478,15 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
     simp only [ReflQuiv.forget_obj, comp_obj, Iso.inv_hom_id_app]
     rw [ReflQuiv.id_eq_id]
     simp_rw [ReflPrefunctor.comp_id
-      (U := ReflQuiv.of _) (V := ReflQuiv.of ↑(SSet.hoFunctor₂.obj X))
-      ((SSet.hoFunctor₂Obj.quotientFunctor X).toReflPrefunctor)]
+      (U := ReflQuiv.of _) (V := ReflQuiv.of ↑(hoFunctor₂.obj X))
+      ((SSet.Truncated.HomotopyCategory.quotientFunctor X).toReflPrefunctor)]
     rw [← ReflQuiv.comp_eq_comp (Z := ReflQuiv.of _)
       (ReflQuiv.adj.{u}.unit.app (SSet.oneTruncation₂.obj X))
-      ((SSet.hoFunctor₂Obj.quotientFunctor X).toReflPrefunctor)]
+      ((SSet.Truncated.HomotopyCategory.quotientFunctor X).toReflPrefunctor)]
     simp only [ReflQuiv.forget_obj, Cat.freeRefl_obj_α, ReflQuiv.of_val, map_comp, assoc]
     have nat := ReflQuiv.adj.counit.naturality
       (X := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ X)))
-      (Y := SSet.hoFunctor₂.obj X) (SSet.hoFunctor₂Obj.quotientFunctor X)
+      (Y := hoFunctor₂.obj X) (SSet.Truncated.HomotopyCategory.quotientFunctor X)
     dsimp at nat
     rw [nat, ← assoc]
     conv => lhs; lhs; apply ReflQuiv.adj.left_triangle_components (SSet.oneTruncation₂.obj X)
@@ -503,11 +502,12 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
     rw [← ReflQuiv.comp_eq_comp, ← ReflQuiv.comp_eq_comp (X := ReflQuiv.of _) (Y := ReflQuiv.of _)
       (Z := ReflQuiv.of _), assoc, assoc, ← Functor.comp_map,
         ← OneTruncation₂.ofNerve₂.natIso.inv.naturality]
-    conv => lhs; rhs; rw [← assoc] --
+    conv => lhs; rhs; rw [← assoc]
     show _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
     rw [← ReflQuiv.forget.map_comp]
-    show _ ≫ ReflQuiv.forget.map (SSet.hoFunctor₂Obj.quotientFunctor (nerveFunctor₂.obj ↑C)
-      ⋙ nerve₂Adj.counit.app C) ≫ _ = _
+    show _ ≫ ReflQuiv.forget.map
+      ((SSet.Truncated.HomotopyCategory.quotientFunctor (nerveFunctor₂.obj ↑C))
+        ⋙ nerve₂Adj.counit.component C) ≫ _ = _
     rw [nerve₂Adj.counit, nerve₂Adj.counit.component_eq]
     simp only [ReflQuiv.forget_obj, Cat.freeRefl_obj_α, ReflQuiv.of_val, NatTrans.comp_app,
       comp_obj, id_obj, whiskerRight_app]
@@ -614,10 +614,10 @@ noncomputable def nerveAdjunction : hoFunctor ⊣ nerveFunctor :=
 
 /-- Repleteness exists for full and faithful functors but not fully faithful functors, which is
 why we do this inefficiently.-/
-instance nerveFunctor.faithful : nerveFunctor.{u, u}.Faithful := by
-  have : (nerveFunctor₂ ⋙ SSet.Truncated.cosk 2).Faithful :=
+instance nerveFunctor.faithful : nerveFunctor.{u, u}.Faithful :=
+  have : (Nerve.nerveFunctor₂ ⋙ SSet.Truncated.cosk 2).Faithful :=
     Faithful.comp nerveFunctor₂ (SSet.Truncated.cosk 2)
-  exact Functor.Faithful.of_iso Nerve.cosk₂Iso.symm
+  Functor.Faithful.of_iso Nerve.cosk₂Iso.symm
 
 instance nerveFunctor.full : nerveFunctor.{u, u}.Full :=
   have : (Nerve.nerveFunctor₂ ⋙ SSet.Truncated.cosk 2).Full :=
