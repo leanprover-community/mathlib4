@@ -92,27 +92,23 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
         simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero,
           op_id, FunctorToTypes.map_id_apply] }
 
+@[simp]
+lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
+    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (SSet.σ₂ 0).op X := rfl
+
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
-def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
+@[simps]
+def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
   obj S := ReflQuiv.of (OneTruncation₂ S)
   map {S T} F := {
     obj := F.app (op [0]₂)
-    map := fun f => by
-      refine ⟨F.app (op [1]₂) f.edge, ?_, ?_⟩
-      · change (F.app _ ≫ _) _ = _
-        rw [← F.naturality]
-        exact congrArg (F.app _) f.src_eq
-      · change (F.app _ ≫ _) _ = _
-        rw [← F.naturality]
-        exact congrArg (F.app _) f.tgt_eq
-    map_id := fun X => by
-      apply OneTruncation₂.Hom.ext
-      dsimp only [SimplexCategory.len_mk, id_eq, ReflQuiv.of_val, Nat.reduceAdd, Fin.isValue,
-        types_comp_apply, eq_mpr_eq_cast]
-      change _ = (F.app _ ≫ _) _
-      rw [← F.naturality]
-      rfl
-  }
+    map := fun f ↦
+      { edge := F.app _ f.edge
+        src_eq := by rw [← FunctorToTypes.naturality, f.src_eq]
+        tgt_eq := by rw [← FunctorToTypes.naturality, f.tgt_eq] }
+    map_id := fun X ↦ OneTruncation₂.Hom.ext (by
+      dsimp
+      rw [← FunctorToTypes.naturality]) }
 
 @[ext] lemma hom₂_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
     f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
