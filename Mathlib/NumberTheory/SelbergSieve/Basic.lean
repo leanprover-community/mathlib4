@@ -34,12 +34,15 @@ attribute [arith_mult] SelbergSieve.nu_mult
 
 namespace SelbergSieve
 
-variable [s : SelbergSieve]
 scoped notation3 "ν" => nu
 scoped notation3 "P" => prodPrimes
 scoped notation3 "a" => weights
 scoped notation3 "X" => totalMass
 scoped notation3 "A" => support
+
+section SelbergSieve
+
+variable [s : SelbergSieve]
 
 @[simp]
 def multSum (d : ℕ) : ℝ :=
@@ -77,6 +80,7 @@ def mainSum (μPlus : ℕ → ℝ) : ℝ :=
 def errSum (μPlus : ℕ → ℝ) : ℝ :=
   ∑ d in divisors P, |μPlus d| * |R d|
 
+end SelbergSieve
 
 section UpperBoundSieve
 
@@ -101,6 +105,8 @@ instance lbToμMinus : CoeFun LowerBoundSieve fun _ => ℕ → ℝ where coe lb 
 end UpperBoundSieve
 
 section SieveLemmas
+
+variable [s : SelbergSieve]
 
 theorem prodPrimes_ne_zero : P ≠ 0 :=
   Squarefree.ne_zero prodPrimes_squarefree
@@ -183,20 +189,22 @@ theorem selbergTerms_mult : ArithmeticFunction.IsMultiplicative g := by
   arith_mult
 
 theorem one_div_selbergTerms_eq_conv_moebius_nu (l : ℕ) (hl : Squarefree l)
-    (hnu_nonzero : ν l ≠ 0) : 1 / g l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ <| e) * (ν d)⁻¹ :=
+    (hnu_nonzero : ν l ≠ 0) : 1 / g l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ <| d) * (ν e)⁻¹ :=
   by
   simp only [selbergTerms_apply, one_div, mul_inv, inv_div, inv_inv, Finset.prod_congr,
     Finset.prod_inv_distrib, (nu_mult).prodPrimeFactors_one_sub_of_squarefree _ hl, mul_sum]
   apply symm
-  rw [← Nat.sum_divisorsAntidiagonal' fun d e : ℕ => ↑(μ d) * (ν e)⁻¹]
-  rw [Nat.sum_divisorsAntidiagonal fun d e : ℕ => ↑(μ d) * (ν e)⁻¹]
-  apply sum_congr rfl; intro d hd
-  have hd_dvd : d ∣ l := dvd_of_mem_divisors hd
-  rw [←div_mult_of_dvd_squarefree ν nu_mult l d (dvd_of_mem_divisors hd) hl, inv_div]
-  · ring
-  · revert hnu_nonzero
-    contrapose!
-    exact multiplicative_zero_of_zero_dvd ν nu_mult hl hd_dvd
+  rw [← Nat.sum_divisorsAntidiagonal fun i _ : ℕ => (ν l)⁻¹ * (↑(μ i) * ν i)]
+  apply sum_congr rfl; intro ⟨d, e⟩ hd
+  simp only [mem_divisorsAntidiagonal, ne_eq] at hd
+  obtain ⟨rfl, _⟩ := hd
+  have : ν e ≠ 0 := by
+    revert hnu_nonzero; contrapose!
+    exact multiplicative_zero_of_zero_dvd ν nu_mult hl (Nat.dvd_mul_left e d)
+  simp only [squarefree_mul_iff] at hl ⊢
+  field_simp
+  rw [nu_mult.map_mul_of_coprime hl.1, mul_comm (ν d)]
+  ring
 
 theorem nu_eq_conv_one_div_selbergTerms (d : ℕ) (hdP : d ∣ P) :
     (ν d)⁻¹ = ∑ l in divisors P, if l ∣ d then 1 / g l else 0 := by
@@ -206,7 +214,6 @@ theorem nu_eq_conv_one_div_selbergTerms (d : ℕ) (hdP : d ∣ P) :
   revert hdP; revert d
   apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on _ (fun _ _ => Nat.dvd_trans)).mpr
   intro l _ hlP
-  rw [sum_divisorsAntidiagonal' (f:=fun x y => (μ <| x) * (ν y)⁻¹) (n:=l)]
   apply symm
   exact one_div_selbergTerms_eq_conv_moebius_nu l
     (Squarefree.squarefree_of_dvd hlP prodPrimes_squarefree)
@@ -266,13 +273,12 @@ theorem siftedSum_le_mainSum_errSum_of_UpperBoundSieve (μPlus : UpperBoundSieve
 
 end SieveLemmas
 
--- Results about Lambda Squared Sieves
+-- Results about Λ²-Sieves
 section LambdaSquared
 
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 in d.divisors, ∑ d2 in d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
-omit s in
 private theorem lambdaSquared_eq_zero_of_support_wlog {w : ℕ → ℝ} {y : ℝ}
   (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ y → w d = 0) {d : ℕ} (hd : ¬↑d ≤ y) (d1 : ℕ) (d2 : ℕ)
   (h : d = Nat.lcm d1 d2) (hle : d1 ≤ d2) :
@@ -287,7 +293,6 @@ private theorem lambdaSquared_eq_zero_of_support_wlog {w : ℕ → ℝ} {y : ℝ
       _ ≤ _       := ?_
   · rw [sq]; gcongr
 
-omit s in
 theorem lambdaSquared_eq_zero_of_support (w : ℕ → ℝ) (y : ℝ)
     (hw : ∀ d : ℕ, ¬d ^ 2 ≤ y → w d = 0) (d : ℕ) (hd : ¬d ≤ y) :
     lambdaSquared w d = 0 := by
@@ -312,7 +317,6 @@ theorem lambdaSquared_eq_zero_of_support (w : ℕ → ℝ) (y : ℝ)
   · rw[mul_comm]
     apply lambdaSquared_eq_zero_of_support_wlog hw hd d2 d1 (Nat.lcm_comm d1 d2 ▸ h) hle
 
-omit s in
 theorem upperMoebius_of_lambda_sq (weights : ℕ → ℝ) (hw : weights 1 = 1) :
     UpperMoebius <| lambdaSquared weights := by
   dsimp [UpperMoebius, lambdaSquared]
@@ -333,6 +337,8 @@ theorem upperMoebius_of_lambda_sq (weights : ℕ → ℝ) (hw : weights 1 = 1) :
   split_ifs with hn
   · rw [hn]; simp [hw]
   · apply sq_nonneg
+
+variable [s : SelbergSieve]
 
 theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     s.mainSum (lambdaSquared w) =
