@@ -71,17 +71,18 @@ lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := Simp
 
 /-- The source vertex of `f : S _[1]₂` for use in defining the underlying refl quiver. -/
 def OneTruncation₂.src {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
-  S.map (δ₂ (n := 0) 1).op f
+  S.map (δ₂ 1).op f
 
 /-- The target vertex of `f : S _[1]₂` for use in defining the underlying refl quiver. -/
 def OneTruncation₂.tgt {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
-  S.map (δ₂ (n := 0) 0).op f
+  S.map (δ₂ 0).op f
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]₂`. -/
+@[ext]
 structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) where
   edge : S _[1]₂
-  src_eq : S.map (δ₂ 1).op edge = X
-  tgt_eq : S.map (δ₂ 0).op edge = Y
+  src_eq : OneTruncation₂.src edge = X
+  tgt_eq : OneTruncation₂.tgt edge = Y
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
@@ -101,16 +102,17 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
   map {S T} F := {
     obj := F.app (op [0]₂)
     map := fun f => by
-      refine ⟨F.app (op [1]₂) f.1, ?_, ?_⟩
+      refine ⟨F.app (op [1]₂) f.edge, ?_, ?_⟩
       · change (F.app _ ≫ _) _ = _
         rw [← F.naturality]
-        exact congrArg (F.app _) f.2.1
+        exact congrArg (F.app _) f.src_eq
       · change (F.app _ ≫ _) _ = _
         rw [← F.naturality]
-        exact congrArg (F.app _) f.2.2
+        exact congrArg (F.app _) f.tgt_eq
     map_id := fun X => by
-      change ({..} : Subtype _) = {..}
-      congr
+      apply OneTruncation₂.Hom.ext
+      dsimp only [SimplexCategory.len_mk, id_eq, ReflQuiv.of_val, Nat.reduceAdd, Fin.isValue,
+        types_comp_apply, eq_mpr_eq_cast]
       change _ = (F.app _ ≫ _) _
       rw [← F.naturality]
       rfl
@@ -119,7 +121,7 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
   map_comp f g := by rfl
 
 @[ext] lemma hom₂_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
-    f.1 = g.1 → f = g := Subtype.ext
+    f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
 
 section
 variable {C : Type u} [Category.{v} C]
@@ -127,7 +129,7 @@ variable {C : Type u} [Category.{v} C]
 /-- An arrow `f : X ⟶ Y` in the refl quiver of a nerve induces an arrow in the category `C`. -/
 def OneTruncation₂.ofNerve₂.map {X Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
     (f : X ⟶ Y) : X.left ⟶ Y.left :=
-  eqToHom (congrArg (·.left) f.2.1.symm) ≫ f.1.hom ≫ eqToHom (congrArg (·.left) f.2.2)
+  eqToHom (congrArg (·.left) f.src_eq.symm) ≫ f.edge.hom ≫ eqToHom (congrArg (·.left) f.tgt_eq)
 
 /-- The refl prefunctor from the refl quiver underlying a nerve to the refl quiver underlying a
 category. -/
@@ -156,14 +158,14 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
     inv_hom_id := ?_
   }
   · have H1 {X X' Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
-        (f : X ⟶ Y) (h : X = X') : (Eq.rec f h : X' ⟶ Y).1 = f.1 := by cases h; rfl
+        (f : X ⟶ Y) (h : X = X') : (Eq.rec f h : X' ⟶ Y).edge = f.edge := by cases h; rfl
     have H2 {X Y Y' : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
-        (f : X ⟶ Y) (h : Y = Y') : (Eq.rec f h : X ⟶ Y').1 = f.1 := by cases h; rfl
+        (f : X ⟶ Y) (h : Y = Y') : (Eq.rec f h : X ⟶ Y').edge = f.edge := by cases h; rfl
     fapply ReflPrefunctor.ext <;> simp
     · exact fun _ ↦ ComposableArrows.ext₀ rfl
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
-      apply Subtype.ext
+      apply OneTruncation₂.Hom.ext
       simp [ReflQuiv.comp_eq_comp]
       refine ((H2 _ _).trans ((H1 _ _).trans (ComposableArrows.ext₁ ?_ ?_ ?_))).symm
       · rfl
@@ -271,9 +273,9 @@ inductive HoRel₂ {V : SSet.Truncated 2} :
 
 theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
     (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
-    (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.1 = f'.1)
-    (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.1 = g'.1)
-    (h : Y ⟶ Z) (h' : Y' ⟶ Z') (hh : h.1 = h'.1) :
+    (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.edge = f'.edge)
+    (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.edge = g'.edge)
+    (h : Y ⟶ Z) (h' : Y' ⟶ Z') (hh : h.edge = h'.edge) :
     HoRel₂ _ _
       ((Quotient.functor _).map (.cons .nil f))
       ((Quotient.functor _).map (.cons (.cons .nil g) h)) ↔
@@ -283,7 +285,7 @@ theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
   cases hX
   cases hY
   cases hZ
-  congr! <;> apply Subtype.ext <;> assumption
+  congr! <;> apply OneTruncation₂.Hom.ext <;> assumption
 
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
 def hoFunctor₂Obj (V : SSet.Truncated.{u} 2) : Type u :=
