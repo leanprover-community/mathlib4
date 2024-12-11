@@ -282,8 +282,6 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
 def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 
-end Truncated
-open Truncated
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`. -/
@@ -294,6 +292,26 @@ inductive HoRel₂ {V : SSet.Truncated 2} :
       (Quot.mk _ (Quiver.Hom.toPath (ev02₂ φ)))
       (Quot.mk _ ((Quiver.Hom.toPath (ev01₂ φ)).comp
         (Quiver.Hom.toPath (ev12₂ φ))))
+
+theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _[2]₂) {X₀ X₁ X₂ : OneTruncation₂ V}
+    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₂ : X₀ ⟶ X₂)
+    (h₀₁ : f₀₁.edge = V.map (δ₂ 2).op φ) (h₁₂ : f₁₂.edge = V.map (δ₂ 0).op φ)
+    (h₀₂ : f₀₂.edge = V.map (δ₂ 1).op φ) :
+    HoRel₂ _ _ (Quot.mk _ (Quiver.Hom.toPath f₀₂))
+      (Quot.mk _ ((Quiver.Hom.toPath f₀₁).comp (Quiver.Hom.toPath f₁₂))) := by
+  obtain rfl : X₀ = ev0₂ φ := by
+    rw [← f₀₂.src_eq, h₀₂, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    rfl
+  obtain rfl : X₁ = ev1₂ φ := by
+    rw [← f₀₁.tgt_eq, h₀₁, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    rfl
+  obtain rfl : X₂ = ev2₂ φ := by
+    rw [← f₁₂.tgt_eq, h₁₂, ← FunctorToTypes.map_comp_apply, ← op_comp]
+    rfl
+  obtain rfl : f₀₁ = ev01₂ φ := by ext; assumption
+  obtain rfl : f₁₂ = ev12₂ φ := by ext; assumption
+  obtain rfl : f₀₂ = ev02₂ φ := by ext; assumption
+  constructor
 
 theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
     (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
@@ -312,10 +330,10 @@ theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
   congr! <;> apply OneTruncation₂.Hom.ext <;> assumption
 
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
-def _root_.SSet.Truncated.homotopyCategory (V : SSet.Truncated.{u} 2) : Type u :=
+def _root_.SSet.Truncated.HomotopyCategory (V : SSet.Truncated.{u} 2) : Type u :=
   Quotient (HoRel₂ (V := V))
 
-instance (V : SSet.Truncated.{u} 2) : Category.{u} (SSet.hoFunctor₂Obj V) :=
+instance (V : SSet.Truncated.{u} 2) : Category.{u} (V.HomotopyCategory) :=
   inferInstanceAs (Category (Quotient ..))
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
@@ -326,49 +344,51 @@ def _root_.SSet.Truncated.HomotopyCategory.quotientFunctor (V : SSet.Truncated.{
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism. -/
-theorem hoFunctor₂Obj.lift_unique' (V : SSet.Truncated.{u} 2)
-    {D} [Category D] (F₁ F₂ : hoFunctor₂Obj V ⥤ D)
-    (h : quotientFunctor V ⋙ F₁ = quotientFunctor V ⋙ F₂) : F₁ = F₂ :=
+theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2)
+    {D} [Category D] (F₁ F₂ : V.HomotopyCategory ⥤ D)
+    (h : SSet.Truncated.HomotopyCategory.quotientFunctor V ⋙ F₁ =
+      SSet.Truncated.HomotopyCategory.quotientFunctor V ⋙ F₂) : F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V)))
     (HoRel₂ (V := V)) _ _ h
 
 /-- A map of 2-truncated simplicial sets induces a functor between homotopy categories. -/
-def hoFunctor₂Map {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) : hoFunctor₂Obj V ⥤ hoFunctor₂Obj W :=
+def mapHomotopyCategory {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
+    V.HomotopyCategory ⥤ W.HomotopyCategory :=
   Quotient.lift _
-    ((by exact (oneTruncation₂ ⋙ Cat.freeRefl).map F) ⋙ hoFunctor₂Obj.quotientFunctor _)
-    (fun X Y f g hfg => by
-      let .mk φ := hfg
+    ((oneTruncation₂ ⋙ Cat.freeRefl).map F ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor W)
+    (by
+      rintro _ _ _ _ ⟨φ⟩
       apply Quotient.sound
-      convert HoRel₂.mk (F.app (op _) φ) using 0
-      apply HoRel₂.ext_triangle
-      · exact congrFun (F.naturality ι0₂.op) φ
-      · exact congrFun (F.naturality ι1₂.op) φ
-      · exact congrFun (F.naturality ι2₂.op) φ
-      · exact congrFun (F.naturality δ1₂.op) φ
-      · exact congrFun (F.naturality δ2₂.op) φ
-      · exact congrFun (F.naturality δ0₂.op) φ)
+      apply HoRel₂.mk' (φ := F.app _ φ)
+        (f₀₁ := (oneTruncation₂.map F).map (ev01₂ φ))
+        (f₀₂ := (oneTruncation₂.map F).map (ev02₂ φ))
+        (f₁₂ := (oneTruncation₂.map F).map (ev12₂ φ))
+      all_goals
+        apply FunctorToTypes.naturality)
 
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
-  obj V := Cat.of (hoFunctor₂Obj V)
-  map {S T} F := hoFunctor₂Map F
+  obj V := Cat.of (V.HomotopyCategory)
+  map {S T} F := mapHomotopyCategory F
   map_id S := by
     apply Quotient.lift_unique'
-    simp [hoFunctor₂Map, Quotient.lift_spec]
+    simp [mapHomotopyCategory, Quotient.lift_spec]
     exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
   map_comp {S T U} F G := by
     apply Quotient.lift_unique'
-    simp [hoFunctor₂Map, SSet.hoFunctor₂Obj.quotientFunctor]
+    simp [mapHomotopyCategory, SSet.Truncated.HomotopyCategory.quotientFunctor]
     rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
       Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
 theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
-    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ hoFunctor₂Obj.quotientFunctor Y =
-      hoFunctor₂Obj.quotientFunctor X ⋙ hoFunctor₂Map f := rfl
+    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
+      SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
 
 /-- The functor that takes a simplicial set to its homotopy category by passing through the
 2-truncation. -/
 def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ hoFunctor₂
+
+end Truncated
 
 end
 
