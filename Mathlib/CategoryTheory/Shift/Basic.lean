@@ -450,6 +450,46 @@ def shiftFunctorCompIsoId (i j : A) (h : i + j = 0) :
     shiftFunctor C i ⋙ shiftFunctor C j ≅ 𝟭 C :=
   (shiftFunctorAdd' C i j 0 h).symm ≪≫ shiftFunctorZero C A
 
+open Category in
+lemma shiftFunctorCompIsoId_add_hom_app (a a' b b' : A) (h : a + b = 0) (h' : a' + b' = 0) (X : C) :
+    (shiftFunctorCompIsoId C (a + a') (b' + b)
+    (by rw [add_assoc a, ← add_assoc a', h', zero_add, h])).hom.app X =
+    ((shiftFunctorAdd C a a').hom.app X)⟦b' + b⟧' ≫ (shiftFunctorAdd C b' b).hom.app _ ≫
+    ((shiftFunctorCompIsoId C a' b' h').hom.app (X⟦a⟧))⟦b⟧' ≫
+    (shiftFunctorCompIsoId C a b h).hom.app X := by
+  simp only [Functor.comp_obj, Functor.id_obj, shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom,
+    NatTrans.comp_app, Functor.map_comp, assoc, NatTrans.naturality_assoc, Functor.comp_map]
+  have := shiftFunctorAdd'_assoc_inv_app (C := C) (a + a') b' b a (b' + b) 0
+    (by rw [add_assoc, h', add_zero]) rfl (by rw [add_assoc a, h', add_zero, h]) X
+  apply_fun (fun h ↦ (shiftFunctorAdd' C b' b (b' + b) rfl).hom.app
+    ((shiftFunctor C (a + a')).obj X) ≫ h) at this
+  conv_rhs at this => rw [← assoc, Iso.hom_inv_id_app, id_comp]
+  rw [← this, shiftFunctorAdd'_eq_shiftFunctorAdd]
+  simp only [Functor.comp_obj, assoc, NatIso.cancel_natIso_hom_left]
+  have := shiftFunctorAdd'_assoc_inv_app (C := C) a a' b' (a + a') 0 a rfl h'
+    (by rw [add_assoc, h', add_zero]) X
+  apply_fun (fun h ↦ (shiftFunctor C b').map ((shiftFunctorAdd C a a').hom.app X) ≫ h) at this
+  rw [shiftFunctorAdd'_eq_shiftFunctorAdd, ← assoc, ← Functor.map_comp, Iso.hom_inv_id_app,
+    Functor.map_id, id_comp] at this
+  rw [this, shiftFunctorAdd'_add_zero]
+  simp
+
+lemma shiftFunctorCompIsoId_add_inv_app (a a' b b' : A) (h : a + b = 0) (h' : a' + b' = 0) (X : C) :
+    (shiftFunctorCompIsoId C (a + a') (b' + b)
+    (by rw [add_assoc a, ← add_assoc a', h', zero_add, h])).inv.app X =
+    (shiftFunctorCompIsoId C a b h).inv.app X ≫
+    ((shiftFunctorCompIsoId C a' b' h').inv.app (X⟦a⟧))⟦b⟧' ≫
+    (((shiftFunctorAdd C a a').inv.app _)⟦(b')⟧')⟦b⟧' ≫ (shiftFunctorAdd C b' b).inv.app _ := by
+  rw [← cancel_epi ((shiftFunctorCompIsoId C (a + a') (b' + b)
+    (by rw [add_assoc a, ← add_assoc a', h', zero_add, h])).hom.app X), Iso.hom_inv_id_app,
+    shiftFunctorCompIsoId_add_hom_app C a a' b b' h h']
+  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.naturality_assoc, Functor.comp_map,
+    Category.assoc, Iso.hom_inv_id_app_assoc]
+  slice_rhs 3 4 => rw [← Functor.map_comp, Iso.hom_inv_id_app]
+  simp only [Functor.comp_obj, Functor.map_id, Category.id_comp]
+  slice_rhs 2 3 => rw [← Functor.map_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
+  simp only [Functor.map_id, Category.id_comp, Iso.hom_inv_id_app]
+
 end AddMonoid
 
 section AddGroup
@@ -513,6 +553,57 @@ lemma shiftEquiv'_symm_homEquiv (a a' : A) (h : a + a' = 0) (X Y : C) :
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
 abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)
 
+lemma shiftEquiv'_zero_homEquiv (a b : A) (ha : a = 0) (hb : b = 0) (X Y : C) (u : X⟦a⟧ ⟶ Y) :
+    (shiftEquiv' C a b (by simp [ha, hb])).toAdjunction.homEquiv X Y u =
+    (shiftFunctorZero' C a ha).inv.app X ≫ u ≫
+    (shiftFunctorZero' C b hb).inv.app Y := by
+  rw [Adjunction.homEquiv_apply]
+  slice_rhs 2 3 => erw [(shiftFunctorZero' C b hb).inv.naturality]
+  simp only [shiftEquiv'_inverse, shiftEquiv'_functor, Functor.comp_obj,
+    Equivalence.toAdjunction_unit, shiftEquiv'_unit, shiftFunctorCompIsoId,
+    shiftFunctorAdd'_eqToIso a b 0 0 0 0 (by simp [ha, hb]) (by simp) ha hb, eqToIso_refl,
+    Iso.refl_trans, Iso.trans_symm, Iso.trans_assoc, Iso.trans_inv, Iso.symm_inv, eqToIso.hom,
+    Category.assoc, NatTrans.comp_app, Functor.id_obj, shiftFunctorAdd'_add_zero_hom_app,
+    eqToHom_app, shiftFunctorZero', eqToIso.inv]
+  slice_rhs 2 3 => rw [← eqToHom_naturality (fun a ↦ (shiftFunctorZero C A).inv.app
+                   ((shiftFunctor C a).obj X)) ha.symm]
+  simp
+
+lemma shiftEquiv'_zero_homEquiv_symm (a b : A) (ha : a = 0) (hb : b = 0) (X Y : C) (u : X ⟶ Y⟦b⟧) :
+    ((shiftEquiv' C a b (by simp [ha, hb])).toAdjunction.homEquiv X Y).symm u =
+    (shiftFunctorZero' C a ha).hom.app X ≫ u ≫
+    (shiftFunctorZero' C b hb).hom.app Y := by
+  rw [← Equiv.apply_symm_apply ((shiftEquiv' C a b (by simp [ha, hb])).toAdjunction.homEquiv X Y) u,
+  Equiv.symm_apply_apply, shiftEquiv'_zero_homEquiv C a b ha hb]
+  simp
+
+open Adjunction in
+lemma shiftEquiv'_add_homEquiv (a a' b b' : A) (h : a + b = 0) (h' : a' + b' = 0) (X Y : C)
+    (u : X⟦a + a'⟧ ⟶ Y) :
+    (shiftEquiv' C (a + a') (b' + b)
+    (by rw [add_assoc, ← add_assoc a', h', zero_add, h])).toAdjunction.homEquiv X Y u =
+    ((shiftEquiv' C a b h).toAdjunction.comp (shiftEquiv' C a' b' h').toAdjunction).homEquiv X Y
+    ((shiftFunctorAdd C a a').inv.app X ≫ u) ≫
+    (shiftFunctorAdd C b' b).inv.app Y := by
+  simp [comp_homEquiv, homEquiv_apply, shiftEquiv'_unit]
+  rw [shiftFunctorCompIsoId_add_inv_app C a a' b b' h h']
+  simp only [Functor.id_obj, Functor.comp_obj, Category.assoc]
+  erw [(shiftFunctorAdd C b' b).inv.naturality]
+
+open Adjunction in
+lemma shiftEquiv'_add_homEquiv_symm (a a' b b' : A) (h : a + b = 0) (h' : a' + b' = 0) (X Y : C)
+    (v : X ⟶ Y⟦b' + b⟧) :
+    ((shiftEquiv' C (a + a') (b' + b)
+    (by rw [add_assoc, ← add_assoc a', h', zero_add, h])).toAdjunction.homEquiv X Y).symm v =
+    (shiftFunctorAdd C a a').hom.app X ≫ (((shiftEquiv' C a b h).toAdjunction.comp
+    (shiftEquiv' C a' b' h').toAdjunction).homEquiv X Y).symm
+    (v ≫ (shiftFunctorAdd C b' b).hom.app Y) := by
+  simp [comp_homEquiv, homEquiv_symm_apply, shiftEquiv'_counit]
+  rw [shiftFunctorCompIsoId_add_hom_app C b' b a' a (by simp [eq_neg_of_add_eq_zero_left h'])
+  (by simp [eq_neg_of_add_eq_zero_left h])]
+  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.naturality_assoc, Functor.comp_map]
+
+/-
 open Category in
 lemma shiftEquiv_zero'_homEquiv_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a⟧ ⟶ Y) :
     (shiftEquiv C a).symm.toAdjunction.homEquiv X Y u =
@@ -556,6 +647,14 @@ lemma shiftEquiv_zero_homEquiv (X Y : C) :
     (coyoneda.obj (Opposite.op X)).mapIso ((shiftFunctorZero C A).symm.app Y)).toEquiv := by
   rw [shiftEquiv_zero'_homEquiv C (0 : A) rfl]
   simp [shiftFunctorZero']
+
+lemma shiftEquiv'_zero_homEquiv₂ (X Y : C) :
+    (shiftEquiv' C (0 : A) (0 : A) (by simp)).symm.toAdjunction.homEquiv X Y =
+    ((yoneda.obj Y).mapIso ((shiftFunctorZero C A).symm.app X).op ≪≫
+    (coyoneda.obj (Opposite.op X)).mapIso ((shiftFunctorZero C A).symm.app Y)).toEquiv := by sorry
+/-  rw [shiftEquiv_zero'_homEquiv C (0 : A) rfl]
+  simp [shiftFunctorZero']-/
+-/
 
 variable (X Y : C) (f : X ⟶ Y)
 

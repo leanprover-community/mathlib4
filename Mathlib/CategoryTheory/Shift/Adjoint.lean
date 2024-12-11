@@ -26,6 +26,176 @@ section Compatibility
 
 namespace Adjunction
 
+namespace CommShift
+
+/-- Suppose that we have an adjunction between functors `adj : F ⊣ G` with `F : C ⥤ D`,
+that `C` and `D` have shifts by an additive group `A`, that `a, b` are elements of `A`
+such that `a + b = 0`, and that we are given isomorphisms
+`e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a)` and
+`e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)`.
+
+Given a morphism `u : F.obj (X⟦a⟧) ⟶ Y`, there are two natural ways to construct a
+morphism `X ⟶ G.obj (Y⟦b⟧)` from `u`:
+(1) Apply `Adjunction.homEquiv` for the composition of the adjunction deduced from
+the equivalence `shiftEquiv' C a b` and of `adj` to obtain a morphism `X ⟶ (G.obj Y)⟦b⟧` then
+compose on the right with the inverse of `e₂`;
+(2) Compose on the left with the inverse of `e₁` to obtain a morphism `(F.obj X)⟦a⟧ ⟶ Y`
+then apply `Adjunction.homEquiv` for the composition of `adj` and of the adjunction deduced from
+the equivalence `shiftEquiv' D a b`).
+
+We say that the adjunction `adj` is compatible with the isomorphisms `e₁` and `e₂` if,
+for every morphism `u : F.obj(X⟦a⟧) ⟶ Y`, these two constructions give the same result.
+-/
+abbrev compat_left_right (adj : F ⊣ G) (a b : A) (h : a + b = 0)
+    (e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a))
+    (e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)) :=
+  ∀ (X : C) (Y : D) (u : F.obj (X⟦a⟧) ⟶ Y),
+  ((shiftEquiv' C a b h).toAdjunction.comp adj).homEquiv X Y u ≫ e₂.inv.app Y =
+  (adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv X Y (e₁.inv.app X ≫ u)
+
+/--
+Suppose that we have an adjunction between functors `adj : F ⊣ G` with `F : C ⥤ D`,
+that `C` and `D` have shifts by an additive group `A`, that `a, b` are elements of `A`
+such that `a + b = 0`, and that we are given isomorphisms
+`e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a)` and
+`e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)`.
+
+If `adj` is compatible with `e₁` and `e₂` in the sense of `compat_left_right`, this is the
+compatibility condition in the other direction: for every morphism `v : X ⟶ G.obj (Y⟦a⟧)`,
+the two natural ways to construct a morphism `F.obj (X⟦-a⟧) ⟶ Y` from `v` give the same result.
+-/
+lemma compat_right_left (adj : F ⊣ G) (a b : A) (h : a + b = 0)
+    (e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a))
+    (e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b))
+    (hc : compat_left_right adj a b h e₁ e₂)
+    (X : C) (Y : D) (v : X ⟶ G.obj (Y⟦b⟧)) :
+    e₁.hom.app X ≫
+    ((adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv _ _).symm v =
+    (((shiftEquiv' C a b h).toAdjunction.comp adj).homEquiv _ _).symm
+    (v ≫ e₂.hom.app Y) := by
+  have := hc _ _ (e₁.hom.app X ≫
+    ((adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv _ _).symm v)
+  conv_rhs at this => rw [← assoc, Iso.inv_hom_id_app]; erw [id_comp]; rw [Equiv.apply_symm_apply]
+  conv_rhs => rw [← this, assoc, Iso.inv_hom_id_app]; erw [comp_id]; rw [Equiv.symm_apply_apply]
+
+/--
+Suppose that we have an adjunction between functors `adj : F ⊣ G` with `F : C ⥤ D`,
+that `C` and `D` have shifts by an additive group `A`, that `a, b` are elements of `A`
+such that `a + b = 0`, and that we are given isomorphisms
+`e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a)`,
+`e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)` and
+`e₂' : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)`.
+
+If `adj` is compatible with `e₁` and `e₂` in the sense of `compat_left_right`, and
+also with `e₁` and `e₂'`, then we have `e₂ = e₂'`.
+-/
+lemma compat_left_right_unique_right (adj : F ⊣ G) (a b : A) (h : a + b = 0)
+    (e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a))
+    (e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b))
+    (e₂' : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b))
+    (hc : compat_left_right adj a b h e₁ e₂) (hc' : compat_left_right adj a b h e₁ e₂') :
+    e₂ = e₂' := by
+  ext Y
+  have heq := compat_right_left adj a b h e₁ e₂ hc _ Y (𝟙 _)
+  apply_fun (((shiftEquiv' C a b h).toAdjunction.comp adj).homEquiv
+    (G.obj ((shiftFunctor D b).obj Y)) Y) at heq
+  rw [Equiv.apply_symm_apply, id_comp] at heq
+  have heq' := compat_right_left adj a b h e₁ e₂' hc' _ Y (𝟙 _)
+  apply_fun (((shiftEquiv' C a b h).toAdjunction.comp adj).homEquiv
+    (G.obj ((shiftFunctor D b).obj Y)) Y) at heq'
+  rw [Equiv.apply_symm_apply, id_comp] at heq'
+  rw [← heq, ← heq']
+
+/--
+Suppose that we have an adjunction between functors `adj : F ⊣ G` with `F : C ⥤ D`,
+that `C` and `D` have shifts by an additive group `A`, that `a, b` are elements of `A`
+such that `a + b = 0`, and that we are given isomorphisms
+`e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a)`,
+`(e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a))` and
+`e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)`.
+
+If `adj` is compatible with `e₁` and `e₂` in the sense of `compat_left_right`, and
+also with `e₁'` and `e₂'`, then we have `e₁ = e₁'`.
+-/
+lemma compat_left_right_unique_left (adj : F ⊣ G) (a b : A) (h : a + b = 0)
+    (e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a))
+    (e₁' : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a))
+    (e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b))
+    (hc : compat_left_right adj a b h e₁ e₂) (hc' : compat_left_right adj a b h e₁' e₂) :
+    e₁ = e₁' := by
+  rw [← Iso.symm_eq_iff]
+  ext X
+  have heq := hc X _ (𝟙 _)
+  apply_fun ((adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv X
+    (F.obj ((shiftFunctor C a).obj X))).symm at heq
+  rw [Equiv.symm_apply_apply] at heq; erw [comp_id] at heq
+  have heq' := hc' X _ (𝟙 _)
+  apply_fun ((adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv X
+    (F.obj ((shiftFunctor C a).obj X))).symm at heq'
+  rw [Equiv.symm_apply_apply] at heq'; erw [comp_id] at heq'
+  rw [Iso.symm_hom, Iso.symm_hom, ← heq, ← heq']
+
+/--
+The isomorphisms `CommShift.isoZero F A` and `CommShift.isoZero F G` are compatible with any
+adjunction between `F` and `G`.
+-/
+lemma compat_left_right_isoZero (adj : F ⊣ G) :
+    CommShift.compat_left_right adj 0 0 (by simp) (CommShift.isoZero F A) (CommShift.isoZero G A) :=
+    by
+  intro X Y u
+  simp only [comp_obj, shiftEquiv'_inverse, shiftEquiv'_functor, comp_homEquiv, Equiv.trans_apply,
+    isoZero_inv_app, assoc]
+  conv_lhs => erw [shiftEquiv'_zero_homEquiv C 0 0 rfl rfl X (G.obj Y)]
+  conv_rhs => erw [shiftEquiv'_zero_homEquiv D 0 0 rfl rfl (F.obj X) Y]
+  simp only [id_obj, shiftFunctorZero'_eq_shiftFunctorZero, assoc, Iso.inv_hom_id_app_assoc]
+  conv_lhs => rw [← adj.homEquiv_naturality_right, ← adj.homEquiv_naturality_left]
+
+/--
+Suppose that we have an adjunction between functors `adj : F ⊣ G` with `F : C ⥤ D`,
+that `C` and `D` have shifts by an additive group `A`, that `a, a', b, b'` are elements of `A`
+such that `a + b = a' + b' = 0`, and that we are given isomorphisms
+`e₁ : (shiftFunctor C a) ⋙ F ≅ F ⋙ (shiftFunctor D a)`,
+`e₁' : (shiftFunctor C a') ⋙ F ≅ F ⋙ (shiftFunctor D a')`,
+`e₂ : (shiftFunctor D b) ⋙ G ≅ G ⋙ (shiftFunctor C b)` and
+`e₂' : (shiftFunctor D b') ⋙ G ≅ G ⋙ (shiftFunctor C b')`.
+
+If `adj` is compatible with `e₁` and `e₂` in the sense of `compat_left_right`, and also
+with `e₁'` and `e₂'` in the same sense, then it is compatible with `CommShift.isoAdd e₁ e₁'`
+and `CommShift.isoAdd e₂' e₂`.
+-/
+lemma compat_left_right_isoAdd (adj : F ⊣ G) (a a' b b' : A) (h : a + b = 0) (h' : a' + b' = 0)
+    (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
+    (e₁' : shiftFunctor C a' ⋙ F ≅ F ⋙ shiftFunctor D a')
+    (e₂ : shiftFunctor D b ⋙ G ≅ G ⋙ shiftFunctor C b)
+    (e₂' : shiftFunctor D b' ⋙ G ≅ G ⋙ shiftFunctor C b')
+    (hc : CommShift.compat_left_right adj a b h e₁ e₂)
+    (hc' : CommShift.compat_left_right adj a' b' h' e₁' e₂') :
+    CommShift.compat_left_right adj (a + a') (b' + b)
+    (by rw [add_assoc a, ← add_assoc a', h', zero_add, h])
+    (CommShift.isoAdd e₁ e₁') (CommShift.isoAdd e₂' e₂) := by
+  intro X Y u
+  simp [comp_homEquiv]
+  conv_lhs => erw [shiftEquiv'_add_homEquiv C a a' b b' h h']
+  conv_rhs => erw [shiftEquiv'_add_homEquiv D a a' b b' h h']
+  simp [comp_homEquiv]
+  have : u = F.map ((shiftFunctorAdd C a a').hom.app X) ≫
+      (F.map ((shiftFunctorAdd C a a').inv.app X) ≫ u) := by
+    rw [← assoc, ← map_comp, Iso.hom_inv_id_app, map_id, id_comp]
+  conv_lhs => rw [this, adj.homEquiv_naturality_left, ← assoc, ← assoc, ← assoc, Iso.inv_hom_id_app]
+              erw [id_comp]
+              rw [← homEquiv_naturality_right]
+  have := hc' _ _ (F.map ((shiftFunctorAdd C a a').inv.app X) ≫ u)
+  simp [comp_homEquiv] at this
+  conv_lhs => erw [this]
+  have := hc _ _ (((shiftEquiv' D a' b' h').toAdjunction.homEquiv
+    (F.obj ((shiftFunctor C a).obj X)) Y) (e₁'.inv.app ((shiftFunctor C a).obj X) ≫
+    F.map ((shiftFunctorAdd C a a').inv.app X) ≫ u))
+  simp [comp_homEquiv] at this
+  conv_lhs => rw [this, ← adj.homEquiv_naturality_right]
+  conv_rhs => rw [homEquiv_naturality_left]
+
+end CommShift
+
 variable (A)
 
 /-- Suppose that we have an adjunction between functors `adj : F ⊣ G` that both commute with shifts
@@ -42,9 +212,8 @@ We say that the adjunction `adj` is compatible with the `CommShift` structures o
 for every morphism `u : F.obj(X⟦a⟧) ⟶ Y`, these two constructions give the same result.
 -/
 class compatCommShift (adj : F ⊣ G) [CommShift F A] [CommShift G A] where
-  left_right : ∀ (a b : A) (h : a + b = 0) (X : C) (Y : D) (u : F.obj (X⟦a⟧) ⟶ Y),
-    ((shiftEquiv' C a b h).toAdjunction.comp adj).homEquiv X Y u ≫ (G.commShiftIso b).inv.app Y =
-    (adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv X Y ((F.commShiftIso a).inv.app X ≫ u)
+  left_right : ∀ (a b : A) (h : a + b = 0), CommShift.compat_left_right adj a b h
+               (F.commShiftIso a) (G.commShiftIso b)
 
 variable {A}
 
@@ -60,11 +229,9 @@ lemma compatCommShift.right_left (adj : F ⊣ G) [CommShift F A] [CommShift G A]
     (F.commShiftIso a).hom.app X ≫
     ((adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv _ _).symm v =
     (((shiftEquiv' C a b h).toAdjunction.comp adj).homEquiv _ _).symm
-    (v ≫ (G.commShiftIso b).hom.app Y) := by
-  have := compatCommShift.left_right (adj := adj) a b h _ _ ((F.commShiftIso a).hom.app X ≫
-    ((adj.comp (shiftEquiv' D a b h).toAdjunction).homEquiv _ _).symm v)
-  conv_rhs at this => rw [← assoc, Iso.inv_hom_id_app]; erw [id_comp]; rw [Equiv.apply_symm_apply]
-  conv_rhs => rw [← this, assoc, Iso.inv_hom_id_app]; erw [comp_id]; rw [Equiv.symm_apply_apply]
+    (v ≫ (G.commShiftIso b).hom.app Y) :=
+  CommShift.compat_right_left adj a b h (F.commShiftIso a) (G.commShiftIso b)
+  (compatCommShift.left_right a b h) _ _ _
 
 open scoped Opposite in
 /--
@@ -95,7 +262,7 @@ def compatCommShift_op (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adj.comp
 
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F`
-and `G`, then we a have a shift-twisted adjunction left triangle.
+and `G`, then we a have a shift-twisted adjunction right triangle.
 -/
 lemma compatCommShift_right_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A]
     [adj.compatCommShift A] (a : A) (Y : D) :
@@ -124,9 +291,9 @@ lemma compatCommShift_right_triangle (adj : F ⊣ G) [CommShift F A] [CommShift 
 open scoped Opposite in
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F`
-and `G`, then we a have a shift-twisted adjunction right triangle.
+and `G`, then we a have a shift-twisted adjunction left triangle.
 -/
-lemma compatCpmmShift_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A]
+lemma compatCommShift_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A]
     [adj.compatCommShift A] (a : A) (X : C) :
     (F.map (adj.unit.app X))⟦a⟧' ≫ (CommShift.iso a).inv.app (G.obj (F.obj X)) ≫
     F.map ((CommShift.iso a).inv.app (F.obj X)) ≫ adj.counit.app ((F.obj X)⟦a⟧) = 𝟙 _ := by
@@ -269,22 +436,37 @@ lemma left_to_right_iso_hom_app (adj : F ⊣ G) (commF : CommShift F A) (a a' : 
   rw [comp_left_to_right_iso_hom_app _ _ a a' h]
   simp
 
+/-- If we have an adjunction `adj : F ⊣ G` and a `CommShift F A` structure on `commF`, then,
+for all `a, b` in `A` such that `a + b = 0`, the adjunction `adj` is compatible with the
+isomorphisms `F.commShiftIso a` and `left_to_right_iso adj commF b`.
+-/
+lemma left_to_right_compat (adj : F ⊣ G) (commF : CommShift F A) (a b : A) (h : a + b = 0) :
+    CommShift.compat_left_right adj a b h (F.commShiftIso a) (left_to_right_iso adj commF b) := by
+  intro X Y u
+  rw [← cancel_mono ((left_to_right_iso adj commF b).hom.app Y)]
+  slice_lhs 2 3 => rw [Iso.inv_hom_id_app]
+  conv_rhs => erw [comp_left_to_right_iso_hom_app adj commF b a
+              (by simp [eq_neg_of_add_eq_zero_left h])]
+  rw [comp_homEquiv, comp_homEquiv]
+  simp only [comp_obj, shiftEquiv'_inverse, shiftEquiv'_functor, Equiv.trans_apply, comp_id,
+  Equivalence.symm_functor, Equivalence.symm_inverse, Equiv.symm_apply_apply]
+  rw [shiftEquiv'_symm_homEquiv, shiftEquiv'_symm_homEquiv, Equiv.symm_apply_apply, ← assoc]
+  erw [Iso.hom_inv_id_app]
+  simp
+
 lemma left_to_right_iso_zero (adj : F ⊣ G) (commF : CommShift F A) :
     left_to_right_iso adj commF 0 = CommShift.isoZero G A := by
   ext Y
-  rw [left_to_right_iso_hom_app _ _ 0 (-0) (by simp)]
-  conv_lhs => --erw [shiftEquiv_zero_homEquiv D]
-              erw [shiftEquiv_zero'_homEquiv_symm_app D (0 : A) rfl _ Y]
-              erw [← homEquiv_naturality_right_symm]
-  simp only [id_obj, shiftFunctorZero'_eq_shiftFunctorZero, id_comp, counit_naturality,
-      comp_obj, map_comp]
-  change ((shiftEquiv C (0 : A)).symm.toAdjunction.homEquiv _ (G.obj Y))
-    ((adj.homEquiv ((shiftFunctor C (-0)).obj _) Y) ((F.commShiftIso (-0)).hom.app _ ≫ _)) = _
-  rw [F.commShiftIso_zero' A (-0 : A) (by simp)]
-  simp only [CommShift.isoZero'_hom_app, map_comp, assoc]
-  rw [← assoc ((shiftFunctorZero' D (-0 : A) (by simp)).inv.app _),
-      Iso.inv_hom_id_app, id_comp, ← homEquiv_naturality_left_symm, Equiv.apply_symm_apply,
-      shiftEquiv_zero_homEquiv]
+  rw [left_to_right_iso_hom_app _ _ 0 0 (by simp)]
+  change ((shiftEquiv' C 0 0 (by simp)).symm.toAdjunction.homEquiv
+    (G.obj ((shiftFunctor D 0).obj Y)) (G.obj Y))
+    ((adj.homEquiv ((shiftFunctor C 0).obj (G.obj ((shiftFunctor D 0).obj Y))) Y)
+    ((F.commShiftIso 0).hom.app (G.obj ((shiftFunctor D 0).obj Y)) ≫ _)) = _
+  rw [F.commShiftIso_zero]
+  rw [shiftEquiv'_symm_homEquiv, shiftEquiv'_symm_homEquiv]
+  erw [shiftEquiv'_zero_homEquiv C 0 0 rfl rfl, shiftEquiv'_zero_homEquiv_symm D 0 0 rfl rfl]
+  simp
+  rw [adj.homEquiv_naturality_left, adj.homEquiv_naturality_right, Equiv.apply_symm_apply]
   simp
 
 lemma left_to_right_iso_add (adj : F ⊣ G) (commF : CommShift F A) (a b : A) :
