@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Polynomial.Smeval
-import Mathlib.Algebra.Order.Floor
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.FieldSimp
@@ -259,8 +258,8 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
     simp_all only [smul_assoc, Nat.cast_smul_eq_nsmul]
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
-    rw [← smul_assoc, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr n.factorial_ne_zero),
-      one_smul]
+    simp only [← smul_assoc]
+    field_simp
 
 end Basic_Instances
 
