@@ -15,13 +15,15 @@ two-sided ideals.
 - `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R` such that `f i` converges to `0`,
 `f i * g i` converges to `0`.
 
-TODO. For the moment, only commutative rings are considered.
+TODO. For the moment, only commutative rings are considered. The general case
+requires to use two-sided ideals, and it is not clear whether I wish to use `TwoSidedIdeal α`
+or a predicate on `Ideal α`.
 
 -/
 
 section Definition
 
-variable (α : Type*) [CommRing α]
+variable (α : Type*) [Ring α]
 
 /-- A topology on a ring is linear if its topology is defined by a family of ideals. -/
 class LinearTopology [TopologicalSpace α] [TopologicalRing α] where
