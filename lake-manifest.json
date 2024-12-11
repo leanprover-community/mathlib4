@@ -68,7 +68,7 @@
    "rev": "b80508fccc50d04687bb3cb08379f943c8e21ae2",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing",
+   "inputRev": "lean-pr-testing-3696",
    "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover/lean4-cli",
