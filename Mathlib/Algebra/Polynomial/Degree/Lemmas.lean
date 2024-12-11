@@ -367,6 +367,19 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [← coeff_comp_degree_mul_degree hq, ← natDegree_comp, coeff_natDegree]
 
+/-- When there are no zero divisors, multiplying a polynomial by a nonzero constant leaves the
+    degree unchanged. -/
+theorem natDegree_mul_of_nonzero (ha : a ≠ 0) : natDegree (C a * p) = p.natDegree := by
+  by_cases hp : p = 0
+  next P0 => simp only [hp, mul_zero, natDegree_zero]
+  next Pn0 =>
+    rw [← zero_add p.natDegree, ← natDegree_C a]
+    apply natDegree_mul'
+    simp only [leadingCoeff_C, ne_eq, mul_eq_zero, leadingCoeff_eq_zero]
+    rintro ⟨a0 | p0⟩
+    next a0 => exact ha rfl
+    next p0 => exact hp p0
+
 end NoZeroDivisors
 
 @[simp] lemma comp_neg_X_leadingCoeff_eq [Ring R] (p : R[X]) :
