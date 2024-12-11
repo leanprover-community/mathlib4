@@ -403,7 +403,7 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
   let e : Fin pb.dim ≃ (L →ₐ[K] AlgebraicClosure L) := (Fintype.equivFinOfCardEq ?_).symm
   · rw [RingHom.map_det, RingHom.mapMatrix_apply,
       traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,
-      embeddingsMatrixReindex_eq_vandermonde, det_mul, det_transpose]
+      embeddingsMatrixReindex_eq_vandermonde, Matrix.det_mul, det_transpose]
     refine mt mul_self_eq_zero.mp ?_
     simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
     rintro i ⟨_, j, hij, h⟩
@@ -415,7 +415,7 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Ba
   haveI : FiniteDimensional K L := FiniteDimensional.of_fintype_basis b
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
   rw [← BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
-    det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
+    det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, Matrix.det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine
     mul_ne_zero
@@ -425,7 +425,7 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Ba
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =
           (pb.basis.toMatrix b * (b.toMatrix pb.basis * pb.basis.toMatrix b)ᵀ *
               b.toMatrix pb.basis).det := by
-        simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
+        simp only [← Matrix.det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
       _ = 1 := by
         simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]
