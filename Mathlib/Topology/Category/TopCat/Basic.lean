@@ -34,22 +34,16 @@ instance bundledHom : BundledHom @ContinuousMap where
 
 deriving instance LargeCategory for TopCat
 
--- Porting note: currently no derive handler for ConcreteCategory
--- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat :=
-  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace)
-
 instance : CoeSort TopCat Type* where
   coe X := X.α
 
 instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
   X.str
 
-instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
-  inferInstanceAs <| FunLike C(X, Y) X Y
-
-instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
-  inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
+-- Porting note: currently no derive handler for ConcreteCategory
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
+instance concreteCategory : ConcreteCategory TopCat (fun X Y => ContinuousMap X Y) Bundled.α :=
+  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace) _ _
 
 @[simp]
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
@@ -84,21 +78,28 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
     (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
   X.str
 
-@[simp]
+-- Not `@[simp]` since it will rewrite in the type of `apply` lemmas. 
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
+
+/-- Construct a bundled `Top` morphism from a continuous map. -/
+def ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
+    of X ⟶ of Y :=
+  f
 
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.
 -/
-@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : C(X, Y)} {x} :
-    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
-      f x =
-    @DFunLike.coe C(X, Y) X
-      (fun _ ↦ Y) _
-      f x :=
+@[simp] theorem coe_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : C(X, Y)) : (ofHom f : X → Y) = f :=
+  rfl
+
+/--
+Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
+equal function coercion for a continuous map `C(X, Y)`.
+-/
+@[simp] theorem ofHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : C(X, Y)} {x} : ofHom f x = f x :=
   rfl
 
 instance inhabited : Inhabited TopCat :=

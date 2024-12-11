@@ -51,6 +51,10 @@ namespace BundledHom
 
 variable [𝒞 : BundledHom hom]
 
+instance {α β} (Iα : c α) (Iβ : c β) : FunLike (hom Iα Iβ) α β where
+  coe := BundledHom.toFun 𝒞 _ _
+  coe_injective' := BundledHom.hom_ext 𝒞 _ _
+
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
@@ -66,13 +70,11 @@ instance category : Category (Bundled c) where
   id_comp _ := by apply 𝒞.hom_ext; simp
 
 /-- A category given by `BundledHom` is a concrete category. -/
-instance concreteCategory : ConcreteCategory.{u} (Bundled c) where
-  forget :=
-    { obj := fun X => X
-      map := @fun X Y f => 𝒞.toFun X.str Y.str f
-      map_id := fun X => 𝒞.id_toFun X.str
-      map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
-  forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
+instance concreteCategory : ConcreteCategory.{u} (Bundled c) (fun X Y => hom X.str Y.str) _ where
+  hom f := f
+  ofHom f := f
+  id_apply _ := congrFun (id_toFun 𝒞 _) _
+  comp_apply _ _ _ := congrFun (comp_toFun 𝒞 _ _ _ _ _) _
 
 /-- This unification hint helps `rw` to figure out how to apply statements about abstract
 concrete categories to specific concrete categories. Crucially, it fires also at `reducible`
@@ -81,8 +83,6 @@ unif_hint (C : Bundled c) where
   ⊢ (CategoryTheory.forget (Bundled c)).obj C =?= Bundled.α C
 
 variable {hom}
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}

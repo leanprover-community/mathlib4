@@ -59,14 +59,14 @@ theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
 
 theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : ∀ i, α i) :
     (Pi.π α i :) ((piIsoPi α).inv x) = x i :=
-  ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
+  congr_hom (piIsoPi_inv_π α i) x
 
 -- Porting note: needing the type ascription on `∏ᶜ α : TopCat.{max v u}` is unfortunate.
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := by
   have := piIsoPi_inv_π α i
   rw [Iso.inv_comp_eq] at this
-  exact ConcreteCategory.congr_hom this x
+  exact congr_hom this x
 
 -- Porting note: Lean doesn't automatically reduce TopCat.of X|>.α to X now
 /-- The inclusion to the coproduct as a bundled continuous map. -/
@@ -74,7 +74,9 @@ abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ 
   refine ContinuousMap.mk ?_ ?_
   · dsimp
     apply Sigma.mk i
-  · dsimp; continuity
+  · dsimp
+    -- Note: was `continuity`; not sure why that failed.
+    apply continuous_sigmaMk
 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]
@@ -107,7 +109,7 @@ theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
 
 theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).hom ((Sigma.ι α i :) x) = Sigma.mk i x :=
-  ConcreteCategory.congr_hom (sigmaIsoSigma_hom_ι α i) x
+  congr_hom (sigmaIsoSigma_hom_ι α i) x
 
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i :) x := by
@@ -132,11 +134,11 @@ section Prod
 -- Porting note: why is autoParam not firing?
 /-- The first projection from the product. -/
 abbrev prodFst {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ X :=
-  ⟨Prod.fst, by continuity⟩
+  ⟨Prod.fst, continuous_fst⟩
 
 /-- The second projection from the product. -/
 abbrev prodSnd {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ Y :=
-  ⟨Prod.snd, by continuity⟩
+  ⟨Prod.snd, continuous_snd⟩
 
 /-- The explicit binary cofan of `X, Y` given by `X × Y`. -/
 def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
@@ -187,8 +189,8 @@ theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` didn't pick this up.
   apply Prod.ext
-  · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
-  · exact ConcreteCategory.congr_hom (prodIsoProd_hom_snd X Y) x
+  · exact congr_hom (prodIsoProd_hom_fst X Y) x
+  · exact congr_hom (prodIsoProd_hom_snd X Y) x
 
 @[reassoc (attr := simp), elementwise]
 theorem prodIsoProd_inv_fst (X Y : TopCat.{u}) :
@@ -227,14 +229,12 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← comp_apply, Limits.prod.map_fst]
-      change (_ ≫ _ ≫ f) _ = _
-      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+      erw [← comp_apply, Limits.prod.map_fst, ← comp_apply]
+      rw [TopCat.prodIsoProd_inv_fst_assoc W X f, TopCat.comp_app]
       exact hx₁
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
-      erw [← comp_apply, Limits.prod.map_snd]
-      change (_ ≫ _ ≫ g) _ = _
-      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+      erw [← comp_apply, Limits.prod.map_snd, ← comp_apply]
+      rw [TopCat.prodIsoProd_inv_snd_assoc, TopCat.comp_app]
       exact hx₂
 
 theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)
@@ -261,7 +261,7 @@ end Prod
 
 /-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
-  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (X ⊕ Y)) ⟨Sum.inr, by continuity⟩
+  BinaryCofan.mk (⟨Sum.inl, continuous_inl⟩ : X ⟶ TopCat.of (X ⊕ Y)) ⟨Sum.inr, continuous_inr⟩
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
@@ -277,7 +277,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
     rfl
   · intro s m h₁ h₂
     ext (x | x)
-    exacts [(ConcreteCategory.congr_hom h₁ x :), (ConcreteCategory.congr_hom h₂ x :)]
+    exacts [(congr_hom h₁ x :), (congr_hom h₂ x :)]
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
@@ -344,17 +344,18 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
         · dsimp
-          conv_lhs => rw [Equiv.ofInjective_symm_apply]
+          -- This seems to need `erw` for type mismatch reasons in `(of X : X) = X` (?)
+          conv_lhs => erw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x
         refine (dif_neg ?_).trans ?_
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this
-        · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
+        · exact _root_.congr_arg g (Equiv.ofInjective_symm_apply _ _)
       · rintro T _ _ m rfl rfl
         ext x
         change m x = dite _ _ _
-        split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
+        split_ifs <;> exact _root_.congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
 end TopCat

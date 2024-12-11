@@ -120,11 +120,9 @@ lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} SemiRingCat where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) carrier where
+  hom := Hom.hom
+  ofHom := ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
 unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
@@ -264,11 +262,9 @@ lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} RingCat where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) carrier where
+  hom := Hom.hom
+  ofHom := ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
@@ -413,11 +409,9 @@ lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} CommSemiRingCat where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) carrier where
+  hom := Hom.hom
+  ofHom := ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
 unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
@@ -560,11 +554,9 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} CommRingCat where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) carrier where
+  hom := Hom.hom
+  ofHom := ofHom
 
 lemma forget_obj {R : CommRingCat} : (forget CommRingCat).obj R = R := rfl
 
@@ -669,10 +661,10 @@ abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 lemma RingCat.forget_map_apply {R S : RingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget RingCat).obj R) :
-    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
+    (forget _).map f x = f x :=
   rfl
 
 lemma CommRingCat.forget_map_apply {R S : CommRingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget CommRingCat).obj R) :
-    @DFunLike.coe _ _ _ ConcreteCategory.instFunLike f x = f x :=
+    (forget _).map f x = f x :=
   rfl

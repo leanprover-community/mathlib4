@@ -48,13 +48,15 @@ instance : Category TopCommRingCat.{u} where
       cases g
       dsimp; apply Continuous.comp <;> assumption⟩
 
-instance : ConcreteCategory TopCommRingCat.{u} where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.val }
-  -- Porting note: Old proof was `forget_faithful := { }`
-  forget_faithful :=
-    { map_injective := fun {_ _ _ _} h => Subtype.ext <| RingHom.coe_inj h }
+-- TODO: is this a legitimate instance?
+instance {R S : Type*} [CommRing R] [CommRing S] [TopologicalSpace R] [TopologicalSpace S] :
+    FunLike { f : R →+* S // Continuous f } R S where
+  coe f := f.val
+  coe_injective' f g h := by ext x; exact congrFun h x
+
+instance : ConcreteCategory TopCommRingCat.{u} (fun R S => {f : R →+* S // Continuous f}) α where
+  hom f := f
+  ofHom f := f
 
 /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
 -/

@@ -42,25 +42,16 @@ deriving instance LargeCategory for Grp
 attribute [to_additive] instGrpLargeCategory
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory Grp := by
-  dsimp only [Grp]
-  infer_instance
-
-@[to_additive]
 instance : CoeSort Grp Type* where
   coe X := X.α
 
 @[to_additive]
 instance (X : Grp) : Group X := X.str
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : Grp} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →* Y) := f
-
-@[to_additive]
-instance instFunLike (X Y : Grp) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (X →* Y) X Y from inferInstance
+instance concreteCategory : ConcreteCategory Grp (fun M N => M →* N) Bundled.α := by
+  dsimp only [Grp]
+  infer_instance
 
 @[to_additive (attr := simp)]
 lemma coe_id {X : Grp} : (𝟙 X : X → X) = id := rfl
@@ -85,7 +76,9 @@ def of (X : Type u) [Group X] : Grp :=
 /-- Construct a bundled `AddGroup` from the underlying type and typeclass. -/
 add_decl_doc AddGrp.of
 
-@[to_additive (attr := simp)]
+-- This should not be `@[simp]` because it will apply to the coercions in e.g.
+-- `AddCommGrp.asHom_apply` below.
+@[to_additive]
 theorem coe_of (R : Type u) [Group R] : ↑(Grp.of R) = R :=
   rfl
 
@@ -127,7 +120,12 @@ def ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGrp.ofHom
 
-@[to_additive]
+@[to_additive (attr := simp)]
+theorem coe_ofHom {X Y : Type _} [Group X] [Group Y] (f : X →* Y) :
+    (ofHom f : X → Y) = f :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
@@ -171,25 +169,16 @@ deriving instance LargeCategory for CommGrp
 attribute [to_additive] instCommGrpLargeCategory
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommGrp := by
-  dsimp only [CommGrp]
-  infer_instance
-
-@[to_additive]
 instance : CoeSort CommGrp Type* where
   coe X := X.α
 
 @[to_additive]
 instance commGroupInstance (X : CommGrp) : CommGroup X := X.str
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : CommGrp} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →* Y) := f
-
-@[to_additive]
-instance instFunLike (X Y : CommGrp) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (X →* Y) X Y from inferInstance
+instance concreteCategory : ConcreteCategory CommGrp (fun G H => G →* H) Bundled.α := by
+  dsimp only [CommGrp]
+  infer_instance
 
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommGrp} : (𝟙 X : X → X) = id := rfl
@@ -221,7 +210,9 @@ add_decl_doc AddCommGrp.of
 instance : Inhabited CommGrp :=
   ⟨CommGrp.of PUnit⟩
 
-@[to_additive (attr := simp)]
+-- This should not be `@[simp]` because it will apply to the coercions in e.g.
+-- `AddCommGrp.asHom_apply` below.
+@[to_additive]
 theorem coe_of (R : Type u) [CommGroup R] : (CommGrp.of R : Type u) = R :=
   rfl
 
@@ -273,7 +264,7 @@ add_decl_doc AddCommGrp.ofHom
 
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
-    @DFunLike.coe (X →* Y) X (fun _ ↦ Y) _ (ofHom f) x = f x :=
+    (ofHom f) x = f x :=
   rfl
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
@@ -304,7 +295,7 @@ def asHom {G : AddCommGrp.{0}} (g : G) : AddCommGrp.of ℤ ⟶ G :=
 
 @[simp]
 theorem asHom_apply {G : AddCommGrp.{0}} (g : G) (i : ℤ) :
-    @DFunLike.coe (ℤ →+ ↑G) ℤ (fun _ ↦ ↑G) _ (asHom g) i = i • g :=
+    (asHom g) i = i • g :=
   rfl
 
 theorem asHom_injective {G : AddCommGrp.{0}} : Function.Injective (@asHom G) := fun h k w => by
@@ -327,9 +318,9 @@ end AddCommGrp
 
 /-- Build an isomorphism in the category `Grp` from a `MulEquiv` between `Group`s. -/
 @[to_additive (attr := simps)]
-def MulEquiv.toGrpIso {X Y : Grp} (e : X ≃* Y) : X ≅ Y where
-  hom := e.toMonoidHom
-  inv := e.symm.toMonoidHom
+def MulEquiv.toGrpIso {X Y : Type _} [Group X] [Group Y] (e : X ≃* Y) : Grp.of X ≅ Grp.of Y where
+  hom := Grp.ofHom e.toMonoidHom
+  inv := Grp.ofHom e.symm.toMonoidHom
 
 /-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/
 add_decl_doc AddEquiv.toAddGrpIso
@@ -337,9 +328,10 @@ add_decl_doc AddEquiv.toAddGrpIso
 /-- Build an isomorphism in the category `CommGrp` from a `MulEquiv`
 between `CommGroup`s. -/
 @[to_additive (attr := simps)]
-def MulEquiv.toCommGrpIso {X Y : CommGrp} (e : X ≃* Y) : X ≅ Y where
-  hom := e.toMonoidHom
-  inv := e.symm.toMonoidHom
+def MulEquiv.toCommGrpIso {X Y : Type _} [CommGroup X] [CommGroup Y] (e : X ≃* Y) :
+    CommGrp.of X ≅ CommGrp.of Y where
+  hom := CommGrp.ofHom e.toMonoidHom
+  inv := CommGrp.ofHom e.symm.toMonoidHom
 
 /-- Build an isomorphism in the category `AddCommGrp` from an `AddEquiv`
 between `AddCommGroup`s. -/

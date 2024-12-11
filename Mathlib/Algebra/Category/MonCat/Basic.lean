@@ -53,11 +53,6 @@ instance bundledHom : BundledHom AssocMonoidHom where
 deriving instance LargeCategory for MonCat
 attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
-@[to_additive]
-instance concreteCategory : ConcreteCategory MonCat :=
-  BundledHom.concreteCategory _
-
 @[to_additive]
 instance : CoeSort MonCat Type* where
   coe X := X.α
@@ -65,18 +60,10 @@ instance : CoeSort MonCat Type* where
 @[to_additive]
 instance (X : MonCat) : Monoid X := X.str
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →* Y) := f
-
-@[to_additive]
-instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
-  inferInstanceAs <| FunLike (X →* Y) X Y
-
-@[to_additive]
-instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
-  inferInstanceAs <| MonoidHomClass (X →* Y) X Y
+instance concreteCategory : ConcreteCategory MonCat (fun M N => M →* N) Bundled.α where
+  hom f := f
+  ofHom f := f
 
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
@@ -168,12 +155,6 @@ instance : BundledHom.ParentProjection @CommMonoid.toMonoid := ⟨⟩
 deriving instance LargeCategory for CommMonCat
 attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCategory
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
-@[to_additive]
-instance concreteCategory : ConcreteCategory CommMonCat := by
-  dsimp only [CommMonCat]
-  infer_instance
-
 @[to_additive]
 instance : CoeSort CommMonCat Type* where
   coe X := X.α
@@ -181,14 +162,11 @@ instance : CoeSort CommMonCat Type* where
 @[to_additive]
 instance (X : CommMonCat) : CommMonoid X := X.str
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →* Y) := f
-
-@[to_additive]
-instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
-  show FunLike (X →* Y) X Y by infer_instance
+instance concreteCategory : ConcreteCategory CommMonCat (fun M N => M →* N) _ where
+  hom f := f
+  ofHom f := f
 
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl

@@ -45,12 +45,16 @@ universe u
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : (forget (Type u)).map f = f := rfl
 
-theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
+theorem hom_elementwise {C : Type*} {F : C → C → Type*} {carrier : C → Type*}
+    {instFunLike : ∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)}
+    [Category C] [ConcreteCategory C F carrier]
+    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : carrier X) : f x = g x := by rw [h]
 
-theorem hom_elementwise {C : Type*} [Category C] [ConcreteCategory C]
-    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
+theorem hom_elementwise_forget {C : Type*} [Category C] [HasForget C]
+    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : (forget C).obj X) :
+    (forget C).map f x = (forget C).map g x := by rw [h]
 
 end theorems
 
@@ -59,7 +63,7 @@ def elementwiseThms : List Name :=
   [``CategoryTheory.coe_id, ``CategoryTheory.coe_comp, ``CategoryTheory.comp_apply,
     ``CategoryTheory.id_apply,
     -- further simplifications if the category is `Type`
-    ``forget_hom_Type, ``forall_congr_forget_Type,
+    ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
     -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]
@@ -77,7 +81,7 @@ The `simpSides` option controls whether to simplify both sides of the equality, 
 purposes.
 -/
 def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
-    MetaM (Expr × Option Level) := do
+    MetaM (Expr × Option (Level × Level)) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
     mkHomElementwise type' (← mkExpectedTypeHint (mkAppN pf fvars) type') fun eqPf instConcr? => do
@@ -98,36 +102,56 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
                 to the trivial equality {ty'}. \
                 Either add `nosimp` or remove the `elementwise` attribute."
         eqPf' ← mkExpectedTypeHint eqPf'' ty'
-      if let some (w, instConcr) := instConcr? then
-        return (← Meta.mkLambdaFVars (fvars.push instConcr) eqPf', w)
+      if let some (w, uF, insts) := instConcr? then
+        return (← Meta.mkLambdaFVars (fvars.append insts) eqPf', (w, uF))
       else
         return (← Meta.mkLambdaFVars fvars eqPf', none)
 where
   /-- Given an equality, extract a `Category` instance from it or raise an error.
   Returns the name of the category and its instance. -/
-  extractCatInstance (eqTy : Expr) : MetaM (Expr × Expr) := do
+  extractCatInstance  (eqTy : Expr) : MetaM (Expr × Expr) := do
     let some (α, _, _) := eqTy.cleanupAnnotations.eq? | failure
     let (``Quiver.Hom, #[_, instQuiv, _, _]) := α.getAppFnArgs | failure
     let (``CategoryTheory.CategoryStruct.toQuiver, #[_, instCS]) := instQuiv.getAppFnArgs | failure
     let (``CategoryTheory.Category.toCategoryStruct, #[C, instC]) := instCS.getAppFnArgs | failure
     return (C, instC)
-  mkHomElementwise {α} (eqTy eqPf : Expr) (k : Expr → Option (Level × Expr) → MetaM α) :
+  mkHomElementwise {α} [Inhabited α] (eqTy eqPf : Expr)
+      (k : Expr → Option (Level × Level × Array Expr) → MetaM α) :
       MetaM α := do
     let (C, instC) ← try extractCatInstance eqTy catch _ =>
       throwError "elementwise expects equality of morphisms in a category"
     -- First try being optimistic that there is already a ConcreteCategory instance.
     if let some eqPf' ← observing? (mkAppM ``hom_elementwise #[eqPf]) then
       k eqPf' none
+    -- We might still fall back to `HasForget` (in particular for `Type`)
+    else if let some eqPf' ← observing? (mkAppM ``hom_elementwise_forget #[eqPf]) then
+      k eqPf' none
     else
       -- That failed, so we need to introduce the instance, which takes creating
       -- a fresh universe level for `ConcreteCategory`'s forgetful functor.
       let .app (.const ``Category [v, u]) _ ← inferType instC
-        | throwError "internal error in elementwise"
+        | throwError "internal error in elementwise: {← inferType instC}"
       let w ← mkFreshLevelMVar
-      let cty : Expr := mkApp2 (.const ``ConcreteCategory [w, v, u]) C instC
-      withLocalDecl `inst .instImplicit cty fun cfvar => do
-        let eqPf' ← mkAppM ``hom_elementwise #[eqPf]
-        k eqPf' (some (w, cfvar))
+      let uF ← mkFreshLevelMVar
+      -- Give a type to the `FunLike` instance on `F`
+      let fty (F carrier : Expr) : Expr :=
+        -- I *think* this is right, but it certainly doesn't feel like I'm doing it right.
+        .forallE `X C (.forallE `Y C (mkApp3
+          (.const ``FunLike [.succ uF, .succ w, .succ w])
+          (mkApp2 F (.bvar 1) (.bvar 0))
+          (mkApp carrier (.bvar 1)) (mkApp carrier (.bvar 0))) default) default
+      -- Give a type to the `ConcreteCategory` instance on `C`
+      let cty (F carrier instFunLike : Expr) : Expr :=
+        mkApp5 (.const ``ConcreteCategory [w, v, u, uF]) C instC F carrier instFunLike
+      withLocalDecls
+        #[(`F, .implicit, fun _ => pure <| .forallE `X C (.forallE `Y C
+            (.sort (.succ uF)) default) default),
+          (`carrier, .implicit, fun _ => pure <| .forallE `X C (.sort (.succ w)) default),
+          (`instFunLike, .implicit, fun decls => pure <| fty decls[0]! decls[1]!),
+          (`inst, .instImplicit, fun decls => pure <| cty decls[0]! decls[1]! decls[2]!)]
+        fun cfvars => do
+          let eqPf' ← mkAppM ``hom_elementwise #[eqPf]
+          k eqPf' (some (w, uF, cfvars))
 
 /-- Gives a name based on `baseName` that's not already in the list. -/
 private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
@@ -192,11 +216,14 @@ initialize registerBuiltinAttribute {
       throwError "`elementwise` can only be used as a global attribute"
     addRelatedDecl src "_apply" ref stx? fun type value levels => do
       let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
-      let newLevels ← if let some level := level? then do
+      let newLevels ← if let some (levelW, levelUF) := level? then do
         let w := mkUnusedName levels `w
-        unless ← isLevelDefEq level (mkLevelParam w) do
-          throwError "Could not create level parameter for ConcreteCategory instance"
-        pure <| w :: levels
+        let uF := mkUnusedName levels `uF
+        unless ← isLevelDefEq levelW (mkLevelParam w) do
+          throwError "Could not create level parameter `w` for ConcreteCategory instance"
+        unless ← isLevelDefEq levelUF (mkLevelParam uF) do
+          throwError "Could not create level parameter `uF` for ConcreteCategory instance"
+        pure <| uF :: w :: levels
       else
         pure levels
       pure (newValue, newLevels)

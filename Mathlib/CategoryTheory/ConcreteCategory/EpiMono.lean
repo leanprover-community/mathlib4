@@ -25,7 +25,8 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+variable {C : Type u} [Category.{v} C] {F : C → C → Type*} {carrier : C → Type w}
+variable [∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)] [ConcreteCategory C F carrier]
 
 open Limits MorphismProperty
 
@@ -33,14 +34,16 @@ namespace ConcreteCategory
 
 section
 
-attribute [local instance] ConcreteCategory.instFunLike in
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
   (forget C).mono_of_mono_map ((mono_iff_injective ((forget C).map f)).2 i)
 
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
+    [Category.{v} C] {FC : C → C → Type*} {cC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (cC X) (cC Y)] [ConcreteCategory C FC cC]
+    [Category.{v'} D] {FD : D → D → Type*} {cD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (cD X) (cD Y)] [ConcreteCategory D FD cD]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
@@ -49,7 +52,10 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
 
 instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
+    [Category.{v} C] {FC : C → C → Type*} {cC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (cC X) (cC Y)] [ConcreteCategory C FC cC]
+    [Category.{v'} D] {FD : D → D → Type*} {cD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (cD X) (cD Y)] [ConcreteCategory D FD cD]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
@@ -132,9 +138,6 @@ end
 section
 
 open CategoryTheory.Limits
-
-attribute [local instance] ConcreteCategory.hasCoeToSort
-attribute [local instance] ConcreteCategory.instFunLike
 
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=

@@ -321,7 +321,8 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
       · rintro T _ _ m rfl rfl
         funext x
         dsimp
-        split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
+        -- TODO: make `CategoryTheory.congr_arg` protected?
+        split_ifs <;> exact _root_.congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
@@ -905,7 +906,7 @@ variable {f g}
 lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
-  convert congr_arg e.hom.hom h
+  convert _root_.congr_arg e.hom.hom h
   · exact congr_fun (e.hom.w WalkingSpan.left).symm x₁
   · exact congr_fun (e.hom.w WalkingSpan.right).symm x₂
 
