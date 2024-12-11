@@ -20,7 +20,7 @@ all coefficients the exponent of which is smaller than some bound vanish.
 
 TODO. For the moment, this is restricted to commutative rings because of the similar
 restriction for linear topologies. However, the definition below is already correct
-in the general case, the issue is solely about the definition of a linear topology. 
+in the general case, the issue is solely about the definition of a linear topology.
 
 -/
 namespace MvPowerSeries
