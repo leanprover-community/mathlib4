@@ -249,10 +249,11 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
   tauto
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : p.tail.IsPath := by
-  rw [Walk.isPath_def] at hp ⊢
-  rw [← cons_support_tail _ hp', List.nodup_cons] at hp
-  exact hp.2
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
+  cases p with
+  | nil => simp
+  | cons hadj p =>
+    simp_all [Walk.isPath_def]
 
 /-! ### About paths -/
 
