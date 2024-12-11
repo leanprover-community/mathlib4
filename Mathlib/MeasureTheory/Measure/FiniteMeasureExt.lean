@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Extensionality of finite measures
-The main Result is `ext_of_forall_mem_subalgebra_integral_eq`:
+The main Result is `ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable`:
 Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elements are bounded. If
 the integrals of all elements `A` with respect to two finite measures `P, P'`coincide, then the
 measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
@@ -16,12 +16,11 @@ measures coincide. In other words: If a Subalgebra separates points, it separate
 
 open MeasureTheory Filter
 
-variable {E 𝕜 : Type*} [RCLike 𝕜]
-    [MeasurableSpace E] [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E]
-    [SecondCountableTopology E] {P P' : FiniteMeasure E}
+variable {E 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace E]
 
-theorem ext_of_forall_mem_subalgebra_integral_eq
-    {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
+    [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
+    {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
     (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
     (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
   --consider the real subalgebra of the purely real-valued elements of A
@@ -65,3 +64,10 @@ theorem ext_of_forall_mem_subalgebra_integral_eq
     Tendsto.abs (Filter.Tendsto.sub (integral_mulExpNegMulSq_tendsto P f)
       (integral_mulExpNegMulSq_tendsto P' f))
   apply eq_of_abs_sub_eq_zero (tendsto_nhds_unique lim2 lim1)
+
+theorem ext_of_forall_mem_subalgebra_integral_eq_of_polish [TopologicalSpace E] [PolishSpace E]
+    [BorelSpace E] {P P' : FiniteMeasure E} {A : StarSubalgebra 𝕜 C(E, 𝕜)} (hA : A.SeparatesPoints)
+    (hbound : ∀ g ∈ A, ∃ C, ∀ x y : E, dist (g x) (g y) ≤ C)
+    (heq : ∀ g ∈ A, ∫ (x : E), (g : E → 𝕜) x ∂P = ∫ (x : E), (g : E → 𝕜) x ∂P') : P = P' := by
+  letI := upgradePolishSpace E
+  exact ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA hbound heq
