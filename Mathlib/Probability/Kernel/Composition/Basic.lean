@@ -720,6 +720,12 @@ instance IsMarkovKernel.comap (κ : Kernel α β) [IsMarkovKernel κ] (hg : Meas
     IsMarkovKernel (comap κ g hg) :=
   ⟨fun a => ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
 
+instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (hg : Measurable g) :
+    IsZeroOrMarkovKernel (comap κ g hg) := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h
+  · simp only [comap_zero]; infer_instance
+  · have := IsMarkovKernel.comap κ hg; infer_instance
+
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
   refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
@@ -795,6 +801,12 @@ instance IsMarkovKernel.prodMkLeft (κ : Kernel α β) [IsMarkovKernel κ] :
 
 instance IsMarkovKernel.prodMkRight (κ : Kernel α β) [IsMarkovKernel κ] :
     IsMarkovKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
+
+instance IsZeroOrMarkovKernel.prodMkLeft (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (prodMkLeft γ κ) := by rw [Kernel.prodMkLeft]; infer_instance
+
+instance IsZeroOrMarkovKernel.prodMkRight (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
 
 instance IsFiniteKernel.prodMkLeft (κ : Kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel (prodMkLeft γ κ) := by rw [Kernel.prodMkLeft]; infer_instance
