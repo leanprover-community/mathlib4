@@ -35,6 +35,8 @@ section
 
 variable {F₁ F₂ F₂' F₃ F₃' : J ⥤ C}
 
+/-- The bijection `(F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnrichedHom C F₁ F₃)` when `F₁`, `F₂`
+and `F₃` are functors `J ⥤ C`, and `C` is monoidal closed. -/
 noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnrichedHom C F₁ F₃) where
   toFun f :=
     { app := fun j ↦ end_.lift (fun k ↦ F₂.map k.hom ≫ curry (f.app k.right)) (fun k₁ k₂ φ ↦ by
@@ -121,6 +123,8 @@ end
 variable [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
 attribute [local instance] Enriched.FunctorCategory.functorEnrichedOrdinaryCategory
 
+/-- When `F : J ⥤ C`, `C` is monoidal closed and has suitable limits,
+then `tensorLeft F` has a right adjoint. -/
 noncomputable def adj (F : J ⥤ C) :
     MonoidalCategory.tensorLeft F ⊣ (eHomFunctor _ _).obj ⟨F⟩ :=
   Adjunction.mkOfHomEquiv
@@ -128,6 +132,8 @@ noncomputable def adj (F : J ⥤ C) :
       homEquiv_naturality_left_symm := homEquiv_naturality_two_symm
       homEquiv_naturality_right := homEquiv_naturality_three }
 
+/-- When `F : J ⥤ C`, `C` is monoidal closed and has suitable limits,
+then `tensorLeft F` has a right adjoint. -/
 noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
   adj := adj F

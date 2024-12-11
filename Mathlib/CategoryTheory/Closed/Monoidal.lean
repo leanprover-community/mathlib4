@@ -229,7 +229,7 @@ theorem uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 
-def curry_pre_app (f : B ⟶ A) {X Y : C} (g : A ⊗ Y ⟶ X) :
+lemma curry_pre_app (f : B ⟶ A) {X Y : C} (g : A ⊗ Y ⟶ X) :
     curry g ≫ (pre f).app X = curry (f ▷ _ ≫ g) := uncurry_injective (by
   rw [uncurry_curry, uncurry_eq, MonoidalCategory.whiskerLeft_comp, assoc,
     id_tensor_pre_app_comp_ev, whisker_exchange_assoc, whiskerLeft_curry_ihom_ev_app])

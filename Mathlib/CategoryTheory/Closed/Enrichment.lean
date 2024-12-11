@@ -136,6 +136,7 @@ lemma curry'_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 end
 
+/-- A monoidal closed category is an enriched ordinary category over itself.  -/
 scoped instance enrichedOrdinaryCategorySelf : EnrichedOrdinaryCategory C C where
   homEquiv := curryHomEquiv'
   homEquiv_id := curry'_id
