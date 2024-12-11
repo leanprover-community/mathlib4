@@ -413,24 +413,19 @@ instance IsMeasurableRatCDF.instIsProbabilityMeasure_stieltjesFunction (a : α) 
 lemma IsMeasurableRatCDF.measurable_measure_stieltjesFunction :
     Measurable fun a ↦ (hf.stieltjesFunction a).measure := by
   rw [Measure.measurable_measure]
-  refine fun s hs ↦ MeasurableSpace.induction_on_inter
-    (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (hf.stieltjesFunction b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
-  · simp only [measure_empty, measurable_const]
-  · rintro S ⟨u, rfl⟩
-    simp_rw [measure_stieltjesFunction_Iic hf _ u]
-    exact (measurable_stieltjesFunction hf u).ennreal_ofReal
-  · intro t ht ht_cd_meas
-    have : (fun a ↦ (hf.stieltjesFunction a).measure tᶜ) =
-        (fun a ↦ (hf.stieltjesFunction a).measure univ)
-          - fun a ↦ (hf.stieltjesFunction a).measure t := by
-      ext1 a
-      rw [measure_compl ht (measure_ne_top (hf.stieltjesFunction a).measure _), Pi.sub_apply]
-    simp_rw [this, measure_stieltjesFunction_univ hf]
-    exact Measurable.sub measurable_const ht_cd_meas
-  · intro f hf_disj hf_meas hf_cd_meas
-    simp_rw [measure_iUnion hf_disj hf_meas]
-    exact Measurable.ennreal_tsum hf_cd_meas
+  intro s hs
+  induction hs
+    using MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic with
+  | empty => simp only [measure_empty, measurable_const]
+  | basic t ht =>
+    obtain ⟨c, rfl⟩ := ht
+    simp only [measure_stieltjesFunction_Iic hf _ c]
+    exact (measurable_stieltjesFunction hf c).ennreal_ofReal
+  | compl t ht iht =>
+    simp only [measure_compl ht (measure_ne_top _ _), measure_stieltjesFunction_univ hf]
+    exact iht.const_sub _
+  | iUnion t htd htm iht =>
+    simpa only [measure_iUnion htd htm] using .ennreal_tsum iht
 
 end Measure
 

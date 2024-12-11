@@ -70,23 +70,20 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
-  classical
-  refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
-  · simp
-  · rintro _ ⟨s, hs, t, _, rfl⟩
-    simp only [mk_preimage_prod_right_eq_if, measure_if]
-    exact measurable_const.indicator hs
-  · intro t ht h2t
-    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left ht) (measure_ne_top ν _)]
-    exact h2t.const_sub _
-  · intro f h1f h2f h3f
-    simp_rw [preimage_iUnion]
-    have : ∀ b, ν (⋃ i, Prod.mk b ⁻¹' f i) = ∑' i, ν (Prod.mk b ⁻¹' f i) := fun b =>
-      measure_iUnion (fun i j hij => Disjoint.preimage _ (h1f hij)) fun i =>
-        measurable_prod_mk_left (h2f i)
-    simp_rw [this]
-    apply Measurable.ennreal_tsum h3f
+  induction hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  | empty => simp
+  | basic s hs =>
+    obtain ⟨s, hs, t, -, rfl⟩ := hs
+    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]
+      using measurable_const.indicator hs
+  | compl s hs ihs =>
+    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left hs) (measure_ne_top ν _)]
+    exact ihs.const_sub _
+  | iUnion f hfd hfm ihf =>
+    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
+      rw [preimage_iUnion, measure_iUnion]
+      exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prod_mk_left (hfm i)]
+    simpa only [this] using Measurable.ennreal_tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
   is a measurable function. -/
