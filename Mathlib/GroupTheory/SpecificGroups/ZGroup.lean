@@ -17,7 +17,7 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 ## Main results
 
-* `isCyclic_abelianization`: A Z-group has cyclic abelianization.
+* `IsZGroup.isCyclic_abelianization`: A finite Z-group has cyclic abelianization.
 
 TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
 and `G/G'` are cyclic of coprime orders.
