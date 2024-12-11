@@ -427,7 +427,8 @@ theorem selberg_bound_simple_errSum :
     linarith
   · rw [s.selbergμPlus_eq_zero d h, abs_zero, zero_mul]
 
-theorem selberg_bound_simple :
+omit s in
+theorem selberg_bound_simple (s : SelbergSieve) :
     s.siftedSum ≤
       X / S +
         ∑ d in divisors P, if (d : ℝ) ≤ y then (3:ℝ) ^ ω d * |R d| else 0 := by
