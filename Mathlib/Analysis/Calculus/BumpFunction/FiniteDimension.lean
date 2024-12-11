@@ -346,7 +346,7 @@ theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     have C : ball x D ⊆ ball 0 1 := by
       apply ball_subset_ball'
       simp only [mem_closedBall] at hx
-      linarith only [hx]
+      linear_combination hx
     intro y hy
     simp only [φ, indicator, mem_closedBall, ite_eq_left_iff, not_le, zero_ne_one]
     intro h'y
@@ -431,7 +431,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
-    exact div_pos (mul_pos Dpos (by linarith only [hx])) B
+    exact div_pos (mul_pos Dpos (by linear_combination hx)) B
 
 variable (E)
 
