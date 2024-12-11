@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 /-!
 
 # Grothendieck axioms for the category of sheaves for the extensive topology
@@ -19,120 +19,6 @@ namespace CategoryTheory
 
 open CategoryTheory Limits Sheaf GrothendieckTopology Opposite
 
-section
-
-variable {C D J : Type*} [Category C] [Category D] [Category J]
-    [HasColimitsOfShape J C] [HasColimitsOfShape J D] [HasExactColimitsOfShape J D]
-    (F : C ⥤ D) [PreservesFiniteLimits F] [ReflectsFiniteLimits F] [HasFiniteLimits C]
-    [PreservesColimitsOfShape J F]
-
-include F in
-lemma hasExactColimitsOfShape_transfer : HasExactColimitsOfShape J C where
-  preservesFiniteLimits := { preservesFiniteLimits I := { preservesLimit {G} := {
-    preserves {c} hc := by
-      constructor
-      apply isLimitOfReflects F
-      refine (IsLimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesColimitNatIso F).symm)
-        ((_ ⋙ colim).mapCone c) _ ?_) (isLimitOfPreserves _ hc)
-      exact Cones.ext ((preservesColimitNatIso F).symm.app _)
-        fun i ↦ by erw [← (preservesColimitNatIso F).inv.naturality]; rfl } } }
-
-end
-
-section
-
-variable {C D J : Type*} [Category C] [Category D] [Category J]
-    [HasLimitsOfShape J C] [HasLimitsOfShape J D] [HasExactLimitsOfShape J D]
-    (F : C ⥤ D) [PreservesFiniteColimits F] [ReflectsFiniteColimits F] [HasFiniteColimits C]
-    [PreservesLimitsOfShape J F]
-
-include F in
-lemma hasExactLimitsOfShape_transfer : HasExactLimitsOfShape J C where
-  preservesFiniteColimits := { preservesFiniteColimits I := { preservesColimit {G} := {
-    preserves {c} hc := by
-      constructor
-      apply isColimitOfReflects F
-      refine (IsColimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesLimitNatIso F).symm)
-        ((_ ⋙ lim).mapCocone c) _ ?_) (isColimitOfPreserves _ hc)
-      refine Cocones.ext ((preservesLimitNatIso F).symm.app _) fun i ↦ ?_
-      simp only [Functor.comp_obj, lim_obj, Functor.mapCocone_pt, isoWhiskerLeft_inv, Iso.symm_inv,
-        Cocones.precompose_obj_pt, whiskeringRight_obj_obj, Functor.const_obj_obj,
-        Cocones.precompose_obj_ι, NatTrans.comp_app, whiskerLeft_app, preservesLimitNatIso_hom_app,
-        Functor.mapCocone_ι_app, Functor.comp_map, whiskeringRight_obj_map, lim_map, Iso.app_hom,
-        Iso.symm_hom, preservesLimitNatIso_inv_app, Category.assoc]
-      rw [← Iso.eq_inv_comp]
-      erw [← (preservesLimitNatIso F).inv.naturality]
-      rfl } } }
-
-end
-
-section
-
-variable {A C J : Type*} [Category A] [Category C] [Category J]
-    [HasColimitsOfShape J A] [HasExactColimitsOfShape J A] [HasFiniteLimits A]
-
-instance : HasExactColimitsOfShape J (C ⥤ A) where
-  preservesFiniteLimits := { preservesFiniteLimits I := { preservesLimit {K} := {
-    preserves {c} hc := by
-      constructor
-      apply Limits.evaluationJointlyReflectsLimits
-      intro k
-      let F : (J ⥤ C ⥤ A) ⥤ (J ⥤ A) :=
-        (whiskeringRight J (C ⥤ A) A).obj <| (evaluation C A).obj k
-      let i : F ⋙ colim ≅ colim ⋙ (evaluation C A).obj k :=
-        (preservesColimitNatIso ((evaluation C A).obj k)).symm
-      refine (IsLimit.equivOfNatIsoOfIso (isoWhiskerLeft K i) ((F ⋙ colim).mapCone c) _ ?_)
-        (isLimitOfPreserves _ hc)
-      refine Cones.ext (i.app _) ?_
-      intro j
-      erw [← i.hom.naturality]
-      rfl } } }
-
-variable (K : GrothendieckTopology C) [HasWeakSheafify K A]
-
-variable [PreservesColimitsOfShape J (sheafToPresheaf K A)]
-
-instance : HasExactColimitsOfShape J (Sheaf K A) :=
-  hasExactColimitsOfShape_transfer (sheafToPresheaf K A)
-
-end
-
-section
-
-variable {A C J : Type*} [Category A] [Category C] [Category J]
-    [HasLimitsOfShape J A] [HasExactLimitsOfShape J A] [HasFiniteColimits A]
-
-instance : HasExactLimitsOfShape J (C ⥤ A) where
-  preservesFiniteColimits := { preservesFiniteColimits I := { preservesColimit {K} := {
-    preserves {c} hc := by
-      constructor
-      apply Limits.evaluationJointlyReflectsColimits
-      intro k
-      let F : (J ⥤ C ⥤ A) ⥤ (J ⥤ A) :=
-        (whiskeringRight J (C ⥤ A) A).obj <| (evaluation C A).obj k
-      let i  : F ⋙ lim ≅ lim ⋙ (evaluation C A).obj k :=
-        (preservesLimitNatIso ((evaluation C A).obj k)).symm
-      refine (IsColimit.equivOfNatIsoOfIso (isoWhiskerLeft K i) ((F ⋙ lim).mapCocone c) _ ?_)
-        (isColimitOfPreserves _ hc)
-      refine Cocones.ext (i.app _) ?_
-      intro j
-      simp only [Functor.comp_obj, lim_obj, evaluation_obj_obj, Functor.mapCocone_pt,
-        isoWhiskerLeft_inv, Iso.symm_inv, Cocones.precompose_obj_pt, Functor.const_obj_obj,
-        Cocones.precompose_obj_ι, NatTrans.comp_app, whiskerLeft_app, preservesLimitNatIso_hom_app,
-        Functor.mapCocone_ι_app, Functor.comp_map, lim_map, Iso.app_hom, Iso.symm_hom,
-        preservesLimitNatIso_inv_app, Category.assoc, evaluation_obj_map, i]
-      rw [← Iso.eq_inv_comp]
-      erw [← i.hom.naturality]
-      rfl } } }
-
-variable (K : GrothendieckTopology C) [HasWeakSheafify K A]
-
-variable [PreservesFiniteColimits (sheafToPresheaf K A)]
-
-instance : HasExactLimitsOfShape J (Sheaf K A) :=
-  hasExactLimitsOfShape_transfer (sheafToPresheaf K A)
-
-end
 
 section
 

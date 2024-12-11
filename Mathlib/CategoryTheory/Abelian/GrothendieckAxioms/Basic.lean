@@ -79,6 +79,49 @@ class HasExactLimitsOfShape (J : Type u') [Category.{v'} J] (C : Type u) [Catego
 attribute [instance] HasExactColimitsOfShape.preservesFiniteLimits
   HasExactLimitsOfShape.preservesFiniteColimits
 
+variable {C} in
+/--
+Pull back a `HasExactColimitsOfShape J` along a functor which preserves and reflects finite limits
+and preserves colimits of shape `J`
+-/
+lemma hasExactColimitsOfShape_transport {J D : Type*} [Category J] [Category D]
+    [HasColimitsOfShape J C] [HasColimitsOfShape J D] [HasExactColimitsOfShape J D]
+    (F : C ⥤ D) [PreservesFiniteLimits F] [ReflectsFiniteLimits F] [HasFiniteLimits C]
+    [PreservesColimitsOfShape J F] : HasExactColimitsOfShape J C where
+  preservesFiniteLimits := { preservesFiniteLimits I := { preservesLimit {G} := {
+    preserves {c} hc := by
+      constructor
+      apply isLimitOfReflects F
+      refine (IsLimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesColimitNatIso F).symm)
+        ((_ ⋙ colim).mapCone c) _ ?_) (isLimitOfPreserves _ hc)
+      exact Cones.ext ((preservesColimitNatIso F).symm.app _)
+        fun i ↦ by erw [← (preservesColimitNatIso F).inv.naturality]; rfl } } }
+
+variable {C} in
+/--
+Pull back a `HasExactLimitsOfShape J` along a functor which preserves and reflects finite colimits
+and preserves limits of shape `J`
+-/
+lemma hasExactLimitsOfShape_transport {D J : Type*} [Category D] [Category J]
+    [HasLimitsOfShape J C] [HasLimitsOfShape J D] [HasExactLimitsOfShape J D]
+    (F : C ⥤ D) [PreservesFiniteColimits F] [ReflectsFiniteColimits F] [HasFiniteColimits C]
+    [PreservesLimitsOfShape J F] : HasExactLimitsOfShape J C where
+  preservesFiniteColimits := { preservesFiniteColimits I := { preservesColimit {G} := {
+    preserves {c} hc := by
+      constructor
+      apply isColimitOfReflects F
+      refine (IsColimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesLimitNatIso F).symm)
+        ((_ ⋙ lim).mapCocone c) _ ?_) (isColimitOfPreserves _ hc)
+      refine Cocones.ext ((preservesLimitNatIso F).symm.app _) fun i ↦ ?_
+      simp only [Functor.comp_obj, lim_obj, Functor.mapCocone_pt, isoWhiskerLeft_inv, Iso.symm_inv,
+        Cocones.precompose_obj_pt, whiskeringRight_obj_obj, Functor.const_obj_obj,
+        Cocones.precompose_obj_ι, NatTrans.comp_app, whiskerLeft_app, preservesLimitNatIso_hom_app,
+        Functor.mapCocone_ι_app, Functor.comp_map, whiskeringRight_obj_map, lim_map, Iso.app_hom,
+        Iso.symm_hom, preservesLimitNatIso_inv_app, Category.assoc]
+      rw [← Iso.eq_inv_comp]
+      erw [← (preservesLimitNatIso F).inv.naturality]
+      rfl } } }
+
 /--
 Transport a `HasExactColimitsOfShape` along an equivalence of the shape.
 
