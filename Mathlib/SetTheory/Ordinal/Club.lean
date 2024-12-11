@@ -31,6 +31,8 @@ universe u v
 
 namespace Ordinal
 
+instance {o : Ordinal.{u}} : Small.{max u v} (Iio o) := small_lift (Iio o)
+
 /-- A set of ordinals is a club below an ordinal if it is closed and unbounded in it. -/
 def IsClub (C : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosedBelow C o ∧ IsAcc o C
@@ -140,25 +142,24 @@ theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal
   there is an element of `C`, and `δ` is a limit ordinal,
   then the supremum of the sequence is an accumulation point of `C`. -/
 theorem isAcc_iSup_of_between {δ : Ordinal.{u}} (C : Set Ordinal) (δLim : δ.IsLimit)
-    (s : Iio δ → Ordinal.{max u v}) (sInc : ∀ o, s o < s ⟨succ o, δLim.succ_lt o.2⟩)
-    (h : ∀ o, (C ∩ (Ioo (s o) (s ⟨succ o, δLim.succ_lt o.2⟩))).Nonempty) :
+    (s : Iio δ → Ordinal.{max u v}) (sInc : ∀ o, s o < s (succ o))
+    (h : ∀ o, (C ∩ (Icc (s o) (s (succ o)))).Nonempty) :
     IsAcc (iSup s) C := by
-  have : Small.{max u v, u + 1} (Iio δ) := small_lift _
   rw [isAcc_iff]
   constructor
   · rw [← Ordinal.pos_iff_ne_zero, Ordinal.lt_iSup_iff]
     use ⟨1, δLim.one_lt⟩
     refine lt_of_le_of_lt (Ordinal.zero_le (s ⟨0, δLim.pos⟩)) ?_
     convert sInc ⟨0, δLim.pos⟩
-    exact succ_zero.symm
+    exact coe_succ_Iio δLim.isSuccPrelimit ▸ succ_zero.symm
   intro p hp
   rw [Ordinal.lt_iSup_iff] at hp
   obtain ⟨r, hr⟩ := hp
   obtain ⟨q, hq⟩ := h r
   use q
-  refine ⟨hq.1, ⟨hr.trans hq.2.1, ?_⟩⟩
+  refine ⟨hq.1, ⟨hr.trans_le hq.2.1, ?_⟩⟩
   rw [Ordinal.lt_iSup_iff]
-  exact ⟨⟨r.1 + 1, δLim.succ_lt r.2⟩, hq.2.2⟩
+  exact ⟨succ (succ r), hq.2.2.trans_lt (sInc (succ r))⟩
 
 /--
 The intersection of less than `o.cof` clubs in `o` is a club in `o`.
@@ -187,18 +188,18 @@ theorem IsClub.sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hS
   · intro s hs
     apply (hS s hs).1.forall_lt sup suplt
     apply isAcc_iSup_of_between
+    · exact isLimit_omega0
     · intro n
       rw [@Subtype.coe_lt_coe]
       convert hf.2.1 n (succ n) ?_
-      · rw [coe_succ_of_mem]
-        exact isLimit_omega0.succ_lt n.2
       · apply Subtype.coe_lt_coe.mp
         rw [coe_succ_of_mem]
         · exact lt_succ n.1
         exact isLimit_omega0.succ_lt n.2
     · intro n
-      exact hf.1 n s hs
-    · exact isLimit_omega0
+      apply (hf.1 n s hs).mono
+      convert inter_subset_inter_right _ Ioo_subset_Icc_self
+      rw [coe_succ_Iio isLimit_omega0.isSuccPrelimit, succ_eq_add_one]
   · constructor
     · rw [Ordinal.lt_iSup_iff]
       exact ⟨⟨0, omega0_pos⟩, hf.2.2⟩
