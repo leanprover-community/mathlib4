@@ -39,7 +39,7 @@ open Batteries (RBSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
-  name := "split conjunctions"
+  description := "split conjunctions"
   transform := aux
 where
   /-- Implementation of the `splitConjunctions` preprocessor. -/
@@ -54,7 +54,7 @@ where
 Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
 -/
 partial def filterComparisons : Preprocessor where
-  name := "filter terms that are not proofs of comparisons"
+  description := "filter terms that are not proofs of comparisons"
   transform h := do
     let tp ← instantiateMVars (← inferType h)
     try
@@ -80,7 +80,7 @@ Replaces proofs of negations of comparisons with proofs of the reversed comparis
 For example, a proof of `¬ a < b` will become a proof of `a ≥ b`.
 -/
 def removeNegations : Preprocessor where
-  name := "replace negations of comparisons"
+  description := "replace negations of comparisons"
   transform h := do
     let t : Q(Prop) ← whnfR (← inferType h)
     match t with
@@ -147,7 +147,7 @@ It also adds the facts that the integers involved are nonnegative.
 To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
  -/
 def natToInt : GlobalBranchingPreprocessor where
-  name := "move nats to ints"
+  description := "move nats to ints"
   transform g l := do
     let l ← l.mapM fun h => do
       let t ← whnfR (← instantiateMVars (← inferType h))
@@ -192,7 +192,7 @@ def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
-  name := "strengthen strict inequalities over int"
+  description := "strengthen strict inequalities over int"
   transform h := return [(← mkNonstrictIntProof h).getD h]
 
 end strengthenStrictInt
@@ -214,7 +214,7 @@ partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 def compWithZero : Preprocessor where
-  name := "make comparisons with zero"
+  description := "make comparisons with zero"
   transform e := return (← rearrangeComparison e).toList
 
 end compWithZero
@@ -247,7 +247,7 @@ def normalizeDenominatorsLHS (h lhs : Expr) : MetaM Expr := do
 it tries to scale `t` to cancel out division by numerals.
 -/
 def cancelDenoms : Preprocessor where
-  name := "cancel denominators"
+  description := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
       guard <| lhs.containsConst <| fun n =>
@@ -288,7 +288,8 @@ partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
   | _ => e.foldlM findSquares s
 
 /-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
-private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
+private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
     let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
@@ -297,8 +298,7 @@ private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
   let new_es ← s.filterMapM fun (e, is_sq) =>
     observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
   let new_es ← compWithZero.globalize.transform new_es
-  trace[linarith] "nlinarith preprocessing found squares"
-  trace[linarith] "{s}"
+  trace[linarith] "found:{indentD <| toMessageData s}"
   linarithTraceProofs "so we added proofs" new_es
   return new_es
 
@@ -308,7 +308,8 @@ Get proofs for products of inequalities from `ls`.
 Note that the length of the resulting list is proportional to `ls.length^2`, which can make a large
 amount of work for the linarith oracle.
 -/
-private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) := do
+private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
+  withTraceNode `linarith (return m!"{exceptEmoji ·} adding product terms") do
   let with_comps ← ls.mapM (fun e => do
     let tp ← inferType e
     try
@@ -341,7 +342,7 @@ private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) := d
 This preprocessor is typically run last, after all inputs have been canonized.
 -/
 def nlinarithExtras : GlobalPreprocessor where
-  name := "nonlinear arithmetic extras"
+  description := "nonlinear arithmetic extras"
   transform ls := do
     let new_es ← nlinarithGetSquareProofs ls
     let products ← nlinarithGetProductsProofs (new_es ++ ls)
@@ -374,7 +375,7 @@ by calling `linarith.removeNe_aux`.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 def removeNe : GlobalBranchingPreprocessor where
-  name := "removeNe"
+  description := "case split on ≠"
   transform := removeNe_aux
 end removeNe
 
@@ -394,7 +395,10 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) := g.withContext <|
-  pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).flatten) [(g, l)]
+    MetaM (List Branch) := do
+  withTraceNode `linarith (fun e => return m!"{exceptEmoji e} Running preprocessors") <|
+    g.withContext <|
+      pps.foldlM (init := [(g, l)]) fun ls pp => do
+        return (← ls.mapM fun (g, l) => do pp.process g l).flatten
 
 end Linarith
