@@ -228,6 +228,11 @@ theorem orderOf_one : orderOf (1 : G) = 1 := by
 theorem orderOf_eq_one_iff : orderOf x = 1 ↔ x = 1 := by
   rw [orderOf, minimalPeriod_eq_one_iff_isFixedPt, IsFixedPt, mul_one]
 
+@[to_additive AddMonoid.one_lt_addOrderOf_of_isOfFinOrder_ne_zero]
+theorem one_lt_orderOf_of_isOfFinOrder_ne_one (x : G) (hx : IsOfFinOrder x) (h1 : x ≠ 1) :
+    1 < orderOf x := Nat.one_lt_iff_ne_zero_and_ne_one.2
+  ⟨fun hnot => orderOf_eq_zero_iff.1 hnot hx, fun hnot => h1 (orderOf_eq_one_iff.1 hnot)⟩
+
 @[to_additive (attr := simp) mod_addOrderOf_nsmul]
 lemma pow_mod_orderOf (x : G) (n : ℕ) : x ^ (n % orderOf x) = x ^ n :=
   calc
@@ -546,6 +551,21 @@ lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
+
+@[to_additive finEquivMultiples_symm_zero]
+theorem finEquivPowers_symm_one (x : G) {hx : IsOfFinOrder x} :
+    (finEquivPowers _ hx).symm ⟨1, 0, pow_zero _⟩ = (0 : ℕ) := by
+  convert Fin.ext_iff.1 (finEquivPowers_symm_apply x hx 0)
+  · rw [_root_.pow_zero]
+  · exact ⟨0, rfl⟩
+
+@[to_additive finEquivMultiples_symm_self]
+theorem finEquivPowers_symm_self (x : G) {hx : IsOfFinOrder x} (h1 : x ≠ 1) :
+    (finEquivPowers _ hx).symm ⟨x, 1, pow_one _⟩ = (1 : ℕ) := by
+  convert Fin.ext_iff.1 (finEquivPowers_symm_apply x hx 1)
+  · rw [pow_one]
+  · simp_rw [Nat.mod_eq_of_lt (one_lt_orderOf_of_isOfFinOrder_ne_one x hx h1)]
+  · exact ⟨1, rfl⟩
 
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive "See also `addOrder_eq_card_multiples`."]
