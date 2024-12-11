@@ -484,6 +484,9 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
 instance sub : Sub Ordinal where
   sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
+private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
+  dif_neg h.not_le
+
 protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - b) = a := by
   change b + dite _ _ _ = a
   rw [dif_pos h]
@@ -493,23 +496,18 @@ protected theorem add_sub_cancel_of_le {a b : Ordinal} (h : b ≤ a) : b + (a - 
 theorem add_sub_cancel (a b : Ordinal) : a + b - a = b := by
   simpa using Ordinal.add_sub_cancel_of_le (le_add_right a b)
 
-theorem sub_eq_zero_of_le {a b : Ordinal} (h : a ≤ b) : a - b = 0 := by
-  obtain h | rfl := h.lt_or_eq
-  · exact dif_neg h.not_le
-  · rw [← add_left_cancel_iff (a := a), add_zero]
-    exact Ordinal.add_sub_cancel_of_le le_rfl
-
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) := by
-  obtain h | h := le_total b a
+  obtain h | h := le_or_lt b a
   · exact (Ordinal.add_sub_cancel_of_le h).ge
-  · rwa [sub_eq_zero_of_le h, add_zero]
+  · rw [sub_eq_zero_of_lt h, add_zero]
+    exact h.le
 
 theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c where
   mp h := (le_add_sub a b).trans (add_le_add_left h _)
   mpr h := by
-    obtain h' | h' := le_total b a
+    obtain h' | h' := le_or_lt b a
     · rwa [← add_le_add_iff_left b, Ordinal.add_sub_cancel_of_le h']
-    · rw [sub_eq_zero_of_le h']
+    · rw [sub_eq_zero_of_lt h']
       exact Ordinal.zero_le c
 
 theorem lt_sub {a b c : Ordinal} : a < b - c ↔ c + a < b :=
@@ -532,8 +530,8 @@ theorem sub_zero (a : Ordinal) : a - 0 = a := by
   simpa only [zero_add] using add_sub_cancel 0 a
 
 @[simp]
-theorem zero_sub (a : Ordinal) : 0 - a = 0 :=
-  sub_eq_zero_of_le (Ordinal.zero_le _)
+theorem zero_sub (a : Ordinal) : 0 - a = 0 := by
+  simpa only [Ordinal.le_zero] using (sub_le_self 0 a)
 
 @[simp]
 theorem sub_self (a : Ordinal) : a - a = 0 := by
@@ -612,7 +610,6 @@ theorem isLimit_sub {a b} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) := by
 alias sub_isLimit := isLimit_sub
 
 /-! ### Multiplication of ordinals -/
-
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
