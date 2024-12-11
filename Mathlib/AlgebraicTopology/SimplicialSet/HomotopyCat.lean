@@ -297,8 +297,8 @@ theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
   congr! <;> apply OneTruncation₂.Hom.ext <;> assumption
 
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
-def hoFunctor₂Obj (V : SSet.Truncated.{u} 2) : Type u :=
-  Quotient (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V))) (HoRel₂ (V := V))
+def _root_.SSet.Truncated.homotopyCategory (V : SSet.Truncated.{u} 2) : Type u :=
+  Quotient (HoRel₂ (V := V))
 
 instance (V : SSet.Truncated.{u} 2) : Category.{u} (SSet.hoFunctor₂Obj V) :=
   inferInstanceAs (Category (Quotient ..))
