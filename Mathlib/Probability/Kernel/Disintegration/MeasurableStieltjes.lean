@@ -45,6 +45,19 @@ open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
 
+/-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
+function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
+lemma StieltjesFunction.measurable_measure {α : Type*} {_ : MeasurableSpace α}
+    {f : α → StieltjesFunction} (hf : ∀ q, Measurable fun a ↦ f a q)
+    (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
+    (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
+    Measurable fun a ↦ (f a).measure :=
+  have : ∀ a, IsProbabilityMeasure (f a).measure :=
+    fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
+  .measure_of_basis_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
+    simp_rw [forall_mem_range, StieltjesFunction.measure_Iic (f _) (hf_bot _), sub_zero]
+    exact fun _ ↦ (hf _).ennreal_ofReal
+
 namespace ProbabilityTheory
 
 variable {α : Type*}
@@ -412,20 +425,8 @@ instance IsMeasurableRatCDF.instIsProbabilityMeasure_stieltjesFunction (a : α) 
 
 lemma IsMeasurableRatCDF.measurable_measure_stieltjesFunction :
     Measurable fun a ↦ (hf.stieltjesFunction a).measure := by
-  rw [Measure.measurable_measure]
-  intro s hs
-  induction s, hs
-    using MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic with
-  | empty => simp only [measure_empty, measurable_const]
-  | basic t ht =>
-    obtain ⟨c, rfl⟩ := ht
-    simp only [measure_stieltjesFunction_Iic hf _ c]
-    exact (measurable_stieltjesFunction hf c).ennreal_ofReal
-  | compl t ht iht =>
-    simp only [measure_compl ht (measure_ne_top _ _), measure_stieltjesFunction_univ hf]
-    exact iht.const_sub _
-  | iUnion t htd htm iht =>
-    simpa only [measure_iUnion htd htm] using .ennreal_tsum iht
+  apply_rules [StieltjesFunction.measurable_measure, measurable_stieltjesFunction,
+    tendsto_stieltjesFunction_atBot, tendsto_stieltjesFunction_atTop]
 
 end Measure
 
