@@ -1068,6 +1068,7 @@ lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (Eventually.of_forall (fun _ ↦ by simp))
 
+set_option synthInstance.maxHeartbeats 21000 in
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
 def integralCLM : 𝓢(D, V) →L[𝕜] V := by
