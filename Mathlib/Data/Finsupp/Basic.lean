@@ -1124,18 +1124,11 @@ end CurryUncurry
 section Sum
 
 /-- `Finsupp.sumElim f g` maps `inl x` to `f x` and `inr y` to `g y`. -/
-def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : α ⊕ β →₀ γ :=
-  onFinset
-    (by
-      haveI := Classical.decEq α
-      haveI := Classical.decEq β
-      exact f.support.map ⟨_, Sum.inl_injective⟩ ∪ g.support.map ⟨_, Sum.inr_injective⟩)
-    (Sum.elim f g) fun ab h => by
-    cases' ab with a b <;>
-    letI := Classical.decEq α <;> letI := Classical.decEq β <;>
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add these `DecidableEq` instances
-    simp only [Sum.elim_inl, Sum.elim_inr] at h <;>
-    simpa
+@[simps support]
+def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : α ⊕ β →₀ γ where
+  support := f.support.disjSum g.support
+  toFun := Sum.elim f g
+  mem_support_toFun := by simp
 
 @[simp, norm_cast]
 theorem coe_sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
@@ -1153,6 +1146,12 @@ theorem sumElim_inl {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
 theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) (x : β) :
     sumElim f g (Sum.inr x) = g x :=
   rfl
+
+@[to_additive]
+lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
+    (f₁ : ι₁ →₀ α) (f₂ : ι₂ →₀ α) (g : ι₁ ⊕ ι₂ → α → M) :
+    (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
+  simp [Finsupp.prod, Finset.prod_disj_sum]
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
