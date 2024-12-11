@@ -13,11 +13,11 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 ## Main definitions
 
-* `IsZGroup G`: A predicate stating that all Sylow subgroups of `G` are cyclic.
+* `IsZGroup G`: a predicate stating that all Sylow subgroups of `G` are cyclic.
 
 ## Main results
 
-* `IsZGroup.isCyclic_abelianization`: A finite Z-group has cyclic abelianization.
+* `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
 
 TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
 and `G/G'` are cyclic of coprime orders.
