@@ -2184,6 +2184,7 @@ import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.ErdosGinzburgZiv
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+import Mathlib.Combinatorics.Additive.QuotientInterGrowth
 import Mathlib.Combinatorics.Additive.Randomisation
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Additive.SmallTripling
