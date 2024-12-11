@@ -825,6 +825,30 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | n + 1, a => by rw [succ_nsmul, Nat.cast_add, mul_add, Nat.cast_one, mul_one, smul_eq_mul n]
 
+private theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
+    (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
+  le_antisymm
+    ((mul_le_of_limit l).2 fun c' h => by
+      apply (mul_le_mul_left' (le_succ c') _).trans
+      rw [IH _ h]
+      apply (add_le_add_left _ _).trans
+      · rw [← mul_succ]
+        exact mul_le_mul_left' (succ_le_of_lt <| l.succ_lt h) _
+      · rw [← ba]
+        exact le_add_right _ _)
+    (mul_le_mul_right' (le_add_right _ _) _)
+
+theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
+  induction c using limitRecOn with
+  | H₁ => simp only [succ_zero, mul_one]
+  | H₂ c IH =>
+    rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
+  | H₃ c l IH =>
+    rw [mul_succ, add_mul_limit_aux ba l IH, mul_succ, add_assoc]
+
+theorem add_mul_limit {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c) : (a + b) * c = a * c :=
+  add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
+
 /-! ### Division on ordinals -/
 
 
@@ -2432,32 +2456,6 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
-
-theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
-    (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
-  le_antisymm
-    ((mul_le_of_limit l).2 fun c' h => by
-      apply (mul_le_mul_left' (le_succ c') _).trans
-      rw [IH _ h]
-      apply (add_le_add_left _ _).trans
-      · rw [← mul_succ]
-        exact mul_le_mul_left' (succ_le_of_lt <| l.succ_lt h) _
-      · rw [← ba]
-        exact le_add_right _ _)
-    (mul_le_mul_right' (le_add_right _ _) _)
-
-theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
-  induction c using limitRecOn with
-  | H₁ => simp only [succ_zero, mul_one]
-  | H₂ c IH =>
-    rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
-  | H₃ c l IH =>
-    -- Porting note: Unused.
-    -- have := add_mul_limit_aux ba l IH
-    rw [mul_succ, add_mul_limit_aux ba l IH, mul_succ, add_assoc]
-
-theorem add_mul_limit {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c) : (a + b) * c = a * c :=
-  add_mul_limit_aux ba l fun c' _ => add_mul_succ c' ba
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]

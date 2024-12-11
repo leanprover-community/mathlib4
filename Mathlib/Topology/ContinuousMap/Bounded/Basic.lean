@@ -1087,13 +1087,11 @@ instance instModule : Module 𝕜 (α →ᵇ β) :=
 variable (𝕜)
 
 /-- The evaluation at a point, as a continuous linear map from `α →ᵇ β` to `β`. -/
+@[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
   map_add' _ _ := add_apply _ _
   map_smul' _ _ := smul_apply _ _ _
-
-@[simp]
-theorem evalCLM_apply (x : α) (f : α →ᵇ β) : evalCLM 𝕜 x f = f x := rfl
 
 variable (α β)
 
