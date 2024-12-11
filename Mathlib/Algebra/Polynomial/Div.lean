@@ -53,8 +53,8 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
 
 variable {p q : R[X]}
 
-theorem multiplicity_finite_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degree p) (hmp : Monic p)
-    (hq : q ≠ 0) : multiplicity.Finite p q :=
+theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degree p) (hmp : Monic p)
+    (hq : q ≠ 0) : FiniteMultiplicity p q :=
   have zn0 : (0 : R) ≠ 1 :=
     haveI := Nontrivial.of_polynomial_ne hq
     zero_ne_one
@@ -75,6 +75,9 @@ theorem multiplicity_finite_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < deg
         (lt_add_of_le_of_pos (le_mul_of_one_le_right (Nat.zero_le _) hnp)
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity_finite_of_degree_pos_of_monic := finiteMultiplicity_of_degree_pos_of_monic
 
 end Semiring
 
@@ -470,11 +473,14 @@ See `polynomial.modByMonic` for the algorithm that computes `%ₘ`.
 def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 
-theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite (X - C a) p := by
+theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by
   haveI := Nontrivial.of_polynomial_ne h0
-  refine multiplicity_finite_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
+  refine finiteMultiplicity_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
   rw [degree_X_sub_C]
   decide
+
+@[deprecated (since := "2024-11-30")]
+alias multiplicity_X_sub_C_finite := finiteMultiplicity_X_sub_C
 
 /- Porting note: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
@@ -488,7 +494,7 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
     let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)
-    Nat.find (multiplicity_X_sub_C_finite a h0)
+    Nat.find (finiteMultiplicity_X_sub_C a h0)
 
 /- Porting note: added the following due to diamond with decidableProp and
 decidableDvdMonic see also [Zulip]
@@ -497,7 +503,7 @@ theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 :
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)
-    rootMultiplicity a p = Nat.find (multiplicity_X_sub_C_finite a p0) := by
+    rootMultiplicity a p = Nat.find (finiteMultiplicity_X_sub_C a p0) := by
   dsimp [rootMultiplicity]
   cases Subsingleton.elim ‹DecidableEq R› (Classical.decEq R)
   rw [dif_neg p0]
@@ -510,7 +516,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   split
   · rfl
   rename_i h
-  simp only [multiplicity_X_sub_C_finite a h, ↓reduceDIte]
+  simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
   rw [← ENat.some_eq_coe, WithTop.untop'_coe]
   congr
 
@@ -548,7 +554,7 @@ theorem exists_eq_pow_rootMultiplicity_mul_and_not_dvd (p : R[X]) (hp : p ≠ 0)
     ∃ q : R[X], p = (X - C a) ^ p.rootMultiplicity a * q ∧ ¬ (X - C a) ∣ q := by
   classical
   rw [rootMultiplicity_eq_multiplicity, if_neg hp]
-  apply (multiplicity_X_sub_C_finite a hp).exists_eq_pow_mul_and_not_dvd
+  apply (finiteMultiplicity_X_sub_C a hp).exists_eq_pow_mul_and_not_dvd
 
 end multiplicity
 
@@ -633,7 +639,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
   rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, if_neg hp] at this
   exact
-    (multiplicity_finite_of_degree_pos_of_monic
+    (finiteMultiplicity_of_degree_pos_of_monic
       (show (0 : WithBot ℕ) < degree (X - C a) by rw [degree_X_sub_C]; decide)
       (monic_X_sub_C _) hp).not_pow_dvd_of_multiplicity_lt
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)

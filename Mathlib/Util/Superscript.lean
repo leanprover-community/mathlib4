@@ -277,11 +277,7 @@ def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscrip
 def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
 initialize
-  registerAlias `superscript ``superscript superscript
-  registerAliasCore Formatter.formatterAliasesRef `superscript superscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `superscript superscript.parenthesizer
-  registerAlias `subscript ``subscript subscript
-  registerAliasCore Formatter.formatterAliasesRef `subscript subscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `subscript subscript.parenthesizer
+  register_parser_alias superscript
+  register_parser_alias subscript
 
 end Mathlib.Tactic

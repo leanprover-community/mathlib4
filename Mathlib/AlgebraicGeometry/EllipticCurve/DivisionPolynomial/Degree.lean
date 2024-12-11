@@ -249,7 +249,7 @@ lemma natDegree_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_preΨ'_le n) <| W.coeff_preΨ'_ne_zero h
 
 lemma natDegree_preΨ'_pos {n : ℕ} (hn : 2 < n) (h : (n : R) ≠ 0) : 0 < (W.preΨ' n).natDegree := by
-  rw [W.natDegree_preΨ' h, Nat.div_pos_iff two_ne_zero]
+  simp only [W.natDegree_preΨ' h, Nat.div_pos_iff, zero_lt_two, true_and]
   split_ifs <;>
     exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_left hn 2) _
 

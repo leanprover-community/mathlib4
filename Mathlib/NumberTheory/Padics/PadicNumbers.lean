@@ -60,7 +60,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
+open Nat padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
 abbrev PadicSeq (p : ℕ) :=

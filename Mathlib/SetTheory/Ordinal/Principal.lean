@@ -195,19 +195,6 @@ theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, 
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, hb, c, hc, rfl⟩
     exact (H b hb c hc).irrefl⟩
 
-theorem add_omega0 (h : a < ω) : a + ω = ω := by
-  rcases lt_omega0.1 h with ⟨n, rfl⟩
-  clear h; induction' n with n IH
-  · rw [Nat.cast_zero, zero_add]
-  · rwa [Nat.cast_succ, add_assoc, one_add_of_omega0_le (le_refl _)]
-
-@[deprecated (since := "2024-09-30")]
-alias add_omega := add_omega0
-
-@[simp]
-theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
-  add_omega0 (nat_lt_omega0 n)
-
 theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
 

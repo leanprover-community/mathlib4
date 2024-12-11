@@ -77,7 +77,7 @@ variable (d : M.Derivation φ)
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
 @[simps! d_apply]
 def postcomp (f : M ⟶ N) : N.Derivation φ where
-  d := (f.app _).toAddMonoidHom.comp d.d
+  d := (f.app _).hom.toAddMonoidHom.comp d.d
   d_map {X Y} g x := by simpa using naturality_apply f g (d.d x)
   d_app {X} a := by
     dsimp
@@ -191,7 +191,7 @@ attribute [simp] relativeDifferentials'_obj
 lemma relativeDifferentials'_map_d {X Y : Dᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
     DFunLike.coe (α := CommRingCat.KaehlerDifferential (φ'.app X))
       (β := fun _ ↦ CommRingCat.KaehlerDifferential (φ'.app Y))
-      ((relativeDifferentials' φ').map f) (CommRingCat.KaehlerDifferential.d x) =
+      ((relativeDifferentials' φ').map f).hom (CommRingCat.KaehlerDifferential.d x) =
         CommRingCat.KaehlerDifferential.d (R.map f x) :=
   CommRingCat.KaehlerDifferential.map_d (φ'.naturality f) _
 

@@ -284,8 +284,8 @@ lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) :
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
-    · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
     · rw [prod_add, prod_add, h]
 
 end CancelCommMonoid
@@ -317,8 +317,8 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
-    · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
 
 end CancelCommMonoid
 

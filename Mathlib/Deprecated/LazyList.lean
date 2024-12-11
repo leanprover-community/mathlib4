@@ -102,7 +102,7 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
     intro _ _ f xs
     simp only [bind, Functor.map, pure, singleton]
-    induction xs using LazyList.traverse.induct (m := @Id) (f := f) with
+    induction xs using LazyList.traverse.induct with
     | case1 =>
       simp only [Thunk.pure, LazyList.bind, LazyList.traverse, Id.pure_eq]
     | case2 _ _ ih =>

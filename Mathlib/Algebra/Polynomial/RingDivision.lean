@@ -230,7 +230,7 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), if_neg hpq, rootMultiplicity_eq_multiplicity p,
     if_neg hp, rootMultiplicity_eq_multiplicity q, if_neg hq,
-    multiplicity_mul (prime_X_sub_C x) (multiplicity_X_sub_C_finite _ hpq)]
+    multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
 
 open Multiset in
 set_option linter.unusedVariables false in

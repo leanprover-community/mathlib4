@@ -7,7 +7,7 @@ import Lean.Util.SearchPath
 import Mathlib.Lean.CoreM
 import Mathlib.Tactic.ToExpr
 
-/-! # Script to check `undergrad.yaml`, `overview.yaml`, and `100.yaml`
+/-! # Script to check `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`
 
 This assumes `yaml_check.py` has first translated these to `json` files.
 
@@ -23,7 +23,7 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
   liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
-def databases : List String := ["undergrad", "overview", "100"]
+def databases : List String := ["undergrad", "overview", "100", "1000"]
 
 def processDb (decls : ConstMap) : String → IO Bool
 | file => do

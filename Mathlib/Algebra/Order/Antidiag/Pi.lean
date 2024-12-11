@@ -223,7 +223,8 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
     · rw [not_imp_comm.1 (hfsup _) hi]
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
-  simpa [Nat.sum_div, Nat.div_ne_zero_iff_of_dvd, funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  aesop
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

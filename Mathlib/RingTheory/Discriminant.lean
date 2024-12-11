@@ -288,9 +288,9 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
-  · simp only [updateColumn_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
+  · simp only [updateCol_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
     exact mem_bot.2 (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace (hz.mul <| hint.pow _))
-  · simp only [updateColumn_apply, hji, PowerBasis.coe_basis]
+  · simp only [updateCol_apply, hji, PowerBasis.coe_basis]
     exact mem_bot.2
       (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace <| (hint.pow _).mul (hint.pow _))
 

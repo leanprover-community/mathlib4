@@ -47,11 +47,11 @@ variable (K : Type*) [Field K]
 
 The infinite adele ring is the finite product of completions of a number field over its
 infinite places. See `NumberField.InfinitePlace` for the definition of an infinite place and
-`NumberField.InfinitePlace.completion` for the associated completion.
+`NumberField.InfinitePlace.Completion` for the associated completion.
 -/
 
 /-- The infinite adele ring of a number field. -/
-def InfiniteAdeleRing := (v : InfinitePlace K) → v.completion
+def InfiniteAdeleRing := (v : InfinitePlace K) → v.Completion
 
 namespace InfiniteAdeleRing
 
@@ -82,11 +82,11 @@ abbrev ringEquiv_mixedSpace :
     InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K :=
   RingEquiv.trans
     (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)
-      (fun (v : InfinitePlace K) => v.completion))
+      (fun (v : InfinitePlace K) => v.Completion))
     (RingEquiv.prodCongr
-      (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquiv_real_of_isReal hv))
+      (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquivRealOfIsReal hv))
       (RingEquiv.trans
-        (RingEquiv.piCongrRight (fun v => Completion.ringEquiv_complex_of_isComplex
+        (RingEquiv.piCongrRight (fun v => Completion.ringEquivComplexOfIsComplex
           ((not_isReal_iff_isComplex.1 v.2))))
         (RingEquiv.piCongrLeft (fun _ => ℂ) <|
           Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))
@@ -94,7 +94,7 @@ abbrev ringEquiv_mixedSpace :
 @[simp]
 theorem ringEquiv_mixedSpace_apply (x : InfiniteAdeleRing K) :
     ringEquiv_mixedSpace K x =
-      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbedding_of_isReal v.2 (x v),
+      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.2 (x v),
        fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.1 (x v)) := rfl
 
 /-- Transfers the embedding of `x ↦ (x)ᵥ` of the number field `K` into its infinite adele
@@ -103,8 +103,8 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    ringEquiv_real_of_isReal, ringEquiv_complex_of_isComplex, extensionEmbedding,
-    extensionEmbedding_of_isReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
+    ringEquivRealOfIsReal, ringEquivComplexOfIsComplex, extensionEmbedding,
+    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]

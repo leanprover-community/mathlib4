@@ -315,11 +315,7 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (H : of R ι G f i x = 0
   if hx0 : x = 0 then ⟨i, le_rfl, by simp [hx0]⟩
   else
     have hij : i ≤ j := hj _ <| by simp [DirectSum.apply_eq_component, hx0]
-    ⟨j, hij, by
-      -- Porting note: this had been
-      -- simpa [totalize_of_le hij] using hxj
-      simp only [DirectSum.toModule_lof] at hxj
-      rwa [totalize_of_le hij] at hxj⟩
+    ⟨j, hij, by simpa [totalize, dif_pos hij, totalize_of_le hij] using hxj⟩
 
 end DirectLimit
 
@@ -731,8 +727,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       ⟨k, ↑s ∪ t, this,
         isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
           (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
-    -- Porting note: RingHom.map_mul was `(restriction _).map_mul`
-    classical rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
+    classical rw [(restriction _).map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, iht,
       (f' j k hjk).map_zero, mul_zero]
 

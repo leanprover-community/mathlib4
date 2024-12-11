@@ -90,11 +90,11 @@ instance inv_pair₂ : RingHomInvPair ((FractionRing.frobenius p k).symm : K(p, 
   RingHomInvPair.of_ringEquiv (FractionRing.frobenius p k).symm
 
 scoped[Isocrystal]
-  notation:50 M " →ᶠˡ[" p ", " k "] " M₂ =>
+  notation3:50 M " →ᶠˡ[" p ", " k "] " M₂ =>
     LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 scoped[Isocrystal]
-  notation:50 M " ≃ᶠˡ[" p ", " k "] " M₂ =>
+  notation3:50 M " ≃ᶠˡ[" p ", " k "] " M₂ =>
     LinearEquiv (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 /-! ### Isocrystals -/

@@ -89,13 +89,11 @@ open Function
 
 variable {M₀ G₀ : Type*} (α : Type*)
 
-set_option quotPrecheck false in
-/-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
-notation "α≥0" => { x : α // 0 ≤ x }
+/-- Local notation for the nonnegative elements of a type `α`. -/
+local notation3 "α≥0" => { x : α // 0 ≤ x }
 
-set_option quotPrecheck false in
-/-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
-notation "α>0" => { x : α // 0 < x }
+/-- Local notation for the positive elements of a type `α`. -/
+local notation3 "α>0" => { x : α // 0 < x }
 
 section Abbreviations
 
@@ -1109,7 +1107,7 @@ lemma strictMonoOn_mul_self [PosMulStrictMono M₀] [MulPosMono M₀] :
 
 -- See Note [decidable namespace]
 protected lemma Decidable.mul_lt_mul'' [PosMulMono M₀] [PosMulStrictMono M₀] [MulPosStrictMono M₀]
-    [@DecidableRel M₀ (· ≤ ·)] (h1 : a < c) (h2 : b < d)
+    [DecidableRel (α := M₀) (· ≤ ·)] (h1 : a < c) (h2 : b < d)
     (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 ↦ mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 ↦ by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)

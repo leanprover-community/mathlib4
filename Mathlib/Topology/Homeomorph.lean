@@ -198,6 +198,9 @@ theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
 theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
+theorem image_eq_preimage (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=
+  h.toEquiv.image_eq_preimage s
+
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 

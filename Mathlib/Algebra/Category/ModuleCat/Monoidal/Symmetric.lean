@@ -29,6 +29,7 @@ namespace MonoidalCategory
 @[simp]
 theorem braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (f ⊗ g) ≫ (Y₁.braiding Y₂).hom = (X₁.braiding X₂).hom ≫ (g ⊗ f) := by
+  ext : 1
   apply TensorProduct.ext'
   intro x y
   rfl
@@ -49,6 +50,7 @@ theorem braiding_naturality_right (X : ModuleCat R) {Y Z : ModuleCat R} (f : Y �
 theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).hom ≫ (braiding X _).hom ≫ (α_ Y Z X).hom =
       (braiding X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫ Y ◁ (braiding X Z).hom := by
+  ext : 1
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
@@ -58,6 +60,7 @@ theorem hexagon_reverse (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).inv ≫ (braiding _ Z).hom ≫ (α_ Z X Y).inv =
       X ◁ (Y.braiding Z).hom ≫ (α_ X Z Y).inv ≫ (X.braiding Z).hom ▷ Y := by
   apply (cancel_epi (α_ X Y Z).hom).1
+  ext : 1
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
@@ -74,6 +77,7 @@ instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   -- Porting note: this proof was automatic in Lean3
   -- now `aesop` is applying `ModuleCat.ext` in favour of `TensorProduct.ext`.
   symmetry _ _ := by
+    ext : 1
     apply TensorProduct.ext'
     aesop_cat
 
@@ -88,8 +92,8 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
   rfl
 
 theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
-    tensorμ A B C D = (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
-  TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
+    tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
+  ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
     TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
 
 @[simp]

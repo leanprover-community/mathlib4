@@ -304,8 +304,8 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
   induction' n using Nat.strong_induction_on with n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
-  · have hb0 : b ≠ 0 := (Nat.succ_le_iff.1 hb).ne_bot
-    simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
+  · simp [IH, h]
+    aesop
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
     refine Nat.succ_le_of_lt (log_pos hb ?_)
@@ -821,8 +821,7 @@ theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 
   have b2 : 1 < b :=
     lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
   refine ⟨?_, b2, n0⟩
-  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb,
-    (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
+  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
 
 /-
 Porting note: this part of the file is tactic related.

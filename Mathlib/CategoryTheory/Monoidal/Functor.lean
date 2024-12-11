@@ -25,9 +25,9 @@ inverse isomorphisms.
 
 We show that the composition of (lax) monoidal functors gives a (lax) monoidal functor.
 
-See `CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
+See `Mathlib.CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
 
-We show in `CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
+We show in `Mathlib.CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
 to monoid objects.
 
 ## References

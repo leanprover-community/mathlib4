@@ -94,7 +94,7 @@ theorem tendsto_const_mul_pow_atTop_iff :
     exact pos_of_mul_pos_left hck (pow_nonneg hk _)
 
 lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
-  lift n to ℕ+ using hn; simp
+  lift n to ℕ using hn.le; simp [(Int.ofNat_pos.mp hn).ne']
 
 end LinearOrderedSemifield
 

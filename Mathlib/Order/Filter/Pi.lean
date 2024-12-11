@@ -30,14 +30,6 @@ variable {ι : Type*} {α : ι → Type*} {f f₁ f₂ : (i : ι) → Filter (α
 
 section Pi
 
-/-- The product of an indexed family of filters. -/
-def pi (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
-  ⨅ i, comap (eval i) (f i)
-
-instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
-    IsCountablyGenerated (pi f) :=
-  iInf.isCountablyGenerated _
-
 theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (pi f) (f i) :=
   tendsto_iInf' i tendsto_comap
 

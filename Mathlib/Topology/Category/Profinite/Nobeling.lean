@@ -1360,7 +1360,7 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
 include hC in
 theorem succ_exact :
     (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
-    (by ext; apply CC_comp_zero)).Exact := by
+    (by ext : 2; apply CC_comp_zero)).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro f
   exact CC_exact C hC hsC ho
@@ -1661,7 +1661,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   apply Submodule.add_mem
   · apply Submodule.finsupp_sum_mem
     intro q _
-    erw [LinearMap.map_smul (fₗ := πs C o) (c := w q) (x := eval (π C (ord I · < o)) q)]
+    rw [LinearMap.map_smul]
     apply Submodule.smul_mem
     apply Submodule.subset_span
     dsimp only [eval]
@@ -1702,7 +1702,7 @@ theorem linearIndependent_comp_of_eval
     LinearIndependent ℤ (eval (C' C ho)) →
     LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
   dsimp [SumEval, ModuleCat.ofHom]
-  erw [max_eq_eval_unapply C hsC ho]
+  rw [max_eq_eval_unapply C hsC ho]
   intro h
   let f := MaxToGood C hC hsC ho h₁
   have hf : f.Injective := maxToGood_injective C hC hsC ho h₁

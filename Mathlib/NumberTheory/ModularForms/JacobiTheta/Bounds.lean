@@ -249,11 +249,7 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_zero_sub ha.1
   obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
-  have ha' : (a : UnitAddCircle) = 0 ↔ a = 0 := by
-    rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩), QuotientAddGroup.mk_zero]
-    · rw [zero_add]; exact ha
-    · simp
-  simp_rw [ha']
+  simp_rw [AddCircle.coe_eq_zero_iff_of_mem_Ico ha]
   simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
   refine ⟨_, lt_min hp hq, ?_⟩
   have : (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =ᶠ[atTop]

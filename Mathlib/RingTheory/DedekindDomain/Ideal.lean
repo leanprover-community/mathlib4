@@ -9,6 +9,7 @@ import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal.Operations
+import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Dedekind domains and ideals
@@ -911,7 +912,7 @@ theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ
   classical
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
-    rw [← Nat.cast_inj (R := ℕ∞), ← multiplicity.Finite.emultiplicity_eq_multiplicity,
+    rw [← Nat.cast_inj (R := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity,
       emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
     rw [← emultiplicity_lt_top]
     apply hn.trans_lt
@@ -1317,7 +1318,7 @@ end ChineseRemainder
 
 section PID
 
-open multiplicity UniqueFactorizationMonoid Ideal
+open UniqueFactorizationMonoid Ideal
 
 variable {R}
 variable [IsDomain R] [IsPrincipalIdealRing R]
@@ -1358,18 +1359,18 @@ theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [Normaliza
 
 theorem emultiplicity_eq_emultiplicity_span {a b : R} :
     emultiplicity (Ideal.span {a}) (Ideal.span ({b} : Set R)) = emultiplicity a b := by
-  by_cases h : Finite a b
+  by_cases h : FiniteMultiplicity a b
   · rw [h.emultiplicity_eq_multiplicity]
     apply emultiplicity_eq_of_dvd_of_not_dvd <;>
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
     · exact pow_multiplicity_dvd a b
     · apply h.not_pow_dvd_of_multiplicity_lt
       apply lt_add_one
-  · suffices ¬Finite (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
+  · suffices ¬FiniteMultiplicity (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
       rw [emultiplicity_eq_top.2 h, emultiplicity_eq_top.2 this]
-    exact Finite.not_iff_forall.mpr fun n => by
+    exact FiniteMultiplicity.not_iff_forall.mpr fun n => by
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-      exact Finite.not_iff_forall.mp h n
+      exact FiniteMultiplicity.not_iff_forall.mp h n
 
 section NormalizationMonoid
 variable [NormalizationMonoid R]

@@ -352,7 +352,6 @@
  ["docBlame", "VectorPrebundle.pretrivializationAt"],
  ["docBlame", "VectorPrebundle.pretrivializationAtlas"],
  ["docBlame", "WithIdeal.i"],
- ["docBlame", "WithZeroTopology.instHasContinuousInv₀"],
  ["docBlame", "WriterT.adapt"],
  ["docBlame", "WriterT.callCC"],
  ["docBlame", "WriterT.callCC'"],

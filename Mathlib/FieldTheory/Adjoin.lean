@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.SetTheory.Cardinal.Subfield
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Adjoining Elements to Fields

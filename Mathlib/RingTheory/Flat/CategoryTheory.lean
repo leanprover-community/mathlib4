@@ -53,7 +53,7 @@ lemma iff_lTensor_preserves_shortComplex_exact :
     fun _ _ _ _ _ _ _ _ _ f g h ↦
       moduleCat_exact_iff_function_exact _ |>.1 <|
       H (.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g)
-        (DFunLike.ext _ _ h.apply_apply_eq_zero))
+        (ModuleCat.hom_ext (DFunLike.ext _ _ h.apply_apply_eq_zero)))
           (moduleCat_exact_iff_function_exact _ |>.2 h)⟩
 
 lemma iff_rTensor_preserves_shortComplex_exact :
@@ -63,7 +63,7 @@ lemma iff_rTensor_preserves_shortComplex_exact :
     fun _ _ _ _ _ _ _ _ _ f g h ↦
       moduleCat_exact_iff_function_exact _ |>.1 <|
       H (.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g)
-        (DFunLike.ext _ _ h.apply_apply_eq_zero))
+        (ModuleCat.hom_ext (DFunLike.ext _ _ h.apply_apply_eq_zero)))
           (moduleCat_exact_iff_function_exact _ |>.2 h)⟩
 
 end Module.Flat
