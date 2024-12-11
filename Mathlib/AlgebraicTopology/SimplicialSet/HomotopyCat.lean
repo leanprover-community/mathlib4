@@ -78,8 +78,10 @@ def OneTruncation₂.tgt {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation�
   S.map (δ₂ (n := 0) 0).op f
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]₂`. -/
-def OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) :=
-  {p : S _[1]₂ // src p = X ∧ tgt p = Y}
+structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) where
+  edge : S _[1]₂
+  src_eq : S.map (δ₂ 1).op edge = X
+  tgt_eq : S.map (δ₂ 0).op edge = Y
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
