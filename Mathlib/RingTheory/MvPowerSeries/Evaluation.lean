@@ -323,9 +323,9 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : EvalDomain a)
   exact (MvPolynomial.coeToMvPowerSeries_denseInducing.extend_unique h hε).symm
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)
-    {T : Type*} [UniformSpace T] [CompleteSpace T]
-    [CommRing T] [TopologicalRing T] [LinearTopology T] [CompleteSpace T]
-    [T2Space T] [UniformAddGroup T] [TopologicalRing T] {ε : S →+* T} (hε : Continuous ε) :
+    {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
+    [CommRing T] [TopologicalRing T] [LinearTopology T] [UniformAddGroup T]
+    {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← coe_comp]
   apply eval₂_unique _ (ha.comp hε)
