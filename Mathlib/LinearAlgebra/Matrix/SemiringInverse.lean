@@ -20,29 +20,6 @@ variable {n m R : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 
 variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
-namespace Equiv.Perm
-
-/-- Permutations of a given sign. -/
-def ofSign : Finset (Perm n) := univ.filter (sign · = s)
-
-@[simp]
-lemma mem_ofSign {s} {σ : Perm n} : σ ∈ ofSign s ↔ σ.sign = s := by
-  rw [ofSign, mem_filter, and_iff_right (mem_univ σ)]
-
-lemma ofSign_disjoint : _root_.Disjoint (ofSign 1 : Finset (Perm n)) (ofSign (-1)) := by
-  rw [Finset.disjoint_iff_ne]
-  rintro σ hσ τ hτ rfl
-  rw [mem_ofSign] at hσ hτ
-  have := hσ.symm.trans hτ
-  contradiction
-
-lemma ofSign_disjUnion :
-    (ofSign 1).disjUnion (ofSign (-1)) ofSign_disjoint = (univ : Finset (Perm n)) := by
-  ext σ
-  simp_rw [mem_disjUnion, mem_ofSign, Int.units_eq_one_or, mem_univ]
-
-end Equiv.Perm
-
 namespace Matrix
 
 /-- The determinant, but only the terms of a given sign. -/
