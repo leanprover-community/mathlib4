@@ -15,8 +15,8 @@ form `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`, where `I₁ : R₁ →+* R` 
 Sesquilinear forms are the special case that `M₁ = M₂`, `M = R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
 Taking additionally `I₂ = RingHom.id R`, then one obtains bilinear forms.
 
-These forms are a special case of the bilinear maps defined in `BilinearMap.lean` and all basic
-lemmas about construction and elementary calculations are found there.
+Sesquilinear maps are a special case of the bilinear maps defined in `BilinearMap.lean` and all
+basic lemmas about construction and elementary calculations are found there.
 
 ## Main declarations
 
@@ -410,7 +410,7 @@ variable (B B' f g)
 
 /-- Given a pair of modules equipped with bilinear maps, this is the condition for a pair of
 maps between them to be mutually adjoint. -/
-def IsAdjointPair :=
+def IsAdjointPair (f : M → M₁) (g : M₁ → M) :=
   ∀ x y, B' (f x) y = B x (g y)
 
 variable {B B' f g}
@@ -423,17 +423,24 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
   · intro _ _
     rw [← compl₂_apply, ← comp_apply, h]
 
-theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by simp only [zero_apply, map_zero]
+theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by
+  simp only [Pi.zero_apply, map_zero, zero_apply]
 
-theorem isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ ↦ rfl
+theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : M → M) :=
+  fun _ _ ↦ rfl
 
-theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
+theorem isAdjointPair_one : IsAdjointPair B B (1 : Module.End R M) (1 : Module.End R M) :=
+  isAdjointPair_id
+
+theorem IsAdjointPair.add {f f' : M → M₁} {g g' : M₁ → M} (h : IsAdjointPair B B' f g)
+    (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f + f') (g + g') := fun x _ ↦ by
-  rw [f.add_apply, g.add_apply, B'.map_add₂, (B x).map_add, h, h']
+  rw [Pi.add_apply, Pi.add_apply, B'.map_add₂, (B x).map_add, h, h']
 
-theorem IsAdjointPair.comp {f' : M₁ →ₗ[R] M₂} {g' : M₂ →ₗ[R] M₁} (h : IsAdjointPair B B' f g)
-    (h' : IsAdjointPair B' B'' f' g') : IsAdjointPair B B'' (f'.comp f) (g.comp g') := fun _ _ ↦ by
-  rw [LinearMap.comp_apply, LinearMap.comp_apply, h', h]
+theorem IsAdjointPair.comp {f : M → M₁} {g : M₁ → M} {f' : M₁ → M₂} {g' : M₂ → M₁}
+    (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B' B'' f' g') :
+    IsAdjointPair B B'' (f' ∘ f) (g ∘ g') := fun _ _ ↦ by
+  rw [Function.comp_def, Function.comp_def, h', h]
 
 theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
     (h' : IsAdjointPair B B f' g') : IsAdjointPair B B (f * f') (g' * g) :=
@@ -448,11 +455,11 @@ variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₁] [Module R M₁]
 variable [AddCommGroup M₂] [Module R M₂]
 variable {B F : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
-variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
+variable {f f' : M → M₁} {g g' : M₁ → M}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
     IsAdjointPair B B' (f - f') (g - g') := fun x _ ↦ by
-  rw [f.sub_apply, g.sub_apply, B'.map_sub₂, (B x).map_sub, h, h']
+  rw [Pi.sub_apply, Pi.sub_apply, B'.map_sub₂, (B x).map_sub, h, h']
 
 theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
     IsAdjointPair B B' (c • f) (c • g) := fun _ _ ↦ by
@@ -463,7 +470,7 @@ end AddCommGroup
 section OrthogonalMap
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-  (B : LinearMap.BilinForm R M) (f : Module.End R M)
+  (B : LinearMap.BilinForm R M) (f : M → M)
 
 /-- A linear transformation `f` is orthogonal with respect to a bilinear form `B` if `B` is
 bi-invariant with respect to `f`. -/
@@ -473,17 +480,17 @@ def IsOrthogonal : Prop :=
 variable {B f}
 
 @[simp]
-lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
+lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ M} :
     LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
   ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
 
-lemma isOrthogonal_of_forall_apply_same
-    (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
+lemma isOrthogonal_of_forall_apply_same {F : Type*} [FunLike F M M] [LinearMapClass F R M M]
+    (f : F) (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
     B.IsOrthogonal f := by
   intro x y
   suffices 2 * B (f x) (f y) = 2 * B x y from h this
   have := hf (x + y)
-  simp only [map_add, add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
+  simp only [map_add, LinearMap.add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
   rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
   simp only [add_assoc, add_right_inj] at this
   simp only [← add_assoc, add_left_inj] at this
@@ -510,12 +517,12 @@ variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 on the underlying module. In the case that these two maps are identical, this is the usual concept
 of self adjointness. In the case that one of the maps is the negation of the other, this is the
 usual concept of skew adjointness. -/
-def IsPairSelfAdjoint (f : Module.End R M) :=
+def IsPairSelfAdjoint (f : M → M) :=
   IsAdjointPair B F f f
 
 /-- An endomorphism of a module is self-adjoint with respect to a bilinear map if it serves as an
 adjoint for itself. -/
-protected def IsSelfAdjoint (f : Module.End R M) :=
+protected def IsSelfAdjoint (f : M → M) :=
   IsAdjointPair B B f f
 
 end AddCommMonoid
@@ -535,7 +542,7 @@ def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
 
 /-- An endomorphism of a module is skew-adjoint with respect to a bilinear map if its negation
 serves as an adjoint. -/
-def IsSkewAdjoint (f : Module.End R M) :=
+def IsSkewAdjoint (f : M → M) :=
   IsAdjointPair B B f (-f)
 
 /-- The set of self-adjoint endomorphisms of a module with bilinear map is a submodule. (In fact
@@ -557,7 +564,7 @@ theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
 
 theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
     IsPairSelfAdjoint B F f ↔
-      IsPairSelfAdjoint (B.compl₁₂ ↑e ↑e) (F.compl₁₂ ↑e ↑e) (e.symm.conj f) := by
+      IsPairSelfAdjoint (B.compl₁₂ e e) (F.compl₁₂ e e) (e.symm.conj f) := by
   have hₗ :
     (F.compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M)).comp (e.symm.conj f) =
       (F.comp f).compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M) := by
@@ -573,7 +580,7 @@ theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
   have he : Function.Surjective (⇑(↑e : M₁ →ₗ[R] M) : M₁ → M) := e.surjective
   simp_rw [IsPairSelfAdjoint, isAdjointPair_iff_comp_eq_compl₂, hₗ, hᵣ, compl₁₂_inj he he]
 
-theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R M) :
+theorem isSkewAdjoint_iff_neg_self_adjoint (f : M → M) :
     B.IsSkewAdjoint f ↔ IsAdjointPair (-B) B f f :=
   show (∀ x y, B (f x) y = B x ((-f) y)) ↔ ∀ x y, B (f x) y = (-B) x (f y) by simp
 
