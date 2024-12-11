@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 
 /-!
 # Disjoint sum of finsets

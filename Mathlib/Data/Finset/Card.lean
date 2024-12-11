@@ -3,7 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Image
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Data.Finset.Image.Basic
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Cardinality of a finite set
