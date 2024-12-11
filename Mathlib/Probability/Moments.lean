@@ -287,7 +287,7 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
-lemma mgf_ident_distrib (X Y : Ω → ℝ) (hident : IdentDistrib X Y μ μ) : mgf X μ t = mgf Y μ t := by
+theorem mgf_ident_distrib (X Y : Ω → ℝ) (hident : IdentDistrib X Y μ μ) : mgf X μ t = mgf Y μ t := by
     rw [mgf, mgf]
     apply IdentDistrib.integral_eq
     let u := fun x => Real.exp (t * x)
@@ -358,7 +358,7 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 
 open Measurable
 
-theorem mgf_of_gaussian
+theorem mgf_gaussian
 (X: Ω → ℝ) (hXm: Measurable X) (hX: (Measure.map X μ) = (gaussianReal 0 1)) (t : ℝ) :
   mgf X μ t = exp (t ^ 2 / 2) :=
     calc
