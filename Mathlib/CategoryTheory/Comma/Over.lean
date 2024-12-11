@@ -23,7 +23,7 @@ Comma, Slice, Coslice, Over, Under
 
 namespace CategoryTheory
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {T : Type u₁} [Category.{v₁} T]
@@ -859,6 +859,37 @@ noncomputable def ofDiagEquivalence' (X : T × T) :
     (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
     StructuredArrow.mapNatIso (Under.forget X.2).rightUnitor
 
+section CommaFst
+
+variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
+
+/-- The functor used to define the equivalence `ofCommaSndEquivalence`. -/
+@[simps]
+def ofCommaSndEquivalenceFunctor (c : C) :
+    StructuredArrow c (Comma.fst F G) ⥤ Comma (Under.forget c ⋙ F) G where
+  obj X := ⟨Under.mk X.hom, X.right.right, X.right.hom⟩
+  map f := ⟨Under.homMk f.right.left (by simpa using f.w.symm), f.right.right, by simp⟩
+
+/-- The inverse functor used to define the equivalence `ofCommaSndEquivalence`. -/
+@[simps!]
+def ofCommaSndEquivalenceInverse (c : C) :
+    Comma (Under.forget c ⋙ F) G ⥤ StructuredArrow c (Comma.fst F G) :=
+  Functor.toStructuredArrow (Comma.preLeft (Under.forget c) F G) _ _
+    (fun Y => Y.left.hom) (fun _ => by simp)
+
+/-- There is a canonical equivalence between the costructured arrow category with codomain `c` on
+the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
+`Over.forget c ⋙ F : Over c ⥤ T` and `G`. -/
+@[simps]
+def ofCommaSndEquivalence (c : C) :
+    StructuredArrow c (Comma.fst F G) ≌ Comma (Under.forget c ⋙ F) G where
+  functor := ofCommaSndEquivalenceFunctor F G c
+  inverse := ofCommaSndEquivalenceInverse F G c
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+
+end CommaFst
+
 end StructuredArrow
 
 namespace CostructuredArrow
@@ -926,6 +957,37 @@ noncomputable def ofDiagEquivalence' (X : T × T) :
   (ofDiagEquivalence X).trans <|
     (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
     CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
+
+section CommaFst
+
+variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
+
+/-- The functor used to define the equivalence `ofCommaFstEquivalence`. -/
+@[simps]
+def ofCommaFstEquivalenceFunctor (c : C) :
+    CostructuredArrow (Comma.fst F G) c ⥤ Comma (Over.forget c ⋙ F) G where
+  obj X := ⟨Over.mk X.hom, X.left.right, X.left.hom⟩
+  map f := ⟨Over.homMk f.left.left (by simpa using f.w), f.left.right, by simp⟩
+
+/-- The inverse functor used to define the equivalence `ofCommaFstEquivalence`. -/
+@[simps!]
+def ofCommaFstEquivalenceInverse (c : C) :
+    Comma (Over.forget c ⋙ F) G ⥤ CostructuredArrow (Comma.fst F G) c :=
+  Functor.toCostructuredArrow (Comma.preLeft (Over.forget c) F G) _ _
+    (fun Y => Y.left.hom) (fun _ => by simp)
+
+/-- There is a canonical equivalence between the costructured arrow category with codomain `c` on
+the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
+`Over.forget c ⋙ F : Over c ⥤ T` and `G`. -/
+@[simps]
+def ofCommaFstEquivalence (c : C) :
+    CostructuredArrow (Comma.fst F G) c ≌ Comma (Over.forget c ⋙ F) G where
+  functor := ofCommaFstEquivalenceFunctor F G c
+  inverse := ofCommaFstEquivalenceInverse F G c
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+
+end CommaFst
 
 end CostructuredArrow
 
