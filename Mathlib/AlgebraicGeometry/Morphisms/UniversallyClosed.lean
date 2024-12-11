@@ -67,6 +67,14 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
+lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
+  constructor
+  intro X' Y' i₁ i₂ f' H
+  have := UniversallyClosed.out _ _ _ ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
+  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
+    (Scheme.Hom.continuous _) this
+
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
   comp_mem _ _ _ hf hg
@@ -127,7 +135,7 @@ lemma compactSpace_of_universallyClosed
   contrapose! h
   obtain ⟨x, hx⟩ := h
   obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f.base x) (q.base t'))
-  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p.base z ∉ U i from ⟨z, by simpa [Z, p, hzr], hzr⟩
+  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p.base z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
   intro i hi₁ hi₂
   rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
   cases hi₁

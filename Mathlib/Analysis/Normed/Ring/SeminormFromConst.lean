@@ -89,10 +89,10 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
   nth_rw 1 [← Nat.add_sub_of_le hmn]
   rw [pow_add, ← mul_assoc]
   have hc_pos : 0 < f c := lt_of_le_of_ne (apply_nonneg f _) hc.symm
-  apply le_trans ((div_le_div_right (pow_pos hc_pos _)).mpr (map_mul_le_mul f _ _))
+  apply le_trans ((div_le_div_iff_of_pos_right (pow_pos hc_pos _)).mpr (map_mul_le_mul f _ _))
   by_cases heq : m = n
   · have hnm : n - m = 0 := by rw [heq, Nat.sub_self n]
-    rw [hnm, heq, div_le_div_right (pow_pos hc_pos _), pow_zero]
+    rw [hnm, heq, div_le_div_iff_of_pos_right (pow_pos hc_pos _), pow_zero]
     conv_rhs => rw [← mul_one (f (x * c ^ n))]
     exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
   · have h1 : 1 ≤ n - m := by
@@ -150,7 +150,7 @@ def seminormFromConst : RingSeminorm R where
       (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]
     rw [div_mul_div_comm, ← pow_add, two_mul,
-      div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _), pow_add,
+      div_le_div_iff_of_pos_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _), pow_add,
       ← mul_assoc, mul_comm (x * y), ← mul_assoc, mul_assoc, mul_comm (c ^ n)]
     exact map_mul_le_mul f (x * c ^ n) (y * c ^ n)
 

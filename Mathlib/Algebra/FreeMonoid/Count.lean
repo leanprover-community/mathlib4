@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # `List.count` as a bundled homomorphism

@@ -82,7 +82,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   · exact (mul_lt_aleph0 qo qo).trans_le ol
   · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
-    apply (isLimit_ord ol).2
+    apply (isLimit_ord ol).succ_lt
     rw [e]
     apply typein_lt_type
 
@@ -861,7 +861,7 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordi
     (mem_Iio.mp ((enumIsoToType _).symm _).2).trans_le (Ordinal.le_iSup _ _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
-  obtain ⟨i, hi⟩ := Ordinal.lt_iSup.mp hx
+  obtain ⟨i, hi⟩ := Ordinal.lt_iSup_iff.mp hx
   exact ⟨⟨i, enumIsoToType _ ⟨x, hi⟩⟩, by simp⟩
 
 theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :

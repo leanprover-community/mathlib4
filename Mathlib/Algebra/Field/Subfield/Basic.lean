@@ -3,10 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Subfields
@@ -314,6 +315,7 @@ theorem closure_le {s : Set K} {t : Subfield K} : closure s ≤ t ↔ s ⊆ t :=
 
 /-- Subfield closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set K⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 

@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Data.Finite.Sum
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.MvPolynomial.Tower
 

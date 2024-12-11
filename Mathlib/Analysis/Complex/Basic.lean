@@ -187,7 +187,7 @@ theorem continuous_normSq : Continuous normSq := by
 
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  (pow_left_inj zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+  (pow_left_inj₀ zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
   congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
@@ -451,10 +451,23 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
   map_smul' _ _ := by simp [RCLike.smul_re, RCLike.smul_im, ofReal_mul]; ring
   norm_map' _ := by
-    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← RCLike.normSq_eq_def',
+    rw [← sq_eq_sq₀ (by positivity) (by positivity), ← normSq_eq_norm_sq, ← RCLike.normSq_eq_def',
       RCLike.normSq_apply]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h
+
+theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
+  Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
+    Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
+
+theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
+  isometry_intCast.isClosedEmbedding
+
+lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
+  Complex.closedEmbedding_intCast.isClosed_range
+
+lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℂ))ᶜ :=
+  Complex.isClosed_range_intCast.isOpen_compl
 
 section ComplexOrder
 
