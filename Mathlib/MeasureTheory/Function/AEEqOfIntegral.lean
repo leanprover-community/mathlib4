@@ -593,11 +593,10 @@ lemma ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero {μ : Measure β} {f : �
     have I : ∫ x, f x ∂μ = 0 := by rw [← setIntegral_univ]; exact h'f _ isClosed_univ
     simpa [ht, I] using integral_add_compl t_meas hf
   intro s hs
-  refine MeasurableSet.induction_on_open (fun U hU ↦ ?_) A (fun g g_disj g_meas hg ↦ ?_) hs
-  · rw [← compl_compl U]
-    exact A _ hU.measurableSet.compl (h'f _ hU.isClosed_compl)
-  · rw [integral_iUnion g_meas g_disj hf.integrableOn]
-    simp [hg]
+  induction s, hs using MeasurableSet.induction_on_open with
+  | isOpen U hU => exact compl_compl U ▸ A _ hU.measurableSet.compl (h'f _ hU.isClosed_compl)
+  | compl s hs ihs => exact A s hs ihs
+  | iUnion g g_disj g_meas hg => simp [integral_iUnion g_meas g_disj hf.integrableOn, hg]
 
 @[deprecated (since := "2024-04-17")]
 alias ae_eq_zero_of_forall_set_integral_isClosed_eq_zero :=
