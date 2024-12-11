@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.DenseEmbedding
 
 /-!
@@ -308,6 +309,11 @@ protected theorem t1Space [T1Space X] (h : X ≃ₜ Y) : T1Space Y := h.symm.isE
 protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y := h.symm.isEmbedding.t2Space
 protected theorem t25Space [T25Space X] (h : X ≃ₜ Y) : T25Space Y := h.symm.isEmbedding.t25Space
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isEmbedding.t3Space
+
+protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
+    TotallyDisconnectedSpace Y :=
+  (totallyDisconnectedSpace_iff Y).mpr
+    (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
 
 theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.isEmbedding with dense := h.surjective.denseRange }
@@ -1049,3 +1055,39 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
+
+/-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.-/
+class HomeomorphClass (F : Type*) (A B : outParam Type*)
+    [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
+  map_continuous : ∀ (f : F), Continuous f
+  inv_continuous : ∀ (f : F), Continuous (h.inv f)
+
+namespace HomeomorphClass
+
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
+
+/-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
+`Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
+@[coe]
+def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
+  {(f : α ≃ β) with
+  continuous_toFun := h.map_continuous f
+  continuous_invFun := h.inv_continuous f }
+
+@[simp]
+theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
+
+instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
+  ⟨HomeomorphClass.toHomeomorph⟩
+
+theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
+
+instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
+  map_continuous  f := map_continuous f
+
+instance : HomeomorphClass (α ≃ₜ β) α β where
+  map_continuous e := e.continuous_toFun
+  inv_continuous e := e.continuous_invFun
+
+end HomeomorphClass
