@@ -3,7 +3,6 @@ Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
-import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Basic
 
 /-!
@@ -36,16 +35,11 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
   · apply pq; simp only [reverse_nil, base]
   · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
 
-@[deprecated (since := "2024-10-15")] alias mapIdxGo_append := mapIdx_go_append
 @[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
 
-theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
-    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
-  intros f l e
-  unfold mapIdx
-  rw [mapIdx_go_append]
-  simp only [mapIdx.go, Array.size_toArray, mapIdx_go_length, length_nil, Nat.add_zero,
-    Array.push_toList, Array.toList_toArray]
+theorem mapIdx_append_one : ∀ {f : ℕ → α → β} {l : List α} {e : α},
+    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] :=
+  mapIdx_concat
 
 @[local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
@@ -292,9 +286,8 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
   · simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure]
     generalize (f (Array.size arr) head) = head
-    let arr_1 := arr.push ⟨⟩
-    have : arr_1.size = arr.size + 1 := Array.size_push arr ⟨⟩
-    rw [← this, ih arr_1]
+    have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push arr ⟨⟩
+    rw [← this, ih]
     simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :

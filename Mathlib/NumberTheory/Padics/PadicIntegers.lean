@@ -305,7 +305,7 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
     apply lt_of_lt_of_le hk
     norm_cast
     apply le_of_lt
-    convert Nat.lt_pow_self _ _ using 1
+    convert Nat.lt_pow_self _ using 1
     exact hp.1.one_lt
   · exact mod_cast hp.1.pos
 
@@ -615,8 +615,8 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
       use
         (⟨a, le_of_eq ha_norm⟩,
           ⟨(p ^ n : ℤ_[p]), mem_nonZeroDivisors_iff_ne_zero.mpr (NeZero.ne _)⟩)
-      simp only [map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow, PadicInt.coe_natCast,
-        Subtype.coe_mk, Nat.cast_pow]
+      simp only [a, map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow,
+        PadicInt.coe_natCast, Subtype.coe_mk, Nat.cast_pow]
   exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
     exact fun h => ⟨1, by rw [h]⟩

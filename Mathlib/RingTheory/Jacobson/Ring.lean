@@ -5,7 +5,7 @@ Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson.Polynomial
 import Mathlib.RingTheory.Artinian
 
 /-!
@@ -492,7 +492,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = Ideal.map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
   let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
-  refine map.isMaximal (algebraMap (R[X] ⧸ P) (Localization M')) ?_ bot_maximal
+  refine bot_maximal.map_bijective (algebraMap (R[X] ⧸ P) (Localization M')) ?_
   apply IsField.localization_map_bijective hM'
   rwa [← Quotient.maximal_ideal_iff_isField_quotient, ← bot_quotient_isMaximal_iff]
 
@@ -702,7 +702,12 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
   have : (algebraMap R S).IsIntegral := by
     rw [← f.comp_algebraMap]
-    exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f hf
+    #adaptation_note
+    /--
+    After https://github.com/leanprover/lean4/pull/6024
+    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues.
+    -/
+    exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f.toRingHom hf
   have : Algebra.IsIntegral R S := Algebra.isIntegral_def.mpr this
   exact Algebra.IsIntegral.finite
 
