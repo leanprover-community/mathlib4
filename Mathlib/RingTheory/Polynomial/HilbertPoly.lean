@@ -19,7 +19,7 @@ given any `p : F[X]` and `d : ℕ`, there exists some `h : F[X]` such that for a
 `n : ℕ`, `h(n)` is equal to the coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 This `h` is unique and is denoted as `Polynomial.hilbertPoly p d`.
 
-For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]`
+For example, given `d : ℕ`, the power series expansion of `1/(1 - X)ᵈ⁺¹` in `F[X]`
 is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
 `Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(X + 1)···(X + d)/d!`. Note that
 if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer works, so we do not want
@@ -37,7 +37,7 @@ the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` m
 * Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
 
-open Nat PowerSeries
+open Nat Polynomial PowerSeries
 
 variable (F : Type*) [Field F]
 
@@ -91,8 +91,7 @@ lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
     rw [ascPochhammer_nat_eq_natCast_ascFactorial];
     field_simp [ascFactorial_eq_factorial_mul_choose]
 
-variable {F}
-
+variable {F} in
 /--
 `Polynomial.hilbertPoly p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbertPoly p (d + 1)`
 is defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbertPoly F d i`. If
@@ -106,23 +105,43 @@ noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
   | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i
 
-variable (F) in
 lemma hilbertPoly_zero_nat (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   delta hilbertPoly; induction d with
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
+variable {F} in
 lemma hilbertPoly_poly_zero (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
+variable {F} in
 lemma hilbertPoly_poly_succ (p : F[X]) (d : ℕ) :
     hilbertPoly p (d + 1) = ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i := rfl
 
-variable (F) in
 lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
-variable [CharZero F]
+end Polynomial
+
+theorem fun_hilbertPoly_isLinearMap (d : ℕ) :
+    IsLinearMap F (fun (p : F[X]) => hilbertPoly p d) := by
+  delta hilbertPoly
+  induction d with
+  | zero => exact ⟨by simp only [add_zero, implies_true], by simp only [smul_zero, implies_true]⟩
+  | succ d _ => exact {
+      map_add := fun _ _ => by
+        simp only [← coeff_add]
+        rw [← sum_def _ fun _ r => r • _]
+        exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
+      map_smul := fun _ _ => by
+        simp only
+        rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
+          sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
+        simp only [smul_assoc] }
+
+namespace Polynomial
+
+variable {F} [CharZero F]
 
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
