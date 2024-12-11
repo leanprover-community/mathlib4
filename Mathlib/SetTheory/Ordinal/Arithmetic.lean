@@ -532,8 +532,8 @@ theorem sub_zero (a : Ordinal) : a - 0 = a := by
   simpa only [zero_add] using add_sub_cancel 0 a
 
 @[simp]
-theorem zero_sub (a : Ordinal) : 0 - a = 0 := by
-  rw [← Ordinal.le_zero]; apply sub_le_self
+theorem zero_sub (a : Ordinal) : 0 - a = 0 :=
+  sub_eq_zero_of_le (Ordinal.zero_le _)
 
 @[simp]
 theorem sub_self (a : Ordinal) : a - a = 0 := by
