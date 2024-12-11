@@ -81,6 +81,10 @@ instance (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel γ δ) [IsMarkovKe
     IsMarkovKernel (κ ∥ₖ η) := by
   rw [parallelComp]; infer_instance
 
+instance (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (η : Kernel γ δ) [IsZeroOrMarkovKernel η] :
+    IsZeroOrMarkovKernel (κ ∥ₖ η) := by
+  rw [parallelComp]; infer_instance
+
 lemma parallelComp_comp_copy (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel α γ) [IsSFiniteKernel η] :
     (κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η := by
