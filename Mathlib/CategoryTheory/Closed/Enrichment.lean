@@ -59,18 +59,23 @@ section
 
 variable {C}
 
+/-- The morphism `𝟙_ C ⟶ (ihom X).obj Y` corresponding to a morphism `X ⟶ Y`. -/
 def curry' {X Y : C} (f : X ⟶ Y) : 𝟙_ C ⟶ (ihom X).obj Y := curry ((ρ_ _).hom ≫ f)
 
+/-- The morphism `X ⟶ Y` corresponding to a morphism `𝟙_ C ⟶ (ihom X).obj Y`. -/
 def uncurry' {X Y : C} (g : 𝟙_ C ⟶ (ihom X).obj Y) : X ⟶ Y := (ρ_ _).inv ≫ uncurry g
 
+/-- `curry'` and `uncurry`' are inverse bijections. -/
 @[simp]
 lemma curry'_uncurry' {X Y : C} (g : 𝟙_ C ⟶ (ihom X).obj Y) : curry' (uncurry' g) = g := by
   simp [curry', uncurry']
 
+/-- `curry'` and `uncurry`' are inverse bijections. -/
 @[simp]
 lemma uncurry'_curry' {X Y : C} (f : X ⟶ Y) : uncurry' (curry' f) = f := by
   simp [curry', uncurry']
 
+/-- The bijection `(X ⟶ Y) ≃ (𝟙_ C ⟶ (ihom X).obj Y)` in a monoidal closed category. -/
 @[simps]
 def curryHomEquiv' {X Y : C} : (X ⟶ Y) ≃ (𝟙_ C ⟶ (ihom X).obj Y) where
   toFun := curry'
