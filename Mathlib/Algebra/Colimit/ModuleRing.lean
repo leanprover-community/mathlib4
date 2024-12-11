@@ -126,7 +126,7 @@ def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
+@[simp] theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →ₗ[R] P) (x) :
@@ -237,11 +237,11 @@ the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
   .ofLinear (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
-    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Module.lift, _root_.DirectLimit.lift_def, lift_of]; rfl)
-    (by ext x; refine x.induction_on fun i x ↦ ?_; simp [lift_of]; rfl)
+    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Module.lift, _root_.DirectLimit.lift_def]; rfl)
+    (by ext x; refine x.induction_on fun i x ↦ ?_; simp; rfl)
 
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
-  simp [linearEquiv, lift_of]; rfl
+  simp [linearEquiv]; rfl
 
 theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.1 g.2 := rfl
 
@@ -481,9 +481,7 @@ nonrec def of (i) : G i →+* DirectLimit G f :=
 
 variable {G f}
 
--- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
--- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
-theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
+@[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
 
 /-- Every element of the direct limit corresponds to some element in
@@ -568,9 +566,7 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
--- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
--- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
-theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
+@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x) :
@@ -580,7 +576,7 @@ theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x
     apply Ideal.Quotient.ringHom_ext
     refine FreeCommRing.hom_ext fun ⟨i, _⟩ ↦ ?_
     exact IsEmpty.elim' inferInstance i
-  · exact DirectLimit.induction_on x fun i x => by simp [lift_of]
+  · exact DirectLimit.induction_on x fun i x => by simp
 
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
@@ -602,11 +598,11 @@ the direct limit constructed as a quotient of the disjoint union. -/
 def ringEquiv [Nonempty ι] : DirectLimit G (f' · · ·) ≃+* _root_.DirectLimit G f' :=
   .ofRingHom (lift _ _ _ (Ring.of _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Ring.lift _ _ _ (of _ _) fun _ _ _ _ ↦ of_f ..)
-    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Ring.lift, _root_.DirectLimit.lift_def, lift_of]; rfl)
-    (by ext x; refine x.induction_on fun i x ↦ ?_; simp [lift_of])
+    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Ring.lift, _root_.DirectLimit.lift_def]; rfl)
+    (by ext x; exact x.induction_on fun i x ↦ by simp)
 
 theorem ringEquiv_of [Nonempty ι] {i g} : ringEquiv G f' (of _ _ i g) = ⟦⟨i, g⟩⟧ := by
-  simp [ringEquiv, lift_of]; rfl
+  simp [ringEquiv]; rfl
 
 theorem ringEquiv_symm_mk [Nonempty ι] {g} : (ringEquiv G f').symm ⟦g⟧ = of _ _ g.1 g.2 := rfl
 
