@@ -90,21 +90,7 @@ instance : HasExactColimitsOfShape J (C ⥤ A) where
 
 variable (K : GrothendieckTopology C) [HasWeakSheafify K A]
 
-variable (A) in
-abbrev GrothendieckTopology.ev (S : C) : Sheaf K A ⥤ A := (sheafSections K A).obj (op S)
-
-instance (S : C) [HasLimitsOfShape J A] : PreservesLimitsOfShape J (K.ev A S) :=
-  inferInstanceAs <| PreservesLimitsOfShape _ ((sheafToPresheaf _ _) ⋙ (evaluation _ _).obj _)
-
-variable [∀ (S : C), PreservesColimitsOfShape J (K.ev A S)]
-
-instance : PreservesColimitsOfShape J (sheafToPresheaf K A) where
-  preservesColimit {G} := {
-    preserves {c} hc := by
-      constructor
-      apply Limits.evaluationJointlyReflectsColimits
-      intro ⟨S⟩
-      exact isColimitOfPreserves (K.ev A S) hc }
+variable [PreservesColimitsOfShape J (sheafToPresheaf K A)]
 
 instance : HasExactColimitsOfShape J (Sheaf K A) :=
   hasExactColimitsOfShape_transfer (sheafToPresheaf K A)
@@ -141,10 +127,7 @@ instance : HasExactLimitsOfShape J (C ⥤ A) where
 
 variable (K : GrothendieckTopology C) [HasWeakSheafify K A]
 
-variable [∀ (S : C), PreservesFiniteColimits (K.ev A S)]
-
-instance : PreservesFiniteColimits (sheafToPresheaf K A) where
-  preservesFiniteColimits _ := ⟨inferInstance⟩
+variable [PreservesFiniteColimits (sheafToPresheaf K A)]
 
 instance : HasExactLimitsOfShape J (Sheaf K A) :=
   hasExactLimitsOfShape_transfer (sheafToPresheaf K A)
@@ -177,82 +160,69 @@ end
 
 section
 
-universe v
-
 variable {A C J : Type*} [Category A] [Category C] [Category J]
+  [FinitaryExtensive C] [Preadditive A] [HasColimitsOfShape J A]
 
-variable [FinitaryExtensive C] [Abelian A] [HasWeakSheafify (extensiveTopology C) A]
-    [HasFiniteLimits A]
-
-attribute [local instance] Abelian.hasFiniteBiproducts
-
-variable (G : J ⥤ Cᵒᵖ ⥤ A)
-
-variable [HasColimitsOfShape J A]
-
-#check G.flip ⋙ colim
-
-noncomputable def pointwiseColimitCone (G : J ⥤ Cᵒᵖ ⥤ A) : Cone G where
+@[simps]
+noncomputable def pointwiseColimitCone (G : J ⥤ Cᵒᵖ ⥤ A) : Cocone G where
   pt := G.flip ⋙ colim
-  π := {
-    app X := {
-      app Y := by
-        simp
-        change _ ⟶ (G.flip.obj Y).obj X
-        sorry
-      naturality := sorry
-    }
-    naturality := sorry
-  }
+  ι := {
+    app X := { app Y := (colimit.ι _ X : (G.flip.obj Y).obj X ⟶ _) }
+    naturality X Y f := by
+      ext x
+      simp only [Functor.const_obj_obj, Functor.comp_obj, colim_obj, NatTrans.comp_app,
+        Functor.const_obj_map, Category.comp_id]
+      change (G.flip.obj x).map f ≫ _ = _
+      rw [colimit.w] }
 
-lemma isSheaf_colimit [HasColimitsOfShape J A] (G : J ⥤ Sheaf (extensiveTopology C) A) :
-    Presheaf.IsSheaf (extensiveTopology C) (colimit (G ⋙ sheafToPresheaf _ A)) := by
+noncomputable def isColimitPointwiseColimitCone (G : J ⥤ Cᵒᵖ ⥤ A) :
+    IsColimit (pointwiseColimitCone G) := by
+  apply IsColimit.ofIsoColimit (combinedIsColimit _
+    (fun k ↦ ⟨colimit.cocone _, colimit.isColimit _⟩))
+  exact Cocones.ext (Iso.refl _)
+
+lemma isSheaf_pointwiseColimit (G : J ⥤ Sheaf (extensiveTopology C) A) :
+    Presheaf.IsSheaf (extensiveTopology C) (pointwiseColimitCone (G ⋙ sheafToPresheaf _ A)).pt := by
   rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
-  sorry
+  dsimp only [pointwiseColimitCone_pt]
+  apply (config := { allowSynthFailures := true } ) comp_preservesFiniteProducts
+  · have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := by
+      intro i
+      rw [← Presheaf.isSheaf_iff_preservesFiniteProducts]
+      exact Sheaf.cond _
+    exact { preserves I := { preservesLimit {K} := {
+      preserves {s} hs := by
+        constructor
+        apply evaluationJointlyReflectsLimits
+        intro i
+        obtain ⟨h⟩ := (this i).1 I
+        exact ((h (K := K)).1 hs).some } } }
+  · exact {
+      preserves I _ := by
+        apply ( config := {allowSynthFailures := true} )
+          preservesProductsOfShape_of_preservesBiproductsOfShape
+        apply preservesBiproductsOfShape_of_preservesCoproductsOfShape }
 
-instance (F : C ⥤ A) [Fintype J] [PreservesColimitsOfShape (Discrete J) F] :
-    PreservesLimitsOfShape (Discrete J) F := sorry
+instance : PreservesColimitsOfShape J (sheafToPresheaf (extensiveTopology C) A) where
+  preservesColimit {G} := by
+    suffices CreatesColimit G (sheafToPresheaf (extensiveTopology C) A) from inferInstance
+    apply createsColimitOfIsSheaf
+    intro c hc
+    let i : c.pt ≅ (G ⋙ sheafToPresheaf _ _).flip ⋙ colim :=
+      hc.coconePointUniqueUpToIso (isColimitPointwiseColimitCone _)
+    rw [Presheaf.isSheaf_of_iso_iff i]
+    exact isSheaf_pointwiseColimit _
 
--- instance (S : C) : PreservesColimitsOfShape J ((extensiveTopology C).ev A S) := sorry
+instance [HasFiniteColimits A] :
+    PreservesFiniteColimits (sheafToPresheaf (extensiveTopology C) A) where
+  preservesFiniteColimits _ := inferInstance
 
--- instance : PreservesColimits (sheafToPresheaf (extensiveTopology C) A) := ⟨inferInstance⟩
+example [HasExactColimitsOfShape J A] [HasWeakSheafify (extensiveTopology C) A]
+    [HasFiniteLimits A] : HasExactColimitsOfShape J (Sheaf (extensiveTopology C) A) := inferInstance
 
-instance [HasColimitsOfShape J A] :
-    PreservesColimitsOfShape J (sheafToPresheaf (extensiveTopology C) A) where
-      preservesColimit {G} := by
-        suffices CreatesColimit G (sheafToPresheaf (extensiveTopology C) A) from inferInstance
-        apply createsColimitOfIsSheaf
-        intro c hc
-        rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
-        exact {
-          preserves I _ := by
-            -- suffices PreservesColimitsOfShape (Discrete I) c.pt from inferInstance
-            let i : c.pt ≅ colimit (G ⋙ sheafToPresheaf _ _) :=
-              hc.coconePointUniqueUpToIso (colimit.isColimit _)
-            suffices PreservesLimitsOfShape (Discrete I) (colimit (G ⋙ sheafToPresheaf _ _)) from
-              preservesLimitsOfShape_of_natIso i.symm
-            -- exact { preservesColimit {K} := {
-            --     preserves {s} hs := by
-            --       constructor
-            --       sorry } } }
-            apply ( config := {allowSynthFailures := true} ) preservesLimitsOfShape_of_discrete
-            intro f
-            exact {
-              preserves {s} hs := by
-                constructor
-                sorry
-                -- let b := biproduct (fun x ↦ c.pt.obj (f x))
-                -- let hb := biproduct.isLimit (fun x ↦ c.pt.obj (f x))
-                -- apply (isProductEquiv _ _).toFun
-                -- refine IsLimit.ofIsoLimit (biproduct.isLimit _) ?_
-                -- refine Cones.ext ?_ ?_
-                -- · simp
-                --   let i : (biproduct.bicone fun a ↦ c.pt.obj (f a)).pt ≅ sigmaObj _ :=
-                --     (biproduct.isColimit _).coconePointUniqueUpToIso (colimit.isColimit _)
-                --   refine i ≪≫ ?_
-                --   sorry
-                -- · sorry
-            } }
+example [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
+  [HasWeakSheafify (extensiveTopology C) A] [HasFiniteColimits A] :
+  HasExactLimitsOfShape J (Sheaf (extensiveTopology C) A) := inferInstance
 
 end
 
