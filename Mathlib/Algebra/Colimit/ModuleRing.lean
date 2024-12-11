@@ -232,6 +232,8 @@ section equiv
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [DecidableEq ι] [DirectedSystem G (f · · ·)]
 open _root_.DirectLimit
 
+/-- The direct limit constructed as a quotient of the direct sum is isomorphic to
+the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
   .ofLinear (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
@@ -595,6 +597,8 @@ variable [DirectedSystem G fun i j h => f' i j h] [IsDirected ι (· ≤ ·)]
 variable (G f)
 
 open _root_.DirectLimit in
+/-- The direct limit constructed as a quotient of the free commutative ring is isomorphic to
+the direct limit constructed as a quotient of the disjoint union. -/
 def ringEquiv [Nonempty ι] : DirectLimit G (f' · · ·) ≃+* _root_.DirectLimit G f' :=
   .ofRingHom (lift _ _ _ (Ring.of _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Ring.lift _ _ _ (of _ _) fun _ _ _ _ ↦ of_f ..)
