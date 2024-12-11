@@ -963,8 +963,8 @@ theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R
   rfl
 
 -- Porting note: Lean can find this instance already
-instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
-    SMulCommClass S α β :=
+instance (priority := 900) smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β]
+    (S : Subring R) : SMulCommClass S α β :=
   inferInstanceAs (SMulCommClass S.toSubsemiring α β)
 
 -- Porting note: Lean can find this instance already

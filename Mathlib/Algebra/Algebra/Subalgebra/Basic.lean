@@ -264,7 +264,8 @@ instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsSc
 instance : Module R S :=
   S.module'
 
-instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
+instance (priority := 900) [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+    IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
 /- More general form of `Subalgebra.algebra`.
