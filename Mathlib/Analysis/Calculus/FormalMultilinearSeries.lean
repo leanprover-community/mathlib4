@@ -179,6 +179,12 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
   | n + 1 => (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm (q n)
 
+theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
+    (p.unshift z).shift = p := by
+  ext1 n
+  simp [shift, unshift]
+  exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
+
 end FormalMultilinearSeries
 
 section
