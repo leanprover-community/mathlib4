@@ -83,14 +83,14 @@ structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
   Hom X Y := SSet.OneTruncation₂.Hom X Y
-  id X := by
-    refine ⟨S.map (SSet.σ₂ (n := 0) 0).op X, ?_, ?_⟩ <;>
-    · change (S.map _ ≫ S.map _) X = X
-      rw [← map_comp]
-      rw [(_ : _ ≫ _ = 𝟙 _)]; simp
-      show ({..} : Opposite _) = _; congr; dsimp [SimplexCategory.Truncated]; ext ⟨i, _⟩
-      let 0 := i
-      rfl
+  id X :=
+    { edge := S.map (SSet.σ₂ (n := 0) 0).op X
+      src_eq := by
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero,
+          op_id, FunctorToTypes.map_id_apply]
+      tgt_eq := by
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero,
+          op_id, FunctorToTypes.map_id_apply] }
 
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
 def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
