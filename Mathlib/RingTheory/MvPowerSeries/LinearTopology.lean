@@ -168,8 +168,29 @@ instance : LinearTopology (MvPowerSeries σ α) where
     constructor
     · rintro ⟨d, hd⟩
       refine ⟨basis σ α d, ?_, hd⟩
-      sorry
-    · sorry
+      suffices (basis σ α d : Set (MvPowerSeries σ α)) = 
+        ⋂ e ∈ { e | e ≤ d}, (fun f ↦ f.coeff α e) ⁻¹' {0} by 
+        rw [this]
+        apply Set.Finite.isOpen_biInter
+        · rw [Set.Iic_def, ← Finset.coe_Iic]
+          apply Finset.finite_toSet
+        · exact fun i _ ↦ IsOpen.preimage (continuous_coeff α i) 
+            (discreteTopology_iff_isOpen_singleton_zero.mp (inferInstance))
+      ext f
+      simp only [mem_coe, mem_setOf_eq, mem_iInter, mem_preimage, mem_singleton_iff, mem_basis]
+    · rintro ⟨I, hIopen, hIs⟩
+      rw [isOpen_pi_iff] at hIopen
+      specialize hIopen 0 I.zero_mem
+      rcases hIopen with ⟨t, u, h1, h2⟩
+      use t.sup id
+      intro f hf
+      simp only [mem_basis, mem_setOf_eq] at hf
+      apply hIs
+      apply h2
+      simp only [mem_pi, Finset.mem_coe]
+      intro e he
+      rw [← f.coeff_apply, hf e (Finset.le_sup (f := id) he)]
+      exact (h1 e he).2
 
 /-  Ideal.IsBasis.toIdealBasis (idealIsBasis _ _) with
   isTopology := by
