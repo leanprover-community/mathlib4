@@ -18,6 +18,8 @@ namespace CategoryTheory
 
 open Limits Category
 
+section AddMonoid
+
 variable (C : Type*) [Category C] {A B : Type*} [AddMonoid A] [AddMonoid B]
   (φ : A →+ B) [HasShift C B]
 
@@ -118,6 +120,23 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
+variable (X : C) (i j : A) (h : i + j = 0)
+
+lemma pullbackShiftFunctorCompIsoId_hom_app :
+    (shiftFunctorCompIsoId (PullbackShift C φ) i j h).hom.app X =
+    (pullbackShiftIso C φ j (φ j) rfl).hom.app _ ≫
+    ((pullbackShiftIso C φ i (φ i) rfl).hom.app X)⟦j⟧' ≫
+    (shiftFunctorCompIsoId C (φ i) (φ j) (by rw [← φ.map_add, h, φ.map_zero])).hom.app X := by
+  simp [shiftFunctorCompIsoId, pullbackShiftFunctorAdd'_inv_app, pullbackShiftFunctorZero_hom_app]
+  rfl
+
+lemma pullbackShiftFunctorCompIsoId_inv_app :
+    (shiftFunctorCompIsoId (PullbackShift C φ) i j h).inv.app X =
+    (shiftFunctorCompIsoId C (φ i) (φ j) (by rw [← φ.map_add, h, φ.map_zero])).inv.app X ≫
+    ((pullbackShiftIso C φ i (φ i) rfl).inv.app X)⟦j⟧' ≫
+    (pullbackShiftIso C φ j (φ j) rfl).inv.app _  := by
+  simp [shiftFunctorCompIsoId, pullbackShiftFunctorAdd'_hom_app, pullbackShiftFunctorZero_inv_app]
+
 section CommShift
 
 variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
@@ -179,5 +198,33 @@ lemma pullbackCommShift_iso_inv_app (a : A) (X : C) :
   simp
 
 end CommShift
+
+end AddMonoid
+
+section AddGroup
+
+variable (C : Type*) [Category C] {A B : Type*} [AddGroup A] [AddGroup B]
+  (φ : A →+ B) [HasShift C B]
+
+open Adjunction
+
+lemma pullbackShiftEquiv'_homEquiv (i j : A) (h : i + j = 0) (X Y : C)
+    (u : (shiftFunctor (PullbackShift C φ) i).obj X ⟶ Y) :
+    (shiftEquiv' (PullbackShift C φ) i j h).toAdjunction.homEquiv X Y u =
+    (shiftEquiv' C (φ i) (φ j) (by rw [← φ.map_add, h, φ.map_zero])).toAdjunction.homEquiv X Y
+    ((pullbackShiftIso C φ i (φ i) rfl).inv.app X ≫ u) ≫
+    (pullbackShiftIso C φ j (φ j) rfl).inv.app Y := by
+  simp [homEquiv_apply, shiftEquiv'_unit, pullbackShiftFunctorCompIsoId_inv_app]
+
+lemma pullbackShiftEquiv'_homEquiv_symm (i j : A) (h : i + j = 0) (X Y : C)
+    (u : X ⟶ (shiftFunctor (PullbackShift C φ) j).obj Y) :
+    ((shiftEquiv' (PullbackShift C φ) i j h).toAdjunction.homEquiv X Y).symm u =
+    (pullbackShiftIso C φ i (φ i) rfl).hom.app X ≫ ((shiftEquiv' C (φ i) (φ j)
+    (by rw [← φ.map_add, h, φ.map_zero])).toAdjunction.homEquiv X Y).symm
+    (u ≫ (pullbackShiftIso C φ j (φ j) rfl).hom.app Y) := by
+  simp [homEquiv_symm_apply, shiftEquiv'_counit, pullbackShiftFunctorCompIsoId_hom_app]
+  rfl
+
+end AddGroup
 
 end CategoryTheory
