@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-! # Linear topologies on rings
 
