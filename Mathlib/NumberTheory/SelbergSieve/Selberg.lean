@@ -15,34 +15,26 @@ This file proves `selberg_bound_simple`, the main theorem of the Selberg.
 
 noncomputable section
 
-open scoped BigOperators Classical Sieve
+open scoped BigOperators Classical
 
 open Finset Real Nat Sieve.UpperBoundSieve ArithmeticFunction Sieve
 
-structure SelbergSieve extends Sieve where mk ::
+class SelbergSieve extends Sieve where mk ::
   level : ℝ
   one_le_level : 1 ≤ level
 
 namespace SelbergSieve
-set_option quotPrecheck false
 
-variable (s : SelbergSieve)
-local notation3 "ν" => Sieve.nu (toSieve s)
-local notation3 "P" => Sieve.prodPrimes (toSieve s)
-local notation3 "a" => Sieve.weights (toSieve s)
-local notation3 "X" => Sieve.totalMass (toSieve s)
-local notation3 "R" => Sieve.rem (toSieve s)  -- this one seems broken
-local notation3 "g" => Sieve.selbergTerms (toSieve s)
-local notation3 "y" => SelbergSieve.level s
-local notation3 "hy" => SelbergSieve.one_le_level s
+variable [s : SelbergSieve]
 
---set_option profiler true
+scoped notation3 "y" => SelbergSieve.level
+scoped notation3 "hy" => SelbergSieve.one_le_level
+
 @[simp]
 def selbergBoundingSum : ℝ :=
   ∑ l in divisors P, if l ^ 2 ≤ y then g l else 0
 
-set_option quotPrecheck false
-local notation3 "S" => SelbergSieve.selbergBoundingSum s
+scoped notation3 "S" => SelbergSieve.selbergBoundingSum
 
 lemma selbergBoundingSum_def :
   S = ∑ l in divisors P, if l ^ 2 ≤ y then g l else 0 := rfl
@@ -74,8 +66,7 @@ def selbergWeights : ℕ → ℝ := fun d =>
   else 0
 
 -- This notation traditionally uses λ, which is unavailable in lean
-set_option quotPrecheck false
-local notation3 "γ" => SelbergSieve.selbergWeights s
+scoped notation3 "γ" => SelbergSieve.selbergWeights
 
 theorem selbergWeights_eq_zero_of_not_dvd {d : ℕ} (hd : ¬ d ∣ P) :
     γ d = 0 := by
@@ -115,6 +106,7 @@ theorem selbergWeights_mul_mu_nonneg (d : ℕ) (hdP : d ∣ P) :
     · rfl
   · apply le_of_eq; ring
 
+omit s in
 lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k ∣ l → f l = 0) :
       ∑ l in n.divisors, f l
     = ∑ m in n.divisors, if k*m ∣ n then f (k*m) else 0 := by
@@ -155,7 +147,7 @@ lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k �
       simp only [mem_divisors, ne_eq] at hl
       exact hdvd hl.1
 
---Important facts about the selberg weights
+-- Important facts about the selberg weights
 theorem selbergWeights_eq_dvds_sum (d : ℕ) :
     ν d * γ d =
       S⁻¹ * μ d *
@@ -190,7 +182,7 @@ theorem selbergWeights_eq_dvds_sum (d : ℕ) :
           Nat.dvd_mul_right d m, h.1⟩
     · intro h
       trans ((ν d)⁻¹ * (ν d) * g d * μ d / S * g m)
-      · rw [inv_mul_cancel₀ (s.nu_ne_zero h_dvd), s.selbergTerms_mult.map_mul_of_coprime
+      · rw [inv_mul_cancel₀ (s.nu_ne_zero h_dvd), selbergTerms_mult.map_mul_of_coprime
           <| coprime_comm.mp h.2]
         ring
       ring
@@ -236,13 +228,11 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
 def selbergMuPlus : ℕ → ℝ :=
   Sieve.lambdaSquared γ
 
-set_option quotPrecheck false
-local notation3 "μ⁺" => SelbergSieve.selbergMuPlus s
+scoped notation3 "μ⁺" => SelbergSieve.selbergMuPlus
 
 theorem weight_one_of_selberg : γ 1 = 1 := by
   dsimp only [selbergWeights]
-  rw [if_pos (one_dvd P), s.nu_mult.left, s.selbergTerms_mult.left]
-  -- rw [ArithmeticFunction.moebius_apply_one, Int.cast_one]
+  rw [if_pos (one_dvd P), s.nu_mult.left, selbergTerms_mult.left]
   simp only [inv_one, mul_one, isUnit_one, IsUnit.squarefree, moebius_apply_of_squarefree,
     cardFactors_one, _root_.pow_zero, Int.cast_one, selbergBoundingSum, cast_pow, one_mul,
     coprime_one_right_eq_true, and_true, cast_one]
@@ -263,15 +253,7 @@ theorem mainSum_eq_diag_quad_form :
       ∑ l in divisors P,
         1 / g l *
           (∑ d in divisors P, if l ∣ d then ν d * γ d else 0) ^ 2 :=
-  by apply lambdaSquared_mainSum_eq_diag_quad_form
-
-
-/-- These two are in Mathlib per #10672 -/
-theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
-  rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
-
-theorem abs_moebius_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| = 1 := by
-  simp only [moebius_apply_of_squarefree hl, abs_pow, abs_neg, abs_one, one_pow]
+  lambdaSquared_mainSum_eq_diag_quad_form ..
 
 theorem selberg_bound_simple_mainSum :
     s.mainSum μ⁺ = S⁻¹ :=
@@ -290,6 +272,7 @@ theorem selberg_bound_simple_mainSum :
   rw [← sum_filter, ← sum_mul, sum_filter, ←selbergBoundingSum_def, sq, ←mul_assoc,
     mul_inv_cancel₀ (_root_.ne_of_gt s.selbergBoundingSum_pos), one_mul]
 
+omit s in
 lemma eq_gcd_mul_of_dvd_of_coprime {k d m :ℕ} (hkd : k ∣ d) (hmd : Coprime m d) (hk : k ≠ 0) :
     k = d.gcd (k*m) := by
   cases' hkd with r hr
@@ -351,7 +334,7 @@ theorem selbergBoundingSum_ge {d : ℕ} (hdP : d ∣ P) :
       · apply if_ctx_congr _ _ fun _ => rfl
         · exact_mod_cast s._helper hkd hk hm
         · intro h;
-          apply s.selbergTerms_mult.2
+          apply selbergTerms_mult.2
           rw [coprime_comm]; apply h.2.coprime_dvd_right hkd
     · intro l _ hkl; apply if_neg
       push_neg; intro h; exfalso
