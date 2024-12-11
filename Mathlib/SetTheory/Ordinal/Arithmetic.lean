@@ -612,27 +612,6 @@ theorem isLimit_sub {a b} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) := by
 @[deprecated isLimit_sub (since := "2024-10-11")]
 alias sub_isLimit := isLimit_sub
 
-theorem one_add_omega0 : 1 + ω = ω := by
-  refine le_antisymm ?_ (le_add_left _ _)
-  rw [omega0, ← lift_one.{0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
-  refine ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone ?_ ?_)⟩
-  · apply Sum.rec
-    · exact fun _ => 0
-    · exact Nat.succ
-  · intro a b
-    cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
-      [exact H.elim; exact Nat.succ_pos _; exact Nat.succ_lt_succ H]
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias one_add_omega := one_add_omega0
-
-@[simp]
-theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o := by
-  rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega0]
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias one_add_of_omega_le := one_add_of_omega0_le
-
 /-! ### Multiplication of ordinals -/
 
 
@@ -2329,23 +2308,7 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   lift_natCast n
 
-end Ordinal
-
 /-! ### Properties of ω -/
-
-
-namespace Cardinal
-
-open Ordinal
-
-@[simp]
-theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
-  rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
-  rwa [← ord_aleph0, ord_le_ord]
-
-end Cardinal
-
-namespace Ordinal
 
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
@@ -2420,6 +2383,37 @@ theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_le_of_isLimit := omega0_le_of_isLimit
+
+theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
+  refine le_antisymm (le_of_forall_lt fun a ha ↦ ?_) (le_add_left _ _)
+  obtain ⟨b, hb', hb⟩ := (lt_add_iff omega0_ne_zero).1 ha
+  obtain ⟨m, rfl⟩ := lt_omega0.1 hb'
+  apply hb.trans_lt
+  exact_mod_cast nat_lt_omega0 (n + m)
+
+theorem one_add_omega0 : 1 + ω = ω :=
+  mod_cast natCast_add_omega0 1
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias one_add_omega := one_add_omega0
+
+theorem add_omega0 {a : Ordinal} (h : a < ω) : a + ω = ω := by
+  obtain ⟨n, rfl⟩ := lt_omega0.1 h
+  exact natCast_add_omega0 n
+
+@[deprecated (since := "2024-09-30")]
+alias add_omega := add_omega0
+
+@[simp]
+theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o := by
+  rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, natCast_add_omega0]
+
+@[simp]
+theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
+  mod_cast natCast_add_of_omega0_le h 1
+
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+alias one_add_of_omega_le := one_add_of_omega0_le
 
 theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
   refine ⟨fun l => ⟨l.ne_zero, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
@@ -2500,6 +2494,11 @@ end Ordinal
 namespace Cardinal
 
 open Ordinal
+
+@[simp]
+theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
+  rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
+  rwa [← ord_aleph0, ord_le_ord]
 
 theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
   rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
