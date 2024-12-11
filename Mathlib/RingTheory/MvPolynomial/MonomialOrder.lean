@@ -414,18 +414,6 @@ theorem lCoeff_prod_of_regular {ι : Type*}
     m.lCoeff (s.prod P) = s.prod (fun i ↦ m.lCoeff (P i)) := by
   simp only [lCoeff, degree_prod_of_regular H, coeff_prod_of_sum_degree]
 
-theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
-    f = C (m.lCoeff f) := by
-  ext d
-  simp only [lCoeff, hf]
-  classical
-  by_cases hd : d = 0
-  · simp [hd]
-  · rw [coeff_C, if_neg (Ne.symm hd)]
-    apply coeff_eq_zero_of_lt (m := m)
-    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
-    exact ⟨bot_le, hd⟩
-
 end Semiring
 
 section Ring
