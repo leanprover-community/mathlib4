@@ -382,8 +382,8 @@ theorem det_updateCol_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R)
   rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul_left]
   simp [updateRow_transpose, det_transpose]
 
-@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul' := det_updateCol_smul_left
-@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul_left := det_updateCol_smul_left
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_smul' := det_updateCol_smul_left
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_smul_left := det_updateCol_smul_left
 
 theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j ∉ s) (c : n → R)
     (a : R) :
@@ -411,7 +411,7 @@ theorem det_updateCol_sum (A : Matrix n n R) (j : n) (c : n → R) :
   convert det_updateRow_sum A.transpose j c
   simp only [smul_eq_mul, Finset.sum_apply, Pi.smul_apply, transpose_apply]
 
-@[deprecated (since := "2024-11-03")] alias det_updateColumn_sum := det_updateCol_sum
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_sum := det_updateCol_sum
 
 section DetEq
 
@@ -445,7 +445,7 @@ theorem det_updateCol_add_self (A : Matrix n n R) {i j : n} (hij : i ≠ j) :
   rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
   exact det_updateRow_add_self Aᵀ hij
 
-@[deprecated (since := "2024-11-03")] alias det_updateColumn_add_self := det_updateCol_add_self
+@[deprecated (since := "2024-12-09")] alias det_updateColumn_add_self := det_updateCol_add_self
 
 theorem det_updateRow_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j) (c : R) :
     det (updateRow A i (A i + c • A j)) = det A := by
@@ -457,7 +457,7 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
   rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
   exact det_updateRow_add_smul_self Aᵀ hij c
 
-@[deprecated (since := "2024-11-03")]
+@[deprecated (since := "2024-12-09")]
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
