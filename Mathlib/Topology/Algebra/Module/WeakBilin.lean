@@ -3,7 +3,6 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
