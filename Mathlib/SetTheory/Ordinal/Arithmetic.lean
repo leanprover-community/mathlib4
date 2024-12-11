@@ -468,7 +468,8 @@ theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (ho : IsLimit o) : IsLimit (f 
   apply hab.trans_lt
   rwa [H.lt_iff]
 
-theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
+private theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) :
+    a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
   ⟨fun h _ l => (add_le_add_left l.le _).trans h, fun H =>
     le_of_not_lt <| by
       -- Porting note: `induction` tactics are required because of the parser bug.
@@ -592,6 +593,14 @@ theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a
   use fun h ↦ ⟨_, sub_lt_of_lt_add h hc.bot_lt, le_add_sub a b⟩
   rintro ⟨d, hd, ha⟩
   exact ha.trans_lt (add_lt_add_left hd b)
+
+theorem add_le_iff {a b c : Ordinal} (hb : b ≠ 0) : a + b ≤ c ↔ ∀ d < b, a + d < c := by
+  simpa using (lt_add_iff hb).not
+
+@[deprecated add_le_iff (since := "2024-12-08")]
+theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a + d < c) :
+    a + b ≤ c :=
+  (add_le_iff hb.ne').2 h
 
 theorem isLimit_sub {a b} (ha : IsLimit a) (h : b < a) : IsLimit (a - b) := by
   rw [isLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
@@ -2453,18 +2462,6 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
-
-theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a + d < c) :
-    a + b ≤ c := by
-  have H : a + (c - a) = c :=
-    Ordinal.add_sub_cancel_of_le
-      (by
-        rw [← add_zero a]
-        exact (h _ hb).le)
-  rw [← H]
-  apply add_le_add_left _ a
-  by_contra! hb
-  exact (h _ hb).ne H
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
