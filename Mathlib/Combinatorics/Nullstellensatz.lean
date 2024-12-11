@@ -3,12 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.RingTheory.MvPolynomial.Groebner
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Data.Finsupp.MonomialOrder.DegLex
+import Mathlib.Data.Set.Card
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.MvPolynomial.Groebner
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-! # Alon's Combinatorial Nullstellensatz -/
