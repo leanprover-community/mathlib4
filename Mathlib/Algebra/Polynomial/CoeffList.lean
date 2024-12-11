@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
 import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.GetD
