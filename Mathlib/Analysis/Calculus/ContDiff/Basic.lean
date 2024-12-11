@@ -54,21 +54,26 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-! ### Constants -/
 
+theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
+    iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s = 0 := by
+  induction n  with
+  | zero =>
+    ext1
+    simp [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp, comp_def]
+  | succ n IH =>
+    rw [iteratedFDerivWithin_succ_eq_comp_left, IH]
+    simp only [Pi.zero_def, comp_def, fderivWithin_const, map_zero]
+
 @[simp]
-theorem iteratedFDerivWithin_zero_fun (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} :
-    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s x = 0 := by
-  induction i generalizing x with
+theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s = 0 := by
+  cases i with
   | zero => ext; simp
-  | succ i IH =>
-    ext m
-    rw [iteratedFDerivWithin_succ_apply_left, fderivWithin_congr (fun _ ↦ IH) (IH hx)]
-    rw [fderivWithin_const_apply _ (hs x hx)]
-    rfl
+  | succ i => apply iteratedFDerivWithin_succ_const
 
 @[simp]
 theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦ (0 : F)) = 0 :=
-  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_zero_fun uniqueDiffOn_univ (mem_univ x)
+  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
@@ -103,30 +108,19 @@ theorem contDiffWithinAt_of_subsingleton [Subsingleton F] : ContDiffWithinAt �
 theorem contDiffOn_of_subsingleton [Subsingleton F] : ContDiffOn 𝕜 n f s := by
   rw [Subsingleton.elim f fun _ => 0]; exact contDiffOn_const
 
-theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s x = 0 := by
-  ext m
-  rw [iteratedFDerivWithin_succ_apply_right hs hx]
-  rw [iteratedFDerivWithin_congr (fun y hy ↦ fderivWithin_const_apply c (hs y hy)) hx]
-  rw [iteratedFDerivWithin_zero_fun hs hx]
-  simp [ContinuousMultilinearMap.zero_apply (R := 𝕜)]
+theorem iteratedFDerivWithin_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) (s : Set E) :
+    iteratedFDerivWithin 𝕜 n (fun _ : E ↦ c) s = 0 := by
+  cases n with
+  | zero => contradiction
+  | succ n => exact iteratedFDerivWithin_succ_const n c
+
+theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
+    (iteratedFDeriv 𝕜 n fun _ : E ↦ c) = 0 := by
+  simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_const_of_ne hn]
 
 theorem iteratedFDeriv_succ_const (n : ℕ) (c : F) :
     (iteratedFDeriv 𝕜 (n + 1) fun _ : E ↦ c) = 0 :=
-  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_succ_const n c uniqueDiffOn_univ (mem_univ x)
-
-theorem iteratedFDerivWithin_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F)
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedFDerivWithin 𝕜 n (fun _ : E ↦ c) s x = 0 := by
-  cases n with
-  | zero => contradiction
-  | succ n => exact iteratedFDerivWithin_succ_const n c hs hx
-
-theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
-    (iteratedFDeriv 𝕜 n fun _ : E ↦ c) = 0 :=
-  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_const_of_ne hn c uniqueDiffOn_univ (mem_univ x)
+  iteratedFDeriv_const_of_ne (by simp) _
 
 theorem contDiffWithinAt_singleton : ContDiffWithinAt 𝕜 n f {x} x :=
   (contDiffWithinAt_const (c := f x)).congr (by simp) rfl
@@ -946,7 +940,7 @@ theorem iteratedFDerivWithin_clm_apply_const_apply
     rw [fderivWithin_congr' (fun x hx ↦ ih hi.le hx) hx]
     rw [fderivWithin_clm_apply (hs x hx) (h_deriv.continuousMultilinear_apply_const _ x hx)
       (differentiableWithinAt_const u)]
-    rw [fderivWithin_const_apply _ (hs x hx)]
+    rw [fderivWithin_const_apply]
     simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.comp_zero, zero_add]
     rw [fderivWithin_continuousMultilinear_apply_const_apply (hs x hx) (h_deriv x hx)]
 
