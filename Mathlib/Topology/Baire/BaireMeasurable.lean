@@ -129,7 +129,7 @@ open Filter
 /--Any Borel set differs from some open set by a meager set. -/
 theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
     ∃ u : Set α, IsOpen u ∧ s =ᵇ u := by
-  induction h using MeasurableSet.induction_on_open with
+  induction s, h using MeasurableSet.induction_on_open with
   | isOpen U hU => exact ⟨U, hU, .rfl⟩
   | compl s _ ihs =>
     obtain ⟨U, Uo, hsU⟩ := ihs

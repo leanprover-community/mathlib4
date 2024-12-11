@@ -228,7 +228,7 @@ theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s →
     (compl : ∀ t (ht : MeasurableSet t), C t ht → C tᶜ ht.compl)
     (iUnion : ∀ f : ℕ → Set γ, Pairwise (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
       (∀ i, C (f i) (hf i)) → C (⋃ i, f i) (.iUnion hf)) :
-    ∀ ⦃t⦄ (ht : MeasurableSet t), C t ht := fun t ht ↦
+    ∀ t (ht : MeasurableSet t), C t ht := fun t ht ↦
   MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
     (isOpen _ isOpen_empty) isOpen compl iUnion t ht
 
@@ -265,7 +265,8 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not) fun _ _ _ h ↦ by simp [h]
+  MeasurableSet.induction_on_open (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
+    (fun _ _ _ h ↦ by simp [h]) s hs
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
 then `s` includes the closure of `K` as well. -/
