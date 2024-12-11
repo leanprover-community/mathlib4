@@ -214,6 +214,14 @@ instance instPowNat : Pow ℚ ℕ where
   pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
     rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩
 
+def pow_int_exponent (q : ℚ) (n : ℤ) : ℚ :=
+  if n ≥ 0
+  then q ^ (Int.toNat n)
+  else q ^ (Int.toNat (-n))
+
+instance instPowInt : Pow ℚ ℤ where
+  pow q n := pow_int_exponent q n
+
 lemma pow_def (q : ℚ) (n : ℕ) :
     q ^ n = ⟨q.num ^ n, q.den ^ n,
       by simp [Nat.pow_eq_zero],
