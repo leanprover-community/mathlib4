@@ -37,7 +37,7 @@ the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` m
 * Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
 
-open Nat Polynomial PowerSeries
+open Nat PowerSeries
 
 variable (F : Type*) [Field F]
 
@@ -121,8 +121,6 @@ lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
-end Polynomial
-
 theorem fun_hilbertPoly_isLinearMap (d : ℕ) :
     IsLinearMap F (fun (p : F[X]) => hilbertPoly p d) := by
   delta hilbertPoly
@@ -138,8 +136,6 @@ theorem fun_hilbertPoly_isLinearMap (d : ℕ) :
         rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
           sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
         simp only [smul_assoc] }
-
-namespace Polynomial
 
 variable {F} [CharZero F]
 
