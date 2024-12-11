@@ -26,7 +26,6 @@ so as to make the operations (addition etc.) "computable".
 
 ## Main definitions
 
-* `DirectedSystem f`
 * `Module.DirectLimit G f`
 * `AddCommGroup.DirectLimit G f`
 * `Ring.DirectLimit G f`
