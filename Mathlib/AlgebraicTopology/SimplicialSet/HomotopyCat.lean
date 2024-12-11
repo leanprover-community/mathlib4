@@ -115,7 +115,26 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
 
 section
 variable {C : Type u} [Category.{v} C]
+@[simps]
+def OneTruncation₂.nerveEquiv :
+    C ≃ OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) where
+  toFun X := .mk₀ X
+  invFun X := X.obj' 0
+  left_inv _ := rfl
+  right_inv _ := ComposableArrows.ext₀ rfl
 
+def OneTruncation₂.nerveHomEquiv {X Y : C} : (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
+  toFun f :=
+    { edge := ComposableArrows.mk₁ f
+      src_eq := ComposableArrows.ext₀ rfl
+      tgt_eq := ComposableArrows.ext₀ rfl }
+  invFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
+      eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
+  left_inv f := by dsimp; simp only [comp_id, id_comp]; rfl
+  right_inv φ := by
+    ext
+    exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
+      (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
 /-- An arrow `f : X ⟶ Y` in the refl quiver of a nerve induces an arrow in the category `C`. -/
 def OneTruncation₂.ofNerve₂.map {X Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
     (f : X ⟶ Y) : X.left ⟶ Y.left :=
