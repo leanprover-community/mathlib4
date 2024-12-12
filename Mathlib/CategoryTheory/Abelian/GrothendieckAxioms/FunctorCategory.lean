@@ -31,10 +31,7 @@ instance : HasExactColimitsOfShape J (C ⥤ A) where
         (preservesColimitNatIso ((evaluation C A).obj k)).symm
       refine (IsLimit.equivOfNatIsoOfIso (isoWhiskerLeft K i) ((F ⋙ colim).mapCone c) _ ?_)
         (isLimitOfPreserves _ hc)
-      refine Cones.ext (i.app _) ?_
-      intro j
-      erw [← i.hom.naturality]
-      rfl } } }
+      exact Cones.ext (i.app _) (fun _ ↦ i.hom.naturality _) } } }
 
 end
 
@@ -63,8 +60,7 @@ instance : HasExactLimitsOfShape J (C ⥤ A) where
         Functor.mapCocone_ι_app, Functor.comp_map, lim_map, Iso.app_hom, Iso.symm_hom,
         preservesLimitNatIso_inv_app, Category.assoc, evaluation_obj_map, i]
       rw [← Iso.eq_inv_comp]
-      erw [← i.hom.naturality]
-      rfl } } }
+      exact i.hom.naturality _ } } }
 
 end
 
