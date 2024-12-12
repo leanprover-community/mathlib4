@@ -95,7 +95,7 @@ lemma hasExactColimitsOfShape_transport {J D : Type*} [Category J] [Category D]
       refine (IsLimit.equivOfNatIsoOfIso (isoWhiskerLeft G (preservesColimitNatIso F).symm)
         ((_ ⋙ colim).mapCone c) _ ?_) (isLimitOfPreserves _ hc)
       exact Cones.ext ((preservesColimitNatIso F).symm.app _)
-        fun i ↦ by erw [← (preservesColimitNatIso F).inv.naturality]; rfl } } }
+        fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
 variable {C} in
 /--
@@ -119,8 +119,7 @@ lemma hasExactLimitsOfShape_transport {D J : Type*} [Category D] [Category J]
         Functor.mapCocone_ι_app, Functor.comp_map, whiskeringRight_obj_map, lim_map, Iso.app_hom,
         Iso.symm_hom, preservesLimitNatIso_inv_app, Category.assoc]
       rw [← Iso.eq_inv_comp]
-      erw [← (preservesLimitNatIso F).inv.naturality]
-      rfl } } }
+      exact (preservesLimitNatIso F).inv.naturality _ } } }
 
 /--
 Transport a `HasExactColimitsOfShape` along an equivalence of the shape.
