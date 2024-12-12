@@ -43,7 +43,7 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-open CategoryTheory ContinuousMap Limits Opposite Profinite Submodule Topology
+open CategoryTheory ContinuousMap Limits Opposite Order Profinite Submodule Topology
 
 universe u
 
@@ -1048,7 +1048,7 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
 
 end GoodProducts
 
-variable {o : Ordinal} (ho : o.IsLimit)
+variable {o : Ordinal} (ho : IsSuccLimit o)
 include ho
 
 theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) ↔
@@ -1056,7 +1056,7 @@ theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) 
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
-    simp only [Finset.sup_lt_iff ho.pos, List.mem_toFinset]
+    simp only [Finset.sup_lt_iff ho.bot_lt, List.mem_toFinset]
     exact fun b hb ↦ ho.succ_lt (prop_of_isGood C (ord I · < o) h b hb)
   refine ⟨hslt, fun he ↦ h ?_⟩
   have hlt : ∀ i ∈ l.val, ord I i < Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) := by
@@ -1743,7 +1743,7 @@ theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   · subst C
     exact linearIndependentSingleton
 
-theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
+theorem GoodProducts.Plimit (o : Ordinal) (ho : IsSuccLimit o) :
     (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
   intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC]
