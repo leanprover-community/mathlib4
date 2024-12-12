@@ -78,10 +78,8 @@ theorem coeffList_of_nextCoeff_ne_zero (h : P.nextCoeff ≠ 0) :
     List.reverse_nil, List.nil_append, List.cons_append, List.map_cons, List.map_reverse,
     List.cons.injEq, List.reverse_inj, List.map_inj_left, List.mem_range]
   use hd ▸ coeff_natDegree
-  constructor <;> {
-    intros
+  constructor <;> intros <;>
     exact (Polynomial.eraseLead_coeff_of_ne _ (by linarith)).symm
-  }
 
 /- Coefficients of P are always the leading coefficient, some number of zeros, and then
   `coeffList P.eraseLead`. -/
@@ -121,7 +119,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
       · simpa using by omega
   )
   · simp_all only
-    rw [List.getElem?_cons_succ, List.getElem?_reverse (by simpa [hd] using hnp ),
+    rw [List.getElem?_cons_succ, List.getElem?_reverse (by simpa [hd] using hnp),
       List.length_map, List.length_range, List.getElem?_map, List.getElem?_range (by omega),
       Option.map_some', Option.getD_some, add_tsub_cancel_right, List.append_nil,
       List.getElem?_replicate_of_lt (by omega)]

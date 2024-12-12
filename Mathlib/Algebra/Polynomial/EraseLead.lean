@@ -125,10 +125,9 @@ theorem card_support_le_one_of_eraseLead_eq_zero (h : f.eraseLead = 0) : #f.supp
   case neg => exact le_of_eq (card_support_eq_one_of_eraseLead_eq_zero hpz h)
 
 theorem eraseLead_card_support_one (h : f ≠ 0) : f.eraseLead.support.card + 1 = f.support.card := by
-    set c := f.support.card with hc
-    cases h₁ : c
-    case zero => by_contra; exact h (card_support_eq_zero.mp h₁);
-    case succ => exact Nat.succ_inj'.mpr (card_support_eraseLead' (hc ▸ h₁))
+  have h₁ : f.support.card ≠ 0 := by simpa
+  obtain ⟨c, hc⟩ := Nat.exists_eq_add_one_of_ne_zero h₁
+  rw [hc, card_support_eraseLead' hc]
 
 theorem card_support_eq_one_of_eraseLead_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
     f.support.card = 1 :=
@@ -326,8 +325,8 @@ theorem natDegree_ge_2_of_nextCoeff_eraseLead (h₁ : f.eraseLead ≠ 0) (h₂ :
     · simp [h₃]
   · exact h₃
 
-theorem ne_zero_eraseLead_of_nz_nextCoeff (h : f.nextCoeff ≠ 0) : f.eraseLead ≠ 0 :=
-  leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h ▸ h)
+theorem eraseLead_ne_zero_of_nextCoeff_ne_zero (h : f.nextCoeff ≠ 0) : f.eraseLead ≠ 0 :=
+  mt nextCoeff_eq_zero_of_eraseLead_eq_zero h
 
 end EraseLead
 

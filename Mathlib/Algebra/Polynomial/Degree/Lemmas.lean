@@ -371,14 +371,10 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     degree unchanged. -/
 theorem natDegree_mul_of_nonzero (ha : a ≠ 0) : natDegree (C a * p) = p.natDegree := by
   by_cases hp : p = 0
-  next P0 => simp only [hp, mul_zero, natDegree_zero]
-  next Pn0 =>
-    rw [← zero_add p.natDegree, ← natDegree_C a]
+  · simp only [hp, mul_zero, natDegree_zero]
+  · rw [← zero_add p.natDegree, ← natDegree_C a]
     apply natDegree_mul'
-    simp only [leadingCoeff_C, ne_eq, mul_eq_zero, leadingCoeff_eq_zero]
-    rintro ⟨a0 | p0⟩
-    next a0 => exact ha rfl
-    next p0 => exact hp p0
+    simp [ha, hp]
 
 end NoZeroDivisors
 
