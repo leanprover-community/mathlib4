@@ -2362,7 +2362,8 @@ theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias one_add_of_omega_le := one_add_of_omega0_le
 
-theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
+-- TODO: prove `IsSuccPrelimit a ↔ ω ∣ a`.
+theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
   refine ⟨fun l => ⟨l.ne_bot, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
   · refine l.le_iff_forall_le.2 fun x hx => le_of_lt ?_
     rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
@@ -2378,7 +2379,7 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω 
     simp only [e, mul_zero]
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
+alias isLimit_iff_omega_dvd := isSuccLimit_iff_omega0_dvd
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
@@ -2594,6 +2595,10 @@ alias omega0_isLimit := isLimit_omega0
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_isLimit := isLimit_omega0
+
+@[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-12")]
+theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a :=
+  isSuccLimit_iff_omega0_dvd
 
 @[deprecated natCast_lt_of_isSuccLimit (since := "2024-12-12")]
 theorem nat_lt_limit {o : Ordinal} (h : IsSuccLimit o) : ∀ n : ℕ, ↑n < o :=
