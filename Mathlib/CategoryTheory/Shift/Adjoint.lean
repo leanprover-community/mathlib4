@@ -360,29 +360,33 @@ namespace CommShift
 /-- Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this defines commutation
 isomorphisms `shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`.
 -/
-noncomputable def left_to_right_iso (adj : F ⊣ G) (commF : CommShift F A) (a : A) :=
-  (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction)
-  (Adjunction.comp (shiftEquiv C a).symm.toAdjunction adj)).toFun (commF.iso (-a))
+def left_to_right_iso (adj : F ⊣ G) (commF : CommShift F A) (a : A) :=
+  (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D (-a) a (by simp)).toAdjunction)
+  (Adjunction.comp (shiftEquiv' C (-a) a (by simp)).toAdjunction adj)).toFun (commF.iso (-a))
 
 /-- In the definition of `CommShift.left_to_right_iso`, we used `F.commShiftIso (-a)`
 to define the commutation isomorphism `shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`.
 This result shows that we can use instead any `F.commShiftIso a'` for `a'` such that
-`a + a' = 0`.
+`a' + a = 0`.
 -/
-lemma left_to_right_iso_eq (adj : F ⊣ G) (commF : CommShift F A) (a a' : A) (h : a + a' = 0) :
+lemma left_to_right_iso_eq (adj : F ⊣ G) (commF : CommShift F A) (a a' : A) (h : a' + a = 0) :
     left_to_right_iso adj commF a =
-    (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D a a' h).symm.toAdjunction)
-    (Adjunction.comp (shiftEquiv' C a a' h).symm.toAdjunction adj)).toFun (commF.iso a') := by
-  have h' : a' = -a := eq_neg_of_add_eq_zero_right h
+    (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D a' a h).toAdjunction)
+    (Adjunction.comp (shiftEquiv' C a' a h).toAdjunction adj)).toFun (commF.iso a') := by
+  have h' : a' = -a := eq_neg_of_add_eq_zero_left h
   ext Y
-  simp [left_to_right_iso]
-  conv_lhs => rw [shiftEquiv'_symm_counit, shiftFunctorCompIsoId]
-  conv_rhs => rw [shiftEquiv'_symm_counit, shiftFunctorCompIsoId]
-  simp only [Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, comp_obj, id_obj, map_comp]
-  have := shiftFunctorAdd'_symm_eqToIso (C := D) a a' 0 a (-a) 0 h (by simp) rfl h'
+  simp only [shiftEquiv'_inverse, comp_obj, left_to_right_iso, shiftEquiv'_functor,
+    Equiv.toFun_as_coe, conjugateIsoEquiv_apply_hom, conjugateEquiv_apply_app, comp_unit_app,
+    id_obj, Equivalence.toAdjunction_unit, Functor.comp_map, comp_counit_app,
+    Equivalence.toAdjunction_counit, map_comp, assoc]
+  conv_lhs => rw [shiftEquiv'_unit, shiftFunctorCompIsoId]
+  conv_rhs => rw [shiftEquiv'_counit, shiftFunctorCompIsoId]
+  simp only [Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app, id_obj, comp_obj, assoc, Iso.trans_hom,
+    Iso.symm_hom, map_comp]
+  have := shiftFunctorAdd'_symm_eqToIso (C := D) a a' 0 a (-a) 0 (by simp [h']) (by simp) rfl h'
   apply_fun (fun e ↦ e.hom.app) at this
-  simp only [comp_obj, Iso.symm_hom, eqToIso_refl, Iso.trans_refl, Iso.trans_hom, eqToIso.hom]
-    at this
+  simp only [comp_obj, Iso.symm_hom, eqToIso_refl, Iso.trans_refl, Iso.trans_hom,
+    eqToIso.hom] at this
   rw [this]
   simp only [NatTrans.comp_app, comp_obj, eqToHom_app, map_comp, assoc]
   rw [eqToHom_map, eqToHom_map]
@@ -392,10 +396,10 @@ lemma left_to_right_iso_eq (adj : F ⊣ G) (commF : CommShift F A) (a a' : A) (h
     (G.map ((commF.iso i).hom.app (G.obj ((shiftFunctor D a).obj Y))))) (w := h')]
   slice_rhs 2 3 => rw [eqToHom_naturality (z := fun i ↦ (shiftFunctor C a).map (adj.unit.app
     ((shiftFunctor C i).obj (G.obj ((shiftFunctor D a).obj Y))))) (w := h')]
-  conv_lhs => rw [shiftEquiv'_symm_unit, shiftFunctorCompIsoId]
-  conv_rhs => rw [shiftEquiv'_symm_unit, shiftFunctorCompIsoId]
-  simp only [Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app, id_obj, comp_obj, assoc,
-    NatIso.cancel_natIso_inv_left]
+  conv_lhs => rw [shiftEquiv'_counit, shiftFunctorCompIsoId]
+  conv_rhs => rw [shiftEquiv'_unit, shiftFunctorCompIsoId]
+  simp only [Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, comp_obj, id_obj, map_comp,
+    Iso.trans_inv, Iso.symm_inv, assoc, NatIso.cancel_natIso_inv_left]
   have := shiftFunctorAdd'_eqToIso (C := C) a' a 0 (-a) a 0 (by simp only [h', neg_add_cancel])
     (by simp) h' rfl
   apply_fun (fun e ↦ e.hom.app) at this
@@ -405,38 +409,63 @@ lemma left_to_right_iso_eq (adj : F ⊣ G) (commF : CommShift F A) (a a' : A) (h
     id_comp]
 
 lemma comp_left_to_right_iso_hom_app (adj : F ⊣ G) (commF : CommShift F A) (a a' : A)
-    (h : a + a' = 0) (X : C) (Y : D) (u : X ⟶ G.obj (Y⟦a⟧)) :
-    u ≫ (left_to_right_iso adj commF a).hom.app Y =
-    ((shiftEquiv' C a a' h).symm.toAdjunction.homEquiv X (G.obj Y)) ((adj.homEquiv
-    ((shiftFunctor C a').obj X) Y) ((CommShift.iso a').hom.app X ≫
-    ((shiftEquiv' D a a' h).symm.toAdjunction.homEquiv (F.obj X) Y).symm
-    ((adj.homEquiv X ((shiftFunctor D a).obj Y)).symm u))) := by
-  rw [left_to_right_iso_eq adj commF a a' h]
+    (h : a + a' = 0) (X : C) (Y : D) (u : X ⟶ G.obj (Y⟦a'⟧)) :
+    u ≫ (left_to_right_iso adj commF a').hom.app Y =
+    ((shiftEquiv' C a a' h).toAdjunction.homEquiv X (G.obj Y)) ((adj.homEquiv
+    ((shiftFunctor C a).obj X) Y) ((CommShift.iso a).hom.app X ≫
+    ((shiftEquiv' D a a' h).toAdjunction.homEquiv (F.obj X) Y).symm
+    ((adj.homEquiv X ((shiftFunctor D a').obj Y)).symm u))) := by
+  rw [left_to_right_iso_eq adj commF a' a h]
   simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, Equivalence.symm_functor,
     shiftEquiv'_inverse, Equiv.toFun_as_coe, conjugateIsoEquiv_apply_hom, conjugateEquiv_apply_app,
     comp_unit_app, id_obj, Equivalence.toAdjunction_unit, Functor.comp_map, comp_counit_app,
     Equivalence.toAdjunction_counit, map_comp, assoc, homEquiv_symm_apply, homEquiv_apply]
-  slice_lhs 1 2 => erw [(shiftEquiv' C a a' h).symm.unit.naturality u]
+  slice_lhs 1 2 => erw [(shiftEquiv' C a a' h).unit.naturality u]
   simp only [id_obj, Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
     shiftEquiv'_functor, comp_obj, Functor.comp_map, assoc]
   slice_lhs 2 3 => rw [← Functor.map_comp]; erw [adj.unit.naturality]
   slice_rhs 3 4 => rw [← Functor.map_comp, ← Functor.map_comp]
-                   erw [← (CommShift.iso a').hom.naturality u]
+                   erw [← (CommShift.iso a).hom.naturality u]
   simp only [assoc, Functor.map_comp]
   rfl
 
 lemma left_to_right_iso_hom_app (adj : F ⊣ G) (commF : CommShift F A) (a a' : A)
     (h : a + a' = 0) (Y : D) :
-    (left_to_right_iso adj commF a).hom.app Y =
-    ((shiftEquiv' C a a' h).symm.toAdjunction.homEquiv _ (G.obj Y)) ((adj.homEquiv
-    ((shiftFunctor C a').obj _) Y) ((CommShift.iso a').hom.app _ ≫
-    ((shiftEquiv' D a a' h).symm.toAdjunction.homEquiv (F.obj _) Y).symm
-    ((adj.homEquiv _ ((shiftFunctor D a).obj Y)).symm (𝟙 (G.obj (Y⟦a⟧)))))) := by
-  conv_lhs => rw [← id_comp ((left_to_right_iso adj commF a).hom.app Y)]
-  rw [comp_left_to_right_iso_hom_app _ _ a a' h]
+    (left_to_right_iso adj commF a').hom.app Y =
+    ((shiftEquiv' C a a' h).toAdjunction.homEquiv _ (G.obj Y)) ((adj.homEquiv
+    ((shiftFunctor C a).obj _) Y) ((CommShift.iso a).hom.app _ ≫
+    ((shiftEquiv' D a a' h).toAdjunction.homEquiv (F.obj _) Y).symm
+    ((adj.homEquiv _ ((shiftFunctor D a').obj Y)).symm (𝟙 (G.obj (Y⟦a'⟧)))))) := by
+  conv_rhs => rw [← comp_left_to_right_iso_hom_app _ _ a a' h]
   simp
 
-/-- If we have an adjunction `adj : F ⊣ G` and a `CommShift F A` structure on `commF`, then,
+lemma comp_left_to_right_iso_inv_app (adj : F ⊣ G) (commF : CommShift F A) (a a' : A)
+    (h : a + a' = 0) (X : C) (Y : D) (u : X ⟶ (G.obj Y)⟦a'⟧) :
+    u ≫ (left_to_right_iso adj commF a').inv.app Y =
+    adj.homEquiv X (Y⟦a'⟧) ((shiftEquiv' D a a' h).toAdjunction.homEquiv (F.obj X) Y
+    ((F.commShiftIso a).inv.app X ≫ (adj.homEquiv (X⟦a⟧) Y).symm
+    (((shiftEquiv' C a a' h).toAdjunction.homEquiv X (G.obj Y)).symm u))) := by
+  rw [left_to_right_iso_eq adj commF a' a (by simp [eq_neg_of_add_eq_zero_left h])]
+  simp [homEquiv_apply, homEquiv_symm_apply]
+  slice_rhs 3 4 => rw [← map_comp, ← map_comp]; erw [← (F.commShiftIso a).inv.naturality]
+  simp only [comp_obj, Functor.comp_map, map_comp, assoc]
+  slice_rhs 2 3 => rw [← map_comp]; erw [← (shiftEquiv' D a a' h).unit.naturality]
+  simp only [id_obj, shiftEquiv'_functor, shiftEquiv'_inverse, comp_obj, Functor.id_map, map_comp,
+    assoc]
+  slice_rhs 1 2 => erw [← adj.unit.naturality]
+  simp only [id_obj, comp_obj, Functor.id_map, assoc]
+  rfl
+
+lemma left_to_right_iso_inv_app (adj : F ⊣ G) (commF : CommShift F A) (a a' : A)
+    (h : a + a' = 0) (Y : D) :
+    (left_to_right_iso adj commF a').inv.app Y =
+    adj.homEquiv _ (Y⟦a'⟧) ((shiftEquiv' D a a' h).toAdjunction.homEquiv _ Y
+    ((F.commShiftIso a).inv.app _ ≫ (adj.homEquiv _ Y).symm
+    (((shiftEquiv' C a a' h).toAdjunction.homEquiv _ (G.obj Y)).symm (𝟙 _)))) := by
+  conv_rhs => rw [← comp_left_to_right_iso_inv_app _ _ a a' h]
+  simp
+
+/-- If we have an adjunction `adj : F ⊣ G` and a `CommShift F A` structure `commF`, then,
 for all `a, b` in `A` such that `a + b = 0`, the adjunction `adj` is compatible with the
 isomorphisms `F.commShiftIso a` and `left_to_right_iso adj commF b`.
 -/
@@ -445,238 +474,195 @@ lemma left_to_right_compat (adj : F ⊣ G) (commF : CommShift F A) (a b : A) (h 
   intro X Y u
   rw [← cancel_mono ((left_to_right_iso adj commF b).hom.app Y)]
   slice_lhs 2 3 => rw [Iso.inv_hom_id_app]
-  conv_rhs => erw [comp_left_to_right_iso_hom_app adj commF b a
-              (by simp [eq_neg_of_add_eq_zero_left h])]
+  conv_rhs => erw [comp_left_to_right_iso_hom_app adj commF a b h]
   rw [comp_homEquiv, comp_homEquiv]
-  simp only [comp_obj, shiftEquiv'_inverse, shiftEquiv'_functor, Equiv.trans_apply, comp_id,
-  Equivalence.symm_functor, Equivalence.symm_inverse, Equiv.symm_apply_apply]
-  rw [shiftEquiv'_symm_homEquiv, shiftEquiv'_symm_homEquiv, Equiv.symm_apply_apply, ← assoc]
-  erw [Iso.hom_inv_id_app]
-  simp
+  simp only [shiftEquiv'_inverse, comp_obj, shiftEquiv'_functor, Equiv.trans_apply, comp_id,
+    Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq]
+  change  _ = (F.commShiftIso a).hom.app X ≫ _
+  rw [← assoc, Iso.hom_inv_id_app, id_comp]
 
-lemma left_to_right_iso_zero (adj : F ⊣ G) (commF : CommShift F A) :
-    left_to_right_iso adj commF 0 = CommShift.isoZero G A := by
-  apply CommShift.compat_left_right_unique_right adj 0 0 (by simp) (CommShift.isoZero F A)
-  · rw [← F.commShiftIso_zero]; exact left_to_right_compat adj commF 0 0 (by simp)
-  · exact CommShift.compat_left_right_isoZero adj
-
-lemma left_to_right_iso_add (adj : F ⊣ G) (commF : CommShift F A) (a b : A) :
-    left_to_right_iso adj commF (a + b) = CommShift.isoAdd (left_to_right_iso adj commF a)
-    (left_to_right_iso adj commF b) := by
-  have h : (-b + (-a)) + (a + b) = 0 := by rw [add_assoc, ← add_assoc (-a)]; simp
-  apply CommShift.compat_left_right_unique_right adj (-b + (-a)) (a + b) h
-    (F.commShiftIso (-b + (-a)))
-  · exact left_to_right_compat adj commF (-b + (-a)) (a + b) h
-  · rw [F.commShiftIso_add]
-    exact CommShift.compat_left_right_isoAdd adj (-b) (-a) b a (by simp) (by simp) _ _ _ _
-      (left_to_right_compat adj commF (-b) b (by simp))
-      (left_to_right_compat adj commF (-a) a (by simp))
-
-noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
+/-- Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this defines a
+`CommShift` structure on `G` such that the adjunction is compatible with these structures
+(proved in `CommShift.left_to_right_compatCommShift`).
+-/
+ def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     CommShift G A where
   iso := left_to_right_iso adj commF
-  zero := left_to_right_iso_zero adj commF
-  add a b := left_to_right_iso_add adj commF a b
+  zero := by
+    apply CommShift.compat_left_right_unique_right adj 0 0 (by simp) (CommShift.isoZero F A)
+    · rw [← F.commShiftIso_zero]; exact left_to_right_compat adj commF 0 0 (by simp)
+    · exact CommShift.compat_left_right_isoZero adj
+  add a b := by
+    have h : (-b + (-a)) + (a + b) = 0 := by rw [add_assoc, ← add_assoc (-a)]; simp
+    apply CommShift.compat_left_right_unique_right adj (-b + (-a)) (a + b) h
+      (F.commShiftIso (-b + (-a)))
+    · exact left_to_right_compat adj commF (-b + (-a)) (a + b) h
+    · rw [F.commShiftIso_add]
+      exact CommShift.compat_left_right_isoAdd adj (-b) (-a) b a (by simp) (by simp) _ _ _ _
+        (left_to_right_compat adj commF (-b) b (by simp))
+        (left_to_right_compat adj commF (-a) a (by simp))
 
 /-- If we have an adjunction `adj : F ⊣ G` and a `CommShift` structure on `F`, and if we put
 the `CommShift` structure on `G` given by `CommShift.left_to_right`, then the adjunction
 `adj` is compatible with these two `CommShift` structures.
 -/
 lemma left_to_right_compatCommShift (adj : F ⊣ G) (commF : CommShift F A) :
-    @compatCommShift C D _ _ F G A _ _ _ adj commF (left_to_right adj commF) := by
-  apply @compatCommShift.mk C D _ _ F G A _ _ _ adj commF (left_to_right adj commF)
-  intro a b h X Y u
-  rw [← cancel_mono (((left_to_right adj commF).iso b).hom.app Y)]
-  slice_lhs 2 3 => change ((left_to_right adj commF).iso b).inv.app Y ≫ _
-                   rw [Iso.inv_hom_id_app]
-  conv_rhs => erw [comp_left_to_right_iso_hom_app adj commF b a
-              (by simp [eq_neg_of_add_eq_zero_left h])]
-  rw [comp_homEquiv, comp_homEquiv]
-  simp only [comp_obj, shiftEquiv'_inverse, shiftEquiv'_functor, Equiv.trans_apply, comp_id,
-  Equivalence.symm_functor, Equivalence.symm_inverse, Equiv.symm_apply_apply]
-  rw [shiftEquiv'_symm_homEquiv, shiftEquiv'_symm_homEquiv, Equiv.symm_apply_apply, ← assoc]
-  erw [Iso.hom_inv_id_app]
-  simp
+    @compatCommShift C D _ _ F G A _ _ _ adj commF (left_to_right adj commF) :=
+  @compatCommShift.mk C D _ _ F G A _ _ _ adj commF (left_to_right adj commF)
+  (fun a b h ↦ left_to_right_compat adj commF a b h)
 
 /-- Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this defines commutation
 isomorphisms `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a`.
 -/
-noncomputable def right_to_left_iso (adj : F ⊣ G) (commG : CommShift G A) (a : A) :=
-  (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D (-a) a
-  (neg_add_cancel _)).symm.toAdjunction) (Adjunction.comp (shiftEquiv' C (-a) a
-  (neg_add_cancel _)).symm.toAdjunction adj)).invFun (commG.iso (-a))
+ def right_to_left_iso (adj : F ⊣ G) (commG : CommShift G A) (a : A) :=
+  (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv D a).toAdjunction)
+  (Adjunction.comp (shiftEquiv C a).toAdjunction adj)).invFun (commG.iso (-a))
 
-noncomputable def left_to_right_iso_op (adj : F ⊣ G) (commG : CommShift G A) (a : A) :
-    (F ⋙ (shiftEquiv' D (-a) a (neg_add_cancel a)).symm.functor).op ≅
-      ((shiftEquiv' C (-a) a (neg_add_cancel a)).symm.functor ⋙ F).op :=
-    (left_to_right_iso (C := OppositeShift D A) (D := OppositeShift C A)
-    adj.opAdjointOpOfAdjoint (@Opposite.commShiftOp D _ _ _ _ C _ _ G commG) a).symm
-
+/-- The function `right_to_left_iso` is given by `left_to_right_iso` applied to the opposite
+adjunction.
+-/
 lemma right_to_left_eq_left_to_right_op (adj : F ⊣ G) (commG : CommShift G A) (a : A) :
-    right_to_left_iso adj commG a = NatIso.removeOp (left_to_right_iso_op adj commG a) := by
-  set G' : OppositeShift D A ⥤ OppositeShift C A := G.op
-  set F' : OppositeShift C A ⥤ OppositeShift D A := F.op
-  set commG' : CommShift G' A := @Opposite.commShiftOp D _ _ _ _ C _ _ G commG
-  set adj' : G' ⊣ F' := adj.opAdjointOpOfAdjoint
-  have := commG'
-  dsimp [left_to_right_iso_op, left_to_right_iso, right_to_left_iso]
-  rw [← conjugateIsoEquiv_op _ _ _ _ (adj.comp (shiftEquiv' D (-a) a (by simp)).symm.toAdjunction)
-    ((shiftEquiv' C (-a) a (by simp)).symm.toAdjunction.comp adj)]
-  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
-    shiftEquiv'_inverse, natIsoOpEquiv, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
-  congr 1
+    right_to_left_iso adj commG a = NatIso.removeOp
+    (F := F ⋙ (shiftEquiv' D (-a) a (neg_add_cancel a)).symm.functor)
+    (G := (shiftEquiv' C (-a) a (neg_add_cancel a)).symm.functor ⋙ F)
+    (left_to_right_iso (C := OppositeShift D A) (D := OppositeShift C A)
+    adj.opAdjointOpOfAdjoint (@Opposite.commShiftOp D _ _ _ _ C _ _ G commG) a).symm := by
+  dsimp [left_to_right_iso, right_to_left_iso]
+  rw [← conjugateIsoEquiv_op _ _ _ _ (adj.comp (shiftEquiv D a).toAdjunction)
+    ((shiftEquiv C a).toAdjunction.comp adj)]
+  simp only [shiftEquiv'_inverse, shiftEquiv'_functor, natIsoOpEquiv, Equiv.trans_apply,
+    Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
   rw [Adjunction.comp_op, Adjunction.comp_op]
-  change _ = conjugateIsoEquiv _ _ _
+  change _ = NatIso.removeOp (conjugateIsoEquiv _ _ _)
   dsimp [shiftEquiv]
-  rw [← shiftEquiv'_symm_toAdjunction_op, ← shiftEquiv'_symm_toAdjunction_op]
-  rfl
-
-lemma right_to_left_iso_eq (adj : F ⊣ G) (commG : CommShift G A) (a a' : A) (h : a + a' = 0) :
-    right_to_left_iso adj commG a = (conjugateIsoEquiv (Adjunction.comp adj
-    (shiftEquiv' D a' a (by simp [eq_neg_of_add_eq_zero_left h])).symm.toAdjunction)
-    (Adjunction.comp (shiftEquiv' C a' a
-    (by simp [eq_neg_of_add_eq_zero_left h])).symm.toAdjunction adj)).invFun (commG.iso a') := by
-  rw [right_to_left_eq_left_to_right_op, left_to_right_iso_op, left_to_right_iso_eq _ _ a a' h]
-  ext X
-  simp only [Equivalence.symm_functor, shiftEquiv'_inverse, comp_obj, Equivalence.symm_inverse,
-    shiftEquiv'_functor, Equiv.toFun_as_coe, NatIso.removeOp_hom, Iso.symm_hom,
-    conjugateIsoEquiv_apply_inv, NatTrans.removeOp_app, op_obj, conjugateEquiv_apply_app,
-    comp_unit_app, id_obj, opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_unit, op_map,
-    Functor.comp_map, comp_counit_app, Equivalence.toAdjunction_counit,
-    opAdjointOpOfAdjoint_counit_app, map_comp, assoc, Equiv.invFun_as_coe,
-    conjugateIsoEquiv_symm_apply_hom, conjugateEquiv_symm_apply_app]
-  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
-    unop_comp, unop_comp, unop_comp, unop_comp]
-  simp only [unop_id, map_id, comp_id, map_comp, op_comp, unop_comp, Quiver.Hom.unop_op, assoc,
-    id_comp]
-  rw [shiftEquiv'_symm_counit, shiftEquiv'_symm_unit]
-  simp only [shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, comp_obj,
-    id_obj, Iso.trans_inv, Iso.symm_inv]
-  rw [oppositeShiftFunctorAdd'_inv_app, oppositeShiftFunctorZero_hom_app]
-  simp only [comp_obj, id_obj]
-  rw [shiftEquiv'_symm_unit]
-  simp only [shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app, id_obj,
-    comp_obj, map_comp, assoc]
-  rw [oppositeShiftFunctorAdd'_hom_app, oppositeShiftFunctorZero_inv_app]
-  simp only [id_obj, comp_obj]
-  have : F.map ((shiftFunctor (OppositeShift C A) a).map (adj.unit.app X).op).unop =
-    F.map ((shiftFunctor C a).map (adj.unit.app X)) := rfl
-  rw [this]
-  congr 1
-  have : F.map ((shiftFunctor (OppositeShift C A) a).map (G.map
-              (((shiftFunctorAdd' D a a' 0 h).hom.app (F.obj X)).op ≫
-                  ((shiftFunctorZero D A).inv.app (F.obj X)).op).unop).op).unop =
-    F.map ((shiftFunctor C a).map (G.map ((shiftFunctorZero D A).inv.app (F.obj X)))) ≫
-    F.map ((shiftFunctor C a).map (G.map ((shiftFunctorAdd' D a a' 0 h).hom.app (F.obj X)))) := by
-    conv_lhs => rw [← op_comp, Quiver.Hom.unop_op]
-                rw [map_comp, op_comp, map_comp, unop_comp]
-                erw [Quiver.Hom.unop_op, Quiver.Hom.unop_op]
-    simp only [id_obj, comp_obj, map_comp]
-    rfl
-  rw [this]
-  simp only [id_obj, comp_obj, assoc]
+  rw [← shiftEquiv'_toAdjunction_op, ← shiftEquiv'_toAdjunction_op]
   rfl
 
 lemma comp_right_to_left_iso_hom_app (adj : F ⊣ G) (commG : CommShift G A) (a a' : A)
     (h : a + a' = 0) (X : C) (Y : D) (v : (F.obj X)⟦a⟧ ⟶ Y) :
     (right_to_left_iso adj commG a).hom.app X ≫ v = (adj.homEquiv _ _).symm
-    (((shiftEquiv' C a' a (by simp [eq_neg_of_add_eq_zero_left h])).symm.toAdjunction.homEquiv
-    _ _).symm (((adj.homEquiv X _) (((shiftEquiv' D a' a
-    (by simp [eq_neg_of_add_eq_zero_left h])).symm.toAdjunction.homEquiv _ _) v)) ≫
-    (commG.iso a').hom.app _)) := by
-  rw [right_to_left_iso_eq _ _ a a' h]
-  simp only [Equivalence.symm_functor, shiftEquiv'_inverse, comp_obj, Equivalence.symm_inverse,
-    shiftEquiv'_functor, Equiv.invFun_as_coe, conjugateIsoEquiv_symm_apply_hom,
-    conjugateEquiv_symm_apply_app, comp_unit_app, id_obj, Equivalence.toAdjunction_unit,
-    Functor.comp_map, map_comp, comp_counit_app, Equivalence.toAdjunction_counit, assoc,
-    homEquiv_apply, homEquiv_symm_apply]
-  slice_lhs 5 6 => erw [← adj.counit.naturality]
-  slice_lhs 4 5 => erw [← Functor.map_comp]
-                   erw [← (shiftEquiv' C a' a
-                     (by simp [eq_neg_of_add_eq_zero_left h])).symm.counit.naturality]
-                   rw [Functor.map_comp]
-  slice_lhs 3 4 => rw [← Functor.map_comp]; erw [← Functor.map_comp]
-                   erw [← (commG.iso a').hom.naturality]
-                   rw [Functor.map_comp, Functor.map_comp]
-  simp only [assoc]
+    (((shiftEquiv' C a a' h).toAdjunction.homEquiv _ _).symm (((adj.homEquiv X _)
+    (((shiftEquiv' D a a' h).toAdjunction.homEquiv _ _) v)) ≫ (commG.iso a').hom.app _)) := by
+  rw [right_to_left_eq_left_to_right_op]
+  conv_lhs => rw [NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, ← Quiver.Hom.unop_op v,
+              ← unop_comp, comp_left_to_right_iso_inv_app (opAdjointOpOfAdjoint G F adj)
+              (commShiftOp G) a' a (by simp [eq_neg_of_add_eq_zero_left h]) (C := OppositeShift D A)
+              (D := OppositeShift C A)]
+  rw [opAdjointOpOfAdjoint_homEquiv, opAdjointOpOfAdjoint_homEquiv]
+  simp only [shiftEquiv'_functor, comp_obj, op_obj, shiftEquiv'_inverse, Equiv.symm_trans_apply,
+    Equiv.symm_symm, Equiv.trans_apply]
+  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
+    ← shiftEquiv'_toAdjunction_op C A a a' h, ← shiftEquiv'_toAdjunction_op D A a a' h,
+    opAdjointOpOfAdjoint_homEquiv, opAdjointOpOfAdjoint_homEquiv]
   rfl
 
-noncomputable def right_to_left (adj : F ⊣ G) (commG : CommShift G A) :
+lemma right_to_left_iso_hom_app (adj : F ⊣ G) (commG : CommShift G A) (a a' : A)
+    (h : a + a' = 0) (X : C) :
+    (right_to_left_iso adj commG a).hom.app X = (adj.homEquiv _ _).symm
+    (((shiftEquiv' C a a' h).toAdjunction.homEquiv _ _).symm (((adj.homEquiv X _)
+    (((shiftEquiv' D a a' h).toAdjunction.homEquiv _ _) (𝟙 _))) ≫ (commG.iso a').hom.app _)) :=
+  by
+  rw [← comp_right_to_left_iso_hom_app]
+  simp
+
+lemma comp_right_to_left_iso_inv_app (adj : F ⊣ G) (commG : CommShift G A) (a a' : A)
+    (h : a + a' = 0) (X : C) (Y : D) (v : F.obj (X⟦a⟧) ⟶ Y) :
+    (right_to_left_iso adj commG a).inv.app X ≫ v =
+    (((shiftEquiv' D a a' h).toAdjunction.homEquiv _ _).symm
+    ((adj.homEquiv _ _).symm (((((shiftEquiv' C a a' h).toAdjunction.homEquiv _ _)
+    (adj.homEquiv _ _ v))) ≫ (commG.iso a').inv.app Y))) := by
+  rw [right_to_left_eq_left_to_right_op]
+  conv_lhs => rw [NatIso.removeOp_inv, Iso.symm_inv, NatTrans.removeOp_app, ← Quiver.Hom.unop_op v,
+                ← unop_comp, comp_left_to_right_iso_hom_app (opAdjointOpOfAdjoint G F adj)
+                (commShiftOp G) a' a (by simp [eq_neg_of_add_eq_zero_left h])
+                (C := OppositeShift D A) (D := OppositeShift C A)]
+  rw [opAdjointOpOfAdjoint_homEquiv, opAdjointOpOfAdjoint_homEquiv]
+  simp only [shiftEquiv'_functor, comp_obj, op_obj, shiftEquiv'_inverse, Equiv.symm_trans_apply,
+    Equiv.symm_symm, Equiv.trans_apply]
+  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
+    ← shiftEquiv'_toAdjunction_op C A a a' h, ← shiftEquiv'_toAdjunction_op D A a a' h,
+    opAdjointOpOfAdjoint_homEquiv, opAdjointOpOfAdjoint_homEquiv]
+  rfl
+
+/-- If we have an adjunction `adj : F ⊣ G` and a `CommShift G A` structure `commG`, then,
+for all `a, b` in `A` such that `a + b = 0`, the adjunction `adj` is compatible with the
+isomorphisms `right_to_left_iso adj commG a` and `G.commShiftIso b`.
+-/
+lemma right_to_left_compat (adj : F ⊣ G) (commG : CommShift G A) (a b : A) (h : a + b = 0) :
+    CommShift.compat_left_right adj a b h (right_to_left_iso adj commG a) (G.commShiftIso b) := by
+  intro X Y u
+  rw [← cancel_mono ((G.commShiftIso b).hom.app Y)]
+  slice_lhs 2 3 => rw [Iso.inv_hom_id_app]
+  conv_rhs => erw [comp_right_to_left_iso_inv_app adj commG a b h]
+  rw [comp_homEquiv, comp_homEquiv]
+  simp only [comp_obj, shiftEquiv'_inverse, shiftEquiv'_functor, Equiv.trans_apply, comp_id,
+    Equiv.apply_symm_apply, assoc]
+  change  _ = _ ≫ (G.commShiftIso b).inv.app Y ≫ _
+  rw [Iso.inv_hom_id_app, comp_id]
+
+/-- Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this defines a
+`CommShift` structure on `F` such that the adjunction is compatible with these structures
+(proved in `CommShift.right_to_left_compatCommShift`).
+-/
+ def right_to_left (adj : F ⊣ G) (commG : CommShift G A) :
     CommShift F A where
   iso := right_to_left_iso adj commG
   zero := by
-    rw [right_to_left_eq_left_to_right_op, left_to_right_iso_op, left_to_right_iso_zero]
-    ext Y
-    simp only [Equivalence.symm_functor, shiftEquiv'_inverse, comp_obj, Equivalence.symm_inverse,
-      shiftEquiv'_functor, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      CommShift.isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, CommShift.isoZero_hom_app]
-    erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
-    simp
+    apply CommShift.compat_left_right_unique_left adj 0 0 (by simp) (e₂ := CommShift.isoZero G A)
+    · rw [← G.commShiftIso_zero]; exact right_to_left_compat adj commG 0 0 (by simp)
+    · exact CommShift.compat_left_right_isoZero adj
   add a b := by
-    rw [right_to_left_eq_left_to_right_op, right_to_left_eq_left_to_right_op,
-      right_to_left_eq_left_to_right_op, left_to_right_iso_op, left_to_right_iso_op,
-      left_to_right_iso_op, left_to_right_iso_add]
-    ext Y
-    simp only [Equivalence.symm_functor, shiftEquiv'_inverse, comp_obj, Equivalence.symm_inverse,
-      shiftEquiv'_functor, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, assoc,
-      CommShift.isoAdd_hom_app]
-    have : ((left_to_right_iso (C := OppositeShift D A) (D := OppositeShift C A)
-        (opAdjointOpOfAdjoint G F adj) (Functor.CommShift.op G) b).inv.app
-        ((shiftFunctor (OppositeShift C A) a).obj (op Y))) = ((left_to_right_iso
-        (C := OppositeShift D A) (D := OppositeShift C A) (opAdjointOpOfAdjoint G F adj)
-        (Functor.CommShift.op G) b).inv.app (op (Y⟦a⟧))) := rfl
-    erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
-    erw [this]
-    simp only [comp_obj, Quiver.Hom.unop_op, Equivalence.symm_inverse, shiftEquiv'_functor]
-    rfl
+    have h : (a + b) + (-b + (-a)) = 0 := by rw [add_assoc, ← add_assoc b]; simp
+    apply CommShift.compat_left_right_unique_left adj (a + b) (-b + (-a)) h
+      (e₂ := G.commShiftIso (-b + (-a)))
+    · exact right_to_left_compat adj commG (a + b) (-b + (-a)) h
+    · rw [G.commShiftIso_add]
+      refine CommShift.compat_left_right_isoAdd adj a b (-a) (-b) (by simp) (by simp) _ _ _ _
+        (right_to_left_compat adj commG a (-a) (by simp))
+        (right_to_left_compat adj commG b (-b) (by simp))
 
-lemma right_to_left_compatCommShift (adj : F ⊣ G) (commG : CommShift G A) (a a' : A) (h : a + a' = 0)
-    (X : C) (Y : D) (u : (F.obj X)⟦a'⟧ ⟶ Y) : commShift_left_right_compat adj
-    (right_to_left adj commG) commG a a' h X Y u := by
-  dsimp [commShift_left_right_compat, right_to_left]
-  rw [comp_right_to_left_iso_hom_app adj commG a' a (by simp [eq_neg_of_add_eq_zero_left h]),
-    comp_homEquiv, comp_homEquiv]
-  simp only [Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
-    shiftEquiv'_functor, comp_obj, map_comp, assoc, Equiv.trans_apply, unit_naturality_assoc,
-    right_triangle_components, comp_id]
-  rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply]
+/-- If we have an adjunction `adj : F ⊣ G` and a `CommShift` structure on `G`, and if we put
+the `CommShift` structure on `F` given by `CommShift.right_to_left`, then the adjunction
+`adj` is compatible with these two `CommShift` structures.
+-/
+lemma right_to_left_compatCommShift (adj : F ⊣ G) (commG : CommShift G A) :
+    @compatCommShift C D _ _ F G A _ _ _ adj (right_to_left adj commG) commG :=
+  @compatCommShift.mk C D _ _ F G A _ _ _ adj (right_to_left adj commG) commG
+  (fun a b h ↦ right_to_left_compat adj commG a b h)
 
-noncomputable def left_right_equiv (adj : F ⊣ G) : CommShift F A ≃ CommShift G A where
+/--
+If we have an adjunction `adj : F ⊣ G`, this is the equivalence between `CommShift F A`
+and `CommShift G A` (i.e. commutation with the shifts structures on `F` and `G`).
+-/
+ def left_right_equiv (adj : F ⊣ G) : CommShift F A ≃ CommShift G A where
   toFun := left_to_right adj
   invFun := right_to_left adj
-  left_inv commF := by
-    ext a X
-    have := left_to_right_compat adj commF (-a) a (by simp) X ((F.obj X)⟦a⟧) (𝟙 _)
-    dsimp [commShift_left_right_compat] at this; erw [comp_id] at this
-    rw [← Equiv.eq_symm_apply] at this
-    rw [this]
-    have := right_to_left_compat adj (left_to_right adj commF) (-a) a (by simp) X
-      ((F.obj X)⟦a⟧) (𝟙 _)
-    dsimp [commShift_left_right_compat] at this; erw [comp_id] at this
-    rw [← Equiv.eq_symm_apply] at this
-    exact this
-  right_inv commG := by
-    ext a Y
-    set u := ((adj.comp (shiftEquiv' D a (-a) (by simp)).symm.toAdjunction).homEquiv _ _).symm
-      (𝟙 (G.obj (Y⟦a⟧)))
-    have := right_to_left_compat adj commG a (-a) (by simp) (G.obj (Y⟦a⟧)) Y u
-    dsimp [commShift_left_right_compat, u] at this; erw [Equiv.apply_symm_apply] at this
-    rw [id_comp] at this
-    rw [← this]
-    have := left_to_right_compat adj (right_to_left adj commG) a (-a) (by simp) (G.obj (Y⟦a⟧)) Y u
-    dsimp [commShift_left_right_compat, u] at this; erw [Equiv.apply_symm_apply] at this
-    rw [id_comp] at this
-    exact this.symm
+  left_inv commF :=
+    CommShift.ext (funext (fun a ↦ CommShift.compat_left_right_unique_left adj a (-a) (by simp) _ _
+    (left_to_right_iso adj commF (-a)) (right_to_left_compat adj (left_to_right adj commF) a (-a)
+    (by simp)) (left_to_right_compat adj commF a (-a) (by simp))))
+  right_inv commG :=
+    CommShift.ext (funext (fun a ↦ CommShift.compat_left_right_unique_right adj (-a) a (by simp)
+    (right_to_left_iso adj commG (-a)) _ _ (left_to_right_compat adj (right_to_left adj commG)
+    (-a) a (by simp)) (right_to_left_compat adj commG (-a) a (by simp))))
 
--- compatibility of this equiv
-noncomputable def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
+/--
+If we have an adjunction `adj : F ⊣ G`, and a `CommShift` structure on `F`, and if we put
+the `CommShift` structure on `G` given by the forward direction of `CommShift.left_right_equiv`,
+then the adjunction `adj` is compatible with these two `CommShift` structures.
+-/
+def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
     @compatCommShift C D _ _ F G A _ _ _ adj inferInstance
     ((left_right_equiv adj).toFun inferInstance) := by
   apply @compatCommShift.mk C D _ _ F G A _ _ _ adj _ ((left_right_equiv adj).toFun inferInstance)
   intro a a' h X Y u
   exact left_to_right_compat adj inferInstance a a' h X Y u
 
+/--
+If we have an adjunction `adj : F ⊣ G`, and a `CommShift` structure on `G`, and if we put
+the `CommShift` structure on `F` given by the backward direction of `CommShift.left_right_equiv`,
+then the adjunction `adj` is compatible with these two `CommShift` structures.
+-/
 def left_right_equiv_compat_backward (adj : F ⊣ G) [CommShift G A] :
     @compatCommShift C D _ _ F G A _ _ _ adj ((left_right_equiv adj).invFun inferInstance)
     inferInstance := by
@@ -685,8 +671,6 @@ def left_right_equiv_compat_backward (adj : F ⊣ G) [CommShift G A] :
   intro a a' h X Y u
   exact right_to_left_compat adj inferInstance a a' h X Y u
 
-end Adjunction
+end CommShift
 
 end CategoryTheory
-
-#min_imports
