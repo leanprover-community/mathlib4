@@ -52,6 +52,16 @@ def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 
+/-- `Multiplicative G` has the same automorphisms as `G`. -/
+@[simps]
+def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* AddAut G :=
+  { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
+
+/-- `Additive G` has the same automorphisms as `G`. -/
+@[simps]
+def AddAutAdditive [Group G] : AddAut (Additive G) ≃* MulAut G :=
+  { MulEquiv.toAdditive.symm with map_mul' := fun _ _ ↦ rfl }
+
 /-- Reinterpret `Additive G ≃+ H` as `G ≃* Multiplicative H`. -/
 @[simps]
 def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
