@@ -95,6 +95,7 @@ section
 variable (R)
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
+@[norm_cast]
 lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
   induction n with
   | zero => rw [Nat.cast_zero, zero_smul, zero_smul]
