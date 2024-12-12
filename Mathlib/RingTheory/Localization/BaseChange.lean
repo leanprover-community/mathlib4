@@ -141,8 +141,8 @@ variable [Module A M] [IsScalarTower R A M]
 open TensorProduct
 
 /-- `S⁻¹M ⊗[R] N = S⁻¹(M ⊗[R] N)`. -/
-instance isLocalizedModule_tensorProduct_map (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
-    IsLocalizedModule S (AlgebraTensorModule.map g (LinearMap.id (R := R) (M := N))) := by
+instance IsLocalizedModule.rTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule S (AlgebraTensorModule.rTensor R N g) := by
   let Aₚ := Localization S
   letI : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
   haveI : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
@@ -150,5 +150,15 @@ instance isLocalizedModule_tensorProduct_map (g : M →ₗ[A] M') [h : IsLocaliz
     IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
   rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
   exact isBaseChange_tensorProduct_map _ h
+
+variable {P : Type*} [AddCommMonoid P] [Module R P] (f : N →ₗ[R] P)
+
+lemma IsLocalizedModule.map_lTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule.map S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
+      (AlgebraTensorModule.lTensor A M f) = AlgebraTensorModule.lTensor A M' f := by
+  apply linearMap_ext S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
+  rw [map_comp]
+  ext
+  simp
 
 end
