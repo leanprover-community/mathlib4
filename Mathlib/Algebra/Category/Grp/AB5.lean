@@ -5,7 +5,7 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 -/
 import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 /-!
 # The category of abelian groups satisfies Grothendieck's axiom AB5
 
