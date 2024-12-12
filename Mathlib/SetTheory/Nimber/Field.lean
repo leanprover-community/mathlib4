@@ -262,7 +262,7 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   rw [invSet]
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
-/-- An enumeration of elements in the complement of `invSet` by a type in the same universe. -/
+/-- An enumeration of elements in `invSet` by a type in the same universe. -/
 private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
   | [] => 0
   | x::l =>
