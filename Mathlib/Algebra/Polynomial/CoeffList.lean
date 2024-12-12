@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Data.List.Range
-import Mathlib.Data.List.GetD
 
 /-!
 # A list of coefficients of a polynomial
