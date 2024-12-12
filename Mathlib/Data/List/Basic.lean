@@ -793,17 +793,6 @@ theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n 
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
 
-/-- If two lists are the same length and get! is the same on all indices, the lists are equal. -/
-theorem ext_get! [Inhabited α] (hl : length l₁ = length l₂)
-    (h : ∀ n, get! l₁ n = get! l₂ n) : l₁ = l₂ :=
-  ext_get? fun n ↦ match h₃ : get? l₁ n, h₄ : get? l₂ n with
-      | none, none => rfl
-      | none, some _ =>
-        (not_lt_of_ge (get?_eq_none_iff.mp h₃) (hl ▸ (get?_eq_some_iff.mp h₄).1)).elim
-      | some _, none =>
-        (not_lt_of_ge (get?_eq_none_iff.mp h₄) (hl ▸ (get?_eq_some_iff.mp h₃).1)).elim
-      | some _, some _ => congrArg _ ((get!_of_get? h₃) ▸ (get!_of_get? h₄) ▸ h n)
-
 @[simp]
 theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : indexOf a l < l.length),
     l[indexOf a l] = a

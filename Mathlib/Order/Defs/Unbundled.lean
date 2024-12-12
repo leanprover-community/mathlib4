@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Alex Meiburg
+Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Set.Defs
 import Mathlib.Tactic.ExtendDoc
@@ -57,12 +57,6 @@ instance {α : Sort*} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
 instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
   ⟨fun _ _ _ => Trans.trans⟩
 
-/-- `IsCotrans X r` means the binary relation `r` on `X` is cotransitive. A cotransitive
-  relation is the (claisscal) logical negation of a transitive relation. In other words,
-  r x z implies that r x y or r y z. -/
-class IsCotrans (α : Sort*) (r : α → α → Prop) : Prop where
-  cotrans : ∀ a c, r a c → ∀ b, (r a b) ∨ (r b c)
-
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`. -/
 class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
@@ -83,12 +77,6 @@ class IsLinearOrder (α : Sort*) (r : α → α → Prop) extends IsPartialOrder
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
 class IsEquiv (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
-
-/-- `IsCoequiv X r` means that the binary relation `r` on `X` is an coequivalence relation. A
-  coequivalence is the logical negation of an equivalence relation. That is, `IsIrrefl X r`,
-  `IsSymm X r`, and `IsCotrans X r`. -/
-class IsCoequiv (α : Sort*) (r : α → α → Prop) extends IsIrrefl α r, IsSymm α r, IsCotrans α r :
-  Prop
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `IsIrrefl X r` and `IsTrans X r`. -/
@@ -131,7 +119,6 @@ local infixl:50 " ≺ " => r
 lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
 lemma refl [IsRefl α r] (a : α) : a ≺ a := IsRefl.refl a
 lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := IsTrans.trans _ _ _
-lemma cotrans [IsCotrans α r] : a ≺ c → ∀ {b}, a ≺ b ∨ b ≺ c := (IsCotrans.cotrans _ _ · _)
 lemma symm [IsSymm α r] : a ≺ b → b ≺ a := IsSymm.symm _ _
 lemma antisymm [IsAntisymm α r] : a ≺ b → b ≺ a → a = b := IsAntisymm.antisymm _ _
 lemma asymm [IsAsymm α r] : a ≺ b → ¬b ≺ a := IsAsymm.asymm _ _
@@ -142,61 +129,6 @@ lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
-
-/-- The negation of a transitive relation is cotransitive. -/
-instance neg_IsTrans_IsCotrans [IsTrans α r] : IsCotrans α (¬r · ·) where
-  cotrans :=
-    fun _ _ hez _ => Classical.or_iff_not_imp_left.mpr
-      fun hnxy hyz => hez (Trans.trans (Classical.not_not.1 hnxy) hyz)
-
-/-- The negation of a cotransitive relation is transitive. -/
-instance neg_IsCotrans_IsTrans [IsCotrans α r] : IsTrans α (¬r · ·) where
-  trans := by
-    intro _ y _ hnxz hnyz hxz
-    cases (cotrans hxz)
-    · apply hnxz; assumption
-    · apply hnyz; assumption
-
-/- The negation of a coequivalence is an equivalence. -/
-instance neg_IsCoequiv_IsEquiv [IsCoequiv α r] : IsEquiv α (¬r · ·) where
-  refl := irrefl
-  symm := fun _ _ => mt symm
-  trans := IsTrans.trans
-
-/- The negation of an equivalence is a coequivalence. -/
-instance neg_IsEquiv_IsCoequiv [IsEquiv α r] : IsCoequiv α (¬r · ·) where
-  irrefl := fun _ => Classical.not_not.2 (refl _)
-  symm := fun _ _ => mt symm
-  cotrans := IsCotrans.cotrans (self := neg_IsTrans_IsCotrans)
-
-/-- Nonequality `≠` is a `IsCoequiv` relation. -/
-instance ne_IsCoequiv : IsCoequiv α (·≠·) := neg_IsEquiv_IsCoequiv
-
-theorem cotrans_of_neg_pos [IsCotrans α r] (hxy : ¬r a b) (hxz: r a c) : r b c :=
-  Or.casesOn (cotrans hxz) (fun h => absurd h hxy) id
-
-theorem cotrans_neg_of_neg_neg [h : IsCotrans α r] (hxy : ¬r a b) (hyz: ¬r b c) : ¬r a c :=
-  _root_.trans (r := (¬r · ·)) hxy hyz
-
-theorem coequiv_of_neg_pos [IsCoequiv α r] (hxy : ¬r b a) (hxz: r a c) : r b c :=
-  Or.casesOn (cotrans hxz) (fun _ => cotrans_of_neg_pos (mt symm hxy) hxz) id
-
-theorem coequiv_neg_of_neg_neg [h : IsCoequiv α r] (hxy : ¬r b a) (hyz: ¬r b c) : ¬r a c :=
-  cotrans_neg_of_neg_neg (mt symm hxy) hyz
-
-/-- Takes both flipped arguments compared to `coequiv_neg_of_neg_neg` -/
-theorem coequiv_neg_of_neg_neg' [h : IsCoequiv α r] (hxy : ¬r a b) (hyz: ¬r c b) : ¬r a c :=
-  cotrans_neg_of_neg_neg hxy (mt symm hyz)
-
-/-- Takes one flipped argument compared to `coequiv_neg_of_neg_neg` -/
-theorem coequiv_neg_of_neg_neg'' [h : IsCoequiv α r] (hxy : ¬r b a) (hyz: ¬r c b) : ¬r a c :=
-  cotrans_neg_of_neg_neg (mt symm hxy) (mt symm hyz)
-
-/-- Is a relation is reflexive and cotransitive, is it total. This is the relational negation
-  of isAsymm_of_isTrans_of_isIrrefl. -/
-instance (priority := 90) isTotal_of_isCotrans_of_isRefl [IsCotrans α r] [IsRefl α r] :
-    IsTotal α r :=
-  ⟨fun a _ => _root_.cotrans (refl a)⟩
 
 instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
     IsIrrefl α (fun a b => decide (r a b) = true) where

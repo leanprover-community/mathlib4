@@ -51,7 +51,7 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
 
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
-  ext a
+  funext a
   rwa [List.getD_eq_getElem?_getD, List.getElem?_reverse, ← List.getD_eq_getElem?_getD]
 
 /-- An empty list can always be decidably checked for the presence of an element.
