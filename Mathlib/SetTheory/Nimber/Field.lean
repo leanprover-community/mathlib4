@@ -221,7 +221,7 @@ instance : CancelMonoidWithZero Nimber where
 
 mutual
 
-/-- The nimber inverse `a⁻¹` is recursively defined as the smallest nimber not in the set `s`, which
+/-- The nimber inverse `a⁻¹` is mutually recursively defined as the smallest nimber not in the set `s`, which
 itself is recursively defined as the smallest set with `0 ∈ s` and `(1 + (a + a') * b) / a' ∈ s`
 for `0 < a' < a` and `b ∈ s`.
 
