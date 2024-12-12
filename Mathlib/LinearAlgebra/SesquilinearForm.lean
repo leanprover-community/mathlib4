@@ -520,21 +520,13 @@ lemma isOrthogonal_of_forall_apply_same {F : Type*} [FunLike F M M] [LinearMapCl
     (f : F) (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
     B.IsOrthogonal f := by
   intro x y
-  suffices (2 : R) • B (f x) (f y) = (2 : R) • B x y from
-    (by
-      calc (B (f x)) (f y) = (1 : R) • (B (f x)) (f y) := by rw [MulAction.one_smul]
-      _ = (⅟2 * 2 : R) • (B (f x)) (f y) := by rw [invOf_mul_self']
-      _ = (⅟2 : R) • ((2 : R) • (B (f x)) (f y)) := by rw [mul_smul]
-      _ = (⅟2 : R) • ((2 : R) • B x y) := congrArg (HSMul.hSMul ⅟2) this
-      _ = (⅟2 * 2 : R) • B x y := by rw [← mul_smul]
-      _ = (1 : R) • (B x) y := by rw [← invOf_mul_self']
-      _ = (B x) y := by rw [MulAction.one_smul])
+  suffices 2 * B (f x) (f y) = 2 * B x y from h this
   have := hf (x + y)
   simp only [map_add, LinearMap.add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
   rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
   simp only [add_assoc, add_right_inj] at this
   simp only [← add_assoc, add_left_inj] at this
-  rw [two_smul, two_smul, this]
+  simpa only [← two_mul] using this
 
 end OrthogonalMap
 
