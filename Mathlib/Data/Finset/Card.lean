@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Finset.Image.Basic
+import Mathlib.Data.Finset.Subtype
 import Mathlib.Data.Int.Cast.Basic
 
 /-!

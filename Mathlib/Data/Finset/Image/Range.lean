@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Data.Finset.Image.Basic
+import Mathlib.Data.Finset.Disjoint
+import Mathlib.Data.Finset.Range
+import Mathlib.Data.Finset.Image.Defs
+import Mathlib.Data.Finset.Lattice.Basic
 
 /-! # Image and map operations on `Finset.range`.
 
