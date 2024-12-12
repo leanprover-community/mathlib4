@@ -28,7 +28,11 @@ open Polynomial
 
 namespace Polynomial
 
-variable {α : Type*} [Semiring α]
+variable {α : Type*}
+
+section Semiring
+
+variable [Semiring α]
 
 /-- A list of coefficients starting from the leading term down to the constant term. Defining
 this with P.support keeps it computable, even if the base ring doesn't have DecidableEq.
@@ -168,7 +172,9 @@ theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
         omega
       · simpa using by omega
 
-variable {α : Type*} [Ring α] (P : Polynomial α)
+end Semiring
+section Ring
+variable [Ring α] (P : α[X])
 
 /-- The coefficient list is negated if the polynomial is negated. --/
 theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
@@ -176,7 +182,10 @@ theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   · rw [hp, coeffList_zero, neg_zero, coeffList_zero, List.map_nil]
   · simp [coeffList_of_ne_zero hp, coeffList_of_ne_zero (neg_ne_zero.mpr hp)]
 
-variable {α : Type*} [DivisionSemiring α] (P : Polynomial α)
+end Ring
+section DivisionSemiring
+
+variable [DivisionSemiring α] (P : α[X])
 
 /-- Over a division semiring, multiplying a polynomial by a nonzero constant multiplies
   the coefficient list. -/
@@ -186,4 +195,5 @@ theorem coeffList_mul_C {x : α} (hη : x ≠ 0) : (C x * P).coeffList = P.coeff
   · have hcη := mul_ne_zero (mt (map_eq_zero C).mp hη) hp
     simp [coeffList_of_ne_zero hcη, coeffList_of_ne_zero hp, natDegree_mul_of_nonzero hη]
 
+end DivisionSemiring
 end Polynomial
