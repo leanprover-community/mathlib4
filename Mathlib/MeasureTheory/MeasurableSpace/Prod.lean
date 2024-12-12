@@ -69,10 +69,10 @@ lemma isPiSystem_prod :
     IsPiSystem (image2 (· ×ˢ ·) { s : Set α | MeasurableSet s } { t : Set β | MeasurableSet t }) :=
   isPiSystem_measurableSet.prod isPiSystem_measurableSet
 
-lemma MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace α}
+lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : α → β}
     {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
-    MeasurableEmbedding fun x : γ × α => (g x.1, f x.2) := by
+    MeasurableEmbedding (Prod.map g f) := by
   have h_inj : Function.Injective fun x : γ × α => (g x.fst, f x.snd) := by
     intro x y hxy
     rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
@@ -96,6 +96,9 @@ lemma MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace �
     · intro g _ _ hg
       simp_rw [Set.image_iUnion]
       exact MeasurableSet.iUnion hg
+
+@[deprecated (since := "2024-12-11")]
+alias MeasurableEmbedding.prod_mk := MeasurableEmbedding.prodMap
 
 lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass α]
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
