@@ -425,9 +425,18 @@ theorem _root_.Abelianization.ker_of (G : Type*) [Group G] :
     (Abelianization.of : G →* Abelianization G).ker = commutator G :=
   QuotientGroup.ker_mk' (commutator G)
 
-theorem _root_.Subgroup.le_center_iff_map_subtype_le_centralizer
-    {G : Type*} [Group G] {H : Subgroup G} {K : Subgroup H} :
-    K ≤ Subgroup.center H ↔ K.map H.subtype ≤ Subgroup.centralizer H := sorry
+def MulAutMultiplicative (G : Type*) [AddGroup G] :
+    MulAut (Multiplicative G) ≃* AddAut G :=
+  { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
+
+def AddAutAdditive (G : Type*) [Group G] :
+    AddAut (Additive G) ≃* MulAut G :=
+  { MulEquiv.toAdditive.symm with map_mul' := fun _ _ ↦ rfl }
+
+noncomputable def _root_.IsCyclic.mulAutMulEquiv {G : Type*} [Group G] [h : IsCyclic G] :
+    MulAut G ≃* (ZMod (Nat.card G))ˣ :=
+  ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
 
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
   refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
@@ -450,24 +459,26 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       conv_lhs at h => rw [← Abelianization.ker_of]
       let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
       infer_instance
-    rw [Subgroup.le_center_iff_map_subtype_le_centralizer, commutator_def (commutator H),
-      Subgroup.map_commutator, ← MonoidHom.range_eq_map, Subgroup.range_subtype,
-      Subgroup.le_centralizer_iff]
-    have : commutator H ≤ Subgroup.centralizer (⁅commutator H, commutator H⁆ : Subgroup H) := by
-      -- use the inductive assumption here!
-      let _ : CommGroup (MulAut (⁅commutator H, commutator H⁆ : Subgroup H)) :=
-        ⟨fun g h ↦ sorry⟩
-      have key' : ⁅commutator H, commutator H⁆.normalizer = ⊤ :=
-        Subgroup.normalizer_eq_top.mpr inferInstance
-      -- can we use key' to clean up earlier?
-      let f := Subgroup.normalizerMonoidHom ⁅commutator H, commutator H⁆
-      have key := Abelianization.commutator_subset_ker f
-      rw [Subgroup.normalizerMonoidHom_ker] at key
-      have key := Subgroup.map_mono (f := Subgroup.subtype _) key
-      simp_rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map,
-        Subgroup.range_subtype, ← commutator_def, key', ← commutator_def] at key
-      rw [Subgroup.subgroupOf, Subgroup.map_comap_eq_self] at key
-      exact key
+    suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
+        Subgroup.centralizer (commutator H) by
+      simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
+    rw [commutator_def (commutator H), Subgroup.map_commutator, ← MonoidHom.range_eq_map,
+      Subgroup.range_subtype, Subgroup.le_centralizer_iff]
+    have key' : ⁅commutator H, commutator H⁆.normalizer = ⊤ :=
+      Subgroup.normalizer_eq_top.mpr inferInstance
+    let _ : CommGroup (MulAut (⁅commutator H, commutator H⁆ : Subgroup H)) :=
+      ⟨fun g h ↦ by
+        let f := hH.mulAutMulEquiv
+        rw [← f.apply_eq_iff_eq, map_mul, mul_comm, ← map_mul, f.apply_eq_iff_eq]⟩
+    let f := Subgroup.normalizerMonoidHom ⁅commutator H, commutator H⁆
+    have key := Abelianization.commutator_subset_ker f
+    rw [Subgroup.normalizerMonoidHom_ker, key'] at key
+    have key := Subgroup.map_mono (f := Subgroup.subtype _) key
+    simp_rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map,
+      Subgroup.range_subtype, ← commutator_def] at key
+    rwa [Subgroup.subgroupOf, Subgroup.map_comap_eq_self] at key
+    rw [Subgroup.range_subtype]
+    exact le_top
 
 theorem isSolvable_iff_commutator_lt {G : Type*} [Group G] [WellFoundedLT (Subgroup G)] :
     IsSolvable G ↔ ∀ H : Subgroup G, H ≠ ⊥ → ⁅H, H⁆ < H := by
