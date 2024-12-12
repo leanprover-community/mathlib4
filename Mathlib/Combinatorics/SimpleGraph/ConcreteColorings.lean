@@ -23,11 +23,9 @@ theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hAdj
     2 ≤ G.chromaticNumber := by
   refine le_of_not_lt ?_
   intro h
-  have hc: G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
+  have hc : G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
   let c : G.Coloring (Fin 1) := hc.some
-  have huv : c u ≠ c v := Coloring.valid c hAdj
-  rw [(c u).fin_one_eq_zero, (c v).fin_one_eq_zero] at huv
-  exact huv rfl
+  exact c.valid hAdj (Subsingleton.elim (c u) (c v))
 
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
