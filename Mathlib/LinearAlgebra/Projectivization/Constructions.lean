@@ -32,7 +32,7 @@ section DotProduct
 /-- Orthogonality on the projective plane. -/
 def orthogonal : ℙ F (m → F) → ℙ F (m → F) → Prop :=
   Quotient.lift₂ (fun v w ↦ dotProduct v.1 w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
-    simp_rw [← h1, ← h2, dotProduct_smul, Matrix.smul_dotProduct, smul_smul,
+    simp_rw [← h1, ← h2, dotProduct_smul, smul_dotProduct, smul_smul,
       smul_eq_zero_iff_eq])
 
 lemma orthogonal_mk {v w : m → F} (hv : v ≠ 0) (hw : w ≠ 0) :
