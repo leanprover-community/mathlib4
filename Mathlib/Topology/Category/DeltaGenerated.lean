@@ -26,7 +26,7 @@ open CategoryTheory
 
 /-- The type of delta-generated topological spaces. -/
 structure DeltaGenerated where
-  /-- The underlying topological space. -/
+  /-- the underlying topological space -/
   toTop : TopCat.{u}
   /-- The underlying topological space is delta-generated. -/
   deltaGenerated : DeltaGeneratedSpace toTop := by infer_instance
@@ -34,7 +34,7 @@ structure DeltaGenerated where
 namespace DeltaGenerated
 
 instance : CoeSort DeltaGenerated Type* :=
-  ⟨fun X => X.toTop⟩
+  ⟨fun X ↦ X.toTop⟩
 
 attribute [instance] deltaGenerated
 
@@ -44,12 +44,12 @@ instance : LargeCategory.{u} DeltaGenerated.{u} :=
 instance : ConcreteCategory.{u} DeltaGenerated.{u} :=
   InducedCategory.concreteCategory _
 
-/-- Constructor for objects of the category `DeltaGenerated`. -/
+/-- Constructor for objects of the category `DeltaGenerated` -/
 def of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} where
   toTop := TopCat.of X
   deltaGenerated := ‹_›
 
-/-- The forgetful functor `DeltaGenerated ⥤ TopCat`. -/
+/-- The forgetful functor `DeltaGenerated ⥤ TopCat` -/
 @[simps!]
 def deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
   inducedFunctor _
@@ -67,7 +67,7 @@ instance : deltaGeneratedToTop.{u}.Faithful := fullyFaithfulDeltaGeneratedToTop.
 @[simps!]
 def topToDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} where
   obj X := of (DeltaGeneratedSpace.of X)
-  map {_ Y} f := ⟨f,(continuous_to_deltaGenerated (Y := Y)).mpr <|
+  map {_ Y} f := ⟨f, (continuous_to_deltaGenerated (Y := Y)).mpr <|
     continuous_le_dom deltaGenerated_le f.continuous⟩
 
 instance : topToDeltaGenerated.{u}.Faithful :=
@@ -77,9 +77,9 @@ instance : topToDeltaGenerated.{u}.Faithful :=
 def coreflectorAdjunction : deltaGeneratedToTop ⊣ topToDeltaGenerated :=
   Adjunction.mkOfUnitCounit {
     unit := {
-      app := fun X => ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
+      app X := ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
     counit := {
-      app := fun X => ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
+      app X := ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
 
 /-- The category of delta-generated spaces is coreflective in the category of topological spaces. -/
 instance deltaGeneratedToTop.coreflective : Coreflective deltaGeneratedToTop where
