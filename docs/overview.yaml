@@ -417,6 +417,10 @@ Geometry:
     boundary of a manifold: 'ModelWithCorners.boundary'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
+    Lie group: 'LieGroup'
+    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+
+  Smooth vector and fiber bundles:
     (topological) fiber bundle: FiberBundle
     (topological) vector bundle: VectorBundle
     (topological) trivial vector bundle: Bundle.Trivial.vectorBundle
@@ -428,9 +432,6 @@ Geometry:
     # (smooth) direct sum is missing, it seems
     (smooth) pullback vector bundle: SmoothVectorBundle.pullback
     (smooth) Hom bundle: SmoothVectorBundle.continuousLinearMap
-    Lie group: 'LieGroup'
-    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
-
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
