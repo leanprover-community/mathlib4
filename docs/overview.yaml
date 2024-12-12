@@ -410,11 +410,15 @@ Geometry:
 
   Differentiable manifolds:
     smooth manifold (with boundary and corners): 'SmoothManifoldWithCorners'
+    analytic manifold (with boundary and corners): 'AnalyticManifold'
     smooth map between manifolds: 'MDifferentiableAt'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
     Lie group: 'LieGroup'
     sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+    product of manifolds: 'ModelWithCorners.prod'
+    interior of a manifold: 'ModelWithCorners.interior'
+    boundary of a manifold: 'ModelWithCorners.boundary'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
