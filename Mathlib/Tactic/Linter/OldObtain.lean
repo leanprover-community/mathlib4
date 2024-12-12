@@ -52,15 +52,12 @@ open Lean Elab
 namespace Mathlib.Linter.Style
 
 /-- Whether a syntax element is an `obtain` tactic call without a provided proof. -/
-def isObtainWithoutProof : Syntax → Bool
+def is_obtain_without_proof : Syntax → Bool
   -- Using the `obtain` tactic without a proof requires proving a type;
   -- a pattern is optional.
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
-/-- Deprecated alias for `Mathlib.Linter.Style.isObtainWithoutProof`. -/
-@[deprecated isObtainWithoutProof (since := "2024-12-07")]
-def is_obtain_without_proof := @isObtainWithoutProof
 
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-conciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
@@ -78,7 +75,7 @@ def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some head := stx.find? isObtainWithoutProof then
+    if let some head := stx.find? is_obtain_without_proof then
       Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
 
 initialize addLinter oldObtainLinter

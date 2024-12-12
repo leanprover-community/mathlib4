@@ -916,11 +916,9 @@ theorem sUnion_powerset_gc :
   gc_sSup_Iic
 
 /-- `⋃₀` and `𝒫` form a Galois insertion. -/
-def sUnionPowersetGI :
+def sUnion_powerset_gi :
     GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
   gi_sSup_Iic
-
-@[deprecated (since := "2024-12-07")] alias sUnion_powerset_gi := sUnionPowersetGI
 
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :

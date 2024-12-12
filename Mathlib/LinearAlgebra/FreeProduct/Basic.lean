@@ -68,7 +68,7 @@ universe uS uA uB
 then their quotients are also `R`-equivalent.
 
 (Special case of the third isomorphism theorem.)-/
-def algEquivQuotAlgEquiv
+def algEquiv_quot_algEquiv
     {R : Type u} [CommSemiring R] {A B : Type v} [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) (rel : A → A → Prop) :
     RingQuot rel ≃ₐ[R] RingQuot (rel on f.symm) :=
@@ -83,20 +83,16 @@ def algEquivQuotAlgEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
-@[deprecated (since := "2024-12-07")] alias algEquiv_quot_algEquiv := algEquivQuotAlgEquiv
-
 /--If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 
 (Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
 case of the third isomorphism theorem.)-/
-def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop) :
+def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop)  :
     RingQuot rel ≃+* RingQuot (rel on f.symm) :=
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
-  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
-
-@[deprecated (since := "2024-12-07")] alias equiv_quot_equiv := equivQuotEquiv
+  algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
 
 end RingQuot
 
