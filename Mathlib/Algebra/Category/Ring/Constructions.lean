@@ -282,7 +282,7 @@ instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ Comm
         ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
         WalkingParallelPair.zero : _)
   erw [← this]
-  -- note: this was not needed before
+  -- note: this was not needed before https://github.com/leanprover-community/mathlib4/pull/19757
   haveI : IsLocalHom (limit.π (walkingParallelPairOpEquiv.functor ⋙ F) zero).hom := by
     infer_instance
   infer_instance

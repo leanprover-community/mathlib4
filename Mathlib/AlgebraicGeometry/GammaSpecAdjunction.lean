@@ -124,6 +124,8 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
 def toΓSpecCApp :
     (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
       X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
+  -- note: the explicit type annotations were not needed before
+  -- https://github.com/leanprover-community/mathlib4/pull/19757
   CommRingCat.ofHom  <|
     IsLocalization.Away.lift
       (R := Γ.obj (op X))
