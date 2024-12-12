@@ -43,6 +43,9 @@ See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
+assert_not_exists Finset.disjiUnion
+assert_not_exists Multiset.bind
+assert_not_exists List.prod
 
 open Function
 

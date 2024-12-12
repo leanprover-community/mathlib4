@@ -104,7 +104,6 @@ section BUnion
 variable [DecidableEq β]
 
 /-- `Finset.biUnion s t` is the union of `t a` over `a ∈ s`.
-
 (This was formerly `bind` due to the monad structure on types with `DecidableEq`.) -/
 protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
   (s.1.bind fun a ↦ (t a).1).toFinset
