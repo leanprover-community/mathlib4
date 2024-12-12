@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Order.BoundedOrder
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.NAry
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # `WithBot`, `WithTop`
@@ -444,13 +445,13 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithBot α) (· ≤ ·)
   | none, _ => isTrue fun _ h => Option.noConfusion h
   | Option.some x, Option.some y =>
       if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
   | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
 
-instance decidableLT [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithBot α) (· < ·)
+instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithBot α) (· < ·)
   | none, Option.some x => isTrue <| by exists x, rfl; rintro _ ⟨⟩
   | Option.some x, Option.some y =>
       if h : x < y then isTrue <| by simp [*] else isFalse <| by simp [*]
@@ -1166,12 +1167,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
-    @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
+instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] :
+    DecidableRel (α := WithTop α) (· ≤ ·) := fun _ _ =>
   decidable_of_decidable_of_iff toDual_le_toDual_iff
 
-instance decidableLT [LT α] [@DecidableRel α (· < ·)] :
-    @DecidableRel (WithTop α) (· < ·) := fun _ _ =>
+instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] :
+    DecidableRel (α := WithTop α) (· < ·) := fun _ _ =>
   decidable_of_decidable_of_iff toDual_lt_toDual_iff
 
 instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) :=

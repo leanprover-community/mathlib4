@@ -3,7 +3,6 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Ultrafilter
 /-!
 # Subsingleton filters
