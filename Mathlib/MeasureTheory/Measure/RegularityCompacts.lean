@@ -4,20 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-<<<<<<< HEAD
---import Mathlib.MeasureTheory.MeasurableSpace.Ball
-=======
->>>>>>> e3a82c6219ca22c71ead073371ab7d6cd6bd8be1
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
-<<<<<<< HEAD
-# Inner regularity of Measures wrt compact sets
-In this file we show that a finite measure `μ`  on a `PseudoEMetricSpace E` is inner regular with
-respect to compact sets: `theorem inner_regularWRT_isCompact_of_complete_countable`.
-=======
 # Inner regularity of finite measures
 
 The main result of this file is `theorem InnerRegularCompactLTTop`:
@@ -27,7 +18,6 @@ words, a finite measure on such a space is a tight measure.
 
 Finite measures on Polish spaces are an important special case, which makes the result
 `theorem PolishSpace.innerRegular_isCompact_measurableSet` an important result in probability.
->>>>>>> e3a82c6219ca22c71ead073371ab7d6cd6bd8be1
 -/
 
 open Set MeasureTheory
@@ -122,10 +112,6 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     rcases ENNReal.exists_seq_pos_lt ε hε with ⟨δ, hδ1, hδ2⟩
     classical
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
-<<<<<<< HEAD
-    let A := interUnionBalls seq u t
-=======
->>>>>>> e3a82c6219ca22c71ead073371ab7d6cd6bd8be1
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
     rw [interUnionBalls, Set.compl_iInter]
     refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
