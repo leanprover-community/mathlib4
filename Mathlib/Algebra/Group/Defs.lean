@@ -317,7 +317,10 @@ class LeftCommonMul (G : Type u) [Mul G] where
    /-- there is a common multiple for any two elements of G -/
   cl_spec : ∀ (a b : G), cl₁ a b * a = cl₂ a b * b
 
-/-- A mixin for common right multiples. -/
+/-- We say that `G` has *right common multiples* if for all `a b : G`, there exist
+`c d : G` such that `a * c = b * d`. This mixin carries both the property
+of having right common multiples and the data of how to determine `c` and `d` from `a` and `b`.
+This will be used to define the right Ore localization of a monoid with respect to itself. -/
 class RightCommonMul (G : Type u) [Mul G] where
   /-- the factor for a -/
   cr₁ : G → G → G
