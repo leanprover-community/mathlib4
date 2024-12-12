@@ -59,11 +59,11 @@ variable (Mₚ : ∀ (P : Ideal S) [P.IsMaximal], Type*)
 include f in
 theorem flat_of_isLocalized_maximal (H : ∀ (P : Ideal S) [P.IsMaximal], Flat R (Mₚ P)) :
     Module.Flat R M := by
-  refine (Flat.iff_lTensor_injective' _ _).mpr fun I ↦ ?_
-  rw [← AlgebraTensorModule.coe_lTensor (A := S)]
-  refine injective_of_isLocalized_maximal _ (fun P ↦ AlgebraTensorModule.rTensor R _ (f P))
+  simp_rw [Flat.iff_lTensor_injective'] at H ⊢
+  simp_rw [← AlgebraTensorModule.coe_lTensor (A := S)]
+  refine fun I ↦ injective_of_isLocalized_maximal _ (fun P ↦ AlgebraTensorModule.rTensor R _ (f P))
     _ (fun P ↦ AlgebraTensorModule.rTensor R _ (f P)) _ fun P hP ↦ ?_
-  simpa [IsLocalizedModule.map_lTensor] using (Flat.iff_lTensor_injective' _ _).mp (H P) I
+  simpa [IsLocalizedModule.map_lTensor] using H P I
 
 theorem flat_of_localized_maximal
     (h : ∀ (P : Ideal R) [P.IsMaximal], Flat R (LocalizedModule P.primeCompl M)) :
@@ -81,13 +81,13 @@ variable (s : Set S) (spn : Ideal.span s = ⊤)
 include spn
 
 include g in
-theorem flat_of_isLocalized_span (h : ∀ r : s, Module.Flat R (Mₛ r)) :
+theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
     Module.Flat R M := by
-  refine (Flat.iff_lTensor_injective' _ _).mpr fun I ↦ ?_
-  rw [← AlgebraTensorModule.coe_lTensor (A := S)]
-  refine injective_of_isLocalized_span s spn _ (fun r ↦ AlgebraTensorModule.rTensor R _ (g r))
-    _ (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _ fun r ↦ ?_
-  simpa [IsLocalizedModule.map_lTensor] using (Flat.iff_lTensor_injective' _ _).mp (h r) I
+  simp_rw [Flat.iff_lTensor_injective'] at H ⊢
+  simp_rw [← AlgebraTensorModule.coe_lTensor (A := S)]
+  refine fun I ↦ injective_of_isLocalized_span s spn _ (fun r ↦ AlgebraTensorModule.rTensor
+    R _ (g r)) _ (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _ fun r ↦ ?_
+  simpa [IsLocalizedModule.map_lTensor] using H r I
 
 theorem flat_of_localized_span
     (h : ∀ r : s, Flat S (LocalizedModule (.powers r.1) M)) :
