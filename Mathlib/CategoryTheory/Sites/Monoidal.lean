@@ -34,9 +34,25 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
   toFun f :=
     { app := fun j ↦
         MonoidalClosed.uncurry (f ≫ enrichedHomπ A _ _ (Under.mk j.unop.hom.op))
-      naturality := sorry }
-  invFun g := end_.lift (fun j ↦ MonoidalClosed.curry (g.app (op (Over.mk j.hom.unop)))) (by
-    sorry)
+      naturality := fun j j' φ ↦ by
+        dsimp
+        rw [tensorHom_id, ← uncurry_natural_right, ← uncurry_pre_app, Category.assoc,
+          Category.assoc, ← enrichedOrdinaryCategorySelf_eHomWhiskerRight,
+          ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
+        congr 2
+        exact (enrichedHom_condition A (Under.forget (op X) ⋙ F) (Under.forget (op X) ⋙ G)
+          (i := Under.mk j.unop.hom.op) (j := Under.mk j'.unop.hom.op)
+            (Under.homMk φ.unop.left.op (Quiver.Hom.unop_inj (by simp)))).symm }
+  invFun g :=
+    end_.lift (fun j ↦ MonoidalClosed.curry (g.app (op (Over.mk j.hom.unop)))) (fun j j' φ ↦ by
+      dsimp
+      rw [enrichedOrdinaryCategorySelf_eHomWhiskerRight,
+        enrichedOrdinaryCategorySelf_eHomWhiskerLeft,
+        curry_pre_app, ← curry_natural_right]
+      congr 1
+      let α : Over.mk j'.hom.unop ⟶ Over.mk j.hom.unop := Over.homMk φ.right.unop
+        (Quiver.Hom.op_inj (by simp))
+      simpa using (g.naturality α.op).symm )
   left_inv f := by
     dsimp
     ext j
