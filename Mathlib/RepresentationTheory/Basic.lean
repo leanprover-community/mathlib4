@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.LinearAlgebra.Contraction
+import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Monoid representations
@@ -292,7 +293,7 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
     ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
-    ofMulDistribMulAction M G g a = Additive.ofMul (g • Additive.toMul a) := rfl
+    ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
 
 end MulDistribMulAction
 section Group

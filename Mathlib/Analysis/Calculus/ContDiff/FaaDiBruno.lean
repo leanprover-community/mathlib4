@@ -207,7 +207,7 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
 lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
-  ⟨(c.length_pos size_pos').ne'⟩
+  ⟨(c.length_pos pos').ne'⟩
 
 lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c.partSize i) :=
   .of_pos (c.partSize_pos i)
@@ -699,6 +699,11 @@ lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E[×c.partSize
     (v : Fin n → E) :
   c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
 
+theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+    (v : Fin n → E) (m : Fin c.length) :
+    ‖c.applyOrderedFinpartition p v m‖ ≤ ‖p m‖ * ∏ i : Fin (c.partSize m), ‖v (c.emb m i)‖ :=
+  (p m).le_opNorm _
+
 /-- Technical lemma stating how `c.applyOrderedFinpartition` commutes with updating variables. This
 will be the key point to show that functions constructed from `applyOrderedFinpartition` retain
 multilinearity. -/
@@ -741,9 +746,7 @@ variables, and for each `m` a continuous multilinear map `p m` in `c.partSize m`
 one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
-def compAlongOrderedFinpartition
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G)
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
+def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
     E[×n]→L[𝕜] G where
   toFun v := f (c.applyOrderedFinpartition p v)
   map_update_add' v i x y := by
@@ -757,16 +760,24 @@ def compAlongOrderedFinpartition
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
     fun_prop
 
-@[simp] lemma compAlongOrderFinpartition_apply
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G)
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
+@[simp] lemma compAlongOrderFinpartition_apply (f : F [×c.length]→L[𝕜] G)
+    (p : ∀ i, E[×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
     c.compAlongOrderedFinpartition f p v = f (c.applyOrderedFinpartition p v) := rfl
+
+theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
+    (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
+    ‖c.compAlongOrderedFinpartition f p‖ ≤ ‖f‖ * ∏ i, ‖p i‖ := by
+  refine ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun v ↦ ?_
+  rw [compAlongOrderFinpartition_apply, mul_assoc, ← c.prod_sigma_eq_prod,
+    ← Finset.prod_mul_distrib]
+  exact f.le_opNorm_mul_prod_of_le <| c.norm_applyOrderedFinpartition_le _ _
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
 and multilinearly on `p`.-/
+@[simps apply_apply]
 def compAlongOrderedFinpartitionₗ :
-    (ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ (E[×c.partSize i]→L[𝕜] F)) (E[×n]→L[𝕜] G) where
+    (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
+      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) where
   toFun f :=
     { toFun := fun p ↦ c.compAlongOrderedFinpartition f p
       map_update_add' := by
@@ -786,23 +797,20 @@ variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
 and continuously multilinearly on `p`.-/
 noncomputable def compAlongOrderedFinpartitionL :
-    (ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G) →L[𝕜]
-      ContinuousMultilinearMap 𝕜 (fun i : Fin c.length ↦ (E[×c.partSize i]→L[𝕜] F))
-        (E[×n]→L[𝕜] G) := by
-  refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 (fun f p ↦ ?_)
-  simp only [one_mul]
-  change ‖c.compAlongOrderedFinpartition f p‖ ≤ _
-  apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun v ↦ ?_)
-  simp only [compAlongOrderFinpartition_apply]
-  apply (f.le_opNorm _).trans
-  rw [mul_assoc, ← c.prod_sigma_eq_prod, ← Finset.prod_mul_distrib]
-  gcongr with m _
-  exact (p m).le_opNorm _
+    (F [×c.length]→L[𝕜] G) →L[𝕜]
+      ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by
+  refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 fun f p ↦ ?_
+  simp only [one_mul, compAlongOrderedFinpartitionₗ_apply_apply]
+  apply norm_compAlongOrderedFinpartition_le
 
-@[simp] lemma compAlongOrderedFinpartitionL_apply
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G)
+@[simp] lemma compAlongOrderedFinpartitionL_apply (f : F [×c.length]→L[𝕜] G)
     (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
     c.compAlongOrderedFinpartitionL 𝕜 E F G f p = c.compAlongOrderedFinpartition f p := rfl
+
+theorem norm_compAlongOrderedFinpartitionL_le :
+    set_option maxSynthPendingDepth 2 in
+    ‖c.compAlongOrderedFinpartitionL 𝕜 E F G‖ ≤ 1 :=
+  MultilinearMap.mkContinuousLinear_norm_le _ zero_le_one _
 
 end OrderedFinpartition
 
@@ -816,7 +824,7 @@ block of the composition, and then applying `q c.length` to the resulting vector
 called `q.compAlongComposition p c`. -/
 def compAlongOrderedFinpartition {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition n) :
-    ContinuousMultilinearMap 𝕜 (fun _i : Fin n ↦ E) G :=
+    E [×n]→L[𝕜] G :=
   c.compAlongOrderedFinpartition (q c.length) (fun m ↦ p (c.partSize m))
 
 @[simp]
@@ -895,12 +903,13 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G (q c.length)).toContinuousLinearMap
       (fun i ↦ p (c.partSize i)) i).comp (p (c.partSize i + 1)).curryLeft := by
   ext e v
-  simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
-    ContinuousMultilinearMap.curryLeft_apply,
-    FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_comp',
-    comp_apply, ContinuousMultilinearMap.toContinuousLinearMap_toFun,
-    compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply,
-    applyOrderedFinpartition_apply]
+  simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
+    simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
+      ContinuousMultilinearMap.curryLeft_apply,
+      FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
+      ContinuousLinearMap.coe_comp', comp_apply,
+      ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
+      compAlongOrderFinpartition_apply]
   congr
   ext j
   rcases eq_or_ne j i with rfl | hij
@@ -917,7 +926,7 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
 
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
-theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
+theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
   /- One has to check that the `m+1`-th term is the derivative of the `m`-th term. The `m`-th term
@@ -940,8 +949,8 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
       change HasFDerivWithinAt (fun y ↦ B (q (f y) c.length) (fun i ↦ p y (c.partSize i)))
         (∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
-      have cm : (c.length : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
-      have cp i : (c.partSize i : ℕ∞) ≤ m := by
+      have cm : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
+      have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
         exact_mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
           (p x (c.partSize i).succ).curryLeft s x :=
@@ -949,9 +958,10 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
       have J : HasFDerivWithinAt (fun x ↦ q x c.length) (q (f x) c.length.succ).curryLeft
         t (f x) := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
-        hf.hasFDerivWithinAt (le_trans le_add_self (Order.add_one_le_of_lt hm)) hx
+        hf.hasFDerivWithinAt (le_trans (mod_cast Nat.le_add_left 1 m)
+          (ENat.add_one_natCast_le_withTop_of_lt hm)) hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
-      simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
+      simp only [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
         (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
@@ -975,8 +985,9 @@ theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
     apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
-    · have : (c.length : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
+    · have : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)
-      have : (c.partSize i : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.partSize_le c i
+      have : (c.partSize i : WithTop ℕ∞) ≤ m := by
+        exact_mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)

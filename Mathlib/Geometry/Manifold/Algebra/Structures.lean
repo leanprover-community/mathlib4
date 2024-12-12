@@ -12,7 +12,7 @@ In this file we define smooth structures that build on Lie groups. We prefer usi
 instead of Lie mainly because Lie ring has currently another use in mathematics.
 -/
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 section SmoothRing
 
@@ -24,7 +24,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 If `R` is a ring, then negation is automatically smooth, as it is multiplication with `-1`. -/
 class SmoothRing (I : ModelWithCorners 𝕜 E H) (R : Type*) [Semiring R] [TopologicalSpace R]
     [ChartedSpace H R] extends SmoothAdd I R : Prop where
-  smooth_mul : Smooth (I.prod I) I fun p : R × R => p.1 * p.2
+  smooth_mul : ContMDiff (I.prod I) I ⊤ fun p : R × R => p.1 * p.2
 
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -35,9 +35,9 @@ instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Ring R] [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
-  compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
-  smooth_add := smooth_add I
-  smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
+  compatible := StructureGroupoid.compatible (contDiffGroupoid ∞ I)
+  smooth_add := contMDiff_add I
+  smooth_neg := by simpa only [neg_one_mul] using contMDiff_mul_left (G := R) (a := -1)
 
 end SmoothRing
 
@@ -46,7 +46,7 @@ instance (priority := 100) fieldSmoothRing {𝕜 : Type*} [NontriviallyNormedFie
     SmoothRing 𝓘(𝕜) 𝕜 :=
   { normedSpaceLieAddGroup with
     smooth_mul := by
-      rw [smooth_iff]
+      rw [contMDiff_iff]
       refine ⟨continuous_mul, fun x y => ?_⟩
       simp only [mfld_simps]
       rw [contDiffOn_univ]

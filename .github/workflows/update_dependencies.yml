@@ -40,6 +40,13 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
+      - name: Print PR, if found
+        run: echo "Found PR ${prNumber} at ${prUrl}"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+
       - name: Configure Git User
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         run: |
