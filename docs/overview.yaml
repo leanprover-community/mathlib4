@@ -417,6 +417,11 @@ Geometry:
     boundary of a manifold: 'ModelWithCorners.boundary'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
+    vector field: VectorField
+    pullback of vector fields: VectorField.pullback
+    # caution: on a normed space so far... manifold version is awaiting review (PR #xxx)
+    Lie bracket of vector field: VectorField.lieBracket
+    'Jacobi/Leibniz identity': VectorField.leibniz_identity_lieBracket
     Lie group: 'LieGroup'
     sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
 
@@ -429,7 +434,7 @@ Geometry:
     (topological) Hom bundle: Bundle.ContinuousLinearMap.vectorBundle
     smooth vector bundle: SmoothVectorBundle
     (smooth) trivial bundle: Bundle.Trivial.smoothVectorBundle
-    # (smooth) direct sum is missing, it seems
+    # (smooth) direct sum is missing (December 2024)
     (smooth) pullback vector bundle: SmoothVectorBundle.pullback
     (smooth) Hom bundle: SmoothVectorBundle.continuousLinearMap
 
