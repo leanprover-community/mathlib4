@@ -64,7 +64,7 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
       let iY : limit Y ≅ AddCommGrp.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
-      have : Pi.map (fun i ↦ f.app ⟨i⟩) = (iX.inv ≫ lim.map f ≫ iY.hom) := by
+      have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
         simp only [AddCommGrp.coe_of, Functor.comp_obj, Discrete.functor_obj_eq_as, Discrete.mk_as,
           Pi.isoLimit, IsLimit.conePointUniqueUpToIso, limit.cone,
           AddCommGrp.HasLimit.productLimitCone, Iso.trans_inv, Functor.mapIso_inv,
