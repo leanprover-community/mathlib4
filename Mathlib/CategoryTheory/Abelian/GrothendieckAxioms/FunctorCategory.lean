@@ -16,24 +16,14 @@ namespace CategoryTheory
 
 open CategoryTheory Limits Opposite
 
-section
-
 variable {A C J : Type*} [Category A] [Category C] [Category J]
-    [HasColimitsOfShape J A] [HasExactColimitsOfShape J A] [HasFiniteLimits A]
 
-instance : HasExactColimitsOfShape J (C ⥤ A) where
+instance [HasColimitsOfShape J A] [HasExactColimitsOfShape J A] [HasFiniteLimits A] :
+    HasExactColimitsOfShape J (C ⥤ A) where
   preservesFiniteLimits := { preservesFiniteLimits _ := inferInstance }
 
-end
-
-section
-
-variable {A C J : Type*} [Category A] [Category C] [Category J]
-    [HasLimitsOfShape J A] [HasExactLimitsOfShape J A] [HasFiniteColimits A]
-
-instance : HasExactLimitsOfShape J (C ⥤ A) where
+instance [HasLimitsOfShape J A] [HasExactLimitsOfShape J A] [HasFiniteColimits A] :
+    HasExactLimitsOfShape J (C ⥤ A) where
   preservesFiniteColimits := { preservesFiniteColimits _ := inferInstance }
-
-end
 
 end CategoryTheory
