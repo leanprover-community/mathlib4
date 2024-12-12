@@ -412,13 +412,25 @@ Geometry:
     smooth manifold (with boundary and corners): 'SmoothManifoldWithCorners'
     analytic manifold (with boundary and corners): 'AnalyticManifold'
     smooth map between manifolds: 'MDifferentiableAt'
-    tangent bundle: 'TangentBundle'
-    tangent map: 'tangentMap'
-    Lie group: 'LieGroup'
-    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
     product of manifolds: 'ModelWithCorners.prod'
     interior of a manifold: 'ModelWithCorners.interior'
     boundary of a manifold: 'ModelWithCorners.boundary'
+    tangent bundle: 'TangentBundle'
+    tangent map: 'tangentMap'
+    (topological) fiber bundle: FiberBundle
+    (topological) vector bundle: VectorBundle
+    (topological) trivial vector bundle: Bundle.Trivial.vectorBundle
+    (topological) direct sum of vector bundles: VectorBundle.prod
+    (topological) pullback vector bundle: VectorBundle.pullback
+    (topological) Hom bundle: Bundle.ContinuousLinearMap.vectorBundle
+    smooth vector bundle: SmoothVectorBundle
+    (smooth) trivial bundle: Bundle.Trivial.smoothVectorBundle
+    # (smooth) direct sum is missing, it seems
+    (smooth) pullback vector bundle: SmoothVectorBundle.pullback
+    (smooth) Hom bundle: SmoothVectorBundle.continuousLinearMap
+    Lie group: 'LieGroup'
+    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
