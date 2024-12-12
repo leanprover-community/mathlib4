@@ -421,7 +421,13 @@ Geometry:
     pullback of vector fields: VectorField.pullback
     # caution: on a normed space so far... manifold version is awaiting review (PR #xxx)
     Lie bracket of vector field: VectorField.lieBracket
-    'Jacobi/Leibniz identity': VectorField.leibniz_identity_lieBracket
+    Jacobi/Leibniz identity: VectorField.leibniz_identity_lieBracket
+    # TODO: restate this using vector fields, once the manifold version has landed
+    integral curves: 'IsIntegralCurve'
+    local existence of integral curves: exists_isIntegralCurveAt_of_contMDiffAt_boundaryless
+    uniform time existence: exists_isIntegralCurve_of_isIntegralCurveOn
+    # corollary for compact manifolds not yet
+    uniqueness of integral curves: 'isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
     Lie group: 'LieGroup'
     sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
 
