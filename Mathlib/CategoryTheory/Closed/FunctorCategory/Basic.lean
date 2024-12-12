@@ -138,6 +138,7 @@ noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
   adj := adj F
 
+variable (J C) in
 noncomputable instance monoidalClosed : MonoidalClosed (J ⥤ C) where
   closed := closed
 
