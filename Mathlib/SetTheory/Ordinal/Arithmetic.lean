@@ -206,8 +206,11 @@ def IsLimit (o : Ordinal) : Prop :=
 theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
   simp [IsSuccLimit]
 
-theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
+@[simp]
+theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) :=
+  isSuccPrelimit_bot
 
+@[simp]
 theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) :=
   not_isSuccLimit_bot
 

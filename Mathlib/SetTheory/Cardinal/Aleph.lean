@@ -335,11 +335,6 @@ theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
     exact h _ h'⟩
 
-@[deprecated preAleph_le_of_isSuccPrelimit (since := "2024-12-12")]
-theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
-    preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
-  preAleph_le_of_isSuccPrelimit l.isSuccPrelimit
-
 theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preAleph o = ⨆ a : Iio o, preAleph a := by
   refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
@@ -440,10 +435,6 @@ instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := b
 theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isSuccLimit_ord (aleph0_le_aleph _)
-
-@[deprecated isSuccLimit_omega (since := "2024-12-12")]
-theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) :=
-  isSuccLimit_omega o
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
@@ -602,6 +593,11 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n :=
 theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) :=
   lift_preAleph o
 
+@[deprecated preAleph_le_of_isSuccPrelimit (since := "2024-12-12")]
+theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
+    preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
+  preAleph_le_of_isSuccPrelimit l.isSuccPrelimit
+
 @[deprecated preAleph_le_of_isLimit (since := "2024-10-22")]
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
@@ -670,6 +666,10 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
+@[deprecated isSuccLimit_omega (since := "2024-12-12")]
+theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) :=
+  isSuccLimit_omega o
+
 @[deprecated isLimit_omega (since := "2024-10-24")]
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
@@ -697,14 +697,14 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ :=
 theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ beth o :=
   limitRecOn_succ _ _ _ _
 
-theorem beth_limit {o : Ordinal} : o.IsLimit → ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
+theorem beth_limit {o : Ordinal} : IsSuccLimit o → ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
   limitRecOn_limit _ _ _ _
 
 theorem beth_strictMono : StrictMono beth := by
   intro a b
   induction' b using Ordinal.induction with b IH generalizing a
   intro h
-  rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
+  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · exact (Ordinal.not_lt_zero a h).elim
   · rw [lt_succ_iff] at h
     rw [beth_succ]
