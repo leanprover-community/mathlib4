@@ -365,7 +365,7 @@ end LeftCommonMul
 
 section RightCommonMul
 
-variable [RightCommonMul G] {a b c : G}
+variable [RightCommonMul G] {a b : G}
 
 @[to_additive]
 theorem common_right_mul :  a * RightCommonMul.cr₁ a b = b * RightCommonMul.cr₂ a b :=
