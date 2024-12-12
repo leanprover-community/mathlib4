@@ -305,7 +305,10 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 
 end IsRightCancelMul
 
-/-- A mixin for common left multiples. -/
+/-- We say that `G` has *left common multiples* if for all `a b : G`, there exist
+`c d : G` such that `c * a = d * b`. This mixin carries both the property
+of having left common multiples and the data of how to determine `c` and `d` from `a` and `b`.
+This will be used to define the left Ore localization of a monoid with respect to itself. -/
 class LeftCommonMul (G : Type u) [Mul G] where
   /-- the factor for a -/
   cl₁ : G → G → G
