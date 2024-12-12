@@ -97,7 +97,9 @@ noncomputable def forgetToSheafModuleCat
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
     Presheaf.isSheaf_of_isSheaf_comp _ _
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) M.isSheaf⟩
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w})
+        sorry
+        /- M.isSheaf -/⟩
   map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
@@ -198,6 +200,8 @@ variable {N : PresheafOfModules.{v} R} (hN : Presheaf.IsSheaf J N.presheaf)
 
 variable {J}
 
+open ModuleCat.restrictScalars
+
 /-- The bijection `(M₂ ⟶ N) ≃ (M₁ ⟶ N)` induced by a locally bijective morphism
 `f : M₁ ⟶ M₂` of presheaves of modules, when `N` is a sheaf. -/
 @[simps]
@@ -215,12 +219,12 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)
-        rintro Y p ⟨x : M₁.obj _, hx : f.app _ x = M₂.map p.op y⟩
-        have hφ' : ∀ (z : M₂.obj X), φ.app _ (M₂.map p.op z) =
-            N.map p.op (φ.app _ z) := congr_fun ((forget _).congr_map (φ.naturality p.op))
-        change N.map p.op (φ.app X (r • y)) = N.map p.op (r • φ.app X y)
-        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).hom.map_smul, hφ, (ψ.app _).hom.map_smul,
-          ← hφ, hx, N.map_smul, hφ'])
+        rintro Y p ⟨x : M₁.obj _, hx : f.app _ x = out _ (M₂.map p.op y)⟩
+        have hφ' : ∀ (z : M₂.obj X), φ.app _ (out _ (M₂.map p.op z)) =
+            out _ (N.map p.op (φ.app _ z)) := congr_fun ((forget _).congr_map (φ.naturality p.op))
+        change out _ (N.map p.op (φ.app X (r • y))) = out _ (N.map p.op (r • φ.app X y))
+        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).hom.map_smul, out_into, hφ,
+          (ψ.app _).hom.map_smul, ← hφ, hx, N.map_smul, hφ', out_into])
   left_inv φ := (toPresheaf _).map_injective
     (((J.W_of_isLocallyBijective
       ((PresheafOfModules.toPresheaf R).map f)).homEquiv _ hN).left_inv

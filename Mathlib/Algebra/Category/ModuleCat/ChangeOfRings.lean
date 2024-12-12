@@ -40,8 +40,99 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
-suppress_compilation
+namespace Module
 
+/-- `Module.RestrictScalars f M` is the module with scalar multiplication given by `f c • x`
+for `c : R`, `x : M`.
+
+It is intended as a more type-safe alternative to `Module.compHom`.
+
+This is a type synonym to ensure we don't accidentally put the wrong module structure on `M`,
+especially if we have `f : R →+* R` which is not the identity.
+-/
+@[ext]
+structure RestrictScalars {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
+    (M : Type*) where into ::
+  out : M
+
+namespace RestrictScalars
+
+variable {R S : Type*} [Semiring R] [Semiring S] {f : R →+* S} {M : Type*}
+
+variable (f) in
+lemma into_injective : Function.Injective (into : M → RestrictScalars f M) :=
+  fun _ _ h => congr_arg out h
+
+variable (f) in
+lemma out_injective : Function.Injective (out : RestrictScalars f M → M) :=
+  fun _ _ h => RestrictScalars.ext h
+
+/-! Copy over the instances from the underlying type to `RestrictScalars`. -/
+
+instance [Add M] : Add (RestrictScalars f M) where
+  add x y := into (out x + out y)
+
+instance [Zero M] : Zero (RestrictScalars f M) where
+  zero := into 0
+
+instance [Neg M] : Neg (RestrictScalars f M) where
+  neg x := into (- out x)
+
+instance [Sub M] : Sub (RestrictScalars f M) where
+  sub x y := into (out x - out y)
+
+instance {X : Type*} [SMul X M] : SMul X (RestrictScalars f M) where
+  smul x y := into (x • out y)
+
+instance [AddCommMonoid M] : AddCommMonoid (RestrictScalars f M) :=
+  (out_injective f).addCommMonoid _ rfl (fun _ _ => rfl) (fun _ _ => rfl)
+
+instance [AddCommGroup M] : AddCommGroup (RestrictScalars f M) :=
+  (out_injective f).addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  (fun _ _ => rfl) (fun _ _ => rfl)
+
+variable (f M) in
+/-- Bundle `out` into an additive isomorphism. -/
+def outAddEquiv [Add M] : RestrictScalars f M ≃+ M where
+  toFun := out
+  invFun := into
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
+
+/-! The `Module` instance itself. -/
+
+instance [AddCommMonoid M] [Module S M] : Module R (RestrictScalars f M) :=
+  let _ := Module.compHom M f
+  (out_injective f).module R (outAddEquiv f M : _ →+ M) (fun _ _ => rfl)
+
+/-! Moving maps back and forth from `RestrictScalars`. -/
+
+variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N]
+
+/-- `out` as a semilinear map. -/
+@[simps]
+def outₛₗ [Module S M] : RestrictScalars f M →ₛₗ[f] M where
+  toFun := out
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- Composing with `into` turns a semilinear map into a linear map. -/
+@[simps]
+def mapInto [Module R M] [Module S N] (g : M →ₛₗ[f] N) : M →ₗ[R] RestrictScalars f N where
+  toFun x := into (g x)
+  map_add' x y := congr_arg into (map_add g x y)
+  map_smul' c x := congr_arg into (map_smulₛₗ g c x)
+
+/-- Restrict the domain and codomain of a linear map. -/
+@[simps!]
+def map [Module S M] [Module S N] (g : M →ₗ[S] N) :
+    RestrictScalars f M →ₗ[R] RestrictScalars f N :=
+  mapInto (g.comp outₛₗ)
+
+end RestrictScalars
+
+end Module
 
 open CategoryTheory Limits
 
@@ -54,20 +145,18 @@ namespace RestrictScalars
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 variable (M : ModuleCat.{v} S)
 
+open Module.RestrictScalars
+
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
     `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
-def obj' : ModuleCat R :=
-  let _ := Module.compHom M f
-  of R M
+abbrev obj' : ModuleCat R :=
+  of R (Module.RestrictScalars f M)
 
 /-- Given an `S`-linear map `g : M → M'` between `S`-modules, `g` is also `R`-linear between `M` and
 `M'` by means of restriction of scalars.
 -/
 def map' {M M' : ModuleCat.{v} S} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
-  -- This suggests `RestrictScalars.obj'` needs to be redesigned.
-  ofHom (X := obj' f M) (Y := obj' f M')
-    { g.hom with map_smul' := fun r => g.hom.map_smul (f r) }
+  ofHom <| map g.hom
 
 end RestrictScalars
 
@@ -80,46 +169,107 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
   obj := RestrictScalars.obj' f
   map := RestrictScalars.map' f
 
+namespace restrictScalars
+
+abbrev into {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) {M : ModuleCat.{v} S}
+    (x : M) : (restrictScalars f).obj M := Module.RestrictScalars.into x
+
+lemma into_injective {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : ModuleCat.{v} S} : Function.Injective (into f : M → _) :=
+  Module.RestrictScalars.into_injective _
+
+@[simp] lemma into_add {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : ModuleCat.{v} S} (x y : M) : into f (x + y) = into f x + into f y := rfl
+
+/-- Variant of `into_add` with `ModuleCat.of`. -/
+@[simp] lemma into_add' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : Type v} [AddCommGroup M] [Module S M] (x y : M) :
+    into (M := ModuleCat.of S M) f (x + y) = into f x + into f y := rfl
+
+@[simp] lemma into_zero {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : ModuleCat.{v} S} : into f (0 : M) = 0 := rfl
+
+/-- Variant of `into_zero` with `ModuleCat.of`. -/
+@[simp] lemma into_zero' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : Type v} [AddCommGroup M] [Module S M] :
+    into (M := ModuleCat.of S M) f 0 = 0 := rfl
+
+/-- Forget that `M` is equipped with the restriction of scalar multiplication. -/
+def out {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) {M : ModuleCat.{v} S} :
+    (restrictScalars f).obj M →ₛₗ[f] M :=
+  Module.RestrictScalars.outₛₗ
+
+lemma out_injective {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : ModuleCat.{v} S} : Function.Injective (out f : _ → M) :=
+  Module.RestrictScalars.out_injective _
+
+@[simp] lemma out_add {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : ModuleCat.{v} S} (x y : (restrictScalars f).obj M) :
+    out f (x + y) = out f x + out f y := rfl
+
+@[simp] lemma out_into {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M : ModuleCat.{v} S} (x : M) : out f (into f x) = x := rfl
+
+@[ext] lemma obj_ext {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M : ModuleCat.{v} S} (x y : (restrictScalars f).obj M) (h : out _ x = out _ y) : x = y :=
+  Module.RestrictScalars.out_injective _ h
+
+@[ext high] lemma hom_ext {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M : ModuleCat.{v} S} {N : ModuleCat.{v} R} (g g' : (restrictScalars f).obj M ⟶ N)
+    (h : g ∘ into _ = g' ∘ into _) : g = g' := by
+  ext ⟨x⟩
+  exact congr_fun h x
+
+@[ext high] lemma map_ext {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M : ModuleCat.{v} S} {N : Type*} [AddCommMonoid N] [Module R N]
+    (g g' : (restrictScalars f).obj M →ₗ[R] N) (h : g ∘ into _ = g' ∘ into _) : g = g' := by
+  ext ⟨x⟩
+  exact congr_fun h x
+
+@[simp]
+theorem coe_map {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M M' : ModuleCat.{v} S} (g : M ⟶ M') :
+    ((restrictScalars f).map g : _ → _) = into f ∘ g ∘ out f :=
+  rfl
+
+@[simp]
+theorem map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M M' : ModuleCat.{v} S} (g : M ⟶ M') (x) :
+    (restrictScalars f).map g (into f x) = into f (g x) :=
+  rfl
+
+@[simp] lemma into_eq_into_iff {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+    {M : ModuleCat.{v} S} {x y : M} : into f x = into f y ↔ x = y :=
+  (Module.RestrictScalars.into_injective _).eq_iff
+
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h := by
     ext x
-    simpa only using DFunLike.congr_fun (ModuleCat.hom_ext_iff.mp h) x
+    simpa using DFunLike.congr_fun (ModuleCat.hom_ext_iff.mp h) (into f x)
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
-  preserves _ h := by rwa [mono_iff_injective] at h ⊢
-
--- Porting note: this should be automatic
--- TODO: this instance gives diamonds if `f : S →+* S`, see `PresheafOfModules.pushforward₀`.
--- The correct solution is probably to define explicit maps between `M` and
--- `(restrictScalars f).obj M`.
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
-    {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
-  inferInstanceAs <| Module S M
+  preserves _ h := by
+    rw [mono_iff_injective] at h ⊢
+    exact into_injective.comp (h.comp out_injective)
 
 @[simp]
-theorem restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
-    {M M' : ModuleCat.{v} S} (g : M ⟶ M') (x) : (restrictScalars f).map g x = g x :=
+theorem smul_def {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M : ModuleCat.{v} S} (r : R) (m : (restrictScalars f).obj M) :
+    r • m = into f (f r • out f m) :=
   rfl
 
-@[simp]
-theorem restrictScalars.smul_def {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
-    {M : ModuleCat.{v} S} (r : R) (m : (restrictScalars f).obj M) : r • m = f r • show M from m :=
-  rfl
-
-theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+theorem smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     {M : ModuleCat.{v} S} (r : R) (m : M) :
-    r • (show (restrictScalars f).obj M from m) = f r • m :=
+    r • (into f m) = into f (f r • m) :=
   rfl
 
+end restrictScalars
 
-instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [CommRing S]
-    (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :
-    haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.of S M)).isModule.toSMul
-    SMulCommClass R S M :=
-  @SMulCommClass.mk R S M (_) _
-   fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+suppress_compilation
+
+open restrictScalars
 
 /-- Semilinear maps `M →ₛₗ[f] N` identify to
 morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/
@@ -127,16 +277,11 @@ morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/
 def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
     (M : ModuleCat.{v} R) (N : ModuleCat.{v} S) :
     (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
-  -- This suggests `restrictScalars` needs to be redesigned.
-  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N) <|
-    { toFun := g
-      map_add' := by simp
-      map_smul' := by simp }
+  toFun g := ofHom <| Module.RestrictScalars.mapInto g
   invFun g :=
-    { toFun := g
-      map_add' := by simp
-      map_smul' := g.hom.map_smul }
+    { toFun x := out f (g x)
+      map_add' _ _ := by simp
+      map_smul' _ _ := by simp }
   left_inv _ := rfl
   right_inv _ := rfl
   map_add' _ _ := rfl
@@ -147,20 +292,26 @@ variable {R : Type u₁} [Ring R] (f : R →+* R)
 
 /-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
 to `M`. -/
+@[simps!]
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
   LinearEquiv.toModuleIso <|
-    @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
-      (by rfl) (fun r x ↦ by subst hf; rfl)
+    AddEquiv.toLinearEquiv
+      { toFun := out f
+        invFun := into f
+        left_inv _ := rfl
+        right_inv _ := rfl
+        map_add' _ _ := rfl }
+      (fun r x ↦ by simp [hf])
 
 variable (hf : f = RingHom.id R)
 
 @[simp] lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId'App f hf M).hom x = x :=
+    (restrictScalarsId'App f hf M).hom (into f x) = x :=
   rfl
 
 @[simp] lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId'App f hf M).inv x = x :=
+    (restrictScalarsId'App f hf M).inv x = (into f x) :=
   rfl
 
 /-- The restriction of scalars by a ring morphism that is the identity identify to the
@@ -196,22 +347,27 @@ variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [R
 
 /-- For each `R₃`-module `M`, restriction of scalars of `M` by a composition of ring morphisms
 identifies to successively restricting scalars. -/
+@[simps!]
 def restrictScalarsComp'App (hgf : gf = g.comp f) (M : ModuleCat R₃) :
     (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
   (AddEquiv.toLinearEquiv
     (M := ↑((restrictScalars gf).obj M))
     (M₂ := ↑((restrictScalars f).obj ((restrictScalars g).obj M)))
-    (by rfl)
-    (fun r x ↦ by subst hgf; rfl)).toModuleIso
+    { toFun x := into _ (into _ (out _ x))
+      invFun x := into _ (out _ (out _ x))
+      left_inv _ := rfl
+      right_inv _ := rfl
+      map_add' _ _ := rfl }
+    (fun r x ↦ by simp [hgf])).toModuleIso
 
 variable (hgf : gf = g.comp f)
 
 @[simp] lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp'App f g gf hgf M).hom x = x :=
+    (restrictScalarsComp'App f g gf hgf M).hom (into _ x) = into _ (into _ x) :=
   rfl
 
 @[simp] lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp'App f g gf hgf M).inv x = x :=
+    (restrictScalarsComp'App f g gf hgf M).inv (into _ (into _ x)) = into _ x :=
   rfl
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
@@ -250,13 +406,21 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
   unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso
     (X₁ := M)
     (X₂ := (restrictScalars e.symm.toRingHom).obj ((restrictScalars e.toRingHom).obj M))
-    { __ := AddEquiv.refl M
-      map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }) (by intros; rfl)
+    { toFun x := into _ (into _ x)
+      invFun x := out _ (out _ x)
+      left_inv _ := rfl
+      right_inv _ := rfl
+      map_add' _ _ := rfl
+      map_smul' _ _ := by simp }) (by intros; rfl)
   counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso
     (X₁ := (restrictScalars e.toRingHom).obj ((restrictScalars e.symm.toRingHom).obj M))
     (X₂ := M)
-    { __ := AddEquiv.refl M
-      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
+    { toFun x := out _ (out _ x)
+      invFun x := into _ (into _ x)
+      left_inv _ := rfl
+      right_inv _ := rfl
+      map_add' _ _ := rfl
+      map_smul' r _ := by simp }) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
 
 instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
@@ -284,10 +448,18 @@ open ChangeOfRings
 
 variable (M : ModuleCat.{v} R)
 
+instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [CommRing S]
+    (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :
+    haveI : SMul R M := (Module.compHom M f).toSMul
+    SMulCommClass R S M :=
+  @SMulCommClass.mk R S M (_) _
+   fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+
 /-- Extension of scalars turn an `R`-module into `S`-module by M ↦ S ⨂ M
 -/
 def obj' : ModuleCat S :=
-  of _ (TensorProduct R ((restrictScalars f).obj (of _ S)) M)
+  let _ := Module.compHom S f
+  of _ (TensorProduct R S M)
 
 /-- Extension of scalars is a functor where an `R`-module `M` is sent to `S ⊗ M` and
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
@@ -328,7 +500,7 @@ variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 
 @[simp]
 protected theorem smul_tmul {M : ModuleCat.{v} R} (s s' : S) (m : M) :
-    s • (s'⊗ₜ[R,f]m : (extendScalars f).obj M) = (s * s')⊗ₜ[R,f]m :=
+    s • (s' ⊗ₜ[R,f] m : (extendScalars f).obj M) = (s * s')⊗ₜ[R,f]m :=
   rfl
 
 @[simp]
@@ -355,36 +527,35 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
  -/
 instance hasSMul : SMul S <| (restrictScalars f).obj (of _ S) →ₗ[R] M where
   smul s g :=
-    { toFun := fun s' : S => g (s' * s : S)
-      map_add' := fun x y : S => by dsimp; rw [add_mul, map_add]
-      map_smul' := fun r (t : S) => by
-        -- Porting note: needed some erw's even after dsimp to clean things up
+    { toFun s' := g (into _ ((out _ s') * s : S))
+      map_add' x y := by dsimp; simp [add_mul, map_add]
+      map_smul' r t := by
         dsimp
-        rw [← LinearMap.map_smul]
-        erw [smul_eq_mul, smul_eq_mul, mul_assoc] }
+        rw [out_into, ← smul_eq_mul (a := f r), smul_mul_assoc, ← restrictScalars.smul_def',
+            map_smul] }
 
 @[simp]
 theorem smul_apply' (s : S) (g : (restrictScalars f).obj (of _ S) →ₗ[R] M) (s' : S) :
-    (s • g) s' = g (s' * s : S) :=
+    (s • g) (into _ s') = g (into _ (s' * s)) :=
   rfl
 
 instance mulAction : MulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.hasSMul f _ with
-    one_smul := fun g => LinearMap.ext fun s : S => by simp
-    mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
+    one_smul _ := by ext; simp
+    mul_smul _ _ _ := by ext; simp [mul_assoc] }
 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with
-    smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
-    smul_zero := fun _ => LinearMap.ext fun _ : S => by simp }
+    smul_add s g h := by ext; simp
+    smul_zero _ := by ext; simp }
 
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
 Hom(S, M).
  -/
 instance isModule : Module S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.distribMulAction f _ with
-    add_smul := fun s1 s2 g => LinearMap.ext fun x : S => by simp [mul_add, LinearMap.map_add]
-    zero_smul := fun g => LinearMap.ext fun x : S => by simp [LinearMap.map_zero] }
+    add_smul _ _ _ := by ext; simp [mul_add]
+    zero_smul g := by ext; simp }
 
 end Unbundled
 
@@ -395,8 +566,8 @@ scalar multiplication defined by `s • l := x ↦ l (x • s)`-/
 def obj' : ModuleCat S :=
   of _ ((restrictScalars f).obj (of _ S) →ₗ[R] M)
 
-instance : CoeFun (obj' f M) fun _ => S → M :=
-  inferInstanceAs <| CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _
+instance : CoeFun (obj' f M) fun _ => ((restrictScalars f).obj (of _ S)) → M where
+  coe (f : ((restrictScalars f).obj (of _ S) →ₗ[R] M)) := f
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h`-/
@@ -425,16 +596,20 @@ namespace CoextendScalars
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
-instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
+instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ =>
+    ((restrictScalars f).obj (of _ S)) → M :=
   inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
 
+@[ext] lemma ext (M : ModuleCat R) (g g' : (coextendScalars f).obj M)
+    (h : g ∘ into _ = g' ∘ into _) : g = g' := restrictScalars.map_ext _ _ _ h
+
 theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
-    (s • g) s' = g (s' * s) :=
+    (s • g) (into _ s') = g (into _ (s' * s)) :=
   rfl
 
 @[simp]
 theorem map_apply {M M' : ModuleCat R} (g : M ⟶ M') (x) (s : S) :
-    (coextendScalars f).map g x s = g (x s) :=
+    (coextendScalars f).map g x (into _ s) = g (x (into _ s)) :=
   rfl
 
 end CoextendScalars
@@ -449,73 +624,68 @@ corresponds to `Y ⟶ (coextendScalars f).obj X` by sending `y ↦ (s ↦ g (s �
 def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
     (g : (restrictScalars f).obj Y ⟶ X) : Y ⟶ (coextendScalars f).obj X :=
   ofHom
-  { toFun := fun y : Y =>
-      { toFun := fun s : S => g <| (s • y : Y)
-        map_add' := fun s1 s2 : S => by simp only [add_smul]; rw [LinearMap.map_add]
-        map_smul' := fun r (s : S) => by
-          -- Porting note: dsimp clears out some rw's but less eager to apply others with Lean 4
+  { toFun y :=
+      { toFun s := g (into _ (out _ s • y))
+        map_add' := fun ⟨s1⟩ ⟨s2⟩ => by simp [add_smul]
+        map_smul' := fun r ⟨s⟩ => by
           dsimp
-          rw [← g.hom.map_smul]
-          erw [smul_eq_mul, mul_smul]
-          rfl }
-    map_add' := fun y1 y2 : Y =>
-      LinearMap.ext fun s : S => by
+          rw [← g.hom.map_smul, restrictScalars.smul_def', restrictScalars.smul_def',
+            ← smul_assoc, smul_eq_mul, out_into, out_into, smul_eq_mul] }
+    map_add' _ _ := by
+        ext
         simp [smul_add, map_add]
-    map_smul' := fun (s : S) (y : Y) => LinearMap.ext fun t : S => by
-        simp [mul_smul] }
+    map_smul' s y := by
+        ext
+        dsimp
+        rw [← smul_assoc, smul_eq_mul]
+        rfl }
 
 /-- This should be autogenerated by `@[simps]` but we need to give `s` the correct type here. -/
 @[simp] lemma HomEquiv.fromRestriction_hom_apply_apply {X : ModuleCat R} {Y : ModuleCat S}
-    (g : (restrictScalars f).obj Y ⟶ X) (y) (s : S) :
-    (HomEquiv.fromRestriction f g).hom y s = g (s • y) := rfl
+    (g : (restrictScalars f).obj Y ⟶ X) (y) (s) :
+    (HomEquiv.fromRestriction f g).hom y s = g (into _ (out _ s • y)) := rfl
 
 /-- Given `R`-module X and `S`-module Y, any `g : Y ⟶ (coextendScalars f).obj X`
 corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
 def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
     (restrictScalars f).obj Y ⟶ X :=
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)`.
-  -- This suggests `restrictScalars` needs to be redesigned.
-  ofHom (X := (restrictScalars f).obj Y)
-  { toFun := fun y : Y => (g y) (1 : S)
-    map_add' := fun x y => by dsimp; rw [g.hom.map_add, LinearMap.add_apply]
-    map_smul' := fun r (y : Y) => by
+  ofHom
+  { toFun y := g (out _ y) (into _ 1)
+    map_add' x y := by
       dsimp
-      rw [← LinearMap.map_smul]
-      erw [smul_eq_mul, mul_one, LinearMap.map_smul]
-      rw [CoextendScalars.smul_apply (s := f r) (g := g y) (s' := 1), one_mul]
-      simp }
+      rw [map_add, map_add, LinearMap.add_apply]
+    map_smul' := by
+      rintro r ⟨y⟩
+      dsimp
+      rw [restrictScalars.smul_def, out_into, map_smul, CoextendScalars.smul_apply, one_mul,
+        ← map_smul, restrictScalars.smul_def', smul_eq_mul, mul_one, out_into] }
 
-/-- This should be autogenerated by `@[simps]` but we need to give `1` the correct type here. -/
+/-- This should be autogenerated by `@[simps]` but we need to give `s` the correct type here. -/
 @[simp] lemma HomEquiv.toRestriction_hom_apply {X : ModuleCat R} {Y : ModuleCat S}
     (g : Y ⟶ (coextendScalars f).obj X) (y) :
-    (HomEquiv.toRestriction f g).hom y = g.hom y (1 : S) := rfl
+    (HomEquiv.toRestriction f g).hom y = g (out _ y) (into _ 1) := rfl
 
 -- Porting note: add to address timeout in unit'
 /-- Auxiliary definition for `unit'` -/
 def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars f).obj Y :=
   { toFun := fun y : Y =>
-      { toFun := fun s : S => (s • y : Y)
-        map_add' := fun _ _ => add_smul _ _ _
-        map_smul' := fun r (s : S) => by
-          dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
-          erw [smul_eq_mul, mul_smul]
-          simp }
-    map_add' := fun y1 y2 =>
-      LinearMap.ext fun s : S => by
-        -- Porting note: double dsimp seems odd
-        dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
-          RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-          MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, id_eq, eq_mpr_eq_cast, cast_eq,
-          Functor.comp_obj]
-        rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
-        dsimp
-        rw [smul_add]
-    map_smul' := fun s (y : Y) => LinearMap.ext fun t : S => by
-      -- Porting note: used to be simp [mul_smul]
-      rw [RingHom.id_apply, LinearMap.coe_mk, CoextendScalars.smul_apply', LinearMap.coe_mk]
+      { toFun s := into _ (out _ s • y)
+        map_add' _ _ := by simp [add_smul]
+        map_smul' := by
+          rintro r ⟨_⟩
+          dsimp only [restrictScalars.smul_def, RingHom.id_apply, out_into, into_eq_into_iff]
+          rw [out_into, smul_def', out_into, smul_assoc] }
+    map_add' y1 y2 :=
+      LinearMap.ext <| by
+        rintro ⟨s⟩
+        rw [LinearMap.add_apply]
+        simp [smul_add]
+    map_smul' s y := LinearMap.ext <| by
+      rintro ⟨t⟩
       dsimp
-      rw [mul_smul] }
+      rw [CoextendScalars.smul_apply, ← smul_eq_mul, ← smul_assoc, out_into, LinearMap.coe_mk,
+        AddHom.coe_mk, out_into] }
 
 /--
 The natural transformation from identity functor to the composition of restriction and coextension
@@ -524,33 +694,22 @@ of scalars.
 @[simps]
 protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
   app Y := ofHom (app' f Y)
-  naturality Y Y' g :=
-    hom_ext <| LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
-      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): previously simp [CoextendScalars.map_apply]
-      simp only [ModuleCat.hom_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj,
-        Functor.comp_map, LinearMap.coe_comp, Function.comp, CoextendScalars.map_apply,
-        restrictScalars.map_apply f]
-      change s • (g y) = g (s • y)
-      rw [map_smul]
+  naturality Y Y' g := by dsimp; ext; simp [CoextendScalars.map_apply, app']
 
 /-- The natural transformation from the composition of coextension and restriction of scalars to
 identity functor.
 -/
 @[simps]
 protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (ModuleCat R) where
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)`.
-  -- This suggests `restrictScalars` needs to be redesigned.
-  app X := ofHom (X := (restrictScalars f).obj ((coextendScalars f).obj X))
-    { toFun := fun g => g.toFun (1 : S)
-      map_add' := fun x1 x2 => by
+  app X := ofHom
+    { toFun g := out _ g (into _ 1)
+      map_add' x1 x2 := by
         dsimp
-        rw [LinearMap.add_apply]
-      map_smul' := fun r (g : (restrictScalars f).obj ((coextendScalars f).obj X)) => by
+        rw [out_add, LinearMap.add_apply]
+      map_smul' := fun r g => by
         dsimp
-        rw [CoextendScalars.smul_apply, one_mul, ← LinearMap.map_smul]
-        congr
-        change f r = (f r) • (1 : S)
-        rw [smul_eq_mul (a := f r) (a' := 1), mul_one] }
+        rw [restrictScalars.smul_def, out_into, CoextendScalars.smul_apply, one_mul,
+            ← LinearMap.map_smul, restrictScalars.smul_def', smul_eq_mul, mul_one] }
 
 end RestrictionCoextensionAdj
 
@@ -563,12 +722,12 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
     homEquiv := fun X Y ↦
       { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
         invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
-        left_inv := fun g => by ext; simp
-        right_inv := fun g => hom_ext <| LinearMap.ext fun x => LinearMap.ext fun s : S => by
+        left_inv := fun g => by ext; dsimp; rw [out_into, one_smul]
+        right_inv := fun g => by
+          ext
           -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
-          rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_hom_apply_apply,
-              RestrictionCoextensionAdj.HomEquiv.toRestriction_hom_apply, LinearMap.map_smulₛₗ,
-              RingHom.id_apply, CoextendScalars.smul_apply', one_mul] }
+          dsimp
+          rw [map_smul, CoextendScalars.smul_apply', one_mul, out_into] }
     unit := RestrictionCoextensionAdj.unit'.{u₁,u₂,v} f
     counit := RestrictionCoextensionAdj.counit'.{u₁,u₂,v} f
     homEquiv_unit := hom_ext <| LinearMap.ext fun _ => rfl
@@ -600,16 +759,17 @@ map `S ⨂ X → Y`, there is a `X ⟶ (restrictScalars f).obj Y`, i.e. `R`-line
 @[simps hom_apply]
 def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     X ⟶ (restrictScalars f).obj Y :=
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
-  -- This suggests `restrictScalars` needs to be redesigned.
-  ofHom (Y := (restrictScalars f).obj Y)
-  { toFun := fun x => g <| (1 : S)⊗ₜ[R,f]x
-    map_add' := fun _ _ => by dsimp; rw [tmul_add, map_add]
+  ofHom
+  { toFun := fun x => into _ <| g <| (1 : S)⊗ₜ[R,f]x
+    map_add' := fun _ _ => by
+      let _ : Module R S := Module.compHom S f
+      dsimp
+      rw [tmul_add, map_add, into_add]
     map_smul' := fun r s => by
       letI : Module R S := Module.compHom S f
       letI : Module R Y := Module.compHom Y f
       dsimp
-      erw [RestrictScalars.smul_def, ← LinearMap.map_smul, tmul_smul]
+      rw [tmul_smul, restrictScalars.smul_def', ← map_smul]
       congr }
 
 -- Porting note: forced to break apart fromExtendScalars due to timeouts
@@ -621,15 +781,18 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     (g : X ⟶ (restrictScalars f).obj Y) : have : Module R Y := Module.compHom Y f
     X →ₗ[R] Y :=
   @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
-    { toFun := fun x => s • (g x : Y)
+    { toFun x := s • out _ (g x)
       map_add' := by
         intros
         dsimp only
-        rw [map_add, smul_add] }
+        rw [map_add, out_add, smul_add] }
     (by
       intros r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
-        LinearMap.map_smul, smul_comm r s (g x : Y)] )
+        LinearMap.map_smul, smul_comm r s, restrictScalars.smul_def, out_into]
+      -- This does not look defeq because we have the competing instance `Module.compHom Y f`,
+      -- but it is indeed equal.
+      rfl )
 
 /--
 Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`, i.e `R`-linear map
@@ -648,7 +811,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
       dsimp only [m2, evalAt_apply, LinearMap.add_apply]
       rw [← add_smul]
     · ext x
-      apply mul_smul (f r) s (g x)
+      apply mul_smul (f r) s (out _ (g x))
   · intros z₁ z₂
     change lift _ (z₁ + z₂) = lift _ z₁ + lift _ z₂
     rw [map_add]
@@ -656,12 +819,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     change lift _ (s • z) = s • lift _ z
     induction z using TensorProduct.induction_on with
     | zero => rw [smul_zero, map_zero, smul_zero]
-    | tmul s' x =>
-      rw [LinearMap.coe_mk, ExtendScalars.smul_tmul]
-      erw [lift.tmul, lift.tmul]
-      set s' : S := s'
-      change (s * s') • (g x) = s • s' • (g x)
-      rw [mul_smul]
+    | tmul s' x => simp [mul_smul]
     | add _ _ ih1 ih2 => rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 
 /-- Given `R`-module X and `S`-module Y, `S`-linear linear maps `(extendScalars f).obj X ⟶ Y`
@@ -680,36 +838,32 @@ def homEquiv {X Y} :
     | zero => rw [map_zero, map_zero]
     | tmul x s =>
       erw [TensorProduct.lift.tmul]
-      simp only [LinearMap.coe_mk]
-      change S at x
       dsimp
       erw [← LinearMap.map_smul, ExtendScalars.smul_tmul, mul_one x]
-      rfl
     | add _ _ ih1 ih2 => rw [map_add, map_add, ih1, ih2]
   right_inv g := by
     letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
     ext x
-    rw [HomEquiv.toRestrictScalars_hom_apply]
     -- This needs to be `erw` because of some unfolding in `fromExtendScalars`
-    erw [HomEquiv.fromExtendScalars_hom_apply]
-    rw [lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
-    dsimp
-    rw [one_smul]
+    erw [HomEquiv.toRestrictScalars_hom_apply, HomEquiv.fromExtendScalars_hom_apply]
+    simp
 
 /--
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
 -/
 -- @[simps] Porting note: not in normal form and not used
 def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
-  -- This suggests `restrictScalars` needs to be redesigned.
-  ofHom (Y := (extendScalars f ⋙ restrictScalars f).obj X)
-  { toFun := fun x => (1 : S)⊗ₜ[R,f]x
-    map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
+  ofHom
+  { toFun := fun x => into _ <| (1 : S)⊗ₜ[R,f]x
+    map_add' x x' := by
+      let m1 : Module R S := Module.compHom S f
+      dsimp
+      rw [TensorProduct.tmul_add, into_add]
     map_smul' := fun r x => by
       letI m1 : Module R S := Module.compHom S f
       -- Porting note: used to be rfl
-      dsimp; rw [← TensorProduct.smul_tmul,TensorProduct.smul_tmul'] }
+      simp only [tmul_smul]
+      rfl }
 
 /--
 The natural transformation from identity functor on `R`-module to the composition of extension and
@@ -728,34 +882,41 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
       letI m1 : Module R S := Module.compHom S f
       letI m2 : Module R Y := Module.compHom Y f
       TensorProduct.lift
-      { toFun := fun s : S =>
-        { toFun := fun y : Y => s • y,
-          map_add' := smul_add _
-          map_smul' := fun r y => by
-            change s • f r • y = f r • s • y
-            rw [← mul_smul, mul_comm, mul_smul] },
-        map_add' := fun s₁ s₂ => by
+      { toFun s :=
+        { toFun y := s • out _ y,
+          map_add' y₁ y₂ := by
+            simp only [out_add, smul_add]
+          map_smul' r y := by
+            dsimp only [restrictScalars.smul_def, AddHom.toFun_eq_coe, AddHom.coe_mk, out_into,
+              RingHom.id_apply]
+            rw [← mul_smul, mul_comm, mul_smul]
+            rfl },
+        map_add' s₁ s₂ := by
           ext y
-          change (s₁ + s₂) • y = s₁ • y + s₂ • y
+          dsimp only [smul_def, AddHom.toFun_eq_coe, AddHom.coe_mk, out_into, RingHom.id_apply,
+            id_eq, eq_mpr_eq_cast, LinearMap.coe_mk, Function.comp_apply, LinearMap.add_apply]
           rw [add_smul]
-        map_smul' := fun r s => by
+        map_smul' r s := by
           ext y
+          dsimp only [restrictScalars.smul_def, AddHom.toFun_eq_coe, AddHom.coe_mk, out_into,
+            RingHom.id_apply, id_eq, eq_mpr_eq_cast, LinearMap.coe_mk, LinearMap.add_apply,
+            LinearMap.smul_apply]
           change (f r • s) • y = (f r) • s • y
           rw [smul_eq_mul, mul_smul] }
-    map_add' := fun _ _ => by rw [map_add]
+    map_add' := fun _ _ => map_add _ _ _
     map_smul' := fun s z => by
       letI m1 : Module R S := Module.compHom S f
       letI m2 : Module R Y := Module.compHom Y f
-      dsimp only
+      dsimp only [RingHom.id_apply, restrictScalars.smul_def, out_into, id_eq, eq_mpr_eq_cast,
+        LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
+        cast_eq]
       induction z using TensorProduct.induction_on with
       | zero => rw [smul_zero, map_zero, smul_zero]
       | tmul s' y =>
-        rw [ExtendScalars.smul_tmul, LinearMap.coe_mk]
-        erw [TensorProduct.lift.tmul, TensorProduct.lift.tmul]
-        set s' : S := s'
-        change (s * s') • y = s • s' • y
+        dsimp only [ExtendScalars.smul_tmul, lift.tmul, LinearMap.coe_mk, AddHom.coe_mk]
         rw [mul_smul]
-      | add _ _ ih1 ih2 => rw [smul_add, map_add, map_add, ih1, ih2, smul_add] }
+      | add _ _ ih1 ih2 => 
+        rw [smul_add, map_add, map_add, smul_add, ih1, ih2] }
 
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
@@ -777,7 +938,7 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
       erw [Counit.map_hom_apply]
       rw [lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
       set s' : S := s'
-      change s' • g y = g (s' • y)
+      change s' • g (out _ y) = g (s' • out _ y)
       rw [map_smul]
     | add _ _ ih₁ ih₂ => rw [map_add, map_add]; congr 1
 end ExtendRestrictScalarsAdj
@@ -814,24 +975,41 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
     (restrictScalars.{max u₂ w, u₁, u₂} f).IsRightAdjoint :=
   (extendRestrictScalarsAdj f).isRightAdjoint
 
+lemma comp_restrictScalars_comp_forget₂
+    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
+    (F : J ⥤ ModuleCat.{v} S) :
+    (F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp =
+      F ⋙ forget₂ (ModuleCat S) AddCommGrp :=
+  -- TODO: This was probably `rfl` but now we have to unfold `restrictScalars` somehow?
+  sorry
+
 noncomputable instance preservesLimit_restrictScalars
     {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => ⟨by
-    have hc' := isLimitOfPreserves (forget₂ _ AddCommGrp) hc
-    exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩⟩
+    apply isLimitOfReflects (forget₂ _ AddCommGrp)
+    -- TODO: is this going to be something like:
+    -- apply IsLimit.mapConeEquiv _ (isLimitOfPreserves (forget₂ _ AddCommGrp) hc)
+    convert isLimitOfPreserves (forget₂ _ AddCommGrp) hc
+    · apply comp_restrictScalars_comp_forget₂
+    · sorry⟩⟩
 
 instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
     [HasColimit (F ⋙ forget₂ _ AddCommGrp)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
-  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp) :=
-    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrp))
+  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp) := by
+    rw [comp_restrictScalars_comp_forget₂]
+    infer_instance
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
   apply isColimitOfReflects (forget₂ _ AddCommGrp)
+  sorry
+  -- TODO: was:
+  /-
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrp.{v})
   exact HasColimit.isColimitColimitCocone F
+  -/
 
 end ModuleCat
 

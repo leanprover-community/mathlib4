@@ -31,13 +31,15 @@ namespace PresheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 
+open ModuleCat.restrictScalars
+
 variable {R} in
 /-- Given a presheaf of types `F : Cᵒᵖ ⥤ Type u`, this is the presheaf
 of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F.obj X`. -/
 @[simps]
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
   obj X := (ModuleCat.free (R.obj X)).obj (F.obj X)
-  map {X Y} f := ModuleCat.freeDesc (fun x ↦ ModuleCat.freeMk (F.map f x))
+  map {X Y} f := ModuleCat.freeDesc (fun x ↦ into _ (ModuleCat.freeMk (F.map f x)))
   map_id := by aesop
 
 /-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/

@@ -121,6 +121,8 @@ lemma ext {M : ModuleCat B} {α β : KaehlerDifferential f ⟶ M}
   ext : 1
   exact this
 
+open ModuleCat.restrictScalars
+
 /-- The map `KaehlerDifferential f ⟶ (ModuleCat.restrictScalars g').obj (KaehlerDifferential f')`
 induced by a commutative square (given by an equality `g ≫ f' = f ≫ g'`)
 in the category `CommRingCat`. -/
@@ -134,15 +136,13 @@ noncomputable def map :
   letI := (g ≫ f').toAlgebra
   have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
   have := IsScalarTower.of_algebraMap_eq' fac
-  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
-  -- This suggests `restrictScalars` needs to be redesigned.
-  ModuleCat.ofHom (Y := (ModuleCat.restrictScalars g').obj (KaehlerDifferential f'))
-  { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
-    map_add' := by simp
-    map_smul' := by simp }
+  ModuleCat.ofHom
+  { toFun x := into _ <| _root_.KaehlerDifferential.map A A' B B' x
+    map_add' x y := by dsimp; rw [map_add]; rfl
+    map_smul' m x := by dsimp; rw [map_smul]; rfl }
 
 @[simp]
-lemma map_d (b : B) : map fac (d b) = d (g' b) := by
+lemma map_d (b : B) : map fac (d b) = into _ (d (g' b)) := by
   letI := f.toAlgebra
   letI := f'.toAlgebra
   letI := g.toAlgebra
@@ -150,6 +150,7 @@ lemma map_d (b : B) : map fac (d b) = d (g' b) := by
   letI := (f'.comp g).toAlgebra
   have : IsScalarTower A A' B' := IsScalarTower.of_algebraMap_eq' rfl
   have := IsScalarTower.of_algebraMap_eq' fac
+  ext
   exact _root_.KaehlerDifferential.map_D A A' B B' b
 
 end KaehlerDifferential

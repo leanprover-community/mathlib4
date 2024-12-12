@@ -36,13 +36,16 @@ namespace Monoidal
 
 variable (M₁ M₂ M₃ M₄ : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
 
+open ModuleCat.restrictScalars
+
 /-- Auxiliary definition for `tensorObj`. -/
 noncomputable def tensorObjMap {X Y : Cᵒᵖ} (f : X ⟶ Y) : M₁.obj X ⊗ M₂.obj X ⟶
     (ModuleCat.restrictScalars (R.map f)).obj (M₁.obj Y ⊗ M₂.obj Y) :=
-  ModuleCat.MonoidalCategory.tensorLift (fun m₁ m₂ ↦ M₁.map f m₁ ⊗ₜ M₂.map f m₂)
-    (by intro m₁ m₁' m₂; dsimp; rw [map_add, TensorProduct.add_tmul])
+  ModuleCat.MonoidalCategory.tensorLift
+      (fun m₁ m₂ ↦ into _ (out _ (M₁.map f m₁) ⊗ₜ out _ (M₂.map f m₂)))
+    (by intro m₁ m₁' m₂; ext; dsimp; rw [map_add, map_add, TensorProduct.add_tmul])
     (by intro a m₁ m₂; dsimp; erw [M₁.map_smul]; rfl)
-    (by intro m₁ m₂ m₂'; dsimp; rw [map_add, TensorProduct.tmul_add])
+    (by intro m₁ m₂ m₂'; ext; dsimp; rw [map_add, map_add, TensorProduct.tmul_add])
     (by intro a m₁ m₂; dsimp; erw [M₂.map_smul, TensorProduct.tmul_smul (r := R.map f a)]; rfl)
 
 /-- The tensor product of two presheaves of modules. -/
@@ -68,10 +71,8 @@ variable {M₁ M₂ M₃ M₄}
 
 @[simp]
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
-    DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X : _))
-      (β := fun _ ↦ (ModuleCat.restrictScalars
-        ((forget₂ CommRingCat RingCat).map (R.map f))).obj (M₁.obj Y ⊗ M₂.obj Y))
-      ((tensorObj M₁ M₂).map f).hom (m₁ ⊗ₜ[R.obj X] m₂) = M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
+    ((tensorObj M₁ M₂).map f).hom (m₁ ⊗ₜ[R.obj X] m₂) =
+      into _ (out _ (M₁.map f m₁) ⊗ₜ[R.obj Y] out _ (M₂.map f m₂)) := rfl
 
 /-- The tensor product of two morphisms of presheaves of modules. -/
 @[simps]
@@ -79,8 +80,14 @@ noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj 
   app X := f.app X ⊗ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
     dsimp
+    -- TODO: this was as follows (`erw` didn't work either)
+    /-
     rw [tensorObj_map_tmul, ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul,
       naturality_apply, naturality_apply])
+    -/
+    refine Eq.trans ?_ (tensorObj_map_tmul _ _ _).symm
+    refine Eq.trans (congr_arg (into _) (ModuleCat.MonoidalCategory.tensorHom_tmul _ _ _ _)) ?_
+    rw [naturality_apply, naturality_apply])
 
 end Monoidal
 

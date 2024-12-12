@@ -45,7 +45,7 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
         refine ModuleCat.hom_ext
           -- Work around an instance diamond for `restrictScalarsId'`
           (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
-        exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
+        exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by ext; simp) }
   map {M₁ M₂} φ := { app := fun X ↦ φ.app _ }
 
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
