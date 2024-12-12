@@ -23,7 +23,7 @@ variable (A J : Type*) [Category A] [Category J] [Preadditive A]
 
 variable [HasWeakSheafify (coherentTopology CompHaus.{u}) A]
   [HasWeakSheafify (extensiveTopology Stonean.{u}) A]
--- Here, one could be deduced from the other using the dense subsite API, but when `A` is a
+-- One of these could be deduced from the other using the dense subsite API, but when `A` is a
 -- concrete category, these will both be synthesized anyway.
 
 variable [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
@@ -48,21 +48,20 @@ section Module
 
 variable (R : Type (u+1)) [Ring R]
 
+local instance : HasLimitsOfSize.{u, u+1} (ModuleCat.{u+1} R) :=
+  hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
+
 variable (X Y : CondensedMod.{u} R)
 
 instance : AB5 (CondensedMod.{u} R) where
-  ofShape J _ _ :=
-    have : HasLimitsOfSize.{u, u+1} (ModuleCat.{u+1} R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
-    hasExactColimitsOfShape (ModuleCat R) J
+  ofShape J _ _ := hasExactColimitsOfShape (ModuleCat R) J
 
 attribute [local instance] Abelian.hasFiniteBiproducts
 
 instance : AB4 (CondensedMod.{u} R) := AB4.of_AB5 _
 
 instance : AB4Star (CondensedMod.{u} R) where
-  ofShape J :=
-    have : HasLimitsOfSize.{u, u+1} (ModuleCat.{u+1} R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
-    hasExactLimitsOfShape (ModuleCat R) (Discrete J)
+  ofShape J := hasExactLimitsOfShape (ModuleCat R) (Discrete J)
 
 end Module
 
