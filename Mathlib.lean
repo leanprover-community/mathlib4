@@ -2449,6 +2449,7 @@ import Mathlib.Data.Finset.Image.Basic
 import Mathlib.Data.Finset.Image.Range
 import Mathlib.Data.Finset.Image.Union
 import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Finset.Image.Defs
 import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice.Basic
 import Mathlib.Data.Finset.Lattice.Fold
