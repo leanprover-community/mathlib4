@@ -35,7 +35,7 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 /-! ### Construction of the content: -/
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
-with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`. 
+with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`.
 When `X` is a compact Hausdorff space, this will be shown to be a
 content, and will be shown to agree with the Riesz measure on the compact subsets `K ⊆ X`. -/
 def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
