@@ -54,42 +54,27 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 
 instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
 
-attribute [reassoc] limit.lift_map
-
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
   apply ( config := {allowSynthFailures := true} )  hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
-      have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
-        apply limit.hom_ext
-        intro ⟨n⟩
-        simp only [lim_obj, lim_map, limMap, IsLimit.map, limit.isLimit_lift, limit.lift_π,
-          Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, NatTrans.comp_app,
-          Functor.const_obj_obj, limit.cone_π, Pi.isoLimit, Limits.Pi.map, Category.assoc,
-          limit.conePointUniqueUpToIso_hom_comp, Pi.cone_pt, Pi.cone_π, Discrete.natTrans_app,
-          Discrete.functor_obj_eq_as]
-        erw [IsLimit.conePointUniqueUpToIso_inv_comp_assoc]
-        rfl
       let iX : limit X ≅ AddCommGrp.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
       let iY : limit Y ≅ AddCommGrp.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
       have : ⇑(iX.inv ≫ lim.map f ≫ iY.hom) = Pi.map (fun i ↦ f.app ⟨i⟩) := by
-        rw [this]
-        dsimp [iX, iY]
-        simp only [Category.assoc, Iso.hom_inv_id_assoc]
-        simp [Pi.isoLimit, AddCommGrp.HasLimit.productLimitCone,
-          IsLimit.conePointUniqueUpToIso, Limits.Pi.map, limit.cone]
-        erw [limit.lift_map_assoc]
+        simp only [AddCommGrp.coe_of, Functor.comp_obj, Discrete.functor_obj_eq_as, Discrete.mk_as,
+          Pi.isoLimit, IsLimit.conePointUniqueUpToIso, limit.cone,
+          AddCommGrp.HasLimit.productLimitCone, Iso.trans_inv, Functor.mapIso_inv,
+          IsLimit.uniqueUpToIso_inv, Cones.forget_map, IsLimit.liftConeMorphism_hom,
+          limit.isLimit_lift, Iso.symm_inv, Functor.mapIso_hom, IsLimit.uniqueUpToIso_hom, lim_obj,
+          lim_map, Iso.trans_hom, Iso.symm_hom, AddCommGrp.HasLimit.lift, Functor.const_obj_obj,
+          Category.assoc, limit.lift_map_assoc, Pi.cone_pt, iX, iY]
         ext g j
-        simp
-        erw [CategoryTheory.comp_apply]
-        simp [AddCommGrp.HasLimit.lift]
-        change ((getLimitCone (Discrete.functor fun j ↦ Y.obj { as := j })).cone.π.app _) _  = _
-        have : (getLimitCone (Discrete.functor fun j ↦ Y.obj { as := j })).cone.π.app ⟨j⟩ =
-            limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩ := rfl
-        rw [this]
         change (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _ = _
+        simp only [Discrete.functor_obj_eq_as, Functor.comp_obj, Discrete.mk_as, productIsProduct',
+          limit.lift_π, Fan.mk_pt, Fan.mk_π_app, Pi.map_apply]
+        change (_ ≫ _ ≫ limit.π Y ⟨j⟩) _ = _
         simp
       suffices Epi (iX.inv ≫ lim.map f ≫ iY.hom) by
         suffices Epi (iX.hom ≫ (iX.inv ≫ lim.map f ≫ iY.hom) ≫ iY.inv) by simpa using this
