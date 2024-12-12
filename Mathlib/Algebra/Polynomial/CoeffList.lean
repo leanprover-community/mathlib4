@@ -108,67 +108,43 @@ theorem coeffList_of_nextCoeff_ne_zero (h : P.nextCoeff ≠ 0) :
 /- Coefficients of P are always the leading coefficient, some number of zeros, and then
   `coeffList P.eraseLead`. -/
 theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
-    P.leadingCoeff::((List.replicate n 0)++P.eraseLead.coeffList) := by
+    P.leadingCoeff :: ((List.replicate n 0) ++ P.eraseLead.coeffList) := by
   by_cases hdp : P.natDegree = 0
   · use 0
     rw [eq_C_of_natDegree_eq_zero hdp] at h ⊢
     simp [coeffList_C (C_ne_zero.mp h)]
-  have hd : P.natDegree ≥ P.eraseLead.natDegree + 1 := by
-    linarith [eraseLead_natDegree_le P, Nat.sub_add_cancel (Nat.ne_zero_iff_zero_lt.mp hdp)]
-  replace ⟨dd, hd⟩ := exists_add_of_le hd
-  use if P.eraseLead.support = ∅ then P.natDegree else dd
-  --need α to be Inhabited to use getElem!, 0 is an accessible default
-  inhabit α
-  --first two subgoals: l=l₂ if (1) the lengths are equal and (2) l.getElem!=l₂.getElem!
-  apply List.ext_getElem!
-  --then four subgoals: is P.eraseLead zero or not
-  · by_cases hep : P.eraseLead.support = ∅
-    · rw [coeffList_of_ne_zero h, coeffList]
-      simp [if_pos hep]
-    · simpa only [length_coeffList_support, if_neg (mt support_eq_empty.mp h), if_neg hep,
-        List.length_cons, List.length_append, List.length_replicate] using by omega
-  rintro (_|n)
+  obtain ⟨n, hn⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d :=
+    exists_add_of_le (have := eraseLead_natDegree_le P; by omega)
+  use if P.eraseLead.support = ∅ then P.natDegree else n
+  apply List.ext_getElem?
+  rintro (_|k)
   · cases coeffList_eq_cons_leadingCoeff h
     simp_all
-  simp only [nonpos_iff_eq_zero, List.getElem!_eq_getElem?_getD,
-    coeffList_of_ne_zero h]
   by_cases hep : P.eraseLead.support = ∅
   all_goals (
-    simp_rw [coeffList, hep, List.map_reverse, reduceIte]
-    by_cases hnp : n + 1 < P.natDegree + 1
+    simp_rw [coeffList_of_ne_zero h, coeffList, hep, List.map_reverse, reduceIte]
+    by_cases hkd : k + 1 < P.natDegree + 1
     case neg =>
-      rw [List.getElem?_cons_succ, ← List.getD_eq_getElem?_getD, ← List.getD_eq_getElem?_getD,
-      List.getD_eq_default, List.getD_eq_default]
-      · simpa using by omega
-      · simpa using by omega
+      rw [List.getElem?_eq_none] <;> simpa using by omega
+    obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ hkd)
+    rw [List.getElem?_reverse (by simpa using hkd), List.getElem?_cons_succ, List.length_map,
+      List.length_range, List.getElem?_map, List.getElem?_range (by omega), Option.map_some']
   )
-  · simp_all only
-    rw [List.getElem?_cons_succ, List.getElem?_reverse (by simpa [hd] using hnp),
-      List.length_map, List.length_range, List.getElem?_map, List.getElem?_range (by omega),
-      Option.map_some', Option.getD_some, add_tsub_cancel_right, List.append_nil,
-      List.getElem?_replicate_of_lt (by omega)]
-    obtain ⟨np, hnp⟩ := exists_add_of_le (Nat.le_of_lt_succ hnp)
-    have h2 : np = P.natDegree - (n + 1) := by omega
-    rw [← hd, ← h2, ← eraseLead_coeff_of_ne np (by omega), support_eq_empty.mp hep,
-      coeff_zero, Option.getD_some]
-  · rw [List.getElem?_reverse (by simpa using hnp), List.getElem?_cons_succ, List.length_map,
-      List.length_range, List.getElem?_map, List.getElem?_range (by omega), Option.map_some',
-      Option.getD_some]
-    obtain ⟨dp, _⟩ := exists_add_of_le (Nat.le_of_lt_succ hnp)
-    conv_lhs => equals P.eraseLead.coeff dp =>
-      rw [eraseLead_coeff_of_ne (f := P) dp (by omega)]
+  · rw [add_tsub_cancel_right, List.append_nil, ← Nat.eq_sub_of_add_eq' hdk.symm,
+      List.getElem?_replicate_of_lt (by omega), ← eraseLead_coeff_of_ne dk (by omega),
+      support_eq_empty.mp hep, coeff_zero]
+  · conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
+      rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
       congr
       omega
-    by_cases hnp2 : n < dd
-    case pos => --goes into the 0's chunk
-      simpa [List.getElem?_append, hnp2] using coeff_eq_zero_of_natDegree_lt (by linarith)
-    case neg => --goes into the coeffList eraseLead chunk
-      obtain ⟨_, hd3⟩ := exists_add_of_le (Nat.ge_of_not_lt hnp2)
-      rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hnp2),
+    by_cases hkn : k < n
+    case pos => --k points into the 0's chunk
+      simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
+    case neg => --k points into the coeffList eraseLead chunk
+      rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hkn),
         List.length_replicate, List.getElem?_reverse, List.getElem?_map]
-      · rw [List.length_map, List.length_range, List.getElem?_range (by omega), hd3,
-          Option.map_some', Option.getD_some, add_tsub_cancel_right]
-        congr 1
+      · rw [List.length_map, List.length_range, List.getElem?_range (by omega), Option.map_some']
+        congr 2
         omega
       · simpa using by omega
 
