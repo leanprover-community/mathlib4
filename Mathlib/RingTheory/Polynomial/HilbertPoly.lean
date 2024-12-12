@@ -121,21 +121,33 @@ lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
-theorem fun_hilbertPoly_isLinearMap (d : ℕ) :
-    IsLinearMap F (fun (p : F[X]) => hilbertPoly p d) := by
+variable {F} in
+lemma hilbertPoly_add_nat (p q : F[X]) (d : ℕ) :
+    hilbertPoly (p + q) d = hilbertPoly p d + hilbertPoly q d := by
   delta hilbertPoly
   induction d with
-  | zero => exact ⟨by simp only [add_zero, implies_true], by simp only [smul_zero, implies_true]⟩
-  | succ d _ => exact {
-      map_add := fun _ _ => by
-        simp only [← coeff_add]
-        rw [← sum_def _ fun _ r => r • _]
-        exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
-      map_smul := fun _ _ => by
-        simp only
-        rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
-          sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
-        simp only [smul_assoc] }
+  | zero => simp only [add_zero]
+  | succ d _ =>
+      simp only [← coeff_add]
+      rw [← sum_def _ fun _ r => r • _]
+      exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
+
+variable {F} in
+lemma hilbertPoly_smul_nat (a : F) (p : F[X]) (d : ℕ) :
+    hilbertPoly (a • p) d = a • hilbertPoly p d := by
+  delta hilbertPoly
+  induction d with
+  | zero => simp only [smul_zero]
+  | succ d _ =>
+      simp only
+      rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
+        sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
+      simp only [smul_assoc]
+
+theorem fun_hilbertPoly_isLinearMap (d : ℕ) :
+    IsLinearMap F (fun (p : F[X]) => hilbertPoly p d) where
+  map_add := fun _ _ => hilbertPoly_add_nat ..
+  map_smul := fun _ _ ↦ hilbertPoly_smul_nat ..
 
 variable {F} [CharZero F]
 
