@@ -27,8 +27,7 @@ The proof uses Mason-Stothers theorem (Polynomial ABC theorem) and infinite desc
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
 
-variable {k : Type _} [Field k]
-variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R]
+variable {k R : Type*} [Field k] [CommRing R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R]
 
 private lemma Ne.isUnit_C {u : k} (hu : u ≠ 0) : IsUnit (C u) :=
