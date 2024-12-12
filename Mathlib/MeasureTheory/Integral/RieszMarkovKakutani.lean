@@ -26,7 +26,7 @@ compact subsets of the space X, rather than the usual construction of open sets 
 
 noncomputable section
 
-open scoped Classical BoundedContinuousFunction NNReal ENNReal
+open scoped BoundedContinuousFunction NNReal ENNReal
 open Set Function TopologicalSpace CompactlySupported MeasureTheory
 
 variable {X : Type*} [TopologicalSpace X]
