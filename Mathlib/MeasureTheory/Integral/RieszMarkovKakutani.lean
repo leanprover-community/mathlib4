@@ -65,8 +65,7 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   intro x hx
   apply le_of_eq
   simp only [nnrealPartCompactlySupported_apply, CompactlySupportedContinuousMap.coe_mk]
-  rw [← Real.toNNReal_one]
-  rw [Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
+  rw [← Real.toNNReal_one, Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
   exact (EqOn.symm hfeq1onK) hx
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
