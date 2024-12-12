@@ -101,8 +101,7 @@ theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c →
 instance socsN2 : StrictOrderedCommSemiring (ℕ × ZMod 2) :=
   { Nxzmod2.csrN21, (inferInstance : PartialOrder (ℕ × ZMod 2)),
     (inferInstance : CommSemiring (ℕ × ZMod 2)),
-    pullback_nonzero Prod.fst Prod.fst_zero
-      Prod.fst_one with
+    domain_nontrivial Prod.fst Prod.fst_zero Prod.fst_one with
     add_le_add_left := add_le_add_left
     le_of_add_le_add_left := le_of_add_le_add_left
     zero_le_one := zero_le_one
