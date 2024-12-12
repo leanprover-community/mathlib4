@@ -66,7 +66,7 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   apply le_of_eq
   simp only [nnrealPartCompactlySupported_apply, CompactlySupportedContinuousMap.coe_mk]
   rw [← Real.toNNReal_one, Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
-  exact (EqOn.symm hfeq1onK) hx
+  exact hfeq1onK.symm hx
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K₂)`. -/
