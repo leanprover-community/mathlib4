@@ -336,7 +336,7 @@ instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
 /-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
 theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
     Measurable fun a => (condCDF ρ a).measure :=
-  .measure_of_basis_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
+  .measure_of_isPiSystem_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
     simp_rw [forall_mem_range, measure_condCDF_Iic]
     exact fun u ↦ (measurable_condCDF ρ u).ennreal_ofReal
 
