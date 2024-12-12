@@ -226,7 +226,7 @@ itself is recursively defined as the smallest set with `0 ∈ s` and `(1 + (a + 
 for `0 < a' < a` and `b ∈ s`.
 
 This preliminary definition "accidentally" satisfies `invAux 0 = 1`, which the real inverse
-corrects. -/
+corrects. The lemma `inv_eq_invAux` can be used to transfer between the two. -/
 def invAux (a : Nimber) : Nimber :=
   sInf (invSet a)ᶜ
 termination_by (a, 1)
