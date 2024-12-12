@@ -4,73 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+--import Mathlib.MeasureTheory.MeasurableSpace.Ball
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Inner regularity of Measures wrt compact sets
-In this file we show that a `FiniteMeasure P`  on a `PseudoEMetricSpace E` is inner regular with
+In this file we show that a finite measure `μ`  on a `PseudoEMetricSpace E` is inner regular with
 respect to compact sets: `theorem inner_regularWRT_isCompact_of_complete_countable`.
 -/
 
 open Set MeasureTheory
 
-open scoped ENNReal Topology
-
-variable {α : Type*}
-
-section Topology
-
-namespace UniformSpace
-
-lemma _root_.MeasurableSet.ball {_ : MeasurableSpace α} (x : α)
-    {s : Set (α × α)} (hs : MeasurableSet s) :
-    MeasurableSet (UniformSpace.ball x s) := measurable_prod_mk_left hs
-
-/-- Given a family of points `xs n`, a family of entourages `V n` of the diagonal and a family of
-natural numbers `u n`, the intersection over `n` of the `V n`-neighborhood of `xs 1, ..., xs (u n)`.
-Designed to be relatively compact when `V n` tends to the diagonal. -/
-def interUnionBalls (xs : ℕ → α) (u : ℕ → ℕ) (V : ℕ → Set (α × α)) : Set α :=
-  ⋂ n, ⋃ m ≤ u n, UniformSpace.ball (xs m) (Prod.swap ⁻¹' V n)
-
-lemma totallyBounded_interUnionBalls [UniformSpace α] {p : ℕ → Prop} {U : ℕ → Set (α × α)}
-    (H : (uniformity α).HasBasis p U) (xs : ℕ → α) (u : ℕ → ℕ) :
-    TotallyBounded (interUnionBalls xs u U) := by
-  rw [Filter.HasBasis.totallyBounded_iff H]
-  intro i _
-  have h_subset : interUnionBalls xs u U
-      ⊆ ⋃ m ≤ u i, UniformSpace.ball (xs m) (Prod.swap ⁻¹' U i) :=
-    fun x hx ↦ Set.mem_iInter.1 hx i
-  classical
-  refine ⟨Finset.image xs (Finset.range (u i + 1)), Finset.finite_toSet _, fun x hx ↦ ?_⟩
-  simp only [Finset.coe_image, Finset.coe_range, mem_image, mem_Iio, iUnion_exists, biUnion_and',
-    iUnion_iUnion_eq_right, Nat.lt_succ_iff]
-  exact h_subset hx
-
-/-- The construction `interUnionBalls` is used to have a relatively compact set. -/
-theorem isCompact_closure_interUnionBalls [UniformSpace α] {p : ℕ → Prop} {U : ℕ → Set (α × α)}
-    (H : (uniformity α).HasBasis p U) [CompleteSpace α] (xs : ℕ → α) (u : ℕ → ℕ) :
-    IsCompact (closure (interUnionBalls xs u U)) := by
-  rw [isCompact_iff_totallyBounded_isComplete]
-  refine ⟨TotallyBounded.closure ?_, isClosed_closure.isComplete⟩
-  exact totallyBounded_interUnionBalls H xs u
-
-theorem _root_.MeasureTheory.measure_compl_interUnionBalls_le {_ : MeasurableSpace α}
-    (μ : Measure α) (xs : ℕ → α) (u : ℕ → ℕ) (V : ℕ → Set (α × α)) :
-    μ (UniformSpace.interUnionBalls xs u V)ᶜ ≤
-      ∑' n, μ (⋃ m ≤ u n, UniformSpace.ball (xs m) (Prod.swap ⁻¹' V n))ᶜ := by
-  rw [UniformSpace.interUnionBalls, Set.compl_iInter]
-  exact measure_iUnion_le _
-
-end UniformSpace
-
-end Topology
-
+open scoped ENNReal
 
 namespace MeasureTheory
 
-variable [MeasurableSpace α] {μ : Measure α}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 theorem innerRegularWRT_isCompact_closure_iff [TopologicalSpace α] [R1Space α] :
     μ.InnerRegularWRT (IsCompact ∘ closure) IsClosed ↔ μ.InnerRegularWRT IsCompact IsClosed := by
@@ -145,15 +96,16 @@ theorem exists_isCompact_closure_measure_lt_of_complete_countable [UniformSpace 
     have h_univ n : (⋃ m, f n m) = univ := hseq_dense.iUnion_uniformity_ball (hto n).1
     have h3 n (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ m, P (⋂ m' ≤ m, (f n m')ᶜ) < ε := by
       refine exists_measure_iInter_lt (fun m ↦ ?_) hε ⟨0, measure_ne_top P _⟩ ?_
-      · exact ((IsOpen.measurableSet (hto n).2.1).ball _).compl.nullMeasurableSet
+      · exact (measurable_prod_mk_left (IsOpen.measurableSet (hto n).2.1)).compl.nullMeasurableSet
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_seq_pos_lt ε hε with ⟨δ, hδ1, hδ2⟩
     classical
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
-    let A := UniformSpace.interUnionBalls seq u t
-    refine ⟨A, UniformSpace.isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
-    refine ((measure_compl_interUnionBalls_le P seq u t).trans ?_).trans_lt hδ2
+    let A := interUnionBalls seq u t
+    refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
+    rw [interUnionBalls, Set.compl_iInter]
+    refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
     refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
     have h'' n : Prod.swap ⁻¹' t n = t n := SymmetricRel.eq (hto n).2.2
     simp only [h'', compl_iUnion, ge_iff_le]
@@ -170,8 +122,6 @@ theorem innerRegularWRT_isCompact_isClosed_of_complete_countable [UniformSpace �
     [SecondCountableTopology α] [(uniformity α).IsCountablyGenerated]
     [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) IsClosed := by
-  have : R1Space α := by
-    exact instR1Space
   rw [innerRegularWRT_isCompact_isClosed_iff_innerRegularWRT_isCompact_closure]
   exact innerRegularWRT_isCompact_closure_of_complete_countable P
 
