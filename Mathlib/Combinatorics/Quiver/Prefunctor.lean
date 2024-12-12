@@ -45,6 +45,18 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
   funext X Y f
   simpa using h_map X Y f
 
+/-- This may be a more useful form of `Prefunctor.ext`. -/
+theorem ext' {V W : Type u} [Quiver V] [Quiver W] {F G : Prefunctor V W}
+    (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : V) (f : X ⟶ Y),
+      F.map f = Quiver.homOfEq (G.map f) (h_obj _).symm (h_obj _).symm) : F = G := by
+  obtain ⟨Fobj, Fmap⟩ := F
+  obtain ⟨Gobj, Gmap⟩ := G
+  obtain rfl : Fobj = Gobj := funext h_obj
+  simp only [mk.injEq, heq_eq_eq, true_and]
+  ext X Y f
+  simpa only [Quiver.homOfEq_rfl] using h_map X Y f
+
 /-- The identity morphism between quivers. -/
 @[simps]
 def id (V : Type*) [Quiver V] : Prefunctor V V where
@@ -87,5 +99,6 @@ notation "𝟭q" => id
 theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
     (h : f = g) : F.map f = F.map g := by
   rw [h]
+
 
 end Prefunctor

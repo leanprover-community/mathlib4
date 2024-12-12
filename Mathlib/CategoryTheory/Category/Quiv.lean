@@ -82,38 +82,33 @@ end Cat
 
 namespace Quiv
 
-def isoOfEquiv {V W : Type u } [Quiver.{v + 1, u} V] [Quiver.{v + 1, u} W]
-    (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y)) : Quiv.of V ≅ Quiv.of W where
-      hom := Prefunctor.mk e (he _ _)
-      inv := {
-        obj := e.symm
-        map {X' Y'} f' := (he _ _).symm
-          (Eq.recOn (e.right_inv Y').symm
-            (Eq.recOn (e.right_inv X').symm f') : e.toFun (e.invFun X') ⟶ e.toFun (e.invFun Y'))
-      }
-      hom_inv_id := by
-        rw [Quiv.id_eq_id, Quiv.comp_eq_comp]
-        refine Prefunctor.ext e.left_inv ?_
-        · intro X Y f
-          have H1 {X Y Y' : V} (f' : e X ⟶ e Y) (h : Y = Y') :
-            (he _ _).symm (Eq.recOn h f' : e X ⟶ e Y') = Eq.recOn h ((he _ _).symm f') := by
-              cases h; rfl
-          have H2 {X' X Y : V} (f' : e X ⟶ e Y) (h : X = X') :
-            (he _ _).symm (Eq.recOn h f' : e X' ⟶ e Y) = Eq.recOn h ((he _ _).symm f') := by
-              cases h; rfl
-          have H3 {X Y : V} (f : X ⟶ Y) :
-            (he _ _).symm
-              (Eq.recOn (e.right_inv (e Y)).symm (Eq.recOn (e.right_inv (e X)).symm (he _ _ f)) ) =
-              Eq.recOn (e.left_inv Y).symm (Eq.recOn (e.left_inv X).symm f) := sorry
-          simp only [Prefunctor.id_map, Prefunctor.comp_map]
-          sorry
-      inv_hom_id := by
-        rw [Quiv.id_eq_id]
-        refine Prefunctor.ext e.right_inv ?_
-        · intro X' Y' f'
-          simp only [Equiv.invFun_as_coe, Equiv.toFun_as_coe, Prefunctor.id_obj, Prefunctor.id_map]
-          sorry
+section
+variable {V W : Type u } [Quiver V] [Quiver W]
+  (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
 
+include he in
+@[simp]
+lemma homOfEq_map_homOfEq {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY : Y = Y')
+    {X'' Y'' : W} (hX' : e X' = X'') (hY' : e Y' = Y'') :
+    Quiver.homOfEq (he _ _ (Quiver.homOfEq f hX hY)) hX' hY' =
+      Quiver.homOfEq (he _ _ f) (by rw [hX, hX']) (by rw [hY, hY']) := by
+  subst hX hY hX' hY'
+  rfl
+
+/-- Compatible equivalences of types and hom-types induce an isomorphism of quivers. -/
+def isoOfEquiv : Quiv.of V ≅ Quiv.of W where
+  hom := Prefunctor.mk e (he _ _)
+  inv :=
+    { obj := e.symm
+      map {X Y} f := (he _ _).symm (Quiver.homOfEq f (by simp) (by simp)) }
+  hom_inv_id := Prefunctor.ext' e.left_inv (fun X Y f ↦ by
+    dsimp [Quiv.id_eq_id, Quiv.comp_eq_comp]
+    apply (he _ _).injective
+    apply Quiver.homOfEq_injective (X' := e X) (Y' := e Y) (by simp) (by simp)
+    simp)
+  inv_hom_id := Prefunctor.ext' e.right_inv (by simp [Quiv.id_eq_id, Quiv.comp_eq_comp])
+
+end
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
 @[simps]
 def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefunctor V C) :
