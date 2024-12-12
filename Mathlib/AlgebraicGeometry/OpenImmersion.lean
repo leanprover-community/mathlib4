@@ -104,6 +104,18 @@ lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
   simp
 
+lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ''ᵁ f.opensRange :=
+  TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
+
+lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    f.opensRange = ⊤ :=
+  TopologicalSpace.Opens.ext (Set.range_eq_univ.mpr f.homeomorph.surjective)
+
+lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
+  rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
+
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
@@ -442,11 +454,11 @@ instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
     (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.fst g.toLRSHom f.toLRSHom).1)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
-instance forgetPreservesOfLeft : PreservesLimit (cospan f g) forget :=
-  CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit _ _
+instance forget_preservesOfLeft : PreservesLimit (cospan f g) forget :=
+  CategoryTheory.preservesLimit_of_createsLimit_and_hasLimit _ _
 
-instance forgetPreservesOfRight : PreservesLimit (cospan g f) forget :=
-  preservesPullbackSymmetry _ _ _
+instance forget_preservesOfRight : PreservesLimit (cospan g f) forget :=
+  preservesPullback_symmetry _ _ _
 
 instance hasPullback_of_left : HasPullback f g :=
   hasLimit_of_created (cospan f g) forget
@@ -475,17 +487,17 @@ instance pullback_to_base [IsOpenImmersion g] :
   -- provided but still class inference fail to find this
   exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
 
-instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetToTop := by
+instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
-  refine @Limits.compPreservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
+  refine @Limits.comp_preservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
   · infer_instance
-  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
+  refine @preservesLimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
 
-instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forgetToTop :=
-  preservesPullbackSymmetry _ _ _
+instance forgetToTop_preserves_of_right : PreservesLimit (cospan g f) Scheme.forgetToTop :=
+  preservesPullback_symmetry _ _ _
 
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by

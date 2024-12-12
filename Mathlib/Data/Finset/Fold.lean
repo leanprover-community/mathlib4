@@ -3,8 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Fold
 
@@ -230,11 +228,6 @@ theorem fold_max_lt : s.fold max b f < c ↔ b < c ∧ ∀ x ∈ s, f x < c := b
 
 theorem lt_fold_max : c < s.fold max b f ↔ c < b ∨ ∃ x ∈ s, c < f x :=
   fold_op_rel_iff_or lt_max_iff
-
-theorem fold_max_add [Add β] [AddRightMono β] (n : WithBot β)
-    (s : Finset α) : (s.fold max ⊥ fun x : α => ↑(f x) + n) = s.fold max ⊥ ((↑) ∘ f) + n := by
-  classical
-    induction' s using Finset.induction_on with a s _ ih <;> simp [*, max_add_add_right]
 
 end Order
 

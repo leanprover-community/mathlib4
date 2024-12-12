@@ -274,7 +274,7 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc (fun x hx ↦ ?_)
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
-    · rw [div_le_div_left] -- leave side-goals to end and kill them all together
+    · rw [div_le_div_iff_of_pos_left] -- leave side-goals to end and kill them all together
       · apply rpow_le_rpow_of_exponent_le
         · exact (lt_of_le_of_lt (by simp) hx.1).le
         · linarith [mem_Ici.mp hs]

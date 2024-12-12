@@ -150,6 +150,16 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rw [mul_pow, mem_span_singleton]
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 
+theorem span_range_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : s → ℕ) :
+    span (Set.range fun x ↦ x.1 ^ n x) = ⊤ := by
+  have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span ((eq_top_iff_one _).mp hs)
+  refine top_unique ((span_pow_eq_top _ ((eq_top_iff_one _).mpr mem) <|
+    t.attach.sup fun x ↦ n ⟨x, hts x.2⟩).ge.trans <| span_le.mpr ?_)
+  rintro _ ⟨x, hxt, rfl⟩
+  rw [← Nat.sub_add_cancel (Finset.le_sup <| t.mem_attach ⟨x, hxt⟩)]
+  simp_rw [pow_add]
+  exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)
+
 end Ideal
 
 end CommSemiring
