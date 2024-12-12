@@ -91,7 +91,8 @@ lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
     rw [ascPochhammer_nat_eq_natCast_ascFactorial];
     field_simp [ascFactorial_eq_factorial_mul_choose]
 
-variable {F} in
+variable {F}
+
 /--
 `Polynomial.hilbertPoly p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbertPoly p (d + 1)`
 is defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbertPoly F d i`. If
@@ -110,10 +111,8 @@ lemma hilbertPoly_zero_nat (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
-variable {F} in
 lemma hilbertPoly_poly_zero (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
-variable {F} in
 lemma hilbertPoly_poly_succ (p : F[X]) (d : ℕ) :
     hilbertPoly p (d + 1) = ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i := rfl
 
@@ -121,7 +120,6 @@ lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
-variable {F} in
 lemma hilbertPoly_add_nat (p q : F[X]) (d : ℕ) :
     hilbertPoly (p + q) d = hilbertPoly p d + hilbertPoly q d := by
   delta hilbertPoly
@@ -132,7 +130,6 @@ lemma hilbertPoly_add_nat (p q : F[X]) (d : ℕ) :
       rw [← sum_def _ fun _ r => r • _]
       exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
 
-variable {F} in
 lemma hilbertPoly_smul_nat (a : F) (p : F[X]) (d : ℕ) :
     hilbertPoly (a • p) d = a • hilbertPoly p d := by
   delta hilbertPoly
@@ -144,12 +141,13 @@ lemma hilbertPoly_smul_nat (a : F) (p : F[X]) (d : ℕ) :
         sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
       simp only [smul_assoc]
 
-theorem fun_hilbertPoly_isLinearMap (d : ℕ) :
+variable (F) in
+theorem isLinearMap_hilbertPoly (d : ℕ) :
     IsLinearMap F (fun (p : F[X]) => hilbertPoly p d) where
   map_add := fun _ _ => hilbertPoly_add_nat ..
   map_smul := fun _ _ ↦ hilbertPoly_smul_nat ..
 
-variable {F} [CharZero F]
+variable [CharZero F]
 
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
@@ -263,7 +261,7 @@ theorem natDegree_hilbertPoly_of_ne_zero
   have hp : p ≠ 0 := by
     intro h
     rw [h] at hh
-    exact hh (hilbertPoly_zero_nat F d)
+    exact hh (hilbertPoly_zero_nat d)
   have hpd : p.rootMultiplicity 1 < d := by
     by_contra h
     exact hh (hilbertPoly_eq_zero_of_le_rootMultiplicity_one <| not_lt.1 h)
