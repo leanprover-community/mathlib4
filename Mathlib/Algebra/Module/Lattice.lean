@@ -83,27 +83,37 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     rw [show x = a • a⁻¹ • x by simp]
     exact Submodule.smul_mem_pointwise_smul _ _ _ (by trivial)
 
+lemma of_le_of_isLattice_of_fg {M N : Submodule R V} (hle : M ≤ N) [IsLattice A M]
+    (hfg : N.FG) : IsLattice A N :=
+  ⟨hfg, eq_top_iff.mpr <|
+    le_trans (b := span A M) (by rw [IsLattice.span_eq_top]) (Submodule.span_mono hle)⟩
+
+/-- The supremum of two lattices is a lattice. -/
+instance sup (M N : Submodule R V) [IsLattice A M] [IsLattice A N] :
+    IsLattice A (M ⊔ N) :=
+  of_le_of_isLattice_of_fg A le_sup_left (Submodule.FG.sup IsLattice.fg IsLattice.fg)
+
 end
 
 section Field
 
 variable {K : Type*} [Field K] [Algebra R K]
 
-lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank {M N : Type u} [IsDomain R]
+lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} [IsDomain R]
     [IsFractionRing R K] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
-    {f : M →ₗ[R] N} (hf : Function.Injective f)
-    (h : Module.rank R M = Module.rank K N) :
+    {f : M →ₗ[R] N} (hf : Function.Injective f) (h : Module.rank K N ≤ Module.rank R M) :
     Submodule.span K (LinearMap.range f : Set N) = ⊤ := by
   obtain ⟨s, hs, hli⟩ := exists_set_linearIndependent R M
   replace hli := hli.map' f (LinearMap.ker_eq_bot.mpr hf)
   rw [LinearIndependent.iff_fractionRing (R := R) (K := K)] at hli
-  rw [h, ← Module.finrank_eq_rank, Cardinal.mk_eq_nat_iff_fintype] at hs
+  replace hs : Cardinal.mk s = Module.rank K N :=
+    le_antisymm (LinearIndependent.cardinal_le_rank hli) (hs ▸ h)
+  rw [← Module.finrank_eq_rank, Cardinal.mk_eq_nat_iff_fintype] at hs
   obtain ⟨hfin, hcard⟩ := hs
   have hsubset : Set.range (fun x : s ↦ f x.val) ⊆ (LinearMap.range f : Set N) := by
     rintro x ⟨a, rfl⟩
     simp
-  have hcard : Fintype.card ↑s = Module.finrank K N := by simpa
   rw [eq_top_iff, ← LinearIndependent.span_eq_top_of_card_eq_finrank' hli hcard]
   exact Submodule.span_mono hsubset
 
@@ -131,21 +141,13 @@ lemma _root_.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
 
 variable [IsDomain R]
 
-/-- A finitely-generated `R`-submodule of `V` that has rank the `K`-rank of `V` is
-a lattice. -/
-lemma of_rank [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
-    (hfg : M.FG) (hr : Module.rank R M = Module.rank K V) : IsLattice K M where
+/-- A finitely-generated `R`-submodule of `V` of rank at least the `K`-rank of `V`
+is a lattice. -/
+lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
+    (hfg : M.FG) (hr : Module.rank K V ≤ Module.rank R M) : IsLattice K M where
   fg := hfg
   span_eq_top := by
-    simpa using Submodule.span_range_eq_top_of_injective_of_rank M.injective_subtype hr
-
-/-- The supremum of two lattices is a lattice. -/
-instance sup (M N : Submodule R V) [IsLattice K M] [IsLattice K N] :
-    IsLattice K (M ⊔ N) where
-  fg := Submodule.FG.sup IsLattice.fg IsLattice.fg
-  span_eq_top := by
-    rw [eq_top_iff]
-    exact le_trans (b := span K M) (by rw [IsLattice.span_eq_top]) (Submodule.span_mono (by simp))
+    simpa using Submodule.span_range_eq_top_of_injective_of_rank_le M.injective_subtype hr
 
 variable [IsPrincipalIdealRing R]
 
@@ -185,10 +187,10 @@ instance inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
     infer_instance
   span_eq_top := by
     rw [← range_subtype (M ⊓ N)]
-    apply Submodule.span_range_eq_top_of_injective_of_rank (M ⊓ N).injective_subtype
+    apply Submodule.span_range_eq_top_of_injective_of_rank_le (M ⊓ N).injective_subtype
     have h := Submodule.rank_sup_add_rank_inf_eq M N
     rw [IsLattice.rank' K M, IsLattice.rank' K N, IsLattice.rank'] at h
-    exact Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)
+    rw [Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)]
 
 end Field
 
