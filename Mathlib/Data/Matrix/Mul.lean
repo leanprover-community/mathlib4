@@ -11,10 +11,10 @@ import Mathlib.Data.Matrix.Diagonal
 /-!
 # Matrix multiplication
 
-This file defines matrix multiplication
+This file defines vector and matrix multiplication
 
 ## Main definitions
- * `Matrix.dotProduct`: the dot product between two vectors
+ * `dotProduct`: the dot product between two vectors
  * `Matrix.mul`: multiplication of two matrices
  * `Matrix.mulVec`: multiplication of a matrix with a vector
  * `Matrix.vecMul`: multiplication of a vector with a matrix
@@ -25,7 +25,7 @@ This file defines matrix multiplication
 
 The locale `Matrix` gives the following notation:
 
-* `⬝ᵥ` for `Matrix.dotProduct`
+* `⬝ᵥ` for `dotProduct`
 * `*ᵥ` for `Matrix.mulVec`
 * `ᵥ*` for `Matrix.vecMul`
 
@@ -56,8 +56,6 @@ variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 open Matrix
 
-namespace Matrix
-
 section DotProduct
 
 variable [Fintype m] [Fintype n]
@@ -66,10 +64,12 @@ variable [Fintype m] [Fintype n]
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
+-- @[deprecated (since := "2024-12-12")] alias Matrix.dotProduct := dotProduct
+
 /- The precedence of 72 comes immediately after ` • ` for `SMul.smul`,
    so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ • b)` here. -/
 @[inherit_doc]
-scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
+infixl:72 " ⬝ᵥ " => dotProduct
 
 theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v : Matrix m n α) :
     (fun j => u ⬝ᵥ fun i => v i j) ⬝ᵥ w = u ⬝ᵥ fun i => v i ⬝ᵥ w := by
@@ -235,6 +235,8 @@ end DistribMulAction
 end DotProduct
 
 open Matrix
+
+namespace Matrix
 
 /-- `M * N` is the usual product of matrices `M` and `N`, i.e. we have that
 `(M * N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
@@ -531,7 +533,7 @@ variable [NonUnitalNonAssocSemiring α]
 where `v` is seen as a column vector.
 Put another way, `M *ᵥ v` is the vector whose entries are those of `M * col v` (see `col_mulVec`).
 
-The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `Matrix.dotProduct`,
+The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
 so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
 -/
 def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
@@ -545,7 +547,7 @@ scoped infixr:73 " *ᵥ " => Matrix.mulVec
 where `v` is seen as a row vector.
 Put another way, `v ᵥ* M` is the vector whose entries are those of `row v * M` (see `row_vecMul`).
 
-The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `Matrix.dotProduct`,
+The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
 so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
 -/
 def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
@@ -935,7 +937,7 @@ theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (
 
 theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (v w : n → R) :
     f (v ⬝ᵥ w) = f ∘ v ⬝ᵥ f ∘ w := by
-  simp only [Matrix.dotProduct, map_sum f, f.map_mul, Function.comp]
+  simp only [dotProduct, map_sum f, f.map_mul, Function.comp]
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
     (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* M.map f) i := by

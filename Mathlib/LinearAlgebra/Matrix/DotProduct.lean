@@ -10,14 +10,14 @@ import Mathlib.LinearAlgebra.StdBasis
 /-!
 # Dot product of two vectors
 
-This file contains some results on the map `Matrix.dotProduct`, which maps two
+This file contains some results on the map `dotProduct`, which maps two
 vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 
 ## Main results
 
-* `Matrix.dotProduct_stdBasis_one`: the dot product of `v` with the `i`th
+* `dotProduct_stdBasis_one`: the dot product of `v` with the `i`th
   standard basis vector is `v i`
-* `Matrix.dotProduct_eq_zero_iff`: if `v`'s dot product with all `w` is zero,
+* `dotProduct_eq_zero_iff`: if `v`'s dot product with all `w` is zero,
   then `v` is zero
 
 ## Tags
@@ -28,8 +28,6 @@ matrix, reindex
 
 
 variable {m n p R : Type*}
-
-namespace Matrix
 
 section Semiring
 
@@ -116,6 +114,8 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 �
   (Fintype.sum_eq_zero_iff_of_nonneg fun _ => mul_star_self_nonneg _).trans <|
     by simp [funext_iff, mul_eq_zero]
 
+namespace Matrix
+
 @[simp]
 lemma conjTranspose_mul_self_eq_zero {n} {A : Matrix m n R} : Aᴴ * A = 0 ↔ A = 0 :=
   ⟨fun h => Matrix.ext fun i j =>
@@ -186,8 +186,8 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
 theorem dotProduct_self_star_pos_iff {v : n → R} : 0 < dotProduct v (star v) ↔ v ≠ 0 := by
   simpa using dotProduct_star_self_pos_iff (v := star v)
 
+end Matrix
+
 end StarOrderedRing
 
 end Self
-
-end Matrix

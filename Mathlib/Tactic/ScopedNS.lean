@@ -18,7 +18,7 @@ open Lean
 `scoped[NS]` is similar to the `scoped` modifier on attributes and notations,
 but it scopes the syntax in the specified namespace instead of the current namespace.
 ```
-scoped[Matrix] infixl:72 " ⬝ᵥ " => Matrix.dotProduct
+scoped[Matrix] infixl:72 " ⬝ᵥ " => dotProduct
 -- declares `*` as a notation for vector dot productss
 -- which is only accessible if you `open Matrix` or `open scoped Matrix`.
 
