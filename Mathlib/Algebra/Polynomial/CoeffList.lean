@@ -96,7 +96,7 @@ theorem length_coeffList [DecidableEq α] (P : α[X]) :
 theorem coeffList_of_nextCoeff_ne_zero (h : P.nextCoeff ≠ 0) :
     P.coeffList = P.leadingCoeff::P.eraseLead.coeffList := by
   have hd := eraseLead_natDegree_of_nextCoeff h
-  simp only [coeffList, hd, ne_zero_eraseLead_of_nz_nextCoeff h,
+  simp only [coeffList, hd, mt nextCoeff_eq_zero_of_eraseLead_eq_zero h,
     ne_zero_of_natDegree_gt (natDegree_pos_of_nextCoeff_ne_zero h),
     support_eq_empty, ↓reduceIte, List.range_succ, List.reverse_append, List.reverse_cons,
     List.reverse_nil, List.nil_append, List.cons_append, List.map_cons, List.map_reverse,
