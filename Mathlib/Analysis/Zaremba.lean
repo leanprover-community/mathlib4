@@ -52,6 +52,7 @@ class WellDistributed {ι : Type*} (μ : ι →₀ ℝ≥0) : Prop where
 
 variable (μ ν : (Fin 2 → ℤ) →₀ ℝ≥0)
   (hμ : SupportedCoprime μ) (hν : SupportedCoprime ν)
+  (hμ_le : WellDistributed μ) (hν_le : WellDistributed ν)
   (β : ℝ) (a q : ℕ) (hq₀ : q ≠ 0) (haq : IsCoprime a q) (N Q K : ℝ≥0) (hK₀ : 0 ≤ K) (hQ₀ : 0 ≤ Q)
   (hQ : Q ^ 2 < N)
   (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q / 2 ≤ q) (hq₂ : q ≤ Q) (hβ₁ : K / (2 * N) ≤ |β|)
@@ -80,7 +81,9 @@ notation "θ" => (a:ℝ) / q + β
 def Finsupp.mass {α A : Type*} [AddCommMonoid A] (a : α →₀ A) : A := a.sum (fun _ ↦ id)
 
 notation3 "∑ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => Finsupp.mass (r • μ)
+notation3 "∑ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => Finsupp.mass (r • (Finsupp.filter (· ∈ s) μ))
 
+-- TODO figure out how to get `∑ x ∈ s`, not just `∑ x in s`
 theorem Finsupp.smul_mass {α A : Type*} [AddCommMonoid A] [Module ℝ≥0 A] (μ : α →₀ ℝ≥0) (f : α → A)
     (c : ℝ≥0) :
     (c • ∑ a, f a ∂μ) = ∑ a, c • f a ∂μ := by
@@ -185,7 +188,7 @@ lemma PoissonSum (f : (Fin 2 → ℝ) → ℂ) : -- add conditions
 -- distance to nearest lattice point in `Fin 2 → ℤ`
 noncomputable def Hdist (z : Fin 2 → ℝ) : ℝ≥0 := sorry
 
-set_option synthInstance.maxHeartbeats 400000 in
+-- set_option synthInstance.maxHeartbeats 400000 in
 example : ‖S‖₊ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
   let g (x : Fin 2 → ℤ) : ℂ :=  ∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
@@ -275,7 +278,10 @@ example : ‖S‖₊ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2) / (K * Q) ^ 2 := by
     _ = ((∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
           (NNReal.sqrt N)^2 * ψ (√N • ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2)))))
              ∂(ν.pointwise_prod ν) ) ) := by
-        push_cast
+        sorry
+    _ = ((∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (k : Fin 2 → ℤ),
+          N * ψ (√N • ((Int.cast ∘ k) - θ • (Int.cast ∘ (p.1 - p.2)))))
+             ∂(ν.pointwise_prod ν) ) ) := by
         sorry
   norm_cast at this
   rw [this]; clear this
@@ -285,16 +291,29 @@ example : ‖S‖₊ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2) / (K * Q) ^ 2 := by
     sorry
   let IndSet : Set ((Fin 2 → ℤ) × (Fin 2 → ℤ)) :=
     {p : (Fin 2 → ℤ) × (Fin 2 → ℤ) | Hdist (θ • Int.cast ∘ (p.1 - p.2)) < 1 / NNReal.sqrt N}
-  have :=
+  classical
   calc
-  ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)),
-    ∑' (k : Fin 2 → ℤ),
-      NNReal.sqrt N ^ 2 * ψ (√↑N • (Int.cast ∘ k - θ • Int.cast ∘ (p.1 - p.2))) ∂ν.pointwise_prod ν
-    ≤
-      ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)),
-        (IndSet.indicator 1 p * NNReal.sqrt N ^ 2 * ψ_max) ∂(ν.pointwise_prod ν) := by
-          sorry
-  -- getting max heartbeat errors???
+    ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), ∑' k : Fin 2 → ℤ,
+      N * ψ (√↑N • (Int.cast ∘ k - θ • Int.cast ∘ (p.1 - p.2))) ∂ν.pointwise_prod ν
+      = ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)) in IndSet, ∑' k : Fin 2 → ℤ,
+        -- TODO can the notation be prettier?
+          N * ψ (√↑N • (Int.cast ∘ k - θ • Int.cast ∘ (p.1 - p.2)))
+          ∂ν.pointwise_prod ν := sorry
+    _ ≤ ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)) in IndSet,
+        N * ψ_max ∂ν.pointwise_prod ν := sorry
+    _ = N * ψ_max *
+          ∑ (p : (Fin 2 → ℤ) × (Fin 2 → ℤ)) in IndSet, (1 : ℝ≥0) ∂ν.pointwise_prod ν := sorry
+    _ ≤ N * ψ_max * Finset.card ((ν.support ×ˢ ν.support).filter IndSet) := sorry
+
+  have H1 : ∀ p ∈ (ν.support ×ˢ ν.support).filter IndSet,
+      p.1 0 ≡ p.2 0 [ZMOD q] ∧ p.1 1 ≡ p.2 1 [ZMOD q] := by
+    sorry
+
+  -- TODO maybe use ‖p.1 - p.2‖₊ (the max norm) throughout, rather than L^2 norm
+  have H2 : ∀ p ∈ (ν.support ×ˢ ν.support).filter IndSet,
+      (↑((p.1 - p.2) ⬝ᵥ (p.1 - p.2)) : ℝ) ≤ NNReal.sqrt N / K := by
+    sorry
+
   sorry
 #exit
 
