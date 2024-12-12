@@ -28,9 +28,9 @@ universe u
 
 variable {x y z w : ZFSet.{u}}
 
-/-! ### Transitive sets -/
-
 namespace ZFSet
+
+/-! ### Transitive sets -/
 
 /-- A transitive set is one where every element is a subset.
 
