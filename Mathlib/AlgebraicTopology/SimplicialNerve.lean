@@ -39,10 +39,6 @@ universe v u
 
 namespace CategoryTheory
 
--- This is to improve automation throughout this file, because `simp` doesn't apply
--- `NatTrans.comp_app` to morphisms of simplicial sets.
-attribute [local simp] SSet.comp_app
-
 open SimplicialCategory EnrichedCategory EnrichedOrdinaryCategory MonoidalCategory
 
 open scoped Simplicial
