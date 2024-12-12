@@ -64,7 +64,7 @@ theorem measurable_measure {μ : α → Measure β} :
     Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=
   ⟨fun hμ _s hs => (measurable_coe hs).comp hμ, measurable_of_measurable_coe μ⟩
 
-theorem _root_.Measurable.measure_of_basis {μ : α → Measure β} [∀ a, IsFiniteMeasure (μ a)]
+theorem _root_.Measurable.measure_of_isPiSystem {μ : α → Measure β} [∀ a, IsFiniteMeasure (μ a)]
     {S : Set (Set β)} (hgen : ‹MeasurableSpace β› = .generateFrom S) (hpi : IsPiSystem S)
     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) (h_univ : Measurable fun a ↦ μ a univ) :
     Measurable μ := by
@@ -79,7 +79,7 @@ theorem _root_.Measurable.measure_of_basis {μ : α → Measure β} [∀ a, IsFi
   | iUnion f hfd hfm ihf =>
     simpa only [measure_iUnion hfd hfm] using .ennreal_tsum ihf
 
-theorem _root_.Measurable.measure_of_basis_of_isProbabilityMeasure {μ : α → Measure β}
+theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α → Measure β}
     [∀ a, IsProbabilityMeasure (μ a)]
     {S : Set (Set β)} (hgen : ‹MeasurableSpace β› = .generateFrom S) (hpi : IsPiSystem S)
     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) : Measurable μ :=
