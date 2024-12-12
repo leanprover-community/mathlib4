@@ -343,7 +343,9 @@ class LeftCommonAdd (G : Type u) [Add G] where
 
 attribute [to_additive] LeftCommonMul
 
-/-- A mixin for right common sums. -/
+/-- We say that `G` has *right common sums* if for all `a b : G`, there exist
+`c d : G` such that `a + c = b + d`. This mixin carries both the property
+of having right common sums and the data of how to determine `c` and `d` from `a` and `b`. -/
 class RightCommonAdd (G : Type u) [Add G] where
   /-- the addend for a -/
   cr₁ : G → G → G
