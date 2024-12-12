@@ -199,7 +199,7 @@ def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform (skipConstInApp := true) e
     (pre := fun e => do
       if (← Meta.isProof e) then
-        return .continue (← mkSyntheticSorry (← inferType e))
+        return .continue (← mkSorry (← inferType e) true)
       else
         return .continue)
 
