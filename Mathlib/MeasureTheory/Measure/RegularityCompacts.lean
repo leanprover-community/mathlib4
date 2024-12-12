@@ -106,7 +106,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     have h_univ n : (⋃ m, f n m) = univ := hseq_dense.iUnion_uniformity_ball (hto n).1
     have h3 n (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ m, P (⋂ m' ≤ m, (f n m')ᶜ) < ε := by
       refine exists_measure_iInter_lt (fun m ↦ ?_) hε ⟨0, measure_ne_top P _⟩ ?_
-      · exact ((IsOpen.measurableSet (hto n).2.1).ball _).compl.nullMeasurableSet
+      · exact (measurable_prod_mk_left (IsOpen.measurableSet (hto n).2.1)).compl.nullMeasurableSet
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_seq_pos_lt ε hε with ⟨δ, hδ1, hδ2⟩
