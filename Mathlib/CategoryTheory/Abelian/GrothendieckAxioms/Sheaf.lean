@@ -8,6 +8,9 @@ import Mathlib.CategoryTheory.Sites.Limits
 /-!
 
 # AB axioms in sheaf categories
+
+This file proves that, when the relevant limits and colimits and sheafification exist, exactness of
+limits and colimits carries over from `A` to categories of `A`-valued sheaves.
 -/
 
 namespace CategoryTheory
