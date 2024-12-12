@@ -55,14 +55,14 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
 
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
-  apply ( config := {allowSynthFailures := true} )  hasExactLimitsOfShape_of_preservesEpi
+  apply ( config := {allowSynthFailures := true} ) hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
       let iX : limit X ≅ AddCommGrp.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
       let iY : limit Y ≅ AddCommGrp.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
-      have : ⇑(iX.inv ≫ lim.map f ≫ iY.hom) = Pi.map (fun i ↦ f.app ⟨i⟩) := by
+      have : Pi.map (fun i ↦ f.app ⟨i⟩) = (iX.inv ≫ lim.map f ≫ iY.hom) := by
         simp only [AddCommGrp.coe_of, Functor.comp_obj, Discrete.functor_obj_eq_as, Discrete.mk_as,
           Pi.isoLimit, IsLimit.conePointUniqueUpToIso, limit.cone,
           AddCommGrp.HasLimit.productLimitCone, Iso.trans_inv, Functor.mapIso_inv,
@@ -71,19 +71,16 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
           lim_map, Iso.trans_hom, Iso.symm_hom, AddCommGrp.HasLimit.lift, Functor.const_obj_obj,
           Category.assoc, limit.lift_map_assoc, Pi.cone_pt, iX, iY]
         ext g j
-        change (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _ = _
+        change _ = (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _
         simp only [Discrete.functor_obj_eq_as, Functor.comp_obj, Discrete.mk_as, productIsProduct',
           limit.lift_π, Fan.mk_pt, Fan.mk_π_app, Pi.map_apply]
-        change (_ ≫ _ ≫ limit.π Y ⟨j⟩) _ = _
+        change _ = (_ ≫ _ ≫ limit.π Y ⟨j⟩) _
         simp
-      suffices Epi (iX.inv ≫ lim.map f ≫ iY.hom) by
-        suffices Epi (iX.hom ≫ (iX.inv ≫ lim.map f ≫ iY.hom) ≫ iY.inv) by simpa using this
-        infer_instance
-      rw [AddCommGrp.epi_iff_surjective]
-      rw [this]
+      suffices Epi (iX.hom ≫ (iX.inv ≫ lim.map f ≫ iY.hom) ≫ iY.inv) by simpa using this
+      suffices Epi (iX.inv ≫ lim.map f ≫ iY.hom) from inferInstance
+      rw [AddCommGrp.epi_iff_surjective, ← this]
       simp_rw [CategoryTheory.NatTrans.epi_iff_epi_app, AddCommGrp.epi_iff_surjective] at hf
-      intro b
-      refine ⟨fun i ↦ (hf ⟨i⟩ (b i)).choose, ?_⟩
+      refine fun b ↦ ⟨fun i ↦ (hf ⟨i⟩ (b i)).choose, ?_⟩
       funext i
       exact (hf ⟨i⟩ (b i)).choose_spec }
 
