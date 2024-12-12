@@ -30,10 +30,10 @@ variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
 
 /-- The type of derivations with values in a `B`-module `M` relative
 to a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
-nonrec def Derivation : Type _ :=
+def Derivation : Type _ :=
   letI := f.toAlgebra
   letI := Module.compHom M f
-  Derivation A B M
+  _root_.Derivation A B M
 
 namespace Derivation
 
