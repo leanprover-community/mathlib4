@@ -115,7 +115,20 @@ end Adjunction
 /-- If `e : C ≌ D` is an equivalence of categories, then the adjunction induced by
 `e.op : Cᵒᵖ ≌ Dᵒᵖ` is the opposite of `e.symm.toAdjunction`.-/
 lemma Equivalence.op_toAdjunction (e : C ≌ D) :
-    e.op.toAdjunction = e.symm.toAdjunction.opAdjointOpOfAdjoint := sorry
+    e.op.toAdjunction = e.symm.toAdjunction.opAdjointOpOfAdjoint := by
+  ext
+  · simp only [Functor.id_obj, op_functor, op_inverse, Functor.comp_obj, Functor.op_obj,
+    toAdjunction_unit, symm_inverse, symm_functor, Adjunction.opAdjointOpOfAdjoint_unit_app,
+    toAdjunction_counit]
+    rw [opEquiv_apply, opEquiv_symm_apply]
+    simp only [unop_id, Functor.map_id, Category.id_comp]
+    rfl
+  · simp only [op_inverse, op_functor, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
+    toAdjunction_counit, symm_inverse, symm_functor, Adjunction.opAdjointOpOfAdjoint_counit_app,
+    toAdjunction_unit]
+    rw [opEquiv_apply, opEquiv_symm_apply]
+    simp only [unop_id, Functor.map_id, Category.comp_id]
+    rfl
 
 namespace Adjunction
 
