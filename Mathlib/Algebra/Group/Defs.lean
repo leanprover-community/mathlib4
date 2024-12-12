@@ -332,7 +332,9 @@ class RightCommonMul (G : Type u) [Mul G] where
 /-- A mixin for common multiples. -/
 class CommonMul (G : Type u) [Mul G] extends LeftCommonMul G, RightCommonMul G
 
-/-- A mixin for left common sums. -/
+/-- We say that `G` has *left common sums* if for all `a b : G`, there exist
+`c d : G` such that `c + a = d + b`. This mixin carries both the property
+of having left common sums and the data of how to determine `c` and `d` from `a` and `b`. -/
 class LeftCommonAdd (G : Type u) [Add G] where
   /-- the addend for a -/
   cl₁ : G → G → G
