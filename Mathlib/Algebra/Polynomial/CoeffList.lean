@@ -95,15 +95,13 @@ theorem length_coeffList [DecidableEq α] (P : α[X]) :
 /-- If the `P.nextCoeff ≠ 0`, then the tail of `P.coeffList` is `coeffList P.eraseLead`.-/
 theorem coeffList_of_nextCoeff_ne_zero (h : P.nextCoeff ≠ 0) :
     P.coeffList = P.leadingCoeff::P.eraseLead.coeffList := by
-  have hd := eraseLead_natDegree_of_nextCoeff h
-  simp only [coeffList, hd, mt nextCoeff_eq_zero_of_eraseLead_eq_zero h,
-    ne_zero_of_natDegree_gt (natDegree_pos_of_nextCoeff_ne_zero h),
+  simp only [coeffList, natDegree_eraseLead_add_one h, mt nextCoeff_eq_zero_of_eraseLead_eq_zero h,
+    ne_zero_of_natDegree_gt (natDegree_pos_of_nextCoeff_ne_zero h), true_and,
     support_eq_empty, ↓reduceIte, List.range_succ, List.reverse_append, List.reverse_cons,
     List.reverse_nil, List.nil_append, List.cons_append, List.map_cons, List.map_reverse,
-    List.cons.injEq, List.reverse_inj, List.map_inj_left, List.mem_range]
-  use hd ▸ coeff_natDegree
-  constructor <;> intros <;>
-    exact (Polynomial.eraseLead_coeff_of_ne _ (by linarith)).symm
+    List.cons.injEq, List.reverse_inj, List.map_inj_left, List.mem_range, coeff_natDegree]
+  intros
+  exact (Polynomial.eraseLead_coeff_of_ne _ (by linarith)).symm
 
 /- Coefficients of P are always the leading coefficient, some number of zeros, and then
   `coeffList P.eraseLead`. -/
