@@ -3,13 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 /-!
 
 # Grothendieck axioms for the category of sheaves for the extensive topology
@@ -102,13 +97,6 @@ instance : PreservesColimitsOfShape J (sheafToPresheaf (extensiveTopology C) A) 
 instance [HasFiniteColimits A] :
     PreservesFiniteColimits (sheafToPresheaf (extensiveTopology C) A) where
   preservesFiniteColimits _ := inferInstance
-
-example [HasExactColimitsOfShape J A] [HasWeakSheafify (extensiveTopology C) A]
-    [HasFiniteLimits A] : HasExactColimitsOfShape J (Sheaf (extensiveTopology C) A) := inferInstance
-
-example [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
-  [HasWeakSheafify (extensiveTopology C) A] [HasFiniteColimits A] :
-  HasExactLimitsOfShape J (Sheaf (extensiveTopology C) A) := inferInstance
 
 end
 

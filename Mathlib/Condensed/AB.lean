@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Category.ModuleCat.AB
-import Mathlib.Condensed.Explicit
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Limits
-import Mathlib.CategoryTheory.Sites.Coherent.AB
 /-!
 
 # AB axioms in condensed modules
