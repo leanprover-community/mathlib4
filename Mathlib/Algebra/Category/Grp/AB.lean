@@ -11,6 +11,8 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 /-!
 # AB axioms for the category of abelian groups
 
+This file proves that the category of abelian groups satisfies Grothendieck's axioms AB5, AB4, and
+AB4*.
 -/
 
 universe u
