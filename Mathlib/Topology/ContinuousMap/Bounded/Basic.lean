@@ -83,13 +83,15 @@ instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC
       map_bounded' := map_bounded f }⟩
 
 @[simp]
-theorem coe_to_continuous_fun (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
+theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
+
+@[deprecated (since := "2024-11-23")] alias coe_to_continuous_fun := coe_toContinuousMap
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α →ᵇ β) : α → β := h
 
-initialize_simps_projections BoundedContinuousFunction (toContinuousMap_toFun → apply)
+initialize_simps_projections BoundedContinuousFunction (toFun → apply)
 
 protected theorem bounded (f : α →ᵇ β) : ∃ C, ∀ x y : α, dist (f x) (f y) ≤ C :=
   f.map_bounded'
@@ -1420,8 +1422,7 @@ instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β
   { instSeminormedAddCommGroup with
     add_le_add_left := by
       intro f g h₁ h t
-      simp only [coe_to_continuous_fun, Pi.add_apply, add_le_add_iff_left, coe_add,
-        ContinuousMap.toFun_eq_coe]
+      simp only [coe_toContinuousMap, Pi.add_apply, add_le_add_iff_left, coe_add]
       exact h₁ _
     solid := by
       intro f g h
@@ -1480,15 +1481,15 @@ variable {α : Type*} [TopologicalSpace α]
 lemma add_norm_nonneg (f : α →ᵇ ℝ) :
     0 ≤ f + const _ ‖f‖ := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_add,
-    const_toFun, Pi.add_apply]
+  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_add,
+    const_apply, Pi.add_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
 
 lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_sub,
-    const_toFun, Pi.sub_apply, sub_nonneg]
+  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_sub,
+    const_apply, Pi.sub_apply, sub_nonneg]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end
