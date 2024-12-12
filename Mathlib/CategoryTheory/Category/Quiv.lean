@@ -87,28 +87,31 @@ def isoOfEquiv {V W : Type u } [Quiver.{v + 1, u} V] [Quiver.{v + 1, u} W]
       hom := Prefunctor.mk e (he _ _)
       inv := {
         obj := e.symm
-        map {X' Y'} f' := by
-          let f'' : e.toFun (e.invFun X') ⟶ e.toFun (e.invFun Y') :=
-            Eq.recOn (e.right_inv Y').symm (Eq.recOn (e.right_inv X').symm f')
-          exact ((he _ _).symm f'')
+        map {X' Y'} f' := (he _ _).symm
+          (Eq.recOn (e.right_inv Y').symm
+            (Eq.recOn (e.right_inv X').symm f') : e.toFun (e.invFun X') ⟶ e.toFun (e.invFun Y'))
       }
       hom_inv_id := by
+        rw [Quiv.id_eq_id, Quiv.comp_eq_comp]
         refine Prefunctor.ext e.left_inv ?_
         · intro X Y f
           have H1 {X Y Y' : V} (f' : e X ⟶ e Y) (h : Y = Y') :
-            (he _ _).symm (Eq.rec f' h : e X ⟶ e Y') = Eq.rec ((he _ _).symm f') h := by
+            (he _ _).symm (Eq.recOn h f' : e X ⟶ e Y') = Eq.recOn h ((he _ _).symm f') := by
               cases h; rfl
           have H2 {X' X Y : V} (f' : e X ⟶ e Y) (h : X = X') :
-            (he _ _).symm (Eq.rec f' h : e X' ⟶ e Y) = Eq.rec ((he _ _).symm f') h := by
+            (he _ _).symm (Eq.recOn h f' : e X' ⟶ e Y) = Eq.recOn h ((he _ _).symm f') := by
               cases h; rfl
           have H3 {X Y : V} (f : X ⟶ Y) :
             (he _ _).symm
               (Eq.recOn (e.right_inv (e Y)).symm (Eq.recOn (e.right_inv (e X)).symm (he _ _ f)) ) =
               Eq.recOn (e.left_inv Y).symm (Eq.recOn (e.left_inv X).symm f) := sorry
+          simp only [Prefunctor.id_map, Prefunctor.comp_map]
           sorry
       inv_hom_id := by
+        rw [Quiv.id_eq_id]
         refine Prefunctor.ext e.right_inv ?_
         · intro X' Y' f'
+          simp only [Equiv.invFun_as_coe, Equiv.toFun_as_coe, Prefunctor.id_obj, Prefunctor.id_map]
           sorry
 
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
