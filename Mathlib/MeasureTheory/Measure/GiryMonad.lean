@@ -83,7 +83,7 @@ theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α
     [∀ a, IsProbabilityMeasure (μ a)]
     {S : Set (Set β)} (hgen : ‹MeasurableSpace β› = .generateFrom S) (hpi : IsPiSystem S)
     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) : Measurable μ :=
-  .measure_of_basis hgen hpi h_basic <| by simp
+  .measure_of_isPiSystem hgen hpi h_basic <| by simp
 
 theorem measurable_map (f : α → β) (hf : Measurable f) :
     Measurable fun μ : Measure α => map f μ := by
