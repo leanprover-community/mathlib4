@@ -162,6 +162,15 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
 instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMaximal], I.IsPrime :=
   @IsMaximal.isPrime _ _ _
 
+theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (I : Ideal α)
+    (hI : I ≠ ⊤) : ∃ r ∈ s, Disjoint (I : Set α) (Submonoid.powers r) := by
+  have ⟨M, hM, le⟩ := exists_le_maximal I hI
+  have := hM.1.1
+  rw [Ne, eq_top_iff, ← hs, span_le, Set.not_subset] at this
+  have ⟨a, has, haM⟩ := this
+  exact ⟨a, has, Set.disjoint_left.mpr fun x hx ⟨n, hn⟩ ↦
+    haM (hM.isPrime.mem_of_pow_mem _ (le <| hn ▸ hx))⟩
+
 theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
     span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
   rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
@@ -190,6 +199,26 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
       (S.mul_mem hs₁ hs₂) ?_
     rw [← hr₁, ← hr₂]
     ring
+
+theorem exists_le_prime_disjoint (S : Submonoid α) (disjoint : Disjoint (I : Set α) S) :
+    ∃ p : Ideal α, p.IsPrime ∧ I ≤ p ∧ Disjoint (p : Set α) S := by
+  have ⟨p, hIp, hp⟩ := zorn_le_nonempty₀ {p : Ideal α | Disjoint (p : Set α) S}
+    (fun c hc hc' x hx ↦ ?_) I disjoint
+  · exact ⟨p, isPrime_of_maximally_disjoint _ _ hp.1 (fun _ ↦ hp.not_prop_of_gt), hIp, hp.1⟩
+  cases isEmpty_or_nonempty c
+  · exact ⟨I, disjoint, fun J hJ ↦ isEmptyElim (⟨J, hJ⟩ : c)⟩
+  refine ⟨sSup c, Set.disjoint_left.mpr fun x hx ↦ ?_, fun _ ↦ le_sSup⟩
+  have ⟨p, hp⟩ := (Submodule.mem_iSup_of_directed _ hc'.directed).mp (sSup_eq_iSup' c ▸ hx)
+  exact Set.disjoint_left.mp (hc p.2) hp
+
+theorem exists_le_prime_nmem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem a) (haI : a ∉ I) :
+    ∃ p : Ideal α, p.IsPrime ∧ I ≤ p ∧ a ∉ p :=
+  have : Disjoint (I : Set α) (Submonoid.powers a) := Set.disjoint_right.mpr <| by
+    rw [ha.coe_powers]
+    rintro _ (rfl|rfl)
+    exacts [I.ne_top_iff_one.mp (ne_of_mem_of_not_mem' Submodule.mem_top haI).symm, haI]
+  have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
+  ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
 
 end Ideal
 

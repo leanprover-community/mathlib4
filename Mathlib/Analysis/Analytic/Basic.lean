@@ -214,7 +214,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
   rw [← pos_iff_ne_zero, ← NNReal.coe_pos] at h₀
   lift a to ℝ≥0 using ha.1.le
   have : (r : ℝ) < r / a := by
-    simpa only [div_one] using (div_lt_div_left h₀ zero_lt_one ha.1).2 ha.2
+    simpa only [div_one] using (div_lt_div_iff_of_pos_left h₀ zero_lt_one ha.1).2 ha.2
   norm_cast at this
   rw [← ENNReal.coe_lt_coe] at this
   refine this.trans_le (p.le_radius_of_bound C fun n => ?_)
@@ -529,6 +529,15 @@ theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝
   exact ⟨min r₁ r₂,
     (h₁.mono (lt_min h₁.r_pos h₂pos) inf_le_left).congr
       fun y hy => h₂ (EMetric.ball_subset_ball inf_le_right hy)⟩
+
+theorem HasFPowerSeriesWithinOnBall.unique (hf : HasFPowerSeriesWithinOnBall f p s x r)
+    (hg : HasFPowerSeriesWithinOnBall g p s x r) :
+    (insert x s ∩ EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
+
+theorem HasFPowerSeriesOnBall.unique (hf : HasFPowerSeriesOnBall f p x r)
+    (hg : HasFPowerSeriesOnBall g p x r) : (EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
 
 protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=

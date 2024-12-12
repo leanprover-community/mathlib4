@@ -69,7 +69,7 @@ open Ideal
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
-    (coprime : Pairwise fun i j => Nat.Coprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
+    (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
   have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
     fun _i _j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime h).cast (R := ℤ))
   Int.quotientSpanNatEquivZMod _ |>.symm.trans <|

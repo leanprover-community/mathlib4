@@ -62,7 +62,7 @@ lemma eHomEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   EnrichedOrdinaryCategory.homEquiv_comp _ _
 
 /-- The morphism `(X' ⟶[V] Y) ⟶ (X ⟶[V] Y)` induced by a morphism `X ⟶ X'`. -/
-noncomputable def eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y : C) :
+def eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y : C) :
     (X' ⟶[V] Y) ⟶ (X ⟶[V] Y) :=
   (λ_ _).inv ≫ eHomEquiv V f ▷ _ ≫ eComp V X X' Y
 
@@ -82,7 +82,7 @@ lemma eHomWhiskerRight_comp {X X' X'' : C} (f : X ⟶ X') (f' : X' ⟶ X'') (Y :
     ← whisker_exchange_assoc, id_whiskerLeft_assoc, Iso.inv_hom_id_assoc]
 
 /-- The morphism `(X ⟶[V] Y) ⟶ (X ⟶[V] Y')` induced by a morphism `Y ⟶ Y'`. -/
-noncomputable def eHomWhiskerLeft (X : C) {Y Y' : C} (g : Y ⟶ Y') :
+def eHomWhiskerLeft (X : C) {Y Y' : C} (g : Y ⟶ Y') :
     (X ⟶[V] Y) ⟶ (X ⟶[V] Y') :=
   (ρ_ _).inv ≫ _ ◁ eHomEquiv V g ≫ eComp V X Y Y'
 
@@ -121,7 +121,7 @@ attribute [local simp] eHom_whisker_exchange
 variable (C) in
 /-- The bifunctor `Cᵒᵖ ⥤ C ⥤ V` which sends `X : Cᵒᵖ` and `Y : C` to `X ⟶[V] Y`. -/
 @[simps]
-noncomputable def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
+def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj X :=
     { obj := fun Y => X.unop ⟶[V] Y
       map := fun φ => eHomWhiskerLeft V X.unop φ }

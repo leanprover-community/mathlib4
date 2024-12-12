@@ -44,16 +44,16 @@ noncomputable section
 
 /-! ### Basic casts between `Ordinal` and `Nimber` -/
 
-/-- A type synonym for ordinals with natural addition and multiplication. -/
+/-- A type synonym for ordinals with nimber addition and multiplication. -/
 def Nimber : Type _ :=
   Ordinal deriving Zero, Inhabited, One, Nontrivial, WellFoundedRelation
 
-instance Nimber.linearOrder : LinearOrder Nimber := {Ordinal.linearOrder with}
-instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
-instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
-instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
-instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
-instance Nimber.instNeZeroOne : NeZero (1 : Nimber) := Ordinal.NeZero.one
+instance Nimber.instLinearOrder : LinearOrder Nimber := Ordinal.instLinearOrder
+instance Nimber.instSuccOrder : SuccOrder Nimber := Ordinal.instSuccOrder
+instance Nimber.instOrderBot : OrderBot Nimber := Ordinal.instOrderBot
+instance Nimber.instNoMaxOrder : NoMaxOrder Nimber := Ordinal.instNoMaxOrder
+instance Nimber.instZeroLEOneClass : ZeroLEOneClass Nimber := Ordinal.instZeroLEOneClass
+instance Nimber.instNeZeroOne : NeZero (1 : Nimber) := Ordinal.instNeZeroOne
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
