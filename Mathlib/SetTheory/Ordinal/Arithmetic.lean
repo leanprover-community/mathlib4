@@ -298,6 +298,7 @@ theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoM
 
 @[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
 alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
+
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩

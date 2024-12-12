@@ -36,14 +36,14 @@ variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
-theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
+theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a := by
   refine ⟨fun h ha => ?_, fun ha => ?_⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
-      (mem_nhds_iff_exists_Ioo_subset' ⟨0, ha.pos⟩ ⟨_, lt_succ a⟩).1
+      (mem_nhds_iff_exists_Ioo_subset' ⟨0, ha.bot_lt⟩ ⟨_, lt_succ a⟩).1
         (h.mem_nhds rfl)
     have hba := ha.succ_lt hbc.1
     exact hba.ne (hbc' ⟨lt_succ b, hba.trans hbc.2⟩)
-  · rcases zero_or_succ_or_limit a with (rfl | ⟨b, rfl⟩ | ha')
+  · rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha')
     · rw [← bot_eq_zero, ← Set.Iic_bot, ← Iio_succ]
       exact isOpen_Iio
     · rw [← Set.Icc_self, Icc_succ_left, ← Ioo_succ_right]
@@ -66,14 +66,14 @@ theorem nhdsBasis_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) 
   nhds_left_eq_nhds a ▸ nhdsWithin_Iic_basis' ⟨0, h.bot_lt⟩
 
 -- todo: generalize to a `SuccOrder`
-theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
+theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
   (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff
 
 -- todo: generalize `Ordinal.IsLimit` and this lemma to a `SuccOrder`
-theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
+theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho => ?_
-  by_cases ho' : IsLimit o
-  · simp only [(nhdsBasis_Ioc ho'.ne_zero).mem_iff, ho', true_implies]
+  by_cases ho' : IsSuccLimit o
+  · simp only [(nhdsBasis_Ioc ho'.ne_bot).mem_iff, ho', true_implies]
     refine exists_congr fun a => and_congr_right fun ha => ?_
     simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
@@ -187,7 +187,7 @@ theorem isClosed_iff_bsup :
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 
-theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a := by
+theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := by
   simp only [frontier_eq_closure_inter_closure, Set.mem_inter_iff, mem_closure_iff] at ha
   by_contra h
   rw [← isOpen_singleton_iff] at h
@@ -197,15 +197,20 @@ theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a := by
   subst hb; subst hc
   exact hc' hb'
 
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
+set_option linter.deprecated false in
+@[deprecated isSuccLimit_of_mem_frontier (since := "2024-12-12")]
+theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a :=
+  isSuccLimit_of_mem_frontier ha
+
+theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{max u v}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
   refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
   · rw [continuous_def]
     intro s hs
     rw [isOpen_iff] at *
     intro o ho ho'
-    rcases hs _ ho (h.isLimit ho') with ⟨a, ha, has⟩
-    rw [← IsNormal.bsup_eq.{u, u} h ho', lt_bsup] at ha
+    rcases hs _ ho (h.isSuccLimit ho') with ⟨a, ha, has⟩
+    rw [← IsNormal.bsup_eq.{u, v} h ho', lt_bsup] at ha
     rcases ha with ⟨b, hb, hab⟩
     exact
       ⟨b, hb, fun c hc =>
@@ -216,7 +221,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_iff_iSup_of_isClosed (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
-      ⟨_, toType_nonempty_iff_ne_zero.2 ho.ne_zero, typein (· < ·), fun i => h _ (typein_lt_self i),
+      ⟨_, toType_nonempty_iff_ne_zero.2 ho.ne_bot, typein (· < ·), fun i => h _ (typein_lt_self i),
         sup_typein_limit fun _ ↦ ho.succ_lt⟩
 
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
@@ -237,7 +242,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
   · rw [isClosed_iff_bsup] at h
     suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
       this.trans (bsup_le H)
-    obtain ⟨b, hb⟩ := enumOrd_surjective hs (h ha.ne_zero (fun b _ => enumOrd s b)
+    obtain ⟨b, hb⟩ := enumOrd_surjective hs (h ha.ne_bot (fun b _ => enumOrd s b)
       fun b _ => enumOrd_mem hs b)
     rw [← hb]
     apply Hs.monotone
@@ -287,10 +292,11 @@ theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     0 < o := Ordinal.pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
-theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o := by
+theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o := by
   rw [isAcc_iff] at h
-  refine isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ ?_) h.1
-  rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
+  rw [isSuccLimit_iff]
+  refine ⟨h.1, isSuccPrelimit_of_succ_ne fun x hx ↦ ?_⟩
+  rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
@@ -306,10 +312,10 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
     AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
   constructor
   · intro h
-    have plim : p.IsLimit := IsAcc.isLimit h
+    have plim : IsSuccLimit p := IsAcc.isLimit h
     rw [accPt_iff_nhds] at *
     intro u hu
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, plim.pos.trans hpo⟩, plim.pos⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, hpo.bot_lt⟩, plim.bot_lt⟩
     obtain ⟨x, hx⟩ := h (Ioo l (p + 1)) (Ioo_mem_nhds hl.1 (lt_add_one _))
     use ⟨x, lt_of_le_of_lt (lt_succ_iff.mp hx.1.1.2) hpo⟩
     refine ⟨?_, Subtype.coe_ne_coe.mp hx.2⟩
@@ -324,19 +330,16 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
         specialize h (Iio ⟨1, ho⟩) (Iio_mem_nhds (Subtype.mk_lt_mk.mpr zero_lt_one))
         obtain ⟨_, h⟩ := h
         exact h.2 <| Subtype.mk_eq_mk.mpr (lt_one_iff_zero.mp h.1.1)
-      have plim : p.IsLimit := by
+      have plim : IsSuccLimit p := by
         contrapose! h
-        obtain ⟨q, hq⟩ := ((zero_or_succ_or_limit p).resolve_left ppos).resolve_right h
-        use (Ioo ⟨q, ((hq ▸ lt_succ q).trans hpo)⟩ ⟨p + 1, ho⟩)
-        constructor
-        · exact Ioo_mem_nhds (by simp only [hq, Subtype.mk_lt_mk, lt_succ]) (lt_succ p)
-        · intro _ mem
-          have aux1 := Subtype.mk_lt_mk.mp mem.1.1
-          have aux2 := Subtype.mk_lt_mk.mp mem.1.2
-          rw [Subtype.mk_eq_mk]
-          rw [hq] at aux2 ⊢
-          exact ((succ_le_iff.mpr aux1).antisymm (le_of_lt_succ aux2)).symm
-      obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, plim.pos⟩
+        obtain ⟨q, rfl⟩ := ((zero_or_succ_or_isSuccLimit p).resolve_left ppos).resolve_right h
+        refine ⟨Ioo ⟨q, ((lt_succ q).trans hpo)⟩ ⟨_, ho⟩,
+          Ioo_mem_nhds (lt_succ q) (lt_succ (succ q)), fun _ mem ↦ ?_⟩
+        have aux1 := Subtype.mk_lt_mk.mp mem.1.1
+        have aux2 := Subtype.mk_lt_mk.mp mem.1.2
+        rw [Subtype.mk_eq_mk]
+        exact ((succ_le_iff.mpr aux1).antisymm (le_of_lt_succ aux2)).symm
+      obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, plim.bot_lt⟩
       obtain ⟨x, hx⟩ := h (Ioo ⟨l, hl.1.trans hpo⟩ ⟨p + 1, ho⟩) (Ioo_mem_nhds hl.1 (lt_add_one p))
       use x
       exact ⟨⟨hl.2 ⟨hx.1.1.1, lt_succ_iff.mp hx.1.1.2⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩
