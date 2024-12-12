@@ -565,7 +565,7 @@ theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i 
     f.leLT g a = g (f a) :=
   transPrincipal_apply f g a
 
-theorem exists_relIso_sum {β : Type u} [IsWellOrder β s] (f : r ≼i s) :
+theorem exists_relIso_sum {β : Type u} {s : β → β → Prop} [IsWellOrder β s] (f : r ≼i s) :
     ∃ (γ : Type u) (t : γ → γ → Prop), Nonempty (Sum.Lex r t ≃r s) := by
   classical
   obtain f | f := f.principalSumRelIso
