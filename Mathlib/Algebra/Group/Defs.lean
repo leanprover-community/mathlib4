@@ -368,7 +368,7 @@ section RightCommonMul
 variable [RightCommonMul G] {a b : G}
 
 @[to_additive]
-theorem common_right_mul :  a * RightCommonMul.cr₁ a b = b * RightCommonMul.cr₂ a b :=
+theorem common_right_mul : a * RightCommonMul.cr₁ a b = b * RightCommonMul.cr₂ a b :=
   RightCommonMul.cr_spec a b
 
 end RightCommonMul
