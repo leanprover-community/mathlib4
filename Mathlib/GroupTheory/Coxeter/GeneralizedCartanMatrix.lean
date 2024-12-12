@@ -106,7 +106,8 @@ structure IsRealGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℝ) :
 Let $(k_{i, i'})_{i, i' \in B}$ be a matrix with integer entries. We say that $k$ is a
 *generalized Cartan matrix* for $M$ if for all $i, i'$, the ordered triple
 `(M i i', k i i', k i' i)` is one of `(1, 2, 2)`, `(2, 0, 0)`, `(3, -1, -1)`, `(4, -1, -2)`,
-`(4, -2, -1)`, `(6, -1, -3)`, `(6, -3, -1)`, or `(0, a, b)` with `a * b ≥ 4`.
+`(4, -2, -1)`, `(6, -1, -3)`, `(6, -3, -1)`, or `(0, -a, -b)`, where `a` and `b` are positive
+integers with `a * b ≥ 4`.
 This is equivalent to the definition given in `CoxeterMatrix.IsGeneralizedCartan`, but it only makes
 sense for matrices with integer entries. -/
 @[mk_iff]
@@ -120,6 +121,7 @@ structure IsIntegerGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℤ) 
     M i i' = 4 ∧ k i i' = -2 ∧ k i' i = -1 ∨
     M i i' = 6 ∧ k i i' = -1 ∧ k i' i = -3 ∨
     M i i' = 6 ∧ k i i' = -3 ∧ k i' i = -1
+  nonpos i i' (_ : M i i' = 0) : k i i' ≤ 0
   mul_ge_four i i' (_ : M i i' = 0) : 4 ≤ k i i' * k i' i
 
 /-- It is decidable whether a finite matrix with integer entries is a generalized Cartan matrix for
@@ -132,21 +134,19 @@ private lemma S_eval_two_mul_cos_neg {θ : ℝ} (θ_pos : 0 < θ) (θ_lt_pi : θ
     (S ℝ (⌊π / θ⌋₊)).eval (2 * cos θ) < 0 := by
   have sin_θ_pos : 0 < sin θ := sin_pos_of_pos_of_lt_pi θ_pos θ_lt_pi
   have pi_lt_mul : π < (⌊π / θ⌋₊ + 1) * θ := by
-    linear_combination (norm := skip) θ * (Nat.sub_one_lt_floor (π / θ))
+    linear_combination (norm := apply le_of_eq) θ * (Nat.sub_one_lt_floor (π / θ))
     field_simp
     ring_nf
-    rfl
   have mul_lt_two_mul_pi : (⌊π / θ⌋₊ + 1) * θ < 2 * π := by
-    linear_combination (norm := skip) θ * (Nat.floor_le (show 0 ≤ π / θ by positivity)) + θ_lt_pi
+    linear_combination (norm := apply le_of_eq)
+      θ * (Nat.floor_le (show 0 ≤ π / θ by positivity)) + θ_lt_pi
     field_simp
     ring_nf
-    rfl
   have sin_mul_neg : sin ((⌊π / θ⌋₊ + 1) * θ) < 0 := by
     rw [← sin_sub_two_pi]
     exact sin_neg_of_neg_of_neg_pi_lt (by linarith) (by linarith)
   refine neg_of_mul_neg_left ?_ (le_of_lt sin_θ_pos)
-  simp only [S_two_mul_real_cos, Int.cast_natCast]
-  linarith
+  simpa only [S_two_mul_real_cos, Int.cast_natCast]
 
 theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℝ)
     (h : M.IsGeneralizedCartan k) : M.IsRealGeneralizedCartan k := by
@@ -324,7 +324,6 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
             rw [Nat.div_le_iff_le_mul_add_pred ℓ'_pos]
             zify
             rw [Int.natCast_sub ℓ'_pos]
-            push_cast
             have m_sub_three_nonneg : 0 ≤ (M i i' - 3 : ℤ) :=
               sub_nonneg_of_le (mod_cast Mii'_ge_three)
             have ℓ'_sub_two_nonneg : 0 ≤ (ℓ' - 2 : ℤ) := sub_nonneg_of_le (mod_cast ℓ'_ge_two)
@@ -374,7 +373,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       exact ne_of_lt k_mul_k_pos hθ
     have θ_pos : 0 < θ := lt_of_le_of_ne (arccos_nonneg _) θ_ne_zero.symm
     have θ_lt_pi : θ < π := lt_of_le_of_ne (arccos_le_pi _) θ_ne_pi
-    /- Now, we prove that this contradicts `s_eval_nonneg'` by substituting `j = ⌊π / θ⌋₊`.-/
+    -- Now, we prove that this contradicts `s_eval_nonneg'` by substituting `j = ⌊π / θ⌋₊`.
     have h_neg : (S ℝ ⌊π / θ⌋₊).eval (2 * cos θ) < 0 := S_eval_two_mul_cos_neg θ_pos θ_lt_pi
     have h_pos : 0 ≤ (S ℝ ⌊π / θ⌋₊).eval (2 * cos θ) :=
       hθ ▸ h.s_eval_nonneg' i i' ⌊π / θ⌋₊ hii'

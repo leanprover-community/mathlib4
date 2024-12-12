@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Mitchell Lee
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.Module
 import Mathlib.RingTheory.Polynomial.Chebyshev
@@ -20,44 +19,6 @@ This file gives the trigonometric characterizations of Chebyshev polynomials, fo
 namespace Polynomial.Chebyshev
 
 open Polynomial
-
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-
-@[simp]
-theorem aeval_T (x : A) (n : ℤ) : aeval x (T R n) = (T A n).eval x := by
-  rw [aeval_def, eval₂_eq_eval_map, map_T]
-
-@[simp]
-theorem aeval_U (x : A) (n : ℤ) : aeval x (U R n) = (U A n).eval x := by
-  rw [aeval_def, eval₂_eq_eval_map, map_U]
-
-@[simp]
-theorem aeval_C (x : A) (n : ℤ) : aeval x (C R n) = (C A n).eval x := by
-  rw [aeval_def, eval₂_eq_eval_map, map_C]
-
-@[simp]
-theorem aeval_S (x : A) (n : ℤ) : aeval x (S R n) = (S A n).eval x := by
-  rw [aeval_def, eval₂_eq_eval_map, map_S]
-
-@[simp]
-theorem algebraMap_eval_T (x : R) (n : ℤ) :
-    algebraMap R A ((T R n).eval x) = (T A n).eval (algebraMap R A x) := by
-  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_T]
-
-@[simp]
-theorem algebraMap_eval_U (x : R) (n : ℤ) :
-    algebraMap R A ((U R n).eval x) = (U A n).eval (algebraMap R A x) := by
-  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_U]
-
-@[simp]
-theorem algebraMap_eval_C (x : R) (n : ℤ) :
-    algebraMap R A ((C R n).eval x) = (C A n).eval (algebraMap R A x) := by
-  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_C]
-
-@[simp]
-theorem algebraMap_eval_S (x : R) (n : ℤ) :
-    algebraMap R A ((S R n).eval x) = (S A n).eval (algebraMap R A x) := by
-  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
 -- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
