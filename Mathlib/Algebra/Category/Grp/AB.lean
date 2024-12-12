@@ -9,7 +9,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 /-!
-# The category of abelian groups satisfies Grothendieck's axiom AB5
+# AB axioms for the category of abelian groups
 
 -/
 
