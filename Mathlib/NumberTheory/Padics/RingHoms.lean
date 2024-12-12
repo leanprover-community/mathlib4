@@ -285,7 +285,7 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     · norm_cast
     · apply sub_zmodRepr_mem
 
-#where
+-- #where
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
 noncomputable def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p := by
   exact_mod_cast (@PadicInt.ker_toZMod p _) ▸ RingHom.quotientKerEquivOfSurjective
