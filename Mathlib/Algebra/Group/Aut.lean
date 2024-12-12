@@ -278,6 +278,8 @@ def congr [AddGroup G] {H : Type*} [AddGroup H] (ϕ : G ≃+ H) :
 
 end AddAut
 
+variable (G)
+
 /-- `Multiplicative G` and `G` have isomorphic automorphism groups. -/
 @[simps!]
 def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* AddAut G :=
