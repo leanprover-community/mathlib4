@@ -232,7 +232,7 @@ lemma coe_lTensor (f : N →ₗ[R] Q) :
 
 @[simp]
 lemma restrictScalars_lTensor (f : N →ₗ[R] Q) :
-    LinearMap.restrictScalars R (lTensor A M f) = f.lTensor M := rfl
+    (lTensor A M f).restrictScalars R = f.lTensor M := rfl
 
 @[simp] lemma lTensor_tmul (f : N →ₗ[R] Q) (m : M) (n : N) :
     lTensor A M f (m ⊗ₜ[R] n) = m ⊗ₜ f n :=
@@ -264,7 +264,7 @@ lemma coe_rTensor (f : M →ₗ[A] P) :
 
 @[simp]
 lemma restrictScalars_rTensor (f : M →ₗ[A] P) :
-    LinearMap.restrictScalars R (rTensor R N f) = f.rTensor N := rfl
+    (rTensor R N f).restrictScalars R = f.rTensor N := rfl
 
 @[simp] lemma rTensor_tmul (f : M →ₗ[A] P) (m : M) (n : N) :
     rTensor R N f (m ⊗ₜ[R] n) = f m ⊗ₜ n :=
