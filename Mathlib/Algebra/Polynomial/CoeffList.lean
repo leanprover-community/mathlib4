@@ -52,21 +52,41 @@ theorem coeffList_zero : (0 : α[X]).coeffList = [] := by
 theorem coeffList_nil (h : P.coeffList = []) : P = 0 := by
   simp_all [coeffList]
 
+@[simp]
+theorem coeffList_zero_iff (P : α[X]) : P.coeffList = [] ↔ P = 0 :=
+  ⟨coeffList_nil, (· ▸ coeffList_zero α)⟩
+
 /-- coeffList (C x) = [x] -/
 @[simp]
-theorem coeffList_C {η : α} (h : η ≠ 0) : (C η).coeffList = [η] := by
+theorem coeffList_C {x : α} (h : x ≠ 0) : (C x).coeffList = [x] := by
   simpa [coeffList, if_neg h, List.range_succ]
 
 /-- coeffList always starts with leadingCoeff -/
 theorem coeffList_eq_cons_leadingCoeff (h : P ≠ 0) :
-    ∃(ls : List α), P.coeffList = P.leadingCoeff::ls := by
+    ∃ ls, P.coeffList = P.leadingCoeff :: ls := by
   simp [coeffList, List.range_succ, h]
 
-/-- The length of the coefficient list is the degree. -/
-@[simp]
-theorem length_coeffList (P : α[X]) :
+/-- `List.head?` of coeffList is leadingCoeff -/
+theorem head?_coeffList_eq_leadingCoeff (h : P ≠ 0) :
+    P.coeffList.head? = P.leadingCoeff :=
+  (coeffList_eq_cons_leadingCoeff h).casesOn fun _ ↦ (Eq.symm · ▸ rfl)
+
+/-- `List.head` of coeffList is leadingCoeff -/
+theorem head_coeffList_eq_leadingCoeff (h : P ≠ 0) :
+    P.coeffList.head (mt coeffList_nil h) = P.leadingCoeff :=
+  (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
+    Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList_eq_leadingCoeff h
+
+/-- The length of the coefficient list is the degree plus one, or zero if P has empty support. -/
+theorem length_coeffList_support (P : α[X]) :
     P.coeffList.length = if P.support = ∅ then 0 else P.natDegree + 1 := by
   by_cases h : P = 0 <;> simp [h, coeffList]
+
+/-- The length of the coefficient list is the degree plus one, or zero if P is zero. -/
+@[simp]
+theorem length_coeffList [DecidableEq α] (P : α[X]) :
+    P.coeffList.length = if P = 0 then 0 else P.natDegree + 1 := by
+  simp [length_coeffList_support]
 
 /-- If the `P.nextCoeff ≠ 0`, then the tail of `P.coeffList` is `coeffList P.eraseLead`.-/
 theorem coeffList_of_nextCoeff_ne_zero (h : P.nextCoeff ≠ 0) :
@@ -93,7 +113,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
     linarith [eraseLead_natDegree_le P, Nat.sub_add_cancel (Nat.ne_zero_iff_zero_lt.mp hdp)]
   replace ⟨dd, hd⟩ := exists_add_of_le hd
   use if P.eraseLead.support = ∅ then P.natDegree else dd
-  --need α to be Inhabited to use get!, 0 is an accessible default
+  --need α to be Inhabited to use getElem!, 0 is an accessible default
   inhabit α
   --first two subgoals: l=l₂ if (1) the lengths are equal and (2) l.getElem!=l₂.getElem!
   apply List.ext_getElem!
@@ -101,8 +121,8 @@ theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
   · by_cases hep : P.eraseLead.support = ∅
     · rw [coeffList_of_ne_zero h, coeffList]
       simp [if_pos hep]
-    · simpa only [length_coeffList, if_neg (mt support_eq_empty.mp h), if_neg hep, List.length_cons,
-        List.length_append, List.length_replicate] using by omega
+    · simpa only [length_coeffList_support, if_neg (mt support_eq_empty.mp h), if_neg hep,
+        List.length_cons, List.length_append, List.length_replicate] using by omega
   rintro (_|n)
   · cases coeffList_eq_cons_leadingCoeff h
     simp_all
@@ -160,7 +180,7 @@ variable {α : Type*} [DivisionSemiring α] (P : Polynomial α)
 
 /-- Over a division semiring, multiplying a polynomial by a nonzero constant multiplies
   the coefficient list. -/
-theorem coeffList_mul_C {η : α} (hη : η ≠ 0) : (C η * P).coeffList = P.coeffList.map (η * ·) := by
+theorem coeffList_mul_C {x : α} (hη : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
   by_cases hp : P = 0
   · simp only [hp, mul_zero, coeffList_zero, List.map_nil]
   · have hcη := mul_ne_zero (mt (map_eq_zero C).mp hη) hp
