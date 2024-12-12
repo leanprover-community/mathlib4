@@ -172,7 +172,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     simp only [mem_setOf_eq, PerfectPairing.flip_apply_apply, mul_sub,
       apply_self_mul_coroot_apply B y.2, ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
-      RingHom.id_apply, RingHom.id_apply, Module.reflection_apply, map_sub,
+      star_id_of_comm, star_id_of_comm, Module.reflection_apply, map_sub,
       mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
     refine x.2.1.1 ?_
     simp only [mem_setOf_eq, map_smul, smul_eq_mul]

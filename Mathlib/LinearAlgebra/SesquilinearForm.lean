@@ -493,6 +493,7 @@ lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ M} :
     LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
   ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
 
+attribute [local instance] starRingOfComm
 lemma isOrthogonal_of_forall_apply_same {F : Type*} [FunLike F M M] [LinearMapClass F R M M]
     (f : F) (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
     B.IsOrthogonal f := by
