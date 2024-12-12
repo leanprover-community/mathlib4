@@ -31,17 +31,41 @@ noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } �
       Module.stabilizer_units_eq_bot_of_ne_zero k b.property]
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))
 
+instance isEmpty_of_subsingleton [Subsingleton V] : IsEmpty (ℙ k V) := by
+  have : IsEmpty { v : V // v ≠ 0 } := ⟨fun v ↦ v.2 (Subsingleton.elim v.1 0)⟩
+  simpa using (nonZeroEquivProjectivizationProdUnits k V).symm.isEmpty
+
 /-- If `V` is a finite `k`-module and `k` is finite, `ℙ k V` is finite. -/
 instance finite_of_finite [Finite V] : Finite (ℙ k V) :=
   have : Finite (ℙ k V × kˣ) := Finite.of_equiv _ (nonZeroEquivProjectivizationProdUnits k V)
   Finite.prod_left kˣ
 
-/-- Fraction free cardinality formula for the points of `ℙ k V` if `k` and `V` are finite.
-See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
-lemma card [Finite k] [Finite V] :
-    Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
+lemma finite_iff_of_finite [Finite k] : Finite (ℙ k V) ↔ Finite V := by
   classical
-  haveI : Finite V := Module.finite_of_finite k
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  let e := nonZeroEquivProjectivizationProdUnits k V
+  have : Finite { v : V // v ≠ 0 } := Finite.of_equiv _ e.symm
+  let eq : { v : V // v ≠ 0 } ⊕ Unit ≃ V :=
+    ⟨(Sum.elim Subtype.val (fun _ ↦ 0)), fun v ↦ if h : v = 0 then Sum.inr () else Sum.inl ⟨v, h⟩,
+      by intro x; aesop, by intro x; aesop⟩
+  exact Finite.of_equiv _ eq
+
+/-- Fraction free cardinality formula for the points of `ℙ k V` if `k` and `V` are finite
+(for silly reasons the formula also holds when `k` and `V` are infinite).
+See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
+lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
+  nontriviality V
+  wlog h : Finite k
+  · simp only [not_finite_iff_infinite] at h
+    have : Infinite V := Module.Free.infinite k V
+    simp
+  wlog h : Finite V
+  · simp only [not_finite_iff_infinite] at h
+    have := not_iff_not.mpr (finite_iff_of_finite k V)
+    simp only [not_finite_iff_infinite] at this
+    have : Infinite (ℙ k V) := by rwa [this]
+    simp
+  classical
   haveI : Fintype V := Fintype.ofFinite V
   haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)
   haveI : Fintype k := Fintype.ofFinite k
@@ -51,8 +75,7 @@ lemma card [Finite k] [Finite V] :
 
 /-- Cardinality formula for the points of `ℙ k V` if `k` and `V` are finite with less
 natural subtraction. -/
-lemma card' [Finite k] [Finite V] :
-    Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 := by
+lemma card' [Finite V] : Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 := by
   rw [← card k V]
   have : Nat.card V > 0 := Nat.card_pos
   omega
