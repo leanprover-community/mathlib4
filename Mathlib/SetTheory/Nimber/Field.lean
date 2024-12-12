@@ -14,6 +14,11 @@ The nim product `a * b` is recursively defined as the least nimber not equal to 
 `a' * b + a * b' + a' * b'` for `a' < a` and `b' < b`. When endowed with this operation, the nimbers
 form a field.
 
+It's possible to show the existence of the nimber inverse implicitly via the simplicity theorem.
+Instead, we employ the explicit formula given in [On Numbers And Games][conway2001] (p. 56), which
+uses mutual induction and mimicks the definition for the surreal inverse. This definition `invAux`
+"accidentally" gives the inverse of `0` as `1`, which the real inverse corrects.
+
 ## Todo
 
 - Show the nimbers are algebraically closed.
@@ -221,9 +226,9 @@ instance : CancelMonoidWithZero Nimber where
 
 mutual
 
-/-- The nimber inverse `a⁻¹` is mutually recursively defined as the smallest nimber not in the set `s`, which
-itself is recursively defined as the smallest set with `0 ∈ s` and `(1 + (a + a') * b) / a' ∈ s`
-for `0 < a' < a` and `b ∈ s`.
+/-- The nimber inverse `a⁻¹` is mutually recursively defined as the smallest nimber not in the set
+`s = invSet a`, which itself is defined as the smallest set with `0 ∈ s` and
+`(1 + (a + a') * b) / a' ∈ s` for `0 < a' < a` and `b ∈ s`.
 
 This preliminary definition "accidentally" satisfies `invAux 0 = 1`, which the real inverse
 corrects. The lemma `inv_eq_invAux` can be used to transfer between the two. -/
@@ -257,28 +262,25 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   rw [invSet]
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
-/--- An auxiliary type for enumerating the elements of `invSet`, and proving that its complement
-is nonempty. -/
-private inductive InvTy (a : Nimber.{u}) : Type u
-  | zero : InvTy a
-  | cons : (toOrdinal a).toType → InvTy a → InvTy a
-
 /-- An enumeration of elements in the complement of `invSet` by a type in the same universe. -/
-private def InvTy.toNimber {a : Nimber} : InvTy a → Nimber
-  | zero => 0
-  | cons x b =>
-    let a' := Ordinal.toNimber ((Ordinal.enumIsoToType (toOrdinal a)).symm x)
-    invAux a' * (1 + (a + a') * (toNimber b))
+private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
+  | [] => 0
+  | x::l =>
+    let a' := Ordinal.toNimber ((Ordinal.enumIsoToType a.toOrdinal).symm x)
+    invAux a' * (1 + (a + a') * (toNimber l))
+
+instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
+  refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
+  refine fun x hx ↦ invSet_recOn a ⟨[], rfl⟩ ?_ x hx
+  rintro a' ha _ _ ⟨l, rfl⟩
+  use (Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩)::l
+  rw [List.toNimber]
+  simp
 
 /-- The complement of `invSet a` is nonempty. -/
-private theorem invSet_nonempty (a : Nimber.{u}) : (invSet a)ᶜ.Nonempty := by
-  refine nonempty_of_not_bddAbove <| @Ordinal.not_bddAbove_compl_of_small _ <|
-    @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@InvTy.toNimber a))
-  refine fun x hx ↦ invSet_recOn a ⟨InvTy.zero, rfl⟩ ?_ x hx
-  rintro a' ha _ _ ⟨b, rfl⟩
-  use InvTy.cons (Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩) b
-  rw [InvTy.toNimber]
-  simp
+private theorem invSet_nonempty (a : Nimber) : (invSet a)ᶜ.Nonempty :=
+  have := instSmallElemInvSet a -- why is this needed?
+  nonempty_of_not_bddAbove (Ordinal.not_bddAbove_compl_of_small _)
 
 theorem invAux_ne_zero (a : Nimber) : invAux a ≠ 0 := by
   rw [invAux]
