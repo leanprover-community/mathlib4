@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.Tactic.Linarith
-
 /-!
 # The (pre)triangulated structure on the opposite category
 
@@ -481,6 +479,211 @@ lemma map_distinguished_op_exact [HasShift C ℤ] [HasZeroObject C] [Preadditive
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)
 
+variable {D : Type*} [Category D] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+    [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C] [HasShift D ℤ] [HasZeroObject D]
+    [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+
+variable (F : C ⥤ D) [F.CommShift ℤ]
+
+/-- If `F` commutes with shifts, so does `F.op`, for the shifts chosen on `Cᵒᵖ` at the
+beginning of this file. This is a scoped instance.
+-/
+noncomputable scoped instance : @Functor.CommShift Cᵒᵖ Dᵒᵖ _ _ F.op ℤ _
+    (instHasShiftOppositeInt C) (instHasShiftOppositeInt D) :=
+  @Pullback.CommShift (OppositeShift C ℤ) _  ℤ ℤ _ _
+  (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+  (inferInstance : HasShift (OppositeShift C ℤ) ℤ) (OppositeShift D ℤ) _
+  (inferInstance : HasShift (OppositeShift D ℤ) ℤ) F.op
+  (Opposite.commShiftOp F)
+
+open Functor
+
+omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Preadditive C]
+  [Preadditive D] [Pretriangulated C]
+  [HasZeroObject D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D] in
+lemma oppositeCommShift_iso (n : ℤ) :
+    Functor.CommShift.iso (F := F.op) n =
+    isoWhiskerRight (shiftFunctorOpIso C n (-n) (by simp)) F.op ≪≫
+    NatIso.op (Functor.CommShift.iso (F := F) (-n)).symm ≪≫
+    isoWhiskerLeft F.op (shiftFunctorOpIso D n (-n) (by simp)).symm := by
+  ext X
+  erw [pullbackCommShift_iso_hom_app]
+
+omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated
+  C] [HasZeroObject D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  [Preadditive C] [Preadditive D] in
+lemma map_opShiftFunctorEquivalence_unit_hom_app (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
+    F.op.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X) =
+    (opShiftFunctorEquivalence D n).unitIso.hom.app (F.op.obj X) ≫
+    (shiftFunctor D n).op.map (((F.op).commShiftIso n).inv.app X) ≫
+    ((F.commShiftIso n).hom.app _).op := by
+  simp only [Functor.id_obj, Functor.op_obj, opShiftFunctorEquivalence, Functor.comp_obj,
+    Iso.trans_hom, NatIso.op_hom, isoWhiskerRight_hom, Iso.symm_hom, NatTrans.comp_app,
+    NatTrans.op_app, whiskerRight_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op,
+    Functor.map_comp, Functor.map_shiftFunctorCompIsoId_hom_app,
+    Functor.commShiftIso_hom_naturality_assoc, op_comp, assoc]
+  conv_rhs => congr; rfl; congr; rfl; congr; congr; congr; congr
+              change (Functor.CommShift.iso (F := F.op) n).inv.app X
+              rw [oppositeCommShift_iso _ n]
+  simp only [Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv, NatIso.op_inv, isoWhiskerRight_inv,
+    assoc, NatTrans.comp_app, Functor.comp_obj, Functor.op_obj, whiskerLeft_app, NatTrans.op_app,
+    whiskerRight_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op, Functor.map_comp, op_comp]
+  slice_rhs 2 3 => rw [← op_comp, ← Functor.map_comp, ← unop_comp, Iso.inv_hom_id_app]
+  simp only [Functor.op_obj, unop_id, Functor.map_id, op_id, id_comp, assoc]
+  rfl
+
+omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated
+  C] [HasZeroObject D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  [Preadditive C] [Preadditive D] in
+lemma map_opShiftFunctorEquivalence_unit_inv_app (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
+    F.op.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X) =
+    ((F.commShiftIso n).inv.app _).op ≫
+    (shiftFunctor D n).op.map (((F.op).commShiftIso n).hom.app X) ≫
+    (opShiftFunctorEquivalence D n).unitIso.inv.app (F.op.obj X) := by
+  simp only [opShiftFunctorEquivalence, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
+    Iso.trans_inv, isoWhiskerRight_inv, Iso.symm_inv, NatIso.op_inv, NatTrans.comp_app,
+    whiskerRight_app, Functor.op_map, NatTrans.op_app, unop_comp, Quiver.Hom.unop_op,
+    Functor.map_comp, Functor.map_shiftFunctorCompIsoId_inv_app, assoc, op_comp]
+  conv_rhs => congr; rfl; congr; congr; congr; congr
+              change (Functor.CommShift.iso (F := F.op) n).hom.app X
+              rw [oppositeCommShift_iso _ n]
+  simp only [Iso.trans_hom, isoWhiskerRight_hom, NatIso.op_hom, Iso.symm_hom, isoWhiskerLeft_hom,
+    NatTrans.comp_app, Functor.comp_obj, Functor.op_obj, whiskerRight_app, Functor.op_map,
+    NatTrans.op_app, whiskerLeft_app, unop_comp, Quiver.Hom.unop_op, assoc, Functor.map_comp,
+    op_comp]
+  slice_rhs 4 5 => rw [← op_comp, ← Functor.map_comp, ← unop_comp, Iso.inv_hom_id_app]
+  simp only [Functor.op_obj, unop_id, Functor.map_id, op_id, id_comp]
+  slice_rhs 1 2 => rw [← op_comp]
+                   change ((F ⋙ shiftFunctor D n).map ((shiftFunctorOpIso C n (-n)
+                     (by simp)).hom.app X).unop ≫ (F.commShiftIso n).inv.app _).op
+                   rw [(F.commShiftIso n).inv.naturality]
+  simp only [Functor.op_obj, Functor.comp_obj, Functor.comp_map, op_comp, assoc]
+  rfl
+
+omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated
+  C] [HasZeroObject D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  [Preadditive C] [Preadditive D] in
+lemma map_opShiftFunctorEquivalence_counit_hom_app (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
+    F.op.map ((opShiftFunctorEquivalence C n).counitIso.hom.app X) =
+    (F.op.commShiftIso n).hom.app _ ≫
+    (shiftFunctor Dᵒᵖ n).map ((F.commShiftIso n).inv.app _).op ≫
+    (opShiftFunctorEquivalence D n).counitIso.hom.app (F.op.obj X) := by
+  simp only [opShiftFunctorEquivalence, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
+    Iso.trans_hom, isoWhiskerLeft_hom, NatIso.op_hom, Iso.symm_hom, NatTrans.comp_app,
+    whiskerLeft_app, NatTrans.op_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op,
+    Functor.map_comp, Functor.map_shiftFunctorCompIsoId_inv_app, assoc, op_comp,
+    NatTrans.naturality_assoc]
+  conv_rhs => congr; change (Functor.CommShift.iso (F := F.op) n).hom.app _
+              rw [oppositeCommShift_iso _ n]
+  simp only [Iso.trans_hom, isoWhiskerRight_hom, NatIso.op_hom, Iso.symm_hom, isoWhiskerLeft_hom,
+    NatTrans.comp_app, Functor.comp_obj, Functor.op_obj, whiskerRight_app, Functor.op_map,
+    NatTrans.op_app, whiskerLeft_app, assoc, Iso.inv_hom_id_app_assoc]
+  rfl
+
+omit [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated
+  C] [HasZeroObject D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  [Preadditive C] [Preadditive D] in
+lemma map_opShiftFunctorEquivalence_counit_inv_app (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
+    F.op.map ((opShiftFunctorEquivalence C n).counitIso.inv.app X) =
+    (opShiftFunctorEquivalence D n).counitIso.inv.app (F.op.obj X) ≫
+    (shiftFunctor Dᵒᵖ n).map ((F.commShiftIso n).hom.app _).op ≫
+    (F.op.commShiftIso n).inv.app _ := by
+  simp only [Functor.id_obj, Functor.op_obj, opShiftFunctorEquivalence, Functor.comp_obj,
+    Iso.trans_inv, NatIso.op_inv, Iso.symm_inv, isoWhiskerLeft_inv, NatTrans.comp_app,
+    NatTrans.op_app, whiskerLeft_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op,
+    Functor.map_comp, Functor.map_shiftFunctorCompIsoId_hom_app, op_comp, assoc]
+  conv_rhs => congr; rfl; congr; rfl; congr; rfl
+              change (Functor.CommShift.iso (F := F.op) n).inv.app _
+              rw [oppositeCommShift_iso _ n]
+  simp only [Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv, NatIso.op_inv, isoWhiskerRight_inv,
+    assoc, NatTrans.comp_app, Functor.comp_obj, Functor.op_obj, whiskerLeft_app, NatTrans.op_app,
+    whiskerRight_app, Functor.op_map, NatTrans.naturality_assoc, Quiver.Hom.unop_op,
+    Iso.inv_hom_id_app_assoc]
+  rfl
+
+set_option maxHeartbeats 300000 in
+noncomputable def triangleOpEquivalence_functor_naturality :
+    F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor ≅
+    (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle := by
+  refine NatIso.ofComponents (fun T ↦ ?_) ?_
+  · refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
+    simp only [triangleOpEquivalence_functor, Functor.comp_obj, Functor.op_obj,
+      Functor.mapTriangle_obj, TriangleOpEquivalence.functor_obj, Triangle.mk_obj₃,
+      Triangle.mk_obj₂, Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
+      opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor, Triangle.mk_mor₃,
+      op_comp, Functor.op_map, Quiver.Hom.unop_op, unop_comp, Functor.map_comp, Iso.refl_hom,
+      Functor.map_id, comp_id, assoc, id_comp]
+    conv_rhs => congr; change F.op.map ((opShiftFunctorEquivalence C 1).counitIso.inv.app
+                  (Opposite.op (Opposite.unop T).obj₁))
+                rw [map_opShiftFunctorEquivalence_counit_inv_app]
+    slice_rhs 3 4 => change (F.op.commShiftIso 1).inv.app _ ≫
+                       (shiftFunctor Cᵒᵖ 1 ⋙ F.op).map (Opposite.unop T).mor₃.op
+                     rw [← (F.op.commShiftIso (1 : ℤ)).inv.naturality]
+    slice_rhs 4 5 => rw [Iso.inv_hom_id_app]
+    simp only [opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor, Functor.op_obj,
+      Functor.comp_obj, Functor.comp_map, Functor.op_map, Quiver.Hom.unop_op, comp_id]
+  · intro T T' u
+    simp only [triangleOpEquivalence_functor, Functor.comp_obj, Functor.op_obj,
+      Functor.mapTriangle_obj, TriangleOpEquivalence.functor_obj, Triangle.mk_obj₃,
+      Triangle.mk_obj₂, Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
+      opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor, Triangle.mk_mor₃,
+      op_comp, Functor.op_map, Quiver.Hom.unop_op, unop_comp, Functor.comp_map,
+      triangleCategory_comp]
+    ext
+    · simp only [Triangle.mk_obj₁, Triangle.isoMk_hom, Iso.refl_hom, Triangle.mk_obj₂,
+      Triangle.mk_obj₃, TriangleMorphism.comp_hom₁, TriangleOpEquivalence.functor_map_hom₁,
+      Quiver.Hom.unop_op, Functor.mapTriangle_map_hom₃, Triangle.homMk_hom₁, comp_id,
+      Functor.mapTriangle_map_hom₁, Functor.op_map, id_comp]
+    · simp only [Triangle.mk_obj₂, Triangle.isoMk_hom, Triangle.mk_obj₁, Iso.refl_hom,
+      Triangle.mk_obj₃, TriangleMorphism.comp_hom₂, TriangleOpEquivalence.functor_map_hom₂,
+      Quiver.Hom.unop_op, Functor.mapTriangle_map_hom₂, Triangle.homMk_hom₂, comp_id,
+      Functor.op_map, id_comp]
+    · simp only [Triangle.mk_obj₃, Triangle.isoMk_hom, Triangle.mk_obj₁, Iso.refl_hom,
+      Triangle.mk_obj₂, TriangleMorphism.comp_hom₃, TriangleOpEquivalence.functor_map_hom₃,
+      Quiver.Hom.unop_op, Functor.mapTriangle_map_hom₁, Triangle.homMk_hom₃, comp_id,
+      Functor.mapTriangle_map_hom₃, Functor.op_map, id_comp]
+
+noncomputable def triangleOpEquivalence_inverse_naturality :
+    F.op.mapTriangle ⋙ (triangleOpEquivalence D).inverse ≅
+    (triangleOpEquivalence C).inverse ⋙ F.mapTriangle.op := by
+  refine (Functor.leftUnitor _).symm ≪≫ ?_
+  refine isoWhiskerRight (triangleOpEquivalence C).counitIso.symm _ ≪≫ ?_
+  refine Functor.associator _ _ _ ≪≫ ?_
+  refine isoWhiskerLeft (triangleOpEquivalence C).inverse (Functor.associator _ _ _).symm ≪≫ ?_
+  refine isoWhiskerLeft _ (isoWhiskerRight
+    (triangleOpEquivalence_functor_naturality F).symm _) ≪≫ ?_
+  refine isoWhiskerLeft (triangleOpEquivalence C).inverse (Functor.associator _ _ _) ≪≫ ?_
+  refine isoWhiskerLeft (triangleOpEquivalence C).inverse (isoWhiskerLeft _
+    (triangleOpEquivalence D).unitIso.symm) ≪≫ ?_
+  exact isoWhiskerLeft _ (Functor.rightUnitor _)
+
+/-- If `F` is triangulated, so is `F.op`. This is a scoped instance because the pretriangulated
+structures on `Cᵒᵖ` and `Dᵒᵖ` are.
+-/
+noncomputable scoped instance [F.IsTriangulated] : F.op.IsTriangulated where
+  map_distinguished T dT := by
+    rw [mem_distTriang_op_iff]
+    erw [← distinguished_iff_of_iso ((triangleOpEquivalence_inverse_naturality F).app T).unop]
+    exact F.map_distinguished _ ((mem_distTriang_op_iff _).mp dT)
+
+open Pretriangulated.Opposite in
+noncomputable def isTriangulated_of_op_triangulated [F.op.IsTriangulated] : F.IsTriangulated where
+  map_distinguished T dT := by
+    have := distinguished_iff_of_iso ((triangleOpEquivalence D).unitIso.app
+      (Opposite.op (F.mapTriangle.obj T))).unop
+    rw [Functor.id_obj, Opposite.unop_op (F.mapTriangle.obj T)] at this
+    rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff]
+    conv => congr; rfl
+            change (F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor).obj (Opposite.op T)
+    rw [distinguished_iff_of_iso ((triangleOpEquivalence_functor_naturality F).app (Opposite.op T))]
+    apply F.op.map_distinguished
+    have := distinguished_iff_of_iso ((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop
+    rw [Functor.id_obj, Opposite.unop_op T] at this
+    rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff] at dT
+    exact dT
+
 end Functor
 
 end CategoryTheory
+
+#min_imports

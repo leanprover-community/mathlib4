@@ -6,6 +6,8 @@ Authors: Dagur Asgeirsson, Junyan Xu
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # `ULift` creates small (co)limits
@@ -149,4 +151,21 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimit
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
 
+instance : AddCommGrp.uliftFunctor.{u, v}.Faithful := by
+  refine {map_injective := ?_}
+  intro X Y f g
+  intro heq
+  ext a
+  apply_fun (fun h ↦ h {down := a}) at heq
+  simp at heq
+  exact heq
+
+instance : PreservesFiniteLimits AddCommGrp.uliftFunctor.{u,v} := sorry
+
+instance : PreservesFiniteColimits AddCommGrp.uliftFunctor.{u,v} := sorry
+
+instance : AddCommGrp.uliftFunctor.{u,v}.PreservesZeroMorphisms := {map_zero := fun X Y ↦ by rfl}
+
 end CategoryTheory.Limits.Types
+
+#min_imports

@@ -10,6 +10,8 @@ import Mathlib.CategoryTheory.Shift.Pullback
 /-!
 # Commutation with shifts and adjunction
 
+TODO
+
 -/
 
 namespace CategoryTheory

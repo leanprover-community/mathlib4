@@ -89,7 +89,7 @@ lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X 
 lemma preadditiveYoneda_homologySequenceδ_apply
     (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {B : C} (x : T.obj₁ ⟶ B⟦n₀⟧) :
     (preadditiveYoneda.obj B).homologySequenceδ
-      ((triangleOpEquivalence _).functor.obj (op T)) n₀ n₁ h x =
+      ((triangleOpEquivalence _).functor.obj (Opposite.op T)) n₀ n₁ h x =
       T.mor₃ ≫ x⟦(1 : ℤ)⟧' ≫ (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app B := by
   simp only [Functor.homologySequenceδ, preadditiveYoneda_shiftMap_apply,
     ShiftedHom.comp, ← Category.assoc]
