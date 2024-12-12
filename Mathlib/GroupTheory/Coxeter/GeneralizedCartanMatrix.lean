@@ -18,7 +18,7 @@ Traditionally, a geometric representation of a Coxeter group with Coxeter matrix
 starting with a matrix $(k_{i, i})_{i, i' \in B}$ satisfying the following conditions for all
 $i, i'$:
 1. $k_{i, i} = 2$.
-2. $k_{i, i'} = 0$ if and only if $M_{i, i'} = 2$.
+2. If $M_{i, i'} = 2$, then $k_{i, i'} = 0$.
 3. $k_{i, i'} \leq 0$ for $i \neq i'$.
 4. $k_{i, i'} k_{i', i} = 4 \cos^2 (\pi / M_{i, i'})$ if $M_{i, i'} \neq 0$.
 5. $k_{i, i'} k_{i', i} \geq 4$ if $M_{i, i'} = 0$.
@@ -55,7 +55,7 @@ namespace CoxeterMatrix
 Let $(k_{i, i'})_{i, i' \in B}$ be a matrix whose entries lie in a commutative ordered ring $R$.
 We say that $k$ is a *generalized Cartan matrix* for $M$ if for all $i, i'$, we have
 1. $k_{i, i} = 2$.
-2. $k_{i, i'} = 0$ if and only if $M_{i, i'} = 2$.
+2. If $M_{i, i'} = 2$, then $k_{i, i'} = 0$.
 3. $k_{i, i'} \leq 0$ for $i \neq i'$.
 4. If $m = M_{i, i'}$ is even, then $S_{m/2 - 1}(k_{i, i'} k_{i', i} - 2) = 0$, where $S$ refers to
   a Chebyshev $S$-polynomial (`Polynomial.Chebyshev.S`).
@@ -69,7 +69,7 @@ corresponding to the Coxeter matrix $M$. -/
 structure IsGeneralizedCartan {R : Type*} [OrderedCommRing R] (M : CoxeterMatrix B)
     (k : Matrix B B R) : Prop where
   diagonal i : k i i = 2
-  eq_zero_iff i i' : k i i' = 0 ↔ M i i' = 2
+  eq_zero_of_m_eq_two i i' (_ : M i i' = 2) : k i i' = 0
   nonpos i i' (_ : i ≠ i') : k i i' ≤ 0
   s_eval_eq_zero_of_even i i' (j : ℤ) (_ : M i i' = 2 * j) :
     (S R (j - 1)).eval (k i i' * k i' i - 2) = 0
@@ -96,7 +96,7 @@ entries. -/
 structure IsRealGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℝ) :
     Prop where
   diagonal i : k i i = 2
-  eq_zero_iff i i' : k i i' = 0 ↔ M i i' = 2
+  eq_zero_of_m_eq_two i i' (_ : M i i' = 2) : k i i' = 0
   nonpos i i' (_ : i ≠ i') : k i i' ≤ 0
   mul_eq_four_mul_cos_sq i i' (_ : M i i' ≠ 0) : k i i' * k i' i = 4 * cos (π / M i i') ^ 2
   mul_ge_four i i' (_ : M i i' = 0) : 4 ≤ k i i' * k i' i
@@ -130,31 +130,33 @@ instance [Fintype B] (M : CoxeterMatrix B) (k : Matrix B B ℤ) :
     Decidable (M.IsIntegerGeneralizedCartan k) :=
   decidable_of_iff' _ (isIntegerGeneralizedCartan_iff M k)
 
-private lemma S_eval_two_mul_cos_neg {θ : ℝ} (θ_pos : 0 < θ) (θ_lt_pi : θ < π) :
+private lemma S_eval_two_mul_cos_neg {θ : ℝ} (θ_pos : 0 < θ) (θ_le_pi : θ ≤ π) :
     (S ℝ (⌊π / θ⌋₊)).eval (2 * cos θ) < 0 := by
-  have sin_θ_pos : 0 < sin θ := sin_pos_of_pos_of_lt_pi θ_pos θ_lt_pi
-  have pi_lt_mul : π < (⌊π / θ⌋₊ + 1) * θ := by
-    linear_combination (norm := apply le_of_eq) θ * (Nat.sub_one_lt_floor (π / θ))
-    field_simp
-    ring_nf
-  have mul_lt_two_mul_pi : (⌊π / θ⌋₊ + 1) * θ < 2 * π := by
-    linear_combination (norm := apply le_of_eq)
-      θ * (Nat.floor_le (show 0 ≤ π / θ by positivity)) + θ_lt_pi
-    field_simp
-    ring_nf
-  have sin_mul_neg : sin ((⌊π / θ⌋₊ + 1) * θ) < 0 := by
-    rw [← sin_sub_two_pi]
-    exact sin_neg_of_neg_of_neg_pi_lt (by linarith) (by linarith)
-  refine neg_of_mul_neg_left ?_ (le_of_lt sin_θ_pos)
-  simpa only [S_two_mul_real_cos, Int.cast_natCast]
+  obtain θ_lt_pi | rfl := lt_or_eq_of_le θ_le_pi
+  · have sin_θ_pos : 0 < sin θ := sin_pos_of_pos_of_lt_pi θ_pos θ_lt_pi
+    have pi_lt_mul : π < (⌊π / θ⌋₊ + 1) * θ := by
+      linear_combination (norm := apply le_of_eq) θ * (Nat.sub_one_lt_floor (π / θ))
+      field_simp
+      ring_nf
+    have mul_lt_two_mul_pi : (⌊π / θ⌋₊ + 1) * θ < 2 * π := by
+      linear_combination (norm := apply le_of_eq)
+        θ * (Nat.floor_le (show 0 ≤ π / θ by positivity)) + θ_lt_pi
+      field_simp
+      ring_nf
+    have sin_mul_neg : sin ((⌊π / θ⌋₊ + 1) * θ) < 0 := by
+      rw [← sin_sub_two_pi]
+      exact sin_neg_of_neg_of_neg_pi_lt (by linarith) (by linarith)
+    refine neg_of_mul_neg_left ?_ (le_of_lt sin_θ_pos)
+    simpa only [S_two_mul_real_cos, Int.cast_natCast]
+  · simp [div_self pi_ne_zero]
 
 theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℝ)
     (h : M.IsGeneralizedCartan k) : M.IsRealGeneralizedCartan k := by
   constructor
   · show ∀ i, k i i = 2
     exact h.diagonal
-  · show ∀ (i i'), k i i' = 0 ↔ M i i' = 2
-    exact h.eq_zero_iff
+  · show ∀ (i i'), M i i' = 2 → k i i' = 0
+    exact h.eq_zero_of_m_eq_two
   · show ∀ (i i'), i ≠ i' → k i i' ≤ 0
     exact h.nonpos
   · show ∀ (i i'), M.M i i' ≠ 0 → k i i' * k i' i = 4 * cos (π / ↑(M.M i i')) ^ 2
@@ -193,8 +195,8 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       simp only [← this, h.diagonal, diagonal, Nat.cast_one, div_one, cos_pi, even_two,
         Even.neg_pow, one_pow, mul_one]
       norm_num
-    · -- If `M i i' = 2`, then we use `h.eq_zero_iff`.
-      simp [Mii'_eq_two, (h.eq_zero_iff i i').mpr Mii'_eq_two]
+    · -- If `M i i' = 2`, then we use `h.eq_zero_of_m_eq_two`.
+      simp [Mii'_eq_two, h.eq_zero_of_m_eq_two i i' Mii'_eq_two]
     · -- If `M i i' > 1`, then we first claim that `cos θ` cannot be `1` or `-1`.
       have cos_θ_ne_one : Complex.cos θ ≠ 1 := by
         intro cos_θ_eq_one
@@ -276,13 +278,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       simp_rw [← cos_θ'_eq_cos_θ] at h₁ h₂ h₃ eq_two_mul_cos_theta cos_θ_ne_one cos_θ_ne_neg_one
       norm_cast at h₁ h₂ h₃ eq_two_mul_cos_theta cos_θ_ne_one cos_θ_ne_neg_one
       -- Now, we will put bounds on `ℓ'`. Namely, we will prove that it is less than `M i i' / 2`.
-      have two_mul_ℓ'_ne_Mii' : 2 * ℓ' ≠ M i i' := by
-        intro two_mul_ℓ'_eq_Mii'
-        unfold θ' at cos_θ_ne_neg_one
-        rw_mod_cast [← mul_assoc, mul_comm _ 2, two_mul_ℓ'_eq_Mii',
-          mul_div_cancel_left₀ _ (mod_cast hii')] at cos_θ_ne_neg_one
-        simp at cos_θ_ne_neg_one
-      have two_mul_ℓ'_lt_Mii' : 2 * ℓ' < M i i' := by
+      have two_mul_ℓ'_le_Mii' : 2 * ℓ' ≤ M i i' := by
         unfold ℓ'
         have := Int.bmod_le (x := ℓ) (Nat.zero_lt_of_ne_zero hii')
         have := Int.le_bmod (x := ℓ) (Nat.zero_lt_of_ne_zero hii')
@@ -295,12 +291,12 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
         simp [ℓ'_eq_zero] at cos_θ_ne_one
       -- This implies that `θ'` is strictly between `0` and `π`.
       have θ'_pos : 0 < θ' := by positivity
-      have θ'_lt_pi : θ' < π := by
+      have θ'_le_pi : θ' ≤ π := by
         unfold θ'
-        rw [div_lt_iff₀ (by positivity), ← mul_assoc, mul_comm π, mul_comm _ 2]
-        apply mul_lt_mul_of_pos_right
-        · exact_mod_cast two_mul_ℓ'_lt_Mii'
-        · exact pi_pos
+        linear_combination (norm := apply le_of_eq)
+          π / M i i' * (mod_cast two_mul_ℓ'_le_Mii' : (2 * ℓ' : ℝ) ≤ M i i')
+        field_simp
+        ring
       -- If `ℓ' = 1`, we are done, so assume that `ℓ' ≠ 1`. This implies that `ℓ` is at least `2`.
       suffices ℓ' = 1 by
         simp only [eq_add_of_sub_eq eq_two_mul_cos_theta, this, Nat.cast_one, one_mul, θ',
@@ -338,17 +334,11 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
   · show ∀ (i i'), M.M i i' = 0 → 4 ≤ k i i' * k i' i
     intro i i' hii'
     /- We must show `k i i' * k i' i ≥ 4`. First we will show that `k i i'` and `k i' i` are
-    negative. -/
+    nonpositive. -/
     have i_ne_i' : i ≠ i' := by intro i_eq_i'; simp only [i_eq_i', diagonal, one_ne_zero] at hii'
-    have kii'_ne_zero : k i i' ≠ 0 := (h.eq_zero_iff i i').mp.mt (by omega)
     have kii'_nonpos : k i i' ≤ 0 := h.nonpos i i' i_ne_i'
-    have kii'_neg : k i i' < 0 := lt_of_le_of_ne kii'_nonpos kii'_ne_zero
-    clear kii'_ne_zero kii'_nonpos
-    have ki'i_ne_zero : k i' i ≠ 0 := (h.eq_zero_iff i' i).mp.mt (by rw [M.symmetric]; omega)
     have ki'i_nonpos : k i' i ≤ 0 := h.nonpos i' i i_ne_i'.symm
-    have ki'i_neg : k i' i < 0 := lt_of_le_of_ne ki'i_nonpos ki'i_ne_zero
-    clear ki'i_ne_zero ki'i_nonpos
-    have k_mul_k_pos := mul_pos_of_neg_of_neg kii'_neg ki'i_neg
+    have k_mul_k_nonneg := mul_nonneg_of_nonpos_of_nonpos kii'_nonpos ki'i_nonpos
     /- Now assume for the sake of contradiction that `k i i' * k i' i < 4`; then, there is an angle
     `θ` such that `2 * cos θ = k i i' * k i' i - 2`. -/
     by_contra four_lt_k_mul_k
@@ -358,7 +348,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       unfold θ
       rw [cos_arccos ?_ ?_]
       · ring
-      · linear_combination (1 / 2) * k_mul_k_pos
+      · linear_combination (1 / 2) * k_mul_k_nonneg
       · linear_combination (1 / 2) * four_lt_k_mul_k
     -- We prove that `θ` is between `0` and `π` and thus `sin θ` is positive.
     have θ_ne_zero : θ ≠ 0 := by
@@ -366,15 +356,10 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       rw [θ_eq_zero, cos_zero, eq_sub_iff_add_eq] at hθ
       norm_num only at hθ
       exact ne_of_lt four_lt_k_mul_k hθ.symm
-    have θ_ne_pi : θ ≠ π := by
-      intro θ_eq_pi
-      rw [θ_eq_pi, cos_pi, eq_sub_iff_add_eq] at hθ
-      norm_num only at hθ
-      exact ne_of_lt k_mul_k_pos hθ
     have θ_pos : 0 < θ := lt_of_le_of_ne (arccos_nonneg _) θ_ne_zero.symm
-    have θ_lt_pi : θ < π := lt_of_le_of_ne (arccos_le_pi _) θ_ne_pi
+    have θ_le_pi : θ ≤ π := arccos_le_pi _
     -- Now, we prove that this contradicts `s_eval_nonneg'` by substituting `j = ⌊π / θ⌋₊`.
-    have h_neg : (S ℝ ⌊π / θ⌋₊).eval (2 * cos θ) < 0 := S_eval_two_mul_cos_neg θ_pos θ_lt_pi
+    have h_neg : (S ℝ ⌊π / θ⌋₊).eval (2 * cos θ) < 0 := S_eval_two_mul_cos_neg θ_pos θ_le_pi
     have h_pos : 0 ≤ (S ℝ ⌊π / θ⌋₊).eval (2 * cos θ) :=
       hθ ▸ h.s_eval_nonneg' i i' ⌊π / θ⌋₊ hii'
     exact not_lt_of_ge h_pos h_neg
@@ -413,7 +398,7 @@ instance : CoeFun (CoxeterMatrix.GeneralizedCartanMatrix M R) fun _ ↦ (Matrix 
 @[simp]
 lemma diagonal (i) : k i i = 2 := k.isGeneralizedCartan.diagonal i
 
-lemma eq_zero_iff (i i') : k i i' = 0 ↔ M i i' = 2 := k.isGeneralizedCartan.eq_zero_iff i i'
+lemma k_mul_k_nonneg (i i') : M i i' = 2 → k i i' = 0  := k.isGeneralizedCartan.eq_zero_iff i i'
 
 lemma coxeterMatrix_eq_two (i i') : k i i' = 0 → M i i' = 2 := (k.eq_zero_iff i i').mp
 
