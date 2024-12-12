@@ -20,13 +20,11 @@ open Condensed CategoryTheory Limits
 namespace Condensed
 
 variable (A J : Type*) [Category A] [Category J] [Preadditive A]
-
-variable [HasWeakSheafify (coherentTopology CompHaus.{u}) A]
+  [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
+  [HasWeakSheafify (coherentTopology CompHaus.{u}) A]
   [HasWeakSheafify (extensiveTopology Stonean.{u}) A]
--- One of these could be deduced from the other using the dense subsite API, but when `A` is a
--- concrete category, these will both be synthesized anyway.
-
-variable [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
+-- One of the `HasWeakSheafify` instances could be deduced from the other using the dense subsite
+-- API, but when `A` is a concrete category, these will both be synthesized anyway.
 
 def hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [HasFiniteLimits A] : HasExactColimitsOfShape J (Condensed.{u} A) := by
