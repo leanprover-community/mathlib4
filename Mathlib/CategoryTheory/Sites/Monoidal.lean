@@ -70,10 +70,16 @@ lemma functorEnrichedHomCoyonedaObjEquiv_naturality
     {M : A} {F G : Cᵒᵖ ⥤ A} {X Y : C} (f : X ⟶ Y)
     [HasFunctorEnrichedHom A F G]
     (y : (functorEnrichedHom A F G ⋙ coyoneda.obj (op M)).obj (op Y)) :
-  functorEnrichedHomCoyonedaObjEquiv M F G X
-    (y ≫ precompEnrichedHom _ _ _ (Under.map f.op)) =
-  (presheafHom (F ⊗ (Functor.const Cᵒᵖ).obj M) G).map f.op
-    (functorEnrichedHomCoyonedaObjEquiv M F G Y y) := sorry
+    functorEnrichedHomCoyonedaObjEquiv M F G X
+      (y ≫ precompEnrichedHom _ _ _ (Under.map f.op)) =
+    (presheafHom (F ⊗ (Functor.const Cᵒᵖ).obj M) G).map f.op
+      (functorEnrichedHomCoyonedaObjEquiv M F G Y y) := by
+  dsimp
+  ext ⟨j⟩
+  dsimp [functorEnrichedHomCoyonedaObjEquiv, presheafHom]
+  rw [Category.assoc]
+  erw [precompEnrichedHom_π]
+  rfl
 
 lemma isSheaf_functorEnrichedHom (F G : Cᵒᵖ ⥤ A) (hG : Presheaf.IsSheaf J G)
     [HasFunctorEnrichedHom A F G] :
