@@ -33,9 +33,8 @@ decomposition of the nerve functor, made by possible by the fact that nerves of 
 2-truncated simplicial sets.
 -/
 
-namespace CategoryTheory
 namespace SSet
-open Category Limits Functor Opposite Simplicial Nerve
+open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
 universe v u
 
 section
@@ -318,7 +317,7 @@ def _root_.SSet.Truncated.HomotopyCategory (V : SSet.Truncated.{u} 2) : Type u :
   Quotient (HoRel₂ (V := V))
 
 instance (V : SSet.Truncated.{u} 2) : Category.{u} (V.HomotopyCategory) :=
-  inferInstanceAs (Category (Quotient ..))
+  inferInstanceAs (Category (Quotient (HoRel₂ (V := V))))
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
 simplicial set `V` to its homotopy category. -/
@@ -328,21 +327,19 @@ def _root_.SSet.Truncated.HomotopyCategory.quotientFunctor (V : SSet.Truncated.{
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism. -/
-theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2)
-    {D} [Category D] (F₁ F₂ : V.HomotopyCategory ⥤ D)
-    (h : SSet.Truncated.HomotopyCategory.quotientFunctor V ⋙ F₁ =
-      SSet.Truncated.HomotopyCategory.quotientFunctor V ⋙ F₂) : F₁ = F₂ :=
-  Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V))
-    (HoRel₂ (V := V)) _ _ h
+theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D]
+    (F₁ F₂ : V.HomotopyCategory ⥤ D)
+    (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
+    F₁ = F₂ := Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V)) (HoRel₂ (V := V)) _ _ h
 
 /-- A map of 2-truncated simplicial sets induces a functor between homotopy categories. -/
 def mapHomotopyCategory {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
     V.HomotopyCategory ⥤ W.HomotopyCategory :=
-  Quotient.lift _
-    ((oneTruncation₂ ⋙ Cat.freeRefl).map F ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor W)
+  CategoryTheory.Quotient.lift _
+    ((oneTruncation₂ ⋙ Cat.freeRefl).map F ⋙ HomotopyCategory.quotientFunctor W)
     (by
       rintro _ _ _ _ ⟨φ⟩
-      apply Quotient.sound
+      apply CategoryTheory.Quotient.sound
       apply HoRel₂.mk' (φ := F.app _ φ)
         (f₀₁ := (oneTruncation₂.map F).map (ev01₂ φ))
         (f₀₂ := (oneTruncation₂.map F).map (ev02₂ φ))
@@ -379,4 +376,3 @@ end
 end
 
 end SSet
-end CategoryTheory
