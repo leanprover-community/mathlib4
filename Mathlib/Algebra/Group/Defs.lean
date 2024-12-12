@@ -331,7 +331,7 @@ class LeftCommonAdd (G : Type u) [Add G] where
   /-- the addend for a -/
   cl₁ : G → G → G
   /-- the addend for b -/
-    cl₂ : G → G → G
+  cl₂ : G → G → G
   /-- there is a common sum for any two elements of G -/
   cl_spec : ∀ (a b : G), cl₁ a b + a = cl₂ a b + b
 
