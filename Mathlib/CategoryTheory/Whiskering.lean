@@ -302,4 +302,20 @@ theorem pentagon :
 
 end Functor
 
+variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂]
+  [Category D₁] [Category D₂] (E : Type*) [Category E]
+
+/-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
+@[simps!]
+def whiskeringLeft₂ :
+    (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E) where
+  obj F₁ :=
+    { obj := fun F₂ ↦
+        (whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).obj ((whiskeringLeft C₂ D₂ E).obj F₂) ⋙
+          (whiskeringLeft C₁ D₁ (C₂ ⥤ E)).obj F₁
+      map := fun φ ↦ whiskerRight
+        ((whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).map ((whiskeringLeft C₂ D₂ E).map φ)) _ }
+  map ψ :=
+    { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
+
 end CategoryTheory

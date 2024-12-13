@@ -134,7 +134,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
   left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
-    let x' := Multiplicative.toAdd x
+    let x' := x.toAdd
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')

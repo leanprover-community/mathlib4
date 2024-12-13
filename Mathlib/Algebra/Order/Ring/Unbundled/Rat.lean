@@ -85,7 +85,7 @@ protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
         divInt_mul_divInt _ _ d₁0.ne' d₂0.ne']
       apply Int.mul_nonneg
 
--- Porting note (#11215): TODO can this be shortened?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO can this be shortened?
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
@@ -167,8 +167,8 @@ instance instDistribLattice : DistribLattice ℚ := inferInstance
 instance instLattice        : Lattice ℚ        := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf            : Inf ℚ            := inferInstance
-instance instSup            : Sup ℚ            := inferInstance
+instance instInf            : Min ℚ            := inferInstance
+instance instSup            : Max ℚ            := inferInstance
 instance instPartialOrder   : PartialOrder ℚ   := inferInstance
 instance instPreorder       : Preorder ℚ       := inferInstance
 

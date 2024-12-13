@@ -99,7 +99,7 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
-@[ext] -- Porting note (#11215): TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`
+@[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`
 theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
   SetLike.coe_injective h
 
@@ -207,11 +207,11 @@ theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : S
 
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
--- porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [IsEmpty α] : Unique (Opens α) where
   uniq _ := ext <| Subsingleton.elim _ _
 
--- porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [Nonempty α] : Nontrivial (Opens α) where
   exists_pair_ne := ⟨⊥, ⊤, mt coe_inj.2 empty_ne_univ⟩
 
@@ -271,7 +271,7 @@ theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α
   rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
   exact U.2
 
--- porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
 
@@ -378,7 +378,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   fun f g h =>
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
-      inseparable_iff_forall_open.2 fun s hs =>
+      inseparable_iff_forall_isOpen.2 fun s hs =>
         have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
@@ -431,10 +431,10 @@ instance : OrderTop (OpenNhdsOf x) where
   le_top _ := subset_univ _
 
 instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
-instance : Inf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
-instance : Sup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
+instance : Min (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
+instance : Max (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
--- porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
@@ -455,7 +455,7 @@ end OpenNhdsOf
 
 end TopologicalSpace
 
--- Porting note (#11215): TODO: once we port `auto_cases`, port this
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: once we port `auto_cases`, port this
 -- namespace Tactic
 
 -- namespace AutoCases

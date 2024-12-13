@@ -121,7 +121,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       calc
         ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
           congr 1
-          simp only [f.map_sub]
+          simp only [x, f.map_sub]
           abel
         _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := norm_sub_le _ _
         _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
@@ -284,7 +284,8 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
-  choose C hC fsymm h using exists_preimage_norm_le _ (LinearMap.range_eq_top.mp hsurj)
+  choose C hC fsymm h using
+    exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩
@@ -320,7 +321,7 @@ theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous 
   intro s hs
   rw [← e.image_eq_preimage]
   rw [← e.coe_coe] at h ⊢
-  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨↑e, h⟩ e.surjective s hs
+  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 
 /-- Associating to a linear equivalence between Banach spaces a continuous linear equivalence when
 the direct map is continuous, thanks to the Banach open mapping theorem that ensures that the

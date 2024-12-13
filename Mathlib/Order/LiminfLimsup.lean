@@ -46,17 +46,6 @@ namespace Filter
 
 section Relation
 
-/-- `f.IsBounded (≺)`: the filter `f` is eventually bounded w.r.t. the relation `≺`, i.e.
-eventually, it is bounded by some uniform bound.
-`r` will be usually instantiated with `≤` or `≥`. -/
-def IsBounded (r : α → α → Prop) (f : Filter α) :=
-  ∃ b, ∀ᶠ x in f, r x b
-
-/-- `f.IsBoundedUnder (≺) u`: the image of the filter `f` under `u` is eventually bounded w.r.t.
-the relation `≺`, i.e. eventually, it is bounded by some uniform bound. -/
-def IsBoundedUnder (r : α → α → Prop) (f : Filter β) (u : β → α) :=
-  (map u f).IsBounded r
-
 variable {r : α → α → Prop} {f g : Filter α}
 
 /-- `f` is eventually bounded if and only if, there exists an admissible set on which it is
@@ -154,6 +143,14 @@ lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
 lemma _root_.BddBelow.isBoundedUnder_of_range (hu : BddBelow (Set.range u)) :
     f.IsBoundedUnder (· ≥ ·) u := BddBelow.isBoundedUnder (s := univ) f.univ_mem (by simpa)
 
+lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirected α (· ≤ ·)] [Finite β]
+    {f : Filter β} {u : β → α} : IsBoundedUnder (· ≤ ·) f u :=
+  (Set.toFinite _).bddAbove.isBoundedUnder_of_range
+
+lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsDirected α (· ≥ ·)] [Finite β]
+    {f : Filter β} {u : β → α} : IsBoundedUnder (· ≥ ·) f u :=
+  (Set.toFinite _).bddBelow.isBoundedUnder_of_range
+
 end Preorder
 
 theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
@@ -209,25 +206,6 @@ theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirected β (· ≤ ·)] 
 theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsDirected β (· ≥ ·)] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≥ ·) atTop f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range (β := βᵒᵈ) hf
-
-/-- `IsCobounded (≺) f` states that the filter `f` does not tend to infinity w.r.t. `≺`. This is
-also called frequently bounded. Will be usually instantiated with `≤` or `≥`.
-
-There is a subtlety in this definition: we want `f.IsCobounded` to hold for any `f` in the case of
-complete lattices. This will be relevant to deduce theorems on complete lattices from their
-versions on conditionally complete lattices with additional assumptions. We have to be careful in
-the edge case of the trivial filter containing the empty set: the other natural definition
-  `¬ ∀ a, ∀ᶠ n in f, a ≤ n`
-would not work as well in this case.
--/
-def IsCobounded (r : α → α → Prop) (f : Filter α) :=
-  ∃ b, ∀ a, (∀ᶠ x in f, r x a) → r b a
-
-/-- `IsCoboundedUnder (≺) f u` states that the image of the filter `f` under the map `u` does not
-tend to infinity w.r.t. `≺`. This is also called frequently bounded. Will be usually instantiated
-with `≤` or `≥`. -/
-def IsCoboundedUnder (r : α → α → Prop) (f : Filter β) (u : β → α) :=
-  (map u f).IsCobounded r
 
 /-- To check that a filter is frequently bounded, it suffices to have a witness
 which bounds `f` at some point for every admissible set.
@@ -289,7 +267,7 @@ lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
 theorem isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
-  simp (config := { contextual := true }) [IsCobounded, eq_univ_iff_forall,
+  simp +contextual [IsCobounded, eq_univ_iff_forall,
     exists_true_iff_nonempty]
 
 theorem isCobounded_principal (s : Set α) :
@@ -821,15 +799,13 @@ theorem HasBasis.limsup_eq_sInf_univ_of_empty {f : ι → α} {v : Filter ι}
     limsup f v = sInf univ :=
   HasBasis.liminf_eq_sSup_univ_of_empty (α := αᵒᵈ) hv i hi h'i
 
--- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
-@[simp, nolint simpNF]
+@[simp]
 theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
     liminf (fun i => f (i + k)) atTop = liminf f atTop := by
   change liminf (f ∘ (· + k)) atTop = liminf f atTop
   rw [liminf, liminf, ← map_map, map_add_atTop_eq_nat]
 
--- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
-@[simp, nolint simpNF]
+@[simp]
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 
@@ -1454,7 +1430,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply Subset.antisymm
     · apply iUnion_subset (fun j ↦ ?_)
       by_cases hj : j ∈ m
-      · have : j = liminf_reparam f s p j := by simp only [liminf_reparam, hj, ite_true]
+      · have : j = liminf_reparam f s p j := by simp only [m, liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
       · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
@@ -1467,8 +1443,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply (Iic_ciInf _).symm
     change liminf_reparam f s p j ∈ m
     by_cases Hj : j ∈ m
-    · simpa only [liminf_reparam, if_pos Hj] using Hj
-    · simp only [liminf_reparam, if_neg Hj]
+    · simpa only [m, liminf_reparam, if_pos Hj] using Hj
+    · simp only [m, liminf_reparam, if_neg Hj]
       have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
         rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩
@@ -1620,7 +1596,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     apply hb c
     rw [eventually_map] at hc ⊢
     refine hc.mono (fun _ ↦ ?_)
-    simp (config := { contextual := true }) only [implies_true, max_le_iff, and_imp]
+    simp +contextual only [implies_true, max_le_iff, and_imp]
 
 theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)

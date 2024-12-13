@@ -119,7 +119,7 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
     ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
   rw [ThreeGPFree, ThreeGPFree]
   have := (hf.bijOn.injOn.mono hAs).bijOn_image (f := f)
-  simp (config := { contextual := true }) only
+  simp +contextual only
     [((hf.bijOn.injOn.mono hAs).bijOn_image (f := f)).forall,
     hf.mul_eq_mul (hAs _) (hAs _) (hAs _) (hAs _), this.injOn.eq_iff]
 

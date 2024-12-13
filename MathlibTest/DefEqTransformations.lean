@@ -32,62 +32,6 @@ example : 1 + 2 * 3 = 7 := by
   guard_target =ₛ nat_lit 7 = nat_lit 7
   rfl
 
-example : let x := 1; let y := 2; x + y = y + x := by
-  intro x y
-  unfold_let x
-  guard_target =ₛ 1 + y = y + 1
-  let z := 3
-  have h : z - 3 = 0 := rfl
-  unfold_let z at h
-  guard_hyp h :ₛ 3 - 3 = 0
-  unfold_let y
-  guard_target =ₛ 1 + 2 = 2 + 1
-  rfl
-
-example : let x := 1; let y := 2; x + y = y + x := by
-  intro x y
-  unfold_let x y
-  guard_target =ₛ 1 + 2 = 2 + 1
-  rfl
-
-example : let x := 1; let y := 2; x + y = y + x := by
-  intro x y
-  unfold_let
-  guard_target =ₛ 1 + 2 = 2 + 1
-  rfl
-
-example : let x := 1; let y := 2 + x; y = 3 := by
-  intro x y
-  unfold_let x
-  guard_target =ₛ y = 3
-  unfold_let y
-  guard_target =ₛ 2 + x = 3
-  unfold_let x
-  guard_target =ₛ 2 + 1 = 3
-  rfl
-
-example : let x := 1; let y := 2 + x; y = 3 := by
-  intro x y
-  unfold_let x y
-  guard_target =ₛ 2 + 1 = 3
-  rfl
-
-/-!
-Do not reorder hypotheses. (`unfold_let` makes a change)
--/
-example : let ty := Int; ty → Nat → Nat := by
-  intro _ a a
-  unfold_let at *
-  exact a
-
-/-!
-Do not reorder hypotheses. (`unfold_let` does not make a change)
--/
-set_option linter.unusedVariables false in
-example (a : Int) (a : Nat) : Nat := by
-  unfold_let at *
-  exact a
-
 set_option linter.unusedVariables false in
 example : let x := 1; let y := 2 + x; 2 + 1 = 3 := by
   intro x y
