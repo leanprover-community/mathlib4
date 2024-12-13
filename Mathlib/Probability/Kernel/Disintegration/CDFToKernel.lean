@@ -471,34 +471,6 @@ section ToKernel
 variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
   {κ : Kernel α (β × ℝ)} {ν : Kernel α β}
 
-/-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
-function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
-lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
-    (hf : ∀ q, Measurable fun a ↦ f a q)
-    (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
-    (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
-    Measurable fun a ↦ (f a).measure := by
-  refine Measure.measurable_measure.mpr fun s hs ↦ ?_
-  have : ∀ a, IsProbabilityMeasure (f a).measure :=
-    fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
-  refine MeasurableSpace.induction_on_inter
-    (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (f b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
-  · simp only [measure_empty, measurable_const]
-  · rintro S ⟨u, rfl⟩
-    simp_rw [StieltjesFunction.measure_Iic (f _) (hf_bot _), sub_zero]
-    exact (hf _).ennreal_ofReal
-  · intro t ht ht_cd_meas
-    have : (fun a ↦ (f a).measure tᶜ) = (fun a ↦ (f a).measure univ) - fun a ↦ (f a).measure t := by
-      ext1 a
-      rw [measure_compl ht, Pi.sub_apply]
-      exact measure_ne_top _ _
-    simp_rw [this, measure_univ]
-    exact Measurable.sub measurable_const ht_cd_meas
-  · intro f hf_disj hf_meas hf_cd_meas
-    simp_rw [measure_iUnion hf_disj hf_meas]
-    exact Measurable.ennreal_tsum hf_cd_meas
-
 /-- A function `f : α × β → StieltjesFunction` with the property `IsCondKernelCDF f κ ν` gives a
 Markov kernel from `α × β` to `ℝ`, by taking for each `p : α × β` the measure defined by `f p`. -/
 noncomputable

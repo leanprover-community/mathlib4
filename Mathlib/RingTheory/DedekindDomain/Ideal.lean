@@ -9,6 +9,7 @@ import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal.Operations
+import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Dedekind domains and ideals
