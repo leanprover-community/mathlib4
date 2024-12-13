@@ -35,7 +35,7 @@ lemma hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape 
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
   have : HasColimitsOfShape J (Sheaf (extensiveTopology Stonean.{u}) A) :=
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape e.inverse
-  exact hasExactColimitsOfShape_transport e.functor
+  exact HasExactColimitsOfShape.domain_of_functor _ e.functor
 
 lemma hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
     [HasFiniteColimits A] : HasExactLimitsOfShape J (Condensed.{u} A) := by
@@ -43,7 +43,7 @@ lemma hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
   have : HasLimitsOfShape J (Sheaf (extensiveTopology Stonean.{u}) A) :=
     hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape e.inverse
-  exact hasExactLimitsOfShape_transport e.functor
+  exact HasExactLimitsOfShape.domain_of_functor _ e.functor
 
 section Module
 
