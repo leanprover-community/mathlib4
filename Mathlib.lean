@@ -2291,6 +2291,12 @@ import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
 import Mathlib.Computability.AkraBazzi.AkraBazzi
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+import Mathlib.Computability.ChomskyNormalForm.Basic
+import Mathlib.Computability.ChomskyNormalForm.EmptyElimination
+import Mathlib.Computability.ChomskyNormalForm.LengthRestriction
+import Mathlib.Computability.ChomskyNormalForm.TerminalRestriction
+import Mathlib.Computability.ChomskyNormalForm.Translation
+import Mathlib.Computability.ChomskyNormalForm.UnitElimination
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding

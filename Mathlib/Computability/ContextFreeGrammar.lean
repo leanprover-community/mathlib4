@@ -137,6 +137,18 @@ lemma mem_language_iff (g : ContextFreeGrammar.{uN} T) (w : List T) :
 
 variable {g : ContextFreeGrammar.{uN} T}
 
+lemma Produces.input_output {r : ContextFreeRule T g.NT} (hrg : r ∈ g.rules) :
+    g.Produces [.nonterminal r.input] r.output :=
+  ⟨r, hrg, ContextFreeRule.Rewrites.input_output⟩
+
+lemma Produces.rule {n : g.NT} {u : List (Symbol T g.NT)}
+    (hnu : g.Produces [Symbol.nonterminal n] u) :
+    ⟨n, u⟩ ∈ g.rules := by
+  obtain ⟨_, _, hr⟩ := hnu
+  cases hr
+  · rwa [List.append_nil]
+  · contradiction
+
 @[refl]
 lemma Derives.refl (w : List (Symbol T g.NT)) : g.Derives w w :=
   Relation.ReflTransGen.refl
@@ -194,6 +206,13 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
   induction hvw with
   | refl => rfl
   | tail _ last ih => exact ih.trans_produces <| last.append_right p
+
+theorem Derives.head_induction_on {v : List (Symbol T g.NT)} {P : ∀ u, g.Derives u v → Prop}
+  {u : List (Symbol T g.NT)} (huv : g.Derives u v)
+  (refl : P v (Derives.refl v))
+  (head : ∀ {u w} (huw : g.Produces u w) (hwv : g.Derives w v), P w hwv → P u (hwv.head huw)) :
+  P u huv :=
+  Relation.ReflTransGen.head_induction_on huv refl head
 
 end ContextFreeGrammar
 
@@ -301,8 +320,8 @@ theorem Language.IsContextFree.reverse (L : Language T) :
 
 end closure_reversal
 
-/-! Alternative definition of `Derives` which allows to use well-founded induction on derivations,
-by explicitely counting the number of steps of the transformation -/
+/-! Alternative definition of `ContextFreeGrammar.Derives` which allows to use well-founded
+induction on derivations, by explicitely counting the number of steps of the transformation -/
 section derivesIn
 
 namespace ContextFreeGrammar

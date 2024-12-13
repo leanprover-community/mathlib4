@@ -6,6 +6,21 @@ Authors: Alexander Loitzl, Martin Dvorak
 
 import Mathlib.Computability.ContextFreeGrammar
 
+/-!
+# Chomsky Normal Form Grammars
+
+This file contains the definition of a chomsky normal form grammar, which is a context-free grammar
+with syntactic restriction on the rules. Each rule either rewrites to a single terminal symbol or a
+pair of nonterminals.
+
+## Main definitions
+* `ChomskyNormalFormGrammar`: A chomsky normal form grammar.
+* `ChomskyNormalFormGrammar.toCFG`: simple translation to a context-free grammar.
+
+## Main theorems
+* `Language.toCFG_correct`: `g.toCFG` generates the same language a a context-free grammar `g`.
+-/
+
 /-- Rule that rewrites a single nonterminal to a single terminal or a pair of nonterminals. -/
 inductive ChomskyNormalFormRule.{uT,uN} (T : Type uT) (N : Type uN)
   /-- First kind of rule, rewriting a nonterminal `n` to a single terminal `t`. -/
@@ -276,9 +291,10 @@ theorem toCFG_correct {u : List (Symbol T g.NT)} : g.Generates u ↔ g.toCFG.Gen
 
 end toCFG
 
-/-! Alternative definition of `Derives` which allows to use well-founded induction on derivations,
-by explicitely counting the number of steps of the transformation -/
+/-! Alternative definition of `ChomskyNormalFormGrammar.Derives` which allows to use well-founded
+induction on derivations, by explicitely counting the number of steps of the transformation -/
 section derivesIn
+
 /-- Given a context-free grammar `g`, strings `u` and `v`, and number `n`
 `g.DerivesIn u v n` means that `g` can transform `u` to `v` in `n` rewriting steps. -/
 inductive DerivesIn (g : ChomskyNormalFormGrammar.{uN} T) :
