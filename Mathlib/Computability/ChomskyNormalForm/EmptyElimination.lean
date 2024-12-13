@@ -673,7 +673,7 @@ variable {g : ContextFreeGrammar.{uN, uT} T}
 noncomputable def removeNullables [DecidableEq T] [DecidableEq g.NT] (p : Finset g.NT) :=
   (g.rules.toList.map (removeNullableRule p)).flatten.toFinset
 
-/- Given `g`, computes a new grammar in which all rules deriving `[]` are removed and all rules
+/-- Given `g`, computes a new grammar in which all rules deriving `[]` are removed and all rules
 in `g` have a set of corresponding rules in g' in which some nullable symbols do not appear in
 the output. For example if `r: V -> ABC` is in `g` and `A` and `B` are nullable, the rules
 `r₁ : V -> ABC`, `r₂ : V -> BC`, `r₃ : V -> AC`, `r₄ : V -> C` will be in `g.eliminate_empty` -/
@@ -745,7 +745,7 @@ lemma mem_nullableCombinations_nullableRelated {u v : List (Symbol T g.NT)} (p :
       obtain ⟨u', hu', rfl⟩ := huv
       exact NullableRelated.cons_term (ih hu') t
 
-lemma mem_removeNullableRule_nullableRelated [DecidableEq T] {r': ContextFreeRule T g.NT}
+lemma mem_removeNullableRule_nullableRelated {r': ContextFreeRule T g.NT}
     {r : ContextFreeRule T g.NT} {hrg : r ∈ removeNullableRule g.computeNullables r'} :
     r.input = r'.input ∧ NullableRelated r.output r'.output := by
   rw [removeNullableRule, List.mem_filterMap] at hrg

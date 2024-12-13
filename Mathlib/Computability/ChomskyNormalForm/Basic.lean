@@ -29,6 +29,7 @@ inductive ChomskyNormalFormRule.{uT,uN} (T : Type uT) (N : Type uN)
   | node (n l r : N) : ChomskyNormalFormRule T N
 deriving DecidableEq
 
+/-- Chomsky normal form grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ChomskyNormalFormGrammar.{uN,uT} (T : Type uT) where
   /-- Type of nonterminals. -/
   NT : Type uN
