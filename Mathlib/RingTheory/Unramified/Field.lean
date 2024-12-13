@@ -179,8 +179,10 @@ theorem range_eq_top_of_isPurelyInseparable
   by_cases h' : LinearIndependent K ![1, x]
   · have h := h'.coe_range
     let S := h.extend (Set.subset_univ _)
-    let a : S := ⟨1, h.subset_extend _ (by simp)⟩; have ha : Basis.extend h a = 1 := by simp
-    let b : S := ⟨x, h.subset_extend _ (by simp)⟩; have hb : Basis.extend h b = x := by simp
+    let a : S := ⟨1, h.subset_extend _ (by simp)⟩
+    have ha : Basis.extend h a = 1 := by simp [a]
+    let b : S := ⟨x, h.subset_extend _ (by simp)⟩
+    have hb : Basis.extend h b = x := by simp [b]
     by_cases e : a = b
     · obtain rfl : 1 = x := congr_arg Subtype.val e
       exact ⟨1, map_one _⟩
