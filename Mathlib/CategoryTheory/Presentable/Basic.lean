@@ -7,7 +7,6 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Comma.CardinalArrow
-import Mathlib.Data.Set.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-! # Presentable objects
@@ -33,20 +32,6 @@ universe w w' v' v u' u
 namespace CategoryTheory
 
 open Limits Opposite
-
--- to be moved
-@[simp]
-lemma cardinal_arrow_discrete (S : Type w) :
-    Cardinal.mk (Arrow (Discrete S)) = Cardinal.mk S := by
-  let e : Arrow (Discrete S) ≃ S :=
-    { toFun f := f.left.as
-      invFun s := Arrow.mk (𝟙 (Discrete.mk s))
-      left_inv := by
-        rintro ⟨⟨a⟩, ⟨b⟩, f⟩
-        obtain rfl := Discrete.eq_of_hom f
-        rfl
-      right_inv _ := rfl }
-  exact Cardinal.mk_congr e
 
 section
 
@@ -91,40 +76,6 @@ lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ' ≤ κ) :
 
 end IsCardinalFiltered
 
--- to be moved
-/-- `Arrow A` is equivalent to a sigma type. -/
-@[simps!]
-def Arrow.equivSigma (A : Type u) [Category.{v} A] :
-    Arrow A ≃ Σ (X : A) (Y : A), X ⟶ Y where
-  toFun f := ⟨_, _, f.hom⟩
-  invFun x := Arrow.mk x.2.2
-  left_inv _ := rfl
-  right_inv _ := rfl
-
--- to be moved
-lemma Arrow.finite_iff (A : Type u) [SmallCategory A] :
-    Finite (Arrow A) ↔ Nonempty (FinCategory A) := by
-  constructor
-  · intro
-    refine ⟨?_, fun a b ↦ ?_⟩
-    · have := Finite.of_injective (fun (a : A) ↦ Arrow.mk (𝟙 a))
-        (fun _ _  ↦ congr_arg Comma.left)
-      apply Fintype.ofFinite
-    · have := Finite.of_injective (fun (f : a ⟶ b) ↦ Arrow.mk f)
-        (fun f g h ↦ by
-          change (Arrow.mk f).hom = (Arrow.mk g).hom
-          congr)
-      apply Fintype.ofFinite
-  · rintro ⟨_⟩
-    have := Fintype.ofEquiv  _ (Arrow.equivSigma A).symm
-    infer_instance
-
--- to be moved
-instance {A : Type u} [SmallCategory A] [FinCategory A] :
-    Finite (Arrow A) := by
-  rw [Arrow.finite_iff]
-  exact ⟨inferInstance⟩
-
 open IsCardinalFiltered in
 lemma isFiltered_of_isCardinalDirected (J : Type w) [SmallCategory J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]:
@@ -151,11 +102,6 @@ lemma isCardinalFiltered_aleph0_iff (J : Type w) [SmallCategory J] :
     rw [Cardinal.mk_lt_aleph0_iff] at hA
     have := ((Arrow.finite_iff A).1 hA).some
     exact ⟨IsFiltered.cocone F⟩
-
--- to be moved
-lemma cardinal_le_cardinal_arrow (A : Type u) [SmallCategory A] :
-    Cardinal.mk A ≤ Cardinal.mk (Arrow A) :=
-  Cardinal.mk_le_of_injective (f := fun a ↦ Arrow.mk (𝟙 a)) (fun _ _ ↦ congr_arg Comma.left)
 
 lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
