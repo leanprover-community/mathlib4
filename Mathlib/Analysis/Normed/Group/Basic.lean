@@ -1242,9 +1242,6 @@ theorem norm_of_nonpos (hr : r ≤ 0) : ‖r‖ = -r :=
 theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
   le_abs_self r
 
-theorem neg_le_norm (r : ℝ) : - r ≤ ‖r‖ :=
-  neg_le_abs r
-
 @[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
 @[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 
