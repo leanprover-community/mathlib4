@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.LinearAlgebra.Span.Basic
 
@@ -789,19 +788,6 @@ theorem Basis.coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : �
   b.coord_repr_symm i (Finsupp.equivFunOnFinite.symm f)
 
 end Fintype
-
-namespace Polynomial
-
-/-- The monomials form a basis on `R[X]`. To get the rank of a polynomial ring,
-use this and `Basis.mk_eq_rank`. -/
-def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoLinear R)
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
-
-end Polynomial
 
 end Module
 
