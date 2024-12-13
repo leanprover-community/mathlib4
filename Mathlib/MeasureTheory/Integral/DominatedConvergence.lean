@@ -589,7 +589,7 @@ theorem continuous_parametric_primitive_of_continuous
             (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
           exact Eventually.of_forall this
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
-      gcongr
+      gcongr ?_ + ?_
       · apply setIntegral_mono_on
         · exact (hf.uncurry_left _).norm.integrableOn_Icc
         · exact continuous_const.integrableOn_Icc

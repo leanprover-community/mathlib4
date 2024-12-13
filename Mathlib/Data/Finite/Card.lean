@@ -46,7 +46,7 @@ theorem Nat.card_eq (α : Type*) :
     Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
   · letI := Fintype.ofFinite α
-    simp only [*, Nat.card_eq_fintype_card, dif_pos]
+    simp only [this, *, Nat.card_eq_fintype_card, dif_pos]
   · simp only [*, card_eq_zero_of_infinite, not_finite_iff_infinite.mpr, dite_false]
 
 theorem Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
@@ -171,21 +171,6 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   exact Finite.cast_card_eq_mk
 
 end ENat
-
-namespace PartENat
-
-set_option linter.deprecated false in
-@[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
-theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
-  unfold PartENat.card
-  apply symm
-  rw [Cardinal.natCast_eq_toPartENat_iff]
-  exact Finite.cast_card_eq_mk
-
-
-@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
-
-end PartENat
 
 namespace Set
 
