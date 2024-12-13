@@ -36,7 +36,7 @@ variable {f : ℝ → ℝ} {x₀ : ℝ}
 
 /-- If the slope from a critical point `x₀` to `b > x₀` is positive then so is the derivative
  at `b`. -/
-lemma slopeSimpPos {b : ℝ} (hb : x₀ < b) (hbf : b ∈ slope (deriv f) x₀ ⁻¹' Ioi 0)
+lemma slopeSimpPos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope (deriv f) x₀ b)
     (hf : deriv f x₀ = 0) : 0 < deriv f b := by
   unfold slope at hbf
   rw [hf] at hbf
@@ -44,10 +44,10 @@ lemma slopeSimpPos {b : ℝ} (hb : x₀ < b) (hbf : b ∈ slope (deriv f) x₀ �
 
 /-- If the slope from a critical point `x₀` to `b < x₀` is positive then the derivative
  at `b` is negative. -/
-lemma slopeSimpNeg {b : ℝ} (hb : b < x₀) (hbf : b ∈ slope (deriv f) x₀ ⁻¹' Ioi 0)
+lemma slopeSimpNeg {b : ℝ} (hb : b < x₀) (hbf : 0 < slope (deriv f) x₀ b)
     (hf : deriv f x₀ = 0) : deriv f b < 0 := by
   unfold slope at hbf
-  simp_rw [smul_eq_mul, mem_preimage, hf] at hbf
+  simp_rw [smul_eq_mul, hf] at hbf
   rw [mul_comm] at hbf
   have : 0 < deriv f b / (b - x₀) := sub_zero (deriv f b) ▸ hbf
   contrapose this
