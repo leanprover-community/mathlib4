@@ -63,6 +63,14 @@ theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀
     Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   rw [← not_iff_not, Classical.not_not, not_summable_iff_tendsto_nat_atTop_of_nonneg hf]
 
+theorem summable_iff_partial_sums_bounded_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
+    Summable f ↔ ∃ C, ∀ n, ∑ i ∈ Finset.range n, f i < C := by
+  rw [summable_iff_not_tendsto_nat_atTop_of_nonneg hf, Monotone.tendsto_atTop_atTop_iff]
+  · simp_rw [not_forall, not_exists, not_le]
+  · intro _ _ h
+    simp_rw [← sum_range_add_sum_Ico _ h, le_add_iff_nonneg_right]
+    exact sum_nonneg fun n _ ↦ hf n
+
 theorem summable_sigma_of_nonneg {α} {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
   lift f to (Σx, β x) → ℝ≥0 using hf
