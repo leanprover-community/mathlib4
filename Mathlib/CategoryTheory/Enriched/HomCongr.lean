@@ -8,8 +8,14 @@ import Mathlib.CategoryTheory.Enriched.Ordinary
 /-!
 # Congruence of enriched homs
 
-In a `V`-enriched ordinary category `C`, isomorphisms in `C` induce
-isomorphisms between hom-objects in `V`.
+Recall that when `C` is both a category and a `V`-enriched category, we say it
+is an `EnrichedOrdinaryCategory` if it comes equipped with a sufficiently
+compatible equivalence between morphisms `X ⟶ Y` in `C` and morphisms
+`𝟙_ V ⟶ (X ⟶[V] Y)` in `V`.
+
+In such a `V`-enriched ordinary category `C`, isomorphisms in `C` induce
+isomorphisms between hom-objects in `V`. We define this isomorphism in
+`CategoryTheory.Iso.eHomCongr` and prove that it respects composition in `C`.
 
 The treatment here parallels that for unenriched categories in
 `Mathlib/CategoryTheory/HomCongr.lean` and that for sorts in
@@ -28,8 +34,8 @@ open Category MonoidalCategory
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
   {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
-/-- If we have isomorphisms `α : X ≅ X₁` and `β : Y ≅ Y₁` in `C`, then we can
-construct an isomorphism between `V` objects `X ⟶[V] Y` and `X₁ ⟶[V] Y₁`. -/
+/-- Given isomorphisms `α : X ≅ X₁` and `β : Y ≅ Y₁` in `C`, we can construct
+an isomorphism between `V` objects `X ⟶[V] Y` and `X₁ ⟶[V] Y₁`. -/
 @[simps]
 def eHomCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) :
     (X ⟶[V] Y) ≅ (X₁ ⟶[V] Y₁) where
