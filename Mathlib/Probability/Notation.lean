@@ -42,7 +42,7 @@ scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
 namespace ProbabilityTheory
 /-- `P[X]` is the expectation of `X` under the measure `P`.
 
-Note that this notation can conflct with the `GetElem` notation for lists. Usually if you see an
+Note that this notation can conflict with the `GetElem` notation for lists. Usually if you see an
 error about ambiguous notation when trying to write `l[i]` for a list, it means that Lean could
 not find `i < l.length`, and so fell back to trying this notation as well. -/
 scoped macro:max P:term noWs "[" X:term "]" : term => `(∫ x, ↑($X x) ∂$P)
