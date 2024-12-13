@@ -105,6 +105,10 @@ theorem DifferentiableAt.const_cpow (hf : DifferentiableAt ℂ f x) (h0 : c ≠ 
     DifferentiableAt ℂ (fun x => c ^ f x) x :=
   (hf.hasFDerivAt.const_cpow h0).differentiableAt
 
+theorem DifferentiableAt.cpow_const (hf : DifferentiableAt ℂ f x) (h0 : f x ∈ slitPlane) :
+    DifferentiableAt ℂ (fun x => f x ^ c) x :=
+  hf.cpow (differentiableAt_const c) h0
+
 theorem DifferentiableWithinAt.cpow (hf : DifferentiableWithinAt ℂ f s x)
     (hg : DifferentiableWithinAt ℂ g s x) (h0 : f x ∈ slitPlane) :
     DifferentiableWithinAt ℂ (fun x => f x ^ g x) s x :=
@@ -114,6 +118,11 @@ theorem DifferentiableWithinAt.const_cpow (hf : DifferentiableWithinAt ℂ f s x
     (h0 : c ≠ 0 ∨ f x ≠ 0) : DifferentiableWithinAt ℂ (fun x => c ^ f x) s x :=
   (hf.hasFDerivWithinAt.const_cpow h0).differentiableWithinAt
 
+theorem DifferentiableWithinAt.cpow_const (hf : DifferentiableWithinAt ℂ f s x)
+    (h0 : f x ∈ slitPlane) :
+    DifferentiableWithinAt ℂ (fun x => f x ^ c) s x :=
+  hf.cpow (differentiableWithinAt_const c) h0
+
 theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : DifferentiableOn ℂ g s)
     (h0 : Set.MapsTo f s slitPlane) : DifferentiableOn ℂ (fun x ↦ f x ^ g x) s :=
   fun x hx ↦ (hf x hx).cpow (hg x hx) (h0 hx)
@@ -121,6 +130,11 @@ theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : Differentiab
 theorem DifferentiableOn.const_cpow (hf : DifferentiableOn ℂ f s)
     (h0 : c ≠ 0 ∨ ∀ x ∈ s, f x ≠ 0) : DifferentiableOn ℂ (fun x ↦ c ^ f x) s :=
   fun x hx ↦ (hf x hx).const_cpow (h0.imp_right fun h ↦ h x hx)
+
+theorem DifferentiableOn.cpow_const (hf : DifferentiableOn ℂ f s)
+    (h0 : ∀ x ∈ s, f x ∈ slitPlane) :
+    DifferentiableOn ℂ (fun x => f x ^ c) s :=
+  hf.cpow (differentiableOn_const c) h0
 
 theorem Differentiable.cpow (hf : Differentiable ℂ f) (hg : Differentiable ℂ g)
     (h0 : ∀ x, f x ∈ slitPlane) : Differentiable ℂ (fun x ↦ f x ^ g x) :=
@@ -247,6 +261,32 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     · rw [add_sub_cancel_right, add_sub_cancel_right]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
+
+/-- An alternate statement of `hasDerivAt_ofReal_cpow`. -/
+theorem hasDerivAt_ofReal_cpow' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
+    HasDerivAt (fun y : ℝ => (y : ℂ) ^ r) (r * x ^ (r - 1)) x := by
+  have := HasDerivAt.const_mul r <| hasDerivAt_ofReal_cpow hx (by rwa [ne_eq, sub_eq_neg_self])
+  simp_rw [sub_add_cancel, mul_div_cancel₀ _ hr] at this
+  exact this
+
+/-- A version of `DifferentiableAt.cpow_const` for a real function. -/
+theorem DifferentiableAt.cpow_const' {f : ℝ → ℝ} {x : ℝ} (hf : DifferentiableAt ℝ f x)
+    (h0 : f x ≠ 0) (h1 : c ≠ 0) :
+    DifferentiableAt ℝ (fun (y : ℝ) => (f y : ℂ) ^ c) x :=
+  (hasDerivAt_ofReal_cpow' h0 h1).differentiableAt.comp x hf
+
+theorem Complex.deriv_cpow_const (hx : x ∈ Complex.slitPlane) :
+    deriv (fun (x : ℂ) ↦ x ^ c) x = c * x ^ (c - 1) :=
+  (hasStrictDerivAt_cpow_const hx).hasDerivAt.deriv
+
+/-- A version of `Complex.deriv_cpow_const` for a real variable. -/
+theorem Complex.deriv_cpow_const' {x : ℝ} (hx : x ≠ 0) (hc : c ≠ 0) :
+    deriv (fun x : ℝ ↦ (x : ℂ) ^ c) x = c * x ^ (c - 1) :=
+  (hasDerivAt_ofReal_cpow' hx hc).deriv
+
+theorem deriv_cpow_const (hf : DifferentiableAt ℂ f x) (hx : f x ∈ Complex.slitPlane) :
+    deriv (fun (x : ℂ) ↦ f x ^ c) x = c * f x ^ (c - 1) * deriv f x :=
+  (hf.hasDerivAt.cpow_const hx).deriv
 
 end deriv
 
