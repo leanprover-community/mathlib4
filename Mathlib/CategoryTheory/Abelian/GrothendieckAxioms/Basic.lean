@@ -84,7 +84,7 @@ variable {C} in
 Pull back a `HasExactColimitsOfShape J` along a functor which preserves and reflects finite limits
 and preserves colimits of shape `J`
 -/
-lemma hasExactColimitsOfShape_transport {J D : Type*} [Category J] [Category D]
+lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Category J] [Category D]
     [HasColimitsOfShape J C] [HasColimitsOfShape J D] [HasExactColimitsOfShape J D]
     (F : C ⥤ D) [PreservesFiniteLimits F] [ReflectsFiniteLimits F] [HasFiniteLimits C]
     [PreservesColimitsOfShape J F] : HasExactColimitsOfShape J C where
@@ -102,7 +102,7 @@ variable {C} in
 Pull back a `HasExactLimitsOfShape J` along a functor which preserves and reflects finite colimits
 and preserves limits of shape `J`
 -/
-lemma hasExactLimitsOfShape_transport {D J : Type*} [Category D] [Category J]
+lemma HasExactLimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Category D] [Category J]
     [HasLimitsOfShape J C] [HasLimitsOfShape J D] [HasExactLimitsOfShape J D]
     (F : C ⥤ D) [PreservesFiniteColimits F] [ReflectsFiniteColimits F] [HasFiniteColimits C]
     [PreservesLimitsOfShape J F] : HasExactLimitsOfShape J C where

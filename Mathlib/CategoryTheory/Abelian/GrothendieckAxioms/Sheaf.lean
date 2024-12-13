@@ -23,10 +23,10 @@ variable (K : GrothendieckTopology C) [HasWeakSheafify K A]
 
 instance [HasFiniteLimits A] [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [PreservesColimitsOfShape J (sheafToPresheaf K A)] : HasExactColimitsOfShape J (Sheaf K A) :=
-  hasExactColimitsOfShape_transport J (sheafToPresheaf K A)
+  HasExactColimitsOfShape.domain_of_functor J (sheafToPresheaf K A)
 
 instance [HasFiniteColimits A] [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
     [PreservesFiniteColimits (sheafToPresheaf K A)] : HasExactLimitsOfShape J (Sheaf K A) :=
-  hasExactLimitsOfShape_transport J (sheafToPresheaf K A)
+  HasExactLimitsOfShape.domain_of_functor J (sheafToPresheaf K A)
 
 end CategoryTheory
