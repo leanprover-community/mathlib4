@@ -253,9 +253,9 @@ def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
 
 /-- Lifts the state type `σ` inside `Language.IsRegular` to a different universe. -/
 private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
-    (h : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
+    (hL : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
     ∃ σ' : Type v', ∃ _ : Fintype σ', ∃ M : DFA T σ', M.accepts = L :=
-  have ⟨σ, _, M, hM⟩ := h
+  have ⟨σ, _, M, hM⟩ := hL
   have ⟨σ', ⟨f⟩⟩ := Small.equiv_small.{v', v} (α := σ)
   ⟨σ', Fintype.ofEquiv σ f, M.reindex f, hM ▸ DFA.accepts_reindex M f⟩
 
