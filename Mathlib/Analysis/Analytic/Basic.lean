@@ -529,6 +529,15 @@ theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝
     (h₁.mono (lt_min h₁.r_pos h₂pos) inf_le_left).congr
       fun y hy => h₂ (EMetric.ball_subset_ball inf_le_right hy)⟩
 
+theorem HasFPowerSeriesWithinOnBall.unique (hf : HasFPowerSeriesWithinOnBall f p s x r)
+    (hg : HasFPowerSeriesWithinOnBall g p s x r) :
+    (insert x s ∩ EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
+
+theorem HasFPowerSeriesOnBall.unique (hf : HasFPowerSeriesOnBall f p x r)
+    (hg : HasFPowerSeriesOnBall g p x r) : (EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
+
 protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=
   let ⟨_, hr⟩ := hf
