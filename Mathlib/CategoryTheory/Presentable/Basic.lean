@@ -11,12 +11,13 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-! # Presentable objects
 
-If `κ` is a regular cardinal, we shall say that a preordered type `J`
-is `κ`-directed (`IsCardinalDirected`) if any subset of `J` of
-cardinality `< κ` has an upper bound.
+If `κ` is a regular cardinal, we introduce the notion of `κ`-filtered
+category, which generalizes the notion of filtered category.
+Indeed, we obtain the equivalence
+`IsCardinalFiltered J ℵ₀ ↔ IsFiltered J`.
 
 A functor `F : C ⥤ D` is `κ`-accessible (`Functor.IsAccessible`)
-if it commutes with colimits of shape `J` where `J` is any `κ`-directed preordered type.
+if it commutes with colimits of shape `J` where `J` is any `κ`-filtered category.
 
 An object `X` of a category is `κ`-presentable (`IsPresentable`)
 if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
@@ -26,66 +27,152 @@ if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
 
 -/
 
-universe w v' v u' u
+universe w w' v' v u' u
 
 namespace CategoryTheory
 
 open Limits Opposite
 
+-- to be moved
+@[simp]
+lemma cardinal_arrow_discrete (S : Type w) :
+    Cardinal.mk (Arrow (Discrete S)) = Cardinal.mk S := by
+  let e : Arrow (Discrete S) ≃ S :=
+    { toFun f := f.left.as
+      invFun s := Arrow.mk (𝟙 (Discrete.mk s))
+      left_inv := by
+        rintro ⟨⟨a⟩, ⟨b⟩, f⟩
+        obtain rfl := Discrete.eq_of_hom f
+        rfl
+      right_inv _ := rfl }
+  exact Cardinal.mk_congr e
+
 section
 
-variable (J : Type w) [Preorder J] (κ : Cardinal.{w})
+/-- A category `J` is `κ`-filtered (for a regular cardinal `κ`) is
+any functor `F : A ⥤ J` from a `κ`-small category (`Cardinal.mk (Arrow A) < κ`)
+admits a cocone. -/
+class IsCardinalFiltered (J : Type w) [SmallCategory J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
+  nonempty_cocone {A : Type w} [SmallCategory A] (F : A ⥤ J)
+    (hA : Cardinal.mk (Arrow A) < κ) : Nonempty (Cocone F)
 
-/-- A preorder `J` is `κ`-directed (when `κ` is regular cardinal),
-if any subset of `J` of cardinality `< κ` has an upper bound. -/
-class IsCardinalDirected [Fact κ.IsRegular] : Prop where
-  exists_upper_bound (S : Set J) (hS : Cardinal.mk S < κ) :
-    ∃ (j : J), ∀ (s : S), s.1 ≤ j
+namespace IsCardinalFiltered
 
-namespace IsCardinalDirected
+variable {J : Type w} [SmallCategory J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
+  [IsCardinalFiltered J κ]
 
-variable [hκ : Fact κ.IsRegular] [IsCardinalDirected J κ]
+/-- A choice of cocone for a functor `F : A ⥤ J` such that `Cardinal.mk (Arrow A) < κ`
+when `J` is a `κ`-filtered category. -/
+noncomputable def cocone {A : Type w} [SmallCategory A]
+    (F : A ⥤ J) (hA : Cardinal.mk (Arrow A) < κ) :
+    Cocone F :=
+  (nonempty_cocone (κ := κ) _ hA).some
 
-section
+/-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered, this is
+a choice of object in `J` which is the target of a map from any object in `S`. -/
+noncomputable def max (S : Set J) (hS : Cardinal.mk S < κ) : J := by
+  have : Cardinal.mk (Arrow (Discrete S)) < κ := by simpa using hS
+  exact (cocone (Discrete.functor Subtype.val) this).pt
 
-variable {J κ} (S : Set J) (hS : Cardinal.mk S < κ)
+/-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered,
+this is a choice of map `s.1 ⟶ max S hS` for any `s : S`. -/
+noncomputable def toMax (S : Set J) (hS : Cardinal.mk S < κ) (s : S) :
+    s.1 ⟶ max S hS := by
+  have : Cardinal.mk (Arrow (Discrete S)) < κ := by simpa using hS
+  exact (cocone (Discrete.functor Subtype.val) this).ι.app ⟨s⟩
 
-/-- A choice of upper bound for a subset `S : Set J`
-of cardinality `< κ`, when `J` is `κ`-directed. -/
-noncomputable def upperBound : J :=
-  (IsCardinalDirected.exists_upper_bound S hS).choose
+variable (J)
 
-lemma le_upperBound (s : S) : s.1 ≤ upperBound S hS :=
-  (IsCardinalDirected.exists_upper_bound S hS).choose_spec s
-
-end
-
-variable {κ} in
 lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ' ≤ κ) :
-    IsCardinalDirected J κ' where
-  exists_upper_bound S hS :=
-    ⟨upperBound S (lt_of_lt_of_le hS h), le_upperBound _ _⟩
+    IsCardinalFiltered J κ' where
+  nonempty_cocone F hA := ⟨cocone F (lt_of_lt_of_le hA h)⟩
 
-include κ in
-lemma isDirected : IsDirected J (· ≤ ·) where
-  directed X Y := by
-    have : Cardinal.mk ({X, Y} : Set J) < κ := by
-      refine lt_of_lt_of_le ?_ hκ.out.aleph0_le
-      rw [Cardinal.lt_aleph0_iff_subtype_finite]
-      apply Finite.Set.finite_insert
-    refine ⟨upperBound _ this,
-      le_upperBound _ this ⟨X, by simp⟩, le_upperBound _ this ⟨Y, by simp⟩⟩
+end IsCardinalFiltered
 
-include κ in
-lemma isFiltered_of_isCardinalDirected :
+-- to be moved
+/-- `Arrow A` is equivalent to a sigma type. -/
+@[simps!]
+def Arrow.equivSigma (A : Type u) [Category.{v} A] :
+    Arrow A ≃ Σ (X : A) (Y : A), X ⟶ Y where
+  toFun f := ⟨_, _, f.hom⟩
+  invFun x := Arrow.mk x.2.2
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+-- to be moved
+lemma Arrow.finite_iff (A : Type u) [SmallCategory A] :
+    Finite (Arrow A) ↔ Nonempty (FinCategory A) := by
+  constructor
+  · intro
+    refine ⟨?_, fun a b ↦ ?_⟩
+    · have := Finite.of_injective (fun (a : A) ↦ Arrow.mk (𝟙 a))
+        (fun _ _  ↦ congr_arg Comma.left)
+      apply Fintype.ofFinite
+    · have := Finite.of_injective (fun (f : a ⟶ b) ↦ Arrow.mk f)
+        (fun f g h ↦ by
+          change (Arrow.mk f).hom = (Arrow.mk g).hom
+          congr)
+      apply Fintype.ofFinite
+  · rintro ⟨_⟩
+    have := Fintype.ofEquiv  _ (Arrow.equivSigma A).symm
+    infer_instance
+
+-- to be moved
+instance {A : Type u} [SmallCategory A] [FinCategory A] :
+    Finite (Arrow A) := by
+  rw [Arrow.finite_iff]
+  exact ⟨inferInstance⟩
+
+open IsCardinalFiltered in
+lemma isFiltered_of_isCardinalDirected (J : Type w) [SmallCategory J]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]:
     IsFiltered J := by
-  have : Nonempty J := ⟨upperBound (κ := κ) (∅ : Set J) (by
+  rw [IsFiltered.iff_cocone_nonempty.{w}]
+  intro A _ _ F
+  have hA : Cardinal.mk (Arrow A) < κ := by
     refine lt_of_lt_of_le ?_ hκ.out.aleph0_le
-    simpa only [Cardinal.mk_eq_zero] using Cardinal.aleph0_pos)⟩
-  have := isDirected J κ
-  infer_instance
+    rw [Cardinal.mk_lt_aleph0_iff]
+    infer_instance
+  exact ⟨cocone F hA⟩
 
-end IsCardinalDirected
+instance : Fact Cardinal.aleph0.IsRegular where
+  out := Cardinal.isRegular_aleph0
+
+lemma isCardinalFiltered_aleph0_iff (J : Type w) [SmallCategory J] :
+    IsCardinalFiltered J Cardinal.aleph0 ↔ IsFiltered J := by
+  constructor
+  · intro
+    exact isFiltered_of_isCardinalDirected J Cardinal.aleph0
+  · intro
+    constructor
+    intro A _ F hA
+    rw [Cardinal.mk_lt_aleph0_iff] at hA
+    have := ((Arrow.finite_iff A).1 hA).some
+    exact ⟨IsFiltered.cocone F⟩
+
+-- to be moved
+lemma cardinal_le_cardinal_arrow (A : Type u) [SmallCategory A] :
+    Cardinal.mk A ≤ Cardinal.mk (Arrow A) :=
+  Cardinal.mk_le_of_injective (f := fun a ↦ Arrow.mk (𝟙 a)) (fun _ _ ↦ congr_arg Comma.left)
+
+lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (h : ∀ (S : Set J) (_ : Cardinal.mk S < κ), ∃ (j : J), ∀ (s : S), s.1 ≤ j) :
+    IsCardinalFiltered J κ where
+  nonempty_cocone {A _ F hA} := by
+    let S := Set.range F.obj
+    have hS : Cardinal.mk S < κ := by
+      let f : A → S := fun a ↦ ⟨F.obj a, ⟨a, rfl⟩⟩
+      have hf : Function.Surjective f := by
+        rintro ⟨_, ⟨a, rfl⟩⟩
+        exact ⟨a, rfl⟩
+      exact lt_of_le_of_lt (Cardinal.mk_le_of_surjective hf)
+        (lt_of_le_of_lt (cardinal_le_cardinal_arrow A) hA)
+    obtain ⟨j, hj⟩ := h S hS
+    refine ⟨Cocone.mk j
+      { app a := homOfLE (hj ⟨F.obj a, ⟨a, rfl⟩⟩)
+        naturality _ _ _ := rfl }⟩
 
 end
 
@@ -96,13 +183,13 @@ namespace Functor
 variable (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 /-- A functor is `κ`-accessible (with `κ` a regular cardinal)
-if it preserves colimits of shape `J` where `J` is any `κ`-directed preordered type. -/
+if it preserves colimits of shape `J` where `J` is any `κ`-filtered category. -/
 class IsAccessible : Prop where
-  preservesColimitOfShape {J : Type w} [Preorder J] [IsCardinalDirected J κ] :
+  preservesColimitOfShape {J : Type w} [SmallCategory J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J F
 
 lemma preservesColimitsOfShape_of_isAccessible [F.IsAccessible κ]
-    (J : Type w) [Preorder J] [IsCardinalDirected J κ] :
+    (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J F :=
   IsAccessible.preservesColimitOfShape κ
 
@@ -111,7 +198,7 @@ lemma isAccessible_of_le
     [F.IsAccessible κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
     F.IsAccessible κ' where
   preservesColimitOfShape {J _ _} := by
-    have := IsCardinalDirected.of_le J h
+    have := IsCardinalFiltered.of_le J h
     exact F.preservesColimitsOfShape_of_isAccessible κ J
 
 end Functor
@@ -120,11 +207,11 @@ variable (X : C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 /-- An object `X` in a category is `κ`-presentable (for `κ` a regular cardinal)
 when the functor `Hom(X, _)` preserves colimits indexed by
-`κ`-directed preordered types. -/
+`κ`-filtered categories. -/
 abbrev IsPresentable : Prop := (coyoneda.obj (op X)).IsAccessible κ
 
 lemma preservesColimitsOfShape_of_isPresentable [IsPresentable X κ]
-    (J : Type w) [Preorder J] [IsCardinalDirected J κ] :
+    (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J (coyoneda.obj (op X)) :=
   (coyoneda.obj (op X)).preservesColimitsOfShape_of_isAccessible κ J
 
