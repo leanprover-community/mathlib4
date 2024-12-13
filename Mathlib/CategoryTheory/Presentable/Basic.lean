@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 
