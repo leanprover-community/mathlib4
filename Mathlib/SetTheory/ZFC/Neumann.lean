@@ -22,7 +22,7 @@ open Order
 
 namespace ZFSet
 
-/-- The von Neumann hierarchy is defined so that `V_ o` is the union of the powerset of all
+/-- The von Neumann hierarchy is defined so that `V_ o` is the union of the powersets of all
 `V_ a` for `a < o`. It satisfies the following properties:
 
 - `vonNeumann_zero`: `V_ 0 = ∅`
