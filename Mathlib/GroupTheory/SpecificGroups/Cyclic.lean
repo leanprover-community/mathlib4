@@ -725,12 +725,19 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Group G] [Group G']
   apply mulEquivOfCyclicCardEq
   exact hG.trans hH.symm
 
+variable (G) in
+/-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
+noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
+    MulAut G ≃* (ZMod (Nat.card G))ˣ :=
+  ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
+
+variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
     Nat.card (MulAut G) = Nat.totient (Nat.card G) := by
   have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   rw [← ZMod.card_units_eq_totient, ← Nat.card_eq_fintype_card]
-  exact Nat.card_congr ((MulAut.congr (zmodCyclicMulEquiv h)).toEquiv.symm.trans
-    (MulEquiv.toAdditive.trans (ZMod.AddAutEquivUnits (Nat.card G)).toEquiv))
+  exact Nat.card_congr (mulAutMulEquiv G)
 
 end ZMod
 
