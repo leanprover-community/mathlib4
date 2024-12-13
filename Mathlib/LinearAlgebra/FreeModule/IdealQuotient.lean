@@ -44,7 +44,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     simp_rw [ab.mem_ideal_iff', ab, ab_eq]
     have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
-      simp only [← MulAction.mul_smul, b'.repr_sum_self, mul_comm]
+      simp only [← mul_smul, b'.repr_sum_self, mul_comm]
     constructor
     · rintro ⟨c, rfl⟩ i
       exact ⟨c i, this c i⟩

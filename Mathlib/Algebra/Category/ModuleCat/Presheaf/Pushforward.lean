@@ -28,6 +28,7 @@ namespace PresheafOfModules
 
 variable (F : C ⥤ D)
 
+set_option maxHeartbeats 300000
 /-- The pushforward functor on presheaves of modules for a functor `F : C ⥤ D` and
 `R : Dᵒᵖ ⥤ RingCat`. On the underlying presheaves of abelian groups, it is induced
 by the precomposition with `F.op`. -/
