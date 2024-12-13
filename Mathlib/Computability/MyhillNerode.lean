@@ -34,8 +34,7 @@ theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
 theorem leftQuotient_append (x y : List α) :
     L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
-  dsimp [leftQuotient, Language]
-  simp_rw [List.append_assoc]
+  simp [leftQuotient, Language]
 
 @[simp]
 theorem mem_leftQuotient (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈ L := Iff.rfl
