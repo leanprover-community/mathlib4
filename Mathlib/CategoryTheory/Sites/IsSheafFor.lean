@@ -608,7 +608,7 @@ presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a shea
 lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
     (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
     (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
-    e (P₁.map f.op x) = P₂.map f.op (e x))
+      e (P₁.map f.op x) = P₂.map f.op (e x))
     {X : C} {R : Presieve X} (hP₁ : IsSheafFor P₁ R) :
     IsSheafFor P₂ R := fun x₂ hx₂ ↦ by
   have he' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₂.obj (op Y)),
