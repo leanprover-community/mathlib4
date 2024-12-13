@@ -32,7 +32,8 @@ private theorem opow_of_ne_zero {a b : Ordinal} (h : a ≠ 0) : a ^ b =
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2 :=
   if_neg h
 
-private theorem zero_opow' (a : Ordinal) : 0 ^ a = 1 - a :=
+/-- `0 ^ a = 1` if `a = 0` and `0 ^ a = 0` otherwise. -/
+theorem zero_opow' (a : Ordinal) : 0 ^ a = 1 - a :=
   if_pos rfl
 
 theorem zero_opow_le (a : Ordinal) : (0 : Ordinal) ^ a ≤ 1 := by
