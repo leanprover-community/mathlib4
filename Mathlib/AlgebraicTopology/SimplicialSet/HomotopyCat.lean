@@ -109,11 +109,77 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
       dsimp
       rw [← FunctorToTypes.naturality]) }
 
-@[ext] lemma hom₂_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
+@[ext]
+lemma OneTruncation₂.Hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
     f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
 
 section
 variable {C : Type u} [Category.{v} C]
+
+/-- An equivalence between the type of objects underlying a category and the type of 0-simplices in
+the 2-truncated nerve. -/
+@[simps]
+def OneTruncation₂.nerveEquiv' :
+    OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C where
+  toFun X := X.obj' 0
+  invFun X := .mk₀ X
+  left_inv _ := ComposableArrows.ext₀ rfl
+  right_inv _ := rfl
+
+/-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.invFun`. -/
+def OneTruncation₂.nerveHomEquiv' (X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
+  (X ⟶ Y) ≃ (nerveEquiv' X ⟶ nerveEquiv' Y) where
+  toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
+      eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
+  invFun f :=
+    { edge := ComposableArrows.mk₁ f
+      src_eq := ComposableArrows.ext₀ rfl
+      tgt_eq := ComposableArrows.ext₀ rfl }
+  left_inv φ := by
+    ext
+    exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
+      (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
+  right_inv f := by dsimp; simp only [comp_id, id_comp]; rfl
+
+-- TODO: Fix universes.
+/-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
+def OneTruncation₂.ofNerve₂' (C : Type 0) [Category.{0} C] :
+    ReflQuiv.of (OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))) ≅ ReflQuiv.of C := by
+  apply ReflQuiv.isoOfEquiv OneTruncation₂.nerveEquiv' OneTruncation₂.nerveHomEquiv' ?_
+  intro X
+  unfold nerveEquiv' nerveHomEquiv'
+  simp only [Cat.of_α, op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
+    nerveEquiv'_apply, Nat.reduceAdd, id_edge, SimplexCategory.len_mk, id_eq, eqToHom_refl, comp_id,
+    id_comp, ReflQuiver.id_eq_id]
+  unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
+  simp only [fullSubcategoryInclusion.obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
+    SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
+    Quiver.Hom.unop_op, fullSubcategoryInclusion.map, ComposableArrows.whiskerLeft_map,
+    Fin.zero_eta, Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
+  show X.map (𝟙 _) = _
+  rw [X.map_id]
+  rfl
+
+/-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
+category. -/
+@[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
+def OneTruncation₂.ofNerve₂.natIso' :
+    nerveFunctor₂.{0,0} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
+  refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂' C) ?nat
+  · intro C D F
+    fapply ReflPrefunctor.ext <;> simp
+    · exact fun _ ↦ rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
+        nerveFunctor mapComposableArrows toReflPrefunctor
+      simp only [comp_obj, whiskeringLeft_obj_obj, ReflQuiv.of_val, Functor.comp_map,
+        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, whiskeringRight_obj_obj, ofNerve₂',
+        Cat.of_α, nerveEquiv', ComposableArrows.obj', Fin.zero_eta, Fin.isValue,
+        ReflQuiv.comp_eq_comp, Nat.reduceAdd, SimplexCategory.len_mk, id_eq, op_map,
+        Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
+        ReflPrefunctor.comp_map]
+      simp [nerveHomEquiv', ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv]
 
 /-- An equivalence between the type of objects underlying a category and the type of 0-simplices in
 the 2-truncated nerve. -/
@@ -139,39 +205,81 @@ def OneTruncation₂.nerveHomEquiv (X Y : C) : (X ⟶ Y) ≃ (nerveEquiv X ⟶ n
     exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
       (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
 
--- TODO: Fix universes!
+/-- A hom equivalence over the function `OneTruncation₂.nerveEquiv.invFun`. -/
+def OneTruncation₂.nerveHomEquivInv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
+  (X ⟶ Y) ≃ (nerveEquiv.invFun X ⟶ nerveEquiv.invFun Y) where
+  toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
+      eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
+  invFun f :=
+    { edge := ComposableArrows.mk₁ f
+      src_eq := ComposableArrows.ext₀ rfl
+      tgt_eq := ComposableArrows.ext₀ rfl }
+  left_inv φ := by
+    ext
+    exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
+      (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
+  right_inv f := by dsimp; simp only [comp_id, id_comp]; rfl
+
+/-- The refl prefunctor from the refl quiver underlying a nerve to the refl quiver underlying a
+category. -/
+def OneTruncation₂.ofNerve₂.hom : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ⥤rq C where
+  obj := nerveEquiv.invFun
+  map := nerveHomEquivInv
+  map_id := fun X : ComposableArrows _ 0 => by
+    obtain ⟨x, rfl⟩ := X.mk₀_surjective
+    simp [nerveHomEquivInv]; rfl
+
+/-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
+a nerve. -/
+def OneTruncation₂.ofNerve₂.inv : C ⥤rq OneTruncation₂ (nerveFunctor₂.obj (Cat.of C)) where
+  obj := (.mk₀ ·)
+  map := fun f => by
+    refine ⟨.mk₁ f, ?_, ?_⟩ <;> apply ComposableArrows.ext₀ <;> simp <;> rfl
+  map_id _ := by ext; apply ComposableArrows.ext₁ <;> simp <;> rfl
+
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
-def OneTruncation₂.ofNerve₂ (C : Type 0) [Category.{0} C] :
+def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
     ReflQuiv.of (OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))) ≅ ReflQuiv.of C := by
-  refine Iso.symm ?_
-  apply ReflQuiv.isoOfEquiv OneTruncation₂.nerveEquiv OneTruncation₂.nerveHomEquiv ?_
-  intro X
-  unfold nerveEquiv nerveHomEquiv
-  simp only [op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
-    nerveEquiv_apply, Nat.reduceAdd, ReflQuiver.id_eq_id]
-  ext
-  dsimp only [SimplexCategory.len_mk, id_eq, id_edge, Nat.reduceAdd, Fin.isValue]
-  have := ((truncation 2).obj (nerve C)).map (σ₂ (0 : Fin 1)).op
-  unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
-  refine ComposableArrows.ext₁ rfl rfl ?_
-  simp
+  refine {
+    hom := ofNerve₂.hom
+    inv := ofNerve₂.inv (C := C)
+    hom_inv_id := ?_
+    inv_hom_id := ?_
+  }
+  · have H1 {X X' Y : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
+        (f : X ⟶ Y) (h : X = X') : (Eq.rec f h : X' ⟶ Y).edge = f.edge := by cases h; rfl
+    have H2 {X Y Y' : OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))}
+        (f : X ⟶ Y) (h : Y = Y') : (Eq.rec f h : X ⟶ Y').edge = f.edge := by cases h; rfl
+    fapply ReflPrefunctor.ext <;> simp
+    · exact fun _ ↦ ComposableArrows.ext₀ rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      apply OneTruncation₂.Hom.ext
+      simp [ReflQuiv.comp_eq_comp]
+      refine ((H2 _ _).trans ((H1 _ _).trans (ComposableArrows.ext₁ ?_ ?_ ?_))).symm
+      · rfl
+      · rfl
+      · simp [ofNerve₂.inv, ofNerve₂.hom, nerveHomEquivInv]; rfl
+  · fapply ReflPrefunctor.ext <;> simp
+    · exact fun _ ↦ rfl
+    · intro X Y f
+      simp [ReflQuiv.comp_eq_comp, ReflQuiv.id_eq_id, ofNerve₂.inv, ofNerve₂.hom, nerveHomEquivInv,
+        SimplexCategory.Truncated.inclusion]
 
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso :
-    nerveFunctor₂.{0,0} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
+    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
   refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) ?nat
   · intro C D F
-    fapply ReflPrefunctor.ext' <;> simp
+    fapply ReflPrefunctor.ext <;> simp
     · exact fun _ ↦ rfl
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
       unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
         nerveFunctor mapComposableArrows toReflPrefunctor
-      simp [ReflQuiv.comp_eq_comp, ofNerve₂, nerveHomEquiv, ReflQuiv.isoOfEquiv,
-        ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv]
-      sorry
+      simp [ReflQuiv.comp_eq_comp, ofNerve₂, ofNerve₂.hom, nerveHomEquivInv]
 
 end
 
@@ -275,7 +383,7 @@ def _root_.SSet.Truncated.HomotopyCategory (V : SSet.Truncated.{u} 2) : Type u :
   Quotient (HoRel₂ (V := V))
 
 instance (V : SSet.Truncated.{u} 2) : Category.{u} (V.HomotopyCategory) :=
-  inferInstanceAs (Category (Quotient (HoRel₂ (V := V))))
+  inferInstanceAs (Category (CategoryTheory.Quotient ..))
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
 simplicial set `V` to its homotopy category. -/
@@ -288,7 +396,9 @@ epimorphism. -/
 theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D]
     (F₁ F₂ : V.HomotopyCategory ⥤ D)
     (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
-    F₁ = F₂ := Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V)) (HoRel₂ (V := V)) _ _ h
+    F₁ = F₂ :=
+  Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V))
+    (HoRel₂ (V := V)) _ _ h
 
 /-- A map of 2-truncated simplicial sets induces a functor between homotopy categories. -/
 def mapHomotopyCategory {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
