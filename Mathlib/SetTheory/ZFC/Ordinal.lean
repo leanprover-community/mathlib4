@@ -31,8 +31,6 @@ universe u
 
 variable {x y z : ZFSet.{u}}
 
-open Order
-
 namespace ZFSet
 
 /-- A transitive set is one where every element is a subset.
