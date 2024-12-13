@@ -877,9 +877,9 @@ def ofCommaSndEquivalenceInverse (c : C) :
   Functor.toStructuredArrow (Comma.preLeft (Under.forget c) F G) _ _
     (fun Y => Y.left.hom) (fun _ => by simp)
 
-/-- There is a canonical equivalence between the costructured arrow category with codomain `c` on
+/-- There is a canonical equivalence between the structured arrow category with domain `c` on
 the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
-`Over.forget c ⋙ F : Over c ⥤ T` and `G`. -/
+`Under.forget c ⋙ F : Under c ⥤ T` and `G`. -/
 @[simps]
 def ofCommaSndEquivalence (c : C) :
     StructuredArrow c (Comma.fst F G) ≌ Comma (Under.forget c ⋙ F) G where
