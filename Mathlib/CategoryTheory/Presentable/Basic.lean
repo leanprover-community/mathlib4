@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.Data.Set.Finite.Basic
+import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-! # Presentable objects
 
