@@ -36,7 +36,7 @@ variable {f : ℝ → ℝ} {x₀ : ℝ}
 
 /-- If the slope from a critical point `x₀` to `b > x₀` is positive then so is the derivative
  at `b`. -/
-lemma slopeSimpPos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope (deriv f) x₀ b)
+lemma deriv_pos_of_lt_of_slope_pos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope (deriv f) x₀ b)
     (hf : deriv f x₀ = 0) : 0 < deriv f b := by
   unfold slope at hbf
   rw [hf] at hbf
@@ -44,7 +44,7 @@ lemma slopeSimpPos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope (deriv f) x₀ b)
 
 /-- If the slope from a critical point `x₀` to `b < x₀` is positive then the derivative
  at `b` is negative. -/
-lemma slopeSimpNeg {b : ℝ} (hb : b < x₀) (hbf : 0 < slope (deriv f) x₀ b)
+lemma deriv_neg_of_gt_of_slope_pos {b : ℝ} (hb : b < x₀) (hbf : 0 < slope (deriv f) x₀ b)
     (hf : deriv f x₀ = 0) : deriv f b < 0 := by
   unfold slope at hbf
   simp_rw [smul_eq_mul, hf] at hbf
@@ -53,18 +53,16 @@ lemma slopeSimpNeg {b : ℝ} (hb : b < x₀) (hbf : 0 < slope (deriv f) x₀ b)
   contrapose this
   exact not_lt.mpr <| div_nonpos_of_nonneg_of_nonpos (not_lt.mp this) (by linarith)
 
-/-- If the derivative is negative (positive) to the left (right) then the
+/-- If the derivative is nonzero in a (specific) punctured neighborhood then the
 function is differentiable in a punctured neighborhood. -/
 theorem eventually_differentiable_of_deriv_nonzero {ε : ℝ}
     (hε : ε > 0)
-    (hε₀ : ∀ b ∈ Ioo (x₀ - ε) x₀, deriv f b < 0)
-    (hε₁ : ∀ b ∈ Ioo x₀ (x₀ + ε), 0 < deriv f b) :
+    (hε₀ : ∀ b ∈ Ioo (x₀ - ε) x₀, deriv f b ≠ 0)
+    (hε₁ : ∀ b ∈ Ioo x₀ (x₀ + ε), deriv f b ≠ 0) :
     ∀ᶠ x in 𝓝[≠] x₀, DifferentiableAt ℝ f x :=
     (eventually_mem_set.mpr <| insert_mem_nhds_iff.mp <| insert_Ioo₀ hε hε ▸
     Ioo_mem_nhds (by linarith) (by linarith)).mono
-    fun _ hb => differentiableAt_of_deriv_ne_zero <| hb.elim
-      (fun h => ne_of_lt <| hε₀ _ h)
-      (fun h => ne_of_gt <| hε₁ _ h)
+    fun _ hb => differentiableAt_of_deriv_ne_zero <| hb.elim (hε₀ _) (hε₁ _)
 
 
 /-- If `f''(x) > 0` then `f' < 0` on an interval to the left of `x`. -/
@@ -74,7 +72,7 @@ lemma deriv_neg_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0)
     (show x₀ - 1 < x₀ by simp)).mp
       <| nhds_left'_le_nhds_ne x₀ <| (tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
       (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt) (Ioi 0) isOpen_Ioi hf
-  exact ⟨u, hu.1.2, fun b hb => slopeSimpNeg hb.2 (hu.2 hb) hd⟩
+  exact ⟨u, hu.1.2, fun b hb => deriv_neg_of_gt_of_slope_pos hb.2 (hu.2 hb) hd⟩
 
 
 /-- If `f''(x) > 0` then `f' > 0` on an interval to the right of `x`. -/
@@ -83,7 +81,7 @@ lemma deriv_pos_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0)
   obtain ⟨u,hu⟩ := (mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset (show x₀ < x₀ + 1 by simp)).mp
     <| nhds_right'_le_nhds_ne x₀ <|(tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
     (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt) (Ioi 0) isOpen_Ioi hf
-  exact ⟨u, hu.1.1, fun b hb => slopeSimpPos hb.1 (hu.2 hb) hd⟩
+  exact ⟨u, hu.1.1, fun b hb => deriv_pos_of_lt_of_slope_pos hb.1 (hu.2 hb) hd⟩
 
 /-- If `f''(x) > 0` then `f'` changes sign at `x`.
 This lemma applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
@@ -121,7 +119,8 @@ theorem isLocalMin_of_deriv_deriv_pos
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
   obtain ⟨ε,hε⟩    := deriv_neg_pos_of_deriv_deriv_pos hf hd
-  obtain ⟨p,hp⟩    := eventually_differentiable_of_deriv_nonzero hε.1 hε.2.1 hε.2.2
+  obtain ⟨p,hp⟩    := eventually_differentiable_of_deriv_nonzero hε.1
+    (fun b hb => ne_of_lt <| hε.2.1 b hb) (fun b hb => ne_of_gt <| hε.2.2 b hb)
   obtain ⟨l,u,hlu⟩ := mem_nhds_iff_exists_Ioo_subset.mp hp.1
   let δ := min (x₀ - l) (u - x₀)
   have hζ : (1/2) * min δ ε > 0 := by aesop
