@@ -443,8 +443,7 @@ open MeasureTheory MeasureTheory.Measure ENNReal
 @[simp]
 theorem Complex.volume_ball (a : ℂ) (r : ℝ) :
     volume (Metric.ball a r) = .ofReal r ^ 2 * NNReal.pi := by
-  rw [InnerProductSpace.volume_ball a r, finrank_real_complex, Nat.cast_ofNat, div_self two_ne_zero,
-    one_add_one_eq_two, Real.Gamma_two, div_one, Real.sq_sqrt (by positivity),
+  simp [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) a,
     ← NNReal.coe_real_pi, ofReal_coe_nnreal]
 
 @[simp]
