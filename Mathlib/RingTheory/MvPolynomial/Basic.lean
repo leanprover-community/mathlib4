@@ -39,8 +39,6 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-open Polynomial
-
 universe u v
 
 variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
