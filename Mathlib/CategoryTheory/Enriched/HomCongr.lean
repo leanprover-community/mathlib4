@@ -44,7 +44,7 @@ def eHomCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) :
     rw [← eHomWhiskerRight_comp_assoc, inv_hom_id, eHomWhiskerRight_id, id_comp]
     rw [← eHomWhiskerLeft_comp, inv_hom_id, eHomWhiskerLeft_id]
 
-lemma eHomCongr_refl {X Y : C} :
+lemma eHomCongr_refl (X Y : C) :
     eHomCongr V (Iso.refl X) (Iso.refl Y) = Iso.refl _ := by aesop
 
 lemma eHomCongr_trans {X₁ Y₁ X₂ Y₂ X₃ Y₃ : C} (α₁ : X₁ ≅ X₂) (β₁ : Y₁ ≅ Y₂)
