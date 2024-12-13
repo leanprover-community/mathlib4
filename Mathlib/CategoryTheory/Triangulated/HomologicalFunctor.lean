@@ -122,7 +122,7 @@ lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) 
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
-    ⟨fun {X} => preservesLimitOfIsoDiagram F (diagramIsoPair X).symm⟩
+    ⟨fun {X} => preservesLimit_of_iso_diagram F (diagramIsoPair X).symm⟩
   intro X₁ X₂
   have : HasBinaryBiproduct (F.obj X₁) (F.obj X₂) := HasBinaryBiproducts.has_binary_biproduct _ _
   have : Mono (F.biprodComparison X₁ X₂) := by
@@ -137,8 +137,8 @@ noncomputable instance (priority := 100) [F.IsHomological] :
     simp only [assoc, biprodComparison_fst, zero_comp, ← F.map_comp, biprod.inl_fst,
       F.map_id, comp_id] at hf
     rw [hf, zero_comp]
-  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproductOfMonoBiprodComparison _
-  apply Limits.preservesBinaryProductOfPreservesBinaryBiproduct
+  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproduct_of_mono_biprodComparison _
+  apply Limits.preservesBinaryProduct_of_preservesBinaryBiproduct
 
 instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
@@ -208,7 +208,8 @@ lemma homologySequence_exact₂ :
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
+    (by dsimp; simp) (by dsimp; simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by

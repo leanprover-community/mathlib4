@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Counting on ℕ
@@ -53,6 +54,10 @@ theorem count_eq_card_filter_range (n : ℕ) : count p n = #{x ∈ range n | p x
 theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
   rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
   rfl
+
+theorem count_le {n : ℕ} : count p n ≤ n := by
+  rw [count_eq_card_filter_range]
+  exact (card_filter_le _ _).trans_eq (card_range _)
 
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   split_ifs with h <;> simp [count, List.range_succ, h]
@@ -121,15 +126,19 @@ theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFi
 theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < #hp.toFinset :=
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 
-theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
-  rw [count_eq_card_filter_range, filter_true_of_mem, card_range]
-  · simpa only [Finset.mem_range]
+theorem count_iff_forall {n : ℕ} : count p n = n ↔ ∀ n' < n, p n' := by
+  simpa [count_eq_card_filter_range, card_range, mem_range] using
+    card_filter_eq_iff (p := p) (s := range n)
+
+alias ⟨_, count_of_forall⟩ := count_iff_forall
 
 @[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
 
-theorem count_of_forall_not {n : ℕ} (hp : ∀ n' < n, ¬p n') : count p n = 0 := by
-  rw [count_eq_card_filter_range, filter_false_of_mem, card_empty]
-  · simpa only [Finset.mem_range]
+theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := by
+  simpa [count_eq_card_filter_range, mem_range] using
+    card_filter_eq_zero_iff (p := p) (s := range n)
+
+alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 
 @[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
   count_of_forall_not fun _ _ ↦ id

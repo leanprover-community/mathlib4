@@ -222,7 +222,7 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
   simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
   rw [← getElem?_eq_getElem]
 
--- Porting note (#10756): new lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
