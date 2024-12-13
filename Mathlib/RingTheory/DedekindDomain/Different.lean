@@ -109,7 +109,7 @@ lemma traceDual_top [Decidable (IsField A)] :
   convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
-    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff]
+    ← RingHom.range_eq_top, _root_.eq_top_iff]
   simp [SetLike.le_def]
 
 end Submodule
@@ -188,7 +188,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   rw [cramer_apply]
   apply IsIntegral.det
   intros j k
-  rw [updateColumn_apply]
+  rw [updateCol_apply]
   split
   · rw [mul_assoc]
     rw [mem_traceDual_iff_isIntegral] at hx

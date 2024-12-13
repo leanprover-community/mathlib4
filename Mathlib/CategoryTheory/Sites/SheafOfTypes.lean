@@ -190,82 +190,12 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
-    let s := compatibleYonedaFamily_toCocone S W x hx
+    let s := compatibleYonedaFamily_toCocone S.arrows W x hx
     use H.desc s
     constructor
     · exact fun _ f hf => (H.fac s) ⟨Over.mk f, hf⟩
     · exact fun g hg => H.uniq s g (fun ⟨⟨f, _, hom⟩, hf⟩ => hg hom hf)
 
 end Sieve
-
-variable {C : Type u} [Category.{v} C]
-variable (J : GrothendieckTopology C)
-
-/-- The category of sheaves on a grothendieck topology. -/
-structure SheafOfTypes (J : GrothendieckTopology C) : Type max u v (w + 1) where
-  /-- the underlying presheaf -/
-  val : Cᵒᵖ ⥤ Type w
-  /-- the condition that the presheaf is a sheaf -/
-  cond : Presieve.IsSheaf J val
-
-namespace SheafOfTypes
-
-variable {J}
-
-/-- Morphisms between sheaves of types are just morphisms between the underlying presheaves. -/
-@[ext]
-structure Hom (X Y : SheafOfTypes J) where
-  /-- a morphism between the underlying presheaves -/
-  val : X.val ⟶ Y.val
-
-@[simps]
-instance : Category (SheafOfTypes J) where
-  Hom := Hom
-  id _ := ⟨𝟙 _⟩
-  comp f g := ⟨f.val ≫ g.val⟩
-  id_comp _ := Hom.ext <| id_comp _
-  comp_id _ := Hom.ext <| comp_id _
-  assoc _ _ _ := Hom.ext <| assoc _ _ _
-
--- Porting note (#11041): we need to restate the `ext` lemma in terms of the categorical morphism.
--- not just the underlying structure.
--- It would be nice if this boilerplate weren't necessary.
-@[ext]
-theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f = g :=
-  Hom.ext w
-
--- Let's make the inhabited linter happy...
-instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=
-  ⟨𝟙 X⟩
-
-end SheafOfTypes
-
-/-- The inclusion functor from sheaves to presheaves. -/
-@[simps]
-def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
-  obj := SheafOfTypes.val
-  map f := f.val
-  map_id _ := rfl
-  map_comp _ _ := rfl
-
-instance : (sheafOfTypesToPresheaf J).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
-
-instance : (sheafOfTypesToPresheaf J).Faithful where
-
-/--
-The category of sheaves on the bottom (trivial) grothendieck topology is equivalent to the category
-of presheaves.
--/
-@[simps]
-def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒᵖ ⥤ Type w where
-  functor := sheafOfTypesToPresheaf _
-  inverse :=
-    { obj := fun P => ⟨P, Presieve.isSheaf_bot⟩
-      map := fun f => ⟨f⟩ }
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-
-instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
-  ⟨sheafOfTypesBotEquiv.inverse.obj ((Functor.const _).obj PUnit)⟩
 
 end CategoryTheory

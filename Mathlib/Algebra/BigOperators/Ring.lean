@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
 
@@ -177,6 +178,14 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
           simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
           tauto)
 
+theorem prod_one_add {f : ι → α} (s : Finset ι) :
+    ∏ i ∈ s, (1 + f i) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
+  simp only [add_comm (1 : α), prod_add, prod_const_one, mul_one]
+
+theorem prod_add_one {f : ι → α} (s : Finset ι) :
+    ∏ i ∈ s, (f i + 1) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
+  simp only [prod_add, prod_const_one, mul_one]
+
 end DecidableEq
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
@@ -264,6 +273,10 @@ end CommRing
 
 section DivisionSemiring
 variable [DivisionSemiring α]
+
+lemma _root_.Multiset.sum_map_div {s : Multiset ι} {f : ι → α} {a : α} :
+    (s.map (fun x ↦ f x / a)).sum = (s.map f).sum / a := by
+  simp only [div_eq_mul_inv, Multiset.sum_map_mul_right]
 
 lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
     (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by simp only [div_eq_mul_inv, sum_mul]

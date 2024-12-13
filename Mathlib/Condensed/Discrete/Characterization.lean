@@ -147,13 +147,13 @@ theorem isDiscrete_tfae  (M : CondensedMod.{u} R) :
     rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)]
     intro S
     letI : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
-      preservesFilteredColimitsOfSizeShrink.{u, u+1, u, u+1} _
+      preservesFilteredColimitsOfSize_shrink.{u, u+1, u, u+1} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 7 := by
     intro h S
     rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)] at h
     letI : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
-      reflectsFilteredColimitsOfSizeShrink.{u, u+1, u, u+1} _
+      reflectsFilteredColimitsOfSize_shrink.{u, u+1, u, u+1} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
   tfae_finish
 
@@ -251,13 +251,13 @@ theorem isDiscrete_tfae  (M : LightCondMod.{u} R) :
     rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5:)]
     intro S
     letI : PreservesFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
-      preservesFilteredColimitsOfSizeShrink.{0, u, 0, u} _
+      preservesFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 6 := by
     intro h S
     rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5:)] at h
     letI : ReflectsFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
-      reflectsFilteredColimitsOfSizeShrink.{0, u, 0, u} _
+      reflectsFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
   tfae_finish
 

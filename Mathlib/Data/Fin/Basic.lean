@@ -427,6 +427,11 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
+theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
+    (a + b).val = a.val + b.val := by
+  rw [val_add]
+  simp [Nat.mod_eq_of_lt huv]
+
 lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
   split <;> fin_omega
@@ -1110,7 +1115,7 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 
-@[deprecated (since := "2024-05-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-05-30")]
 lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 
@@ -1460,9 +1465,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
-instance uniqueFinOne : Unique (Fin 1) where
-  uniq _ := Subsingleton.elim _ _
-
 @[deprecated val_eq_zero (since := "2024-09-18")]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
@@ -1512,9 +1514,8 @@ theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 
 -- See note [no_index around OfNat.ofNat]
-@[simp]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
-    ((no_index OfNat.ofNat n : Fin m) : ℕ) = OfNat.ofNat n % m :=
+    ((no_index (OfNat.ofNat n) : Fin m) : ℕ) = OfNat.ofNat n % m :=
   rfl
 
 section Mul
