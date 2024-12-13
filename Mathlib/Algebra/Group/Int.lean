@@ -3,7 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Even
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
 
@@ -17,7 +18,6 @@ See note [foundational algebra order theory].
 
 assert_not_exists Ring
 assert_not_exists DenselyOrdered
-assert_not_exists Set.range
 
 open Nat
 
@@ -74,9 +74,9 @@ section Multiplicative
 
 open Multiplicative
 
-lemma toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+lemma toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : (a ^ b).toAdd = a.toAdd * b := mul_comm _ _
 
-lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : (a ^ b).toAdd = a.toAdd * b := mul_comm _ _
 
 @[simp] lemma ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_zpow ..).symm
 
@@ -220,7 +220,7 @@ lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
+  simp +decide [*, (by decide : ¬2 = 0), parity_simps]
 
 example : ¬Even (25394535 : ℤ) := by decide
 

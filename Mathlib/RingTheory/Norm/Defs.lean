@@ -53,6 +53,7 @@ namespace Algebra
 variable (R)
 
 /-- The norm of an element `s` of an `R`-algebra is the determinant of `(*) s`. -/
+@[stacks 0BIF "Norm"]
 noncomputable def norm : S →* R :=
   LinearMap.det.comp (lmul R S).toRingHom.toMonoidHom
 

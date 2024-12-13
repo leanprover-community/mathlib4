@@ -3,7 +3,7 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Pointwise.SMul
@@ -314,9 +314,18 @@ lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ 
   simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply, Quotient.eq''] using Setoid.comm' _
 
 @[to_additive]
-lemma orbit_eq_out'_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out' • s := by
+lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out • s := by
   induction x using QuotientGroup.induction_on
   simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
+
+@[to_additive]
+alias orbit_eq_out'_smul := orbit_eq_out_smul
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated orbit_eq_out_smul (since := "2024-10-19")] orbit_eq_out'_smul
+attribute [deprecated QuotientAddGroup.orbit_eq_out_vadd (since := "2024-10-19")]
+QuotientAddGroup.orbit_eq_out'_vadd
 
 end QuotientGroup
 
@@ -344,7 +353,7 @@ def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
     α ≃ ΣL : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
-    _ ≃ ΣL : α ⧸ s, (Quotient.out' L • s : Set α) :=
+    _ ≃ ΣL : α ⧸ s, (Quotient.out L • s : Set α) :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
         show
@@ -394,7 +403,7 @@ The constructive version is `quotientEquivProdOfLE'`. -/
 @[to_additive (attr := simps!) "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
  constructive version is `quotientEquivProdOfLE'`."]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
-  quotientEquivProdOfLE' h_le Quotient.out' Quotient.out_eq'
+  quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
 @[to_additive "If `s ≤ t`, then there is an embedding
@@ -543,11 +552,11 @@ variable [Group α]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=
-    ⟨⟨((Quotient.out' (QuotientGroup.mk a)) : α)⁻¹ * a,
+    ⟨⟨((Quotient.out (QuotientGroup.mk a)) : α)⁻¹ * a,
         leftRel_apply.mp (@Quotient.exact' _ (leftRel s) _ _ <| Quotient.out_eq' _)⟩,
       ⟨QuotientGroup.mk a, a.2⟩⟩
   invFun a :=
-    ⟨Quotient.out' a.2.1 * a.1.1,
+    ⟨Quotient.out a.2.1 * a.1.1,
       show QuotientGroup.mk _ ∈ t by
         rw [mk_mul_of_mem _ a.1.2, out_eq']
         exact a.2.2⟩
@@ -559,8 +568,8 @@ open MulAction in
 @[to_additive "An additive group is made up of a disjoint union of cosets of an additive
 subgroup."]
 lemma univ_eq_iUnion_smul (H : Subgroup α) :
-    (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out' • (H : Set _) := by
-  simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out'_smul]
+    (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out • (H : Set _) := by
+  simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out_smul]
   rfl
 
 end QuotientGroup

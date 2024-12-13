@@ -81,7 +81,7 @@ def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
     ⟨⟨fun t j => (s.π.app ⟨j⟩).toFun t, fun _ _ h j => (s.π.app ⟨j⟩).monotone h⟩,
       fun x => funext fun j => (s.π.app ⟨j⟩).continuous x⟩
   uniq s m w := by
-    ext t; funext j -- Porting note (#11041): Originally `ext t j`
+    ext t; funext j -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext t j`
     change m.toFun t j = (s.π.app ⟨j⟩).toFun t
     rw [← w ⟨j⟩]
     rfl
@@ -98,7 +98,7 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
   OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
     congr 1
-    apply OrderHom.ext; funext x -- Porting note (#11041): Originally `ext`
+    apply OrderHom.ext; funext x -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
     apply hc _ ⟨_, rfl⟩
 
 namespace HasEqualizers
@@ -122,7 +122,7 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
         monotone' := fun _ _ h => s.ι.monotone h
         map_ωSup' := fun x => Subtype.ext (s.ι.continuous x)
       }, by ext; rfl, fun hm => by
-      apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note (#11041): Originally `ext`
+      apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
       apply ContinuousHom.congr_fun hm⟩
 
 end HasEqualizers

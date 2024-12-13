@@ -57,7 +57,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
     simpa [norm_inr] using this (starMap_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
   intro ψ hψ a
   -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a)‖ = ‖star a * a‖`
-  rw [← sq_eq_sq (by positivity) (by positivity)]
+  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp only [sq, ← CStarRing.norm_star_mul_self, ← map_star, ← map_mul]
   /- since `star a * a` is selfadjoint, it has the same `ℝ`-spectrum as `ψ (star a * a)`.
   Since the spectral radius over `ℝ` coincides with the norm, `‖ψ (star a * a)‖ = ‖star a * a‖`. -/

@@ -118,13 +118,13 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
 
 instance hasLimit : HasLimit F := ⟨_, isLimitLimitCone F⟩
 
-noncomputable instance evaluationPreservesLimit (X : Cᵒᵖ) :
+noncomputable instance evaluation_preservesLimit (X : Cᵒᵖ) :
     PreservesLimit F (evaluation R X) :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (limit.isLimit _)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (limit.isLimit _)
 
-noncomputable instance toPresheafPreservesLimit :
+noncomputable instance toPresheaf_preservesLimit :
     PreservesLimit F (toPresheaf R) :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
       (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isLimitLimitCone F)))
@@ -139,10 +139,10 @@ variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
+noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
 
-noncomputable instance toPresheafPreservesLimitsOfShape :
+noncomputable instance toPresheaf_preservesLimitsOfShape :
     PreservesLimitsOfShape J (toPresheaf.{v} R) where
 
 end Small
@@ -152,10 +152,10 @@ section Finite
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
 
-noncomputable instance evaluationPreservesFiniteLimits (X : Cᵒᵖ) :
+noncomputable instance evaluation_preservesFiniteLimits (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where
 
-noncomputable instance toPresheafPreservesFiniteLimits :
+noncomputable instance toPresheaf_preservesFiniteLimits :
     PreservesFiniteLimits (toPresheaf.{v} R) where
 
 end Finite

@@ -41,14 +41,14 @@ example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
 
 You can use `noncomm_ring [h]` to also simplify using `h`.
 -/
-syntax (name := noncomm_ring) "noncomm_ring"  (config)? (discharger)?
+syntax (name := noncomm_ring) "noncomm_ring" optConfig (discharger)?
   (" [" ((simpStar <|> simpErase <|> simpLemma),*,?) "]")? : tactic
 
 macro_rules
-  | `(tactic| noncomm_ring $[$cfg]? $[$disch]? $[[$rules,*]]?) => do
+  | `(tactic| noncomm_ring $cfg:optConfig $[$disch]? $[[$rules,*]]?) => do
     let rules' := rules.getD ⟨#[]⟩
     let tac ← `(tactic|
-      (first | simp $cfg ? $disch ? only [
+      (first | simp $cfg:optConfig $(disch)? only [
           -- Expand everything out.
           add_mul, mul_add, sub_eq_add_neg,
           -- Right associate all products.
