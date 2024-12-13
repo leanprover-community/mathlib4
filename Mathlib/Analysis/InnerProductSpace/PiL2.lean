@@ -185,11 +185,11 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = Matrix.dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
+    ⟪x, y⟫ = Matrix.dotProduct (WithLp.equiv _ _ y) (star <| WithLp.equiv _ _ x) :=
   rfl
 
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = Matrix.dotProduct (star x) y :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = Matrix.dotProduct y (star x) :=
   rfl
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
@@ -268,10 +268,10 @@ theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
 variable [Fintype ι]
 
 theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
-    ⟪EuclideanSpace.single i (a : 𝕜), v⟫ = conj a * v i := by simp [apply_ite conj]
+    ⟪EuclideanSpace.single i (a : 𝕜), v⟫ = conj a * v i := by simp [apply_ite conj, mul_comm]
 
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
-    ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [apply_ite conj, mul_comm]
+    ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [apply_ite conj]
 
 @[simp]
 theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
@@ -460,7 +460,7 @@ def _root_.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonormal 𝕜
         let p : EuclideanSpace 𝕜 ι := v.equivFun x
         let q : EuclideanSpace 𝕜 ι := v.equivFun y
         have key : ⟪p, q⟫ = ⟪∑ i, p i • v i, ∑ i, q i • v i⟫ := by
-          simp [sum_inner, inner_smul_left, hv.inner_right_fintype]
+          simp [inner_sum, inner_smul_right, hv.inner_left_fintype]
         convert key
         · rw [← v.equivFun.symm_apply_apply x, v.equivFun_symm_apply]
         · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
@@ -715,8 +715,11 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
     (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
   ext i j
   convert a.repr.inner_map_map (b i) (b j)
-  rw [orthonormal_iff_ite.mp b.orthonormal i j]
-  rfl
+  · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
+      inner_apply']
+    congr
+  · rw [orthonormal_iff_ite.mp b.orthonormal i j]
+    rfl
 
 /-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
 different index types. -/
@@ -1041,12 +1044,13 @@ local notation "⟪" x ", " y "⟫ₑ" =>
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', Matrix.dotProduct_comm,
-    Matrix.conjTranspose_apply, Pi.star_def]
+  rfl
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
-    ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j :=
+    ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
+  simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply',
+    Matrix.conjTranspose_apply, Matrix.dotProduct_comm, Pi.star_def]
   rfl
 
 end Matrix
