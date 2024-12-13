@@ -212,9 +212,6 @@ end veblenWith
 
 section veblen
 
-private theorem isNormal_omega0_opow : IsNormal fun a ↦ ω ^ a := isNormal_opow one_lt_omega0
-private theorem omega0_opow_zero_pos : 0 < ω ^ (0 : Ordinal) := by simp
-
 /-- `veblen o` is the `o`-th function in the Veblen hierarchy starting with `ω ^ ·`. That is:
 
 - `veblen 0 a = ω ^ a`.
@@ -235,44 +232,44 @@ theorem veblen_of_ne_zero (h : o ≠ 0) : veblen o = derivFamily fun x : Set.Iio
   veblenWith_of_ne_zero _ h
 
 theorem isNormal_veblen (o : Ordinal) : IsNormal (veblen o) :=
-  isNormal_omega0_opow.veblenWith o
+  (isNormal_opow one_lt_omega0).veblenWith o
 
 theorem veblen_veblen_of_lt (h : a < b) (c : Ordinal) : veblen a (veblen b c) = veblen b c :=
-  veblenWith_veblenWith_of_lt isNormal_omega0_opow h c
+  veblenWith_veblenWith_of_lt (isNormal_opow one_lt_omega0) h c
 
 theorem veblen_succ (o : Ordinal) : veblen (Order.succ o) = deriv (veblen o) :=
-  veblenWith_succ isNormal_omega0_opow o
+  veblenWith_succ (isNormal_opow one_lt_omega0) o
 
 theorem veblen_right_strictMono (o : Ordinal) : StrictMono (veblen o) :=
-  veblenWith_right_strictMono isNormal_omega0_opow o
+  veblenWith_right_strictMono (isNormal_opow one_lt_omega0) o
 
 @[simp]
 theorem veblen_lt_veblen_iff_right : veblen o a < veblen o b ↔ a < b :=
-  veblenWith_lt_veblenWith_iff_right isNormal_omega0_opow
+  veblenWith_lt_veblenWith_iff_right (isNormal_opow one_lt_omega0)
 
 @[simp]
 theorem veblen_le_veblen_iff_right : veblen o a ≤ veblen o b ↔ a ≤ b :=
-  veblenWith_le_veblenWith_iff_right isNormal_omega0_opow
+  veblenWith_le_veblenWith_iff_right (isNormal_opow one_lt_omega0)
 
 theorem veblen_injective (o : Ordinal) : Function.Injective (veblen o) :=
-  veblenWith_injective isNormal_omega0_opow o
+  veblenWith_injective (isNormal_opow one_lt_omega0) o
 
 @[simp]
 theorem veblen_inj : veblen o a = veblen o b ↔ a = b :=
   (veblen_injective o).eq_iff
 
 theorem right_le_veblen (a b : Ordinal) : b ≤ veblen a b :=
-  right_le_veblenWith isNormal_omega0_opow a b
+  right_le_veblenWith (isNormal_opow one_lt_omega0) a b
 
 theorem veblen_left_monotone (o : Ordinal) : Monotone (veblen · o) :=
-  veblenWith_left_monotone isNormal_omega0_opow o
+  veblenWith_left_monotone (isNormal_opow one_lt_omega0) o
 
 @[simp]
 theorem veblen_pos (a b : Ordinal) : 0 < veblen a b :=
-  veblenWith_pos isNormal_omega0_opow omega0_opow_zero_pos a b
+  veblenWith_pos (isNormal_opow one_lt_omega0) (by simp) a b
 
 theorem veblen_zero_strictMono : StrictMono (veblen · 0) :=
-  veblenWith_zero_strictMono isNormal_omega0_opow omega0_opow_zero_pos
+  veblenWith_zero_strictMono (isNormal_opow one_lt_omega0) (by simp)
 
 @[simp]
 theorem veblen_zero_lt_veblen_zero_iff : veblen a 0 < veblen b 0 ↔ a < b :=
@@ -287,10 +284,10 @@ theorem veblen_zero_inj : veblen a 0 = veblen b 0 ↔ a = b :=
   veblen_zero_strictMono.injective.eq_iff
 
 theorem left_le_veblen (a b : Ordinal) : a ≤ veblen a b :=
-  left_le_veblenWith isNormal_omega0_opow omega0_opow_zero_pos a b
+  left_le_veblenWith (isNormal_opow one_lt_omega0) (by simp) a b
 
 theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
-  isNormal_omega0_opow.veblenWith_zero omega0_opow_zero_pos
+  (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
 
 /-- `veblen a b < veblen c d` iff one of the following holds:
 * `a = c` and `b < d`
@@ -298,7 +295,7 @@ theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
 * `a > c` and `veblen a b < d` -/
 theorem veblen_lt_veblen_iff :
     veblen a b < veblen c d ↔ a = c ∧ b < d ∨ a < c ∧ b < veblen c d ∨ c < a ∧ veblen a b < d :=
-  veblenWith_lt_veblenWith_iff isNormal_omega0_opow
+  veblenWith_lt_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 /-- `veblen a b ≤ veblen c d` iff one of the following holds:
 * `a = c` and `b ≤ d`
@@ -306,7 +303,7 @@ theorem veblen_lt_veblen_iff :
 * `a > c` and `veblen a b ≤ d` -/
 theorem veblen_le_veblen_iff :
     veblen a b ≤ veblen c d ↔ a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblen c d ∨ c < a ∧ veblen a b ≤ d :=
-  veblenWith_le_veblenWith_iff isNormal_omega0_opow
+  veblenWith_le_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 /-- `veblen a b = veblen c d` iff one of the following holds:
 * `a = c` and `b = d`
@@ -314,7 +311,7 @@ theorem veblen_le_veblen_iff :
 * `a > c` and `veblen a b = d` -/
 theorem veblen_eq_veblen_iff :
     veblen a b = veblen c d ↔ a = c ∧ b = d ∨ a < c ∧ b = veblen c d ∨ c < a ∧ veblen a b = d :=
- veblenWith_eq_veblenWith_iff isNormal_omega0_opow
+ veblenWith_eq_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 end veblen
 end Ordinal
