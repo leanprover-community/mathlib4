@@ -102,6 +102,17 @@ theorem coeffList_of_nextCoeff_ne_zero (h : P.nextCoeff ≠ 0) :
   intros
   exact (Polynomial.eraseLead_coeff_of_ne _ (by linarith)).symm
 
+theorem coeffList_monomial {x : α} (hx : x ≠ 0) (n : ℕ) :
+    (monomial n x).coeffList = x :: List.replicate n 0 := by
+  have h := mt (Polynomial.monomial_eq_zero_iff x n).mp hx
+  apply List.ext_get (by classical simp [hx])
+  rintro (_|k) _ h₁
+  · exact (coeffList_eq_cons_leadingCoeff h).rec (by simp_all)
+  · rw [List.length_cons, List.length_replicate] at h₁
+    simpa [coeffList_of_ne_zero h, List.map_reverse, List.getElem_reverse]
+      using Polynomial.coeff_monomial_of_ne _
+        (have := Polynomial.natDegree_monomial_eq n hx; by omega)
+
 /- Coefficients of P are always the leading coefficient, some number of zeros, and then
   `coeffList P.eraseLead`. -/
 theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
@@ -112,38 +123,35 @@ theorem coeffList_eraseLead (h : P ≠ 0) : ∃ n, P.coeffList =
     simp [coeffList_C (C_ne_zero.mp h)]
   obtain ⟨n, hn⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d :=
     exists_add_of_le (have := eraseLead_natDegree_le P; by omega)
-  use if P.eraseLead.support = ∅ then P.natDegree else n
+  by_cases hep : P.eraseLead.support = ∅
+  · replace hep : P.eraseLead = 0 := support_eq_empty.mp hep
+    have h₂ : .monomial P.natDegree P.leadingCoeff = P := by
+      simpa [hep] using P.eraseLead_add_monomial_natDegree_leadingCoeff
+    nth_rewrite 1 [← h₂]
+    simp [coeffList_monomial (Polynomial.leadingCoeff_ne_zero.mpr h), hep]
+  use n
   apply List.ext_getElem?
   rintro (_|k)
-  · cases coeffList_eq_cons_leadingCoeff h
+  · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
-  by_cases hep : P.eraseLead.support = ∅
-  all_goals (
-    simp_rw [coeffList_of_ne_zero h, coeffList, hep, List.map_reverse, reduceIte]
-    by_cases hkd : k + 1 < P.natDegree + 1
-    case neg =>
-      rw [List.getElem?_eq_none] <;> simpa using by omega
-    obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ hkd)
-    rw [List.getElem?_reverse (by simpa using hkd), List.getElem?_cons_succ, List.length_map,
-      List.length_range, List.getElem?_map, List.getElem?_range (by omega), Option.map_some']
-  )
-  · rw [add_tsub_cancel_right, List.append_nil, ← Nat.eq_sub_of_add_eq' hdk.symm,
-      List.getElem?_replicate_of_lt (by omega), ← eraseLead_coeff_of_ne dk (by omega),
-      support_eq_empty.mp hep, coeff_zero]
-  · conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
-      rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
-      congr
+  simp_rw [coeffList_of_ne_zero h, coeffList, hep, List.map_reverse, reduceIte]
+  by_cases hkd : P.natDegree + 1 ≤ k + 1
+  · rw [List.getElem?_eq_none] <;> simpa using by omega
+  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_le hkd))
+  rw [List.getElem?_reverse (by simpa using hkd), List.getElem?_cons_succ, List.length_map,
+    List.length_range, List.getElem?_map, List.getElem?_range (by omega), Option.map_some']
+  conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
+    rw [eraseLead_coeff_of_ne (f := P) dk (by omega)]
+    congr
+    omega
+  by_cases hkn : k < n
+  · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
+  · rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hkn),
+      List.length_replicate, List.getElem?_reverse, List.getElem?_map]
+    · rw [List.length_map, List.length_range, List.getElem?_range (by omega), Option.map_some']
+      congr 2
       omega
-    by_cases hkn : k < n
-    case pos => --k points into the 0's chunk
-      simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
-    case neg => --k points into the coeffList eraseLead chunk
-      rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hkn),
-        List.length_replicate, List.getElem?_reverse, List.getElem?_map]
-      · rw [List.length_map, List.length_range, List.getElem?_range (by omega), Option.map_some']
-        congr 2
-        omega
-      · simpa using by omega
+    · simpa using by omega
 
 end Semiring
 section Ring
