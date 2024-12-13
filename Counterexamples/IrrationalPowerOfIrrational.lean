@@ -16,7 +16,10 @@ Consider `c = √2^√2`. If `c` is rational, we are done.
 If `c` is irrational, then `c^√2 = 2` is rational, so we are done.
 -/
 
+
 open Classical Real
+
+namespace Counterexample
 
 /--
 There exist irrational `a`, `b` with rational `a^b`.
@@ -32,3 +35,5 @@ theorem not_irrational_rpow : ¬ ∀ a b : ℝ, Irrational a → Irrational b �
       at ht; simp at ht
   · have ht := h √2 √2 irrational_sqrt_two irrational_sqrt_two (by norm_num)
     exact hc ht
+
+end Counterexample
