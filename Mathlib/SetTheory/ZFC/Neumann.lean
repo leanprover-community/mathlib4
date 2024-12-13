@@ -46,21 +46,15 @@ theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
 termination_by o
 decreasing_by exact a.2
 
-theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : V_ a ∈ V_ b := by
+private theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : V_ a ∈ V_ b := by
   rw [vonNeumann, mem_sUnion]
   refine ⟨_, mem_range_self ⟨a, h⟩, ?_⟩
   rw [mem_powerset]
 
-theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b := by
+private theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b := by
   obtain rfl | h := h.eq_or_lt
   · rfl
   · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
-
-theorem vonNeumann_strictMono : StrictMono vonNeumann :=
-  sorry
-
-
-#exit
 
 theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ o := by
   rw [vonNeumann, rank_le_iff]
@@ -96,6 +90,24 @@ theorem rank_vonNeumann (o : Ordinal) : rank (V_ o) = o := by
 termination_by o
 
 @[simp]
+theorem vonNeumann_mem_vonNeumann_iff {a b : Ordinal} : V_ a ∈ V_ b ↔ a < b := by
+  simp [mem_vonNeumann]
+
+@[simp]
+theorem vonNeumann_subset_vonNeumann_iff {a b : Ordinal} : V_ a ⊆ V_ b ↔ a ≤ b := by
+  simp [subset_vonNeumann]
+
+theorem vonNeumann_strictMono : StrictMono vonNeumann :=
+  strictMono_of_le_iff_le fun _ _ ↦ vonNeumann_subset_vonNeumann_iff.symm
+
+theorem vonNeumann_injective : Function.Injective vonNeumann :=
+  vonNeumann_strictMono.injective
+
+@[simp]
+theorem vonNeumann_inj {a b : Ordinal} : V_ a = V_ b ↔ a = b :=
+  vonNeumann_injective.eq_iff
+
+@[simp]
 theorem vonNeumann_zero : V_ 0 = ∅ := by
   ext
   rw [vonNeumann]
@@ -106,7 +118,6 @@ theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) := by
   ext
   rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
-@[simp]
 theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
     V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
   ext
@@ -114,7 +125,7 @@ theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
 
 /-- Every set is in some element of the von Neumann hierarchy. -/
 theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o := by
-  use rank x + 1
+  use succ (rank x)
   rw [mem_vonNeumann]
   exact lt_succ _
 
