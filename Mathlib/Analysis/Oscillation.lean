@@ -107,7 +107,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
       ⟨ENNReal.ofReal ((a - r) / 2), by simp [ar], ?_⟩
     refine fun y hy ↦ ⟨a - (a - r) / 2, by linarith,
       le_trans (diam_mono (image_mono fun z hz ↦ ?_)) ha⟩
-    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (add_lt_add hz.1 hy) ?_),
+    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_),
       hz.2⟩
     rw [← ofReal_add (by linarith) (by linarith), sub_add_cancel]
   have S_cover : K ⊆ ⋃ r > 0, S r := by

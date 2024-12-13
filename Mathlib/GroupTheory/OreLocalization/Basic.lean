@@ -135,7 +135,7 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
   rcases oreCondition r₁ t with ⟨r₁', t', hr₁⟩
   rw [OreLocalization.expand' _ s t', OreLocalization.expand' _ s t']
   congr 1
-  -- Porting note (#11215): TODO: use `assoc_rw`?
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `assoc_rw`?
   calc (t' : R) * (r₁ * r * r₂)
       = t' * r₁ * r * r₂ := by simp [← mul_assoc]
     _ = r₁' * t * r * r₂ := by rw [hr₁]
@@ -467,7 +467,7 @@ to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive "The universal lift from a morphism `R →+ T`, which maps elements of `S` to
   additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`."]
 def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
-  -- Porting note(#12129): additional beta reduction needed
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]

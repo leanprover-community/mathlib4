@@ -390,7 +390,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
       guard (kindsIt[0]! matches .eq)
       let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
       lemmaArgs := lemmaArgs.push p
-    kindsIt := kindsIt.eraseIdx 0
+    kindsIt := kindsIt.eraseIdx! 0
   let mut r := mkAppN specLemma.proof lemmaArgs
   if specLemma.heqResult && !heqProofs then
     r ← mkAppM ``eq_of_heq #[r]
@@ -558,7 +558,7 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
     if path₁.isEmpty then
       guard (it₂ == e₁)
       break
-    if path₁.back == it₂ then
+    if path₁.back! == it₂ then
       -- found it!
       break
     path₁ := path₁.pop
@@ -1232,7 +1232,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     let fn := e.getAppFn
     let apps := e.getAppApps
     guard (apps.size > 0)
-    guard (apps.back == e)
+    guard (apps.back! == e)
     let mut pinfo : List ParamInfo := []
     let state ← get
     if state.ignoreInstances then
@@ -1713,7 +1713,7 @@ def propagateBetaToEqc (fnRoots lambdas : Array Expr) (newLambdaApps : Array Exp
     CCM (Array Expr) := do
   if lambdas.isEmpty then return newLambdaApps
   let mut newLambdaApps := newLambdaApps
-  let lambdaRoot ← getRoot lambdas.back
+  let lambdaRoot ← getRoot lambdas.back!
   guard (← lambdas.allM fun l => pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
   for fnRoot in fnRoots do
     if let some ps := (← get).parents.find? fnRoot then
@@ -1748,7 +1748,7 @@ def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
       unless ← pureIsDefEq (← inferType (pArgs[mkidx]'h)) (← inferType c) do return
       /- Create new projection application using c (e.g., `(x, y).fst`), and internalize it.
         The internalizer will add the new equality. -/
-      let pArgs := pArgs.set ⟨mkidx, h⟩ c
+      let pArgs := pArgs.set mkidx c
       let newP := mkAppN pFn pArgs
       internalizeCore newP none
     else

@@ -3,10 +3,10 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # The topological dual of a normed space
@@ -58,11 +58,11 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
--- leanprover/lean4#2522 is resolved; remove once fixed
+-- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
 instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
--- leanprover/lean4#2522 is resolved; remove once fixed
+-- https://github.com/leanprover/lean4/issues/2522 is resolved; remove once fixed
 instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered

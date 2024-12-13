@@ -29,7 +29,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 noncomputable section
 
-open Complex UpperHalfPlane Set Finset CongruenceSubgroup
+open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
 
 open scoped UpperHalfPlane
 
@@ -78,9 +78,9 @@ lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ vertica
   apply min_le_min hz.2
   rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
   simp only [r1_eq, div_pow, one_div]
-  rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right]
-  apply div_le_div (sq_nonneg _) _ (by positivity) (pow_le_pow_left h.le hz.2 2)
-  simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
+  rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right, ← even_two.pow_abs]
+  gcongr
+  exacts [hz.1, hz.2]
 
 lemma auxbound1 {c : ℝ} (d : ℝ) (hc : 1 ≤ c ^ 2) : r z ≤ Complex.abs (c * z + d) := by
   rcases z with ⟨z, hz⟩

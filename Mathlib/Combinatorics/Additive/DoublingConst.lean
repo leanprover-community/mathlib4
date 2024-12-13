@@ -5,9 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Data.Finset.Density
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring
 
 /-!
 # Doubling and difference constants
@@ -21,7 +18,6 @@ open scoped Pointwise
 namespace Finset
 section Group
 variable {G G' : Type*} [Group G] [AddGroup G'] [DecidableEq G] [DecidableEq G'] {A B : Finset G}
-  {a : G}
 
 /-- The doubling constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A * B| / |A|`.
 
@@ -169,7 +165,7 @@ end Group
 open scoped Combinatorics.Additive
 
 section CommGroup
-variable {G : Type*} [CommGroup G] [DecidableEq G] {A B : Finset G} {a : G}
+variable {G : Type*} [CommGroup G] [DecidableEq G] {A B : Finset G}
 
 @[to_additive (attr := simp)]
 lemma mulConst_inv_left (A B : Finset G) : σₘ[A⁻¹, B] = δₘ[A, B] := by

@@ -237,9 +237,20 @@ theorem nth_eq_zero {n} :
   · rintro (⟨h₀, rfl⟩ | ⟨hf, hle⟩)
     exacts [nth_zero_of_zero h₀, nth_of_card_le hf hle]
 
+lemma lt_card_toFinset_of_nth_ne_zero {n : ℕ} (h : nth p n ≠ 0) (hf : (setOf p).Finite) :
+    n < #hf.toFinset := by
+  simp only [ne_eq, nth_eq_zero, not_or, not_exists, not_le] at h
+  exact h.2 hf
+
+lemma nth_mem_of_ne_zero {n : ℕ} (h : nth p n ≠ 0) : p (Nat.nth p n) :=
+  nth_mem n (lt_card_toFinset_of_nth_ne_zero h)
+
 theorem nth_eq_zero_mono (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (ha : nth p a = 0) : nth p b = 0 := by
   simp only [nth_eq_zero, h₀, false_and, false_or] at ha ⊢
   exact ha.imp fun hf hle => hle.trans hab
+
+lemma nth_ne_zero_anti (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (hb : nth p b ≠ 0) : nth p a ≠ 0 :=
+  mt (nth_eq_zero_mono h₀ hab) hb
 
 theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a ≤ nth p k := by
   cases' (setOf p).finite_or_infinite with hf hf
@@ -251,6 +262,18 @@ theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a
       exact absurd h (zero_le _).not_lt
   · rcases subset_range_nth ha with ⟨n, rfl⟩
     rwa [nth_lt_nth hf, Nat.lt_succ_iff, ← nth_le_nth hf] at h
+
+lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) := by
+  by_cases h' : ∀ hf : (setOf p).Finite, a < #hf.toFinset
+  · exact nth_mem a h'
+  · simp only [not_forall, not_lt] at h'
+    have h'b : ∃ hf : (setOf p).Finite, #hf.toFinset ≤ b := by
+      rcases h' with ⟨hf, ha⟩
+      exact ⟨hf, ha.trans hab⟩
+    have ha0 : nth p a = 0 := by simp [nth_eq_zero, h']
+    have hb0 : nth p b = 0 := by simp [nth_eq_zero, h'b]
+    rw [ha0]
+    rwa [hb0] at h
 
 section Count
 
@@ -310,6 +333,10 @@ theorem surjective_count_of_infinite_setOf (h : {n | p n}.Infinite) :
 theorem count_nth_succ {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     count p (nth p n + 1) = n + 1 := by rw [count_succ, count_nth hn, if_pos (nth_mem _ hn)]
 
+lemma count_nth_succ_of_infinite (hp : (setOf p).Infinite) (n : ℕ) :
+    count p (nth p n + 1) = n + 1 := by
+  rw [count_succ, count_nth_of_infinite hp, if_pos (nth_mem_of_infinite hp _)]
+
 @[simp]
 theorem nth_count {n : ℕ} (hpn : p n) : nth p (count p n) = n :=
   have : ∀ hf : (setOf p).Finite, count p n < #hf.toFinset := fun hf => count_lt_card hf hpn
@@ -322,6 +349,9 @@ theorem nth_lt_of_lt_count {n k : ℕ} (h : k < count p n) : nth p k < n := by
 
 theorem le_nth_of_count_le {n k : ℕ} (h : n ≤ nth p k) : count p n ≤ k :=
   not_lt.1 fun hlt => h.not_lt <| nth_lt_of_lt_count hlt
+
+protected theorem count_eq_zero (h : ∃ n, p n) {n : ℕ} : count p n = 0 ↔ n ≤ nth p 0 := by
+  rw [nth_zero_of_exists h, le_find_iff h, Nat.count_iff_forall_not]
 
 variable (p)
 

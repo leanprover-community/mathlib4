@@ -362,7 +362,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
         (l := List.map (Function.uncurry fun _ _ ↦ n₀) (List.enum L)),
         List.sum_replicate, List.length_map, List.enum_length, nsmul_eq_mul, mul_comm,
         Nat.digits_len n₀ m hn₀ (not_eq_zero_of_lt hm), Nat.cast_add_one]
-      simp (config := { contextual := true })
+      simp +contextual
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
   -- For h_ineq2 we need to exclude the case n = 0.
   rcases eq_or_ne n 0 with rfl | h₀
@@ -377,7 +377,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       gcongr
       exact h_ineq1 <| one_le_pow₀ (one_le_iff_ne_zero.mpr h₀)
     _   = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
-      rw [Nat.cast_pow, logb_pow (mod_cast h₀.bot_lt)]
+      rw [Nat.cast_pow, logb_pow]
     _   ≤ (n₀ * ( k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
       gcongr
       exact one_le_cast.mpr hk
@@ -427,7 +427,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
       · exact le_of_lt (expr_pos hm notbdd)
       · rw [← Real.rpow_natCast, Real.rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
         exact natLog_le_logb n m
-  apply le_of_pow_le_pow_left hk (mul_nonneg (rpow_nonneg
+  apply le_of_pow_le_pow_left₀ hk (mul_nonneg (rpow_nonneg
     (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹) (rpow_nonneg (apply_nonneg f ↑m) (logb m n)))
   nth_rw 2 [← Real.rpow_natCast]
   rw [mul_rpow (rpow_nonneg (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹)
@@ -438,7 +438,6 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m ↑(n ^ k)) := h_ineq1 hm (Nat.one_lt_pow hk hn)
     _ = (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
       rw [Nat.cast_pow, Real.logb_pow]
-      exact_mod_cast zero_lt_of_lt hn
 
 include hm hn notbdd in
 /-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
@@ -513,7 +512,7 @@ end Archimedean
 /-- **Ostrowski's Theorem** -/
 theorem mulRingNorm_equiv_standard_or_padic (f : MulRingNorm ℚ) (hf_nontriv : f ≠ 1) :
     (MulRingNorm.equiv f mulRingNorm_real) ∨
-    ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+    ∃! p, ∃ (_ : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · right
     exact mulRingNorm_equiv_padic_of_bounded hf_nontriv bdd

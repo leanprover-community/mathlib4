@@ -18,7 +18,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
 * `RingHom.RespectsIso`: `P` respects isomorphisms if `P f → P (e ≫ f)` and
   `P f → P (f ≫ e)`, where `e` is an isomorphism.
 * `RingHom.StableUnderComposition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
-* `RingHom.StableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
+* `RingHom.IsStableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
   implies `P (X ⟶ X ⊗[S] Y)`.
 
 -/
@@ -110,23 +110,23 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
 
 end StableUnderComposition
 
-section StableUnderBaseChange
+section IsStableUnderBaseChange
 
-/-- A morphism property `P` is `StableUnderBaseChange` if `P(S →+* A)` implies
+/-- A morphism property `P` is `IsStableUnderBaseChange` if `P(S →+* A)` implies
 `P(B →+* A ⊗[S] B)`. -/
-def StableUnderBaseChange : Prop :=
+def IsStableUnderBaseChange : Prop :=
   ∀ (R S R' S') [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
     ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
       ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
         ∀ [Algebra.IsPushout R S R' S'], P (algebraMap R S) → P (algebraMap R' S')
 
-theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
+theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
     (h₂ :
       ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
         ∀ [Algebra R S] [Algebra R T],
           P (algebraMap R T) →
             P (Algebra.TensorProduct.includeLeftRingHom : S →+* TensorProduct R S T)) :
-    StableUnderBaseChange @P := by
+    IsStableUnderBaseChange @P := by
   introv R h H
   let e := h.symm.1.equiv
   let f' :=
@@ -155,7 +155,7 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
-theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P)
+theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g) :
     P (pushout.inl _ _ : S ⟶ pushout f g) := by
   letI := f.toAlgebra
@@ -167,7 +167,7 @@ theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P
   apply hP R T S (TensorProduct R S T)
   exact H
 
-end StableUnderBaseChange
+end IsStableUnderBaseChange
 
 section ToMorphismProperty
 

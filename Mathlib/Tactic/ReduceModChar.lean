@@ -56,6 +56,7 @@ lemma CharP.isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} 
     rw [h, Nat.cast_id, Nat.pow_eq, ← Nat.cast_pow, CharP.natCast_eq_natCast_mod α n]
     rfl⟩
 
+attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM in
 /-- Evaluates `e` to an integer using `norm_num` and reduces the result modulo `n`. -/
 def normBareNumeral {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
     (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
@@ -250,11 +251,8 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let ext ← match ext? with
   | some ext => pure ext
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
-  let ctx : Simp.Context := {
-    config := config,
-    congrTheorems := congrTheorems,
-    simpTheorems := #[← ext.getTheorems]
-  }
+  let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
+    (simpTheorems := #[← ext.getTheorems])
   let discharge := Mathlib.Meta.NormNum.discharge ctx
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>

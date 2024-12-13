@@ -3,8 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
 
@@ -34,6 +36,9 @@ for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
 `f = 0` for `NonTorsion Weight w` and `CanonicallyOrderedAddCommMonoid M`.
 
+- For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
+there are finitely many `f : σ →₀ ℕ` of bounded weight.
+
 ## Degree
 
 - `Finsupp.degree`:  the weight when all components of `w` are equal to `1 : ℕ`.
@@ -45,6 +50,10 @@ The present choice is to have it defined as a plain function.
 
 - `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1`.
 This is useful to access the additivity properties of `Finsupp.degree`
+
+- For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
+there are finitely many `f : σ →₀ ℕ` of bounded degree.
+
 
 
 ## TODO
@@ -95,6 +104,13 @@ theorem NonTorsionWeight.ne_zero [NonTorsionWeight w] (s : σ) :
   rw [← one_smul ℕ (w s)] at h
   apply Nat.zero_ne_one.symm
   exact NonTorsionWeight.eq_zero_of_smul_eq_zero h
+
+variable {w} in
+lemma weight_sub_single_add {f : σ →₀ ℕ} {i : σ} (hi : f i ≠ 0) :
+    (f - single i 1).weight w + w i = f.weight w := by
+  conv_rhs => rw [← sub_add_single_one_cancel hi, weight_apply]
+  rw [sum_add_index', sum_single_index, one_smul, weight_apply]
+  exacts [zero_smul .., fun _ ↦ zero_smul .., fun _ _ _ ↦ add_smul ..]
 
 end AddCommMonoid
 
@@ -159,6 +175,25 @@ theorem weight_eq_zero_iff_eq_zero
   · intro h
     rw [h, map_zero]
 
+theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d ≤ n}.Finite := by
+  classical
+  set fg := Finset.antidiagonal (Finsupp.equivFunOnFinite.symm (Function.const σ n)) with hfg
+  suffices {d : σ →₀ ℕ | weight w d ≤ n} ⊆ ↑(fg.image fun uv => uv.fst) by
+    exact Set.Finite.subset (Finset.finite_toSet _) this
+  intro d hd
+  rw [hfg]
+  simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe,
+    Finset.mem_antidiagonal, Prod.exists, exists_and_right, exists_eq_right]
+  use Finsupp.equivFunOnFinite.symm (Function.const σ n) - d
+  ext x
+  simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply,
+    Finsupp.equivFunOnFinite_symm_apply_toFun, Function.const_apply]
+  rw [add_comm]
+  apply Nat.sub_add_cancel
+  apply le_trans (le_weight w (hw x) d)
+  simpa only [Set.mem_setOf_eq] using hd
+
 end CanonicallyOrderedAddCommMonoid
 
 /-- The degree of a finsupp function. -/
@@ -166,6 +201,20 @@ def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
 @[deprecated degree (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree := degree
+
+@[simp]
+theorem degree_add (a b : σ →₀ ℕ) : (a + b).degree = a.degree + b.degree :=
+  sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+
+@[simp]
+theorem degree_single (a : σ) (m : ℕ) : (Finsupp.single a m).degree = m := by
+  rw [degree, Finset.sum_eq_single a]
+  · simp only [single_eq_same]
+  · intro b _ hba
+    exact single_eq_of_ne hba.symm
+  · intro ha
+    simp only [mem_support_iff, single_eq_same, ne_eq, Decidable.not_not] at ha
+    rw [single_eq_same, ha]
 
 lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, Finsupp.mem_support_iff, ne_eq, Decidable.not_imp_self,
@@ -189,5 +238,12 @@ theorem le_degree (s : σ) (f : σ →₀ ℕ) : f s ≤ degree f  := by
   rw [degree_eq_weight_one]
   apply le_weight
   simp only [Pi.one_apply, ne_eq, one_ne_zero, not_false_eq_true]
+
+theorem finite_of_degree_le [Finite σ] (n : ℕ) :
+    {f : σ →₀ ℕ | degree f ≤ n}.Finite := by
+  simp_rw [degree_eq_weight_one]
+  refine finite_of_nat_weight_le (Function.const σ 1) ?_ n
+  intro _
+  simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
 end Finsupp

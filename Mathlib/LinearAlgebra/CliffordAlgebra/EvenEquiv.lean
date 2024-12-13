@@ -117,7 +117,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
 
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 
@@ -247,7 +247,7 @@ theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q 
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply, AlgHom.id_apply]
   rw [evenToNeg_ι]
-  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` #8386
+  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` https://github.com/leanprover-community/mathlib4/pull/8386
   erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.
