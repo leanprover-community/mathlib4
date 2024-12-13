@@ -10,7 +10,7 @@ import Mathlib.SetTheory.ZFC.Ordinal
 # Von Neumann hierarchy
 
 This file defines the von Neumann hierarchy of sets `V_ o`, which is recursively defined so that
-`V_ a = ⋃ b < a, powerset (V_ a)`. This stratifies the universal class, in the sense that
+`V_ a = ⋃ b < a, powerset (V_ b)`. This stratifies the universal class, in the sense that
 `⋃ o, V _ o = univ`.
 
 ## Notation
