@@ -787,7 +787,6 @@ import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.Algebra.Polynomial.CancelLeads
