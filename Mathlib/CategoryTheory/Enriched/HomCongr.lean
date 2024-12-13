@@ -57,11 +57,12 @@ lemma eHomCongr_symm {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) :
     (eHomCongr V α β).symm = eHomCongr V α.symm β.symm := rfl
 
 /-- `eHomCongr` respects composition of morphisms. Recall that for any
-pair of composable arrows `f : X ⟶ Y` and `g : Y ⟶ Z` in `C`, the composite
+composable pair of arrows `f : X ⟶ Y` and `g : Y ⟶ Z` in `C`, the composite
 `f ≫ g` in `C` defines a morphism `𝟙_ V ⟶ (X ⟶[V] Z)` in `V`. Composing with
 the isomorphism `eHomCongr V α γ` yields a morphism in `V` that can be factored
 through the enriched composition map as shown:
 `𝟙_ V ⟶ 𝟙_ V ⊗ 𝟙_ V ⟶ (X₁ ⟶[V] Y₁) ⊗ (Y₁ ⟶[V] Z₁) ⟶ (X₁ ⟶[V] Z₁)`. -/
+@[reassoc]
 lemma eHomCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (γ : Z ≅ Z₁)
     (f : X ⟶ Y) (g : Y ⟶ Z) :
     eHomEquiv V (f ≫ g) ≫ (eHomCongr V α γ).hom =
@@ -78,6 +79,7 @@ lemma eHomCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y�
     ← eHomEquiv_comp_assoc]
 
 /-- The inverse map defined by `eHomCongr` respects composition of morphisms. -/
+@[reassoc]
 lemma eHomCongr_inv_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (γ : Z ≅ Z₁)
     (f : X₁ ⟶ Y₁) (g : Y₁ ⟶ Z₁) :
     eHomEquiv V (f ≫ g) ≫ (eHomCongr V α γ).inv =
