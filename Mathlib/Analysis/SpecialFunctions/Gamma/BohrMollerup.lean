@@ -57,7 +57,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   let f : ℝ → ℝ → ℝ → ℝ := fun c u x => exp (-c * x) * x ^ (c * (u - 1))
   have e : IsConjExponent (1 / a) (1 / b) := Real.isConjExponent_one_div ha hb hab
   have hab' : b = 1 - a := by linarith
-  have hst : 0 < a * s + b * t := add_pos (mul_pos ha hs) (mul_pos hb ht)
+  have hst : 0 < a * s + b * t := by positivity
   -- some properties of f:
   have posf : ∀ c u x : ℝ, x ∈ Ioi (0 : ℝ) → 0 ≤ f c u x := fun c u x hx =>
     mul_nonneg (exp_pos _).le (rpow_pos_of_pos hx _).le

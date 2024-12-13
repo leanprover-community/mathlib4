@@ -601,7 +601,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
     (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) : Summable f := by
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
   refine summable_of_ratio_norm_eventually_le hr₁ ?_
-  filter_upwards [eventually_le_of_tendsto_lt hr₀ h, hf] with _ _ h₁
+  filter_upwards [h.eventually_le_const hr₀, hf] with _ _ h₁
   rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
 theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
@@ -629,12 +629,12 @@ theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCom
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
     ¬Summable f := by
   have key : ∀ᶠ n in atTop, ‖f n‖ ≠ 0 := by
-    filter_upwards [eventually_ge_of_tendsto_gt hl h] with _ hn hc
+    filter_upwards [h.eventually_const_le hl] with _ hn hc
     rw [hc, _root_.div_zero] at hn
     linarith
   rcases exists_between hl with ⟨r, hr₀, hr₁⟩
   refine not_summable_of_ratio_norm_eventually_ge hr₀ key.frequently ?_
-  filter_upwards [eventually_ge_of_tendsto_gt hr₁ h, key] with _ _ h₁
+  filter_upwards [h.eventually_const_le hr₁, key] with _ _ h₁
   rwa [← le_div_iff₀ (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
 
 section NormedDivisionRing

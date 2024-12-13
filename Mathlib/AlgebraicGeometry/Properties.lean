@@ -203,7 +203,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>
     H { toPreirreducibleSpace := ⟨h⟩
         toNonempty := inferInstance }
-  simp_rw [isPreirreducible_iff_closed_union_closed, not_forall, not_or] at H
+  simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   erw [not_forall] at h₂ h₃
   simp_rw [not_forall] at h₂ h₃

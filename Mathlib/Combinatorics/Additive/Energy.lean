@@ -178,7 +178,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
   have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
-    simp_rw [Prod.ext_iff] at h
+    simp_rw [f, Prod.ext_iff] at h
     obtain ⟨h, rfl, rfl⟩ := h
     rw [mul_right_cancel h.1]
   rw [← card_image_of_injOn this]
@@ -187,7 +187,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
     Prod.exists]
   refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩
-  simpa [mul_right_comm]
+  simpa [f, mul_right_comm]
 
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_right : Eₘ[s, univ] = Fintype.card α * s.card ^ 2 := by

@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -61,6 +61,10 @@ instance hasColimits : HasColimits SSet := by
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
 
+@[simp]
+lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
+    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+
 /-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
@@ -105,6 +109,13 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
     (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   yonedaCompUliftFunctorEquiv X n
+
+/-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
+def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
+
+lemma id_eq_objEquiv_symm (n : ℕ) : id n = (objEquiv _ _).symm (𝟙 _) := rfl
+
+lemma objEquiv_id (n : ℕ) : objEquiv _ _ (id n) = 𝟙 _ := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
@@ -377,10 +388,10 @@ protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.sk n
+abbrev sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.cosk n
+abbrev cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
 
 end
 

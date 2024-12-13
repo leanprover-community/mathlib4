@@ -135,7 +135,7 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
-  have := (pow_le_pow_left (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
+  have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
   ring_nf at this ⊢
   linarith
 
