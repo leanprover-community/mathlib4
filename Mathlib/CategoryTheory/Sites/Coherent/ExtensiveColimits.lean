@@ -34,17 +34,11 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
   rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
   dsimp only [pointwiseCocone_pt]
   apply (config := { allowSynthFailures := true } ) comp_preservesFiniteProducts
-  have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := by
-    intro i
+  have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := fun i ↦ by
     rw [← Presheaf.isSheaf_iff_preservesFiniteProducts]
     exact Sheaf.cond _
-  exact { preserves I := { preservesLimit {K} := {
-    preserves {s} hs := by
-      constructor
-      apply evaluationJointlyReflectsLimits
-      intro i
-      obtain ⟨h⟩ := (this i).1 I
-      exact ((h (K := K)).1 hs).some } } }
+  exact ⟨fun _ ↦ preservesLimitsOfShape_of_evaluation _ _ fun d ↦
+    inferInstanceAs (PreservesLimitsOfShape _ ((G ⋙ sheafToPresheaf _ _).obj d))⟩
 
 instance [Preadditive A] : PreservesFiniteProducts (colim (J := J) (C := A)) where
   preserves I _ := by
