@@ -426,6 +426,13 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
     (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+@[to_additive]
+theorem prod_filter_xor (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q] :
+    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+      (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
+  rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
+  rfl
+
 section ToList
 
 @[to_additive (attr := simp)]
@@ -1209,8 +1216,7 @@ lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α
     ∏ i ∈ t, g i (mulIndicator ↑s f i) = ∏ i ∈ s, g i (f i) := by
   calc
     _ = ∏ i ∈ s, g i (mulIndicator ↑s f i) := by rw [prod_subset h fun i _ hn ↦ by simp [hn, hg]]
-    -- Porting note: This did not use to need the implicit argument
-    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ <| mulIndicator_of_mem (α := ι) hi f
+    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ <| mulIndicator_of_mem hi f
 
 /-- Taking the product of an indicator function over a possibly larger finset is the same as
 taking the original function over the original finset. -/
@@ -1241,16 +1247,17 @@ lemma mulIndicator_prod (s : Finset ι) (t : Set κ) (f : ι → κ → β) :
 
 variable {κ : Type*}
 @[to_additive]
-lemma mulIndicator_biUnion (s : Finset ι) (t : ι → Set κ) {f : κ → β} :
-    ((s : Set ι).PairwiseDisjoint t) →
-      mulIndicator (⋃ i ∈ s, t i) f = fun a ↦ ∏ i ∈ s, mulIndicator (t i) f a := by
-  classical
-  refine Finset.induction_on s (by simp) fun i s hi ih hs ↦ funext fun j ↦ ?_
-  rw [prod_insert hi, set_biUnion_insert, mulIndicator_union_of_not_mem_inter,
-    ih (hs.subset <| subset_insert _ _)]
-  simp only [not_exists, exists_prop, mem_iUnion, mem_inter_iff, not_and]
-  exact fun hji i' hi' hji' ↦ (ne_of_mem_of_not_mem hi' hi).symm <|
-    hs.elim_set (mem_insert_self _ _) (mem_insert_of_mem hi') _ hji hji'
+lemma mulIndicator_biUnion (s : Finset ι) (t : ι → Set κ) {f : κ → β}
+    (hs : (s : Set ι).PairwiseDisjoint t) :
+    mulIndicator (⋃ i ∈ s, t i) f = fun a ↦ ∏ i ∈ s, mulIndicator (t i) f a := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s hi ih =>
+    ext j
+    rw [coe_cons, Set.pairwiseDisjoint_insert_of_not_mem (Finset.mem_coe.not.2 hi)] at hs
+    classical
+    rw [prod_cons, cons_eq_insert, set_biUnion_insert, mulIndicator_union_of_not_mem_inter, ih hs.1]
+    exact (Set.disjoint_iff.mp (Set.disjoint_iUnion₂_right.mpr hs.2) ·)
 
 @[to_additive]
 lemma mulIndicator_biUnion_apply (s : Finset ι) (t : ι → Set κ) {f : κ → β}
@@ -1734,13 +1741,12 @@ theorem prod_pow_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α)
 
 theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ S, g1 a ∣ g2 a) :
     S.prod g1 ∣ S.prod g2 := by
-  classical
-    induction S using Finset.induction_on' with
-    | h₁ => simp
-    | h₂ _haS _hTS haT IH =>
-      rename_i a T
-      rw [Finset.prod_insert haT, prod_insert haT]
-      exact mul_dvd_mul (h a <| T.mem_insert_self a) <| IH fun b hb ↦ h b <| mem_insert_of_mem hb
+  induction S using Finset.cons_induction with
+  | empty => simp
+  | cons a T haT IH =>
+    rw [Finset.prod_cons, Finset.prod_cons]
+    rw [Finset.forall_mem_cons] at h
+    exact mul_dvd_mul h.1 <| IH h.2
 
 theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)
     (h : s ⊆ t) : (∏ i ∈ s, f i) ∣ ∏ i ∈ t, f i :=
@@ -1887,10 +1893,9 @@ theorem card_eq_sum_card_image [DecidableEq β] (f : α → β) (s : Finset α) 
 
 theorem mem_sum {f : α → Multiset β} (s : Finset α) (b : β) :
     (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := by
-  classical
-    refine s.induction_on (by simp) ?_
-    intro a t hi ih
-    simp [sum_insert hi, ih, or_and_right, exists_or]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a t hi ih => simp [sum_cons, ih, or_and_right, exists_or]
 
 @[to_additive]
 theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Finset α) (f : α → β)
@@ -2083,6 +2088,10 @@ end List
 
 namespace Multiset
 
+@[simp]
+lemma card_sum (s : Finset ι) (f : ι → Multiset α) : card (∑ i ∈ s, f i) = ∑ i ∈ s, card (f i) :=
+  map_sum cardHom ..
+
 theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     Disjoint l.sum a ↔ ∀ b ∈ l, Disjoint b a := by
   induction l with
@@ -2162,11 +2171,9 @@ theorem toFinset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.pr
 @[to_additive]
 theorem prod_sum {α : Type*} {ι : Type*} [CommMonoid α] (f : ι → Multiset α) (s : Finset ι) :
     (∑ x ∈ s, f x).prod = ∏ x ∈ s, (f x).prod := by
-  classical
-    induction s using Finset.induction_on with
-    | empty => rw [Finset.sum_empty, Finset.prod_empty, Multiset.prod_zero]
-    | insert hat ih =>
-      rw [Finset.sum_insert hat, Finset.prod_insert hat, Multiset.prod_add, ih]
+  induction s using Finset.cons_induction with
+  | empty => rw [Finset.sum_empty, Finset.prod_empty, Multiset.prod_zero]
+  | cons a s has ih => rw [Finset.sum_cons, Finset.prod_cons, Multiset.prod_add, ih]
 
 end Multiset
 
@@ -2175,14 +2182,23 @@ theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset �
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
 
+@[to_additive (attr := simp)]
+lemma IsUnit.prod_iff [CommMonoid β] : IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha hs => rw [Finset.prod_cons, IsUnit.mul_iff, hs, Finset.forall_mem_cons]
+
+@[to_additive]
+lemma IsUnit.prod_univ_iff [Fintype α] [CommMonoid β] : IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by
+  simp
+
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
-  classical
-    induction s using Finset.induction_on with
-    | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
-    | insert his IH =>
-      simp only [his, Finset.sum_insert, not_false_iff]
-      exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
+  induction s using Finset.cons_induction with
+  | empty => simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
+  | cons i s his IH =>
+    simp only [Finset.sum_cons, not_false_iff]
+    exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
 
 /-! ### `Additive`, `Multiplicative` -/
 

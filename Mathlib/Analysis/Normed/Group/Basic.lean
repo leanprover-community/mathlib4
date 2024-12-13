@@ -47,7 +47,6 @@ normed group
 variable {𝓕 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology
-
 open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
@@ -65,7 +64,6 @@ class NNNorm (E : Type*) where
   nnnorm : E → ℝ≥0
 
 export Norm (norm)
-
 export NNNorm (nnnorm)
 
 @[inherit_doc]
@@ -375,6 +373,22 @@ theorem norm_div_rev (a b : E) : ‖a / b‖ = ‖b / a‖ := by
 @[to_additive (attr := simp) norm_neg]
 theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_rev 1 a
 
+@[to_additive (attr := simp) norm_abs_zsmul]
+theorem norm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖ = ‖a ^ n‖ := by
+  rcases le_total 0 n with hn | hn <;> simp [hn, abs_of_nonneg, abs_of_nonpos]
+
+@[to_additive (attr := simp) norm_natAbs_smul]
+theorem norm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖ = ‖a ^ n‖ := by
+  rw [← zpow_natCast, ← Int.abs_eq_natAbs, norm_zpow_abs]
+
+@[to_additive norm_isUnit_zsmul]
+theorem norm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖ = ‖a‖ := by
+  rw [← norm_pow_natAbs, Int.isUnit_iff_natAbs_eq.mp hn, pow_one]
+
+@[simp]
+theorem norm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖ = ‖a‖ :=
+  norm_isUnit_zsmul a n.isUnit
+
 open scoped symmDiff in
 @[to_additive]
 theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
@@ -492,7 +506,6 @@ theorem norm_le_norm_add_norm_div (u v : E) : ‖v‖ ≤ ‖u‖ + ‖u / v‖ 
   exact norm_le_norm_add_norm_div' v u
 
 alias norm_le_insert' := norm_le_norm_add_norm_sub'
-
 alias norm_le_insert := norm_le_norm_add_norm_sub
 
 @[to_additive]
@@ -650,8 +663,7 @@ instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
 
 @[to_additive (attr := simp, norm_cast) coe_nnnorm]
-theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ :=
-  rfl
+theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
 @[to_additive (attr := simp) coe_comp_nnnorm]
 theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm :=
@@ -675,8 +687,7 @@ theorem edist_one_right (a : E) : edist a 1 = ‖a‖₊ := by
   rw [edist_nndist, nndist_one_right]
 
 @[to_additive (attr := simp) nnnorm_zero]
-theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 :=
-  NNReal.eq norm_one'
+theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
 
 @[to_additive]
 theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
@@ -691,6 +702,22 @@ theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp) nnnorm_abs_zsmul]
+theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
+  NNReal.eq <| norm_zpow_abs a n
+
+@[to_additive (attr := simp) nnnorm_natAbs_smul]
+theorem nnnorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
+  NNReal.eq <| norm_pow_natAbs a n
+
+@[to_additive nnnorm_isUnit_zsmul]
+theorem nnnorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_zpow_isUnit a hn
+
+@[simp]
+theorem nnnorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_isUnit_zsmul a n.isUnit
 
 @[to_additive (attr := simp)]
 theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]

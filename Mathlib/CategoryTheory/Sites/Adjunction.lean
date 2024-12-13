@@ -100,8 +100,8 @@ variable [HasWeakSheafify J D] [ConcreteCategory D] [HasSheafCompose J (forget D
 
 @[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
 
-/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. (Use `Sheaf.adjunction`.)-/
-@[deprecated (since := "2024-11-26")] abbrev adjunctionToTypes
+/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
+@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
     {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
     composeAndSheafify J G ⊣ sheafForget J :=
   adjunction _ adj
