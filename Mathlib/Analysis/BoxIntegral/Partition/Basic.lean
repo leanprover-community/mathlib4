@@ -493,8 +493,11 @@ theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
     rcases Hi J hJ this with ⟨Ji, hJi, hlei⟩
     exact ⟨Ji, π.mem_biUnion.2 ⟨J, hJ, hJi⟩, hlei⟩
 
-instance inf : Inf (Prepartition I) :=
-  ⟨fun π₁ π₂ => π₁.biUnion fun J => π₂.restrict J⟩
+instance : SemilatticeInf (Prepartition I) :=
+  { inf := fun π₁ π₂ => π₁.biUnion fun J => π₂.restrict J
+    inf_le_left := fun π₁ _ => π₁.biUnion_le _
+    inf_le_right := fun _ _ => (biUnion_le_iff _).2 fun _ _ => le_rfl
+    le_inf := fun _ π₁ _ h₁ h₂ => π₁.le_biUnion_iff.2 ⟨h₁, fun _ _ => restrict_mono h₂⟩ }
 
 theorem inf_def (π₁ π₂ : Prepartition I) : π₁ ⊓ π₂ = π₁.biUnion fun J => π₂.restrict J := rfl
 
@@ -506,13 +509,6 @@ theorem mem_inf {π₁ π₂ : Prepartition I} :
 @[simp]
 theorem iUnion_inf (π₁ π₂ : Prepartition I) : (π₁ ⊓ π₂).iUnion = π₁.iUnion ∩ π₂.iUnion := by
   simp only [inf_def, iUnion_biUnion, iUnion_restrict, ← iUnion_inter, ← iUnion_def]
-
-instance : SemilatticeInf (Prepartition I) :=
-  { Prepartition.inf,
-    Prepartition.partialOrder with
-    inf_le_left := fun π₁ _ => π₁.biUnion_le _
-    inf_le_right := fun _ _ => (biUnion_le_iff _).2 fun _ _ => le_rfl
-    le_inf := fun _ π₁ _ h₁ h₂ => π₁.le_biUnion_iff.2 ⟨h₁, fun _ _ => restrict_mono h₂⟩ }
 
 /-- The prepartition with boxes `{J ∈ π | p J}`. -/
 @[simps]
@@ -543,7 +539,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
   simp only [Prepartition.iUnion]
   convert
     (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
-  · simp (config := { contextual := true })
+  · simp +contextual
   · rw [Set.PairwiseDisjoint]
     convert π.pairwiseDisjoint
     rw [Set.union_eq_left, filter_boxes, coe_filter]

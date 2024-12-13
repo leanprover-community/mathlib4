@@ -3,9 +3,9 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
-import Mathlib.Topology.Support
 
 /-!
 # Compactly supported continuous functions
@@ -446,8 +446,6 @@ theorem zero_comp (g : β →co γ) : (0 : C_c(γ, δ)).comp g = 0 :=
   rfl
 
 end
-
-variable [T2Space γ]
 
 /-- Composition as an additive monoid homomorphism. -/
 def compAddMonoidHom [AddMonoid δ] [ContinuousAdd δ] (g : β →co γ) : C_c(γ, δ) →+ C_c(β, δ) where

@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Trace.Defs
-import Mathlib.LinearAlgebra.Determinant
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 # Trace for (finite) ring extensions.
@@ -276,7 +277,7 @@ open Finset
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)
 
--- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `traceMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
@@ -347,7 +348,7 @@ variable (A)
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
 
--- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `embeddingsMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
@@ -432,6 +433,9 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Ba
 
 variable (K L)
 
+/-- Let $L/K$ be a finite extension of fields. If $L/K$ is separable,
+then `traceForm` is nondegenerate. -/
+@[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _

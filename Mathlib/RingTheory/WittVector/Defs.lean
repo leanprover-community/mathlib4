@@ -156,8 +156,6 @@ evaluating this at `(x₀, x₁)` gives us the sum of two Witt vectors `x₀ + x
 def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → 𝕎 R) : 𝕎 R :=
   mk p fun n => peval (φ n) fun i => (x i).coeff
 
-variable (R) [Fact p.Prime]
-
 instance : Zero (𝕎 R) :=
   ⟨eval (wittZero p) ![]⟩
 

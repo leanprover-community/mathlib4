@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # A counterexample on Pettis integrability
@@ -287,15 +287,15 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     convert hF (s n) u using 2
     · dsimp
       ext x
-      simp only [not_exists, mem_iUnion, mem_diff]
+      simp only [u, not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
-      simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
+      simp only [G, s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction n with
     | zero =>
-      simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
+      simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, le_rfl]
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
@@ -385,7 +385,7 @@ section
 
 
 theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α → ℝ)) x‖ ≤ 1 := by
-  simp only [indicator, Pi.one_apply]; split_ifs <;> norm_num
+  simp only [Set.indicator, Pi.one_apply]; split_ifs <;> norm_num
 
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,
 by applying the functional to the indicator functions. -/

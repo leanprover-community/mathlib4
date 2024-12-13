@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
 
@@ -177,6 +178,14 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
           simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
           tauto)
 
+theorem prod_one_add {f : ι → α} (s : Finset ι) :
+    ∏ i ∈ s, (1 + f i) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
+  simp only [add_comm (1 : α), prod_add, prod_const_one, mul_one]
+
+theorem prod_add_one {f : ι → α} (s : Finset ι) :
+    ∏ i ∈ s, (f i + 1) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
+  simp only [prod_add, prod_const_one, mul_one]
+
 end DecidableEq
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
@@ -227,6 +236,12 @@ end CommSemiring
 section CommRing
 variable [CommRing α]
 
+/-- The product of `f i - g i` over all of `s` is the sum over the powerset of `s` of the product of
+`g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
+lemma prod_sub [DecidableEq ι] (f g : ι → α) (s : Finset ι) :
+    ∏ i ∈ s, (f i - g i) = ∑ t ∈ s.powerset, (-1) ^ #t * (∏ i ∈ s \ t, f i) * ∏ i ∈ t, g i := by
+  simp [sub_eq_neg_add, prod_add, ← prod_const, ← prod_mul_distrib, mul_right_comm]
+
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
     ∏ i ∈ s, (f i - g i) =
@@ -258,6 +273,10 @@ end CommRing
 
 section DivisionSemiring
 variable [DivisionSemiring α]
+
+lemma _root_.Multiset.sum_map_div {s : Multiset ι} {f : ι → α} {a : α} :
+    (s.map (fun x ↦ f x / a)).sum = (s.map f).sum / a := by
+  simp only [div_eq_mul_inv, Multiset.sum_map_mul_right]
 
 lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
     (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by simp only [div_eq_mul_inv, sum_mul]

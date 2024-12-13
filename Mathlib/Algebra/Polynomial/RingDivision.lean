@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Div
 We prove basic results about univariate polynomials.
 
 -/
+
+assert_not_exists Ideal.map
 
 noncomputable section
 
@@ -42,6 +44,8 @@ theorem degree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S}
     (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) : 0 < p.degree :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_aeval_root hp hz inj)
 
+end
+
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
   · cases' subsingleton_or_nontrivial R with hR hR
@@ -59,7 +63,9 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   map_add' := add_modByMonic
   map_smul' := smul_modByMonic
 
-end
+theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
+    p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
+  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
 
 section
 
@@ -224,7 +230,7 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), if_neg hpq, rootMultiplicity_eq_multiplicity p,
     if_neg hp, rootMultiplicity_eq_multiplicity q, if_neg hq,
-    multiplicity_mul (prime_X_sub_C x) (multiplicity_X_sub_C_finite _ hpq)]
+    multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
 
 open Multiset in
 set_option linter.unusedVariables false in

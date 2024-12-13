@@ -167,7 +167,7 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
     · apply eq_zero_of_neg_eq
       specialize h n
       split_ifs at h <;> simp_all [B, h_odd.neg_one_pow, factorial_ne_zero]
-    · simpa (config := {decide := true}) [Nat.factorial] using h 1
+    · simpa +decide [Nat.factorial] using h 1
   have h : B * (exp ℚ - 1) = X * exp ℚ := by
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
   rw [sub_mul, h, mul_sub X, sub_right_inj, ← neg_sub, mul_neg, neg_eq_iff_eq_neg]
@@ -181,7 +181,7 @@ def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
 theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli n := by
-  simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2, pow_mul]
+  simp [bernoulli, ← mul_assoc, ← sq, ← pow_mul, mul_comm n 2]
 
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
@@ -285,7 +285,7 @@ theorem sum_range_pow (n p : ℕ) :
     ext q : 1
     let f a b := bernoulli a / a ! * coeff ℚ (b + 1) (exp ℚ ^ n)
     -- key step: use `PowerSeries.coeff_mul` and then rewrite sums
-    simp only [coeff_mul, coeff_mk, cast_mul, sum_antidiagonal_eq_sum_range_succ f]
+    simp only [f, coeff_mul, coeff_mk, cast_mul, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
     intros m h
     simp only [f, exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,

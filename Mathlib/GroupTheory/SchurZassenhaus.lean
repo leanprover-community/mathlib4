@@ -174,7 +174,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   replace hH : Nat.card (H.map K.subtype) = N.index := by
     rw [← relindex_bot_left, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
       relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      subtype_range, ← relindex_sup_right, hK, relindex_top_right]
+      range_subtype, ← relindex_sup_right, hK, relindex_top_right]
   have h7 : Nat.card N * Nat.card (H.map K.subtype) = Nat.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Nat.card N).Coprime (Nat.card (H.map K.subtype)) := by
@@ -184,7 +184,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
-  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
+  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.mk''_surjective
   have h4 := step1 h1 h2 h3
   contrapose! h4
   have h5 : Nat.card (G ⧸ K) < Nat.card G := by
@@ -220,7 +220,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
   conv at key =>
     rhs
     rhs
-    rw [← N.subtype_range, N.subtype.range_eq_map]
+    rw [← N.range_subtype, N.subtype.range_eq_map]
   have inj := map_injective N.subtype_injective
   rwa [inj.eq_iff, inj.eq_iff] at key
 
@@ -239,7 +239,7 @@ include h2 in
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
-  rw [← MonoidHom.range_top_iff_surjective, subtype_range]
+  rw [← MonoidHom.range_eq_top, range_subtype]
   haveI : (P.1.map N.subtype).Normal :=
     normalizer_eq_top.mp (step1 h1 h2 h3 (P.1.map N.subtype).normalizer P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)

@@ -54,7 +54,7 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
   The case `n = -1`, `|w -c| > R` is not covered by these lemmas. While it is possible to construct
   an explicit primitive, it is easier to apply Cauchy theorem, so we postpone the proof till we have
-  this theorem (see #10000).
+  this theorem (see https://github.com/leanprover-community/mathlib4/pull/10000).
 
 ## Notation
 
