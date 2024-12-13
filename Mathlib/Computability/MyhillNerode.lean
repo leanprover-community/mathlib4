@@ -94,7 +94,7 @@ theorem toDFA_accepts : L.toDFA.accepts = L := by
 theorem exists_dfa_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
     ∃ n, ∃ M : DFA α (Fin n), M.accepts = L :=
   have ⟨n, ⟨f⟩⟩ := h.exists_equiv_fin
-  ⟨n, DFA.equivOfStates f L.toDFA, by simp⟩
+  ⟨n, DFA.reindex f L.toDFA, by simp⟩
 
 /--
 **Myhill–Nerode theorem**. There exists a DFA for a language if and only if the set of left
