@@ -542,7 +542,7 @@ theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m
       cases k <;> simp [← hd, mul_assoc, pow_succ']
     · cases k <;> simp [mul_assoc, pow_succ']
 
-theorem ZMod.eq_one_or_isUnit {n p k : ℕ} [Fact p.Prime] (hn : n = p ^ k) (a : ZMod n)
+theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^ k) (a : ZMod n)
     (ha : (orderOf a).Coprime n) : a = 1 ∨ IsUnit (a - 1) := by
   rcases eq_or_ne n 0 with rfl | hn0
   · exact Or.inl (orderOf_eq_one_iff.mp ((orderOf a).coprime_zero_right.mp ha))
