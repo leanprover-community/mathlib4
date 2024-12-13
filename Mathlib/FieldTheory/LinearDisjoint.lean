@@ -76,26 +76,26 @@ The following results are related to the equivalent characterizations in
 
 - `IntermediateField.LinearDisjoint.isDomain'`,
   `IntermediateField.LinearDisjoint.exists_field_of_isDomain`:
-  if `A` and `B` are field extensions `F`, then `A ⊗[F] B`
-  is a domain if and only if there exists a field such that `A` and `B` map to it and their
-  images are linearly disjoint.
+  if `A` and `B` are field extensions of `F`, then `A ⊗[F] B`
+  is a domain if and only if there exists a field extension of `F` that `A` and `B`
+  embed into with linearly disjoint images.
 
 - `IntermediateField.LinearDisjoint.isField_of_forall`,
   `IntermediateField.LinearDisjoint.of_isField'`:
-  if `A` and `B` are field extensions `F`, then `A ⊗[F] B`
-  is a field if and only if for any field such that `A` and `B` map to it, their
+  if `A` and `B` are field extensions of `F`, then `A ⊗[F] B`
+  is a field if and only if for any field extension of `F` that `A` and `B` embed into, their
   images are linearly disjoint.
 
 - `Algebra.TensorProduct.isField_of_isAlgebraic`:
-  if `E` and `K` are field extensions of `F`, one of them is algebraic, such that
+  if `E` and `K` are field extensions of `F`, one of them is algebraic, and
   `E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field.
   See `Algebra.TensorProduct.isAlgebraic_of_isField` for its converse (in an earlier file).
 
 - `IntermediateField.LinearDisjoint.isField_of_isAlgebraic`,
   `IntermediateField.LinearDisjoint.isField_of_isAlgebraic'`:
   if `A` and `B` are field extensions of `F`, one of them is algebraic, such that they are linearly
-  disjoint (more generally, if there exists a field such that they map to it and their images are
-  linearly disjoint), then `A ⊗[F] B` is a field.
+  disjoint (more generally, if there exists a field extension of `F` that they embed into with
+  linearly disjoint images), then `A ⊗[F] B` is a field.
 
 ### Other main results
 
@@ -103,7 +103,7 @@ The following results are related to the equivalent characterizations in
   linear disjointness is symmetric.
 
 - `IntermediateField.LinearDisjoint.map`:
-  linear disjointness is preserved by field homomorphism.
+  linear disjointness is preserved by algebra homomorphism.
 
 - `IntermediateField.LinearDisjoint.rank_sup`,
   `IntermediateField.LinearDisjoint.finrank_sup`:
@@ -194,12 +194,12 @@ end
 
 namespace LinearDisjoint
 
-/-- Linear disjointness is preserved by field homomorphism. -/
+/-- Linear disjointness is preserved by algebra homomorphism. -/
 theorem map (H : A.LinearDisjoint B) {K : Type*} [Field K] [Algebra F K]
     (f : E →ₐ[F] K) : (A.map f).LinearDisjoint (B.map f) :=
   linearDisjoint_iff'.2 ((linearDisjoint_iff'.1 H).map f f.injective)
 
-/-- Linear disjointness is preserved by field homomorphism. -/
+/-- Linear disjointness is preserved by algebra homomorphism. -/
 theorem map' (H : A.LinearDisjoint L) (K : Type*) [Field K] [Algebra F K] [Algebra L K]
     [IsScalarTower F L K] [Algebra E K] [IsScalarTower F E K] [IsScalarTower L E K] :
     (A.map (IsScalarTower.toAlgHom F E K)).LinearDisjoint L := by
@@ -209,7 +209,7 @@ theorem map' (H : A.LinearDisjoint L) (K : Type*) [Field K] [Algebra F K] [Algeb
   convert this
   ext; exact IsScalarTower.algebraMap_apply L E K _
 
-/-- Linear disjointness is preserved by field homomorphism. -/
+/-- Linear disjointness is preserved by algebra homomorphism. -/
 theorem map'' {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTower F L' E]
     (H : (IsScalarTower.toAlgHom F L E).fieldRange.LinearDisjoint L')
     (K : Type*) [Field K] [Algebra F K] [Algebra L K] [IsScalarTower F L K]
@@ -378,8 +378,8 @@ theorem isDomain (H : A.LinearDisjoint L) : IsDomain (A ⊗[F] L) :=
   (Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
     (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))).toMulEquiv.isDomain
 
-/-- If `A` and `B` are field extensions of `F`, such that there exists a field `E` such that
-`A` and `B` map to `E` and their images are linearly disjoint, then `A ⊗[F] B` is a domain. -/
+/-- If `A` and `B` are field extensions of `F`, there exists a field extension `E` of `F` that
+`A` and `B` embed into it with linearly disjoint images, then `A ⊗[F] B` is a domain. -/
 theorem isDomain' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
     {fa : A →ₐ[F] E} {fb : B →ₐ[F] E} (H : fa.fieldRange.LinearDisjoint fb.fieldRange) :
     IsDomain (A ⊗[F] B) := by
@@ -399,8 +399,8 @@ theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
     (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
       |>.symm.toMulEquiv.isField _ H
 
-/-- If `A` and `B` are field extensions `F`, such that `A ⊗[F] B` is a field, then for any
-field `K` and injections of `A` and `B` into `K`, their images are linearly disjoint. -/
+/-- If `A` and `B` are field extensions of `F`, such that `A ⊗[F] B` is a field, then for any
+field extension of `F` that `A` and `B` embed into, their images are linearly disjoint. -/
 theorem of_isField' {A : Type v} [Field A] {B : Type w} [Field B]
     [Algebra F A] [Algebra F B] (H : IsField (A ⊗[F] B))
     {K : Type*} [Field K] [Algebra F K] (fa : A →ₐ[F] K) (fb : B →ₐ[F] K) :
@@ -411,8 +411,8 @@ theorem of_isField' {A : Type v} [Field A] {B : Type w} [Field B]
     (AlgEquiv.ofInjective fb fb.injective) |>.symm.toMulEquiv.isField _ H
 
 variable (F) in
-/-- If `A` and `B` are field extensions `F`, such that `A ⊗[F] B` is a domain, then there exists
-a field `K` such that `A` and `B` inject into `K`, and their images are linearly disjoint. -/
+/-- If `A` and `B` are field extensions of `F`, such that `A ⊗[F] B` is a domain, then there exists
+a field extension of `F` that `A` and `B` embed into with linearly disjoint images. -/
 theorem exists_field_of_isDomain (A : Type v) [Field A] (B : Type w) [Field B]
     [Algebra F A] [Algebra F B] [IsDomain (A ⊗[F] B)] :
     ∃ (K : Type (max v w)) (_ : Field K) (_ : Algebra F K) (fa : A →ₐ[F] K) (fb : B →ₐ[F] K),
@@ -423,7 +423,7 @@ theorem exists_field_of_isDomain (A : Type v) [Field A] (B : Type w) [Field B]
   ⟨K, inst1, inst2, fa, fb, linearDisjoint_iff'.2 H⟩
 
 variable (F) in
-/-- If for any field `K` and injections of `A` and `B` into `K`, their images are
+/-- If for any field extension `K` of `F` that `A` and `B` embed into, their images are
 linearly disjoint, then `A ⊗[F] B` is a field. (In the proof we choose `K` to be the quotient
 of `A ⊗[F] B` by a maximal ideal.) -/
 theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]

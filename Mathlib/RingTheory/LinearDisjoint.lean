@@ -73,12 +73,12 @@ The following results are related to the equivalent characterizations in
 - `Subalgebra.LinearDisjoint.isDomain_of_injective`,
   `Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective`:
   under some flatness and injectivity conditions, if `A` and `B` are `R`-algebras, then `A ⊗[R] B`
-  is a domain if and only if there exists a field such that `A` and `B` inject into it and their
-  images are linearly disjoint.
+  is a domain if and only if there exists an `R`-algebra which is a field that `A` and `B`
+  embed into with linearly disjoint images.
 
 - `Subalgebra.LinearDisjoint.of_isField`, `Subalgebra.LinearDisjoint.of_isField'`:
   if `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint, moreover, for any
-  ring `S` and injections of `A` and `B` into `S`, their images are linearly disjoint.
+  `R`-algebra `S` and injections of `A` and `B` into `S`, their images are linearly disjoint.
 
 - `Algebra.TensorProduct.not_isField_of_transcendental`,
   `Algebra.TensorProduct.isAlgebraic_of_isField`:
