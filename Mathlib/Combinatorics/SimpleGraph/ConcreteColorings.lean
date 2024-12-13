@@ -19,6 +19,14 @@ This file defines colorings for some common graphs
 
 namespace SimpleGraph
 
+theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hAdj : G.Adj u v) :
+    2 ≤ G.chromaticNumber := by
+  refine le_of_not_lt ?_
+  intro h
+  have hc : G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
+  let c : G.Coloring (Fin 1) := hc.some
+  exact c.valid hAdj (Subsingleton.elim (c u) (c v))
+
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
     Coloring (pathGraph n) Bool :=
@@ -43,8 +51,8 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
   have hc := (pathGraph.bicoloring n).colorable
   apply le_antisymm
   · exact hc.chromaticNumber_le
-  · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
-      chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
+  · have hAdj : (pathGraph n).Adj ⟨0, Nat.zero_lt_of_lt h⟩ ⟨1, h⟩ := by simp [pathGraph_adj]
+    exact two_le_chromaticNumber_of_adj hAdj
 
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
