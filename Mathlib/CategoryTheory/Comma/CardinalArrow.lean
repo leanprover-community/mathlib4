@@ -47,4 +47,8 @@ instance Arrow.finite {A : Type u} [SmallCategory A] [FinCategory A] :
   rw [Arrow.finite_iff]
   exact ⟨inferInstance⟩
 
+lemma cardinal_le_cardinal_arrow (A : Type u) [SmallCategory A] :
+    Cardinal.mk A ≤ Cardinal.mk (Arrow A) :=
+  Cardinal.mk_le_of_injective (f := fun a ↦ Arrow.mk (𝟙 a)) (fun _ _ ↦ congr_arg Comma.left)
+
 end CategoryTheory
