@@ -7,8 +7,8 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.FinCases
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Affine combinations of points
@@ -412,9 +412,9 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
   change univ.sum g₁ = (image f univ).sum g₂
   have hgf : g₁ = g₂ ∘ f := by
     ext
-    simp
+    simp [g₁, g₂]
   rw [hgf, sum_image]
-  · simp only [Function.comp_apply]
+  · simp only [g₁, g₂,Function.comp_apply]
   · exact fun _ _ _ _ hxy => hf hxy
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
@@ -927,7 +927,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     cases' hn with i1 hi1
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1
     have hw1 : ∑ i ∈ s, w1 i = 1 := by
-      simp only [Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
+      simp only [w1, Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
           Finset.sum_const_zero, add_zero]
     have hw1s : s.affineCombination k p w1 = p i1 :=
       s.affineCombination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_same _ _ _) fun _ _ hne =>
@@ -1057,8 +1057,8 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
       let w' : ι → k := Function.update w j (1 - (s \ {j}).sum w)
       have h₁ : (insert j s).sum w' = 1 := by
         by_cases hj : j ∈ s
-        · simp [Finset.sum_update_of_mem hj, Finset.insert_eq_of_mem hj]
-        · simp [Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
+        · simp [w', Finset.sum_update_of_mem hj, Finset.insert_eq_of_mem hj]
+        · simp [w', Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
       have hww : ∀ i, i ≠ j → w i = w' i := by
         intro i hij
         simp [w', hij]

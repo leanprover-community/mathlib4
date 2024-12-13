@@ -155,7 +155,7 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
     intro hx
     exact f.le_closure.1 hx
   let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
-  have hyz : (y : E) = z := by simp
+  have hyz : (y : E) = z := by simp [z]
   rw [f.le_closure.2 hyz]
   exact domRestrict_apply (hxy.trans hyz)
 

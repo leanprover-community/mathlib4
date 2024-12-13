@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Finite modules over local rings
@@ -76,7 +76,7 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
       intro x; obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       rw [← this, LinearMap.comp_apply]; exact ⟨_, rfl⟩
     apply_fun Submodule.map f at hN
-    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.mpr hf,
+    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.2 hf,
       map_mkQ_eq_top] at hN
   · rintro rfl; rw [Submodule.map_top, LinearMap.range_eq_top]
     exact TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective

@@ -135,8 +135,7 @@ theorem eq_empty_iff_forall_not_mem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s
 theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
   @val_inj _ s ∅
 
-theorem subset_empty {s : Finset α} : s ⊆ ∅ ↔ s = ∅ :=
-  subset_zero.trans val_eq_zero
+@[simp] lemma subset_empty : s ⊆ ∅ ↔ s = ∅ := subset_zero.trans val_eq_zero
 
 @[simp]
 theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := fun h =>

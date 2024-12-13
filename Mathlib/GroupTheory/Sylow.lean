@@ -140,7 +140,7 @@ theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : P ≤ ϕ.range) 
 
 /-- A sylow subgroup of G is also a sylow subgroup of a subgroup of G. -/
 protected def subtype (h : P ≤ N) : Sylow p N :=
-  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [subtype_range])
+  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [range_subtype])
 
 @[simp]
 theorem coe_subtype (h : P ≤ N) : P.subtype h = subgroupOf P N :=
@@ -446,6 +446,37 @@ theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.Fin
 @[deprecated (since := "2024-11-03")]
 alias _root_.not_dvd_index_sylow' := not_dvd_index
 
+section mapSurjective
+
+variable [Finite G] {G' : Type*} [Group G'] {f : G →* G'} (hf : Function.Surjective f)
+
+/-- Surjective group homomorphisms map Sylow subgroups to Sylow subgroups. -/
+def mapSurjective [Fact p.Prime] (P : Sylow p G) : Sylow p G' :=
+  { P.1.map f with
+    isPGroup' := P.2.map f
+    is_maximal' := fun hQ hPQ ↦ ((P.2.map f).toSylow
+      (fun h ↦ P.not_dvd_index (h.trans (P.index_map_dvd hf)))).3 hQ hPQ }
+
+@[simp] theorem coe_mapSurjective [Fact p.Prime] (P : Sylow p G) : P.mapSurjective hf = P.map f :=
+  rfl
+
+theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
+    Function.Surjective (Sylow.mapSurjective hf : Sylow p G → Sylow p G') := by
+  have : Finite G' := Finite.of_surjective f hf
+  intro P
+  let Q₀ : Sylow p (P.comap f) := Sylow.nonempty.some
+  let Q : Subgroup G := Q₀.map (P.comap f).subtype
+  have hPQ : Q.map f ≤ P := Subgroup.map_le_iff_le_comap.mpr (Subgroup.map_subtype_le Q₀.1)
+  have hpQ : IsPGroup p Q := Q₀.2.map (P.comap f).subtype
+  have hQ : ¬ p ∣ Q.index := by
+    rw [Subgroup.index_map_subtype Q₀.1, P.index_comap_of_surjective hf]
+    exact Nat.Prime.not_dvd_mul Fact.out Q₀.not_dvd_index P.not_dvd_index
+  use hpQ.toSylow hQ
+  rw [Sylow.ext_iff, Sylow.coe_mapSurjective, eq_comm]
+  exact ((hpQ.map f).toSylow (fun h ↦ hQ (h.trans (Q.index_map_dvd hf)))).3 P.2 hPQ
+
+end mapSurjective
+
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
@@ -637,7 +668,7 @@ lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : 
   obtain ⟨m, hm⟩ := h.exists_card_eq
   refine exists_subgroup_card_pow_prime _ ?_
   rw [hm] at hn ⊢
-  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
+  exact pow_dvd_pow _ <| (Nat.pow_le_pow_iff_right hp.one_lt).1 hn
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
 least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
@@ -725,9 +756,9 @@ theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P :
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
   simp_rw [← normalizer_eq_top, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
     subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
-  rw [← subtype_range P.normalizer.normalizer, MonoidHom.range_eq_map,
+  rw [← range_subtype P.normalizer.normalizer, MonoidHom.range_eq_map,
     ← this trivial]
-  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (subtype_range _)))
+  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (range_subtype _)))
 
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
@@ -775,7 +806,7 @@ noncomputable def directProductOfNormal [Finite G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (Fintype.bijective_iff_injective_and_card _).mpr
   constructor
-  · apply Subgroup.injective_noncommPiCoprod_of_independent
+  · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)

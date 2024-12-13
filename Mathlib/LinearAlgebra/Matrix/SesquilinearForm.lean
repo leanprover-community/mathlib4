@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Moritz Doll
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Opposite
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -563,7 +563,6 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
-    -- Porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
     · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl

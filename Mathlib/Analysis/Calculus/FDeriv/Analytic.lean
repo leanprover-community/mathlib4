@@ -7,7 +7,7 @@ import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.Inverse
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Normed.Module.Completion
@@ -89,7 +89,8 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
-  simpa only [Set.insert_eq_of_mem, Set.mem_univ, Set.univ_prod_univ, nhdsWithin_univ]
+  simpa only [hasStrictFDerivAt_iff_isLittleO, Set.insert_eq_of_mem, Set.mem_univ,
+      Set.univ_prod_univ, nhdsWithin_univ]
     using (h.hasFPowerSeriesWithinAt (s := Set.univ)).hasStrictFDerivWithinAt
 
 theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
@@ -191,6 +192,7 @@ theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOn
     fderiv 𝕜 f (x + y) = continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
   (h.hasFDerivAt hy).fderiv
 
+/-- If a function has a power series on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) :
     HasFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x r := by
@@ -220,6 +222,17 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     · simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz.2
     · simpa using hz.1
 
+/-- If a function has a power series within a set on a ball, then so does its derivative. For a
+version without completeness, but assuming that the function is analytic on the set `s`, see
+`HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn`. -/
+protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
+  have : insert x s = s := insert_eq_of_mem hx
+  rw [← this] at hu
+  convert h.fderivWithin hu
+  exact this.symm
+
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
 protected theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (fderiv 𝕜 f) x := by
@@ -237,7 +250,7 @@ protected theorem AnalyticOnNhd.fderiv [CompleteSpace F] (h : AnalyticOnNhd 𝕜
 alias AnalyticOn.fderiv := AnalyticOnNhd.fderiv
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. See also
-`AnalyticOnNhd.iteratedFDeruv_of_isOpen`, removing the completeness assumption but requiring the set
+`AnalyticOnNhd.iteratedFDeriv_of_isOpen`, removing the completeness assumption but requiring the set
 to be open.-/
 protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (iteratedFDeriv 𝕜 n f) s := by
@@ -253,14 +266,14 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
     simp
 
 @[deprecated (since := "2024-09-26")]
-alias AnalyticOn.iteratedFDeriv := AnalyticOnNhd.iteratedFDeriv
+protected alias AnalyticOn.iteratedFDeriv := AnalyticOnNhd.iteratedFDeriv
 
 /-- If a function is analytic on a neighborhood of a set `s`, then it has a Taylor series given
 by the sequence of its derivatives. Note that, if the function were just analytic on `s`, then
 one would have to use instead the sequence of derivatives inside the set, as in
 `AnalyticOn.hasFTaylorSeriesUpToOn`. -/
 lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
+    (n : WithTop ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
   · apply HasFDerivAt.hasFDerivWithinAt
@@ -268,44 +281,8 @@ lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
   · apply (DifferentiableAt.continuousAt (𝕜 := 𝕜) ?_).continuousWithinAt
     exact (h.iteratedFDeriv m x hx).differentiableAt
 
-/-- An analytic function is infinitely differentiable. -/
-protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s :=
-  let t := { x | AnalyticAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
-  have H : AnalyticOnNhd 𝕜 f t := fun _x hx ↦ hx
-  have t_open : IsOpen t := isOpen_analyticAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
-    (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
-      fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
-    (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
-      fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
-
-/-- An analytic function on the whole space is infinitely differentiable there. -/
-theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : ℕ∞} :
-    ContDiff 𝕜 n f := by
-  rw [← contDiffOn_univ]
-  exact h.contDiffOn
-
-theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
-    ContDiffAt 𝕜 n f x := by
-  obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOnNhd
-  exact hf.contDiffOn.contDiffAt hs
-
-protected lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
-    (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
-  rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
-  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
-
-protected lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
-    (h : AnalyticOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
-  fun x m ↦ (h x m).contDiffWithinAt
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
-
 lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
+    (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
     ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
     HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) u := by
   rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
@@ -352,19 +329,27 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
     Matrix.zero_empty]
   rfl
 
-/-- If a function is analytic within a set with unique differentials, then so is its derivative.
-Note that this theorem does not require completeness of the space. -/
-protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
-    AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
-  intro x hx
-  rcases h x hx with ⟨p, r, hr⟩
-  refine ⟨p.derivSeries, r, ?_⟩
+/-- If a function has a power series within a set on a ball, then so does its derivative. Version
+assuming that the function is analytic on `s`. For a version without this assumption but requiring
+that `F` is complete, see `HasFPowerSeriesWithinOnBall.fderivWithin_of_mem`. -/
+protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn
+    (hr : HasFPowerSeriesWithinOnBall f p s x r)
+    (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
   · rw [insert_eq_of_mem hx] at hy ⊢
     apply DifferentiableWithinAt.hasFDerivWithinAt
     exact h.differentiableOn _ hy
   · rwa [insert_eq_of_mem hx]
+
+/-- If a function is analytic within a set with unique differentials, then so is its derivative.
+Note that this theorem does not require completeness of the space. -/
+protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
+    AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
+  intro x hx
+  rcases h x hx with ⟨p, r, hr⟩
+  refine ⟨p.derivSeries, r, hr.fderivWithin_of_mem_of_analyticOn h hu hx⟩
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/
@@ -381,7 +366,7 @@ protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     apply AnalyticOnNhd.comp_analyticOn _ (IH.fderivWithin hu) (mapsTo_univ _ _)
     apply LinearIsometryEquiv.analyticOnNhd
 
-lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : ℕ∞}
+protected lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : WithTop ℕ∞}
     (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
@@ -543,24 +528,6 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
-/-- A polynomial function is infinitely differentiable. -/
-theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s :=
-  let t := { x | CPolynomialAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
-  have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
-  have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
-    (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
-      fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
-    (fun m _ ↦ (H.iteratedFDeriv m).analyticOnNhd.differentiableOn.congr
-      fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
-
-theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
-    ContDiffAt 𝕜 n f x :=
-  let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
-  hf.contDiffOn.contDiffAt hs
-
 end fderiv
 
 section deriv
@@ -594,7 +561,7 @@ theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
       toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
 
-variable {n : ℕ∞} (x : ∀ i, E i)
+variable {n : WithTop ℕ∞} (x : ∀ i, E i)
 
 open Finset in
 theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
@@ -745,10 +712,6 @@ lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
 
 lemma cPolyomialOn : CPolynomialOn 𝕜 f ⊤ := fun x _ ↦ f.cPolynomialAt x
 
-lemma contDiffAt : ContDiffAt 𝕜 n f x := (f.cPolynomialAt x).contDiffAt
-
-lemma contDiff : ContDiff 𝕜 n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
-
 end ContinuousMultilinearMap
 
 namespace FormalMultilinearSeries
@@ -792,19 +755,23 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ p f h
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
-      ih h.fderiv, iteratedFDeriv_succ_apply_right]
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
+      ← ContinuousLinearMap.smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 variable [CompleteSpace F]
 include h
 
+/-- The iterated derivative of an analytic function, on vectors `(y, ..., y)`, is given by `n!`
+times the `n`-th term in the power series. For a more general result giving the full iterated
+derivative as a sum over the permutations of `Fin n`, see
+`HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum`. -/
 theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
-      factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
+      ← ContinuousLinearMap.smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :

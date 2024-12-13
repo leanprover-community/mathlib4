@@ -119,7 +119,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- Porting note (#11215): TODO: `simp [← coe_mul]` times out
+      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
         simp only [map_coe, ← coe_mul, map_mul] }
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :

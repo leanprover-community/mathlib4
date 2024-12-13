@@ -115,7 +115,7 @@ end ihom
 open CategoryTheory.Limits
 
 instance : PreservesColimits (tensorLeft A) :=
-  (ihom.adjunction A).leftAdjointPreservesColimits
+  (ihom.adjunction A).leftAdjoint_preservesColimits
 
 variable {A}
 
@@ -130,12 +130,12 @@ def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X) :=
 def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
   ((ihom.adjunction A).homEquiv _ _).symm
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
@@ -272,7 +272,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
         (MonoidalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
         ((Iso.compInverseIso (H := adj.toEquivalence)
           (Functor.Monoidal.commTensorLeft F X)).hom.app Y ≫ f))) := by
-  -- This whole proof used to be `rfl` before #16317.
+  -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
@@ -294,7 +294,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
               (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
   intro f
-  -- This whole proof used to be `rfl` before #16317.
+  -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
   dsimp only [Adjunction.ofNatIsoLeft]

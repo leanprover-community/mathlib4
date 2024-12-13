@@ -173,6 +173,16 @@ protected theorem inv_div {a b : ℝ≥0∞} (htop : b ≠ ∞ ∨ a ≠ ∞) (h
   rw [← ENNReal.inv_ne_top] at hzero
   rw [ENNReal.div_eq_inv_mul, ENNReal.div_eq_inv_mul, ENNReal.mul_inv htop hzero, mul_comm, inv_inv]
 
+lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
+    (hf : s.toSet.Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) : (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
+  induction' s using Finset.cons_induction with i s hi ih
+  · simp
+  simp [← ih (hf.mono <| by simp)]
+  refine ENNReal.mul_inv (not_or_of_imp fun hi₀ ↦ prod_ne_top fun j hj ↦ ?_)
+    (not_or_of_imp fun hi₀ ↦ Finset.prod_ne_zero_iff.2 fun j hj ↦ ?_)
+  · exact imp_iff_not_or.2 (hf (by simp) (by simp [hj]) <| .symm <| ne_of_mem_of_not_mem hj hi) hi₀
+  · exact imp_iff_not_or.2 (hf (by simp [hj]) (by simp) <| ne_of_mem_of_not_mem hj hi).symm hi₀
+
 protected theorem mul_div_mul_left (a b : ℝ≥0∞) (hc : c ≠ 0) (hc' : c ≠ ⊤) :
     c * a / (c * b) = a / b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ENNReal.mul_inv (Or.inl hc) (Or.inl hc'), mul_mul_mul_comm,
@@ -533,7 +543,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   refine ⟨n, lt_trans ?_ hn⟩
   rw [← ENNReal.inv_pow, ENNReal.inv_lt_inv]
   norm_cast
-  exact n.lt_two_pow
+  exact n.lt_two_pow_self
 
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
@@ -668,7 +678,8 @@ lemma mul_iSup (a : ℝ≥0∞) (f : ι → ℝ≥0∞) : a * ⨆ i, f i = ⨆ i
   · simp
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ := not_forall.1 hf
-    simpa [iSup_eq_zero.not.2 hf, eq_comm (a := ⊤)] using le_iSup_of_le i (top_mul hi).ge
+    simpa [iSup_eq_zero.not.2 hf, eq_comm (a := ⊤)]
+      using le_iSup_of_le (f := fun i => ⊤ * f i) i (top_mul hi).ge
   · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iSup _
 
 lemma iSup_mul (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : (⨆ i, f i) * a = ⨆ i, f i * a := by

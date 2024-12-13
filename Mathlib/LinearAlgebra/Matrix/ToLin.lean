@@ -3,12 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.Notation
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.AlgebraTower
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Matrix.Block
+import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.StdBasis
+import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
@@ -917,8 +918,9 @@ def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] 
   { e.conj with
     map_mul' := fun f g ↦ by apply e.arrowCongr_comp
     commutes' := fun r ↦ by
-      change e.conj (r • LinearMap.id) = r • LinearMap.id
-      rw [LinearEquiv.map_smul, LinearEquiv.conj_id] }
+      change e.conj _ = _
+      simp only [Algebra.algebraMap_eq_smul_one, LinearEquiv.map_smul,
+        one_eq_id, LinearEquiv.conj_id] }
 
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to
 square matrices. -/

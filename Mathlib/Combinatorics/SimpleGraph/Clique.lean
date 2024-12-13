@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Lattice
 
 /-!
@@ -276,7 +277,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
     f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
-  -- This used to be the end of the proof before leanprover/lean4#2644
+  -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
   erw [Function.Embedding.coe_subtype, f.map_adj_iff]
   simp
 
@@ -492,7 +493,7 @@ theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
 
 protected alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 
-@[mono]
+@[gcongr, mono]
 theorem cliqueSet_mono (h : G ≤ H) : G.cliqueSet n ⊆ H.cliqueSet n :=
   fun _ ↦ IsNClique.mono h
 
@@ -635,7 +636,7 @@ theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
 
 variable [DecidableRel H.Adj]
 
-@[mono]
+@[gcongr, mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
   monotone_filter_right _ fun _ ↦ IsNClique.mono h
 
