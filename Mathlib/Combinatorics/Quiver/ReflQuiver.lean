@@ -31,6 +31,10 @@ class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
 /-- Notation for the identity morphism in a category. -/
 scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
 
+@[simp]
+theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X') :
+    Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX ; rfl
+
 instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
   { inst with }
 

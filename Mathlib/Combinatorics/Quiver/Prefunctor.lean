@@ -100,5 +100,20 @@ theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {
     (h : f = g) : F.map f = F.map g := by
   rw [h]
 
+/-- An equality of prefunctors gives an equality on objects. -/
+theorem congr_obj {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = G) (X : U) :
+    F.obj X = G.obj X := by cases e; rfl
+
+/-- An equality of prefunctors gives an equality on homs. -/
+theorem congr_hom {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = G) {X Y : U}
+    (f : X ⟶ Y) : Quiver.homOfEq (F.map f) (congr_obj e X) (congr_obj e Y) = G.map f := by
+  subst e
+  simp
+
+/-- Prefunctors commute with `homOfEq`. -/
+theorem homOfEq_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} (f : X ⟶ Y)
+    {X' Y' : U} (hX : X = X') (hY : Y = Y') :
+    F.map (Quiver.homOfEq f hX hY) =
+      Quiver.homOfEq (F.map f) (congr_arg F.obj hX) (congr_arg F.obj hY) := by subst hX hY; simp
 
 end Prefunctor

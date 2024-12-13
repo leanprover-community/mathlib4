@@ -77,21 +77,45 @@ theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
 def toQuiv_eq (V : Type) [ReflQuiver V] : (ReflQuiv.of V).toQuiv = V := rfl
 
+/-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
+compatibility with the identities. -/
 def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W] (e : Quiv.of V ≅ Quiv.of W)
-    (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = ReflQuiver.id (obj := W) (e.hom.obj X))
-     : ReflQuiv.of V ≅ ReflQuiv.of W where
+    (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = ReflQuiver.id (obj := W) (e.hom.obj X)) :
+    ReflQuiv.of V ≅ ReflQuiv.of W where
   hom := ReflPrefunctor.mk e.hom h_id
   inv := by
     refine ReflPrefunctor.mk e.inv ?_
-    intro X'
-    sorry
+    intro Y
+    have : Quiver.homOfEq (e.inv.map (e.hom.map _)) _ _ = (𝟭q _).map _ :=
+      Prefunctor.congr_hom e.hom_inv_id (ReflQuiver.id (obj := V) (e.inv.obj Y))
+    simp only [Prefunctor.id_obj, Prefunctor.id_map] at this
+    rw [congrArg e.inv.map (h_id (e.inv.obj Y))] at this
+    rw [← this]
+    have hY : e.hom.obj (e.inv.obj Y) = Y := by
+      rw [← Prefunctor.comp_obj]
+      show (e.inv ≫ e.hom).obj _ = _
+      rw [e.inv_hom_id, Quiv.id_eq_id, Prefunctor.id_obj]
+    rw [← Prefunctor.homOfEq_map _ _ hY hY]
+    simp only [of_val, ReflQuiver.homOfEq_id]
+  hom_inv_id := by
+    apply forgetToQuiv_faithful
+    simp only [Functor.map_comp]
+    simp only [forgetToQuiv_obj, of_val, forgetToQuiv_map, Iso.hom_inv_id]
+    rfl
+  inv_hom_id := by
+    apply forgetToQuiv_faithful
+    simp only [Functor.map_comp]
+    simp only [forgetToQuiv_obj, of_val, forgetToQuiv_map, Iso.hom_inv_id]
+    rw [e.inv_hom_id]
+    rfl
 
 section
 variable {V W : Type u } [ReflQuiver V] [ReflQuiver W]
   (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
 
 /-- Compatible equivalences of types and hom-types induce an isomorphism of quivers. -/
-def isoOfEquiv : ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he) sorry
+def isoOfEquiv (h_id : ∀ (X : V), he _ _ (𝟙rq X) = ReflQuiver.id (obj := W) (e X)) :
+    ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he) h_id
 
 end
 
