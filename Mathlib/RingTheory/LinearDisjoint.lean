@@ -3,6 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
+import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
 import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -14,7 +15,6 @@ import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Nontrivial
 
@@ -581,7 +581,6 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective
       ((Subalgebra.inclusion_injective key2).comp (AlgEquiv.injective _))
-  -- FIXME: why `basisMonomials` is in `Mathlib.RingTheory.MvPolynomial.Basic` ???
   have := lift_uzero.{u} _ ▸ (basisMonomials R).mk_eq_rank.symm
   simp only [this, mk_eq_aleph0, lift_aleph0, aleph0_le_lift] at key3
   exact (key3.trans key1).not_lt one_lt_aleph0
