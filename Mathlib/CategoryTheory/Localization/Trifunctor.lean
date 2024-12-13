@@ -1,6 +1,16 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.Bifunctor
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Products.Associator
+
+/-!
+# Lifting of trifunctors
+
+-/
 
 namespace CategoryTheory
 
@@ -178,12 +188,13 @@ variable {D₁ D₂ D₃ : Type*} [Category D₁] [Category D₂] [Category D₃
 def whiskeringLeft₃ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃)
     (E : Type*) [Category E] :
     (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) :=
-  (whiskeringRight _ _ _).obj (whiskeringLeft₂ObjObj F₂ F₃ E) ⋙ (whiskeringLeft C₁ D₁ _).obj F₁
+  (whiskeringRight _ _ _).obj (((whiskeringLeft₂ E).obj F₂).obj F₃) ⋙
+    (whiskeringLeft C₁ D₁ _).obj F₁
 
 @[simps!]
 def curry₃ObjProdComp (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃) (G : D₁ × D₂ × D₃ ⥤ E) :
     curry₃.obj (F₁.prod (F₂.prod F₃) ⋙ G) ≅
-      F₁ ⋙ curry₃.obj G ⋙ whiskeringLeft₂ObjObj F₂ F₃ E :=
+      F₁ ⋙ curry₃.obj G ⋙ ((whiskeringLeft₂ E).obj F₂).obj F₃ :=
   NatIso.ofComponents
     (fun X₁ ↦ NatIso.ofComponents
       (fun X₂ ↦ NatIso.ofComponents (fun X₃ ↦ Iso.refl _)))

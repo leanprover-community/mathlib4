@@ -483,13 +483,13 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · filter_upwards with x
       have T := tendsto_pi_nhds.1 (thickenedIndicator_tendsto_indicator_closure
         (fun n ↦ (u_mem n).1) u_lim ({1} : Set ℝ)) (f x)
-      simp only [thickenedIndicator_toFun, closure_singleton] at T
+      simp only [thickenedIndicator_apply, closure_singleton] at T
       convert NNReal.tendsto_coe.2 T
       simp
   have M n : ∫ (x : G), v n (f x) ∂μ' = ∫ (x : G), v n (f x) ∂(haarScalarFactor μ' μ • μ) := by
     apply integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ (vf_cont n)
     apply h'f.comp_left
-    simp only [v, thickenedIndicator_toFun, NNReal.coe_eq_zero]
+    simp only [v, thickenedIndicator_apply, NNReal.coe_eq_zero]
     rw [thickenedIndicatorAux_zero (u_mem n).1]
     · simp only [ENNReal.zero_toNNReal]
     · simpa using (u_mem n).2.le

@@ -7,6 +7,11 @@ import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.Tactic.CategoryTheory.Coherence
 
+/-!
+# Localization of monoidal categories
+
+-/
+
 namespace CategoryTheory
 
 open Category MonoidalCategory
@@ -87,8 +92,14 @@ noncomputable instance : Lifting₂ L' L' W W (curriedTensor C ⋙ (whiskeringRi
   inferInstanceAs (Lifting₂ L L W W (curriedTensor C ⋙ (whiskeringRight C C D).obj L')
     (Localization.lift₂ _ (isInvertedBy₂ L W ε) L L))
 
+@[simps!]
+def whiskeringRight₂' (C₁ C₂ : Type*) {E E' : Type*} [Category C₁] [Category C₂]
+    [Category E] [Category E'] (G : E ⥤ E') :
+    (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E' :=
+  (whiskeringRight C₁ (C₂ ⥤ E) (C₂ ⥤ E')).obj ((whiskeringRight C₂ E E').obj G)
+
 noncomputable abbrev tensorBifunctorIso :
-    (whiskeringLeft₂ObjObj L' L' D).obj (tensorBifunctor L W ε) ≅
+    (((whiskeringLeft₂ D).obj L').obj L').obj (tensorBifunctor L W ε) ≅
       (whiskeringRight₂' C C L').obj (curriedTensor C) :=
   Lifting₂.iso L' L' W W (curriedTensor C ⋙ (whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε)
@@ -412,13 +423,12 @@ end Localization
 
 open Localization.Monoidal
 
-noncomputable def toLocalizedMonoidal :
-    MonoidalFunctor C (LocalizedMonoidal L W ε) where
-  toFunctor := toMonoidalCategory L W ε
-  ε := ε.inv
-  μ X Y := (μ L W ε X Y).hom
-  associativity X Y Z := by simp [associator_hom_app L W ε X Y Z]
-  left_unitality Y := leftUnitor_hom_app L W ε Y
-  right_unitality X := rightUnitor_hom_app L W ε X
+noncomputable instance : (toMonoidalCategory L W ε).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := ε.symm
+      μIso X Y := μ L W ε X Y
+      associativity X Y Z := by simp [associator_hom_app L W ε X Y Z]
+      left_unitality Y := leftUnitor_hom_app L W ε Y
+      right_unitality X := rightUnitor_hom_app L W ε X }
 
 end CategoryTheory
