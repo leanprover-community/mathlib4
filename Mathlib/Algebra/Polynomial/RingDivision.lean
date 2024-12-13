@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Div
 We prove basic results about univariate polynomials.
 
 -/
+
+assert_not_exists Ideal.map
 
 noncomputable section
 
@@ -64,11 +66,6 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
 theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
-
-@[simp]
-theorem ker_modByMonicHom (hq : q.Monic) :
-    LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 
 section
 

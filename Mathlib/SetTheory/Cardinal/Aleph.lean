@@ -275,7 +275,7 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
-theorem type_cardinal : @type Cardinal (· < ·) _ = Ordinal.univ.{u, u + 1} := by
+theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
   rw [Ordinal.univ_id]
   exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
 

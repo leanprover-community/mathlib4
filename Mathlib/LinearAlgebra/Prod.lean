@@ -985,7 +985,8 @@ most once. Then the image of `f` is the graph of some linear map `f' : H → I`.
 lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
-  obtain ⟨f', hf'⟩ := AddMonoidHom.exists_mrange_eq_mgraph (I := I) (f := f) hf₁ hf
+  obtain ⟨f', hf'⟩ :=
+    AddMonoidHom.exists_mrange_eq_mgraph (G := G) (H := H) (I := I) (f := f) hf₁ hf
   simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_coe,
     AddMonoidHom.mem_mgraph] at hf'
   use

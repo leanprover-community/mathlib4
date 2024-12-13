@@ -92,7 +92,11 @@ structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of dual vectors, called coroots. -/
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLin (root i) (coroot i) = 2
-  /-- A parametrized family of permutations, induced by reflection. -/
+  /-- A parametrized family of permutations, induced by reflections. This corresponds to the
+      classical requirement that the symmetry attached to each root (later defined in
+      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+      formalize this stability by fixing the image of the roots through each reflection (whence the
+      permutation); and similarly for coroots. -/
   reflection_perm : ι → (ι ≃ ι)
   reflection_perm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
@@ -358,6 +362,12 @@ lemma isCrystallographic_iff :
   refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
   · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
   · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
+
+variable {P} in
+lemma IsCrystallographic.flip (h : P.IsCrystallographic) :
+    P.flip.IsCrystallographic := by
+  rw [isCrystallographic_iff, forall_comm]
+  exact P.isCrystallographic_iff.mp h
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/

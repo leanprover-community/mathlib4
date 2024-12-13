@@ -15,6 +15,8 @@ the forgetful functor from `R`-modules to types.
 -/
 
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open CategoryTheory

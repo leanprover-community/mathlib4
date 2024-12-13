@@ -151,10 +151,9 @@ theorem invOneSubPow_inv_eq_one_sub_pow :
   | zero => exact Eq.symm <| pow_zero _
   | succ d => rfl
 
-theorem invOneSubPow_inv_eq_one_of_eq_zero (h : d = 0) :
-    (invOneSubPow S d).inv = 1 := by
+theorem invOneSubPow_inv_zero_eq_one : (invOneSubPow S 0).inv = 1 := by
   delta invOneSubPow
-  simp only [h, Units.inv_eq_val_inv, inv_one, Units.val_one]
+  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one]
 
 theorem mk_add_choose_mul_one_sub_pow_eq_one :
     (mk fun n ↦ Nat.choose (d + n) d : S⟦X⟧) * ((1 - X) ^ (d + 1)) = 1 :=

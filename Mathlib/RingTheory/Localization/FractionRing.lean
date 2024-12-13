@@ -33,6 +33,7 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+assert_not_exists Ideal
 
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
 variable [Algebra R S] {P : Type*} [CommRing P]

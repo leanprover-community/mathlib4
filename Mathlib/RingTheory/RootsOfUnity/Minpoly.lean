@@ -217,7 +217,7 @@ theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree
     _ ≤ P_K.roots.toFinset.card := Finset.card_le_card (is_roots_of_minpoly h)
     _ ≤ Multiset.card P_K.roots := Multiset.toFinset_card_le _
     _ ≤ P_K.natDegree := card_roots' _
-    _ ≤ P.natDegree := natDegree_map_le _ _
+    _ ≤ P.natDegree := natDegree_map_le
 
 end IsDomain
 
