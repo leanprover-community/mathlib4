@@ -56,6 +56,12 @@ theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : V_ a ⊆ V_ b :=
   · rfl
   · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
 
+theorem vonNeumann_strictMono : StrictMono vonNeumann :=
+  sorry
+
+
+#exit
+
 theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ V_ o ↔ rank x ≤ o := by
   rw [vonNeumann, rank_le_iff]
   constructor <;> intro hx y hy
