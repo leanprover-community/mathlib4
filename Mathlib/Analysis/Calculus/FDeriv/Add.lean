@@ -739,31 +739,7 @@ theorem differentiableWithinAt_comp_add_right (a : E) :
 
 theorem fderivWithin_comp_add_right (a : E) :
     fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
-  simp only [fderivWithin, hasFDerivWithinAt_comp_add_right]
-  by_cases h : 𝓝[s \ {x}] x = ⊥
-  · have h' : 𝓝[(a +ᵥ s) \ {x + a}] (x + a) = ⊥ := by
-      let e := Homeomorph.addRight a
-      have : 𝓝[(a +ᵥ s) \ {x + a}] (x + a) = map e (𝓝[s \ {x}] x) := by
-        rw [e.isEmbedding.map_nhdsWithin_eq]
-        congr
-        ext y
-        rw [← e.preimage_symm]
-        simp [e, Homeomorph.addRight, Set.mem_vadd_set_iff_neg_vadd_mem, add_comm]
-      rw [this, h, Filter.map_bot]
-    simp [h, h']
-  · have h' : 𝓝[(a +ᵥ s) \ {x + a}] (x + a) ≠ ⊥ := by
-      intro h''
-      let e := Homeomorph.addRight (-a)
-      have : 𝓝[s \ {x}] x = map e (𝓝[(a +ᵥ s) \ {x + a}] (x + a)) := by
-        rw [e.isEmbedding.map_nhdsWithin_eq]
-        congr
-        · simp [e]
-        ext y
-        rw [← e.preimage_symm]
-        simp [e, Homeomorph.addRight, Set.mem_vadd_set_iff_neg_vadd_mem, add_comm]
-      apply h
-      rw [this, h'', Filter.map_bot]
-    simp [h, h']
+  simp only [fderivWithin, hasFDerivWithinAt_comp_add_right, DifferentiableWithinAt]
 
 theorem hasFDerivWithinAt_comp_add_left (a : E) :
     HasFDerivWithinAt (fun x ↦ f (a + x)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (a + x) := by

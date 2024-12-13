@@ -527,7 +527,7 @@ private lemma respects_isOpenImmersion_aux
       let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
         (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
       have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
-        simp only [IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
+        simp only [V, IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
       rw [heq, ← Category.assoc]
       refine this _ ?_ ?_
       · rwa [P.cancel_right_of_respectsIso]
