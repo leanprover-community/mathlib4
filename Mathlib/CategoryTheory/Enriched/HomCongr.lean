@@ -30,7 +30,7 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 
 /-- If we have isomorphisms `α : X ≅ X₁` and `β : Y ≅ Y₁` in `C`, then we can
 construct an isomorphism between `V` objects `X ⟶[V] Y` and `X₁ ⟶[V] Y₁`. -/
-@[simp]
+@[simps]
 def eHomCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) :
     (X ⟶[V] Y) ≅ (X₁ ⟶[V] Y₁) where
   hom := eHomWhiskerRight V α.inv Y ≫ eHomWhiskerLeft V X₁ β.hom
