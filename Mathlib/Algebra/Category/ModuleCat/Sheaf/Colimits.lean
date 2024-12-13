@@ -29,7 +29,13 @@ instance [HasColimitsOfShape K (PresheafOfModules.{v} R.val)] :
     HasColimitsOfShape K (SheafOfModules.{v} R) where
   has_colimit F := by
     let e : F ≅ (F ⋙ forget R) ⋙ PresheafOfModules.sheafification (𝟙 R.val) :=
-      isoWhiskerLeft F (asIso (PresheafOfModules.sheafificationAdjunction (𝟙 R.val)).counit).symm
+      (isoWhiskerLeft F
+        (asIso (PresheafOfModules.sheafificationAdjunction (𝟙 R.val)).counit).symm) ≪≫ 
+        (isoWhiskerLeft F (Functor.associator (forget _)
+          (PresheafOfModules.restrictScalars (𝟙 R.val)) (PresheafOfModules.sheafification _) ≪≫
+            isoWhiskerLeft (forget R) (isoWhiskerRight PresheafOfModules.restrictScalarsId.symm _ ≪≫
+              Functor.leftUnitor _))) ≪≫
+        (Functor.associator F (forget _) (PresheafOfModules.sheafification (𝟙 R.val))).symm
     exact hasColimitOfIso e
 
 end SheafOfModules

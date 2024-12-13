@@ -130,6 +130,14 @@ def map [Module S M] [Module S N] (g : M →ₗ[S] N) :
     RestrictScalars f M →ₗ[R] RestrictScalars f N :=
   mapInto (g.comp outₛₗ)
 
+/-- Restricting by the identity map gives back an isomorphic module. -/
+@[simps! apply symm_apply]
+def idEquiv [Module R M] : RestrictScalars (RingHom.id R) M ≃ₗ[R] M where
+  __ := outₛₗ
+  invFun := into
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end RestrictScalars
 
 end Module
@@ -975,41 +983,33 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
     (restrictScalars.{max u₂ w, u₁, u₂} f).IsRightAdjoint :=
   (extendRestrictScalarsAdj f).isRightAdjoint
 
-lemma comp_restrictScalars_comp_forget₂
-    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
-    (F : J ⥤ ModuleCat.{v} S) :
-    (F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp =
-      F ⋙ forget₂ (ModuleCat S) AddCommGrp :=
-  -- TODO: This was probably `rfl` but now we have to unfold `restrictScalars` somehow?
-  sorry
+/-- Forgetting the scalar multiplication after changing it is the same as forgetting it directly. -/
+def restrictScalars_comp_forget₂
+    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) :
+    restrictScalars f ⋙ forget₂ (ModuleCat R) AddCommGrp ≅ forget₂ (ModuleCat S) AddCommGrp where
+  hom.app M := AddCommGrp.ofHom <| (Module.RestrictScalars.outAddEquiv f M).toAddMonoidHom
+  inv.app M := AddCommGrp.ofHom <| (Module.RestrictScalars.outAddEquiv f M).symm.toAddMonoidHom
 
 noncomputable instance preservesLimit_restrictScalars
     {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
-  ⟨fun {c} hc => ⟨by
-    apply isLimitOfReflects (forget₂ _ AddCommGrp)
-    -- TODO: is this going to be something like:
-    -- apply IsLimit.mapConeEquiv _ (isLimitOfPreserves (forget₂ _ AddCommGrp) hc)
-    convert isLimitOfPreserves (forget₂ _ AddCommGrp) hc
-    · apply comp_restrictScalars_comp_forget₂
-    · sorry⟩⟩
+  ⟨fun hc => ⟨isLimitOfReflects (forget₂ _ AddCommGrp)
+    (IsLimit.mapConeEquiv (restrictScalars_comp_forget₂ f).symm
+      (isLimitOfPreserves (forget₂ _ AddCommGrp) hc))⟩⟩
 
 instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
     [HasColimit (F ⋙ forget₂ _ AddCommGrp)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp) := by
-    rw [comp_restrictScalars_comp_forget₂]
-    infer_instance
+    exact hasColimitOfIso ((Functor.associator F _ _).trans
+      (isoWhiskerLeft F (restrictScalars_comp_forget₂ f)))
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
   apply isColimitOfReflects (forget₂ _ AddCommGrp)
-  sorry
-  -- TODO: was:
-  /-
+  apply IsColimit.mapCoconeEquiv (restrictScalars_comp_forget₂ f).symm
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrp.{v})
   exact HasColimit.isColimitColimitCocone F
-  -/
 
 end ModuleCat
 

@@ -25,6 +25,7 @@ and the presheaf of modules.
 universe w v v₁ u₁ u
 
 open CategoryTheory
+open ModuleCat.restrictScalars
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
 
@@ -66,8 +67,11 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     · exact Presheaf.equalizerSieve_mem J α _ _ hr₀
     · exact Presheaf.equalizerSieve_mem J φ _ _ hm₀
   · intro Z g hg
-    erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply, M₀.map_smul, M₀.map_smul,
-      hg.1, hg.2]
+    rw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply]
+    change (φ.app _) (out _ ((M₀.map g.op) (r₀ • m₀))) =
+      (φ.app _) (out _ ((M₀.map g.op) (r₀' • m₀')))
+    rw [M₀.map_smul, M₀.map_smul, hg.1]
+    erw [hg.2]
     rfl
 
 lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
@@ -75,9 +79,10 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     (m₀ : M₀.obj (Opposite.op Y)) (m₀' : M₀.obj (Opposite.op Z))
     (hr₀ : α.app _ r₀ = R.map f.op r) (hr₀' : α.app _ r₀' = R.map (f.op ≫ g.op) r)
     (hm₀ : φ.app _ m₀ = A.map f.op m) (hm₀' : φ.app _ m₀' = A.map (f.op ≫ g.op) m) :
-    φ.app _ (M₀.map g.op (r₀ • m₀)) = φ.app _ (r₀' • m₀') := by
+    φ.app _ (out _ (M₀.map g.op (r₀ • m₀))) = φ.app _ (r₀' • m₀') := by
   rw [← PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective α φ hA (R₀.map g.op r₀) r₀'
-    (M₀.map g.op m₀) m₀', M₀.map_smul]
+    (out _ (M₀.map g.op m₀)) m₀', M₀.map_smul]
+  · simp
   · rw [hr₀', R.map_comp, comp_apply, ← hr₀, NatTrans.naturality_apply]
   · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply]
@@ -101,17 +106,17 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
   have ha₀ : (α.app (Opposite.op Z)) a₀ = (R.map (f₁.op ≫ g₁.op)) r := by
     dsimp [a₀]
     rw [NatTrans.naturality_apply, ha₁, Functor.map_comp, comp_apply]
-  have hb₀ : (φ.app (Opposite.op Z)) b₀ = (A.map (f₁.op ≫ g₁.op)) m := by
+  have hb₀ : (φ.app (Opposite.op Z)) (out _ b₀) = (A.map (f₁.op ≫ g₁.op)) m := by
     dsimp [b₀]
     erw [NatTrans.naturality_apply, hb₁, Functor.map_comp, comp_apply]
   have ha₀' : (α.app (Opposite.op Z)) a₀ = (R.map (f₂.op ≫ g₂.op)) r := by
     rw [ha₀, ← op_comp, fac, op_comp]
-  have hb₀' : (φ.app (Opposite.op Z)) b₀ = (A.map (f₂.op ≫ g₂.op)) m := by
+  have hb₀' : (φ.app (Opposite.op Z)) (out _ b₀) = (A.map (f₂.op ≫ g₂.op)) m := by
     rw [hb₀, ← op_comp, fac, op_comp]
   dsimp
   erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply]
-  exact (isCompatible_map_smul_aux α φ hA r m f₁ g₁ a₁ a₀ b₁ b₀ ha₁ ha₀ hb₁ hb₀).trans
-    (isCompatible_map_smul_aux α φ hA r m f₂ g₂ a₂ a₀ b₂ b₀ ha₂ ha₀' hb₂ hb₀').symm
+  exact (isCompatible_map_smul_aux α φ hA r m f₁ g₁ a₁ a₀ b₁ (out _ b₀) ha₁ ha₀ hb₁ hb₀).trans
+    (isCompatible_map_smul_aux α φ hA r m f₂ g₂ a₂ a₀ b₂ (out _ b₀) ha₂ ha₀' hb₂ hb₀').symm
 
 end
 
@@ -158,7 +163,9 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     apply A.isSeparated _ _ (J.pullback_stable f.unop hS)
     rintro Z g hg
     dsimp at hg
-    erw [← comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply, M₀.map_smul]
+    rw [← comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply]
+    show (A.val.map (f ≫ g.op)) a = (φ.app (Opposite.op Z)) (out _ ((M₀.map g.op) (a₀ • b₀)))
+    rw [M₀.map_smul]
     refine (ha _ hg).trans (app_eq_of_isLocallyInjective α φ A.isSeparated _ _ _ _ ?_ ?_)
     · rw [NatTrans.naturality_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
@@ -308,29 +315,52 @@ noncomputable def sheafify : SheafOfModules.{v} R where
   val := letI := Sheafify.module α φ; ofPresheaf A.val (Sheafify.map_smul _ _)
   isSheaf := A.cond
 
+@[simps]
+noncomputable def intoRestrictScalars :
+    A.val ⟶ ((restrictScalars α).obj (sheafify α φ).val).presheaf where
+  app X := (AddCommGrp.ofHom (Module.RestrictScalars.outAddEquiv _ _).symm.toAddMonoidHom)
+
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
-def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
-  homMk φ (fun X r₀ m₀ ↦ by
+noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
+  homMk
+  (φ ≫ (intoRestrictScalars _ _))
+  (fun X r₀ m₀ ↦ ModuleCat.restrictScalars.obj_ext _ _ _ <| by 
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by aesop) m₀ (by simp)).symm)
 
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
-    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
+    ((toSheafify α φ).app X).hom x = into _ (φ.app X x) := rfl
 
 /-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
 @[simp]
 lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
     DFunLike.coe (F := (_ →ₗ[_] ↑((ModuleCat.restrictScalars (α.app X)).obj _)))
-    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
+    ((toSheafify α φ).app X).hom x = into _ (φ.app X x) := rfl
 
 @[simp]
-lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
+lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) =
+    φ ≫ (intoRestrictScalars _ _) :=
+  rfl
+
+instance : Presheaf.IsLocallyInjective J (intoRestrictScalars α φ) where
+  equalizerSieve_mem x y h := by
+    rw [show x = y from congr_arg Module.RestrictScalars.out h, Presheaf.equalizerSieve_self_eq_top]
+    exact GrothendieckTopology.top_mem _ _
 
 instance : IsLocallyInjective J (toSheafify α φ) := by
-  dsimp [IsLocallyInjective]; infer_instance
+  dsimp only [restrictScalars_obj, IsLocallyInjective, toPresheaf_map_toSheafify,
+    toPresheaf_obj_coe, restrictScalarsObj_obj, AddEquiv.toAddMonoidHom_eq_coe, id_eq]
+  apply Presheaf.isLocallyInjective_comp
+
+instance : Presheaf.IsLocallySurjective J (intoRestrictScalars α φ) where
+  imageSieve_mem s := by
+    erw [Presheaf.imageSieve_app]
+    exact GrothendieckTopology.top_mem _ _
 
 instance : IsLocallySurjective J (toSheafify α φ) := by
-  dsimp [IsLocallySurjective]; infer_instance
+  dsimp only [restrictScalars_obj, IsLocallySurjective, toPresheaf_map_toSheafify,
+    toPresheaf_obj_coe, restrictScalarsObj_obj, AddEquiv.toAddMonoidHom_eq_coe, id_eq]
+  apply Presheaf.isLocallySurjective_comp
 
 variable [J.WEqualsLocallyBijective AddCommGrp.{v}]
 
@@ -341,13 +371,16 @@ noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (hF : Presheaf.IsSheaf J F.presheaf) :
     ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) :=
   (restrictHomEquivOfIsLocallySurjective α hF).trans
-    (homEquivOfIsLocallyBijective (f := toSheafify α φ)
-      (N := (restrictScalars α).obj F) hF)
+    (homEquivOfIsLocallyBijective (J := J) (f := toSheafify α φ)
+      (N := (restrictScalars α).obj F)
+      ((Presheaf.isSheaf_of_iso_iff ((restrictScalarsCompToPresheaf _).app _)).mpr hF))
 
 lemma comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
     (hF : Presheaf.IsSheaf J F.presheaf) (f : M₀ ⟶ (restrictScalars α).obj F) :
-    φ ≫ (toPresheaf R.val).map ((sheafifyHomEquiv' α φ hF).symm f) = (toPresheaf R₀).map f :=
-  (toPresheaf _).congr_map ((sheafifyHomEquiv' α φ hF).apply_symm_apply f)
+    φ ≫ (toPresheaf R.val).map ((sheafifyHomEquiv' α φ hF).symm f) =
+      (toPresheaf R₀).map f ≫ ((restrictScalarsCompToPresheaf _).hom.app _) := by
+  rw [← ((toPresheaf _).congr_map ((sheafifyHomEquiv' α φ hF).apply_symm_apply f))]
+  rfl
 
 /-- The bijection
 `(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
@@ -378,7 +411,8 @@ def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
     apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
     dsimp [f]
     erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]
-    rw [← fac, Functor.map_comp, toPresheaf_map_toSheafify])
+    rw [← fac, Functor.map_comp, toPresheaf_map_toSheafify]
+    rfl)
 
 end
 

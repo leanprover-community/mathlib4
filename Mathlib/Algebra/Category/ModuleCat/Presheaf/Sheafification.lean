@@ -83,23 +83,26 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
-      CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val := rfl
+      CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val ≫
+        ((restrictScalarsCompToPresheaf _).inv.app _) := rfl
 
 lemma toPresheaf_map_sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
-      (sheafificationAdjunction J AddCommGrp).homEquiv P.presheaf
-        ((SheafOfModules.toSheaf _).obj F) ((SheafOfModules.toSheaf _).map f) := by
+      ((sheafificationAdjunction J AddCommGrp).homEquiv P.presheaf
+        ((SheafOfModules.toSheaf _).obj F) ((SheafOfModules.toSheaf _).map f)) ≫
+         ((restrictScalarsCompToPresheaf _).inv.app _) := by
   rw [toPresheaf_map_sheafificationHomEquiv_def, Adjunction.homEquiv_unit]
-  dsimp
+  simp
 
 lemma toSheaf_map_sheafificationHomEquiv_symm
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
     (SheafOfModules.toSheaf _).map ((sheafificationHomEquiv α).symm g) =
       (((sheafificationAdjunction J AddCommGrp).homEquiv
-        P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm ((toPresheaf R₀).map g)) := by
+        P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm
+          (((toPresheaf R₀).map g) ≫ ((restrictScalarsCompToPresheaf _).hom.app _))) := by
   obtain ⟨f, rfl⟩ := (sheafificationHomEquiv α).surjective g
   apply ((sheafificationAdjunction J AddCommGrp).homEquiv _ _).injective
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
@@ -118,6 +121,8 @@ noncomputable def sheafificationAdjunction :
         erw [toSheaf_map_sheafificationHomEquiv_symm,
           toSheaf_map_sheafificationHomEquiv_symm α g]
         rw [Functor.map_comp]
+        simp only [sheafToPresheaf_obj, SheafOfModules.toSheaf_obj_val, SheafOfModules.forget_obj,
+          restrictScalars_obj, assoc]
         apply (CategoryTheory.sheafificationAdjunction J
           AddCommGrp.{v}).homEquiv_naturality_left_symm
       homEquiv_naturality_right := fun {P₀ M N} f g ↦ by
@@ -131,7 +136,9 @@ lemma sheafificationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
 @[simp]
 lemma toPresheaf_map_sheafificationAdjunction_unit_app (M₀ : PresheafOfModules.{v} R₀) :
     (toPresheaf _).map ((sheafificationAdjunction α).unit.app M₀) =
-      CategoryTheory.toSheafify J M₀.presheaf := rfl
+      CategoryTheory.toSheafify J M₀.presheaf ≫
+        { app X := AddCommGrp.ofHom <|
+          (Module.RestrictScalars.outAddEquiv _ _).symm.toAddMonoidHom } := rfl
 
 instance : (sheafification.{v} α).IsLeftAdjoint :=
   (sheafificationAdjunction α).isLeftAdjoint

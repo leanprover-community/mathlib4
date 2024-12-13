@@ -33,7 +33,12 @@ noncomputable def restrictScalars :
     SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R where
   obj M' :=
     { val := (PresheafOfModules.restrictScalars α.val).obj M'.val
-      isSheaf := M'.isSheaf }
+      isSheaf := (Presheaf.isSheaf_of_iso_iff
+        { hom.app X := AddCommGrp.ofHom <|
+            (Module.RestrictScalars.outAddEquiv _ _).symm.toAddMonoidHom
+          inv.app X := AddCommGrp.ofHom <|
+            (Module.RestrictScalars.outAddEquiv _ _).toAddMonoidHom }).mp
+        M'.isSheaf }
   map φ := { val := (PresheafOfModules.restrictScalars α.val).map φ.val }
 
 instance : (restrictScalars.{v} α).Additive where
@@ -41,6 +46,8 @@ instance : (restrictScalars.{v} α).Additive where
 end SheafOfModules
 
 namespace PresheafOfModules
+
+open ModuleCat.restrictScalars
 
 variable {R R' : Cᵒᵖ ⥤ RingCat.{u}} (α : R ⟶ R')
   {M₁ M₂ : PresheafOfModules.{v} R'}
@@ -51,17 +58,21 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
     (hM₂ : Presheaf.IsSheaf J M₂.presheaf) [Presheaf.IsLocallySurjective J α] :
     (M₁ ⟶ M₂) ≃ ((restrictScalars α).obj M₁ ⟶ (restrictScalars α).obj M₂) where
   toFun f := (restrictScalars α).map f
-  invFun g := homMk ((toPresheaf R).map g) (fun X r' m ↦ by
+  invFun g := homMk ((restrictScalarsCompToPresheaf α).inv.app _ ≫ ((toPresheaf R).map g) ≫
+  (restrictScalarsCompToPresheaf α).hom.app _) (fun X r' m ↦ by
     apply hM₂.isSeparated _ _ (Presheaf.imageSieve_mem J α r')
     rintro Y p ⟨r : R.obj _, hr⟩
-    have hg : ∀ (z : M₁.obj X), g.app _ (M₁.map p.op z) = M₂.map p.op (g.app X z) :=
-      fun z ↦ congr_fun ((forget _).congr_map (g.naturality p.op)) z
-    change M₂.map p.op (g.app X (r' • m)) = M₂.map p.op (r' • show M₂.obj X from g.app X m)
+    have hg : ∀ (z : M₁.obj X), out _ (g.app _ (into _ (out _ (M₁.map p.op z)))) =
+        out _ (M₂.map p.op (out _ (g.app X (into _ z)))) := fun z ↦ by
+          have := congr_arg (out _) (congr_arg (out _)
+            (congr_fun ((forget _).congr_map (g.naturality p.op)) (into _ z)))
+          dsimp at this ⊢
+          exact this
+    change out _ (M₂.map p.op (out _ (g.app X (into _ (r' • m))))) =
+      out _ (M₂.map p.op (r' • (out _ (g.app X (into _ m)))))
     dsimp at hg ⊢
-    rw [← hg, M₂.map_smul, ← hg, ← hr]
-    erw [← (g.app _).hom.map_smul]
-    rw [M₁.map_smul, ← hr]
-    rfl)
+    rw [← hg, map_smul, out_into, map_smul, out_into, ← hr, ← hg, ← smul_def', map_smulₛₗ,
+        RingHom.id_apply, map_smulₛₗ])
   left_inv _ := rfl
   right_inv _ := rfl
 

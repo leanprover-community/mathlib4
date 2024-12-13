@@ -30,13 +30,19 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
+set_option maxHeartbeats 400000 in -- Not sure why this is so slow...
 /-- The pushforward of sheaves of modules that is induced by a continuous functor `F`
 and a morphism of sheaves of rings `φ : S ⟶ (F.sheafPushforwardContinuous RingCat J K).obj R`. -/
 @[simps]
 noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S where
   obj M :=
     { val := (PresheafOfModules.pushforward φ.val).obj M.val
-      isSheaf := ((F.sheafPushforwardContinuous _ J K).obj ⟨_, M.isSheaf⟩).cond }
+      isSheaf := (Presheaf.isSheaf_of_iso_iff
+          { hom.app X :=
+              AddCommGrp.ofHom ((Module.RestrictScalars.outAddEquiv _ _).symm.toAddMonoidHom)
+            inv.app X :=
+              AddCommGrp.ofHom ((Module.RestrictScalars.outAddEquiv _ _).toAddMonoidHom) }).mp
+        ((F.sheafPushforwardContinuous _ J K).obj ⟨_, M.isSheaf⟩).cond }
   map f :=
     { val := (PresheafOfModules.pushforward φ.val).map f.val }
 

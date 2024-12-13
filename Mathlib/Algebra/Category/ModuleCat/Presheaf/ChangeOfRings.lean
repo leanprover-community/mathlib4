@@ -56,14 +56,25 @@ noncomputable def restrictScalars (α : R ⟶ R') :
 
 instance (α : R ⟶ R') : (restrictScalars.{v} α).Additive where
 
-instance : (restrictScalars (𝟙 R)).Full := sorry -- inferInstanceAs (𝟭 _).Full
-
-instance (α : R ⟶ R') : (restrictScalars α).Faithful where
-  map_injective h := (toPresheaf R').map_injective sorry -- ((toPresheaf R).congr_map h)
-
 /-- The isomorphism `restrictScalars α ⋙ toPresheaf R ≅ toPresheaf R'` for any
 morphism of presheaves of rings `α : R ⟶ R'`. -/
 noncomputable def restrictScalarsCompToPresheaf (α : R ⟶ R') :
-    restrictScalars.{v} α ⋙ toPresheaf R ≅ toPresheaf R' := sorry -- Iso.refl _
+    restrictScalars.{v} α ⋙ toPresheaf R ≅ toPresheaf R' where
+  hom.app X := { app M := AddCommGrp.ofHom <|
+    (Module.RestrictScalars.outAddEquiv _ _).toAddMonoidHom }
+  inv.app X := { app M := AddCommGrp.ofHom <|
+    (Module.RestrictScalars.outAddEquiv _ _).symm.toAddMonoidHom }
+
+def restrictScalarsId : 𝟭 (PresheafOfModules R) ≅ restrictScalars (𝟙 R) where
+  hom.app X := { app M := ModuleCat.ofHom <| Module.RestrictScalars.idEquiv.symm.toLinearMap }
+  inv.app X := { app M := ModuleCat.ofHom <| Module.RestrictScalars.idEquiv.toLinearMap }
+
+instance : (restrictScalars (𝟙 R)).Full :=
+  CategoryTheory.Functor.Full.of_iso (F := (𝟭 _)) restrictScalarsId
+
+instance (α : R ⟶ R') : (restrictScalars α).Faithful :=
+  have _ : (restrictScalars α ⋙ toPresheaf R).Faithful := Functor.Faithful.of_iso
+    (restrictScalarsCompToPresheaf _).symm
+  Functor.Faithful.of_comp (restrictScalars α) (toPresheaf R)
 
 end PresheafOfModules

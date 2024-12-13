@@ -97,9 +97,13 @@ noncomputable def forgetToSheafModuleCat
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
     Presheaf.isSheaf_of_isSheaf_comp _ _
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w})
-        sorry
-        /- M.isSheaf -/⟩
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) 
+        ((Presheaf.isSheaf_of_iso_iff
+        { hom.app X :=
+            AddCommGrp.ofHom (Module.RestrictScalars.outAddEquiv _ _).symm.toAddMonoidHom
+          inv.app X :=
+            AddCommGrp.ofHom (Module.RestrictScalars.outAddEquiv _ _).toAddMonoidHom }).mp
+        M.isSheaf)⟩
   map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
