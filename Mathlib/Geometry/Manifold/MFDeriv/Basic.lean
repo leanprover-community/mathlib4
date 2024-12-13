@@ -693,10 +693,23 @@ protected theorem MDifferentiableAt.mfderiv (h : MDifferentiableAt I I' f x) :
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt I I' f x f') : mfderiv I I' f x = f' :=
   (hasMFDerivAt_unique h h.mdifferentiableAt.hasMFDerivAt).symm
 
-theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' f s x f')
+protected theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' f s x f')
     (hxs : UniqueMDiffWithinAt I s x) : mfderivWithin I I' f s x = f' := by
   ext
   rw [hxs.eq h h.mdifferentiableWithinAt.hasMFDerivWithinAt]
+
+theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f s x 0) :
+    mfderivWithin I I' f s x = 0 := by
+  simp only [mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte, writtenInExtChartAt, extChartAt,
+    PartialHomeomorph.extend, PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+    ModelWithCorners.toPartialEquiv_coe_symm, Function.comp_apply]
+  simp only [HasMFDerivWithinAt, writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+    PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+    ModelWithCorners.toPartialEquiv_coe_symm, Function.comp_apply] at h
+  rw [fderivWithin, if_pos]
+  exact h.2
 
 theorem MDifferentiable.mfderivWithin (h : MDifferentiableAt I I' f x)
     (hxs : UniqueMDiffWithinAt I s x) : mfderivWithin I I' f s x = mfderiv I I' f x := by

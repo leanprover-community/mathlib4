@@ -198,9 +198,10 @@ theorem mfderiv_const :
     mfderiv I I' (fun _ : M => c) x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   HasMFDerivAt.mfderiv (hasMFDerivAt_const c x)
 
-theorem mfderivWithin_const (hxs : UniqueMDiffWithinAt I s x) :
-    mfderivWithin I I' (fun _ : M => c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
-  (hasMFDerivWithinAt_const _ _ _).mfderivWithin hxs
+theorem mfderivWithin_const :
+    mfderivWithin I I' (fun _ : M => c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
+  apply HasMFDerivWithinAt.mfderivWithin_eq_zero
+  exact hasMFDerivWithinAt_const _ _ _
 
 end Const
 
