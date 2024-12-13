@@ -775,7 +775,7 @@ theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK 
   QuaternionAlgebra.ext
 
 /-- The imaginary part of a quaternion. -/
-nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
+def im (x : ℍ[R]) : ℍ[R] := QuaternionAlgebra.im x
 
 @[simp] theorem im_re : a.im.re = 0 := rfl
 
@@ -787,11 +787,11 @@ nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 
 @[simp] theorem im_idem : a.im.im = a.im := rfl
 
-@[simp] nonrec theorem re_add_im : ↑a.re + a.im = a := a.re_add_im
+@[simp] theorem re_add_im : ↑a.re + a.im = a := QuaternionAlgebra.re_add_im a
 
-@[simp] nonrec theorem sub_self_im : a - a.im = a.re := a.sub_self_im
+@[simp] theorem sub_self_im : a - a.im = a.re := QuaternionAlgebra.sub_self_im a
 
-@[simp] nonrec theorem sub_self_re : a - ↑a.re = a.im := a.sub_self_re
+@[simp] theorem sub_self_re : a - ↑a.re = a.im := QuaternionAlgebra.sub_self_re a
 
 @[simp, norm_cast]
 theorem coe_re : (x : ℍ[R]).re = x := rfl
@@ -842,7 +842,7 @@ theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
 
 @[simp] theorem add_imK : (a + b).imK = a.imK + b.imK := rfl
 
-@[simp] nonrec theorem add_im : (a + b).im = a.im + b.im := a.add_im b
+@[simp] theorem add_im : (a + b).im = a.im + b.im := QuaternionAlgebra.add_im a b
 
 @[simp, norm_cast]
 theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
@@ -856,7 +856,7 @@ theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
 
 @[simp] theorem neg_imK : (-a).imK = -a.imK := rfl
 
-@[simp] nonrec theorem neg_im : (-a).im = -a.im := a.neg_im
+@[simp] theorem neg_im : (-a).im = -a.im := QuaternionAlgebra.neg_im a
 
 @[simp, norm_cast]
 theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
@@ -870,7 +870,7 @@ theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
 
 @[simp] theorem sub_imK : (a - b).imK = a.imK - b.imK := rfl
 
-@[simp] nonrec theorem sub_im : (a - b).im = a.im - b.im := a.sub_im b
+@[simp] theorem sub_im : (a - b).im = a.im - b.im := QuaternionAlgebra.sub_im a b
 
 @[simp, norm_cast]
 theorem coe_sub : ((x - y : R) : ℍ[R]) = x - y :=
@@ -989,8 +989,8 @@ theorem smul_re [SMul S R] (s : S) : (s • a).re = s • a.re :=
 @[simp] theorem smul_imK [SMul S R] (s : S) : (s • a).imK = s • a.imK := rfl
 
 @[simp]
-nonrec theorem smul_im [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
-  a.smul_im s
+theorem smul_im [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
+  QuaternionAlgebra.smul_im a s
 
 @[simp, norm_cast]
 theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) : (↑(s • r) : ℍ[R]) = s • (r : ℍ[R]) :=
@@ -1037,20 +1037,20 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 
 @[simp] theorem star_im : (star a).im = -a.im := a.im_star
 
-nonrec theorem self_add_star' : a + star a = ↑(2 * a.re) :=
-  a.self_add_star'
+theorem self_add_star' : a + star a = ↑(2 * a.re) :=
+  QuaternionAlgebra.self_add_star' a
 
-nonrec theorem self_add_star : a + star a = 2 * a.re :=
-  a.self_add_star
+theorem self_add_star : a + star a = 2 * a.re :=
+  QuaternionAlgebra.self_add_star a
 
-nonrec theorem star_add_self' : star a + a = ↑(2 * a.re) :=
-  a.star_add_self'
+theorem star_add_self' : star a + a = ↑(2 * a.re) :=
+  QuaternionAlgebra.star_add_self' a
 
-nonrec theorem star_add_self : star a + a = 2 * a.re :=
-  a.star_add_self
+theorem star_add_self : star a + a = 2 * a.re :=
+  QuaternionAlgebra.star_add_self a
 
-nonrec theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
-  a.star_eq_two_re_sub
+theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
+  QuaternionAlgebra.star_eq_two_re_sub a
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=
@@ -1085,11 +1085,11 @@ theorem star_eq_neg {a : ℍ[R]} : star a = -a ↔ a.re = 0 :=
 
 end CharZero
 
-nonrec theorem star_mul_eq_coe : star a * a = (star a * a).re :=
-  a.star_mul_eq_coe
+theorem star_mul_eq_coe : star a * a = (star a * a).re :=
+  QuaternionAlgebra.star_mul_eq_coe a
 
-nonrec theorem mul_star_eq_coe : a * star a = (a * star a).re :=
-  a.mul_star_eq_coe
+theorem mul_star_eq_coe : a * star a = (a * star a).re :=
+  QuaternionAlgebra.mul_star_eq_coe a
 
 open MulOpposite
 

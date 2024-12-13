@@ -52,15 +52,15 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) :
+theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) :
     f i i h x = x :=
-  DirectedSystem.map_self (f := (f · · ·)) x
+  _root_.DirectedSystem.map_self (f := (f · · ·)) x
 
 /-- A copy of `DirectedSystem.map_map` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
-nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
+theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
+  _root_.DirectedSystem.map_map (f := (f · · ·)) hij hjk x
 
 variable (G)
 
@@ -530,7 +530,7 @@ instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/
-nonrec def of (i) : G i →+* DirectLimit G f :=
+def of (i) : G i →+* DirectLimit G f :=
   RingHom.mk'
     { toFun := fun x => Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σi, G i))
       map_one' := Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inl ⟨i, rfl⟩
@@ -577,7 +577,7 @@ open Polynomial
 
 variable {f' : ∀ i j, i ≤ j → G i →+* G j}
 
-nonrec theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
+theorem Polynomial.exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (q : Polynomial (DirectLimit G fun i j h => f' i j h)) :
     ∃ i p, Polynomial.map (of G (fun i j h => f' i j h) i) p = q :=
   Polynomial.induction_on q
