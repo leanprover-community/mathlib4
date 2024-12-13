@@ -75,8 +75,6 @@ theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
-def toQuiv_eq (V : Type) [ReflQuiver V] : (ReflQuiv.of V).toQuiv = V := rfl
-
 /-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
 compatibility with the identities. -/
 def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W] (e : Quiv.of V ≅ Quiv.of W)
