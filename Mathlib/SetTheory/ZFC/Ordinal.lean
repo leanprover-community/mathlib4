@@ -16,7 +16,8 @@ under `∈`.
 ## Definitions
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
-- `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`.
+- `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`. We show multiple
+  equivalences to this definition.
 
 ## TODO
 
