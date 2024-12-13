@@ -248,3 +248,11 @@ theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet
+
+/-! ### Lean ordinals to ZFC ordinals -/
+
+namespace Ordinal
+
+private
+
+end Ordinal
