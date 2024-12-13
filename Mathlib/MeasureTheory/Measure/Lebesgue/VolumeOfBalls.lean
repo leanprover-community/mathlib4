@@ -314,13 +314,18 @@ theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
 
 end LpSpace
 
-section EuclideanSpace
+namespace EuclideanSpace
 
-variable (ι : Type*) [Nonempty ι] [Fintype ι]
+variable (ι : Type*) [Fintype ι]
 
-open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal
+open scoped Nat
+open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal Metric
 
-theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
+section Nonempty
+
+variable [Nonempty ι]
+
+theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ card ι *
       .ofReal (Real.sqrt π ^ card ι / Gamma (card ι / 2 + 1)) := by
   obtain hr | hr := le_total r 0
@@ -329,15 +334,15 @@ theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ ι) 1) =
         .ofReal (Real.sqrt π ^ card ι / Gamma (card ι / 2 + 1)) by
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
-    rw [← ((EuclideanSpace.volume_preserving_measurableEquiv _).symm).measure_preimage
+    rw [← ((volume_preserving_measurableEquiv _).symm).measure_preimage
       measurableSet_ball.nullMeasurableSet]
     convert (volume_sum_rpow_lt_one ι one_le_two) using 4
-    · simp_rw [EuclideanSpace.ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
+    · simp_rw [ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
         Set.setOf_app_iff]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
-theorem EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
+theorem volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ card ι *
       .ofReal (sqrt π ^ card ι / Gamma (card ι / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, EuclideanSpace.volume_ball]
@@ -346,6 +351,50 @@ theorem EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
 alias Euclidean_space.volume_ball := EuclideanSpace.volume_ball
 @[deprecated (since := "2024-04-06")]
 alias Euclidean_space.volume_closedBall := EuclideanSpace.volume_closedBall
+
+lemma volume_ball_of_dim_even {k : ℕ} (hk : card ι = 2 * k) (x : EuclideanSpace ℝ ι) {r : ℝ}
+    (hr : 0 ≤ r) : volume (ball x r) = .ofReal (π ^ k * r ^ (card ι) / (k : ℕ)!) := by
+  rw [volume_ball, ← ofReal_pow hr, ← ofReal_mul (pow_nonneg hr _), hk,
+    pow_mul, pow_mul, sq_sqrt pi_nonneg]
+  simp only [Nat.cast_mul, Nat.cast_ofNat, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+    mul_div_cancel_left₀]
+  rw [Real.Gamma_nat_eq_factorial]
+  ring_nf
+
+lemma volume_closedBall_of_dim_even {k : ℕ} (hk : card ι = 2 * k) (x : EuclideanSpace ℝ ι) {r : ℝ}
+    (hr : 0 ≤ r) : volume (closedBall x r) = .ofReal (π ^ k * r ^ (card ι) / (k : ℕ)!) := by
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_of_dim_even ι hk x hr]
+
+end Nonempty
+
+lemma volume_ball_of_dim_odd {k : ℕ} (hk : card ι = 2 * k + 1)
+    (x : EuclideanSpace ℝ ι) {r : ℝ} (hr : 0 ≤ r) :
+    volume (ball x r) = .ofReal (π ^ k * r ^ (card ι) * 2 ^ (k + 1) / (card ι : ℕ)‼) := by
+  have : Nonempty ι := card_pos_iff.mp (hk ▸ Nat.succ_pos _)
+  rw [volume_ball, ← ofReal_pow hr, ← ofReal_mul (pow_nonneg hr _), hk,
+    pow_succ (√π), pow_mul, sq_sqrt pi_nonneg]
+  simp? [add_div, add_right_comm, -one_div, Gamma_nat_add_one_add_half] says
+    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one, add_div, ne_eq,
+      OfNat.ofNat_ne_zero, not_false_eq_true, mul_div_cancel_left₀, add_right_comm,
+      Gamma_nat_add_one_add_half]
+  have : 0 < √π := sqrt_pos_of_pos pi_pos
+  field_simp
+  ring
+
+lemma volume_closedBall_of_dim_odd {k : ℕ} (hk : card ι = 2 * k + 1)
+    (x : EuclideanSpace ℝ ι) {r : ℝ} (hr : 0 ≤ r) :
+    volume (closedBall x r) = .ofReal (π ^ k * r ^ (card ι) * 2 ^ (k + 1) / (card ι : ℕ)‼) := by
+  have : Nonempty ι := card_pos_iff.mp (hk ▸ Nat.succ_pos _)
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_of_dim_odd ι hk x hr]
+
+lemma volume_ball_of_dim_three (h_card : card ι = 3) (x : EuclideanSpace ℝ ι) {r : ℝ} (hr : 0 ≤ r) :
+    volume (ball x r) = .ofReal (π * r ^ 3 * 4 / 3) := by
+  norm_num [volume_ball_of_dim_odd ι (k := 1) (by simp [h_card]) x hr, h_card]
+
+lemma volume_closedBall_of_dim_three (h_card : card ι = 3) (x : EuclideanSpace ℝ ι) {r : ℝ}
+    (hr : 0 ≤ r) : volume (closedBall x r) = .ofReal (π * r ^ 3 * 4 / 3) := by
+  have : Nonempty ι := card_pos_iff.mp (h_card ▸ Nat.succ_pos _)
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_of_dim_three ι h_card x hr]
 
 end EuclideanSpace
 
