@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Wong
 -/
 import Mathlib.Computability.DFA
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Myhill–Nerode theorem
@@ -49,7 +49,8 @@ theorem leftQuotient_mem (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈
 theorem leftQuotient_accepts (M : DFA α σ) (x : List α) :
     leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
   ext y
-  rw [DFA.mem_acceptsFrom, DFA.eval, ← DFA.evalFrom_of_append, ← DFA.mem_accepts, leftQuotient_mem]
+  rw [DFA.mem_acceptsFrom, DFA.eval, ← DFA.evalFrom_of_append, leftQuotient_mem, DFA.mem_accepts,
+    DFA.eval]
 
 theorem leftQuotient_accepts' (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
   funext <| leftQuotient_accepts M
@@ -83,7 +84,7 @@ theorem toDFA_start : L.toDFA.start.val = L := rfl
 @[simp]
 theorem toDFA_accepts : L.toDFA.accepts = L := by
   ext x
-  rw [DFA.mem_accepts, ← DFA.eval]
+  rw [DFA.mem_accepts]
   suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
   induction x using List.list_reverse_induction with
   | base => simp
