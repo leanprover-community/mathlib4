@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.Data.Fintype.Pi
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
@@ -183,18 +184,3 @@ instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
   IsScalarTower.of_algebraMap_eq' (by ext; simp)
 
 end Algebra
-
-end MvPolynomial
-
--- this is here to avoid import cycle issues
-namespace Polynomial
-
-/-- The monomials form a basis on `R[X]`. -/
-noncomputable def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoAlg R).toLinearEquiv
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
-
-end Polynomial
