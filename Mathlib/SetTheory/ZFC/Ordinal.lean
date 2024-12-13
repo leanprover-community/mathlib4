@@ -33,6 +33,7 @@ variable {x y z : ZFSet.{u}}
 
 namespace ZFSet
 
+
 /-- A transitive set is one where every element is a subset.
 
 This is equivalent to being an infinite-open interval in the transitive closure of membership. -/
