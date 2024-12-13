@@ -32,7 +32,6 @@ def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
 @[simp]
 theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
-@[simp]
 theorem leftQuotient_append (x y : List α) :
     L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
   dsimp [leftQuotient, Language]
@@ -85,7 +84,7 @@ theorem toDFA_accepts : L.toDFA.accepts = L := by
   suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
   induction x using List.list_reverse_induction with
   | base => simp
-  | ind x a ih => simp [ih]
+  | ind x a ih => simp [ih, leftQuotient_append]
 
 theorem isRegular_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient))
     : L.IsRegular :=
