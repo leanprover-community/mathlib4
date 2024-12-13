@@ -714,16 +714,14 @@ theorem add_one_nmul : ∀ a b, (a + 1) ⨳ b = a ⨳ b ♯ b :=
   succ_nmul
 
 theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
-  refine b.limitRecOn ?_ ?_ ?_
+  refine b.limitRecOn ?_ (fun c h ↦ ?_) (fun c hc H ↦ ?_)
   · simp
-  · intro c h
-    rw [mul_succ, nmul_succ]
+  · rw [mul_succ, nmul_succ]
     exact (add_le_nadd _ a).trans (nadd_le_nadd_right h a)
-  · intro c hc H
-    rcases eq_zero_or_pos a with (rfl | ha)
+  · rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · rw [← IsNormal.blsub_eq.{u, u} (isNormal_mul_right ha) hc, blsub_le_iff]
-      exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
+    · rw [(isNormal_mul_right ha).apply_of_isLimit hc, Ordinal.iSup_le_iff]
+      exact fun ⟨i, hi⟩ => (H i hi).trans (nmul_lt_nmul_of_pos_left hi ha).le
 
 @[deprecated mul_le_nmul (since := "2024-08-20")]
 alias _root_.NatOrdinal.mul_le_nmul := mul_le_nmul
