@@ -28,12 +28,10 @@ negative bases. See `Real.rpow_def_of_neg` for more details.
 -/
 theorem not_irrational_rpow : ¬ ∀ a b : ℝ, Irrational a → Irrational b → 0 < a → Irrational (a ^ b)
     := by
-  intro h
+  push_neg
   by_cases hc : Irrational (√2 ^ √2)
-  · have ht := h (√2 ^ √2) √2 hc irrational_sqrt_two (NNReal.rpow_pos (by norm_num))
-    rw [← rpow_mul (by norm_num), mul_self_sqrt (by norm_num), rpow_two, sq_sqrt (by norm_num)]
-      at ht; simp at ht
-  · have ht := h √2 √2 irrational_sqrt_two irrational_sqrt_two (by norm_num)
-    exact hc ht
+  · use (√2 ^ √2), √2, hc, irrational_sqrt_two, by positivity
+    rw [← rpow_mul, mul_self_sqrt, rpow_two, sq_sqrt] <;> norm_num
+  · use √2, √2, irrational_sqrt_two, irrational_sqrt_two, by positivity, hc
 
 end Counterexample
