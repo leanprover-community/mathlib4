@@ -43,8 +43,7 @@ theorem leftQuotient_mem (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈
 theorem leftQuotient_accepts (M : DFA α σ) (x : List α) :
     leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
   ext y
-  rw [DFA.mem_acceptsFrom, DFA.eval, ← DFA.evalFrom_of_append, leftQuotient_mem, DFA.mem_accepts,
-    DFA.eval]
+  simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_of_append]
 
 /-- Like `leftQuotient_accepts`, but as an equality on functions. -/
 theorem leftQuotient_accepts' (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
