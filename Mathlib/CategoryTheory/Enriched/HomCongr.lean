@@ -36,13 +36,13 @@ def eHomCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) :
   hom := eHomWhiskerRight V α.inv Y ≫ eHomWhiskerLeft V X₁ β.hom
   inv := eHomWhiskerRight V α.hom Y₁ ≫ eHomWhiskerLeft V X β.inv
   hom_inv_id := by
-    rw [← eHom_whisker_exchange, assoc]
-    rw [← eHomWhiskerRight_comp_assoc, hom_inv_id, eHomWhiskerRight_id, id_comp]
-    rw [← eHomWhiskerLeft_comp, hom_inv_id, eHomWhiskerLeft_id]
+    rw [← eHom_whisker_exchange]
+    slice_lhs 2 3 => rw [← eHomWhiskerRight_comp]
+    simp [← eHomWhiskerLeft_comp]
   inv_hom_id := by
-    rw [← eHom_whisker_exchange, assoc]
-    rw [← eHomWhiskerRight_comp_assoc, inv_hom_id, eHomWhiskerRight_id, id_comp]
-    rw [← eHomWhiskerLeft_comp, inv_hom_id, eHomWhiskerLeft_id]
+    rw [← eHom_whisker_exchange]
+    slice_lhs 2 3 => rw [← eHomWhiskerRight_comp]
+    simp [← eHomWhiskerLeft_comp]
 
 lemma eHomCongr_refl (X Y : C) :
     eHomCongr V (Iso.refl X) (Iso.refl Y) = Iso.refl _ := by aesop
@@ -68,20 +68,18 @@ lemma eHomCongr_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y�
     eHomEquiv V (f ≫ g) ≫ (eHomCongr V α γ).hom =
       (λ_ _).inv ≫ (eHomEquiv V f ≫ (eHomCongr V α β).hom) ▷ _ ≫
         _ ◁ (eHomEquiv V g ≫ (eHomCongr V β γ).hom) ≫ eComp V X₁ Y₁ Z₁ := by
-  dsimp only [eHomCongr]
-  simp only [assoc, MonoidalCategory.whiskerRight_id,
+  simp only [eHomCongr, MonoidalCategory.whiskerRight_id, assoc,
     MonoidalCategory.whiskerLeft_comp]
   rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
-    rightUnitor_inv_naturality_assoc, hom_inv_id_assoc]
-  rw [← whisker_exchange_assoc, ← whisker_exchange_assoc, ← eComp_eHomWhiskerLeft]
-  rw [eHom_whisker_cancel_assoc]
-  rw [← eComp_eHomWhiskerRight_assoc, ← tensorHom_def_assoc,
+    rightUnitor_inv_naturality_assoc, hom_inv_id_assoc, ← whisker_exchange_assoc,
+    ← whisker_exchange_assoc, ← eComp_eHomWhiskerLeft, eHom_whisker_cancel_assoc,
+    ← eComp_eHomWhiskerRight_assoc, ← tensorHom_def_assoc,
     ← eHomEquiv_comp_assoc]
 
 /-- The inverse map defined by `eHomCongr` respects composition of morphisms. -/
 @[reassoc]
-lemma eHomCongr_inv_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (γ : Z ≅ Z₁)
-    (f : X₁ ⟶ Y₁) (g : Y₁ ⟶ Z₁) :
+lemma eHomCongr_inv_comp {X Y Z X₁ Y₁ Z₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁)
+    (γ : Z ≅ Z₁) (f : X₁ ⟶ Y₁) (g : Y₁ ⟶ Z₁) :
     eHomEquiv V (f ≫ g) ≫ (eHomCongr V α γ).inv =
       (λ_ _).inv ≫ (eHomEquiv V f ≫ (eHomCongr V α β).inv) ▷ _ ≫
         _ ◁ (eHomEquiv V g ≫ (eHomCongr V β γ).inv) ≫ eComp V X Y Z :=
