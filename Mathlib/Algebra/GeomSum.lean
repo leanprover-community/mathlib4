@@ -7,8 +7,6 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Tactic.Abel
 import Mathlib.Algebra.Ring.Regular
@@ -348,7 +346,6 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  -- Porting note: gives deterministic timeout without this intermediate `have`
   convert (Commute.op h).mul_geom_sum₂_Ico hmn
 
 theorem geom_sum_Ico_mul [Ring α] (x : α) {m n : ℕ} (hmn : m ≤ n) :
@@ -382,7 +379,7 @@ theorem geom_sum_Ico_le_of_lt_one [LinearOrderedField α] {x : α} (hx : 0 ≤ x
     {m n : ℕ} : ∑ i ∈ Ico m n, x ^ i ≤ x ^ m / (1 - x) := by
   rcases le_or_lt m n with (hmn | hmn)
   · rw [geom_sum_Ico' h'x.ne hmn]
-    apply div_le_div (pow_nonneg hx _) _ (sub_pos.2 h'x) le_rfl
+    apply div_le_div₀ (pow_nonneg hx _) _ (sub_pos.2 h'x) le_rfl
     simpa using pow_nonneg hx _
   · rw [Ico_eq_empty, sum_empty]
     · apply div_nonneg (pow_nonneg hx _)

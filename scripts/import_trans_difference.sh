@@ -67,7 +67,16 @@ git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (awk -F, -v all="${all}" -v ghLimit='261752' '{ diff[$1]+=$2 } END {
+  (awk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
+      # we pass the "A"dded files with respect to master, converting them to module names
+      git diff --name-only --diff-filter=A master | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
+    )" '
+    BEGIN{
+      # `arrayNewModules` maps integers to module names
+      split(newFiles, arrayNewModules, ",")
+      # `newModules` "just" stores the module names
+      for(v in arrayNewModules) { newModules[arrayNewModules[v]]=0 }
+    } { diff[$1]+=$2 } END {
     fileCount=0
     outputLength=0
     for(fil in diff) {
@@ -75,7 +84,8 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         fileCount++
         outputLength+=length(fil)+4
         nums[diff[fil]]++
-        reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
+        # we add "(new file)" next to the modules whose name appears in `newModules`
+        reds[diff[fil]]=sprintf("%s `%s`%s", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
       }
     }
     if ((all == 0) && (ghLimit/2 <= outputLength)) {

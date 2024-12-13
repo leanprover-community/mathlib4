@@ -85,6 +85,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 -/
 
+assert_not_exists Finset
 
 open Function Set NNReal
 

@@ -166,7 +166,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
   · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
     induction' q_a using Quotient.ind with a
     induction' q_b using Quotient.ind with b
-    simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
+    simp only [f, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
     show a ∈ { x | r x b }
     rw [← h_eq]
@@ -405,7 +405,7 @@ theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
   funext hs.equivQuotient_index_apply
 
 /-- A map choosing a representative for each element of the quotient associated to an indexed
-partition. This is a computable version of `Quotient.out'` using `IndexedPartition.some`. -/
+partition. This is a computable version of `Quotient.out` using `IndexedPartition.some`. -/
 def out : hs.Quotient ↪ α :=
   hs.equivQuotient.symm.toEmbedding.trans ⟨hs.some, Function.LeftInverse.injective hs.index_some⟩
 
@@ -414,9 +414,11 @@ def out : hs.Quotient ↪ α :=
 theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
   rfl
 
-/-- The indices of `Quotient.out'` and `IndexedPartition.out` are equal. -/
-theorem index_out' (x : hs.Quotient) : hs.index x.out' = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out' x).trans (hs.index_some _).symm
+/-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
+theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
+  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
+
+@[deprecated (since := "2024-10-19")] alias index_out' := index_out
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
