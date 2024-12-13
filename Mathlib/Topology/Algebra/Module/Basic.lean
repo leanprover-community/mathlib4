@@ -412,7 +412,7 @@ def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=
 def Simps.coe (h : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂ :=
   h
 
-initialize_simps_projections ContinuousLinearMap (toLinearMap_toFun → apply, toLinearMap → coe)
+initialize_simps_projections ContinuousLinearMap (toFun → apply, toLinearMap → coe)
 
 @[ext]
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
