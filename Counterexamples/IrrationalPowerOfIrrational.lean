@@ -23,7 +23,7 @@ namespace Counterexample
 
 /--
 There exist irrational `a`, `b` with rational `a^b`.
-Note that the positivity assumption on `a` is required because of the definition of `rpow` for
+Note that the positivity assumption on `a` is imposed because of the definition of `rpow` for
 negative bases. See `Real.rpow_def_of_neg` for more details.
 -/
 theorem not_irrational_rpow : ¬ ∀ a b : ℝ, Irrational a → Irrational b → 0 < a → Irrational (a ^ b)
