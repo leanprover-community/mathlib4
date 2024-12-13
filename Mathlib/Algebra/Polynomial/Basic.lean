@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Sort
-import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
@@ -353,15 +352,6 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIsoLinear : R[X] ≃ₗ[R] R[ℕ] where
   __ := toFinsuppIso R
   map_smul' _ _ := rfl
-
-/-- The monomials form a basis on `R[X]`. To get the rank of a polynomial ring,
-use this and `Basis.mk_eq_rank`. -/
-def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoLinear R)
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
 
 end AddMonoidAlgebra
 
