@@ -92,14 +92,14 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
 
 variable (R)
 
--- open AddMonoidAlgebra in
--- /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
--- implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
--- @[simps!]
--- def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
---   { toFinsuppIso R with
---     commutes' := fun r => by
---       dsimp }
+open AddMonoidAlgebra in
+/-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
+implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
+@[simps!]
+def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
+  { toFinsuppIso R with
+    commutes' := fun r => by
+      dsimp }
 
 variable {R}
 
