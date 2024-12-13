@@ -16,11 +16,6 @@ Given a language `L` and a word `x`, the *left quotient* is the set of suffixes 
 to the state of an automaton that matches `L`, and that `L` is regular if and only if there are
 finitely many such states.
 
-## Implementation notes
-
-Since mathlib doesn't have an `IsRegular` definition yet, we define regularity directly as the
-existence of a DFA.
-
 ## References
 
 * <https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem>
@@ -56,11 +51,12 @@ theorem leftQuotient_accepts (M : DFA α σ) (x : List α) :
 theorem leftQuotient_accepts' (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
   funext <| leftQuotient_accepts M
 
-theorem finite_leftQuotient_of_dfa [Finite σ] (M : DFA α σ) :
-    Set.Finite (Set.range M.accepts.leftQuotient) :=
-  leftQuotient_accepts' M ▸
-    Set.finite_of_finite_preimage (Set.toFinite _)
-      (Set.range_comp_subset_range M.eval M.acceptsFrom)
+theorem finite_leftQuotient_of_isRegular (h : L.IsRegular) :
+    Set.Finite (Set.range L.leftQuotient) := by
+  have ⟨σ, x, M, hM⟩ := h
+  rw [← hM, leftQuotient_accepts']
+  exact Set.finite_of_finite_preimage (Set.toFinite _)
+    (Set.range_comp_subset_range M.eval M.acceptsFrom)
 
 /-- The left quotients of a language are the states of an automaton that accepts the language. -/
 def toDFA : DFA α (Set.range L.leftQuotient) where
@@ -91,17 +87,15 @@ theorem toDFA_accepts : L.toDFA.accepts = L := by
   | base => simp
   | ind x a ih => simp [ih]
 
-theorem exists_dfa_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
-    ∃ n, ∃ M : DFA α (Fin n), M.accepts = L :=
+theorem isRegular_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient))
+    : L.IsRegular :=
   have ⟨n, ⟨f⟩⟩ := h.exists_equiv_fin
-  ⟨n, DFA.reindex f L.toDFA, by simp⟩
+  ⟨Fin n, Fin.fintype n, DFA.reindex f L.toDFA, by simp⟩
 
 /--
-**Myhill–Nerode theorem**. There exists a DFA for a language if and only if the set of left
-quotients is finite.
+**Myhill–Nerode theorem**. A language is regular if and only if the set of left quotients is finite.
 -/
-theorem exists_dfa_iff_finite_leftQuotient :
-    (∃ n, ∃ M : DFA α (Fin n), M.accepts = L) ↔ Set.Finite (Set.range L.leftQuotient) :=
-  ⟨fun ⟨_, M, hM⟩ => hM ▸ finite_leftQuotient_of_dfa M, exists_dfa_of_finite_leftQuotient L⟩
+theorem isRegular_iff_finite_leftQuotient : L.IsRegular ↔ Set.Finite (Set.range L.leftQuotient) :=
+  ⟨finite_leftQuotient_of_isRegular L, isRegular_of_finite_leftQuotient L⟩
 
 end Language
