@@ -995,7 +995,7 @@ variable {G : J ⥤ C} (α : F ⟶ G)
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem colimit.map_desc (c : Cocone G) :
     colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
   ext j

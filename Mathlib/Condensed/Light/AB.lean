@@ -13,6 +13,7 @@ import Mathlib.Condensed.Light.Limits
 The category of light condensed `R`-modules over a ring satisfies the countable version of
 Grothendieck's AB4* axiom
 -/
+
 universe u
 
 open CategoryTheory Limits
