@@ -86,7 +86,7 @@ lemma eHomWhiskerRight_comp {X X' X'' : C} (f : X ⟶ X') (f' : X' ⟶ X'') (Y :
 lemma eComp_eHomWhiskerRight {X X' : C} (f : X ⟶ X') (Y Z : C) :
     eComp V X' Y Z ≫ eHomWhiskerRight V f Z =
       eHomWhiskerRight V f Y ▷ _ ≫ eComp V X Y Z := by
-  unfold eHomWhiskerRight
+  dsimp [eHomWhiskerRight]
   rw [leftUnitor_inv_naturality_assoc, whisker_exchange_assoc]
   simp [e_assoc']
 
@@ -118,7 +118,7 @@ lemma eHomWhiskerLeft_comp (X : C) {Y Y' Y'' : C} (g : Y ⟶ Y') (g' : Y' ⟶ Y'
 lemma eComp_eHomWhiskerLeft (X Y : C) {Z Z' : C} (g : Z ⟶ Z') :
     eComp V X Y Z ≫ eHomWhiskerLeft V X g =
       _ ◁ eHomWhiskerLeft V Y g ≫ eComp V X Y Z' := by
-  unfold eHomWhiskerLeft
+  dsimp [eHomWhiskerLeft]
   rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc]
   simp [e_assoc']
 
@@ -130,7 +130,7 @@ middle with `α.hom` and `α.inv`. -/
 lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
     eHomWhiskerLeft V X α.hom ▷ _ ≫ _ ◁ eHomWhiskerRight V α.inv Z ≫
       eComp V X Y₁ Z = eComp V X Y Z := by
-  unfold eHomWhiskerLeft eHomWhiskerRight
+  dsimp [eHomWhiskerLeft, eHomWhiskerRight]
   simp only [MonoidalCategory.whiskerLeft_comp_assoc, whisker_assoc_symm,
     triangle_assoc_comp_left_inv_assoc, e_assoc', assoc]
   simp only [← comp_whiskerRight_assoc]
