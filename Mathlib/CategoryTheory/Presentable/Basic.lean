@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
@@ -19,6 +20,9 @@ if it commutes with colimits of shape `J` where `J` is any `κ`-directed preorde
 
 An object `X` of a category is `κ`-presentable (`IsPresentable`)
 if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
 
@@ -55,6 +59,12 @@ lemma le_upperBound (s : S) : s.1 ≤ upperBound S hS :=
   (IsCardinalDirected.exists_upper_bound S hS).choose_spec s
 
 end
+
+variable {κ} in
+lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ' ≤ κ) :
+    IsCardinalDirected J κ' where
+  exists_upper_bound S hS :=
+    ⟨upperBound S (lt_of_lt_of_le hS h), le_upperBound _ _⟩
 
 include κ in
 lemma isDirected : IsDirected J (· ≤ ·) where
@@ -96,6 +106,14 @@ lemma preservesColimitsOfShape_of_isAccessible [F.IsAccessible κ]
     PreservesColimitsOfShape J F :=
   IsAccessible.preservesColimitOfShape κ
 
+variable {κ} in
+lemma isAccessible_of_le
+    [F.IsAccessible κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    F.IsAccessible κ' where
+  preservesColimitOfShape {J _ _} := by
+    have := IsCardinalDirected.of_le J h
+    exact F.preservesColimitsOfShape_of_isAccessible κ J
+
 end Functor
 
 variable (X : C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
@@ -109,5 +127,11 @@ lemma preservesColimitsOfShape_of_isPresentable [IsPresentable X κ]
     (J : Type w) [Preorder J] [IsCardinalDirected J κ] :
     PreservesColimitsOfShape J (coyoneda.obj (op X)) :=
   (coyoneda.obj (op X)).preservesColimitsOfShape_of_isAccessible κ J
+
+variable {κ} in
+lemma isPresentable_of_le [IsPresentable X κ]
+    {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    IsPresentable X κ' :=
+  (coyoneda.obj (op X)).isAccessible_of_le h
 
 end CategoryTheory
