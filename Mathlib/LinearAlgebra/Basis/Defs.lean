@@ -792,8 +792,6 @@ end Fintype
 
 namespace Polynomial
 
-variable (R)
-
 /-- The monomials form a basis on `R[X]`. To get the rank of a polynomial ring,
 use this and `Basis.mk_eq_rank`. -/
 def basisMonomials : Basis ℕ R R[X] :=
