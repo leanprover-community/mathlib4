@@ -831,17 +831,13 @@ theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
   dsimp
   omega
 
-set_option linter.deprecated false
-
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
-  rw [eq_comm]
-  convert get_reverse l.reverse n (by simpa) n.2 using 1
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
-  simp only [get_singleton]
+  simp
   congr
   omega
 
