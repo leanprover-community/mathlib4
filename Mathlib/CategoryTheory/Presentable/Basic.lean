@@ -86,7 +86,7 @@ namespace Functor
 variable (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 /-- A functor is `κ`-accessible (with `κ` a regular cardinal)
-if it preserves colimits of shape `J` where `J` is any `κ`-directed preorder. -/
+if it preserves colimits of shape `J` where `J` is any `κ`-directed preordered type. -/
 class IsAccessible : Prop where
   preservesColimitOfShape {J : Type w} [Preorder J] [IsCardinalDirected J κ] :
     PreservesColimitsOfShape J F
@@ -102,7 +102,7 @@ variable (X : C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 /-- An object `X` in a category is `κ`-presentable (for `κ` a regular cardinal)
 when the functor `Hom(X, _)` preserves colimits indexed by
-`κ`-directed preordered sets. -/
+`κ`-directed preordered types. -/
 abbrev IsPresentable : Prop := (coyoneda.obj (op X)).IsAccessible κ
 
 lemma preservesColimitsOfShape_of_isPresentable [IsPresentable X κ]
