@@ -8,6 +8,10 @@ import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProduct
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.Tactic.TFAE
+
 
 /-!
 
@@ -19,19 +23,19 @@ A (finitary) distributive monoidal category is a monoidal category `C` with copr
 the canonical distributivity isomorphism `(X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)` is an isomorphism
 for all objects `X`, `Y`, and `Z` in `C`.
 
-A category `C` with finite products and finite coproducts is called (finitary) distributive if the
-canonical distributivity isomorphism `X ⨯ (Y ⨿ Z) ⟶ (X ⨯ Y) ⨿ (X ⨯ Z)` is an isomorphism
-for all objects `X`, `Y`, and `Z` in `C`.
-
 ## Main results
 
 - A monoidal category `C` tensor product is distributive if the tensor product preserves
   coproducts in each variable separately.
 
+## Monic coprojections
+conjecture: In the case of semicartesian monoidal categories, the coprojections are monic.
 
 ## References
-- [J.R.B.Cockett, Introduction to distributive categories, 1992][]
-- [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
+- when is a semicartesian monoidal category cartesian?
+https://mathoverflow.net/questions/348480/a-semicartesian-monoidal-category-with-diagonals-is-cartesian-proof
+
+-
 -/
 
 universe v v₂ u u₂
@@ -40,9 +44,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits
-
-namespace MonoidalCategory
+open Category MonoidalCategory Limits
 
 variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
 
@@ -68,9 +70,10 @@ attribute [instance] tensor_coprod_right_distrib_of_tensor_coprod_left_distrib
 
 /-- A monoidal category is distributive if the tensor product is left and right distributive
 over coproducts.-/
-class Distributive [HasBinaryCoproducts C] where
+class MonoidalDistributive [HasBinaryCoproducts C] where
   left_distrib : TensorCoprodLeftDistrib C
 
+/-- A closed monoidal category is distributive. -/
 def leftDistribOfClosed [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
   (X ⊗ Y) ⨿ (X ⊗ Z) ≅ X ⊗ (Y ⨿ Z) where
     hom := coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
@@ -92,13 +95,9 @@ def leftDistribOfClosed [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
         coprod.inr_desc, ← MonoidalClosed.curry_natural_left,
         comp_id]
 
-/-- A closed monoidal category is distributive. -/
-instance distributive_of_closed [HasBinaryCoproducts C] [MonoidalClosed C] : Distributive C where
+instance distributive_of_closed [HasBinaryCoproducts C] [MonoidalClosed C] : MonoidalDistributive C where
   left_distrib := {
     iso {X Y Z} := Iso.isIso_hom (leftDistribOfClosed C X Y Z)
   }
-
-
-end MonoidalCategory
 
 end CategoryTheory
