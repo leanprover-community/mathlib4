@@ -65,6 +65,12 @@ theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa usi
 @[deprecated (since := "2024-04-17")]
 alias rpow_nat_cast := rpow_natCast
 
+-- See library note [no_index around OfNat.ofNat]
+@[simp]
+lemma rpow_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (no_index (OfNat.ofNat n : ℝ)) = x ^ (OfNat.ofNat n : ℕ) :=
+  rpow_natCast x n
+
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
 
