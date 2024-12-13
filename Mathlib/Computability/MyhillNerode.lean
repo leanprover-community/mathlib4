@@ -9,12 +9,12 @@ import Mathlib.Data.Set.Finite.Basic
 /-!
 # Myhill–Nerode theorem
 
-This file proves the Myhill–Nerode theorem via left quotients.
+This file proves the Myhill–Nerode theorem using left quotients.
 
-Given a language `L` and a word `x`, the *left quotient* is the set of suffixes `y` such that
-`x ++ y` is in `L`. The *Myhill–Nerode theorem* shows that each left quotient, in fact, corresponds
-to the state of an automaton that matches `L`, and that `L` is regular if and only if there are
-finitely many such states.
+Given a language `L` and a word `x`, the *left quotient* of `L` by `x` is the set of suffixes `y`
+such that `x ++ y` is in `L`. The *Myhill–Nerode theorem* shows that each left quotient, in fact,
+corresponds to the state of an automaton that matches `L`, and that `L` is regular if and only if
+there are finitely many such states.
 
 ## References
 
