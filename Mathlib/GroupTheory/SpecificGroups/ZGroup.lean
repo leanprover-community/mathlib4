@@ -6,6 +6,7 @@ Authors: Thomas Browning
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Module.ZMod
 import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.SchurZassenhaus
 
@@ -188,24 +189,6 @@ end Nilpotent
 
 section Hall
 
-noncomputable def IsCyclic.toMonoidHom
-    (M G : Type*) [Monoid M] [Group G] [IsCyclic G] [MulDistribMulAction M G] :
-    M →* ZMod (Nat.card G) where
-  toFun := fun m ↦ (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose
-  map_one' := by
-    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
-    rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_one,
-      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G 1)).choose_spec,
-      MulDistribMulAction.toMonoidHom_apply, one_smul]
-  map_mul' := fun m n ↦ by
-    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
-    rw [← Int.cast_mul, ZMod.intCast_eq_intCast_iff, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_mul',
-      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose_spec,
-      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G n)).choose_spec,
-      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G (m * n))).choose_spec,
-      MulDistribMulAction.toMonoidHom_apply, MulDistribMulAction.toMonoidHom_apply,
-      MulDistribMulAction.toMonoidHom_apply, mul_smul]
-
 noncomputable def _root_.CommGroup.zmodModule
     {G : Type*} [CommGroup G] {n : ℕ} (h : ∀ (g : G), g ^ n = 1) :
     MulDistribMulAction (ZMod n) G :=
@@ -284,56 +267,35 @@ theorem tada3_zero_smul (G : Type*) [Group G] [IsCyclic G] (g : G) :
   let _ : CommGroup G := IsCyclic.commGroup
   CommGroup.zmodModule.zero_smul _ g
 
-theorem IsCyclic.toMonoidHom_apply
+noncomputable def _root_.IsCyclic.mulAutMulEquiv {G : Type*} [Group G] [h : IsCyclic G] :
+    MulAut G ≃* (ZMod (Nat.card G))ˣ :=
+  ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
+
+noncomputable def _root_.IsCyclic.toMonoidHom
+    (M G : Type*) [Monoid M] [Group G] [IsCyclic G] [MulDistribMulAction M G] :
+    M →* ZMod (Nat.card G) where
+  toFun := fun m ↦ (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose
+  map_one' := by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_one,
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G 1)).choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, one_smul]
+  map_mul' := fun m n ↦ by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_mul, ZMod.intCast_eq_intCast_iff, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_mul',
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose_spec,
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G n)).choose_spec,
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G (m * n))).choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, MulDistribMulAction.toMonoidHom_apply,
+      MulDistribMulAction.toMonoidHom_apply, mul_smul]
+
+theorem _root_.IsCyclic.toMonoidHom_apply
     {M G : Type*} [Monoid M] [Group G] [IsCyclic G] [MulDistribMulAction M G] (m : M) (g : G) :
     IsCyclic.toMonoidHom M G m • g = m • g := by
   conv_rhs => rw [← MulDistribMulAction.toMonoidHom_apply]
   rw [(MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose_spec g]
   exact tada3_coe_smul G _ g
-
-theorem exists_pow_modEq_one (p m a : ℕ) :
-    (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
-  induction' m with m hm
-  · exact Nat.modEq_one
-  · rw [Nat.ModEq.comm, add_comm, Nat.modEq_iff_dvd' (Nat.one_le_pow' _ _)] at hm
-    obtain ⟨d, hd⟩ := hm
-    rw [tsub_eq_iff_eq_add_of_le (Nat.one_le_pow' _ _), add_comm] at hd
-    rw [pow_succ, pow_mul, hd, add_pow, Finset.sum_range_succ', pow_zero, one_mul, one_pow,
-      one_mul, Nat.choose_zero_right, Nat.cast_one]
-    refine Nat.ModEq.add_right 1 ?_
-    rw [Nat.modEq_zero_iff_dvd]
-    simp_rw [one_pow, mul_one, pow_succ', mul_assoc, ← Finset.mul_sum]
-    refine mul_dvd_mul_left (p ^ m) (dvd_mul_of_dvd_right (Finset.dvd_sum fun k hk ↦ ?_) d)
-    cases m
-    · rw [pow_zero, pow_one, one_mul, add_comm, add_left_inj] at hd
-      cases k <;> simp [← hd, mul_assoc, pow_succ']
-    · cases k <;> simp [mul_assoc, pow_succ']
-
-theorem ZMod.eq_one_or_isUnit
-    {n p k : ℕ} [Fact p.Prime] (hn : n = p ^ k) (a : ZMod n) (ha : (orderOf a).Coprime n) :
-    a = 1 ∨ IsUnit (a - 1) := by
-  rcases eq_or_ne n 0 with rfl | hn0
-  · exact Or.inl (orderOf_eq_one_iff.mp ((orderOf a).coprime_zero_right.mp ha))
-  rcases eq_or_ne a 0 with rfl | ha0
-  · exact Or.inr (zero_sub (1 : ZMod n) ▸ isUnit_neg_one)
-  have : NeZero n := ⟨hn0⟩
-  rw [← orderOf_eq_one_iff, or_iff_not_imp_right]
-  refine fun h ↦ ha.eq_one_of_dvd ?_
-  rw [orderOf_dvd_iff_pow_eq_one]
-  obtain ⟨a, rfl⟩ := ZMod.natCast_zmod_surjective a
-  rw [← Nat.cast_pow, ← Nat.cast_one, ZMod.eq_iff_modEq_nat, hn]
-  replace ha0 : a ≠ 0 := by
-    contrapose! ha0
-    rw [ha0, Nat.cast_zero]
-  rw [← Nat.one_le_iff_ne_zero] at ha0
-  rw [← Nat.cast_one, ← Nat.cast_sub ha0, ZMod.isUnit_iff_coprime, hn] at h
-  replace h : p ∣ a - 1 := by
-    contrapose! h
-    exact Nat.Prime.coprime_pow_of_not_dvd Fact.out h
-  obtain ⟨b, hb⟩ := h
-  rw [tsub_eq_iff_eq_add_of_le ha0, add_comm] at hb
-  rw [hb]
-  exact exists_pow_modEq_one p k b
 
 theorem _root_.IsCyclic.commutator_eq_bot_or_commutator_eq [Finite G] {p : ℕ} [Fact p.Prime]
     {P : Sylow p G} [IsCyclic P] [P.Normal] {K : Subgroup G} (h : K.IsComplement' P) :
@@ -352,7 +314,7 @@ theorem _root_.IsCyclic.commutator_eq_bot_or_commutator_eq [Finite G] {p : ℕ} 
   replace h k : ϕ k - 1 = 0 ∨ IsUnit (ϕ k - 1) := by
     rw [sub_eq_zero]
     obtain ⟨n, hn⟩ := P.2.exists_card_eq
-    refine ZMod.eq_one_or_isUnit hn (ϕ k) (P.card_coprime_index.symm.coprime_dvd_left ?_)
+    refine ZMod.eq_one_or_isUnit_sub_one hn (ϕ k) (P.card_coprime_index.symm.coprime_dvd_left ?_)
     exact h.index_eq_card ▸ (orderOf_map_dvd ϕ k).trans (orderOf_dvd_natCard k)
   rcases forall_or_exists_not (fun k : K ↦ ϕ k - 1 = 0) with hϕ | ⟨k, hk⟩
   · left
@@ -424,19 +386,6 @@ variable (G)
 theorem _root_.Abelianization.ker_of (G : Type*) [Group G] :
     (Abelianization.of : G →* Abelianization G).ker = commutator G :=
   QuotientGroup.ker_mk' (commutator G)
-
-def MulAutMultiplicative (G : Type*) [AddGroup G] :
-    MulAut (Multiplicative G) ≃* AddAut G :=
-  { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
-
-def AddAutAdditive (G : Type*) [Group G] :
-    AddAut (Additive G) ≃* MulAut G :=
-  { MulEquiv.toAdditive.symm with map_mul' := fun _ _ ↦ rfl }
-
-noncomputable def _root_.IsCyclic.mulAutMulEquiv {G : Type*} [Group G] [h : IsCyclic G] :
-    MulAut G ≃* (ZMod (Nat.card G))ˣ :=
-  ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
-    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
 
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
   refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
