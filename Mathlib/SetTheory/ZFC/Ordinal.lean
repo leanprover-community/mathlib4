@@ -131,11 +131,11 @@ theorem _root_.ZFSet.isOrdinal_iff_isTrans :
     have hzx := h₁.mem_trans hzw hwx
     exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
 
-protected theorem mem (hx : x.IsOrdinal) (hy : y ∈ x) : y.IsOrdinal := by
+protected theorem mem (hx : x.IsOrdinal) (hy : y ∈ x) : y.IsOrdinal :=
   have := hx.isTrans
   let f : Subrel (· ∈ ·) y.toSet ↪r Subrel (· ∈ ·) x.toSet :=
     Subrel.inclusionEmbedding (· ∈ ·) (hx.subset_of_mem hy)
-  exact isOrdinal_iff_isTrans.2 ⟨fun _ hz _ ha ↦ hx.mem_trans' ha hz hy, f.isTrans⟩
+  isOrdinal_iff_isTrans.2 ⟨fun _ hz _ ha ↦ hx.mem_trans' ha hz hy, f.isTrans⟩
 
 /-- An ordinal is a transitive set of transitive sets. -/
 theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isTransitive :
