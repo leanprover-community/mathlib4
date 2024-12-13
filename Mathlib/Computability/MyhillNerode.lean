@@ -84,8 +84,8 @@ theorem toDFA_accepts : L.toDFA.accepts = L := by
   | base => simp
   | ind x a ih => simp [ih, leftQuotient_append]
 
-theorem isRegular_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient))
-    : L.IsRegular :=
+theorem isRegular_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
+    L.IsRegular :=
   have ⟨n, ⟨f⟩⟩ := h.exists_equiv_fin
   ⟨Fin n, Fin.fintype n, DFA.reindex f L.toDFA, by simp⟩
 
