@@ -18,7 +18,7 @@ under `∈`.
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
 - `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`.
 
-## Todo
+## TODO
 
 - Define the von Neumann hierarchy.
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
