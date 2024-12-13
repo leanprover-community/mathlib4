@@ -184,3 +184,5 @@ instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
   IsScalarTower.of_algebraMap_eq' (by ext; simp)
 
 end Algebra
+
+end MvPolynomial
