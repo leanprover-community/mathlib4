@@ -24,7 +24,7 @@ book "Local Fields").
 
 Let R be an integral domain, assumed to be a principal ideal ring and a local ring.
 
-* `DiscreteValuationRing R` : a predicate expressing that R is a DVR.
+* `IsDiscreteValuationRing R` : a predicate expressing that R is a DVR.
 
 ### Definitions
 
@@ -46,13 +46,13 @@ open Ideal IsLocalRing
 
 /-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
   is not a field. -/
-class DiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R]
+class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R]
     extends IsPrincipalIdealRing R, IsLocalRing R : Prop where
   not_a_field' : maximalIdeal R ≠ ⊥
 
-namespace DiscreteValuationRing
+namespace IsDiscreteValuationRing
 
-variable (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuationRing R]
+variable (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 
 theorem not_a_field : maximalIdeal R ≠ ⊥ :=
   not_a_field'
@@ -104,7 +104,7 @@ theorem exists_prime : ∃ ϖ : R, Prime ϖ :=
 
 /-- An integral domain is a DVR iff it's a PID with a unique non-zero prime ideal. -/
 theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
-    DiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P := by
+    IsDiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P := by
   constructor
   · intro RDVR
     rcases id RDVR with ⟨Rlocal⟩
@@ -137,9 +137,9 @@ theorem associated_of_irreducible {a b : R} (ha : Irreducible a) (hb : Irreducib
   rw [irreducible_iff_uniformizer] at ha hb
   rw [← span_singleton_eq_span_singleton, ← ha, hb]
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing
 
-namespace DiscreteValuationRing
+namespace IsDiscreteValuationRing
 
 variable (R : Type*)
 
@@ -179,7 +179,7 @@ variable [IsDomain R]
 
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
-See `DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
+See `IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
 theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
     UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
@@ -269,7 +269,7 @@ is a discrete valuation ring.
 theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
-    DiscreteValuationRing R := by
+    IsDiscreteValuationRing R := by
   rw [iff_pid_with_one_nonzero_prime]
   haveI PID : IsPrincipalIdealRing R := aux_pid_of_ufd_of_unique_irreducible R h₁ h₂
   obtain ⟨p, hp⟩ := h₁
@@ -290,7 +290,7 @@ such that every nonzero element is associated to a power of `p`
 is a discrete valuation ring.
 -/
 theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDomain R]
-    (hR : HasUnitMulPowIrreducibleFactorization R) : DiscreteValuationRing R := by
+    (hR : HasUnitMulPowIrreducibleFactorization R) : IsDiscreteValuationRing R := by
   letI : UniqueFactorizationMonoid R := hR.toUniqueFactorizationMonoid
   apply of_ufd_of_unique_irreducible _ hR.unique_irreducible
   obtain ⟨p, hp, H⟩ := hR
@@ -298,7 +298,7 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
 
 section
 
-variable [CommRing R] [IsDomain R] [DiscreteValuationRing R]
+variable [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {R}
 
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
@@ -369,7 +369,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 
 open Classical in
 /-- The `ℕ∞`-valued additive valuation on a DVR. -/
-noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
+noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     AddValuation R ℕ∞ :=
   multiplicity_addValuation (Classical.choose_spec (exists_prime R))
 
@@ -439,7 +439,7 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
 
 end
 
-instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
+instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
@@ -447,14 +447,14 @@ instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
     rwa [← addVal_eq_top_iff, ← WithTop.forall_ge_iff_eq_top]
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing
 
 
 section
 
-variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
+variable (A : Type u) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
-instance (priority := 100) of_discreteValuationRing : ValuationRing A := inferInstance
+instance (priority := 100) of_IsDiscreteValuationRing : ValuationRing A := inferInstance
 
 end
