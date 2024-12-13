@@ -213,6 +213,7 @@ class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder 
 monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 
+-- use `LinearOrderedCommRing.toOrderedCommRing`
 attribute [instance 0] LinearOrderedCommRing.toCommMonoid
 
 section OrderedSemiring

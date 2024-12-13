@@ -3,15 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
--- HEAD
-import Mathlib.Algebra.Ring.Rat
-import Mathlib.SetTheory.Cardinal.Basic
---
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Rat.Encodable
 import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Ring.Rat
+import Mathlib.Data.Rat.Encodable
 import Mathlib.Logic.Denumerable
--- master
 
 /-!
 # Denumerability of ℚ
