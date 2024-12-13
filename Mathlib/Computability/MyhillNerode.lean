@@ -38,7 +38,7 @@ theorem leftQuotient_append (x y : List α) :
   simp_rw [List.append_assoc]
 
 @[simp]
-theorem leftQuotient_mem (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈ L := Iff.rfl
+theorem mem_leftQuotient (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈ L := Iff.rfl
 
 theorem leftQuotient_accepts (M : DFA α σ) (x : List α) :
     leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
