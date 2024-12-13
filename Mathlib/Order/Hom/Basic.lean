@@ -521,6 +521,12 @@ protected def withBotMap (f : α →o β) : WithBot α →o WithBot β :=
 protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
   ⟨WithTop.map f, f.mono.withTop_map⟩
 
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
+higher universe. -/
+@[simps!]
+def uliftMap (f : α →o β) : ULift α →o ULift β :=
+  ⟨fun i => ⟨f i.down⟩, fun _ _ h ↦ f.monotone h⟩
+
 end OrderHom
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/

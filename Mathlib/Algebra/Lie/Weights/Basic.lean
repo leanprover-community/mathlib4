@@ -414,7 +414,7 @@ def posFittingCompOf (x : L) : LieSubmodule R L M :=
       obtain ⟨q, hq⟩ := h₁.add_pow_dvd_pow_of_pow_eq_zero_right (N + k).le_succ hN
       use toModuleHom R L M (q (y ⊗ₜ m))
       change (φ ^ k).comp ((toModuleHom R L M : L ⊗[R] M →ₗ[R] M)) _ = _
-      simp [φ,  f₁, f₂, LinearMap.commute_pow_left_of_commute h₂,
+      simp [φ, f₁, f₂, LinearMap.commute_pow_left_of_commute h₂,
         LinearMap.comp_apply (g := (f₁ + f₂) ^ k), ← LinearMap.comp_apply (g := q),
         ← LinearMap.mul_eq_comp, ← hq] }
 

@@ -98,15 +98,16 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
 instance (priority := 75) toRing : Ring s :=
-  Subtype.coe_injective.ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
     CommRing s :=
-  Subtype.coe_injective.commRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  Subtype.coe_injective.commRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/

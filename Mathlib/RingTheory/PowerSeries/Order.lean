@@ -38,8 +38,6 @@ variable {R : Type*}
 
 section OrderBasic
 
-open multiplicity
-
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
@@ -331,9 +329,9 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       divided_by_X_pow_order (mul_ne_zero hf hg) := by
   set df := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   set dg := g.order.lift (order_finite_iff_ne_zero.mpr hg)
-  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
+  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg))
   have H_add_d : df + dg = dfg := by
-    simp_all [order_mul f g]
+    simp_all [df, dg, dfg, order_mul f g]
   have H := self_eq_X_pow_order_mul_divided_by_X_pow_order (mul_ne_zero hf hg)
   have : f * g = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by
     calc

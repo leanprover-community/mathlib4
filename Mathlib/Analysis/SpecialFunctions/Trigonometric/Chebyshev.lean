@@ -94,6 +94,18 @@ theorem U_complex_cos (n : ℤ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
     push_cast
     ring_nf
 
+/-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
+`2 * cos θ` to the value `2 * cos (n * θ)`. -/
+@[simp]
+theorem C_two_mul_complex_cos (n : ℤ) : (C ℂ n).eval (2 * cos θ) = 2 * cos (n * θ) := by
+  simp [C_eq_two_mul_T_comp_half_mul_X]
+
+/-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
+evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
+@[simp]
+theorem S_two_mul_complex_cos (n : ℤ) : (S ℂ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) := by
+  simp [S_eq_U_comp_half_mul_X]
+
 end Complex
 
 /-! ### Real versions -/
@@ -114,6 +126,18 @@ value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
 theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
   mod_cast U_complex_cos θ n
+
+/-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
+`2 * cos θ` to the value `2 * cos (n * θ)`. -/
+@[simp]
+theorem C_two_mul_real_cos : (C ℝ n).eval (2 * cos θ) = 2 * cos (n * θ) := by
+  simp [C_eq_two_mul_T_comp_half_mul_X]
+
+/-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
+evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
+@[simp]
+theorem S_two_mul_real_cos : (S ℝ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) := by
+  simp [S_eq_U_comp_half_mul_X]
 
 end Real
 

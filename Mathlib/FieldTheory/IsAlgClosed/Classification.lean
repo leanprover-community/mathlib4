@@ -8,7 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Classification of Algebraically closed fields
