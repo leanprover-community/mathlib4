@@ -586,7 +586,7 @@ section SymEquiv
 
 attribute [local instance] Vector.Perm.isSetoid
 
-private def fromVector : Vector α 2 → α × α
+private def fromVector : Mathlib.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :

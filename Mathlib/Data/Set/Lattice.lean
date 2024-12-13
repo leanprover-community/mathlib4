@@ -924,9 +924,11 @@ theorem sUnion_powerset_gc :
   gc_sSup_Iic
 
 /-- `⋃₀` and `𝒫` form a Galois insertion. -/
-def sUnion_powerset_gi :
+def sUnionPowersetGI :
     GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
   gi_sSup_Iic
+
+@[deprecated (since := "2024-12-07")] alias sUnion_powerset_gi := sUnionPowersetGI
 
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
@@ -1893,7 +1895,7 @@ theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
     let ⟨a, hb⟩ := this
     ⟨⟨a, b, hb⟩, rfl⟩
 
-theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :
     Injective (sigmaToiUnion t)
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
@@ -1903,7 +1905,7 @@ theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
         (h ne).le_bot this
     Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
 
-theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_bijective (h : Pairwise (Disjoint on t)) :
     Bijective (sigmaToiUnion t) :=
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 
@@ -1918,7 +1920,7 @@ noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i)
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
-    (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+    (h : Pairwise (Disjoint on t)) :
     (⋃ i, t i) ≃ Σi, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 

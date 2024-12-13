@@ -242,9 +242,9 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     let S' : ValuativeCommSq f := ⟨S.R, S.K, S.i₁, S.i₂ ≫ pullback.fst f f ≫ f, hc⟩
     have : Subsingleton S'.commSq.LiftStruct := hf S'
     let S'l₁ : S'.commSq.LiftStruct := ⟨S.i₂ ≫ pullback.fst f f,
-      by simp [← S.commSq.w_assoc], by simp⟩
+      by simp [S', ← S.commSq.w_assoc], by simp [S']⟩
     let S'l₂ : S'.commSq.LiftStruct := ⟨S.i₂ ≫ pullback.snd f f,
-      by simp [← S.commSq.w_assoc], by simp [pullback.condition]⟩
+      by simp [S', ← S.commSq.w_assoc], by simp [S', pullback.condition]⟩
     have h₁₂ : S'l₁ = S'l₂ := Subsingleton.elim _ _
     constructor
     constructor
@@ -275,7 +275,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
     conv_lhs => rw [← pullback.lift_fst l₁ l₂ h, ← pullback.condition_assoc]
     conv_rhs => rw [← pullback.lift_snd l₁ l₂ h, ← pullback.condition_assoc]
     simp
-  suffices h : Function.Bijective (g.app ⊤) by
+  suffices h : Function.Bijective (g.appTop) by
     refine (HasAffineProperty.iff_of_isAffine (P := MorphismProperty.isomorphisms Scheme)).mpr ?_
     exact ⟨hZ, (ConcreteCategory.isIso_iff_bijective _).mpr h⟩
   constructor
@@ -286,7 +286,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
       simpa using hl₂.symm
     have hg : l ≫ g = Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)) :=
       pullback.lift_snd _ _ _
-    have : Function.Injective ((l ≫ g).app ⊤) := by
+    have : Function.Injective ((l ≫ g).appTop) := by
       rw [hg]
       let e := arrowIsoΓSpecOfIsAffine (CommRingCat.ofHom <| algebraMap S.R S.K)
       let P : MorphismProperty CommRingCat :=
@@ -296,7 +296,7 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Unique
       show P _
       rw [← MorphismProperty.arrow_mk_iso_iff (P := P) e]
       exact NoZeroSMulDivisors.algebraMap_injective S.R S.K
-    rw [Scheme.comp_app _ _] at this
+    rw [Scheme.comp_appTop] at this
     exact Function.Injective.of_comp this
   · rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
     exact this.right
