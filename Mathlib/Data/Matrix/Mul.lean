@@ -64,7 +64,7 @@ variable [Fintype m] [Fintype n]
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
--- @[deprecated (since := "2024-12-12")] alias Matrix.dotProduct := dotProduct
+@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct := dotProduct
 
 /- The precedence of 72 comes immediately after ` • ` for `SMul.smul`,
    so that `r₁ • a ⬝ᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ᵥ (r₂ • b)` here. -/
@@ -75,12 +75,18 @@ theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v
     (fun j => u ⬝ᵥ fun i => v i j) ⬝ᵥ w = u ⬝ᵥ fun i => v i ⬝ᵥ w := by
   simpa [dotProduct, Finset.mul_sum, Finset.sum_mul, mul_assoc] using Finset.sum_comm
 
+@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_assoc := dotProduct_assoc
+
 theorem dotProduct_comm [AddCommMonoid α] [CommSemigroup α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
   simp_rw [dotProduct, mul_comm]
+
+@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_comm := dotProduct_comm
 
 @[simp]
 theorem dotProduct_pUnit [AddCommMonoid α] [Mul α] (v w : PUnit → α) : v ⬝ᵥ w = v ⟨⟩ * w ⟨⟩ := by
   simp [dotProduct]
+
+@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_pUnit := dotProduct_pUnit
 
 section MulOneClass
 
@@ -88,7 +94,11 @@ variable [MulOneClass α] [AddCommMonoid α]
 
 theorem dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
 
+@[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_one := dotProduct_one
+
 theorem one_dotProduct (v : n → α) : 1 ⬝ᵥ v = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+
+@[deprecated (since := "2024-12-12")] protected alias Matrix.one_dotProduct := one_dotProduct
 
 end MulOneClass
 
