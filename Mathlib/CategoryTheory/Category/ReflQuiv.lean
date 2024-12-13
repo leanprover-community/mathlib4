@@ -75,6 +75,27 @@ theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
+def toQuiv_eq (V : Type) [ReflQuiver V] : (ReflQuiv.of V).toQuiv = V := rfl
+
+def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W] (e : Quiv.of V ≅ Quiv.of W)
+    -- (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = 𝟙rq (e.hom.obj X))
+     : ReflQuiv.of V ≅ ReflQuiv.of W where
+  hom := sorry
+    -- ReflPrefunctor.mk e.hom h_id
+  inv := by
+    refine ReflPrefunctor.mk e.inv ?_
+    intro X'
+    sorry
+
+section
+variable {V W : Type u } [ReflQuiver V] [ReflQuiver W]
+  (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
+
+/-- Compatible equivalences of types and hom-types induce an isomorphism of quivers. -/
+def isoOfEquiv : ReflQuiv.of V ≅ ReflQuiv.of W := isoOfQuivIso (Quiv.isoOfEquiv e he)
+
+end
+
 end ReflQuiv
 
 namespace ReflPrefunctor
