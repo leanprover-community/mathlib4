@@ -217,7 +217,7 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   have : IsLocalizedModule (Algebra.algebraMapSubmonoid _ p.asIdeal.primeCompl) l :=
       IsLocalizedModule.of_restrictScalars p.asIdeal.primeCompl ..
   have := Module.finrank_of_isLocalizedModule_of_free Rₚ p' l
-  simp [rankAtStalk, this, hf'']
+  simp [Rₚ, rankAtStalk, this, hf'']
 
 lemma isLocallyConstant_rankAtStalk [Module.FinitePresentation R M] [Module.Flat R M] :
     IsLocallyConstant (rankAtStalk (R := R) M) := by
