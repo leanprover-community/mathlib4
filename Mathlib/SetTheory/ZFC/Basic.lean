@@ -1168,7 +1168,7 @@ theorem mem_irrefl (x : ZFSet) : x ∉ x :=
 theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
   fun h' ↦ mem_irrefl _ (h' h)
 
-theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : ¬ y ∈ x :=
+theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
