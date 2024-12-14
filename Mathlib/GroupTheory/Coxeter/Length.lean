@@ -183,13 +183,13 @@ theorem length_mul_simple (w : W) (i : B) :
     have length_ge := cs.length_mul_ge_length_sub_length w (s i)
     simp only [length_simple, tsub_le_iff_right] at length_ge
     -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
-    linarith
+    omega
   · -- gt : ℓ w < ℓ (w * s i)
     left
     have length_le := cs.length_mul_le w (s i)
     simp only [length_simple] at length_le
     -- length_le : ℓ (w * s i) ≤ ℓ w + 1
-    linarith
+    omega
 
 theorem length_simple_mul (w : W) (i : B) :
     ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
@@ -222,7 +222,7 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
     _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
-  exact ⟨by linarith, by linarith⟩
+  exact ⟨by omega, by omega⟩
 
 theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
   (isReduced_take_and_drop _ hω _).1
@@ -237,7 +237,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
       rw [Nat.succ_eq_add_one, length_alternatingWord]
-      linarith
+      omega
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
     have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by
@@ -299,36 +299,36 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_left (by linarith)
+    exact (cs.length_simple_mul w i).resolve_left (by omega)
   · intro _
-    linarith
+    omega
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_right (by linarith)
+    exact (cs.length_simple_mul w i).resolve_right (by omega)
   · intro _
-    linarith
+    omega
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_left (by linarith)
+    exact (cs.length_mul_simple w i).resolve_left (by omega)
   · intro _
-    linarith
+    omega
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_right (by linarith)
+    exact (cs.length_mul_simple w i).resolve_right (by omega)
   · intro _
-    linarith
+    omega
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by
