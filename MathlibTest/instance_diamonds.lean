@@ -23,7 +23,7 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
+example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
 example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
