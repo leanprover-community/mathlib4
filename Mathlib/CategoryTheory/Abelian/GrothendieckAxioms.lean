@@ -99,27 +99,6 @@ lemma hasExactColimitsOfShape_obj_of_equiv (J : Type*) {D : Type*} [Category J] 
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
   exact isoWhiskerLeft (_ ⋙ colim) e.unitIso.symm ≪≫ (preservesColimitNatIso e.inverse).symm
 
-universe v₁ u₁ v₂ u₂ in
-theorem comp_const (J : Type u') [Category.{v'} J] (C : Type u₁) [Category.{v₁} C]
-    (D : Type u₂) [Category.{v₂} D] (F : C ⥤ D) :
-    F ⋙ Functor.const J = Functor.const J ⋙ (whiskeringRight J C D).obj F := by
-  apply Functor.ext
-  · intro X Y f
-    simp only [Functor.comp_obj, Functor.comp_map, whiskeringRight_obj_obj,
-    whiskeringRight_obj_map]
-    apply NatTrans.ext
-    ext x
-    simp only [Functor.const_obj_obj, Functor.const_map_app, NatTrans.comp_app, Functor.comp_obj,
-      eqToHom_app, eqToHom_refl, whiskerRight_app, Category.comp_id, Category.id_comp]
-  · intro X
-    simp only [Functor.comp_obj, whiskeringRight_obj_obj]
-    apply Functor.ext
-    · intro A B g
-      simp only [Functor.const_obj_obj, Functor.const_obj_map, Functor.comp_obj, eqToHom_refl,
-        Functor.comp_map, Functor.map_id, Category.comp_id]
-    · simp only [Functor.const_obj_obj, Functor.comp_obj]
-      intros ; trivial
-
 /--
 Transport a `HasExactLimitsOfShape` along an equivalence of the shape.
 
