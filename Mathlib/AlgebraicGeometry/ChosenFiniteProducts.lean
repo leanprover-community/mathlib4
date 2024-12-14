@@ -1,9 +1,11 @@
 import Mathlib
 
-open AlgebraicGeometry CategoryTheory Limits Opposite CommRingCat
-open scoped TensorProduct
+open CategoryTheory Limits Opposite CommRingCat
 
 noncomputable section
+
+section TensorProduct
+open scoped TensorProduct
 
 universe u
 
@@ -61,21 +63,33 @@ def tensorProductColimit : IsColimit (tensorProductCocone A B) where
 def tensorProductColimitCocone : Limits.ColimitCocone (pair A B) :=
 ⟨_, tensorProductColimit A B⟩
 
-example :(AffineScheme.Spec.mapCone (Limits.Cocone.op (tensorProductCocone A B))).pt =
-  AffineScheme.Spec.obj (op (of (A ⊗[ℤ] B))) := by
-  rfl
+end TensorProduct
 
-example : IsLimit <| AffineScheme.Spec.mapCone (Limits.Cocone.op (tensorProductCocone A B)) := by
-  exact isLimitOfPreserves AffineScheme.Spec (IsColimit.op (tensorProductColimit A B))
+section AffineScheme
 
-example : IsLimit (asEmptyCone (Spec (of ℤ))) := by 
-  exact specZIsTerminal
+open AlgebraicGeometry hiding Spec 
+open AffineScheme
 
-example : ChosenFiniteProducts AffineScheme where
-  product (X Y : AffineScheme) :=
-    let A := AffineScheme.Γ.obj (op X)
-    let B := AffineScheme.Γ.obj (op Y)
-    ⟨_,isLimitOfPreserves AffineScheme.Spec (IsColimit.op (tensorProductColimit A B))⟩
+universe u
 
-  terminal := ⟨_,AffineScheme.specZIsTerminal⟩
+variable (X Y : AffineScheme.{u})
 
+def chosen_finite_products_aux : Cone ((pair (Γ.obj (op X)) (Γ.obj (op Y))).op ⋙ Spec) ≌
+  Cone (pair X Y) := 
+  (Cones.whiskeringEquivalence (Discrete.opposite _)).symm.trans <| Cones.postcomposeEquivalence <|
+    isoWhiskerLeft (Discrete.opposite WalkingPair).inverse 
+      (isoWhiskerRight (NatIso.op (pairComp (Γ.obj (op X)) (Γ.obj (op Y)) Spec.rightOp)).symm 
+        (unopUnop _)) ≪≫
+    Discrete.natIso (fun ⟨j⟩ => by cases j <;> rfl) ≪≫
+    mapPairIso X.isoSpec.symm Y.isoSpec.symm
+
+instance AffineScheme.ChosenFiniteProducts : ChosenFiniteProducts AffineScheme.{u} where
+  product (X Y : AffineScheme) := ⟨_, IsLimit.ofPreservesConeTerminal
+    (chosen_finite_products_aux X Y).functor <|
+    isLimitOfPreserves Spec <| IsColimit.op <| tensorProductColimit (Γ.obj (op X)) (Γ.obj (op Y))⟩
+  terminal := ⟨_,AffineScheme.isTerminal⟩
+
+open scoped MonoidalCategory
+example : X ⊗ Y = Spec.obj (op (of (TensorProduct ℤ (Γ.obj (op X)) (Γ.obj (op Y))))) := rfl
+
+end AffineScheme

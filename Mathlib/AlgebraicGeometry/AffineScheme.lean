@@ -170,6 +170,9 @@ show (Scheme.Spec.essImageInclusion).Faithful from inferInstance
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
   forgetToScheme.op ⋙ Scheme.Γ
 
+def isoSpec (X : AffineScheme) : X ≅ Spec.obj (Γ.rightOp.obj X) :=
+  InducedCategory.isoMk X.obj.isoSpec
+
 /-- The category of affine schemes is equivalent to the category of commutative rings. -/
 def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
@@ -208,6 +211,10 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
 def specZIsTerminal : IsTerminal (AffineScheme.Spec.obj (op (CommRingCat.of ℤ))) :=
   IsTerminal.isTerminalObj AffineScheme.Spec (op (CommRingCat.of ℤ)) 
     (terminalOpOfInitial CommRingCat.zIsInitial)
+
+def isTerminal : IsTerminal (AffineScheme.Spec.obj (op (CommRingCat.of (ULift.{u} ℤ)))) :=
+  IsTerminal.isTerminalObj AffineScheme.Spec (op (CommRingCat.of (ULift.{u} ℤ))) 
+    (terminalOpOfInitial CommRingCat.isInitial)
 
 end AffineScheme
 
