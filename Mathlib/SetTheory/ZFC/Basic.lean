@@ -1220,9 +1220,9 @@ theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
-      exact ⟨(equivShrink α).symm z, Quotient.eq_mk_iff_out.2 hz.symm⟩
+      exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
     · rintro ⟨z, hz⟩
-      use equivShrink α z
+      use ULift.up z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
 @[simp]
