@@ -75,7 +75,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid M]
 /-- The `weight` of the finitely supported function `f : σ →₀ ℕ`
-with respect to `w : σ → M` is the sum `∑ f i • w i`. -/
+with respect to `w : σ → M` is the sum `∑ i, f i • w i`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
   (Finsupp.linearCombination ℕ w).toAddMonoidHom
 

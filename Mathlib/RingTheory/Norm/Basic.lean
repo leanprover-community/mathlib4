@@ -96,7 +96,7 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
   swap
   · rintro rfl; exact norm_zero
   · let b := Module.Free.chooseBasis R S
-    letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
+    let := Classical.decEq (Module.Free.ChooseBasisIndex R S)
     rw [norm_eq_matrix_det b, ← Matrix.exists_mulVec_eq_zero_iff]
     rintro ⟨v, v_ne, hv⟩
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
