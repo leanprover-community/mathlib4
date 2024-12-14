@@ -36,8 +36,8 @@ open Limits Opposite
 
 section
 
-/-- A category `J` is `κ`-filtered (for a regular cardinal `κ`) is
-any functor `F : A ⥤ J` from a `κ`-small category (`Cardinal.mk (Arrow A) < κ`)
+/-- A category `J` is `κ`-filtered (for a regular cardinal `κ`) if
+any functor `F : A ⥤ J` from a category `A` such that `HasCardinalLT (Arrow A) κ`
 admits a cocone. -/
 class IsCardinalFiltered (J : Type u') [Category.{v'} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
@@ -49,7 +49,7 @@ namespace IsCardinalFiltered
 variable {J : Type u'} [Category.{v'} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
-/-- A choice of cocone for a functor `F : A ⥤ J` such that `Cardinal.mk (Arrow A) < κ`
+/-- A choice of cocone for a functor `F : A ⥤ J` such that `HasCardinatLT (Arrow A) κ`
 when `J` is a `κ`-filtered category. -/
 noncomputable def cocone {A : Type v''} [Category.{u''} A]
     (F : A ⥤ J) (hA : HasCardinalLT (Arrow A) κ) :
@@ -61,14 +61,15 @@ noncomputable def cocone {A : Type v''} [Category.{u''} A]
   exact (Cocones.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
     (nonempty_cocone (κ := κ) (e.inverse ⋙ F) (by simpa)).some
 
---/-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered, this is
---a choice of object in `J` which is the target of a map from any object in `S`. -/
+/-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
+this is a  choice of object in `J` which is the target of a map from any of
+the objects `S k`. -/
 noncomputable def max {K : Type v''} (S : K → J) (hS : HasCardinalLT K κ) : J := by
   have : HasCardinalLT (Arrow (Discrete K)) κ := by simpa using hS
   exact (cocone (Discrete.functor S) this).pt
 
-/-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered,
-this is a choice of map `s.1 ⟶ max S hS` for any `s : S`. -/
+/-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
+this is a choice of map `S k ⟶ max S hS` for any `k : K`. -/
 noncomputable def toMax {K : Type v''} (S : K → J) (hS : HasCardinalLT K κ) (k : K) :
     S k ⟶ max S hS := by
   have : HasCardinalLT (Arrow (Discrete K)) κ := by simpa using hS
