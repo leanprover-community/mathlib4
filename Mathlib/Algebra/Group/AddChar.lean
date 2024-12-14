@@ -5,6 +5,8 @@ Authors: Michael Stoll
 -/
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Ring
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -115,7 +117,7 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 -- this instance was a bad idea and conflicted with `instFunLike` above
 
 @[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
-  ψ.toMonoidHom a = ψ (Multiplicative.toAdd a) :=
+  ψ.toMonoidHom a = ψ a.toAdd :=
   rfl
 
 /-- An additive character maps multiples by natural numbers to powers. -/
@@ -142,7 +144,7 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
     ⇑(toMonoidHomEquiv.symm ψ) = ψ ∘ Multiplicative.ofAdd := rfl
 
 @[simp] lemma toMonoidHomEquiv_apply (ψ : AddChar A M) (a : Multiplicative A) :
-    toMonoidHomEquiv ψ a = ψ (Multiplicative.toAdd a) := rfl
+    toMonoidHomEquiv ψ a = ψ a.toAdd := rfl
 
 @[simp] lemma toMonoidHomEquiv_symm_apply (ψ : Multiplicative A →* M) (a : A) :
     toMonoidHomEquiv.symm ψ a = ψ (Multiplicative.ofAdd a) := rfl
@@ -180,7 +182,7 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
     toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
 
 @[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
-    toAddMonoidHomEquiv.symm ψ a = Additive.toMul (ψ a) := rfl
+    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul  := rfl
 
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
@@ -253,7 +255,7 @@ lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 lemma ne_zero_iff : ψ ≠ 0 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-@[deprecated (since := "2024-06-06")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-06")]
 def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
 
 set_option linter.deprecated false in

@@ -65,7 +65,7 @@ lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
 --
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
 -- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
--- is too expensive. If lean4#2867 is fixed in a performant way, this can be made `@[simp]`.
+-- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
 --
 -- @[simp]
 lemma ofNat_eq_zero [p.AtLeastTwo] : no_index (OfNat.ofNat p : R) = 0 := cast_eq_zero R p
@@ -232,7 +232,7 @@ section NoZeroDivisors
 variable [NoZeroDivisors R]
 
 lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
-  suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def_lt''.mpr ⟨hp, this⟩
+  suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd
   have : (p : R) = 0 := (cast_eq_zero_iff R p p).mpr (dvd_refl p)

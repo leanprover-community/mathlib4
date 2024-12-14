@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Integral over an interval
@@ -84,6 +85,11 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
   it is integrable on `uIoc a b` with respect to `μ`. -/
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
+
+theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
+    (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    IntervalIntegrable g μ a b := by
+  rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
 
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
@@ -580,7 +586,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 
 end Basic
 
--- Porting note (#11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]

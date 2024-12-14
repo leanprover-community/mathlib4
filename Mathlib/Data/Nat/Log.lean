@@ -3,11 +3,11 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Contrapose
 import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Natural number logarithms
@@ -26,7 +26,7 @@ namespace Nat
 
 #adaptation_note
 /--
-After leanprover/lean4#5338 we just unused argument warnings,
+After https://github.com/leanprover/lean4/pull/5338 we just unused argument warnings,
 but these are used in the decreasing by blocks.
 If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers.
 -/
@@ -123,7 +123,7 @@ theorem lt_pow_of_log_lt {b x y : ℕ} (hb : 1 < b) : log b y < x → y < b ^ x 
 lemma log_lt_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : log b x < x :=
   match le_or_lt b 1 with
   | .inl h => log_of_left_le_one h x ▸ Nat.pos_iff_ne_zero.2 hx
-  | .inr h => log_lt_of_lt_pow hx <| lt_pow_self h _
+  | .inr h => log_lt_of_lt_pow hx <| Nat.lt_pow_self h
 
 lemma log_le_self (b x : ℕ) : log b x ≤ x :=
   if hx : x = 0 then by simp [hx]

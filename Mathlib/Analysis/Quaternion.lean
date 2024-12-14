@@ -72,11 +72,15 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+-- simp cannot prove this
+@[simp, nolint simpNF]
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+-- simp cannot prove this
+@[simp, nolint simpNF]
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
@@ -161,7 +165,7 @@ theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (-1 : ℝ)).trans
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
-    toFun := fun a => (WithLp.equiv _ (Fin 4 → _)).symm ![a.1, a.2, a.3, a.4]
+    toFun := fun a => !₂[a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_piLp_equiv_symm_equivTuple }
 

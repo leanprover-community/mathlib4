@@ -110,11 +110,11 @@ theorem lhopital_zero_left_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDe
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
   have hdng : ∀ x ∈ -Ioo a b, HasDerivAt (g ∘ Neg.neg) (g' (-x) * -1) x := fun x hx =>
     comp x (hgg' (-x) hx) (hasDerivAt_neg x)
-  rw [preimage_neg_Ioo] at hdnf
-  rw [preimage_neg_Ioo] at hdng
+  rw [neg_Ioo] at hdnf
+  rw [neg_Ioo] at hdng
   have := lhopital_zero_right_on_Ioo (neg_lt_neg hab) hdnf hdng (by
     intro x hx h
-    apply hg' _ (by rw [← preimage_neg_Ioo] at hx; exact hx)
+    apply hg' _ (by rw [← neg_Ioo] at hx; exact hx)
     rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
     (hfb.comp tendsto_neg_nhdsWithin_Ioi_neg) (hgb.comp tendsto_neg_nhdsWithin_Ioi_neg)
     (by
@@ -176,12 +176,12 @@ theorem lhopital_zero_atBot_on_Iio (hff' : ∀ x ∈ Iio a, HasDerivAt f (f' x) 
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
   have hdng : ∀ x ∈ -Iio a, HasDerivAt (g ∘ Neg.neg) (g' (-x) * -1) x := fun x hx =>
     comp x (hgg' (-x) hx) (hasDerivAt_neg x)
-  rw [preimage_neg_Iio] at hdnf
-  rw [preimage_neg_Iio] at hdng
+  rw [neg_Iio] at hdnf
+  rw [neg_Iio] at hdng
   have := lhopital_zero_atTop_on_Ioi hdnf hdng
     (by
       intro x hx h
-      apply hg' _ (by rw [← preimage_neg_Iio] at hx; exact hx)
+      apply hg' _ (by rw [← neg_Iio] at hx; exact hx)
       rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
     (hfbot.comp tendsto_neg_atTop_atBot) (hgbot.comp tendsto_neg_atTop_atBot)
     (by

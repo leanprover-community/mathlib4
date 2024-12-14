@@ -6,9 +6,9 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Maximal
 import Mathlib.Tactic.FinCases
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -150,6 +150,16 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rw [mul_pow, mem_span_singleton]
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 
+theorem span_range_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : s → ℕ) :
+    span (Set.range fun x ↦ x.1 ^ n x) = ⊤ := by
+  have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span ((eq_top_iff_one _).mp hs)
+  refine top_unique ((span_pow_eq_top _ ((eq_top_iff_one _).mpr mem) <|
+    t.attach.sup fun x ↦ n ⟨x, hts x.2⟩).ge.trans <| span_le.mpr ?_)
+  rintro _ ⟨x, hxt, rfl⟩
+  rw [← Nat.sub_add_cancel (Finset.le_sup <| t.mem_attach ⟨x, hxt⟩)]
+  simp_rw [pow_add]
+  exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)
+
 end Ideal
 
 end CommSemiring
@@ -256,47 +266,3 @@ theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsFiel
   rwa [hm.1.2 I Ibot] at Itop
 
 end Ideal
-
-variable {a b : α}
-
-/-- The set of non-invertible elements of a monoid. -/
-def nonunits (α : Type u) [Monoid α] : Set α :=
-  { a | ¬IsUnit a }
-
-@[simp]
-theorem mem_nonunits_iff [Monoid α] : a ∈ nonunits α ↔ ¬IsUnit a :=
-  Iff.rfl
-
-theorem mul_mem_nonunits_right [CommMonoid α] : b ∈ nonunits α → a * b ∈ nonunits α :=
-  mt isUnit_of_mul_isUnit_right
-
-theorem mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ nonunits α :=
-  mt isUnit_of_mul_isUnit_left
-
-theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
-  not_congr isUnit_zero_iff
-
-@[simp 1001] -- increased priority to appease `simpNF`
-theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
-  not_not_intro isUnit_one
-
--- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
-@[simp (high)]
-theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
-    [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
-  ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
-
-theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
-  fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu
-
-theorem exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits α) :
-    ∃ I : Ideal α, I.IsMaximal ∧ a ∈ I := by
-  have : Ideal.span ({a} : Set α) ≠ ⊤ := by
-    intro H
-    rw [Ideal.span_singleton_eq_top] at H
-    contradiction
-  rcases Ideal.exists_le_maximal _ this with ⟨I, Imax, H⟩
-  use I, Imax
-  apply H
-  apply Ideal.subset_span
-  exact Set.mem_singleton a

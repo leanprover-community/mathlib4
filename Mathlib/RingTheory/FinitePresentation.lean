@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.Finite.Sum
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.MvPolynomial.Tower
 
@@ -220,9 +222,9 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
   letI RX := MvPolynomial (Fin n) R
   letI AX := MvPolynomial (Fin n) A
   refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
-  · rw [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
+  · rw [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
-      adjoin_image, adjoin_range_X, Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr hf]
+      adjoin_image, adjoin_range_X, Algebra.map_top, (AlgHom.range_eq_top _).mpr hf]
     exact fun {x} => subset_adjoin ⟨⟩
   · obtain ⟨t, ht⟩ := FiniteType.out (R := R) (A := A)
     have := fun i : t => hf (algebraMap A B i)
@@ -362,7 +364,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
     refine add_mem ?_ hy
-    simp only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
+    simp only [RXn, RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
       show f y = 0 from leI hy, add_zero, hh'] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by
       apply this

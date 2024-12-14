@@ -324,7 +324,7 @@ theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
 
 /-- Topology on the Sorgenfrey line is not second countable. -/
 theorem not_secondCountableTopology : ¬SecondCountableTopology ℝₗ :=
-  fun _ ↦ not_metrizableSpace (metrizableSpace_of_t3_second_countable _)
+  fun _ ↦ not_metrizableSpace (metrizableSpace_of_t3_secondCountable _)
 
 end SorgenfreyLine
 

@@ -63,8 +63,10 @@ protected def ringCon (I : Ideal R) : RingCon R :=
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
       rwa [← this] at F }
 
-instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
-    inferInstanceAs (CommRing (Quotient.ringCon I).Quotient)
+-- This instance makes use of the existing AddCommGroup instance to boost performance.
+instance commRing (I : Ideal R) : CommRing (R ⧸ I) where
+  __ : AddCommGroup (R ⧸ I) := inferInstance
+  __ : CommRing (Quotient.ringCon I).Quotient := inferInstance
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
 example : (commRing I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl

@@ -128,7 +128,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
     rw [sum_dite_of_true fun _ ↦ id]
-    exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp (config := { contextual := true })⟩
+    exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
     refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
     rw [← sum_attach s]
@@ -223,7 +223,8 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
     · rw [not_imp_comm.1 (hfsup _) hi]
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
-  simpa [Nat.sum_div, Nat.div_ne_zero_iff_of_dvd, funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  aesop
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map
@@ -255,7 +256,7 @@ lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
     simpa [← hf, Multiset.sum_count_eq_card hm]
   · rintro ⟨rfl, hf⟩
     refine ⟨∑ a ∈ s, f a • {a}, ?_, ?_⟩
-    · simp (config := { contextual := true })
+    · simp +contextual
     · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0)] using hf
 
 end Finset
