@@ -16,6 +16,8 @@ import Mathlib.CategoryTheory.Presentable.Basic
 In this file, we show that `κ`-accessible functors (to the category of types)
 are stable under limits indexed by a small category `K` such that
 `Cardinal.mk (Arrow K) < κ`.
+In particular, `κ`-presentable objects are stable by colimits indexed
+by a small category `K` such that `Cardinal.mk (Arrow K) < κ`.
 
 -/
 
