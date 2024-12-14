@@ -431,7 +431,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+        exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
       · simp_all only [List.cons.injEq, le_refl]
 
 lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
