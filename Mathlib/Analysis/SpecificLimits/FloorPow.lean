@@ -92,7 +92,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       _ ≤ ε * c N + ε * c (N - 1) * l := by
         gcongr
         · exact (ha N (a.le_succ.trans aN)).2
-        · linarith only [IcN]
+        · linear_combination IcN
       _ ≤ ε * ((1 + ε) * c (N - 1)) + ε * c (N - 1) * l := by gcongr
       _ = ε * (1 + ε + l) * c (N - 1) := by ring
       _ ≤ ε * (1 + ε + l) * n := by gcongr
@@ -161,10 +161,10 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     calc
       d < (n : ℝ)⁻¹ * n * (l - ε * (1 + l)) := by
         rw [inv_mul_cancel₀, one_mul]
-        · linarith only [hε]
+        · linear_combination hε
         · exact Nat.cast_ne_zero.2 (ne_of_gt npos)
       _ = (n : ℝ)⁻¹ * (n * l - ε * (1 + l) * n) := by ring
-      _ ≤ (n : ℝ)⁻¹ * u n := by gcongr; linarith only [hn]
+      _ ≤ (n : ℝ)⁻¹ * u n := by gcongr; linear_combination hn
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, l + ε * (1 + ε + l) < d ∧ 0 < ε := by
       have L : Tendsto (fun ε => l + ε * (1 + ε + l)) (𝓝[>] 0) (𝓝 (l + 0 * (1 + 0 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
@@ -175,7 +175,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       exact (((tendsto_order.1 L).2 d hd).and self_mem_nhdsWithin).exists
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
     calc
-      u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
+      u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linear_combination hn
       _ = (l + ε * (1 + ε + l)) := by field_simp; ring
       _ < d := hε
 

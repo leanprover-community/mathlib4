@@ -61,12 +61,12 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   have hreal₃ : (k : ℝ) ^ 2 + 4 ≥ p := by assumption_mod_cast
   have hreal₅ : (k : ℝ) > 4 := by
     refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
-    linarith only [hreal₂, hreal₃]
+    linear_combination hreal₂ + hreal₃
   have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
     refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
     rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
-    linarith only [hreal₁, hreal₃, hreal₅]
-  exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩
+    linear_combination hreal₁ + hreal₃ + hreal₅
+  exact ⟨n, hnat₁, by linear_combination hreal₆ + hreal₁⟩
 
 end Imo2008Q3
 
@@ -76,8 +76,8 @@ theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
     ∃ p : ℕ, Nat.Prime p ∧ p ∣ n ^ 2 + 1 ∧ (p : ℝ) > 2 * n + sqrt (2 * n) := by
   intro N
   obtain ⟨p, hpp, hineq₁, hpmod4⟩ := Nat.exists_prime_gt_modEq_one (N ^ 2 + 20) four_ne_zero
-  obtain ⟨n, hnat, hreal⟩ := p_lemma p hpp hpmod4 (by linarith [hineq₁, Nat.zero_le (N ^ 2)])
+  obtain ⟨n, hnat, hreal⟩ := p_lemma p hpp hpmod4 (by linear_combination hineq₁ + sq_nonneg N)
   have hineq₂ : n ^ 2 + 1 ≥ p := Nat.le_of_dvd (n ^ 2).succ_pos hnat
-  have hineq₃ : n * n ≥ N * N := by linarith [hineq₁, hineq₂]
+  have hineq₃ : n * n ≥ N * N := by linear_combination hineq₁ + hineq₂
   have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.1 hineq₃
   exact ⟨n, hn_ge_N, p, hpp, hnat, hreal⟩

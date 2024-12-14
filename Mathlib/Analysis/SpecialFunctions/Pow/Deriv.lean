@@ -595,7 +595,7 @@ theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
   have h₂ : Tendsto (fun x : ℝ => 1 + t / x) atTop (𝓝 1) := by
     simpa using (tendsto_inv_atTop_zero.const_mul t).const_add 1
   refine (h₂.eventually_const_le h₁).mono fun x hx => ?_
-  have hx' : 0 < 1 + t / x := by linarith
+  have hx' : 0 < 1 + t / x := by linear_combination hx
   simp [mul_comm x, exp_mul, exp_log hx']
 
 /-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞` for naturals `x`. -/

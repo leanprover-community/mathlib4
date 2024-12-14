@@ -52,7 +52,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
   simp only [AntitoneOn, mem_setOf_eq]
   intro x hex y _ hxy
   have x_pos : 0 < x := lt_of_lt_of_le (exp_pos (1 / a)) hex
-  have y_pos : 0 < y := by linarith
+  have y_pos : 0 < y := by linear_combination x_pos + hxy
   nth_rw 1 [← rpow_one y]
   nth_rw 1 [← rpow_one x]
   rw [← div_self (ne_of_lt ha).symm, div_eq_mul_one_div a a, rpow_mul y_pos.le, rpow_mul x_pos.le,

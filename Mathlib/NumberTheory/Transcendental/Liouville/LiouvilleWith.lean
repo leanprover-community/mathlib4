@@ -60,7 +60,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
     add_div_eq_mul_add_div _ _ hn'.ne']
   gcongr
   calc _ ≤ x * n + 1 := by push_cast; gcongr; apply Int.floor_le
-    _ < x * n + 2 := by linarith
+    _ < x * n + 2 := by linear_combination
 
 namespace LiouvilleWith
 

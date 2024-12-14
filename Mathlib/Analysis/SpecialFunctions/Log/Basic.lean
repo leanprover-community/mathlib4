@@ -149,7 +149,7 @@ theorem log_pos (hx : 1 < x) : 0 < log x :=
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
   rw [← neg_neg x, log_neg_eq_log]
-  have : 1 < -x := by linarith
+  have : 1 < -x := by linear_combination hx
   exact log_pos this
 
 theorem log_neg_iff (h : 0 < x) : log x < 0 ↔ x < 1 := by
@@ -162,8 +162,8 @@ theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
 
 theorem log_neg_of_lt_zero (h0 : x < 0) (h1 : -1 < x) : log x < 0 := by
   rw [← neg_neg x, log_neg_eq_log]
-  have h0' : 0 < -x := by linarith
-  have h1' : -x < 1 := by linarith
+  have h0' : 0 < -x := by linear_combination h0
+  have h1' : -x < 1 := by linear_combination h1
   exact log_neg h0' h1'
 
 theorem log_nonneg_iff (hx : 0 < x) : 0 ≤ log x ↔ 1 ≤ x := by rw [← not_lt, log_neg_iff hx, not_lt]
@@ -285,7 +285,7 @@ lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
 lemma log_le_self (hx : 0 ≤ x) : log x ≤ x := by
   obtain rfl | hx := hx.eq_or_lt
   · simp
-  · exact (log_le_sub_one_of_pos hx).trans (by linarith)
+  · exact (log_le_sub_one_of_pos hx).trans (by linear_combination)
 
 /-- See `Real.one_sub_inv_le_log_of_pos` for the stronger version when `x ≠ 0`. -/
 lemma neg_inv_le_log (hx : 0 ≤ x) : -x⁻¹ ≤ log x := by
@@ -295,7 +295,7 @@ lemma neg_inv_le_log (hx : 0 ≤ x) : -x⁻¹ ≤ log x := by
 theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by
   have : 0 < 1 / x := by simpa only [one_div, inv_pos] using h1
   replace := log_le_sub_one_of_pos this
-  replace : log (1 / x) < 1 / x := by linarith
+  replace : log (1 / x) < 1 / x := by linear_combination this
   rw [log_div one_ne_zero h1.ne', log_one, zero_sub, lt_div_iff₀ h1] at this
   have aux : 0 ≤ -log x * x := by
     refine mul_nonneg ?_ h1.le

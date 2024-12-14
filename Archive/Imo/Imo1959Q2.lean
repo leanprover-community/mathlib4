@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 1959 Q2
@@ -39,7 +40,7 @@ theorem isGood_iff : IsGood x A ↔
     sqrt (2 * x - 1) + 1 + |sqrt (2 * x - 1) - 1| = A * sqrt 2 ∧ 1 / 2 ≤ x := by
   cases le_or_lt (1 / 2) x with
   | inl hx =>
-    have hx' : 0 ≤ 2 * x - 1 := by linarith
+    have hx' : 0 ≤ 2 * x - 1 := by linear_combination 2 * hx
     have h₁ : x + sqrt (2 * x - 1) = (sqrt (2 * x - 1) + 1) ^ 2 / 2 := by
       rw [add_sq, sq_sqrt hx']; field_simp; ring
     have h₂ : x - sqrt (2 * x - 1) = (sqrt (2 * x - 1) - 1) ^ 2 / 2 := by
@@ -49,7 +50,7 @@ theorem isGood_iff : IsGood x A ↔
     rw [sqrt_sq, sqrt_sq_eq_abs] <;> [skip; positivity]
     field_simp
   | inr hx =>
-    have : 2 * x - 1 < 0 := by linarith
+    have : 2 * x - 1 < 0 := by linear_combination 2 * hx
     simp only [IsGood, this.not_le, hx.not_le]; simp
 
 theorem IsGood.one_half_le (h : IsGood x A) : 1 / 2 ≤ x := (isGood_iff.1 h).2
@@ -66,7 +67,7 @@ theorem isGood_iff_eq_sqrt_two (hx : x ∈ Icc (1 / 2) 1) : IsGood x A ↔ A = s
 
 theorem isGood_iff_eq_sqrt (hx : 1 < x) : IsGood x A ↔ A = sqrt (4 * x - 2) := by
   have h₁ : 1 < sqrt (2 * x - 1) := by simpa only [← not_le, sqrt_two_mul_sub_one_le_one] using hx
-  have h₂ : 1 / 2 ≤ x := by linarith
+  have h₂ : 1 / 2 ≤ x := by linear_combination hx
   simp only [isGood_iff, h₂, abs_of_pos (sub_pos.2 h₁), add_add_sub_cancel, and_true]
   rw [← mul_two, ← div_eq_iff (by positivity), mul_div_assoc, div_sqrt, ← sqrt_mul' _ zero_le_two,
     eq_comm]
@@ -75,7 +76,7 @@ theorem isGood_iff_eq_sqrt (hx : 1 < x) : IsGood x A ↔ A = sqrt (4 * x - 2) :=
 theorem IsGood.sqrt_two_lt_of_one_lt (h : IsGood x A) (hx : 1 < x) : sqrt 2 < A := by
   rw [(isGood_iff_eq_sqrt hx).1 h]
   refine sqrt_lt_sqrt zero_le_two ?_
-  linarith
+  linear_combination 4 * hx
 
 theorem IsGood.eq_sqrt_two_iff_le_one (h : IsGood x A) : A = sqrt 2 ↔ x ≤ 1 :=
   ⟨fun hA ↦ not_lt.1 fun hx ↦ (h.sqrt_two_lt_of_one_lt hx).ne' hA, fun hx ↦

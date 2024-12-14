@@ -8,6 +8,7 @@ import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
 
 /-!
@@ -106,7 +107,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
             exact ⟨rfl, rfl, rfl⟩
         · have hg : -z = g (x, y, z) := rfl
           rw [hg, hz_def]; ring
-      have h₂ : q < t * (t + 1) := by linarith [sq_nonneg t, le_max_left (q + 1) 1]
+      have h₂ : q < t * (t + 1) := by linear_combination sq_nonneg t + le_max_left (q + 1) 1
       exact ⟨h₁, h₂⟩
     have hK_inf : Set.Infinite K := by intro h; apply hK_not_bdd; exact Set.Finite.bddAbove h
     exact hK_inf.of_image g

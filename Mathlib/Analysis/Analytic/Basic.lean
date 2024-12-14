@@ -910,7 +910,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     gcongr
     · exact I _ h'z
     · simp only [norm_neg]; exact I _ yr'
-  _ < ε := by linarith
+  _ < ε := by linear_combination εpos / 4
 
 /-- If a function admits a power series on a ball, then the partial sums
 `p.partialSum n z` converges to `f (x + y)` as `n → ∞` and `z → y`. -/

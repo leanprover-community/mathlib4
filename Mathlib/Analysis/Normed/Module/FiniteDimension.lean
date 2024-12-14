@@ -413,7 +413,7 @@ theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : �
 theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
     ∃ (R : ℝ) (f : ℕ → E), 1 < R ∧ (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
   obtain ⟨c, hc⟩ : ∃ c : 𝕜, 1 < ‖c‖ := NormedField.exists_one_lt_norm 𝕜
-  have A : ‖c‖ < ‖c‖ + 1 := by linarith
+  have A : ‖c‖ < ‖c‖ + 1 := by linear_combination
   rcases exists_seq_norm_le_one_le_norm_sub' hc A h with ⟨f, hf⟩
   exact ⟨‖c‖ + 1, f, hc.trans A, hf.1, hf.2⟩
 

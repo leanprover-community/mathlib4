@@ -527,7 +527,7 @@ theorem radius_rightInv_pos_of_radius_pos
           gcongr
           · simp only [sub_le_self_iff]
             positivity
-          · linarith only [rSn]
+          · linear_combination rSn
         _ = I * a + 2 * I * C * (r * S n) ^ 2 := by ring
         _ ≤ I * a + 2 * I * C * (r * ((I + 1) * a)) ^ 2 := by gcongr
         _ = (I + 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) * a := by ring

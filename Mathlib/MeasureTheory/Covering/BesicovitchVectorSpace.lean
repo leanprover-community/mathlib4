@@ -311,17 +311,17 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       Pairwise fun i j => a.r i ≤ ‖a.c i - a.c j‖ ∧ a.r j ≤ τ * a.r i ∨
         a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
     simpa only [dist_eq_norm] using a.h
-  have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
-  have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
+  have δnonneg : 0 ≤ δ := by linear_combination 4 * (hτ + hδ1)
+  have D : 0 ≤ 1 - δ / 4 := by linear_combination hδ2 / 4
   have τpos : 0 < τ := _root_.zero_lt_one.trans_le hτ
   have I : (1 - δ / 4) * τ ≤ 1 :=
     calc
       (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := by gcongr
       _ = (1 : ℝ) - δ ^ 2 / 16 := by ring
-      _ ≤ 1 := by linarith only [sq_nonneg δ]
-  have J : 1 - δ ≤ 1 - δ / 4 := by linarith only [δnonneg]
+      _ ≤ 1 := by linear_combination sq_nonneg δ / 16
+  have J : 1 - δ ≤ 1 - δ / 4 := by linear_combination 3 / 4 * δnonneg
   have K : 1 - δ / 4 ≤ τ⁻¹ := by rw [inv_eq_one_div, le_div_iff₀ τpos]; exact I
-  suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖ by linarith only [J, K, L]
+  suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖ by linear_combination J + K + L
   have hτ' : ∀ k, τ⁻¹ ≤ a.r k := by
     intro k
     rw [inv_eq_one_div, div_le_iff₀ τpos, ← lastr, mul_comm]
@@ -343,8 +343,8 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       Pairwise fun i j => a.r i ≤ ‖a.c i - a.c j‖ ∧ a.r j ≤ τ * a.r i ∨
         a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
     simpa only [dist_eq_norm] using a.h
-  have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
-  have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
+  have δnonneg : 0 ≤ δ := by linear_combination 4 * (hτ + hδ1)
+  have D : 0 ≤ 1 - δ / 4 := by linear_combination hδ2 / 4
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
   have I : a.r i ≤ 2 := by
     rcases lt_or_le i (last N) with (H | H)
@@ -357,19 +357,19 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     calc
       (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := by gcongr
       _ = (1 : ℝ) - δ ^ 2 / 16 := by ring
-      _ ≤ 1 := by linarith only [sq_nonneg δ]
+      _ ≤ 1 := by linear_combination (sq_nonneg δ) / 16
   have A : a.r j - δ ≤ ‖a.c i - a.c j‖ := by
     rcases ah inej.symm with (H | H); · rw [norm_sub_rev]; linarith [H.1]
     have C : a.r j ≤ 4 :=
       calc
         a.r j ≤ τ * a.r i := H.2
         _ ≤ τ * 2 := by gcongr
-        _ ≤ 5 / 4 * 2 := by gcongr; linarith only [hδ1, hδ2]
+        _ ≤ 5 / 4 * 2 := by gcongr; linear_combination hδ1 + hδ2 / 4
         _ ≤ 4 := by norm_num
     calc
       a.r j - δ ≤ a.r j - a.r j / 4 * δ := by
         gcongr _ - ?_
-        exact mul_le_of_le_one_left δnonneg (by linarith only [C])
+        exact mul_le_of_le_one_left δnonneg (by linear_combination C / 4)
       _ = (1 - δ / 4) * a.r j := by ring
       _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr
@@ -385,8 +385,8 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         rw [← one_smul ℝ (a.c j), hd, ← sub_smul, norm_smul, norm_sub_rev, Real.norm_eq_abs,
           abs_of_nonneg A, sub_mul]
         field_simp [(zero_le_two.trans_lt hj).ne']
-        linarith only [hcrj]
-  linarith only [this]
+        linear_combination hcrj
+  linear_combination this
 
 theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
@@ -396,7 +396,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       Pairwise fun i j => a.r i ≤ ‖a.c i - a.c j‖ ∧ a.r j ≤ τ * a.r i ∨
         a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
     simpa only [dist_eq_norm] using a.h
-  have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
+  have δnonneg : 0 ≤ δ := by linear_combination 4 * (hτ + hδ1)
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
   have A : a.r i ≤ ‖a.c i‖ := by
     have : i < last N := by
@@ -431,13 +431,12 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
             a.r j - ‖a.c j - a.c i‖ ≤ τ * a.r i - a.r i := sub_le_sub H.2 H.1
             _ = a.r i * (τ - 1) := by ring
             _ ≤ s * (τ - 1) := mul_le_mul_of_nonneg_right A (sub_nonneg.2 hτ)
-      _ ≤ s * (δ / 2) := (mul_le_mul_of_nonneg_left (by linarith only [δnonneg, hδ1]) spos.le)
+      _ ≤ s * (δ / 2) := by linear_combination s * (hδ1 + δnonneg / 4)
       _ = s / 2 * δ := by ring
   have invs_nonneg : 0 ≤ 2 / s := div_nonneg zero_le_two (zero_le_two.trans hi.le)
   calc
     1 - δ = 2 / s * (s / 2 - s / 2 * δ) := by field_simp [spos.ne']; ring
-    _ ≤ 2 / s * ‖d - a.c i‖ :=
-      (mul_le_mul_of_nonneg_left (by linarith only [hcrj, I, J, hi]) invs_nonneg)
+    _ ≤ 2 / s * ‖d - a.c i‖ := by linear_combination 2 / s * (hcrj + I + J + hi / 2)
     _ = ‖(2 / s) • a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
       conv_lhs => rw [norm_sub_rev, ← abs_of_nonneg invs_nonneg]
       rw [← Real.norm_eq_abs, ← norm_smul, smul_sub, hd, smul_smul]
