@@ -931,8 +931,10 @@ import Mathlib.Algebra.Star.Rat
 import Mathlib.Algebra.Star.RingQuot
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.StarLinearMap
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Algebra.Star.Submodule
 import Mathlib.Algebra.Star.Subsemiring
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Symmetrized
