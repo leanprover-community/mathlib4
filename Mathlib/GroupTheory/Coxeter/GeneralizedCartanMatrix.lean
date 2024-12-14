@@ -31,7 +31,7 @@ More specifically, let $(k_{i, i'})_{i, i' \in B}$ be a matrix whose entries lie
 ordered ring $R$. We say that $k$ is a *generalized Cartan matrix* for $M$ if for all $i, i'$,
 we have
 1. $k_{i, i} = 2$.
-2. $k_{i, i'} = 0$ if and only if $M_{i, i'} = 2$.
+2. If $M_{i, i'} = 2$, then $k_{i, i'} = 0$.
 3. $k_{i, i'} \leq 0$ for $i \neq i'$.
 4. If $m = M_{i, i'}$ is even, then $S_{m/2 - 1}(k_{i, i'} k_{i', i} - 2) = 0$, where $S$ refers to
   a Chebyshev $S$-polynomial (`Polynomial.Chebyshev.S`).
@@ -69,23 +69,23 @@ corresponding to the Coxeter matrix $M$. -/
 structure IsGeneralizedCartan {R : Type*} [OrderedCommRing R] (M : CoxeterMatrix B)
     (k : Matrix B B R) : Prop where
   diagonal i : k i i = 2
-  eq_zero_of_m_eq_two i i' (_ : M i i' = 2) : k i i' = 0
+  eq_zero_of_M_eq_two i i' : M i i' = 2 → k i i' = 0
   nonpos i i' (_ : i ≠ i') : k i i' ≤ 0
-  s_eval_eq_zero_of_even i i' (j : ℤ) (_ : M i i' = 2 * j) :
-    (S R (j - 1)).eval (k i i' * k i' i - 2) = 0
-  s_eval_eq_zero_of_odd i i' (j : ℤ) (_ : M i i' = 2 * j + 1) :
-    (S R (j - 1)).eval (k i i' * k i' i - 2) +
+  s_eval_eq_zero_of_even i i' (j : ℤ) :
+    M i i' = 2 * j → (S R (j - 1)).eval (k i i' * k i' i - 2) = 0
+  s_eval_eq_zero_of_odd i i' (j : ℤ) :
+    M i i' = 2 * j + 1 → (S R (j - 1)).eval (k i i' * k i' i - 2) +
       (S R j).eval (k i i' * k i' i - 2) = 0
-  s_eval_nonneg i i' (j : ℕ) (_ : 2 * j + 2 ≤ M i i') :
-    0 ≤ (S R j).eval (k i i' * k i' i - 2)
-  s_eval_nonneg' i i' (j : ℕ) (_ : M i i' = 0) :
-    0 ≤ (S R j).eval (k i i' * k i' i - 2)
+  s_eval_nonneg i i' (j : ℕ) :
+    2 * j + 2 ≤ M i i' → 0 ≤ (S R j).eval (k i i' * k i' i - 2)
+  s_eval_nonneg' i i' (j : ℕ) :
+    M i i' = 0 → 0 ≤ (S R j).eval (k i i' * k i' i - 2)
 
 /-- Fix a Coxeter matrix (`CoxeterMatrix`) $M$ whose rows and columns are indexed by a type $B$.
 Let $(k_{i, i'})_{i, i' \in B}$ be a matrix with real entries. We say that $k$ is a
 *generalized Cartan matrix* for $M$ if for all $i, i'$, we have
 1. $k_{i, i} = 2$.
-2. $k_{i, i'} = 0$ if and only if $M_{i, i'} = 2$.
+2. If $M_{i, i'} = 2$, then $k_{i, i'} = 0$.
 3. $k_{i, i'} \leq 0$ for $i \neq i'$.
 4. $k_{i, i'} k_{i', i} = 4 \cos^2 (\pi / M_{i, i'})$ if $M_{i, i'} \neq 0$.
 5. $k_{i, i'} k_{i', i} \geq 4$ if $M_{i, i'} = 0$.
@@ -96,10 +96,10 @@ entries. -/
 structure IsRealGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℝ) :
     Prop where
   diagonal i : k i i = 2
-  eq_zero_of_m_eq_two i i' (_ : M i i' = 2) : k i i' = 0
-  nonpos i i' (_ : i ≠ i') : k i i' ≤ 0
-  mul_eq_four_mul_cos_sq i i' (_ : M i i' ≠ 0) : k i i' * k i' i = 4 * cos (π / M i i') ^ 2
-  mul_ge_four i i' (_ : M i i' = 0) : 4 ≤ k i i' * k i' i
+  eq_zero_of_M_eq_two i i' : M i i' = 2 → k i i' = 0
+  nonpos i i' : i ≠ i' → k i i' ≤ 0
+  mul_eq_four_mul_cos_sq i i' : M i i' ≠ 0 → k i i' * k i' i = 4 * cos (π / M i i') ^ 2
+  mul_ge_four i i' : M i i' = 0 → 4 ≤ k i i' * k i' i
 
 
 /-- Fix a Coxeter matrix (`CoxeterMatrix`) $M$ whose rows and columns are indexed by a type $B$.
@@ -113,7 +113,7 @@ sense for matrices with integer entries. -/
 @[mk_iff]
 structure IsIntegerGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℤ) :
     Prop where
-  mul_eq_four_mul_cos_sq i i' (_ : M i i' ≠ 0) :
+  mul_eq_four_mul_cos_sq i i' : M i i' ≠ 0 →
     M i i' = 1 ∧ k i i' = 2 ∧ k i' i = 2 ∨
     M i i' = 2 ∧ k i i' = 0 ∧ k i' i = 0 ∨
     M i i' = 3 ∧ k i i' = -1 ∧ k i' i = -1 ∨
@@ -121,8 +121,8 @@ structure IsIntegerGeneralizedCartan (M : CoxeterMatrix B) (k : Matrix B B ℤ) 
     M i i' = 4 ∧ k i i' = -2 ∧ k i' i = -1 ∨
     M i i' = 6 ∧ k i i' = -1 ∧ k i' i = -3 ∨
     M i i' = 6 ∧ k i i' = -3 ∧ k i' i = -1
-  nonpos i i' (_ : M i i' = 0) : k i i' ≤ 0
-  mul_ge_four i i' (_ : M i i' = 0) : 4 ≤ k i i' * k i' i
+  nonpos i i' : M i i' = 0 → k i i' ≤ 0
+  mul_ge_four i i' : M i i' = 0 → 4 ≤ k i i' * k i' i
 
 /-- It is decidable whether a finite matrix with integer entries is a generalized Cartan matrix for
 $M$. -/
@@ -156,7 +156,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
   · show ∀ i, k i i = 2
     exact h.diagonal
   · show ∀ (i i'), M i i' = 2 → k i i' = 0
-    exact h.eq_zero_of_m_eq_two
+    exact h.eq_zero_of_M_eq_two
   · show ∀ (i i'), i ≠ i' → k i i' ≤ 0
     exact h.nonpos
   · show ∀ (i i'), M.M i i' ≠ 0 → k i i' * k i' i = 4 * cos (π / ↑(M.M i i')) ^ 2
@@ -196,7 +196,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
         Even.neg_pow, one_pow, mul_one]
       norm_num
     · -- If `M i i' = 2`, then we use `h.eq_zero_of_m_eq_two`.
-      simp [Mii'_eq_two, h.eq_zero_of_m_eq_two i i' Mii'_eq_two]
+      simp [Mii'_eq_two, h.eq_zero_of_M_eq_two i i' Mii'_eq_two]
     · -- If `M i i' > 1`, then we first claim that `cos θ` cannot be `1` or `-1`.
       have cos_θ_ne_one : Complex.cos θ ≠ 1 := by
         intro cos_θ_eq_one
@@ -328,7 +328,7 @@ theorem isRealGeneralizedCartan_of_isGeneralizedCartan (M : CoxeterMatrix B) (k 
       /- These bounds imply that `(S ℝ ⌊π / θ'⌋₊).eval (2 * cos θ') < 0`, whereas
       `s_eval_nonneg` implies `0 ≤ (S ℝ ⌊π / θ'⌋₊).eval (2 * cos θ)`, and we get a
       contradiction. -/
-      have h_neg : (S ℝ ⌊π / θ'⌋₊).eval (2 * cos θ') < 0 := S_eval_two_mul_cos_neg θ'_pos θ'_lt_pi
+      have h_neg : (S ℝ ⌊π / θ'⌋₊).eval (2 * cos θ') < 0 := S_eval_two_mul_cos_neg θ'_pos θ'_le_pi
       have h_pos : 0 ≤ (S ℝ ⌊π / θ'⌋₊).eval (2 * cos θ') := h₃ ⌊π / θ'⌋₊ two_mul_floor_add_two_le
       exact not_lt_of_ge h_pos h_neg
   · show ∀ (i i'), M.M i i' = 0 → 4 ≤ k i i' * k i' i
@@ -398,7 +398,7 @@ instance : CoeFun (CoxeterMatrix.GeneralizedCartanMatrix M R) fun _ ↦ (Matrix 
 @[simp]
 lemma diagonal (i) : k i i = 2 := k.isGeneralizedCartan.diagonal i
 
-lemma k_mul_k_nonneg (i i') : M i i' = 2 → k i i' = 0  := k.isGeneralizedCartan.eq_zero_iff i i'
+lemma k_mul_k_nonneg (i i') : M i i' = 2 → k i i' = 0 := k.isGeneralizedCartan.eq_zero_iff i i'
 
 lemma coxeterMatrix_eq_two (i i') : k i i' = 0 → M i i' = 2 := (k.eq_zero_iff i i').mp
 
