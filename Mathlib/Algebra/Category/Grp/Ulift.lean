@@ -1,6 +1,20 @@
+/-
+Copyright (c) 2024 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
+-/
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+/-!
+This file shows that the functors `Grp.uliftFunctor` and `CommGrp.uliftFunctor`
+(as well as the additive versions) are fully faithful, preserves all limits and
+create small limits.
+
+It also shows that `AddCommGrp.uliftFunctor` preserves zero morphisms and is an additive functor.
+
+-/
 
 universe v w w' u
 
