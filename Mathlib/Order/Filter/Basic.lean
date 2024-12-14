@@ -435,7 +435,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
         exact ⟨c, inter_mem (ha hx) (hb hy)⟩ }
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
   -- Porting note: it was just `congr_arg filter.sets this.symm`
-  (congr_arg Filter.sets this.symm).trans <| by simp only
+  (congr_arg Filter.sets this.symm).trans <| by simp only [u]
 
 theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
