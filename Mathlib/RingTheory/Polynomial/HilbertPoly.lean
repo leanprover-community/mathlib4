@@ -21,10 +21,10 @@ This `h` is unique and is denoted as `Polynomial.hilbertPoly p d`.
 
 For example, given `d : ℕ`, the power series expansion of `1/(1-X)ᵈ⁺¹` in `F[X]`
 is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
-`Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(n + 1)···(n + d)/d!`. Note that
-if `d! = 0` in `F`, then the polynomial `(n + 1)···(n + d)/d!` no longer works, so we do not
-want the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take
-any `p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
+`Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(X + 1)···(X + d)/d!`. Note that
+if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer works, so we do not want
+the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take any
+`p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
 
 ## Main definitions
 
