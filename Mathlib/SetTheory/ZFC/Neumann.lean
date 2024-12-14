@@ -3,6 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.SetTheory.ZFC.Rank
 
@@ -131,5 +132,15 @@ theorem exists_mem_vonNeumann (x : ZFSet) : ∃ o, x ∈ V_ o := by
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
+
+universe u in
+open Cardinal in
+theorem cardinalMk_eq_univ : #ZFSet.{u} = univ.{u,u+1} := by
+  refine le_antisymm ?_ (univ_id ▸ ⟨_, vonNeumann_injective⟩)
+  rw [← mk_univ, ← Class.univ, ← iUnion_vonNeumann]
+  refine (mk_iUnion_le _).trans ((Cardinal.mul_le_max _ _).trans ?_)
+  simp_rw [sup_le_iff, ← univ_id, ciSup_le_iff (bddAbove_range _)]
+  refine ⟨⟨le_rfl, ?_⟩, by simpa using (lift_lt_univ' ℵ₀).le⟩
+  exact fun i ↦ (lift_id _).symm.trans_le (small_iff_lift_mk_lt_univ.mp <| small_toSet _).le
 
 end ZFSet
