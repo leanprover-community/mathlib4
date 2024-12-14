@@ -436,9 +436,9 @@ theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M ×
     Tendsto (fun (x : M × M) ↦ x.1 * x.2) ((𝓝 0).coprod (𝓝 0) ⊓ l) (𝓝 0) := by
   have := calc
     (𝓝 0).coprod (𝓝 0) ⊓ l
-    _ ≤ (𝓝 0).coprod (𝓝 0) ⊓ map Prod.fst l ×ˢ map Prod.snd l            :=
+    _ ≤ (𝓝 0).coprod (𝓝 0) ⊓ map Prod.fst l ×ˢ map Prod.snd l :=
       inf_le_inf_left _ le_prod_map_fst_snd
-    _ ≤ 𝓝 0 ×ˢ map Prod.snd l ⊔ map Prod.fst l ×ˢ 𝓝 0                    :=
+    _ ≤ 𝓝 0 ×ˢ map Prod.snd l ⊔ map Prod.fst l ×ˢ 𝓝 0 :=
       Filter.coprod_inf_prod_le _ _ _ _
   apply (Tendsto.sup _ _).mono_left this
   · apply tendsto_mul_nhds_zero_prod_of_disjoint_cocompact
