@@ -288,6 +288,23 @@ theorem deriv_cpow_const (hf : DifferentiableAt ℂ f x) (hx : f x ∈ Complex.s
     deriv (fun (x : ℂ) ↦ f x ^ c) x = c * f x ^ (c - 1) * deriv f x :=
   (hf.hasDerivAt.cpow_const hx).deriv
 
+theorem isTheta_deriv_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
+    deriv (fun (x : ℝ) => (x : ℂ) ^ c) =Θ[atTop] fun x => x ^ (c.re - 1) := by
+  calc
+    _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
+      filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_cpow_const' hx hc]
+    _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
+      (Asymptotics.isTheta_of_norm_eventuallyEq' (Eq.eventuallyEq rfl)).const_mul_left hc
+    _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
+      filter_upwards [eventually_gt_atTop 0] with x hx
+      rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
+
+theorem isBigO_deriv_cpow_const_atTop (c : ℂ) :
+    deriv (fun (x : ℝ) => (x : ℂ) ^ c) =O[atTop] fun x => x ^ (c.re - 1) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  · exact (isTheta_deriv_cpow_const_atTop hc).1
+
 end deriv
 
 namespace Real
