@@ -242,8 +242,8 @@ linearly disjoint, then `A ⊗[R] B` is also a domain. -/
 theorem isDomain [IsDomain S] : IsDomain (A ⊗[R] B) :=
   H.injective.isDomain (A.mulMap B).toRingHom
 
-/-- If `A` and `B` are `R`-algebras, such that there exists a domain `S` such that
-`A` and `B` inject into it and their images are linearly disjoint,
+/-- If `A` and `B` are `R`-algebras, such that there exists a domain `S` over `R`
+such that `A` and `B` inject into it and their images are linearly disjoint,
 then `A ⊗[R] B` is also a domain. -/
 theorem isDomain_of_injective [IsDomain S] {A B : Type*} [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] {fa : A →ₐ[R] S} {fb : B →ₐ[R] S}
@@ -496,8 +496,8 @@ theorem include_range_of_injective (A : Type v) [CommRing A] (B : Type w) [CommR
 
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that `A ⊗[R] B` is a domain, and such that
-the algebra maps are injective, then there exists a field `K` such that `A` and `B`
-inject into `K`, and their images are linearly disjoint. Note: `K` can chosen to be the
+the algebra maps are injective, then there exists an `R`-algebra `K` that is a field that `A`
+and `B` inject into with linearly disjoint images. Note: `K` can chosen to be the
 fraction field of `A ⊗[R] B`, but here we hide this fact. -/
 theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
     [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B] [IsDomain (A ⊗[R] B)]
@@ -523,8 +523,8 @@ theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
   letI : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
   exact RingHom.injective _
 
-/-- If `A ⊗[R] B` is a field, then for any
-ring `S` and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
+/-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
+and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
 theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
     [Algebra R A] [Algebra R B] (H : IsField (A ⊗[R] B))
     (fa : A →ₐ[R] S) (fb : B →ₐ[R] S) (hfa : Function.Injective fa) (hfb : Function.Injective fb) :
