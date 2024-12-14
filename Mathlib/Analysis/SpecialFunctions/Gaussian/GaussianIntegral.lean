@@ -359,8 +359,17 @@ values of the gamma function in terms of `Nat.doubleFactorial`. -/
 lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
     Gamma (k + 1 + 1 / 2) = (2 * k + 1 : ℕ)‼ * √π / (2 ^ (k + 1)) := by
   induction k with
-  | zero => simp [- one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
+  | zero => simp [-one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
   | succ k ih =>
     rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih]
     field_simp
     ring
+
+open scoped Nat in
+/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k))` for half-integer
+values of the gamma function in terms of `Nat.doubleFactorial`. -/
+lemma Real.Gamma_nat_add_half (k : ℕ) :
+    Gamma (k + 1 / 2) = (2 * k - 1 : ℕ)‼ * √π / (2 ^ k) := by
+  cases k with
+  | zero => simp [- one_div, Gamma_one_half_eq]
+  | succ k => simpa [-one_div, mul_add] using Gamma_nat_add_one_add_half k
