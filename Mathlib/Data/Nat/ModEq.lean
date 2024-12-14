@@ -244,8 +244,8 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
     rw [Int.mul_sub]
     exact modEq_iff_dvd.mp h
   · show Int.gcd (m / d) (c / d) = 1
-    simp only [← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d), gcd_div hmd hcd,
-      Nat.div_self (gcd_pos_of_pos_left c hm)]
+    simp only [d, ← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d),
+      gcd_div hmd hcd, Nat.div_self (gcd_pos_of_pos_left c hm)]
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
 lemma cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m / gcd m c] := by

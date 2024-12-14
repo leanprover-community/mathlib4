@@ -91,7 +91,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
         RightExtension.coneAt_pt, RightExtension.mk_left, RightExtension.coneAt_π_app,
         const_obj_obj, op_obj, StructuredArrow.mk_hom_eq_self, map_id, whiskeringLeft_obj_obj,
         RightExtension.mk_hom, Category.id_comp, StructuredArrow.mk_left, unop_id] at this
-      simp only [id_obj, yoneda_map_app, this]
+      simp only [c, id_obj, yoneda_map_app, this]
       apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (𝟙 (G.obj U))⟩ _ _ fun I ↦ ?_
       apply (Y.2 X _ (IsDenseSubsite.equalizer_mem J K G (l _ _ _ _ _ I.hf)
         I.f (by simp [hl]))).isSeparatedFor.ext fun V iUV (hiUV : _ = _) ↦ ?_

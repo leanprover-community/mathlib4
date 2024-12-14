@@ -238,7 +238,7 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
     ring
 
 @[simp]
-theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = (n + 1) * n.negOnePow := by
+theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
   | one => simp; norm_num
@@ -454,7 +454,7 @@ theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_
 theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
   simpa [sub_eq_add_neg, add_comm] using S_neg R (n + 2)
 
-@[simp]
+  @[simp]
 theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -470,7 +470,7 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
     ring
 
 @[simp]
-theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = (n + 1) * n.negOnePow := by
+theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
   | one => simp; norm_num

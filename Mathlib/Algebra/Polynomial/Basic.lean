@@ -346,6 +346,13 @@ def toFinsuppIso : R[X] ≃+* R[ℕ] where
 instance [DecidableEq R] : DecidableEq R[X] :=
   @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.instDecidableEq)
 
+/-- Linear isomorphism between `R[X]` and `R[ℕ]`. This is just an
+implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
+@[simps!]
+def toFinsuppIsoLinear : R[X] ≃ₗ[R] R[ℕ] where
+  __ := toFinsuppIso R
+  map_smul' _ _ := rfl
+
 end AddMonoidAlgebra
 
 theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[ℕ]) :
