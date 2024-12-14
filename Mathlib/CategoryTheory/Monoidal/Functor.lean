@@ -1097,6 +1097,7 @@ variable (C D)
 structure in `CategoryTheory.Monoidal.NaturalTransformation`. -/
 structure LaxMonoidalFunctor extends C ⥤ D where
   laxMonoidal : toFunctor.LaxMonoidal := by infer_instance
+
 namespace LaxMonoidalFunctor
 
 attribute [instance] laxMonoidal
