@@ -250,13 +250,13 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     apply cons
 
 @[simp]
-theorem noConfusion {x : α} {s : Seq α} : (cons x s) ≠ .nil := by
+theorem cons_ne_nil {x : α} {s : Seq α} : (cons x s) ≠ .nil := by
   intro h
   apply_fun head at h
   simp at h
 
 @[simp]
-theorem noConfusion_symm {x : α} {s : Seq α} : .nil ≠ (cons x s) := noConfusion.symm
+theorem nil_ne_cons {x : α} {s : Seq α} : .nil ≠ (cons x s) := cons_ne_nil.symm
 
 theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
     (cons x s = cons x' s') ↔ (x = x' ∧ s = s') := by
@@ -267,7 +267,7 @@ theorem cons_eq_cons {x x' : α} {s s' : Seq α} :
       simpa using h
     · apply_fun tail at h
       simpa using h
-  · intro ⟨hx, hs⟩
+  · intro ⟨_, _⟩
     congr
 
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
@@ -545,8 +545,6 @@ def drop (s : Seq α) : ℕ → Seq α
   | 0 => s
   | n + 1 => tail (drop s n)
 
--- attribute [simp] drop
-
 /-- Take the first `n` elements of the sequence (producing a list) -/
 def take : ℕ → Seq α → List α
   | 0, _ => []
@@ -566,7 +564,7 @@ def splitAt : ℕ → Seq α → List α × Seq α
       let (l, r) := splitAt n s'
       (List.cons x l, r)
 
-/-- Folds a sequence using `f`, producing sequence of intermedieate values, i.e.
+/-- Folds a sequence using `f`, producing a sequence of intermediate values, i.e.
 `[init, f init s.head, f (f init s.head) s.tail.head, ...]`. -/
 def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
   let f : β × Seq α → Option (β × (β × Seq α)) := fun (acc, x) =>
