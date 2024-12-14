@@ -106,7 +106,7 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
-  exact (p.changeOriginSeries k l).le_of_opNNNorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
+  exact (p.changeOriginSeries k l).le_of_opNNNorm_le (p.nnnorm_changeOriginSeries_le_tsum _ _) _
 
 /-- Changing the origin of a formal multilinear series `p`, so that
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense.
@@ -231,6 +231,14 @@ theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
   apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
   apply mul_le_of_le_one_left (norm_nonneg  _)
   exact ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
+
+theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0 := by
+  suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
+  apply Finset.sum_eq_zero (fun s hs ↦ ?_)
+  ext v
+  have : p (1 + n) = 0 := p.congr_zero (by abel) hp
+  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.curryFinFinset_apply,
+    ContinuousMultilinearMap.zero_apply, this]
 
 end
 

@@ -51,14 +51,7 @@ theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p 
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
   revert h_two h_three hp
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
-  match p with
-  | 0 => decide
-  | 1 => decide
-  | 2 => decide
-  | 3 => decide
-  | 4 => decide
-  | n + 5 => exact (h.not_le <| le_add_left ..).elim
+  decide +revert
 
 end
 
@@ -223,8 +216,8 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
   | 1 => by simp [Nat.not_prime_one]
   | n + 2 => by
     let a := n + 2
-    let ha : a ≠ 1 := Nat.succ_succ_ne_one n
-    simp only [true_iff, Ne, not_false_iff, ha]
+    have ha : a ≠ 1 := Nat.succ_succ_ne_one n
+    simp only [a, true_iff, Ne, not_false_iff, ha]
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
 
 theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Prime → ¬p ∣ n := by

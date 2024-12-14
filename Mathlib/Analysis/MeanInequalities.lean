@@ -135,7 +135,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
   -- for `exp` and numbers `log (z i)` with weights `w i`.
   · simp only [not_exists, not_and, Ne, Classical.not_not] at A
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
-    simp only [exp_sum, (· ∘ ·), smul_eq_mul, mul_comm (w _) (log _)] at this
+    simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
     convert this using 1 <;> [apply prod_congr rfl;apply sum_congr rfl] <;> intro i hi
     · cases' eq_or_lt_of_le (hz i hi) with hz hz
       · simp [A i hi hz.symm]
@@ -144,7 +144,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       · simp [A i hi hz.symm]
       · rw [exp_log hz]
 
-/-- **AM-GM inequality**: The **geometric mean is less than or equal to the arithmetic mean. --/
+/-- **AM-GM inequality**: The **geometric mean is less than or equal to the arithmetic mean. -/
 theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
     (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹  ≤  (∑ i ∈ s, w i * z i) / (∑ i ∈ s, w i) := by
@@ -189,6 +189,82 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i := by
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
+
+/-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
+*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
+theorem geom_mean_eq_arith_mean_weighted_iff' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
+  by_cases A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
+  · rcases A with ⟨i, his, hzi, hwi⟩
+    rw [prod_eq_zero his]
+    · constructor
+      · intro h
+        rw [← h]
+        intro j hj
+        apply eq_zero_of_ne_zero_of_mul_left_eq_zero (ne_of_lt (hw j hj)).symm
+        apply (sum_eq_zero_iff_of_nonneg ?_).mp h.symm j hj
+        exact fun i hi => (mul_nonneg_iff_of_pos_left (hw i hi)).mpr (hz i hi)
+      · intro h
+        convert h i his
+        exact hzi.symm
+    · rw [hzi]
+      exact zero_rpow hwi
+  · simp only [not_exists, not_and] at A
+    have hz' := fun i h => lt_of_le_of_ne (hz i h) (fun a => (A i h a.symm) (ne_of_gt (hw i h)))
+    have := strictConvexOn_exp.map_sum_eq_iff hw hw' fun i _ => Set.mem_univ <| log (z i)
+    simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
+    convert this using 1
+    · apply Eq.congr <;>
+      [apply prod_congr rfl; apply sum_congr rfl] <;>
+      intro i hi <;>
+      simp only [exp_mul, exp_log (hz' i hi)]
+    · constructor <;> intro h j hj
+      · rw [← arith_mean_weighted_of_constant s w _ (log (z j)) hw' fun i _ => congrFun rfl]
+        apply sum_congr rfl
+        intro x hx
+        simp only [mul_comm, h j hj, h x hx]
+      · rw [← arith_mean_weighted_of_constant s w _ (z j) hw' fun i _ => congrFun rfl]
+        apply sum_congr rfl
+        intro x hx
+        simp only [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
+
+/-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
+weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
+theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
+  have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by apply left_ne_zero_of_mul
+  have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by
+    by_contra!
+    obtain ⟨h1, h2⟩ := this
+    simp only [h2, rpow_zero, ne_self_iff_false] at h1
+  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
+  · simp
+  · simp +contextual [(hw _ _).gt_iff_ne]
+  · rwa [sum_filter_ne_zero]
+  · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, and_imp, implies_true, mem_filter]
+
+/-- **AM-GM inequality - strict inequality condition**: This theorem provides the strict inequality
+condition for the *positive* weighted version of the AM-GM inequality for real-valued nonnegative
+functions. -/
+theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k:= by
+  constructor
+  · intro h
+    by_contra! h_contra
+    rw [(geom_mean_eq_arith_mean_weighted_iff' s w z hw hw' hz).mpr ?_] at h
+    · exact (lt_self_iff_false _).mp h
+    · intro j hjs
+      rw [← arith_mean_weighted_of_constant s w (fun _ => z j) (z j) hw' fun _ _ => congrFun rfl]
+      apply sum_congr rfl (fun x a => congrArg (HMul.hMul (w x)) (h_contra j hjs x a))
+  · rintro ⟨j, hjs, k, hks, hzjk⟩
+    have := geom_mean_le_arith_mean_weighted s w z (fun i a => le_of_lt (hw i a)) hw' hz
+    by_contra! h
+    apply le_antisymm this at h
+    apply (geom_mean_eq_arith_mean_weighted_iff' s w z hw hw' hz).mp at h
+    simp only [h j hjs, h k hks, ne_eq, not_true_eq_false] at hzjk
 
 end Real
 
@@ -282,7 +358,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     · rw [Real.inv_rpow]; apply fun i hi ↦ le_of_lt (hz i hi); assumption
 
 
-/-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. --/
+/-- **HM-GM inequality**: The **harmonic mean is less than or equal to the geometric mean. -/
 theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i in s, w i) / (∑ i in s, w i / z i) ≤ (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹ := by

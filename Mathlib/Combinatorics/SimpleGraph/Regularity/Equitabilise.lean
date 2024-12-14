@@ -89,7 +89,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
     · exact fun x hx => (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
-    simp_rw [extend_parts, filter_insert, htn, m.succ_ne_self.symm.ite_eq_right_iff]
+    simp_rw [extend_parts, filter_insert, htn, n, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]

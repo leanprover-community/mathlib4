@@ -95,12 +95,6 @@ def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b =
   le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
 
-instance OrderDual.instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance OrderDual.instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
-
 section SemilatticeSup
 
 variable [SemilatticeSup α] {a b c d : α}

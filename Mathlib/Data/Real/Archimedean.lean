@@ -14,6 +14,8 @@ import Mathlib.Order.Interval.Set.Disjoint
 
 -/
 
+assert_not_exists Finset
+
 open scoped Classical
 open Pointwise CauSeq
 
