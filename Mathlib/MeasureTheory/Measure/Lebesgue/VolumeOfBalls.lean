@@ -3,11 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Pi
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
 # Volume of balls
@@ -314,13 +314,13 @@ theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
 
 end LpSpace
 
-section EuclideanSpace
+namespace EuclideanSpace
 
 variable (ι : Type*) [Nonempty ι] [Fintype ι]
 
 open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal
 
-theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
+theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ card ι *
       .ofReal (Real.sqrt π ^ card ι / Gamma (card ι / 2 + 1)) := by
   obtain hr | hr := le_total r 0
@@ -329,15 +329,15 @@ theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ ι) 1) =
         .ofReal (Real.sqrt π ^ card ι / Gamma (card ι / 2 + 1)) by
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
-    rw [← ((EuclideanSpace.volume_preserving_measurableEquiv _).symm).measure_preimage
+    rw [← ((volume_preserving_measurableEquiv _).symm).measure_preimage
       measurableSet_ball.nullMeasurableSet]
     convert (volume_sum_rpow_lt_one ι one_le_two) using 4
-    · simp_rw [EuclideanSpace.ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
+    · simp_rw [ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
         Set.setOf_app_iff]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
-theorem EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
+theorem volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ card ι *
       .ofReal (sqrt π ^ card ι / Gamma (card ι / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, EuclideanSpace.volume_ball]
@@ -349,14 +349,19 @@ alias Euclidean_space.volume_closedBall := EuclideanSpace.volume_closedBall
 
 end EuclideanSpace
 
-section InnerProductSpace
+namespace InnerProductSpace
 
-open MeasureTheory MeasureTheory.Measure ENNReal Real Module
+open scoped Nat
+open MeasureTheory MeasureTheory.Measure ENNReal Real Module Metric
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E] [Nontrivial E]
+  [MeasurableSpace E] [BorelSpace E]
 
-theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
+section Nontrivial
+
+variable [Nontrivial E]
+
+theorem volume_ball (x : E) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
   rw [← ((stdOrthonormalBasis ℝ E).measurePreserving_repr_symm).measure_preimage
@@ -367,12 +372,69 @@ theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
   convert this
   simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, _root_.map_zero]
 
-theorem InnerProductSpace.volume_closedBall (x : E) (r : ℝ) :
+theorem volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
   rw [addHaar_closedBall_eq_addHaar_ball, InnerProductSpace.volume_ball _]
 
+lemma volume_ball_of_dim_even {k : ℕ} (hk : finrank ℝ E = 2 * k) (x : E) (r : ℝ) :
+    volume (ball x r) = .ofReal r ^ finrank ℝ E * .ofReal (π ^ k / (k : ℕ)!) := by
+  rw [volume_ball, hk, pow_mul, pow_mul, sq_sqrt pi_nonneg]
+  congr
+  simp [Gamma_nat_eq_factorial]
+
+lemma volume_closedBall_of_dim_even {k : ℕ} (hk : finrank ℝ E = 2 * k) (x : E) (r : ℝ) :
+    volume (closedBall x r) = .ofReal r ^ finrank ℝ E * .ofReal (π ^ k / (k : ℕ)!) := by
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_of_dim_even hk x]
+
+end Nontrivial
+
+lemma volume_ball_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) (r : ℝ) :
+    volume (ball x r) =
+      .ofReal r ^ finrank ℝ E * .ofReal (π ^ k * 2 ^ (k + 1) / (finrank ℝ E : ℕ)‼) := by
+  have : Nontrivial E := Module.nontrivial_of_finrank_pos (R := ℝ) (hk ▸ (2 * k).succ_pos)
+  rw [volume_ball, hk, pow_succ (√π), pow_mul, sq_sqrt pi_nonneg, mul_div_assoc, mul_div_assoc]
+  congr 3
+  simp? [add_div, add_right_comm, -one_div, Gamma_nat_add_one_add_half] says
+    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one, add_div, ne_eq,
+      OfNat.ofNat_ne_zero, not_false_eq_true, mul_div_cancel_left₀, add_right_comm,
+      Gamma_nat_add_one_add_half]
+  field_simp
+  ring
+
+lemma volume_closedBall_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) (r : ℝ) :
+    volume (closedBall x r) =
+      .ofReal r ^ finrank ℝ E * .ofReal (π ^ k * 2 ^ (k + 1) / (finrank ℝ E : ℕ)‼) := by
+  have : Nontrivial E := Module.nontrivial_of_finrank_pos (R := ℝ) (hk ▸ (2 * k).succ_pos)
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_of_dim_odd hk x r]
+
 end InnerProductSpace
+
+namespace EuclideanSpace
+
+open Real MeasureTheory MeasureTheory.Measure ENNReal Metric
+
+@[simp]
+lemma volume_ball_fin_two (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
+    volume (ball x r) = .ofReal r ^ 2 * .ofReal π := by
+  norm_num [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) x]
+
+@[simp]
+lemma volume_closedBall_fin_two (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
+    volume (closedBall x r) = .ofReal r ^ 2 * .ofReal π := by
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_fin_two x r]
+
+@[simp]
+lemma volume_ball_fin_three (x : EuclideanSpace ℝ (Fin 3)) (r : ℝ) :
+    volume (ball x r) = .ofReal r ^ 3 * .ofReal (π * 4 / 3) := by
+  norm_num [InnerProductSpace.volume_ball_of_dim_odd (k := 1) (by simp) x]
+
+@[simp]
+lemma volume_closedBall_fin_three (x : EuclideanSpace ℝ (Fin 3)) (r : ℝ) :
+    volume (closedBall x r) = .ofReal r ^ 3 * .ofReal (π * 4 / 3) := by
+  rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_fin_three x]
+
+end EuclideanSpace
 
 section Complex
 
@@ -381,8 +443,7 @@ open MeasureTheory MeasureTheory.Measure ENNReal
 @[simp]
 theorem Complex.volume_ball (a : ℂ) (r : ℝ) :
     volume (Metric.ball a r) = .ofReal r ^ 2 * NNReal.pi := by
-  rw [InnerProductSpace.volume_ball a r, finrank_real_complex, Nat.cast_ofNat, div_self two_ne_zero,
-    one_add_one_eq_two, Real.Gamma_two, div_one, Real.sq_sqrt (by positivity),
+  simp [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) a,
     ← NNReal.coe_real_pi, ofReal_coe_nnreal]
 
 @[simp]
