@@ -86,15 +86,17 @@ jobs:
         echo "$PRS" | tr ' ' '\n' > prs.txt
         echo "=== prs.txt ====================="
         cat prs.txt
-        MATCHING_BRANCHES=$(git branch -r | grep -f prs.txt)
+        MATCHING_BRANCHES=$(git branch -r | grep -f prs.txt | grep "lean-pr-testing")
         echo "=== MATCHING_BRANCHES ==========="
         echo "$MATCHING_BRANCHES"
+        echo "================================="
 
         # Initialize an empty variable to store branches with relevant diffs
         RELEVANT_BRANCHES=""
 
         # Loop through each matching branch
         for BRANCH in $MATCHING_BRANCHES; do
+            echo " === Testing $BRANCH for relevance."
             # Get the diff filenames
             DIFF_FILES=$(git diff --name-only "origin/nightly-testing...$BRANCH")
             
