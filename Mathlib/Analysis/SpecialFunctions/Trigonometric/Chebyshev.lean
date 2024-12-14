@@ -20,6 +20,8 @@ namespace Polynomial.Chebyshev
 
 open Polynomial
 
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+
 -- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
