@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.GameAdd
 import Mathlib.Order.RelIso.Set
+import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.ZFC.Basic
 
 /-!
@@ -249,10 +250,70 @@ theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
 
 end ZFSet
 
-/-! ### Lean ordinals to ZFC ordinals -/
+/-! ### Type-theoretic ordinals to ZFC ordinals -/
 
 namespace Ordinal
 
-private
+open Set ZFSet
+
+/-- The ZFC ordinal corresponding to a given `Ordinal`, as a `PSet`. -/
+noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
+  ⟨o.toType, fun a ↦ toPSet ((enumIsoToType o).symm a)⟩
+termination_by o
+decreasing_by exact ((enumIsoToType o).symm a).2
+
+@[simp]
+theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.toType := by
+  rw [toPSet]
+  rfl
+
+theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
+  rw [toPSet, PSet.mem_def]
+  simpa using ((enumIsoToType o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+
+/-- The ZFC ordinal corresponding to a given `Ordinal`, as a `ZFSet`. -/
+noncomputable def toZFSet (o : Ordinal.{u}) : ZFSet.{u} :=
+  .mk o.toPSet
+
+@[simp]
+theorem mk_toPSet (o : Ordinal) : .mk o.toPSet = o.toZFSet :=
+  rfl
+
+theorem mem_toZFSet_iff {o : Ordinal} {x : ZFSet} : x ∈ o.toZFSet ↔ ∃ a < o, a.toZFSet = x := by
+  refine Quotient.inductionOn x fun x ↦ ?_
+  rw [toZFSet, mk_eq, ZFSet.mk_mem_iff, mem_toPSet_iff]
+  convert Iff.rfl
+  rw [toZFSet, eq, PSet.Equiv.comm]
+
+@[simp]
+theorem toZFSet_toSet {o : Ordinal} : o.toZFSet.toSet = toZFSet '' Iio o := by
+  ext
+  simp [mem_toZFSet_iff]
+
+private theorem toZFSet_mem_toZFSet_of_lt {a b : Ordinal} (h : a < b) :
+    a.toZFSet ∈ b.toZFSet := by
+  rw [mem_toZFSet_iff]
+  exact ⟨a, h, rfl⟩
+
+private theorem toZFSet_subset_toZFSet_of_le {a b : Ordinal} (h : a ≤ b) :
+    a.toZFSet ⊆ b.toZFSet := by
+  intro x hx
+  obtain ⟨c, hc, rfl⟩ := mem_toZFSet_iff.1 hx
+  exact toZFSet_mem_toZFSet_of_lt (hc.trans_le h)
+
+@[simp]
+theorem toZFSet_mem_toZFSet_iff {a b : Ordinal} : a.toZFSet ∈ b.toZFSet ↔ a < b := by
+  refine ⟨?_, toZFSet_mem_toZFSet_of_lt⟩
+  contrapose!
+  intro h
+  exact not_mem_of_sub
+
+
+theorem isOrdinal_toZFSet {o : Ordinal} : IsOrdinal o.toZFSet := by
+  refine ⟨fun x hx y hy ↦ ?_, @fun x y z hx hy hz ↦ ?_⟩
+  · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
+    obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy
+    apply mem_toZFSet_iff.2
+    e
 
 end Ordinal
