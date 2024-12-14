@@ -791,7 +791,7 @@ theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × 
     (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
   rw [sup'_product_left, Finset.sup'_comm]
 
-/-- Analog of `Finset.isLUB_sup` requiring a nonempty set. -/
+set_option linter.docPrime false in
 theorem isLUB_sup' {α : Type} [SemilatticeSup α] {s : Finset α} (hs : s.Nonempty) :
     IsLUB s (sup' s hs id) :=
   ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
@@ -961,7 +961,7 @@ theorem inf'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × 
     (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ :=
   sup'_product_right (α := αᵒᵈ) h f
 
-/-- Analog of `Finset.isGLB_inf` requiring a nonempty set. -/
+set_option linter.docPrime false in
 theorem isGLB_inf' {α : Type} [SemilatticeInf α] {s : Finset α} (hs : s.Nonempty) :
     IsGLB s (inf' s hs id) :=
   ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' hs id h⟩
