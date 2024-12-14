@@ -61,6 +61,15 @@ noncomputable instance uliftFunctor_preservesLimitsOfSize :
 noncomputable instance uliftFunctor_preservesLimits :
     PreservesLimits uliftFunctor.{v, u} := uliftFunctor_preservesLimitsOfSize
 
+/--
+The universe lift functor on `Grp.{u}` creates `u`-small limits.
+-/
+@[to_additive
+  "The universe lift functor on `AddGrp.{u}` creates `u`-small limits."
+]
+noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
+  CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
+
 end Grp
 
 namespace CommGrp
@@ -116,6 +125,15 @@ noncomputable instance uliftFunctor_preservesLimitsOfSize :
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimits :
     PreservesLimits uliftFunctor.{v, u} := uliftFunctor_preservesLimitsOfSize
+
+/--
+The universe lift functor on `CommGrp.{u}` creates `u`-small limits.
+-/
+@[to_additive
+  "The universe lift functor on `AddCommGrp.{u}` creates `u`-small limits."
+]
+noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
+  CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
 end CommGrp
 
