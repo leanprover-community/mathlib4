@@ -222,7 +222,7 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
     _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
-  exact ⟨by omega, by omega⟩
+  omega
 
 theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
   (isReduced_take_and_drop _ hω _).1
