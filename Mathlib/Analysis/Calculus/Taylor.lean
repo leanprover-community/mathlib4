@@ -233,57 +233,60 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ}
 
 /-- **Taylor's theorem** as a limit. -/
 theorem taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
-    (hs : UniqueDiffOn ℝ s) (hsx₀ : s ∈ 𝓝 x₀) (hf : ContDiffOn ℝ n f s) :
-    Filter.Tendsto (fun x ↦ (f x - taylorWithinEval f n s x₀ x) / (x - x₀) ^ n) (𝓝 x₀) (𝓝 0) := by
+    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
+    Filter.Tendsto (fun x ↦ (f x - taylorWithinEval f n s x₀ x) / (x - x₀) ^ n)
+      (𝓝[s] x₀) (𝓝 0) := by
   induction n generalizing f with
   | zero =>
     simp_rw [taylor_within_zero_eval, pow_zero, div_one]
     rw [tendsto_sub_nhds_zero_iff]
-    exact hf.continuousOn.continuousAt hsx₀
+    exact hf.continuousOn.continuousWithinAt hx₀s
   | succ n h =>
-    refine (tendsto_inf_principal_nhds_iff_of_forall_eq ?_).1 <|
-      HasDerivAt.lhopital_zero_nhds'
-        (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x)
-        (f' := fun x ↦ derivWithin f s x - taylorWithinEval (derivWithin f s) n s x₀ x)
-        (g := fun x ↦ (x - x₀) ^ (n + 1))
-        (g' := fun x ↦ (n + 1 : ℕ) * (x - x₀) ^ n * 1) ?_ ?_ ?_ ?_ ?_ ?_
+    rcases s.eq_singleton_or_nontrivial hx₀s with rfl | hs'
+    · rw [nhdsWithin_singleton]
+      convert tendsto_pure_nhds _ _
+      rw [taylorWithinEval_self, sub_self, zero_div]
+    replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
+    rw [← tendsto_inf_principal_nhds_iff_of_forall_eq (s := {x₀}ᶜ), ← nhdsWithin_inter', ← diff_eq]
+    swap
     · intro x hx
       rw [not_mem_compl_iff, mem_singleton_iff] at hx
       simp [hx]
+    refine HasDerivWithinAt.lhopital_zero_nhdsWithin_convex hs
+      (f' := fun x ↦ derivWithin f s x - taylorWithinEval (derivWithin f s) n s x₀ x)
+      (g' := fun x ↦ (n + 1 : ℕ) * (x - x₀) ^ n * 1) ?_ ?_ ?_ ?_ ?_ ?_
     any_goals
-      rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
-      refine ⟨interior s, ?_, isOpen_interior, mem_interior_iff_mem_nhds.2 hsx₀⟩
-      intro x hsx hxx₀
-    · rw [mem_interior_iff_mem_nhds] at hsx
-      rw [Nat.cast_add, Nat.cast_one] at hf
-      exact hf.differentiableOn le_add_self _ (mem_of_mem_nhds hsx)
-        |>.hasDerivWithinAt.hasDerivAt hsx |>.sub <|
-        hasDerivAt_taylorWithinEval_succ hs (mem_of_mem_nhds hsx₀) ..
-    · exact hasDerivAt_id _ |>.sub_const _ |>.pow _
-    · rw [mem_compl_iff, mem_singleton_iff] at hxx₀
-      apply mul_ne_zero (mul_ne_zero ?_ <| pow_ne_zero _ <| sub_ne_zero_of_ne hxx₀) one_ne_zero
-      · rw [Nat.cast_ne_zero]
-        exact n.add_one_ne_zero
-    all_goals apply Filter.Tendsto.mono_left ?_ nhdsWithin_le_nhds
-    · convert ContinuousAt.tendsto ?_
+      apply eventually_nhdsWithin_of_forall
+      intro x hx
+      rw [mem_diff_singleton] at hx
+    · rw [Nat.cast_add, Nat.cast_one] at hf
+      apply hf.differentiableOn le_add_self _ hx.1 |>.hasDerivWithinAt |>.sub
+        (hasDerivAt_taylorWithinEval_succ hs' hx₀s ..).hasDerivWithinAt |>.mono diff_subset
+    · exact hasDerivWithinAt_id _ _ |>.sub_const _ |>.pow _
+    · apply mul_ne_zero (mul_ne_zero ?_ <| pow_ne_zero _ <| sub_ne_zero_of_ne hx.2) one_ne_zero
+      rw [Nat.cast_ne_zero]
+      exact n.add_one_ne_zero
+    all_goals apply Filter.Tendsto.mono_left ?_ <| nhdsWithin_mono x₀ diff_subset
+    · convert ContinuousWithinAt.tendsto ?_
       · rw [taylorWithinEval_self, sub_self]
-      · apply (hf.continuousOn.continuousAt hsx₀).sub
+      · apply (hf.continuousOn.continuousWithinAt hx₀s).sub
         unfold taylorWithinEval
         simp_rw [← PolynomialModule.eval_equivPolynomial]
-        apply Polynomial.continuousAt
-    · apply Continuous.tendsto'
+        apply Polynomial.continuousWithinAt
+    · apply Filter.Tendsto.mono_left ?_ nhdsWithin_le_nhds
+      apply Continuous.tendsto'
       · continuity
       · rw [sub_self, zero_pow n.add_one_ne_zero]
     · simp_rw [mul_one, div_mul_eq_div_div_swap]
-      convert Filter.Tendsto.div_const (h <| hf.derivWithin hs le_rfl) _
+      convert h (hf.derivWithin hs' le_rfl) |>.div_const _
       rw [zero_div]
 
 /-- **Taylor's theorem** using little-o notation. -/
 theorem taylor_isLittleO {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
-    (hs : UniqueDiffOn ℝ s) (hsx₀ : s ∈ 𝓝 x₀) (hf : ContDiffOn ℝ n f s) :
-    (fun x ↦ f x - taylorWithinEval f n s x₀ x) =o[𝓝 x₀] fun x ↦ (x - x₀) ^ n := by
+    (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
+    (fun x ↦ f x - taylorWithinEval f n s x₀ x) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n := by
   rw [Asymptotics.isLittleO_iff_tendsto]
-  · exact taylor_tendsto hs hsx₀ hf
+  · exact taylor_tendsto hs hx₀s hf
   · intro x hx
     rw [pow_eq_zero_iff', sub_eq_zero] at hx
     rw [hx.1, taylorWithinEval_self, sub_self]
