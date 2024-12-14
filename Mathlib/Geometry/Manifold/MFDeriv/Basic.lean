@@ -700,14 +700,8 @@ protected theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' 
 
 theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f s x 0) :
     mfderivWithin I I' f s x = 0 := by
-  simp only [mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte, writtenInExtChartAt, extChartAt,
-    PartialHomeomorph.extend, PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
-    PartialHomeomorph.toFun_eq_coe, PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
-    ModelWithCorners.toPartialEquiv_coe_symm, Function.comp_apply]
-  simp only [HasMFDerivWithinAt, writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
-    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-    PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
-    ModelWithCorners.toPartialEquiv_coe_symm, Function.comp_apply] at h
+  simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
+  simp only [HasMFDerivWithinAt, mfld_simps] at h
   rw [fderivWithin, if_pos]
   exact h.2
 
