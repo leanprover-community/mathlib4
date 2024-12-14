@@ -16,7 +16,7 @@ If `A` is a (small) category, `Arrow A` is finite iff `FinCategory A` holds.
 
 -/
 
-universe u
+universe v u
 
 namespace CategoryTheory
 
@@ -24,6 +24,15 @@ namespace CategoryTheory
 lemma cardinal_arrow_discrete (S : Type u) :
     Cardinal.mk (Arrow (Discrete S)) = Cardinal.mk S :=
   Cardinal.mk_congr (Arrow.discreteEquiv S)
+
+@[simp]
+lemma cardinal_arrow_op (A : Type u) [Category.{v} A] :
+    Cardinal.mk (Arrow Aᵒᵖ) = Cardinal.mk (Arrow A) :=
+  Cardinal.mk_congr
+    { toFun f := Arrow.mk f.hom.unop
+      invFun g := Arrow.mk g.hom.op
+      left_inv _ := rfl
+      right_inv _ := rfl }
 
 lemma Arrow.finite_iff (A : Type u) [SmallCategory A] :
     Finite (Arrow A) ↔ Nonempty (FinCategory A) := by
