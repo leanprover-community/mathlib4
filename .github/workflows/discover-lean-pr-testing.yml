@@ -124,6 +124,22 @@ jobs:
           echo "branches_exist=true" >> "$GITHUB_ENV"
         fi
 
+    - name: Prepare Zulip message
+      id: zulip-message
+      run: |
+        BRANCHES="${{ steps.find-branches.outputs.branches }}"
+        {
+          printf "msg<<EOF\n"
+          printf "We will need to merge the following branches into \`nightly-testing\`:\n"
+          printf "\`\`\`bash\n"
+          for BRANCH in $BRANCHES; do
+            PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+            printf "scripts/merge-lean-testing-pr.sh %s   # %s\n" "$PR_NUMBER" "$BRANCH"
+          done
+          printf "\`\`\`\n"
+          printf "EOF"
+        } >> "$GITHUB_OUTPUT"
+
     - name: Send message on Zulip
       if: env.branches_exist == 'true'
       uses: zulip/github-actions-zulip/send-message@v1
@@ -135,8 +151,4 @@ jobs:
         type: 'stream'
         topic: 'Mergeable lean testing PRs'
         content: |
-          We will need to merge the following branches into `nightly-testing`:
-
-          ${{ steps.find-branches.outputs.branches }}
-
-          This can be done using the script `scripts/merge-lean-testing-pr.sh`, which takes 1 lean-PR number as argument.
+          ${{ steps.zulip-message.outputs.msg }}

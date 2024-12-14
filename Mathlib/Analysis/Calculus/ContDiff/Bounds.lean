@@ -296,7 +296,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
   | empty =>
     cases n with
     | zero => simp [Sym.eq_nil_of_card_zero]
-    | succ n => simp [iteratedFDerivWithin_succ_const _ _ hs hx]
+    | succ n => simp [iteratedFDerivWithin_succ_const]
   | @insert i u hi IH =>
     conv => lhs; simp only [Finset.prod_insert hi]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hf

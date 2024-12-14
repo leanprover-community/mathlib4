@@ -159,7 +159,7 @@ lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset
 
 @[simp] lemma univ_sups_univ [Fintype α] : (univ : Finset α) ⊻ univ = univ := by simp
 
-lemma filter_sups_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_sups_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by
   simp only [← coe_inj, coe_filter, coe_sups, ← mem_coe, Set.sep_sups_le]
 
@@ -304,7 +304,7 @@ lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset
 
 @[simp] lemma univ_infs_univ [Fintype α] : (univ : Finset α) ⊼ univ = univ := by simp
 
-lemma filter_infs_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_infs_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by
   simp only [← coe_inj, coe_filter, coe_infs, ← mem_coe, Set.sep_infs_le]
 
@@ -388,7 +388,8 @@ end Finset
 section DisjSups
 
 variable [DecidableEq α]
-variable [SemilatticeSup α] [OrderBot α] [@DecidableRel α Disjoint] (s s₁ s₂ t t₁ t₂ u : Finset α)
+variable [SemilatticeSup α] [OrderBot α] [DecidableRel (α := α) Disjoint]
+  (s s₁ s₂ t t₁ t₂ u : Finset α)
 
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
 -/
@@ -486,7 +487,7 @@ open FinsetFamily
 section DistribLattice
 
 variable [DecidableEq α]
-variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
+variable [DistribLattice α] [OrderBot α] [DecidableRel (α := α) Disjoint] (s t u v : Finset α)
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
   refine (associative_of_commutative_of_le inferInstance ?_).assoc

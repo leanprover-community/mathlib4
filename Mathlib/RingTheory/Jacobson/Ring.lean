@@ -306,7 +306,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     obtain ⟨q'', hq''⟩ := isUnit_iff_exists_inv'.1 (IsLocalization.map_units Rₘ (⟨q', hq'⟩ : M))
     refine (hp.symm ▸ this).of_mul_unit φ' p (algebraMap (R[X] ⧸ P) Sₘ (φ q')) q'' ?_
     rw [← φ'.map_one, ← congr_arg φ' hq'', φ'.map_mul, ← φ'.comp_apply]
-    simp only [IsLocalization.map_comp _]
+    simp only [φ', IsLocalization.map_comp _]
     rw [RingHom.comp_apply]
   dsimp at hp
   refine @IsIntegral.of_mem_closure'' Rₘ _ Sₘ _ φ'
@@ -320,7 +320,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
         (pX.map (Ideal.Quotient.mk P')) ?_ M ?_
       · rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
       · use 1
-        simp only [pow_one]
+        simp only [P', pow_one]
     · rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
       -- Porting note: was `refine' hy.symm ▸`
       -- `⟨X - C (algebraMap _ _ ((Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, _⟩`
@@ -330,7 +330,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
       · apply monic_X_sub_C
       · simp only [eval₂_sub, eval₂_X, eval₂_C]
         rw [sub_eq_zero, ← φ'.comp_apply]
-        simp only [IsLocalization.map_comp _]
+        simp only [φ', IsLocalization.map_comp _]
         rfl
   · obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective p'
     rw [← RingHom.comp_apply]
