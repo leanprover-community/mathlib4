@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Presentable.Basic
@@ -27,28 +27,6 @@ namespace CategoryTheory
 
 open Opposite Limits
 
-namespace Limits
-
-namespace Types
-
-namespace FilteredColimit
-
-variable {J : Type u} [Category.{v} J] [IsFiltered J] {F : J ⥤ Type w}
-  (c : Cocone F)
-
-def isColimit_mk (hc₁ : ∀ (x : c.pt), ∃ (j : J) (y : F.obj j), c.ι.app j y = x)
-    (hc₂ : ∀ (j : J) (y₁ y₂ : F.obj j) (hy : c.ι.app j y₁ = c.ι.app j y₂),
-      ∃ (j' : J) (k : j ⟶ j'), F.map k y₁ = F.map k y₂) :
-    IsColimit c := by
-  have : IsFiltered J := inferInstance
-  sorry
-
-end FilteredColimit
-
-end Types
-
-end Limits
-
 variable {C : Type u} [Category.{v} C]
 
 namespace Functor
@@ -67,27 +45,39 @@ variable {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
   {X : J ⥤ C} (cX : Cocone X) (hcX : IsColimit cX)
   (hF : ∀ (k : K), IsColimit ((F.obj k).mapCocone cX))
 
-def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
+noncomputable def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
   have := isFiltered_of_isCardinalDirected J κ
   have := hcX
-  apply Types.FilteredColimit.isColimit_mk
+  apply Types.FilteredColimit.isColimitOf
   · intro x
     obtain ⟨y, hy⟩ := (Types.isLimitEquivSections (hc cX.pt)).symm.surjective x
     have H := fun k ↦ Types.jointly_surjective_of_isColimit (hF k) (y.1 k)
+    dsimp at H
     let j (k : K) : J := (H k).choose
     let z (k : K) : (F.obj k).obj (X.obj (j k)) := (H k).choose_spec.choose
     have hz (k : K) : (F.obj k).map (cX.ι.app (j k)) (z k) = y.1 k :=
       (H k).choose_spec.choose_spec
+    have H' {k k' : K} (φ : k ⟶ k') :=
+      (Types.FilteredColimit.isColimit_eq_iff (ht := hF k')
+         (xi := (F.map φ).app _ (z k)) (xj := z k')).1 (by
+          dsimp
+          simpa only [← FunctorToTypes.naturality, hz] using y.2 φ)
+    dsimp at H'
     have hK' := hasCardinalLT_of_hasCardinalLT_arrow hK
-    have pif := IsCardinalFiltered.max j hK'
     let j₀ : J := IsCardinalFiltered.max j hK'
     let α (k : K) : j k ⟶ j₀ := IsCardinalFiltered.toMax j hK' k
     have j₁ : J := sorry
     have β : j₀ ⟶ j₁ := sorry
+    have hβ {k k'} (φ : k ⟶ k') :
+      (F.obj k').map (X.map β) ((F.obj k').map (X.map (α k)) ((F.map φ).app (X.obj (j k)) (z k))) =
+      (F.obj k').map (X.map β) ((F.obj k').map (X.map (α k')) (z k')) := sorry
     let s : (F ⋙ (evaluation C (Type w')).obj (X.obj j₁)).sections :=
       { val k := (F.obj k).map (X.map (α k ≫ β)) (z k)
         property {k k'} φ := by
-          sorry }
+          dsimp
+          simp only [FunctorToTypes.naturality, Functor.map_comp,
+            types_comp_apply]
+          apply hβ }
     refine ⟨j₁, (Types.isLimitEquivSections (hc (X.obj j₁))).symm s, ?_⟩
     apply (Types.isLimitEquivSections (hc cX.pt)).injective
     rw [← hy, Equiv.apply_symm_apply]
