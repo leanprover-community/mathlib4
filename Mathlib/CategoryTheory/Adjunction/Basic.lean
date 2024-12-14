@@ -101,7 +101,6 @@ To construct adjoints to a given functor, there are constructors `leftAdjointOfE
 
 See <https://stacks.math.columbia.edu/tag/0037>.
 -/
-@[ext]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G

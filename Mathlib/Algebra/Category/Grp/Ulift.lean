@@ -4,7 +4,7 @@ import Mathlib.CategoryTheory.Whiskering
 
 universe v w w' u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace Grp
 
@@ -30,15 +30,25 @@ instance : uliftFunctor.{u, v}.Full where
           (fun _ _ ↦ by simp only [uliftFunctor_obj, coe_of];
                         change (f (_ * _)).down = _; rw [f.map_mul]; rfl)), rfl⟩
 
-def yoneda_comp_uliftFunctor (X : Grp.{u}) :
-    yoneda.obj X ⋙ CategoryTheory.uliftFunctor.{v,u} ≅ Grp.uliftFunctor.{v,u}.op ⋙
-    yoneda.obj (Grp.uliftFunctor.{v,u}.obj X) := sorry
+noncomputable instance {J : Type w} [Category.{w'} J] (K : J ⥤ Grp.{u}) :
+    PreservesLimit K uliftFunctor.{v, u} where
+      preserves {c} lc := by
+        apply ReflectsLimit.reflects (F := forget Grp.{max u v})
+        set e : CategoryTheory.uliftFunctor.{v,u}.mapCone ((forget Grp).mapCone c) ≅
+            (forget Grp).mapCone (uliftFunctor.mapCone c) := Cones.ext (Iso.refl _) (fun _ ↦ rfl)
+        exact IsLimit.ofIsoLimit (Classical.choice (PreservesLimit.preserves
+          (F := CategoryTheory.uliftFunctor) (Classical.choice (PreservesLimit.preserves
+          (F := forget Grp) lc)))) e
 
-/- Doesn't type check (need to apply `uliftFunctor` on `Cᵒᵖ` too).
-def yoneda_comp_uliftFunctor :
-    yoneda.{u} ⋙ ((whiskeringRight (Grp.{u})ᵒᵖ _ _).obj CategoryTheory.uliftFunctor.{v,u}) ≅
-    Grp.uliftFunctor.{u,v} ⋙ yoneda (C := Grp.{u}) := sorry
+/--
+The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
 -/
+noncomputable
+instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
+  preservesLimitsOfShape {J} := {
+    preservesLimit := fun {K} => {
+      preserves := fun {c} hc => by
+        sorry } }
 
 end Grp
 

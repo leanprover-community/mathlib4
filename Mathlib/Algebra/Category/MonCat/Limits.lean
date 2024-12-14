@@ -157,6 +157,46 @@ noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forget_preservesLimitsOfSize.{u, u}
 
+@[to_additive]
+noncomputable instance forget_createsLimit :
+    CreatesLimit F (forget MonCat.{u}) := by
+  apply createsLimitOfReflectsIso
+  intro c lc
+  have : Small.{u} (Functor.sections (F ⋙ forget MonCat)) :=
+    (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk {cone := c, isLimit := lc})
+  refine LiftsToLimit.mk (LiftableCone.mk ?_ ?_) ?_
+  · refine {pt := MonCat.of (Types.Small.limitCone (F ⋙ forget MonCat)).pt, π := ?_}
+    exact NatTrans.mk (limitπMonoidHom F) (MonCat.HasLimits.limitCone F).π.naturality
+  · exact Cones.ext ((Types.isLimitEquivSections lc).trans (equivShrink _)).symm.toIso
+      (fun _ ↦ funext (fun _ ↦ by simp; rfl))
+  · refine IsLimit.ofFaithful (forget MonCat.{u}) (Types.Small.limitConeIsLimit.{v,u} _) ?_ ?_
+    · intro d
+      simp
+      refine {toFun := (Types.Small.limitConeIsLimit.{v,u} _).lift ((forget MonCat).mapCone d),
+              map_one' := ?_, map_mul' := ?_ }
+      · simp; rfl
+      · intro x y
+        simp only [Types.Small.limitConeIsLimit_lift, Functor.comp_obj, Functor.mapCone_pt,
+          Functor.mapCone_π_app, forget_map, map_mul, mul_of]
+        congr
+        simp only [Functor.comp_obj, Equiv.symm_apply_apply]
+        rfl
+    · exact fun _ ↦ rfl
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfShape :
+    CreatesLimitsOfShape J (forget MonCat.{u}) where
+      CreatesLimit := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfSize :
+    CreatesLimitsOfSize.{w,v} (forget MonCat.{u}) where
+      CreatesLimitsOfShape := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimits :
+    CreatesLimits (forget MonCat.{u}) := MonCat.forget_createsLimitsOfSize.{u,u}
+
 end MonCat
 
 open MonCat
@@ -291,5 +331,26 @@ instance _root_.AddCommMonCat.forget_preservesLimits :
 @[to_additive existing]
 instance forget_preservesLimits : PreservesLimits (forget CommMonCat.{u}) :=
   CommMonCat.forget_preservesLimitsOfSize.{u, u}
+
+@[to_additive]
+noncomputable instance forget_createsLimit :
+    CreatesLimit F (forget CommMonCat.{u}) := by
+  set e : forget CommMonCat.{u} ≅ forget₂ CommMonCat.{u} MonCat.{u} ⋙ forget MonCat.{u} :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  exact createsLimitOfNatIso e.symm
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfShape :
+    CreatesLimitsOfShape J (forget MonCat.{u}) where
+      CreatesLimit := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfSize :
+    CreatesLimitsOfSize.{w,v} (forget MonCat.{u}) where
+      CreatesLimitsOfShape := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimits :
+    CreatesLimits (forget MonCat.{u}) := CommMonCat.forget_createsLimitsOfSize.{u,u}
 
 end CommMonCat

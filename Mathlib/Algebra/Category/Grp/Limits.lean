@@ -86,7 +86,13 @@ noncomputable instance Forget₂.createsLimit :
   letI : (forget₂ Grp.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ Grp.{u} MonCat.{u}))
-    fun c' t =>
+    fun c' t => by
+    have : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) := by
+        have : HasLimit (F ⋙ forget₂ Grp MonCat) := HasLimit.mk {cone := c', isLimit := t}
+        apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ Grp MonCat)
+    have : Small.{u} (Functor.sections (F ⋙ forget Grp)) := inferInstanceAs <| Small.{u}
+      (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat))
+    exact
     { liftedCone :=
         { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
           π :=
@@ -135,6 +141,13 @@ lemma hasLimit_iff_small_sections :
   · apply Concrete.small_sections_of_hasLimit
   · intro
     infer_instance
+
+/-- A functor `F : J ⥤ Grp.{u}` has a limit iff `F ⋙ forget Grp` has a limit. -/
+@[to_additive "A functor `F : J ⥤ AddGrp.{u}` has a limit iff
+`F ⋙ forget AddGrp` has a limit."]
+lemma hasLimit_iff_of_forget :
+    HasLimit F ↔ HasLimit (F ⋙ forget Grp) := by
+  rw [hasLimit_iff_small_sections, Types.hasLimit_iff_small_sections]
 
 /-- If `J` is `u`-small, `Grp.{u}` has limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, `AddGrp.{u}` has limits of shape `J`."]
@@ -192,6 +205,29 @@ instance forget_preservesLimitsOfSize :
 @[to_additive]
 instance forget_preservesLimits : PreservesLimits (forget Grp.{u}) :=
   Grp.forget_preservesLimitsOfSize.{u, u}
+
+@[to_additive]
+noncomputable instance forget_createsLimit :
+    CreatesLimit F (forget Grp.{u}) := by
+  have : CreatesLimit F (forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u}) := by
+    exact compCreatesLimit (forget₂ Grp.{u} MonCat.{u}) (forget MonCat.{u})
+  set e : forget Grp.{u} ≅ forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  exact createsLimitOfNatIso e.symm
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfShape :
+    CreatesLimitsOfShape J (forget Grp.{u}) where
+      CreatesLimit := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfSize :
+    CreatesLimitsOfSize.{w,v} (forget Grp.{u}) where
+      CreatesLimitsOfShape := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimits :
+    CreatesLimits (forget Grp.{u}) := Grp.forget_createsLimitsOfSize.{u,u}
 
 end Grp
 
@@ -290,6 +326,13 @@ lemma hasLimit_iff_small_sections :
   · apply Concrete.small_sections_of_hasLimit
   · intro
     infer_instance
+
+/-- A functor `F : J ⥤ CommGrp.{u}` has a limit iff `F ⋙ forget Grp` has a limit. -/
+@[to_additive "A functor `F : J ⥤ AddCommGrp.{u}` has a limit iff
+`F ⋙ forget AddGrp` has a limit."]
+lemma hasLimit_iff_of_forget :
+    HasLimit F ↔ HasLimit (F ⋙ forget CommGrp) := by
+  rw [hasLimit_iff_small_sections, Types.hasLimit_iff_small_sections]
 
 /-- If `J` is `u`-small, `CommGrp.{u}` has limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, `AddCommGrp.{u}` has limits of shape `J`."]
@@ -397,6 +440,28 @@ noncomputable instance _root_.AddCommGrp.forget_preservesLimits :
 @[to_additive existing]
 noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrp.{u}) :=
   CommGrp.forget_preservesLimitsOfSize.{u, u}
+
+@[to_additive]
+noncomputable instance forget_createsLimit :
+    CreatesLimit F (forget CommGrp.{u}) := by
+  set e : forget CommGrp.{u} ≅ forget₂ CommGrp.{u} Grp.{u} ⋙ forget Grp.{u} :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  exact createsLimitOfNatIso e.symm
+
+@[to_additive]
+noncomputable instance forget_cratesLimitsOfShape (J : Type v) [Category.{w} J] :
+    CreatesLimitsOfShape J (forget CommGrp.{u}) where
+      CreatesLimit := inferInstance
+
+@[to_additive,
+  to_additive_relevant_arg 2]
+noncomputable instance forget_createsLimitsOfSize :
+    CreatesLimitsOfSize.{w, v} (forget CommGrp.{u}) where
+      CreatesLimitsOfShape := inferInstance
+
+@[to_additive]
+noncomputable instance forget_createsLimits : CreatesLimits (forget Grp.{u}) :=
+  Grp.forget_createsLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGrp) : HasProduct f := by infer_instance
