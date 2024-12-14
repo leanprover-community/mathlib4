@@ -36,6 +36,10 @@ Primed versions of the three results above are also stated for when the endpoint
 * `summable_mul_of_bigO_atTop`: let `c : ℕ → 𝕜` and `f : ℝ → 𝕜` with `𝕜 = ℝ` or `ℂ`, prove the
   summability of `n ↦ (c n) * (f n)` using Abel's formula under some `bigO` assumptions at infinity.
 
+* `summable_mul_of_bigO_atTop₀`: let `c : ℕ → 𝕜` and `f : ℝ → 𝕜` with `𝕜 = ℝ` or `ℂ`, prove the
+  summability of `n ↦ (c n) * (f n)` using Abel's formula under some `bigO` assumptions at infinity
+  and assuming `c 0 = 0`. This version can be useful to avoid difficulties near zero.
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Abel%27s_summation_formula>
@@ -329,6 +333,47 @@ theorem summable_mul_of_bigO_atTop
         · exact integrableOn_Ici_iff_integrableOn_Ioi.mp <|
             (integrable_norm_iff h_mes.aestronglyMeasurable).mpr <|
               (locallyintegrablemulsum _ le_rfl hf_int).integrableOn_of_isBigO_atTop hg₁ hg₂
+        · filter_upwards with t using norm_nonneg _
+
+theorem summable_mul_of_bigO_atTop₀ (hc : c 0 = 0)
+    (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)
+    (hf_int : IntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici 1))
+    (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
+    {g : ℝ → ℝ}
+    (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
+    (hg₂ : IntegrableAtFilter g atTop) :
+    Summable (fun n : ℕ ↦ f n * c n) := by
+  obtain ⟨C₁, hC₁⟩ := Asymptotics.isBigO_one_nat_atTop_iff.mp h_bdd
+  let C₂ := ∫ t in Set.Ioi 1, ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖
+  refine summable_iff_partial_sums_norm_bounded.mpr ⟨max (C₁ + C₂ + 1) 1, fun n ↦ ?_⟩
+  cases n with
+  | zero => simp only [range_zero, sum_empty, lt_sup_iff, zero_lt_one, or_true]
+  | succ n =>
+      have h_mes : Measurable fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := by
+        refine (measurable_deriv _).mul ?_
+        exact Measurable.comp' (β := ℕ) -- Lean needs this hint for unification
+          (by exact fun (_ : Set ℝ) _ ↦ trivial : Measurable fun n : ℕ ↦ ∑ k ∈ Icc 0 n, ‖c k‖)
+            Nat.measurable_floor
+      rw [Nat.range_eq_Icc_zero_sub_one _ n.add_one_ne_zero, add_tsub_cancel_right]
+      calc
+        _ = ∑ k ∈ Icc 0 n, ‖f k‖ * ‖c k‖ := by simp_rw [norm_mul]
+        _ = ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖ -
+              ∫ t in Set.Ioc 1 ↑n, deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := ?_
+        _ ≤ C₁ - ∫ t in Set.Ioc 1 ↑n, deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := ?_
+        _ ≤ C₁ + ∫ t in Set.Ioc 1 ↑n, ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖ := ?_
+        _ ≤ C₁ + C₂ := ?_
+        _ < C₁ + C₂ + 1 := lt_add_one _
+        _ ≤ max (C₁ + C₂ + 1) 1 := le_max_left _ _
+      · rw [sum_mul_eq_sub_integral_mul₀' (fun n ↦ ‖c n‖) (norm_eq_zero.mpr hc) _
+          (fun _ ht ↦ hf_diff _ ht.1) (hf_int.mono_set Set.Icc_subset_Ici_self)]
+      · refine tsub_le_tsub_right (le_of_eq_of_le (Real.norm_of_nonneg ?_).symm (hC₁ n)) _
+        exact mul_nonneg (norm_nonneg _) (sum_nonneg fun _ _ ↦ norm_nonneg _)
+      · exact add_le_add_left
+          (le_trans (neg_le_abs _) (Real.norm_eq_abs _ ▸ norm_integral_le_integral_norm _)) _
+      · refine add_le_add_left (setIntegral_mono_set ?_ ?_ Set.Ioc_subset_Ioi_self.eventuallyLE) C₁
+        · exact integrableOn_Ici_iff_integrableOn_Ioi.mp <|
+            (integrable_norm_iff h_mes.aestronglyMeasurable).mpr <|
+              (locallyintegrablemulsum _ zero_le_one hf_int).integrableOn_of_isBigO_atTop hg₁ hg₂
         · filter_upwards with t using norm_nonneg _
 
 end summable
