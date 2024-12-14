@@ -68,7 +68,7 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
 
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
-  nsmul_right_injective n hn := smul_right_injective ℤ_[p] hn
+  nsmul_right_injective hn := smul_right_injective ℤ_[p] hn
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
   multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
@@ -367,7 +367,7 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℚ_[p]] C₀(ℕ, E) wh
     · rw [← (hasSum_mahler f).tsum_eq]
       refine (norm_tsum_le _).trans (ciSup_le fun n ↦ ?_)
       refine le_trans (le_of_eq ?_) (BoundedContinuousFunction.norm_coe_le_norm _ n)
-      simp only [ZeroAtInftyContinuousMap.toBCF_toFun, ZeroAtInftyContinuousMap.coe_mk,
+      simp only [ZeroAtInftyContinuousMap.toBCF_apply, ZeroAtInftyContinuousMap.coe_mk,
         norm_mahlerTerm, (hasSum_mahler f).tsum_eq]
 
 lemma mahlerEquiv_apply (f : C(ℤ_[p], E)) : mahlerEquiv E f = fun n ↦ Δ_[1]^[n] f 0 := rfl
