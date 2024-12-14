@@ -14,14 +14,14 @@ import Mathlib.CategoryTheory.Presentable.Basic
 # Colimits of presentable objects
 
 In this file, we show that `κ`-accessible functors (to the category of types)
-are stable under limits indexed by a small category `K` such that
-`Cardinal.mk (Arrow K) < κ`.
+are stable under limits indexed by a category `K` such that
+`HasCardinalLT (Arrow K) κ`.
 In particular, `κ`-presentable objects are stable by colimits indexed
-by a small category `K` such that `Cardinal.mk (Arrow K) < κ`.
+by a category `K` such that `HasCardinalLT (Arrow K) κ`.
 
 -/
 
-universe w w' v u
+universe w w' v' v u' u
 
 namespace CategoryTheory
 
@@ -59,10 +59,10 @@ namespace Limits
 
 section
 
-variable {K : Type w} [SmallCategory K] {F : K ⥤ C ⥤ Type w'}
+variable {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
   (c : Cone F) (hc : ∀ (Y : C), IsLimit (((evaluation _ _).obj Y).mapCone c))
   (κ : Cardinal.{w}) [Fact κ.IsRegular]
-  (hK : Cardinal.mk (Arrow K) < κ)
+  (hK : HasCardinalLT (Arrow K) κ)
   {J : Type w} [SmallCategory J] [IsCardinalFiltered J κ]
   {X : J ⥤ C} (cX : Cocone X) (hcX : IsColimit cX)
   (hF : ∀ (k : K), IsColimit ((F.obj k).mapCocone cX))
@@ -70,9 +70,6 @@ variable {K : Type w} [SmallCategory K] {F : K ⥤ C ⥤ Type w'}
 def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
   have := isFiltered_of_isCardinalDirected J κ
   have := hcX
-  have := hc
-  have := hF
-  have := hK
   apply Types.FilteredColimit.isColimit_mk
   · intro x
     obtain ⟨y, hy⟩ := (Types.isLimitEquivSections (hc cX.pt)).symm.surjective x
@@ -81,10 +78,10 @@ def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
     let z (k : K) : (F.obj k).obj (X.obj (j k)) := (H k).choose_spec.choose
     have hz (k : K) : (F.obj k).map (cX.ι.app (j k)) (z k) = y.1 k :=
       (H k).choose_spec.choose_spec
-    have h : Cardinal.mk (Set.range j) < κ :=
-      lt_of_le_of_lt Cardinal.mk_range_le (lt_of_le_of_lt (cardinal_le_cardinal_arrow K) hK)
-    let j₀ := IsCardinalFiltered.max (Set.range j) h
-    let α (k : K) : j k ⟶ j₀ := IsCardinalFiltered.toMax (Set.range j) h ⟨j k, k, rfl⟩
+    have hK' := hasCardinalLT_of_hasCardinalLT_arrow hK
+    have pif := IsCardinalFiltered.max j hK'
+    let j₀ : J := IsCardinalFiltered.max j hK'
+    let α (k : K) : j k ⟶ j₀ := IsCardinalFiltered.toMax j hK' k
     have j₁ : J := sorry
     have β : j₀ ⟶ j₁ := sorry
     let s : (F ⋙ (evaluation C (Type w')).obj (X.obj j₁)).sections :=
@@ -108,10 +105,10 @@ end Limits
 
 end Accessible
 
-lemma accessible_of_isLimit {K : Type w} [SmallCategory K] {F : K ⥤ C ⥤ Type w'}
+lemma accessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hK : Cardinal.mk (Arrow K) < κ)
-    [HasLimitsOfSize.{w, w} (Type w')]
+    (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape K (Type w')]
     [∀ k, (F.obj k).IsAccessible κ] :
     c.pt.IsAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
@@ -124,17 +121,16 @@ lemma accessible_of_isLimit {K : Type w} [SmallCategory K] {F : K ⥤ C ⥤ Type
 end Functor
 
 lemma isPresentable_of_isColimit
-    {K : Type w} [SmallCategory K] {Y : K ⥤ C}
+    {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hK : Cardinal.mk (Arrow K) < κ)
-    [HasLimitsOfSize.{w, w} (Type v)]
+    (hK : HasCardinalLT (Arrow K) κ)
+    [HasLimitsOfShape Kᵒᵖ (Type v)]
     [∀ k, IsPresentable (Y.obj k) κ] :
     IsPresentable c.pt κ := by
   have : ∀ (k : Kᵒᵖ), ((Y.op ⋙ coyoneda).obj k).IsAccessible κ := fun k ↦ by
     dsimp
     infer_instance
   exact Functor.accessible_of_isLimit
-    (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ
-    (by simpa only [cardinal_arrow_op] using hK)
+    (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
 end CategoryTheory
