@@ -249,7 +249,7 @@ variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ 
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
   [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-  [ConcreteCategory D] [ConcreteCategory E]
+  [HasForget D] [HasForget E]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget D)]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget E)]
   [PreservesLimits (forget D)] [PreservesLimits (forget E)]
@@ -285,12 +285,14 @@ instance : PreservesSheafification J F := by
 end
 
 example {D : Type*} [Category.{max v u} D]
-  [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+  {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+  [ConcreteCategory.{max v u} D FD CD] [PreservesLimits (forget D)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
   [∀ (α β : Type max u v) (fst snd : β → α),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan fst snd) D]
-  [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) := inferInstance
+  [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) := /- inferInstance -/
+    instPreservesSheafification J (forget D)
 
 end GrothendieckTopology
 

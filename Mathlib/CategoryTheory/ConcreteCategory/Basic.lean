@@ -148,12 +148,51 @@ lemma coe_ext {X Y : C} {f g : X ⟶ Y} (h : ⇑(hom f) = ⇑(hom g)) : f = g :=
 lemma ext_apply {X Y : C} {f g : X ⟶ Y} (h : ∀ x, f x = g x) : f = g :=
   hom_ext (DFunLike.ext _ _ h)
 
-instance : HasForget C where
+instance toHasForget : HasForget C where
   forget.obj := carrier
   forget.map f := ⇑(hom f)
   forget_faithful.map_injective h := coe_ext h
 
 end ConcreteCategory
+
+section
+
+variable (C)
+
+/-- Build a coercion to functions out of `HasForget`.
+
+The intended usecase is to provide a `FunLike` instance in `HasForget.toConcreteCategory`.
+See that definition for the considerations in making this an instance.
+-/
+abbrev HasForget.toFunLike [HasForget C] (X Y : C) :
+    FunLike (X ⟶ Y) ((forget C).obj X) ((forget C).obj Y) where
+  coe := (forget C).map
+  coe_injective' _ _ h := Functor.Faithful.map_injective h
+
+attribute [local instance] HasForget.toFunLike
+/-- Build a concrete category out of `HasForget`.
+
+The intended usecase is to prove theorems referencing only `(forget C)`
+and not `(forget C).obj X` nor `(forget C).map f`: those should be written
+as `carrier X` and `ConcreteCategory.hom f` respectively.
+-/
+abbrev HasForget.toConcreteCategory [HasForget C] :
+    ConcreteCategory C (· ⟶ ·) _ where
+  hom f := f
+  ofHom f := f
+  id_apply := congr_fun ((forget C).map_id _)
+  comp_apply _ _ := congr_fun ((forget C).map_comp _ _)
+
+attribute [local instance] HasForget.toConcreteCategory
+
+/-- Check that the new `ConcreteCategory` has the same forgetful functor as we started with. -/
+example [inst : HasForget C] :
+    @forget C _ ((HasForget.toConcreteCategory _).toHasForget) = @forget C _ inst := by
+  with_reducible_and_instances rfl
+
+end
+
+theorem forget_obj (X : C) : (forget C).obj X = carrier X := rfl
 
 @[simp]
 theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl

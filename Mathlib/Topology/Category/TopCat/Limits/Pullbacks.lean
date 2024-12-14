@@ -61,7 +61,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       constructor; swap
       · exact
           { toFun := fun x =>
-              ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using congr_hom S.condition x⟩
             continuous_toFun := by
               apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
               · exact (PullbackCone.fst S)|>.continuous_toFun
@@ -83,8 +83,8 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         apply ContinuousMap.ext; intro x
         apply Subtype.ext
         apply Prod.ext
-        · simpa using ConcreteCategory.congr_hom h₁ x
-        · simpa using ConcreteCategory.congr_hom h₂ x)
+        · simpa using congr_hom h₁ x
+        · simpa using congr_hom h₂ x)
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
 def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -99,7 +99,7 @@ theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     pullback.fst f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
-  ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
+  congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -109,7 +109,7 @@ theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     pullback.snd f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
-  ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_snd f g) x
+  congr_hom (pullbackIsoProdSubtype_inv_snd f g) x
 
 theorem pullbackIsoProdSubtype_hom_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).hom ≫ pullbackFst f g = pullback.fst _ _ := by
@@ -121,13 +121,13 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 
 -- Porting note: why do I need to tell Lean to coerce pullback to a type
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
-    (x : ConcreteCategory.forget.obj (pullback f g)) :
+    (x : (forget _).obj (pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
-        simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
+        simpa using congr_hom pullback.condition x⟩ := by
   apply Subtype.ext; apply Prod.ext
-  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
-    ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
+  exacts [congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
+    congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
 
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).str =
@@ -145,14 +145,13 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    change (_ ≫ _ ≫ f) _ = (_ ≫ _ ≫ g) _ -- new `change` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rw [Set.mem_setOf_eq, ← comp_apply, ← comp_apply]
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
-    change (forget TopCat).map _ _ = _ -- new `change` after https://github.com/leanprover-community/mathlib4/pull/13170
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    erw [← comp_apply, ← comp_apply, limit.lift_π] <;> -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rw [← comp_apply, ← comp_apply, limit.lift_π] <;>
     -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
     aesop_cat
 
@@ -220,14 +219,16 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   erw [← comp_apply, ← comp_apply] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
     simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
-    rw [pullbackFst_apply, hx₁, ← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl,
-        comp_apply (g := g₁)]
+    rw [pullbackFst_apply, hx₁, ← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl]
+    rfl
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [hx₁] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rfl
   · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
     erw [hx₂] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rfl
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
@@ -235,7 +236,7 @@ theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
   constructor
   · rintro ⟨(y : (forget TopCat).obj _), rfl⟩
     use (pullback.snd f g) y
-    exact ConcreteCategory.congr_hom pullback.condition y
+    exact congr_hom pullback.condition y
   · rintro ⟨y, eq⟩
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
     rw [pullbackIsoProdSubtype_inv_fst_apply]
@@ -246,7 +247,7 @@ theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
   constructor
   · rintro ⟨(x : (forget TopCat).obj _), rfl⟩
     use (pullback.fst f g) x
-    exact ConcreteCategory.congr_hom pullback.condition x
+    exact congr_hom pullback.condition x
   · rintro ⟨x, eq⟩
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
     rw [pullbackIsoProdSubtype_inv_snd_apply]
@@ -409,7 +410,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
   constructor
   · rintro ⟨(y : (forget TopCat).obj _), hy, rfl⟩
     exact
-      ⟨(pullback.fst f g) y, hy, ConcreteCategory.congr_hom pullback.condition y⟩
+      ⟨(pullback.fst f g) y, hy, congr_hom pullback.condition y⟩
   · rintro ⟨y, hy, eq⟩
   -- next 5 lines were
   -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩` before https://github.com/leanprover-community/mathlib4/pull/13170
@@ -427,7 +428,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
   · rintro ⟨(y : (forget TopCat).obj _), hy, rfl⟩
     exact
       ⟨(pullback.snd f g) y, hy,
-        (ConcreteCategory.congr_hom pullback.condition y).symm⟩
+        (congr_hom pullback.condition y).symm⟩
   · rintro ⟨y, hy, eq⟩
     -- next 5 lines were
     -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, by simpa, by simp⟩`

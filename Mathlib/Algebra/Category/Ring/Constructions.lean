@@ -283,7 +283,7 @@ def equalizerFork : Fork f g :=
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x :)
+  use ofHom <| s.ι.hom.codRestrict _ fun x => (congr_hom s.condition x :)
   constructor
   · ext
     rfl

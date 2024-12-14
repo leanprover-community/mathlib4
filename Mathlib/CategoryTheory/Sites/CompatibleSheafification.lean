@@ -120,7 +120,8 @@ theorem toSheafify_comp_sheafifyCompIso_inv :
 section
 
 -- We will sheafify `D`-valued presheaves in this section.
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{max v u} D FD CD] [PreservesLimits (forget D)]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 
 @[simp]

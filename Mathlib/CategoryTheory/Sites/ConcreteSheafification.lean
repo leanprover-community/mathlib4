@@ -30,26 +30,24 @@ variable {D : Type w} [Category.{max v u} D]
 
 section
 
-variable [ConcreteCategory.{max v u} D]
-
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{max v u} D FD CD]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
-  { x : ∀ I : S.Arrow, P.obj (op I.Y) //
+  { x : ∀ I : S.Arrow, CD (P.obj (op I.Y)) //
     ∀ I : S.Relation, P.map I.r.g₁.op (x I.fst) = P.map I.r.g₂.op (x I.snd) }
 
 end
 
 namespace Meq
 
-variable [ConcreteCategory.{max v u} D]
-
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{max v u} D FD CD]
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
-    CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
+    CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, CD (P.obj (op I.Y)) :=
   ⟨fun x => x.1⟩
 
 lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
@@ -94,12 +92,12 @@ theorem pullback_refine {Y X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (h : S �
   rfl
 
 /-- Make a term of `Meq P S`. -/
-def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) : Meq P S :=
+def mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : CD (P.obj (op X))) : Meq P S :=
   ⟨fun I => P.map I.f.op x, fun I => by
     dsimp
     simp only [← comp_apply, ← P.map_comp, ← op_comp, I.r.w]⟩
 
-theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) (I : S.Arrow) :
+theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : CD (P.obj (op X))) (I : S.Arrow) :
     mk S x I = P.map I.f.op x :=
   rfl
 
@@ -107,12 +105,12 @@ variable [PreservesLimits (forget D)]
 
 /-- The equivalence between the type associated to `multiequalizer (S.index P)` and `Meq P S`. -/
 noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)] :
-    (multiequalizer (S.index P) : D) ≃ Meq P S :=
+    CD (multiequalizer (S.index P) : D) ≃ Meq P S :=
   Limits.Concrete.multiequalizerEquiv _
 
 @[simp]
 theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
-    (x : (multiequalizer (S.index P) : D)) (I : S.Arrow) :
+    (x : CD (multiequalizer (S.index P) : D)) (I : S.Arrow) :
     equiv P S x I = Multiequalizer.ι (S.index P) I x :=
   rfl
 
@@ -128,10 +126,10 @@ namespace GrothendieckTopology
 
 namespace Plus
 
-variable [ConcreteCategory.{max v u} D]
+section Concrete
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
-
+variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{max v u} D FD CD]
 variable [PreservesLimits (forget D)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
@@ -139,7 +137,7 @@ variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.
 noncomputable section
 
 /-- Make a term of `(J.plusObj P).obj (op X)` from `x : Meq P S`. -/
-def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : (J.plusObj P).obj (op X) :=
+def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : CD ((J.plusObj P).obj (op X)) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
@@ -157,7 +155,7 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   erw [Meq.equiv_symm_eq_apply]
   cases i; rfl
 
-theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) :
+theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : CD (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk S x) := by
   dsimp [mk, toPlus]
   let e : S ⟶ ⊤ := homOfLE (OrderTop.le_top _)
@@ -193,7 +191,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   erw [Meq.equiv_symm_eq_apply]
   simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
-theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
+theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : CD (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := by
   dsimp [mk, toPlus]
   delta Cover.toMultiequalizer
@@ -206,7 +204,7 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
 
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
-theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
+theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : CD ((J.plusObj P).obj (op X))) :
     ∃ (S : J.Cover X) (y : Meq P S), x = mk y := by
   obtain ⟨S, y, h⟩ := Concrete.colimit_exists_rep (J.diagram P X) x
   use S.unop, Meq.equiv _ _ y
@@ -241,7 +239,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
       cases i; rfl
 
 /-- `P⁺` is always separated. -/
-theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj (op X))
+theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : CD ((J.plusObj P).obj (op X)))
     (h : ∀ I : S.Arrow, (J.plusObj P).map I.f.op x = (J.plusObj P).map I.f.op y) : x = y := by
   -- First, we choose representatives for x and y.
   obtain ⟨Sx, x, rfl⟩ := exists_rep x
@@ -288,7 +286,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
 
 theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+      ∀ (X : C) (S : J.Cover X) (x y : CD (P.obj (op X))),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
     (X : C) : Function.Injective ((J.toPlus P).app (op X)) := by
   intro x y h
@@ -307,7 +305,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   The separatedness condition is used to prove compatibility among these local sections of `P`. -/
 def meqOfSep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+      ∀ (X : C) (S : J.Cover X) (x y : CD (P.obj (op X))),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
     (X : C) (S : J.Cover X) (s : Meq (J.plusObj P) S) (T : ∀ I : S.Arrow, J.Cover I.Y)
     (t : ∀ I : S.Arrow, Meq P (T I)) (ht : ∀ I : S.Arrow, s I = mk (t I)) : Meq P (S.bind T) where
@@ -330,10 +328,10 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
 
 theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+      ∀ (X : C) (S : J.Cover X) (x y : CD (P.obj (op X))),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y)
     (X : C) (S : J.Cover X) (s : Meq (J.plusObj P) S) :
-    ∃ t : (J.plusObj P).obj (op X), Meq.mk S t = s := by
+    ∃ t : CD ((J.plusObj P).obj (op X)), Meq.mk S t = s := by
   have inj : ∀ X : C, Function.Injective ((J.toPlus P).app (op X)) := inj_of_sep _ hsep
   -- Choose representatives for the given local sections.
   choose T t ht using fun I => exists_rep (s I)
@@ -384,7 +382,7 @@ variable [(forget D).ReflectsIsomorphisms]
 /-- If `P` is separated, then `P⁺` is a sheaf. -/
 theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
-      ∀ (X : C) (S : J.Cover X) (x y : P.obj (op X)),
+      ∀ (X : C) (S : J.Cover X) (x y : CD (P.obj (op X))),
         (∀ I : S.Arrow, P.map I.f.op x = P.map I.f.op y) → x = y) :
     Presheaf.IsSheaf J (J.plusObj P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer]
@@ -398,26 +396,38 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply_fun Meq.equiv _ _ at h
     apply_fun fun e => e I at h
     convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
-  · rintro (x : (multiequalizer (S.index _) : D))
+  · rintro (x : CD (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t
     apply (Meq.equiv _ _).injective
-    rw [← ht]
     ext i
+    erw [← ht, Meq.equiv_apply]
     dsimp
-    erw [← comp_apply]
-    rw [Multiequalizer.lift_ι]
+    rw [← comp_apply, Multiequalizer.lift_ι]
     rfl
 
+end
+
+end Concrete
+
+variable [HasForget.{max v u} D]
+variable [PreservesLimits (forget D)]
+variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+variable [(forget D).ReflectsIsomorphisms]
 variable (J)
 
-/-- `P⁺⁺` is always a sheaf. -/
+/-- `P⁺⁺` is always a sheaf.
+
+The statement does not mention coercions to types/functions, so we write it for `HasForget`.
+-/
 theorem isSheaf_plus_plus (P : Cᵒᵖ ⥤ D) : Presheaf.IsSheaf J (J.plusObj (J.plusObj P)) := by
+  let _ := HasForget.toFunLike D
+  let _ := HasForget.toConcreteCategory D
   apply isSheaf_of_sep
   intro X S x y
   apply sep
-
-end
 
 end Plus
 
@@ -540,8 +550,7 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
 
 end GrothendieckTopology
 
-variable (J)
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable (J) [HasForget.{max v u} D] [PreservesLimits (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]

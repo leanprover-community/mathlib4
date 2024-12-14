@@ -251,7 +251,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
+      ⟨fun p => ⟨p.1.1, p.2.trans (_root_.congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
         fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
     · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
@@ -313,13 +313,13 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         cases' h : s.fst x with val val
         · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
         · apply_fun f at h
-          cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
-            (ConcreteCategory.congr_hom hαY val :).symm
+          cases ((congr_hom s.condition x).symm.trans h).trans
+            (congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => ContinuousMap.ext fun x =>
-          hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+          hl' x (l' x) (congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
@@ -329,14 +329,14 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         intro x
         cases' h : s.fst x with val val
         · apply_fun f at h
-          cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
-            (ConcreteCategory.congr_hom hαX val :).symm
+          cases ((congr_hom s.condition x).symm.trans h).trans
+            (congr_hom hαX val :).symm
         · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩
       delta ExistsUnique at this
       choose l hl hl' using this
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
-          ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+          ContinuousMap.ext fun x => hl' x (l' x) (congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
@@ -477,7 +477,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   change Cofan f at c
   obtain ⟨i⟩ := i
   let e : ∐ f ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
-  { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
+  { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (_root_.congr_arg f h) ≫ coprod.inl else
       Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
     inv := coprod.desc (Sigma.ι f i) (Sigma.desc fun j ↦ Sigma.ι f j)
     hom_inv_id := by aesop_cat

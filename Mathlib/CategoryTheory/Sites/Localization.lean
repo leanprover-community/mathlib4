@@ -30,7 +30,7 @@ abbrev W : MorphismProperty (Cᵒᵖ ⥤ A) := LeftBousfield.W (Presheaf.IsSheaf
 variable (A) in
 lemma W_eq_W_range_sheafToPresheaf_obj :
     J.W = LeftBousfield.W (· ∈ Set.range (sheafToPresheaf J A).obj) := by
-  apply congr_arg
+  apply _root_.congr_arg
   ext P
   constructor
   · intro hP
