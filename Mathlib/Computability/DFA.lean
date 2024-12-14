@@ -260,7 +260,7 @@ private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
   ⟨σ', Fintype.ofEquiv σ f, M.reindex f, hM ▸ DFA.accepts_reindex M f⟩
 
 /--
-A language is regular if and only if is defined by a DFA with finite states.
+A language is regular if and only if it is defined by a DFA with finite states.
 
 This is more general than using the definition of `Language.IsRegular` directly, as the state type
 `σ` is universe-polymorphic.
