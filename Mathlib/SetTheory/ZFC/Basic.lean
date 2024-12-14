@@ -189,8 +189,15 @@ instance : Preorder PSet where
   le_refl := refl_of (· ⊆ ·)
   le_trans _ _ _ := trans_of (· ⊆ ·)
 
+instance : HasSSubset PSet :=
+  ⟨(· < ·)⟩
+
 @[simp]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
@@ -826,8 +833,15 @@ instance : PartialOrder ZFSet where
   le_trans _ _ _ := trans_of (· ⊆ ·)
   le_antisymm _ _ := antisymm_of (· ⊆ ·)
 
+instance : HasSSubset ZFSet :=
+  ⟨(· < ·)⟩
+
 @[simp]
 theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
 
 /-- The empty ZFC set -/
