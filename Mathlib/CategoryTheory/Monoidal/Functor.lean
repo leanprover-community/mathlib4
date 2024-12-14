@@ -1032,11 +1032,6 @@ lemma functor_map_μ_inverse_comp_counitIso_hom_app_tensor (X Y : D) :
       δ e.functor _ _ ≫ (e.counitIso.hom.app X ⊗ e.counitIso.hom.app Y) :=
   e.toAdjunction.map_μ_comp_counit_app_tensor X Y
 
-set_option linter.style.nameCheck false in
-@[deprecated (since := "2024-11-30")]
-alias unitIso_hom_app_tensor_comp_inverse_map_δ_functor__ :=
-unitIso_hom_app_tensor_comp_inverse_map_δ_functor
-
 @[reassoc]
 lemma counitIso_inv_app_comp_functor_map_η_inverse :
     e.counitIso.inv.app (𝟙_ D) ≫ e.functor.map (η e.inverse) = ε e.functor := by
