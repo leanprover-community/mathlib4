@@ -151,13 +151,19 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimit
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
 
+#check uliftFunctor_full
+
+#check uliftFunctor_faithful
+
 instance : AddCommGrp.uliftFunctor.{u, v}.Faithful := by
   refine {map_injective := ?_}
   intro X Y f g
   intro heq
   ext a
   apply_fun (fun h ↦ h {down := a}) at heq
-  simp at heq
+  simp only [AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of, AddCommGrp.uliftFunctor_map,
+    AddEquiv.toAddMonoidHom_eq_coe, AddCommGrp.ofHom_apply, AddMonoidHom.coe_comp,
+    AddMonoidHom.coe_coe, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at heq
   exact heq
 
 instance : PreservesFiniteLimits AddCommGrp.uliftFunctor.{u,v} := sorry
