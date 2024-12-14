@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Order.GameAdd
 import Mathlib.Order.RelIso.Set
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.SetTheory.ZFC.Basic
+import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann ordinals
@@ -181,7 +181,7 @@ theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y)
   · exact hz.mem_trans hx hy
 
 theorem not_mem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
-  refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
+  refine ⟨?_, not_mem_of_subset⟩
   revert hx hy
   apply Sym2.GameAdd.induction mem_wf _ x y
   intros x y IH hx hy hyx z hzy
@@ -233,6 +233,20 @@ theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔
   refine isOrdinal_iff_isTrans.2 ⟨h₁, ?_⟩
   infer_instance
 
+theorem mem_iff_rank_lt {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
+    x ∈ y ↔ rank x < rank y := by
+  refine ⟨rank_lt_of_mem, fun h ↦ ?_⟩
+  rw [← hy.not_subset_iff_mem hx]
+  exact fun h' ↦ (rank_mono h').not_lt h
+
+theorem subset_iff_rank_le {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
+    x ⊆ y ↔ rank x ≤ rank y := by
+  rw [← not_mem_iff_subset hy hx, mem_iff_rank_lt hy hx, not_lt]
+
+theorem rank_inj {x y : ZFSet} (hx : IsOrdinal x) (hy : IsOrdinal y) :
+    rank x = rank y ↔ x = y := by
+  rw [antisymm_iff, le_antisymm_iff, subset_iff_rank_le hx hy, subset_iff_rank_le hy hx]
+
 end IsOrdinal
 
 @[simp]
@@ -271,6 +285,12 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
   rw [toPSet, PSet.mem_def]
   simpa using ((enumIsoToType o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
 
+@[simp]
+theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
+  rw [PSet.rank_def]
+  convert lsub_const
+
+#exit
 /-- The ZFC ordinal corresponding to a given `Ordinal`, as a `ZFSet`. -/
 noncomputable def toZFSet (o : Ordinal.{u}) : ZFSet.{u} :=
   .mk o.toPSet
@@ -306,14 +326,43 @@ theorem toZFSet_mem_toZFSet_iff {a b : Ordinal} : a.toZFSet ∈ b.toZFSet ↔ a 
   refine ⟨?_, toZFSet_mem_toZFSet_of_lt⟩
   contrapose!
   intro h
-  exact not_mem_of_sub
+  exact not_mem_of_subset (toZFSet_subset_toZFSet_of_le h)
 
+@[simp]
+theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔ a ≤ b := by
+  refine ⟨?_, toZFSet_subset_toZFSet_of_le⟩
+  contrapose!
+  intro h
+  exact not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
 
-theorem isOrdinal_toZFSet {o : Ordinal} : IsOrdinal o.toZFSet := by
+theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
   refine ⟨fun x hx y hy ↦ ?_, @fun x y z hx hy hz ↦ ?_⟩
   · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
     obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy
-    apply mem_toZFSet_iff.2
-    e
+    exact toZFSet_mem_toZFSet_iff.2 (hb.trans ha)
+  · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hz
+    obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy
+    obtain ⟨c, hc, rfl⟩ := mem_toZFSet_iff.1 hx
+    exact toZFSet_mem_toZFSet_iff.2 (hc.trans hb)
+
+@[simp]
+theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o := by
+  rw [rank_eq]
+
+    #exit
+
+theorem _root_.ZFSet.IsOrdinal.toZFSet_rank_eq {x : ZFSet} (hx : IsOrdinal x) :
+    x.rank.toZFSet = x := by
+  ext y
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 h
+
+
+#exit
+theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet} : IsOrdinal x ↔ x ∈ range toZFSet := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · sorry
+  · rintro ⟨a, rfl⟩
+    exact isOrdinal_toZFSet a
 
 end Ordinal

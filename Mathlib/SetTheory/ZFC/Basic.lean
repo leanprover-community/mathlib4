@@ -817,8 +817,16 @@ theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ex
 theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
   toSet_injective.eq_iff
 
+theorem eq_of_subset_of_subset {x y : ZFSet} (hx : x ⊆ y) (hy : y ⊆ x) : x = y :=
+  ext fun c => ⟨@hx c, @hy c⟩
+
+theorem antisymm_iff {x y : ZFSet} : x = y ↔ x ⊆ y ∧ y ⊆ x := by
+  refine ⟨?_, fun ⟨hx, hy⟩ ↦ eq_of_subset_of_subset hx hy⟩
+  rintro rfl
+  exact ⟨subset_rfl, subset_rfl⟩
+
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
+  ⟨fun _ _ => eq_of_subset_of_subset⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=

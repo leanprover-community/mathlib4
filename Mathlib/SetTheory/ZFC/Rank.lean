@@ -29,6 +29,9 @@ namespace PSet
 noncomputable def rank : PSet.{u} → Ordinal.{u}
   | ⟨_, A⟩ => lsub fun a => rank (A a)
 
+theorem rank_def : ∀ x : PSet.{u}, rank x = lsub.{u, u} fun a ↦ rank (x.Func a)
+  | ⟨_, _⟩ => rfl
+
 theorem rank_congr : ∀ {x y : PSet}, Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
     lsub_eq_of_range_eq (by
