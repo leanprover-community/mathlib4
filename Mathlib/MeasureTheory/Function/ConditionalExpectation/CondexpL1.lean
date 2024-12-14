@@ -119,10 +119,8 @@ theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
 
 theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     ‖condexpIndL1Fin hm hs hμs x‖ ≤ (μ s).toReal * ‖x‖ := by
-  have : 0 ≤ ∫ a : α, ‖condexpIndL1Fin hm hs hμs x a‖ ∂μ := by positivity
-  rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul, ←
-    ENNReal.toReal_ofReal this,
-    ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
+  rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul,
+    ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
     ofReal_integral_norm_eq_lintegral_nnnorm]
   swap; · rw [← memℒp_one_iff_integrable]; exact Lp.memℒp _
   have h_eq :
@@ -140,8 +138,7 @@ theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
       (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne x =
     condexpIndL1Fin hm hs hμs x + condexpIndL1Fin hm ht hμt x := by
   ext1
-  have hμst :=
-    ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
+  have hμst := measure_union_ne_top hμs hμt
   refine (condexpIndL1Fin_ae_eq_condexpIndSMul hm (hs.union ht) hμst x).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
   have hs_eq := condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x

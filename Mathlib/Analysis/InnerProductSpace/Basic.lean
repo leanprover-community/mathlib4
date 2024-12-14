@@ -1144,6 +1144,14 @@ theorem abs_real_inner_le_norm (x y : F) : |⟪x, y⟫_ℝ| ≤ ‖x‖ * ‖y�
 theorem real_inner_le_norm (x y : F) : ⟪x, y⟫_ℝ ≤ ‖x‖ * ‖y‖ :=
   le_trans (le_abs_self _) (abs_real_inner_le_norm _ _)
 
+lemma inner_eq_zero_of_left {x : E} (y : E) (h : ‖x‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
+  rw [← norm_eq_zero]
+  refine le_antisymm ?_ (by positivity)
+  exact norm_inner_le_norm _ _ |>.trans <| by simp [h]
+
+lemma inner_eq_zero_of_right (x : E) {y : E} (h : ‖y‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
+  rw [inner_eq_zero_symm, inner_eq_zero_of_left _ h]
+
 variable (𝕜)
 
 include 𝕜 in
@@ -1204,7 +1212,7 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     refine le_sqrt_of_sq_le ?_
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
-    exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
+    gcongr⟩
 
 section Complex_Seminormed
 
@@ -1592,9 +1600,7 @@ end ContinuousLinearMap
 
 section
 
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
+variable {ι : Type*} {ι' : Type*} {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 @[simp]
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
@@ -1675,7 +1681,7 @@ open scoped InnerProductSpace
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
+variable {ι : Type*}
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -2180,18 +2186,16 @@ local notation "IK" => @RCLike.I 𝕜 _
 
 local postfix:90 "†" => starRingEnd _
 
-variable {ι : Type*}
-variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
-  {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V) [dec_V : ∀ (i) (x : G i), Decidable (x ≠ 0)]
+variable {ι : Type*} {G : ι → Type*}
 
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the
 pairwise intersections of elements of the family are 0. -/
 theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
-    CompleteLattice.Independent V := by
+    iSupIndep V := by
   classical
-  apply CompleteLattice.independent_of_dfinsupp_lsum_injective
+  apply iSupIndep_of_dfinsupp_lsum_injective
   refine LinearMap.ker_eq_bot.mp ?_
   rw [Submodule.eq_bot_iff]
   intro v hv

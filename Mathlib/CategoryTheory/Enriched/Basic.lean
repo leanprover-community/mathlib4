@@ -297,6 +297,16 @@ def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [Enrich
   obj X := G.obj (F.obj X)
   map _ _ := F.map _ _ ≫ G.map _ _
 
+lemma EnrichedFunctor.ext {C : Type u₁} {D : Type u₂} [EnrichedCategory V C]
+    [EnrichedCategory V D] {F G : EnrichedFunctor V C D} (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : C), F.map X Y ≫ eqToHom (by rw [h_obj, h_obj]) = G.map X Y) : F = G := by
+  match F, G with
+  | mk F_obj F_map _ _, mk G_obj G_map _ _ =>
+    obtain rfl : F_obj = G_obj := funext fun X ↦ h_obj X
+    congr
+    ext X Y
+    simpa using h_map X Y
+
 section
 
 variable {W : Type (v + 1)} [Category.{v} W] [MonoidalCategory W]

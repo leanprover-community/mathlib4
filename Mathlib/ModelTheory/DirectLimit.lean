@@ -441,7 +441,7 @@ end DirectLimit
 section Substructure
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
-variable {M N : Type*} [L.Structure M] [L.Structure N] (S : ι →o L.Substructure M)
+variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
   map_self _ _ := rfl
