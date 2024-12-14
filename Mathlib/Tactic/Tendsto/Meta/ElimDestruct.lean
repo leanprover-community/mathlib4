@@ -37,9 +37,6 @@ theorem inv_const (x : PreMS []) : (PreMS.inv x) = x⁻¹ := rfl
 @[PreMS_const]
 theorem pow_const (x : PreMS []) (a : ℝ) : (PreMS.pow x a) = x^a := rfl
 
-@[PreMS_const]
-theorem npow_const (x : PreMS []) (a : ℕ) : (PreMS.npow x a) = x^a := rfl
-
 end Const
 
 section Destruct
@@ -134,22 +131,6 @@ theorem pow_destruct (ms : PreMS (basis_hd :: basis_tl)) (a : ℝ) : destruct (m
     · simp
   · simp [PreMS.pow]
 
-theorem npow_destruct (ms : PreMS (basis_hd :: basis_tl)) (a : ℕ) : destruct (ms.npow a) =
-    match destruct ms with
-    | none =>
-      if a = 0 then
-        .some ((0, PreMS.const basis_tl 1), @PreMS.nil basis_hd basis_tl)
-      else
-        .none
-    | some ((exp, coef), tl) => destruct <| PreMS.mulMonomial (basis_hd := basis_hd)
-      ((PreMS.npowSeries a).apply (PreMS.mulMonomial tl coef.inv (-exp))) (coef.npow a) (exp * a) := by
-  cases' ms with exp coef tl
-  · simp [PreMS.npow]
-    split_ifs
-    · simp [PreMS.one, const_destruct]
-    · simp
-  · simp [PreMS.npow]
-
 theorem invSeries_destruct : destruct PreMS.invSeries = .some (1, PreMS.invSeries) := by
   conv => lhs; rw [PreMS.invSeries_eq_cons_self]; simp
 
@@ -161,21 +142,6 @@ theorem powSeriesFrom_destruct (x : ℝ) (acc : ℝ) (n : ℕ) : destruct (PreMS
 theorem powSeries_destruct (x : ℝ) : destruct (PreMS.powSeries x) = .some (1, PreMS.powSeriesFrom x x 1) := by
   unfold PreMS.powSeries
   simp [powSeriesFrom_destruct]
-
-theorem npowSeriesFrom_destruct (x : ℕ) (acc : ℝ) (n : ℕ) : destruct (PreMS.npowSeriesFrom x acc n) =
-    if n ≤ x then
-      .some (acc, PreMS.npowSeriesFrom x (acc * (x - n) / (n + 1)) (n + 1))
-    else
-      .none := by
-  split_ifs with h
-  · conv => lhs; rw [PreMS.npowSeriesFrom_eq_cons h]
-    simp
-  · rw [PreMS.npowSeriesFrom_eq_nil (by linarith)]
-    rfl
-
-theorem npowSeries_destruct (n : ℕ) : destruct (PreMS.npowSeries n) = .some (1, PreMS.npowSeriesFrom n n 1) := by
-  unfold PreMS.npowSeries
-  simp [npowSeriesFrom_destruct]
 
 end Destruct
 
@@ -195,8 +161,6 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.invSeries) => simpWith q(invSeries_destruct)
     | ~q(PreMS.powSeriesFrom $x $acc $n) => simpWith q(powSeriesFrom_destruct $x $acc $n)
     | ~q(PreMS.powSeries $x) => simpWith q(powSeries_destruct $x)
-    | ~q(PreMS.npowSeriesFrom $x $acc $n) => simpWith q(npowSeriesFrom_destruct $x $acc $n)
-    | ~q(PreMS.npowSeries $x) => simpWith q(npowSeries_destruct $x)
     | _ => return .continue
   | ~q(PreMS $basis) =>
     let ~q(List.cons $basis_hd $basis_tl) := basis | return .continue
@@ -224,7 +188,6 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.LazySeries.apply $s $ms) => simpWith q(apply_destruct $s $ms)
     | ~q(PreMS.inv $arg) => simpWith q(inv_destruct $arg)
     | ~q(PreMS.pow $arg $exp) => simpWith q(pow_destruct $arg $exp)
-    | ~q(PreMS.npow $arg $exp) => simpWith q(npow_destruct $arg $exp)
     | _ => return .continue
   | _ => return .continue
 

@@ -5,7 +5,6 @@ Authors: Vasily Nesterov
 -/
 import Mathlib.Data.Seq.Seq
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Additional lemmas about `Seq`
@@ -23,24 +22,13 @@ namespace Seq
 universe u v w
 
 @[simp]
-theorem recOn_nil {α : Type u} {motive : Seq α → Sort v} {nil : motive .nil}
-    {cons : (hd : α) → (tl : Seq α) → motive (.cons hd tl)} : Seq.nil.recOn nil cons = nil := by
-  rfl
-
-@[simp]
-theorem recOn_cons {α : Type u} {motive : Seq α → Sort v} {nil : motive .nil}
-    {cons : (hd : α) → (tl : Seq α) → motive (.cons hd tl)} {hd : α} (tl : Seq α) :
-    (Seq.cons hd tl).recOn nil cons = cons hd tl := by
-  rfl
-
-@[simp]
 theorem noConfusion {α : Type u} {hd : α} {tl : Seq α} : (cons hd tl) ≠ .nil := by
   intro h
   apply_fun head at h
   simp at h
 
 @[simp]
-theorem noConfusion' {α : Type u} {hd : α} {tl : Seq α} : .nil ≠ (cons hd tl) := by
+theorem noConfusion_symm {α : Type u} {hd : α} {tl : Seq α} : .nil ≠ (cons hd tl) := by
   symm
   simp
 
@@ -87,7 +75,7 @@ theorem head_eq_none_iff {α : Type u} {li : Seq α} : li.head = none ↔ li = n
   constructor
   · apply head_eq_none
   · intro h
-    simp [h]
+    rw [h, head_nil]
 
 @[simp]
 theorem val_eq_get {α : Type u} (li : Seq α) (n : ℕ) : li.val n = li.get? n := by
@@ -101,7 +89,7 @@ theorem drop_get? {α : Type u} {n m : ℕ} {li : Seq α} : (li.drop n).get? m =
   | zero => simp
   | succ k ih =>
     simp [Seq.get?_tail]
-    rw [show k + 1 + m = k + (m + 1) by ring]
+    rw [show k + 1 + m = k + (m + 1) by omega]
     apply ih
 
 theorem drop_succ_cons {α : Type u} {hd : α} {tl : Seq α} {n : ℕ} :
@@ -152,13 +140,12 @@ theorem take_succ {α : Type u} {n : ℕ} {hd : α} {tl : Seq α} :
     (cons hd tl).take (n + 1) = hd :: tl.take n := by
   rfl
 
-theorem get_mem_take {α : Type u} {li : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
+theorem get?_mem_take {α : Type u} {li : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : li.get? m = .some x) : x ∈ li.take n := by
   induction m generalizing n li with
   | zero =>
     obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
-    rw [← hl]
-    rw [take, head_eq_some h_get]
+    rw [← hl, take, head_eq_some h_get]
     simp
   | succ k ih =>
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
@@ -173,7 +160,7 @@ theorem get_mem_take {α : Type u} {li : Seq α} {m n : ℕ} (h_mn : m < n) {x :
     apply ih (by omega)
     rwa [get?_tail]
 
-theorem take_length_le {α : Type u} {li : Seq α} {n : ℕ} : (li.take n).length ≤ n := by
+theorem length_take_le {α : Type u} {li : Seq α} {n : ℕ} : (li.take n).length ≤ n := by
   induction n generalizing li with
   | zero => simp
   | succ m ih =>
@@ -655,20 +642,21 @@ theorem set_all {α : Type u} {p : α → Prop} {li : Seq α} (h_all : li.All p)
 
 end All
 
-section Sorted
+section Pairwise
 
 -- Note: `irreducible` here is necessary for the same reason as for `All` above
 @[irreducible]
-def Sorted {α : Type u} (r : α → α → Prop) (li : Seq α) : Prop :=
+def Pairwise {α : Type u} (r : α → α → Prop) (li : Seq α) : Prop :=
   ∀ i j x y, i < j → li.get? i = .some x → li.get? j = .some y → r x y
 
-theorem Sorted.nil {α : Type u} {r : α → α → Prop} : Sorted r (.nil (α := α)) := by
-  simp [Sorted]
+theorem Pairwise.nil {α : Type u} {r : α → α → Prop} : Pairwise r (.nil (α := α)) := by
+  simp [Pairwise]
 
-theorem Sorted.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : α} {tl : Seq α}
+-- TODO: add version without `IsTrans`
+theorem Pairwise.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : α} {tl : Seq α}
     (h_lt : tl.head.elim True (r hd ·))
-    (h_tl : Sorted r tl) : Sorted r (.cons hd tl) := by
-  simp [Sorted] at *
+    (h_tl : Pairwise r tl) : Pairwise r (.cons hd tl) := by
+  simp [Pairwise] at *
   intro i j x y h_ij hx hy
   cases j with
   | zero =>
@@ -695,10 +683,11 @@ theorem Sorted.cons {α : Type u} {r : α → α → Prop} [IsTrans _ r] {hd : �
     | succ n =>
       exact h_tl n k x y (by omega) hx hy
 
-theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : Seq α}
+-- TODO: add version without `IsTrans`
+theorem Pairwise.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : Seq α}
     (motive : Seq α → Prop) (h_base : motive li)
     (h_step : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (r hd ·) ∧ motive tl)
-    : Sorted r li := by
+    : Pairwise r li := by
   have h_all : ∀ n, motive (li.drop n) := by
     intro n
     induction n with
@@ -709,7 +698,7 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
       cases' t with hd tl
       · simpa
       · exact (h_step hd tl ih).right
-  simp [Sorted]
+  simp [Pairwise]
   intro i j x y h_ij hx hy
   replace h_ij := Nat.exists_eq_add_of_lt h_ij
   obtain ⟨k, hj⟩ := h_ij
@@ -741,10 +730,10 @@ theorem Sorted.coind {α : Type u} {r : α → α → Prop} [IsTrans _ r] {li : 
     trans hd
     exacts [ih, h_step.left]
 
-theorem Sorted_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : Seq α}
-    (h : Sorted r (.cons hd tl)) :
-    tl.head.elim True (r hd ·) ∧ Sorted r tl := by
-  simp [Sorted] at *
+theorem Pairwise_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : Seq α}
+    (h : Pairwise r (.cons hd tl)) :
+    tl.head.elim True (r hd ·) ∧ Pairwise r tl := by
+  simp [Pairwise] at *
   constructor
   · cases' tl with tl_hd tl_tl
     · simp
@@ -754,40 +743,40 @@ theorem Sorted_cons {α : Type u} {r : α → α → Prop} {hd : α} {tl : Seq �
     specialize h (i + 1) (j + 1)
     simpa using h
 
-theorem Sorted_tail {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Sorted r) :
-    li.tail.Sorted r := by
+theorem Pairwise_tail {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Pairwise r) :
+    li.tail.Pairwise r := by
   cases' li with hd tl
   · simpa
   · simp
-    exact (Sorted_cons h).right
+    exact (Pairwise_cons h).right
 
-theorem Sorted_drop {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Sorted r) {n : ℕ} :
-    (li.drop n).Sorted r := by
+theorem Pairwise_drop {α : Type u} {r : α → α → Prop} {li : Seq α} (h : li.Pairwise r) {n : ℕ} :
+    (li.drop n).Pairwise r := by
   induction n with
   | zero => simpa
   | succ m ih =>
     simp only [drop]
-    exact Sorted_tail ih
+    exact Pairwise_tail ih
 
-end Sorted
+end Pairwise
 
 section AsLong
 
 -- Meaning: if `a` exhausted then `b` too. Or, equivalentelly, `a` is not exhausted before `b`.
-def atLeastAsLongAs {α : Type u} {β : Type v} (a : Seq α) (b : Seq β) : Prop :=
+def AtLeastAsLongAs {α : Type u} {β : Type v} (a : Seq α) (b : Seq β) : Prop :=
   ∀ n, a.TerminatedAt n → b.TerminatedAt n
 
 -- TODO: prove using coinduction
 @[simp]
-theorem atLeastAsLongAs_nil {α : Type u} {β : Type v} {a : Seq α} :
-    a.atLeastAsLongAs (.nil (α := β)) := by
-  unfold atLeastAsLongAs
+theorem AtLeastAsLongAs_nil {α : Type u} {β : Type v} {a : Seq α} :
+    a.AtLeastAsLongAs (.nil (α := β)) := by
+  unfold AtLeastAsLongAs
   simp
 
-theorem atLeastAsLongAs_cons {α : Type u} {β : Type v} {a : Seq α} {hd : β} {tl : Seq β}
-    (h : a.atLeastAsLongAs (cons hd tl)) : ∃ hd' tl', a = cons hd' tl' := by
+theorem AtLeastAsLongAs_cons {α : Type u} {β : Type v} {a : Seq α} {hd : β} {tl : Seq β}
+    (h : a.AtLeastAsLongAs (cons hd tl)) : ∃ hd' tl', a = cons hd' tl' := by
   cases' a with hd' tl'
-  · unfold atLeastAsLongAs at h
+  · unfold AtLeastAsLongAs at h
     simp at h
     specialize h 0
     simp [TerminatedAt] at h
@@ -795,17 +784,17 @@ theorem atLeastAsLongAs_cons {α : Type u} {β : Type v} {a : Seq α} {hd : β} 
     use tl'
 
 @[simp]
-theorem cons_atLeastAsLongAs_cons {α : Type u} {β : Type v} {a_hd : α} {a_tl : Seq α} {b_hd : β}
+theorem cons_AtLeastAsLongAs_cons {α : Type u} {β : Type v} {a_hd : α} {a_tl : Seq α} {b_hd : β}
     {b_tl : Seq β} :
-    (cons a_hd a_tl).atLeastAsLongAs (cons b_hd b_tl) ↔ a_tl.atLeastAsLongAs b_tl := by
+    (cons a_hd a_tl).AtLeastAsLongAs (cons b_hd b_tl) ↔ a_tl.AtLeastAsLongAs b_tl := by
   constructor
   · intro h
-    simp [atLeastAsLongAs] at *
+    simp [AtLeastAsLongAs] at *
     intro n
     specialize h (n + 1)
     simpa using h
   · intro h
-    simp [atLeastAsLongAs] at *
+    simp [AtLeastAsLongAs] at *
     intro n
     cases n with
     | zero => simp
@@ -813,10 +802,10 @@ theorem cons_atLeastAsLongAs_cons {α : Type u} {β : Type v} {a_hd : α} {a_tl 
       specialize h m
       simpa
 
-theorem atLeastAsLongAs_map {α : Type v} {β : Type v} {γ : Type w} {f : β → γ} {a : Seq α}
-    {b : Seq β} (h : a.atLeastAsLongAs b):
-    a.atLeastAsLongAs (b.map f) := by
-  simp [atLeastAsLongAs] at h ⊢
+theorem AtLeastAsLongAs_map {α : Type v} {β : Type v} {γ : Type w} {f : β → γ} {a : Seq α}
+    {b : Seq β} (h : a.AtLeastAsLongAs b):
+    a.AtLeastAsLongAs (b.map f) := by
+  simp [AtLeastAsLongAs] at h ⊢
   intro n ha
   specialize h n ha
   simpa [TerminatedAt] using h
@@ -826,8 +815,8 @@ theorem atLeastAsLong.coind {α : Type u} {β : Type v} {a : Seq α} {b : Seq β
     (motive : Seq α → Seq β → Prop) (h_base : motive a b)
     (h_step : ∀ a b, motive a b →
       (∀ b_hd b_tl, (b = cons b_hd b_tl) → ∃ a_hd a_tl, a = cons a_hd a_tl ∧ motive a_tl b_tl))
-    : a.atLeastAsLongAs b := by
-  simp only [atLeastAsLongAs]
+    : a.AtLeastAsLongAs b := by
+  simp only [AtLeastAsLongAs]
   intro n
   have : b.drop n ≠ .nil → motive (a.drop n) (b.drop n) := by
     intro hb

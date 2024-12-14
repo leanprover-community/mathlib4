@@ -106,7 +106,7 @@ theorem mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_co
   let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun s =>
     ∃ (X : PreMS (basis_hd :: basis_tl)), s = (Seq.map (fun p ↦ Y.mulMonomial p.2 p.1) X) ∧
     X.WellOrdered
-  apply Seq.Sorted.coind motive (r := fun x1 x2 ↦ x1 > x2)
+  apply Seq.Pairwise.coind motive (r := fun x1 x2 ↦ x1 > x2)
   · simp [motive]
     use X
   · intro hd tl ih
@@ -202,7 +202,7 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
           · simp only [motive]
 
 mutual
-  theorem mulMonomial_mulConst_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+  theorem mulMonomial_mulConst_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       {B : PreMS (basis_hd :: basis_tl)} {M_coef : PreMS basis_tl} {M_exp c : ℝ} :
       B.mulMonomial (M_coef.mulConst c) M_exp = (B.mulMonomial M_coef M_exp).mulConst c := by
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
@@ -226,11 +226,11 @@ mutual
       constructor
       · simp [Seq.cons_eq_cons]
         constructor
-        · rw [mul_mulConst]
+        · rw [mul_mulConst_left]
         · exact Eq.refl _
       use B_tl
 
-  theorem mul_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
+  theorem mul_mulConst_left {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
       (X.mulConst c).mul Y = (X.mul Y).mulConst c := by
     cases basis with
     | nil => simp [mul, mulConst]; ring
@@ -259,12 +259,12 @@ mutual
           constructor
           · simp [Seq.cons_eq_cons]
             constructor
-            · rw [mul_mulConst]
+            · rw [mul_mulConst_left]
             · exact Eq.refl _
           use ?_, ?_, ?_
           constructor
           · exact Eq.refl _
-          · rw [add_mulConst, mulMonomial_mulConst_coef]
+          · rw [add_mulConst, mulMonomial_mulConst_left]
         simp only [mulConst_cons, mul_cons_cons]
         rw [add_cons_cons, add_cons_cons]
         split_ifs
@@ -283,29 +283,158 @@ mutual
           constructor
           · simp [Seq.cons_eq_cons]
             constructor
-            · rw [mul_mulConst]
+            · rw [mul_mulConst_left]
             · exact Eq.refl _
           use ?_, ?_, ?_
           constructor
           · rw [← add_assoc]
             exact Eq.refl _
           · rw [add_assoc]
-            rw [add_mulConst, mulMonomial_mulConst_coef]
+            rw [add_mulConst, mulMonomial_mulConst_left]
         · use ?_, ?_, ?_ -- Copypaste
           constructor
           · exact Eq.refl _
           constructor
           · simp [Seq.cons_eq_cons]
             constructor
-            · rw [mul_mulConst]
+            · rw [mul_mulConst_left]
             · exact Eq.refl _
           use ?_, ?_, ?_
           constructor
           · rw [← add_assoc]
             exact Eq.refl _
           · rw [add_assoc]
-            rw [add_mulConst, mulMonomial_mulConst_coef]
+            rw [add_mulConst, mulMonomial_mulConst_left]
 end
+
+#check mul_cons_cons
+
+mutual
+  theorem mulMonomial_mulConst_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+      {B : PreMS (basis_hd :: basis_tl)} {M_coef : PreMS basis_tl} {M_exp c : ℝ} :
+      (B.mulConst c).mulMonomial M_coef M_exp = (B.mulMonomial M_coef M_exp).mulConst c := by
+    -- copypaste from left version
+    let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
+      ∃ (B : PreMS (basis_hd :: basis_tl)),
+        X = (B.mulConst c).mulMonomial M_coef M_exp ∧
+        Y = (B.mulMonomial M_coef M_exp).mulConst c
+    apply Seq.Eq.coind motive
+    · simp only [motive]
+      use B
+    · intro X Y ih
+      simp only [motive] at ih ⊢
+      obtain ⟨B, hX, hY⟩ := ih
+      subst hX hY
+      cases' B with B_exp B_coef B_tl
+      · simp
+      left
+      use ?_, ?_, ?_
+      constructor
+      · simp
+        exact Eq.refl _
+      constructor
+      · simp [Seq.cons_eq_cons]
+        constructor
+        · rw [mul_mulConst_right]
+        · exact Eq.refl _
+      use B_tl
+
+  theorem mul_mulConst_right {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
+      X.mul (Y.mulConst c) = (X.mul Y).mulConst c := by
+    -- Copypaste from left version
+    cases basis with
+    | nil => simp [mul, mulConst]; ring
+    | cons basis_hd basis_tl =>
+      let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun A B =>
+        ∃ (X S : PreMS (basis_hd :: basis_tl)), A = S + X.mul (Y.mulConst c) ∧
+          B = S + (X.mul Y).mulConst c
+      apply Seq.Eq.coind_strong motive
+      · simp only [motive]
+        use X, 0
+        simp
+      · intro A B ih
+        simp only [motive] at ih ⊢
+        obtain ⟨X, S, hA, hB⟩ := ih
+        subst hA hB
+        cases' X with X_exp X_coef X_tl
+        · simp
+        cases' Y with Y_exp Y_coef Y_tl
+        · simp
+        right
+        cases' S with S_exp S_coef S_tl
+        · use ?_, ?_, ?_
+          constructor
+          · simp
+            exact Eq.refl _
+          constructor
+          · simp [Seq.cons_eq_cons]
+            constructor
+            · rw [mul_mulConst_right]
+            · exact Eq.refl _
+          use ?_, ?_
+          constructor
+          · simp
+            exact Eq.refl _
+          · rw [add_mulConst, mulMonomial_mulConst_right]
+        simp only [mulConst_cons, mul_cons_cons]
+        rw [add_cons_cons, add_cons_cons]
+        split_ifs
+        · use ?_, ?_, ?_
+          constructor
+          · exact Eq.refl _
+          constructor
+          · exact Eq.refl _
+          use Seq.cons (X_exp, X_coef) X_tl, S_tl
+          constructor
+          · simp
+          · simp
+        · use ?_, ?_, ?_
+          constructor
+          · exact Eq.refl _
+          constructor
+          · simp [Seq.cons_eq_cons]
+            constructor
+            · rw [mul_mulConst_right]
+            · exact Eq.refl _
+          use ?_, ?_
+          constructor
+          · rw [← add_assoc]
+            exact Eq.refl _
+          · rw [add_assoc]
+            rw [add_mulConst, mulMonomial_mulConst_right]
+        · use ?_, ?_, ?_ -- Copypaste
+          constructor
+          · exact Eq.refl _
+          constructor
+          · simp [Seq.cons_eq_cons]
+            constructor
+            · rw [mul_mulConst_right]
+            · exact Eq.refl _
+          use ?_, ?_
+          constructor
+          · rw [← add_assoc]
+            exact Eq.refl _
+          · rw [add_assoc]
+            rw [add_mulConst, mulMonomial_mulConst_right]
+end
+
+theorem mulMonomial_neg_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {B : PreMS (basis_hd :: basis_tl)} {M_coef : PreMS basis_tl} {M_exp : ℝ} :
+    B.mulMonomial M_coef.neg M_exp = (B.mulMonomial M_coef M_exp).neg := by
+  simp [neg, mulMonomial_mulConst_left]
+
+theorem mul_neg_left {basis : Basis} {X Y : PreMS basis} :
+    X.neg.mul Y = (X.mul Y).neg := by
+  simp [neg, mul_mulConst_left]
+
+theorem mulMonomial_neg_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {B : PreMS (basis_hd :: basis_tl)} {M_coef : PreMS basis_tl} {M_exp : ℝ} :
+    B.neg.mulMonomial M_coef M_exp = (B.mulMonomial M_coef M_exp).neg := by
+  simp [neg, mulMonomial_mulConst_right]
+
+theorem mul_neg_right {basis : Basis} {X Y : PreMS basis} :
+    X.mul Y.neg = (X.mul Y).neg := by
+  simp [neg, mul_mulConst_right]
 
 mutual
   @[simp]

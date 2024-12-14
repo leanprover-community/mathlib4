@@ -34,6 +34,10 @@ theorem FlatZero_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
   have := h.casesOn (motive := motive) (by simp [motive]) (by simp [motive])
   simp [motive] at this
 
+theorem zero_FlatZero {basis : Basis} : FlatZero (zero basis) := by
+  cases basis <;> constructor
+  rfl
+
 /-- Positive constant is not `FlatZero`. -/
 theorem pos_not_FlatZero {x : PreMS []} (h_pos : 0 < x) : ¬ PreMS.FlatZero x := by
   intro h_zero

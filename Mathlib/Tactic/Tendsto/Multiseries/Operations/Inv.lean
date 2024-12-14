@@ -74,6 +74,18 @@ noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
 noncomputable def div {basis : Basis} (X Y : PreMS basis) : PreMS basis :=
   X.mul (Y.inv)
 
+theorem neg_inv_comm {basis : Basis} {ms : PreMS basis} :
+    ms.neg.inv = ms.inv.neg := by
+  cases basis with
+  | nil => simp [neg, inv, mulConst]; ring
+  | cons basis_hd basis_tl =>
+    cases' ms with exp coef tl
+    · simp [inv]
+    · simp [inv]
+      rw [neg_inv_comm, mulMonomial_neg_left]
+      congr 3
+      simp [mulMonomial_neg_left, mulMonomial_neg_right]
+
 theorem inv_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : ms.inv.WellOrdered := by
   cases basis with

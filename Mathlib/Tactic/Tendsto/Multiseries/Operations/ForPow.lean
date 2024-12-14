@@ -5,6 +5,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.RingTheory.Binomial
 
 set_option linter.style.longLine false
 
@@ -67,16 +68,33 @@ universe u v w
 
 noncomputable def binomialCoef (a : ℝ) (n : ℕ) : ℝ := (decreasing_factorial a n) / (n ! : ℝ)
 
+-- noncomputable def lol : BinomialRing ℝ := by infer_instance
+
+-- #print lol
+
+noncomputable def binomialCoef' (a : ℝ) (n : ℕ) : ℝ := Ring.choose a n
+
 @[simp]
 theorem binomialCoef_zero {a : ℝ} : binomialCoef a 0 = 1 := by
   simp [binomialCoef, decreasing_factorial]
 
 @[simp]
+theorem binomialCoef_zero' {a : ℝ} : binomialCoef' a 0 = 1 := by
+  simp [binomialCoef']
+
+@[simp]
 theorem binomialCoef_one {a : ℝ} : binomialCoef a 1 = a := by
   simp [binomialCoef, decreasing_factorial]
 
+@[simp]
+theorem binomialCoef_one' {a : ℝ} : binomialCoef' a 1 = a := by
+  simp [binomialCoef']
+
 noncomputable def binomialSeries (a : ℝ) : FormalMultilinearSeries ℝ ℝ ℝ := fun n =>
   (binomialCoef a n) • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
+
+noncomputable def binomialSeries' (a : ℝ) : FormalMultilinearSeries ℝ ℝ ℝ := fun n =>
+  (binomialCoef' a n) • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
 
 -- variable [NormedAddCommGroup 𝔸] [NormedSpace ℝ 𝔸] [NormedAddCommGroup 𝔸] [NormedSpace ℝ 𝔸]
 
@@ -146,6 +164,73 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
       simpa
   simp only [div_eq_mul_inv] at this ⊢
   apply this
+
+-- theorem binomialSeries_radius_ge_one' {a : ℝ} : 1 ≤ (binomialSeries' a).radius := by
+--   apply le_of_forall_ge_of_dense
+--   intro r hr
+--   cases' r with r <;> simp at hr
+--   by_cases hr_pos : r = 0
+--   · simp [hr_pos]
+--   replace hr_pos : 0 < r := lt_of_le_of_ne (zero_le r) (by solve_by_elim)
+--   apply FormalMultilinearSeries.le_radius_of_isBigO
+--   have : ∃ M : ℕ, |a| * r < M * (1 - r) := by
+--     conv => arg 1; ext M; rw [← div_lt_iff₀ (by simpa)]
+--     apply exists_nat_gt
+--   obtain ⟨M, hM⟩ := this
+--   have : ∀ k, increasing_factorial |a| (M + k) / (M + k).factorial * r^k ≤
+--       increasing_factorial |a| M / M.factorial := by
+--     intro k
+--     induction k with
+--     | zero => simp
+--     | succ l ih =>
+--       simp [increasing_factorial, Nat.factorial, pow_succ] at ih ⊢
+--       convert_to increasing_factorial |a| (M + l) / ↑(M + l)! * ↑r ^ l * (r * (|a| + (↑M + ↑l)) / (↑M + ↑l + 1)) ≤ increasing_factorial |a| M / ↑M !
+--       · simp only [div_eq_mul_inv, mul_inv_rev]
+--         ring_nf
+--       trans
+--       swap
+--       · exact ih
+--       apply mul_le_of_le_one_right
+--       · apply mul_nonneg
+--         · apply div_nonneg
+--           · apply increasing_factorial_nonneg
+--             simp
+--           · simp
+--         · simp
+--       rw [div_le_one (by linarith)]
+--       ring_nf at hM ⊢
+--       have : (r : ℝ) * l ≤ l := by -- for linarith
+--         apply mul_le_of_le_one_left
+--         · simp
+--         · simp
+--           exact hr.le
+--       linarith
+--   apply Asymptotics.IsBigO.of_bound (c := r^M * increasing_factorial |a| M / ↑M.factorial)
+--   simp [binomialSeries']
+--   use M
+--   intro b hb
+--   replace hb := Nat.exists_eq_add_of_le hb
+--   obtain ⟨k, hk⟩ := hb
+--   subst hk
+--   trans ‖binomialCoef' a (M + k)‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin ℝ (M + k) ℝ‖ * ↑r ^ (M + k)
+--   · rw [mul_le_mul_right]
+--     · apply ContinuousMultilinearMap.opNorm_smul_le
+--     · apply pow_pos
+--       simpa
+--   simp [pow_add, div_eq_mul_inv]
+--   move_mul [r.toReal^M, r.toReal^M]
+--   apply mul_le_mul_of_nonneg_right _ (by simp)
+--   simp [binomialCoef', abs_div]
+--   trans increasing_factorial |a| (M + k) * (↑(M + k)!)⁻¹ * ↑r ^ k
+--   · simp only [div_eq_mul_inv]
+--     rw [mul_le_mul_right, mul_le_mul_right]
+--     · exact decreasing_factorial_bound
+--     · simp
+--       linarith [Nat.factorial_pos (M + k)]
+--     · apply pow_pos
+--       simpa
+--   simp only [div_eq_mul_inv] at this ⊢
+--   apply this
 
 open ContinuousLinearMap FormalMultilinearSeries
 

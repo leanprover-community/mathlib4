@@ -16,7 +16,7 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 ## Main definitions
 
 * `WellFormedBasis basis` is a predicate meaning that all function from `basis` tend to `atTop`,
-and `basis` is sorted such that if
+and `basis` is Pairwise such that if
 function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 -/
@@ -26,7 +26,7 @@ open Asymptotics Filter
 namespace TendstoTactic
 
 /-- `WellFormedBasis basis` means that all function from `basis` tend to `atTop`, and
-`basis` is sorted such that if
+`basis` is Pairwise such that if
 function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`. -/
 def WellFormedBasis (basis : Basis) : Prop :=
   basis.Pairwise (fun x y => (Real.log ∘ y) =o[atTop] (Real.log ∘ x)) ∧

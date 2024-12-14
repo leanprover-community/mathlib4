@@ -55,6 +55,20 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
     rw [mul_comm] -- why do I need these rws? Why ring_nf can't solve the goal?
   rw [← mul_assoc]
 
+theorem zero_of_leadingTerm_zero_coef {basis : Basis} {ms : PreMS basis} (h_trimmed : ms.Trimmed)
+    (h : ms.leadingTerm.coef = 0) : ms = zero basis := by
+  cases basis with
+  | nil =>
+    simp [leadingTerm] at h
+    exact h
+  | cons basis_hd basis_tl =>
+    cases' ms with exp coef tl
+    · rfl
+    simp [leadingTerm] at h
+    replace h_trimmed := Trimmed_cons h_trimmed
+    have : coef = zero _ := zero_of_leadingTerm_zero_coef h_trimmed.left h
+    simp [this, zero_FlatZero] at h_trimmed
+
 /-- If `ms` is not flat zero, then eventually `ms.leadingTerm.toFun` is non-zero. -/
 theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
@@ -238,6 +252,7 @@ theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F
 
 --------------------------------
 
+-- TODO: remove assumptions here using `zero_of_leadingTerm_zero_coef`
 theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
     (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates F)

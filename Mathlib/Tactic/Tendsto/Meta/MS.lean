@@ -79,13 +79,20 @@ def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis 
   h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
   h_basis := x.h_basis
 
-
 def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
-  val := q(PreMS.npow $x.val $a)
+  val := q(PreMS.pow $x.val $a)
   F := q($x.F ^ $a)
-  h_wo := q(PreMS.npow_WellOrdered $x.h_wo)
-  h_approx := q(PreMS.npow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_basis := x.h_basis
+
+def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
+  basis := x.basis
+  val := q(PreMS.pow $x.val $a)
+  F := q($x.F ^ $a)
+  h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
 
 def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where

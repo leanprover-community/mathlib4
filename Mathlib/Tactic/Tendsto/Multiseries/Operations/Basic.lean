@@ -5,6 +5,7 @@ Authors: Vasily Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
+import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
 
 /-!
 # Basic operations for multiseries: multiplication by constant and negation
@@ -68,6 +69,28 @@ theorem const_mulConst {basis : Basis} {x y : ℝ} :
     simp [mulConst, const]
     congr
     apply const_mulConst
+
+@[simp]
+theorem mulConst_one {basis : Basis} {ms : PreMS basis} : ms.mulConst 1 = ms := by
+  cases basis with
+  | nil => simp [mulConst]
+  | cons basis_hd basis_tl =>
+    simp [mulConst]
+    convert Seq.map_id _
+    simp
+    apply mulConst_one
+
+@[simp]
+theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
+    (ms.mulConst x).mulConst y = ms.mulConst (x * y) := by
+  cases basis with
+  | nil => simp [mulConst, mul_assoc]
+  | cons =>
+    simp [mulConst, const]
+    simp [← Seq.map_comp]
+    congr
+    ext1
+    simp [mulConst_mulConst]
 
 /-- Multiplication by constant preserves well-orderedness. -/
 theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
@@ -159,21 +182,43 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
           exact hf_eq
         · exact hX_tl
 
-@[simp]
-theorem neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)} :
-    X.neg.leadingExp = X.leadingExp := by
-  simp [neg]
+theorem mulConst_not_FlatZero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ¬ ms.FlatZero)
+    (hc : c ≠ 0) : ¬ (ms.mulConst c).FlatZero := by
+  contrapose! h_ne_zero
+  cases basis with
+  | nil =>
+    simp [mulConst] at h_ne_zero
+    cases' h_ne_zero with _ h_ne_zero
+    constructor
+    · exact eq_zero_of_ne_zero_of_mul_right_eq_zero hc h_ne_zero
+  | cons =>
+    cases' ms with exp coef tl
+    · constructor
+    simp [FlatZero_cons] at h_ne_zero
 
-theorem neg_WellOrdered {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered) : ms.neg.WellOrdered :=
-  mulConst_WellOrdered h_wo
+theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed : ms.Trimmed)
+    (hc : c ≠ 0) :
+    (ms.mulConst c).Trimmed := by
+  cases basis with
+  | nil => constructor
+  | cons basis_hd basis_tl =>
+    cases' ms with exp coef tl
+    · simp
+      constructor
+    simp
+    apply Trimmed_cons at h_trimmed
+    constructor
+    · exact mulConst_Trimmed h_trimmed.left hc
+    · exact mulConst_not_FlatZero h_trimmed.right hc
 
-theorem neg_Approximates {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
-    (h_approx : ms.Approximates F) : ms.neg.Approximates (-F) := by
-  rw [← mul_neg_one]
-  eta_expand
-  simp only [Pi.one_apply, Pi.neg_apply, Pi.mul_apply]
-  apply mulConst_Approximates h_approx
+theorem mulConst_leadingTerm {basis : Basis} {ms : PreMS basis} {c : ℝ} :
+    (ms.mulConst c).leadingTerm = ⟨ms.leadingTerm.coef * c, ms.leadingTerm.exps⟩ := by
+  cases basis with
+  | nil => simp [mulConst, leadingTerm]
+  | cons basis_hd basis_tl =>
+    cases' ms with exp coef tl
+    · simp [leadingTerm]
+    · simp [leadingTerm, mulConst_leadingTerm]
 
 @[simp]
 theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
@@ -186,6 +231,34 @@ theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     neg (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl) =
     Seq.cons (exp, coef.neg) tl.neg := by
   simp [neg]
+
+@[simp]
+theorem neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)} :
+    X.neg.leadingExp = X.leadingExp := by
+  simp [neg]
+
+@[simp]
+theorem neg_neg {basis : Basis} {ms : PreMS basis} : ms.neg.neg = ms := by
+  cases basis <;> simp [neg]
+
+theorem neg_WellOrdered {basis : Basis} {ms : PreMS basis}
+    (h_wo : ms.WellOrdered) : ms.neg.WellOrdered :=
+  mulConst_WellOrdered h_wo
+
+theorem neg_Approximates {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_approx : ms.Approximates F) : ms.neg.Approximates (-F) := by
+  rw [← mul_neg_one]
+  eta_expand
+  simp only [Pi.one_apply, Pi.neg_apply, Pi.mul_apply]
+  apply mulConst_Approximates h_approx
+
+theorem neg_Trimmed {basis : Basis} {ms : PreMS basis} (h_trimmed : ms.Trimmed) :
+    ms.neg.Trimmed :=
+  mulConst_Trimmed h_trimmed (by simp)
+
+theorem neg_leadingTerm {basis : Basis} {ms : PreMS basis} :
+    ms.neg.leadingTerm = ⟨-ms.leadingTerm.coef, ms.leadingTerm.exps⟩ := by
+  simp [neg, mulConst_leadingTerm]
 
 end PreMS
 

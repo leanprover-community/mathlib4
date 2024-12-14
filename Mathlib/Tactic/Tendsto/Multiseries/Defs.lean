@@ -16,7 +16,7 @@ functions. It is defined recursively as `PreMS [] = ℝ` (constants), and
 pair `(exp, coef)` represents the monomial `b₁^exp * coef`. The type is isomorphic to the type
 of trees of finite fixed depth with possibly infinite branching and `ℝ`-valued labels in vertexes.
 * `WellOrdered ms` is the predicate meaning that at each level of `ms` as a nested tree all
-exponents are sorted by TODO (убывание).
+exponents are Pairwise by TODO (убывание).
 * `Approximates ms F` is the predicate meaning that the multiseries `ms` can be used to obtain
 an asymptotical approximations of the real function `F`.
 For details see the docs for `Approximates`.
@@ -104,7 +104,7 @@ end leadingExp
 section WellOrdered
 
 /-- Auxilary instance for order on pairs `(exp, coef)` used below to define `WellOrdered` in terms
-of `Stream'.Seq.Sorted`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
+of `Stream'.Seq.Pairwise`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
 scoped instance {basis} : Preorder (ℝ × PreMS basis) where
   le := fun x y ↦ x.1 ≤ y.1
   le_refl := by simp
@@ -124,12 +124,12 @@ private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} 
     rw [lt_iff_le_not_le] at h ⊢
     exact h
 
-/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are sorted by TODO. -/
+/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are Pairwise by TODO. -/
 inductive WellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : WellOrdered ms
 | colist {hd} {tl} (ms : PreMS (hd :: tl))
     (h_coef : ∀ i x, ms.get? i = .some x → x.2.WellOrdered)
-    (h_sorted : Seq.Sorted (· > ·) ms) : ms.WellOrdered
+    (h_Pairwise : Seq.Pairwise (· > ·) ms) : ms.WellOrdered
 
 variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
@@ -139,7 +139,7 @@ theorem WellOrdered.nil : @WellOrdered (basis_hd :: basis_tl) .nil := by
   · intro i x
     intro h
     simp at h
-  · unfold Seq.Sorted
+  · unfold Seq.Pairwise
     intro i j x y _ h
     simp at h
 
@@ -155,7 +155,7 @@ theorem WellOrdered.cons_nil {exp : ℝ} {coef : PreMS basis_tl} (h_coef : coef.
       simpa
     | succ j =>
       simp at h
-  · unfold Seq.Sorted
+  · unfold Seq.Pairwise
     intro i j x y h_lt _ hj
     cases j with
     | zero => simp at h_lt
@@ -180,7 +180,7 @@ theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
       simp at h
       simp at h_tl_coef
       solve_by_elim
-  · apply Seq.Sorted.cons
+  · apply Seq.Pairwise.cons
     · cases tl
       · simp
       · simp at h_comp ⊢
@@ -192,23 +192,23 @@ leading exponent of `tl` is less than `exp`. -/
 theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (h : @WellOrdered (basis_hd :: basis_tl) (.cons (exp, coef) tl)) :
     coef.WellOrdered ∧ tl.leadingExp < exp ∧ tl.WellOrdered := by
-  cases h with | colist _ h_coef h_sorted =>
-  apply Seq.Sorted_cons at h_sorted
+  cases h with | colist _ h_coef h_Pairwise =>
+  apply Seq.Pairwise_cons at h_Pairwise
   constructor
   · specialize h_coef 0 (exp, coef)
     simpa using h_coef
   constructor
   · cases' tl with tl_exp tl_coef tl_tl
     · simp
-    · simp [lt_iff_lt] at h_sorted
+    · simp [lt_iff_lt] at h_Pairwise
       simp
-      exact h_sorted.left
+      exact h_Pairwise.left
   · constructor
     · intro i x hx
       specialize h_coef (i + 1) x
       simp at h_coef hx
       exact h_coef hx
-    · exact h_sorted.right
+    · exact h_Pairwise.right
 
 -- TODO : ∨ -> → at h_step
 /-- Coinduction principle for proving `WellOrdered`. For some predicate `motive` on multiseries,
@@ -257,7 +257,7 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
       rw [h_ms_eq] at hx
       simp at hx
       simpa [← hx]
-  · apply Seq.Sorted.coind motive h_base
+  · apply Seq.Pairwise.coind motive h_base
     intro hd tl ih
     specialize h_step _ ih
     simp [Seq.cons_eq_cons] at h_step
@@ -413,13 +413,13 @@ theorem partialSumsFrom_cons {Cs_hd : ℝ → ℝ} {Cs_tl : Seq (ℝ → ℝ)} {
   simp [partialSumsFrom]
 
 theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_fun : ℝ → ℝ}
-    {init : ℝ → ℝ} (h : Cs.atLeastAsLongAs exps) :
+    {init : ℝ → ℝ} (h : Cs.AtLeastAsLongAs exps) :
     partialSumsFrom Cs exps basis_fun init =
       (partialSums Cs exps basis_fun).map fun G => init + G := by
 
   let motive : Seq (ℝ → ℝ) → Seq (ℝ → ℝ) → Prop := fun x y =>
     ∃ Cs exps init D,
-      Cs.atLeastAsLongAs exps ∧
+      Cs.AtLeastAsLongAs exps ∧
       (
         (x = partialSumsFrom Cs exps basis_fun (D + init)) ∧
         (y = (partialSumsFrom Cs exps basis_fun init).map fun G => D + G)
@@ -449,7 +449,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
         constructor
         · assumption
         simp [motive]
-      · obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.atLeastAsLongAs_cons h_alal
+      · obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.AtLeastAsLongAs_cons h_alal
         subst h_Cs
         simp [partialSums, partialSumsFrom_cons] at h_x_eq h_y_eq
         use D + init',
@@ -484,7 +484,7 @@ def Approximates {basis : Basis} (ms : PreMS basis) (F : ℝ → ℝ)   : Prop :
   | [] => F =ᶠ[atTop] fun _ ↦ ms
   | List.cons basis_hd _ =>
     ∃ Cs : Seq (ℝ → ℝ),
-    Cs.atLeastAsLongAs ms ∧
+    Cs.AtLeastAsLongAs ms ∧
     ((Cs.zip ms).All fun (C, (_, coef)) => coef.Approximates C) ∧
     (
       let exps := ms.map fun x => x.1;
@@ -528,7 +528,7 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
     constructor
     · exact h_maj
     -- copypaste from `Approximates_cons`
-    · rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_tl_alal)]
+    · rw [partialSumsFrom_eq_map (Seq.AtLeastAsLongAs_map h_tl_alal)]
       rw [Seq.map_zip_left]
       apply Seq.map_all_iff.mpr
       apply Seq.all_mp _ h_tl_maj
@@ -561,17 +561,18 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
     : ms.Approximates F := by
   simp [Approximates]
   let T := Approximates.coind.AuxT motive
+  -- let g_aux :
   let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, F, h⟩ =>
-    (val.recOn (motive := fun ms => motive F ms → Option ((ℝ → ℝ) × T))
-    (nil := fun _ => .none)
-    (cons := fun exp coef tl =>
-      fun h =>
+    match h_val : destruct val with
+    | none => .none
+    | some ((exp, coef), tl) =>
         have spec : ∃ C,
             coef.Approximates C ∧
             majorated F basis_hd exp ∧
             motive (fun x ↦ F x - basis_hd x ^ exp * C x) tl := by
+          apply destruct_eq_cons at h_val
           specialize h_step _ _ h
-          simp [Seq.cons_eq_cons] at h_step
+          simp [h_val, Seq.cons_eq_cons] at h_step
           obtain ⟨exp_1, coef_1, tl_1, ⟨⟨h_exp, h_coef⟩, h_tl⟩, h_step⟩ := h_step
           subst h_exp
           subst h_coef
@@ -579,8 +580,6 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
           exact h_step
         let C := spec.choose
         .some (C, ⟨tl, fun x ↦ F x - (basis_hd x)^exp * (C x), spec.choose_spec.right.right⟩)
-    )
-    ) h
   let Cs : Seq (ℝ → ℝ) := Seq.corec g ⟨ms, F, h_base⟩
   use Cs
   constructor
@@ -656,7 +655,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
           cases' ms with exp coef tl
           · rw [Seq.corec_nil] at h_eq
             pick_goal 2
-            · simp [recOn, g]
+            · simp [g]
             simp [Seq.cons_eq_cons, partialSumsFrom_nil] at h_eq
             obtain ⟨⟨h1, h2⟩, h3⟩ := h_eq
             subst h1 h2 h3
@@ -736,7 +735,7 @@ theorem Approximates_cons {exp : ℝ}
       tl.Approximates (fun x ↦ F x - (basis_hd x)^exp * (C x)) := by
   unfold Approximates at h
   obtain ⟨Cs, h_alal, h_coef, h_maj⟩ := h
-  obtain ⟨C, Cs_tl, h_alal⟩ := Seq.atLeastAsLongAs_cons h_alal
+  obtain ⟨C, Cs_tl, h_alal⟩ := Seq.AtLeastAsLongAs_cons h_alal
   subst h_alal
   use C
   simp at h_coef
@@ -754,7 +753,7 @@ theorem Approximates_cons {exp : ℝ}
         · exact h_coef.right
         · simp [partialSums, partialSumsFrom_cons] at h_maj
           apply And.right at h_maj
-          rw [partialSumsFrom_eq_map (Seq.atLeastAsLongAs_map h_alal)] at h_maj
+          rw [partialSumsFrom_eq_map (Seq.AtLeastAsLongAs_map h_alal)] at h_maj
           rw [Seq.map_zip_left] at h_maj
           apply Seq.all_mp _ (Seq.map_all_iff.mp h_maj)
           intro (C', exp?)

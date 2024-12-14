@@ -15,8 +15,6 @@ def basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] := by
   simp [WellFormedBasis]
   exact fun ⦃U⦄ a ↦ a
 
-#check fun (x : ℝ) ↦ x^(1 : ℝ)
-
 partial def createMS (body : Expr) : TacticM MS := do
   let basis : Q(Basis) := q([fun (x : ℝ) ↦ x])
   let basis_wo : Q(WellFormedBasis $basis) := q(basis_wo)
@@ -56,7 +54,8 @@ partial def createMS (body : Expr) : TacticM MS := do
       let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
       return MS.npow ms exp h_trimmed
     else if t == q(ℤ) then
-      throwError "integer powers are not implemented"
+      let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
+      return MS.zpow ms exp h_trimmed
     else if t == q(ℝ) then
       let ⟨ms, h_trimmed⟩ ← trimMS (← createMS arg)
       let .some h_pos ← getLeadingTermCoefPos ms.val

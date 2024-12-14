@@ -257,7 +257,7 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
           · exact Eq.refl _
         simp
         congr
-        · rw [mul_mulConst]
+        · rw [mul_mulConst_left]
         · exact Eq.refl _
       simp only [motive]
       use ?_, s_tl
@@ -310,7 +310,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
         simp [apply_aux]
       rw [Seq.corec_cons] at h_eq
       pick_goal 2
-      · simp only [apply_aux, Seq.recOn_cons]
+      · simp only [apply_aux]
         exact Eq.refl _
       simp [Seq.cons_eq_cons] at h_eq
       obtain ⟨⟨h_hd, h_tl⟩, hX_wo⟩ := h_eq
@@ -323,7 +323,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
       · exact mul_WellOrdered hX_wo h_wo
   · let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
       ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
-    apply Seq.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
+    apply Seq.Pairwise.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
     · simp only [motive]
       use one _, s
       constructor
@@ -338,7 +338,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
         simp [apply_aux]
       rw [Seq.corec_cons] at h_eq
       pick_goal 2
-      · simp only [apply_aux, Seq.recOn_cons]
+      · simp only [apply_aux]
         exact Eq.refl _
       simp [Seq.cons_eq_cons] at h_eq
       obtain ⟨h_hd, h_tl⟩ := h_eq
@@ -350,7 +350,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
           · simp [apply_aux]
         rw [Seq.corec_cons]
         pick_goal 2
-        · simp only [apply_aux, Seq.recOn_cons]
+        · simp only [apply_aux]
           exact Eq.refl _
         simp [h_hd, lt_iff_lt]
         conv => rhs; rw [← add_zero X.leadingExp]
@@ -784,14 +784,6 @@ theorem zeros_apply_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: 
     (h_neg : ms.leadingExp < 0) : (zeros.apply ms).Approximates 0 := by
   rw [show 0 = zeros.toFun ∘ F by rw [zeros_toFun]; rfl]
   apply apply_Approximates zeros_analytic h_basis h_wo h_neg h_approx
-
-theorem trim_zeros_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd : ℝ → ℝ}
-    {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
-    (h_neg : ms.leadingExp < 0) {F : ℝ → ℝ}
-    (h_approx : (apply (s.append zeros) ms).Approximates F) :
-    (apply s ms).Approximates F := by
-  sorry
 
 end Zeros
 

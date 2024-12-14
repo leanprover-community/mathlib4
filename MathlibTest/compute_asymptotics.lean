@@ -271,7 +271,7 @@ example :
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x^(1/2 : ℝ);
+  let f := fun (x : ℝ) ↦ x^(1/2 : ℝ) / (x^(1/3 : ℝ) + x^(-1/3 : ℝ) + 18);
   Tendsto f atTop atTop := by
   simp only
   compute_asymptotics
@@ -290,16 +290,16 @@ example :
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x^1 - (1/x)⁻¹;
+  let f := fun (x : ℝ) ↦ x^(1 : ℕ) - (1/x)⁻¹;
   Tendsto f (𝓝[>] 0) (𝓝 0) := by
   simp only
   compute_asymptotics
 
--- example :
---   let f := fun (x : ℝ) ↦ x^(-1 : ℤ) - 1/x;
---   Tendsto f (𝓝[>] 0) (𝓝 0) := by
---   simp only
---   compute_asymptotics
+example :
+  let f := fun (x : ℝ) ↦ x^(-1 : ℤ) - 1/x;
+  Tendsto f (𝓝[<] 0) (𝓝 0) := by
+  simp only
+  compute_asymptotics
 
 -- TODO: add guard_msg
 -- example :
