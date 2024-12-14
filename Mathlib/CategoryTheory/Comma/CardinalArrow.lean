@@ -6,40 +6,28 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Cardinal of Arrow
 
-If `A` is a (small) category, `Arrow A` is finite iff `FinCategory A` holds.
+We obtain various results about the cardinality of `Arrow C`. For example,
+If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
 
-universe v u
+universe w w' v u
 
 namespace CategoryTheory
 
-@[simp]
-lemma cardinal_arrow_discrete (S : Type u) :
-    Cardinal.mk (Arrow (Discrete S)) = Cardinal.mk S :=
-  Cardinal.mk_congr (Arrow.discreteEquiv S)
-
-@[simp]
-lemma cardinal_arrow_op (A : Type u) [Category.{v} A] :
-    Cardinal.mk (Arrow Aᵒᵖ) = Cardinal.mk (Arrow A) :=
-  Cardinal.mk_congr
-    { toFun f := Arrow.mk f.hom.unop
-      invFun g := Arrow.mk g.hom.op
-      left_inv _ := rfl
-      right_inv _ := rfl }
-
-lemma Arrow.finite_iff (A : Type u) [SmallCategory A] :
-    Finite (Arrow A) ↔ Nonempty (FinCategory A) := by
+lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
+    Finite (Arrow C) ↔ Nonempty (FinCategory C) := by
   constructor
   · intro
     refine ⟨?_, fun a b ↦ ?_⟩
-    · have := Finite.of_injective (fun (a : A) ↦ Arrow.mk (𝟙 a))
+    · have := Finite.of_injective (fun (a : C) ↦ Arrow.mk (𝟙 a))
         (fun _ _  ↦ congr_arg Comma.left)
       apply Fintype.ofFinite
     · have := Finite.of_injective (fun (f : a ⟶ b) ↦ Arrow.mk f)
@@ -48,16 +36,86 @@ lemma Arrow.finite_iff (A : Type u) [SmallCategory A] :
           congr)
       apply Fintype.ofFinite
   · rintro ⟨_⟩
-    have := Fintype.ofEquiv  _ (Arrow.equivSigma A).symm
+    have := Fintype.ofEquiv  _ (Arrow.equivSigma C).symm
     infer_instance
 
-instance Arrow.finite {A : Type u} [SmallCategory A] [FinCategory A] :
-    Finite (Arrow A) := by
+instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
+    Finite (Arrow C) := by
   rw [Arrow.finite_iff]
   exact ⟨inferInstance⟩
 
-lemma cardinal_le_cardinal_arrow (A : Type u) [SmallCategory A] :
-    Cardinal.mk A ≤ Cardinal.mk (Arrow A) :=
-  Cardinal.mk_le_of_injective (f := fun a ↦ Arrow.mk (𝟙 a)) (fun _ _ ↦ congr_arg Comma.left)
+/-- The bijection `Arrow Cᵒᵖ ≃ Arrow C`. -/
+def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C where
+  toFun f := Arrow.mk f.hom.unop
+  invFun g := Arrow.mk g.hom.op
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp]
+lemma hasCardinal_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :
+    HasCardinalLT (Arrow Cᵒᵖ) κ ↔ HasCardinalLT (Arrow C) κ :=
+  hasCardinalLT_iff_of_equiv (Arrow.opEquiv C) κ
+
+@[simp]
+lemma hasCardinalLT_arrow_discrete_iff {X : Type u} (κ : Cardinal.{w}) :
+    HasCardinalLT (Arrow (Discrete X)) κ ↔ HasCardinalLT X κ :=
+  hasCardinalLT_iff_of_equiv (Arrow.discreteEquiv X) κ
+
+lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
+    Small.{w} C :=
+  small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
+
+lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
+    LocallySmall.{w} C where
+  hom_small X Y :=
+    small_of_injective (f := fun f ↦ Arrow.mk f) (fun f g h ↦ by
+      change (Arrow.mk f).hom = (Arrow.mk g).hom
+      congr)
+
+/-- The bijection `Arrow.{w} (ShrinkHoms C) ≃ Arrow C`. -/
+noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
+    Arrow.{w} (ShrinkHoms C) ≃ Arrow C where
+  toFun := (ShrinkHoms.equivalence C).inverse.mapArrow.obj
+  invFun := (ShrinkHoms.equivalence C).functor.mapArrow.obj
+  left_inv _ := by simp [Functor.mapArrow]; rfl
+  right_inv _ := by simp [Functor.mapArrow]; rfl
+
+-- to be moved
+lemma Arrow.ext {C : Type u} [Category.{v} C] {f g : Arrow C}
+    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
+    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g := by
+  obtain ⟨X, Y, f⟩ := f
+  obtain ⟨X', Y', g⟩ := g
+  obtain rfl : X = X' := h₁
+  obtain rfl : Y = Y' := h₂
+  obtain rfl : f = g := by simpa using h₃
+  rfl
+
+/-- The bijection `Arrow (Shrink C) ≃ Arrow C`. -/
+noncomputable def Arrow.shrinkEquiv (C : Type u) [Category.{v} C] [Small.{w} C] :
+    Arrow (Shrink.{w} C) ≃ Arrow C where
+  toFun := (Shrink.equivalence C).inverse.mapArrow.obj
+  invFun := (Shrink.equivalence C).functor.mapArrow.obj
+  left_inv f := Arrow.ext (by simp [Shrink.equivalence])
+    (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence]; rfl)
+  right_inv _ := Arrow.ext (by simp [Shrink.equivalence])
+    (by simp [Shrink.equivalence]) (by simp [Shrink.equivalence])
+
+@[simp]
+lemma hasCardinalLT_arrow_shrinkHoms_iff (C : Type u) [Category.{v} C] [LocallySmall.{w'} C]
+    (κ : Cardinal.{w}) :
+    HasCardinalLT (Arrow.{w'} (ShrinkHoms C)) κ ↔ HasCardinalLT (Arrow C) κ :=
+  hasCardinalLT_iff_of_equiv (Arrow.shrinkHomsEquiv C) κ
+
+@[simp]
+lemma hasCardinalLT_arrow_shrink_iff (C : Type u) [Category.{v} C] [Small.{w'} C]
+    (κ : Cardinal.{w}) :
+    HasCardinalLT (Arrow (Shrink.{w'} C)) κ ↔ HasCardinalLT (Arrow C) κ :=
+  hasCardinalLT_iff_of_equiv (Arrow.shrinkEquiv C) κ
+
+lemma hasCardinalLT_of_hasCardinalLT_arrow
+    {C : Type u} [Category.{v} C] {κ : Cardinal.{w}} (h : HasCardinalLT (Arrow C) κ) :
+    HasCardinalLT C κ :=
+  h.of_injective (fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
 
 end CategoryTheory

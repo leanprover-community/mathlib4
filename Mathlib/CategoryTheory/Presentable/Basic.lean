@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -27,7 +28,7 @@ if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
 
 -/
 
-universe w w' v' v u' u
+universe w w' v'' v' v u'' u' u
 
 namespace CategoryTheory
 
@@ -38,60 +39,65 @@ section
 /-- A category `J` is `κ`-filtered (for a regular cardinal `κ`) is
 any functor `F : A ⥤ J` from a `κ`-small category (`Cardinal.mk (Arrow A) < κ`)
 admits a cocone. -/
-class IsCardinalFiltered (J : Type w) [SmallCategory J]
+class IsCardinalFiltered (J : Type u') [Category.{v'} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   nonempty_cocone {A : Type w} [SmallCategory A] (F : A ⥤ J)
-    (hA : Cardinal.mk (Arrow A) < κ) : Nonempty (Cocone F)
+    (hA : HasCardinalLT (Arrow A) κ) : Nonempty (Cocone F)
 
 namespace IsCardinalFiltered
 
-variable {J : Type w} [SmallCategory J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
+variable {J : Type u'} [Category.{v'} J] {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular]
   [IsCardinalFiltered J κ]
 
 /-- A choice of cocone for a functor `F : A ⥤ J` such that `Cardinal.mk (Arrow A) < κ`
 when `J` is a `κ`-filtered category. -/
-noncomputable def cocone {A : Type w} [SmallCategory A]
-    (F : A ⥤ J) (hA : Cardinal.mk (Arrow A) < κ) :
-    Cocone F :=
-  (nonempty_cocone (κ := κ) _ hA).some
+noncomputable def cocone {A : Type v''} [Category.{u''} A]
+    (F : A ⥤ J) (hA : HasCardinalLT (Arrow A) κ) :
+    Cocone F := by
+  have := hA.small
+  have := small_of_small_arrow.{w} A
+  have := locallySmall_of_small_arrow.{w} A
+  let e := (Shrink.equivalence.{w} A).trans (ShrinkHoms.equivalence.{w} (Shrink.{w} A))
+  exact (Cocones.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
+    (nonempty_cocone (κ := κ) (e.inverse ⋙ F) (by simpa)).some
 
-/-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered, this is
-a choice of object in `J` which is the target of a map from any object in `S`. -/
-noncomputable def max (S : Set J) (hS : Cardinal.mk S < κ) : J := by
-  have : Cardinal.mk (Arrow (Discrete S)) < κ := by simpa using hS
-  exact (cocone (Discrete.functor Subtype.val) this).pt
+--/-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered, this is
+--a choice of object in `J` which is the target of a map from any object in `S`. -/
+noncomputable def max {K : Type v''} (S : K → J) (hS : HasCardinalLT K κ) : J := by
+  have : HasCardinalLT (Arrow (Discrete K)) κ := by simpa using hS
+  exact (cocone (Discrete.functor S) this).pt
 
 /-- When `S : Set J` is of cardinality `< κ` and `J` is `κ`-filtered,
 this is a choice of map `s.1 ⟶ max S hS` for any `s : S`. -/
-noncomputable def toMax (S : Set J) (hS : Cardinal.mk S < κ) (s : S) :
-    s.1 ⟶ max S hS := by
-  have : Cardinal.mk (Arrow (Discrete S)) < κ := by simpa using hS
-  exact (cocone (Discrete.functor Subtype.val) this).ι.app ⟨s⟩
+noncomputable def toMax {K : Type v''} (S : K → J) (hS : HasCardinalLT K κ) (k : K) :
+    S k ⟶ max S hS := by
+  have : HasCardinalLT (Arrow (Discrete K)) κ := by simpa using hS
+  exact (cocone (Discrete.functor S) this).ι.app ⟨k⟩
 
 variable (J)
 
 lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ' ≤ κ) :
     IsCardinalFiltered J κ' where
-  nonempty_cocone F hA := ⟨cocone F (lt_of_lt_of_le hA h)⟩
+  nonempty_cocone F hA := ⟨cocone F (hA.of_le h)⟩
 
 end IsCardinalFiltered
 
 open IsCardinalFiltered in
-lemma isFiltered_of_isCardinalDirected (J : Type w) [SmallCategory J]
+lemma isFiltered_of_isCardinalDirected (J : Type u') [Category.{v'} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]:
     IsFiltered J := by
   rw [IsFiltered.iff_cocone_nonempty.{w}]
   intro A _ _ F
-  have hA : Cardinal.mk (Arrow A) < κ := by
-    refine lt_of_lt_of_le ?_ hκ.out.aleph0_le
-    rw [Cardinal.mk_lt_aleph0_iff]
+  have hA : HasCardinalLT (Arrow A) κ := by
+    refine HasCardinalLT.of_le ?_ hκ.out.aleph0_le
+    simp only [hasCardinalLT_aleph0]
     infer_instance
   exact ⟨cocone F hA⟩
 
 instance : Fact Cardinal.aleph0.IsRegular where
   out := Cardinal.isRegular_aleph0
 
-lemma isCardinalFiltered_aleph0_iff (J : Type w) [SmallCategory J] :
+lemma isCardinalFiltered_aleph0_iff (J : Type u') [Category.{v'} J] :
     IsCardinalFiltered J Cardinal.aleph0 ↔ IsFiltered J := by
   constructor
   · intro
@@ -99,26 +105,20 @@ lemma isCardinalFiltered_aleph0_iff (J : Type w) [SmallCategory J] :
   · intro
     constructor
     intro A _ F hA
-    rw [Cardinal.mk_lt_aleph0_iff] at hA
+    rw [hasCardinalLT_aleph0] at hA
     have := ((Arrow.finite_iff A).1 hA).some
     exact ⟨IsFiltered.cocone F⟩
 
 lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (h : ∀ (S : Set J) (_ : Cardinal.mk S < κ), ∃ (j : J), ∀ (s : S), s.1 ≤ j) :
+    (h : ∀ ⦃K : Type w⦄ (s : K → J) (_ : Cardinal.mk K < κ),
+      ∃ (j : J), ∀ (k : K), s k ≤ j) :
     IsCardinalFiltered J κ where
   nonempty_cocone {A _ F hA} := by
-    let S := Set.range F.obj
-    have hS : Cardinal.mk S < κ := by
-      let f : A → S := fun a ↦ ⟨F.obj a, ⟨a, rfl⟩⟩
-      have hf : Function.Surjective f := by
-        rintro ⟨_, ⟨a, rfl⟩⟩
-        exact ⟨a, rfl⟩
-      exact lt_of_le_of_lt (Cardinal.mk_le_of_surjective hf)
-        (lt_of_le_of_lt (cardinal_le_cardinal_arrow A) hA)
-    obtain ⟨j, hj⟩ := h S hS
-    refine ⟨Cocone.mk j
-      { app a := homOfLE (hj ⟨F.obj a, ⟨a, rfl⟩⟩)
+    obtain ⟨j, hj⟩ := h F.obj (by simpa only [hasCardinalLT_iff_cardinal_mk_lt] using
+        hasCardinalLT_of_hasCardinalLT_arrow hA)
+    exact ⟨Cocone.mk j
+      { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
 end
