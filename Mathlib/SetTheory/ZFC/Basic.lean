@@ -257,6 +257,12 @@ theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
 theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl_of (· ∈ ·) x
 
+theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
+  fun h' ↦ mem_irrefl _ <| mem_of_subset h' h
+
+theorem not_mem_of_subset {x y : PSet} (h : x ⊆ y) : ¬ y ∈ x :=
+  imp_not_comm.2 not_subset_of_mem h
+
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
@@ -1161,6 +1167,12 @@ theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
 
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
   irrefl_of (· ∈ ·) x
+
+theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
+  fun h' ↦ mem_irrefl _ (h' h)
+
+theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : ¬ y ∈ x :=
+  imp_not_comm.2 not_subset_of_mem h
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
