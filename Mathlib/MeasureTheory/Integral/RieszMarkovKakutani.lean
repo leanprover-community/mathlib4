@@ -168,8 +168,7 @@ lemma exists_sum_one_of_isCompact_nnreal
   use (nnrealPartCompactlySupported (⟨f 1, f_hcs 1⟩ : C_c(X, ℝ))),
     (nnrealPartCompactlySupported (⟨f 0, f_hcs 0⟩ : C_c(X, ℝ)))
   simp only [Fin.isValue, CompactlySupportedContinuousMap.coe_add]
-  have sum_one_x : ∀ x, x ∈ t → (f 0) x + (f 1) x = 1 := by
-    intro x hx
+  have sum_one_x x (hx : x ∈ t) : (f 0) x + (f 1) x = 1 := by
     let sum_one := sum_f_one_on_t hx
     simp only [Finset.sum_apply, Fin.sum_univ_two, Fin.isValue, Pi.one_apply] at sum_one
     exact sum_one
