@@ -154,8 +154,8 @@ theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) 
     (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i => f ⟨i, i'⟩ := by
   rw [sup_product_left, Finset.sup_comm]
 
-theorem isLUB_sup {α : Type} [SemilatticeSup α] [OrderBot α] (F : Finset α) :
-    IsLUB F (sup F id) :=
+theorem isLUB_sup {α : Type} [SemilatticeSup α] [OrderBot α] (s : Finset α) :
+    IsLUB s (sup s id) :=
   ⟨fun x h => id_eq x ▸ le_sup h, fun _ h => Finset.sup_le h⟩
 
 section Prod
@@ -381,8 +381,8 @@ theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) 
     (s ×ˢ t).inf f = t.inf fun i' => s.inf fun i => f ⟨i, i'⟩ :=
   @sup_product_right αᵒᵈ _ _ _ _ _ _ _
 
-theorem isGLB_inf {α : Type} [SemilatticeInf α] [OrderTop α] (F : Finset α) :
-    IsGLB F (inf F id) :=
+theorem isGLB_inf {α : Type} [SemilatticeInf α] [OrderTop α] (s : Finset α) :
+    IsGLB s (inf s id) :=
   ⟨fun x h => id_eq x ▸ inf_le h, fun _ h => Finset.le_inf h⟩
 
 section Prod
@@ -791,9 +791,10 @@ theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × 
     (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
   rw [sup'_product_left, Finset.sup'_comm]
 
-theorem isLUB_sup' {α : Type} [SemilatticeSup α] {F : Finset α} (ne : F.Nonempty) :
-    IsLUB F (sup' F ne id) :=
-  ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le ne id h⟩
+/-- Analog of `Finset.isLUB_sup` requiring a nonempty set. -/
+theorem isLUB_sup' {α : Type} [SemilatticeSup α] {s : Finset α} (hs : s.Nonempty) :
+    IsLUB s (sup' s hs id) :=
+  ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] {s : Finset ι} {t : Finset κ}
@@ -960,9 +961,10 @@ theorem inf'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × 
     (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ :=
   sup'_product_right (α := αᵒᵈ) h f
 
-theorem isGLB_inf' {α : Type} [SemilatticeInf α] {F : Finset α} (ne : F.Nonempty) :
-    IsGLB F (inf' F ne id) :=
-  ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' ne id h⟩
+/-- Analog of `Finset.isGLB_inf` requiring a nonempty set. -/
+theorem isGLB_inf' {α : Type} [SemilatticeInf α] {s : Finset α} (hs : s.Nonempty) :
+    IsGLB s (inf' s hs id) :=
+  ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' hs id h⟩
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] {s : Finset ι} {t : Finset κ}
