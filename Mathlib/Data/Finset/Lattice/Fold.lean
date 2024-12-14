@@ -106,6 +106,9 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 
+theorem isLUB_sup (s : Finset α) : IsLUB s (sup s id) :=
+  ⟨fun x h => id_eq x ▸ le_sup h, fun _ h => Finset.sup_le h⟩
+
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
@@ -153,10 +156,6 @@ theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
 theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i => f ⟨i, i'⟩ := by
   rw [sup_product_left, Finset.sup_comm]
-
-theorem isLUB_sup {α : Type} [SemilatticeSup α] [OrderBot α] (s : Finset α) :
-    IsLUB s (sup s id) :=
-  ⟨fun x h => id_eq x ▸ le_sup h, fun _ h => Finset.sup_le h⟩
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] [OrderBot α] [OrderBot β]
@@ -341,6 +340,9 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
 
+theorem isGLB_inf (s : Finset α) : IsGLB s (inf s id) :=
+  ⟨fun x h => id_eq x ▸ inf_le h, fun _ h => Finset.le_inf h⟩
+
 theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
 
 theorem inf_union [DecidableEq β] : (s₁ ∪ s₂).inf f = s₁.inf f ⊓ s₂.inf f :=
@@ -380,10 +382,6 @@ theorem inf_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
 theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).inf f = t.inf fun i' => s.inf fun i => f ⟨i, i'⟩ :=
   @sup_product_right αᵒᵈ _ _ _ _ _ _ _
-
-theorem isGLB_inf {α : Type} [SemilatticeInf α] [OrderTop α] (s : Finset α) :
-    IsGLB s (inf s id) :=
-  ⟨fun x h => id_eq x ▸ inf_le h, fun _ h => Finset.le_inf h⟩
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] [OrderTop α] [OrderTop β]
@@ -754,6 +752,10 @@ alias ⟨_, sup'_le⟩ := sup'_le_iff
 theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
   (sup'_le_iff ⟨b, h⟩ f).1 le_rfl b h
 
+set_option linter.docPrime false in
+theorem isLUB_sup' {s : Finset α} (hs : s.Nonempty) : IsLUB s (sup' s hs id) :=
+  ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
+
 theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
   h.trans <| le_sup' _ hb
 
@@ -790,11 +792,6 @@ theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × �
 theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
   rw [sup'_product_left, Finset.sup'_comm]
-
-set_option linter.docPrime false in
-theorem isLUB_sup' {α : Type} [SemilatticeSup α] {s : Finset α} (hs : s.Nonempty) :
-    IsLUB s (sup' s hs id) :=
-  ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] {s : Finset ι} {t : Finset κ}
@@ -929,6 +926,10 @@ theorem le_inf' {a : α} (hs : ∀ b ∈ s, a ≤ f b) : a ≤ s.inf' H f :=
 theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
 
+set_option linter.docPrime false in
+theorem isGLB_inf' {s : Finset α} (hs : s.Nonempty) : IsGLB s (inf' s hs id) :=
+  ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' hs id h⟩
+
 theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
     s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
 
@@ -960,11 +961,6 @@ theorem inf'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × �
 theorem inf'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ :=
   sup'_product_right (α := αᵒᵈ) h f
-
-set_option linter.docPrime false in
-theorem isGLB_inf' {α : Type} [SemilatticeInf α] {s : Finset α} (hs : s.Nonempty) :
-    IsGLB s (inf' s hs id) :=
-  ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' hs id h⟩
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] {s : Finset ι} {t : Finset κ}
