@@ -116,6 +116,8 @@ jobs:
         echo "=== RELEVANT_BRANCHES ==========="
         echo "'$RELEVANT_BRANCHES'"
         printf "branches<<EOF\n%s\nEOF" "$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
+
+        # Check if there are relevant branches, recording the outcome in the `branches_exist` variable
         if [ -z "${RELEVANT_BRANCHES}" ]; then
           echo "branches_exist=false" >> "$GITHUB_ENV"
         else
