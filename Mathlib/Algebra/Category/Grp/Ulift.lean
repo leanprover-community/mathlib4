@@ -14,7 +14,8 @@ This file shows that the functors `Grp.uliftFunctor` and `CommGrp.uliftFunctor`
 (as well as the additive versions) are fully faithful, preserves all limits and
 create small limits.
 
-It also shows that `AddCommGrp.uliftFunctor` preserves zero morphisms and is an additive functor.
+It also shows that `AddCommGrp.uliftFunctor` preserves all colimits, creates small colimits,
+preserves zero morphisms and is an additive functor.
 
 -/
 
@@ -181,7 +182,6 @@ def coconeOfChar (f : lc.pt →+ A) : Cocone K where
       ext a
       have := lc.ι.naturality u
       apply_fun (fun f ↦ f {down := a}) at this
-      simp
       change lc.ι.app j' {down := K.map u a} = _ at this
       change ({down := f (lc.ι.app j' {down := K.map u a})} : ULift A) = _
       rw [this]; rfl
@@ -266,7 +266,7 @@ open CharacterModule in
 noncomputable def descHom : c.pt →+ lc.pt := by
   set u : lc.pt →+ ((c : CharacterModule lc.pt) → AddCircle (1 : ℚ)) := hom_to_pi lc.pt
   set u' := descCharFamily hc (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ))
-    (fun c ↦ c) with hdef'
+    (fun c ↦ c)
   set π := (QuotientAddGroup.mk' (AddMonoidHom.range u)) with hπ
   have h : u.range = π.ker := (QuotientAddGroup.ker_mk' _).symm
   have h' : π.comp u' = 0 := by
