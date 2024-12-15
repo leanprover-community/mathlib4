@@ -33,7 +33,7 @@ universe u
 
 noncomputable section
 
-open AlgebraicGeometry hiding Spec 
+open AlgebraicGeometry hiding Spec
 open AffineScheme CategoryTheory Limits Opposite CommRingCat
 open scoped MonoidalCategory TensorProduct
 
@@ -48,10 +48,10 @@ Y))).op ⋙ Spec`. This is needed in the `ChosenFiniteProducts` instance, since
 we construct our limit cone by applying Spec to the colimit cocone given by the
 tensor product `Γ.obj (op X) ⊗[ℤ] Γ.obj (op Y))`. -/
 def chosen_finite_products_aux :
-    Cone ((pair (Γ.obj (op X)) (Γ.obj (op Y))).op ⋙ Spec) ≌ BinaryFan X Y := 
+    Cone ((pair (Γ.obj (op X)) (Γ.obj (op Y))).op ⋙ Spec) ≌ BinaryFan X Y :=
   (Cones.whiskeringEquivalence (Discrete.opposite _)).symm.trans <| Cones.postcomposeEquivalence <|
-    isoWhiskerLeft (Discrete.opposite WalkingPair).inverse 
-      (isoWhiskerRight (NatIso.op (pairComp (Γ.obj (op X)) (Γ.obj (op Y)) Spec.rightOp)).symm 
+    isoWhiskerLeft (Discrete.opposite WalkingPair).inverse
+      (isoWhiskerRight (NatIso.op (pairComp (Γ.obj (op X)) (Γ.obj (op Y)) Spec.rightOp)).symm
         (unopUnop _)) ≪≫
     Discrete.natIso (fun ⟨j⟩ => by cases j <;> rfl) ≪≫
     mapPairIso X.isoSpec.symm Y.isoSpec.symm

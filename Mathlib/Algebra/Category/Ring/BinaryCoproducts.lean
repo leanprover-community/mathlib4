@@ -30,7 +30,7 @@ variable (A B : CommRingCat.{u})
 /-- The tensor product `A ⊗[ℤ] B` forms a cocone for `A` and `B`. -/
 @[simps! pt ι]
 def tensorProductCocone : BinaryCofan A B :=
-BinaryCofan.mk 
+BinaryCofan.mk
   (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
   (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
 
@@ -46,7 +46,7 @@ theorem tensorProductCocone_inr : (tensorProductCocone A B).inr =
 @[simps]
 def tensorProductColimit : IsColimit (tensorProductCocone A B) where
   desc (s : BinaryCofan A B) :=
-    ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom 
+    ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom
       (fun _ _ => by apply Commute.all)).toRingHom
   fac (s : BinaryCofan A B) := by
     rintro ⟨j⟩
