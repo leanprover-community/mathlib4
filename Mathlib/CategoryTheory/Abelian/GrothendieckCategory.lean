@@ -67,7 +67,7 @@ theorem IsGrothendieckAbelian.of_equivalence
   refine ⟨?_, hasFilteredColimits, ?_, ?_⟩
   · exact locallySmall_of_faithful α.inverse
   · refine ⟨fun _ _ _ => ?_⟩
-    exact hasExactColimitsOfShape_obj_of_equiv _ α
+    exact HasExactColimitsOfShape.of_codomain_equivalence _ α
   · exact HasSeparator.of_equivalence α
 
 section ShrinkHoms

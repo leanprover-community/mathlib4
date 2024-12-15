@@ -80,6 +80,18 @@ def IsDetecting (𝒢 : Set C) : Prop :=
 def IsCodetecting (𝒢 : Set C) : Prop :=
   ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ G ∈ 𝒢, ∀ (h : X ⟶ G), ∃! h' : Y ⟶ G, f ≫ h' = h) → IsIso f
 
+section Equivalence
+
+lemma IsSeparating.of_equivalence
+    {𝒢 : Set C} (h : IsSeparating 𝒢) {D : Type*} [Category D] (e : C ≌ D) :
+    IsSeparating (e.functor.obj '' 𝒢) := fun X Y f g H =>
+  e.inverse.map_injective (h _ _ (fun Z hZ h => by
+    obtain ⟨h', rfl⟩ := (e.toAdjunction.homEquiv _ _).surjective h
+    simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
+      H (e.functor.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+
+end Equivalence
+
 section Dual
 
 theorem isSeparating_op_iff (𝒢 : Set C) : IsSeparating 𝒢.op ↔ IsCoseparating 𝒢 := by
@@ -354,24 +366,8 @@ def IsCodetector (G : C) : Prop :=
 
 section Equivalence
 
-theorem IsSeparator.isSeparator_obj_of_equivalence {G : C} (hC : IsSeparator G) (F : C ⥤ D)
-    [F.IsEquivalence] :
-    IsSeparator (F.obj G) := by
-  let α := F.asEquivalence
-  intro d₁ d₂ f g hD
-  suffices h : α.inverse.map f = α.inverse.map g by
-    have h := congrArg α.functor.map h
-    simp only [Equivalence.fun_inv_map, Functor.comp_obj, Functor.id_obj,
-      NatIso.cancel_natIso_hom_left] at h
-    have h := congrArg (· ≫ α.counit.app d₂) h
-    simpa using h
-  apply hC
-  intro _ hG' hh
-  cases hG'
-  have := hD (α.functor.obj G) rfl (Adjunction.homEquiv α.toAdjunction G d₁ |>.symm hh)
-  have := congrArg (Adjunction.homEquiv α.toAdjunction G d₂) this
-  simp only [Adjunction.homEquiv_apply, Functor.map_comp, Adjunction.homEquiv_symm_apply] at this
-  simpa
+theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (F : C ⥤ D) [F.IsEquivalence] :
+    IsSeparator (F.obj G) := by simpa using IsSeparating.of_equivalence h (F.asEquivalence)
 
 end Equivalence
 
@@ -731,7 +727,7 @@ end Instances
 section Equivalence
 
 theorem HasSeparator.of_equivalence [HasSeparator C] (α : C ≌ D) : HasSeparator D :=
-  ⟨α.functor.obj (separator C), isSeparator_separator C |>.isSeparator_obj_of_equivalence α.functor⟩
+  ⟨α.functor.obj (separator C), isSeparator_separator C |>.of_equivalence α.functor⟩
 
 end Equivalence
 
