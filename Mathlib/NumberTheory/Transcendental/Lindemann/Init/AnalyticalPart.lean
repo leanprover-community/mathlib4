@@ -24,41 +24,25 @@ open Complex Polynomial
 
 attribute [local fun_prop] Polynomial.differentiable Differentiable.cexp Complex.continuous_abs
 
-set_option linter.style.multiGoal false in
-theorem deriv_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) :
-    (deriv fun x ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s))) =
-      fun x : ℝ ↦ s * (cexp (-(x • s)) * p.eval (x • s)) := by
-  funext x
-  have h₁ : (fun y : ℝ ↦ p.sumIDeriv.eval (y • s)) = p.sumIDeriv.eval ∘ (· • s) := rfl
-  have h₂ :
-    s * p.sumIDeriv.eval (x • s) - (derivative (R := ℂ) (sumIDeriv p)).eval (x • s) * s =
-      s * p.eval (x • s) := by
-    nth_rw 1 [sumIDeriv_eq_self_add, sumIDeriv_derivative]
-    rw [mul_comm _ s, eval_add, mul_add, add_sub_cancel_right]
-  rw [deriv.neg, deriv_mul, deriv_cexp, deriv.neg, deriv_smul_const, deriv_id'', h₁, deriv_comp,
-    Polynomial.deriv, deriv_smul_const, deriv_id'', one_smul, mul_assoc, ← mul_add, ← mul_neg,
-    neg_add', neg_mul, neg_neg, h₂, mul_left_comm]
-  on_goal 7 =>
-    rw [h₁]
-    have : Differentiable ℂ fun x ↦ eval x (sumIDeriv p) := by fun_prop
-    apply (this.restrictScalars ℝ).comp
-  all_goals fun_prop
+theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
+    HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
+      (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
+  have h₀ := (hasDerivAt_id' x).smul_const s
+  have h₁ := h₀.neg.cexp
+  have h₂ := ((sumIDeriv p).hasDerivAt (x • s)).comp x h₀
+  convert (h₁.mul h₂).neg using 1
+  nth_rw 1 [sumIDeriv_eq_self_add p]
+  simp only [one_smul, eval_add, Function.comp_apply]
+  ring
 
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul,
-    intervalIntegral.integral_deriv_eq_sub' (a := 0) (b := 1)
-      (fun x : ℝ ↦ -(exp (-(x • s)) * p.sumIDeriv.eval (x • s)))
-      (deriv_cexp_mul_sumIDeriv p s) ?_ (by fun_prop)]
-  · simp
-  intro x _
-  apply (Differentiable.mul _ _).neg.differentiableAt
-  · have : Differentiable ℂ fun c ↦ exp (-(c * s)) := by fun_prop
-    simpa only [Function.comp_def, real_smul, ← ofRealCLM_apply] using
-      (this.restrictScalars ℝ).comp ofRealCLM.differentiable
-  · have : Differentiable ℂ fun x ↦ eval x (sumIDeriv p) := by fun_prop
-    apply (this.restrictScalars ℝ).comp <| by fun_prop
+    intervalIntegral.integral_eq_sub_of_hasDerivAt
+      (fun x hx => hasDerivAt_cexp_mul_sumIDeriv p s x)
+      (ContinuousOn.intervalIntegrable (by fun_prop))]
+  simp
 
 def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIDeriv.eval 0 - p.sumIDeriv.eval s

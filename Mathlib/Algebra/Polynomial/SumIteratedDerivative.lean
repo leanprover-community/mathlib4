@@ -95,8 +95,8 @@ theorem sumIDeriv_derivative (p : R[X]) : sumIDeriv (derivative p) = derivative 
     derivative_sum]
   simp_rw [← Function.iterate_succ_apply, Function.iterate_succ_apply']
 
-theorem sumIDeriv_eq_self_add (p : R[X]) : sumIDeriv p = p + sumIDeriv (derivative p) := by
-  rw [sumIDeriv_derivative, sumIDeriv_apply, derivative_sum, sum_range_succ', sum_range_succ,
+theorem sumIDeriv_eq_self_add (p : R[X]) : sumIDeriv p = p + derivative (sumIDeriv p) := by
+  rw [sumIDeriv_apply, derivative_sum, sum_range_succ', sum_range_succ,
     add_comm, ← add_zero (Finset.sum _ _)]
   simp_rw [← Function.iterate_succ_apply' derivative, Nat.succ_eq_add_one,
     Function.iterate_zero_apply, iterate_derivative_eq_zero (Nat.lt_succ_self _)]
