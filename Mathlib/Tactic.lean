@@ -62,8 +62,9 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
@@ -81,6 +82,8 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.Finiteness
+import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
@@ -106,7 +109,6 @@ import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.ITauto
@@ -140,14 +142,17 @@ import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
+import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
+import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.PPRoundtrip
 import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Linter.UnusedTactic
+import Mathlib.Tactic.Linter.UpstreamableDecl
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MinImports
@@ -177,6 +182,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Tactic.NthRewrite
@@ -201,7 +207,6 @@ import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.ReduceModChar.Ext
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
@@ -221,7 +226,6 @@ import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.StacksAttribute

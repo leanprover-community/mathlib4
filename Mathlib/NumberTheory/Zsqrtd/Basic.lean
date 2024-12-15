@@ -558,7 +558,7 @@ instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
 
-instance decidableLE : @DecidableRel (ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
+instance decidableLE : DecidableRel (α := ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
 
 open Int in
 theorem nonneg_cases : ∀ {a : ℤ√d}, Nonneg a → ∃ x y : ℕ, a = ⟨x, y⟩ ∨ a = ⟨x, -y⟩ ∨ a = ⟨-x, y⟩
@@ -931,8 +931,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
     ext
     simp
   right_inv f := by
-    -- Porting note: was `ext`
-    refine hom_ext _ _ ?_
+    ext
     simp
 
 /-- `lift r` is injective if `d` is non-square, and R has characteristic zero (that is, the map from

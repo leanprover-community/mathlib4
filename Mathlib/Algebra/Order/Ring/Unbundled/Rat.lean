@@ -29,7 +29,7 @@ assert_not_exists GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   cases' hab : a /. b with n d hd hnd
@@ -85,7 +85,7 @@ protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
         divInt_mul_divInt _ _ d₁0.ne' d₂0.ne']
       apply Int.mul_nonneg
 
--- Porting note (#11215): TODO can this be shortened?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO can this be shortened?
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
@@ -105,13 +105,11 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
           · apply Int.mul_nonneg h.2 (Int.natCast_nonneg _)
         · simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
           exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
-      · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
-        simp [h']
+      · simp [h']
       · simp only [Rat.sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
         · refine Int.ediv_nonneg ?_ (Int.natCast_nonneg _)
           rw [Int.sub_nonneg]
-          push_neg at h
           obtain hb|hb := Ne.lt_or_lt h'
           · apply H
             intro H'
@@ -167,8 +165,8 @@ instance instDistribLattice : DistribLattice ℚ := inferInstance
 instance instLattice        : Lattice ℚ        := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf            : Inf ℚ            := inferInstance
-instance instSup            : Sup ℚ            := inferInstance
+instance instInf            : Min ℚ            := inferInstance
+instance instSup            : Max ℚ            := inferInstance
 instance instPartialOrder   : PartialOrder ℚ   := inferInstance
 instance instPreorder       : Preorder ℚ       := inferInstance
 
@@ -191,7 +189,7 @@ protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_sub_nonneg, add_sub_add_left_eq_sub, ← Rat.le_iff_sub_nonneg]
 
-instance : CovariantClass ℚ ℚ (· + ·) (· ≤ ·) where
+instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by

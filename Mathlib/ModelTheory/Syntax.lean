@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -61,8 +62,7 @@ namespace FirstOrder
 namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'} {γ : Type*}
+variable {M : Type w} {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -86,7 +86,7 @@ instance instDecidableEq [DecidableEq α] [∀ n, DecidableEq (L.Functions n)] :
         letI : DecidableEq (L.Term α) := instDecidableEq
         decidable_of_iff (f = h ▸ g ∧ ∀ i : Fin m, xs i = ys (Fin.cast h i)) <| by
           subst h
-          simp [Function.funext_iff]
+          simp [funext_iff]
       else
         .isFalse <| by simp [h]
   | .var _, .func _ _ | .func _ _, .var _ => .isFalse <| by simp
@@ -366,10 +366,10 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
 instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
-instance : Inf (L.BoundedFormula α n) :=
+instance : Min (L.BoundedFormula α n) :=
   ⟨fun f g => (f.imp g.not).not⟩
 
-instance : Sup (L.BoundedFormula α n) :=
+instance : Max (L.BoundedFormula α n) :=
   ⟨fun f g => f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/

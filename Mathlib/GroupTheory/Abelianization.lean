@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Finiteness
 
 /-!
 # The abelianization of a group

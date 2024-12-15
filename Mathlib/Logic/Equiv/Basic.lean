@@ -9,7 +9,6 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe
@@ -23,7 +22,7 @@ import Mathlib.Tactic.CC
 /-!
 # Equivalence between types
 
-In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lean`, defining
+In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`, defining
 
 * canonical isomorphisms between various types: e.g.,
 
@@ -39,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Mathlib/Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
@@ -628,6 +627,7 @@ section
 
 /-- A family of equivalences `∀ a, β₁ a ≃ β₂ a` generates an equivalence between `∀ a, β₁ a` and
 `∀ a, β₂ a`. -/
+@[simps]
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
@@ -1429,7 +1429,7 @@ theorem swap_apply_right (a b : α) : swap a b b = a := by
   by_cases h : b = a <;> simp [swap_apply_def, h]
 
 theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x = x := by
-  simp (config := { contextual := true }) [swap_apply_def]
+  simp +contextual [swap_apply_def]
 
 theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
   contrapose! h
@@ -1718,6 +1718,14 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
 
 end
 
+/-- Transport dependent functions through an equality of sets. -/
+@[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :
+    (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
+  toFun f i := f ⟨i, h ▸ i.2⟩
+  invFun f i := f ⟨i, h.symm ▸ i.2⟩
+  left_inv f := rfl
+  right_inv f := rfl
+
 section BinaryOp
 
 variable {α₁ β₁ : Type*} (e : α₁ ≃ β₁) (f : α₁ → α₁ → α₁)
@@ -1731,16 +1739,6 @@ instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f)
 
 instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-09-11")]
-instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-09-11")]
-instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
 end BinaryOp
 

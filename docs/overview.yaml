@@ -54,7 +54,7 @@ General algebra:
     the category of rings: 'RingCat'
     subring: 'Subring'
     localization: 'Localization'
-    local ring: 'LocalRing'
+    local ring: 'IsLocalRing'
     noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
@@ -468,7 +468,7 @@ Data structures:
   Maps:
     key-value map: 'AList'
     red-black map: 'Batteries.RBMap'
-    hash map: 'Batteries.HashMap'
+    hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 

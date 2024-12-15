@@ -20,9 +20,9 @@ group of `x`.
 
 open CategoryTheory
 
-universe u v
+universe u
 
-variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type u} [TopologicalSpace X]
 variable {x₀ x₁ : X}
 
 noncomputable section

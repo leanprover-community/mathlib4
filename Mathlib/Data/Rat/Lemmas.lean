@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.PNat.Defs
 
 /-!
@@ -14,8 +15,6 @@ import Mathlib.Data.PNat.Defs
 
 
 namespace Rat
-
-open Rat
 
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c
@@ -63,6 +62,16 @@ theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gc
   rcases d with ((_ | _) | _) <;>
     simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
       if_neg (Nat.cast_add_one_ne_zero _), this]
+
+theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
+  rw [add_def, normalize_eq, Nat.div_dvd_iff_dvd_mul (Nat.gcd_dvd_right _ _)
+    (Nat.gcd_ne_zero_right (by simp)), ← Nat.gcd_mul_lcm,
+    mul_dvd_mul_iff_right (Nat.lcm_ne_zero (by simp) (by simp)), Nat.dvd_gcd_iff]
+  refine ⟨?_, dvd_mul_right _ _⟩
+  rw [← Int.natCast_dvd_natCast, Int.dvd_natAbs]
+  apply Int.dvd_add
+    <;> apply dvd_mul_of_dvd_right <;> rw [Int.natCast_dvd_natCast]
+    <;> [exact Nat.gcd_dvd_right _ _; exact Nat.gcd_dvd_left _ _]
 
 theorem add_den_dvd (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den * q₂.den := by
   rw [add_def, normalize_eq]

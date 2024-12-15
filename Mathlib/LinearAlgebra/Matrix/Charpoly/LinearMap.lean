@@ -93,8 +93,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
     have := LinearMap.congr_fun h (Pi.single i 1)
     rwa [PiToModule.fromEnd_apply_single_one, PiToModule.fromMatrix_apply_single_one] at this
   · intro h
-    -- Porting note: was `ext`
-    refine LinearMap.pi_ext' (fun i => LinearMap.ext_ring ?_)
+    ext
     simp_rw [LinearMap.comp_apply, LinearMap.coe_single, PiToModule.fromEnd_apply_single_one,
       PiToModule.fromMatrix_apply_single_one]
     apply h

@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.RingTheory.AlgebraTower
 import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
@@ -50,6 +51,7 @@ theorem lift_rank_mul_lift_rank :
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
+@[stacks 09G9]
 theorem rank_mul_rank (A : Type v) [AddCommGroup A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by

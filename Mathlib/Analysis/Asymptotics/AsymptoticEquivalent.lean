@@ -171,7 +171,7 @@ open Asymptotics
 
 section NormedField
 
-variable {α β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α β : Type*} [NormedField β] {u v : α → β} {l : Filter α}
 
 theorem isEquivalent_iff_exists_eq_mul :
     u ~[l] v ↔ ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v := by

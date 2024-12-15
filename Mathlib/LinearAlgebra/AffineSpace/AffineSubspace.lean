@@ -49,6 +49,7 @@ noncomputable section
 open Affine
 
 open Set
+open scoped Pointwise
 
 section
 
@@ -257,7 +258,8 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
   refine le_antisymm ?_ ?_
   · rintro v ⟨p1, hp1, p2, hp2, rfl⟩
-    exact ⟨p1 -ᵥ p2 +ᵥ p, vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
+    exact ⟨(p1 -ᵥ p2) +ᵥ p,
+      vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
   · rintro v ⟨p2, hp2, rfl⟩
     exact ⟨p2, hp2, p, hp, rfl⟩
 
@@ -510,6 +512,12 @@ theorem direction_affineSpan (s : Set P) : (affineSpan k s).direction = vectorSp
 theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s :=
   mem_spanPoints k p s hp
 
+@[simp]
+lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
+  ext
+  simp [mem_add, spanPoints]
+  aesop
+
 end affineSpan
 
 namespace AffineSubspace
@@ -679,7 +687,7 @@ theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
   cases' S.nonempty with p
   ext v
   refine ⟨imp_intro Submodule.mem_top, fun _hv => ?_⟩
-  have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
+  have hpv : ((v +ᵥ p) -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
     vsub_mem_direction (mem_top k V _) (mem_top k V _)
   rwa [vadd_vsub] at hpv
 
@@ -1242,7 +1250,7 @@ theorem affineSpan_pair_le_of_right_mem {p₁ p₂ p₃ : P} (h : p₁ ∈ line[
 variable (k)
 
 /-- `affineSpan` is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
   spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 
@@ -1283,6 +1291,17 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
 lemma affineSpan_subset_span {s : Set V} :
     (affineSpan k s : Set V) ⊆  Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
+
+-- TODO: We want this to be simp, but `affineSpan` gets simped away to `spanPoints`!
+-- Let's delete `spanPoints`
+lemma affineSpan_insert_zero (s : Set V) :
+    (affineSpan k (insert 0 s) : Set V) = Submodule.span k s := by
+  rw [← Submodule.span_insert_zero]
+  refine affineSpan_subset_span.antisymm ?_
+  rw [← vectorSpan_add_self, vectorSpan_def]
+  refine Subset.trans ?_ <| subset_add_left _ <| mem_insert ..
+  gcongr
+  exact subset_sub_left <| mem_insert ..
 
 end AffineSpace'
 

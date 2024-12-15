@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.Discriminant
+import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields

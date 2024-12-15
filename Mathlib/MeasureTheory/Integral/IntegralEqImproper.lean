@@ -76,9 +76,8 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open scoped ENNReal NNReal Topology
+open MeasureTheory Filter Set TopologicalSpace Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -361,7 +360,7 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
     indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
-    lintegral_indicator f (hφ.measurableSet n)
+    lintegral_indicator (hφ.measurableSet n) _
 
 theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ atTop φ) {f : α → ℝ≥0∞}
     (hfm : AEMeasurable f μ) : Tendsto (∫⁻ x in φ ·, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) := by
@@ -389,9 +388,7 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
   have := hφ.lintegral_tendsto_of_countably_generated hfm
   refine ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => ?_
-  rcases exists_between hw with ⟨m, hm₁, hm₂⟩
-  rcases (eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
-  exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
+  exact (this.eventually_const_lt hw).exists
 
 end Lintegral
 
@@ -642,7 +639,7 @@ open scoped Interval
 
 section IoiFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
@@ -711,8 +708,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -864,7 +861,7 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
@@ -908,8 +905,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     apply le_antisymm (le_top)
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.isUniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -975,7 +972,7 @@ lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
     exact ennnorm_integral_le_lintegral_ennnorm _
   convert this with y
   · simp [f', I, Completion.nnnorm_coe]
-  · rw [fderiv.comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
@@ -983,7 +980,7 @@ end IicFTC
 
 section UnivFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {m n : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- **Fundamental theorem of calculus-2**, on the whole real line
@@ -1025,7 +1022,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
@@ -1224,7 +1221,7 @@ end IntegrationByPartsBilinear
 section IntegrationByPartsAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-  {a b : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
+  {a : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub [CompleteSpace A]

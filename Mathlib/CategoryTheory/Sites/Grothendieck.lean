@@ -53,7 +53,7 @@ universe v₁ u₁ v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category
+open Category
 
 variable (C : Type u) [Category.{v} C]
 
@@ -260,6 +260,11 @@ instance : InfSet (GrothendieckTopology C) where
         apply
           J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
+lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
+    S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
+  show S ∈ sInf (sieves '' s) X ↔ _
+  simp
+
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
@@ -408,7 +413,7 @@ instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 @[ext]
 structure Arrow (S : J.Cover X) where
@@ -546,7 +551,7 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.2
 
 /-- An auxiliary structure, used to define `S.index`. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
