@@ -77,10 +77,10 @@ section Instances
 
 variable [Abelian C] [IsGrothendieckAbelian.{w} C]
 
-instance IsGrothendieckAbelian.has_colimits : HasColimitsOfSize.{w, w} C :=
+instance IsGrothendieckAbelian.hasColimits : HasColimitsOfSize.{w, w} C :=
   has_colimits_of_finite_and_filtered
 
-instance IsGrothendieckAbelian.has_limits : HasLimitsOfSize.{w, w} C :=
+instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
   have : HasLimits.{w, u} (ShrinkHoms C) := hasLimits_of_hasColimits_of_hasSeparator
   Adjunction.has_limits_of_equivalence (ShrinkHoms.equivalence C |>.functor)
 
