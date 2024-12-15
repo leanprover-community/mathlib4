@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.InsertIdx
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
@@ -21,9 +20,7 @@ universe u
 
 variable {α β γ σ φ : Type*} {m n : ℕ}
 
-namespace Mathlib
-
-namespace Vector
+namespace List.Vector
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -527,8 +524,7 @@ variable {a : α}
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
-    rw [v.2, ← Nat.succ_le_succ_iff]
-    exact i.2⟩
+    split <;> omega⟩
 
 @[deprecated (since := "2024-10-21")] alias insertNth := insertIdx
 
@@ -624,7 +620,9 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
   refine (List.prod_set v.toList i a).trans ?_
   simp_all
 
-@[to_additive]
+/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element.-/
+@[to_additive
+  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element."]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
@@ -792,6 +790,4 @@ theorem mapAccumr₂_cons {f : α → β → σ → σ × φ} :
 
 end Simp
 
-end Vector
-
-end Mathlib
+end List.Vector

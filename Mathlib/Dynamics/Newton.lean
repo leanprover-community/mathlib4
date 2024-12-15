@@ -111,7 +111,7 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
   · -- Existence
     obtain ⟨n, hn⟩ := id h
     refine ⟨P.newtonMap^[n] x, isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n, ?_⟩
-    rw [← zero_dvd_iff, ← pow_eq_zero_of_le n.lt_two_pow.le hn]
+    rw [← zero_dvd_iff, ← pow_eq_zero_of_le (n.lt_two_pow_self).le hn]
     exact aeval_pow_two_pow_dvd_aeval_iterate_newtonMap h h' n
   · -- Uniqueness
     have ⟨u, hu⟩ := binomExpansion (P.map (algebraMap R S)) r₁ (r₂ - r₁)

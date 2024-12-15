@@ -6,11 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Batteries.Logic
+import Batteries.Tactic.Trans
 import Batteries.Util.LibraryNote
-import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
-import Mathlib.Order.Defs
 
 /-!
 # Basic logic properties
@@ -132,10 +131,6 @@ open Function
 section Propositional
 
 /-! ### Declarations about `implies` -/
-
-instance : IsRefl Prop Iff := ⟨Iff.refl⟩
-
-instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
 alias Iff.imp := imp_congr
 
@@ -357,6 +352,10 @@ theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q
 theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
+
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+    and_or_left, and_not_self_iff, or_false]
 
 end Propositional
 
@@ -725,20 +724,21 @@ alias by_contradiction := byContradiction -- TODO: remove? rename in core?
 
 alias prop_complete := propComplete -- TODO: remove? rename in core?
 
-@[elab_as_elim, deprecated (since := "2024-07-27")] theorem cases_true_false (p : Prop → Prop)
+@[elab_as_elim, deprecated "No deprecation message was provided." (since := "2024-07-27")]
+theorem cases_true_false (p : Prop → Prop)
     (h1 : p True) (h2 : p False) (a : Prop) : p a :=
   Or.elim (prop_complete a) (fun ht : a = True ↦ ht.symm ▸ h1) fun hf : a = False ↦ hf.symm ▸ h2
 
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem eq_false_or_eq_true (a : Prop) : a = False ∨ a = True := (prop_complete a).symm
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
   @cases_true_false p h1 h2 a
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
 
 end Classical
