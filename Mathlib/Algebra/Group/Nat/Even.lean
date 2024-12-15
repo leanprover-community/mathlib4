@@ -94,6 +94,10 @@ theorem add_one_lt_of_even {n m : ℕ} (hn : Even n) (hm : Even m) (hnm : n < m)
   rcases hm with ⟨m, rfl⟩
   omega
 
+theorem even_iff_iff_mod_two_eq : (Even n ↔ Even m) ↔ n % 2 = m % 2 := by
+  simp [even_iff]
+  omega
+
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by simp [*, parity_simps]
 
