@@ -414,7 +414,7 @@ lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
 
-theorem identical_of_eq {x y : PGame} (h : x = y) : x ≡ y := by subst h; rfl 
+theorem identical_of_eq {x y : PGame} (h : x = y) : x ≡ y := by subst h; rfl
 
 /-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
