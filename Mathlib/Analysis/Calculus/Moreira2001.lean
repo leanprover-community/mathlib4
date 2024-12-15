@@ -8,6 +8,7 @@ import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!
 # Moreira's version of Sard's Theorem
@@ -218,6 +219,29 @@ theorem comp {g : F → G} {V L : Set F} (hg : ContDiffHolder k α g L V)
   isBigO x hx := by
     sorry
 
+theorem mono_alpha {α' : I} (hα': α' ≤ α) (hf : ContDiffHolder k α f K U) :
+    ContDiffHolder k α' f K U where
+  contDiffOn := hf.contDiffOn
+  isBigO x hx := by sorry
+    -- morally, same proof as monotonicity of local Holder continuity in alpha ∈ (0,1]
+
+theorem of_contDiffOn (hf : ContDiffOn ℝ (k + 1) f U) (hU : IsOpen U) :
+    ContDiffHolder k α f K U where
+  contDiffOn := hf.of_le (by norm_num)
+  isBigO x hx := by
+    -- prose proof: iteratedFDeriv ℝ k f x_1 is C¹, in particular Hölder
+    -- complications for formalising: iteratedFDeriv is not as well-behaved...
+    sorry
+
+theorem mono_k {k' : ℕ} (hk': k' ≤ k) (hf : ContDiffHolder k α f K U) :
+    ContDiffHolder k' α f K U where
+  contDiffOn := hf.contDiffOn.of_le (by norm_cast)
+  isBigO x hx := by
+    by_cases h: k' = k
+    · exact h ▸ hf.isBigO x hx
+    -- choose k'' between k and k', then use ContDiffHolder.ofContDiffOn
+    sorry
+
 
 end ContDiffHolder
 
@@ -324,12 +348,67 @@ theorem theorem_2_1 {m p : ℕ} {k : ℕ} {α : I} (hk : k ≠ 0) {f : ℝᵐ ×
       ⋃ c ∈ s, c '' c.finiteSet = A := by
   sorry
 
-theorem main [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [MeasurableSpace E] [BorelSpace E]
+-- Theorem 3.4 from the paper: assuming α ≠ 0, in particular
+theorem thm34 [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [MeasurableSpace E] [BorelSpace E]
     [MeasurableSpace F] [BorelSpace F] -- added for now. TODO: necessary?
+    (p k : ℕ) (hp : p < finrank ℝ F)
+    (f : E → F) (K U : Set E) (hU : IsOpen U) (hKU : K ⊆ U) (α : I) (hα: α ≠ 0)
+    (hf : ContDiffHolder k α f K U)
+    (hrank : ∀ x ∈ K, finrank (LinearMap.range (fderiv ℝ f x)) ≤ p) :
+    μH[p + (finrank ℝ E - p) / (k + α)] (f '' K) = 0 := by sorry
+
+-- Moreira claims (Remark 3.5) that Theorem 3.3 also proves this.
+theorem thm33' [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace F] [BorelSpace F] -- added for now. TODO: necessary?
+    (hdim: finrank ℝ E < finrank ℝ F)
+    (f : E → F) {s : Set E} {f' : E → E →L[ℝ] F}
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x)
+    (h'f' : ∀ x ∈ s, finrank (LinearMap.range (f' x)) < (finrank ℝ E)) :
+    μH[(finrank ℝ E)] (f '' s) = 0 := by
+  -- mathlib has Theorem 3.3 as MeasureTheory.addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
+  -- somehow reduce to that setting
+  sorry
+
+theorem main [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace F] [BorelSpace F] -- added this line; TODO: necessary?
     (p k : ℕ) (hp : p < finrank ℝ F)
     (f : E → F) (K U : Set E) (hU : IsOpen U) (hKU : K ⊆ U) (α : I) (hf : ContDiffHolder k α f K U)
     (hrank : ∀ x ∈ K, finrank (LinearMap.range (fderiv ℝ f x)) ≤ p) :
-    μH[p + (finrank ℝ E - p) / (k + α)] K = 0 := by
-  sorry
+    μH[p + (finrank ℝ E - p) / (k + α)] (f '' K) = 0 := by
+  by_cases h: α = 0; swap
+  · exact thm34 p k hp f K U hU hKU α h hf hrank
+  -- This is Remark 3.5 in the paper.
+  replace hf := hf.contDiffOn
+  by_cases k ≥ 2
+  · have : ContDiffHolder (k - 1) 1 f K U := by
+      apply ContDiffHolder.of_contDiffOn
+      convert hf
+      sorry -- goal (k - 1) + 1 = k uses Nat subtraction... but k ≥ 2, so is fine mathematically
+    rw [h]
+    push_cast
+    rw [add_zero]
+    convert thm34 p (k-1) hp f K U hU hKU (α := 1) (by norm_num) this hrank
+    sorry -- same sorry as above
+  · have : k = 1 := sorry
+    simp [h, this]
+    -- now, this is theorem 3.3, but not quite (finrank F vs finrank F)
+    -- Moreira writes "the proof of Thm 3.3 shows"...
+    -- presumably, the same argument works, but would need to formalise the details
+    sorry /-
+    refine thm33' ?_ f (f' := fderiv ℝ f) ?_ ?_
+    · -- if not, we're in the easy case
+      sorry
+    · intro x hx
+      have foo : (1 : WithTop ℕ∞) ≤ k := (by norm_cast; exact this.symm.le)
+      --have aux := hf.differentiableOn foo
+      have aux := ((hf x (hKU hx)).differentiableWithinAt foo).hasFDerivWithinAt
+      -- not quite right, but close
+      convert aux.mono hKU
+      sorry
+    · sorry
+      /- intro x hx
+      calc finrank (LinearMap.range (fderiv ℝ f x))
+        _ ≤ p := by apply hrank x hx
+        _ < (finrank ℝ F) := by sorry -- hp plus casting -/ -/
 
 end Moreira2001
