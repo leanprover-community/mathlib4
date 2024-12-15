@@ -1192,7 +1192,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  linarith
+  omega
 
 end
 
