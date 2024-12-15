@@ -65,42 +65,6 @@ theorem ContDiffWithinAt.contDiffOn_inter_isOpen_subset
   · exact mem_of_mem_nhdsWithin hz.1 ht
   · exact (hu_sub ⟨hz.2, subset_insert _ _ hz.1⟩).resolve_left hne
 
-/-- If two sets coincide in a punctured neighborhood of `x`,
-then the corresponding iterated derivatives are equal.
-
-Note that we also allow to puncture the neighborhood of `x` at `y`.
-If `y ≠ x`, then this is a no-op. -/
-theorem iteratedFDerivWithin_congr_set' {x y : E} {s t : Set E} {f : E → F}
-    (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
-    iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
-  (iteratedFDerivWithin_eventually_congr_set' y h n).self_of_nhds
-
-@[simp]
-theorem iteratedFDerivWithin_insert {x y : E} {s : Set E} {f : E → F} {n : ℕ} :
-    iteratedFDerivWithin 𝕜 n f (insert x s) y = iteratedFDerivWithin 𝕜 n f s y :=
-  iteratedFDerivWithin_congr_set' (y := x)
-    (eventually_mem_nhdsWithin.mono <| by intros; simp_all).set_eq _
-
--- TODO: add `ftaylorSeriesWithin_congr_set'`
--- TODO: add `fderivWithin_insert`
-@[simp]
-theorem ftaylorSeriesWithin_insert {x : E} {s : Set E} {f : E → F} :
-    ftaylorSeriesWithin 𝕜 f (insert x s) = ftaylorSeriesWithin 𝕜 f s := by
-  ext y n : 2
-  apply iteratedFDerivWithin_insert
-
-theorem HasFTaylorSeriesUpToOn.congr_series {f : E → F} {n : WithTop ℕ∞} {s : Set E}
-    {p q : E → FormalMultilinearSeries 𝕜 E F} (hp : HasFTaylorSeriesUpToOn n f p s)
-    (hpq : ∀ m : ℕ, m ≤ n → EqOn (p · m) (q · m) s) :
-    HasFTaylorSeriesUpToOn n f q s where
-  zero_eq x hx := by simp only [← (hpq 0 (zero_le n) hx), hp.zero_eq x hx]
-  fderivWithin m hm x hx := by
-    refine ((hp.fderivWithin m hm x hx).congr' ?_ hx).congr_fderiv ?_
-    · exact (hpq m hm.le).symm
-    · refine congrArg _ (hpq (m + 1) ?_ hx)
-      exact ENat.add_one_natCast_le_withTop_of_lt hm
-  cont m hm := (hp.cont m hm).congr (hpq m hm).symm
-
 theorem ContDiffWithinAt.hasFTaylorSeriesUpToOn_subset_of_eventually
     {f : E → F} {s t : Set E} {m n : WithTop ℕ∞} {x : E} (h : ContDiffWithinAt 𝕜 n f s x)
     (hle : m ≤ n) (htop : m = ∞ → n = ω) (hs : ∀ᶠ x' in 𝓝[insert x s] x, UniqueDiffWithinAt 𝕜 s x')
@@ -121,7 +85,7 @@ theorem ContDiffWithinAt.hasFTaylorSeriesUpToOn_subset_of_eventually
   refine (hu.ftaylorSeriesWithin Hunique).congr_series fun k hk z hz ↦ ?_
   simp only [ftaylorSeriesWithin, iteratedFDerivWithin_inter_open huo hz.2,
     iteratedFDerivWithin_insert]
-  
+
 theorem iteratedFDerivWithin_comp_of_eventually
     {g : F → G} {f : E → F} {s : Set E} {t : Set F} {n : ℕ} {x₀ : E}
     (hg : ContDiffWithinAt 𝕜 n g t (f x₀))
@@ -252,8 +216,8 @@ theorem comp {g : F → G} {V L : Set F} (hg : ContDiffHolder k α g L V)
     ContDiffHolder k α (g ∘ f) K U where
   contDiffOn := hg.contDiffOn.comp hf.contDiffOn hUV
   isBigO x hx := by
-    
-    
+    sorry
+
 
 end ContDiffHolder
 
@@ -361,6 +325,7 @@ theorem theorem_2_1 {m p : ℕ} {k : ℕ} {α : I} (hk : k ≠ 0) {f : ℝᵐ ×
   sorry
 
 theorem main [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace F] [BorelSpace F] -- added for now. TODO: necessary?
     (p k : ℕ) (hp : p < finrank ℝ F)
     (f : E → F) (K U : Set E) (hU : IsOpen U) (hKU : K ⊆ U) (α : I) (hf : ContDiffHolder k α f K U)
     (hrank : ∀ x ∈ K, finrank (LinearMap.range (fderiv ℝ f x)) ≤ p) :
