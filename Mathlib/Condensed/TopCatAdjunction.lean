@@ -19,20 +19,16 @@ The counit is an isomorphism for compactly generated spaces, and we conclude tha
 
 universe u
 
-open Condensed CondensedSet CategoryTheory
+open Condensed CondensedSet CategoryTheory CompHaus
 
 attribute [local instance] ConcreteCategory.instFunLike
 
 variable (X : CondensedSet.{u})
 
 /-- Auxiliary definition to define the topology on `X(*)` for a condensed set `X`. -/
-private def _root_.CompHaus.const (S : CompHaus.{u}) (s : S) : CompHaus.of PUnit.{u+1} ⟶ S :=
-  ContinuousMap.const _ s
-
-/-- Auxiliary definition to define the topology on `X(*)` for a condensed set `X`. -/
 private def CondensedSet.coinducingCoprod :
-    (Σ (i : (S : CompHaus.{u}) × X.val.obj ⟨S⟩), i.fst) → X.val.obj ⟨CompHaus.of PUnit⟩ :=
-  fun ⟨⟨S, i⟩, s⟩ ↦ X.val.map (S.const s).op i
+    (Σ (i : (S : CompHaus.{u}) × X.val.obj ⟨S⟩), i.fst) → X.val.obj ⟨of PUnit⟩ :=
+  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u+1}).const s).op i
 
 /-- Let `X` be a condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from compact Hausdorff `S` spaces to `X(*)`, corresponding to elements of `X(S)`.
@@ -41,7 +37,7 @@ local instance : TopologicalSpace (X.val.obj ⟨CompHaus.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `CondensedSet ⥤ TopCat`  -/
-def CondensedSet.toTopCat : TopCat.{u+1} := TopCat.of (X.val.obj ⟨CompHaus.of PUnit⟩)
+def CondensedSet.toTopCat : TopCat.{u+1} := TopCat.of (X.val.obj ⟨of PUnit⟩)
 
 namespace CondensedSet
 
@@ -57,16 +53,14 @@ variable {X} {Y : CondensedSet} (f : X ⟶ Y)
 /-- The map part of the functor `CondensedSet ⥤ TopCat`  -/
 @[simps]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
-  toFun := f.val.app ⟨CompHaus.of PUnit⟩
+  toFun := f.val.app ⟨of PUnit⟩
   continuous_toFun := by
     rw [continuous_coinduced_dom]
     apply continuous_sigma
     intro ⟨S, x⟩
     simp only [Function.comp_apply, coinducingCoprod]
-    have : (fun (a : S) ↦ f.val.app ⟨CompHaus.of PUnit⟩ (X.val.map (S.const a).op x)) =
-        (fun (a : S) ↦ Y.val.map (S.const a).op (f.val.app ⟨S⟩ x)) :=
-      funext fun a ↦ NatTrans.naturality_apply f.val (S.const a).op x
-    rw [this]
+    rw [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u+1}).const a).op x)) = _
+      from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u+1}).const a).op x]
     exact continuous_coinducingCoprod Y _
 
 end CondensedSet
@@ -105,7 +99,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u+1}) :
 def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
   val := {
     app := fun S x ↦ {
-      toFun := fun s ↦ X.val.map (S.unop.const s).op x
+      toFun := fun s ↦ X.val.map ((of PUnit.{u+1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : CompHaus.{u}) × X.val.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩

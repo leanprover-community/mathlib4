@@ -15,10 +15,10 @@ In this file we prove many facts about `Pairwise` and the set lattice.
 
 open Function Set Order
 
-variable {α β γ ι ι' : Type*} {κ : Sort*} {r p q : α → α → Prop}
+variable {α ι ι' : Type*} {κ : Sort*} {r : α → α → Prop}
 section Pairwise
 
-variable {f g : ι → α} {s t u : Set α} {a b : α}
+variable {f : ι → α} {s : Set α}
 
 namespace Set
 
@@ -45,7 +45,7 @@ namespace Set
 
 section PartialOrderBot
 
-variable [PartialOrder α] [OrderBot α] {s t : Set ι} {f g : ι → α}
+variable [PartialOrder α] [OrderBot α] {s : Set ι} {f : ι → α}
 
 theorem pairwiseDisjoint_iUnion {g : ι' → Set ι} (h : Directed (· ⊆ ·) g) :
     (⋃ n, g n).PairwiseDisjoint f ↔ ∀ ⦃n⦄, (g n).PairwiseDisjoint f :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
 
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Perfect Sets
@@ -93,7 +93,7 @@ A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
 @[mk_iff perfectSpace_def]
-class PerfectSpace : Prop :=
+class PerfectSpace : Prop where
   univ_preperfect : Preperfect (Set.univ : Set α)
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=

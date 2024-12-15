@@ -34,7 +34,7 @@ variable [ConcreteCategory.{max v u} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
   { x : ∀ I : S.Arrow, P.obj (op I.Y) //
@@ -573,8 +573,8 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.val
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun e => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
-          right_inv := fun e => J.toSheafify_sheafifyLift _ _ }
+          left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
         apply J.sheafifyMap_sheafifyLift

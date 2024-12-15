@@ -136,7 +136,7 @@ lemma desc_map_mk {i : I} (X Y : C i) (f : X ⟶ Y) : (desc F).map (SigmaHom.mk 
 `F i`.
 -/
 def inclDesc (i : I) : incl i ⋙ desc F ≅ F i :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 @[simp]
 lemma inclDesc_hom_app (i : I) (X : C i) : (inclDesc F i).hom.app X = 𝟙 ((F i).obj X) :=
@@ -202,7 +202,7 @@ variable (I)
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
-  natIso fun i => NatIso.ofComponents fun X => Iso.refl _
+  natIso fun i => NatIso.ofComponents fun _ => Iso.refl _
 
 variable {I} {K : Type w₃}
 

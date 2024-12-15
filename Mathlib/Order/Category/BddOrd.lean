@@ -68,7 +68,7 @@ instance concreteCategory : ConcreteCategory BddOrd where
 instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where
   forget₂ :=
     { obj := fun X => X.toPartOrd
-      map := fun {X Y} => BoundedOrderHom.toOrderHom }
+      map := fun {_ _} => BoundedOrderHom.toOrderHom }
 
 instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget₂ :=
@@ -80,7 +80,7 @@ instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
 @[simps]
 def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedOrderHom.dual
+  map {_ _} := BoundedOrderHom.dual
 
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]

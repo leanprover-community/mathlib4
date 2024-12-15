@@ -82,8 +82,8 @@ section
 
 open UniformSpace Filter Set Uniformity Topology UniformConvergence Function
 
-variable {ι κ X X' Y Z α α' β β' γ 𝓕 : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-  [tZ : TopologicalSpace Z] [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
+variable {ι κ X X' Y α α' β β' γ : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+  [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
 *equicontinuous at `x₀ : X`* if, for all entourages `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
@@ -704,55 +704,73 @@ theorem Filter.HasBasis.uniformEquicontinuousOn_iff {κ₁ κ₂ : Type*} {p₁ 
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous at a point
 `x₀ : X` iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is
 equicontinuous at `x₀`. -/
-theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
-    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((u ∘ ·) ∘ F) x₀ := by
-  have := (UniformFun.postcomp_uniformInducing (α := ι) hu).inducing
+theorem IsUniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
+    (hu : IsUniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((u ∘ ·) ∘ F) x₀ := by
+  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).isInducing
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuousAt_iff]
   rfl
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.equicontinuousAt_iff := IsUniformInducing.equicontinuousAt_iff
 
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous at a point
 `x₀ : X` within a subset `S : Set X` iff the family `𝓕'`, obtained by composing each function
 of `𝓕` by `u`, is equicontinuous at `x₀` within `S`. -/
-theorem UniformInducing.equicontinuousWithinAt_iff {F : ι → X → α} {S : Set X} {x₀ : X} {u : α → β}
-    (hu : UniformInducing u) : EquicontinuousWithinAt F S x₀ ↔
+lemma IsUniformInducing.equicontinuousWithinAt_iff {F : ι → X → α} {S : Set X} {x₀ : X} {u : α → β}
+    (hu : IsUniformInducing u) : EquicontinuousWithinAt F S x₀ ↔
       EquicontinuousWithinAt ((u ∘ ·) ∘ F) S x₀ := by
-  have := (UniformFun.postcomp_uniformInducing (α := ι) hu).inducing
+  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).isInducing
   simp only [equicontinuousWithinAt_iff_continuousWithinAt, this.continuousWithinAt_iff]
   rfl
 
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.equicontinuousWithinAt_iff := IsUniformInducing.equicontinuousWithinAt_iff
+
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous iff the
 family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is equicontinuous. -/
-theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : UniformInducing u) :
+lemma IsUniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : IsUniformInducing u) :
     Equicontinuous F ↔ Equicontinuous ((u ∘ ·) ∘ F) := by
   congrm ∀ x, ?_
   rw [hu.equicontinuousAt_iff]
 
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.equicontinuous_iff := IsUniformInducing.equicontinuous_iff
+
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous on a
 subset `S : Set X` iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is
 equicontinuous on `S`. -/
-theorem UniformInducing.equicontinuousOn_iff {F : ι → X → α} {S : Set X} {u : α → β}
-    (hu : UniformInducing u) : EquicontinuousOn F S ↔ EquicontinuousOn ((u ∘ ·) ∘ F) S := by
+theorem IsUniformInducing.equicontinuousOn_iff {F : ι → X → α} {S : Set X} {u : α → β}
+    (hu : IsUniformInducing u) : EquicontinuousOn F S ↔ EquicontinuousOn ((u ∘ ·) ∘ F) S := by
   congrm ∀ x ∈ S, ?_
   rw [hu.equicontinuousWithinAt_iff]
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.equicontinuousOn_iff := IsUniformInducing.equicontinuousOn_iff
 
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous
 iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is uniformly
 equicontinuous. -/
-theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α → γ}
-    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((u ∘ ·) ∘ F) := by
-  have := UniformFun.postcomp_uniformInducing (α := ι) hu
+theorem IsUniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α → γ}
+    (hu : IsUniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((u ∘ ·) ∘ F) := by
+  have := UniformFun.postcomp_isUniformInducing (α := ι) hu
   simp only [uniformEquicontinuous_iff_uniformContinuous, this.uniformContinuous_iff]
   rfl
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformEquicontinuous_iff := IsUniformInducing.uniformEquicontinuous_iff
 
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous
 on a subset `S : Set β` iff the family `𝓕'`, obtained by composing each function of `𝓕` by `u`,
 is uniformly equicontinuous on `S`. -/
-theorem UniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : Set β} {u : α → γ}
-    (hu : UniformInducing u) :
+theorem IsUniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : Set β} {u : α → γ}
+    (hu : IsUniformInducing u) :
     UniformEquicontinuousOn F S ↔ UniformEquicontinuousOn ((u ∘ ·) ∘ F) S := by
-  have := UniformFun.postcomp_uniformInducing (α := ι) hu
+  have := UniformFun.postcomp_isUniformInducing (α := ι) hu
   simp only [uniformEquicontinuousOn_iff_uniformContinuousOn, this.uniformContinuousOn_iff]
   rfl
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformEquicontinuousOn_iff := IsUniformInducing.uniformEquicontinuousOn_iff
 
 /-- If a set of functions is equicontinuous at some `x₀` within a set `S`, the same is true for its
 closure in *any* topology for which evaluation at any `x ∈ S ∪ {x₀}` is continuous. Since

@@ -26,7 +26,7 @@ universe u
 
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
-variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
+variable {G₀ : Type u} {M₀ : Type*}
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
@@ -159,17 +159,17 @@ class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop w
   protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
 
 section MulDivCancelClass
-variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 
-@[simp] lemma mul_div_cancel_right₀ (a : M₀) (hb : b ≠ 0) : a * b / b = a :=
+@[simp] lemma mul_div_cancel_right₀ (a : M₀) {b : M₀} (hb : b ≠ 0) : a * b / b = a :=
   MulDivCancelClass.mul_div_cancel _ _ hb
 
 end MulDivCancelClass
 
 section MulDivCancelClass
-variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 
-@[simp] lemma mul_div_cancel_left₀ (b : M₀) (ha : a ≠ 0) : a * b / a = b := by
+@[simp] lemma mul_div_cancel_left₀ (b : M₀) {a : M₀} (ha : a ≠ 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_right₀ _ ha]
 
 end MulDivCancelClass
@@ -182,15 +182,14 @@ Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
 class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
-  inv_zero : (0 : G₀)⁻¹ = 0
+  protected inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
   protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 
-export GroupWithZero (inv_zero)
-attribute [simp] inv_zero
-
 section GroupWithZero
 variable [GroupWithZero G₀] {a : G₀}
+
+@[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
 @[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 
@@ -216,7 +215,7 @@ end
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀] {a b : G₀}
 
 @[simp]
 theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=

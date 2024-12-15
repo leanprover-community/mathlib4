@@ -309,7 +309,7 @@ theorem mem_iUnionUpTo_lastStep (x : β) : p.c x ∈ p.iUnionUpTo p.lastStep := 
     apply lt_trans (mul_pos (_root_.zero_lt_one.trans p.one_lt_tau) (p.rpos _)) H
   have B : p.τ⁻¹ * p.R p.lastStep < p.R p.lastStep := by
     conv_rhs => rw [← one_mul (p.R p.lastStep)]
-    exact mul_lt_mul (inv_lt_one p.one_lt_tau) le_rfl Rpos zero_le_one
+    exact mul_lt_mul (inv_lt_one_of_one_lt₀ p.one_lt_tau) le_rfl Rpos zero_le_one
   obtain ⟨y, hy1, hy2⟩ : ∃ y, p.c y ∉ p.iUnionUpTo p.lastStep ∧ p.τ⁻¹ * p.R p.lastStep < p.r y := by
     have := exists_lt_of_lt_csSup ?_ B
     · simpa only [exists_prop, mem_range, exists_exists_and_eq_and, Subtype.exists,
@@ -566,7 +566,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     intro x hx
     obtain ⟨i, y, hxy, h'⟩ :
         ∃ (i : Fin N) (i_1 : ↥s), i_1 ∈ u i ∧ x ∈ ball (↑i_1) (r ↑i_1) := by
-      have : x ∈ range a.c := by simpa only [Subtype.range_coe_subtype, setOf_mem_eq]
+      have : x ∈ range a.c := by simpa only [a, Subtype.range_coe_subtype, setOf_mem_eq]
       simpa only [mem_iUnion, bex_def] using hu' this
     refine mem_iUnion.2 ⟨i, ⟨hx, ?_⟩⟩
     simp only [v, exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk]
@@ -939,8 +939,8 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     by_cases h'x : x ∈ s'
     · obtain ⟨i, y, ySi, xy⟩ : ∃ (i : Fin N) (y : ↥s'), y ∈ S i ∧ x ∈ ball (y : α) (r1 y) := by
         have A : x ∈ range q.c := by
-          simpa only [not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_le,
-            mem_setOf_eq, Subtype.range_coe_subtype, mem_diff] using h'x
+          simpa only [q, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and,
+            not_le, mem_setOf_eq, Subtype.range_coe_subtype, mem_diff] using h'x
         simpa only [mem_iUnion, mem_image, bex_def] using hS A
       refine mem_iUnion₂.2 ⟨y, Or.inr ?_, ?_⟩
       · simp only [mem_iUnion, mem_image]
@@ -1016,7 +1016,7 @@ forms a Vitali family. This is essentially a restatement of the measurable Besic
 protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ where
   setsAt x := (fun r : ℝ => closedBall x r) '' Ioi (0 : ℝ)
   measurableSet _ := forall_mem_image.2 fun _ _ ↦ isClosed_ball.measurableSet
-  nonempty_interior _ := forall_mem_image.2 fun r rpos ↦
+  nonempty_interior _ := forall_mem_image.2 fun _ rpos ↦
     (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
   nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
   covering := by

@@ -83,9 +83,9 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
     if f.support.card = 0 then
       "0"
     else
-      let ret := "fun₀" ++
-        Std.Format.join (f.support.val.unquot.map <|
-          fun a => " | " ++ repr a ++ " => " ++ repr (f a))
+      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
+        .group (.join <| f.support.val.unquot.map fun a =>
+          .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
       if p ≥ leadPrec then Format.paren ret else ret
 
 -- This cannot be put in `Mathlib.Data.DFinsupp.Notation` where it belongs, since doc-strings

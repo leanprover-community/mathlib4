@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets
@@ -210,14 +211,14 @@ theorem StarConvex.add_left (hs : StarConvex 𝕜 x s) (z : E) :
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
   refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
-  rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
+  match_scalars <;> simp [hab]
 
 theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (x + z) ((fun x => x + z) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
   refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
-  rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
+  match_scalars <;> simp [hab]
 
 /-- The translation of a star-convex set is also star-convex. -/
 theorem StarConvex.preimage_add_right (hs : StarConvex 𝕜 (z + x) s) :
@@ -326,7 +327,7 @@ theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarCon
   rw [Convex.combo_affine_apply hab, hy'f]
 
 theorem StarConvex.neg (hs : StarConvex 𝕜 x s) : StarConvex 𝕜 (-x) (-s) := by
-  rw [← image_neg]
+  rw [← image_neg_eq_neg]
   exact hs.is_linear_image IsLinearMap.isLinearMap_neg
 
 theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
@@ -385,7 +386,7 @@ theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
 theorem StarConvex.mem_smul (hs : StarConvex 𝕜 0 s) (hx : x ∈ s) {t : 𝕜} (ht : 1 ≤ t) :
     x ∈ t • s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans_le ht).ne']
-  exact hs.smul_mem hx (by positivity) (inv_le_one ht)
+  exact hs.smul_mem hx (by positivity) (inv_le_one_of_one_le₀ ht)
 
 end AddCommGroup
 
