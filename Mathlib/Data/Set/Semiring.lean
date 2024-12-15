@@ -51,31 +51,31 @@ protected def down : SetSemiring α ≃ Set α :=
 open SetSemiring (down)
 open Set (up)
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 @[simp]
 protected theorem down_up (s : Set α) : SetSemiring.down (Set.up s) = s :=
   rfl
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 @[simp]
 protected theorem up_down (s : SetSemiring α) : Set.up (SetSemiring.down s) = s :=
   rfl
 
 -- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` simplifies the LHS
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 theorem up_le_up {s t : Set α} : Set.up s ≤ Set.up t ↔ s ⊆ t :=
   Iff.rfl
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 theorem up_lt_up {s t : Set α} : Set.up s < Set.up t ↔ s ⊂ t :=
   Iff.rfl
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 @[simp]
 theorem down_subset_down {s t : SetSemiring α} : SetSemiring.down s ⊆ SetSemiring.down t ↔ s ≤ t :=
   Iff.rfl
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 @[simp]
 theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSemiring.down t ↔ s < t :=
   Iff.rfl
@@ -84,7 +84,7 @@ instance : Zero (SetSemiring α) where zero := Set.up (∅ : Set α)
 
 instance : Add (SetSemiring α) where add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 instance : AddCommMonoid (SetSemiring α) where
   add_assoc := union_assoc
   zero_add := empty_union
@@ -123,7 +123,7 @@ section Mul
 
 variable [Mul α]
 
--- Porting note (#11036): dot notation no longer works
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation no longer works
 instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
   { (inferInstance : AddCommMonoid (SetSemiring α)) with
     mul := fun s t => Set.up (image2 (· * ·) (SetSemiring.down s) (SetSemiring.down t))

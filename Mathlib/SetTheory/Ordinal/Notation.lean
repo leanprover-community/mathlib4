@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Data.PNat.Basic
 import Mathlib.SetTheory.Ordinal.Principal
@@ -27,7 +28,8 @@ are defined on `ONote` and `NONote`.
 
 open Ordinal Order
 
--- Porting note: the generated theorem is warned by `simpNF`.
+-- The generated theorem `ONote.zero.sizeOf_spec` is flagged by `simpNF`,
+-- and we don't otherwise need it.
 set_option genSizeOfSpec false in
 /-- Recursive definition of an ordinal notation. `zero` denotes the ordinal 0, and `oadd e n a` is
 intended to refer to `ω ^ e * n + a`. For this to be a valid Cantor normal form, we must have the
@@ -115,7 +117,7 @@ def ofNat : ℕ → ONote
   | 0 => 0
   | Nat.succ n => oadd 0 n.succPNat 0
 
--- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/11467): during the port we marked these lemmas with `@[eqns]`
 -- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem ofNat_zero : ofNat 0 = 0 :=
@@ -800,8 +802,8 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   · apply (mul_le_mul_left' (le_succ b) _).trans
     rw [← add_one_eq_succ, add_mul_succ _ (one_add_of_omega0_le h), add_one_eq_succ, succ_le_iff,
       Ordinal.mul_lt_mul_iff_left (Ordinal.pos_iff_ne_zero.2 e0)]
-    exact isLimit_omega0.2 _ l
-  · apply (principal_mul_omega0 (isLimit_omega0.2 _ h) l).le.trans
+    exact isLimit_omega0.succ_lt l
+  · apply (principal_mul_omega0 (isLimit_omega0.succ_lt h) l).le.trans
     simpa using mul_le_mul_right' (one_le_iff_ne_zero.2 e0) ω
 
 section
@@ -829,7 +831,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     by_cases h : m = 0
     · simp only [R, R', h, ONote.ofNat, Nat.cast_zero, zero_add, ONote.repr, mul_zero,
         ONote.opowAux, add_zero]
-    · simp only [R', ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux,
+    · simp only [α', ω0, R, R', ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux,
         ONote.repr_ofNat, ONote.repr_mul, ONote.repr_add, Ordinal.opow_mul, ONote.zero_add]
   have α0 : 0 < α' := by simpa [lt_def, repr] using oadd_pos a0 n a'
   have ω00 : 0 < ω0 ^ (k : Ordinal) := opow_pos _ (opow_pos _ omega0_pos)

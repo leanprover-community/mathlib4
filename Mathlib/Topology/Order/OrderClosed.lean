@@ -150,6 +150,10 @@ theorem disjoint_nhds_atBot_iff : Disjoint (𝓝 a) atBot ↔ ¬IsBot a := by
     refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ (Iic_mem_atBot b)
     exact isClosed_Iic.isOpen_compl.mem_nhds hb
 
+theorem IsLUB.range_of_tendsto {F : Filter β} [F.NeBot] (hle : ∀ i, f i ≤ a)
+    (hlim : Tendsto f F (𝓝 a)) : IsLUB (range f) a :=
+  ⟨forall_mem_range.mpr hle, fun _c hc ↦ le_of_tendsto' hlim fun i ↦ hc <| mem_range_self i⟩
+
 end Preorder
 
 section NoBotOrder
@@ -169,6 +173,23 @@ theorem not_tendsto_atBot_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendst
   hf.not_tendsto (disjoint_nhds_atBot a)
 
 end NoBotOrder
+
+theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeBot F]
+    [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIicTopology α]
+    {a : α} {f : ι → α} (hle : ∀ i, f i ≤ a) (hlim : Filter.Tendsto f F (𝓝 a)) :
+    ⨆ i, f i = a :=
+  have := F.nonempty_of_neBot
+  (IsLUB.range_of_tendsto hle hlim).ciSup_eq
+
+theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIicTopology α]
+    {a : α} {f : ι → α} (hlt : ∀ i, f i < a) (hlim : Tendsto f F (𝓝 a)) :
+    ⋃ i : ι, Iic (f i) = Iio a := by
+  have obs : a ∉ range f := by
+    rw [mem_range]
+    rintro ⟨i, rfl⟩
+    exact (hlt i).false
+  rw [← biUnion_range, (IsLUB.range_of_tendsto (le_of_lt <| hlt ·) hlim).biUnion_Iic_eq_Iio obs]
 
 section LinearOrder
 
@@ -192,13 +213,19 @@ theorem Ici_mem_nhds (h : a < b) : Ici a ∈ 𝓝 b :=
 
 theorem eventually_ge_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b ≤ x := Ici_mem_nhds hab
 
-theorem eventually_gt_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
+theorem Filter.Tendsto.eventually_const_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u < f a :=
   h.eventually <| eventually_gt_nhds hv
 
-theorem eventually_ge_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
+@[deprecated (since := "2024-11-17")]
+alias eventually_gt_of_tendsto_gt := Filter.Tendsto.eventually_const_lt
+
+theorem Filter.Tendsto.eventually_const_le {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u ≤ f a :=
   h.eventually <| eventually_ge_nhds hv
+
+@[deprecated (since := "2024-11-17")]
+alias eventually_ge_of_tendsto_gt := Filter.Tendsto.eventually_const_le
 
 protected theorem Dense.exists_gt [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, x < y :=
@@ -230,27 +257,31 @@ in another file.
 #### Point excluded
 -/
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioo_mem_nhdsWithin_Iio' (H : a < b) : Ioo a b ∈ 𝓝[<] b := by
   simpa only [← Iio_inter_Ioi] using inter_mem_nhdsWithin _ (Ioi_mem_nhds H)
 
 theorem Ioo_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ioo a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio' H.1) <| Ioo_subset_Ioo_right H.2
 
-theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+protected theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
+
+protected theorem PredOrder.nhdsWithin_Iio [PredOrder α] : 𝓝[<] a = ⊥ := by
+  if h : IsMin a then simp [h.Iio_eq]
+  else exact (Order.pred_covBy_of_not_isMin h).nhdsWithin_Iio
 
 theorem Ico_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
--- Porting note (#11215): TODO: swap `'`?
--- Porting note (#11215): TODO: swap `'`?
+
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Iio' (H : a < b) : Ico a b ∈ 𝓝[<] b :=
   Ico_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
 theorem Ioc_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ioc_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioc_mem_nhdsWithin_Iio' (H : a < b) : Ioc a b ∈ 𝓝[<] b :=
   Ioc_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
@@ -281,6 +312,12 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 /-!
 #### Point included
 -/
+
+protected theorem CovBy.nhdsWithin_Iic (H : a ⋖ b) : 𝓝[≤] b = pure b := by
+  rw [← Iio_insert, nhdsWithin_insert, H.nhdsWithin_Iio, sup_bot_eq]
+
+protected theorem PredOrder.nhdsWithin_Iic [PredOrder α] : 𝓝[≤] b = pure b := by
+  rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsWithin_Iio, sup_bot_eq]
 
 theorem Ioc_mem_nhdsWithin_Iic' (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
   inter_mem (nhdsWithin_le_nhds <| Ioi_mem_nhds H) self_mem_nhdsWithin
@@ -331,7 +368,7 @@ variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {f : β → 
 theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
 
-@[deprecated (since := "2024-02-15")]
+@[deprecated "No deprecation message was provided." (since := "2024-02-15")]
 lemma ClosedIciTopology.isClosed_ge' (a : α) : IsClosed {x | a ≤ x} := isClosed_Ici a
 export ClosedIciTopology (isClosed_ge')
 
@@ -366,6 +403,10 @@ protected alias ⟨_, BddBelow.closure⟩ := bddBelow_closure
 theorem disjoint_nhds_atTop_iff : Disjoint (𝓝 a) atTop ↔ ¬IsTop a :=
   disjoint_nhds_atBot_iff (α := αᵒᵈ)
 
+theorem IsGLB.range_of_tendsto {F : Filter β} [F.NeBot] (hle : ∀ i, a ≤ f i)
+    (hlim : Tendsto f F (𝓝 a)) : IsGLB (range f) a :=
+  IsLUB.range_of_tendsto (α := αᵒᵈ) hle hlim
+
 end Preorder
 
 section NoTopOrder
@@ -386,6 +427,18 @@ theorem not_tendsto_atTop_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendst
 
 end NoTopOrder
 
+theorem iInf_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
+    [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIciTopology α]
+    {a : α} {f : ι → α} (hle : ∀ i, a ≤ f i) (hlim : Tendsto f F (𝓝 a)) :
+    ⨅ i, f i = a :=
+  iSup_eq_of_forall_le_of_tendsto (α := αᵒᵈ) hle hlim
+
+theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIciTopology α]
+    {a : α} {f : ι → α} (hlt : ∀ i, a < f i) (hlim : Tendsto f F (𝓝 a)) :
+    ⋃ i : ι, Ici (f i) = Ioi a :=
+  iUnion_Iic_eq_Iio_of_lt_of_tendsto (α := αᵒᵈ) hlt hlim
+
 section LinearOrder
 
 variable [TopologicalSpace α] [LinearOrder α] [ClosedIciTopology α] [TopologicalSpace β]
@@ -404,13 +457,19 @@ theorem Iic_mem_nhds (h : a < b) : Iic b ∈ 𝓝 a :=
 
 theorem eventually_le_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b := Iic_mem_nhds hab
 
-theorem eventually_lt_of_tendsto_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
+theorem Filter.Tendsto.eventually_lt_const {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a < u :=
   h.eventually <| eventually_lt_nhds hv
 
-theorem eventually_le_of_tendsto_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
+@[deprecated (since := "2024-11-17")]
+alias eventually_lt_of_tendsto_lt := Filter.Tendsto.eventually_lt_const
+
+theorem Filter.Tendsto.eventually_le_const {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a ≤ u :=
   h.eventually <| eventually_le_nhds hv
+
+@[deprecated (since := "2024-11-17")]
+alias eventually_le_of_tendsto_lt := Filter.Tendsto.eventually_le_const
 
 protected theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, y < x :=
@@ -442,31 +501,34 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
-theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+protected theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
+
+protected theorem SuccOrder.nhdsWithin_Ioi [SuccOrder α] : 𝓝[>] a = ⊥ :=
+  PredOrder.nhdsWithin_Iio (α := αᵒᵈ)
 
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioc a b ∈ 𝓝[>] a :=
   Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
 theorem Ico_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ico a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ico_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[>] a :=
   Ico_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
 theorem Icc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Icc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Icc_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Icc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[>] a :=
   Icc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
@@ -491,6 +553,12 @@ theorem continuousWithinAt_Ioo_iff_Ioi (h : a < b) :
 /-!
 ### Point included
 -/
+
+protected theorem CovBy.nhdsWithin_Ici (H : a ⋖ b) : 𝓝[≥] a = pure a :=
+  H.toDual.nhdsWithin_Iic
+
+protected theorem SuccOrder.nhdsWithin_Ici [SuccOrder α] : 𝓝[≥] a = pure a :=
+  PredOrder.nhdsWithin_Iic (α := αᵒᵈ)
 
 theorem Ico_mem_nhdsWithin_Ici' (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
   inter_mem_nhdsWithin _ <| Iio_mem_nhds H
@@ -666,7 +734,17 @@ theorem Ico_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Ico a b ∈ 𝓝 x
 theorem Icc_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Icc a b ∈ 𝓝 x :=
   mem_of_superset (Ioo_mem_nhds ha hb) Ioo_subset_Icc_self
 
-variable [TopologicalSpace γ]
+/-- The only order closed topology on a linear order which is a `PredOrder` and a `SuccOrder`
+is the discrete topology.
+
+This theorem is not an instance,
+because it causes searches for `PredOrder` and `SuccOrder` with their `Preorder` arguments
+and very rarely matches. -/
+theorem DiscreteTopology.of_predOrder_succOrder [PredOrder α] [SuccOrder α] :
+    DiscreteTopology α := by
+  refine discreteTopology_iff_nhds.mpr fun a ↦ ?_
+  rw [← nhdsWithin_univ, ← Iic_union_Ioi, nhdsWithin_union, PredOrder.nhdsWithin_Iic,
+    SuccOrder.nhdsWithin_Ioi, sup_bot_eq]
 
 end LinearOrder
 

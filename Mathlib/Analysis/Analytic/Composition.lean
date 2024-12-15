@@ -175,22 +175,21 @@ map `f` in `c.length` variables, one may form a continuous multilinear map in `n
 applying the right coefficient of `p` to each block of the composition, and then applying `f` to
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) :
-    ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G where
+    (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
   toFun v := f (p.applyComposition c v)
-  map_add' v i x y := by
+  map_update_add' v i x y := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_add]
-  map_smul' v i c x := by
+    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
+  map_update_smul' v i c x := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_smul]
+    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
 
 @[simp]
 theorem compAlongComposition_apply {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
+    (f : F [×c.length]→L[𝕜] G) (v : Fin n → E) :
     (f.compAlongComposition p c) v = f (p.applyComposition c v) :=
   rfl
 
@@ -207,8 +206,7 @@ form a continuous multilinear map in `n` variables by applying the right coeffic
 block of the composition, and then applying `q c.length` to the resulting vector. It is
 called `q.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
-    (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
-    ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G :=
+    (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) : (E [×n]→L[𝕜] G) :=
   (q c.length).compAlongComposition p c
 
 @[simp]
@@ -290,7 +288,7 @@ namespace FormalMultilinearSeries
 /-- The norm of `f.compAlongComposition p c` is controlled by the product of
 the norms of the relevant bits of `f` and `p`. -/
 theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
+    (f : F [×c.length]→L[𝕜] G) (v : Fin n → E) :
     ‖f.compAlongComposition p c v‖ ≤ (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) * ∏ i : Fin n, ‖v i‖ :=
   calc
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl
@@ -311,7 +309,7 @@ the norms of the relevant bits of `q` and `p`. -/
 theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖ ≤ ‖q c.length‖ * ∏ i, ‖p (c.blocksFun i)‖ :=
-  ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (compAlongComposition_bound _ _ _)
+  ContinuousMultilinearMap.opNorm_le_bound (by positivity) (compAlongComposition_bound _ _ _)
 
 theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
@@ -807,7 +805,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
-          apply pow_le_pow_left (norm_nonneg _)
+          gcongr
           rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
@@ -1053,16 +1051,15 @@ theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length
   show List.length ((splitWrtComposition a.blocks b)[i.1]) = blocksFun b i by
     rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _)]; rfl
 
-set_option linter.deprecated false in
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
         ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
-      blocksFun a (embedding b i j) :=
-  show get (get _ ⟨_, _⟩) ⟨_, _⟩  = a.blocks.get ⟨_, _⟩ by
-    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
+      blocksFun a (embedding b i j) := by
+  unfold sigmaCompositionAux
+  rw [blocksFun, get_eq_getElem, getElem_of_eq (getElem_splitWrtComposition _ _ _ _),
+    getElem_drop, getElem_take]; rfl
 
-set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some

@@ -111,7 +111,7 @@ section Add
 @[fun_prop]
 nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-  (hf.add hg).congr_left fun y => by
+   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 
@@ -315,7 +315,7 @@ variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[�
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
-  dsimp [HasStrictFDerivAt] at *
+  simp only [hasStrictFDerivAt_iff_isLittleO] at *
   convert IsLittleO.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 
@@ -710,5 +710,99 @@ theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv �
   simp only [← fderivWithin_univ, fderivWithin_const_sub uniqueDiffWithinAt_univ]
 
 end Sub
+
+section CompAdd
+
+/-! ### Derivative of the composition with a translation -/
+
+open scoped Pointwise Topology
+
+theorem hasFDerivWithinAt_comp_add_right (a : E) :
+    HasFDerivWithinAt (fun x ↦ f (x + a)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (x + a) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have A : f = (fun x ↦ f (x + a)) ∘ (fun x ↦ x - a) := by ext; simp
+    rw [show x = (x + a) - a by abel] at h
+    rw [A]
+    have : HasFDerivWithinAt (fun x ↦ x - a) (ContinuousLinearMap.id 𝕜 E) (a +ᵥ s) (x + a) := by
+      simpa using (hasFDerivWithinAt_id (x + a) _).sub (hasFDerivWithinAt_const _ _ _)
+    apply h.comp (x + a) this (fun y hy ↦ ?_)
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem, add_comm, ← sub_eq_add_neg] using hy
+  · have : HasFDerivWithinAt (fun x ↦ x + a) (ContinuousLinearMap.id 𝕜 E) s x := by
+      simpa using (hasFDerivWithinAt_id x s (𝕜 := 𝕜)).add (hasFDerivWithinAt_const a x s (𝕜 := 𝕜))
+    apply h.comp x this (fun y hy ↦ ?_)
+    simp [Set.mem_vadd_set_iff_neg_vadd_mem, hy]
+
+theorem differentiableWithinAt_comp_add_right (a : E) :
+    DifferentiableWithinAt 𝕜 (fun x ↦ f (x + a)) s x ↔
+      DifferentiableWithinAt 𝕜 f (a +ᵥ s) (x + a) := by
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_comp_add_right]
+
+theorem fderivWithin_comp_add_right (a : E) :
+    fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
+  simp only [fderivWithin, hasFDerivWithinAt_comp_add_right, DifferentiableWithinAt]
+
+theorem hasFDerivWithinAt_comp_add_left (a : E) :
+    HasFDerivWithinAt (fun x ↦ f (a + x)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (a + x) := by
+  simpa [add_comm a] using hasFDerivWithinAt_comp_add_right a
+
+theorem differentiableWithinAt_comp_add_left (a : E) :
+    DifferentiableWithinAt 𝕜 (fun x ↦ f (a + x)) s x ↔
+      DifferentiableWithinAt 𝕜 f (a +ᵥ s) (a + x) := by
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_comp_add_left]
+
+theorem fderivWithin_comp_add_left (a : E) :
+    fderivWithin 𝕜 (fun x ↦ f (a + x)) s x = fderivWithin 𝕜 f (a +ᵥ s) (a + x) := by
+  simpa [add_comm a] using fderivWithin_comp_add_right a
+
+theorem hasFDerivAt_comp_add_right (a : E) :
+    HasFDerivAt (fun x ↦ f (x + a)) f' x ↔ HasFDerivAt f f' (x + a) := by
+  simp [← hasFDerivWithinAt_univ, hasFDerivWithinAt_comp_add_right]
+
+theorem differentiableAt_comp_add_right (a : E) :
+    DifferentiableAt 𝕜 (fun x ↦ f (x + a)) x ↔ DifferentiableAt 𝕜 f (x + a) := by
+  simp [DifferentiableAt, hasFDerivAt_comp_add_right]
+
+theorem fderiv_comp_add_right (a : E) :
+    fderiv 𝕜 (fun x ↦ f (x + a)) x = fderiv 𝕜 f (x + a) := by
+  simp [← fderivWithin_univ, fderivWithin_comp_add_right]
+
+theorem hasFDerivAt_comp_add_left (a : E) :
+    HasFDerivAt (fun x ↦ f (a + x)) f' x ↔ HasFDerivAt f f' (a + x) := by
+  simpa [add_comm a] using hasFDerivAt_comp_add_right a
+
+theorem differentiableAt_comp_add_left (a : E) :
+    DifferentiableAt 𝕜 (fun x ↦ f (a + x)) x ↔ DifferentiableAt 𝕜 f (a + x) := by
+  simp [DifferentiableAt, hasFDerivAt_comp_add_left]
+
+theorem fderiv_comp_add_left (a : E) :
+    fderiv 𝕜 (fun x ↦ f (a + x)) x = fderiv 𝕜 f (a + x) := by
+  simpa [add_comm a] using fderiv_comp_add_right a
+
+theorem hasFDerivWithinAt_comp_sub (a : E) :
+    HasFDerivWithinAt (fun x ↦ f (x - a)) f' s x ↔ HasFDerivWithinAt f f' (-a +ᵥ s) (x - a) := by
+  simpa [sub_eq_add_neg] using hasFDerivWithinAt_comp_add_right (-a)
+
+theorem differentiableWithinAt_comp_sub (a : E) :
+    DifferentiableWithinAt 𝕜 (fun x ↦ f (x - a)) s x ↔
+      DifferentiableWithinAt 𝕜 f (-a +ᵥ s) (x - a) := by
+  simp [DifferentiableWithinAt, hasFDerivWithinAt_comp_sub]
+
+theorem fderivWithin_comp_sub (a : E) :
+    fderivWithin 𝕜 (fun x ↦ f (x - a)) s x = fderivWithin 𝕜 f (-a +ᵥ s) (x - a) := by
+  simpa [sub_eq_add_neg] using fderivWithin_comp_add_right (-a)
+
+theorem hasFDerivAt_comp_sub (a : E) :
+    HasFDerivAt (fun x ↦ f (x - a)) f' x ↔ HasFDerivAt f f' (x - a) := by
+  simp [← hasFDerivWithinAt_univ, hasFDerivWithinAt_comp_sub]
+
+theorem differentiableAt_comp_sub (a : E) :
+    DifferentiableAt 𝕜 (fun x ↦ f (x - a)) x ↔ DifferentiableAt 𝕜 f (x - a) := by
+  simp [DifferentiableAt, hasFDerivAt_comp_sub]
+
+theorem fderiv_comp_sub (a : E) :
+    fderiv 𝕜 (fun x ↦ f (x - a)) x = fderiv 𝕜 f (x - a) := by
+  simp [← fderivWithin_univ, fderivWithin_comp_sub]
+
+end CompAdd
 
 end

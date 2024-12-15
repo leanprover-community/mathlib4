@@ -162,6 +162,11 @@ def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
         fun a b => by
         simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 
+theorem extensionHom_coe [CompleteSpace β] [T0Space β] (a : α) :
+    Completion.extensionHom f hf a = f a := by
+  simp only [Completion.extensionHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    UniformSpace.Completion.extension_coe <| uniformContinuous_addMonoidHom_of_continuous hf]
+
 instance topologicalRing : TopologicalRing (Completion α) where
   continuous_add := continuous_add
   continuous_mul := continuous_mul

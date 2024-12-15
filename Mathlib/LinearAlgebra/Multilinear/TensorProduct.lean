@@ -42,11 +42,11 @@ def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) :
     MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) where
   toFun v := (a fun i => v (Sum.inl i)) ⊗ₜ b fun i => v (Sum.inr i)
-  map_add' _ i p q := by
+  map_update_add' _ i p q := by
     letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
     letI := (@Sum.inr_injective ι₁ ι₂).decidableEq
     cases i <;> simp [TensorProduct.add_tmul, TensorProduct.tmul_add]
-  map_smul' _ i c p := by
+  map_update_smul' _ i c p := by
     letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
     letI := (@Sum.inr_injective ι₁ ι₂).decidableEq
     cases i <;> simp [TensorProduct.smul_tmul', TensorProduct.tmul_smul]
