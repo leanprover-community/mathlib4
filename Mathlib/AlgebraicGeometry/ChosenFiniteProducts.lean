@@ -19,16 +19,17 @@ BinaryCofan.mk
 
 @[simp]
 theorem tensorProductCocone_inl : (tensorProductCocone A B).inl =
-  (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
+  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
 
 @[simp]
 theorem tensorProductCocone_inr : (tensorProductCocone A B).inr =
-  (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
+  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
 @[simps]
 def tensorProductColimit : IsColimit (tensorProductCocone A B) where
-  desc (s : BinaryCofan A B) := (Algebra.TensorProduct.lift s.inl.toIntAlgHom s.inr.toIntAlgHom 
-    (fun _ _ => by apply Commute.all)).toRingHom
+  desc (s : BinaryCofan A B) :=
+    ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom 
+      (fun _ _ => by apply Commute.all)).toRingHom
   fac (s : BinaryCofan A B) := by
     rintro ⟨j⟩
     cases j <;> ext a
@@ -44,8 +45,9 @@ def tensorProductColimit : IsColimit (tensorProductCocone A B) where
       erw [Algebra.TensorProduct.lift_tmul (hfg := fun _ _ => by apply Commute.all)]
       rw [map_one, one_mul]
       rfl
-  uniq (s : BinaryCofan A B) (m : A ⊗[ℤ] B →+* s.pt) := by
-    intro hm
+  uniq (s : BinaryCofan A B) := by
+    rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
+    apply CommRingCat.hom_ext
     apply RingHom.toIntAlgHom_injective
     apply Algebra.TensorProduct.liftEquiv.symm.injective
     apply Subtype.ext
@@ -54,11 +56,15 @@ def tensorProductColimit : IsColimit (tensorProductCocone A B) where
     · ext a
       dsimp
       rw [map_one, mul_one]
-      exact congrFun (congrArg DFunLike.coe (hm (Discrete.mk WalkingPair.left))) a
+      have : _ = s.inl := hm (Discrete.mk WalkingPair.left)
+      rw [←this]
+      rfl
     · ext b
       dsimp
       rw [map_one, one_mul]
-      exact congrFun (congrArg DFunLike.coe (hm (Discrete.mk WalkingPair.right))) b
+      have : _ = s.inr := hm (Discrete.mk WalkingPair.right)
+      rw [←this]
+      rfl
 
 def tensorProductColimitCocone : Limits.ColimitCocone (pair A B) :=
 ⟨_, tensorProductColimit A B⟩
