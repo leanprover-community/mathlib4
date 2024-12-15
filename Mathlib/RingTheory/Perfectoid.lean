@@ -13,20 +13,20 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 # Perfectoid Rings and Perfectoid Fields
 -/
 
+
 open Valuation Valued Function NNReal CategoryTheory
-#check Valued.mk
-class PerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K] [UniformSpace K]
+
+class PerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K] [u : UniformSpace K]
     extends UniformAddGroup K, TopologicalDivisionRing K, CompleteSpace K : Prop where
-  exists_val_top : ∃ v : Valuation K ℝ≥0, ∀ (s : Set K),
-      s ∈ nhds 0 ↔ ∃ (γ : ℝ≥0ˣ), {x : K | v x < γ} ⊆ s
+--   exists_val_top : ∃ v : Valuation K ℝ≥0, ∀ (s : Set K),
+--       s ∈ nhds 0 ↔ ∃ (γ : ℝ≥0ˣ), {x : K | v x < γ} ⊆ s
         -- This is wrong, wait for change of Valued.
+  exists_val_top : ∃ vK : Valued K ℝ≥0, vK.toUniformSpace = u
   exists_p_mem_span_pow_p :
-      let _ : Valued K ℝ≥0 := Valued.mk
-          (Classical.choose exists_val_top) (Classical.choose_spec exists_val_top)
+      let _ : Valued K ℝ≥0 := Classical.choose exists_val_top
       ∃ π : 𝒪[K], ¬ IsUnit π ∧ (p : 𝒪[K]) ∈ Ideal.span {π ^ p}
   exist_p_th_root :
-      let _ : Valued K ℝ≥0 := Valued.mk
-          (Classical.choose exists_val_top) (Classical.choose_spec exists_val_top)
+      let _ : Valued K ℝ≥0 := Classical.choose exists_val_top
       ∀ x : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])}, ∃ y : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])} , x = y ^ p
       -- Surjective <| frobenius (𝒪[K]⧸Ideal.span {(p : 𝒪[K])}) p
 
@@ -36,14 +36,30 @@ class PerfectoidFieldObj (p : outParam ℕ) [Fact p.Prime] (K : Type*) extends
 
 -- `Valuation is not a part of information it only require the topology comes from a valuation`
 
-class PerfectoidValuedField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K]
-    [val : Valued K ℝ≥0] extends CompleteSpace K : Prop
+/--
+A convenience class, for a perfectoid field endowed with a valuation.
+No instance of this class should be registered: It should be used as `letI := valuedPerfectoidField`
+to endow a perfectoid field with a valued instance.
+-/
+class ValuedPerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K]
+    extends Valued K ℝ≥0, CompleteSpace K
     where
   exists_p_mem_span_pow_p : ∃ π : 𝒪[K], ¬ IsUnit π ∧ (p : 𝒪[K]) ∈ Ideal.span {π ^ p}
   exist_p_th_root : ∀ x : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])},
       ∃ y : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])} , x = y ^ p
       -- Surjective <| frobenius (𝒪[K]⧸Ideal.span {(p : 𝒪[K])}) p
--- definition of module
+
+noncomputable
+def valuedPerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K] [u : UniformSpace K]
+    [h : PerfectoidField p K] : ValuedPerfectoidField p K where
+  -- toValued := h.exists_val_top.choose.replaceTopology
+-- (congrArg _ h.exists_val_top.choose_spec.symm)
+  -- `should use above`
+  v := h.exists_val_top.choose.v
+  is_topological_valuation := sorry
+  exists_p_mem_span_pow_p := h.exists_p_mem_span_pow_p
+  exist_p_th_root := h.exist_p_th_root
+
 
 namespace PerfectoidField
 
