@@ -44,23 +44,22 @@ theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
       (ContinuousOn.intervalIntegrable (by fun_prop))]
   simp
 
-def P (p : ℂ[X]) (s : ℂ) :=
+private def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIDeriv.eval 0 - p.sumIDeriv.eval s
 
-theorem P_le_aux (p : ℕ → ℂ[X]) (s : ℂ)
+private theorem P_eq_integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
+    P p s = exp s * (s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s)) := by
+  rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
+    neg_add_eq_sub, P]
+
+private theorem P_le_aux (p : ℕ → ℂ[X]) (s : ℂ)
     (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc (0 : ℝ) 1, Complex.abs ((p q).eval (x • s)) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q : ℕ,
       Complex.abs (P (p q) s) ≤
         Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) := by
-  simp_rw [P]
   obtain ⟨c, hc⟩ := h
   refine ⟨|c|, abs_nonneg _, fun q => ?_⟩
-  have h := integral_exp_mul_eval (p q) s
-  rw [← sub_eq_neg_add, ← mul_right_inj' (exp_ne_zero s), mul_sub, exp_neg,
-    mul_inv_cancel_left₀ (exp_ne_zero s)] at h
-  rw [← h]
-  clear h
-  rw [mul_comm s, map_mul, map_mul, abs_exp]
+  rw [P_eq_integral_exp_mul_eval (p q) s, mul_comm s, map_mul, map_mul, abs_exp]
   gcongr
   rw [intervalIntegral.integral_of_le zero_le_one, ← norm_eq_abs, ← mul_one (_ * _)]
   convert MeasureTheory.norm_setIntegral_le_of_norm_le_const' _ _ _
@@ -68,17 +67,16 @@ theorem P_le_aux (p : ℕ → ℂ[X]) (s : ℂ)
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   · exact measurableSet_Ioc
   intro x hx
-  specialize hc q x hx
-  replace hc := hc.trans (le_abs_self _)
-  rw [_root_.abs_pow] at hc
-  simp only [Set.mem_Ioc] at hx
-  rw [norm_eq_abs, map_mul, abs_exp]
+  rw [norm_mul, norm_eq_abs, abs_exp]
   gcongr
-  apply (re_le_abs _).trans
-  rw [Complex.abs.map_neg, real_smul, Complex.abs.map_mul, abs_ofReal, _root_.abs_of_nonneg hx.1.le]
-  exact mul_le_of_le_one_left (Complex.abs.nonneg _) hx.2
+  · simp only [Set.mem_Ioc] at hx
+    apply (re_le_abs _).trans
+    rw [← norm_eq_abs, ← norm_eq_abs, norm_neg, norm_smul, Real.norm_of_nonneg hx.1.le]
+    exact mul_le_of_le_one_left (norm_nonneg _) hx.2
+  · rw [← _root_.abs_pow, norm_eq_abs]
+    exact (hc q x hx).trans (le_abs_self _)
 
-theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
+private theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
     (h : ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc (0 : ℝ) 1, Complex.abs ((p q).eval (x • s)) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q ≥ 1, Complex.abs (P (p q) s) ≤ c ^ q := by
   obtain ⟨c', hc', h'⟩ := P_le_aux p s h; clear h
@@ -86,12 +84,13 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
   let c₂ := max (Real.exp (Complex.abs s)) 1
   let c₃ := max (Complex.abs s) 1
   use c₁ * (c₂ * c' * c₃), by positivity
-  intro q hq; refine (h' q).trans ?_; simp_rw [mul_pow]
+  intro q hq
+  refine (h' q).trans ?_
+  simp_rw [mul_pow]
   have le_max_one_pow : ∀ {x : ℝ}, x ≤ max x 1 ^ q := fun {x} ↦
     (max_cases x 1).elim (fun h ↦ h.1.symm ▸ le_self_pow₀ h.2 (zero_lt_one.trans_le hq).ne')
       fun h ↦ by rw [h.1, one_pow]; exact h.2.le
-  gcongr
-  all_goals exact le_max_one_pow
+  gcongr <;> exact le_max_one_pow
 
 open Polynomial
 
@@ -131,6 +130,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (hp : p.eval 0 ≠ 0) :
     · push_neg at hx1
       exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
   choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
+  clear this
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
   have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
