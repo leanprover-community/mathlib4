@@ -243,5 +243,4 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
 
 instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
 
-
 end CategoryTheory
