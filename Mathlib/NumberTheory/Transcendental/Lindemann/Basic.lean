@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.RingTheory.AlgebraicIndependent.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
