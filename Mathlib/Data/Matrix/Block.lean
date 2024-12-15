@@ -3,6 +3,8 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
@@ -20,7 +22,6 @@ import Mathlib.Data.Matrix.ConjTranspose
   ring homomorphisms, `Matrix.blockDiagonal'RingHom`.
 * `Matrix.blockDiag'`: extract the blocks from the diagonal of a block diagonal matrix.
 -/
-
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
@@ -833,3 +834,33 @@ theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n �
 end
 
 end Matrix
+
+section Maps
+
+variable {R α β ι : Type*} [Fintype m] [Fintype n] [Semiring R]
+
+lemma compRingEquiv_toSquareBlock [DecidableEq α] {b : m → α}
+    (M : Matrix m m (Matrix n n R)) (a : α) :
+    letI equiv := Equiv.prodSubtypeFstEquivSubtypeProd.symm
+    (M.compRingEquiv m n R).toSquareBlock (fun i ↦ b i.1) a =
+      ((M.toSquareBlock b a).compRingEquiv _ n R).reindex equiv equiv :=
+  rfl
+
+variable [DecidableEq m]
+
+lemma RingHom.mapMatrix_toSquareBlock [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) {M : Matrix m m α} {ι} [DecidableEq ι] {b : m → ι} {i : ι} :
+    (f.mapMatrix M).toSquareBlock b i = f.mapMatrix (M.toSquareBlock b i) := by
+  ext; simp [toSquareBlock_def]
+
+lemma Matrix.compRingEquiv_diagonal (d) :
+    compRingEquiv m n R (diagonal d) =
+      (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
+  ext
+  simp only [diagonal, compRingEquiv_apply, of_apply, blockDiagonal, reindex_apply,
+    Equiv.prodComm_symm, Equiv.coe_prodComm, submatrix_apply, Prod.snd_swap, Prod.fst_swap]
+  -- simp [diagonal, blockDiagonal, ite_apply] doesn't work
+  rw [ite_apply, ite_apply]
+  rfl
+
+end Maps
