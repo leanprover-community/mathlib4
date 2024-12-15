@@ -134,7 +134,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
     e₂.withApp fun f₂ args₂ => do
       if ha : args₁.size = args₂.size then
         for hi : i in [:args₁.size] do
-          if (← getRoot (args₁[i]'hi.2)) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2))) then
+          if (← getRoot args₁[i]) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2.1))) then
             return false
         if f₁ == f₂ then return true
         else if (← getRoot f₁) != (← getRoot f₂) then
@@ -382,13 +382,13 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   let mut lemmaArgs : Array Expr := #[]
   for hi : i in [:lhsArgs.size] do
     guard !kindsIt.isEmpty
-    lemmaArgs := lemmaArgs.push (lhsArgs[i]'hi.2) |>.push (rhsArgs[i]'(ha.symm ▸ hi.2))
+    lemmaArgs := lemmaArgs.push lhsArgs[i] |>.push (rhsArgs[i]'(ha.symm ▸ hi.2.1))
     if kindsIt[0]! matches CongrArgKind.heq then
-      let some p ← getHEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      let some p ← getHEqProof lhsArgs[i] (rhsArgs[i]'(ha.symm ▸ hi.2.1)) | failure
       lemmaArgs := lemmaArgs.push p
     else
       guard (kindsIt[0]! matches .eq)
-      let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      let some p ← getEqProof lhsArgs[i] (rhsArgs[i]'(ha.symm ▸ hi.2.1)) | failure
       lemmaArgs := lemmaArgs.push p
     kindsIt := kindsIt.eraseIdx! 0
   let mut r := mkAppN specLemma.proof lemmaArgs
@@ -920,8 +920,8 @@ expression. -/
 def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
     for h : i in [:args.size] do
-      if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
-        let some ae := (← get).acEntries.find? (args[i]'h.2) | failure
+      if i == 0 || args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2.1)) then
+        let some ae := (← get).acEntries.find? args[i] | failure
         let occs := ae.RLHSOccs
         let mut Rlhs? : Option ACApps := none
         for Rlhs in occs do
@@ -1056,8 +1056,8 @@ equality `r*a = s*b`. -/
 def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
   for hi : i in [:args.size] do
-    if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-      let some ent := (← get).acEntries.find? (args[i]'hi.2) | failure
+    if i == 0 || args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+      let some ent := (← get).acEntries.find? args[i] | failure
       let occs := ent.RLHSOccs
       for tr in occs do
         let .apps optr _ := tr | continue
@@ -1239,7 +1239,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
     if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
       for h : i in [:apps.size] do
-        let arg := (apps[i]'h.2).appArg!
+        let arg := apps[i].appArg!
         addOccurrence e arg false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
@@ -1257,13 +1257,13 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       -- Expensive case where we store a quadratic number of occurrences,
       -- as described in the paper "Congruence Closure in Internsional Type Theory"
       for h : i in [:apps.size] do
-        let curr := apps[i]'h.2
+        let curr := apps[i]
         let .app currFn currArg := curr | unreachable!
         if i < apps.size - 1 then
           mkEntry curr false
         for h : j in [i:apps.size] do
-          addOccurrence (apps[j]'h.2) currArg false
-          addOccurrence (apps[j]'h.2) currFn false
+          addOccurrence apps[j] currArg false
+          addOccurrence apps[j] currFn false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry currArg false

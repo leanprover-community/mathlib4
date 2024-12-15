@@ -9,7 +9,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-6390"
 require "leanprover-community" / "Qq" @ git "v4.14.0"
-require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "aesop" @ git "lean-pr-testing-6390"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.48"
 require "leanprover-community" / "importGraph" @ git "v4.15.0-rc1"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
