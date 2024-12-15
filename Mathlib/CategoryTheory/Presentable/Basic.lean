@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Presentable objects
 
@@ -74,6 +75,99 @@ noncomputable def toMax {K : Type v''} (S : K → J) (hS : HasCardinalLT K κ) (
     S k ⟶ max S hS := by
   have : HasCardinalLT (Arrow (Discrete K)) κ := by simpa using hS
   exact (cocone (Discrete.functor S) this).ι.app ⟨k⟩
+
+section
+
+section
+
+inductive ParallelMaps (T : Type u'') : Type
+  | zero
+  | one
+
+namespace ParallelMaps
+
+variable {T : Type u''}
+
+inductive Hom : ParallelMaps T → ParallelMaps T → Type u''
+  | id (X : ParallelMaps T) : Hom X X
+  | map (t : T) : Hom zero one
+
+def Hom.comp :
+  ∀ {X Y Z : ParallelMaps T}, Hom X Y → Hom Y Z → Hom X Z
+  | _, _, _, id _, g => g
+  | _, _, _, f, id _ => f
+
+instance : Category (ParallelMaps T) where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
+  id_comp := by rintro _ _ (_ | _); all_goals rfl
+  comp_id := by rintro _ _ (_ | _); all_goals rfl
+  assoc := by rintro _ _ _ _ (_ | _) (_ | _) (_ | _); all_goals rfl
+
+@[simps]
+def mkFunctor {C : Type u} [Category.{v} C] {X Y : C} (f : T → (X ⟶ Y)) :
+    ParallelMaps T ⥤ C where
+  obj a := match a with
+    | zero => X
+    | one => Y
+  map φ := match φ with
+    | .id _ => 𝟙 _
+    | .map t => f t
+  map_comp := by
+    rintro _ _ _ (_ | _) (_ | _) <;> simp <;> rfl
+
+variable (T) in
+def arrowEquiv : Arrow (ParallelMaps T) ≃ Option (Option T) where
+  toFun f := match f.left, f.right, f.hom with
+    | zero, _, .id _ => none
+    | one, _, .id _ => some none
+    | zero, one, .map t => some (some t)
+  invFun x := match x with
+    | none => Arrow.mk (𝟙 zero)
+    | some none => Arrow.mk (𝟙 one)
+    | some (some t) => Arrow.mk (.map t)
+  left_inv := by rintro ⟨(_ | _), _, (_ | _)⟩ <;> rfl
+  right_inv := by rintro (_ | (_ | _)) <;> rfl
+
+lemma _root_.hasCardinalLT_option_iff (X : Type u) (κ' : Cardinal.{w})
+    (hκ' : Cardinal.aleph0 ≤ κ') :
+    HasCardinalLT (Option X) κ' ↔ HasCardinalLT X κ' := by
+  constructor
+  · intro h
+    exact h.of_injective _ (Option.some_injective _)
+  · intro h
+    dsimp [HasCardinalLT] at h ⊢
+    simp only [Cardinal.mk_option, Cardinal.lift_add, Cardinal.lift_one]
+    exact Cardinal.add_lt_of_lt (by simpa using hκ') h
+      (lt_of_lt_of_le Cardinal.one_lt_aleph0 (by simpa using hκ'))
+
+lemma hasCardinalLT {κ' : Cardinal.{w}} (hT : HasCardinalLT T κ') (hκ' : Cardinal.aleph0 ≤ κ') :
+    HasCardinalLT (Arrow (ParallelMaps T)) κ' := by
+  simpa only [hasCardinalLT_iff_of_equiv (arrowEquiv T),
+    hasCardinalLT_option_iff _ _ hκ'] using hT
+
+end ParallelMaps
+
+end
+
+variable {K : Type u''} {j j' : J} (f : K → (j ⟶ j')) (hK : HasCardinalLT K κ)
+
+noncomputable def coeq : J :=
+  (cocone (ParallelMaps.mkFunctor f) (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).pt
+
+noncomputable def coeqHom : j' ⟶ coeq f hK :=
+  (cocone (ParallelMaps.mkFunctor f) (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).ι.app .one
+
+noncomputable def toCoeq : j ⟶ coeq f hK :=
+  (cocone (ParallelMaps.mkFunctor f) (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).ι.app .zero
+
+@[reassoc]
+lemma coeq_condition (k : K) : f k ≫ coeqHom f hK = toCoeq f hK :=
+  (cocone (ParallelMaps.mkFunctor f) (ParallelMaps.hasCardinalLT hK hκ.out.aleph0_le)).w
+    (ParallelMaps.Hom.map k)
+
+end
 
 variable (J)
 
