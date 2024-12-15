@@ -42,7 +42,7 @@ variable {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
   (κ : Cardinal.{w}) [Fact κ.IsRegular]
   (hK : HasCardinalLT (Arrow K) κ)
   {J : Type w} [SmallCategory J] [IsCardinalFiltered J κ]
-  {X : J ⥤ C} (cX : Cocone X) (hcX : IsColimit cX)
+  {X : J ⥤ C} (cX : Cocone X)
   (hF : ∀ (k : K), IsColimit ((F.obj k).mapCocone cX))
 
 namespace isColimitMapCocone
@@ -67,28 +67,19 @@ lemma surjective (x : c.pt.obj cX.pt) :
       (F.obj k').map (X.map α) ((F.map φ).app _ (z k)) =
         (F.obj k').map (X.map α) (z k') := by
     have H {k k' : K} (φ : k ⟶ k') :=
-      (Types.FilteredColimit.isColimit_eq_iff (ht := hF k')
-        (xi := (F.map φ).app _ (z k)) (xj := z k')).1 (by
+      (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k')
+        (x := (F.map φ).app _ (z k)) (y := z k')).1 (by
           dsimp
           simpa only [← FunctorToTypes.naturality, ← hz] using y.2 φ)
     let j {k k' : K} (φ : k ⟶ k') : J := (H φ).choose
-    let f₁ {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j φ := (H φ).choose_spec.choose
-    let f₂ {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j φ := (H φ).choose_spec.choose_spec.choose
-    have hf {k k' : K} (φ : k ⟶ k') :
-        (F.obj k').map (X.map (f₁ φ)) ((F.map φ).app _ (z k)) =
-          (F.obj k').map (X.map (f₂ φ)) (z k') := (H φ).choose_spec.choose_spec.choose_spec
-    let j' {k k' : K} (φ : k ⟶ k') := IsFiltered.coeq (f₁ φ) (f₂ φ)
-    let g {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j' φ := f₁ φ ≫ IsFiltered.coeqHom (f₁ φ) (f₂ φ)
+    let g {k k' : K} (φ : k ⟶ k') : j₀ ⟶ j φ := (H φ).choose_spec.choose
     have hg {k k' : K} (φ : k ⟶ k') :
         (F.obj k').map (X.map (g φ)) ((F.map φ).app _ (z k)) =
-          (F.obj k').map (X.map (g φ)) (z k') := by
-      dsimp [g]
-      conv_rhs => rw [IsFiltered.coeq_condition]
-      simp only [map_comp, FunctorToTypes.map_comp_apply, hf]
+          (F.obj k').map (X.map (g φ)) (z k') := (H φ).choose_spec.choose_spec
     obtain ⟨j₁, α, β, hα⟩ : ∃ (j₁ : J) (α : j₀ ⟶ j₁)
-        (β : ∀ ⦃k k' : K⦄ (φ : k ⟶ k'), j' φ ⟶ j₁),
+        (β : ∀ ⦃k k' : K⦄ (φ : k ⟶ k'), j φ ⟶ j₁),
         ∀ ⦃k k' : K⦄ (φ : k ⟶ k'), α = g φ ≫ β φ := by
-      let j'' (f : Arrow K) : J := j' f.hom
+      let j'' (f : Arrow K) : J := j f.hom
       let ψ (f : Arrow K) : j₀ ⟶ IsCardinalFiltered.max j'' hK :=
         g f.hom ≫ IsCardinalFiltered.toMax j'' hK f
       refine ⟨IsCardinalFiltered.coeq ψ hK, IsCardinalFiltered.toCoeq ψ hK,
@@ -111,12 +102,47 @@ lemma surjective (x : c.pt.obj cX.pt) :
   dsimp at h₁ h₂ ⊢
   rw [h₁, hz, FunctorToTypes.naturality, h₂, ← FunctorToTypes.map_comp_apply, cX.w]
 
+lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
+    (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
+    ∃ (j' : J) (α : j ⟶ j'),
+    c.pt.map (X.map α) x₁ = c.pt.map (X.map α) x₂ := by
+  have := isFiltered_of_isCardinalDirected J κ
+  let y₁ := Types.isLimitEquivSections (hc (X.obj j)) x₁
+  let y₂ := Types.isLimitEquivSections (hc (X.obj j)) x₂
+  have hy₁ : (Types.isLimitEquivSections (hc (X.obj j))).symm y₁ = x₁ := by simp [y₁]
+  have hy₂ : (Types.isLimitEquivSections (hc (X.obj j))).symm y₂ = x₂ := by simp [y₂]
+  have H (k : K) := (Types.FilteredColimit.isColimit_eq_iff' (ht := hF k)
+    (x := y₁.1 k) (y := y₂.1 k)).1 (by
+      simp only [y₁, y₂, Types.isLimitEquivSections_apply]
+      dsimp
+      simp only [← FunctorToTypes.naturality, h])
+  let j₁ (k : K) : J := (H k).choose
+  let f (k : K) : j ⟶ j₁ k := (H k).choose_spec.choose
+  have hf (k : K) : (F.obj k).map (X.map (f k)) (y₁.1 k) =
+      (F.obj k).map (X.map (f k)) (y₂.1 k) :=
+    (H k).choose_spec.choose_spec
+  have hK' := hasCardinalLT_of_hasCardinalLT_arrow hK
+  let ψ (k : K) : j ⟶ IsCardinalFiltered.max j₁ hK' :=
+    f k ≫ IsCardinalFiltered.toMax j₁ hK' k
+  refine ⟨IsCardinalFiltered.coeq ψ hK', IsCardinalFiltered.toCoeq ψ hK', ?_⟩
+  apply (Types.isLimitEquivSections (hc _)).injective
+  ext k
+  simp only [Types.isLimitEquivSections_apply, ← hy₁, ← hy₂]
+  have h₁ := Types.isLimitEquivSections_symm_apply (hc (X.obj j)) y₁ k
+  have h₂ := Types.isLimitEquivSections_symm_apply (hc (X.obj j)) y₂ k
+  dsimp at h₁ h₂ ⊢
+  simp only [FunctorToTypes.naturality, h₁, h₂,
+    ← IsCardinalFiltered.coeq_condition ψ hK' k,
+    map_comp, FunctorToTypes.map_comp_apply, ψ, hf]
+
 end isColimitMapCocone
 
+/-- Auxiliary definition of `accessible_of_isLimit`. -/
 noncomputable def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
-  have := hcX
-  exact Types.FilteredColimit.isColimitOf _ _
-    (isColimitMapCocone.surjective c hc κ hK cX hF) sorry
+  have := isFiltered_of_isCardinalDirected J κ
+  apply Types.FilteredColimit.isColimitOf'
+  · exact isColimitMapCocone.surjective c hc κ hK cX hF
+  · exact isColimitMapCocone.injective c hc κ hK cX hF
 
 end
 
@@ -133,9 +159,8 @@ lemma accessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Typ
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
     have := fun k ↦ preservesColimitsOfShape_of_isAccessible (F.obj k) κ J
     exact ⟨Accessible.Limits.isColimitMapCocone c
-      (fun Y ↦ isLimitOfPreserves ((evaluation C (Type w')).obj Y) hc) κ hK cX hcX
+      (fun Y ↦ isLimitOfPreserves ((evaluation C (Type w')).obj Y) hc) κ hK cX
       (fun k ↦ isColimitOfPreserves (F.obj k) hcX)⟩⟩⟩
-
 
 end Functor
 

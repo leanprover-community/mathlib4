@@ -75,6 +75,16 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
 
 variable [IsFilteredOrEmpty J]
 
+/-- Recognizing filtered colimits of types. The injectivity condition here is
+slightly easier to check as compared to `isColimitOf`. -/
+noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
+    (hinj : ∀ i x y, t.ι.app i x = t.ι.app i y → ∃ (k : _) (f : i ⟶ k), F.map f x = F.map f y) :
+    IsColimit t :=
+  isColimitOf _ _ hsurj (fun i j xi xj h ↦ by
+    obtain ⟨k, g, hg⟩ := hinj (IsFiltered.max i j) (F.map (IsFiltered.leftToMax i j) xi)
+      (F.map (IsFiltered.rightToMax i j) xj) (by simp [FunctorToTypes.naturality, h])
+    exact ⟨k, IsFiltered.leftToMax i j ≫ g, IsFiltered.rightToMax i j ≫ g, by simpa using hg⟩)
+
 protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) where
   refl x := ⟨x.1, 𝟙 x.1, 𝟙 x.1, rfl⟩
   symm := fun ⟨k, f, g, h⟩ => ⟨k, g, f, h.symm⟩
@@ -116,6 +126,18 @@ theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj
       (IsColimit.comp_coconePointUniqueUpToIso_hom ht (colimitCoconeIsColimit F) _) xi).symm
   · exact (congrFun
       (IsColimit.comp_coconePointUniqueUpToIso_hom ht (colimitCoconeIsColimit F) _) xj).symm
+
+variable {F} in
+theorem isColimit_eq_iff' {t : Cocone F} (ht : IsColimit t) {i : J} (x y : F.obj i) :
+    t.ι.app i x = t.ι.app i y ↔ ∃ (j : _) (f : i ⟶ j), F.map f x = F.map f y := by
+  rw [isColimit_eq_iff _ ht]
+  constructor
+  · rintro ⟨k, f, g, h⟩
+    refine ⟨IsFiltered.coeq f g, f ≫ IsFiltered.coeqHom f g, ?_⟩
+    conv_rhs => rw [IsFiltered.coeq_condition]
+    simp only [FunctorToTypes.map_comp_apply, h]
+  · rintro ⟨j, f, h⟩
+    exact ⟨j, f, f, h⟩
 
 theorem colimit_eq_iff [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
