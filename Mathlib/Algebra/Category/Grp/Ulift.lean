@@ -264,23 +264,20 @@ variable (lc)
 
 open CharacterModule in
 noncomputable def descHom : c.pt →+ lc.pt := by
-  set u : lc.pt →+ ((c : CharacterModule lc.pt) → AddCircle (1 : ℚ)) := hom_to_pi lc.pt
-  set u' := descCharFamily hc (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ))
-    (fun c ↦ c)
-  set π := (QuotientAddGroup.mk' (AddMonoidHom.range u)) with hπ
-  have h : u.range = π.ker := (QuotientAddGroup.ker_mk' _).symm
-  have h' : π.comp u' = 0 := by
+  set u := descCharFamily hc (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) (fun c ↦ c)
+  have h : (QuotientAddGroup.mk' (AddMonoidHom.range (hom_to_pi lc.pt))).comp u = 0 := by
     refine hom_eq_zero_of_character_apply (fun c ↦ ?_)
     rw [← AddMonoidHom.comp_assoc, ← descCharFamily_comp hc
       (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) (fun c ↦ c)]
     convert descChar_zero_eq_zero hc
-    ext a
-    change (c.comp (π.comp u)) a = 0
-    rw [(AddMonoidHom.range_le_ker_iff _ _).mp (le_of_eq h), c.comp_zero,
-      AddMonoidHom.zero_apply]
-  rw [← AddMonoidHom.range_le_ker_iff, ← h] at h'
+    ext _
+    change (c.comp ((QuotientAddGroup.mk' (AddMonoidHom.range (hom_to_pi lc.pt))).comp
+      (hom_to_pi lc.pt))) _ = 0
+    rw [(AddMonoidHom.range_le_ker_iff _ _).mp (le_of_eq (QuotientAddGroup.ker_mk' _).symm),
+      c.comp_zero, AddMonoidHom.zero_apply]
+  rw [← AddMonoidHom.range_le_ker_iff, ← (QuotientAddGroup.ker_mk' _).symm] at h
   exact (AddMonoidHom.ofInjective (hom_to_pi_injective lc.pt)).symm.toAddMonoidHom.comp
-    ((AddSubgroup.inclusion h').comp (AddMonoidHom.rangeRestrict u'))
+    ((AddSubgroup.inclusion h).comp (AddMonoidHom.rangeRestrict u))
 
 open CharacterModule in
 lemma descHom_property (χ : lc.pt →+ AddCircle (1 : ℚ)) : χ.comp (descHom hc lc) =
