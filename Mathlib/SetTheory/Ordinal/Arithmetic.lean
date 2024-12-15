@@ -1448,14 +1448,11 @@ theorem card_sInf_range_compl_le {ι : Type u} (f : ι → Ordinal.{u}) :
     (sInf (range f)ᶜ).card ≤ #ι :=
   Cardinal.lift_id #ι ▸ card_sInf_range_compl_le_lift f
 
-@[deprecated card_sInf_range_compl_le_lift (since := "2024-11-08")]
 theorem sInf_compl_lt_lift_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sInf (range f)ᶜ < lift.{v} (succ #ι).ord := by
   rw [lift_ord, Cardinal.lift_succ, ← card_le_iff]
   exact card_sInf_range_compl_le_lift f
 
-set_option linter.deprecated false in
-@[deprecated card_sInf_range_compl_le (since := "2024-11-08")]
 theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
   lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
