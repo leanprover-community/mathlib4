@@ -1575,7 +1575,6 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
->>>>>>> origin/master
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
