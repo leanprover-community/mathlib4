@@ -199,6 +199,13 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
 lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0) : a = 0 := by
   contrapose! h; exact exists_character_apply_ne_zero_of_ne_zero h
 
+lemma hom_eq_zero_of_character_apply {f : A →+ A'}
+    (h : ∀ (c : CharacterModule A'), c.comp f = 0) : f = 0 := by
+  ext a
+  refine eq_zero_of_character_apply (fun c ↦ ?_)
+  change (c.comp f) a = 0
+  rw [h c, AddMonoidHom.zero_apply]
+
 variable [Module R A] [Module R A'] [Module R B] {R A' B}
 
 lemma dual_surjective_iff_injective {f : A →ₗ[R] A'} :

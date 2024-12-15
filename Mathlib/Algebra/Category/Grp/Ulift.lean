@@ -6,6 +6,7 @@ Authors: Sophie Morel
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.Module.CharacterModule
 
 /-!
 This file shows that the functors `Grp.uliftFunctor` and `CommGrp.uliftFunctor`
@@ -162,3 +163,88 @@ instance uliftFunctor_additive :
     AddCommGrp.uliftFunctor.{u,v}.Additive where map_add := rfl
 
 end AddCommGroup
+
+namespace AddCommGrp
+
+variable {J : Type w} [Category.{w'} J] {K : J ⥤ AddCommGrp.{u}} {c : Cocone K}
+  {lc : Cocone (K ⋙ AddCommGrp.uliftFunctor.{v,u})} (hc : IsColimit c)
+
+variable {A A' : Type u} [AddCommGroup A] [AddCommGroup A']
+
+def coconeOfChar (f : lc.pt →+ A) : Cocone K where
+  pt := AddCommGrp.of A
+  ι :=
+  { app j := AddCommGrp.ofHom (f.comp ((lc.ι.app j).comp
+      (@AddEquiv.ulift (K.obj j) _).symm.toAddMonoidHom))
+    naturality {j j'} u := by
+      ext a
+      have := lc.ι.naturality u
+      apply_fun (fun f ↦ f {down := a}) at this
+      change lc.ι.app j' {down := K.map u a} = _ at this
+      change f (lc.ι.app j' {down := K.map u a}) = f (lc.ι.app j {down := a})
+      rw [this]; rfl
+  }
+
+/-
+def coconeOfChar_map (f : lc.pt →+ A) (g : A →+ A') :
+    coconeOfChar f ⟶ coconeOfChar (g.comp f) :=
+  CoconeMorphism.mk g (fun j ↦ by ext _; simp [coconeOfChar])
+-/
+
+def descChar (f : lc.pt →+A) : c.pt →+ A := hc.desc (coconeOfChar f)
+
+lemma descChar_ι_app (f : lc.pt →+ A) (j : J) (a : K.obj j) :
+    (descChar hc f) (c.ι.app j a) = f ((lc.ι.app j {down := a})) := by
+  have := hc.fac (coconeOfChar f) j
+  apply_fun (fun f ↦ f a) at this
+  change hc.desc (coconeOfChar f) ((c.ι.app j) a) = _ at this
+  conv_lhs => erw [this]
+  rfl
+
+lemma descChar_comp (f : lc.pt →+ A) (g : A →+ A') :
+    descChar hc (g.comp f) = g.comp (descChar hc f) := by
+  refine (hc.uniq (coconeOfChar (g.comp f)) (g.comp (descChar hc f)) (fun j ↦ ?_)).symm
+  ext a
+  simp [coconeOfChar]
+  conv_lhs => erw [descChar_ι_app hc f j a]
+  rfl
+
+lemma descChar_zero_of_zero : descChar hc (0 : lc.pt →+ A) = 0 := by
+  have heq : (0 : lc.pt →+ A) = (0 : ULift.{u} Unit →+ A).comp (0 : lc.pt →+ ULift Unit) := by
+    ext _; simp
+  rw [heq, descChar_comp]
+  simp
+
+variable {ι : Type*} (B : ι → Type u) [∀ (i : ι), AddCommGroup (B i)]
+    (f : (i : ι) → lc.pt →+ B i)
+
+def descCharFamily : c.pt →+ ((i : ι) → B i) := Pi.addMonoidHom (fun i ↦ descChar hc (f i))
+
+lemma descCharFamily_comp (g : ((i : ι) → B i) →+ A) :
+    descChar hc (g.comp (Pi.addMonoidHom f)) = g.comp (descCharFamily hc B f) := by
+  refine (hc.uniq (coconeOfChar (g.comp (Pi.addMonoidHom f)))
+    (g.comp (descCharFamily hc B f)) (fun j ↦ ?_)).symm
+  ext a
+  simp [coconeOfChar]
+  congr 1
+  ext i
+  simp [descCharFamily]
+  conv_lhs => erw [descChar_ι_app hc (f i) j a]
+  rfl
+
+abbrev truc (C : Type*) [AddCommGroup C] :
+    C →+ ((c : CharacterModule C) → ULift.{u} (AddCircle (1 : ℚ))) where
+  toFun a c := {down := c a}
+  map_zero' := by ext _; simp
+  map_add' _ _ := by ext _; simp
+
+def descHom : c.pt →+ lc.pt := by
+  set u : lc.pt →+ ((c : CharacterModule lc.pt) → ULift.{u} (AddCircle (1 : ℚ))) := truc lc.pt
+  set u' := descCharFamily hc (fun (c : CharacterModule lc.pt) ↦ ULift.{u} (AddCircle (1 : ℚ)))
+    (fun (c : CharacterModule lc.pt) ↦ AddEquiv.ulift.symm.toAddMonoidHom.comp c)
+  set π := (QuotientAddGroup.mk' (AddMonoidHom.range u))
+  have h : π.comp u = 0 := sorry
+
+end AddCommGrp
+
+#synth HasColimits Grp.{u}
