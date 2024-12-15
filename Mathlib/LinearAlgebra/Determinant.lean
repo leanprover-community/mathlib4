@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
@@ -229,17 +230,17 @@ theorem det_id : LinearMap.det (LinearMap.id : M →ₗ[A] M) = 1 :=
 
 /-- Multiplying a map by a scalar `c` multiplies its determinant by `c ^ dim M`. -/
 @[simp]
-theorem det_smul {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] (c : 𝕜)
-    (f : M →ₗ[𝕜] M) :
-    LinearMap.det (c • f) = c ^ Module.finrank 𝕜 M * LinearMap.det f := by
-  by_cases H : ∃ s : Finset M, Nonempty (Basis s 𝕜 M)
-  · have : FiniteDimensional 𝕜 M := by
+theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
+    LinearMap.det (c • f) = c ^ Module.finrank A M * LinearMap.det f := by
+  nontriviality A
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s A M)
+  · have : Module.Finite A M := by
       rcases H with ⟨s, ⟨hs⟩⟩
-      exact FiniteDimensional.of_fintype_basis hs
-    simp only [← det_toMatrix (Module.finBasis 𝕜 M), LinearEquiv.map_smul,
+      exact Module.Finite.of_basis hs
+    simp only [← det_toMatrix (Module.finBasis A M), LinearEquiv.map_smul,
       Fintype.card_fin, Matrix.det_smul]
   · classical
-      have : Module.finrank 𝕜 M = 0 := finrank_eq_zero_of_not_exists_basis H
+      have : Module.finrank A M = 0 := finrank_eq_zero_of_not_exists_basis H
       simp [coe_det, H, this]
 
 theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
@@ -252,9 +253,9 @@ theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
 the determinant to be `1`. -/
 @[simp]
-theorem det_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] :
-    LinearMap.det (0 : M →ₗ[𝕜] M) = (0 : 𝕜) ^ Module.finrank 𝕜 M := by
-  simp only [← zero_smul 𝕜 (1 : M →ₗ[𝕜] M), det_smul, mul_one, MonoidHom.map_one]
+theorem det_zero [Module.Free A M] :
+    LinearMap.det (0 : M →ₗ[A] M) = (0 : A) ^ Module.finrank A M := by
+  simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, MonoidHom.map_one]
 
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
@@ -450,18 +451,18 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 multilinear map. -/
 nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
   toFun v := det (e.toMatrix v)
-  map_add' := by
+  map_update_add' := by
     intro inst v i x y
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add]
     -- Porting note: was `exact det_update_column_add _ _ _ _`
-    convert det_updateColumn_add (e.toMatrix v) i (e.repr x) (e.repr y)
-  map_smul' := by
+    convert det_updateCol_add (e.toMatrix v) i (e.repr x) (e.repr y)
+  map_update_smul' := by
     intro inst u i c x
     cases Subsingleton.elim inst ‹_›
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
     -- Porting note: was `apply det_update_column_smul`
-    convert det_updateColumn_smul (e.toMatrix u) i c (e.repr x)
+    convert det_updateCol_smul (e.toMatrix u) i c (e.repr x)
   map_eq_zero_of_eq' := by
     intro v i j h hij
     -- Porting note: added

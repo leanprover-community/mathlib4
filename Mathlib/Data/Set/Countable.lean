@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Finite
 import Mathlib.Data.Countable.Basic
-import Mathlib.Logic.Equiv.List
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Equiv.List
 
 /-!
 # Countable sets
@@ -128,11 +128,17 @@ protected theorem countable_iff_exists_surjective {s : Set α} (hs : s.Nonempty)
 
 alias ⟨Countable.exists_surjective, _⟩ := Set.countable_iff_exists_surjective
 
+theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
+  countable_coe_iff.symm.trans (Equiv.Set.univ _).countable_iff
+
 theorem countable_univ [Countable α] : (univ : Set α).Countable :=
   to_countable univ
 
-theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
-  countable_coe_iff.symm.trans (Equiv.Set.univ _).countable_iff
+theorem not_countable_univ_iff : ¬ (univ : Set α).Countable ↔ Uncountable α := by
+  rw [countable_univ_iff, not_countable_iff]
+
+theorem not_countable_univ [Uncountable α] : ¬ (univ : Set α).Countable :=
+  not_countable_univ_iff.2 ‹_›
 
 /-- If `s : Set α` is a nonempty countable set, then there exists a map
 `f : ℕ → α` such that `s = range f`. -/

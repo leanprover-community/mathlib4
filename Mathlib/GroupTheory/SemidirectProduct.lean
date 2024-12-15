@@ -3,7 +3,8 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Semidirect product
@@ -171,7 +172,7 @@ theorem rightHom_surjective : Function.Surjective (rightHom : N ⋊[φ] G → G)
   Function.surjective_iff_hasRightInverse.2 ⟨inr, rightHom_inr⟩
 
 theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.ker :=
-  le_antisymm (fun _ ↦ by simp (config := { contextual := true }) [MonoidHom.mem_ker, eq_comm])
+  le_antisymm (fun _ ↦ by simp +contextual [MonoidHom.mem_ker, eq_comm])
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 
 section lift

@@ -54,8 +54,7 @@ namespace LinearIsometry
 
 open LinearMap
 
-variable {R : Type*} [Semiring R]
-variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
+variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁]
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
@@ -110,9 +109,7 @@ end AffineIsometry
 section CompleteField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type x}
-  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
-  [ContinuousSMul 𝕜 F'] [CompleteSpace 𝕜]
+  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
 
 section Affine
 
@@ -510,9 +507,6 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
-@[deprecated (since := "2024-01-31")]
-alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
-
 variable (E)
 lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
     ProperSpace 𝕜 :=
@@ -522,9 +516,6 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2024-01-31")]
-alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz
 

@@ -39,7 +39,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   rw [← hS1, ← Fintype.card_coe, ← Finset.card_univ, ← Finset.prod_const]
   let f : (∀ g : S, zpowers (g : G)) →* G := noncommPiCoprod fun s t _ x y _ _ => mul_comm x _
   have hf : Function.Surjective f := by
-    rw [← MonoidHom.range_top_iff_surjective, eq_top_iff, ← hS2, closure_le]
+    rw [← MonoidHom.range_eq_top, eq_top_iff, ← hS2, closure_le]
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
   replace hf := card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf

@@ -97,6 +97,17 @@ theorem Functor.final_of_exists_of_isFiltered [IsFilteredOrEmpty C]
   suffices ∀ d, IsFiltered (StructuredArrow d F) from final_of_isFiltered_structuredArrow F
   exact isFiltered_structuredArrow_of_isFiltered_of_exists F h₁ h₂
 
+/-- The inclusion of a terminal object is final. -/
+theorem Functor.final_const_of_isTerminal [IsFiltered C] {X : D} (hX : IsTerminal X) :
+    ((Functor.const C).obj X).Final :=
+  Functor.final_of_exists_of_isFiltered _ (fun _ => ⟨IsFiltered.nonempty.some, ⟨hX.from _⟩⟩)
+    (fun {_ c} _ _ => ⟨c, 𝟙 _, hX.hom_ext _ _⟩)
+
+/-- The inclusion of the terminal object is final. -/
+theorem Functor.final_const_terminal [IsFiltered C] [HasTerminal D] :
+    ((Functor.const C).obj (⊤_ D)).Final :=
+  Functor.final_const_of_isTerminal terminalIsTerminal
+
 /-- If `C` is cofiltered, then we can give an explicit condition for a functor `F : C ⥤ D` to
     be final. The converse is also true, see `initial_iff_of_isCofiltered`. -/
 theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
@@ -105,6 +116,17 @@ theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
   suffices ∀ d, IsCofiltered (CostructuredArrow F d) from
     initial_of_isCofiltered_costructuredArrow F
   exact isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h₁ h₂
+
+/-- The inclusion of an initial object is initial. -/
+theorem Functor.initial_const_of_isInitial [IsCofiltered C] {X : D} (hX : IsInitial X) :
+    ((Functor.const C).obj X).Initial :=
+  Functor.initial_of_exists_of_isCofiltered _ (fun _ => ⟨IsCofiltered.nonempty.some, ⟨hX.to _⟩⟩)
+    (fun {_ c} _ _ => ⟨c, 𝟙 _, hX.hom_ext _ _⟩)
+
+/-- The inclusion of the initial object is initial. -/
+theorem Functor.initial_const_initial [IsCofiltered C] [HasInitial D] :
+    ((Functor.const C).obj (⊥_ D)).Initial :=
+  Functor.initial_const_of_isInitial initialIsInitial
 
 /-- In this situation, `F` is also final, see
     `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
@@ -326,5 +348,61 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   refine ⟨fun X => ?_⟩
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
+
+section Pi
+
+variable {α : Type u₁} {I : α → Type u₂} [∀ s, Category.{v₂} (I s)]
+
+open IsFiltered in
+instance final_eval [∀ s, IsFiltered (I s)] (s : α) : (Pi.eval I s).Final := by
+  classical
+  apply Functor.final_of_exists_of_isFiltered
+  · exact fun i => ⟨Function.update (fun t => nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
+  · intro d c f g
+    let c't : (∀ s, (c' : I s) × (c s ⟶ c')) := Function.update (fun t => ⟨c t, 𝟙 (c t)⟩)
+      s ⟨coeq f g, coeqHom f g⟩
+    refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
+    dsimp only [Pi.eval_obj, Pi.eval_map, c't]
+    rw [Function.update_same]
+    simpa using coeq_condition _ _
+
+open IsCofiltered in
+instance initial_eval [∀ s, IsCofiltered (I s)] (s : α) : (Pi.eval I s).Initial := by
+  classical
+  apply Functor.initial_of_exists_of_isCofiltered
+  · exact fun i => ⟨Function.update (fun t => nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
+  · intro d c f g
+    let c't : (∀ s, (c' : I s) × (c' ⟶ c s)) := Function.update (fun t => ⟨c t, 𝟙 (c t)⟩)
+      s ⟨eq f g, eqHom f g⟩
+    refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
+    dsimp only [Pi.eval_obj, Pi.eval_map, c't]
+    rw [Function.update_same]
+    simpa using eq_condition _ _
+
+end Pi
+
+section Prod
+
+open IsFiltered in
+instance final_fst [IsFilteredOrEmpty C] [IsFiltered D] : (Prod.fst C D).Final := by
+  apply Functor.final_of_exists_of_isFiltered
+  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
+  · intro c ⟨c', d'⟩ f g
+    exact ⟨(coeq f g, d'), (coeqHom f g, 𝟙 d'), coeq_condition _ _⟩
+
+instance final_snd [IsFiltered C] [IsFilteredOrEmpty D] : (Prod.snd C D).Final :=
+  inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Final
+
+open IsCofiltered in
+instance initial_fst [IsCofilteredOrEmpty C] [IsCofiltered D] : (Prod.fst C D).Initial := by
+  apply Functor.initial_of_exists_of_isCofiltered
+  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
+  · intro c ⟨c', d'⟩ f g
+    exact ⟨(eq f g, d'), (eqHom f g, 𝟙 d'), eq_condition _ _⟩
+
+instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).Initial :=
+  inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Initial
+
+end Prod
 
 end CategoryTheory

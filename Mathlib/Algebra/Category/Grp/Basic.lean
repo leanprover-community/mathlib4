@@ -53,7 +53,7 @@ instance : CoeSort Grp Type* where
 @[to_additive]
 instance (X : Grp) : Group X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : Grp} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -142,8 +142,8 @@ example {R S : Grp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 /-- Universe lift functor for groups. -/
 @[to_additive (attr := simps)
   "Universe lift functor for additive groups."]
-def uliftFunctor : Grp.{u} ⥤ Grp.{max u v} where
-  obj X := Grp.of (ULift.{v, u} X)
+def uliftFunctor : Grp.{v} ⥤ Grp.{max v u} where
+  obj X := Grp.of (ULift.{u, v} X)
   map {_ _} f := Grp.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -182,7 +182,7 @@ instance : CoeSort CommGrp Type* where
 @[to_additive]
 instance commGroupInstance (X : CommGrp) : CommGroup X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommGrp} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -283,8 +283,8 @@ example {R S : CommGrp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [
 /-- Universe lift functor for commutative groups. -/
 @[to_additive (attr := simps)
   "Universe lift functor for additive commutative groups."]
-def uliftFunctor : CommGrp.{u} ⥤ CommGrp.{max u v} where
-  obj X := CommGrp.of (ULift.{v, u} X)
+def uliftFunctor : CommGrp.{v} ⥤ CommGrp.{max v u} where
+  obj X := CommGrp.of (ULift.{u, v} X)
   map {_ _} f := CommGrp.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
