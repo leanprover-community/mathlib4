@@ -174,6 +174,9 @@ noncomputable def equivalence : C ≌ ShrinkHoms C where
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
+instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
+
 end ShrinkHoms
 
 namespace Shrink
@@ -239,5 +242,6 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 
 instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+
 
 end CategoryTheory

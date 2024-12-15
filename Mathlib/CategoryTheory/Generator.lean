@@ -84,21 +84,20 @@ def IsCodetecting (𝒢 : Set C) : Prop :=
 section Equivalence
 
 lemma IsSeparating.of_equivalence
-    {𝒢 : Set C} (h : IsSeparating 𝒢) {D : Type*} [Category D] (F : C ⥤ D) [F.IsEquivalence] :
-    IsSeparating (F.obj '' 𝒢) := fun X Y f g H =>
-  F.asEquivalence.inverse.map_injective (h _ _ (fun Z hZ h => by
-    obtain ⟨h', rfl⟩ := (F.asEquivalence.toAdjunction.homEquiv _ _).surjective h
+    {𝒢 : Set C} (h : IsSeparating 𝒢) {D : Type*} [Category D] (α : C ≌ D) :
+    IsSeparating (α.functor.obj '' 𝒢) := fun X Y f g H =>
+  α.inverse.map_injective (h _ _ (fun Z hZ h => by
+    obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
-      H (F.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+      H (α.functor.obj Z) (Set.mem_image_of_mem _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
-    {𝒢 : Set C} (h : IsCoseparating 𝒢) {D : Type*} [Category D] (F : C ⥤ D) [F.IsEquivalence] :
-    IsCoseparating (F.obj '' 𝒢) := fun X Y f g H =>
-  F.asEquivalence.inverse.map_injective (h _ _ (fun Z hZ h => by
-    have h' := (F.asEquivalence.symm.toAdjunction.homEquiv _ _) h
-    obtain ⟨h', rfl⟩ := (F.asEquivalence.symm.toAdjunction.homEquiv _ _).symm.surjective h
+    {𝒢 : Set C} (h : IsCoseparating 𝒢) {D : Type*} [Category D] (α : C ≌ D) :
+    IsCoseparating (α.functor.obj '' 𝒢) := fun X Y f g H =>
+  α.inverse.map_injective (h _ _ (fun Z hZ h => by
+    obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
     simp only [Adjunction.homEquiv_symm_apply, ← Category.assoc, ← Functor.map_comp,
-      Equivalence.symm_functor, H (F.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+      Equivalence.symm_functor, H (α.functor.obj Z) (Set.mem_image_of_mem _ hZ) h']))
 
 end Equivalence
 
@@ -376,11 +375,11 @@ def IsCodetector (G : C) : Prop :=
 
 section Equivalence
 
-theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (F : C ⥤ D) [F.IsEquivalence] :
-    IsSeparator (F.obj G) := by simpa using IsSeparating.of_equivalence h F
+theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (α : C ≌ D) :
+    IsSeparator (α.functor.obj G) := by simpa using IsSeparating.of_equivalence h α
 
-theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (F : C ⥤ D) [F.IsEquivalence] :
-    IsCoseparator (F.obj G) := by simpa using IsCoseparating.of_equivalence h F
+theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (α : C ≌ D) :
+    IsCoseparator (α.functor.obj G) := by simpa using IsCoseparating.of_equivalence h α
 
 end Equivalence
 
@@ -740,10 +739,10 @@ end Instances
 section Equivalence
 
 theorem HasSeparator.of_equivalence [HasSeparator C] (α : C ≌ D) : HasSeparator D :=
-  ⟨α.functor.obj (separator C), isSeparator_separator C |>.of_equivalence α.functor⟩
+  ⟨α.functor.obj (separator C), isSeparator_separator C |>.of_equivalence α⟩
 
 theorem HasCoseparator.of_equivalence [HasCoseparator C] (α : C ≌ D) : HasCoseparator D :=
-  ⟨α.functor.obj (coseparator C), isCoseparator_coseparator C |>.of_equivalence α.functor⟩
+  ⟨α.functor.obj (coseparator C), isCoseparator_coseparator C |>.of_equivalence α⟩
 
 end Equivalence
 

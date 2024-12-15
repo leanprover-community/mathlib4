@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Transferring "abelian-ness" across a functor
@@ -173,5 +175,52 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Ha
     {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
     [F.IsEquivalence] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
+
+namespace ShrinkHoms
+
+universe w
+
+variable (C : Type*) [Category C] [LocallySmall.{w} C] [Preadditive C]
+
+noncomputable instance homGroup (P Q : ShrinkHoms C) : AddCommGroup (P ⟶ Q : Type w) :=
+  Equiv.addCommGroup (equivShrink _).symm
+
+lemma functor_map_add {P Q : C} (f g : P ⟶ Q) :
+    (functor C).map (f + g) =
+      (functor C).map f + (functor C).map g :=
+  map_add (equivShrink.{w} (P ⟶ Q)).symm.addEquiv.symm f g
+
+lemma inverse_map_add {P Q : ShrinkHoms C} (f g : P ⟶ Q) :
+    (inverse C).map (f + g) =
+      (inverse C).map f + (ShrinkHoms.inverse C).map g :=
+  map_add (equivShrink.{w} (P.fromShrinkHoms ⟶ Q.fromShrinkHoms)).symm.addEquiv f g
+
+noncomputable instance preadditive [Preadditive C] :
+    Preadditive.{w} (ShrinkHoms C) where
+  homGroup P Q := Equiv.addCommGroup (equivShrink _).symm
+  add_comp _ _ _ _ _ _ := by
+    apply (inverse C).map_injective
+    simp only [inverse_map_add, Functor.map_comp, Preadditive.add_comp]
+  comp_add _ _ _ _ _ _ := by
+    apply (inverse C).map_injective
+    simp only [inverse_map_add, Functor.map_comp, Preadditive.comp_add]
+
+instance : (inverse C).Additive where
+  map_add := by apply inverse_map_add
+
+instance : (functor C).Additive where
+  map_add := by apply functor_map_add
+
+instance hasLimits [LocallySmall.{w} C] {J : Type*} [Category J]
+    [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
+  Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
+
+instance hasFiniteLimits [LocallySmall.{w} C] [HasFiniteLimits C] :
+    HasFiniteLimits.{w} (ShrinkHoms C) := ⟨fun _ => inferInstance⟩
+
+noncomputable instance abelian [Abelian C] [LocallySmall.{w} C] :
+    Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
+
+end ShrinkHoms
 
 end CategoryTheory
