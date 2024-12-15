@@ -73,6 +73,6 @@ lemma hasCardinalLT_iff_of_equiv {X : Type u} {Y : Type u'} (e : X ≃ Y) (κ : 
     fun h ↦ h.of_injective _ e.injective⟩
 
 @[simp]
-lemma hasCardinalLT_aleph0 (X : Type u) :
+lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
