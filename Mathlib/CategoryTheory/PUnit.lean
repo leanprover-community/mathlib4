@@ -28,8 +28,6 @@ namespace Functor
 @[simps!]
 def star : C ⥤ Discrete PUnit.{w + 1} :=
   (Functor.const _).obj ⟨⟨⟩⟩
--- Porting note (#10618): simp can simplify this
-attribute [nolint simpNF] star_map_down_down
 variable {C}
 
 /-- Any two functors to `Discrete PUnit` are isomorphic. -/

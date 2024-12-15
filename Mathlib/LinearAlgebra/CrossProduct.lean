@@ -38,8 +38,6 @@ crossproduct
 
 open Matrix
 
-open Matrix
-
 variable {R : Type*} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/

@@ -23,8 +23,8 @@ variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 variable {W : Type*} [Category W] [Preadditive W]
 variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
-variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
+variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
+variable (f : C ⟶ D) (i : ι)
 
 namespace HomologicalComplex
 

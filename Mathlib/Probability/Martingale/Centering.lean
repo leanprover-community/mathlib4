@@ -135,7 +135,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
     (hf.integrable n).add <| hgint n)
   refine (eventuallyEq_iff_sub.2 ?_).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω
-  unfold_let h at hω
+  unfold h at hω
   rw [Pi.sub_apply] at hω
   rw [hω, Pi.sub_apply, martingalePart]
   simp [hg0]

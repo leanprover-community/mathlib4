@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # "Mirror" of a univariate polynomial
@@ -26,8 +26,6 @@ divisible by `X`.
 
 
 namespace Polynomial
-
-open Polynomial
 
 section Semiring
 

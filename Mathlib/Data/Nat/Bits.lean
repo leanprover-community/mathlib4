@@ -3,8 +3,7 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.List.Defs
@@ -264,7 +263,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, Nat.bits, binaryRec_eq']
+  rw [Nat.bits, Nat.bits, binaryRec_eq]
   simpa
 
 @[simp]

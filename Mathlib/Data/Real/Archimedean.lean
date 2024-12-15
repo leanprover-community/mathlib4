@@ -6,12 +6,15 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Data.Real.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 
 -/
+
+assert_not_exists Finset
 
 open scoped Classical
 open Pointwise CauSeq
@@ -373,14 +376,11 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [le_tsub_iff_left hq.le]
     exact hq
   use 2 * k ^ 2
-  refine (pow_lt_pow_left hk (by positivity) (by simp [posk.ne'])).trans_le' ?_
-  rcases k.zero_le.eq_or_lt with rfl|kpos
-  · simp
-  rw [pow_two, mul_left_comm, pow_mul]
-  have := mul_add_one_le_add_one_pow (a := 1 / k) (by simp) k
-  rw [div_mul_cancel₀ _ (by simp [kpos.ne'])] at this
-  refine (pow_le_pow_left (by positivity) this _).trans' ?_
-  rw [mul_left_comm, ← pow_two]
-  exact_mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _
+  calc
+    ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _
+    _ = (1 / k * k + 1 : ℝ) ^ (2 * k) := by simp [posk.ne']; norm_num
+    _ ≤ ((1 / k + 1) ^ k : ℝ) ^ (2 * k) := by gcongr; exact mul_add_one_le_add_one_pow (by simp) _
+    _ = (1 / k + 1 : ℝ) ^ (2 * k ^ 2) := by rw [← pow_mul, mul_left_comm, sq]
+    _ < a ^ (2 * k ^ 2) := by gcongr
 
 end Real

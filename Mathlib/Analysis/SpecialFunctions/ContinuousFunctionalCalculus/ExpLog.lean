@@ -95,8 +95,7 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℂ p]
+  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a :=
