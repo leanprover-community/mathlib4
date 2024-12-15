@@ -83,12 +83,21 @@ def IsCodetecting (𝒢 : Set C) : Prop :=
 section Equivalence
 
 lemma IsSeparating.of_equivalence
-    {𝒢 : Set C} (h : IsSeparating 𝒢) {D : Type*} [Category D] (e : C ≌ D) :
-    IsSeparating (e.functor.obj '' 𝒢) := fun X Y f g H =>
-  e.inverse.map_injective (h _ _ (fun Z hZ h => by
-    obtain ⟨h', rfl⟩ := (e.toAdjunction.homEquiv _ _).surjective h
+    {𝒢 : Set C} (h : IsSeparating 𝒢) {D : Type*} [Category D] (F : C ⥤ D) [F.IsEquivalence] :
+    IsSeparating (F.obj '' 𝒢) := fun X Y f g H =>
+  F.asEquivalence.inverse.map_injective (h _ _ (fun Z hZ h => by
+    obtain ⟨h', rfl⟩ := (F.asEquivalence.toAdjunction.homEquiv _ _).surjective h
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
-      H (e.functor.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+      H (F.obj Z) (Set.mem_image_of_mem _ hZ) h']))
+
+lemma IsCoseparating.of_equivalence
+    {𝒢 : Set C} (h : IsCoseparating 𝒢) {D : Type*} [Category D] (F : C ⥤ D) [F.IsEquivalence] :
+    IsCoseparating (F.obj '' 𝒢) := fun X Y f g H =>
+  F.asEquivalence.inverse.map_injective (h _ _ (fun Z hZ h => by
+    have h' := (F.asEquivalence.symm.toAdjunction.homEquiv _ _) h
+    obtain ⟨h', rfl⟩ := (F.asEquivalence.symm.toAdjunction.homEquiv _ _).symm.surjective h
+    simp only [Adjunction.homEquiv_symm_apply, ← Category.assoc, ← Functor.map_comp,
+      Equivalence.symm_functor, H (F.obj Z) (Set.mem_image_of_mem _ hZ) h']))
 
 end Equivalence
 
@@ -367,7 +376,10 @@ def IsCodetector (G : C) : Prop :=
 section Equivalence
 
 theorem IsSeparator.of_equivalence {G : C} (h : IsSeparator G) (F : C ⥤ D) [F.IsEquivalence] :
-    IsSeparator (F.obj G) := by simpa using IsSeparating.of_equivalence h (F.asEquivalence)
+    IsSeparator (F.obj G) := by simpa using IsSeparating.of_equivalence h F
+
+theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (F : C ⥤ D) [F.IsEquivalence] :
+    IsCoseparator (F.obj G) := by simpa using IsCoseparating.of_equivalence h F
 
 end Equivalence
 
