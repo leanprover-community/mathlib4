@@ -75,7 +75,7 @@ def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(
     let ms ← createMS b
     let ⟨ms_trimmed, h_trimmed⟩ ← trimPartialMS ms
 
-    let hf_eq ← mkFreshExprMVarQ q($ms.F = $f)
+    let hf_eq ← mkFreshExprMVarQ q($ms.f = $f)
     hf_eq.mvarId!.applyRfl
 
     let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis | throwError "Unexpected basis in computeTendsto"
@@ -102,7 +102,7 @@ def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(
 
     let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto | throwError "Unexpected h_tendsto's universe level"
     let ~q(@Tendsto ℝ ℝ $g atTop $limit) := t | throwError "Unexpected h_tendsto's type"
-    haveI' : $g =Q $ms.F := ⟨⟩
+    haveI' : $g =Q $ms.f := ⟨⟩
 
     let res := q(Eq.subst (motive := fun x ↦ Tendsto x atTop $limit) $hf_eq $h_tendsto)
     return ⟨limit, res⟩

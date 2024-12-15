@@ -20,7 +20,6 @@ def zero (basis) : PreMS basis :=
   | [] => 0
   | List.cons _ _ => .nil
 
-
 /-- This instance is needed to create instance for `AddCommMonoid (PreMS basis)`, which is
 necessary for using `abel` tactic in our proofs. -/
 instance instZero {basis : Basis} : Zero (PreMS basis) where

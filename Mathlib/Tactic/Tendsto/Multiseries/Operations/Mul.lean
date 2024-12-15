@@ -1667,9 +1667,9 @@ theorem addMany_WellOrdered {basis : Basis} {k : ℕ} {args : Fin k → PreMS ba
       · apply h_wo
 
 theorem addMany_Approximates {basis : Basis} {k : ℕ} {args : Fin k → PreMS basis}
-    {F : Fin k → (ℝ → ℝ)}
-    (h_approx : ∀ i, (args i).Approximates (F i)) :
-    (addMany args).Approximates (fun t ↦ ∑ i, F i t) := by
+    {f : Fin k → (ℝ → ℝ)}
+    (h_approx : ∀ i, (args i).Approximates (f i)) :
+    (addMany args).Approximates (fun t ↦ ∑ i, f i t) := by
   cases basis with
   | nil =>
     simp [Approximates] at *
@@ -1825,8 +1825,8 @@ theorem addMany_mulMonomial_tail_BM_WellOrdered {basis_hd} {basis_tl} {k : ℕ}
 
 noncomputable def addMany_mulMonomial_tail_fB {basis_hd} {basis_tl} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (exp : ℝ)
-    {FB : Fin k → (ℝ → ℝ)}
-    (hB_approx : ∀ j, (BM j).1.Approximates (FB j)) :
+    {fB : Fin k → (ℝ → ℝ)}
+    (hB_approx : ∀ j, (BM j).1.Approximates (fB j)) :
     Fin k → (ℝ → ℝ) :=
   match k with
   | 0 => default
@@ -1851,15 +1851,15 @@ noncomputable def addMany_mulMonomial_tail_fB {basis_hd} {basis_tl} {k : ℕ}
           specialize hB_approx i
           rw [h'] at hB_approx
           apply Approximates_cons at hB_approx
-          let C := hB_approx.choose
-          exact fun t ↦ FB i t - basis_hd t ^ (exp - (BM i).2.2) * C t
+          let fC := hB_approx.choose
+          exact fun t ↦ fB i t - basis_hd t ^ (exp - (BM i).2.2) * fC t
       else
-        FB i
+        fB i
 
 theorem addMany_mulMonomial_tail_B_Approximates {basis_hd} {basis_tl} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {exp : ℝ}
-    {FB : Fin k → (ℝ → ℝ)}
-    {hB_approx : ∀ j, (BM j).1.Approximates (FB j)} : ∀ (j : Fin k),
+    {fB : Fin k → (ℝ → ℝ)}
+    {hB_approx : ∀ j, (BM j).1.Approximates (fB j)} : ∀ (j : Fin k),
     Approximates (addMany_mulMonomial_tail_BM BM exp j).1
       (addMany_mulMonomial_tail_fB BM exp hB_approx j) := by
   intro j
@@ -1876,8 +1876,8 @@ theorem addMany_mulMonomial_tail_B_Approximates {basis_hd} {basis_tl} {k : ℕ}
 
 noncomputable def addMany_mulMonomial_fC {basis_hd} {basis_tl} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} (exp : ℝ)
-    {FB : Fin k → (ℝ → ℝ)} (FM : Fin k → (ℝ → ℝ))
-    (hB_approx : ∀ j , (BM j).1.Approximates (FB j)) :
+    {fB : Fin k → (ℝ → ℝ)} (fM : Fin k → (ℝ → ℝ))
+    (hB_approx : ∀ j , (BM j).1.Approximates (fB j)) :
     ℝ → ℝ :=
   match k with
   | 0 => default
@@ -1903,7 +1903,7 @@ noncomputable def addMany_mulMonomial_fC {basis_hd} {basis_tl} {k : ℕ}
           rw [h'] at hB_approx
           apply Approximates_cons at hB_approx
           let fBC := hB_approx.choose
-          exact (FM i t) * (fBC t)
+          exact (fM i t) * (fBC t)
       else
         0
     )
@@ -2208,36 +2208,36 @@ end
 set_option maxHeartbeats 400000 in -- TODO : very slow. How to speed up?
 mutual
 
-  theorem mulMonomial_Approximates {basis_hd} {basis_tl} {FB FM : ℝ → ℝ}
+  theorem mulMonomial_Approximates {basis_hd} {basis_tl} {fB fM : ℝ → ℝ}
         {B : PreMS (basis_hd :: basis_tl)}
         {M_coef : PreMS basis_tl} {M_exp : ℝ}
         (h_basis : WellFormedBasis (basis_hd :: basis_tl))
-        (hB_approx : B.Approximates FB)
-        (hM_approx : M_coef.Approximates FM) :
-      (mulMonomial B M_coef M_exp).Approximates (fun t ↦ (FM t) * (basis_hd t)^M_exp * (FB t)) := by
-    let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun F ms =>
-      ∃ (B : PreMS (basis_hd :: basis_tl)) (FB FM : ℝ → ℝ),
+        (hB_approx : B.Approximates fB)
+        (hM_approx : M_coef.Approximates fM) :
+      (mulMonomial B M_coef M_exp).Approximates (fun t ↦ (fM t) * (basis_hd t)^M_exp * (fB t)) := by
+    let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun f ms =>
+      ∃ (B : PreMS (basis_hd :: basis_tl)) (fB fM : ℝ → ℝ),
       ms = B.mulMonomial M_coef M_exp ∧
-      F =ᶠ[atTop] (fun t ↦ (FM t) * (basis_hd t)^M_exp * (FB t)) ∧
-      B.Approximates FB ∧ M_coef.Approximates FM
+      f =ᶠ[atTop] (fun t ↦ (fM t) * (basis_hd t)^M_exp * (fB t)) ∧
+      B.Approximates fB ∧ M_coef.Approximates fM
     apply Approximates.coind motive
     · simp only [motive]
-      use B, FB, FM
-    · intro F ms ih
+      use B, fB, fM
+    · intro f ms ih
       simp only [motive] at ih
-      obtain ⟨B, FB, FM, h_ms_eq, hf_eq, hB_approx, hM_approx⟩ := ih
+      obtain ⟨B, fB, fM, h_ms_eq, hf_eq, hB_approx, hM_approx⟩ := ih
       subst h_ms_eq
       cases' B with B_exp B_coef B_tl
       · apply Approximates_nil at hB_approx
         left
         simp
-        conv => rhs; ext t; simp; rw [← mul_zero (FM t * basis_hd t ^ M_exp)]
+        conv => rhs; ext t; simp; rw [← mul_zero (fM t * basis_hd t ^ M_exp)]
         trans
         · exact hf_eq
         apply EventuallyEq.mul (by rfl) hB_approx
-      · obtain ⟨C, h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons hB_approx
+      · obtain ⟨fC, h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons hB_approx
         right
-        use ?_, ?_, ?_, FM * C
+        use ?_, ?_, ?_, fM * fC
         constructor
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
@@ -2274,12 +2274,12 @@ mutual
   theorem addMany_mulMonomial_cons_Approximates_coef {basis_hd} {basis_tl} {k : ℕ}
       {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {exp : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-      {FB FM : Fin k → (ℝ → ℝ)}
+      {fB fM : Fin k → (ℝ → ℝ)}
       (h_basis : WellFormedBasis (basis_hd :: basis_tl))
-      (hB_approx : ∀ j, (BM j).1.Approximates (FB j))
-      (hM_approx : ∀ j, (BM j).2.1.Approximates (FM j))
+      (hB_approx : ∀ j, (BM j).1.Approximates (fB j))
+      (hM_approx : ∀ j, (BM j).2.1.Approximates (fM j))
       (h_cons : (addMany ((fun p ↦ p.1.mulMonomial p.2.1 p.2.2) ∘ BM)) = Seq.cons (exp, coef) tl) :
-      coef.Approximates (addMany_mulMonomial_fC exp FM hB_approx) := by
+      coef.Approximates (addMany_mulMonomial_fC exp fM hB_approx) := by
     cases k with
     | zero =>
       simp [addMany] at h_cons
@@ -2318,7 +2318,7 @@ mutual
           generalize_proofs
 
           have hh := h3.choose_spec
-          generalize h3.choose = C at *
+          generalize h3.choose = fC at *
           replace h3 := hh
           clear hh
 
@@ -2331,61 +2331,61 @@ mutual
         · simp
           exact zero_Approximates
 
-  theorem mul_Approximates {basis : Basis} {X Y : PreMS basis} {FX FY : ℝ → ℝ}
+  theorem mul_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
       (h_basis : WellFormedBasis basis)
-      (hX_approx : X.Approximates FX) (hY_approx : Y.Approximates FY) :
-      (X.mul Y).Approximates (FX * FY) := by
+      (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
+      (X.mul Y).Approximates (fX * fY) := by
     cases basis with
     | nil =>
       simp [Approximates, mul] at *
       apply EventuallyEq.mul hX_approx hY_approx
     | cons basis_hd basis_tl =>
-      let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun F ms =>
+      let motive : (ℝ → ℝ) → PreMS (basis_hd :: basis_tl) → Prop := fun f ms =>
         ∃ (k : ℕ) (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ))
-          (FB FM : Fin k → (ℝ → ℝ))
+          (fB fM : Fin k → (ℝ → ℝ))
           (X Y : PreMS (basis_hd :: basis_tl))
-          (FX FY : ℝ → ℝ),
+          (fX fY : ℝ → ℝ),
           ms = (addMany <| (fun (B, M_coef, M_exp) => B.mulMonomial M_coef M_exp) ∘ BM) +
             (X.mul Y) ∧
-          F =ᶠ[atTop] (fun t ↦ (∑ i, (FM i t) * (basis_hd t)^(BM i).2.2 * (FB i t)) +
-            (FX t) * (FY t)) ∧
-          (∀ j , (BM j).1.Approximates (FB j)) ∧
-          (∀ j , (BM j).2.1.Approximates (FM j)) ∧
-          X.Approximates FX ∧
-          Y.Approximates FY
+          f =ᶠ[atTop] (fun t ↦ (∑ i, (fM i t) * (basis_hd t)^(BM i).2.2 * (fB i t)) +
+            (fX t) * (fY t)) ∧
+          (∀ j , (BM j).1.Approximates (fB j)) ∧
+          (∀ j , (BM j).2.1.Approximates (fM j)) ∧
+          X.Approximates fX ∧
+          Y.Approximates fY
       apply Approximates.coind motive
       · simp only [motive]
-        use 0, default, 1, 1, X, Y, FX, FY
+        use 0, default, 1, 1, X, Y, fX, fY
         simp [addMany]
         constructor
         · rfl
         constructor
         · exact hX_approx
         · exact hY_approx
-      · intro F ms ih
+      · intro f ms ih
         simp only [motive] at ih
-        obtain ⟨k, BM, FB, FM, X, Y, FX, FY, h_ms_eq, hf_eq, hB_approx, hM_approx, hX_approx,
+        obtain ⟨k, BM, fB, fM, X, Y, fX, fY, h_ms_eq, hf_eq, hB_approx, hM_approx, hX_approx,
           hY_approx⟩ := ih
         generalize h_left_eq : (addMany ((fun p ↦ p.1.mulMonomial p.2.1 p.2.2) ∘ BM)) =
           left at h_ms_eq
         generalize h_right_eq : X.mul Y = right at h_ms_eq
 
-        have h_mul_eq_nil : X.mul Y = .nil → FX * FY =ᶠ[atTop] 0 := by
+        have h_mul_eq_nil : X.mul Y = .nil → fX * fY =ᶠ[atTop] 0 := by
           intro h
           cases mul_eq_nil h with
           | inl hX =>
             subst hX
             apply Approximates_nil at hX_approx
-            conv => rhs; ext t; simp; rw [← zero_mul (FY t)]
+            conv => rhs; ext t; simp; rw [← zero_mul (fY t)]
             exact EventuallyEq.mul hX_approx (by rfl)
           | inr hY =>
             subst hY
             apply Approximates_nil at hY_approx
-            conv => rhs; ext t; simp; rw [← mul_zero (FX t)]
+            conv => rhs; ext t; simp; rw [← mul_zero (fX t)]
             exact EventuallyEq.mul (by rfl) hY_approx
 
         have h_left_approx : left.Approximates
-            (fun t ↦ ∑ i, (FM i t) * (basis_hd t)^(BM i).2.2 * (FB i t)) := by
+            (fun t ↦ ∑ i, (fM i t) * (basis_hd t)^(BM i).2.2 * (fB i t)) := by
           rw [← h_left_eq]
 
           apply addMany_Approximates
@@ -2397,10 +2397,10 @@ mutual
         subst h_ms_eq
         cases' left with left_exp left_coef left_tl
         · apply Approximates_nil at h_left_approx
-          replace hf_eq : F =ᶠ[atTop] FX * FY := by
+          replace hf_eq : f =ᶠ[atTop] fX * fY := by
             trans
             · exact hf_eq
-            conv => rhs; ext t; simp; rw [← zero_add (FX t * FY t)]
+            conv => rhs; ext t; simp; rw [← zero_add (fX t * fY t)]
             apply EventuallyEq.add h_left_approx (by rfl)
           simp
           cases' right with right_exp right_coef right_tl
@@ -2414,13 +2414,13 @@ mutual
             obtain ⟨X_exp, X_coef, X_tl, Y_exp, Y_coef, Y_tl, hX_eq, hY_eq⟩ :=
               mul_eq_cons h_right_eq
             subst hX_eq hY_eq
-            obtain ⟨XC, hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
-            obtain ⟨YC, hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
+            obtain ⟨fXC, hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
+            obtain ⟨fYC, hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
             simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
             obtain ⟨⟨h_exp, h_coef⟩, h_tl⟩ := h_right_eq
             subst h_exp h_coef h_tl
-            use XC * YC
+            use fXC * fYC
             constructor
             · apply mul_Approximates (h_basis.tail) hX_coef_approx
                 hY_coef_approx
@@ -2430,9 +2430,9 @@ mutual
               apply basis_head_eventually_pos h_basis
             simp only [motive]
             use 1, fun _ ↦ (Y_tl, X_coef, X_exp),
-              fun _ ↦ (fun t ↦ FY t - basis_hd t ^ Y_exp * YC t), fun _ ↦ XC,
+              fun _ ↦ (fun t ↦ fY t - basis_hd t ^ Y_exp * fYC t), fun _ ↦ fXC,
               X_tl, .cons (Y_exp, Y_coef) Y_tl,
-              fun t ↦ FX t - basis_hd t ^ X_exp * XC t, FY
+              fun t ↦ fX t - basis_hd t ^ X_exp * fXC t, fY
             simp
             constructor
             · simp [addMany_one]
@@ -2454,7 +2454,7 @@ mutual
             Approximates_cons h_left_approx
           replace h_left_coef_approx := addMany_mulMonomial_cons_Approximates_coef h_basis
             hB_approx hM_approx h_left_eq -- Nasty workaround
-          generalize h_LC_eq : (addMany_mulMonomial_fC left_exp FM hB_approx) =
+          generalize h_LC_eq : (addMany_mulMonomial_fC left_exp fM hB_approx) =
             LC at h_left_coef_approx
           right
           have h_left_tl_eq := addMany_mulMonomial_tail_eq h_left_eq
@@ -2475,12 +2475,12 @@ mutual
               simp only [Seq.cons_eq_cons, Prod.mk.injEq] at h_left_eq'
               obtain ⟨⟨h_exp', _⟩, h_left_tl_eq'⟩ := h_left_eq'
               cases' right with right_exp right_coef right_tl
-              · replace hf_eq : F =ᶠ[atTop] (fun t ↦ ∑ i : Fin (l + 1),
-                    FM i t * basis_hd t ^ (BM i).2.2 * FB i t) := by
+              · replace hf_eq : f =ᶠ[atTop] (fun t ↦ ∑ i : Fin (l + 1),
+                    fM i t * basis_hd t ^ (BM i).2.2 * fB i t) := by
                   trans
                   · exact hf_eq
                   conv => rhs; ext t; simp; rw [← add_zero (∑ i : Fin (l + 1),
-                    FM i t * basis_hd t ^ (BM i).2.2 * FB i t)]
+                    fM i t * basis_hd t ^ (BM i).2.2 * fB i t)]
                   apply EventuallyEq.add (by rfl) (h_mul_eq_nil h_right_eq)
                 use left_exp, left_coef, left_tl, ?_
                 constructor
@@ -2492,7 +2492,7 @@ mutual
                   exact h_left_maj
                 simp only [motive]
                 use (l + 1), ?_, addMany_mulMonomial_tail_fB BM left_exp hB_approx,
-                  FM, .nil, .nil, 0, 0
+                  fM, .nil, .nil, 0, 0
                 constructor
                 · simp
                   exact h_left_tl_eq
@@ -2517,7 +2517,7 @@ mutual
                     clear hh
 
                     have hh := h2.choose_spec
-                    generalize h2.choose = C at *
+                    generalize h2.choose = fC at *
                     replace h2 := hh
                     clear hh
 
@@ -2541,8 +2541,8 @@ mutual
               · obtain ⟨X_exp, X_coef, X_tl, Y_exp, Y_coef, Y_tl, hX_eq, hY_eq⟩ :=
                   mul_eq_cons h_right_eq
                 subst hX_eq hY_eq
-                obtain ⟨XC, hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
-                obtain ⟨YC, hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
+                obtain ⟨fXC, hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
+                obtain ⟨fYC, hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
                 simp only [mul_cons_cons, Seq.cons_eq_cons, Prod.mk.injEq] at h_right_eq
 
                 rw [add_cons_cons]
@@ -2562,7 +2562,7 @@ mutual
                       apply basis_head_eventually_pos h_basis
                   simp only [motive]
                   use (l + 1), ?_, addMany_mulMonomial_tail_fB BM left_exp hB_approx,
-                    FM, Seq.cons (X_exp, X_coef) X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, FX, FY
+                    fM, Seq.cons (X_exp, X_coef) X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fX, fY
                   constructor
                   · rw [← h_right_eq.1.1, ← h_right_eq.1.2, ← h_right_eq.2]
                     congr 1
@@ -2576,7 +2576,7 @@ mutual
                     apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
                     intro t ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
-                    move_add [← FX t * FY t]
+                    move_add [← fX t * fY t]
                     ring_nf
                     rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
                     congr
@@ -2591,7 +2591,7 @@ mutual
                       clear hh
 
                       have hh := h2.choose_spec
-                      generalize h2.choose = C at *
+                      generalize h2.choose = fC at *
                       replace h2 := hh
                       clear hh
 
@@ -2612,7 +2612,7 @@ mutual
                   constructor
                   · exact hX_approx
                   · exact hY_approx
-                · use ?_, ?_, ?_, (XC * YC)
+                · use ?_, ?_, ?_, (fXC * fYC)
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2634,13 +2634,13 @@ mutual
                     | last => exact (Y_tl, X_coef, X_exp)
                     | cast j => exact BM j,
                     fun i => by cases i using Fin.lastCases with
-                    | last => exact (fun t ↦ FY t - basis_hd t ^ Y_exp * YC t)
-                    | cast j => exact FB j,
+                    | last => exact (fun t ↦ fY t - basis_hd t ^ Y_exp * fYC t)
+                    | cast j => exact fB j,
                     fun i => by cases i using Fin.lastCases with
-                    | last => exact XC
-                    | cast j => exact FM j,
-                    X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fun t ↦ FX t - basis_hd t ^ X_exp * XC t,
-                    FY
+                    | last => exact fXC
+                    | cast j => exact fM j,
+                    X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t,
+                    fY
                   constructor
                   · congr 1
                     conv => rhs; unfold addMany
@@ -2692,7 +2692,7 @@ mutual
                 · have h_exp : right_exp = left_exp := by linarith
                   subst h_exp h_exp'
                   clear h1 h2
-                  use ?_, ?_, ?_, (LC + XC * YC)
+                  use ?_, ?_, ?_, (LC + fXC * fYC)
                   constructor
                   · congr 2 <;> exact Eq.refl _
                   constructor
@@ -2716,13 +2716,13 @@ mutual
                     | last => exact (Y_tl, X_coef, X_exp)
                     | cast j => exact addMany_mulMonomial_tail_BM BM exp' j,
                     fun i => by cases i using Fin.lastCases with
-                    | last => exact (fun t ↦ FY t - basis_hd t ^ Y_exp * YC t)
+                    | last => exact (fun t ↦ fY t - basis_hd t ^ Y_exp * fYC t)
                     | cast j => exact addMany_mulMonomial_tail_fB BM exp' hB_approx j,
                     fun i => by cases i using Fin.lastCases with
-                    | last => exact XC
-                    | cast j => exact FM j,
-                    X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fun t ↦ FX t - basis_hd t ^ X_exp * XC t,
-                    FY
+                    | last => exact fXC
+                    | cast j => exact fM j,
+                    X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t,
+                    fY
                   constructor
                   · congr 1
                     conv => rhs; unfold addMany
@@ -2792,7 +2792,7 @@ mutual
                         clear hh
 
                         have hh := h2.choose_spec
-                        generalize h2.choose = C at *
+                        generalize h2.choose = fC at *
                         replace h2 := hh
                         clear hh
 

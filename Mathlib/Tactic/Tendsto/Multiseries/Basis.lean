@@ -132,12 +132,12 @@ theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     tauto
   · exact h_exp
 
-/-- If `basis_hd :: basis_tl` is well-formed and function `C` can be approximated by
-`ms : PreMS basis_tl`, then `C` can be majorated by `basis_hd` with zero exponent. -/
-theorem PreMS.Approximates_coef_majorated_head {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS basis_tl} (h_approx : ms.Approximates C)
+/-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
+`ms : PreMS basis_tl`, then `fC` can be majorated by `basis_hd` with zero exponent. -/
+theorem PreMS.Approximates_coef_majorated_head {fC basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS basis_tl} (h_approx : ms.Approximates fC)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    majorated C basis_hd 0 := by
+    majorated fC basis_hd 0 := by
   intro exp' h_exp
   cases basis_tl with
   | nil =>

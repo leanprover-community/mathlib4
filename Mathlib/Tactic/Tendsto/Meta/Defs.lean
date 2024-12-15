@@ -25,8 +25,8 @@ theorem cons_of_destruct {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS
   Stream'.Seq.destruct_eq_cons h_destruct
 
 open Filter in
-lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ → ℝ}
-    (h : PreMS.Approximates (@PreMS.nil basis_hd basis_tl) F) : Tendsto F atTop (nhds 0) := by
+lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    (h : PreMS.Approximates (@PreMS.nil basis_hd basis_tl) f) : Tendsto f atTop (nhds 0) := by
   apply PreMS.Approximates_nil at h
   exact h.tendsto
 

@@ -7,9 +7,9 @@ namespace TendstoTactic
 structure MS where
   basis : Q(Basis)
   val : Q(PreMS $basis)
-  F : Q(ℝ → ℝ)
+  f : Q(ℝ → ℝ)
   h_wo : Q(PreMS.WellOrdered $val)
-  h_approx : Q(PreMS.Approximates $val $F)
+  h_approx : Q(PreMS.Approximates $val $f)
   h_basis : Q(WellFormedBasis $basis)
 
 namespace MS
@@ -17,7 +17,7 @@ namespace MS
 def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(WellFormedBasis $basis))  : MS where
   basis := basis
   val := q(PreMS.const $basis $c)
-  F := q(fun _ ↦ $c)
+  f := q(fun _ ↦ $c)
   h_wo := q(PreMS.const_WellOrdered)
   h_approx := q(PreMS.const_Approximates $h_basis)
   h_basis := h_basis
@@ -26,7 +26,7 @@ def monomial (basis : Q(Basis)) (n : ℕ) (h : Q($n < List.length $basis))
     (h_basis : Q(WellFormedBasis $basis)) : MS where
   basis := basis
   val := q(PreMS.monomial $basis $n)
-  F := q(List.get $basis ⟨$n, $h⟩)
+  f := q(List.get $basis ⟨$n, $h⟩)
   h_wo := q(PreMS.monomial_WellOrdered)
   h_approx := q(PreMS.monomial_Approximates $h $h_basis)
   h_basis := h_basis
@@ -34,7 +34,7 @@ def monomial (basis : Q(Basis)) (n : ℕ) (h : Q($n < List.length $basis))
 def neg (x : MS) : MS where
   basis := x.basis
   val := q(PreMS.neg $x.val)
-  F := q(-$x.F)
+  f := q(-$x.f)
   h_wo := q(PreMS.neg_WellOrdered $x.h_wo)
   h_approx := q(PreMS.neg_Approximates $x.h_approx)
   h_basis := x.h_basis
@@ -42,7 +42,7 @@ def neg (x : MS) : MS where
 def add (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.add $x.val $y.val)
-  F := q($x.F + $y.F)
+  f := q($x.f + $y.f)
   h_wo := q(PreMS.add_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.add_Approximates $x.h_approx $y.h_approx)
   h_basis := x.h_basis
@@ -50,7 +50,7 @@ def add (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
 def sub (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.add $x.val (PreMS.neg $y.val))
-  F := q($x.F - $y.F)
+  f := q($x.f - $y.f)
   h_wo := q(PreMS.sub_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.sub_Approximates $x.h_approx $y.h_approx)
   h_basis := x.h_basis
@@ -58,7 +58,7 @@ def sub (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
 def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.mul $x.val $y.val)
-  F := q($x.F * $y.F)
+  f := q($x.f * $y.f)
   h_wo := q(PreMS.mul_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.mul_Approximates $x.h_basis $x.h_approx $y.h_approx)
   h_basis := x.h_basis
@@ -66,7 +66,7 @@ def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
 def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   val := q(PreMS.inv $x.val)
-  F := q($x.F⁻¹)
+  f := q($x.f⁻¹)
   h_wo := q(PreMS.inv_WellOrdered $x.h_wo)
   h_approx := q(PreMS.inv_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
@@ -74,7 +74,7 @@ def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
 def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.mul $x.val (PreMS.inv $y.val))
-  F := q($x.F / $y.F)
+  f := q($x.f / $y.f)
   h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
   h_basis := x.h_basis
@@ -82,7 +82,7 @@ def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis 
 def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   val := q(PreMS.pow $x.val $a)
-  F := q($x.F ^ $a)
+  f := q($x.f ^ $a)
   h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
   h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
@@ -90,7 +90,7 @@ def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
 def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   val := q(PreMS.pow $x.val $a)
-  F := q($x.F ^ $a)
+  f := q($x.f ^ $a)
   h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
   h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
@@ -98,7 +98,7 @@ def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
 def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where
   basis := x.basis
   val := q(PreMS.pow $x.val $a)
-  F := q($x.F ^ $a)
+  f := q($x.f ^ $a)
   h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
   h_approx := q(PreMS.pow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed $h_pos)
   h_basis := x.h_basis

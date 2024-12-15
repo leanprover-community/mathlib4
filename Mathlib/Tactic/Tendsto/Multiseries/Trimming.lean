@@ -3,7 +3,6 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Tendsto.TendstoM
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 
 /-!
@@ -90,9 +89,9 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
 /-- If `f` can be approximated by multiseries with negative leading exponent, then
 it tends to zero. -/
 theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} {F : ℝ → ℝ}
-    (h_neg : ms.leadingExp < 0) (h_approx : ms.Approximates F) :
-    Filter.Tendsto F Filter.atTop (nhds 0) := by
+    {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+    (h_neg : ms.leadingExp < 0) (h_approx : ms.Approximates f) :
+    Filter.Tendsto f Filter.atTop (nhds 0) := by
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
       apply Filter.Tendsto.congr' h_approx.symm

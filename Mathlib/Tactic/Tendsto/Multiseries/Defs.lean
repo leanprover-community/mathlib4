@@ -17,8 +17,8 @@ pair `(exp, coef)` represents the monomial `b₁^exp * coef`. The type is isomor
 of trees of finite fixed depth with possibly infinite branching and `ℝ`-valued labels in vertexes.
 * `WellOrdered ms` is the predicate meaning that at each level of `ms` as a nested tree all
 exponents are Pairwise by TODO (убывание).
-* `Approximates ms F` is the predicate meaning that the multiseries `ms` can be used to obtain
-an asymptotical approximations of the real function `F`.
+* `Approximates ms f` is the predicate meaning that the multiseries `ms` can be used to obtain
+an asymptotical approximations of the real function `f`.
 For details see the docs for `Approximates`.
 
 # Definition used inside the theory
@@ -279,7 +279,7 @@ section Majorated
 /-- `majorated f g exp` for real functions `f` and `g` means that for any `exp' < exp`,
 `f =o[atTop] g^exp'`. -/
 def majorated (f basis_hd : ℝ → ℝ) (exp : ℝ) : Prop :=
-  ∀ exp', exp < exp' → f =o[atTop] (fun x ↦ (basis_hd x)^exp')
+  ∀ exp', exp < exp' → f =o[atTop] (fun t ↦ (basis_hd t)^exp')
 
 /-- One can change the argument of `majorated` with the function that eventually equals to it. -/
 theorem majorated_of_EventuallyEq {f g basis_hd : ℝ → ℝ} {exp : ℝ} (h_eq : g =ᶠ[atTop] f)
@@ -293,24 +293,24 @@ theorem majorated_of_EventuallyEq {f g basis_hd : ℝ → ℝ} {exp : ℝ} (h_eq
 /-- For any function `f`, `f^exp` is majorated with `f` with exponent `exp`. -/
 theorem majorated_self {f : ℝ → ℝ} {exp : ℝ}
     (h : Tendsto f atTop atTop) :
-    majorated (fun x ↦ (f x)^exp) f exp := by
+    majorated (fun t ↦ (f t)^exp) f exp := by
   simp only [majorated]
   intro exp' h_exp
   apply (isLittleO_iff_tendsto' _).mpr
-  · have : (fun x ↦ f x ^ exp / f x ^ exp') =ᶠ[atTop] fun x ↦ (f x)^(exp - exp') := by
+  · have : (fun t ↦ f t ^ exp / f t ^ exp') =ᶠ[atTop] fun t ↦ (f t)^(exp - exp') := by
       apply Eventually.mono <| Tendsto.eventually_gt_atTop h 0
-      intro x h
+      intro t h
       simp only
       rw [← Real.rpow_sub h]
     apply Tendsto.congr' this.symm
     conv =>
       arg 1
-      rw [show (fun x ↦ f x ^ (exp - exp')) = ((fun x ↦ x^(-(exp' - exp))) ∘ f) by ext; simp]
+      rw [show (fun t ↦ f t ^ (exp - exp')) = ((fun t ↦ t^(-(exp' - exp))) ∘ f) by ext; simp]
     apply Tendsto.comp _ h
     apply tendsto_rpow_neg_atTop
     linarith
   · apply Eventually.mono <| Tendsto.eventually_gt_atTop h 0
-    intro x h1 h2
+    intro t h1 h2
     absurd h2
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
 
@@ -350,7 +350,7 @@ theorem zero_majorated {basis_hd : ℝ → ℝ} {exp : ℝ}
 /-- `f * c` can be majorated with the same exponent as `f` for any constant `c`. -/
 theorem mul_const_majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : majorated f basis_hd exp)
     {c : ℝ}
-    : majorated (fun x ↦ (f x) * c) basis_hd exp := by
+    : majorated (fun t ↦ (f t) * c) basis_hd exp := by
   intro exp h_exp
   simp_rw [mul_comm]
   apply IsLittleO.const_mul_left (h exp h_exp)
@@ -370,7 +370,7 @@ theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
 /-- Product of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
 majorated with exponent `f_exp + g_exp`. -/
 theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : majorated f basis_hd f_exp)
-    (hg : majorated g basis_hd g_exp) (h_pos : ∀ᶠ x in atTop, 0 < basis_hd x)
+    (hg : majorated g basis_hd g_exp) (h_pos : ∀ᶠ t in atTop, 0 < basis_hd t)
     : majorated (f * g) basis_hd (f_exp + g_exp) := by
   simp only [majorated] at *
   intro exp h_exp
@@ -378,11 +378,11 @@ theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
   specialize hf (f_exp + ε) (by dsimp [ε]; linarith)
   specialize hg (g_exp + ε) (by dsimp [ε]; linarith)
   apply IsLittleO.trans_eventuallyEq
-    (g₁ := fun x ↦ basis_hd x ^ (f_exp + ε) * basis_hd x ^ (g_exp + ε))
+    (g₁ := fun t ↦ basis_hd t ^ (f_exp + ε) * basis_hd t ^ (g_exp + ε))
   · exact IsLittleO.mul hf hg
   · simp only [EventuallyEq]
     apply Eventually.mono h_pos
-    intro x hx
+    intro t hx
     conv =>
       rhs
       rw [show exp = (f_exp + ε) + (g_exp + ε) by dsimp [ε]; ring_nf]
@@ -394,8 +394,8 @@ section PartialSums
 
 noncomputable def partialSumsFrom (Cs : Seq (ℝ → ℝ)) (exps : Seq ℝ) (basis_fun : ℝ → ℝ)
     (init : ℝ → ℝ) : Seq (ℝ → ℝ) :=
-  Cs.zip exps |>.fold init fun acc (C, exp) =>
-    fun x ↦ acc x + (basis_fun x)^exp * (C x)
+  Cs.zip exps |>.fold init fun acc (fC, exp) =>
+    fun t ↦ acc t + (basis_fun t)^exp * (fC t)
 
 noncomputable def partialSums (Cs : Seq (ℝ → ℝ)) (exps : Seq ℝ) (basis_fun : ℝ → ℝ) :
     Seq (ℝ → ℝ) :=
@@ -409,20 +409,20 @@ theorem partialSumsFrom_cons {Cs_hd : ℝ → ℝ} {Cs_tl : Seq (ℝ → ℝ)} {
     {exps_tl : Seq ℝ} {basis_fun : ℝ → ℝ} {init : ℝ → ℝ} :
     partialSumsFrom (.cons Cs_hd Cs_tl) (.cons exps_hd exps_tl) basis_fun init =
     (.cons init <| partialSumsFrom Cs_tl exps_tl basis_fun
-      (fun x ↦ init x + (basis_fun x)^exps_hd * (Cs_hd x))) := by
+      (fun t ↦ init t + (basis_fun t)^exps_hd * (Cs_hd t))) := by
   simp [partialSumsFrom]
 
 theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_fun : ℝ → ℝ}
     {init : ℝ → ℝ} (h : Cs.AtLeastAsLongAs exps) :
     partialSumsFrom Cs exps basis_fun init =
-      (partialSums Cs exps basis_fun).map fun G => init + G := by
+      (partialSums Cs exps basis_fun).map fun fG => init + fG := by
 
   let motive : Seq (ℝ → ℝ) → Seq (ℝ → ℝ) → Prop := fun x y =>
-    ∃ Cs exps init D,
+    ∃ Cs exps init fD,
       Cs.AtLeastAsLongAs exps ∧
       (
-        (x = partialSumsFrom Cs exps basis_fun (D + init)) ∧
-        (y = (partialSumsFrom Cs exps basis_fun init).map fun G => D + G)
+        (x = partialSumsFrom Cs exps basis_fun (fD + init)) ∧
+        (y = (partialSumsFrom Cs exps basis_fun init).map fun fG => fD + fG)
       ) ∨
       (x = .nil ∧ y = .nil)
   apply Seq.Eq.coind motive
@@ -436,13 +436,13 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
     · simp [partialSums]
   · intro x y ih
     simp [motive] at ih
-    obtain ⟨Cs', exps', init', D, ih⟩ := ih
+    obtain ⟨Cs', exps', init', fD, ih⟩ := ih
     cases' ih with ih ih
     · left
       obtain ⟨h_alal, h_x_eq, h_y_eq⟩ := ih
       cases' exps' with exps_hd exps_tl
       · simp [partialSums, partialSumsFrom] at h_x_eq h_y_eq
-        use D + init', .nil
+        use fD + init', .nil
         constructor
         constructor
         · assumption
@@ -452,18 +452,18 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
       · obtain ⟨Cs_hd, Cs_tl, h_Cs⟩ := Seq.AtLeastAsLongAs_cons h_alal
         subst h_Cs
         simp [partialSums, partialSumsFrom_cons] at h_x_eq h_y_eq
-        use D + init',
-          partialSumsFrom Cs_tl exps_tl basis_fun fun x ↦ D x + init' x +
-            basis_fun x ^ exps_hd * Cs_hd x,
-          Seq.map (fun G ↦ D + G) (partialSumsFrom Cs_tl exps_tl basis_fun fun x ↦ init' x +
-            basis_fun x ^ exps_hd * Cs_hd x)
+        use fD + init',
+          partialSumsFrom Cs_tl exps_tl basis_fun fun t ↦ fD t + init' t +
+            basis_fun t ^ exps_hd * Cs_hd t,
+          Seq.map (fun fG ↦ fD + fG) (partialSumsFrom Cs_tl exps_tl basis_fun fun t ↦ init' t +
+            basis_fun t ^ exps_hd * Cs_hd t)
         constructor
         · assumption
         constructor
         · assumption
         simp [motive]
         simp at h_alal
-        use Cs_tl, exps_tl, fun x ↦ init' x + basis_fun x ^ exps_hd * Cs_hd x, D
+        use Cs_tl, exps_tl, fun t ↦ init' t + basis_fun t ^ exps_hd * Cs_hd t, fD
         left
         constructor
         · assumption
@@ -479,43 +479,43 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
 
 end PartialSums
 
-def Approximates {basis : Basis} (ms : PreMS basis) (F : ℝ → ℝ)   : Prop :=
+def Approximates {basis : Basis} (ms : PreMS basis) (f : ℝ → ℝ)   : Prop :=
   match basis with
-  | [] => F =ᶠ[atTop] fun _ ↦ ms
+  | [] => f =ᶠ[atTop] fun _ ↦ ms
   | List.cons basis_hd _ =>
     ∃ Cs : Seq (ℝ → ℝ),
     Cs.AtLeastAsLongAs ms ∧
-    ((Cs.zip ms).All fun (C, (_, coef)) => coef.Approximates C) ∧
+    ((Cs.zip ms).All fun (fC, (_, coef)) => coef.Approximates fC) ∧
     (
-      let exps := ms.map fun x => x.1;
+      let exps := ms.map fun t => t.1;
       let exps' : Seq (Option ℝ) := (exps.map .some).append (.cons .none .nil);
       (partialSums Cs exps basis_hd).zip exps' |>.All fun (ps, exp?) =>
         match exp? with
         | .some exp =>
-          majorated (fun x ↦ F x - ps x) basis_hd exp
-        | .none => (fun x ↦ F x - ps x) =ᶠ[atTop] 0
+          majorated (fun t ↦ f t - ps t) basis_hd exp
+        | .none => (fun t ↦ f t - ps t) =ᶠ[atTop] 0
     )
 
-variable {F basis_hd : ℝ → ℝ} {basis_tl : Basis}
+variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 /-- `[]` approximates zero function. -/
-theorem Approximates.nil (h : F =ᶠ[atTop] 0) :
-    @Approximates (basis_hd :: basis_tl) .nil F := by
+theorem Approximates.nil (h : f =ᶠ[atTop] 0) :
+    @Approximates (basis_hd :: basis_tl) .nil f := by
   simp [Approximates]
   use .nil
   simpa [partialSums, partialSumsFrom]
 
-/-- `cons (exp, coef) tl` approximates `F` when `F` can be majorated with exponent `exp`, and
-there exists some function `C` such that `coef` approximates `C` and `tl` approximates
-`F - C * basis_hd ^ exp`. -/
+/-- `cons (exp, coef) tl` approximates `f` when `f` can be majorated with exponent `exp`, and
+there exists some function `fC` such that `coef` approximates `fC` and `tl` approximates
+`f - fC * basis_hd ^ exp`. -/
 theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (C : ℝ → ℝ) (h_coef : coef.Approximates C)
-    (h_maj : majorated F basis_hd exp)
-    (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^exp * (C x))) :
-    @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) F := by
+    (fC : ℝ → ℝ) (h_coef : coef.Approximates fC)
+    (h_maj : majorated f basis_hd exp)
+    (h_tl : tl.Approximates (fun t ↦ f t - (basis_hd t)^exp * (fC t))) :
+    @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) f := by
   simp [Approximates] at h_tl ⊢
   obtain ⟨Cs, h_tl_alal, h_tl_coef, h_tl_maj⟩ := h_tl
-  use .cons C Cs
+  use .cons fC Cs
   constructor
   · simpa
   constructor
@@ -532,7 +532,7 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
       rw [Seq.map_zip_left]
       apply Seq.map_all_iff.mpr
       apply Seq.all_mp _ h_tl_maj
-      intro (C', exp?)
+      intro (fC', exp?)
       simp
       intro h
       ring_nf at h
@@ -541,35 +541,34 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
 
 /-- Auxilary type used in `Approximates.coind` proof. -/
 private structure Approximates.coind.AuxT {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop) where
+    (motive : (f : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop) where
   val : PreMS (basis_hd :: basis_tl)
-  F : ℝ → ℝ
-  h : motive F val
+  f : ℝ → ℝ
+  h : motive f val
 
 theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
-    (motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop)
-    (h_base : motive F ms)
-    (h_step : ∀ F ms, motive F ms →
-      (ms = .nil ∧ F =ᶠ[atTop] 0) ∨
+    (motive : (f : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_base : motive f ms)
+    (h_step : ∀ f ms, motive f ms →
+      (ms = .nil ∧ f =ᶠ[atTop] 0) ∨
       (
-        ∃ exp coef tl C, ms = .cons (exp, coef) tl ∧
-        (coef.Approximates C) ∧
-        majorated F basis_hd exp ∧
-        (motive (fun x ↦ F x - (basis_hd x)^exp * (C x)) tl)
+        ∃ exp coef tl fC, ms = .cons (exp, coef) tl ∧
+        (coef.Approximates fC) ∧
+        majorated f basis_hd exp ∧
+        (motive (fun t ↦ f t - (basis_hd t)^exp * (fC t)) tl)
       )
     )
-    : ms.Approximates F := by
+    : ms.Approximates f := by
   simp [Approximates]
   let T := Approximates.coind.AuxT motive
-  -- let g_aux :
-  let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, F, h⟩ =>
+  let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, f, h⟩ =>
     match h_val : destruct val with
     | none => .none
     | some ((exp, coef), tl) =>
-        have spec : ∃ C,
-            coef.Approximates C ∧
-            majorated F basis_hd exp ∧
-            motive (fun x ↦ F x - basis_hd x ^ exp * C x) tl := by
+        have spec : ∃ fC,
+            coef.Approximates fC ∧
+            majorated f basis_hd exp ∧
+            motive (fun t ↦ f t - basis_hd t ^ exp * fC t) tl := by
           apply destruct_eq_cons at h_val
           specialize h_step _ _ h
           simp [h_val, Seq.cons_eq_cons] at h_step
@@ -578,19 +577,19 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
           subst h_coef
           subst h_tl
           exact h_step
-        let C := spec.choose
-        .some (C, ⟨tl, fun x ↦ F x - (basis_hd x)^exp * (C x), spec.choose_spec.right.right⟩)
-  let Cs : Seq (ℝ → ℝ) := Seq.corec g ⟨ms, F, h_base⟩
+        let fC := spec.choose
+        .some (fC, ⟨tl, fun t ↦ f t - (basis_hd t)^exp * (fC t), spec.choose_spec.right.right⟩)
+  let Cs : Seq (ℝ → ℝ) := Seq.corec g ⟨ms, f, h_base⟩
   use Cs
   constructor
   · let motive' : Seq (ℝ → ℝ) → Seq (ℝ × PreMS basis_tl) → Prop := fun Cs ms =>
-      ∃ F h, Cs = (Seq.corec g ⟨ms, F, h⟩)
+      ∃ f h, Cs = (Seq.corec g ⟨ms, f, h⟩)
     apply Seq.atLeastAsLong.coind motive'
     · simp only [motive']
-      use F, h_base
+      use f, h_base
     · intro Cs ms ih (exp, coef) tl h_ms_eq
       simp only [motive'] at ih
-      obtain ⟨F, h, h_Cs_eq⟩ := ih
+      obtain ⟨f, h, h_Cs_eq⟩ := ih
       subst h_ms_eq
       rw [Seq.corec_cons] at h_Cs_eq
       pick_goal 2
@@ -601,19 +600,19 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
       · exact h_Cs_eq
       simp only [motive']
       generalize_proofs p1 p2
-      use fun x ↦ F x - basis_hd x ^ exp * p1.choose x, p2
+      use fun t ↦ f t - basis_hd t ^ exp * p1.choose t, p2
       simp
   · constructor
     · let motive' : Seq ((ℝ → ℝ) × ℝ × PreMS basis_tl) → Prop := fun li =>
-        ∃ (ms : PreMS (basis_hd :: basis_tl)), ∃ F h,
-          li = (Seq.corec g ⟨ms, F, h⟩).zip ms
+        ∃ (ms : PreMS (basis_hd :: basis_tl)), ∃ f h,
+          li = (Seq.corec g ⟨ms, f, h⟩).zip ms
       apply Seq.All.coind motive'
       · simp only [motive']
-        use ms, F, h_base
-      · intro (C, (exp, coef)) tl ih
+        use ms, f, h_base
+      · intro (fC, (exp, coef)) tl ih
         simp only
         simp only [motive'] at ih
-        obtain ⟨ms, F, h, h_eq⟩ := ih
+        obtain ⟨ms, f, h, h_eq⟩ := ih
         specialize h_step _ _ h
         cases' ms with ms_exp ms_coef ms_tl
         · simp at h_eq
@@ -633,24 +632,24 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
             use ?_, ?_, ?_
     · simp [partialSums]
       let motive' : Seq ((ℝ → ℝ) × Option ℝ) → Prop := fun li =>
-        li = .nil ∨ ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ G h init,
-          li = ((partialSumsFrom (Seq.corec g ⟨ms, G, h⟩)
+        li = .nil ∨ ∃ (ms : Seq (ℝ × PreMS basis_tl)), ∃ fG h init,
+          li = ((partialSumsFrom (Seq.corec g ⟨ms, fG, h⟩)
             (Seq.map (fun x ↦ x.1) ms) basis_hd init).zip
               ((Seq.map some (Seq.map (fun x ↦ x.1) ms)).append (Seq.cons none Seq.nil))) ∧
-      G + init =ᶠ[atTop] F
+      fG + init =ᶠ[atTop] f
       apply Seq.All.coind motive'
       · simp only [motive']
         right
-        use ms, F, h_base, 0
+        use ms, f, h_base, 0
         constructor
         · rfl
         simp
-      · intro (F', exp?) li_tl ih
+      · intro (f', exp?) li_tl ih
         simp only [motive'] at ih
         cases ih with
         | inl ih => simp at ih
         | inr ih =>
-        obtain ⟨(ms : PreMS (basis_hd :: basis_tl)), G, h_mot, init, h_eq, hF_eq⟩ := ih
+        obtain ⟨(ms : PreMS (basis_hd :: basis_tl)), fG, h_mot, init, h_eq, hF_eq⟩ := ih
         · simp
           cases' ms with exp coef tl
           · rw [Seq.corec_nil] at h_eq
@@ -669,7 +668,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
               · apply eventuallyEq_iff_sub.mp
                 trans
                 · exact hF_eq.symm
-                conv => rhs; ext x; rw [← zero_add (F' x)]
+                conv => rhs; ext t; rw [← zero_add (f' t)]
                 apply EventuallyEq.add h_step
                 rfl
               · simp [motive']
@@ -683,10 +682,10 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
             simp
             constructor
             · intro exp' h_exp
-              apply EventuallyEq.trans_isLittleO (f₂ := G)
+              apply EventuallyEq.trans_isLittleO (f₂ := fG)
               · apply eventuallyEq_iff_sub.mpr
                 replace hF_eq := eventuallyEq_iff_sub.mp hF_eq.symm
-                trans F - (G + F')
+                trans f - (fG + f')
                 · apply eventuallyEq_iff_sub.mpr
                   eta_expand
                   simp
@@ -699,8 +698,8 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
             · simp [motive']
               right
               generalize_proofs h1 h2
-              use tl, fun x ↦ G x - basis_hd x ^ exp * h1.choose x,
-                h2, fun x ↦ F' x + basis_hd x ^ exp * h1.choose x
+              use tl, fun t ↦ fG t - basis_hd t ^ exp * h1.choose t,
+                h2, fun t ↦ f' t + basis_hd t ^ exp * h1.choose t
               constructor
               · rfl
               apply eventuallyEq_iff_sub.mpr
@@ -708,13 +707,13 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
               simp
               ring_nf!
               conv =>
-                lhs; ext x; rw [show G x + (F' x - F x) = (G x + F' x) - F x by ring]
+                lhs; ext t; rw [show fG t + (f' t - f t) = (fG t + f' t) - f t by ring]
               apply eventuallyEq_iff_sub.mp
               exact hF_eq
 
-/-- If `[]` approximates `F`, then `F = 0` eventually. -/
-theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) Seq.nil F) :
-    F =ᶠ[atTop] 0 := by
+/-- If `[]` approximates `f`, then `f = 0` eventually. -/
+theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) Seq.nil f) :
+    f =ᶠ[atTop] 0 := by
   unfold Approximates at h
   obtain ⟨Cs, _, _, h_maj⟩ := h
   simp at h_maj
@@ -723,21 +722,21 @@ theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) Seq.nil F) :
   specialize h_maj (n := 0)
   simpa [partialSums, partialSumsFrom] using h_maj
 
-/-- If `cons (exp, coef) tl` approximates `F`, then `F` can be majorated with exponent `exp`, and
-there exists function `C` such that `coef` approximates `C` and `tl` approximates
-`F - C * basis_hd ^ exp`. -/
+/-- If `cons (exp, coef) tl` approximates `f`, then `f` can be majorated with exponent `exp`, and
+there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
+`f - fC * basis_hd ^ exp`. -/
 theorem Approximates_cons {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) F) :
-    ∃ C,
-      coef.Approximates C ∧
-      majorated F basis_hd exp ∧
-      tl.Approximates (fun x ↦ F x - (basis_hd x)^exp * (C x)) := by
+    (h : @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) f) :
+    ∃ fC,
+      coef.Approximates fC ∧
+      majorated f basis_hd exp ∧
+      tl.Approximates (fun t ↦ f t - (basis_hd t)^exp * (fC t)) := by
   unfold Approximates at h
   obtain ⟨Cs, h_alal, h_coef, h_maj⟩ := h
-  obtain ⟨C, Cs_tl, h_alal⟩ := Seq.AtLeastAsLongAs_cons h_alal
+  obtain ⟨fC, Cs_tl, h_alal⟩ := Seq.AtLeastAsLongAs_cons h_alal
   subst h_alal
-  use C
+  use fC
   simp at h_coef
   constructor
   · exact h_coef.left
@@ -756,33 +755,33 @@ theorem Approximates_cons {exp : ℝ}
           rw [partialSumsFrom_eq_map (Seq.AtLeastAsLongAs_map h_alal)] at h_maj
           rw [Seq.map_zip_left] at h_maj
           apply Seq.all_mp _ (Seq.map_all_iff.mp h_maj)
-          intro (C', exp?)
+          intro (fC', exp?)
           simp
           intro h
           ring_nf at h
           ring_nf
           exact h
 
-/-- One can replace `F` in `Approximates` with the funcion that eventually equals `F`. -/
-theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : ℝ → ℝ}
-     (h_equiv : F =ᶠ[atTop] F') (h_approx : ms.Approximates F) :
-    ms.Approximates F' :=
+/-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
+theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {f f' : ℝ → ℝ}
+     (h_equiv : f =ᶠ[atTop] f') (h_approx : ms.Approximates f) :
+    ms.Approximates f' :=
   match basis with
   | [] => by
     simp [Approximates] at h_approx
     exact EventuallyEq.trans h_equiv.symm h_approx
   | List.cons basis_hd basis_tl => by
-    let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
-      fun F' ms =>
-        ∃ F, F =ᶠ[atTop] F' ∧ ms.Approximates F
+    let motive : (f : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
+      fun f' ms =>
+        ∃ f, f =ᶠ[atTop] f' ∧ ms.Approximates f
     apply Approximates.coind motive
     · simp only [motive]
-      use F
-    · intro F' ms ih
+      use f
+    · intro f' ms ih
       cases' ms with exp coef tl
       · left
         simp [motive] at ih
-        obtain ⟨F, h_equiv, hF⟩ := ih
+        obtain ⟨f, h_equiv, hF⟩ := ih
         apply Approximates_nil at hF
         constructor
         · rfl
@@ -791,9 +790,9 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
         use exp, coef, tl
         simp
         simp [motive] at ih
-        obtain ⟨F, h_equiv, hF⟩ := ih
-        obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons hF
-        use C
+        obtain ⟨f, h_equiv, hF⟩ := ih
+        obtain ⟨fC, h_coef, h_maj, h_tl⟩ := Approximates_cons hF
+        use fC
         constructor
         · exact h_coef
         constructor
@@ -801,7 +800,7 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
           apply EventuallyEq.trans_isLittleO h_equiv.symm
           apply h_maj _ h
         · simp [motive]
-          use fun x ↦ F x - basis_hd x ^ exp * (C x)
+          use fun t ↦ f t - basis_hd t ^ exp * (fC t)
           constructor
           · apply EventuallyEq.sub h_equiv
             apply EventuallyEq.rfl

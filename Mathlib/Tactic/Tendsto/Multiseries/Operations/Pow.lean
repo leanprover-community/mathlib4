@@ -176,9 +176,9 @@ theorem pow_WellOrdered {basis : Basis} {ms : PreMS basis} {a : ℝ}
       · apply pow_WellOrdered
         exact h_coef
 
-theorem pow_zero_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
+theorem pow_zero_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
     (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates F) (h_trimmed : ms.Trimmed)  :
+    (h_approx : ms.Approximates f) (h_trimmed : ms.Trimmed)  :
     (ms.pow 0).Approximates 1 := by
   cases basis with
   | nil =>
@@ -194,9 +194,9 @@ theorem pow_zero_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basi
     · apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-      obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
+      obtain ⟨fC, h_coef, _, h_tl⟩ := Approximates_cons h_approx
       simp [pow, powSeries_zero_eq]
-      apply Approximates.cons (C := 1)
+      apply Approximates.cons (fC := 1)
       · conv => rhs; rw [← mul_one 1]
         apply mul_Approximates (h_basis.tail)
         · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
@@ -209,7 +209,7 @@ theorem pow_zero_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basi
         apply mulMonomial_Approximates h_basis
         swap
         · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
-        conv => arg 2; ext t; rw [← zero_mul (C⁻¹ t * basis_hd t ^ (-exp) * (F t - basis_hd t ^ exp * C t))]
+        conv => arg 2; ext t; rw [← zero_mul (fC⁻¹ t * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t))]
         apply mul_Approximates h_basis
         pick_goal 2
         · apply mulMonomial_Approximates h_basis h_tl
@@ -225,10 +225,10 @@ theorem pow_zero_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basi
         · simp [Ne.bot_lt]
         · simpa [← WithBot.coe_add] using h_comp
 
-theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a : ℝ}
+theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a : ℝ}
     (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates F) (h_trimmed : ms.Trimmed) (h_pos : 0 < ms.leadingTerm.coef) :
-    (ms.pow a).Approximates (F^a) := by
+    (h_approx : ms.Approximates f) (h_trimmed : ms.Trimmed) (h_pos : 0 < ms.leadingTerm.coef) :
+    (ms.pow a).Approximates (f^a) := by
   by_cases ha : a = 0
   · rw [ha]
     eta_expand
@@ -242,7 +242,7 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
     simp
     apply EventuallyEq.pow_const h_approx
   | cons basis_hd basis_tl =>
-    have hF_pos : ∀ᶠ t in atTop, 0 < F t := eventually_pos_of_coef_pos h_pos h_wo h_approx h_trimmed h_basis
+    have hF_pos : ∀ᶠ t in atTop, 0 < f t := eventually_pos_of_coef_pos h_pos h_wo h_approx h_trimmed h_basis
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
       simp [pow]
@@ -259,13 +259,13 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
     · apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-      obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
+      obtain ⟨fC, h_coef, _, h_tl⟩ := Approximates_cons h_approx
       have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
         basis_head_eventually_pos h_basis
-      have hC_pos : ∀ᶠ t in atTop, 0 < C t := by
-        have hC_equiv : C ~[atTop] F / (fun t ↦ (basis_hd t)^exp) := by
+      have hC_pos : ∀ᶠ t in atTop, 0 < fC t := by
+        have hC_equiv : fC ~[atTop] f / (fun t ↦ (basis_hd t)^exp) := by
           have hF_equiv := IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
-          have : C =ᶠ[atTop] (fun t ↦ (basis_hd t)^exp * C t) / (fun t ↦ (basis_hd t)^exp) := by
+          have : fC =ᶠ[atTop] (fun t ↦ (basis_hd t)^exp * fC t) / (fun t ↦ (basis_hd t)^exp) := by
             simp only [EventuallyEq]
             apply Eventually.mono h_basis_hd_pos
             intro t ht
@@ -283,28 +283,28 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
         apply div_pos hF_pos
         apply Real.rpow_pos_of_pos h_basis_hd_pos
       simp [pow]
-      apply Approximates_of_EventuallyEq (F := fun t ↦ (C t)^a * (basis_hd t)^(exp * a) *
-        (fun t ↦ (C t)^(-a) * (basis_hd t)^(-exp * a) * (F t)^a) t)
+      apply Approximates_of_EventuallyEq (f := fun t ↦ (fC t)^a * (basis_hd t)^(exp * a) *
+        (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t)
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_pos.and h_basis_hd_pos
         intro t ⟨hC_pos, h_basis_hd_pos⟩
         simp
         ring_nf
-        move_mul [←  C t ^ (-a)]
+        move_mul [←  fC t ^ (-a)]
         rw [← Real.rpow_add hC_pos]
         simp [← Real.rpow_add h_basis_hd_pos]
       apply mulMonomial_Approximates h_basis
       swap
       · apply pow_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         rwa [leadingTerm_cons_coef] at h_pos
-      have : (tl.mulMonomial coef.inv (-exp)).Approximates (fun t ↦ C⁻¹ t *
-          (basis_hd t)^(-exp) * (F t - basis_hd t ^ exp * C t))
+      have : (tl.mulMonomial coef.inv (-exp)).Approximates (fun t ↦ fC⁻¹ t *
+          (basis_hd t)^(-exp) * (f t - basis_hd t ^ exp * fC t))
           (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact h_tl
         · exact inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       apply Approximates_of_EventuallyEq
-        (F' := (fun t ↦ -1 + C⁻¹ t * basis_hd t ^ (-exp) * F t)) at this
+        (f' := (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t)) at this
       swap
       · simp only [EventuallyEq]
         apply Eventually.mono <| hC_pos.and h_basis_hd_pos
@@ -314,7 +314,7 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
         simp [mul_inv_cancel₀ hC_pos.ne.symm]
         simp [← Real.rpow_add h_basis_hd_pos]
       apply Approximates_of_EventuallyEq
-        (F := (fun t ↦ (1 + t)^a) ∘ (fun t ↦ -1 + C⁻¹ t * basis_hd t ^ (-exp) * F t))
+        (f := (fun t ↦ (1 + t)^a) ∘ (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t))
       · simp only [EventuallyEq]
         apply Eventually.mono <| hF_pos.and (hC_pos.and h_basis_hd_pos)
         intro t ⟨hF_pos, hC_pos, h_basis_hd_pos⟩
@@ -329,12 +329,12 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
             linarith
           · apply Real.rpow_nonneg
             linarith
-      apply Approximates_of_EventuallyEq (F := (powSeries a).toFun ∘
-          (fun t ↦ -1 + C⁻¹ t * basis_hd t ^ (-exp) * F t))
-      · have : Tendsto (fun t ↦ -1 + C⁻¹ t * basis_hd t ^ (-exp) * F t) atTop (nhds 0) := by
+      apply Approximates_of_EventuallyEq (f := (powSeries a).toFun ∘
+          (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t))
+      · have : Tendsto (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t) atTop (nhds 0) := by
           rw [show (0 : ℝ) = -1 + 1 by simp]
           apply Tendsto.const_add
-          apply Tendsto.congr' (f₁ := F / (fun k ↦ C k * basis_hd k ^ (exp)))
+          apply Tendsto.congr' (f₁ := f / (fun k ↦ fC k * basis_hd k ^ (exp)))
           · simp only [EventuallyEq]
             apply Eventually.mono <| h_basis_hd_pos
             intro t h_basis_hd_pos
@@ -353,7 +353,7 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
               intro h
               simp [h] at h_basis_hd_pos
             · exact h_basis_hd_pos.le
-        have : ∀ᶠ t in atTop, ‖-1 + C⁻¹ t * basis_hd t ^ (-exp) * F t‖ < 1 := by
+        have : ∀ᶠ t in atTop, ‖-1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t‖ < 1 := by
           apply NormedAddCommGroup.tendsto_nhds_zero.mp this
           simp
         simp only [EventuallyEq]
@@ -373,12 +373,12 @@ theorem pow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a
         | coe => simpa [← WithBot.coe_add] using h_comp
       · exact this
 
-theorem zpow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {a : ℤ}
+theorem zpow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a : ℤ}
     (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates F) (h_trimmed : ms.Trimmed) :
-    (ms.pow a).Approximates (F^a) := by
+    (h_approx : ms.Approximates f) (h_trimmed : ms.Trimmed) :
+    (ms.pow a).Approximates (f^a) := by
   rcases lt_trichotomy 0 ms.leadingTerm.coef with (h_leading | h_leading | h_leading)
-  · convert_to (ms.pow a).Approximates (F ^ (a : ℝ))
+  · convert_to (ms.pow a).Approximates (f ^ (a : ℝ))
     · ext
       simp
     apply pow_Approximates <;> assumption
@@ -409,16 +409,16 @@ theorem zpow_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis} {
         simp [zero_zpow a ha]
         intro x hx
         rw [hx, zero_zpow a ha]
-  · have : (ms.neg.pow a).Approximates ((-F)^a) := by
-      rw [show (-F)^a = (-F)^(a : ℝ) by ext; simp]
+  · have : (ms.neg.pow a).Approximates ((-f)^a) := by
+      rw [show (-f)^a = (-f)^(a : ℝ) by ext; simp]
       apply pow_Approximates h_basis (neg_WellOrdered h_wo) (neg_Approximates h_approx)
       · exact neg_Trimmed h_trimmed
       · simpa [neg_leadingTerm]
-    rw [show (-F)^a = fun t ↦ (F t)^a * (-1)^a by ext; simp [← mul_zpow]] at this
+    rw [show (-f)^a = fun t ↦ (f t)^a * (-1)^a by ext; simp [← mul_zpow]] at this
     rw [neg_zpow] at this
     have h_eq : ms.pow a = ((ms.pow a).mulConst ((-1)^a)).mulConst ((-1)^a) := by
       simp [← mul_zpow]
-    rw [h_eq, show F ^ a = fun x ↦ (F x) ^ a * (-1)^a * (-1)^a by ext; simp [mul_assoc, ← mul_zpow]]
+    rw [h_eq, show f ^ a = fun x ↦ (f x) ^ a * (-1)^a * (-1)^a by ext; simp [mul_assoc, ← mul_zpow]]
     apply mulConst_Approximates this
 
 end PreMS

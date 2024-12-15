@@ -5,7 +5,6 @@ Authors: Vasily Nesterov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
-import Mathlib.Tactic.Tendsto.TendstoM
 
 /-!
 Here we find the limit of the term of the form `coef * b1(x)^d1 * b2(x)^d2 * ...`

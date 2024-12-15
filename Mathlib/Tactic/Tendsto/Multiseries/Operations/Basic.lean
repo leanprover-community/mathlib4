@@ -122,10 +122,10 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         simp [motive]
         use tl
 
-/-- If `ms` approximates `F`, then `ms.mulConst c` approximates `F * c`. -/
-theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : ℝ → ℝ}
-    (h_approx : ms.Approximates F) :
-    (ms.mulConst c).Approximates (fun t ↦ F t * c) := by
+/-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
+theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
+    (h_approx : ms.Approximates f) :
+    (ms.mulConst c).Approximates (fun t ↦ f t * c) := by
   cases basis with
   | nil =>
     simp [Approximates, mulConst] at *
@@ -133,15 +133,15 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
     rfl
   | cons basis_hd basis_tl =>
     let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun f ms' =>
-      ∃ (X : PreMS (basis_hd :: basis_tl)) (FX : ℝ → ℝ),
-        ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun t ↦ FX t * c) ∧
-        X.Approximates FX
+      ∃ (X : PreMS (basis_hd :: basis_tl)) (fX : ℝ → ℝ),
+        ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun t ↦ fX t * c) ∧
+        X.Approximates fX
     apply Approximates.coind motive
     · simp only [motive]
-      use ms, F
+      use ms, f
     · intro f ms ih
       simp only [motive] at ih
-      obtain ⟨X, FX, h_ms_eq, hf_eq, hX_approx⟩ := ih
+      obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
       cases' X with X_exp X_coef X_tl
       · left
         apply Approximates_nil at hX_approx
@@ -157,10 +157,10 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
           rw [← zero_mul c]
         apply EventuallyEq.mul hX_approx
         rfl
-      · obtain ⟨XC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+      · obtain ⟨fXC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
         simp [mulConst] at h_ms_eq
-        use ?_, ?_, ?_, fun t ↦ XC t * c
+        use ?_, ?_, ?_, fun t ↦ fXC t * c
         constructor
         · exact h_ms_eq
         constructor
@@ -169,7 +169,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {F : 
         · apply majorated_of_EventuallyEq hf_eq
           exact mul_const_majorated hX_maj
         simp only [motive]
-        use X_tl, fun t ↦ FX t - basis_hd t ^ X_exp * XC t
+        use X_tl, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t
         constructor
         · rfl
         constructor
@@ -245,8 +245,8 @@ theorem neg_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : ms.neg.WellOrdered :=
   mulConst_WellOrdered h_wo
 
-theorem neg_Approximates {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
-    (h_approx : ms.Approximates F) : ms.neg.Approximates (-F) := by
+theorem neg_Approximates {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+    (h_approx : ms.Approximates f) : ms.neg.Approximates (-f) := by
   rw [← mul_neg_one]
   eta_expand
   simp only [Pi.one_apply, Pi.neg_apply, Pi.mul_apply]
