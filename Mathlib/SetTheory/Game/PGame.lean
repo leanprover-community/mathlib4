@@ -627,9 +627,6 @@ theorem lt_of_le_of_lf {x y : PGame} (h₁ : x ≤ y) (h₂ : x ⧏ y) : x < y :
 theorem lf_of_lt {x y : PGame} (h : x < y) : x ⧏ y :=
   h.2
 
-theorem not_lt {x y : PGame} : ¬(x < y) ↔ y ⧏ x ∨ y ≤ x := by
-  rw [lt_iff_le_and_lf, Classical.not_and_iff_or_not_not, PGame.not_le, PGame.not_lf]
-
 alias _root_.LT.lt.lf := lf_of_lt
 
 theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
@@ -637,6 +634,10 @@ theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
 
 instance : IsIrrefl _ (· ⧏ ·) :=
   ⟨lf_irrefl⟩
+
+@[simp]
+protected theorem not_lt {x y : PGame} : ¬(x < y) ↔ y ⧏ x ∨ y ≤ x := by
+  rw [lt_iff_le_and_lf, Classical.not_and_iff_or_not_not, PGame.not_le, PGame.not_lf]
 
 @[trans]
 theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏ z := by
