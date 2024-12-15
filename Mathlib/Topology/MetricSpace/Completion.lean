@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Instances.Real
 
 /-!
@@ -103,7 +105,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         · have Z := hε (not_le.1 h)
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
-    simp only [not_le.mpr hxy, false_or_iff, not_le] at this
+    simp only [not_le.mpr hxy, false_or, not_le] at this
     exact ts this
   · /- Start from a set `s` containing an ε-neighborhood of the diagonal in `Completion α`. To show
         that it is an entourage, we use the fact that `dist` is uniformly continuous on
@@ -141,7 +143,7 @@ protected theorem uniformity_dist' :
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩
-    simp (config := { contextual := true }) [lt_min_iff]
+    simp +contextual [lt_min_iff]
 
 protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p | dist p.1 p.2 < ε } := by
   simpa [iInf_subtype] using @Completion.uniformity_dist' α _
@@ -167,6 +169,27 @@ theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
 @[simp]
 protected theorem edist_eq (x y : α) : edist (x : Completion α) y = edist x y :=
   coe_isometry x y
+
+instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [BoundedSMul M α] :
+    BoundedSMul M (Completion α) where
+  dist_smul_pair' c x₁ x₂ := by
+    induction x₁, x₂ using induction_on₂ with
+    | hp =>
+      exact isClosed_le
+        ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
+        (continuous_const.mul (continuous_fst.dist continuous_snd))
+    | ih x₁ x₂ =>
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq,  Completion.dist_eq]
+      exact dist_smul_pair c x₁ x₂
+  dist_pair_smul' c₁ c₂ x := by
+    induction x using induction_on with
+    | hp =>
+      exact isClosed_le
+        ((continuous_const_smul _).dist (continuous_const_smul _))
+        (continuous_const.mul (continuous_id.dist continuous_const))
+    | ih x =>
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, ← coe_zero, Completion.dist_eq]
+      exact dist_pair_smul c₁ c₂ x
 
 end UniformSpace.Completion
 

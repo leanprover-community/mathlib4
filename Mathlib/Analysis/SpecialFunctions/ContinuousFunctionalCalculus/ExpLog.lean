@@ -7,6 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -63,7 +64,7 @@ variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
-  have h := (cfcHom_closedEmbedding (R := 𝕜) (show p a from ha)).continuous
+  have h := (cfcHom_isClosedEmbedding (R := 𝕜) (show p a from ha)).continuous
   have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := exp_continuous.continuousOn
   simp_rw [← map_exp 𝕜 _ h, cfc_apply (exp 𝕜) a ha]
   congr 1
@@ -74,21 +75,27 @@ end RCLikeNormed
 
 section RealNormed
 
-variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
+variable {A : Type*} [NormedRing A] [StarRing A]
   [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ p]
+  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
 
-lemma real_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
+lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc Real.exp a = exp ℝ a :=
   Real.exp_eq_exp_ℝ ▸ exp_eq_normedSpace_exp ha
+
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+lemma _root_.IsSelfAdjoint.exp_nonneg {𝕜 : Type*} [Field 𝕜] [Algebra 𝕜 A]
+    [PartialOrder A] [StarOrderedRing A] {a : A} (ha : IsSelfAdjoint a) :
+    0 ≤ exp 𝕜 a := by
+  rw [exp_eq_exp 𝕜 ℝ, ← real_exp_eq_normedSpace_exp]
+  exact cfc_nonneg fun x _ => Real.exp_nonneg x
 
 end RealNormed
 
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℂ p]
+  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a :=

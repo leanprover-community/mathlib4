@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!

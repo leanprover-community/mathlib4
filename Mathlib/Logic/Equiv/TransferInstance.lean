@@ -133,7 +133,7 @@ on `β` back along `e`. -/
 the additive structure on `α` is the one obtained by transporting an additive structure
 on `β` back along `e`."]
 def mulEquiv (e : α ≃ β) [Mul β] :
-    let mul := Equiv.mul e
+    let _ := Equiv.mul e
     α ≃* β := by
   intros
   exact
@@ -186,7 +186,7 @@ theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves ring structure. -/
-noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Ring α] : Shrink.{v} α ≃+* α :=
+noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Add α] [Mul α] : Shrink.{v} α ≃+* α :=
   (equivShrink α).symm.ringEquiv
 
 /-- Transfer `Semigroup` across an `Equiv` -/
@@ -343,7 +343,7 @@ protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
     e.addGroup with
     intCast := fun n => e.symm n
     intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
-    intCast_negSucc := fun n =>
+    intCast_negSucc := fun _ =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 
 noncomputable instance [Small.{v} α] [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
@@ -471,10 +471,10 @@ noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} �
   (equivShrink α).symm.nontrivial
 
 /-- Transfer `IsDomain` across an `Equiv` -/
-protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
+protected theorem isDomain [Semiring α] [Semiring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
   Function.Injective.isDomain e.toRingHom e.injective
 
-noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Semiring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain (Shrink.ringEquiv α)
 
 /-- Transfer `NNRatCast` across an `Equiv` -/
@@ -565,7 +565,7 @@ variable [Semiring R]
 
 /-- Transfer `Module` across an `Equiv` -/
 protected abbrev module (e : α ≃ β) [AddCommMonoid β] :
-    let addCommMonoid := Equiv.addCommMonoid e
+    let _ := Equiv.addCommMonoid e
     ∀ [Module R β], Module R α := by
   intros
   exact
@@ -608,7 +608,7 @@ variable [CommSemiring R]
 
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
-    let semiring := Equiv.semiring e
+    let _ := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := by
   intros
   letI : Module R α := e.module R
@@ -621,10 +621,9 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
     simp only [apply_symm_apply, Algebra.mul_smul_comm]
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
-    let semiring := Equiv.semiring e
-    let algebra := Equiv.algebra R e
-    (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
-  intros
+    (@algebraMap R α _ (Equiv.semiring e) (Equiv.algebra R e)) r = e.symm ((algebraMap R β) r) := by
+  let _ := Equiv.semiring e
+  let _ := Equiv.algebra R e
   simp only [Algebra.algebraMap_eq_smul_one]
   show e.symm (r • e 1) = e.symm (r • 1)
   simp only [Equiv.one_def, apply_symm_apply]
@@ -677,11 +676,13 @@ namespace Finite
 
 attribute [-instance] Fin.instMul
 
-/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
-lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
-    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
+/-- Any finite group in universe `u` is equivalent to some finite group in universe `v`. -/
+lemma exists_type_univ_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
+    ∃ (G' : Type v) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
-  letI groupH : Group (Fin n) := Equiv.group e.symm
-  exact ⟨Fin n, inferInstance, inferInstance, ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩⟩
+  let f : Fin n ≃ ULift (Fin n) := Equiv.ulift.symm
+  let e : G ≃ ULift (Fin n) := e.trans f
+  letI groupH : Group (ULift (Fin n)) := e.symm.group
+  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
 
 end Finite

@@ -181,7 +181,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     have h_ne_top : condexpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ :=
       (measure_ne_top (condexpKernel μ m' ω) _)
     have : (∏ i ∈ s, condexpKernel μ m' ω (f i)) ≠ ∞ :=
-      (ENNReal.prod_lt_top (fun _ _ ↦ measure_ne_top (condexpKernel μ m' ω) _)).ne
+      ENNReal.prod_ne_top fun _ _ ↦ measure_ne_top (condexpKernel μ m' ω) _
     rw [← ENNReal.ofReal_toReal h_ne_top, h_inter_eq, h, Finset.prod_apply,
       ← ENNReal.ofReal_toReal this, ENNReal.toReal_prod]
     congr 1
@@ -734,7 +734,7 @@ lemma iCondIndepFun.condIndepFun_prod_mk_prod_mk (h_indep : iCondIndepFun m' hm'
 end iCondIndepFun
 
 section Mul
-variable {β : Type*} {m : MeasurableSpace β} [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β}
+variable {m : MeasurableSpace β} [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
 lemma iCondIndepFun.indepFun_mul_left (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
@@ -758,7 +758,7 @@ lemma iCondIndepFun.indepFun_mul_mul (hf_indep : iCondIndepFun m' hm' (fun _ ↦
 end Mul
 
 section Div
-variable {β : Type*} {m : MeasurableSpace β} [Div β] [MeasurableDiv₂ β] {f : ι → Ω → β}
+variable {m : MeasurableSpace β} [Div β] [MeasurableDiv₂ β] {f : ι → Ω → β}
 
 @[to_additive]
 lemma iCondIndepFun.indepFun_div_left (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
@@ -782,7 +782,7 @@ lemma iCondIndepFun.indepFun_div_div (hf_indep : iCondIndepFun m' hm' (fun _ ↦
 end Div
 
 section CommMonoid
-variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
+variable {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_finset_prod_of_not_mem

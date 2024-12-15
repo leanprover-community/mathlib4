@@ -49,6 +49,11 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
     · simp at hn
     · exact ih (Nat.le_of_succ_le_succ hn)
 
+theorem getD_reverse {l : List α} (i) (h : i < length l) :
+    getD l.reverse i = getD l (l.length - 1 - i) := by
+  funext a
+  rwa [List.getD_eq_getElem?_getD, List.getElem?_reverse, ← List.getD_eq_getElem?_getD]
+
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
 def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
@@ -69,19 +74,21 @@ theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.get
 @[deprecated (since := "2024-06-12")]
 alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
 
+theorem getD_replicate {y i n} (h : i < n) :
+    getD (replicate n x) i y = x := by
+  rw [getD_eq_getElem,  getElem_replicate]
+  rwa [length_replicate]
+
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
   rw [getD_eq_getElem _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),
-    getElem_append _ h, getD_eq_getElem]
+    getElem_append_left h, getD_eq_getElem]
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   cases Nat.lt_or_ge n (l ++ l').length with
   | inl h' =>
-    rw [getD_eq_getElem (l ++ l') d h', getElem_append_right, getD_eq_getElem]
-    · rw [length_append] at h'
-      exact Nat.sub_lt_left_of_lt_add h h'
-    · exact Nat.not_lt_of_le h
+    rw [getD_eq_getElem (l ++ l') d h', getElem_append_right h, getD_eq_getElem]
   | inr h' =>
     rw [getD_eq_default _ _ h', getD_eq_default]
     rwa [Nat.le_sub_iff_add_le' h, ← length_append]
@@ -89,7 +96,7 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
   cases Nat.lt_or_ge n l.length with
   | inl h => rw [getD_eq_getElem _ _ h, get?_eq_get h, get_eq_getElem, Option.getD_some]
-  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+  | inr h => rw [getD_eq_default _ _ h, get?_eq_none_iff.mpr h, Option.getD_none]
 
 end getD
 
@@ -131,6 +138,9 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
 
 theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
   rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
+
+theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.iget := by
+  rw [← getD_default_eq_getI, getD_eq_getElem?_getD, Option.getD_default_eq_iget]
 
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 

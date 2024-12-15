@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
@@ -179,7 +178,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
     have hz : z = 0 := by
       simpa only [PythagoreanTriple, hx, hy, add_zero, zero_eq_mul, mul_zero,
         or_self_iff] using h
-    simp only [hx, hy, hz, Int.zero_div]
+    simp only [hx, hy, hz]
     exact zero
   rcases h.gcd_dvd with ⟨z0, rfl⟩
   obtain ⟨k, x0, y0, k0, h2, rfl, rfl⟩ :
@@ -462,16 +461,15 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let q := (circleEquivGen hQ).symm ⟨⟨v, w⟩, hp⟩
   have ht4 : v = 2 * q / (1 + q ^ 2) ∧ w = (1 - q ^ 2) / (1 + q ^ 2) := by
     apply Prod.mk.inj
-    have := ((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm
-    exact congr_arg Subtype.val this
+    exact congr_arg Subtype.val ((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by
-    -- Added to adapt to leanprover/lean4#2734.
-    -- Without `unfold_let`, `norm_cast` can't see the coercion.
+    -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
+    -- Without `unfold`, `norm_cast` can't see the coercion.
     -- One might try `zeta := true` in `Tactic.NormCast.derive`,
     -- but that seems to break many other things.
-    unfold_let m
+    unfold m
     norm_cast
     apply Rat.den_nz q
   have hq2 : q = n / m := (Rat.num_div_den q).symm
@@ -636,7 +634,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           exact ht3
         · rw [Int.neg_emod_two, Int.neg_emod_two]
           apply And.intro ht4
-          linarith
+          omega
       · exfalso
         revert h_pos
         rw [h_neg]

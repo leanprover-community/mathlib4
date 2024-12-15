@@ -3,10 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -48,14 +48,12 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- Porting note (#11215): TODO: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
-  let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
-  have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
+  obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
-  set ind : α → ι := fun x => wf.min { i : ι | x ∈ s i } (hcov x)
-  have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wf.min_mem _ (hcov x)
+  set ind : α → ι := fun x => wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
+  have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wellFounded_lt.min_mem _ (hcov x)
   have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := @fun x i hlt hxi =>
-    wf.not_lt_min _ (hcov x) hxi hlt
+    wellFounded_lt.not_lt_min _ (hcov x) hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
     is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
 

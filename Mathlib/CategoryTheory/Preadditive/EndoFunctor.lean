@@ -78,7 +78,6 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
       zsmul_succ' := by
         intros
         apply Algebra.Hom.ext
-        dsimp
         simp only [natCast_zsmul, succ_nsmul]
         rfl
       zsmul_neg' := by
@@ -156,7 +155,6 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
       zsmul_succ' := by
         intros
         apply Coalgebra.Hom.ext
-        dsimp
         simp only [natCast_zsmul, succ_nsmul]
         rfl
       zsmul_neg' := by

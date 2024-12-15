@@ -40,17 +40,17 @@ instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :
     CanonicallyOrderedCommMonoid (α × β) :=
   { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
     (inferInstance : ExistsMulOfLE _) with
-      le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
+      le_self_mul := fun _ _ ↦ le_def.mpr ⟨le_self_mul, le_self_mul⟩ }
 
 namespace Lex
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α]
-    [CovariantClass α α (· * ·) (· < ·)] [OrderedCommMonoid β] :
+    [MulLeftStrictMono α] [OrderedCommMonoid β] :
     OrderedCommMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    -- Note: the `congr_arg` used to be `rw [hxy.1]` before #8386
+    -- Note: the `congr_arg` used to be `rw [hxy.1]` before https://github.com/leanprover-community/mathlib4/pull/8386
     -- but the definition of `Mul.mul` got unfolded differently.
     (fun hxy => (le_iff _ _).2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
 

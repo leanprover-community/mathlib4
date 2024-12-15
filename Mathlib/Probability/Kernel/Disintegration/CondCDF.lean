@@ -42,7 +42,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace MeasureTheory.Measure
 
-variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
+variable {α : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
 /-- Measure on `α` such that for a measurable set `s`, `ρ.IicSnd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
@@ -50,23 +50,18 @@ noncomputable def IicSnd (r : ℝ) : Measure α :=
 
 theorem IicSnd_apply (r : ℝ) {s : Set α} (hs : MeasurableSet s) :
     ρ.IicSnd r s = ρ (s ×ˢ Iic r) := by
-  rw [IicSnd, fst_apply hs,
-    restrict_apply' (MeasurableSet.univ.prod (measurableSet_Iic : MeasurableSet (Iic r))), ←
-    prod_univ, prod_inter_prod, inter_univ, univ_inter]
+  rw [IicSnd, fst_apply hs, restrict_apply' (MeasurableSet.univ.prod measurableSet_Iic),
+    univ_prod, Set.prod_eq]
 
 theorem IicSnd_univ (r : ℝ) : ρ.IicSnd r univ = ρ (univ ×ˢ Iic r) :=
   IicSnd_apply ρ r MeasurableSet.univ
 
+@[gcongr]
 theorem IicSnd_mono {r r' : ℝ} (h_le : r ≤ r') : ρ.IicSnd r ≤ ρ.IicSnd r' := by
-  refine Measure.le_iff.2 fun s hs ↦ ?_
-  simp_rw [IicSnd_apply ρ _ hs]
-  refine measure_mono (prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩))
-  exact mod_cast h_le
+  unfold IicSnd; gcongr
 
-theorem IicSnd_le_fst (r : ℝ) : ρ.IicSnd r ≤ ρ.fst := by
-  refine Measure.le_iff.2 fun s hs ↦ ?_
-  simp_rw [fst_apply hs, IicSnd_apply ρ r hs]
-  exact measure_mono (prod_subset_preimage_fst _ _)
+theorem IicSnd_le_fst (r : ℝ) : ρ.IicSnd r ≤ ρ.fst :=
+  fst_mono restrict_le_self
 
 theorem IicSnd_ac_fst (r : ℝ) : ρ.IicSnd r ≪ ρ.fst :=
   Measure.absolutelyContinuous_of_le (IicSnd_le_fst ρ r)
@@ -83,10 +78,8 @@ theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ ↦ ρ.IicSnd r s) atTop (𝓝 (ρ.fst s)) := by
   simp_rw [ρ.IicSnd_apply _ hs, fst_apply hs, ← prod_univ]
   rw [← Real.iUnion_Iic_rat, prod_iUnion]
-  refine tendsto_measure_iUnion fun r q hr_le_q x ↦ ?_
-  simp only [mem_prod, mem_Iic, and_imp]
-  refine fun hxs hxr ↦ ⟨hxs, hxr.trans ?_⟩
-  exact mod_cast hr_le_q
+  apply tendsto_measure_iUnion_atTop
+  exact monotone_const.set_prod Rat.cast_mono.Iic
 
 theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ ↦ ρ.IicSnd r s) atBot (𝓝 0) := by
@@ -106,8 +99,9 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       simp_rw [neg_neg]
     rw [h_fun_eq]
     exact h_neg.comp tendsto_neg_atBot_atTop
-  refine tendsto_measure_iInter (fun q ↦ hs.prod measurableSet_Iic) ?_ ⟨0, measure_ne_top ρ _⟩
-  refine fun q r hqr ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, fun x hx ↦ ?_⟩)
+  refine tendsto_measure_iInter_atTop (fun q ↦ (hs.prod measurableSet_Iic).nullMeasurableSet)
+    ?_ ⟨0, measure_ne_top ρ _⟩
+  refine fun q r hqr ↦ Set.prod_mono subset_rfl fun x hx ↦ ?_
   simp only [Rat.cast_neg, mem_Iic] at hx ⊢
   refine hx.trans (neg_le_neg ?_)
   exact mod_cast hqr
@@ -118,7 +112,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type*} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
@@ -126,7 +120,7 @@ attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
 We build towards the definition of `ProbabilityTheory.condCDF`. We first define
 `ProbabilityTheory.preCDF`, a function defined on `α × ℚ` with the properties of a cdf almost
-everywhere.  -/
+everywhere. -/
 
 /-- `preCDF` is the Radon-Nikodym derivative of `ρ.IicSnd` with respect to `ρ.fst` at each
 `r : ℚ`. This function `ℚ → α → ℝ≥0∞` is such that for almost all `a : α`, the function `ℚ → ℝ≥0∞`
@@ -198,7 +192,7 @@ alias set_integral_preCDF_fst := setIntegral_preCDF_fst
 
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
-  rw [← integral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
@@ -214,10 +208,8 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
       (Kernel.const Unit ρ) (Kernel.const Unit ρ.fst) where
   measurable := measurable_preCDF'.comp measurable_snd
   mono' a r r' hrr' := by
-    filter_upwards [monotone_preCDF ρ, preCDF_le_one ρ] with a h1 h2
-    have h_ne_top : ∀ r, preCDF ρ r a ≠ ∞ := fun r ↦ ((h2 r).trans_lt ENNReal.one_lt_top).ne
-    rw [ENNReal.toReal_le_toReal (h_ne_top _) (h_ne_top _)]
-    exact h1 hrr'
+    filter_upwards [monotone_preCDF ρ, preCDF_le_one ρ] with a h₁ h₂
+    exact ENNReal.toReal_mono ((h₂ _).trans_lt ENNReal.one_lt_top).ne (h₁ hrr')
   nonneg' _ q := by simp
   le_one' a q := by
     simp only [Kernel.const_apply, forall_const]
@@ -343,28 +335,10 @@ instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
 
 /-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
 theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
-    Measurable fun a => (condCDF ρ a).measure := by
-  rw [Measure.measurable_measure]
-  refine fun s hs => ?_
-  -- Porting note: supplied `C`
-  refine MeasurableSpace.induction_on_inter
-    (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCDF ρ b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
-  · simp only [measure_empty, measurable_const]
-  · rintro S ⟨u, rfl⟩
-    simp_rw [measure_condCDF_Iic ρ _ u]
-    exact (measurable_condCDF ρ u).ennreal_ofReal
-  · intro t ht ht_cd_meas
-    have :
-      (fun a => (condCDF ρ a).measure tᶜ) =
-        (fun a => (condCDF ρ a).measure univ) - fun a => (condCDF ρ a).measure t := by
-      ext1 a
-      rw [measure_compl ht (measure_ne_top (condCDF ρ a).measure _), Pi.sub_apply]
-    simp_rw [this, measure_condCDF_univ ρ]
-    exact Measurable.sub measurable_const ht_cd_meas
-  · intro f hf_disj hf_meas hf_cd_meas
-    simp_rw [measure_iUnion hf_disj hf_meas]
-    exact Measurable.ennreal_tsum hf_cd_meas
+    Measurable fun a => (condCDF ρ a).measure :=
+  .measure_of_isPiSystem_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
+    simp_rw [forall_mem_range, measure_condCDF_Iic]
+    exact fun u ↦ (measurable_condCDF ρ u).ennreal_ofReal
 
 end Measure
 

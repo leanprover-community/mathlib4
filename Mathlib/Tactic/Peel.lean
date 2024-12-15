@@ -225,7 +225,7 @@ def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
 elab_rules : tactic
   | `(tactic| peel $[$num?:num]? $e:term $[with $l?* $n?]?) => withMainContext do
     /- we use `elabTermForApply` instead of `elabTerm` so that terms passed to `peel` can contain
-    quantifiers with implicit bound variables without causing errors or requiring `@`.  -/
+    quantifiers with implicit bound variables without causing errors or requiring `@`. -/
     let e ← elabTermForApply e false
     let n? := n?.bind fun n => if n.raw.isIdent then pure n.raw.getId else none
     let l := (l?.getD #[]).map getNameOfIdent' |>.toList

@@ -6,6 +6,7 @@ Authors: Junyan Xu
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Norms on free modules over principal ideal domains
@@ -21,7 +22,7 @@ variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Co
 
 section CommRing
 
-variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
+variable (F : Type*)
 
 /-- For a nonzero element `f` in an algebra `S` over a principal ideal domain `R` that is finite and
 free as an `R`-module, the norm of `f` relative to `R` is associated to the product of the Smith
@@ -43,7 +44,7 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
   change _ = f * _
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
     Ideal.selfBasis_def]
   rfl
@@ -71,7 +72,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]
     (b : Basis ι F[X] S) {f : S} (hf : f ≠ 0) :
-    FiniteDimensional.finrank F (S ⧸ span ({f} : Set S)) = (Algebra.norm F[X] f).natDegree := by
+    Module.finrank F (S ⧸ span ({f} : Set S)) = (Algebra.norm F[X] f).natDegree := by
   haveI := Fintype.ofFinite ι
   have h := span_singleton_eq_bot.not.2 hf
   rw [natDegree_eq_of_degree_eq

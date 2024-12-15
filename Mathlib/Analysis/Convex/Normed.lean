@@ -25,14 +25,14 @@ We prove the following facts:
   is bounded.
 -/
 
-variable {ι : Type*} {E P : Type*}
+variable {E P : Type*}
 
-open AffineBasis FiniteDimensional Metric Set
+open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
-variable {s t : Set E}
+variable {s : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/
@@ -111,10 +111,6 @@ theorem isBounded_convexHull {s : Set E} :
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   TopologicalAddGroup.pathConnectedSpace
 
-instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
-  locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
-    (convex_ball x r).isPathConnected <| by simp [r_pos]
-
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
@@ -177,7 +173,7 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   have hdnorm : (range d : Set E) ⊆ closedBall 0 (ε / 2) := by
     simp [d, Set.set_smul_subset_iff₀ hε'.ne', hε₀.le, _root_.smul_closedBall, abs_of_nonneg hε'.le,
       range_subset_iff, norm_smul]
-    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff hc',
+    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff₀ hc',
       mul_le_mul_left hε₀] using hcnorm
   refine ⟨d, ?_, ?_⟩
   · simpa [d, Pi.smul_def, range_smul, interior_smul₀, convexHull_smul, zero_mem_smul_set_iff,

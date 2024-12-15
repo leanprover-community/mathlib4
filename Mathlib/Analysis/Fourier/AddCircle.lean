@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Periodic
-import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 
 /-!
@@ -107,7 +107,7 @@ def fourier (n : ℤ) : C(AddCircle T, ℂ) where
 theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 
--- @[simp] -- Porting note: simp normal form is `fourier_coe_apply'`
+-- simp normal form is `fourier_coe_apply'`
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
@@ -121,26 +121,24 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
     toCircle (n • (x : AddCircle T) :) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [← fourier_apply]; exact fourier_coe_apply
 
--- @[simp] -- Porting note: simp normal form is `fourier_zero'`
+-- simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
   induction x using QuotientAddGroup.induction_on
   simp only [fourier_coe_apply]
   norm_num
 
-@[simp]
 theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
   have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
   rw [← this]; exact fourier_zero
 
--- @[simp] -- Porting note: simp normal form is *also* `fourier_zero'`
+-- simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, fourier_coe_apply, Complex.ofReal_zero, mul_zero,
     zero_div, Complex.exp_zero]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 
--- @[simp] -- Porting note: simp normal form is `fourier_neg'`
+-- simp normal form is `fourier_neg'`
 theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
   induction x using QuotientAddGroup.induction_on
   simp_rw [fourier_apply, toCircle]
@@ -152,7 +150,7 @@ theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier
 theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = conj (fourier n x) := by
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
--- @[simp] -- Porting note: simp normal form is `fourier_add'`
+-- simp normal form is `fourier_add'`
 theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 
@@ -196,9 +194,9 @@ theorem fourierSubalgebra_coe :
   apply adjoin_eq_span_of_subset
   refine Subset.trans ?_ Submodule.subset_span
   intro x hx
-  refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
+  refine Submonoid.closure_induction (fun _ => id) ⟨0, ?_⟩ ?_ hx
   · ext1 z; exact fourier_zero
-  · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
+  · rintro - - - - ⟨m, rfl⟩ ⟨n, rfl⟩
     refine ⟨m + n, ?_⟩
     ext1 z
     exact fourier_add
@@ -287,7 +285,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  -- After leanprover/lean4#3124, we need to add `singlePass := true` to avoid an infinite loop.
+  -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
   simp_rw (config := {singlePass := true}) [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
@@ -315,7 +313,7 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
-  refine setIntegral_congr measurableSet_Ioc fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioc fun x hx => ?_
   rw [liftIoc_coe_apply]
   rwa [add_sub, add_sub_cancel_left]
 
@@ -344,7 +342,7 @@ theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
   congr 1
   simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
   iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine setIntegral_congr measurableSet_Ioo fun x hx => ?_
+  refine setIntegral_congr_fun measurableSet_Ioo fun x hx => ?_
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 
 end fourierCoeff

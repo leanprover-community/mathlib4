@@ -59,10 +59,10 @@ theorem coe_product (s : Finset α) (t : Finset β) :
   Set.ext fun _ => Finset.mem_product
 
 theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
-  simp (config := { contextual := true }) [mem_image]
+  simp +contextual [mem_image]
 
 theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i => by
-  simp (config := { contextual := true }) [mem_image]
+  simp +contextual [mem_image]
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
@@ -168,6 +168,7 @@ theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
 theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
   let ⟨x, hx⟩ := hs
   let ⟨y, hy⟩ := ht
@@ -181,7 +182,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 
@@ -261,7 +262,7 @@ variable {s} {x : α × α}
 
 @[simp]
 theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
-  simp (config := { contextual := true }) [diag]
+  simp +contextual [diag]
 
 @[simp]
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by

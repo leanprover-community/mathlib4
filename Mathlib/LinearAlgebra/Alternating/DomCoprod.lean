@@ -57,7 +57,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
       TensorProduct.smul_tmul']
     simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
       Function.comp_apply, Perm.coe_mul]
-    -- Porting note (#10691): was `rw`.
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`.
     erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
 
 theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
@@ -225,16 +225,16 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   refine Quotient.inductionOn' σ fun σ => ?_
   -- unfold the quotient mess left by `Finset.sum_partition`
   -- Porting note: Was `conv in .. => ..`.
-  erw
-    [@Finset.filter_congr _ _ (fun a => @Quotient.decidableEq _ _
+  rw
+    [@Finset.filter_congr _ _ _ (fun a => @Quotient.decidableEq _ _
       (QuotientGroup.leftRelDecidable (MonoidHom.range (Perm.sumCongrHom ιa ιb)))
       (Quotient.mk (QuotientGroup.leftRel (MonoidHom.range (Perm.sumCongrHom ιa ιb))) a)
       (Quotient.mk'' σ)) _ (s := Finset.univ)
     fun x _ => QuotientGroup.eq (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
   -- eliminate a multiplication
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
-  simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
-    Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
+  simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, Function.comp_def, mul_inv_rev,
+    inv_mul_cancel_right, Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
     Finset.sum_image Perm.sumCongrHom_injective.injOn]
   -- now we're ready to clean up the RHS, pulling out the summation
   rw [domCoprod.summand_mk'', MultilinearMap.domCoprod_alternization_coe, ← Finset.sum_product',

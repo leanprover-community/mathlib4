@@ -35,7 +35,7 @@ with its index. -/
 noncomputable def equivFreeAlgebra (b : Basis κ R M) :
     TensorAlgebra R M ≃ₐ[R] FreeAlgebra R κ :=
   AlgEquiv.ofAlgHom
-    (TensorAlgebra.lift _ (Finsupp.total _ _ _ (FreeAlgebra.ι _) ∘ₗ b.repr.toLinearMap))
+    (TensorAlgebra.lift _ (Finsupp.linearCombination _ (FreeAlgebra.ι _) ∘ₗ b.repr.toLinearMap))
     (FreeAlgebra.lift _ (ι R ∘ b))
     (by ext; simp)
     (hom_ext <| b.ext fun i => by simp)
@@ -65,7 +65,7 @@ instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
 no zero-divisors. -/
 instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
     NoZeroDivisors (TensorAlgebra R M) :=
-  have ⟨⟨κ, b⟩⟩ := ‹Module.Free R M›
+  have ⟨⟨_, b⟩⟩ := ‹Module.Free R M›
   (equivFreeAlgebra b).toMulEquiv.noZeroDivisors
 
 end CommSemiring

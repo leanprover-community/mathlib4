@@ -31,7 +31,7 @@ namespace Complex
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
   ContinuousOn.inv₀ (by fun_prop)
-    (fun t ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
+    (fun _ ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
 open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/
@@ -110,7 +110,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     ‖(1 + t * z)⁻¹‖ ≤ (1 - ‖z‖)⁻¹ := by
   rw [Set.mem_Icc] at ht
   rw [norm_inv, norm_eq_abs]
-  refine inv_le_inv_of_le (by linarith) ?_
+  refine inv_anti₀ (by linarith) ?_
   calc 1 - ‖z‖
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
@@ -148,8 +148,9 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
-    · simp only [add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add, smul_eq_mul]
-  unfold_let f at H
+    · simp only [f', add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add,
+        smul_eq_mul]
+  unfold f at H
   simp only [H, norm_mul]
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
     mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
@@ -188,7 +189,7 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
 lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
-    rw [inv_eq_one_div, div_le_iff]
+    rw [inv_eq_one_div, div_le_iff₀]
     · linarith
     · linarith
   have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
@@ -227,7 +228,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
   refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
   · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
     intro n
-    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
+    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_natCast]
     rcases n.eq_zero_or_pos with rfl | hn
     · simp
     conv => enter [2]; rw [← div_one (‖z‖ ^ n)]

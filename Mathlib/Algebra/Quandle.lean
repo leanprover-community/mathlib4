@@ -93,16 +93,16 @@ The binary operation is regarded as a left action of the type on itself.
 class Shelf (α : Type u) where
   /-- The action of the `Shelf` over `α`-/
   act : α → α → α
-  /-- A verification that `act` is self-distributive-/
+  /-- A verification that `act` is self-distributive -/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
 
 /--
 A *unital shelf* is a shelf equipped with an element `1` such that, for all elements `x`,
 we have both `x ◃ 1` and `1 ◃ x` equal `x`.
 -/
-class UnitalShelf (α : Type u) extends Shelf α, One α :=
-(one_act : ∀ a : α, act 1 a = a)
-(act_one : ∀ a : α, act a 1 = a)
+class UnitalShelf (α : Type u) extends Shelf α, One α where
+  one_act : ∀ a : α, act 1 a = a
+  act_one : ∀ a : α, act a 1 = a
 
 /-- The type of homomorphisms between shelves.
 This is also the notion of rack and quandle homomorphisms.
@@ -111,7 +111,7 @@ This is also the notion of rack and quandle homomorphisms.
 structure ShelfHom (S₁ : Type*) (S₂ : Type*) [Shelf S₁] [Shelf S₂] where
   /-- The function under the Shelf Homomorphism -/
   toFun : S₁ → S₂
-  /-- The homomorphism property of a Shelf Homomorphism-/
+  /-- The homomorphism property of a Shelf Homomorphism -/
   map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 
 /-- A *rack* is an automorphic set (a set with an action on itself by
@@ -129,13 +129,13 @@ class Rack (α : Type u) extends Shelf α where
   /-- Proof of right inverse -/
   right_inv : ∀ x, Function.RightInverse (invAct x) (act x)
 
-/-- Action of a Shelf-/
+/-- Action of a Shelf -/
 scoped[Quandles] infixr:65 " ◃ " => Shelf.act
 
-/-- Inverse Action of a Rack-/
+/-- Inverse Action of a Rack -/
 scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 
-/-- Shelf Homomorphism-/
+/-- Shelf Homomorphism -/
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
 open Quandles
@@ -372,7 +372,7 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
 instance oppositeQuandle : Quandle Qᵐᵒᵖ where
   fix := by
     intro x
-    induction' x
+    induction x
     simp
 
 /-- The conjugation quandle of a group.  Each element of the group acts by
@@ -417,7 +417,6 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
 
 Used for Fox n-colorings of knots.
 -/
--- Porting note: Removed nolint
 def Dihedral (n : ℕ) :=
   ZMod n
 
@@ -599,11 +598,11 @@ def EnvelGroup (R : Type*) [Rack R] :=
 -- TODO: is there a non-invasive way of defining the instance directly?
 instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul a b :=
-    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
+    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun _ _ _ _ ⟨ha⟩ ⟨hb⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
   one := ⟦unit⟧
   inv a :=
-    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun a a' ⟨ha⟩ =>
+    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
@@ -643,9 +642,9 @@ open PreEnvelGroupRel'
 theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandle.Conj G) :
     ∀ {a b : PreEnvelGroup R},
       PreEnvelGroupRel' R a b → toEnvelGroup.mapAux f a = toEnvelGroup.mapAux f b
-  | a, _, PreEnvelGroupRel'.refl => rfl
-  | a, b, PreEnvelGroupRel'.symm h => (well_def f h).symm
-  | a, b, PreEnvelGroupRel'.trans hac hcb => Eq.trans (well_def f hac) (well_def f hcb)
+  | _, _, PreEnvelGroupRel'.refl => rfl
+  | _, _, PreEnvelGroupRel'.symm h => (well_def f h).symm
+  | _, _, PreEnvelGroupRel'.trans hac hcb => Eq.trans (well_def f hac) (well_def f hcb)
   | _, _, PreEnvelGroupRel'.congr_mul ha hb => by
     simp [toEnvelGroup.mapAux, well_def f ha, well_def f hb]
   | _, _, congr_inv ha => by simp [toEnvelGroup.mapAux, well_def f ha]
@@ -664,7 +663,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
     (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G) where
   toFun f :=
     { toFun := fun x =>
-        Quotient.liftOn x (toEnvelGroup.mapAux f) fun a b ⟨hab⟩ =>
+        Quotient.liftOn x (toEnvelGroup.mapAux f) fun _ _ ⟨hab⟩ =>
           toEnvelGroup.mapAux.well_def f hab
       map_one' := by
         change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
@@ -679,16 +678,18 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by
-        induction' x with _ x y ih_x ih_y x ih_x
-        · exact F.map_one.symm
-        · rfl
-        · have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
+        induction x with
+        | unit => exact F.map_one.symm
+        | incl => rfl
+        | mul x y ih_x ih_y =>
+          have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
             simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
             rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul
-        · have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
+        | inv x ih_x =>
+          have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
           rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.

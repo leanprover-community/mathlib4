@@ -50,7 +50,7 @@ namespace Nat
 structure Partition (n : ℕ) where
   /-- positive integers summing to `n`-/
   parts : Multiset ℕ
-  /-- proof that the `parts` are positive-/
+  /-- proof that the `parts` are positive -/
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n
@@ -59,7 +59,7 @@ structure Partition (n : ℕ) where
 
 namespace Partition
 
--- TODO: This should be automatically derived, see lean4#2914
+-- TODO: This should be automatically derived, see https://github.com/leanprover/lean4/issues/2914
 instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
   fun _ _ => decidable_of_iff' _ Partition.ext_iff
 
