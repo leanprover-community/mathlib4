@@ -26,6 +26,7 @@ There are, of course, also the dual notions of coseparating and codetecting sets
 We
 * define predicates `IsSeparating`, `IsCoseparating`, `IsDetecting` and `IsCodetecting` on
   sets of objects;
+* show that equivalences of categories preserves these notions;
 * show that separating and coseparating are dual notions;
 * show that detecting and codetecting are dual notions;
 * show that if `C` has equalizers, then detecting implies separating;
@@ -740,6 +741,9 @@ section Equivalence
 
 theorem HasSeparator.of_equivalence [HasSeparator C] (α : C ≌ D) : HasSeparator D :=
   ⟨α.functor.obj (separator C), isSeparator_separator C |>.of_equivalence α.functor⟩
+
+theorem HasCoseparator.of_equivalence [HasCoseparator C] (α : C ≌ D) : HasCoseparator D :=
+  ⟨α.functor.obj (coseparator C), isCoseparator_coseparator C |>.of_equivalence α.functor⟩
 
 end Equivalence
 
