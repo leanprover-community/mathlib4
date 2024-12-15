@@ -223,13 +223,15 @@ end Symmetric
 
 section Symmetric
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M] [Module R M]
 
+attribute [local instance] starAddMonoidOfAddMonoid in
 attribute [local instance] starRingOfComm in
-theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
+theorem isSymm_iff_eq_flip {B : M₁ →ₗ[R] M₁ →ₗ[R] M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
-    rw [← h, flip_apply, star_id_of_comm]
+    rw [← h, flip_apply]
+    rfl
   intro x y
   conv_lhs => rw [h]
   rfl

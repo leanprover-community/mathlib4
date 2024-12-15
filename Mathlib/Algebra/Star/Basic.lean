@@ -266,6 +266,15 @@ theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n �
 theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
+/-- Any additive monoid admits the trivial `*`-structure.
+
+See note [reducible non-instances].
+-/
+abbrev starAddMonoidOfAddMonoid {R : Type*} [AddMonoid R] : StarAddMonoid R where
+  star := id
+  star_involutive _ := rfl
+  star_add _ _:= rfl
+
 /-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
 which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
 (i.e. `star (r * s) = star s * star r`). -/
