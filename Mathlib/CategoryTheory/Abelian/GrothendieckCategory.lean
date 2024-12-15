@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
