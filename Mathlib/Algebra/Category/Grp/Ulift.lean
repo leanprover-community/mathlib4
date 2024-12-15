@@ -209,7 +209,7 @@ lemma descChar_comp (f : lc.pt →+ A) (g : A →+ A') :
   conv_lhs => erw [descChar_ι_app hc f j a]
   rfl
 
-lemma descChar_zero_of_zero : descChar hc (0 : lc.pt →+ A) = 0 := by
+lemma descChar_zero_eq_zero : descChar hc (0 : lc.pt →+ A) = 0 := by
   have heq : (0 : lc.pt →+ A) = (0 : ULift.{u} Unit →+ A).comp (0 : lc.pt →+ ULift Unit) := by
     ext _; simp
   rw [heq, descChar_comp]
@@ -238,13 +238,48 @@ abbrev truc (C : Type*) [AddCommGroup C] :
   map_zero' := by ext _; simp
   map_add' _ _ := by ext _; simp
 
-def descHom : c.pt →+ lc.pt := by
+lemma truc_injective (C : Type*) [AddCommGroup C] : Function.Injective (truc C) := by
+  refine (injective_iff_map_eq_zero _).mpr (fun a ha ↦ CharacterModule.eq_zero_of_character_apply
+    (fun c ↦ ?_))
+  apply_fun (fun f ↦ f c) at ha
+  simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, Pi.zero_apply] at ha
+  rw [← ULift.down_up (c a), ha, ULift.zero_down]
+
+variable (lc)
+
+noncomputable def descHom : c.pt →+ lc.pt := by
   set u : lc.pt →+ ((c : CharacterModule lc.pt) → ULift.{u} (AddCircle (1 : ℚ))) := truc lc.pt
   set u' := descCharFamily hc (fun (c : CharacterModule lc.pt) ↦ ULift.{u} (AddCircle (1 : ℚ)))
-    (fun (c : CharacterModule lc.pt) ↦ AddEquiv.ulift.symm.toAddMonoidHom.comp c)
-  set π := (QuotientAddGroup.mk' (AddMonoidHom.range u))
-  have h : π.comp u = 0 := sorry
+    (fun c ↦ AddEquiv.ulift.symm.toAddMonoidHom.comp c) with hdef'
+  set π := (QuotientAddGroup.mk' (AddMonoidHom.range u)) with hπ
+  have h : u.range = π.ker := sorry
+  have h' : π.comp u' = 0 := by
+    refine CharacterModule.hom_eq_zero_of_character_apply (fun c ↦ ?_)
+    suffices h'' : ((AddEquiv.ulift.{0,u}.symm.toAddMonoidHom.comp c).comp π).comp u' = 0 by
+      apply_fun (fun h ↦ AddEquiv.ulift.{0,u}.toAddMonoidHom.comp h) at h''
+      rw [AddMonoidHom.comp_zero] at h''
+      rw [← h'']
+      ext _; simp
+    rw [← descCharFamily_comp hc (fun (c : CharacterModule lc.pt) ↦ ULift.{u} (AddCircle (1 : ℚ)))
+      (fun c ↦ AddEquiv.ulift.symm.toAddMonoidHom.comp c)]
+    suffices (((AddEquiv.ulift.symm.toAddMonoidHom.comp c).comp π).comp
+        (Pi.addMonoidHom fun c ↦ AddEquiv.ulift.symm.toAddMonoidHom.comp c)) = 0 by
+      rw [this]; exact descChar_zero_eq_zero hc
+    ext a
+    change (c.comp (π.comp u)) a = 0
+    rw [(AddMonoidHom.range_le_ker_iff _ _).mp (le_of_eq h), c.comp_zero,
+      AddMonoidHom.zero_apply]
+  rw [← AddMonoidHom.range_le_ker_iff, ← h] at h'
+  exact (AddMonoidHom.ofInjective (truc_injective lc.pt)).symm.toAddMonoidHom.comp
+    ((AddSubgroup.inclusion h').comp (AddMonoidHom.rangeRestrict u'))
+
+variable {lc}
+
+lemma descHom_fac (j : J) (a : K.obj j) :
+    descHom lc hc (c.ι.app j a) = lc.ι.app j {down := a} := by
+  simp [descHom]
+  sorry
+
+
 
 end AddCommGrp
-
-#synth HasColimits Grp.{u}
