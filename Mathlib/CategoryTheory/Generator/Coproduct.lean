@@ -10,6 +10,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 # The coproduct of a separating family of objects is separating
 
+If a family of objects `S : ι → C` in a category with zero morphisms
+is separating, then the coproduct of `S` is a separator in `C`.
+
 -/
 
 universe w v u
