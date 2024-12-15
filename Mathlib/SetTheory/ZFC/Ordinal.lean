@@ -266,12 +266,14 @@ theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
 
 end ZFSet
 
-/-! ### Type-theoretic ordinals to ZFC ordinals -/
+/-! ### Type-theoretic ordinals to von Neumann ordinals -/
 
 namespace Ordinal
 open ZFSet
 
-/-- The ZFC ordinal corresponding to a given `Ordinal`, as a `PSet`. -/
+/-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `PSet`.
+
+The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
   ⟨o.toType, fun a ↦ toPSet ((enumIsoToType o).symm a)⟩
 termination_by o
@@ -295,7 +297,9 @@ theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
 termination_by o
 decreasing_by rename_i x; exact x.2
 
-/-- The ZFC ordinal corresponding to a given `Ordinal`, as a `ZFSet`. -/
+/-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
+
+The elements of `o.toZFSet` are all `a.toZFSet` with `a < o`. -/
 noncomputable def toZFSet (o : Ordinal.{u}) : ZFSet.{u} :=
   .mk o.toPSet
 
@@ -333,15 +337,13 @@ private theorem toZFSet_subset_toZFSet_of_le {a b : Ordinal} (h : a ≤ b) :
 theorem toZFSet_mem_toZFSet_iff {a b : Ordinal} : a.toZFSet ∈ b.toZFSet ↔ a < b := by
   refine ⟨?_, toZFSet_mem_toZFSet_of_lt⟩
   contrapose!
-  intro h
-  exact not_mem_of_subset (toZFSet_subset_toZFSet_of_le h)
+  exact fun h ↦ not_mem_of_subset (toZFSet_subset_toZFSet_of_le h)
 
 @[simp]
 theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔ a ≤ b := by
   refine ⟨?_, toZFSet_subset_toZFSet_of_le⟩
   contrapose!
-  intro h
-  exact not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
+  exact fun h ↦ not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
 
 end Ordinal
 
@@ -369,7 +371,7 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
 
-/-- `Ordinal` is order-equivalent to the type of ZFC ordinals. -/
+/-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
   toFun o := ⟨_, isOrdinal_toZFSet o⟩
