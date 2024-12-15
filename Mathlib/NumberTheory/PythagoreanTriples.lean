@@ -634,7 +634,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           exact ht3
         · rw [Int.neg_emod_two, Int.neg_emod_two]
           apply And.intro ht4
-          linarith
+          omega
       · exfalso
         revert h_pos
         rw [h_neg]

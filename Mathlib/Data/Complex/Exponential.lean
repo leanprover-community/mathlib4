@@ -188,7 +188,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
-  { toFun := fun z => exp (Multiplicative.toAdd z),
+  { toFun := fun z => exp z.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -689,7 +689,7 @@ nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
-  { toFun := fun x => exp (Multiplicative.toAdd x),
+  { toFun := fun x => exp x.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 

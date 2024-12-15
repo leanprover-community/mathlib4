@@ -111,8 +111,7 @@ lemma egauge_zero_right (hs : s.Nonempty) : egauge 𝕜 s 0 = 0 := by
   have : 0 ∈ (0 : 𝕜) • s := by simp [zero_smul_set hs]
   simpa using egauge_le_of_mem_smul this
 
-@[simp]
-lemma egauge_zero_zero : egauge 𝕜 (0 : Set E) 0 = 0 := egauge_zero_right _ ⟨0, rfl⟩
+lemma egauge_zero_zero : egauge 𝕜 (0 : Set E) 0 = 0 := by simp
 
 lemma egauge_le_one (h : x ∈ s) : egauge 𝕜 s x ≤ 1 := by
   rw [← one_smul 𝕜 s] at h

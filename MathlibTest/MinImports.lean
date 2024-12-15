@@ -165,4 +165,28 @@ def def_with_multiple_dependencies :=
   let _ := Mathlib.Meta.NormNum.evalNatDvd
   false
 
+/-! Structures and inductives should be treated just like definitions. -/
+
+/--
+
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
+-/
+#guard_msgs in
+structure ProposeToMoveThisStructure where
+  foo : ℕ
+
+/--
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
+-/
+#guard_msgs in
+inductive ProposeToMoveThisInductive where
+| foo : ℕ → ProposeToMoveThisInductive
+| bar : ℕ → ProposeToMoveThisInductive → ProposeToMoveThisInductive
+
+-- This theorem depends on a local inductive, so should not be moved.
+#guard_msgs in
+theorem theorem_with_local_inductive : Nonempty ProposeToMoveThisInductive := ⟨.foo 0⟩
+
 end Linter.UpstreamableDecl

@@ -3,13 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
@@ -225,8 +226,8 @@ end Polynomial
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
-example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [@DecidableRel α (· < ·)]
-    [@DecidableRel α (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
+example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableRel (α := α) (· < ·)]
+    [DecidableRel (α := α) (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _

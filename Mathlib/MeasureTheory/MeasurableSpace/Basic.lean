@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Tactic.FinCases
 import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Tactic.FinCases
 
 /-!
 # Measurable spaces and measurable functions
@@ -55,7 +57,7 @@ open Set Encodable Function Equiv Filter MeasureTheory
 
 universe uι
 
-variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort uι} {s : Set α}
 
 namespace MeasurableSpace
 
@@ -225,7 +227,7 @@ variable {f g : α → β}
 
 section TypeclassMeasurableSpace
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable [MeasurableSpace α] [MeasurableSpace β]
 
 @[nontriviality, measurability]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
