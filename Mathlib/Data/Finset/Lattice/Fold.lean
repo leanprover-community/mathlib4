@@ -18,8 +18,8 @@ This file is concerned with folding binary lattice operations over finsets.
 
 For the special case of maximum and minimum of a finset, see Max.lean.
 
-See also SetLattice.lean, which is instead concerned with how big lattice or set operations behave
-when indexed by a finset.
+See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned with how big
+lattice or set operations behave when indexed by a finset.
 -/
 
 assert_not_exists OrderedCommMonoid
@@ -633,6 +633,22 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
   ⟨fun hs _ hb => lt_of_le_of_lt (le_sup hb) hs,
     Finset.cons_induction_on s (fun _ => ha) fun c t hc => by
       simpa only [sup_cons, sup_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
+
+theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
+  classical
+  induction s using Finset.induction with
+  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | @insert a s _ h =>
+    rw [Finset.sup_insert (b := a) (s := s) (f := f)]
+    by_cases hs : s = ∅
+    · simp [hs]
+    · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
+      simp only [Finset.coe_insert]
+      rcases le_total (f a) (s.sup f) with (ha | ha)
+      · rw [sup_eq_right.mpr ha]
+        exact Set.image_mono (Set.subset_insert a s) (h hs)
+      · rw [sup_eq_left.mpr ha]
+        apply Set.mem_image_of_mem _ (Set.mem_insert a ↑s)
 
 end OrderBot
 
