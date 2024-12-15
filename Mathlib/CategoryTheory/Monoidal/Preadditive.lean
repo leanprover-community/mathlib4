@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
@@ -73,26 +73,26 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
-    (F : MonoidalFunctor D C) [F.Faithful] [F.Additive] :
+    (F : D ⥤ C) [F.Monoidal] [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by
       intros
-      apply F.toFunctor.map_injective
-      simp [F.map_whiskerLeft]
+      apply F.map_injective
+      simp [Functor.Monoidal.map_whiskerLeft]
     zero_whiskerRight := by
       intros
-      apply F.toFunctor.map_injective
-      simp [F.map_whiskerRight]
+      apply F.map_injective
+      simp [Functor.Monoidal.map_whiskerRight]
     whiskerLeft_add := by
       intros
-      apply F.toFunctor.map_injective
-      simp only [F.map_whiskerLeft, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.whiskerLeft_add]
+      apply F.map_injective
+      simp only [Functor.Monoidal.map_whiskerLeft, Functor.map_add, Preadditive.comp_add,
+        Preadditive.add_comp, MonoidalPreadditive.whiskerLeft_add]
     add_whiskerRight := by
       intros
-      apply F.toFunctor.map_injective
-      simp only [F.map_whiskerRight, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.add_whiskerRight] }
+      apply F.map_injective
+      simp only [Functor.Monoidal.map_whiskerRight, Functor.map_add, Preadditive.comp_add,
+        Preadditive.add_comp, MonoidalPreadditive.add_whiskerRight] }
 
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
     P ◁ ∑ j ∈ s, g j = ∑ j ∈ s, P ◁ g j :=
@@ -116,20 +116,20 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
 instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
   preserves {J} :=
     { preserves := fun {f} =>
-        { preserves := fun {b} i => isBilimitOfTotal _ (by
+        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
             simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
-              IsBilimit.total i]) } }
+              IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     { preserves := fun {f} =>
-        { preserves := fun {b} i => isBilimitOfTotal _ (by
+        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
             simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
-               IsBilimit.total i]) } }
+               IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]
 
@@ -178,7 +178,7 @@ theorem biproduct_ι_comp_leftDistributor_inv {J : Type} [Fintype J] (X : C) (f 
 
 theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     (asIso (𝟙 X) ⊗ leftDistributor Y f) ≪≫ leftDistributor X _ =
-      (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun j => α_ X Y _ := by
+      (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun _ => α_ X Y _ := by
   ext
   simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.trans_hom, Iso.symm_hom,
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, tensor_sum,
@@ -234,7 +234,7 @@ theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Fintype J] (f : J →
 
 theorem rightDistributor_assoc {J : Type} [Fintype J] (f : J → C) (X Y : C) :
     (rightDistributor f X ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
-      α_ (⨁ f) X Y ≪≫ rightDistributor f (X ⊗ Y) ≪≫ biproduct.mapIso fun j => (α_ _ X Y).symm := by
+      α_ (⨁ f) X Y ≪≫ rightDistributor f (X ⊗ Y) ≪≫ biproduct.mapIso fun _ => (α_ _ X Y).symm := by
   ext
   simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.symm_hom, Iso.trans_hom,
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
@@ -250,7 +250,7 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J]
     (leftDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
       α_ X (⨁ f) Y ≪≫
         (asIso (𝟙 X) ⊗ rightDistributor _ Y) ≪≫
-          leftDistributor X _ ≪≫ biproduct.mapIso fun j => (α_ _ _ _).symm := by
+          leftDistributor X _ ≪≫ biproduct.mapIso fun _ => (α_ _ _ _).symm := by
   ext
   simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.symm_hom, Iso.trans_hom,
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,

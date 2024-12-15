@@ -58,7 +58,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Classical DiscreteValuation
+open scoped Classical Multiplicative
 
 open Multiplicative IsDedekindDomain
 
@@ -447,7 +447,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      --porting note (#10754): added instance
+      --Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
@@ -538,6 +538,6 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
         Int.natCast_natAbs, smul_eq_mul],
       ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     -- and now it's easy
-    linarith
+    omega
 
 end IsDedekindDomain.HeightOneSpectrum

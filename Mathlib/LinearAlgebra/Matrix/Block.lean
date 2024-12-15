@@ -62,7 +62,7 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
-    simp only [comp.assoc b e e.symm, Equiv.self_comp_symm, comp_id]
+    simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
 
 protected theorem BlockTriangular.transpose :
     M.BlockTriangular b → Mᵀ.BlockTriangular (toDual ∘ b) :=
@@ -84,6 +84,18 @@ theorem BlockTriangular.add (hM : BlockTriangular M b) (hN : BlockTriangular N b
 
 theorem BlockTriangular.sub (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b := fun i j h => by simp_rw [Matrix.sub_apply, hM h, hN h, sub_zero]
+
+lemma BlockTriangular.add_iff_right (hM : BlockTriangular M b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular N b := ⟨(by simpa using ·.sub hM), hM.add⟩
+
+lemma BlockTriangular.add_iff_left (hN : BlockTriangular N b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular M b := by rw [add_comm, hN.add_iff_right]
+
+lemma BlockTriangular.sub_iff_right (hM : BlockTriangular M b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular N b := ⟨(by simpa using hM.sub ·), hM.sub⟩
+
+lemma BlockTriangular.sub_iff_left (hN : BlockTriangular N b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
 end LT
 
@@ -332,7 +344,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   have hb' : image b' univ ⊂ image b univ := by
     convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
     convert max'_mem (α := α) _ _
-  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [hij]
-  simp [hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
+  have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [b', hij]
+  simp [A, hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 
 end Matrix

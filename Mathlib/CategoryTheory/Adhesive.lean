@@ -133,7 +133,7 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
     · intro s m e₁ e₂
       apply PushoutCocone.IsColimit.hom_ext H.isColimit
       · symm; exact (H.isColimit.fac _ WalkingSpan.left).trans e₂.symm
-      · erw [H.isColimit.fac _ WalkingSpan.right]
+      · rw [H.isColimit.fac _ WalkingSpan.right]
         apply BinaryCofan.IsColimit.hom_ext hc
         · erw [hc.fac, ← H.w_assoc, e₂]; rfl
         · refine ((Category.assoc _ _ _).symm.trans e₁).trans ?_; symm; exact hc.fac _ _
@@ -293,9 +293,9 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
     [F.ReflectsIsomorphisms] :
     Adhesive C := by
   haveI : ReflectsLimitsOfShape WalkingCospan F :=
-    reflectsLimitsOfShapeOfReflectsIsomorphisms
+    reflectsLimitsOfShape_of_reflectsIsomorphisms
   haveI : ReflectsColimitsOfShape WalkingSpan F :=
-    reflectsColimitsOfShapeOfReflectsIsomorphisms
+    reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact adhesive_of_preserves_and_reflects F
 
 theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [HasPushouts C]
@@ -303,8 +303,8 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [PreservesLimitsOfShape WalkingCospan Gl] :
     Adhesive D := by
-  have := adj.leftAdjointPreservesColimits
-  have := adj.rightAdjointPreservesLimits
+  have := adj.leftAdjoint_preservesColimits
+  have := adj.rightAdjoint_preservesLimits
   apply Adhesive.mk (hasPushout_of_mono_left := H₂)
   intro W X Y Z f g h i _ H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))

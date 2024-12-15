@@ -291,7 +291,7 @@ lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C
 
 lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
   empty_mem := hC.empty_mem
-  inter_mem := fun s hs t ht => hC.inter_mem hs ht
+  inter_mem := fun _ hs _ ht => hC.inter_mem hs ht
   diff_eq_sUnion' := by
     refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
     · simp only [coe_singleton, Set.singleton_subset_iff]

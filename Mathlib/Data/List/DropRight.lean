@@ -138,18 +138,9 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       rw [get] at this
       simp_rw [this]
 
-/- porting note: This proof is longer than it used to be because `simp` refuses to rewrite
- the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_getElem]
-  refine ⟨fun h hl => ?_, fun h hl => ?_⟩
-  · rw [← length_pos, ← length_reverse] at hl
-    have := h hl
-    rwa [get_reverse'] at this
-  · rw [length_reverse, length_pos] at hl
-    have := h hl
-    rwa [get_reverse']
+  simp [rdropWhile, reverse_eq_iff, getLast_eq_getElem, Nat.pos_iff_ne_zero]
 
 variable (p) (l)
 
@@ -212,7 +203,7 @@ theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 
 lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
-  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
+  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop]
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :

@@ -31,8 +31,8 @@ instance instLinearOrderedCommRing : LinearOrderedCommRing ℚ where
   __ := Rat.linearOrder
   __ := Rat.commRing
   zero_le_one := by decide
-  add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
-  mul_pos a b ha hb := (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')
+  add_le_add_left := fun _ _ ab _ => Rat.add_le_add_left.2 ab
+  mul_pos _ _ ha hb := (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')
 
 -- Extra instances to short-circuit type class resolution
 instance : LinearOrderedRing ℚ := by infer_instance

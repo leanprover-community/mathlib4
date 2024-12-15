@@ -64,7 +64,7 @@ def homogeneousSubmodule (n : ℕ) : Submodule R (MvPolynomial σ R) where
     apply hc
     rw [h]
     exact smul_zero r
-  zero_mem' d hd := False.elim (hd <| coeff_zero _)
+  zero_mem' _ hd := False.elim (hd <| coeff_zero _)
   add_mem' {a b} ha hb c hc := by
     rw [coeff_add] at hc
     obtain h | h : coeff c a ≠ 0 ∨ coeff c b ≠ 0 := by
@@ -372,7 +372,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     have hφR : φ.natDegree < #R := by
       refine lt_of_lt_of_le ?_ hnR
       norm_cast
-      refine lt_of_le_of_lt (natDegree_map_le _ _) ?_
+      refine lt_of_le_of_lt natDegree_map_le ?_
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by omega
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
@@ -457,8 +457,7 @@ theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
   convert coeff_weightedHomogeneousComponent n φ d
 
 theorem homogeneousComponent_apply :
-    homogeneousComponent n φ =
-      ∑ d ∈ φ.support.filter fun d => d.degree = n, monomial d (coeff d φ) := by
+    homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (coeff d φ) := by
   simp_rw [degree_eq_weight_one]
   convert weightedHomogeneousComponent_apply n φ
 

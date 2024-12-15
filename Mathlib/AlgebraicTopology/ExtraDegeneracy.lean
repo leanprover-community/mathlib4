@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.AlgebraicTopology.SimplicialSet
+import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Tactic.FinCases
@@ -181,7 +181,7 @@ open SSet.standardSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  n f := (objEquiv _ _).symm
+  s  _ f := (objEquiv _ _).symm
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
@@ -266,7 +266,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
         simp only [assoc, SplitEpi.id, comp_id]
       · simp only [WidePullback.π_arrow]
 
--- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
@@ -275,7 +275,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
   simp only [WidePullback.lift_π]
   rfl
 
--- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
       @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
@@ -285,7 +285,7 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
   · simp only [Fin.ext_iff, Fin.val_succ, Fin.val_zero, add_eq_zero, and_false, reduceCtorEq] at h
   · simp only [Fin.pred_succ]
 
--- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Lie subalgebras
@@ -106,6 +106,9 @@ instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalge
 
 instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
   isNoetherian_submodule' _
+
+instance (L' : LieSubalgebra R L) [IsArtinian R L] : IsArtinian R L' :=
+  isArtinian_submodule' _
 
 end
 
@@ -221,7 +224,7 @@ variable [Module R M]
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
 instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by
-    rw [coe_bracket_of_module]; erw [smul_lie]; simp only [coe_bracket_of_module]
+    rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
@@ -292,7 +295,7 @@ theorem rangeRestrict_apply (x : L) : f.rangeRestrict x = ⟨f x, f.mem_range_se
 
 theorem surjective_rangeRestrict : Function.Surjective f.rangeRestrict := by
   rintro ⟨y, hy⟩
-  erw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
+  rw [mem_range] at hy; obtain ⟨x, rfl⟩ := hy
   use x
   simp only [Subtype.mk_eq_mk, rangeRestrict_apply]
 
@@ -407,7 +410,7 @@ theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
   ext
   simp
 
-instance : Inf (LieSubalgebra R L) :=
+instance : Min (LieSubalgebra R L) :=
   ⟨fun K K' ↦
     { (K ⊓ K' : Submodule R L) with
       lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
@@ -458,11 +461,11 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     top := ⊤
     le_top := fun _ _ _ ↦ trivial
     inf := (· ⊓ ·)
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance : Add (LieSubalgebra R L) where add := Sup.sup
+instance : Add (LieSubalgebra R L) where add := max
 
 instance : Zero (LieSubalgebra R L) where zero := ⊥
 
@@ -691,7 +694,7 @@ def ofEq (h : (L₁' : Set L₁) = L₁'') : L₁' ≃ₗ⁅R⁆ L₁'' :=
       ext x
       change x ∈ (L₁' : Set L₁) ↔ x ∈ (L₁'' : Set L₁)
       rw [h]) with
-    map_lie' := @fun x y ↦ rfl }
+    map_lie' := @fun _ _ ↦ rfl }
 
 @[simp]
 theorem ofEq_apply (L L' : LieSubalgebra R L₁) (h : (L : Set L₁) = L') (x : L) :
