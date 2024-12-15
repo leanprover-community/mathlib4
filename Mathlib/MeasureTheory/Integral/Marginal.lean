@@ -124,7 +124,7 @@ theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
       = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
         simp_rw [lmarginal,
           measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
-            |>.lintegral_map_equiv]
+            |>.lintegral_map_equiv, e, α]
     _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]; rfl
 
 variable {μ} in
