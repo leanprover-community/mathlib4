@@ -86,7 +86,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
 
   obtain ⟨q, hqN, prime_q, hq⟩ := Filter.Frequently.forall_exists_of_atTop
     ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
-      eventually_lt_of_tendsto_lt (u := 1) (by simp)
+      Filter.Tendsto.eventually_lt_const (u := 1) (by simp)
         ((this (‖k‖ ^ P.natDegree * c)).const_mul (W * ∑ i, Multiset.card ((p i).aroots ℂ))))
     (N + 1)
   rw [ge_iff_le, Nat.succ_le] at hqN
@@ -225,9 +225,9 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by
   intro h
   have is_integral_a : IsIntegral ℚ a :=
-    isAlgebraic_iff_isIntegral.mp (ha.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
+    isAlgebraic_iff_isIntegral.mp (ha.extendScalars (algebraMap ℤ ℚ).injective_int)
   have is_integral_expa : IsIntegral ℚ (exp a) :=
-    isAlgebraic_iff_isIntegral.mp (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
+    isAlgebraic_iff_isIntegral.mp (h.extendScalars (algebraMap ℤ ℚ).injective_int)
   refine by
     simpa [Fin.forall_fin_succ] using linearIndependent_exp' ![a, 0] ?_ ?_ ![1, -exp a] ?_ ?_
   · intro i; fin_cases i
@@ -244,7 +244,7 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
   refine by
     simpa [Fin.forall_fin_succ] using linearIndependent_exp' ![Real.pi * I, 0] ?_ ?_ ![1, 1] ?_ ?_
   · intro i; fin_cases i
-    · have isAlgebraic_pi := h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int
+    · have isAlgebraic_pi := h.extendScalars (algebraMap ℤ ℚ).injective_int
       have isIntegral_pi : IsIntegral ℚ (Real.pi : ℂ) := by
         simpa only [coe_algebraMap] using isAlgebraic_pi.isIntegral.algebraMap
       exact isIntegral_pi.mul Complex.isIntegral_rat_I
