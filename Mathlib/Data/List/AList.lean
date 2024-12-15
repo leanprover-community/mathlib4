@@ -241,14 +241,14 @@ theorem insert_entries {a} {b : β a} {s : AList β} :
     (insert a b s).entries = Sigma.mk a b :: kerase a s.entries :=
   rfl
 
-theorem insert_entries_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
+theorem entries_insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [insert_entries, kerase_of_not_mem_keys h]
 
 theorem insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
-  ext <| insert_entries_of_not_mem h
+  ext <| entries_insert_of_not_mem h
 
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := insert_entries_of_not_mem
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 @[deprecated (since := "2024-12-14")] alias insert_of_neg := insert_of_not_mem
 
 @[simp]
