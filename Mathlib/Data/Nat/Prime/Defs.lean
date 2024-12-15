@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Order.Basic
 
@@ -26,9 +26,9 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 -/
 
-open Bool Subtype
+assert_not_exists Ring
 
-open Nat
+open Bool Subtype Nat
 
 namespace Nat
 variable {n : ℕ}
@@ -225,16 +225,17 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · have pp : Prime n :=
         prime_def_le_sqrt.2
           ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
-      simpa [h] using ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+      simpa only [k, h] using
+        ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
       subst e
       apply Nat.le_add_left
-    simp only [h, ↓reduceIte]
-    by_cases dk : k ∣ n <;> simp only [dk, ↓reduceIte]
+    simp only [k, h, ↓reduceIte]
+    by_cases dk : k ∣ n <;> simp only [k, dk, ↓reduceIte]
     · exact ⟨k2, dk, a⟩
     · refine
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib, add_right_comm])
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, Nat.left_distrib, add_right_comm])
           fun m m2 d => ?_
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me

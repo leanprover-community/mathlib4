@@ -89,7 +89,6 @@ lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n
 /-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
 def Odd (a : α) : Prop := ∃ k, a = 2 * k + 1
 
-set_option linter.deprecated false in
 lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = 2 * b + 1 := exists_congr fun b ↦ by rw [two_mul]
 
 alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
@@ -202,7 +201,7 @@ lemma odd_iff : Odd n ↔ n % 2 = 1 :=
 
 instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ odd_iff.symm
 
-lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_ne_one]
+lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_not_eq_one]
 
 @[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
@@ -247,7 +246,6 @@ lemma mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (m 
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
   rw [even_add, ← not_odd_iff_even, ← not_odd_iff_even, not_iff_not]
 
-set_option linter.deprecated false in
 @[simp] lemma not_even_bit1 (n : ℕ) : ¬Even (2 * n + 1) := by simp [parity_simps]
 
 lemma not_even_two_mul_add_one (n : ℕ) : ¬ Even (2 * n + 1) :=

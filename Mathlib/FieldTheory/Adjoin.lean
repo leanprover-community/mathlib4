@@ -11,6 +11,8 @@ import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.SetTheory.Cardinal.Subfield
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Adjoining Elements to Fields
@@ -1680,4 +1682,27 @@ theorem liftAlgHom_fieldRange_eq_of_range_eq (hg : Function.Injective g)
 
 end IsFractionRing
 
-set_option linter.style.longFile 1700
+namespace IntermediateField
+
+universe u v
+
+open Cardinal
+
+variable (F : Type u) [Field F]
+
+theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set E) :
+    Cardinal.lift.{u} #(adjoin F s) ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} #s ⊔ ℵ₀ := by
+  rw [show ↥(adjoin F s) = (adjoin F s).toSubfield from rfl, adjoin_toSubfield]
+  apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
+  rw [lift_max, sup_le_iff, lift_aleph0]
+  refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
+  simp_rw [lift_max, lift_aleph0, sup_assoc]
+  exact sup_le_sup_right mk_range_le_lift _
+
+theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
+    #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
+  simpa using lift_cardinalMk_adjoin_le F s
+
+end IntermediateField
+
+set_option linter.style.longFile 1800

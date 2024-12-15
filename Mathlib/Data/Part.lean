@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Operations
 
 /-!
 # Partial values of a type

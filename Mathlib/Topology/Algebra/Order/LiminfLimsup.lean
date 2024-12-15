@@ -130,20 +130,18 @@ instance (priority := 100) OrderTop.to_BoundedLENhdsClass [OrderTop α] : Bounde
 instance (priority := 100) OrderBot.to_BoundedGENhdsClass [OrderBot α] : BoundedGENhdsClass α :=
   ⟨fun _a ↦ isBounded_ge_of_bot⟩
 
--- See note [lower instance priority]
-instance (priority := 100) OrderTopology.to_BoundedLENhdsClass [IsDirected α (· ≤ ·)]
-    [OrderTopology α] : BoundedLENhdsClass α :=
-  ⟨fun a ↦
-    ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
-      Exists.imp fun _b ↦ ge_mem_nhds⟩
-
--- See note [lower instance priority]
-instance (priority := 100) OrderTopology.to_BoundedGENhdsClass [IsDirected α (· ≥ ·)]
-    [OrderTopology α] : BoundedGENhdsClass α :=
-  ⟨fun a ↦ ((isBot_or_exists_lt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
-    Exists.imp fun _b ↦ le_mem_nhds⟩
-
 end Preorder
+
+-- See note [lower instance priority]
+instance (priority := 100) BoundedLENhdsClass.of_closedIciTopology [LinearOrder α]
+    [TopologicalSpace α] [ClosedIciTopology α] : BoundedLENhdsClass α :=
+  ⟨fun a ↦ ((isTop_or_exists_gt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
+    Exists.imp fun _b ↦ eventually_le_nhds⟩
+
+-- See note [lower instance priority]
+instance (priority := 100) BoundedGENhdsClass.of_closedIicTopology [LinearOrder α]
+    [TopologicalSpace α] [ClosedIicTopology α] : BoundedGENhdsClass α :=
+  inferInstanceAs <| BoundedGENhdsClass αᵒᵈᵒᵈ
 
 section LiminfLimsup
 
