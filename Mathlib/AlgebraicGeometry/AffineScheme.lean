@@ -170,6 +170,7 @@ show (Scheme.Spec.essImageInclusion).Faithful from inferInstance
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
   forgetToScheme.op ⋙ Scheme.Γ
 
+/-- The canonical isomorphism `X ≅ Spec Γ(X)` in the category of affine schemes. -/
 def isoSpec (X : AffineScheme) : X ≅ Spec.obj (Γ.rightOp.obj X) :=
   InducedCategory.isoMk X.obj.isoSpec
 
@@ -208,10 +209,12 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
+/-- `Spec ℤ` is the terminal object in the category `AffineScheme`. -/
 def specZIsTerminal : IsTerminal (AffineScheme.Spec.obj (op (CommRingCat.of ℤ))) :=
   IsTerminal.isTerminalObj AffineScheme.Spec (op (CommRingCat.of ℤ))
     (terminalOpOfInitial CommRingCat.zIsInitial)
 
+/-- `Spec (ULift.{u} ℤ)` is the terminal object in the category `AffineScheme.{u}`. -/
 def isTerminal : IsTerminal (AffineScheme.Spec.obj (op (CommRingCat.of (ULift.{u} ℤ)))) :=
   IsTerminal.isTerminalObj AffineScheme.Spec (op (CommRingCat.of (ULift.{u} ℤ)))
     (terminalOpOfInitial CommRingCat.isInitial)
