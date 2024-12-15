@@ -67,7 +67,7 @@ Note that this duplicates `MvPolynomial`.
 
 section Polynomials
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- A predicate asserting that a function is a multivariate integer polynomial.
   (We are being a bit lazy here by allowing many representations for multiplication,
@@ -432,7 +432,7 @@ end
 
 section
 
-variable {α β : Type} {n : ℕ}
+variable {α : Type} {n : ℕ}
 
 open Vector3
 

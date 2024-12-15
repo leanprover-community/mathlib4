@@ -60,7 +60,7 @@ namespace ContinuousLinearMap
 variable [CompleteSpace E] [CompleteSpace G]
 
 -- Note: made noncomputable to stop excess compilation
--- leanprover-community/mathlib4#7103
+-- https://github.com/leanprover-community/mathlib4/issues/7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
@@ -215,6 +215,8 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
 
+/-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
+`Analysis.CStarAlgebra.ContinuousLinearMap`. -/
 instance : CStarRing (E →L[𝕜] E) where
   norm_mul_self_le x := le_of_eq <| Eq.symm <| norm_adjoint_comp_self x
 
@@ -488,13 +490,13 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
 
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
-  -- Elaborates faster with this broken out #11299
+  -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
   have := unitary.star_mul_self_of_mem hu
   u.norm_map_iff_adjoint_comp_self.mpr this x
 
 theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) :
     ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
-  -- Elaborates faster with this broken out #11299
+  -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
   have := unitary.star_mul_self_of_mem hu
   u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
@@ -528,8 +530,8 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
             inv_val := by ext; simp }
         exact IsUnit.mem_unitary_of_star_mul_self ⟨e', rfl⟩ <|
           (e : H →L[𝕜] H).norm_map_iff_adjoint_comp_self.mp e.norm_map }
-  left_inv u := Subtype.ext rfl
-  right_inv e := LinearIsometryEquiv.ext fun x ↦ rfl
+  left_inv _ := Subtype.ext rfl
+  right_inv _ := LinearIsometryEquiv.ext fun _ ↦ rfl
   map_mul' u v := by ext; rfl
 
 @[simp]

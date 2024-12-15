@@ -77,7 +77,7 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
   | zero => rw [Nat.zero_add, derivedSeriesOfIdeal_zero]
   | succ k ih => rw [Nat.succ_add k l, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ, ih]
 
-@[mono]
+@[gcongr, mono]
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
   revert l; induction' k with k ih <;> intro l h₂
@@ -198,7 +198,7 @@ namespace LieAlgebra
 class IsSolvable : Prop where
   solvable : ∃ k, derivedSeries R L k = ⊥
 
-instance isSolvableBot : IsSolvable R ((⊥ : LieIdeal R L)) :=
+instance isSolvableBot : IsSolvable R (⊥ : LieIdeal R L) :=
   ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
 
 instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvable R J] :
@@ -266,8 +266,8 @@ def radical :=
 
 /-- The radical of a Noetherian Lie algebra is solvable. -/
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
-  have hwf := (LieSubmodule.wellFoundedGT_of_noetherian R L L).wf
-  rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
+  have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L L
+  rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
   · rw [Set.mem_setOf_eq] at hI hJ ⊢
@@ -287,12 +287,9 @@ instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
 
 @[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
     radical R L = ⊤ := by
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  rw [eq_top_iff]; exact le_sSup <| LieAlgebra.instIsSolvableSubtypeMemLieSubalgebraTop R L
+  rw [eq_top_iff]
+  have h : IsSolvable R (⊤ : LieSubalgebra R L) := inferInstance
+  exact le_sSup h
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
@@ -337,6 +334,9 @@ noncomputable def derivedAbelianOfIdeal (I : LieIdeal R L) : LieIdeal R L :=
   match derivedLengthOfIdeal R L I with
   | 0 => ⊥
   | k + 1 => derivedSeriesOfIdeal R L k I
+
+instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
+  inferInstanceAs <| Unique {x // x ∈ (⊥ : Submodule R L)}
 
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by

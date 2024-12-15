@@ -115,3 +115,11 @@ theorem cast_three : ((3 : ℤ) : R) = 3 := cast_ofNat _
 theorem cast_four : ((4 : ℤ) : R) = 4 := cast_ofNat _
 
 end Int
+
+section zsmul
+
+variable {R : Type*}
+
+@[simp] lemma zsmul_one [AddGroupWithOne R] (n : ℤ) : n • (1 : R) = n := by cases n <;> simp
+
+end zsmul

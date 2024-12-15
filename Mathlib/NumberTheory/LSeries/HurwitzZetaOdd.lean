@@ -177,7 +177,7 @@ lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (I
   suffices ContinuousOn (fun x ↦ (sinKernel a x : ℂ)) (Ioi 0) from
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [sinKernel_def]
-  apply (ContinuousAt.continuousOn (fun x hx ↦ ?_)).div_const
+  apply (continuousOn_of_forall_continuousAt (fun x hx ↦ ?_)).div_const
   have h := continuousAt_jacobiTheta₂' a (by rwa [I_mul_im, ofReal_re])
   fun_prop
 
@@ -302,8 +302,8 @@ section FEPair
 /-- A `StrongFEPair` structure with `f = oddKernel a` and `g = sinKernel a`. -/
 @[simps]
 def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
-  f := ofReal' ∘ oddKernel a
-  g := ofReal' ∘ sinKernel a
+  f := ofReal ∘ oddKernel a
+  g := ofReal ∘ sinKernel a
   hf_int := (continuous_ofReal.comp_continuousOn (continuousOn_oddKernel a)).locallyIntegrableOn
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_sinKernel a)).locallyIntegrableOn
@@ -453,7 +453,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rwa [summable_one_div_int_add_rpow]
   have := mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum
   refine this.congr_fun fun n ↦ ?_
-  simp only [c, mul_one_div, div_mul_eq_mul_div, div_right_comm]
+  simp only [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]
 
 /-!
 ## Non-completed zeta functions

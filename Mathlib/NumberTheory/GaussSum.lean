@@ -97,8 +97,15 @@ lemma gaussSum_mul {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing
     · exact fun a _ ↦ by rw [add_sub_cancel_right, add_comm]
   rw [sum_congr rfl fun x _ ↦ sum_eq x, sum_comm]
 
--- In the following, we need `R` to be a finite field and `R'` to be a domain.
-variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomain R']
+-- In the following, we need `R` to be a finite field.
+variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R']
+
+lemma mul_gaussSum_inv_eq_gaussSum (χ : MulChar R R') (ψ : AddChar R R') :
+    χ (-1) * gaussSum χ ψ⁻¹ = gaussSum χ ψ := by
+  rw [ψ.inv_mulShift, ← Units.coe_neg_one]
+  exact gaussSum_mulShift χ ψ (-1)
+
+variable [IsDomain R'] --  From now on, `R'` needs to be a domain.
 
 -- A helper lemma for `gaussSum_mul_gaussSum_eq_card` below
 -- Is this useful enough in other contexts to be public?
@@ -129,6 +136,17 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ :
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
   simp only [Finset.mem_univ, map_one, one_mul, if_true]
+
+/-- If `χ` is a multiplicative character of order `n` on a finite field `F`,
+then `g(χ) * g(χ^(n-1)) = χ(-1)*#F` -/
+lemma gaussSum_mul_gaussSum_pow_orderOf_sub_one {χ : MulChar R R'} {ψ : AddChar R R'}
+    (hχ : χ ≠ 1) (hψ : ψ.IsPrimitive) :
+    gaussSum χ ψ * gaussSum (χ ^ (orderOf χ - 1)) ψ = χ (-1) * Fintype.card R := by
+  have h : χ ^ (orderOf χ - 1) = χ⁻¹ := by
+    refine (inv_eq_of_mul_eq_one_right ?_).symm
+    rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos χ.orderOf_pos, pow_orderOf_eq_one]
+  rw [h, ← mul_gaussSum_inv_eq_gaussSum χ⁻¹, mul_left_comm, gaussSum_mul_gaussSum_eq_card hχ hψ,
+    MulChar.inv_apply', inv_neg_one]
 
 /-- The Gauss sum of a nontrivial character on a finite field does not vanish. -/
 lemma gaussSum_ne_zero_of_nontrivial (h : (Fintype.card R : R') ≠ 0) {χ : MulChar R R'}

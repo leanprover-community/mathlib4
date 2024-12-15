@@ -54,7 +54,7 @@ This file introduces notation in the locale `Isocrystal`.
 
 noncomputable section
 
-open FiniteDimensional
+open Module
 
 namespace WittVector
 
@@ -74,7 +74,7 @@ variable [IsDomain k] [CharP k p] [PerfectRing k p]
 
 /-- The Frobenius automorphism of `k` induces an automorphism of `K`. -/
 def FractionRing.frobenius : K(p, k) ≃+* K(p, k) :=
-  IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+  IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
 /-- The Frobenius automorphism of `k` induces an endomorphism of `K`. For notation purposes. -/
 def FractionRing.frobeniusRingHom : K(p, k) →+* K(p, k) :=
@@ -90,11 +90,11 @@ instance inv_pair₂ : RingHomInvPair ((FractionRing.frobenius p k).symm : K(p, 
   RingHomInvPair.of_ringEquiv (FractionRing.frobenius p k).symm
 
 scoped[Isocrystal]
-  notation:50 M " →ᶠˡ[" p ", " k "] " M₂ =>
+  notation3:50 M " →ᶠˡ[" p ", " k "] " M₂ =>
     LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 scoped[Isocrystal]
-  notation:50 M " ≃ᶠˡ[" p ", " k "] " M₂ =>
+  notation3:50 M " ≃ᶠˡ[" p ", " k "] " M₂ =>
     LinearEquiv (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 /-! ### Isocrystals -/
@@ -116,19 +116,19 @@ variable {V}
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
-  @Isocrystal.frob p _ k _ _ _ _ _ _ _
+  Isocrystal.frob (p := p) (k := k) (V := V)
 
 variable (V)
 
 scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
 /-- A homomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 
 /-- An isomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
 
@@ -146,7 +146,7 @@ open scoped Isocrystal
 of slope `m : ℤ`.
 -/
 @[nolint unusedArguments]
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 
@@ -181,7 +181,7 @@ admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensio
 theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
-  haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim
+  haveI : Nontrivial V := Module.nontrivial_of_finrank_eq_succ h_dim
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0
   have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).injective.ne hx
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by

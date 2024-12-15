@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials
@@ -184,7 +185,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
   induction' s using Finset.induction_on with x s hx IH
   · simp
   · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
-    specialize IH (h.mono fun _ => by simp (config := { contextual := true }))
+    specialize IH (h.mono fun _ => by simp +contextual)
     rcases lt_trichotomy (degree (f x)) (degree (s.sum f)) with (H | H | H)
     · rw [← IH, sup_eq_right.mpr H.le, degree_add_eq_right_of_degree_lt H]
     · rcases s.eq_empty_or_nonempty with (rfl | hs)
@@ -270,7 +271,7 @@ theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
 theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
   rcases eq_or_ne (natDegree p) 0 with h|h
-  · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le f p]
+  · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   have h2 : p ≠ 0 := by rintro rfl; simp at h
   have h3 : degree p ≠ (0 : ℕ)  := degree_ne_of_natDegree_ne h
   simp_rw [h, or_false, natDegree, WithBot.unbot'_eq_unbot'_iff, degree_map_eq_iff]
@@ -367,6 +368,25 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
   rw [← coeff_comp_degree_mul_degree hq, ← natDegree_comp, coeff_natDegree]
 
 end NoZeroDivisors
+
+@[simp] lemma comp_neg_X_leadingCoeff_eq [Ring R] (p : R[X]) :
+    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
+  simp [((Commute.neg_one_left _).pow_left _).eq, h]
+
+lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
+    p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
+  refine ⟨fun h ↦ ?_, Or.rec (fun h ↦ by simp [h]) fun h ↦ by rw [h.2, comp_C, h.1, C_0]⟩
+  have key : p.natDegree = 0 ∨ q.natDegree = 0 := by
+    rw [← mul_eq_zero, ← natDegree_comp, h, natDegree_zero]
+  obtain key | key := Or.imp eq_C_of_natDegree_eq_zero eq_C_of_natDegree_eq_zero key
+  · rw [key, C_comp] at h
+    exact Or.inl (key.trans h)
+  · rw [key, comp_C, C_eq_zero] at h
+    exact Or.inr ⟨h, key⟩
 
 section DivisionRing
 

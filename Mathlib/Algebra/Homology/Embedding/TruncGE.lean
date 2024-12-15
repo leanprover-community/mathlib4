@@ -128,6 +128,8 @@ lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
   subst hi' hj'
   simp [truncGE'XIso, truncGE'XIsoOpcycles]
 
+section
+
 variable [HasZeroObject C]
 
 /-- The canonical truncation of a homological complex relative to an embedding
@@ -146,4 +148,100 @@ noncomputable def truncGEXIsoOpcycles {i : ι} {i' : ι'} (hi' : e.f i = i') (hi
     (K.truncGE e).X i' ≅ K.opcycles i' :=
   (K.truncGE' e).extendXIso e hi' ≪≫ K.truncGE'XIsoOpcycles e hi' hi
 
+end
+
+section
+
+variable {K L M}
+
+open Classical in
+/-- The morphism `K.truncGE' e ⟶ L.truncGE' e` induced by a morphism `K ⟶ L`. -/
+noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
+  f i :=
+    if hi : e.BoundaryGE i
+    then
+      (K.truncGE'XIsoOpcycles e rfl hi).hom ≫ opcyclesMap φ (e.f i) ≫
+        (L.truncGE'XIsoOpcycles e rfl hi).inv
+    else
+      (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
+  comm' i j hij := by
+    dsimp
+    rw [dif_neg (e.not_boundaryGE_next hij)]
+    by_cases hi : e.BoundaryGE i
+    · rw [dif_pos hi]
+      simp [truncGE'_d_eq_fromOpcycles _ e hij rfl rfl hi,
+        ← cancel_epi (K.pOpcycles (e.f i))]
+    · rw [dif_neg hi]
+      simp [truncGE'_d_eq _ e hij rfl rfl hi]
+
+lemma truncGE'Map_f_eq_opcyclesMap {i : ι} (hi : e.BoundaryGE i) {i' : ι'} (h : e.f i = i') :
+    (truncGE'Map φ e).f i =
+      (K.truncGE'XIsoOpcycles e h hi).hom ≫ opcyclesMap φ i' ≫
+        (L.truncGE'XIsoOpcycles e h hi).inv := by
+  subst h
+  exact dif_pos hi
+
+lemma truncGE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryGE i) {i' : ι'} (h : e.f i = i') :
+    (truncGE'Map φ e).f i =
+      (K.truncGE'XIso e h hi).hom ≫ φ.f i' ≫ (L.truncGE'XIso e h hi).inv := by
+  subst h
+  exact dif_neg hi
+
+variable (K) in
+@[simp]
+lemma truncGE'Map_id : truncGE'Map (𝟙 K) e = 𝟙 _ := by
+  ext i
+  by_cases hi : e.BoundaryGE i
+  · simp [truncGE'Map_f_eq_opcyclesMap _ _ hi rfl]
+  · simp [truncGE'Map_f_eq _ _ hi rfl]
+
+@[reassoc, simp]
+lemma truncGE'Map_comp : truncGE'Map (φ ≫ φ') e = truncGE'Map φ e ≫ truncGE'Map φ' e := by
+  ext i
+  by_cases hi : e.BoundaryGE i
+  · simp [truncGE'Map_f_eq_opcyclesMap _ _ hi rfl, opcyclesMap_comp]
+  · simp [truncGE'Map_f_eq _ _ hi rfl]
+
+variable [HasZeroObject C]
+
+/-- The morphism `K.truncGE e ⟶ L.truncGE e` induced by a morphism `K ⟶ L`. -/
+noncomputable def truncGEMap : K.truncGE e ⟶ L.truncGE e :=
+  (e.extendFunctor C).map (truncGE'Map φ e)
+
+variable (K) in
+@[simp]
+lemma truncGEMap_id : truncGEMap (𝟙 K) e = 𝟙 _ := by
+  simp [truncGEMap, truncGE]
+
+@[reassoc, simp]
+lemma truncGEMap_comp : truncGEMap (φ ≫ φ') e = truncGEMap φ e ≫ truncGEMap φ' e := by
+  simp [truncGEMap, truncGE]
+
+end
+
 end HomologicalComplex
+
+namespace ComplexShape.Embedding
+
+variable (e : Embedding c c') [e.IsTruncGE]
+    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+
+/-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
+this is the (canonical) truncation functor
+`HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
+@[simps]
+noncomputable def truncGE'Functor :
+    HomologicalComplex C c' ⥤ HomologicalComplex C c where
+  obj K := K.truncGE' e
+  map φ := HomologicalComplex.truncGE'Map φ e
+
+/-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
+this is the (canonical) truncation functor
+`HomologicalComplex C c' ⥤ HomologicalComplex C c'`. -/
+@[simps]
+noncomputable def truncGEFunctor :
+    HomologicalComplex C c' ⥤ HomologicalComplex C c' where
+  obj K := K.truncGE e
+  map φ := HomologicalComplex.truncGEMap φ e
+
+end ComplexShape.Embedding

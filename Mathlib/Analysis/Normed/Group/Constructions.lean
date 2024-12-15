@@ -103,11 +103,11 @@ variable [Norm E]
 instance Additive.toNorm : Norm (Additive E) := ‹Norm E›
 instance Multiplicative.toNorm : Norm (Multiplicative E) := ‹Norm E›
 
-@[simp] lemma norm_toMul (x) : ‖(toMul x : E)‖ = ‖x‖ := rfl
+@[simp] lemma norm_toMul (x : Additive E) : ‖(x.toMul : E)‖ = ‖x‖ := rfl
 
 @[simp] lemma norm_ofMul (x : E) : ‖ofMul x‖ = ‖x‖ := rfl
 
-@[simp] lemma norm_toAdd (x) : ‖(toAdd x : E)‖ = ‖x‖ := rfl
+@[simp] lemma norm_toAdd (x : Multiplicative E) : ‖(x.toAdd : E)‖ = ‖x‖ := rfl
 
 @[simp] lemma norm_ofAdd (x : E) : ‖ofAdd x‖ = ‖x‖ := rfl
 
@@ -120,23 +120,23 @@ instance Additive.toNNNorm : NNNorm (Additive E) := ‹NNNorm E›
 
 instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 
-@[simp] lemma nnnorm_toMul (x) : ‖(toMul x : E)‖₊ = ‖x‖₊ := rfl
+@[simp] lemma nnnorm_toMul (x : Additive E) : ‖(x.toMul : E)‖₊ = ‖x‖₊ := rfl
 
 @[simp] lemma nnnorm_ofMul (x : E) : ‖ofMul x‖₊ = ‖x‖₊ := rfl
 
-@[simp] lemma nnnorm_toAdd (x) : ‖(toAdd x : E)‖₊ = ‖x‖₊ := rfl
+@[simp] lemma nnnorm_toAdd (x : Multiplicative E) : ‖(x.toAdd : E)‖₊ = ‖x‖₊ := rfl
 
 @[simp] lemma nnnorm_ofAdd (x : E) : ‖ofAdd x‖₊ = ‖x‖₊ := rfl
 
 end NNNorm
 
 instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
-  dist_eq x y := dist_eq_norm_div (toMul x) (toMul y)
+  dist_eq x y := dist_eq_norm_div x.toMul y.toMul
 
 
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
     SeminormedGroup (Multiplicative E) where
-  dist_eq x y := dist_eq_norm_sub (toMul x) (toMul y)
+  dist_eq x y := dist_eq_norm_sub x.toAdd y.toAdd
 
 instance Additive.seminormedCommGroup [SeminormedCommGroup E] :
     SeminormedAddCommGroup (Additive E) :=
@@ -362,7 +362,7 @@ lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f
 @[to_additive Pi.sum_nnnorm_apply_le_nnnorm "The $L^1$ norm is less than the $L^\\infty$ norm
 scaled by the cardinality."]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
-  NNReal.coe_sum.trans_le <| Pi.sum_norm_apply_le_norm' _
+  (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
 end SeminormedGroup
 

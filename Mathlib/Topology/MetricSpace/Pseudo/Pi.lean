@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.EMetricSpace.Pi
 import Mathlib.Topology.MetricSpace.Pseudo.Defs

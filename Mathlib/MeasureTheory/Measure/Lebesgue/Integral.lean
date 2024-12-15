@@ -80,10 +80,10 @@ itself, it does not apply when `f` is more complicated -/
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
-    (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
+    (Homeomorph.neg ℝ).isClosedEmbedding.measurableEmbedding
   have := MeasurableEmbedding.setIntegral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
-  simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
+  simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, neg_Ici, neg_neg]
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
@@ -95,24 +95,24 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
-    refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
+    refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
     rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
   by_cases hf : IntegrableOn (fun x => f |x|) (Ioi 0)
   · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
       rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
       let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
-      simp_rw [Function.comp_def, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
+      simp_rw [Function.comp_def, abs_neg, neg_preimage, neg_Iic, neg_zero]
       exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
     calc
       _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by
-        rw [← integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,
+        rw [← setIntegral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,
           Iic_union_Ioi, restrict_univ]
       _ = 2 * ∫ x in Ioi 0, f x := by
         rw [two_mul, eq]
         congr! 1
         rw [← neg_zero, ← integral_comp_neg_Iic, neg_zero]
-        refine setIntegral_congr measurableSet_Iic (fun _ hx => ?_)
+        refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
       contrapose! hf
