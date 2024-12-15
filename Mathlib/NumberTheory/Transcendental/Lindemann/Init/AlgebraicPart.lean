@@ -469,7 +469,7 @@ theorem linearIndependent_exp_aux {S : Type*}
   let _ : Algebra K S := K.val.toRingHom.toAlgebra
   have _ : IsSplittingField ℚ K poly :=
     IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain poly)
-  have : FiniteDimensional ℚ K := Polynomial.IsSplittingField.finiteDimensional _ poly
+  have : FiniteDimensional ℚ K := Polynomial.IsSplittingField.finiteDimensional K poly
   have : Normal ℚ K := .of_isSplittingField poly
   have : IsGalois ℚ K := ⟨⟩
   have algebraMap_K_apply x : algebraMap K S x = x := rfl
