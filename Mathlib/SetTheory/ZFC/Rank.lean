@@ -31,9 +31,6 @@ namespace PSet
 noncomputable def rank : PSet.{u} → Ordinal.{u}
   | ⟨_, A⟩ => ⨆ a, succ (rank (A a))
 
-theorem rank_def : ∀ x : PSet.{u}, rank x = lsub.{u, u} fun a ↦ rank (x.Func a)
-  | ⟨_, _⟩ => rfl
-
 theorem rank_congr : ∀ {x y : PSet}, Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ => by
     apply congr_arg sSup
@@ -137,6 +134,10 @@ variable {x y : ZFSet.{u}}
 /-- The ordinal rank of a ZFC set -/
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift _ fun _ _ => PSet.rank_congr
+
+@[simp]
+theorem _root_.PSet.rank_mk (x : PSet) : rank (.mk x) = x.rank :=
+  rfl
 
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem

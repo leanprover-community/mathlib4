@@ -30,6 +30,8 @@ universe u
 
 variable {x y z w : ZFSet.{u}}
 
+open Set
+
 namespace ZFSet
 
 /-! ### Transitive sets -/
@@ -267,8 +269,7 @@ end ZFSet
 /-! ### Type-theoretic ordinals to ZFC ordinals -/
 
 namespace Ordinal
-
-open Set ZFSet
+open ZFSet
 
 /-- The ZFC ordinal corresponding to a given `Ordinal`, as a `PSet`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
@@ -287,10 +288,14 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
-  rw [PSet.rank_def]
-  convert lsub_const
+  rw [toPSet, PSet.rank]
+  conv_rhs => rw [← iSup_succ o]
+  convert (enumIsoToType o).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  rename_i x
+  cases x
+  rw [rank_toPSet]
+termination_by o
 
-#exit
 /-- The ZFC ordinal corresponding to a given `Ordinal`, as a `ZFSet`. -/
 noncomputable def toZFSet (o : Ordinal.{u}) : ZFSet.{u} :=
   .mk o.toPSet
@@ -304,6 +309,10 @@ theorem mem_toZFSet_iff {o : Ordinal} {x : ZFSet} : x ∈ o.toZFSet ↔ ∃ a < 
   rw [toZFSet, mk_eq, ZFSet.mk_mem_iff, mem_toPSet_iff]
   convert Iff.rfl
   rw [toZFSet, eq, PSet.Equiv.comm]
+
+@[simp]
+theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o :=
+  rank_toPSet o
 
 @[simp]
 theorem toZFSet_toSet {o : Ordinal} : o.toZFSet.toSet = toZFSet '' Iio o := by
@@ -335,6 +344,11 @@ theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔
   intro h
   exact not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
 
+end Ordinal
+
+namespace ZFSet
+open Ordinal
+
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
   refine ⟨fun x hx y hy ↦ ?_, @fun x y z hx hy hz ↦ ?_⟩
   · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
@@ -345,24 +359,24 @@ theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
     obtain ⟨c, hc, rfl⟩ := mem_toZFSet_iff.1 hx
     exact toZFSet_mem_toZFSet_iff.2 (hc.trans hb)
 
-@[simp]
-theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o := by
-  rw [rank_eq]
+theorem IsOrdinal.toZFSet_rank_eq {x : ZFSet} (hx : IsOrdinal x) : x.rank.toZFSet = x :=
+  (IsOrdinal.rank_inj (isOrdinal_toZFSet _) hx).1 (rank_toZFSet _)
 
-    #exit
-
-theorem _root_.ZFSet.IsOrdinal.toZFSet_rank_eq {x : ZFSet} (hx : IsOrdinal x) :
-    x.rank.toZFSet = x := by
-  ext y
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 h
-
-
-#exit
-theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet} : IsOrdinal x ↔ x ∈ range toZFSet := by
+theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
+    IsOrdinal x ↔ x ∈ Set.range toZFSet.{u} := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · sorry
+  · rw [← h.toZFSet_rank_eq]
+    exact Set.mem_range_self _
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
 
-end Ordinal
+/-- `Ordinal` is order-equivalent to the type of ZFC ordinals. -/
+@[simps apply symm_apply]
+noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
+  toFun o := ⟨_, isOrdinal_toZFSet o⟩
+  invFun x := rank x.1
+  left_inv o := rank_toZFSet o
+  right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
+  map_rel_iff' {a b} := by simp
+
+end ZFSet

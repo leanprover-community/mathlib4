@@ -387,11 +387,14 @@ theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv 
   simp
 
 /-- The n-th von Neumann ordinal -/
+@[deprecated "construct `ofNat` by using `Ordinal.toPSet` instead" (since := "2024-12-14")]
 def ofNat : ℕ → PSet
   | 0 => ∅
   | n + 1 => insert (ofNat n) (ofNat n)
 
+set_option linter.deprecated false in
 /-- The von Neumann ordinal ω -/
+@[deprecated "construct `omega` by using `Ordinal.toPSet` instead" (since := "2024-12-14")]
 def omega : PSet :=
   ⟨ULift ℕ, fun n => ofNat n.down⟩
 
@@ -976,15 +979,19 @@ theorem singleton_eq_pair_iff {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y
   rw [eq_comm, pair_eq_singleton_iff]
   simp_rw [eq_comm]
 
+set_option linter.deprecated false in
 /-- `omega` is the first infinite von Neumann ordinal -/
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
 def omega : ZFSet :=
   mk PSet.omega
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
 theorem omega_zero : ∅ ∈ omega :=
   ⟨⟨0⟩, Equiv.rfl⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
 theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
   Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
     ⟨⟨n + 1⟩,
