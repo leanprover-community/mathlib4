@@ -219,7 +219,7 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
-theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
+theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
   rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
@@ -262,48 +262,50 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
 
-/-- An alternate statement of `hasDerivAt_ofReal_cpow`. -/
-theorem hasDerivAt_ofReal_cpow' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
+@[deprecated (since := "2024-12-15")] alias hasDerivAt_ofReal_cpow := hasDerivAt_ofReal_cpow_const'
+
+/-- An alternate statement of `hasDerivAt_ofReal_cpow_const'`. -/
+theorem hasDerivAt_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ r) (r * x ^ (r - 1)) x := by
-  have := HasDerivAt.const_mul r <| hasDerivAt_ofReal_cpow hx (by rwa [ne_eq, sub_eq_neg_self])
-  simp_rw [sub_add_cancel, mul_div_cancel₀ _ hr] at this
-  exact this
+  have := HasDerivAt.const_mul r <| hasDerivAt_ofReal_cpow_const' hx
+    (by rwa [ne_eq, sub_eq_neg_self])
+  simpa [sub_add_cancel, mul_div_cancel₀ _ hr] using this
 
 /-- A version of `DifferentiableAt.cpow_const` for a real function. -/
-theorem DifferentiableAt.cpow_const' {f : ℝ → ℝ} {x : ℝ} (hf : DifferentiableAt ℝ f x)
+theorem DifferentiableAt.ofReal_cpow_const {f : ℝ → ℝ} {x : ℝ} (hf : DifferentiableAt ℝ f x)
     (h0 : f x ≠ 0) (h1 : c ≠ 0) :
     DifferentiableAt ℝ (fun (y : ℝ) => (f y : ℂ) ^ c) x :=
-  (hasDerivAt_ofReal_cpow' h0 h1).differentiableAt.comp x hf
+  (hasDerivAt_ofReal_cpow_const h0 h1).differentiableAt.comp x hf
 
 theorem Complex.deriv_cpow_const (hx : x ∈ Complex.slitPlane) :
     deriv (fun (x : ℂ) ↦ x ^ c) x = c * x ^ (c - 1) :=
   (hasStrictDerivAt_cpow_const hx).hasDerivAt.deriv
 
 /-- A version of `Complex.deriv_cpow_const` for a real variable. -/
-theorem Complex.deriv_cpow_const' {x : ℝ} (hx : x ≠ 0) (hc : c ≠ 0) :
+theorem Complex.deriv_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) (hc : c ≠ 0) :
     deriv (fun x : ℝ ↦ (x : ℂ) ^ c) x = c * x ^ (c - 1) :=
-  (hasDerivAt_ofReal_cpow' hx hc).deriv
+  (hasDerivAt_ofReal_cpow_const hx hc).deriv
 
 theorem deriv_cpow_const (hf : DifferentiableAt ℂ f x) (hx : f x ∈ Complex.slitPlane) :
     deriv (fun (x : ℂ) ↦ f x ^ c) x = c * f x ^ (c - 1) * deriv f x :=
   (hf.hasDerivAt.cpow_const hx).deriv
 
-theorem isTheta_deriv_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
+theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
     deriv (fun (x : ℝ) => (x : ℂ) ^ c) =Θ[atTop] fun x => x ^ (c.re - 1) := by
   calc
     _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
-      filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_cpow_const' hx hc]
+      filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const hx hc]
     _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
       (Asymptotics.isTheta_of_norm_eventuallyEq' (Eq.eventuallyEq rfl)).const_mul_left hc
     _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
       rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
 
-theorem isBigO_deriv_cpow_const_atTop (c : ℂ) :
+theorem isBigO_deriv_ofReal_cpow_const_atTop (c : ℂ) :
     deriv (fun (x : ℝ) => (x : ℂ) ^ c) =O[atTop] fun x => x ^ (c.re - 1) := by
   obtain rfl | hc := eq_or_ne c 0
   · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_zero]
-  · exact (isTheta_deriv_cpow_const_atTop hc).1
+  · exact (isTheta_deriv_ofReal_cpow_const_atTop hc).1
 
 end deriv
 
