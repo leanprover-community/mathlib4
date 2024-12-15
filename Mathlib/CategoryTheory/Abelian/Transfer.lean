@@ -37,12 +37,12 @@ namespace CategoryTheory
 
 open Limits
 
-universe v u₁ u₂
+universe v₁ v₂ u₁ u₂
 
 namespace AbelianOfAdjunction
 
-variable {C : Type u₁} [Category.{v} C] [Preadditive C]
-variable {D : Type u₂} [Category.{v} D] [Abelian D]
+variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
+variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 variable (F : C ⥤ D)
 variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 
@@ -153,8 +153,8 @@ then `C` is also abelian.
 
 See <https://stacks.math.columbia.edu/tag/03A3>
 -/
-def abelianOfAdjunction {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFiniteProducts C]
-    {D : Type u₂} [Category.{v} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
+    {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
     (adj : G ⊣ F) : Abelian C := by
   haveI := hasKernels F G i
@@ -169,8 +169,8 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFin
 via a functor that preserves zero morphisms,
 then `C` is also abelian.
 -/
-def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFiniteProducts C]
-    {D : Type u₂} [Category.{v} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
+    {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
     [F.IsEquivalence] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
 
