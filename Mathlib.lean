@@ -147,6 +147,7 @@ import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Ring.Adjunctions
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Ring.BinaryCoproducts
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Epi
@@ -944,6 +945,7 @@ import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.AffineSpace
+import Mathlib.AlgebraicGeometry.ChosenFiniteProducts
 import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.AlgebraicGeometry.Cover.Over
