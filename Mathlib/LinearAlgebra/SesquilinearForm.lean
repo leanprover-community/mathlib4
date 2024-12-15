@@ -22,7 +22,7 @@ basic lemmas about construction and elementary calculations are found there.
 ## Main declarations
 
 * `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear map
-* `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
+* `IsSymm`, `IsAlt`: states that a sesquilinear map is symmetric and alternating, respectively
 * `orthogonalBilin`: provides the orthogonal complement with respect to sesquilinear form
 
 ## References
@@ -189,10 +189,11 @@ end Reflexive
 
 section Symmetric
 
-variable [CommSemiring R] [StarRing R] [AddCommMonoid M] [Module R M] {B : M →ₗ⋆[R] M →ₗ[R] R}
+variable [CommSemiring R] [StarRing R] [AddCommMonoid M₁] [AddCommMonoid M] [Module R M₁]
+  [Module R M] [StarAddMonoid M] {B : M₁ →ₗ⋆[R] M₁ →ₗ[R] M}
 
 /-- The proposition that a sesquilinear form is symmetric -/
-def IsSymm (B : M →ₗ⋆[R] M →ₗ[R] R) : Prop :=
+def IsSymm (B : M₁ →ₗ⋆[R] M₁ →ₗ[R] M) : Prop :=
   ∀ x y, star (B x y) = B y x
 
 namespace IsSymm
@@ -207,7 +208,7 @@ theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
 theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 
-theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
+theorem domRestrict (H : B.IsSymm) (p : Submodule R M₁) : (B.domRestrict₁₂ p p).IsSymm :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
@@ -215,7 +216,7 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : M →ₗ⋆[R] M →ₗ[R] R).IsSymm := fun _ _ => by
+theorem isSymm_zero : (0 : M₁ →ₗ⋆[R] M₁ →ₗ[R] M).IsSymm := fun _ _ => by
   simp_all only [zero_apply, star_zero]
 
 end Symmetric
