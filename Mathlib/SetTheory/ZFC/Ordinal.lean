@@ -291,10 +291,9 @@ theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← iSup_succ o]
   convert (enumIsoToType o).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
-  rename_i x
-  cases x
   rw [rank_toPSet]
 termination_by o
+decreasing_by rename_i x; exact x.2
 
 /-- The ZFC ordinal corresponding to a given `Ordinal`, as a `ZFSet`. -/
 noncomputable def toZFSet (o : Ordinal.{u}) : ZFSet.{u} :=
