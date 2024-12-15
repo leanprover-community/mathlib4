@@ -5,6 +5,8 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.RingTheory.Adjoin.Polynomial
+import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -99,9 +101,14 @@ theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
 variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
-    IsIntegral R x := by
-  rcases hx with ⟨p, hmonic, heval⟩
-  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+    IsIntegral R x :=
+  have ⟨p, hmonic, heval⟩ := hx
+  ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+
+theorem IsIntegral.of_aeval_monic {x : A} {p : R[X]} (monic : p.Monic)
+    (deg : p.natDegree ≠ 0) (hx : IsIntegral R (aeval x p)) : IsIntegral R x :=
+  have ⟨p, hmonic, heval⟩ := hx
+  ⟨_, hmonic.comp monic deg, by rwa [eval₂_comp, ← aeval_def x]⟩
 
 end
 
@@ -131,6 +138,26 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   let ⟨p, hp, hpx⟩ := hx
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
+/- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
+  a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
+  over `T`.-/
+theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra T S] (φ : R ≃+* T)
+    (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
+    IsIntegral R a ↔ IsIntegral T a := by
+  constructor <;> intro ha
+  · letI : Algebra R T := φ.toRingHom.toAlgebra
+    letI : IsScalarTower R T S :=
+      ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
+    exact IsIntegral.tower_top ha
+  · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
+      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm,
+        RingHomCompTriple.comp_eq]
+    letI : Algebra T R := φ.symm.toRingHom.toAlgebra
+    letI : IsScalarTower T R S :=
+      ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩
+    exact IsIntegral.tower_top ha
+
 theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
     [FunLike F B C] [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
@@ -159,6 +186,7 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   rcases hr with ⟨s, _, hsr⟩
   exact hsr.of_subring _
 
+@[stacks 09GH]
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
   Set.Finite.induction_on hfs

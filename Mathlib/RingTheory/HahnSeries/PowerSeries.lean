@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.Data.Finsupp.PWO
 
 /-!
@@ -17,6 +18,11 @@ we get the more familiar semiring of formal power series with coefficients in `R
 ## Main Definitions
   * `toPowerSeries` the isomorphism from `HahnSeries ℕ R` to `PowerSeries R`.
   * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `HahnSeries ℕ R`.
+
+## Instances
+  * For `Finite σ`, the instance `NoZeroDivisors (HahnSeries (σ →₀ ℕ) R)`,
+  deduced from the case of `MvPowerSeries`
+  The case of `HahnSeries ℕ R` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
@@ -31,7 +37,7 @@ open Finset Function Pointwise Polynomial
 
 noncomputable section
 
-variable {Γ : Type*} {R : Type*}
+variable {Γ R : Type*}
 
 namespace HahnSeries
 
@@ -107,12 +113,12 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnS
     single_coeff]
   split_ifs with hn
   · subst hn
-    convert @embDomain_coeff ℕ R _ _ Γ _ _ _ 0 <;> simp
+    convert embDomain_coeff (a := 0) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_C]
     intro
-    simp (config := { contextual := true }) [Ne.symm hn]
+    simp +contextual [Ne.symm hn]
 
 @[simp]
 theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
@@ -120,12 +126,12 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   simp only [single_coeff, ofPowerSeries_apply, RingHom.coe_mk]
   split_ifs with hn
   · rw [hn]
-    convert @embDomain_coeff ℕ R _ _ Γ _ _ _ 1 <;> simp
+    convert embDomain_coeff (a := 1) <;> simp
   · rw [embDomain_notin_image_support]
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_X]
     intro
-    simp (config := { contextual := true }) [Ne.symm hn]
+    simp +contextual [Ne.symm hn]
 
 theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
@@ -165,6 +171,12 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
 variable {σ : Type*} [Finite σ]
+
+-- TODO : generalize to all (?) rings of Hahn Series
+/-- If R has no zero divisors and `σ` is finite,
+then `HahnSeries (σ →₀ ℕ) R` has no zero divisors -/
+instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
+  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R)
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=

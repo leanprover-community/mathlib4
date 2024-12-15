@@ -157,10 +157,10 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
   npow n a := a ^ n
   npow_zero a := match a with
     | none => rfl
-    | some a => congr_arg some (pow_zero _)
+    | some _ => congr_arg some (pow_zero _)
   npow_succ n a := match a with
     | none => by change 0 ^ (n + 1) = 0 ^ n * 0; simp only [mul_zero]; rfl
-    | some a => congr_arg some <| pow_succ _ _
+    | some _ => congr_arg some <| pow_succ _ _
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
   { WithZero.monoidWithZero, WithZero.commSemigroup with }
@@ -212,13 +212,13 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
   zpow n a := a ^ n
   zpow_zero' a := match a with
     | none => rfl
-    | some a => congr_arg some (zpow_zero _)
+    | some _ => congr_arg some (zpow_zero _)
   zpow_succ' n a := match a with
     | none => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
-    | some a => congr_arg some (DivInvMonoid.zpow_succ' _ _)
-  zpow_neg' n a := match a with
+    | some _ => congr_arg some (DivInvMonoid.zpow_succ' _ _)
+  zpow_neg' _ a := match a with
     | none => rfl
-    | some a => congr_arg some (DivInvMonoid.zpow_neg' _ _)
+    | some _ => congr_arg some (DivInvMonoid.zpow_neg' _ _)
 
 instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
   __ := divInvMonoid
@@ -232,14 +232,14 @@ instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) where
   __ := involutiveInv
   mul_inv_rev a b := match a, b with
     | none, none => rfl
-    | none, some b => rfl
-    | some a, none => rfl
-    | some a, some b => congr_arg some (mul_inv_rev _ _)
+    | none, some _ => rfl
+    | some _, none => rfl
+    | some _, some _ => congr_arg some (mul_inv_rev _ _)
   inv_eq_of_mul a b := match a, b with
     | none, none => fun _ ↦ rfl
     | none, some b => fun _ ↦ by contradiction
     | some a, none => fun _ ↦ by contradiction
-    | some a, some b => fun h ↦
+    | some _, some _ => fun h ↦
       congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h
 
 instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) where
@@ -255,7 +255,10 @@ instance groupWithZero : GroupWithZero (WithZero α) where
   __ := divInvMonoid
   __ := nontrivial
   inv_zero := WithZero.inv_zero
-  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_inv_cancel
+  mul_inv_cancel a ha := by
+    lift a to α using ha
+    norm_cast
+    apply mul_inv_cancel
 
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
@@ -265,6 +268,43 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
+
+/-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
+def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
+    [DecidablePred (fun a : G ↦ a = 0)] :
+    WithZero Gˣ ≃* G where
+  toFun := WithZero.recZeroCoe 0 Units.val
+  invFun a := if h : a = 0 then 0 else (Units.mk0 a h : Gˣ)
+  left_inv := (by induction · <;> simp)
+  right_inv _ := by simp only; split <;> simp_all
+  map_mul' x y := by
+    induction x <;> induction y <;>
+    simp [← WithZero.coe_mul, ← Units.val_mul]
+
+/-- A version of `Equiv.optionCongr` for `WithZero`. -/
+noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
+    WithZero α ≃* WithZero β where
+  toFun := map' e.toMonoidHom
+  invFun := map' e.symm.toMonoidHom
+  left_inv := (by induction · <;> simp)
+  right_inv := (by induction · <;> simp)
+  map_mul' x y := by
+    induction x <;> induction y <;>
+    simp
+
+/-- The inverse of `MulEquiv.withZero`. -/
+protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β where
+  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
+  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _ := by
+    simp only [coe_mul, map_mul]
+    generalize_proofs A B C
+    suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
+      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
+    simp
 
 end Group
 

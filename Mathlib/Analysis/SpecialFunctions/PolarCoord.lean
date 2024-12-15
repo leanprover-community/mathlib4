@@ -135,13 +135,13 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   symm
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
-      rw [← integral_univ]
-      apply setIntegral_congr_set_ae
+      rw [← setIntegral_univ]
+      apply setIntegral_congr_set
       exact polarCoord_source_ae_eq_univ.symm
     _ = ∫ p in polarCoord.target, abs (B p).det • f (polarCoord.symm p) := by
       apply integral_target_eq_integral_abs_det_fderiv_smul volume A
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
-      apply setIntegral_congr polarCoord.open_target.measurableSet fun x hx => ?_
+      apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
       rw [B_det, abs_of_pos]
       exact hx.1
 

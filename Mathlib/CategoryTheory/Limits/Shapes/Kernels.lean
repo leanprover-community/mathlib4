@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel
+Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
@@ -79,9 +79,8 @@ variable {f}
 
 @[reassoc (attr := simp)]
 theorem KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
-  erw [Fork.condition, HasZeroMorphisms.comp_zero]
+  rw [Fork.condition, HasZeroMorphisms.comp_zero]
 
--- Porting note (#10618): simp can prove this, removed simp tag
 theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
   simp [Fork.app_one_eq_ι_comp_right]
 
@@ -154,7 +153,7 @@ def KernelFork.IsLimit.ofι {W : C} (g : W ⟶ X) (eq : g ≫ f = 0)
 def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
     (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
     IsLimit (KernelFork.ofι i w) :=
-  ofι _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
+  ofι _ _ (fun {_} k hk => (h k hk).1) (fun {_} k hk => (h k hk).2) (fun {A} k hk m hm => by
     rw [← cancel_mono i, (h k hk).2, hm])
 
 /-- Every kernel of `f` induces a kernel of `f ≫ g` if `g` is mono. -/
@@ -188,7 +187,7 @@ def KernelFork.IsLimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
 /-- Any zero object identifies to the kernel of a given monomorphisms. -/
 def KernelFork.IsLimit.ofMonoOfIsZero {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     (hf : Mono f) (h : IsZero c.pt) : IsLimit c :=
-  isLimitAux _ (fun s => 0) (fun s => by rw [zero_comp, ← cancel_mono f, zero_comp, s.condition])
+  isLimitAux _ (fun _ => 0) (fun s => by rw [zero_comp, ← cancel_mono f, zero_comp, s.condition])
     (fun _ _ _ => h.eq_of_tgt _ _)
 
 lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
@@ -200,6 +199,29 @@ lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     rw [eq]
     infer_instance
   exact IsIso.of_isIso_comp_left e.inv c.ι
+
+/-- If `c` is a limit kernel fork for `g : X ⟶ Y`, `e : X ≅ X'` and `g' : X' ⟶ Y` is a morphism,
+then there is a limit kernel fork for `g'` with the same point as `c` if for any
+morphism `φ : W ⟶ X`, there is an equivalence `φ ≫ g = 0 ↔ φ ≫ e.hom ≫ g' = 0`. -/
+def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} (hc : IsLimit c)
+    {X' Y' : C} (g' : X' ⟶ Y') (e : X ≅ X')
+    (iff : ∀ ⦃W : C⦄ (φ : W ⟶ X), φ ≫ g = 0 ↔ φ ≫ e.hom ≫ g' = 0) :
+    IsLimit (KernelFork.ofι (f := g') (c.ι ≫ e.hom) (by simp [← iff])) :=
+  KernelFork.IsLimit.ofι _ _
+    (fun s hs ↦ hc.lift (KernelFork.ofι (ι := s ≫ e.inv)
+      (by rw [iff, Category.assoc, Iso.inv_hom_id_assoc, hs])))
+    (fun s hs ↦ by simp [← cancel_mono e.inv])
+    (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
+
+/-- If `c` is a limit kernel fork for `g : X ⟶ Y`, and `g' : X ⟶ Y'` is a another morphism,
+then there is a limit kernel fork for `g'` with the same point as `c` if for any
+morphism `φ : W ⟶ X`, there is an equivalence `φ ≫ g = 0 ↔ φ ≫ g' = 0`. -/
+def KernelFork.isLimitOfIsLimitOfIff' {X Y : C} {g : X ⟶ Y} {c : KernelFork g} (hc : IsLimit c)
+    {Y' : C} (g' : X ⟶ Y')
+    (iff : ∀ ⦃W : C⦄ (φ : W ⟶ X), φ ≫ g = 0 ↔ φ ≫ g' = 0) :
+    IsLimit (KernelFork.ofι (f := g') c.ι (by simp [← iff])) :=
+  IsLimit.ofIsoLimit (isLimitOfIsLimitOfIff hc g' (Iso.refl _) (by simpa using iff))
+    (Fork.ext (Iso.refl _))
 
 end
 
@@ -429,13 +451,13 @@ open ZeroObject
 /-- The morphism from the zero object determines a cone on a kernel diagram -/
 def kernel.zeroKernelFork : KernelFork f where
   pt := 0
-  π := { app := fun j => 0 }
+  π := { app := fun _ => 0 }
 
 /-- The map from the zero object is a kernel of a monomorphism -/
 def kernel.isLimitConeZeroCone [Mono f] : IsLimit (kernel.zeroKernelFork f) :=
-  Fork.IsLimit.mk _ (fun s => 0)
+  Fork.IsLimit.mk _ (fun _ => 0)
     (fun s => by
-      erw [zero_comp]
+      rw [zero_comp]
       refine (zero_of_comp_mono f ?_).symm
       exact KernelFork.condition _)
     fun _ _ _ => zero_of_to_zero _
@@ -453,7 +475,7 @@ theorem kernel.ι_of_mono [HasKernel f] [Mono f] : kernel.ι f = 0 :=
 def zeroKernelOfCancelZero {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) :
     IsLimit (KernelFork.ofι (0 : 0 ⟶ X) (show 0 ≫ f = 0 by simp)) :=
-  Fork.IsLimit.mk _ (fun s => 0) (fun s => by rw [hf _ _ (KernelFork.condition s), zero_comp])
+  Fork.IsLimit.mk _ (fun _ => 0) (fun s => by rw [hf _ _ (KernelFork.condition s), zero_comp])
     fun s m _ => by dsimp; apply HasZeroObject.to_zero_ext
 
 end HasZeroObject
@@ -516,7 +538,6 @@ variable {f}
 theorem CokernelCofork.condition (s : CokernelCofork f) : f ≫ s.π = 0 := by
   rw [Cofork.condition, zero_comp]
 
--- Porting note (#10618): simp can prove this, removed simp tag
 theorem CokernelCofork.π_eq_zero (s : CokernelCofork f) : s.ι.app zero = 0 := by
   simp [Cofork.app_zero_eq_comp_π_right]
 
@@ -574,7 +595,7 @@ def CokernelCofork.IsColimit.ofπ {Z : C} (g : Y ⟶ Z) (eq : f ≫ g = 0)
 def CokernelCofork.IsColimit.ofπ' {X Y Q : C} {f : X ⟶ Y} (p : Y ⟶ Q) (w : f ≫ p = 0)
     (h : ∀ {A : C} (k : Y ⟶ A) (_ : f ≫ k = 0), { l : Q ⟶ A // p ≫ l = k}) [hp : Epi p] :
     IsColimit (CokernelCofork.ofπ p w) :=
-  ofπ _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
+  ofπ _ _ (fun {_} k hk => (h k hk).1) (fun {_} k hk => (h k hk).2) (fun {A} k hk m hm => by
     rw [← cancel_epi p, (h k hk).2, hm])
 
 /-- Every cokernel of `f` induces a cokernel of `g ≫ f` if `g` is epi. -/
@@ -620,7 +641,7 @@ def CokernelCofork.IsColimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
 /-- Any zero object identifies to the cokernel of a given epimorphisms. -/
 def CokernelCofork.IsColimit.ofEpiOfIsZero {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
     (hf : Epi f) (h : IsZero c.pt) : IsColimit c :=
-  isColimitAux _ (fun s => 0) (fun s => by rw [comp_zero, ← cancel_epi f, comp_zero, s.condition])
+  isColimitAux _ (fun _ => 0) (fun s => by rw [comp_zero, ← cancel_epi f, comp_zero, s.condition])
     (fun _ _ _ => h.eq_of_src _ _)
 
 lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f)
@@ -633,6 +654,29 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
     dsimp
     infer_instance
   exact IsIso.of_isIso_comp_right c.π e.hom
+
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
+morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
+morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0`. -/
+def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
+    (hc : IsColimit c) {X' Y' : C} (f' : X' ⟶ Y') (e : Y' ≅ Y)
+    (iff : ∀ ⦃W : C⦄ (φ : Y ⟶ W), f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0) :
+    IsColimit (CokernelCofork.ofπ (f := f') (e.hom ≫ c.π) (by simp [← iff])) :=
+  CokernelCofork.IsColimit.ofπ _ _
+    (fun s hs ↦ hc.desc (CokernelCofork.ofπ (π := e.inv ≫ s)
+      (by rw [iff, e.hom_inv_id_assoc, hs])))
+    (fun s hs ↦ by simp [← cancel_epi e.inv])
+    (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
+
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, and `f' : X' ⟶ Y is another
+morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
+morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ φ = 0`. -/
+def CokernelCofork.isColimitOfIsColimitOfIff' {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
+    (hc : IsColimit c) {X' : C} (f' : X' ⟶ Y)
+    (iff : ∀ ⦃W : C⦄ (φ : Y ⟶ W), f ≫ φ = 0 ↔ f' ≫ φ = 0) :
+    IsColimit (CokernelCofork.ofπ (f := f') c.π (by simp [← iff])) :=
+  IsColimit.ofIsoColimit (isColimitOfIsColimitOfIff hc f' (Iso.refl _) (by simpa using iff))
+    (Cofork.ext (Iso.refl _))
 
 end
 
@@ -882,11 +926,11 @@ open ZeroObject
 /-- The morphism to the zero object determines a cocone on a cokernel diagram -/
 def cokernel.zeroCokernelCofork : CokernelCofork f where
   pt := 0
-  ι := { app := fun j => 0 }
+  ι := { app := fun _ => 0 }
 
 /-- The morphism to the zero object is a cokernel of an epimorphism -/
 def cokernel.isColimitCoconeZeroCocone [Epi f] : IsColimit (cokernel.zeroCokernelCofork f) :=
-  Cofork.IsColimit.mk _ (fun s => 0)
+  Cofork.IsColimit.mk _ (fun _ => 0)
     (fun s => by
       erw [zero_comp]
       refine (zero_of_epi_comp f ?_).symm
@@ -978,7 +1022,7 @@ instance cokernel.of_kernel_of_mono [HasKernel f] [HasCokernel (kernel.ι f)] [M
 def zeroCokernelOfZeroCancel {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Y ⟶ Z) (_ : f ≫ g = 0), g = 0) :
     IsColimit (CokernelCofork.ofπ (0 : Y ⟶ 0) (show f ≫ 0 = 0 by simp)) :=
-  Cofork.IsColimit.mk _ (fun s => 0)
+  Cofork.IsColimit.mk _ (fun _ => 0)
     (fun s => by rw [hf _ _ (CokernelCofork.condition s), comp_zero]) fun s m _ => by
       apply HasZeroObject.from_zero_ext
 
