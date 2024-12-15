@@ -42,7 +42,7 @@ theorem powSeriesFrom_eq_cons {a : ℝ} {acc : ℝ} {n : ℕ} :
   rfl
 
 theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).get? m =
-    .some (acc * (decreasing_factorial (a - n) m) * n.factorial / (n + m).factorial) := by
+    .some (acc * ((descPochhammer ℤ m).smeval (a - n)) * n.factorial / (n + m).factorial) := by
   simp [powSeriesFrom]
   induction m generalizing acc n with
   | zero =>
@@ -50,7 +50,7 @@ theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).ge
     rw [corec_cons]
     pick_goal 2
     · exact Eq.refl _
-    simp [decreasing_factorial]
+    simp
     field_simp
   | succ m ih =>
     rw [corec_cons]
@@ -69,13 +69,11 @@ theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).ge
     congr 1
     move_mul [((n : ℝ) + 1)⁻¹]
     rw [mul_inv_cancel_right₀ (by linarith)]
-    symm
-    convert decreasing_factorial_sub_one using 3
-    ring
+    simp [show a - n = a - (n + 1) + 1 by ring, descPochhammer_succ_left, Polynomial.smeval_X_mul,
+      Polynomial.smeval_comp]
 
 theorem powSeries_get {a : ℝ} {n : ℕ} : (powSeries a).get? n = .some (binomialCoef a n) := by
-  simp [powSeries, powSeriesFrom_get]
-  rfl
+  simp [powSeries, powSeriesFrom_get, binomialCoef, Ring.choose_eq_div]
 
 theorem powSeries_eq_binomialSeries {a : ℝ} : (powSeries a).toFormalMultilinearSeries = binomialSeries a := by
   ext n f

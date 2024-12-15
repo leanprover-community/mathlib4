@@ -6,6 +6,7 @@ import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.RingTheory.Binomial
+import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 
 set_option linter.style.longLine false
 
@@ -13,49 +14,28 @@ namespace TendstoTactic
 
 namespace ForPow
 
-def decreasing_factorial (a : ℝ) (n : ℕ) : ℝ := match n with
-| 0 => 1
-| m + 1 => decreasing_factorial a m * (a - m)
-
-theorem decreasing_factorial_sub_one {a : ℝ} {n : ℕ} :
-    decreasing_factorial a (n + 1) = a * decreasing_factorial (a - 1) n := by
+theorem ascPochhammer_nonneg {a : ℝ} {n : ℕ} (ha : 0 ≤ a) : 0 ≤ (ascPochhammer ℕ n).smeval a := by
   cases n with
-  | zero =>
-    simp [decreasing_factorial]
+  | zero => simp
   | succ m =>
-    rw [decreasing_factorial]
-    nth_rw 2 [decreasing_factorial]
-    rw [@decreasing_factorial_sub_one a m, ← mul_assoc]
-    congr 1
-    simp
-    ring
-
-def increasing_factorial (a : ℝ) (n : ℕ) : ℝ := match n with
-| 0 => 1
-| m + 1 => increasing_factorial a m * (a + m)
-
-theorem increasing_factorial_nonneg {a : ℝ} {n : ℕ} (ha : 0 ≤ a) :
-    0 ≤ increasing_factorial a n := by
-  cases n with
-  | zero => simp [increasing_factorial]
-  | succ m =>
-    simp [increasing_factorial]
+    simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
     apply mul_nonneg
-    · exact increasing_factorial_nonneg ha
+    · exact ascPochhammer_nonneg ha
     · linarith
 
-theorem decreasing_factorial_bound {a : ℝ} {n : ℕ} :
-    |decreasing_factorial a n| ≤ increasing_factorial |a| n := by
+theorem descPochhammer_bound_ascPochhammer {a : ℝ} {n : ℕ} :
+    |(descPochhammer ℤ n).smeval a| ≤ (ascPochhammer ℕ n).smeval |a| := by
   cases n with
-  | zero => simp [decreasing_factorial, increasing_factorial]
+  | zero => simp
   | succ m =>
-    simp [decreasing_factorial, increasing_factorial, abs_mul]
+    simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast,
+      descPochhammer_succ_right, abs_mul]
     apply mul_le_mul
-    · exact decreasing_factorial_bound
+    · exact descPochhammer_bound_ascPochhammer
     · convert abs_sub a (↑m)
       simp
     · simp
-    · apply increasing_factorial_nonneg
+    · apply ascPochhammer_nonneg
       simp
 
 open Filter Asymptotics
@@ -66,37 +46,27 @@ universe u v w
 
 -- variable (𝔸 : Type*) [Ring 𝔸] [Algebra ℝ 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
-noncomputable def binomialCoef (a : ℝ) (n : ℕ) : ℝ := (decreasing_factorial a n) / (n ! : ℝ)
-
--- noncomputable def lol : BinomialRing ℝ := by infer_instance
-
--- #print lol
-
-noncomputable def binomialCoef' (a : ℝ) (n : ℕ) : ℝ := Ring.choose a n
+noncomputable def binomialCoef (a : ℝ) (n : ℕ) : ℝ := Ring.choose a n
 
 @[simp]
 theorem binomialCoef_zero {a : ℝ} : binomialCoef a 0 = 1 := by
-  simp [binomialCoef, decreasing_factorial]
-
-@[simp]
-theorem binomialCoef_zero' {a : ℝ} : binomialCoef' a 0 = 1 := by
-  simp [binomialCoef']
+  simp [binomialCoef]
 
 @[simp]
 theorem binomialCoef_one {a : ℝ} : binomialCoef a 1 = a := by
-  simp [binomialCoef, decreasing_factorial]
-
-@[simp]
-theorem binomialCoef_one' {a : ℝ} : binomialCoef' a 1 = a := by
-  simp [binomialCoef']
+  simp [binomialCoef]
 
 noncomputable def binomialSeries (a : ℝ) : FormalMultilinearSeries ℝ ℝ ℝ := fun n =>
   (binomialCoef a n) • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
 
-noncomputable def binomialSeries' (a : ℝ) : FormalMultilinearSeries ℝ ℝ ℝ := fun n =>
-  (binomialCoef' a n) • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
-
 -- variable [NormedAddCommGroup 𝔸] [NormedSpace ℝ 𝔸] [NormedAddCommGroup 𝔸] [NormedSpace ℝ 𝔸]
+
+lemma Ring.choose_eq_div {a : ℝ} {n : ℕ} :
+    Ring.choose a n = (descPochhammer ℤ n).smeval a / n.factorial := by
+  apply eq_div_of_mul_eq (by simp [Nat.factorial_ne_zero])
+  convert_to n ! • Ring.choose a n = (descPochhammer ℤ n).smeval a
+  · ring
+  rw [Ring.descPochhammer_eq_factorial_smul_choose]
 
 theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius := by
   apply le_of_forall_ge_of_dense
@@ -110,14 +80,15 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
     conv => arg 1; ext M; rw [← div_lt_iff₀ (by simpa)]
     apply exists_nat_gt
   obtain ⟨M, hM⟩ := this
-  have : ∀ k, increasing_factorial |a| (M + k) / (M + k).factorial * r^k ≤
-      increasing_factorial |a| M / M.factorial := by
+  have : ∀ k, (ascPochhammer ℕ (M + k)).smeval |a| / (M + k).factorial * r^k ≤
+      (ascPochhammer ℕ M).smeval |a| / M.factorial := by
     intro k
     induction k with
     | zero => simp
     | succ l ih =>
-      simp [increasing_factorial, Nat.factorial, pow_succ] at ih ⊢
-      convert_to increasing_factorial |a| (M + l) / ↑(M + l)! * ↑r ^ l * (r * (|a| + (↑M + ↑l)) / (↑M + ↑l + 1)) ≤ increasing_factorial |a| M / ↑M !
+      simp [← add_assoc, Nat.factorial, pow_succ, ascPochhammer_succ_right, Polynomial.smeval_mul,
+        Polynomial.smeval_natCast] at ih ⊢
+      convert_to (ascPochhammer ℕ (M + l)).smeval |a| / ↑(M + l)! * ↑r ^ l * (r * (|a| + (↑M + ↑l)) / (↑M + ↑l + 1)) ≤ (ascPochhammer ℕ M).smeval |a| / ↑M !
       · simp only [div_eq_mul_inv, mul_inv_rev]
         ring_nf
       trans
@@ -126,7 +97,7 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
       apply mul_le_of_le_one_right
       · apply mul_nonneg
         · apply div_nonneg
-          · apply increasing_factorial_nonneg
+          · apply ascPochhammer_nonneg
             simp
           · simp
         · simp
@@ -138,7 +109,7 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
         · simp
           exact hr.le
       linarith
-  apply Asymptotics.IsBigO.of_bound (c := r^M * increasing_factorial |a| M / ↑M.factorial)
+  apply Asymptotics.IsBigO.of_bound (c := r^M * (ascPochhammer ℕ M).smeval |a| / ↑M.factorial)
   simp [binomialSeries]
   use M
   intro b hb
@@ -153,84 +124,17 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
   simp [pow_add, div_eq_mul_inv]
   move_mul [r.toReal^M, r.toReal^M]
   apply mul_le_mul_of_nonneg_right _ (by simp)
-  simp [binomialCoef, abs_div]
-  trans increasing_factorial |a| (M + k) * (↑(M + k)!)⁻¹ * ↑r ^ k
+  simp [binomialCoef, Ring.choose_eq_div, abs_div]
+  trans (ascPochhammer ℕ (M + k)).smeval |a| * (↑(M + k)!)⁻¹ * ↑r ^ k
   · simp only [div_eq_mul_inv]
     rw [mul_le_mul_right, mul_le_mul_right]
-    · exact decreasing_factorial_bound
+    · exact descPochhammer_bound_ascPochhammer
     · simp
       linarith [Nat.factorial_pos (M + k)]
     · apply pow_pos
       simpa
   simp only [div_eq_mul_inv] at this ⊢
   apply this
-
--- theorem binomialSeries_radius_ge_one' {a : ℝ} : 1 ≤ (binomialSeries' a).radius := by
---   apply le_of_forall_ge_of_dense
---   intro r hr
---   cases' r with r <;> simp at hr
---   by_cases hr_pos : r = 0
---   · simp [hr_pos]
---   replace hr_pos : 0 < r := lt_of_le_of_ne (zero_le r) (by solve_by_elim)
---   apply FormalMultilinearSeries.le_radius_of_isBigO
---   have : ∃ M : ℕ, |a| * r < M * (1 - r) := by
---     conv => arg 1; ext M; rw [← div_lt_iff₀ (by simpa)]
---     apply exists_nat_gt
---   obtain ⟨M, hM⟩ := this
---   have : ∀ k, increasing_factorial |a| (M + k) / (M + k).factorial * r^k ≤
---       increasing_factorial |a| M / M.factorial := by
---     intro k
---     induction k with
---     | zero => simp
---     | succ l ih =>
---       simp [increasing_factorial, Nat.factorial, pow_succ] at ih ⊢
---       convert_to increasing_factorial |a| (M + l) / ↑(M + l)! * ↑r ^ l * (r * (|a| + (↑M + ↑l)) / (↑M + ↑l + 1)) ≤ increasing_factorial |a| M / ↑M !
---       · simp only [div_eq_mul_inv, mul_inv_rev]
---         ring_nf
---       trans
---       swap
---       · exact ih
---       apply mul_le_of_le_one_right
---       · apply mul_nonneg
---         · apply div_nonneg
---           · apply increasing_factorial_nonneg
---             simp
---           · simp
---         · simp
---       rw [div_le_one (by linarith)]
---       ring_nf at hM ⊢
---       have : (r : ℝ) * l ≤ l := by -- for linarith
---         apply mul_le_of_le_one_left
---         · simp
---         · simp
---           exact hr.le
---       linarith
---   apply Asymptotics.IsBigO.of_bound (c := r^M * increasing_factorial |a| M / ↑M.factorial)
---   simp [binomialSeries']
---   use M
---   intro b hb
---   replace hb := Nat.exists_eq_add_of_le hb
---   obtain ⟨k, hk⟩ := hb
---   subst hk
---   trans ‖binomialCoef' a (M + k)‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin ℝ (M + k) ℝ‖ * ↑r ^ (M + k)
---   · rw [mul_le_mul_right]
---     · apply ContinuousMultilinearMap.opNorm_smul_le
---     · apply pow_pos
---       simpa
---   simp [pow_add, div_eq_mul_inv]
---   move_mul [r.toReal^M, r.toReal^M]
---   apply mul_le_mul_of_nonneg_right _ (by simp)
---   simp [binomialCoef', abs_div]
---   trans increasing_factorial |a| (M + k) * (↑(M + k)!)⁻¹ * ↑r ^ k
---   · simp only [div_eq_mul_inv]
---     rw [mul_le_mul_right, mul_le_mul_right]
---     · exact decreasing_factorial_bound
---     · simp
---       linarith [Nat.factorial_pos (M + k)]
---     · apply pow_pos
---       simpa
---   simp only [div_eq_mul_inv] at this ⊢
---   apply this
 
 open ContinuousLinearMap FormalMultilinearSeries
 
@@ -267,7 +171,7 @@ theorem binomialSeries_ODE {a : ℝ} :
   cases n with
   | zero =>
     simp [FormalMultilinearSeries.unshift]
-    simp [binomialSeries, binomialCoef, decreasing_factorial]
+    simp [binomialSeries, binomialCoef]
     apply ContinuousMultilinearMap.ext
     intro m
     simp [h_deriv_coeff]
@@ -291,10 +195,11 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [mul_assoc, mul_eq_mul_left_iff]
     left
     simp [h_coeff, h_deriv_coeff]
-    simp [binomialCoef]
-    conv => rhs; arg 1; simp [decreasing_factorial]
+    simp [binomialCoef, Ring.choose_eq_div]
+    conv => rhs; arg 1; simp [descPochhammer_succ_right,  Polynomial.smeval_mul,
+      Polynomial.smeval_natCast]
     rw [add_comm 1 k]
-    trans decreasing_factorial a (k + 1) * ((a - (1 + ↑k)) / ↑(k + 1 + 1)! * (1 + ↑k + 1) +
+    trans (descPochhammer ℤ (k + 1)).smeval a * ((a - (1 + ↑k)) / ↑(k + 1 + 1)! * (1 + ↑k + 1) +
         1 / ↑(k + 1)! * (↑k + 1))
     swap
     · ring_nf
@@ -490,7 +395,7 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) : Set.EqOn (
     rw [tsum_eq_zero_add']
     · simp
       unfold FormalMultilinearSeries.coeff binomialSeries
-      simp [binomialCoef, decreasing_factorial] -- rewrite with simp lemmas about binomialCoef?
+      simp [binomialCoef]
     · simp
       exact summable_zero
   rcases lt_trichotomy ε 1 with (hε' | hε' | hε')
