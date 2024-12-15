@@ -1,87 +1,54 @@
-import Mathlib
+/-
+Copyright (c) 2024 Justus Springer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Justus Springer
+-/
+import Mathlib.Algebra.Category.Ring.BinaryCoproducts
+import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Countable
 
-open CategoryTheory Limits Opposite CommRingCat
+/-!
+# Chosen finite products in the category of affine schemes.
+
+The category of affine schemes is known to have all limits and colimits, see
+`AffineScheme.lean`. In this file, we construct a `ChosenFiniteProducts`
+instance on the category of affine schemes using the tensor product. This gives
+us access to a `MonoidalCategory` instance with good definitional properties:
+In particluar, the product `X ⊗ Y` of two affine schemes is definitionally
+equal to the spectrum of the tensor product of the global section rings of `X`
+and `Y`, see `AffineScheme.tensorObj`, while the tensor unit `𝟙_ AffineScheme`
+is definitionally equal to $Spec(ℤ)$, see `AffineScheme.tensorUnit`.
+
+## Implementation notes
+
+The terminal object $Spec(ℤ)$ naturally lives in `Type 0`, because `ℤ` does. To
+have good definitional properties in all type universes, we provide one
+instance for type universe zero, and one lower priority universe-polymorphic
+instance, which includes `ULift`s.
+
+-/
+
+universe u
 
 noncomputable section
 
-section TensorProduct
-open scoped TensorProduct
-
-universe u
-
-variable (A B : CommRingCat.{u})
-
-@[simps! pt ι]
-def tensorProductCocone : BinaryCofan A B :=
-BinaryCofan.mk 
-  (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-  (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
-
-@[simp]
-theorem tensorProductCocone_inl : (tensorProductCocone A B).inl =
-  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
-
-@[simp]
-theorem tensorProductCocone_inr : (tensorProductCocone A B).inr =
-  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
-
-@[simps]
-def tensorProductColimit : IsColimit (tensorProductCocone A B) where
-  desc (s : BinaryCofan A B) :=
-    ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom 
-      (fun _ _ => by apply Commute.all)).toRingHom
-  fac (s : BinaryCofan A B) := by
-    rintro ⟨j⟩
-    cases j <;> ext a
-    · simp only [forget_obj, pair_obj_left, tensorProductCocone_pt, Functor.const_obj_obj,
-        BinaryCofan.ι_app_left, pair_obj_right, AlgHom.toRingHom_eq_coe, CommRingCat.comp_apply,
-        coe_of]
-      erw [Algebra.TensorProduct.lift_tmul (hfg := fun _ _ => by apply Commute.all)]
-      rw [map_one, mul_one]
-      rfl
-    · simp only [forget_obj, pair_obj_right, tensorProductCocone_pt, Functor.const_obj_obj,
-        BinaryCofan.ι_app_right, pair_obj_left, AlgHom.toRingHom_eq_coe, CommRingCat.comp_apply,
-        coe_of]
-      erw [Algebra.TensorProduct.lift_tmul (hfg := fun _ _ => by apply Commute.all)]
-      rw [map_one, one_mul]
-      rfl
-  uniq (s : BinaryCofan A B) := by
-    rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
-    apply CommRingCat.hom_ext
-    apply RingHom.toIntAlgHom_injective
-    apply Algebra.TensorProduct.liftEquiv.symm.injective
-    apply Subtype.ext
-    rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
-    constructor
-    · ext a
-      dsimp
-      rw [map_one, mul_one]
-      have : _ = s.inl := hm (Discrete.mk WalkingPair.left)
-      rw [←this]
-      rfl
-    · ext b
-      dsimp
-      rw [map_one, one_mul]
-      have : _ = s.inr := hm (Discrete.mk WalkingPair.right)
-      rw [←this]
-      rfl
-
-def tensorProductColimitCocone : Limits.ColimitCocone (pair A B) :=
-⟨_, tensorProductColimit A B⟩
-
-end TensorProduct
-
-section AffineScheme
-
 open AlgebraicGeometry hiding Spec 
-open AffineScheme
+open AffineScheme CategoryTheory Limits Opposite CommRingCat
+open scoped MonoidalCategory TensorProduct
 
-universe u
+namespace AffineScheme
 
+section
 variable (X Y : AffineScheme.{u})
 
-def chosen_finite_products_aux : Cone ((pair (Γ.obj (op X)) (Γ.obj (op Y))).op ⋙ Spec) ≌
-  Cone (pair X Y) := 
+/-- The category of binary fans over `X` and `Y` (cones over `pair X Y`) is
+equivalent to the category of cones over `(pair (Γ.obj (op X)) (Γ.obj (op
+Y))).op ⋙ Spec`. This is needed in the `ChosenFiniteProducts` instance, since
+we construct our limit cone by applying Spec to the colimit cocone given by the
+tensor product `Γ.obj (op X) ⊗[ℤ] Γ.obj (op Y))`. -/
+def chosen_finite_products_aux :
+    Cone ((pair (Γ.obj (op X)) (Γ.obj (op Y))).op ⋙ Spec) ≌ BinaryFan X Y := 
   (Cones.whiskeringEquivalence (Discrete.opposite _)).symm.trans <| Cones.postcomposeEquivalence <|
     isoWhiskerLeft (Discrete.opposite WalkingPair).inverse 
       (isoWhiskerRight (NatIso.op (pairComp (Γ.obj (op X)) (Γ.obj (op Y)) Spec.rightOp)).symm 
@@ -89,13 +56,23 @@ def chosen_finite_products_aux : Cone ((pair (Γ.obj (op X)) (Γ.obj (op Y))).op
     Discrete.natIso (fun ⟨j⟩ => by cases j <;> rfl) ≪≫
     mapPairIso X.isoSpec.symm Y.isoSpec.symm
 
-instance AffineScheme.ChosenFiniteProducts : ChosenFiniteProducts AffineScheme.{u} where
+instance : ChosenFiniteProducts AffineScheme.{0} where
   product (X Y : AffineScheme) := ⟨_, IsLimit.ofPreservesConeTerminal
     (chosen_finite_products_aux X Y).functor <|
     isLimitOfPreserves Spec <| IsColimit.op <| tensorProductColimit (Γ.obj (op X)) (Γ.obj (op Y))⟩
-  terminal := ⟨_,AffineScheme.isTerminal⟩
+  terminal := ⟨_, AffineScheme.specZIsTerminal⟩
 
-open scoped MonoidalCategory
-example : X ⊗ Y = Spec.obj (op (of (TensorProduct ℤ (Γ.obj (op X)) (Γ.obj (op Y))))) := rfl
+instance (priority := 100) : ChosenFiniteProducts AffineScheme.{u} where
+  product (X Y : AffineScheme) := ⟨_, IsLimit.ofPreservesConeTerminal
+    (chosen_finite_products_aux X Y).functor <|
+    isLimitOfPreserves Spec <| IsColimit.op <| tensorProductColimit (Γ.obj (op X)) (Γ.obj (op Y))⟩
+  terminal := ⟨_, AffineScheme.isTerminal⟩
+
+lemma tensorObj : X ⊗ Y = Spec.obj (op (of (Γ.obj (op X) ⊗[ℤ] Γ.obj (op Y)))) := rfl
+
+lemma tensorUnit_ULift : 𝟙_ AffineScheme.{u} = Spec.obj (op (of (ULift.{u} ℤ))) := rfl
+
+lemma tensorUnit : 𝟙_ AffineScheme.{0} = Spec.obj (op (of ℤ)) := rfl
+end
 
 end AffineScheme
