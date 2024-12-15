@@ -88,7 +88,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `RingTheory.Jacobson`.
+in the file `Mathlib.RingTheory.Jacobson.Polynomial`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
     ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp
@@ -138,24 +138,24 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
   · intro hx
     rw [hx, RingHom.map_zero]
 
-/-- If `P` lies over `p`, then `R / p` has a canonical map to `S / P`. -/
-def Quotient.algebraQuotientOfLEComap (h : p ≤ comap f P) : Algebra (R ⧸ p) (S ⧸ P) :=
-  RingHom.toAlgebra <| quotientMap _ f h
+variable [Algebra R S]
 
 /-- `R / p` has a canonical map to `S / pS`. -/
-instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) :=
+instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map (algebraMap R S) p) :=
   Ideal.Quotient.algebraQuotientOfLEComap le_comap_map
 
 @[simp]
 theorem Quotient.algebraMap_quotient_map_quotient (x : R) :
+    letI f := algebraMap R S
     algebraMap (R ⧸ p) (S ⧸ map f p) (Ideal.Quotient.mk p x) =
     Ideal.Quotient.mk (map f p) (f x) :=
   rfl
 
 @[simp]
 theorem Quotient.mk_smul_mk_quotient_map_quotient (x : R) (y : S) :
+    letI f := algebraMap R S
     Quotient.mk p x • Quotient.mk (map f p) y = Quotient.mk (map f p) (f x * y) :=
-  rfl
+  Algebra.smul_def _ _
 
 instance Quotient.tower_quotient_map_quotient [Algebra R S] :
     IsScalarTower R (R ⧸ p) (S ⧸ map (algebraMap R S) p) :=
@@ -164,7 +164,7 @@ instance Quotient.tower_quotient_map_quotient [Algebra R S] :
       Quotient.mk_algebraMap]
 
 instance QuotientMapQuotient.isNoetherian [Algebra R S] [IsNoetherian R S] (I : Ideal R) :
-    IsNoetherian (R ⧸ I) (S ⧸ Ideal.map (algebraMap R S) I) :=
+    IsNoetherian (R ⧸ I) (S ⧸ I.map (algebraMap R S)) :=
   isNoetherian_of_tower R <|
     isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R _).toLinearMap <|
       LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective

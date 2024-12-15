@@ -3,13 +3,14 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Multisets
@@ -412,7 +413,7 @@ section ToList
 
 /-- Produces a list of the elements in the multiset using choice. -/
 noncomputable def toList (s : Multiset α) :=
-  s.out'
+  s.out
 
 @[simp, norm_cast]
 theorem coe_toList (s : Multiset α) : (s.toList : Multiset α) = s :=
@@ -664,10 +665,7 @@ theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
 
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/
-def card : Multiset α →+ ℕ where
-  toFun s := (Quot.liftOn s length) fun _l₁ _l₂ => Perm.length_eq
-  map_zero' := rfl
-  map_add' s t := Quotient.inductionOn₂ s t length_append
+def card (s : Multiset α) : ℕ := Quot.liftOn s length fun _l₁ _l₂ => Perm.length_eq
 
 @[simp]
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
@@ -681,11 +679,18 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
 theorem card_zero : @card α 0 = 0 :=
   rfl
 
-theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
-  card.map_add s t
+@[simp] lemma card_add (s t : Multiset α) : card (s + t) = card s + card t :=
+  Quotient.inductionOn₂ s t length_append
 
-theorem card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := by
-  rw [card.map_nsmul s n, Nat.nsmul_eq_mul]
+/-- `Multiset.card` bundled as a monoid hom. -/
+@[simps]
+def cardHom : Multiset α →+ ℕ where
+  toFun := card
+  map_zero' := card_zero
+  map_add' := card_add
+
+@[simp]
+lemma card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := cardHom.map_nsmul ..
 
 @[simp]
 theorem card_cons (a : α) (s : Multiset α) : card (a ::ₘ s) = card s + 1 :=
@@ -1719,15 +1724,10 @@ def filter (s : Multiset α) : Multiset α :=
 theorem filter_zero : filter p 0 = 0 :=
   rfl
 
-#adaptation_note
-/--
-Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
--/
-set_option linter.deprecated false in
 @[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
-  Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
+  Quot.inductionOn s fun _l h => congr_arg ofList <| List.filter_congr <| by simpa using h
 
 @[simp]
 theorem filter_add (s t : Multiset α) : filter p (s + t) = filter p s + filter p t :=
@@ -1860,7 +1860,7 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
   · simp only [add_zero]
   · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, or_comm]
   · simp only [Bool.not_eq_true, decide_eq_true_eq, Bool.eq_false_or_eq_true,
-      decide_True, implies_true, Decidable.em]
+      decide_true, implies_true, Decidable.em]
 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl

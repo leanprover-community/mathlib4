@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Sqrt
-import Mathlib.RingTheory.Algebraic
-import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -25,7 +25,7 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 -/
 
 
-open Rat Real multiplicity
+open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
 def Irrational (x : ℝ) :=
@@ -79,7 +79,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   rw [← Int.cast_pow, Int.cast_inj] at hxr
   subst m
   have : y ≠ 0 := by rintro rfl; rw [zero_pow hnpos.ne'] at hm; exact hm rfl
-  rw [(Int.multiplicity_finite_iff.2 ⟨by simp [hp.1.ne_one], this⟩).multiplicity_pow
+  rw [(Int.finiteMultiplicity_iff.2 ⟨by simp [hp.1.ne_one], this⟩).multiplicity_pow
     (Nat.prime_iff_prime_int.1 hp.1), Nat.mul_mod_right] at hv
   exact hv rfl
 
@@ -449,8 +449,6 @@ theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
 end Irrational
 
 section Polynomial
-
-open Polynomial
 
 open Polynomial
 

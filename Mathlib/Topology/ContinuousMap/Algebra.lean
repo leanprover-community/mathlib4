@@ -617,6 +617,13 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
 
+/-- Evaluation at a point, as a continuous linear map. -/
+@[simps apply]
+def evalCLM (x : α) : C(α, M) →L[R] M where
+  toFun f := f x
+  map_add' _ _ := add_apply _ _ x
+  map_smul' _ _ := smul_apply _ _ x
+
 end ContinuousMap
 
 end ModuleStructure
@@ -760,8 +767,8 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine ⟨f', f'.prop, ?_, ?_⟩
-  · simp [f']
-  · simp [f', inv_mul_cancel_right₀ hxy]
+  · simp [a, b, f']
+  · simp [a, b, f', inv_mul_cancel_right₀ hxy]
 
 end ContinuousMap
 

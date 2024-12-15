@@ -1,4 +1,5 @@
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Util.ParseCommand
 
 /-- info: No tags found. -/
 #guard_msgs in
@@ -29,6 +30,21 @@ example : True := .intro
 
 @[stacks 0X14 "I can also have a comment"]
 example : True := .intro
+
+@[stacks 0BR2, stacks 0X14 "I can also have a comment"]
+example : True := .intro
+
+@[stacks 0X14 "I can also have a comment"]
+example : True := .intro
+
+/-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
+#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05"
+
+/-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
+#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05b"
+
+/-- info: 0BD5 -/
+#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "0BD5"
 
 /--
 info:
