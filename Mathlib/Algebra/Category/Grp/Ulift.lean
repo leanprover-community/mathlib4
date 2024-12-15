@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.Algebra.Module.CharacterModule
@@ -166,8 +167,8 @@ end AddCommGroup
 
 namespace AddCommGrp
 
-variable {J : Type w} [Category.{w'} J] {K : J ⥤ AddCommGrp.{u}} {c : Cocone K}
-  {lc : Cocone (K ⋙ AddCommGrp.uliftFunctor.{v,u})} (hc : IsColimit c)
+variable {J : Type w} [Category.{w'} J] {K : J ⥤ AddCommGrp.{u}} {c : Cocone K} (hc : IsColimit c)
+  {lc : Cocone (K ⋙ AddCommGrp.uliftFunctor.{v,u})}
 
 variable {A A' : Type} [AddCommGroup A] [AddCommGroup A']
 
@@ -259,28 +260,17 @@ lemma descCharFamily_comp (g : ((i : ι) → B i) →+ A) :
   conv_lhs => erw [descChar_fac hc (f i) j a]
   rfl
 
-abbrev truc (C : Type*) [AddCommGroup C] :
-    C →+ ((_ : CharacterModule C) → AddCircle (1 : ℚ)) where
-  toFun a c := c a
-  map_zero' := by ext _; simp
-  map_add' _ _ := by ext _; simp
-
-lemma truc_injective (C : Type*) [AddCommGroup C] : Function.Injective (truc C) := by
-  refine (injective_iff_map_eq_zero _).mpr (fun a ha ↦ CharacterModule.eq_zero_of_character_apply
-    (fun c ↦ ?_))
-  apply_fun (fun f ↦ f c) at ha
-  exact ha
-
 variable (lc)
 
+open CharacterModule in
 noncomputable def descHom : c.pt →+ lc.pt := by
-  set u : lc.pt →+ ((c : CharacterModule lc.pt) → AddCircle (1 : ℚ)) := truc lc.pt
+  set u : lc.pt →+ ((c : CharacterModule lc.pt) → AddCircle (1 : ℚ)) := hom_to_pi lc.pt
   set u' := descCharFamily hc (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ))
     (fun c ↦ c) with hdef'
   set π := (QuotientAddGroup.mk' (AddMonoidHom.range u)) with hπ
   have h : u.range = π.ker := (QuotientAddGroup.ker_mk' _).symm
   have h' : π.comp u' = 0 := by
-    refine CharacterModule.hom_eq_zero_of_character_apply (fun c ↦ ?_)
+    refine hom_eq_zero_of_character_apply (fun c ↦ ?_)
     rw [← AddMonoidHom.comp_assoc, ← descCharFamily_comp hc
       (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) (fun c ↦ c)]
     convert descChar_zero_eq_zero hc
@@ -289,18 +279,17 @@ noncomputable def descHom : c.pt →+ lc.pt := by
     rw [(AddMonoidHom.range_le_ker_iff _ _).mp (le_of_eq h), c.comp_zero,
       AddMonoidHom.zero_apply]
   rw [← AddMonoidHom.range_le_ker_iff, ← h] at h'
-  exact (AddMonoidHom.ofInjective (truc_injective lc.pt)).symm.toAddMonoidHom.comp
+  exact (AddMonoidHom.ofInjective (hom_to_pi_injective lc.pt)).symm.toAddMonoidHom.comp
     ((AddSubgroup.inclusion h').comp (AddMonoidHom.rangeRestrict u'))
 
-variable {lc}
-
-lemma descHom_property (χ : lc.pt →+ AddCircle (1 : ℚ)) : χ.comp (descHom lc hc) =
+open CharacterModule in
+lemma descHom_property (χ : lc.pt →+ AddCircle (1 : ℚ)) : χ.comp (descHom hc lc) =
     descChar hc χ := by
   change ((Pi.evalAddMonoidHom (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) χ).comp
-    (truc lc.pt)).comp (descHom lc hc) = _
+    (hom_to_pi lc.pt)).comp (descHom hc lc) = _
   refine AddMonoidHom.ext (fun a ↦ ?_)
   conv_lhs => rw [AddMonoidHom.comp_assoc, AddMonoidHom.comp_apply]
-  erw [AddMonoidHom.apply_ofInjective_symm (f := truc lc.pt) (truc_injective lc.pt),
+  erw [AddMonoidHom.apply_ofInjective_symm (hom_to_pi_injective lc.pt),
     AddMonoidHom.coe_rangeRestrict]
   conv_lhs => erw [← AddMonoidHom.comp_apply (Pi.evalAddMonoidHom (fun x ↦ AddCircle 1) χ)
                 (descCharFamily hc (fun x ↦ AddCircle 1) fun c ↦ c)]
@@ -308,17 +297,17 @@ lemma descHom_property (χ : lc.pt →+ AddCircle (1 : ℚ)) : χ.comp (descHom 
   rfl
 
 lemma descHom_fac (j : J) (a : K.obj j) :
-    descHom lc hc (c.ι.app j a) = lc.ι.app j {down := a} := by
+    descHom hc lc (c.ι.app j a) = lc.ι.app j {down := a} := by
   rw [← add_neg_eq_zero]
   refine CharacterModule.eq_zero_of_character_apply (fun χ ↦ ?_)
   rw [χ.map_add]
-  change (χ.comp ((descHom lc hc).comp (c.ι.app j))) a + _ = 0
+  change (χ.comp ((descHom hc lc).comp (c.ι.app j))) a + _ = 0
   rw [← AddMonoidHom.comp_assoc, descHom_property]
   erw [descChar_fac]
   simp
 
 lemma descHom_uniq (m : c.pt →+ lc.pt) (hm : ∀ (j : J) (a : K.obj j),
-    m (c.ι.app j a) = lc.ι.app j {down := a}) : m = descHom lc hc := by
+    m (c.ι.app j a) = lc.ι.app j {down := a}) : m = descHom hc lc := by
   rw [← add_neg_eq_zero]
   refine CharacterModule.hom_eq_zero_of_character_apply (fun χ ↦ ?_)
   rw [AddMonoidHom.comp_add, AddMonoidHom.comp_neg, descHom_property, add_neg_eq_zero]
@@ -327,5 +316,31 @@ lemma descHom_uniq (m : c.pt →+ lc.pt) (hm : ∀ (j : J) (a : K.obj j),
     uliftFunctor_obj, coe_of]
   erw [hm j a]
   rfl
+
+/--
+The functor `AddCommGr.uliftFunctor.{v,u} : AddCommGrp.{u} ⥤ AddCommGrp.{max v u}`
+preserves colimits of arbitrary size.
+-/
+noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
+  preservesColimitsOfShape {J _} :=
+  { preservesColimit := fun {F} ↦
+    { preserves := fun {c} hc ↦ ⟨{
+        desc := fun lc ↦ AddCommGrp.ofHom ((descHom hc lc).comp AddEquiv.ulift.toAddMonoidHom)
+        fac := fun lc j ↦ by ext ⟨⟩; erw [← descHom_fac hc lc j]; rfl
+        uniq := fun lc f hf ↦ by
+          apply (AddMonoidHom.precompEquiv AddEquiv.ulift.symm _).injective
+          refine descHom_uniq hc lc (f.comp AddEquiv.ulift.symm.toAddMonoidHom) (fun j a ↦ ?_)
+          simp only [Functor.mapCocone_pt, uliftFunctor_obj, coe_of, AddEquiv.toAddMonoidHom_eq_coe,
+            Functor.const_obj_obj, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply,
+            Functor.comp_obj]
+          rw [← hf j]
+          rfl }⟩ } }
+
+/--
+The functor `AddCommGrp.uliftFunctor.{v,u} : AddCommGrp.{u} ⥤ AddCommGrp.{max v u}`
+creates `u`-small colimits.
+-/
+noncomputable instance : CreatesColimitsOfSize.{u, u} uliftFunctor.{v, u} where
+  CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
 
 end AddCommGrp

@@ -199,7 +199,20 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
 lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0) : a = 0 := by
   contrapose! h; exact exists_character_apply_ne_zero_of_ne_zero h
 
-variable {A'}
+variable (A)
+
+def hom_to_pi : A →+ (_ : CharacterModule A) → AddCircle (1 : ℚ) where
+  toFun a c := c a
+  map_zero' := by ext _; simp
+  map_add' _ _ := by ext _; simp
+
+lemma hom_to_pi_injective : Function.Injective (hom_to_pi A) := by
+  refine (injective_iff_map_eq_zero _).mpr (fun a ha ↦ CharacterModule.eq_zero_of_character_apply
+    (fun c ↦ ?_))
+  apply_fun (fun f ↦ f c) at ha
+  exact ha
+
+variable {A A'}
 
 lemma hom_eq_zero_of_character_apply {f : A →+ A'}
     (h : ∀ (c : CharacterModule A'), c.comp f = 0) : f = 0 := by
