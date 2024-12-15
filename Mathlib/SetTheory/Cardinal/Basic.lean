@@ -1881,6 +1881,15 @@ theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α
     lift.{u} #(f '' s) = lift.{v} #s :=
   mk_image_eq_of_injOn_lift _ _ h.injOn
 
+@[simp]
+theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
+    lift.{u} #(f '' s) = lift.{v} #s :=
+  mk_image_eq_lift _ _ f.injective
+
+@[simp]
+theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
+  simpa using mk_image_embedding_lift f s
+
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
     #(⋃ i, f i) ≤ #(Σi, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
