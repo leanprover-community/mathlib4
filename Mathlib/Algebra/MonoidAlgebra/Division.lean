@@ -83,13 +83,13 @@ theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ
 @[simps]
 noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
   toFun g :=
-    { toFun := fun x => divOf x (Multiplicative.toAdd g)
+    { toFun := fun x => divOf x g.toAdd
       map_zero' := zero_divOf _
-      map_add' := fun x y => add_divOf x y (Multiplicative.toAdd g) }
+      map_add' := fun x y => add_divOf x y g.toAdd }
   map_one' := AddMonoidHom.ext divOf_zero
   map_mul' g₁ g₂ :=
     AddMonoidHom.ext fun _x =>
-      (congr_arg _ (add_comm (Multiplicative.toAdd g₁) (Multiplicative.toAdd g₂))).trans
+      (congr_arg _ (add_comm g₁.toAdd g₂.toAdd)).trans
         (divOf_add _ _ _)
 
 theorem of'_mul_divOf (a : G) (x : k[G]) : of' k G a * x /ᵒᶠ a = x := by
