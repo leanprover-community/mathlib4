@@ -254,11 +254,9 @@ protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsC
   exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
 
 @[simp]
-lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle := by
-  refine ⟨?_, fun h ↦ h.reverse⟩
-  intro h
-  rw [← reverse_reverse p]
-  exact h.reverse
+lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
+  mp h := by simpa using h.reverse
+  mpr := .reverse
 
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : p.tail.IsPath := by
   rw [Walk.isPath_def] at hp ⊢
