@@ -189,8 +189,8 @@ instance : Preorder PSet where
   le_refl := refl_of (· ⊆ ·)
   le_trans _ _ _ := trans_of (· ⊆ ·)
 
-instance : HasSSubset PSet :=
-  ⟨(· < ·)⟩
+-- TODO: add lemmas relating `⊂` to `∈`.
+instance : HasSSubset PSet := ⟨(· < ·)⟩
 
 @[simp]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
@@ -833,8 +833,8 @@ instance : PartialOrder ZFSet where
   le_trans _ _ _ := trans_of (· ⊆ ·)
   le_antisymm _ _ := antisymm_of (· ⊆ ·)
 
-instance : HasSSubset ZFSet :=
-  ⟨(· < ·)⟩
+-- TODO: add lemmas relating `⊂` to `∈`.
+instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 
 @[simp]
 theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
