@@ -195,7 +195,7 @@ theorem le_succ_rank_sUnion (x : ZFSet) : rank x ≤ succ (rank (⋃₀ x)) := b
   exists z
 
 @[simp]
-theorem rank_range {α : Type u} (f : α → ZFSet.{max u v}) :
+theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
     rank (range f) = ⨆ i, succ (rank (f i)) := by
   apply (Ordinal.iSup_le _).antisymm'
   · simpa [rank_le_iff, ← succ_le_iff] using Ordinal.le_iSup _
