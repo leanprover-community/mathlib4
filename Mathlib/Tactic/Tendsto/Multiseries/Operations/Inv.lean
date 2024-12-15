@@ -134,7 +134,7 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
       obtain ⟨fC, h_coef, _, h_tl⟩ := Approximates_cons h_approx
       have hC_ne_zero : ∀ᶠ t in atTop, fC t ≠ 0 :=
-        eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
+        eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
           (h_basis.tail)
       have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
         basis_head_eventually_pos h_basis

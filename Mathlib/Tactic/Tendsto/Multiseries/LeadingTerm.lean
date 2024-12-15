@@ -67,11 +67,11 @@ theorem zero_of_leadingTerm_zero_coef {basis : Basis} {ms : PreMS basis} (h_trim
     simp [leadingTerm] at h
     replace h_trimmed := Trimmed_cons h_trimmed
     have : coef = zero _ := zero_of_leadingTerm_zero_coef h_trimmed.left h
-    simp [this, zero_FlatZero] at h_trimmed
+    simp [this] at h_trimmed
 
-/-- If `ms` is not flat zero, then eventually `ms.leadingTerm.toFun` is non-zero. -/
+/-- If `ms` is not zero, then eventually `ms.leadingTerm.toFun` is non-zero. -/
 theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
-    (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ ms.FlatZero)
+    (h_trimmed : ms.Trimmed) (h_ne_zero : ms ≠ zero _)
     (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, ms.leadingTerm.toFun basis t ≠ 0 := by
   cases basis with
@@ -80,10 +80,8 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     simp [Term.toFun]
     use default
     intros
-    intro
-    absurd h_ne_zero
-    constructor
-    assumption
+    intro h
+    simp [h, zero] at h_ne_zero
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
     · absurd h_ne_zero
@@ -114,7 +112,7 @@ mutual
       (h_coef : coef.Approximates fC)
       (h_coef_wo : coef.WellOrdered)
       (h_coef_trimmed : coef.Trimmed)
-      (h_coef_ne_zero : ¬coef.FlatZero)
+      (h_coef_ne_zero : coef ≠ zero _)
       (h_tl : tl.Approximates (fun t ↦ f t - (basis_hd t)^exp * fC t))
       (h_comp : leadingExp tl < ↑exp)
       (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
@@ -229,10 +227,10 @@ theorem eventually_pos_of_coef_pos {basis : Basis} {ms : PreMS basis} {f : ℝ �
   apply eventually_pos_of_IsEquivallent (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)
   exact Term.toFun_pos h_basis h_pos
 
-/-- If `f` is approximated by `ms`, and `ms` is not flat zero, then
+/-- If `f` is approximated by `ms`, and `ms` is not zero, then
 `f` is eventually non-zero. -/
-theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_ne_zero : ¬ ms.FlatZero) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
+theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+    (h_ne_zero : ms ≠ zero _) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis):
     ∀ᶠ t in atTop, f t ≠ 0 := by
   have := IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis

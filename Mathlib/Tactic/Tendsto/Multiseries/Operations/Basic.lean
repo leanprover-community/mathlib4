@@ -182,19 +182,17 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : 
           exact hf_eq
         · exact hX_tl
 
-theorem mulConst_not_FlatZero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ¬ ms.FlatZero)
-    (hc : c ≠ 0) : ¬ (ms.mulConst c).FlatZero := by
+theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ms ≠ zero _)
+    (hc : c ≠ 0) : (ms.mulConst c) ≠ zero _ := by
   contrapose! h_ne_zero
   cases basis with
   | nil =>
-    simp [mulConst] at h_ne_zero
-    cases' h_ne_zero with _ h_ne_zero
-    constructor
-    · exact eq_zero_of_ne_zero_of_mul_right_eq_zero hc h_ne_zero
+    simp [mulConst, zero] at h_ne_zero ⊢
+    tauto
   | cons =>
     cases' ms with exp coef tl
-    · constructor
-    simp [FlatZero_cons] at h_ne_zero
+    · rfl
+    simp [zero] at h_ne_zero
 
 theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed : ms.Trimmed)
     (hc : c ≠ 0) :
@@ -209,7 +207,7 @@ theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed
     apply Trimmed_cons at h_trimmed
     constructor
     · exact mulConst_Trimmed h_trimmed.left hc
-    · exact mulConst_not_FlatZero h_trimmed.right hc
+    · exact mulConst_not_zero h_trimmed.right hc
 
 theorem mulConst_leadingTerm {basis : Basis} {ms : PreMS basis} {c : ℝ} :
     (ms.mulConst c).leadingTerm = ⟨ms.leadingTerm.coef * c, ms.leadingTerm.exps⟩ := by

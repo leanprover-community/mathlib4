@@ -130,7 +130,7 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
         match ← compareReal coef with
         | .pos pf =>
           let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.pos_not_FlatZero $pf)
+          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_lt $pf))
           return {
             val := ms_extracted
             h_wo := h_extracted_wo
@@ -140,7 +140,7 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
           }
         | .neg pf =>
           let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.neg_not_FlatZero $pf)
+          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_gt $pf))
           return {
             val := ms_extracted
             h_wo := h_extracted_wo
@@ -171,7 +171,7 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
             h_trimmed := tl_trimmed.h_trimmed
           }
         | ~q(PreMS.cons $coef_hd $coef_tl) =>
-          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef_trimmed.val) := q(PreMS.FlatZero_cons)
+          let h_coef_ne_zero : Q($coef_trimmed.val ≠ PreMS.zero _) := q(PreMS.noConfusion_zero)
           return {
             val := q(PreMS.cons ($exp, $coef_trimmed.val) $tl)
             h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
@@ -249,7 +249,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
         match ← compareReal coef with
         | .pos pf =>
           let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.pos_not_FlatZero $pf)
+          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_lt $pf))
           return {
             val := ms_extracted
             h_wo := h_extracted_wo
@@ -259,7 +259,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
           }
         | .neg pf =>
           let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.neg_not_FlatZero $pf)
+          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_gt $pf))
           return {
             val := ms_extracted
             h_wo := h_extracted_wo
@@ -290,7 +290,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
             h_trimmed := tl_trimmed.h_trimmed
           }
         | ~q(PreMS.cons $coef_hd $coef_tl) =>
-          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef_trimmed.val) := q(PreMS.FlatZero_cons)
+          let h_coef_ne_zero : Q($coef_trimmed.val ≠ PreMS.zero _) := q(PreMS.noConfusion_zero)
           return {
             val := q(PreMS.cons ($exp, $coef_trimmed.val) $tl)
             h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
