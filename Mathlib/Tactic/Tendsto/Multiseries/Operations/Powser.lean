@@ -5,6 +5,7 @@ Authors: Vasily Nesterov
 -/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.OfScalars
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
@@ -49,26 +50,18 @@ noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Ba
 
 -- theorems
 
-noncomputable def coeff (s : LazySeries) (n : ℕ) :=
-  match s.get? n with
-  | .none => 0
-  | .some c => c • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
+noncomputable def coeff (s : LazySeries) (n : ℕ) : ℝ :=
+  (s.get? n).getD 0
 
 noncomputable def toFormalMultilinearSeries (s : LazySeries) : FormalMultilinearSeries ℝ ℝ ℝ :=
-  s.coeff
+  .ofScalars ℝ (coeff s)
 
 theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} :
     s.toFormalMultilinearSeries.coeff n = (s.get? n).getD 0 := by
-  unfold FormalMultilinearSeries.coeff
-  simp only [toFormalMultilinearSeries, coeff]
-  generalize Seq.get? s n = t? at *
-  cases t? with
-  | none => simp
-  | some t =>
-    simp
-    rw [List.prod_eq_one] -- cringe
-    · simp
-    · simp [List.forall_mem_ofFn_iff]
+  unfold FormalMultilinearSeries.coeff toFormalMultilinearSeries
+  eta_expand
+  simp_rw [Pi.one_apply, FormalMultilinearSeries.ofScalars_apply_eq, coeff]
+  simp
 
 theorem toFormalMultilinearSeries_norm {s : LazySeries} {n : ℕ} :
     ‖(s.toFormalMultilinearSeries) n‖ = |(s.get? n).getD 0| := by
@@ -128,7 +121,7 @@ theorem toFun_nil : toFun Seq.nil = 0 := by
   simp [toFun]
   unfold toFormalMultilinearSeries coeff
   simp
-  unfold FormalMultilinearSeries.sum
+  unfold FormalMultilinearSeries.ofScalars FormalMultilinearSeries.sum
   simp
   rfl
 
@@ -166,7 +159,7 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
     rw [tsum_eq_zero_add']
     · simp
       unfold toFormalMultilinearSeries
-      simp [FormalMultilinearSeries.coeff, coeff]
+      simp [FormalMultilinearSeries.ofScalars, FormalMultilinearSeries.coeff, coeff]
     · simp
       exact summable_zero
   conv =>
@@ -765,7 +758,7 @@ theorem zeros_get {n : ℕ} : zeros.get? n = .some 0 := by
 
 theorem zeros_toFun : zeros.toFun = 0 := by
   simp [toFun, toFormalMultilinearSeries]
-  unfold FormalMultilinearSeries.sum
+  unfold FormalMultilinearSeries.sum FormalMultilinearSeries.ofScalars
   simp [coeff, zeros_get]
   rfl
 
