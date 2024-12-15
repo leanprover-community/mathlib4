@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.ExteriorPower.Basic
+import Mathlib.LinearAlgebra.ExteriorPower.Generators
 
 /-!
 Documentation
@@ -91,5 +92,18 @@ theorem bilin_symm_ιMulti (h : B.IsSymm) : ∀ v w : Fin k → M, ⟪(ιMulti R
   simp only [Matrix.transpose_apply, Matrix.of_apply]
   rw [← h (v j) (w i)]
   simp only [RingHom.id_apply]
+
+section overField
+
+variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M] (k : ℕ)
+variable (B : LinearMap.BilinForm K M) (hN : B.Nondegenerate)
+variable {I : Type*} [LinearOrder I] [Finite I] (b : Basis I K M)
+variable {k : ℕ}
+
+local notation "⟪" v ", " w "⟫" => exteriorPower.BilinForm k B v w
+noncomputable abbrev basis := Basis.exteriorPower K k b
+
+
+end overField
 
 end exteriorPower
