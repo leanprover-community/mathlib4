@@ -472,9 +472,9 @@ theorem second_derivative_symmetric [IsRCLikeNormedField 𝕜]
 
 open scoped Classical in
 variable (𝕜) in
-/-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than `n` for which one can do
-serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise, this is `ω` as only
-analytic functions are well behaved on `ℚₚ`, say. -/
+/-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than or equal to `n` for which
+one  can do serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise,
+this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
 noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
   if IsRCLikeNormedField 𝕜 then n else ω
 
@@ -486,6 +486,11 @@ lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
 
+/-- If `minSmoothness 𝕜 m ≤ n` for some (finite) integer `m`, then one can
+find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`, just take `m`, and otherwise
+just take `ω`. The interest of this technical lemma is that, if a function is `C^{n'}` at a point
+for `n' ≠ ∞`, then it is `C^{n'}` on a neighborhood of the point (this property fails only in
+`C^∞` smoothness). -/
 lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
     ∃ n', minSmoothness 𝕜 m ≤ n' ∧ n' ≤ n ∧ n' ≠ ∞ := by
   simp only [minSmoothness] at hm ⊢
