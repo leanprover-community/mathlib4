@@ -635,7 +635,6 @@ theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
 instance : IsIrrefl _ (· ⧏ ·) :=
   ⟨lf_irrefl⟩
 
-@[simp]
 protected theorem not_lt {x y : PGame} : ¬(x < y) ↔ y ⧏ x ∨ y ≤ x := by
   rw [lt_iff_le_and_lf, Classical.not_and_iff_or_not_not, PGame.not_le, PGame.not_lf]
 
