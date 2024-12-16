@@ -443,7 +443,7 @@ noncomputable instance forget_cratesLimitsOfShape (J : Type v) [Category.{w} J] 
   to_additive_relevant_arg 2]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget CommGrp.{u}) where
-      CreatesLimitsOfShape := inferInstance
+  CreatesLimitsOfShape := inferInstance
 
 @[to_additive]
 noncomputable instance forget_createsLimits : CreatesLimits (forget Grp.{u}) :=
