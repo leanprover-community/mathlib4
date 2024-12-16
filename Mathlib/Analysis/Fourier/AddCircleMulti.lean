@@ -29,11 +29,11 @@ local instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
 
 /-- The measure on `ℝ / ℤ` is a Haar measure. -/
 local instance : Measure.IsAddHaarMeasure (volume : Measure UnitAddCircle) :=
-  inferInstanceAs AddCircle.haarAddCircle.IsAddHaarMeasure
+  inferInstanceAs (Measure.IsAddHaarMeasure AddCircle.haarAddCircle)
 
 /-- The measure on `ℝ / ℤ` is a probability measure. -/
 local instance : IsProbabilityMeasure (volume : Measure UnitAddCircle) :=
-  AddCircle.isProbabilityMeasure
+  inferInstanceAs (IsProbabilityMeasure AddCircle.haarAddCircle)
 
 /-- The product of finitely many copies of the unit circle, indexed by `d`. -/
 abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
