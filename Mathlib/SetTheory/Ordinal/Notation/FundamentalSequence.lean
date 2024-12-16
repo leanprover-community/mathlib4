@@ -78,6 +78,7 @@ theorem singleton_ne_empty (x : α) : ({x} : Sequence α) ≠ ∅ := by
 @[simp] theorem sum_inr_def (f : ℕ → α) : Sum.inr f = ofFun f := rfl
 
 /-- Recursion on sequences, using the preferred forms of the constructors. -/
+@[elab_as_elim]
 def recOn {p : Sequence α → Sort*} (s : Sequence α) (empty : p ∅) (singleton : ∀ x, p {x})
     (ofFun : ∀ f, p (ofFun f)) : p s :=
   match s with
