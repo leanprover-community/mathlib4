@@ -91,6 +91,10 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
   refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 
+@[to_additive (attr := simp)]
+theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
+  (Subgroup.eq_top_iff' _).2 <| by rintro ⟨x⟩; exact ⟨x, rfl⟩
+
 @[to_additive]
 theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
     g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
@@ -101,6 +105,11 @@ theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] 
 theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
   Subgroup.ext eq_one_iff
 -- Porting note: I think this is misnamed without the prime
+
+@[to_additive]
+theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
+    N ≤ Subgroup.comap (QuotientGroup.mk' N) H := by
+  simpa using (Subgroup.comap_mono bot_le : (mk' N).ker ≤ Subgroup.comap (mk' N) H)
 
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
@@ -215,6 +224,23 @@ theorem map_comp_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _))) :
     (map M O g hg).comp (map N M f hf) = map N O (g.comp f) hgf :=
   MonoidHom.ext (map_map N M O f g hf hg hgf)
+
+@[to_additive (attr := simp)]
+theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
+    Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H :=
+  by simp [Subgroup.comap_map_eq, sup_comm]
+
+/-- The **correspondence theorem**, or lattice theorem,
+  or fourth isomorphism theorem for multiplicative groups-/
+@[to_additive "The **correspondence theorem**, or lattice theorem,
+  or fourth isomorphism theorem for additive groups"]
+def comap_mk'_OrderIso (N : Subgroup G) [hn : N.Normal] :
+    Subgroup (G ⧸ N) ≃o { H : Subgroup G // N ≤ H } where
+  toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
+  invFun H := Subgroup.map (mk' N) H
+  left_inv H' := Subgroup.map_comap_eq_self <| by simp
+  right_inv := fun ⟨H, hH⟩ => Subtype.ext_val <| by simpa
+  map_rel_iff' := Subgroup.comap_le_comap_of_surjective <| mk'_surjective _
 
 section Pointwise
 open Set
