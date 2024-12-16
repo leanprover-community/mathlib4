@@ -185,7 +185,7 @@ lemma isFiltered_of_isCardinalDirected (J : Type u') [Category.{v'} J]
   intro A _ _ F
   have hA : HasCardinalLT (Arrow A) κ := by
     refine HasCardinalLT.of_le ?_ hκ.out.aleph0_le
-    simp only [hasCardinalLT_aleph0]
+    simp only [hasCardinalLT_aleph0_iff]
     infer_instance
   exact ⟨cocone F hA⟩
 
@@ -200,7 +200,7 @@ lemma isCardinalFiltered_aleph0_iff (J : Type u') [Category.{v'} J] :
   · intro
     constructor
     intro A _ F hA
-    rw [hasCardinalLT_aleph0] at hA
+    rw [hasCardinalLT_aleph0_iff] at hA
     have := ((Arrow.finite_iff A).1 hA).some
     exact ⟨IsFiltered.cocone F⟩
 
