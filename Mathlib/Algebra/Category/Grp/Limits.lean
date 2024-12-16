@@ -216,7 +216,7 @@ noncomputable instance forget_createsLimitsOfShape :
   "The forgetful functor from additive groups to types creates all limits.",
   to_additive_relevant_arg 2]
 noncomputable instance forget_createsLimitsOfSize :
-    CreatesLimitsOfSize.{w,v} (forget Grp.{u}) where
+    CreatesLimitsOfSize.{w, v} (forget Grp.{u}) where
       CreatesLimitsOfShape := inferInstance
 
 @[to_additive]
