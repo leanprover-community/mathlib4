@@ -50,6 +50,7 @@ theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (S := S
     rw [listChoice_mk]
     exact congrArg (⟦·⟧) (List.Pi.cons_eta a)
 
+omit [DecidableEq ι] in
 /-- Choice-free induction principle for quotients indexed by a `List`. -/
 @[elab_as_elim]
 lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
@@ -57,17 +58,18 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
   match l with
   |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
-    rw [← List.Pi.cons_eta q]
-    induction' List.Pi.head q using Quotient.ind with a
-    refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
-    intro as
-    rw [List.Pi.cons_map a as (fun i ↦ Quotient.mk (S i))]
-    exact f _
+    classical
+      rw [← List.Pi.cons_eta q]
+      induction' List.Pi.head q using Quotient.ind with a
+      refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
+      intro as
+      rw [List.Pi.cons_map a as (fun i ↦ Quotient.mk (S i))]
+      exact f _
 
 end List
 
 section Fintype
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (α i)} {β : Sort*}
+variable {ι : Type*} [Fintype ι] {α : ι → Sort*} {S : ∀ i, Setoid (α i)} {β : Sort*}
 
 /-- Choice-free induction principle for quotients indexed by a finite type.
   See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
@@ -86,6 +88,8 @@ lemma ind_fintype_pi {C : (∀ i, Quotient (S i)) → Prop}
 lemma induction_on_fintype_pi {C : (∀ i, Quotient (S i)) → Prop}
     (q : ∀ i, Quotient (S i)) (f : ∀ a : ∀ i, α i, C (⟦a ·⟧)) : C q :=
   ind_fintype_pi f q
+
+variable [DecidableEq ι]
 
 /-- Given a collection of setoids indexed by a fintype `ι` and a function that for each `i : ι`
   gives a term of the corresponding quotient type, then there is corresponding term in the quotient
