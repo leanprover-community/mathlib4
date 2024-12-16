@@ -65,6 +65,11 @@ lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ' ≤ κ) :
     IsCardinalFiltered J κ' where
   nonempty_cocone F hA := ⟨cocone F (hA.of_le h)⟩
 
+variable (κ) in
+lemma of_equivalence {J' : Type u'} [Category.{v'} J'] (e : J ≌ J') :
+    IsCardinalFiltered J' κ where
+  nonempty_cocone F hA := ⟨e.inverse.mapCoconeInv (cocone (F ⋙ e.inverse) hA)⟩
+
 section max
 
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
