@@ -84,23 +84,22 @@ noncomputable instance Forget₂.createsLimit :
   letI : (forget₂ Grp.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ Grp.{u} MonCat.{u}))
-    fun c' t => by
+    fun c' t =>
       have : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) := by
         have : HasLimit (F ⋙ forget₂ Grp MonCat) := ⟨_, t⟩
         apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ Grp MonCat)
       have : Small.{u} (Functor.sections (F ⋙ forget Grp)) := inferInstanceAs <| Small.{u}
         (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat))
-      exact
-    { liftedCone :=
-        { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
-          π :=
-            { app := MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat)
-              naturality :=
-                (MonCat.HasLimits.limitCone
-                      (F ⋙ forget₂ Grp MonCat.{u})).π.naturality } }
-      validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
-      makesLimit :=
-        IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
+      { liftedCone :=
+          { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
+            π :=
+              { app := MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat)
+                naturality :=
+                  (MonCat.HasLimits.limitCone
+                        (F ⋙ forget₂ Grp MonCat.{u})).π.naturality } }
+        validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
+        makesLimit :=
+         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
           (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
