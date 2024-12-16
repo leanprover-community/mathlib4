@@ -524,9 +524,6 @@ theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
 
-theorem mapMatrix_diagonal (f : α →+* β) (d : m → α) :
-    f.mapMatrix (diagonal d) = diagonal (f ∘ d) := by simp
-
 end RingHom
 
 namespace RingEquiv

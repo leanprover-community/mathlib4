@@ -120,13 +120,13 @@ theorem compRingEquiv_det_mul_pow :
   · simp_rw [_root_.map_mul, det_mul, ((auxMat_blockTriangular M k).mapMatrix f).compRingEquiv
       |>.det_fintype, Fintype.prod_Prop, compRingEquiv_toSquareBlock (b := (· ≠ k)),
       det_reindex_self, f.mapMatrix_toSquareBlock, auxMat_toSquareBlock_true,
-      auxMat_toSquareBlock_false, smul_one_eq_diagonal, ← diagonal_one, f.mapMatrix_diagonal,
-      compRingEquiv_diagonal, det_reindex_self]
+      auxMat_toSquareBlock_false, smul_one_eq_diagonal, ← diagonal_one, f.mapMatrix_apply,
+      diagonal_map (map_zero _), compRingEquiv_diagonal, det_reindex_self]
     simp
   · simp_rw [((mul_auxMat_blockTriangular M k).mapMatrix f).compRingEquiv.det_fintype,
       Fintype.prod_Prop, compRingEquiv_toSquareBlock (b := (· = k)), det_reindex_self,
       f.mapMatrix_toSquareBlock, mul_auxMat_toSquareBlock_true, smul_one_eq_diagonal,
-      f.mapMatrix_diagonal, compRingEquiv_diagonal, det_reindex_self]
+      f.mapMatrix_apply, diagonal_map (map_zero _), compRingEquiv_diagonal, det_reindex_self]
     simp; rfl
 
 variable {M f} in
