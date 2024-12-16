@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.UnivLE
 
 Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `HasCardinalLT X κ` expressing that
-`Cardinal.mk (ULift.{v} X) < Cardinal.lift κ`.
+`Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
 
 -/
 
