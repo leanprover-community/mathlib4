@@ -73,17 +73,16 @@ lemma mul_auxMat_toSquareBlock_eq :
   rw [eq_iff_iff, iff_true] at hi hj
   simp [toSquareBlock_def, hi, hj, mul_auxMat_corner]
 
+set_option quotPrecheck false in
 /-- The upper-left block of `M * aux M k`. -/
-def mulAuxMatBlock : Matrix { a // (a = k) = False } { a // (a = k) = False } S :=
-  (M * auxMat M k).toSquareBlock (· = k) False
+notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) False
 
 lemma det_mul_corner_pow :
-    M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock M k).det := by
+    M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
   trans (M * auxMat M k).det
   · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
       auxMat_toSquareBlock_ne, auxMat_toSquareBlock_eq]
-  rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop,
-    mulAuxMatBlock, mul_auxMat_toSquareBlock_eq]
+  rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop, mul_auxMat_toSquareBlock_eq]
   simp_rw [det_smul_of_tower, eq_iff_iff, iff_true, Fintype.card_unique,
     pow_one, det_one, smul_eq_mul, mul_one]
   -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
@@ -118,7 +117,7 @@ lemma eval_zero_comp_det :
 
 theorem comp_det_mul_pow :
     ((f.mapMatrix M).comp m m n n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
-      (f (M k k)).det * ((f.mapMatrix (mulAuxMatBlock M k)).comp _ _ n n R).det := by
+      (f (M k k)).det * ((f.mapMatrix mulAuxMatBlock).comp _ _ n n R).det := by
   trans ((f.mapMatrix (M * auxMat M k)).compRingEquiv m n R).det
   · simp_rw [_root_.map_mul, det_mul, f.mapMatrix_apply, compRingEquiv_apply,
       ((auxMat_blockTriangular M k).map f).comp.det_fintype, Fintype.prod_Prop,
@@ -129,7 +128,7 @@ theorem comp_det_mul_pow :
   · simp_rw [f.mapMatrix_apply, compRingEquiv_apply, ((mul_auxMat_blockTriangular M k).map f).comp
       |>.det_fintype, Fintype.prod_Prop, comp_toSquareBlock (b := (· = k)), det_reindex_self,
       map_toSquareBlock, mul_auxMat_toSquareBlock_eq, smul_one_eq_diagonal,
-      diagonal_map (map_zero _), comp_diagonal, det_reindex_self, mulAuxMatBlock]
+      diagonal_map (map_zero _), comp_diagonal, det_reindex_self]
     simp
 
 variable {M f} in
@@ -138,7 +137,7 @@ lemma det_det_aux
     ((f M.det).det - ((f.mapMatrix M).comp m m n n R).det) *
       (f (M k k)).det ^ (Fintype.card m - 1) = 0 := by
   rw [sub_mul, comp_det_mul_pow, ← det_pow, ← map_pow, ← det_mul, ← _root_.map_mul,
-    det_mul_corner_pow, _root_.map_mul, det_mul, mulAuxMatBlock, ih, sub_self]
+    det_mul_corner_pow, _root_.map_mul, det_mul, ih, sub_self]
 
 end Algebra.Norm.Transitivity
 
