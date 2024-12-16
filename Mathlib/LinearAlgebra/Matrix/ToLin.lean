@@ -871,10 +871,9 @@ variable {A M n : Type*} [Fintype n] [DecidableEq n]
 
 lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
     (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
-      ((leftMulMatrix bA).mapMatrix <| f.toMatrix bM bM).compRingEquiv _ _ _ := by
-  ext i j
-  simp [toMatrix, Basis.repr, Algebra.leftMulMatrix_apply, Basis.smulTower'_repr,
-    Basis.smulTower'_apply, mul_comm]
+      ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
+  ext; simp [toMatrix, Basis.repr, Algebra.leftMulMatrix_apply,
+    Basis.smulTower'_repr, Basis.smulTower'_apply, mul_comm]
 
 end Lmul
 

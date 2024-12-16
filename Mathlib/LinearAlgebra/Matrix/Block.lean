@@ -105,15 +105,12 @@ lemma BlockTriangular.sub_iff_right [AddGroup R] (hM : BlockTriangular M b) :
 lemma BlockTriangular.sub_iff_left [AddGroup R] (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
 
-variable [Fintype m] [Fintype n]
-
-lemma BlockTriangular.mapMatrix [DecidableEq m]
-    {S} [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S)
-    (h : BlockTriangular M b) : BlockTriangular (f.mapMatrix M) b :=
+lemma BlockTriangular.map {S F} [FunLike F R S] [Zero R] [Zero S] [ZeroHomClass F R S] (f : F)
+    (h : BlockTriangular M b) : BlockTriangular (M.map f) b :=
   fun i j lt ↦ by simp [h lt]
 
-lemma BlockTriangular.compRingEquiv [Semiring R] {M : Matrix m m (Matrix n n R)}
-    (h : BlockTriangular M b) : BlockTriangular (M.compRingEquiv m n R) fun i ↦ b i.1 :=
+lemma BlockTriangular.comp [Zero R] {M : Matrix m m (Matrix n n R)} (h : BlockTriangular M b) :
+    BlockTriangular (M.comp m m n n R) fun i ↦ b i.1 :=
   fun i j lt ↦ by simp [h lt]
 
 end LT
