@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
@@ -393,7 +392,7 @@ theorem moveRight_memᵣ (x : PGame) (b) : x.moveRight b ∈ᵣ x := ⟨_, .rfl�
 theorem identical_of_isEmpty (x y : PGame)
     [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
     [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
-  identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
+  identical_iff.2 (by simp [biTotal_empty])
 
 /-- `Identical` as a `Setoid`. -/
 def identicalSetoid : Setoid PGame :=
@@ -414,6 +413,8 @@ lemma Identical.moveLeft : ∀ {x y}, x ≡ y →
 lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
+
+theorem identical_of_eq {x y : PGame} (h : x = y) : x ≡ y := by subst h; rfl
 
 /-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
@@ -1309,34 +1310,43 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
-theorem moveLeft_neg {x : PGame} (i) : (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
+@[simp]
+theorem moveLeft_neg {x : PGame} (i) :
+    (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
   cases x
   rfl
+
+@[deprecated moveLeft_neg (since := "2024-10-30")]
+alias moveLeft_neg' := moveLeft_neg
+
+theorem moveLeft_neg_toLeftMovesNeg {x : PGame} (i) :
+    (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by simp
 
 @[simp]
-theorem moveLeft_neg' {x : PGame} (i) : (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
-  cases x
-  rfl
-
-theorem moveRight_neg {x : PGame} (i) : (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
-  cases x
-  rfl
-
-@[simp]
-theorem moveRight_neg' {x : PGame} (i) :
+theorem moveRight_neg {x : PGame} (i) :
     (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
 
+@[deprecated moveRight_neg (since := "2024-10-30")]
+alias moveRight_neg' := moveRight_neg
+
+theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
+    (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
+
+@[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 
+@[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm' {x : PGame} (i) :
     x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 
+@[deprecated moveLeft_neg (since := "2024-10-30")]
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 
+@[deprecated moveLeft_neg (since := "2024-10-30")]
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 

@@ -5,7 +5,7 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -29,7 +29,7 @@ suppress_compilation
 
 open Submodule
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+variable {R S T : Type*} [CommRing R] (I : Ideal R)
 variable (M : Type*) [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
 
@@ -202,24 +202,62 @@ instance : Neg (AdicCompletion I M) where
 instance : Sub (AdicCompletion I M) where
   sub x y := ⟨x.val - y.val, by simp [x.property, y.property]⟩
 
-instance : SMul ℕ (AdicCompletion I M) where
-  smul n x := ⟨n • x.val, by simp [x.property]⟩
+instance instSMul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S (AdicCompletion I M) where
+  smul r x := ⟨r • x.val, by simp [x.property]⟩
 
-instance : SMul ℤ (AdicCompletion I M) where
-  smul n x := ⟨n • x.val, by simp [x.property]⟩
+@[simp, norm_cast] lemma val_zero : (0 : AdicCompletion I M).val = 0 := rfl
+
+lemma val_zero_apply (n : ℕ) : (0 : AdicCompletion I M).val n = 0 := rfl
+
+variable {I M}
+
+@[simp, norm_cast] lemma val_add (f g : AdicCompletion I M) : (f + g).val = f.val + g.val := rfl
+@[simp, norm_cast] lemma val_sub (f g : AdicCompletion I M) : (f - g).val = f.val - g.val := rfl
+@[simp, norm_cast] lemma val_neg (f : AdicCompletion I M) : (-f).val = -f.val := rfl
+
+lemma val_add_apply (f g : AdicCompletion I M) (n : ℕ) : (f + g).val n = f.val n + g.val n := rfl
+lemma val_sub_apply (f g : AdicCompletion I M) (n : ℕ) : (f - g).val n = f.val n - g.val n := rfl
+lemma val_neg_apply (f : AdicCompletion I M) (n : ℕ) : (-f).val n = -f.val n := rfl
+
+/- No `simp` attribute, since it causes `simp` unification timeouts when considering
+the `Module (AdicCompletion I R) (AdicCompletion I M)` instance (see `AdicCompletion/Algebra`). -/
+@[norm_cast]
+lemma val_smul [SMul S R] [SMul S M] [IsScalarTower S R M] (s : S) (f : AdicCompletion I M) :
+    (s • f).val = s • f.val := rfl
+
+lemma val_smul_apply [SMul S R] [SMul S M] [IsScalarTower S R M] (s : S) (f : AdicCompletion I M)
+    (n : ℕ) : (s • f).val n = s • f.val n := rfl
+
+@[ext]
+lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.eq <| funext h
+
+variable (I M)
 
 instance : AddCommGroup (AdicCompletion I M) :=
   let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
-  Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.val_injective.addCommGroup f rfl val_add val_neg val_sub (fun _ _ ↦ val_smul ..)
+    (fun _ _ ↦ val_smul ..)
 
-instance : SMul R (AdicCompletion I M) where
-  smul r x := ⟨r • x.val, by simp [x.property]⟩
-
-instance : Module R (AdicCompletion I M) :=
+instance [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+    Module S (AdicCompletion I M) :=
   let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
     { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
-  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
+  Subtype.val_injective.module S f val_smul
+
+instance instIsScalarTower [SMul S T] [SMul S R] [SMul T R] [SMul S M] [SMul T M]
+    [IsScalarTower S R M] [IsScalarTower T R M] [IsScalarTower S T M] :
+    IsScalarTower S T (AdicCompletion I M) where
+  smul_assoc s t f := by ext; simp [val_smul]
+
+instance instSMulCommClass [SMul S R] [SMul T R] [SMul S M] [SMul T M]
+    [IsScalarTower S R M] [IsScalarTower T R M] [SMulCommClass S T M] :
+    SMulCommClass S T (AdicCompletion I M) where
+  smul_comm s t f := by ext; simp [val_smul, smul_comm]
+
+instance instIsCentralScalar [SMul S R] [SMul Sᵐᵒᵖ R] [SMul S M] [SMul Sᵐᵒᵖ M]
+    [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
+    IsCentralScalar S (AdicCompletion I M) where
+  op_smul_eq_smul s f := by ext; simp [val_smul, op_smul_eq_smul]
 
 /-- The canonical inclusion from the completion to the product. -/
 @[simps]
@@ -227,6 +265,18 @@ def incl : AdicCompletion I M →ₗ[R] (∀ n, M ⧸ (I ^ n • ⊤ : Submodule
   toFun x := x.val
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+variable {I M}
+
+@[simp, norm_cast]
+lemma val_sum {ι : Type*} (s : Finset ι) (f : ι → AdicCompletion I M) :
+    (∑ i ∈ s, f i).val = ∑ i ∈ s, (f i).val := by
+  simp_rw [← funext (incl_apply _ _ _), map_sum]
+
+lemma val_sum_apply {ι : Type*} (s : Finset ι) (f : ι → AdicCompletion I M) (n : ℕ) :
+    (∑ i ∈ s, f i).val n = ∑ i ∈ s, (f i).val n := by simp
+
+variable (I M)
 
 /-- The canonical linear map to the completion. -/
 def of : M →ₗ[R] AdicCompletion I M where
@@ -266,43 +316,17 @@ theorem eval_surjective (n : ℕ) : Function.Surjective (eval I M n) := fun x �
 theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
   LinearMap.range_eq_top.2 (eval_surjective I M n)
 
-@[simp]
-theorem val_zero (n : ℕ) : (0 : AdicCompletion I M).val n = 0 :=
-  rfl
-
 variable {I M}
-
-@[simp]
-theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n + g.val n :=
-  rfl
-
-@[simp]
-theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
-  rfl
-
-@[simp]
-theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n : ℕ) :
-    (Finset.sum s f).val n = Finset.sum s (fun a ↦ (f a).val n) := by
-  simp_rw [← incl_apply, map_sum, Finset.sum_apply]
-
-/- No `simp` attribute, since it causes `simp` unification timeouts when considering
-the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
-theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
-  rfl
-
-@[ext]
-theorem ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y :=
-  Subtype.eq <| funext h
 
 variable (I M)
 
 instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
-    · simp only [val_smul, val_zero]
+    · simp only [val_smul_apply, val_zero]
       exact Quotient.inductionOn' (x.val n)
         (fun a ↦ SModEq.zero.2 <| smul_mem_smul hr mem_top)
-    · simp only [val_add, hx, val_zero, hy, add_zero]
+    · simp only [val_add_apply, hx, val_zero_apply, hy, add_zero]
 
 @[simp]
 theorem transitionMap_mk {m n : ℕ} (hmn : m ≤ n) (x : M) :
