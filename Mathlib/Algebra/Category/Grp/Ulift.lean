@@ -48,8 +48,8 @@ a map `(lc.pt →+ A) → (c.pt →+ A)`, and it is easy to prove that it is com
 postcomposition of morphisms of small abelian groups. To actually get the
 morphism `c.pt →+ lc.pt`, we apply this to the canonical embedding of `lc.pt` into
 `Π (_ : lc.pt →+ ℚ / ℤ), ℚ / ℤ` (this group is not small but is a product of small
-groups, so our construction extends) and show that the image of `c.pt` in this product
-is contained in that of `lc.pt`, using the compatibility with postcomposition and the
+groups, so our construction extends). To show that the image of `c.pt` in this product
+is contained in that of `lc.pt`, we use the compatibility with postcomposition and the
 fact that we can detect elements of the image just by applying morphisms from
 `Π (_ : lc.pt →+ ℚ / ℤ), ℚ / ℤ` to `ℚ / ℤ`.
 -/
