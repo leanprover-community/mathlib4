@@ -327,9 +327,7 @@ lemma isOpenMap_of_coinduced' {A : Type*} [AddCommGroup A] {B : Type*} [τA : To
 
 -- #check IsOpenQuotientMap.prodMap
 open TopologicalSpace in
--- **TODO** Should no longer be necessary. `IsOpenQuotientMap.prodMap` is a stronger assertion.
--- Hypotheses (f is surjective, open and continuous)
--- Proof is `IsOpenQuotientMap.prodMap`, not the below
+-- should be removed because it's just `IsOpenQuotientMap.prodMap`
 theorem coinduced_prod_eq_prod_coinduced {X Y S T : Type*} [AddCommGroup X] [AddCommGroup Y]
     [AddCommGroup S] [AddCommGroup T] (f : X →+ S) (g : Y →+ T)
     (hf : Function.Surjective f) (hg : Function.Surjective g)
