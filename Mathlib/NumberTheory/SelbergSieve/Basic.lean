@@ -54,7 +54,7 @@ open scoped BigOperators ArithmeticFunction
 
 open Finset Real Nat
 
-/-!
+/--
 We set up the Selberg sieve as follows. Take a finite set of natural numbers `A`, whose elements
 are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented as a squarefree
 natural number. These are the primes that we will sift from our set `A`. Suppose we can approximate
