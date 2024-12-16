@@ -39,8 +39,8 @@ theorem factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M]
   ext p
   exact normalize_eq p
 
-theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) : Associated (normalizedFactors a).prod a :=
-  by
+theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
+    Associated (normalizedFactors a).prod a := by
   rw [normalizedFactors, factors, dif_neg ane0]
   refine Associated.trans ?_ (Classical.choose_spec (exists_prime_factors a ane0)).2
   rw [← Associates.mk_eq_mk_iff_associated, ← Associates.prod_mk, ← Associates.prod_mk,
