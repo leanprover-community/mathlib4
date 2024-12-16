@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Comma.CardinalArrow
+import Mathlib.CategoryTheory.Comma.Arrow
+import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # The category ParallelMaps
