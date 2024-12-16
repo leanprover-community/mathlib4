@@ -641,7 +641,7 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
 
-instance : MulLeftMono Ordinal.{u} :=
+instance mulLeftMono : MulLeftMono Ordinal.{u} :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine
@@ -650,7 +650,7 @@ instance : MulLeftMono Ordinal.{u} :=
       · exact Prod.Lex.left _ _ (f.toRelEmbedding.map_rel_iff.2 h')
       · exact Prod.Lex.right _ h'⟩
 
-instance : MulRightMono Ordinal.{u} :=
+instance mulRightMono : MulRightMono Ordinal.{u} :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine

@@ -75,9 +75,6 @@ theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ 
     IsSuccLimit a :=
   ⟨ha, h⟩
 
-theorem IsSuccPrelimit.isMin_or_isSuccLimit (h : IsSuccPrelimit a) : IsMin a ∨ IsSuccLimit a :=
-  or_iff_not_imp_left.2 h.isSuccLimit_of_not_isMin
-
 theorem IsSuccPrelimit.isSuccLimit [NoMinOrder α] (h : IsSuccPrelimit a) : IsSuccLimit a :=
   h.isSuccLimit_of_not_isMin (not_isMin a)
 
@@ -190,10 +187,6 @@ variable [PartialOrder α]
 
 theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
   rw [IsSuccLimit, isMin_iff_eq_bot]
-
-theorem IsSuccPrelimit.eq_bot_or_isSuccLimit [OrderBot α] (h : IsSuccPrelimit a) :
-    a = ⊥ ∨ IsSuccLimit a := by
-  simpa using h.isMin_or_isSuccLimit
 
 theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
   h.ne_bot.bot_lt
@@ -412,9 +405,6 @@ theorem IsPredPrelimit.isPredLimit_of_not_isMax (h : IsPredPrelimit a) (ha : ¬ 
     IsPredLimit a :=
   ⟨ha, h⟩
 
-theorem IsPredPrelimit.isMax_or_isPredLimit (h : IsPredPrelimit a) : IsMax a ∨ IsPredLimit a :=
-  or_iff_not_imp_left.2 h.isPredLimit_of_not_isMax
-
 theorem IsPredPrelimit.isPredLimit [NoMaxOrder α] (h : IsPredPrelimit a) : IsPredLimit a :=
   h.isPredLimit_of_not_isMax (not_isMax a)
 
@@ -517,10 +507,6 @@ variable [PartialOrder α]
 
 theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
   rw [IsPredLimit, isMax_iff_eq_top]
-
-theorem IsPredPrelimit.eq_top_or_isPredLimit [OrderTop α] (h : IsPredPrelimit a) :
-    a = ⊤ ∨ IsPredLimit a := by
-  simpa using h.isMax_or_isPredLimit
 
 theorem IsPredLimit.lt_top [OrderTop α] (h : IsPredLimit a) : a < ⊤ :=
   h.ne_top.lt_top
