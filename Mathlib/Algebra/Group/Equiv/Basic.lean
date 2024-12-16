@@ -634,8 +634,10 @@ end MulEquiv
 namespace MonoidHom
 
 /-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`. -/
-@[to_additive (attr := simps)]
+a multiplicative equivalence `e : α ≃+ β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
+an additive equivalence `e : α ≃+ β`."]
 def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
     (β →* γ) ≃ (α →* γ) where
   toFun f := f.comp e
@@ -644,8 +646,10 @@ def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : 
   right_inv _ := by ext; simp
 
 /-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
-an additive equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps)]
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
+an additive equivalence `e : α ≃* β`."]
 def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
     (γ →* α) ≃ (γ →* β) where
   toFun f := e.toMonoidHom.comp f
