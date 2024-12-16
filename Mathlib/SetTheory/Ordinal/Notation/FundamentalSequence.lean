@@ -8,18 +8,12 @@ import Mathlib.Data.Set.Operations
 /-!
 # Fundamental sequences
 
-If `x` is a successor limit in a linear order `α`, a fundamental sequence for `x` is a strictly
-monotonic sequence `ℕ → α` whose supremum is `x`.
+If `o` is an ordinal, a fundamental sequence for `o` is a strictly monotonic function
+`Iio o.cof.ord → Iio o` with cofinal range.
 
-If `x` is not a successor limit, we can define two other types of fundamental sequences: the empty
-sequence `∅` with limit `⊥`, and the singleton sequence `{x}` with limit `succ x` (the limit here is
-more properly the least strict upper bound). This ensures that every countable ordinal
-(nonconstructively) has a fundamental sequence, and it simplifies the definition of the fast-growing
-hierarchy.
-
-To nicely manage these three different cases, we define `Sequence α = Option α ⊕ (ℕ → α)` as the
-type of sequences with length 0, 1, or `ω`. At the moment, the file contains only the basic API for
-this type.
+For `o` a countable ordinal, there are only three possible lengths for such a sequence: 0, 1, or
+`ω`. To nicely manage these three different cases, we define `Sequence α` as an inductive type with
+the respective constructors. At the moment, the file contains only the basic API for this type.
 
 The `Sequence` API is intended to be used constructively in the context of ordinal notations. For a
 more general but non-constructive notion of fundamental sequences for values with arbitrary
@@ -40,56 +34,38 @@ namespace Ordinal
 
 /-- The type of sequences with length 0, 1, or `ω`. These are the possible different lengths for a
 fundamental sequence. -/
-def Sequence (α : Type u) : Type u :=
-  Option α ⊕ (ℕ → α)
+inductive Sequence (α : Type u) : Type u
+  /-- The empty sequence, whose limit is the bottom element. -/
+  | empty : Sequence α
+  /-- The sequence consisting only of `x`, whose limit is the succesor of `x`. -/
+  | singleton (x : α) : Sequence α
+  /-- A sequence `ℕ → α`, whose limit is its least strict upper bound, or equivalently for strictly
+  monotonic sequences, its supremum. -/
+  | ofFun (f : ℕ → α) : Sequence α
 
 namespace Sequence
 
-/-- The empty sequence, whose limit is the bottom element. -/
-instance : EmptyCollection (Sequence α) :=
-  ⟨Sum.inl none⟩
+instance : EmptyCollection (Sequence α) := ⟨empty⟩
+instance : Inhabited (Sequence α) := ⟨∅⟩
+@[simp] theorem empty_def : @empty α = ∅ := rfl
 
-instance : Inhabited (Sequence α) :=
-  ⟨∅⟩
+instance : Singleton α (Sequence α) := ⟨singleton⟩
+@[simp] theorem singleton_def (x : α) : singleton x = {x} := rfl
 
-/-- The sequence consisting only of `x`, whose limit is the succesor of `x`. -/
-instance : Singleton α (Sequence α) :=
-  ⟨fun x ↦ Sum.inl (some x)⟩
+@[simp] theorem singleton_ne_empty (x : α) : ({x} : Sequence α) ≠ ∅ := fun h ↦ by injection h
+@[simp] theorem empty_ne_singleton (x : α) : ∅ ≠ ({x} : Sequence α) := fun h ↦ by injection h
 
-/-- A sequence `ℕ → α`, whose limit is its least strict upper bound, or equivalently for strictly
-monotonic sequences, its supremum. -/
-def ofFun (f : ℕ → α) : Sequence α :=
-  Sum.inr f
+@[simp] theorem ofFun_ne_empty (f : ℕ → α) : ofFun f ≠ ∅ := fun h ↦ by injection h
+@[simp] theorem empty_ne_ofFun (f : ℕ → α) : ∅ ≠ ofFun f := fun h ↦ by injection h
 
-@[simp]
-theorem singleton_ne_empty (x : α) : ({x} : Sequence α) ≠ ∅ := by
-  change Sum.inl _ ≠ Sum.inl _
-  simp
-
-@[simp] theorem ofFun_ne_empty (f : ℕ → α) : ofFun f ≠ ∅ := Sum.inr_ne_inl
-@[simp] theorem ofFun_ne_singleton (f : ℕ → α) (x : α) : ofFun f ≠ {x} := Sum.inr_ne_inl
-
-@[simp] theorem empty_ne_singleton (x : α) : ∅ ≠ ({x} : Sequence α) := (singleton_ne_empty x).symm
-@[simp] theorem empty_ne_ofFun (f : ℕ → α) : ∅ ≠ ofFun f := Sum.inl_ne_inr
-@[simp] theorem singleton_ne_ofFun (x : α) (f : ℕ → α) : {x} ≠ ofFun f := Sum.inl_ne_inr
-
-@[simp] theorem sum_inl_none_def : Sum.inl none = (∅ : Sequence α) := rfl
-@[simp] theorem sum_inl_some_def (x : α) : Sum.inl (some x) = ({x} : Sequence α) := rfl
-@[simp] theorem sum_inr_def (f : ℕ → α) : Sum.inr f = ofFun f := rfl
-
-/-- Recursion on sequences, using the preferred forms of the constructors. -/
-def recOn {p : Sequence α → Sort*} (s : Sequence α) (empty : p ∅) (singleton : ∀ x, p {x})
-    (ofFun : ∀ f, p (ofFun f)) : p s :=
-  match s with
-  | Sum.inl none => empty
-  | Sum.inl (some x) => singleton x
-  | Sum.inr f => ofFun f
+@[simp] theorem singleton_ne_ofFun (x : α) (f : ℕ → α) : {x} ≠ ofFun f := fun h ↦ by injection h
+@[simp] theorem ofFun_ne_singleton (f : ℕ → α) (x : α) : ofFun f ≠ {x} := fun h ↦ by injection h
 
 /-- The range of a sequence is the set of values it contains -/
 def range : Sequence α → Set α
-  | Sum.inl none => ∅
-  | Sum.inl (some x) => {x}
-  | Sum.inr f => Set.range f
+  | empty => ∅
+  | singleton x => {x}
+  | ofFun f => Set.range f
 
 @[simp] theorem range_empty : range (∅ : Sequence α) = ∅ := rfl
 @[simp] theorem range_singleton (x : α) : range {x} = {x} := rfl
@@ -110,9 +86,9 @@ theorem mem_ofFun {f : ℕ → α} (n : ℕ) : f n ∈ ofFun f := ⟨n, rfl⟩
 /-- Maps a sequence through a function -/
 def map (s : Sequence α) (g : α → β) : Sequence β :=
   match s with
-  | Sum.inl none => ∅
-  | Sum.inl (some x) => {g x}
-  | Sum.inr f => ofFun (g ∘ f)
+  | empty => ∅
+  | singleton x => {g x}
+  | ofFun f => ofFun (g ∘ f)
 
 @[simp] theorem map_empty (g : α → β) : map ∅ g = ∅ := rfl
 @[simp] theorem map_singleton (x : α) (g : α → β) : map {x} g = {g x} := rfl
@@ -120,20 +96,20 @@ def map (s : Sequence α) (g : α → β) : Sequence β :=
 
 @[simp]
 theorem map_eq_empty_iff {s : Sequence α} {g : α → β} : s.map g = ∅ ↔ s = ∅ := by
-  apply s.recOn <;> simp
+  cases s <;> simp
 
 @[simp]
 theorem mem_map {s : Sequence α} {f : α → β} {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   match s with
-  | Sum.inl none => by simp
-  | Sum.inl (some x) => by simp [eq_comm]
-  | Sum.inr g => by simp
+  | empty => by simp
+  | singleton x => by simp [eq_comm]
+  | ofFun f => by simp
 
 /-- Attach to a sequence the proof that it contains all its elements -/
 def attach : (s : Sequence α) → Sequence {a : α // a ∈ s}
-  | Sum.inl none => ∅
-  | Sum.inl (some x) => {⟨x, rfl⟩}
-  | Sum.inr f => ofFun fun n ↦ ⟨f n, n, rfl⟩
+  | empty => ∅
+  | singleton x => {⟨x, rfl⟩}
+  | ofFun f => ofFun fun n ↦ ⟨f n, n, rfl⟩
 
 @[simp] theorem attach_empty : (∅ : Sequence α).attach = ∅ := rfl
 @[simp] theorem attach_singleton (x : α) : ({x} : Sequence α).attach = {⟨x, rfl⟩} := rfl
@@ -141,11 +117,11 @@ def attach : (s : Sequence α) → Sequence {a : α // a ∈ s}
 
 @[simp]
 theorem attach_eq_empty_iff {s : Sequence α} : s.attach = ∅ ↔ s = ∅ := by
-  apply s.recOn <;> simp
+  cases s <;> simp
 
 @[simp]
 theorem mem_attach {s : Sequence α} {x : α} : ∀ h : x ∈ s, ⟨x, h⟩ ∈ s.attach := by
-  apply s.recOn <;> simp
+  cases s <;> simp
 
 /-- Partial map -/
 def pmap (s : Sequence α) (f : ∀ x ∈ s, β) : Sequence β :=
@@ -166,7 +142,7 @@ theorem pmap_ofFun (g : ℕ → α) (f : ∀ x ∈ ofFun g, β) :
 
 @[simp]
 theorem pmap_eq_empty_iff {s : Sequence α} : {f : ∀ x ∈ s, β} → pmap _ f = ∅ ↔ s = ∅ := by
-  apply s.recOn <;> simp
+  cases s <;> simp
 
 @[simp]
 theorem mem_pmap {s : Sequence α} {f : ∀ x ∈ s, β} {b : β} :
@@ -177,9 +153,13 @@ theorem mem_pmap {s : Sequence α} {f : ∀ x ∈ s, β} {b : β} :
 sequence. -/
 def toList (s : Sequence α) (n : ℕ) : List α :=
   match s with
-  | Sum.inl none => []
-  | Sum.inl (some x) => [x]
-  | Sum.inr f => (List.range n).map f
+  | empty => []
+  | singleton x => [x]
+  | ofFun f => (List.range n).map f
+
+@[simp] theorem toList_empty (n : ℕ) : @toList α ∅ n = [] := rfl
+@[simp] theorem toList_singleton (x : α) (n : ℕ) : toList {x} n = [x] := rfl
+@[simp] theorem toList_ofFun (f : ℕ → α) (n : ℕ) : toList (ofFun f) n = (List.range n).map f := rfl
 
 end Sequence
 
