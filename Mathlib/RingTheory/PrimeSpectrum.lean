@@ -571,7 +571,7 @@ variable (S)
 theorem localization_specComap_injective [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Function.Injective (algebraMap R S).specComap := by
   intro p q h
-  replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
+  replace h := congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
   dsimp only [specComap] at h
   rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
   ext1

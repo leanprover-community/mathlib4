@@ -305,7 +305,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         ι_colimMap, whiskerLeft_app]
       rfl)
 
-variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
+variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
 variable [PreservesLimits (forget E)]
 

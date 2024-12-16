@@ -29,10 +29,9 @@ namespace CategoryTheory
 open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
+  {D : Type u'} [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+  [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD CD]
   (J : GrothendieckTopology C)
-
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 namespace Presheaf
 
@@ -40,18 +39,18 @@ namespace Presheaf
 elements in `F.obj X`, this is the sieve of `X.unop` consisting of morphisms `f`
 such that `F.map f.op x = F.map f.op y`. -/
 @[simps]
-def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) : Sieve X.unop where
+def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : CD (F.obj X)) : Sieve X.unop where
   arrows _ f := F.map f.op x = F.map f.op y
   downward_closed {X Y} f hf g := by
     dsimp at hf ⊢
     simp [hf]
 
 @[simp]
-lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : F.obj X) :
+lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : CD (F.obj X)) :
     equalizerSieve x x = ⊤ := by aesop
 
 @[simp]
-lemma equalizerSieve_eq_top_iff {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) :
+lemma equalizerSieve_eq_top_iff {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : CD (F.obj X)) :
     equalizerSieve x y = ⊤ ↔ x = y := by
   constructor
   · intro h
@@ -66,11 +65,11 @@ is locally injective for a Grothendieck topology `J` on `C` if
 whenever two sections of `F₁` are sent to the same section of `F₂`, then these two
 sections coincide locally. -/
 class IsLocallyInjective : Prop where
-  equalizerSieve_mem {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y) :
+  equalizerSieve_mem {X : Cᵒᵖ} (x y : CD (F₁.obj X)) (h : φ.app X x = φ.app X y) :
     equalizerSieve x y ∈ J X.unop
 
 lemma equalizerSieve_mem [IsLocallyInjective J φ]
-    {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y) :
+    {X : Cᵒᵖ} (x y : CD (F₁.obj X)) (h : φ.app X x = φ.app X y) :
     equalizerSieve x y ∈ J X.unop :=
   IsLocallyInjective.equalizerSieve_mem x y h
 
@@ -89,6 +88,7 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
     change IsIso ((forget D).map (φ.app X))
     infer_instance))
 
+-- This ends up in `Type` so we can't say that it is indeed a concrete category...
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
     IsLocallyInjective J (whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h

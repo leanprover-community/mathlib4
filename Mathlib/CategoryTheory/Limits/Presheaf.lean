@@ -92,7 +92,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
         refine (congr_fun (g.naturality φ.left.op) (X₂.hom.app (Opposite.op X₂.left)
           (𝟙 _))).symm.trans ?_
         dsimp
-        apply _root_.congr_arg
+        apply congr_arg
         simpa using congr_fun (X₂.hom.naturality φ.left.op).symm (𝟙 _) }
   left_inv f := by
     ext ⟨X, ⟨⟨⟩⟩, φ⟩
@@ -238,7 +238,7 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type v₁) :
     ext X x
     dsimp
     rw [← hm]
-    apply _root_.congr_arg
+    apply congr_arg
     simp [coconeOfRepresentable_ι_app, yonedaEquiv]
 
 variable {A : C ⥤ ℰ}
@@ -451,7 +451,7 @@ lemma natTrans_app_yoneda_obj (X : C) : (natTrans φ).app (yoneda.obj X) =
   rw [Functor.descOfIsLeftKanExtension_fac]
   apply yonedaEquiv.injective
   rw [yonedaEquiv_presheafHom_yoneda_obj]
-  exact _root_.congr_arg _ (compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id F X).symm
+  exact congr_arg _ (compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id F X).symm
 
 end
 
@@ -548,7 +548,7 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
     dsimp
     rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp]
-    exact _root_.congr_arg _ (h (CostructuredArrow.mk t))
+    exact congr_arg _ (h (CostructuredArrow.mk t))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 

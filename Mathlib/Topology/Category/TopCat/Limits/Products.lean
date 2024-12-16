@@ -352,10 +352,10 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this
-        · exact _root_.congr_arg g (Equiv.ofInjective_symm_apply _ _)
+        · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
       · rintro T _ _ m rfl rfl
         ext x
         change m x = dite _ _ _
-        split_ifs <;> exact _root_.congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
+        split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
 end TopCat

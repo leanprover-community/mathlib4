@@ -25,3 +25,16 @@ attribute [elementwise (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 -- This list is incomplete, and it would probably be useful to add more.
 set_option linter.existingAttributeWarning false in
 attribute [elementwise (attr := simp)] IsIso.hom_inv_id IsIso.inv_hom_id
+
+-- TODO: generate the `Type`-specific results using `@[elementwise]`.
+universe u
+
+/-- Specialize `IsIso.hom_inv_id_apply` to the category of types. -/
+@[simp] lemma IsIso.hom_inv_id_apply_type {X Y : Type u} (f : X ⟶ Y) [IsIso f] (x : X) :
+    inv f (f x) = x :=
+  congr_fun (IsIso.hom_inv_id f) x
+
+/-- Specialize `IsIso.inv_hom_id_apply` to the category of types. -/
+@[simp] lemma IsIso.inv_hom_id_apply_type {X Y : Type u} (f : X ⟶ Y) [IsIso f] (y : Y) :
+    f (inv f y) = y :=
+  congr_fun (IsIso.inv_hom_id f) y

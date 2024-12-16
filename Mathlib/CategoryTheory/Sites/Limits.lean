@@ -150,7 +150,7 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
           uniq := fun S m hm => by
             ext1
             exact hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j =>
-              _root_.congr_arg Hom.val (hm j) } }
+              congr_arg Hom.val (hm j) } }
 
 instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
 

@@ -79,7 +79,7 @@ theorem colimitLimitToLimitColimit_injective :
     dsimp at x y
     -- Since the images of `x` and `y` are equal in a limit, they are equal componentwise
     -- (indexed by `j : J`),
-    replace h := fun j => _root_.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+    replace h := fun j => congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp? [colimit_eq_iff] at h says
@@ -347,8 +347,7 @@ noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
-variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC CC]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
 
 section
 

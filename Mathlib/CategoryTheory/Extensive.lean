@@ -251,7 +251,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, p.2.trans (_root_.congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
+      ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
         fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
     · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
@@ -477,7 +477,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   change Cofan f at c
   obtain ⟨i⟩ := i
   let e : ∐ f ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
-  { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (_root_.congr_arg f h) ≫ coprod.inl else
+  { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
       Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
     inv := coprod.desc (Sigma.ι f i) (Sigma.desc fun j ↦ Sigma.ι f j)
     hom_inv_id := by aesop_cat

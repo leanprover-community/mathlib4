@@ -203,7 +203,7 @@ when `h : f = g` is an equality between morphisms in a concrete category.
 theorem congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : carrier X) : f x = g x :=
   congrFun (congrArg (fun k : X ⟶ Y => (k : carrier X → carrier Y)) h) x
 
-theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : carrier X} (h : x = x') : f x = f x' :=
+protected theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : carrier X} (h : x = x') : f x = f x' :=
   congrArg (f : carrier X → carrier Y) h
 
 theorem coe_id {X : C} : (𝟙 X : carrier X → carrier X) = id :=
