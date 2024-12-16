@@ -286,11 +286,19 @@ theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ := 
 theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
   continuous_of_distribMulActionHom φ.toDistribMulActionHom
 
+-- REPLACE WITH THIS
 variable (R) in
-theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
-    [IsModuleTopology R C] : Continuous (fun a ↦ -a : C → C) :=
+theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : ContinuousNeg C where
+  continuous_neg :=
   haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
   continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+
+variable (R) in
+theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : TopologicalAddGroup C where
+      continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+      continuous_neg := (continuousNeg R C).1
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
@@ -307,64 +315,17 @@ end function
 section surjection
 
 open TopologicalSpace in
--- Should be elsewhere
--- see https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/product.20of.20pushforward.20topologies/near/484555435
-lemma isOpenMap_of_coinduced {A : Type*} [AddCommGroup A] {B : Type*} [τA : TopologicalSpace A]
-    [ContinuousAdd A] [AddCommGroup B] [τB : TopologicalSpace B] (φ : A →+ B) (hφc : Continuous φ)
-    (h : coinduced φ τA = τB) :
-    IsOpenMap φ := by
-  intro U hU
-  rw [← h, isOpen_coinduced]
-  suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ φ.ker, (fun x ↦ x + k) ⁻¹' U by
-    exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by continuity) _ hU)
-  ext x
-  constructor
-  · rintro ⟨y, hyU, hyx⟩
-    apply Set.mem_iUnion_of_mem (y - x)
-    suffices y - x ∈ AddMonoidHom.ker φ by simp_all
-    rwa [AddMonoidHom.sub_mem_ker_iff]
-  · rintro ⟨_, ⟨k, rfl⟩, _, ⟨hk, rfl⟩, hx⟩
-    use x + k, hx
-    rw [AddMonoidHom.map_add, hk, add_zero]
+-- Should be removed because it's just `AddMonoidHom.isOpenQuotientMap_of_isQuotientMap`
+lemma isOpenMap_of_coinduced' {A : Type*} [AddCommGroup A] {B : Type*} [τA : TopologicalSpace A]
+    [TopologicalAddGroup A] [AddCommGroup B] [τB : TopologicalSpace B] (φ : A →+ B)
+    --(hφc : Continuous φ)
+    (h : coinduced φ τA = τB)
+    (hnew : Function.Surjective φ) : IsOpenMap φ := by
+  have this : IsOpenQuotientMap ⇑φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap
+    (⟨hnew, h.symm⟩ : Topology.IsQuotientMap φ)
+  exact this.isOpenMap
 
--- /-
--- theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
---     [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
--- -/
--- -- **TODO** In good shape, but should be elsewhere
--- /-- Let `A` and `B` be topological groups, and `φ : A → B` is a continuous surjective group
--- homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
--- is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
--- @[to_additive "Let `A` and `B` be topological additive groups, and `φ : A → B` is a continuous
--- surjective additive group homomorphism.
--- Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
--- is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
--- lemma _root_.MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
---     [TopologicalSpace A] [TopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
---     [TopologicalGroup B] {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
---     (hφ : Topology.IsQuotientMap φ) : IsOpenQuotientMap φ where
---     surjective := hφ.surjective
---     continuous := hφ.continuous
---     isOpenMap := by
---       -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
---       intro U hU
---       rw [← Topology.IsQuotientMap.isOpen_preimage hφ]
---       -- But `φ⁻¹ (φ U) = ⋃ (k + U)` as `k` runs through the kernel of φ,
---       suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ MonoidHom.ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
---         exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
---       ext x
---       constructor
---         -- and `k + U` is open because `k + ⬝` is a homeomorphism.
---         -- Remark: here is where we use that we have additive groups not monoids
---         -- (the inverse of the homeomorphism is `(-k) + ⬝`).
---       · rintro ⟨y, hyU, hyx⟩
---         apply Set.mem_iUnion_of_mem (x⁻¹ * y)
---         suffices y / x ∈ MonoidHom.ker (φ : A →* B) by simp_all
---         rwa [MonoidHom.div_mem_ker_iff]
---       · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
---         use x * k, hx
---         rw [map_mul, hk, mul_one]
-
+-- #check IsOpenQuotientMap.prodMap
 open TopologicalSpace in
 -- **TODO** Should no longer be necessary. `IsOpenQuotientMap.prodMap` is a stronger assertion.
 -- Hypotheses (f is surjective, open and continuous)
@@ -372,15 +333,15 @@ open TopologicalSpace in
 theorem coinduced_prod_eq_prod_coinduced {X Y S T : Type*} [AddCommGroup X] [AddCommGroup Y]
     [AddCommGroup S] [AddCommGroup T] (f : X →+ S) (g : Y →+ T)
     (hf : Function.Surjective f) (hg : Function.Surjective g)
-    [τX : TopologicalSpace X] [ContinuousAdd X] [τY : TopologicalSpace Y] [ContinuousAdd Y] :
-    coinduced (Prod.map f g) instTopologicalSpaceProd =
+    [τX : TopologicalSpace X] [TopologicalAddGroup X] [τY : TopologicalSpace Y]
+    [TopologicalAddGroup Y] : coinduced (Prod.map f g) instTopologicalSpaceProd =
       @instTopologicalSpaceProd S T (coinduced f τX) (coinduced g τY) := by
   letI : TopologicalSpace S := (coinduced f τX)
   have hfc : Continuous f := { isOpen_preimage := fun s a ↦ a }
-  have hf2 : IsOpenQuotientMap f := ⟨hf, hfc, isOpenMap_of_coinduced _ hfc rfl⟩
+  have hf2 : IsOpenQuotientMap f := ⟨hf, hfc, isOpenMap_of_coinduced' _ rfl hf⟩
   letI : TopologicalSpace T := (coinduced g τY)
   have hgc : Continuous g := { isOpen_preimage := fun s a ↦ a }
-  have hg2 : IsOpenQuotientMap g := ⟨hg, hgc, isOpenMap_of_coinduced _ hgc rfl⟩
+  have hg2 : IsOpenQuotientMap g := ⟨hg, hgc, isOpenMap_of_coinduced' _ rfl hg⟩
   have := IsOpenQuotientMap.prodMap hf2 hg2
   symm
   apply Topology.IsQuotientMap.eq_coinduced
@@ -398,6 +359,7 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
   letI τB : TopologicalSpace B := moduleTopology R B
   haveI : IsModuleTopology R A := ⟨rfl⟩
   haveI : ContinuousAdd A := ModuleTopology.continuousAdd R A
+  haveI : ContinuousNeg A := continuousNeg R A
   haveI : IsModuleTopology R B := ⟨rfl⟩
   haveI : ContinuousAdd B := ModuleTopology.continuousAdd R B
   have : Continuous φ := continuous_of_linearMap φ
@@ -416,20 +378,22 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
       (Prod.map id ⇑φ.toAddMonoidHom) by ext; simp, Set.preimage_comp] at foo
     clear! τB -- easiest to just remove topology on B completely now so typeclass inference
     -- never sees it
-    convert isOpenMap_of_coinduced (AddMonoidHom.prodMap (AddMonoidHom.id R) φ.toAddMonoidHom)
-      (_) (_) (_) foo
+    convert isOpenMap_of_coinduced' (AddMonoidHom.prodMap (AddMonoidHom.id R) φ.toAddMonoidHom)
+      (_) (_) _ foo
     · -- aesop would do this if `Function.surjective_id : Surjective ⇑(AddMonoidHom.id R)`
       -- was known by it
       apply (Set.image_preimage_eq _ _).symm
       rw [AddMonoidHom.coe_prodMap, Prod.map_surjective]
       exact ⟨Function.surjective_id, by simp_all⟩
-    · -- should `apply continuousprodmap ctrl-space` find `Continuous.prod_map`?
-      apply @Continuous.prodMap _ _ _ _ (_) (_) (_) (_) id φ continuous_id
-      rw [continuous_iff_coinduced_le, eq_moduleTopology R A]
+    · exact TopologicalAddGroup.mk
     · rw [← eq_moduleTopology R A]
       letI : TopologicalSpace B := (TopologicalSpace.coinduced (⇑φ) inferInstance)
+      haveI : TopologicalAddGroup A := topologicalAddGroup R A
       exact coinduced_prod_eq_prod_coinduced (AddMonoidHom.id R) φ.toAddMonoidHom
        (Function.surjective_id) hφ
+    · rintro ⟨r, b⟩
+      obtain ⟨a, rfl⟩ := hφ b
+      exact ⟨⟨r, a⟩, rfl⟩
   · apply @ContinuousAdd.mk _ (_)
     obtain ⟨bar⟩ := ModuleTopology.continuousAdd R A
     rw [continuous_def] at bar ⊢
@@ -440,13 +404,17 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
       (fun p ↦ p.1 + p.2 : B × B → B) ∘
       (Prod.map ⇑φ.toAddMonoidHom ⇑φ.toAddMonoidHom) by ext; simp, Set.preimage_comp] at bar
     clear! τB -- easiest to just remove topology on B completely now
-    convert isOpenMap_of_coinduced (AddMonoidHom.prodMap φ.toAddMonoidHom φ.toAddMonoidHom)
-      (_) (_) (_) bar
+    convert isOpenMap_of_coinduced' (AddMonoidHom.prodMap φ.toAddMonoidHom φ.toAddMonoidHom)
+      (_) (_) _ bar
     · aesop
-    · apply @Continuous.prodMap _ _ _ _ (_) (_) (_) (_) <;>
-      · rw [continuous_iff_coinduced_le, eq_moduleTopology R A]; rfl
+    · exact TopologicalAddGroup.mk
     · rw [← eq_moduleTopology R A]
+      haveI : TopologicalAddGroup A := topologicalAddGroup R A
       exact coinduced_prod_eq_prod_coinduced (X := A) (Y := A) (S := B) (T := B) φ φ hφ hφ
+    · rintro ⟨b₁, b₂⟩
+      obtain ⟨a₁, rfl⟩ := hφ b₁
+      obtain ⟨a₂, rfl⟩ := hφ b₂
+      exact ⟨⟨a₁, a₂⟩, rfl⟩
 
 end surjection
 
