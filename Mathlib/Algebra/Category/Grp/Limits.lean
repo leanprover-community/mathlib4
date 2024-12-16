@@ -432,7 +432,7 @@ noncomputable instance forget_createsLimit :
   exact createsLimitOfNatIso e
 
 @[to_additive]
-noncomputable instance forget_cratesLimitsOfShape (J : Type v) [Category.{w} J] :
+noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J] :
     CreatesLimitsOfShape J (forget CommGrp.{u}) where
   CreatesLimit := inferInstance
 
