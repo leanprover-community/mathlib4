@@ -139,6 +139,16 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
     exact integral_exp_pos hf
   · simp
 
+instance isZeroOrProbabilityMeasure_tilted : IsZeroOrProbabilityMeasure (μ.tilted f) := by
+  rcases eq_zero_or_neZero μ with hμ | hμ
+  · simp only [hμ, tilted_zero_measure]
+    infer_instance
+  by_cases hf : Integrable (fun x ↦ exp (f x)) μ
+  · have := isProbabilityMeasure_tilted hf
+    infer_instance
+  · simp only [hf, not_false_eq_true, tilted_of_not_integrable]
+    infer_instance
+
 section lintegral
 
 lemma setLIntegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
