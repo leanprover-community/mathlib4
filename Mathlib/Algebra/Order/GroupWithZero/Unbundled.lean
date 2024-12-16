@@ -1273,6 +1273,12 @@ lemma lt_of_mul_self_lt_mul_self₀ (hb : 0 ≤ b) : a * a < b * b → a < b := 
   simp_rw [← sq]
   exact lt_of_pow_lt_pow_left₀ _ hb
 
+lemma sq_lt_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 < b ^ 2 ↔ a < b :=
+  pow_lt_pow_iff_left₀ ha hb two_ne_zero
+
+lemma sq_le_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 ≤ b ^ 2 ↔ a ≤ b :=
+  pow_le_pow_iff_left₀ ha hb two_ne_zero
+
 end MonoidWithZero.LinearOrder
 
 section CancelMonoidWithZero
