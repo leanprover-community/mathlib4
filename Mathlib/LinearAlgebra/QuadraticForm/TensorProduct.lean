@@ -66,6 +66,35 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
     (Q₂ : QuadraticMap R M₂ N₂) : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
+theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticMap A M₁ N₁)
+    (Q₂ : QuadraticMap R M₂ N₂) : associated (R := A) (Q₁.tmul Q₂)
+      = BilinMap.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
+  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  rw [QuadraticMap.tmul, BilinMap.tmul]
+  have : Subsingleton (Invertible (2 : A)) := inferInstance
+  convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
+
+variable (A) in
+/-- The base change of a quadratic form. -/
+-- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
+protected noncomputable def _root_.QuadraticMap.baseChange (Q : QuadraticMap R M₂ N₂) :
+    QuadraticMap A (A ⊗[R] M₂) (A ⊗[R] N₂) :=
+  QuadraticMap.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticMap.sq (R := A)) Q
+
+theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticMap A M₁ N₁)
+    (Q₂ : QuadraticMap R M₂ N₂) :
+    polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinMap.tmul (polarBilin Q₁) (polarBilin Q₂) := by
+  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinMap.tmul, tmul_smul,
+    ← smul_tmul', map_nsmul, associated_tmul]
+  rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
+    one_smul]
+
+theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticMap R M₂ N₂) :
+    polarBilin (Q.baseChange A) = BilinMap.baseChange A (polarBilin Q) := by
+  rw [QuadraticMap.baseChange, BilinMap.baseChange, polarBilin_tmul, BilinMap.tmul,
+    ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
+    smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
+
 end QuadraticMap
 
 namespace QuadraticForm
@@ -95,35 +124,13 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
-theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticMap A M₁ N₁)
-    (Q₂ : QuadraticMap R M₂ N₂) : associated (R := A) (Q₁.tmul Q₂)
-      = BilinMap.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
-  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  /- Previously `QuadraticForm.tensorDistrib` was defined in a similar way to
-  `QuadraticMap.tensorDistrib`. We now obtain the definition of `QuadraticForm.tensorDistrib`
-  from `QuadraticMap.tensorDistrib` using `A ⊗[R] R ≃ₗ[A] A`. Hypothesis `e1` below shows that the
-  new definition is equal to the old, and allows us to reuse the old proof.
 
-  TODO: Define `IsSymm` for bilinear maps and generalise this result to Quadratic Maps.
-  -/
-  have e1: (BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂) ∘
-    BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂) ∘
-    AlgebraTensorModule.map
-      (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
-      (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)) =
-       tensorDistrib R A := rfl
-  rw [QuadraticMap.tmul, BilinMap.tmul]
-  simp_all only [this]
-  --simp
-  have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
-
-theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
-  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinForm.tmul, tmul_smul,
-    ← smul_tmul', map_nsmul, associated_tmul]
-  rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
-    one_smul]
+theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+    associated (R := A) (Q₁.tmul Q₂)
+      = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
+  rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
+    ← (QuadraticMap.associated_tmul )]
+  aesop
 
 variable (A) in
 /-- The base change of a quadratic form. -/
@@ -144,9 +151,19 @@ theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
 
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = BilinForm.baseChange A (polarBilin Q) := by
-  rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
-    ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
-    smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
+  rw [BilinForm.baseChange, BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply,
+    ← BilinMap.tmul, ←BilinMap.baseChange, ← (QuadraticMap.polarBilin_baseChange Q)]
+  rw [QuadraticForm.baseChange, QuadraticForm.tmul, QuadraticForm.tensorDistrib,
+    LinearMap.comp_apply, ← QuadraticMap.tmul, ← QuadraticMap.baseChange]
+  simp only [LinearEquiv.congrQuadraticMap, LinearMap.compQuadraticMap, LinearEquiv.coe_coe,
+    AlgebraTensorModule.rid_symm_apply, LinearMap.coe_mk, AddHom.coe_mk,
+    LinearEquiv.congrRight₂_apply]
+  ext a b
+  simp only [AlgebraTensorModule.rid, LinearEquiv.ofLinear_apply, AlgebraTensorModule.lift_apply,
+    AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
+    polarBilin_apply_apply, polar, LinearEquiv.ofLinear_toLinearMap, LinearMap.compr₂_apply,
+    _root_.map_sub]
+  aesop
 
 end QuadraticForm
 

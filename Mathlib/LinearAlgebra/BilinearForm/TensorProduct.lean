@@ -109,13 +109,17 @@ protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap  R M₂ R) : Bi
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
 attribute [local instance] starRingOfComm
+attribute [local instance] starAddMonoidOfAddMonoid in
 attribute [local ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
-lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
+lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinMap A M₁ N₁} {B₂ : BilinMap R M₂ N₂}
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
-  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+  simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars,
+    BilinMap.tensorDistrib_tmul, LinearMap.flip_apply]
+  rw [← TrivialStar.star_trivial ((B₂ x₂) y₂), (hB₂ x₂ y₂), ← TrivialStar.star_trivial ((B₁ x₁) y₁),
+    (hB₁ x₁ y₁)]
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -128,9 +132,10 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
 
+attribute [local instance] starAddMonoidOfAddMonoid in
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
-lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
+lemma IsSymm.baseChange {B₂ : BilinMap R M₂ N₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
   IsSymm.tmul mul_comm hB₂
 
 end BilinForm
