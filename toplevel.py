@@ -60,15 +60,20 @@ def print_import_table(import_counts, sorted_dirs, column_sums):
         print(f"{textwrap.shorten(dir_name, width=12, placeholder=''):<15}", end="")
     print()
 
+    yellow_count = 0  # Initialize counter for yellow entries
+
     for source_dir in sorted_dirs:
         print(f"{textwrap.shorten(source_dir, width=12, placeholder=''):<20}", end="")
         for target_dir in filtered_dirs:
             count = import_counts[source_dir].get(target_dir, 0)
             if 0 < count < 5:
                 print(f"\033[93m{count:<15}\033[0m", end="")  # Highlight in yellow
+                yellow_count += 1  # Increment counter for yellow entries
             else:
                 print(f"{count:<15}", end="")
         print()
+
+    print(f"\nNumber of yellow entries: {yellow_count}")  # Print the number of yellow entries
 
 def main():
     top_level_dirs = get_top_level_directories(MATHLIB_PATH)
