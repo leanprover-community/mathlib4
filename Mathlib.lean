@@ -209,6 +209,7 @@ import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.DualQuaternion
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.EuclideanDomain.Field
@@ -3537,7 +3538,6 @@ import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Pairwise
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.CompTypeclasses
