@@ -129,5 +129,5 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   suffices (if a = b then f m else 0) = e (1 ⊗ₜ[R] if a = b then m else 0) by
     simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite e]
   split_ifs with h
-  swap; · simp
-  simp [e, IsBaseChange.equiv_tmul]
+  · simp [e, IsBaseChange.equiv_tmul]
+  · simp only [tmul_zero, LinearEquiv.trans_apply, LinearEquiv.restrictScalars_apply, map_zero]

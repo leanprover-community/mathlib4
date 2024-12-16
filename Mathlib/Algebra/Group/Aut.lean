@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.GroupTheory.Perm.Basic
 
 /-!
@@ -276,3 +277,15 @@ def congr [AddGroup G] {H : Type*} [AddGroup H] (ϕ : G ≃+ H) :
   map_mul' := by simp [DFunLike.ext_iff]
 
 end AddAut
+
+variable (G)
+
+/-- `Multiplicative G` and `G` have isomorphic automorphism groups. -/
+@[simps!]
+def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* AddAut G :=
+  { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
+
+/-- `Additive G` and `G` have isomorphic automorphism groups. -/
+@[simps!]
+def AddAutAdditive [Group G] : AddAut (Additive G) ≃* MulAut G :=
+  { MulEquiv.toAdditive.symm with map_mul' := fun _ _ ↦ rfl }
