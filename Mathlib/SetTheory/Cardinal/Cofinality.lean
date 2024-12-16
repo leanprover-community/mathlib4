@@ -665,9 +665,9 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
-  obtain rfl | ho := ho.eq_bot_or_isSuccLimit
-  · simp
-  · exact isNormal_preOmega.cof_eq ho
+  by_cases h : IsMin o
+  · simp [h.eq_bot]
+  · exact isNormal_preOmega.cof_eq ⟨h, ho⟩
 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : IsSuccLimit o) : (ω_ o).cof = o.cof :=
