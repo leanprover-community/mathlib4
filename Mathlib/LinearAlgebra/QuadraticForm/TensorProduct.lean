@@ -95,9 +95,9 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
-theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R := A) (Q₁.tmul Q₂)
-      = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
+theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticMap A M₁ N₁)
+    (Q₂ : QuadraticMap R M₂ N₂) : associated (R := A) (Q₁.tmul Q₂)
+      = BilinMap.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   /- Previously `QuadraticForm.tensorDistrib` was defined in a similar way to
   `QuadraticMap.tensorDistrib`. We now obtain the definition of `QuadraticForm.tensorDistrib`
@@ -112,8 +112,9 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
       (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
       (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)) =
        tensorDistrib R A := rfl
-  rw [QuadraticForm.tmul, ← e1, BilinForm.tmul]
-  dsimp
+  rw [QuadraticMap.tmul, BilinMap.tmul]
+  simp_all only [this]
+  --simp
   have : Subsingleton (Invertible (2 : A)) := inferInstance
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 

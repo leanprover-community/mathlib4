@@ -898,11 +898,9 @@ theorem associated_apply (x y : M) :
 
 attribute [local instance] starAddMonoidOfAddMonoid in
 attribute [local instance] starRingOfComm in
-theorem associated_isSymm (Q : QuadraticMap R M N) [Invertible (2 : R)] :
-    (associatedHom S Q).IsSymm := fun x y ↦ by
-  rw [associated_apply, add_comm x, sub_eq_add_neg, sub_eq_add_neg, add_assoc,
-    add_comm (-Q x), ← add_assoc, ← sub_eq_add_neg, ← sub_eq_add_neg, associated_apply]
-  rfl
+theorem associated_isSymm (Q : QuadraticMap R M N) : (associatedHom S Q).IsSymm := fun x y ↦ by
+  rw [associated_apply, add_comm x, sub_eq_add_neg, sub_eq_add_neg, add_assoc, add_comm (-Q x),
+    ← add_assoc, ← sub_eq_add_neg, ← sub_eq_add_neg, associated_apply, TrivialStar.star_trivial]
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -925,7 +923,7 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
 
 attribute [local instance] starAddMonoidOfAddMonoid in
 attribute [local instance] starRingOfComm in
-theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M N} (h : B₁.IsSymm) :
+theorem associated_left_inverse {B₁ : BilinMap R M N} (h : B₁.IsSymm) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
     rw [associated_toQuadraticMap, ← h.eq x y, TrivialStar.star_trivial, ← (two_smul R),
