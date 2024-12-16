@@ -434,7 +434,7 @@ noncomputable instance forget_createsLimit :
 @[to_additive]
 noncomputable instance forget_cratesLimitsOfShape (J : Type v) [Category.{w} J] :
     CreatesLimitsOfShape J (forget CommGrp.{u}) where
-      CreatesLimit := inferInstance
+  CreatesLimit := inferInstance
 
 /-- The forgetful functor from commutative groups to types creates all limits.
 -/
