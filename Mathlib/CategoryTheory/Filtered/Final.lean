@@ -25,6 +25,7 @@ final can be restated. We show:
   `C` is filtered and `F` is final.
 * Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
   of (co)structured arrow categories.
+* Finality of `StructuredArrow.post`, given the finality of its arguments.
 
 ## References
 
