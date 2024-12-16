@@ -179,7 +179,8 @@ theorem binomialSeries_ODE {a : ℝ} :
     intro k
     unfold binomialSeries
     simp [coeff]
-    rw [List.prod_eq_one] -- cringe
+    -- the following should be simpler
+    rw [List.prod_eq_one]
     · simp
     · simp [List.forall_mem_ofFn_iff]
   have h_deriv_coeff : ∀ k, ((binomialSeries ℝ a).derivSeries.coeff k) 1 =
@@ -306,8 +307,8 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
   apply HasFPowerSeriesOnBall.analyticOnNhd
   exact h_fun
 
-theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
-    Set.EqOn (binomialSum a) (fun x ↦ (1 + x)^a) (Set.Icc (-1 + ε) (1 - ε)) := by
+/-- The binomial series converges to `(1 + x).rpow a` for real `a` and `|x| < 1`. -/
+theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + x)^a := by
   have binomialSum_zero : binomialSum a 0 = 1 := by
     simp [binomialSum, FormalMultilinearSeries.sum]
     rw [tsum_eq_zero_add']
@@ -316,16 +317,16 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
       simp
     · simp
       exact summable_zero
-  rcases lt_trichotomy ε 1 with (hε' | hε' | hε')
-  rotate_left
-  · simp [hε', binomialSum_zero]
-  · convert Set.eqOn_empty _ _
-    apply Set.Icc_eq_empty
-    linarith
-  let v : ℝ → ℝ → ℝ := fun t x ↦ a * x / (1 + t)
+  by_cases hx_zero : x = 0
+  · simp [hx_zero, binomialSum_zero]
+  let v : ℝ → ℝ → ℝ := fun t y ↦ a * y / (1 + t)
   let s : ℝ → Set ℝ := fun _ ↦ Set.univ
+  suffices h_eqon : Set.EqOn (binomialSum a) (fun y ↦ (1 + y)^a) (Set.Icc (-|x|) |x|) by
+    apply h_eqon
+    simp
+    exact ⟨neg_abs_le x, le_abs_self x⟩
   apply ODE_solution_unique_of_mem_Icc (v := v) (s := s) (t₀ := 0)
-    (K := ⟨|a| / ε, by apply div_nonneg (by simp); linarith⟩)
+    (K := ⟨|a| / (1 - |x|), by apply div_nonneg (by simp); linarith⟩)
   · intro t ht
     simp at ht
     simp [s, v]
@@ -339,12 +340,12 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
       linarith
     · rw [← NNReal.coe_le_coe]
       simp
-      exact div_le_div_of_nonneg_left (by simp) hε (by linarith)
+      exact div_le_div_of_nonneg_left (by simp) (by linarith) (by linarith)
   · simpa
   · apply ContinuousOn.mono (s := EMetric.ball 0 (binomialSeries ℝ a).radius)
     · unfold binomialSum
       convert FormalMultilinearSeries.continuousOn
-      infer_instance -- why asked?
+      infer_instance
     · intro x hx
       simp at hx
       simp [EMetric.ball]
@@ -382,15 +383,4 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
     · left
       linarith
   · simp [s]
-  · simp [binomialSum_zero]
-
-/-- The binomial series converges to `(1 + x).rpow a` for real `a` and `|x| < 1`. -/
-theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + x)^a := by
-  let ε := (1 - |x|) / 2
-  have hε : 0 < ε := by dsimp [ε]; linarith
-  have := binomialSum_eq_rpow_aux (a := a) hε
-  apply this
-  simp
-  rw [abs_lt] at hx
-  dsimp [ε]
-  constructor <;> linarith [le_abs_self x, neg_abs_le x]
+  · simpa
