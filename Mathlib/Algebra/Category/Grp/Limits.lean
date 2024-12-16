@@ -86,7 +86,7 @@ noncomputable instance Forget₂.createsLimit :
   createsLimitOfReflectsIso (K := F) (F := (forget₂ Grp.{u} MonCat.{u}))
     fun c' t => by
       have : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) := by
-        have : HasLimit (F ⋙ forget₂ Grp MonCat) := HasLimit.mk {cone := c', isLimit := t}
+        have : HasLimit (F ⋙ forget₂ Grp MonCat) := ⟨_, t⟩
         apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ Grp MonCat)
       have : Small.{u} (Functor.sections (F ⋙ forget Grp)) := inferInstanceAs <| Small.{u}
         (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat))
