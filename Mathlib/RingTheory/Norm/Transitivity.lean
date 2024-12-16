@@ -74,7 +74,8 @@ lemma mul_auxMat_toSquareBlock_true :
   simp [toSquareBlock_def, hi, hj, mul_auxMat_corner]
 
 /-- The upper-left block of `M * aux M k`. -/
-def mulAuxMatBlock := (M * auxMat M k).toSquareBlock (· = k) False
+def mulAuxMatBlock : Matrix { a // (a = k) = False } { a // (a = k) = False } S :=
+  (M * auxMat M k).toSquareBlock (· = k) False
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock M k).det := by
