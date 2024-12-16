@@ -4504,6 +4504,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Norm.Defs
+import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
