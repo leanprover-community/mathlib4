@@ -2351,6 +2351,11 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
 
+theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · exact Or.inl <| lt_omega0.1 ho
+  · exact Or.inr ho
+
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
